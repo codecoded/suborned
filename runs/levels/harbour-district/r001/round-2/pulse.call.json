@@ -1,0 +1,234 @@
+{
+  "id": "06-transit-timetable",
+  "objective": "transit-timetable",
+  "role": "schedule-ai-designer",
+  "model": "claude-sonnet-5-5",
+  "modelsUsed": [
+    "claude-sonnet-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.0584483,
+  "seconds": 19,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/schedule-ai-designer.md",
+    "sourceHash": "d23bd3ee013abf943438c1126b7ecaa2094e0ada8c4b1ca1035a1ea0bb9a0124"
+  },
+  "retrieval": {
+    "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ timetable headway dwell run times journey times between stations ‖ boarding as fast travel is not priced in the GDD; open question for Motive and Sky ‖ The journey T1/records ‖ The first open question says \"Datum's hold includes boarding as fast travel\". Datum's hold says only that the cell rides the networks between stops and stations. It says nothing about fast travel. The wording presents a game power the GDD has not decided as if it were in the source.",
+    "queries": [
+      "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+      "timetable headway dwell run times journey times between stations",
+      "boarding as fast travel is not priced in the GDD; open question for Motive and Sky",
+      "The journey T1/records",
+      "The first open question says \"Datum's hold includes boarding as fast travel\". Datum's hold says only that the cell rides the networks between stops and stations. It says nothing about fast travel. The wording presents a game power the GDD has not decided as if it were in the source."
+    ],
+    "pinned": [
+      "538618090dd534247cab5493",
+      "a675bd376f6046013acaec83"
+    ],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "dde0a99962d78283ceeb1e19f6c846ff0c372b573e689568153cf523fc71395b",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.33020877838134766,
+        "key": "c1909f164651d9c88cd65c53",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › questions",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › notes › questions\n- Scale: 1.1 × 1.1 km with seven environmental areas. Keep that, or plan only the Records Precinct and Lamplight for the slice and leave the rest as massing?\n- Tram: terminate on the circus loop (as drawn), or run on up Crown Avenue to Crown Road?\n- Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?\n- Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?\n- Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.14810148845688673,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "keyword:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.6222695112228394,
+        "key": "a675bd376f6046013acaec83",
+        "kind": "gdd-agent",
+        "lineEnd": 207,
+        "lineStart": 201,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.14.0-2026-10-10.md",
+        "sourceHash": "7ac543ff223970961d34dc713af63ccbe3013052be96b53d182b76bdc5816265",
+        "text": "§14 ROLES (each agent loads only its own block)\nalso: Pulse (schedules), Motive (prices).\nopens: §07–09 · tests T5, T6\n### Datum · World planner · Opus 5.5\nowns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations. Edit the plan; the sheet is generated from it.\nreceives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.\ndelivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.\nhold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations: no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Never loosen a rule to pass; ask Splice, with a reason.",
+        "version": "v0.14.0",
+        "score": 0.1049954130480455,
+        "signals": [
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.2882605578977032,
+        "key": "b90d36765e23d10cba7b09e4",
+        "kind": "gdd-agent",
+        "lineEnd": 190,
+        "lineStart": 181,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.14.0-2026-10-10.md",
+        "sourceHash": "7ac543ff223970961d34dc713af63ccbe3013052be96b53d182b76bdc5816265",
+        "text": "§14 ROLES (each agent loads only its own block)\n## §14 ROLES (each agent loads only its own block)\n### Aster · Lead and producer · Opus 5.5\nowns: The goal, this GDD, the milestone plan, who does what, and the decision log.\nreceives: Sky's goals and constraints; finished work from every agent; reviews from Suture and Redline.\ndelivers: One objective at a time to one owner, with a definition of done and the evidence expected. Accepts the result or sends it back.\nescalates: To Sky only: a pillar change, new paid spend, release, destructive action, an unresolved conflict.\nhold: Five-week capstone. Gate: an uncoached player states the objective and fail conditions, picks an approach from something they learned, explains its cost, completes a chain, says why they fought police or rivals, and reads what the next mission inherits. If it slips, cut crowd witnesses → patrol reroute → camera-block variant → police branch. Keep both routes, the payoff cut, the debrief and the gate. Budget: two 20× subscriptions (one Codex, one Claude).\nopens: §01–§13, at spawn.\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing, bravery and resentment, Talkers, Heat and the debrief.",
+        "version": "v0.14.0",
+        "score": 0.07429641786531607,
+        "signals": [
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.3332350651481697,
+        "key": "c491222b7ea28a0a226c34c6",
+        "kind": "gdd-agent",
+        "lineEnd": 229,
+        "lineStart": 219,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.14.0-2026-10-10.md",
+        "sourceHash": "7ac543ff223970961d34dc713af63ccbe3013052be96b53d182b76bdc5816265",
+        "text": "§14 ROLES (each agent loads only its own block)\nhold: History, not backstory: people are memorable through what the systems record with you; text is a light layer. Built at build time, never live. Tone and rating filters. Civilians are never the payload.\nalso: Chime (voices, contacts confirming calls aloud), Glyph (dossier text).\nopens: §04, §09 · test T7\n### Pulse · Schedule and AI designer · GPT 6.1 Sol\nowns: Routines for people, security, transit and rivals; crowds; investigators; fight AI.\nreceives: Motive's rules, Keel's rulebook, Datum's plan, Vantage's block layouts.\ndelivers: Schedules and behaviour, tram and sky rail timetables. Keel checks; Latch builds.\nhold: Handover: rival car 3:10, last driver turn 5:40, Vale out 5:50, over 8:00. Patrol breaks to gunfire within 30 m; seal 2:25 after the response unit. Witness = sightline within 13 m. Investigators question every ~20 s, 60–90 s per lead. Crowds scatter, block or join; 30 combatants max.\nopens: §05–07 · tests T1, T4\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios.",
+        "version": "v0.14.0",
+        "score": 0.07241115500200476,
+        "signals": [
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3281391458594278,
+        "key": "e20799f1f673824d09ce452d",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › why",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › notes › why\n- Tram: one track (x −2.5) in a 16 m street from z −40, ending 6 m short of the circus. No loop, no crossover, no second track, one stop island; the line starts and ends nowhere.\n- Sky rail: a closed loop 24 m up the west promenade, straight over the tram street, round the Sphere station at r 88, then diagonally back across the west city with pylons dropped onto whatever is underneath.\n- Harbour line: a second closed loop on the quay with a balloon round the skyport (R 48). It shares no station with the sky rail or the tram.\n- Roads: the street kit is one straight street and a side street. The map graph (harbour-map.json) links the civic block to Comet Row and Sunset Way by two exit roads; nothing defines the district's road hierarchy or where those roads go.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.07087876541545926,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "semantic:3",
+          "semantic:5"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.37948811054229736,
+        "key": "cfba161c458af766f224f713",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › concept",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › notes › concept\n- Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.\n- Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.\n- Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.\n- Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.\n- Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island and Circus Road's median. Trains turn on a loop round the skyport.\n- The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).\n- The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.\n- Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.0697355373405952,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.25533924267706964,
+        "key": "ba506de42600790962a866a2",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyrail",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.06190061028770706,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "semantic:3"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 3.4488487243652344,
+        "key": "2c7a49372af3721bf62a8aad",
+        "kind": "gdd-agent",
+        "lineEnd": 180,
+        "lineStart": 171,
+        "section": "§13 TESTS (agent copy only; not in the human GDD)",
+        "source": "GDD/the-suborned-agent-gdd-v0.14.0-2026-10-10.md",
+        "sourceHash": "7ac543ff223970961d34dc713af63ccbe3013052be96b53d182b76bdc5816265",
+        "text": "§13 TESTS (agent copy only; not in the human GDD)\n## §13 TESTS (agent copy only; not in the human GDD)\ndefault: 6 new players.\n| id | question | method | pass |\n| T1 | tactical pause? | same build, 6 each way | pause wins unless no-pause players explain failures as well and rate tension higher |\n| T2 | loud dominates? | log first-shot time + route | < 25% shoot before 2:00; informed quiet runs finish faster |\n| T3 | Trail readable? | ask \"why is the investigation active?\" | ≥ 5/6 give correct cause |\n| T4 | witnesses add decisions? | A/B witnesses on/off | players route around crowds on purpose |\n| T5 | kidnapping fits tone? | framing survey | cell read as resistance, not criminals |\n| T6 | final fight reads as consequence? | ask \"why these enemies?\" | ≥ 5/6 link it to loud/quiet |\n| T7 [L] | contacts memorable? | recall 1 day later | name ≥ 2 contacts + what happened |",
+        "version": "v0.14.0",
+        "score": 0.061778846153846156,
+        "signals": [
+          "keyword:3",
+          "semantic:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "key": "538618090dd534247cab5493",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › tram",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0,
+        "signals": [
+          "critic-cited"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 2,
+    "pinned": 2,
+    "truncated": false,
+    "dropped": []
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 31
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/comet",
+          "sec": 31
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 30.8
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records",
+          "sec": 30.8
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T2/parade",
+          "to": "T2/docks",
+          "sec": 33
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/parade",
+          "sec": 33
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/market",
+          "sec": 34
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/docks",
+          "sec": 34
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/sunset",
+          "sec": 43.1
+        },
+        {
+          "from": "T2/sunset",
+          "to": "T2/market",
+          "sec": 43.1
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 90,
+      "dwellSec": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 21.25
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens",
+          "sec": 21.25
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 18.75
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus",
+          "sec": 18.75
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "T1/circus",
+      "sec": 76.8,
+      "via": []
+    },
+    {
+      "from": "T2/parade",
+      "to": "T2/market",
+      "sec": 82,
+      "via": []
+    },
+    {
+      "from": "T2/parade",
+      "to": "T2/sunset",
+      "sec": 140.1,
+      "via": []
+    },
+    {
+      "from": "T2/docks",
+      "to": "T2/sunset",
+      "sec": 92.1,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/harbour",
+      "sec": 52,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "S1/gardens",
+      "sec": 98.05,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/harbour",
+      "sec": 49.55,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "T2/sunset",
+      "sec": 74.1,
+      "via": [
+        "T1/records"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "T2/docks",
+      "sec": 65,
+      "via": [
+        "T1/records"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T2/docks",
+      "sec": 85,
+      "via": [
+        "S1/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Datum's hold says only that the cell rides trams and sky rail between stops and stations. Is riding a fast-travel power at all? If so, does it cost anything (cash, Trail, Alert, cooldown) and where can the player board?",
+      "for": "Sky",
+      "why": "The GDD sets no power, price, fare or rule for riding as fast travel, so none is written into the timetable."
+    },
+    {
+      "question": "If riding is priced or limited, what are the cost and limits? Does the cell wait for the scheduled vehicle or take an instant hop?",
+      "for": "Motive",
+      "why": "Pricing belongs to Motive. Journey times assume a real vehicle and count in-vehicle time only."
+    },
+    {
+      "question": "Do headway and dwell need to match any mission window, e.g. the handover timings?",
+      "for": "Motive",
+      "why": "The starting headways and dwells are Pulse's own values and are not drawn from the GDD."
+    }
+  ],
+  "notes": [
+    "Run time = chainage gap ÷ stated average speed, including accel/braking: tram 10 m/s, sky rail 12 m/s. Starting values [S], tune by playtest.",
+    "Headway (tram 120 s, sky rail 90 s) and dwell (tram 15 s, sky rail 12 s) are my starting values; the GDD gives none. Motive and Keel to confirm.",
+    "Journey sec = in-vehicle run time plus dwell at intermediate stops only. It excludes waiting, interchange walking and any boarding cost, none of which the GDD sets.",
+    "Interchange pairs: T1/records-T2/market, T1/circus-S1/circus, T2/parade-S1/harbour. 'via' names the interchange stop on the line the journey leaves; [] means no interchange.",
+    "Journeys that start at an interchange stop are listed from the other line's stop so that every second counted is a ride (e.g. T1/comet to T2/sunset = 31 + 43.1 = 74.1).",
+    "T1 and T2 are through-running, with termini off-sheet. The T1 circus loop and S1 skyport loop have no stop ids, so they are not timed. The earlier skyport runs were removed because no such stop exists.",
+    "Reverse runs are assumed symmetric. Only stops on the sheet are timetabled."
+  ],
+  "sources": [
+    "a675bd376f6046013acaec83",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "cfba161c458af766f224f713"
+  ]
+}

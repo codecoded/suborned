@@ -6,7 +6,7 @@ export type Road = { id: string; name: string; class: 'primary' | 'district' | '
 export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string };
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
 export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string };
-export type Line = { id: string; name: string; beyond: string; paths: Path[]; stops?: Stop[]; stations?: Stop[] };
+export type Line = { id: string; name: string; beyond: string; paths: Path[]; order?: string[]; stops?: Stop[]; stations?: Stop[] };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
@@ -120,8 +120,3 @@ export function derive(plan: Plan): Derived {
     offsheet: new Set(plan.links.map(l => l.node)),
   };
 }
-
-export const stopChainage = (d: Derived, line: string, stop: Stop, from: 'tram' | 'sky') => {
-  const path = d[from].find(p => p.line === line && p.id === stop.path)!;
-  return { path, s: chainage(path.samples, stop.at) };
-};

@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Checker clean. All 3 faults from last round are fixed: the Skyport station over water is gone, the journey is now T1/comet→T2/sunset 74.1 s, and the open question quotes the hold accurately. Every run time and journey sum matches. All stops are reachable. No price or rule is invented. Still open: S1 has no Skyport station (Datum/Aster to Sky). The T1/T2 level crossing needs confirming. Seal points at the precinct gates are Waymark's call. The 'one interchange' note needs updating.",
+  "faults": [],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "a675bd376f6046013acaec83",
+    "6e037fc577c7f2aa61117144"
+  ]
+}

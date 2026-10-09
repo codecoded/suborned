@@ -1,0 +1,141 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "parade",
+      "name": "Parade Quay",
+      "path": "line",
+      "at": [
+        308,
+        0
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Harbour Docks",
+      "path": "line",
+      "at": [
+        308,
+        -330
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "line",
+      "at": [
+        30,
+        -409.75
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "line",
+      "at": [
+        -347,
+        -480
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        320,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/parade",
+      "fronts": "harbour-road"
+    }
+  ],
+  "notes": [
+    "Critic fix: I took the S1 Skyport station at (530,0) off the list. The plan has no walkable public space there. The quay ends at x 385 (pier 330–385, y ±25), and everything from x 330 to 740 is water. No road or foot path can serve as its `fronts`. I will not hand over an entrance the cell cannot reach.",
+    "No legal Skyport position exists on this plan. A station on the pier (x ≤ 385) needs Harbour at x ≤ 185 for the 200 m S-S2 minimum. Circus at 95 forces Harbour to x ≥ 295.",
+    "So S1 now has three stations on-sheet: Gardens −160, Circus 95, Harbour 320. Gaps are 255 and 225 m.",
+    "For Datum (blocking): the airport line has no airport station. Please add skyport land inside the loop, joined to the quay by a pier or bridge. Add a forecourt or foot path on S1's straight trunk at x 520–560, or extend the trunk. I will then place Skyport there (length 50, `fronts` = the new path id) and rerun N-P2 and W-1.",
+    "For Aster: the missing Skyport station is a design gap to raise with Sky, because the plan concept says S1 is the airport line.",
+    "Harbour station at (320,0) stands over the quay strip (x 312–330), which is walkable. Its platform runs from x 295 to 345, and its entrance opens onto Harbour Road. That is 12 m from T2 Parade Quay.",
+    "All other stops are unchanged. These are hand figures, not checker results: I have no shell. Reach is tightest at crown-terraces and crescent-north (about 247 m each). No plots lie over water, so dropping Skyport does not change N-R1. The next owner should run `bun tools/plan/cli.ts` and send me the output.",
+    "Still open: Splice/Keel need to confirm the T1/T2 flat crossing at Market × Boulevard. Waymark needs to decide on seal points at the precinct gates; I placed no T2 stop there. Aster should update the concept note's 'one interchange'."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "a675bd376f6046013acaec83"
+  ]
+}

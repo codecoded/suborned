@@ -1,0 +1,54 @@
+{
+ "lines": [
+  {
+   "line": "T1",
+   "headwaySec": 240,
+   "dwellSec": 20,
+   "runs": [
+    {
+     "from": "T1/circus",
+     "to": "T1/records",
+     "sec": 60
+    },
+    {
+     "from": "T1/records",
+     "to": "T1/comet",
+     "sec": 60
+    }
+   ]
+  },
+  {
+   "line": "S1",
+   "headwaySec": 180,
+   "dwellSec": 20,
+   "runs": [
+    {
+     "from": "S1/gardens",
+     "to": "S1/circus",
+     "sec": 40
+    }
+   ]
+  }
+ ],
+ "journeys": [
+  {
+   "from": "T1/circus",
+   "to": "S1/circus",
+   "sec": 30,
+   "via": [
+    "S1/circus"
+   ]
+  }
+ ],
+ "openQuestions": [
+  {
+   "question": "Does boarding a tram or sky rail cost anything, and can the player fast-travel by it?",
+   "for": "Motive",
+   "why": "The GDD does not price boarding as fast travel; no price is proposed here."
+  }
+ ],
+ "notes": [
+  "Stub fixture."
+ ],
+ "sources": []
+}

@@ -11,7 +11,11 @@
     "retrieve": "bun tools/rag/retrieval.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "check": "bun run typecheck && bun test && bun run plan"
+    "check": "bun run typecheck && bun test && bun run plan",
+    "levels": "bun tools/levels/cli.ts",
+    "levels:replay": "bun tools/levels/replay.ts",
+    "levels:sheets": "bun tools/levels/sheets.ts",
+    "levels:ranks": "bun tools/levels/ranks.ts"
   },
   "devDependencies": {
     "@types/bun": "1.3.0",

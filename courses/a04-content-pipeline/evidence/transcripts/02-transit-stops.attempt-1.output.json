@@ -1,0 +1,152 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard",
+      "interchange": "T2/market"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "fronts": "boulevard",
+      "interchange": "S1/circus"
+    },
+    {
+      "line": "T2",
+      "id": "parade",
+      "name": "Parade Quay",
+      "path": "line",
+      "at": [
+        308,
+        0
+      ],
+      "fronts": "harbour-road",
+      "interchange": "S1/harbour"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Harbour Docks",
+      "path": "line",
+      "at": [
+        308,
+        -330
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "line",
+      "at": [
+        30,
+        -409.75
+      ],
+      "fronts": "market-street",
+      "interchange": "T1/records"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "line",
+      "at": [
+        -347,
+        -480
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "fronts": "crown-parade",
+      "interchange": "T1/circus"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        320,
+        0
+      ],
+      "length": 50,
+      "fronts": "harbour-road",
+      "interchange": "T2/parade"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "crown-parade"
+    }
+  ],
+  "notes": [
+    "I have not run this through the checker because I have no shell. The next owner should run `bun tools/plan/cli.ts` and send me the output. All figures here are hand calculations. Along-line distances assume r50 corners of about 90° on T2, each saving about 21 m against the corner point.",
+    "S1 fix: Datum's Harbour (340) to Skyport (530) gap was 190 m, under the 200 m minimum (S-S2). I moved Harbour to x 320, over the quay at the Parade end. Gaps are now 255 / 225 / 210 m. Skyport stays at 530 so its 50 m platform ends at the trunk end (560), clear of the loop.",
+    "T2 spacing along the line: Parade Quay to Harbour Docks about 330 m, to Market Street about 341 m, to Sunset Way about 432 m. All platforms are on straight track, clear of both r50 corners. Market Street is at x 30, off the flat crossing with T1, so its platform (x 15–45) does not overlap the Boulevard.",
+    "Reach (N-R1) is tight in two places, measured as straight-line distance. Worst is crown-terraces at 247 m from Sphere Gardens. Next is crescent-north at 247 m from the S1 Crown Circus station. Gardens stays at x −160 because the station is on the Records Axis. If the checker measures walking distance, these two may fail; that would be one for Datum: a stop on Crown Road or Terrace Row.",
+    "For Datum: no road or foot path defines public space at the Skyport station (x 530, over water). `fronts` says crown-parade only as a placeholder. A skyport forecourt or foot path is needed in the plan.",
+    "Interchange pairs: T1/circus–S1/circus about 119 m; T1/records–T2/market about 42 m; T2/parade–S1/harbour 12 m. This connects T1, T2 and S1 into one network. The concept note's 'one interchange' is now out of date. Aster should update it.",
+    "For Waymark: as Datum asked, I put no T2 stop at the precinct gates. The nearest stops are Market Street, 90 m east of the Satellite Street gate, and Sunset Way, about 175 m from the Rocket Lane gate. The existing T1 Records stop is about 60 m from the Satellite gate. Waymark decides whether that counts as a station seal point.",
+    "The T2/T1 flat crossing at Market × Boulevard has no standard yet. Splice/Keel should confirm it, as Datum noted. I did not move any line."
+  ],
+  "sources": [
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

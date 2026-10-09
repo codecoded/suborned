@@ -33,7 +33,7 @@ export function chunkDocument(source: string, text: string, meta: Meta = { autho
 
 const latest = (part: string, ext: string) => `GDD/${readdirSync(resolve(root, 'GDD')).filter(f => f.includes(part) && f.endsWith(ext)).sort().at(-1)}`;
 const versionOf = (file: string) => file.match(/v\d+\.\d+\.\d+/)?.[0] ?? 'unversioned';
-export const sources = { agentGdd: () => latest('agent-gdd', '.md'), humanGdd: () => latest('-gdd-v', '.html'), plans: () => readdirSync(resolve(root, 'contracts/world')).filter(f => f.endsWith('.plan.json')).sort().map(f => `contracts/world/${f}`) };
+export const sources = { agentGdd: () => latest('agent-gdd', '.md'), humanGdd: () => latest('-gdd-v', '.html'), plans: () => { const dir = process.env.SUBORNED_PLANS ?? 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.plan.json')).sort().map(f => `${dir}/${f}`); } };
 
 /** The agent GDD split at its `## §` headings, so each chunk carries its section and true file lines. */
 function agentGdd(source: string, text: string): Chunk[] {
@@ -42,8 +42,10 @@ function agentGdd(source: string, text: string): Chunk[] {
   return heads.flatMap((h, j) => chunkDocument(source, lines.slice(h, heads[j + 1] ?? lines.length).join('\n'), { ...meta, offset: h }));
 }
 
-export async function loadCorpus(): Promise<Chunk[]> {
-  const read = (p: string) => Bun.file(resolve(root, p)).text();
+/** `override` maps a plan path to the raw text to use instead of the file on disk (replay passes the text a run recorded, so later plan edits do not break it). */
+export async function loadCorpus(override: Record<string, string> = {}): Promise<Chunk[]> {
+  const over = new Map(Object.entries(override).map(([k, v]) => [resolve(root, k), v]));
+  const read = (p: string) => over.get(resolve(root, p)) ?? Bun.file(resolve(root, p)).text();
   const agent = sources.agentGdd(), human = sources.humanGdd();
   const chunks = agentGdd(agent, await read(agent));
   chunks.push(...chunkHtml({ source: human, kind: 'gdd-human', authority: 'Human GDD (wins on conflict)', version: versionOf(human) }, await read(human)));

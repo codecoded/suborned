@@ -1,0 +1,8 @@
+{
+ "verdict": "pass",
+ "summary": "Checker clean; no further fault.",
+ "faults": [],
+ "sources": [
+  "__CHUNK__"
+ ]
+}

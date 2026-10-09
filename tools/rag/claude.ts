@@ -1,6 +1,7 @@
 // Headless crew call for build-time generation. The crew card (.claude/agents/<name>.md) is the system prompt and
 // structured output is the only tool. `--agent <name>` is not used: the card's Glob and Grep survive `--tools`.
 // Verified 2026-10-10 (CLI 2.1.295): init lists exactly ["StructuredOutput"] and no MCP servers.
+import { readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { z } from 'zod';
 import { root } from './config';
@@ -8,7 +9,14 @@ import { root } from './config';
 export const allowedTools = ['StructuredOutput'];
 export type Card = { name: string; model: string; body: string; source: string; text: string };
 
-export async function card(name: string): Promise<Card> {
+/** A card by agent name (`simulation-engineer`) or GDD name (`Keel`, matched in the description "… (Keel). Owns: …"). */
+export async function card(who: string): Promise<Card> {
+  const dir = resolve(root, '.claude/agents');
+  let name = who;
+  if (!(await Bun.file(resolve(dir, `${who}.md`)).exists())) {
+    const tag = `(${who.toLowerCase()}). owns:`;
+    for (const f of await readdir(dir)) if ((await Bun.file(resolve(dir, f)).text()).toLowerCase().includes(tag)) { name = f.replace(/\.md$/, ''); break; }
+  }
   const source = `.claude/agents/${name}.md`, text = await Bun.file(resolve(root, source)).text();
   const m = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!m || m[1]!.match(/^name: (.+)$/m)?.[1] !== name) throw new Error(`${source} is not the card for ${name}`);

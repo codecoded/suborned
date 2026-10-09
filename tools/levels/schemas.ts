@@ -1,0 +1,55 @@
+// One zod schema per generated output (brief 001: lines, stops and stations, timetable) plus the critic's verdict.
+import { z } from 'zod';
+
+const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]*$/).describe('short id, e.g. T2, trunk, circus');
+const chunk = z.string().regex(/^[0-9a-f]{24}$/).describe('a 24-hex passage id from the retrieved passages');
+const xy = z.array(z.number()).length(2).describe('exactly [x, y] in metres [x east, y north], plan origin at Crown Circus centre');
+const pt = z.array(z.number()).min(2).max(3).describe('[x, y] or [x, y, fillet radius m]');
+const sources = z.array(chunk).describe('passage ids the proposal rests on');
+const notes = z.array(z.string().max(400)).max(8);
+
+export const LinesOut = z.object({
+  lines: z.array(z.object({
+    id, mode: z.enum(['tram', 'skyrail']), name: z.string().max(60), beyond: z.string().max(160).describe('where the line goes off-sheet, or "" if it does not'),
+    paths: z.array(z.object({ id, role: z.enum(['running', 'line', 'loop']).describe('tram: running|loop; sky rail: line|loop'), double: z.boolean(), pts: z.array(pt).min(2) })).min(1),
+    order: z.array(z.string()).describe('path ids end to end ("-id" runs a path against its drawn direction); [] = as listed'),
+  })).min(1),
+  remove: z.array(id).describe('ids of existing lines to delete; [] for none'),
+  notes, sources,
+});
+
+export const StopsOut = z.object({
+  stops: z.array(z.object({
+    line: id, id, name: z.string().max(60), path: id, at: xy,
+    length: z.number().optional().describe('sky rail station length m'),
+    interchange: z.string().optional().describe('"<line>/<stop id>" of the paired stop on another line'),
+    fronts: id.describe('id of the road or foot path whose public space the entrance fronts'),
+  })),
+  notes, sources,
+});
+
+const ref = z.string().regex(/^[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+$/).describe('"<line>/<stop id>"');
+export const TimetableOut = z.object({
+  lines: z.array(z.object({ line: id, headwaySec: z.number().positive(), dwellSec: z.number().positive(), runs: z.array(z.object({ from: ref, to: ref, sec: z.number().positive() })) })),
+  journeys: z.array(z.object({ from: ref, to: ref, sec: z.number().positive(), via: z.array(ref).describe('interchanges used; [] for none') })),
+  openQuestions: z.array(z.object({ question: z.string().max(300), for: z.enum(['Motive', 'Sky']), why: z.string().max(300) })).describe('what the GDD has not decided (e.g. whether boarding costs anything); never a price or a rule invented here'),
+  notes, sources,
+});
+
+export const Owner = z.enum(['Datum', 'Vantage', 'Pulse']);
+export const VerdictOut = z.object({
+  verdict: z.enum(['pass', 'fail']),
+  summary: z.string().max(600),
+  faults: z.array(z.object({
+    owner: Owner, rule: z.string().max(40).describe('plan checker rule id, or "critic" for a fault the checker cannot see'),
+    fault: z.string().max(500), fix: z.string().max(400), chunks: z.array(chunk).min(1).describe('passage ids that show the rule being broken'),
+  })).describe('empty when verdict is pass'),
+  sources,
+});
+
+export type Lines = z.infer<typeof LinesOut>;
+export type Stops = z.infer<typeof StopsOut>;
+export type Timetable = z.infer<typeof TimetableOut>;
+export type Verdict = z.infer<typeof VerdictOut>;
+export const agents = { datum: LinesOut, vantage: StopsOut, pulse: TimetableOut, keel: VerdictOut } as const;
+export type Agent = keyof typeof agents;

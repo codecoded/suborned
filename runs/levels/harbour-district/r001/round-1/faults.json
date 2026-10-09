@@ -1,0 +1,30 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "S1/skyport stands at (530,0) over water. Vantage's own note says no road or foot path makes public space there. `fronts: crown-parade` is only a placeholder. The plan says water blocks a walk, so the cell cannot get to the station entrance. The checker passed it only because N-P2 tests plots, not water.",
+    "fix": "Put the Skyport entrance on public space a person can walk to, such as the quay or the skyport island, and name the real road or path in `fronts`. If no such space exists, Datum must add a skyport forecourt or foot path to the plan first. Then rerun N-P2 and W-1.",
+    "chunks": [
+      "cfba161c458af766f224f713",
+      "a675bd376f6046013acaec83"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The journey T1/records → T2/sunset (via T1/records) says 74 s. That time includes a T1 run of 31 s, but the journey starts at the interchange, so no T1 ride happens. By the timetable's own runs it is T2/market → T2/sunset = 43 s. The via also names the starting stop, which breaks the stated rule that via names the stop on the arriving line.",
+    "fix": "Change `from` to T1/comet: 31 + 43 = 74 s via T1/records. Or keep T1/records as the start and set sec 43 with via [].",
+    "chunks": [
+      "538618090dd534247cab5493"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The first open question says \"Datum's hold includes boarding as fast travel\". Datum's hold says only that the cell rides the networks between stops and stations. It says nothing about fast travel. The wording presents a game power the GDD has not decided as if it were in the source.",
+    "fix": "Reword the question so it quotes the hold accurately (\"the cell rides between stops and stations\"). Then ask Sky and Motive whether riding is a fast-travel power and whether it costs anything, without claiming the GDD already says so.",
+    "chunks": [
+      "a675bd376f6046013acaec83"
+    ]
+  }
+]

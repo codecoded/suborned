@@ -1,0 +1,148 @@
+{
+ "lines": [
+  {
+   "id": "T1",
+   "mode": "tram",
+   "name": "Boulevard Line",
+   "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+   "paths": [
+    {
+     "id": "trunk",
+     "role": "running",
+     "double": true,
+     "pts": [
+      [
+       0,
+       -780
+      ],
+      [
+       0,
+       -56
+      ]
+     ]
+    },
+    {
+     "id": "loop",
+     "role": "loop",
+     "double": false,
+     "pts": [
+      [
+       -1.8,
+       -56
+      ],
+      [
+       -1.8,
+       -45,
+       25
+      ],
+      [
+       -28,
+       -19,
+       25
+      ],
+      [
+       -28,
+       28,
+       28
+      ],
+      [
+       28,
+       28,
+       28
+      ],
+      [
+       28,
+       -19,
+       25
+      ],
+      [
+       1.8,
+       -45,
+       25
+      ],
+      [
+       1.8,
+       -56
+      ]
+     ]
+    }
+   ],
+   "order": [
+    "trunk",
+    "loop"
+   ]
+  },
+  {
+   "id": "S1",
+   "mode": "skyrail",
+   "name": "Skyport Line",
+   "beyond": "west to the West End along Circus Road",
+   "paths": [
+    {
+     "id": "trunk",
+     "role": "line",
+     "double": true,
+     "pts": [
+      [
+       -400,
+       0
+      ],
+      [
+       560,
+       0
+      ]
+     ]
+    },
+    {
+     "id": "loop",
+     "role": "loop",
+     "double": false,
+     "pts": [
+      [
+       560,
+       3
+      ],
+      [
+       600,
+       3,
+       40
+      ],
+      [
+       650,
+       60,
+       40
+      ],
+      [
+       708,
+       0,
+       40
+      ],
+      [
+       650,
+       -60,
+       40
+      ],
+      [
+       600,
+       -3,
+       40
+      ],
+      [
+       560,
+       -3
+      ]
+     ]
+    }
+   ],
+   "order": [
+    "trunk",
+    "loop"
+   ]
+  }
+ ],
+ "remove": [],
+ "notes": [
+  "Stub fixture: keeps T1 and S1 as drawn, adds their path order."
+ ],
+ "sources": []
+}

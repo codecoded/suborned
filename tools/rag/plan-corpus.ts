@@ -9,7 +9,7 @@ export function planChunks(source: string, text: string): Chunk[] {
   const p = JSON.parse(text), sourceHash = hash(text);
   const meta = { authority: `District plan ${p.id} (${p.schema}, status: ${p.status}); the plan checker owns its rules`, version: `v${p.version} ${p.date}`, kind: 'plan' };
   const parts: [string, string][] = [
-    ...Object.entries(p.standards as Record<string, Record<string, unknown>>).map(([k, v]): [string, string] => [`standards › ${k}`, fields(v)]),
+    ...Object.entries(p.standards as Record<string, Record<string, unknown>>).map(([k, v]): [string, string] => [`standards › ${k}`, fields(v, ['waived'])]),
     ...['primary', 'district', 'access'].map((c): [string, string] => [`roads › ${c}`, (p.roads as any[]).filter(r => r.class === c).map(r => `${r.name} (${r.id}): ${fields(r, ['id', 'name', 'class'])}`).join('\n')]),
     ['gates', (p.gates as any[]).map(g => `${g.name}: on ${g.road} into ${g.area} at node ${g.node}`).join('\n')],
     ...(p.areas as any[]).map((a): [string, string] => [`area › ${a.name}`, `${fields(a, ['label'])}\nplots:\n${(p.plots as any[]).filter(x => x.area === a.id).map(x => `${x.name} (${x.use}${x.civic ? `, civic ${x.civic}` : ''})`).join('\n')}`]),

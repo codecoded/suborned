@@ -14,7 +14,7 @@ bun run check                 # typecheck + tests + plan checker; no Docker, no 
 bun run up                    # local SurrealDB + embedding service (first start downloads the model)
 bun run ingest                # index the GDD and the district plan
 bun run retrieve "tram stop spacing and station reach"
-claude --agent aster          # the crew, led by Aster
+claude --agent lead-producer  # the crew, led by the lead producer (Aster in the GDD)
 ```
 
 | Command | What it does |

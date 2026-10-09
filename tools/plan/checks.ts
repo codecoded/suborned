@@ -1,11 +1,13 @@
 // The plan's rules: roads (Buchanan hierarchy, sealed environmental areas, gates, frontage), tram, sky rail, the civic
 // block, plus the mission routes. Each check reports a value against its limit.
 import { type V, centroid, dist, inPoly, lineDist, lineToPoly, segHit } from './geom';
-import { type Derived, type Plan, inZone, spanLimit, stopChainage } from './plan';
+import { type Derived, type Plan, inZone, spanLimit } from './plan';
+import { offSheet, placements, stopsOf } from './transit';
+import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect } from './civic';
 import { type Walk, walks as footWalks } from './walk';
 
-export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string };
+export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string; source?: string; waived?: string };
 export type Route = { id: string; name: string; to: string; length: number; roads: string[]; gates: string[] };
 export type Report = { checks: Check[]; routes: Route[]; crossings: { line: string; road: string; p: V }[]; stops: any[]; stations: any[]; walks: Walk[] };
 
@@ -28,7 +30,8 @@ function dijkstra(E: Edge[], from: string) {
   return { D, trace };
 }
 
-export function check(plan: Plan, d: Derived, civ: Civic): Report {
+/** `strict` ignores `standards.transit.waived` (rule id → reason), which lets a draft plan pass `bun run plan` while generation runs never use it. */
+export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Report {
   const C: Check[] = [], add = (c: Check) => C.push(c), std = plan.standards;
   const E = edges(plan, d), roadById = new Map(d.roads.map(r => [r.id, r]));
   const at = (n: string) => d.roads.filter(r => r.path.includes(n));
@@ -112,17 +115,17 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
       const lim = role === 'running' ? T.radiusRunning : T.radiusLoop;
       add({ id: `T-R${role === 'running' ? 1 : 2}`, group: 'Tram', rule: `${line.id} ${role === 'running' ? 'running' : 'terminal loop'} radius`, value: min === Infinity ? 'straight' : `R ${f(min)} m`, limit: `≥ ${lim} m`, ok: min >= lim });
     }
-    const placed = (line.stops ?? []).map(s => ({ ...s, ...stopChainage(d, line.id, s, 'tram') })).sort((a, b) => a.s - b.s);
-    const gaps = placed.slice(1).map((s, i) => s.s - placed[i].s);
-    placed.forEach((s, i) => stops.push({ line: line.id, id: s.id, name: s.name, at: s.at, chainage: s.s, next: gaps[i] }));
+    const { items: placed, gaps: all } = placements(plan, d, line, 'tram'), gaps = all.filter((g): g is number => g !== undefined);
+    placed.forEach((s, i) => stops.push({ line: line.id, id: s.id, name: s.name, at: s.at, chainage: s.s, next: all[i] }));
     const [lo, hi] = T.stopSpacing;
-    add({ id: 'T-S1', group: 'Tram', rule: `${line.id} stop spacing`, value: gaps.map(g => f(g)).join(', ') + ' m', limit: `${lo}–${hi} m`, ok: gaps.every(g => g >= lo && g <= hi) });
-    const curved = placed.filter(s => s.path.samples.some(x => Math.abs(x.s - s.s) <= T.platform / 2 && x.r !== Infinity) || s.s - T.platform / 2 < 0 || s.s + T.platform / 2 > s.path.length);
+    add({ id: 'T-S1', group: 'Tram', rule: `${line.id} stop spacing`, value: gaps.map(g => f(g)).join(', ') + ' m', limit: `${lo}–${hi} m`, ok: placed.length >= 2 && gaps.every(g => g >= lo && g <= hi), detail: placed.length < 2 ? `needs at least 2 stops, has ${placed.length}` : undefined });
+    const curved = placed.filter(s => s.path.samples.some(x => Math.abs(x.s - s.local) <= T.platform / 2 && x.r !== Infinity) || s.local - T.platform / 2 < 0 || s.local + T.platform / 2 > s.path.length);
     add({ id: 'T-S2', group: 'Tram', rule: `${line.id} platforms (${T.platform} m) on straight track`, value: `${placed.length - curved.length}/${placed.length}`, limit: 'all', ok: !curved.length, detail: curved.map(s => s.name).join(', ') || undefined });
-    const trunk = paths.find(p => p.role === 'running')!, loop = paths.find(p => p.role === 'loop');
-    const end = trunk.samples[trunk.samples.length - 1].p, half = T.trackCentres / 2;
-    const joins = loop && Math.abs(dist(loop.samples[0].p, end) - half) < .05 && Math.abs(dist(loop.samples[loop.samples.length - 1].p, end) - half) < .05;
-    add({ id: 'T-L1', group: 'Tram', rule: `${line.id} turns on a loop (single-ended trams, no crossover)`, value: joins ? 'loop joins both tracks' : 'no loop', limit: 'loop', ok: !!joins });
+    // every running end inside the sheet (not off-sheet, not joined to another running path) turns on a terminal loop
+    const half = T.trackCentres / 2, running = paths.filter(p => p.role === 'running'), loops = paths.filter(p => p.role === 'loop');
+    const tails = running.flatMap(p => [p.samples[0].p, p.samples[p.samples.length - 1].p].filter(e => !offSheet(plan, e) && !running.some(o => o !== p && o.samples.some(x => dist(x.p, e) <= half + .05))));
+    const open = tails.filter(e => !loops.some(l => Math.abs(dist(l.samples[0].p, e) - half) < .05 && Math.abs(dist(l.samples[l.samples.length - 1].p, e) - half) < .05));
+    add({ id: 'T-L1', group: 'Tram', rule: `${line.id} turns on a loop at every end inside the sheet (single-ended trams, no crossover)`, value: tails.length ? `${tails.length - open.length}/${tails.length} ends loop` : 'all ends off-sheet', limit: 'all', ok: !open.length, detail: open.map(e => `no loop at (${e.map(v => v.toFixed(0))})`).join('; ') || undefined });
     const street = (p: V) => d.roads.some(r => lineDist(p, r.line) <= r.w / 2 + .01) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !street(s.p));
     add({ id: 'T-C1', group: 'Tram', rule: `${line.id} runs in street space or the circus island`, value: `${off.length / 2} m off`, limit: '0', ok: !off.length });
@@ -149,20 +152,17 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
     const kinds = new Set(S.pylonZones as string[]);
     const stray = pyl.filter(p => !d.zones.some(z => kinds.has(z.kind) && inZone(p.p, z)));
     add({ id: 'S-P2', group: 'Sky rail', rule: `${line.id} pylons stand in medians, malls, parks, quays, water or the island`, value: `${pyl.length - stray.length}/${pyl.length}`, limit: 'all', ok: !stray.length });
-    const placed = (line.stations ?? []).map(s => ({ ...s, ...stopChainage(d, line.id, s, 'sky') })).sort((a, b) => a.s - b.s);
-    placed.forEach((s, i) => stations.push({ line: line.id, id: s.id, name: s.name, at: s.at, chainage: s.s, next: placed[i + 1] ? placed[i + 1].s - s.s : undefined, length: s.length }));
-    const curved = placed.filter(s => s.path.samples.some(x => Math.abs(x.s - s.s) <= (s.length ?? 50) / 2 && x.r !== Infinity));
+    const { items: placed, gaps: sgaps } = placements(plan, d, line, 'sky');
+    placed.forEach((s, i) => stations.push({ line: line.id, id: s.id, name: s.name, at: s.at, chainage: s.s, next: sgaps[i], length: s.length }));
+    const curved = placed.filter(s => s.path.samples.some(x => Math.abs(x.s - s.local) <= (s.length ?? 50) / 2 && x.r !== Infinity));
     add({ id: 'S-S1', group: 'Sky rail', rule: `${line.id} stations on straight beam`, value: `${placed.length - curved.length}/${placed.length}`, limit: 'all', ok: !curved.length });
-    for (const s of placed.filter(s => s.interchange)) {
-      const [tl, ts] = s.interchange!.split('/'), stop = plan.tram.find(l => l.id === tl)?.stops?.find(x => x.id === ts);
-      const m = stop ? dist(stop.at, s.at) : Infinity;
-      add({ id: 'S-I1', group: 'Sky rail', rule: `Interchange ${s.name} ↔ tram ${stop?.name ?? ts}`, value: `${f(m)} m`, limit: `≤ ${S.interchange} m`, ok: m <= S.interchange });
-    }
     const pub = (p: V) => d.roads.some(r => lineDist(p, r.line) <= r.w / 2 + .01) || plan.foot.some(w => lineDist(p, w.pts) <= w.w / 2 + .01)
       || d.zones.some(z => ['park', 'quay', 'water'].includes(z.kind) && inZone(p, z)) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
   }
+
+  C.push(...transitChecks(plan, d));
 
   // ---- civic ----
   const diffs = ['square', 'office'].map(id => { const p = plan.plots.find(x => x.civic === id)!, r = blockPlanRect(plan.civic, id); return { id, ok: p.rect!.every((v, i) => Math.abs(v - r[i]) < .01), r }; });
@@ -188,5 +188,7 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
   const walks = footWalks(plan, d, civ), lim = std.walking.directness;
   const worst = walks.reduce((b, w) => (w.m / w.straight > b.m / b.straight ? w : b));
   add({ id: 'W-1', group: 'Walking', rule: 'Escape walks are direct (players cross any road; only buildings and water block)', value: walks.map(w => `${w.from} → ${w.to} ${f(w.m)} m`).join('; '), limit: `walk ÷ straight ≤ ${lim}`, ok: walks.every(w => w.m / w.straight <= lim), detail: `least direct: ${worst.from} → ${worst.to} ×${(worst.m / worst.straight).toFixed(2)}` });
+  const waived = (std.transit?.waived ?? {}) as Record<string, string>;
+  if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }
   return { checks: C, routes, crossings, stops, stations, walks };
 }

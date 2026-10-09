@@ -15,7 +15,10 @@
   "standards": {
     "tram": { "radiusRunning": 50, "radiusLoop": 25, "stopSpacing": [300, 500], "platform": 30, "trackCentres": 3.6 },
     "skyrail": { "radiusLine": 70, "radiusLoop": 40, "spanStraight": 30, "spanCurve": 23, "spanTight": 18, "tightBelow": 180,
-                 "interchange": 150, "height": 24, "beamCentres": 6, "pylonZones": ["median", "mall", "park", "quay", "water", "island"] },
+                 "interchange": 150, "stationSpacing": [200, 500], "height": 24, "beamCentres": 6, "pylonZones": ["median", "mall", "park", "quay", "water", "island"] },
+    "transit": { "reach": 250, "onLine": 3,
+                 "waived": { "N-R1": "v0.1.0 draft: four outlying plots (docks-east, lantern-west, harbour-east, rocket-west) are not yet in reach; the transit run (brief 001) fixes it",
+                             "S-S2": "v0.1.0 draft: Harbour to Skyport is 190 m; the transit run (brief 001) fixes it" } },
     "roads": { "junctionSpacing": { "primary": 250, "district": 60 }, "frontage": 1 },
     "walking": { "crossAnywhere": true, "grid": 2, "directness": 1.5, "from": ["Café door", "Office entrance"],
                  "note": "Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over." }

@@ -1,0 +1,199 @@
+{
+  "id": "03-transit-timetable",
+  "objective": "transit-timetable",
+  "role": "schedule-ai-designer",
+  "model": "claude-sonnet-5-5",
+  "modelsUsed": [
+    "claude-sonnet-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.061944,
+  "seconds": 23,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/schedule-ai-designer.md",
+    "sourceHash": "d23bd3ee013abf943438c1126b7ecaa2094e0ada8c4b1ca1035a1ea0bb9a0124"
+  },
+  "retrieval": {
+    "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ timetable headway dwell run times journey times between stations ‖ boarding as fast travel is not priced in the GDD; open question for Motive and Sky",
+    "queries": [
+      "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+      "timetable headway dwell run times journey times between stations",
+      "boarding as fast travel is not priced in the GDD; open question for Motive and Sky"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "dde0a99962d78283ceeb1e19f6c846ff0c372b573e689568153cf523fc71395b",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.33020877838134766,
+        "key": "c1909f164651d9c88cd65c53",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › questions",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › notes › questions\n- Scale: 1.1 × 1.1 km with seven environmental areas. Keep that, or plan only the Records Precinct and Lamplight for the slice and leave the rest as massing?\n- Tram: terminate on the circus loop (as drawn), or run on up Crown Avenue to Crown Road?\n- Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?\n- Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?\n- Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.08880800293389302,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.6222695112228394,
+        "key": "a675bd376f6046013acaec83",
+        "kind": "gdd-agent",
+        "lineEnd": 207,
+        "lineStart": 201,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.14.0-2026-10-10.md",
+        "sourceHash": "7ac543ff223970961d34dc713af63ccbe3013052be96b53d182b76bdc5816265",
+        "text": "§14 ROLES (each agent loads only its own block)\nalso: Pulse (schedules), Motive (prices).\nopens: §07–09 · tests T5, T6\n### Datum · World planner · Opus 5.5\nowns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations. Edit the plan; the sheet is generated from it.\nreceives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.\ndelivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.\nhold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations: no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Never loosen a rule to pass; ask Splice, with a reason.",
+        "version": "v0.14.0",
+        "score": 0.07410921680190627,
+        "signals": [
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.25533924267706964,
+        "key": "ba506de42600790962a866a2",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyrail",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.06190061028770706,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "semantic:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3281391458594278,
+        "key": "e20799f1f673824d09ce452d",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › why",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › notes › why\n- Tram: one track (x −2.5) in a 16 m street from z −40, ending 6 m short of the circus. No loop, no crossover, no second track, one stop island; the line starts and ends nowhere.\n- Sky rail: a closed loop 24 m up the west promenade, straight over the tram street, round the Sphere station at r 88, then diagonally back across the west city with pylons dropped onto whatever is underneath.\n- Harbour line: a second closed loop on the quay with a balloon round the skyport (R 48). It shares no station with the sky rail or the tram.\n- Roads: the street kit is one straight street and a side street. The map graph (harbour-map.json) links the civic block to Comet Row and Sunset Way by two exit roads; nothing defines the district's road hierarchy or where those roads go.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.05754543208212593,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "semantic:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.10516214370727539,
+        "key": "538618090dd534247cab5493",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › tram",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.04793840039741679,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3076891486459451,
+        "key": "7dfdfdf13043a24e8e964b0b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › transit",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › transit\nreach: 250\nonLine: 3",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.046634615384615385,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.31128573417663574,
+        "key": "e54a1a5c3874c8a545458768",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › roads",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › roads\njunctionSpacing: {\"primary\":250,\"district\":60}\nfrontage: 1",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.04640914640914641,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3669673015763548,
+        "key": "0e426f4211a2f1f25c328968",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › walking",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "84aeb0100dced4dcbea4105e9db14c93f03defbb6283ed80664ecb39521c0294",
+        "text": "Harbour District plan › standards › walking\ncrossAnywhere: true\ngrid: 2\ndirectness: 1.5\nfrom: Café door, Office entrance\nnote: Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.045783730158730156,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

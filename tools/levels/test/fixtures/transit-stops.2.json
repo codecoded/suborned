@@ -1,0 +1,90 @@
+{
+ "stops": [
+  {
+   "line": "T1",
+   "id": "circus",
+   "name": "Crown Circus",
+   "path": "trunk",
+   "at": [
+    0,
+    -72
+   ],
+   "fronts": "boulevard"
+  },
+  {
+   "line": "T1",
+   "id": "records",
+   "name": "Records",
+   "path": "trunk",
+   "at": [
+    0,
+    -380
+   ],
+   "fronts": "boulevard"
+  },
+  {
+   "line": "T1",
+   "id": "comet",
+   "name": "Comet Row",
+   "path": "trunk",
+   "at": [
+    0,
+    -690
+   ],
+   "fronts": "boulevard"
+  },
+  {
+   "line": "S1",
+   "id": "gardens",
+   "name": "Sphere Gardens",
+   "path": "trunk",
+   "at": [
+    -160,
+    0
+   ],
+   "length": 50,
+   "fronts": "circus-road"
+  },
+  {
+   "line": "S1",
+   "id": "circus",
+   "name": "Crown Circus",
+   "path": "trunk",
+   "at": [
+    95,
+    0
+   ],
+   "length": 50,
+   "interchange": "T1/circus",
+   "fronts": "circus-road"
+  },
+  {
+   "line": "S1",
+   "id": "harbour",
+   "name": "Harbour",
+   "path": "trunk",
+   "at": [
+    340,
+    0
+   ],
+   "length": 50,
+   "fronts": "circus-road"
+  },
+  {
+   "line": "S1",
+   "id": "skyport",
+   "name": "Skyport",
+   "path": "trunk",
+   "at": [
+    540,
+    0
+   ],
+   "length": 50,
+   "fronts": "circus-road"
+  }
+ ],
+ "notes": [
+  "Stub fixture."
+ ],
+ "sources": []
+}

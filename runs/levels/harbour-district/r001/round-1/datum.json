@@ -1,0 +1,198 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; south along Sunset Way past Comet Row. Termini and depot are off-sheet and not planned here",
+      "paths": [
+        {
+          "id": "line",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              308,
+              320
+            ],
+            [
+              308,
+              -414,
+              50
+            ],
+            [
+              -347,
+              -404,
+              50
+            ],
+            [
+              -347,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "line"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Not run through the checker: I have no shell here. Next owner runs `bun tools/plan/cli.ts` and sends back the output. Geometry assumes road space is each road's width rectangle with no end caps, and that T-C1 is tested on both track centres (±1.8 m). T1 and S1 are listed again unchanged, only to state `order` for N-O1.",
+    "Tide's two-way Sky Loop on the ring is not proposed. At ring corners an r≥70 curve bulges about 29 m inward from the centreline against a 12 m half-width, so it passes over corner plots (S-C1). It also duplicates S1. This conflicts with the plan concept note (S1 is one straight trunk). Retiring the loops is still an open question for Sky.",
+    "T1 is kept terminating on the circus balloon, not running through the circus as tide's draft has it. If it ran up Crown Avenue, Crown Road has no room for a loop (T-L1). So it would have to turn onto Crown Road on the east carriageway (x≈5, y≈289) and run off-sheet, and nothing in the plan says where to. Sky's open question decides this.",
+    "T2 Harbour Line is new. It runs from Harbour Road (north sheet edge) down to Market Street, west along it, then south on Sunset Way to the sheet edge. Reason: on current lines these plots are beyond reach 250: harbour-east (278 m from Harbour sta, 285 from Records stop), docks-east, rocket-west (272) and lantern-west (289). Both ends leave the sheet, so no loops are needed.",
+    "Track positions keep the r50 corners inside street space. On Harbour Road the tracks run on the east carriageway (x 308). Market Street runs slightly diagonal from y -414 to -404 across its median. On Sunset Way the tracks run on the west carriageway (x -347). An r50 curve centred on road centrelines would cut about 2 m into the corner plots.",
+    "Interchanges: T2/T1 at Market St × Boulevard is about 30 m from the Records stop (0,-380). T2/S1 on Harbour Road at y 0 is about 32 m from Harbour station (340,0). T2 crosses T1 on the level in the Boulevard reservation. No standard covers flat crossings, so Splice/Keel should confirm. The concept note 'one interchange' needs updating (Aster).",
+    "Mission impact for Waymark: T2 passes the Records Precinct gates at Rocket Lane (-186,-410) and Satellite Street (-60,-410). A stop there would put a station-seal point right at the gates. Vantage should not place stops there until Waymark decides."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "c1909f164651d9c88cd65c53",
+    "e6ffe1ba0919c87923015de5",
+    "e20799f1f673824d09ce452d"
+  ]
+}
