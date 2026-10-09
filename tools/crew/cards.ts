@@ -1,4 +1,4 @@
-// The crew: agent GDD §01 + each §14 role block → .claude/agents/<name>.md (Claude Code subagents).
+// The crew: agent GDD §01 + each §14 role block → .claude/agents/<job>.md (Claude Code subagents, named by job).
 // usage (repo root): bun tools/crew/cards.ts [GDD/<agent-gdd>.md]   ·   never edit a card: edit the GDD, rerun.
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
@@ -31,6 +31,9 @@ const TOOLS: Record<string, string[]> = {
   Suture: [...REVIEW, 'Write', ...UNITY], Redline: [...REVIEW, 'Write'],
 };
 
+/** Agent name = the job, not the GDD's code name: "Schedule and AI designer" → schedule-ai-designer. */
+const agent = (r: Role) => r.job.toLowerCase().replace(/\band\b/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const roster = `Crew (GDD name → agent): ${roles.map(x => `${x.name} → ${agent(x)}`).join(' · ')}. The GDD and briefs use the names; spawn and address agents by job.`;
 const field = (r: Role, k: string) => r.fields.find(f => f[0] === k)?.[1] ?? '';
 const index = sections.map(s => `${s.id} ${s.title.slice(4).toLowerCase()} (line ${s.line})`).join(' · ');
 const repo = `- Repo: \`GDD/\` design source (the human GDD html wins on conflict; ~2 MB, never load it whole) · \`contracts/\` source-of-truth data (the plan is \`contracts/world/<district>.plan.json\`) · \`tools/\` bun TypeScript (\`tools/plan\` = plan checker + CAD sheet) · \`unity/\` the Unity project (only Latch edits scenes) · \`out/\` generated, never edit by hand.
@@ -46,10 +49,10 @@ function card(r: Role): string {
     ? `At spawn, read ${gddPath} §01–§13 in full (you are the lead; the GDD is yours).`
     : `Your role block and §01 are above. Open other sections of ${gddPath} by number when the work needs them; yours: ${field(r, 'opens') || '—'}.`;
   const crew = lead
-    ? `\n## Leading the crew\nYou are the main thread (\`claude --agent aster\`). Spawn crew members with the Agent tool (subagent_type = their lowercase name: ${roles.filter(x => x.name !== 'Aster').map(x => x.name.toLowerCase()).join(', ')}). One objective per owner with a definition of done and the evidence expected; run independent objectives in parallel; have Suture or Redline review; accept or send back. Escalate to Sky only for the §14 escalations.\n`
+    ? `\n## Leading the crew\nYou are the main thread (\`claude --agent ${agent(r)}\`). Spawn crew members with the Agent tool (subagent_type = their agent name: ${roles.filter(x => x !== r).map(agent).join(', ')}). One objective per owner with a definition of done and the evidence expected; run independent objectives in parallel; have Suture or Redline review; accept or send back. Escalate to Sky only for the §14 escalations.\n`
     : '';
   return `---
-name: ${r.name.toLowerCase()}
+name: ${agent(r)}
 description: "${r.job} (${r.name}). Owns: ${field(r, 'owns').replace(/"/g, "'")}"
 model: ${MODEL[r.model] ?? 'inherit'}
 tools: ${(TOOLS[r.name] ?? WORK).join(', ')}
@@ -68,6 +71,7 @@ ${crew}
 ## Working here
 - ${load}
 - GDD sections: ${index}.
+- ${roster}
 ${repo}
 ${rules}
 `;
@@ -76,5 +80,5 @@ ${rules}
 const dir = resolve(root, '.claude/agents');
 rmSync(dir, { recursive: true, force: true });
 mkdirSync(dir, { recursive: true });
-for (const r of roles) writeFileSync(resolve(dir, `${r.name.toLowerCase()}.md`), card(r));
-console.log(`${roles.length} cards from ${gddPath} → ${relative(root, dir)}/: ${roles.map(r => `${r.name.toLowerCase()} (${MODEL[r.model]})`).join(', ')}`);
+for (const r of roles) writeFileSync(resolve(dir, `${agent(r)}.md`), card(r));
+console.log(`${roles.length} cards from ${gddPath} → ${relative(root, dir)}/: ${roles.map(r => `${agent(r)} (${MODEL[r.model]})`).join(', ')}`);

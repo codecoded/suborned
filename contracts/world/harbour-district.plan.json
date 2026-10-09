@@ -6,6 +6,7 @@
   "date": "2026-10-10",
   "status": "draft for review",
   "frame": { "units": "m", "x": "east", "y": "north", "origin": "Crown Circus centre", "unity": "(x, height, y)" },
+  "view": { "yaw": 90, "pitch": 38, "note": "Play camera: orthographic, yaw compass degrees from north (90 = camera west of target looking east), pitch above horizontal. Rule V-1 reads this; Latch's play camera must match." },
   "sheet": {
     "drawing": "SBN-PLN-001",
     "x": [-400, 740], "y": [-780, 320], "grid": 100, "scale": "1:2500 @ A1",
@@ -29,10 +30,10 @@
     "g_lamp_w": [-250, 0], "g_lamp_e": [-100, 0], "g_cres_s": [0, 110], "g_terrace": [0, 220],
 
     "r_north_w": [-186, -198], "r_garden_n": [-132, -198], "r_north_e": [-60, -198],
-    "r_orbit_w": [-186, -267.5], "r_garden_s": [-132, -267.5], "r_pylon_n": [-120, -267.5], "r_orbit_e": [-60, -267.5],
-    "r_apron_w": [-186, -316], "r_pylon_s": [-120, -316], "r_apron_e": [-60, -316],
+    "r_bay_getaway": [-186, -238.5], "r_orbit_w": [-186, -267.5], "r_garden_s": [-132, -267.5], "r_pylon_n": [-120, -267.5], "r_orbit_e": [-60, -267.5],
+    "r_apron_w": [-186, -316], "r_bay_official": [-161, -316], "r_pylon_s": [-120, -316], "r_apron_e": [-60, -316],
     "l_sw": [-250, -120], "l_se": [-100, -120],
-    "a_obs": [-100, 90], "a_terr": [-322, 220],
+    "a_obs": [-100, 96], "a_terr": [-322, 220],
     "b_se": [180, 110], "b_ne": [180, 220],
     "h_nw": [120, -140], "h_ne": [230, -140],
     "f_sw": [120, -600], "f_se": [230, -600],
@@ -61,12 +62,12 @@
     { "id": "market-street", "name": "Market Street", "class": "district", "w": 18, "median": 6, "path": ["w_market", "g_rocket", "g_satellite", "m_boulevard", "g_dock_w", "g_dock_e", "e_market"] },
     { "id": "crown-circus", "name": "Crown Circus", "class": "district", "w": 12, "gyratory": true, "arc": [0, 0], "cw": true, "path": ["c_s", "c_w", "c_n", "c_s"] },
 
-    { "id": "rocket-lane", "name": "Rocket Lane", "class": "access", "w": 12, "path": ["g_rocket", "r_apron_w", "r_orbit_w", "r_north_w"] },
+    { "id": "rocket-lane", "name": "Rocket Lane", "class": "access", "w": 12, "path": ["g_rocket", "r_apron_w", "r_orbit_w", "r_bay_getaway", "r_north_w"] },
     { "id": "starline-street", "name": "Starline Street", "class": "access", "w": 12, "path": ["r_north_w", "r_garden_n", "r_north_e"] },
     { "id": "garden-row", "name": "Garden Row", "class": "access", "w": 12, "path": ["r_garden_n", "r_garden_s"] },
     { "id": "orbit-walk", "name": "Orbit Walk", "class": "access", "w": 13, "path": ["r_orbit_w", "r_garden_s", "r_pylon_n", "r_orbit_e"] },
     { "id": "pylon-row", "name": "Pylon Row", "class": "access", "w": 12, "path": ["r_pylon_n", "r_pylon_s"] },
-    { "id": "apron-road", "name": "Apron Road", "class": "access", "w": 12, "path": ["r_apron_w", "r_pylon_s", "r_apron_e"] },
+    { "id": "apron-road", "name": "Apron Road", "class": "access", "w": 12, "path": ["r_apron_w", "r_bay_official", "r_pylon_s", "r_apron_e"] },
     { "id": "satellite-street", "name": "Satellite Street", "class": "access", "w": 12, "path": ["g_satellite", "r_apron_e", "r_orbit_e", "r_north_e"] },
     { "id": "lamplight-lane", "name": "Lamplight Lane", "class": "access", "w": 12, "path": ["g_lamp_w", "l_sw", "l_se", "g_lamp_e"] },
     { "id": "observatory-lane", "name": "Observatory Lane", "class": "access", "w": 12, "path": ["g_lamp_e", "a_obs"] },
@@ -107,42 +108,42 @@
   "plots": [
     { "id": "records-square", "name": "Records Square", "use": "square", "area": "records", "rect": [-180, -138, -261, -204], "civic": "square" },
     { "id": "records-office", "name": "Records Office", "use": "civic", "area": "records", "rect": [-180, -126, -310, -274], "civic": "office" },
-    { "id": "garden-row-east", "use": "mixed", "area": "records", "rect": [-126, -66, -261, -204] },
-    { "id": "pylon-row-east", "use": "mixed", "area": "records", "rect": [-114, -66, -310, -274] },
+    { "id": "garden-row-east", "use": "mixed", "height": 15, "area": "records", "rect": [-126, -66, -261, -204], "note": "Mixed, held to 15 m (not 18): at yaw 270 East side (−145, −218.6) at 1 m clears the block face (x −123) by 3.19 m; at 18 m the margin was 0.19 m (review N7)." },
+    { "id": "pylon-row-east", "use": "mixed", "height": 18, "area": "records", "rect": [-114, -66, -310, -274] },
     { "id": "orbit-gardens", "name": "Orbit Gardens", "use": "open", "area": "records", "rect": [-180, -66, -401, -322] },
-    { "id": "rocket-west", "use": "residential", "area": "records", "rect": [-328, -192, -401, -192] },
-    { "id": "boulevard-west", "use": "commercial", "area": "records", "rect": [-54, -14, -401, -192] },
+    { "id": "rocket-west", "use": "residential", "height": 8, "area": "records", "rect": [-328, -192, -401, -192], "note": "Low terrace, 8 m: at play yaw 90 (camera west, 38°) a block of height h hides ground up to h/tan 38° = 1.28h m east of it. The Getaway bay point (−178.2, −238.5) at 1 m eye height is clear up to 1 + 13.8 × tan 38° = 11.78 m from the plot edge (x −192), 14.13 m from the 3 m inset block face (x −195): margin 3.78 / 6.13 m. The whole bay (x −180..−177) is clear at ground level (9.38 m from the plot edge). Review N2 (Suture)." },
+    { "id": "boulevard-west", "use": "commercial", "height": 24, "area": "records", "rect": [-54, -14, -401, -192] },
 
-    { "id": "lamplight-west", "use": "residential", "area": "lamplight", "rect": [-328, -256, -126, -9] },
-    { "id": "lamplight-court-w", "use": "residential", "area": "lamplight", "rect": [-244, -164, -114, -9] },
-    { "id": "lamplight-court-e", "use": "residential", "area": "lamplight", "rect": [-156, -106, -114, -9] },
-    { "id": "lamplight-east", "use": "mixed", "area": "lamplight", "rect": [-94, -14, -126, -9], "notch": [0, 0, 51] },
-    { "id": "lamplight-south-w", "use": "residential", "area": "lamplight", "rect": [-328, -164, -192, -126] },
-    { "id": "lamplight-south-e", "use": "residential", "area": "lamplight", "rect": [-156, -14, -192, -126] },
+    { "id": "lamplight-west", "use": "residential", "height": 15, "area": "lamplight", "rect": [-328, -256, -126, -9] },
+    { "id": "lamplight-court-w", "use": "residential", "height": 15, "area": "lamplight", "rect": [-244, -164, -114, -9] },
+    { "id": "lamplight-court-e", "use": "residential", "height": 15, "area": "lamplight", "rect": [-156, -106, -114, -9] },
+    { "id": "lamplight-east", "use": "mixed", "height": 18, "area": "lamplight", "rect": [-94, -14, -126, -9], "notch": [0, 0, 51] },
+    { "id": "lamplight-south-w", "use": "residential", "height": 15, "area": "lamplight", "rect": [-328, -164, -192, -126] },
+    { "id": "lamplight-south-e", "use": "residential", "height": 15, "area": "lamplight", "rect": [-156, -14, -192, -126] },
 
     { "id": "sphere-gardens", "name": "Sphere Gardens", "use": "park", "area": "gardens", "poly": [[-328, 9], [-106, 9], [-106, 96], [-94, 96], [-94, 214], [-328, 214]] },
-    { "id": "avenue-court", "use": "mixed", "area": "gardens", "rect": [-94, -9, 9, 214], "notch": [0, 0, 51] },
-    { "id": "crown-terraces", "name": "Crown Terraces", "use": "residential", "area": "gardens", "rect": [-328, -9, 226, 268] },
+    { "id": "avenue-court", "use": "mixed", "height": 18, "area": "gardens", "rect": [-94, -9, 9, 214], "notch": [0, 0, 51] },
+    { "id": "crown-terraces", "name": "Crown Terraces", "use": "residential", "height": 15, "area": "gardens", "poly": [[-328, 214], [-322, 214], [-322, 226], [-9, 226], [-9, 268], [-328, 268]] },
 
-    { "id": "parade-north", "use": "mixed", "area": "crescent", "rect": [9, 288, 20, 104], "notch": [0, 0, 51] },
-    { "id": "crescent-court", "use": "residential", "area": "crescent", "rect": [9, 174, 116, 214] },
-    { "id": "crescent-east", "use": "commercial", "area": "crescent", "rect": [186, 288, 104, 268] },
-    { "id": "crescent-north", "use": "residential", "area": "crescent", "rect": [9, 186, 226, 268] },
+    { "id": "parade-north", "use": "mixed", "height": 18, "area": "crescent", "rect": [9, 288, 20, 104], "notch": [0, 0, 51] },
+    { "id": "crescent-court", "use": "residential", "height": 15, "area": "crescent", "rect": [9, 174, 116, 214] },
+    { "id": "crescent-east", "use": "commercial", "height": 24, "area": "crescent", "rect": [186, 288, 104, 268] },
+    { "id": "crescent-north", "use": "residential", "height": 15, "area": "crescent", "rect": [9, 186, 226, 268] },
 
-    { "id": "harbour-boulevard", "use": "commercial", "area": "harbour", "rect": [14, 114, -401, -20], "notch": [0, 0, 51] },
-    { "id": "harbour-court", "use": "mixed", "area": "harbour", "rect": [126, 224, -401, -146] },
-    { "id": "parade-south", "use": "mixed", "area": "harbour", "rect": [114, 288, -134, -20] },
-    { "id": "harbour-east", "name": "Ferry offices", "use": "port", "area": "harbour", "rect": [236, 288, -401, -134] },
+    { "id": "harbour-boulevard", "use": "commercial", "height": 24, "area": "harbour", "rect": [14, 114, -401, -20], "notch": [0, 0, 51] },
+    { "id": "harbour-court", "use": "mixed", "height": 18, "area": "harbour", "rect": [126, 224, -401, -146] },
+    { "id": "parade-south", "use": "mixed", "height": 18, "area": "harbour", "rect": [114, 288, -134, -20] },
+    { "id": "harbour-east", "name": "Ferry offices", "use": "port", "height": 8, "area": "harbour", "rect": [236, 288, -401, -134] },
 
-    { "id": "docks-boulevard", "use": "commercial", "area": "docks", "rect": [14, 114, -708, -419] },
-    { "id": "docks-court", "use": "industrial", "area": "docks", "rect": [126, 224, -594, -419] },
-    { "id": "docks-south", "use": "industrial", "area": "docks", "rect": [114, 288, -708, -606] },
-    { "id": "docks-east", "name": "Quay sheds", "use": "port", "area": "docks", "rect": [236, 288, -606, -419] },
+    { "id": "docks-boulevard", "use": "commercial", "height": 24, "area": "docks", "rect": [14, 114, -708, -419] },
+    { "id": "docks-court", "use": "industrial", "height": 10, "area": "docks", "rect": [126, 224, -594, -419] },
+    { "id": "docks-south", "use": "industrial", "height": 10, "area": "docks", "rect": [114, 288, -708, -606] },
+    { "id": "docks-east", "name": "Quay sheds", "use": "port", "height": 8, "area": "docks", "rect": [236, 288, -606, -419] },
 
-    { "id": "lantern-west", "use": "residential", "area": "lantern", "rect": [-328, -192, -708, -419] },
+    { "id": "lantern-west", "use": "residential", "height": 15, "area": "lantern", "rect": [-328, -192, -708, -419] },
     { "id": "starline-green", "name": "Starline Green", "use": "park", "area": "lantern", "rect": [-180, -66, -594, -419] },
-    { "id": "lantern-south", "use": "residential", "area": "lantern", "rect": [-192, -14, -708, -606] },
-    { "id": "lantern-boulevard", "use": "commercial", "area": "lantern", "rect": [-54, -14, -606, -419] }
+    { "id": "lantern-south", "use": "residential", "height": 15, "area": "lantern", "rect": [-192, -14, -708, -606] },
+    { "id": "lantern-boulevard", "use": "commercial", "height": 24, "area": "lantern", "rect": [-54, -14, -606, -419] }
   ],
 
   "foot": [
@@ -194,26 +195,17 @@
   ],
 
   "routes": [
-    { "id": "getaway", "name": "Getaway: crew car from Rocket Lane", "from": "r_orbit_w", "to": ["off_southside", "off_boulevard_south", "off_west", "off_circus_west", "off_seagates"] },
-    { "id": "official", "name": "Official arrival: Vale's car from the West End to Apron Road", "from": "off_west", "to": ["r_pylon_s"], "toName": "the official bay" }
+    { "id": "getaway", "name": "Getaway: crew car from Rocket Lane", "from": "r_bay_getaway", "to": ["off_southside", "off_boulevard_south", "off_west", "off_circus_west", "off_seagates"] },
+    { "id": "official", "name": "Official arrival: Vale's car from the West End to Apron Road", "from": "off_west", "to": ["r_bay_official"], "toName": "the official bay" }
   ],
 
   "civic": {
-    "note": "The Handover block at exact geometry. Testbed frame (contracts/world/handover-block.json) → block frame by HandoverSite.Zones (mirrored here) → plan by blockToPlan. Block frame is the Unity block at yaw 90: x runs south, y east.",
-    "manifest": "contracts/world/handover-block.json",
-    "destinations": "contracts/world/handover-block.json",
+    "note": "The Handover block at exact geometry: contracts/world/handover-block.json (suborned.block/2, block frame, written by bun run block from the Oct 9 city-scale sources) → plan by blockToPlan. Block frame is the Unity block at yaw 90: x runs south, y east.",
+    "block": "contracts/world/handover-block.json",
     "blockToPlan": { "origin": [-130, -230], "x": [0, -1], "y": [1, 0] },
-    "zones": [
-      { "name": "court", "from": [-16.5, 16.5, -28.5, 12.7], "turns": 1, "shift": [-12, -29] },
-      { "name": "getaway", "from": [-16, 0, -44, -29], "turns": 2, "shift": [0, -86] },
-      { "name": "office", "from": [20, 56, -33, 3], "turns": 3, "shift": [77.5, 6.5] },
-      { "name": "official bay", "from": [20, 56, 3, 12], "turns": 1, "shift": [87.2, -68.5] },
-      { "name": "monument", "from": [28, 46, -44, -39], "turns": 3, "shift": [67.1, 17] }
-    ],
     "walk": 4,
     "blocks": { "square": [-26, 31, -50, -8], "office": [44, 80, -50, 4] },
-    "crossing": [31, 44, -32.5, -27.5],
-    "dropIn": "the loop road and its kerb globes stay behind (no zone)"
+    "crossing": [31, 44, -32.5, -27.5]
   },
 
   "notes": {

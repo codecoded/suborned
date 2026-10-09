@@ -1,24 +1,17 @@
 // Harbour District plan: check the plan against its rules and render the CAD sheet.
 // usage (repo root): bun tools/plan/cli.ts [plan.json] [--out sheet.html] [--json report.json]
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { derive, type Plan } from './plan';
-import { civic } from './civic';
-import { check } from './checks';
+import { load, root, cliArgs } from './load';
 import { district, inset } from './draw';
 import { sheet } from './sheet';
+import { fmtCheck } from './checks';
 
-const root = resolve(import.meta.dir, '../..');
-const args = process.argv.slice(2), opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined);
-const src = args.find((a: string) => a.endsWith('.json') && a !== opt('--json')) ?? 'contracts/world/harbour-district.plan.json';
-const json = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
+const { src, opt } = cliArgs(process.argv.slice(2));
 
-const plan: Plan = json(src);
-const d = derive(plan);
-const civ = civic(plan.civic, json(plan.civic.manifest), json(plan.civic.destinations));
-const R = check(plan, d, civ);
+const { plan, d, civ, R } = load(src);
 
-for (const c of R.checks) console.log(`${c.ok ? 'PASS' : 'FAIL'}  ${c.id.padEnd(6)} ${c.rule}: ${c.value} (${c.limit})${c.detail ? `\n        ${c.detail}` : ''}`);
+for (const c of R.checks) console.log(fmtCheck(c));
 for (const r of R.routes) console.log(`route ${r.id}: ${r.roads.join(' → ')} → ${r.to}, ${Math.round(r.length)} m, gates ${r.gates.join(', ') || '—'}`);
 console.log(`pylons ${d.pylons.length}, tram crossings ${R.crossings.map(c => c.road).join(', ')}`);
 

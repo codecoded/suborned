@@ -1,8 +1,9 @@
 // SVG drawings of the plan: the district sheet (1:2500) and the Records Precinct inset (1:500). One SVG unit = 1 m;
 // layers are <g data-layer> groups the sheet's toggles show and hide. Colours live in the sheet's CSS classes.
-import { type V, add, centroid, mul, norm, sub, left, dist } from './geom';
-import type { Derived, Plan, PathGeo } from './plan';
+import { type V, boxAt, add, centroid, mul, norm, sub, left, dist } from './geom';
+import { at, gatePos, type Derived, type Plan } from './plan';
 import type { Civic } from './civic';
+import { reservationPoly } from './circus';
 import type { Report } from './checks';
 
 const n = (x: number) => +x.toFixed(2);
@@ -29,10 +30,7 @@ class Pen {
     return `<text class="${cls}"${fs} x="${this.X(p[0])}" y="${this.Y(p[1])}" transform="rotate(${n(a)} ${this.X(p[0])} ${this.Y(p[1])})">${esc(s)}</text>`;
   }
   /** A rect of `along` × `across` centred at c, long side along dir, shifted sideways by `side`. */
-  box(c: V, dir: V, along: number, across: number, side = 0): V[] {
-    const u = norm(dir), v = left(u), o = add(c, mul(v, side));
-    return [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => add(o, add(mul(u, (a * along) / 2), mul(v, (b * across) / 2))));
-  }
+  box = boxAt;
   /** CAD dimension: a line offset from a→b with slash ticks, extension lines and the measure. */
   dim(a: V, b: V, off: number, size = 2.4) {
     const u = norm(sub(b, a)), nv = left(u), sg = off < 0 ? -1 : 1, A = add(a, mul(nv, off)), B = add(b, mul(nv, off)), t = mul(norm(add(u, nv)), size * .45);
@@ -43,15 +41,14 @@ class Pen {
 }
 
 const layer = (id: string, body: string) => `<g data-layer="${id}">${body}</g>`;
-const at = (path: PathGeo, s: number) => path.samples.reduce((b, x) => (Math.abs(x.s - s) < Math.abs(b.s - s) ? x : b));
 
 function roads(P: Pen, plan: Plan, d: Derived) {
   const order = ['access', 'district', 'primary'] as const;
   const sorted = [...d.roads].sort((a, b) => order.indexOf(a.class) - order.indexOf(b.class));
-  const kerb = sorted.map(r => P.line(r.line, 'kerb', ` stroke-width="${r.w + 1.6}"`)).join('');
+  const kerb = sorted.map(r => P.line(r.body, 'kerb', ` stroke-width="${r.w + 1.6}"`)).join('');
   const foot = plan.foot.map(w => P.line(w.pts, `foot-k`, ` stroke-width="${w.w + 1.2}"`)).join('') + plan.foot.map(w => P.line(w.pts, `foot ${w.kind}`, ` stroke-width="${w.w}"`)).join('');
-  const fill = sorted.map(r => P.line(r.line, `road ${r.class}`, ` stroke-width="${r.w}"`)).join('');
-  const res = d.roads.filter(r => r.reservation).map(r => P.line(r.line, 'reservation', ` stroke-width="${r.reservation}"`)).join('');
+  const fill = sorted.map(r => P.line(r.body, `road ${r.class}`, ` stroke-width="${r.w}"`)).join('');
+  const res = d.roads.filter(r => r.reservation).map(r => P.poly(reservationPoly(plan, r), 'reservation')).join('');
   const c = plan.circus;
   const island = P.circle(c.c, c.ring[0] + .8, 'kerb-c') + P.circle(c.c, c.island, 'island') + P.circle(c.c, c.garden, 'garden');
   const centre = d.roads.filter(r => r.class !== 'access').map(r => P.line(r.line, 'cl')).join('');
@@ -81,8 +78,7 @@ function rail(P: Pen, d: Derived, plan: Plan, kind: 'tram' | 'sky', R: Report, s
 
 function gates(P: Pen, plan: Plan, size: number, labels: boolean) {
   return layer('gates', plan.gates.map(g => {
-    const p = plan.nodes[g.node], road = plan.roads.find(r => r.id === g.road)!, i = road.path.indexOf(g.node);
-    const q = plan.nodes[road.path[i === 0 ? 1 : i - 1]], u = norm(sub(q, p)), c = add(p, mul(u, size * 2.2));
+    const c = gatePos(plan, g, size * 2.2).at;
     const dia = [[0, 1], [1, 0], [0, -1], [-1, 0]].map(([a, b]) => add(c, [a * size, b * size]) as V);
     return P.poly(dia, `gate${g.area === 'records' ? ' seal' : ''}`) + (labels ? P.text(add(c, [size * 1.4, -size * .4]), g.name, 'lab gate-lab', [1, 0], size * 1.2) : '');
   }).join(''));

@@ -1,14 +1,19 @@
 // The plan's rules: roads (Buchanan hierarchy, sealed environmental areas, gates, frontage), tram, sky rail, the civic
 // block, plus the mission routes. Each check reports a value against its limit.
-import { type V, centroid, dist, inPoly, lineDist, lineToPoly, segHit } from './geom';
+import { type V, alongLine, centroid, circlePoly, dist, inPoly, isClosed, lineDist, lineToPoly, overlapsDeeper, overlapsRingDeeper, pointToPoly, ribbon, ringRibbon, segHit } from './geom';
 import { type Derived, type Plan, inZone, spanLimit, stopChainage } from './plan';
 import { type Civic, blockPlanRect } from './civic';
 import { type Walk, walks as footWalks } from './walk';
+import { visibility } from './view';
 
 export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string };
 export type Route = { id: string; name: string; to: string; length: number; roads: string[]; gates: string[] };
 export type Report = { checks: Check[]; routes: Route[]; crossings: { line: string; road: string; p: V }[]; stops: any[]; stations: any[]; walks: Walk[] };
 
+/** One check as a log line. */
+export const fmtCheck = (c: Check) => `${c.ok ? 'PASS' : 'FAIL'}  ${c.id.padEnd(6)} ${c.rule}: ${c.value} (${c.limit})${c.detail ? `\n        ${c.detail}` : ''}`;
+
+const VIEW_MARGIN = 1; // m of height
 const f = (x: number, d = 0) => x.toFixed(d);
 type Edge = { a: string; b: string; road: string; len: number };
 
@@ -87,11 +92,14 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
   const noFront = built.filter(p => !(fronts(p.polyV, c => c === 'access') || (['park', 'open', 'square'].includes(p.use) && (fronts(p.polyV, () => true) || plan.foot.some(w => lineToPoly(w.pts, p.polyV) <= w.w / 2 + tol)))));
   add({ id: 'R-F1', group: 'Roads', rule: 'Every plot fronts an access road (parks: any street or walk)', value: `${built.length - noFront.length}/${built.length}`, limit: 'all', ok: !noFront.length, detail: noFront.map(p => p.id).join(', ') || undefined });
 
-  const clash: string[] = [];
+  // Overlap = depth into a plot's interior over OVERLAP m; touching passes. A road's body is square-ended: no clearance past a free end.
+  const OVERLAP = .5, clash: string[] = [], disc = circlePoly(plan.circus.c, plan.circus.pavement, 96);
+  const bodies = d.roads.map(r => ({ id: r.id, hit: isClosed(r.line) ? (g => (p: V[]) => overlapsRingDeeper(p, g.outer, g.hole, OVERLAP))(ringRibbon(r.line, r.w / 2)) : (g => (p: V[]) => overlapsDeeper(p, g, OVERLAP))(ribbon(r.body, r.w / 2)) }));
+  const walkBodies = plan.foot.map(w => ({ id: w.id, g: ribbon(w.pts, w.w / 2) }));
   for (const p of built) {
-    for (const r of d.roads) if (lineToPoly(r.line, p.polyV) < r.w / 2 - .5) clash.push(`${p.id}×${r.id}`);
-    for (const w of plan.foot) if (lineToPoly(w.pts, p.polyV) < w.w / 2 - .5) clash.push(`${p.id}×${w.id}`);
-    if (p.polyV.some(v => dist(v, plan.circus.c) < plan.circus.pavement - .5)) clash.push(`${p.id}×circus`);
+    for (const r of bodies) if (r.hit(p.polyV)) clash.push(`${p.id}×${r.id}`);
+    for (const w of walkBodies) if (overlapsDeeper(p.polyV, w.g, OVERLAP)) clash.push(`${p.id}×${w.id}`);
+    if (overlapsDeeper(p.polyV, disc, OVERLAP)) clash.push(`${p.id}×circus`);
   }
   for (let i = 0; i < built.length; i++) for (let j = i + 1; j < built.length; j++) {
     const A = built[i].polyV, B = built[j].polyV, cA = centroid(A), cB = centroid(B);
@@ -99,6 +107,19 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
     if (inner(A, cA).some(v => inPoly(v, B)) || inner(B, cB).some(v => inPoly(v, A))) clash.push(`${built[i].id}×${built[j].id}`);
   }
   add({ id: 'R-O1', group: 'Roads', rule: 'No plot overlaps a street, walk, the circus or another plot', value: `${clash.length}`, limit: '0', ok: !clash.length, detail: clash.slice(0, 8).join(', ') || undefined });
+
+  // A road end that is not a junction and not off-sheet must be closed: its centre end lies on a plot edge, landmark, water or quay.
+  const stop = .5, open: string[] = [];
+  const closedBy = (p: V) => built.some(b => pointToPoly(p, b.polyV) <= stop) || plan.landmarks.some(l => dist(p, l.c) <= l.r + stop)
+    || [...plan.water, ...plan.quay].some(w => pointToPoly(p, w) <= stop);
+  for (const r of d.roads) {
+    if (isClosed(r.line)) continue;
+    for (const [k, n] of [[0, r.path[0]], [1, r.path[r.path.length - 1]]] as const) {
+      if (at(n).length >= 2 || d.offsheet.has(n)) continue;
+      if (!closedBy(k ? r.line[r.line.length - 1] : r.line[0])) open.push(`${r.name} at ${n}`);
+    }
+  }
+  add({ id: 'R-D1', group: 'Roads', rule: 'Dead ends are closed (plot edge, landmark, water or quay within 0.5 m)', value: `${open.length} open`, limit: '0', ok: !open.length, detail: open.join(', ') || undefined });
 
   const astray = built.filter(p => !inPoly(centroid(p.polyV), d.areas.find(a => a.id === p.area)!.polyV));
   add({ id: 'R-A1', group: 'Roads', rule: 'Every plot sits in its environmental area', value: `${built.length - astray.length}/${built.length}`, limit: 'all', ok: !astray.length, detail: astray.map(p => p.id).join(', ') || undefined });
@@ -163,6 +184,11 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
     const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
   }
+  // R-B1 every built plot (not park/square/open, not a Handover plot: those buildings carry their own heights) has a height above the pavement.
+  const tall = d.plots.filter(p => !p.civic && !['park', 'square', 'open'].includes(p.use));
+  const noHeight = tall.filter(p => !(typeof p.height === 'number' && p.height > 0));
+  add({ id: 'R-B1', group: 'Roads', rule: 'Every built plot (except the Handover plots) has a height > 0 m', value: `${tall.length - noHeight.length}/${tall.length}`, limit: 'all', ok: !noHeight.length, detail: noHeight.map(p => p.id).join(', ') || undefined });
+
 
   // ---- civic ----
   const diffs = ['square', 'office'].map(id => { const p = plan.plots.find(x => x.civic === id)!, r = blockPlanRect(plan.civic, id); return { id, ok: p.rect!.every((v, i) => Math.abs(v - r[i]) < .01), r }; });
@@ -173,6 +199,37 @@ export function check(plan: Plan, d: Derived, civ: Civic): Report {
   add({ id: 'C-2', group: 'Civic', rule: 'Café and office footprints inside their blocks', value: `${civ.buildings.length - out.length}/${civ.buildings.length}`, limit: 'all', ok: !out.length && civ.buildings.length === 2 });
   const lost = civ.points.filter(pt => !d.plots.some(p => inPoly(pt.p, p.polyV)) && !d.roads.some(r => lineDist(pt.p, r.line) <= r.w / 2));
   add({ id: 'C-3', group: 'Civic', rule: 'Mission points land on a plot or a street', value: `${civ.points.length - lost.length}/${civ.points.length}`, limit: 'all', ok: !lost.length, detail: lost.map(p => p.name).join(', ') || undefined });
+
+  // C-4 bays are lay-bys: the near edge on one road's kerb line, none of it in the carriageway, nothing built on it, and the
+  // routes that name it start/end on that road within its length.
+  const KERB_TOL = .5, bayProblems: string[] = [];
+  for (const bay of civ.bays) {
+    const fits = d.roads.filter(r => !isClosed(r.line)).map(r => {
+      const hw = r.w / 2, near = bay.poly.map(v => lineDist(v, r.line)).sort((a, b) => a - b);
+      return { r, err: Math.max(Math.abs(near[0] - hw), Math.abs(near[1] - hw)), clear: !overlapsDeeper(bay.poly, ribbon(r.body, hw), KERB_TOL) };
+    }).filter(x => x.err <= KERB_TOL).sort((a, b) => a.err - b.err);
+    const on = fits.find(x => x.clear)?.r;
+    if (!on) { bayProblems.push(`${bay.id}: ${fits.length ? 'inside the carriageway' : 'not along any kerb line'}`); continue; }
+    const s = bay.poly.map(v => alongLine(on.line, v)), [s0, s1] = [Math.min(...s), Math.max(...s)];
+    for (const rt of plan.routes) for (const n of [rt.from, ...rt.to]) {
+      const m = /^r_bay_(\w+)$/.exec(n);
+      if (!m || `${m[1]}Bay` !== bay.id) continue;
+      const sn = alongLine(on.line, plan.nodes[n]);
+      if (!on.path.includes(n) || sn < s0 - KERB_TOL || sn > s1 + KERB_TOL) bayProblems.push(`${rt.id}: ${n} is not on ${on.name} within ${bay.id} (${f(s0)}–${f(s1)} m, node at ${f(sn)} m)`);
+    }
+    const things = [...civ.buildings, ...civ.structures, ...civ.objects].filter(o => overlapsDeeper(bay.poly, o.poly, KERB_TOL));
+    if (things.length) bayProblems.push(`${bay.id} overlaps ${things.map(t => t.id).join(', ')}`);
+  }
+  add({ id: 'C-4', group: 'Civic', rule: 'Bays are lay-bys (on a kerb line, off the carriageway, clear of built content, routes land in them)', value: `${civ.bays.length - bayProblems.length}/${civ.bays.length}`, limit: 'all', ok: !bayProblems.length && civ.bays.length > 0, detail: bayProblems.join('; ') || undefined });
+
+  // ---- view ----
+  // V-1 every mission point clears every built plot prism by VIEW_MARGIN at the play camera. Plot prism = the plot edge
+  // (conservative: the builder insets blocks 3 m, Style.BlockInset), base 0.18, top 0.18 + height. Handover buildings
+  // and structures that hide a point are listed, not failed.
+  const vis = visibility(plan, d, civ), hidden = vis.filter(s => s.plot && s.plot.margin < VIEW_MARGIN), tight = vis.filter(s => s.plot).reduce<typeof vis[number] | undefined>((b, s) => (!b || s.plot!.margin < b.plot!.margin ? s : b), undefined);
+  const hid = vis.filter(s => s.others.length).map(s => `${s.name} behind ${s.others.map(o => `${o.id} (${f(-o.margin, 1)} m too tall)`).join(', ')}`);
+  add({ id: 'V-1', group: 'View', rule: `Mission points are visible at the play view (yaw ${plan.view.yaw}, pitch ${plan.view.pitch})`, value: `${vis.length - hidden.length}/${vis.length} clear of plots; least margin ${tight ? `${f(tight.plot!.margin, 2)} m (${tight.name} past ${tight.plot!.id})` : 'none (no plot in the way)'}`, limit: `margin ≥ ${VIEW_MARGIN} m`, ok: !hidden.length,
+    detail: [hidden.length ? `HIDDEN: ${hidden.map(s => `${s.name} behind ${s.plot!.id} (margin ${f(s.plot!.margin, 2)} m)`).join('; ')}` : '', hid.length ? `info, behind Handover buildings: ${hid.join('; ')}` : ''].filter(Boolean).join('\n        ') || undefined });
 
   // ---- routes and walks ----
   const gateAt = new Map(plan.gates.map(g => [`${g.node}|${g.road}`, g.name]));

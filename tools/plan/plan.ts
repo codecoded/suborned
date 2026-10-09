@@ -1,9 +1,9 @@
 // Loads a suborned.plan/1 file and derives what the checks and drawings share: road geometry, plot polygons, the
 // pylon zones and the sky rail pylons.
-import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inPoly, notched, pathLength, polyline, rectPoly, ring, sample } from './geom';
+import { type Rect, type Sample, type Seg, type V, add, chainage, cross, dist, filleted, inPoly, mul, norm, notched, pathLength, polyline, rectPoly, ring, sample, sub } from './geom';
 
 export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
-export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string };
+export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string; height?: number };
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
 export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string };
 export type Line = { id: string; name: string; beyond: string; paths: Path[]; stops?: Stop[]; stations?: Stop[] };
@@ -14,18 +14,20 @@ export type Plan = {
   roads: Road[]; gates: { id: string; name: string; node: string; road: string; area: string }[];
   areas: { id: string; name: string; rect: Rect; notch?: [number, number, number]; label?: V; size?: number }[]; plots: Plot[];
   foot: { id: string; name: string; kind: string; w: number; pts: V[] }[];
+  view: { yaw: number; pitch: number };
   circus: { c: V; island: number; garden: number; ring: V; pavement: number };
   water: V[][]; quay: V[][]; beyond: V[][]; landmarks: { id: string; name: string; c: V; r: number }[];
   tram: Line[]; skyrail: Line[]; routes: { id: string; name: string; from: string; to: string[]; toName?: string }[];
   civic: any; notes: { why: string[]; concept: string[]; questions: string[]; sources: string[] };
 };
 
-export type RoadGeo = Road & { segs: Seg[]; line: V[]; length: number };
+/** line = centreline (2 m chords). body = the line with each end that meets another road's end at a corner run on by that road's half width, so the corner has no hole; the carriageway and kerb are drawn from it. */
+export type RoadGeo = Road & { segs: Seg[]; line: V[]; body: V[]; length: number };
 export type PathGeo = Path & { line: string; segs: Seg[]; samples: Sample[]; length: number };
 export type Pylon = { p: V; line: string; path: string; s: number; span: number };
 export type Derived = {
   roads: RoadGeo[]; plots: (Plot & { polyV: V[] })[]; areas: { id: string; name: string; polyV: V[]; label?: V; size?: number }[];
-  zones: { kind: string; poly?: V[]; c?: V; r?: number }[];
+  zones: { kind: string; road?: string; poly?: V[]; c?: V; r?: number }[];
   tram: PathGeo[]; sky: PathGeo[]; pylons: Pylon[]; pylonGaps: { line: string; path: string; from: number; to: number }[];
   offsheet: Set<string>;
 };
@@ -36,6 +38,34 @@ const shape = (x: { rect?: Rect; poly?: V[]; notch?: [number, number, number] })
 function roadSegs(plan: Plan, r: Road): Seg[] {
   const pts = r.path.map(id => { const p = plan.nodes[id]; if (!p) throw new Error(`road ${r.id}: unknown node ${id}`); return p; });
   return r.arc ? ring(pts, r.arc, !!r.cw) : filleted(pts);
+}
+
+/** Where this road's end meets the end of another road at an angle (an L corner), the two butt ends leave a square hole.
+ *  Run this end on by the other road's half width (T junctions and straight continuations need nothing). */
+function cornerBody(plan: Plan, r: Road, line: V[]): V[] {
+  if (r.arc) return line;
+  const body = [...line];
+  for (const end of [0, 1]) {
+    const id = end ? r.path[r.path.length - 1] : r.path[0], n = line.length;
+    const out = norm(sub(end ? line[n - 1] : line[0], end ? line[n - 2] : line[1]));
+    let ext = 0;
+    for (const o of plan.roads) {
+      if (o === r || o.arc) continue;
+      for (const [k, next] of [[0, 1], [o.path.length - 1, o.path.length - 2]]) {
+        if (o.path[k] !== id) continue;
+        if (Math.abs(cross(out, norm(sub(plan.nodes[o.path[next]], plan.nodes[id])))) > .3) ext = Math.max(ext, o.w / 2);
+      }
+    }
+    if (ext) { const p = add(end ? line[n - 1] : line[0], mul(out, ext)); if (end) body.push(p); else body.unshift(p); }
+  }
+  return body;
+}
+
+/** Where a gate stands: `set` metres in from its junction node along its road (toward the road's next node). */
+export function gatePos(plan: Plan, g: Plan['gates'][number], set: number) {
+  const p = plan.nodes[g.node], road = plan.roads.find(r => r.id === g.road)!, i = road.path.indexOf(g.node);
+  const dir = norm(sub(plan.nodes[road.path[i === 0 ? 1 : i - 1]], p));
+  return { at: add(p, mul(dir, set)), dir };
 }
 
 /** Medians as zones, cut back at every junction by the crossing road's half width + 1 m. */
@@ -50,7 +80,7 @@ function medians(plan: Plan, roads: RoadGeo[]) {
       if (d - c0 - c1 <= 0) continue;
       const u: V = [(b[0] - a[0]) / d, (b[1] - a[1]) / d], n: V = [-u[1] * r.median / 2, u[0] * r.median / 2];
       const p0: V = [a[0] + u[0] * c0, a[1] + u[1] * c0], p1: V = [b[0] - u[0] * c1, b[1] - u[1] * c1];
-      zones.push({ kind: 'median', poly: [[p0[0] + n[0], p0[1] + n[1]], [p1[0] + n[0], p1[1] + n[1]], [p1[0] - n[0], p1[1] - n[1]], [p0[0] - n[0], p0[1] - n[1]]] });
+      zones.push({ kind: 'median', road: r.id, poly: [[p0[0] + n[0], p0[1] + n[1]], [p1[0] + n[0], p1[1] + n[1]], [p1[0] - n[0], p1[1] - n[1]], [p0[0] - n[0], p0[1] - n[1]]] });
     }
   }
   return zones;
@@ -94,7 +124,7 @@ function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean) {
 }
 
 export function derive(plan: Plan): Derived {
-  const roads: RoadGeo[] = plan.roads.map(r => { const segs = roadSegs(plan, r); return { ...r, segs, line: polyline(segs, 2), length: pathLength(segs) }; });
+  const roads: RoadGeo[] = plan.roads.map(r => { const segs = roadSegs(plan, r), line = polyline(segs, 2); return { ...r, segs, line, body: cornerBody(plan, r, line), length: pathLength(segs) }; });
   const paths = (lines: Line[]) => lines.flatMap(l => l.paths.map(p => {
     const segs = filleted(p.pts), samples = sample(segs, .5);
     return { ...p, line: l.id, segs, samples, length: pathLength(segs) };
@@ -125,3 +155,6 @@ export const stopChainage = (d: Derived, line: string, stop: Stop, from: 'tram' 
   const path = d[from].find(p => p.line === line && p.id === stop.path)!;
   return { path, s: chainage(path.samples, stop.at) };
 };
+
+/** The sample of a path nearest chainage s. */
+export const at = (path: PathGeo, s: number) => path.samples.reduce((b, x) => (Math.abs(x.s - s) < Math.abs(b.s - s) ? x : b));

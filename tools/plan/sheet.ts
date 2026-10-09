@@ -55,7 +55,7 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 .kerb,.foot-k{fill:none;stroke:#4a423a;stroke-linecap:butt;stroke-linejoin:round}.kerb-c{fill:#4a423a}
 .road{fill:none;stroke-linecap:butt;stroke-linejoin:round}.road.primary{stroke:#d0bc92}.road.district{stroke:#dfcfaa}.road.access{stroke:#efe6cd}
 .foot{fill:none;stroke-linecap:butt}.foot.mall{stroke:#f5eedd}.foot.walk{stroke:#f2ead6}
-.reservation{fill:none;stroke:#c9d6ad;stroke-linecap:butt}.median{fill:#c9d6ad;stroke:none}
+.reservation{fill:#c9d6ad;stroke:none}.median{fill:#c9d6ad;stroke:none}
 .island{fill:#c2d39c;stroke:var(--ink);stroke-width:.8;vector-effect:non-scaling-stroke}.garden{fill:#b3c98a;stroke:none}
 .cl{fill:none;stroke:#7a6f60;stroke-width:.7;stroke-dasharray:14 4 2 4;vector-effect:non-scaling-stroke}
 .tram{fill:none;stroke:var(--tram);stroke-width:1.3;stroke-linecap:round}.platform{fill:#f3b7a8;stroke:var(--tram);stroke-width:.8;vector-effect:non-scaling-stroke}

@@ -1,6 +1,6 @@
 # 002 · Mission crew: the §09 mission generator, from Assignment 3
 
-Goal: the GDD's mission generator runs in this repo on the crew itself. Given a brief (objective, target, closing event, purse) and a block, Motive, Pulse, Waymark, Fable and Keel generate a rule-checked mission package (cast, schedule, routes, dialogue, check), as Assignment 3 proved on Handover. Runs after 001 because missions are designed on the block the world builder stands up.
+Goal: the GDD's mission generator runs in this repo on the crew itself. Given a brief (objective, target, closing event, purse) and a block, Motive, Pulse, Waymark, Fable and Keel generate a rule-checked mission package (cast, schedule, routes, dialogue, check), as Assignment 3 proved on Handover. Runs after 001 because missions, NPCs and objectives are fitted to the world 001 builds; the world carries no mission content.
 
 Source: `~/Projects/game-course-assignments/assignment-03-agent-crew` (929 lines of bun TS + zod; sample run in `out/handover/`). Reference only: copy what is needed, never import from it at runtime.
 
@@ -12,10 +12,11 @@ done-check: `bun test` passes (A3's checker tests) · `bun run typecheck` clean 
 evidence: test output, the run's `report.json` and `briefing.html` under `out/missions/handover/`, a diff of what changed from A3 and why.
 next owner: Keel.
 
-## B · Vantage · the Handover layout from the plan
-objective: derive the mission layout (places with tags, residents, watchers, walk speed, crew start) from the plan's Handover block (`contracts/world/harbour-district.plan.json` civic + `handover-block.json`), in plan coordinates, so missions sit in the world 001 builds. Same schema as A3's layout; no new mechanics.
-done-check: every A3 place has a counterpart (or a stated reason it's gone); the mission crew run in A is repeated on this layout and ends ACCEPTED.
-next owner: Waymark.
+## B · Vantage · site the Handover in the world
+The world comes first (001); a mission is fitted to it, never the other way round.
+objective: site the Handover in the world's civic block (the café, the office, the square and the bays all stand there after 001). Take the mission layer moved out by 001 A0 (`contracts/missions/handover/`: places, crew start, getaway and official routes) and fit it to the built block, adapting with a stated reason. Then derive the mission layout (places with tags, residents, watchers, walk speed, crew start) in plan coordinates. Same schema as A3's layout; no new mechanics. Mission checks moved out of the plan (C-*, M-1, V-1: mission points visible at the play camera, routes reach their ends) run here, in `tools/missions/`. The world never changes to suit the mission; a mission need that the world can't meet goes to Datum as a world proposal.
+done-check: every A3 place has a counterpart (or a stated reason it's gone). The mission checks pass. The mission crew run in A is repeated on this layout and ends ACCEPTED.
+next owner: Waymark, then Pulse (NPC schedules on the sited layout).
 
 ## C · Keel · review
 objective: check the accepted package against §07 (2+ quiet routes win, loud costs more Trail, every fail reachable, no essential contact, a minute to spare) and the checker report; send faults to their owner.

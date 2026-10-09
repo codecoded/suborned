@@ -12,3 +12,6 @@ unity/*.csproj
 unity/*.sln
 unity/.vs/
 unity/.idea/
+# generated from the plan: bun run world, then Suborned.Graybox.WorldBuilder.Build
+unity/Assets/Scenes/HarbourDistrict.unity
+unity/Assets/Scenes/HarbourDistrict.unity.meta

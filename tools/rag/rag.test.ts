@@ -60,9 +60,16 @@ describe('claude transcript', () => {
   });
 });
 
+/** A crew member's agent name, found by its GDD name in the card description ("… (Keel). Owns: …"). */
+const agentFor = async (gddName: string) => {
+  for (const f of await readdir(join(root, '.claude/agents')))
+    if ((await Bun.file(join(root, '.claude/agents', f)).text()).includes(`(${gddName}). Owns:`)) return f.replace(/\.md$/, '');
+  throw new Error(`no card for ${gddName}`);
+};
+
 describe('claude invocation', () => {
   test('crew card as system prompt, no built-in tools, project-only settings, $schema-free schema', async () => {
-    const c = await card('keel'), args = claudeArgs(c, cliSchema(z.object({ pass: z.boolean() })), 'high');
+    const c = await card(await agentFor('Keel')), args = claudeArgs(c, cliSchema(z.object({ pass: z.boolean() })), 'high');
     expect(args.slice(1, 3)).toEqual(['-p', '--system-prompt']); expect(args[3]).toBe(c.body);
     expect(args).not.toContain('--agent');
     for (const flag of ['--tools=', '--no-session-persistence', '--strict-mcp-config']) expect(args).toContain(flag);
@@ -76,7 +83,7 @@ describe('claude invocation', () => {
     await chmod(bin, 0o755);
     process.env.CLAUDE_BIN = bin;
     try {
-      const run = await invokeClaude(await card('fable'), 'PROMPT BODY', z.object({ ok: z.boolean() }));
+      const run = await invokeClaude(await card(await agentFor('Fable')), 'PROMPT BODY', z.object({ ok: z.boolean() }));
       expect(run.ok).toBe(true);
       expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PROMPT BODY');
       expect((await Bun.file(join(dir, 'cwd.txt')).text()).trim()).toBe(root);

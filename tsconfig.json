@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["tools/**/*.ts"]
+  "include": ["tools/**/*.ts", "contracts/**/*.ts"]
 }
