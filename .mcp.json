@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "unity": {
+      "type": "stdio",
+      "command": "${UNITY_CLI:-unity}",
+      "args": ["mcp", "--project-path", "unity"]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+out/
+.DS_Store
+# Unity
+unity/[Ll]ibrary/
+unity/[Tt]emp/
+unity/[Oo]bj/
+unity/[Ll]ogs/
+unity/[Uu]ser[Ss]ettings/
+unity/[Bb]uild*/
+unity/*.csproj
+unity/*.sln
+unity/.vs/
+unity/.idea/

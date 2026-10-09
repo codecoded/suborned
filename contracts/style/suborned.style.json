@@ -1,0 +1,524 @@
+{
+  "$schema": "../hml-style.v2.schema.json",
+  "contract": "hml.style/2",
+  "id": "suborned",
+  "version": "0.11.3",
+  "date": "2026-10-06",
+  "status": "simple style: look and framing in the prompt; brief guidance in guide, read by Enhance and Explore",
+  "notes": [
+    "Optimistic surface, coercive underneath (design intent, not a prompt line).",
+    "Every district is retro-future (streamline, Googie, space age); no old-city stone or brick until Sky reopens it (2026-09-28).",
+    "Prompt text fields (era, world, people, finishes.*.look, rules.*) are composed verbatim into prompts: keep them clean of meta.",
+    "Migrated to the HML style contract v1 on 2026-10-06: kind lines and rules live under subjects; the cell inherit the people rules.",
+    "Migrated to the HML style contract v2 on 2026-10-06 (v0.4.0): subjects, finishes and reference_board.groups became types, each owning its line, rules, finish, reference policy, brief fields and board. people became character (faction field: citizen, cell, security; the cell line and rules are the cell option, composed after the character line and rules, so the cell still inherit the people rules); world split into scene, building and backdrop; props, robots became prop, robot; nature is new. The v1 sheet finish serves character, prop, robot and nature; the plate finish serves scene, building and backdrop. The v1 explore finish (exploratory sheets and lineups: same world, lean brief, theme plus hard rules only, no motif lists; Codex, 1536x1024) is dropped as a finish; pass --model codex to style_probe.py for the free route. In v2 the prompt text fields are era, types.*.line, types.*.fields[].options[].line, types.*.finish.look, rules.all and types.*.rules: keep them clean of meta.",
+    "2026-10-06 v0.4.1: nature board added (three picks generated from this spec in the studio with a borrowed prop reference); helmet added to negatives.",
+    "v0.6.0 (2026-10-06): Sky: the style is meant to be simple, not down to the player or details. Types now set framing only; fields, faction options, cast rules and faction colours moved to contracts/style/suborned.brief-guide.json; v0.5.0 archived. Character style reference is a painted street plate first, because character images were copied as people.",
+    "v0.6.1 (2026-10-06): the first v0.6.0 sheets came back as 1950s Americana (Sky: medium right, clothing and look all wrong). The couture sentence is the people's look, not a detail, so it is back on the character line; the era drops its dates, which pulled period dress.",
+    "v0.6.2 (2026-10-06): v0.6.1 put every character in the same teal coat: 'bright coats' named one garment and the mint cafe_row plate set the colour. The line now asks for each outfit's own silhouette and colours; the character style plate is parade_eye (wider colour range, painted crowd).",
+    "v0.7.0 (2026-10-06): Sky: v0.6.x 'still not the original look'. The look is the fashion vocabulary of the signed-off spaceage_bold sheets (workbench/Tools/Concept/citizens.py SPACEAGE + grounded medium), which is style, not cast control: restored on the character line and finish. 'helmet' negative removed (dome and helmet hats are the look; astronaut suit and space helmet stay out). Character style reference = the commuters spaceage_bold lineup (six people, so no single face is copied).",
+    "v0.7.1 (2026-10-06): v0.7.0 put every motif on every person (dome helmet, cape, chevrons, teal vinyl on all three). The vocabulary is now a menu ('one or two of these, never all'); garments (tabards, bodysuits, jackets) come from the brief; capes removed and added to the negatives (Sky: capes no good).",
+    "v0.7.2 (2026-10-06): v0.7.1 put a dome hat on all three test characters; Sky: hats 'sometimes'. The hat left the menu and became an occasional extra.",
+    "v0.8.0 (2026-10-06): Sky wants six different characters on one sheet. New lineup type (2496x1664, six people in a row, three-quarter front view) from the original citizens.py LINEUP wording plus the same couture menu; character stays the single-person turnaround for modelling. Lineup style ref = the commuters spaceage_bold sheet.",
+    "v0.8.1 (2026-10-06): Sky: make the number variable. The lineup line no longer fixes six: it takes the count from the brief ('Three couriers...', 'Ten shoppers...'), six when the brief gives none. No field: the number is content, so it lives in the brief.",
+    "v0.8.2 (2026-10-06): the v0.8.0/v0.8.1 lineup tests both came back as a near pixel copy of the commuters spaceage_bold reference (cape included): Seedream treats a lineup reference on a lineup task as the image to reproduce. Lineup now sends no style image; the board stays as the look the text is judged against.",
+    "v0.8.3 (2026-10-06): a count in the brief lost to the sheet ('Four dock workers' still drew six). The number is now a lineup field, People (2, 3, 4, 6, 8; default 6), whose option line states the exact count; the type line names no number.",
+    "v0.8.4 (2026-10-06): Sky: keep costs low for now. Lineup size 2496x1664 -> 1536x1024: Seedream bills by resolution ($0.096 vs $0.048 per image).",
+    "v0.8.5 (2026-10-06): 'White or silver boots' dropped from the character and lineup lines. v0.7.1 had pulled it out of the couture menu into its own sentence, so every figure wore them; footwear now comes from the brief.",
+    "v0.8.6 (2026-10-06): Sky: 'Special ops / covert characters' came back as civilians. The character and lineup lines said 'everyday street clothing of a city'; now the look dresses whoever the brief names (civilian, worker, officer, agent) in what their role needs, role first, then one or two couture motifs. Lineup drops 'as in a real city' and the hat/coat/dress silhouette cues. The studio enhancer stopped treating the type line as the subject.",
+    "v0.9.0 (2026-10-06): Sky: 'we've gone so far away from unique concept'; the style should feed the brief, not preset everything, and stay all in one. New hml.style/2 'guide' (global + per type), read only by Enhance as a menu: couture details, colours, cast, roles, factions, city, robots, nature (from the retired suborned.brief-guide.json, now archived). Character and lineup lines keep framing plus one couture sentence, so a plain brief still gets the look. Enhance stays manual.",
+    "v0.9.1 (2026-10-06): the covert line ('blend into the crowd') sent Enhance straight back to civilians; agents and hard trades now read as what they are in sharper, darker couture. Lineup guide asks Enhance to describe each person in turn so no two share a detail.",
+    "v0.9.2 (2026-10-06): v0.9.1 agents read as agents but the space age thinned to 80s/present-day leather and slip dresses; the agents line now keeps the couture details and only darkens the colour blocks.",
+    "v0.9.3 (2026-10-06): v0.9.2 'one hot accent each' became a colour-coded squad in off-palette neon with matching glasses, earpieces and holsters. Agents now take darker blocks from the city palette. Sky: no references while a concept is being worked out. The studio enhancer now writes one numbered line per person when there are several (a group sentence lands on everyone), so the lineup's own guide line is dropped.",
+    "v0.9.4 (2026-10-06): style_lock.base = runware:400@2: the klein LoRA was being attached to Qwen-Image and Runware rejected the run; the studio now sends the LoRA and trigger only to the base.",
+    "v0.10.0 (2026-10-06): Sky: Make from Explore stayed too close to the sketch; it needs to move from explore to a finished design suitable for 3D model referencing. New type model (Model sheet): orthographic front, side and back on one baseline, neutral A-pose, flat even light, no cast shadows, finished painted rendering on light grey; no style image (the gouache board would pull it back to a sketch); a reference is treated as a rough concept, keeping the person and outfit, not its pose or rendering.",
+    "v0.10.1 (2026-10-06): the model type is marked final: Explore does not propose it and Make on a one-person take uses it; the studio no longer matches it by name.",
+    "v0.10.2 (2026-10-07): Sky: the type help was a long explainer. Every type's use line is now one short phrase.",
+    "v0.11.0 (2026-10-07): Sky wants variations of the same character in a lineup; Lineup is different people and cannot keep one. New type versions: the same person drawn 2-6 times in a row, identical apart from the change the brief names; takes a subject reference (Edit this design).",
+    "v0.11.1 (2026-10-07): update_url added: the studio checks it and offers 'Style vX is available' with one-click Update. Also tells the agent to propose one Versions take for several versions of one person.",
+    "v0.11.2 (2026-10-07): Sky: every version kept the full-length coat although a shorter jacket had been asked for. The Versions type now lets the brief give a change for all figures (it replaces what the reference shows), not only per figure; the Explore agent restates standing changes in every brief.",
+    "v0.11.3 (2026-10-07): Sky: Seedream 5.0 Pro dropped the chest plate and back harness when finishing a model sheet from a sketch; GPT Image 2 kept them. The Model sheet type now finishes with GPT Image 2."
+  ],
+  "era": "Bright retro-future: a space age imagined as the present, built as high art, optimistic and immaculate.",
+  "rules": {
+    "all": [
+      "No text, logos or watermarks in the image."
+    ],
+    "meta": [
+      "No living artist names in prompts.",
+      "No environment surface uses a signal colour at full strength."
+    ]
+  },
+  "guide": [
+    "People wear space-age couture as everyday clothing: the imagined future of 1958-1972 pushed one step further. Any role, civilian, worker, officer or agent, wears it; the job shows through cut, colour and one telling detail (a slim chrome holster, an earpiece, a tool, a satchel), never through costume, tactical kit or matching uniforms.",
+    "Couture details, one or two per person, never all, never the same pair twice on one sheet: visor glasses, a stand-up ribbed collar, glossy vinyl, bonded wool, silver lame or brushed-metal trim, a geometric cut-out, circles or chevrons, chunky geometric jewellery, a tabard over a fitted tunic, a transparent bubble umbrella or hatbox; only rarely a moulded dome or helmet hat. Garments and footwear follow the person.",
+    "Colours on cream: seafoam teal, coral red, vermilion, mustard gold, white and silver, with navy and black for contrast; one dominant block per person, chosen for who they are, so a group never matches.",
+    "Cast: mix ages, builds, genders and ethnicities unless the brief fixes them.",
+    "Security and institutions dress sleeker: white, black, gold and chrome couture with armour accents.",
+    "Agents, special ops and other hard trades read as what they are at a glance, still in the city's space-age couture: darker colour blocks from the city palette (navy, black, chrome, with coral, teal or gold) on the same details as everyone else, visor glasses, stand-up ribbed collars, glossy vinyl, geometric cuts, brushed-metal trim, and the tools of the trade worn like jewellery; never present-day leather, tactical kit or matching kit.",
+    "Only when the brief is about the player cell: visitors from a nearby timeline, the same world a few decades on; sleeker and more technical than the crowd, fitted layers and sharp geometric lines, black, cream and gold with a violet accent, one signature piece each.",
+    "The city: cream limestone, teal and mint enamel, chrome fixtures, coral transit, palms and long soft shadows; grandeur over detail at Space Age Expo scale; towers, rockets, ringed planets and faded daytime moons on the skyline."
+  ],
+  "negatives": [
+    "text",
+    "watermark",
+    "glossy CG render",
+    "photo render",
+    "present-day street clothes",
+    "astronaut suit",
+    "space helmet",
+    "cape"
+  ],
+  "palette": {
+    "cream_stone": {
+      "hex": "#e4e0d3",
+      "role": "stone and paper",
+      "source": "sampled city"
+    },
+    "teal_enamel": {
+      "hex": "#94a9a3",
+      "role": "enamel",
+      "source": "sampled people"
+    },
+    "coral_transit": {
+      "hex": "#c8835e",
+      "role": "warm accent",
+      "source": "sampled people"
+    },
+    "gold_trim": {
+      "hex": "#c9a24f",
+      "role": "trim",
+      "source": "nominal"
+    },
+    "chrome": {
+      "hex": "#cbc6c3",
+      "role": "metal",
+      "source": "sampled security"
+    },
+    "sky_cerulean": {
+      "hex": "#719fb5",
+      "role": "sky",
+      "source": "sampled city"
+    }
+  },
+  "signal_colours": {
+    "rule": "No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue.",
+    "cones": "#e03a2f",
+    "guard": "#f0a020",
+    "rivals": "#8a4fd0"
+  },
+  "materials": [
+    "honed cream limestone",
+    "flamed grey granite kerb",
+    "teal and mint vitreous enamel",
+    "chrome and brushed silver",
+    "white vinyl and lame",
+    "clear acrylic",
+    "warm brass and gold trim",
+    "pale asphalt"
+  ],
+  "types": {
+    "character": {
+      "label": "Character",
+      "use": "One person, turnaround sheet.",
+      "line": "A character turnaround sheet: one person drawn front, three-quarter, side and back at the same scale, full body head to toe, relaxed A-pose with the arms a little away from the body and nothing loose below the hip. Dressed in space-age couture: the imagined future of 1958-1972 pushed one step further, tailored, chic and wearable, never astronaut suits or fancy dress.",
+      "finish": {
+        "look": "Gouache and marker rendering in the tradition of 1960s fashion illustration and costume design boards, crisp confident linework, soft studio light, material realism. Plain warm-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 1
+      },
+      "board": [
+        "Citizens/sheets/commuters__spaceage_bold.png",
+        "Cell/picks/fixer_P4-6.png",
+        "Cell/picks/tech_F2-1.png",
+        "Cell/picks/scout_S1-2.png",
+        "Cell/picks/enforcer_G3.png",
+        "Citizens/sheets/shoppers__spaceage_bold.png",
+        "Citizens/sheets/workers__spaceage_bold.png",
+        "Citizens/model_sheets/corporation_D5.png",
+        "Citizens/model_sheets/commuters_D1.png",
+        "Citizens/sheets/lean__security_posts_sa2__codex.png",
+        "Citizens/model_sheets/refs/guard_P1.png",
+        "Style/probes/2026-10-05_codex/guard__codex.png",
+        "Props/sheets/security_points.png",
+        "Citizens/sheets/security__spaceage_duty_2.png"
+      ]
+    },
+    "model": {
+      "label": "Model sheet",
+      "use": "Finished front, side, back sheet for 3D.",
+      "final": true,
+      "line": "A finished character model sheet for a 3D artist: the same person drawn front, side and back, orthographic with no perspective, side by side at exactly the same height on one baseline, neutral A-pose with the arms about 30 degrees from the body, hands open, feet slightly apart, neutral face. Every garment, seam, panel, trim and material is resolved and identical across the three views. Dressed in space-age couture: the imagined future of 1958-1972 pushed one step further, tailored, chic and wearable, never astronaut suits or fancy dress.",
+      "rules": [
+        "The figure stands alone: nothing in the hands, no seated or action pose, nothing hiding the body outline, hair and clothes clear of the hands and feet.",
+        "A reference image is a rough concept: keep who the person is and what they wear, never its pose, linework or rendering."
+      ],
+      "finish": {
+        "look": "Finished production rendering, clean and painted: crisp edges, solid colour, every material legible (gloss vinyl, brushed chrome, matte wool, leather), flat even front light with no cast shadows and no haze. Plain light-grey backdrop, clear margin all round.",
+        "model": "openai:gpt-image@2",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 0
+      }
+    },
+    "lineup": {
+      "label": "Lineup",
+      "use": "A row of 2–8 people, to explore a cast.",
+      "line": "A character lineup sheet: clearly different people standing in one row, full body head to toe, all at the same scale and the same gentle three-quarter front view, relaxed standing pose with the arms slightly away from the body, soft contact shadows under the feet. Each has a bold, distinct silhouette that reads from across a street and one dominant colour block. Dressed in space-age couture: the imagined future of 1958-1972 pushed one step further, tailored, chic and wearable, never astronaut suits or fancy dress.",
+      "finish": {
+        "look": "Gouache and marker rendering in the tradition of 1960s fashion illustration and costume design boards, crisp confident linework, soft studio light, material realism. Plain warm-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "none",
+        "style": 0
+      },
+      "board": [
+        "Citizens/sheets/commuters__spaceage_bold.png",
+        "Citizens/sheets/shoppers__spaceage_bold.png",
+        "Citizens/sheets/workers__spaceage_bold.png",
+        "Citizens/sheets/corporation__spaceage_bold.png"
+      ],
+      "fields": [
+        {
+          "id": "people",
+          "label": "People",
+          "default": "6",
+          "options": [
+            {
+              "id": "2",
+              "label": "2",
+              "line": "Exactly two people on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "3",
+              "label": "3",
+              "line": "Exactly three people on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "4",
+              "label": "4",
+              "line": "Exactly four people on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "6",
+              "label": "6",
+              "line": "Exactly six people on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "8",
+              "label": "8",
+              "line": "Exactly eight people on the sheet, no more and no fewer, spaced evenly across it."
+            }
+          ]
+        }
+      ]
+    },
+    "versions": {
+      "label": "Versions",
+      "use": "One person drawn several times, to compare changes.",
+      "line": "A versions sheet: the same one person drawn several times, standing in one row, full body head to toe, all at the same scale and the same gentle three-quarter front view, relaxed standing pose with the arms slightly away from the body, soft contact shadows under the feet. Identical face, hair, skin, age and build in every figure. Only the changes the brief names differ from the reference: a change the brief gives for all of them applies to every figure, a numbered line applies to that figure alone, and everything else is exactly the same. Dressed in space-age couture: the imagined future of 1958-1972 pushed one step further, tailored, chic and wearable, never astronaut suits or fancy dress.",
+      "rules": [
+        "A reference image is the person: keep who they are and what they wear, apart from the changes the brief names; where the brief names a change, it replaces what the reference shows."
+      ],
+      "finish": {
+        "look": "Gouache and marker rendering in the tradition of 1960s fashion illustration and costume design boards, crisp confident linework, soft studio light, material realism. Plain warm-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 0
+      },
+      "fields": [
+        {
+          "id": "versions",
+          "label": "Versions",
+          "default": "4",
+          "options": [
+            {
+              "id": "2",
+              "label": "2",
+              "line": "Exactly two versions of him on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "3",
+              "label": "3",
+              "line": "Exactly three versions of him on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "4",
+              "label": "4",
+              "line": "Exactly four versions of him on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "5",
+              "label": "5",
+              "line": "Exactly five versions of him on the sheet, no more and no fewer, spaced evenly across it."
+            },
+            {
+              "id": "6",
+              "label": "6",
+              "line": "Exactly six versions of him on the sheet, no more and no fewer, spaced evenly across it."
+            }
+          ]
+        }
+      ]
+    },
+    "prop": {
+      "label": "Prop",
+      "use": "One object on its own sheet.",
+      "line": "One object on its own, centred and whole.",
+      "finish": {
+        "look": "Painted in high-art gouache: matte paper texture, soft brushed edges, warm hazy light. Plain paper-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 2
+      },
+      "board": [
+        "Props/scenes/tram_stop.png",
+        "Props/sheets/food_carts.png",
+        "Props/sheets/news_kiosks.png",
+        "Props/sheets/aircar_kerbside.png"
+      ]
+    },
+    "scene": {
+      "label": "Scene",
+      "use": "A place with life in it.",
+      "line": "A place in the bright city with life in it, towers and rockets on the skyline.",
+      "guide": [
+        "A place in the cream limestone city with life in it, under a warm hazy sun; teal enamel, coral transit, chrome; a skyline of towers, rockets, ringed planets and faded daytime moons behind; skyports, sky rail, palms, harbour."
+      ],
+      "finish": {
+        "look": "High-art painterly realism with gouache softness: warm hazy sun, long soft shadows, soft focus far.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "none",
+        "style": 3
+      },
+      "board": [
+        "District/aerial_harbour.png",
+        "District/aerial_circus.png",
+        "Streets/hero/cafe_row.png",
+        "Streets/hero/dusk_boulevard.png",
+        "Horizon/pano/pano_harbour.png",
+        "Streets/mega/sphere_station.png",
+        "Streets/spaceage/skylon_avenue.png",
+        "District/parade_eye.png"
+      ]
+    },
+    "building": {
+      "label": "Building",
+      "use": "One structure on its own.",
+      "line": "One building on its own with its street level visible.",
+      "guide": [
+        "One building of the cream limestone city on its own, elevation or three-quarter view with the street level visible, under a warm hazy sun; teal enamel trim, coral transit, chrome fixtures; towers, rockets, ringed planets and faded daytime moons behind it."
+      ],
+      "finish": {
+        "look": "High-art painterly realism with gouache softness: warm hazy sun, long soft shadows, soft focus far.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 2
+      },
+      "board": [
+        "District/aerial_harbour.png",
+        "District/aerial_circus.png",
+        "Streets/hero/cafe_row.png",
+        "Streets/hero/dusk_boulevard.png",
+        "Horizon/pano/pano_harbour.png",
+        "Streets/mega/sphere_station.png",
+        "Streets/spaceage/skylon_avenue.png",
+        "District/parade_eye.png"
+      ]
+    },
+    "robot": {
+      "label": "Robot",
+      "use": "One robot on its own sheet.",
+      "line": "One robot on its own, full body.",
+      "guide": [
+        "A street robot of the city: cream enamel body with teal panels and chrome joints, built by the same hands as the transit and kiosks; a dot-matrix display face and one personality prop that shows its job at a glance.",
+        "Dot-matrix display faces, one personality prop each; no cartoon eyes.",
+        "A hard enamel shell and bare chrome joints only: nothing hangs from the body, no cloth, apron, skirt, cape or bag.",
+        "Plain enamel panels: no lettering, labels or badges on the body."
+      ],
+      "finish": {
+        "look": "Painted in high-art gouache: matte paper texture, soft brushed edges, warm hazy light. Plain paper-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1024,
+          1536
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 1
+      },
+      "board": [
+        "Style/probes/2026-10-06_cell_robot_b/robot__codex.png"
+      ]
+    },
+    "nature": {
+      "label": "Nature",
+      "use": "One plant, tree, rock or water feature.",
+      "line": "One plant, tree or feature on its own, centred and whole.",
+      "guide": [
+        "Foliage, trees, rocks and water of the city in the same look: palms and planted beds in the city's materials, sculpted and tidy, nothing wild; one plant or feature on its own, product-sheet style, built to be modelled and instanced.",
+        "Clean silhouette, no overlapping leaf clutter: every leaf and frond reads as a shape at 50 px.",
+        "Plain backdrop, no ground scene."
+      ],
+      "finish": {
+        "look": "Painted in high-art gouache: matte paper texture, soft brushed edges, warm hazy light. Plain paper-cream backdrop, clear margin all round.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "optional",
+        "style": 1
+      },
+      "board": [
+        "Nature/picks/fan_palm_planter_a.png",
+        "Nature/picks/fan_palm_planter_b.png",
+        "Nature/picks/planted_bed_oval.png"
+      ]
+    },
+    "backdrop": {
+      "label": "Backdrop",
+      "use": "Sky and far distance behind the block.",
+      "line": "The sky and the far distance, painted at huge scale and never modelled.",
+      "finish": {
+        "look": "High-art painterly realism with gouache softness: warm hazy sun, long soft shadows, soft focus far.",
+        "model": "bytedance:seedream@5.0-pro",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      "references": {
+        "subject": "none",
+        "style": 2
+      },
+      "board": [
+        "Horizon/pano/pano_harbour.png",
+        "District/aerial_harbour.png",
+        "District/aerial_circus.png"
+      ]
+    }
+  },
+  "board": {
+    "status": "locked 2026-10-06 by Sky from two review rounds (store scratch/style/round1.json, round2.json) plus the Enforcer G3 pick (approved 2026-10-06 from the cell probe) and the first robot probe; 26 images. Paths relative to the-suborned-store/concepts/.",
+    "root": "the-suborned-store/concepts",
+    "mood": [],
+    "pending": [
+      "cell: Enforcer G3 approved; the A-pose sheet for the mesh keeps the coat tails fitted and the rifle on its own prop sheet.",
+      "robots: one locked (service); a round for corp, maker and civic robots follows under rules.robots."
+    ]
+  },
+  "probes": {
+    "purpose": "Regression set: regenerate from this spec alone after any prompt, model or LoRA change and compare against the reference board.",
+    "items": [
+      {
+        "id": "citizen",
+        "type": "character",
+        "brief": "A shopper of the city, mid-forties, heavy build."
+      },
+      {
+        "id": "guard",
+        "type": "character",
+        "brief": "A city security patrol officer."
+      },
+      {
+        "id": "building",
+        "type": "building",
+        "brief": "A corner pharmacy with a rooftop landing pad, street level, morning."
+      },
+      {
+        "id": "prop",
+        "type": "prop",
+        "brief": "A kerbside news kiosk.",
+        "size": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "id": "street",
+        "type": "scene",
+        "brief": "A tram stop on a palm-lined boulevard, busy, late afternoon."
+      },
+      {
+        "id": "enforcer",
+        "type": "character",
+        "brief": "The cell's Enforcer, alone on the sheet: a big, heavy man in his fifties, silver hair and short silver beard, amber glasses, calm, a chrome rifle held at rest."
+      },
+      {
+        "id": "robot",
+        "type": "robot",
+        "brief": "A street service robot of the city, alone on the sheet, waist-high, carrying a tray."
+      },
+      {
+        "id": "enforcer_apose",
+        "type": "character",
+        "brief": "The cell's Enforcer, alone on the sheet, standing in A-pose facing the viewer: a big, heavy man in his fifties, silver hair and short silver beard, amber glasses, white coat over black and gold with a violet accent, the coat closed and its tails fitted to mid-thigh, legs clear, no weapon."
+      },
+      {
+        "id": "enforcer_rifle",
+        "type": "prop",
+        "brief": "The Enforcer's chrome rifle, side view, a single violet light line along the barrel, gold details.",
+        "size": [
+          1536,
+          1024
+        ]
+      },
+      {
+        "id": "lineup",
+        "type": "lineup",
+        "brief": "Six people waiting at a harbour tram stop."
+      }
+    ]
+  },
+  "style_lock": {
+    "plan": "Trained 2026-10-06 on Runware from the captioned 25-image board v0.3.1 (600 steps). Winner: FLUX.2 klein 9B style LoRA codecoded:3@1 on base runware:400@2 ($1.81); runner-up Qwen-Image codecoded:2@1 on runware:108@1 ($0.63); v1 codecoded:1@1 (uncaptioned) kept for the record. Weights and datasets in the-suborned-store/style/lora. Probe set decides; retrain when the board changes. Seedream keeps the board as inputs.referenceImages (up to 10).",
+    "trigger_word": "sbrnrf",
+    "lora": "codecoded:3@1",
+    "base": "runware:400@2"
+  },
+  "update_url": "http://localhost:5206/scratch/style/studio/suborned.style.v2.json"
+}

@@ -1,0 +1,36 @@
+# Local retrieval stack for build-time generation: SurrealDB (HNSW + BM25) and a BGE embedding service.
+name: suborned
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:v3.3.0
+    user: root
+    command: start --log warn --user ${SURREAL_USER:-suborned} --pass ${SURREAL_PASS:-local-suborned-password} surrealkv:/data/suborned.db
+    ports: ["127.0.0.1:18504:8000"]
+    volumes: ["surreal-data:/data"]
+    cpus: 0.5
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "/surreal", "is-ready", "--endpoint", "http://127.0.0.1:8000"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  embeddings:
+    build: ./services/embeddings
+    ports: ["127.0.0.1:18505:8080"]
+    volumes: ["embedding-cache:/models"]
+    environment:
+      EMBEDDING_MODEL: BAAI/bge-small-en-v1.5
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    cpus: 1
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 40
+      start_period: 120s
+volumes:
+  surreal-data:
+  embedding-cache:
