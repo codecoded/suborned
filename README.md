@@ -5,7 +5,7 @@ Single-player real-time tactics and social infiltration in a bright retro-future
 The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): Aster leads 16 agents, Sky is the only human. Content is generated at build time by the same crew, from the GDD retrieved out of a local index; nothing runs AI at play time.
 
 ## Assignment 4 submission (content pipeline)
-Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, under 2 minutes).
+Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, 1–2 minutes; allow a 5-minute timeout).
 
 ## Run it
 
