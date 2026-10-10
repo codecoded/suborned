@@ -1,0 +1,110 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        300,
+        0
+      ],
+      "length": 50,
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "I moved S1 Harbour from x 340 to x 300, over Harbour Road's median. The old position left Harbour 190 m from Skyport, under the 200 m minimum (S-S2). New spacing along the line: Sphere Gardens to Crown Circus 255 m, Crown Circus to Harbour 205 m, Harbour to Skyport 230 m. Harbour now opens onto Harbour Road, which is on land, not the pier.",
+    "I kept the T1 stops at z -72, -380 and -690. Spacing is 308 m, then 310 m (T-S1 range 300–500). All three are on the straight double track in the Boulevard and open onto the Boulevard. The Crown Circus platform runs from z -57 to -87, so it stays clear of the loop join at z -56.",
+    "Interchange: S1 Crown Circus at (95,0) is about 119 m from T1 Crown Circus at (0,-72). That is within the 150 m limit, and both stops are marked as a pair.",
+    "Hand check only; the plan checker has not been run. Reach (N-R1, 250 m) fails on four plots: rocket-west (-260,-296), lantern-west (-260,-563), harbour-east (262,-267), docks-east (262,-512). Each is 260–262 m across from the tram (x 0) and 267 m or more from the sky rail (z 0). Moving stops cannot fix this; Datum's '≈255 m' still fails.",
+    "Tightest plots that do pass reach: crown-terraces is 247 m from Sphere Gardens and crescent-north is 247 m from S1 Crown Circus. Sphere Gardens stays at x -160 because it sits on the Records Axis.",
+    "The source conflict Datum raised still stands. notes.why (e20799…) describes the old network and contradicts notes.concept and the candidate lines. I built these stops on the candidate lines. Aster should fix or mark the stale note."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 fails on 4 plots: rocket-west, lantern-west (x≈-260) and harbour-east, docks-east (x≈262). Each is >250 m from T1 (x 0) and S1 (z 0). Moving stops can't fix it. Add line coverage near x ±260 (e.g. a Harbour Road / Sunset Way tram or a sky rail branch), or change the plots or reach. Then I'll place stops on it."
+    }
+  ]
+}

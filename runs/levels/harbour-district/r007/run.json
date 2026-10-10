@@ -1,0 +1,320 @@
+{
+  "run": "r007",
+  "plan": "harbour-district",
+  "date": "2026-10-10T08:08:31.586Z",
+  "objective": "transit",
+  "timetable": "derived",
+  "outcome": "REJECTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.1.0",
+    "hash": "395bdf42880045d76154b63974231f799a644ed75770dee608f33786fc62b27d",
+    "rawHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/handover-block.json",
+    "sha256": "6e45e44e14ca2e18a2e8c8a89110be0296cabeee6bff8798a775eb1367e8b87d"
+  },
+  "gdd": {
+    "version": "v0.15.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+    "human": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html"
+  },
+  "toolsHash": "21b5bd5e428a784515b03cd4d8bb7356aff08a84512241cdccc31f91249336da",
+  "corpusHash": "dfd554a9695c2a5898210c4945850fb84877fe6df95026c851677bb001cbc283",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "world-planner": {
+      "source": ".claude/agents/world-planner.md",
+      "sourceHash": "daadb7d143a674de45e886ef86c119ae2f9d2926abc661263c89975d0bbd171a"
+    },
+    "level-designer": {
+      "source": ".claude/agents/level-designer.md",
+      "sourceHash": "7eba7b07f544788d96b286cf913d665a2ee42b6d82424e0f87d517d120b4f29f"
+    },
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "65c6d759478c6a3d6b0b832f915bb38af99242f1c5b4b08c512d2c3ef34da7c5"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.2.0-r007.1",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "N-R1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": false,
+          "ask": "S1 stations Harbour (340,0) and Skyport (530,0) are 190 m apart, under stationSpacing 200. Suggest moving Harbour to about x 325 on the causeway quay or pier. That gives 205 m to Skyport and 230 m to Crown Circus. Alignment is unchanged, so the move fits on the existing trunk."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "No timetable changes: T1 and S1 alignments are unchanged and only path order was added. T2 is not proposed, so do not schedule a Harbour Line."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": true,
+          "ask": "N-R1 fails on 4 plots: rocket-west, lantern-west (x≈-260) and harbour-east, docks-east (x≈262). Each is >250 m from T1 (x 0) and S1 (z 0). Moving stops can't fix it. Add line coverage near x ±260 (e.g. a Harbour Road / Sunset Way tram or a sky rail branch), or change the plots or reach. Then I'll place stops on it."
+        }
+      ],
+      "handoffFaults": 1,
+      "faults": 3,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Datum",
+        "Vantage"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.2.0-r007.2",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "S-P1",
+        "S-S1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": true,
+          "ask": "Please place S2 stations on its trunk straight. Suggested: Lantern about (-105,-410), platform clear of the curve tangent at x -80; Market/Records about (100,-410), as the interchange with T1 Records (0,-380), 104 m apart; Harbour East about (310,-410). That clears N-R1 for rocket-west, lantern-west, harbour-east and docks-east. Also, from last round: S1 Harbour to Skyport is 190 m, under 200."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "New sky rail line S2 Market Line: water loop east, Market Street trunk, balloon loop over the starline-green park west. It needs a timetable once Vantage has placed its stations. T1 and S1 are unchanged. No T2 Harbour Line."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S2 west turn: the r70 fillet at (-150,-410) ends the straight beam at x -80. Market Cross (-65,-410) has to sit at x ≤ -62 to reach lantern-west, so its 50 m platform runs 10 m into the curve. If S-S1 checks the whole platform, please move the corner about 15 m west, or shorten the curve, so the beam is straight to at least x -90."
+        }
+      ],
+      "handoffFaults": 1,
+      "faults": 3,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Datum",
+        "Vantage"
+      ]
+    },
+    {
+      "round": 3,
+      "version": "0.2.0-r007.3",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 0,
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "pass",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": true,
+          "ask": "Place T2 stops 300–500 m apart, on straight track clear of the r50 corners and the lane change (z -560 to -500). Interchange stops: Comet Row near (40,-728), within 150 m of T1 Comet Row (0,-690); Harbour Road near (310,-30), within 150 m of S1 Harbour (340,0). Re-check reach for rocket-west, lantern-west, harbour-east and docks-east. Drop the S2 stations."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "S2 Market Line is withdrawn; drop its timetable. New tram T2 Harbour Line (Harbour Road, Comet Row, Sunset Way, Crown Road) runs off-sheet at both ends. It needs a timetable once Vantage places its stops. T1 and S1 are unchanged."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "Please update the plan's S1 stations list so Harbour is at (300,0), not (340,0). At 340, Skyport cannot be ≥200 m away and still keep its platform clear of the loop. Please also confirm that S2 is withdrawn, so the earlier ask to place S2 stations can be closed."
+        }
+      ],
+      "handoffFaults": 1,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Vantage"
+      ]
+    }
+  ],
+  "cost": {
+    "usd": 3.3066,
+    "calls": 12
+  },
+  "calls": [
+    {
+      "id": "01-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2861148,
+      "seconds": 107
+    },
+    {
+      "id": "02-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.20939400000000002,
+      "seconds": 50
+    },
+    {
+      "id": "03-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.0375833,
+      "seconds": 17
+    },
+    {
+      "id": "04-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.21344620000000003,
+      "seconds": 30
+    },
+    {
+      "id": "05-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.8240306000000001,
+      "seconds": 285
+    },
+    {
+      "id": "06-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1775624,
+      "seconds": 50
+    },
+    {
+      "id": "07-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.047315300000000005,
+      "seconds": 15
+    },
+    {
+      "id": "08-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2534222,
+      "seconds": 34
+    },
+    {
+      "id": "09-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.6748276,
+      "seconds": 219
+    },
+    {
+      "id": "10-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.31016180000000004,
+      "seconds": 83
+    },
+    {
+      "id": "11-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.0498673,
+      "seconds": 16
+    },
+    {
+      "id": "12-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2228314,
+      "seconds": 25
+    }
+  ],
+  "finalVersion": "0.2.0-r007.3"
+}

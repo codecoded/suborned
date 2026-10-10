@@ -1,0 +1,124 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 90,
+      "dwellSec": 12,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 18
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 20
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 229,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/gardens",
+      "sec": 147,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/records",
+      "sec": 175,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T1/comet",
+      "sec": 201,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "T1/records",
+      "sec": 39,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/skyport",
+      "sec": 84,
+      "via": []
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything besides the wait and the ride (fare, cooldown, Trail, Alert exposure at watched stations)?",
+      "for": "Motive",
+      "why": "GDD §02 says time only; the timetable prices only wait + ride, so any other cost is undecided here."
+    },
+    {
+      "question": "Are there limits on who may ride (e.g. wanted persons, armed cells, injured members)?",
+      "for": "Motive",
+      "why": "The GDD says board at any stop, with no restriction stated; none is assumed in the timetable."
+    },
+    {
+      "question": "Is the interchange walk pace (1.4 m/s, [S]) acceptable, and does the cell wait for the next service after changing line?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace; wait at each change is not included in journey totals."
+    }
+  ],
+  "notes": [
+    "T1 speed 8 m/s: tram stops are 300-500 m apart (standards), giving ~39 s runs; slow enough to read as street running on a double track with 25-50 m radii.",
+    "T1 dwell 15 s, headway 120 s [S]: a short wait on a three-stop line; average wait ~60 s keeps boarding cheap but a real cost.",
+    "S1 speed 12 m/s: elevated, 24 m high, stations 200-500 m apart, so ~17-21 s runs; faster than the tram so the sky rail is the quick option.",
+    "S1 dwell 12 s, headway 90 s [S]: shorter than the tram, in line with the faster mode; all values are starting values to tune by playtest.",
+    "Only one interchange exists, T1/circus <-> S1/circus (about 119 m straight line, within the 150 m standard); every cross-network journey goes through it.",
+    "Journeys cover each tram end to each sky rail end in both directions, plus one single-line ride per network. Code derives run times and totals; none are stated here.",
+    "Not decided and not invented: fares, cooldowns, rider limits (see openQuestions). Scale and loop questions in the plan notes are Datum's; stops are used as they stand."
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "a61013bb832308b31e1ef07b",
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

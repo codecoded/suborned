@@ -1,0 +1,175 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "What changed: I kept both alignments as drawn and added order [trunk, loop] to T1 and S1. Both lines chain trunk end to loop start, so N-O1 needs an order and neither line had one.",
+    "T1, checked by hand: trunk in the Boulevard (w28), end at sheet edge z -780. Loop fillets 25/28 meet radiusLoop 25 and fit their segments. The r28 arcs centre on (0,0), inside the island (r31). Diagonals run in the circus carriageway (31-43). The loop joins both tracks at z -56 (T-L1).",
+    "S1, checked by hand: straight trunk over Circus Road median, the circus, the Parade mall, Harbour Road median and the Skyport Pier (all public). Pylon gaps are 24 m or less (span 30). Turning loop is r40 = radiusLoop and stays over apron and water (spanTight 18). West end x -400 is the sheet edge.",
+    "Tide's two-way Sky Loop is not adopted. The straight trunk replaces it. It serves the same stations with one interchange, and a ring of pylons across the west city would land on built plots (S-P2). Retiring the old loop and harbour line is still open in notes.questions and needs Sky's OK via Aster.",
+    "Tide's T2 is held back: no legal south turn on Harbour Road. A r50 corner onto the Boulevard leaves the kerb (T-C1). A Dock Road balloon at r25 leaves the 12 m street and runs a tram through the Docks area (access-road rule). Reach: existing stops cover Docks, Harbour and Lantern within about 255 m of each area's middle.",
+    "Conflict between sources: notes.why (e20799…) still describes the old network: one track with no loop, a Sphere loop at r88, and a separate harbour balloon at R48. The current lines and notes.concept describe the trunk and balloon-loop design. Aster should stale-mark or rewrite notes.why.",
+    "The interchange holds: S1 Crown Circus (95,0) is about 119 m from T1 stop circus (0,-72), within interchange 150 (N-C1).",
+    "Evidence gap: I had no shell, so the plan checker was not run on this proposal. Every check in these notes was done by hand from the passed geometry."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c1909f164651d9c88cd65c53",
+    "7dfdfdf13043a24e8e964b0b"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": false,
+      "ask": "S1 stations Harbour (340,0) and Skyport (530,0) are 190 m apart, under stationSpacing 200. Suggest moving Harbour to about x 325 on the causeway quay or pier. That gives 205 m to Skyport and 230 m to Crown Circus. Alignment is unchanged, so the move fits on the existing trunk."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "No timetable changes: T1 and S1 alignments are unchanged and only path order was added. T2 is not proposed, so do not schedule a Harbour Line."
+    }
+  ]
+}

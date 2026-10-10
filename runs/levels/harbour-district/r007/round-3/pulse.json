@@ -1,0 +1,184 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "speed": 8,
+      "headwaySec": 120,
+      "dwellSec": 15
+    },
+    {
+      "line": "T2",
+      "speed": 8,
+      "headwaySec": 120,
+      "dwellSec": 15
+    },
+    {
+      "line": "S1",
+      "speed": 12,
+      "headwaySec": 90,
+      "dwellSec": 12
+    }
+  ],
+  "journeys": [
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/skyport"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "S1/skyport",
+          "to": "S1/harbour"
+        },
+        {
+          "from": "T2/harbour",
+          "to": "T2/terraces"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T2/terraces",
+          "to": "T2/harbour"
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/gardens"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T2/rocket",
+          "to": "T2/comet"
+        },
+        {
+          "from": "T1/comet",
+          "to": "T1/records"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/comet"
+        },
+        {
+          "from": "T2/comet",
+          "to": "T2/rocket"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T2/docks",
+          "to": "T2/harbour"
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus"
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour"
+        },
+        {
+          "from": "T2/harbour",
+          "to": "T2/docks"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/skyport"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T2/crown",
+          "to": "T2/terraces"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records"
+        }
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything besides the wait and the ride (fare, cooldown, Trail, Alert exposure at watched stations)?",
+      "for": "Motive",
+      "why": "GDD §02 says time only; any other cost is undecided."
+    },
+    {
+      "question": "Are there limits on who may ride (wanted persons, armed cells, injured members)?",
+      "for": "Motive",
+      "why": "The GDD states none; none is assumed."
+    },
+    {
+      "question": "Is the 1.4 m/s interchange walk pace [S] acceptable, and is the wait for the next service after each change counted when pricing an order?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace; journey totals exclude the wait at each change."
+    }
+  ],
+  "notes": [
+    "T1 speed 8 m/s: street-running double track, stops 300-500 m apart, so a run is about 39 s. Dwell 15 s, headway 120 s [S].",
+    "T2 speed 8 m/s: street running with 50 m radius bends. It is the longest line (2.4 km), so it keeps the same values as T1: dwell 15 s, headway 120 s [S].",
+    "S1 speed 12 m/s: elevated at 24 m, faster than trams. Dwell 12 s, headway 90 s [S].",
+    "The previous S2 line and the T1/records–S2/market interchange are not in this plan, so they are removed. Lines are now T1, T2 and S1.",
+    "Interchange pairs used: T1/circus–S1/circus (about 119 m), T2/harbour–S1/harbour (about 41 m) and T1/comet–T2/comet (about 71 m). All are within the 150 m standard.",
+    "Journeys cover each pair in both directions, a three-leg trip across all three lines, and single-line end-to-end rides.",
+    "Fares, cooldowns and rider limits are not decided and are not invented here. The plan's scale and loop questions belong to Datum."
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "a61013bb832308b31e1ef07b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "interchange": "T2/comet",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        300,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "T2",
+      "id": "crown",
+      "name": "Crown Road",
+      "path": "trunk",
+      "at": [
+        310,
+        270
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        310,
+        -40
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "trunk",
+      "at": [
+        310,
+        -470
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        60,
+        -728
+      ],
+      "interchange": "T1/comet",
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern",
+      "path": "trunk",
+      "at": [
+        -347,
+        -640
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "rocket",
+      "name": "Rocket",
+      "path": "trunk",
+      "at": [
+        -333,
+        -300
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "terraces",
+      "name": "Crown Terraces",
+      "path": "trunk",
+      "at": [
+        -333,
+        100
+      ],
+      "fronts": "sunset-way"
+    }
+  ],
+  "notes": [
+    "S2 is withdrawn from Datum's current candidate, so this round has no S2 stations. The critic's ask to place S2 stations is out of date. T2 now gives that coverage. T1 Records loses its S2/market interchange.",
+    "S1 Harbour to Skyport is 230 m along the beam (300 to 530). The 190 m figure came from the plan's stations list, which still has Harbour at 340. The 340 position cannot be used: Skyport would need x ≥ 540, and its 50 m platform would then run into the loop at 560. S1 spacings are 255, 205 and 230 m, all on the straight trunk.",
+    "T2 spacings along the path from (310,320): Crown Road (310,270) → 310 m → Harbour (310,-40) → 430 → Docks (310,-470) → 486.5, including the r50 arc → Comet Row (60,-728) → 473.5 → Lantern (-347,-640) → about 342, including the lane change → Rocket (-333,-300) → 400 → Crown Terraces (-333,100).",
+    "All T2 platforms (30 m) are on straight track, clear of the r50 fillets and of the lane change at z -560 to -500. Every T2 stop sits in the outer lane of the road it fronts, so W-3 and N-P2 hold.",
+    "Interchanges, all within 150 m: T1/circus to S1/circus as before. T2/harbour to S1/harbour is 41 m. T2/comet to T1/comet is 71 m. The network is connected.",
+    "N-R1 (hand check): harbour-east is 136 m from Docks; docks-east is 64 m from Docks; lantern-west is 116 m from Lantern; rocket-west is 73 m from Rocket. Plots that were tight are now clear: crescent-north is 213 m and crown-terraces is 221 m. Worst remaining: harbour-court is 205 m from T1 Records.",
+    "Evidence gap: I have no shell, so the plan checker has not been run. Every figure is a hand check of the geometry I was given.",
+    "Conflict for Aster: notes.why (e20799…) describes the old network; notes.concept (8753…) says there is one interchange, but there are now three; and the S1 stations list in the plan still has Harbour at 340."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "Please update the plan's S1 stations list so Harbour is at (300,0), not (340,0). At 340, Skyport cannot be ≥200 m away and still keep its platform clear of the loop. Please also confirm that S2 is withdrawn, so the earlier ask to place S2 stations can be closed."
+    }
+  ]
+}

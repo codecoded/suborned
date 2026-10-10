@@ -1,0 +1,33 @@
+{
+  "verdict": "fail",
+  "summary": "Reach is fixed: N-R1 passes, worst plot lantern-west at 248 m. New line S2 fails S-P1 (pylon spans at the Boulevard and the west loop) and S-S1 (Market Cross platform runs 10 m into the r70 curve). Both disprove Datum's stated assumptions about the park and the Boulevard span. Timetable is plausible: no fare (matches §02), sensible headways and speeds, journeys cover both interchanges. Fare, rider limits and walk pace correctly go to Motive as open questions. The stale notes.why is for Aster.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "S-P1",
+      "fault": "S2 pylon spans: the longest is 69.5 m, against limits of 30, 23 and 18 m by curvature. There is no allowed ground at 405–436 m on the trunk (30.5 m, where it crosses the Boulevard), at 136–206 m on wloop (69.5 m) or at 237–256 m on wloop (18.9 m at tight radius). This disproves Datum's assumptions that the park fills the loop footprint and that the Boulevard span is about 28 m.",
+      "fix": "Realign the S2 Boulevard crossing and the west balloon loop so every span lands on median, mall, park, quay, water or island ground within its span limit. Do not loosen the rule; if no alignment works, ask Splice, with a reason.",
+      "chunks": [
+        "ba506de42600790962a866a2"
+      ]
+    },
+    {
+      "owner": "Datum",
+      "rule": "S-S1",
+      "fault": "S2 has 1 of 2 stations on straight beam. Market Cross's platform (x -90 to -40) runs into the r70 fillet, where the straight ends at x -80. Vantage showed that no straight position also keeps lantern-west within the 250 m reach (x must be ≤ -62.3). The cause is the line geometry.",
+      "fix": "Move the S2 west corner west to extend the straight beam to at least x -90, keeping r ≥ 70 and legal pylon ground. Then Vantage re-checks Market Cross against S-S1 and N-R1, and Pulse refreshes S2.",
+      "chunks": [
+        "ba506de42600790962a866a2",
+        "7dfdfdf13043a24e8e964b0b"
+      ]
+    }
+  ],
+  "sources": [
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "0e426f4211a2f1f25c328968",
+    "d9cd5166b54ff42ba1ea56ae",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

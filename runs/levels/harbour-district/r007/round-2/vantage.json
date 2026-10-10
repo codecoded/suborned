@@ -1,0 +1,137 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "interchange": "S2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        300,
+        0
+      ],
+      "length": 50,
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "S2",
+      "id": "docks",
+      "name": "Dock Road",
+      "path": "trunk",
+      "at": [
+        240,
+        -410
+      ],
+      "length": 50,
+      "fronts": "market-street"
+    },
+    {
+      "line": "S2",
+      "id": "market",
+      "name": "Market Cross",
+      "path": "trunk",
+      "at": [
+        -65,
+        -410
+      ],
+      "length": 50,
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    }
+  ],
+  "notes": [
+    "S2 has 2 stations, listed in line order (eloop, trunk, wloop): Dock Road at (240,-410), then Market Cross at (-65,-410). They are 305 m apart along the beam (S-S2 allows 200–500). Both are on Market Street's median and open onto Market Street (centreline distance 0).",
+    "Datum's suggested (-105,-410) does not work. The r70 fillet at the (-150,-410) corner leaves the trunk straight only from x -80 to x 420, so -105 is on the curve. Lantern-west also caps the west station: it must be at x ≤ -62.3 to be within 250 m. That leaves a centre between x -80 and -62.3. I used -65.",
+    "Risk at Market Cross (S-S1): the centre is on the straight beam, but the 50 m platform (x -90 to -40) runs 10 m into the r70 curve. If S-S1 checks the whole platform, this fails, and no straight position meets both S-S1 and the lantern-west reach.",
+    "A 3-station S2 does not fit. A middle station would have to be at x ≥ 135, which puts the east one at x ≥ 335, over water. That fails W-2, because only the x 312–330 quay strip is walkable at z -410. So T1/S2 interchange is at Market Cross: it is 72 m from T1 Records (0,-380), well inside 150. N-C1: S1–T1 connect at Crown Circus and T1–S2 at Records/Market Cross, so the network is connected.",
+    "Hand-computed reach for the 4 plots that failed: rocket-west 226 m and lantern-west 248 m (both to Market Cross); harbour-east 145 m and docks-east 104 m (both to Dock Road). Tight passes: lantern-west 248 m and crown-terraces/crescent-north 247 m. docks-south is 204 m from T1 Comet Row; it is 250.06 m from Dock Road, so Comet Row is the stop that covers it.",
+    "T1 and S1 stops are the same as last round. Spacings: T1 is 308 then 310 m; S1 is 255, 205, then 230 m. Only change: T1 Records now pairs with S2/market.",
+    "Evidence gap: I have no shell, so the plan checker has not been run. Every figure above is a hand check of the geometry I was given. The stale notes.why conflict (e20799…) still stands for Aster to fix."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "S2 west turn: the r70 fillet at (-150,-410) ends the straight beam at x -80. Market Cross (-65,-410) has to sit at x ≤ -62 to reach lantern-west, so its 50 m platform runs 10 m into the curve. If S-S1 checks the whole platform, please move the corner about 15 m west, or shorten the curve, so the beam is straight to at least x -90."
+    }
+  ]
+}

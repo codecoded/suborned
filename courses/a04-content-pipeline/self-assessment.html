@@ -33,6 +33,8 @@
 
 <h2>Weaknesses still open</h2>
 <table><tr><th>issue</th><th>evidence</th><th>effect</th></tr>
+<tr><td><b>A blocking hand-off raised in the final round can't be answered</b></td><td>r007, a simulated AI marker's run from a fresh GitHub clone: in round 3 the checker was clean and Keel passed, but Datum opened a new blocking hand-off to Vantage, so the run ended REJECTED.</td><td>A run can fail with nothing wrong in the plan. Fix: in the last round, a new blocking hand-off becomes an open question for Aster rather than a fault, or it earns one extra owner-only round.</td></tr>
+<tr><td>In the submitted run, the critic added nothing beyond the checker</td><td>In r006, Keel's only fault was the checker's T-S2. The correction came from the checker and the hand-offs. Keel's independent catches are in r003, r004 and r007 (stations over water, a run-time error, a reach claim).</td><td>Keel's value shows across runs rather than in any one run. Seeding a challenge each run would show it every time.</td></tr>
 <tr><td>§02 is Keel's 7th of 8 passages</td><td><code>evidence/ranks.json</code></td><td>A longer critic query list, or a new feedback query, could push it out. Splitting the long §02 chunk in <code>tools/rag</code> would give it margin.</td></tr>
 <tr><td>Walking pace is assumed</td><td>Interchange walks use 1.4 m/s, an [S] starting value that the GDD does not state.</td><td>A question for Motive and Sky. It changes journey totals, not the network.</td></tr>
 <tr><td>Off-sheet termini and loop turnarounds are not timetabled</td><td>Keel's r006 round 3 lists them as open: "T1/T2 shared off-sheet track not timetabled".</td><td>The journeys cover the sheet only.</td></tr>
@@ -59,7 +61,7 @@
 <li>a game-specific pipeline;</li>
 <li>three generated outputs;</li>
 <li>query, retrieved chunks and output side by side (<a href="report.html">report.html</a>);</li>
-<li>unseeded critic corrections from the checker, Keel and owner hand-offs;</li>
+<li>unseeded corrections from the checker and owner hand-offs (r006) and from Keel (r003, r004, r007);</li>
 <li>an ACCEPTED run that replays offline;</li>
 <li>a README proven by a fresh-clone run;</li>
 <li>this self-assessment, with a concrete retrieval tweak and its ranks before and after.</li>

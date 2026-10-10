@@ -1,0 +1,295 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S2",
+      "mode": "skyrail",
+      "name": "Market Line",
+      "beyond": "",
+      "paths": [
+        {
+          "id": "eloop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              420,
+              -407
+            ],
+            [
+              460,
+              -407,
+              40
+            ],
+            [
+              510,
+              -350,
+              40
+            ],
+            [
+              568,
+              -410,
+              40
+            ],
+            [
+              510,
+              -470,
+              40
+            ],
+            [
+              460,
+              -413,
+              40
+            ],
+            [
+              420,
+              -413
+            ]
+          ]
+        },
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              420,
+              -410
+            ],
+            [
+              -150,
+              -410,
+              70
+            ],
+            [
+              -150,
+              -484
+            ]
+          ]
+        },
+        {
+          "id": "wloop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -147,
+              -484
+            ],
+            [
+              -147,
+              -510,
+              40
+            ],
+            [
+              -80,
+              -545,
+              40
+            ],
+            [
+              -108,
+              -606,
+              40
+            ],
+            [
+              -170,
+              -606,
+              40
+            ],
+            [
+              -185,
+              -545,
+              40
+            ],
+            [
+              -153,
+              -510,
+              40
+            ],
+            [
+              -153,
+              -484
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "eloop",
+        "trunk",
+        "wloop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Fixed: I withdraw last round's reach claim ('within about 255 m'). It was wrong: reach is 250, and N-R1 failed on rocket-west, lantern-west, harbour-east and docks-east. New line S2 (Market Line) runs along Market Street (z -410), which passes between all four plots. T1 and S1 alignments are unchanged and are listed again only to keep order [trunk, loop] for N-O1.",
+    "S2 trunk (double, line): it starts over water at x 420, crosses the quay (x 312-330) and Harbour Road's median, then runs over Market Street's median to x -80. There it turns south (r70 = radiusLine) into the starline-green park. East turn: a copy of the S1 loop moved to sit over open water (r40). West turn: a balloon loop (r40, single beam) over the park, joining both beams at (-147/-153, -484).",
+    "Fillet fit, checked by hand on wloop: tangent lengths per segment are 24.2/26, 62.2/75.6, 63.7/67.1, 57.1/62, 52.8/62.8, 36.9/47.4 and 15.5/26. Total turn is -180 deg. The loop stays inside the Lantern Lane block (x -185..-80, z -484..-606). Its edges overhang only Lantern Lane, which is street space and so public.",
+    "Coverage if Vantage puts stations at about (-105,-410), (100,-410) and (310,-410): rocket-west 192 m, lantern-west 218, harbour-east 151, docks-east 113. All are within 250. Spacing would be 205 and 210, within the 200-500 band. The (100,-410) station is 104 m from T1 Records (0,-380), so it can be the T1/S2 interchange.",
+    "N-C1: S2 meets T1 at Records; S1 meets T1 at Crown Circus. S1 and S2 have no direct interchange (nearest stations about 410 m apart). If N-C1 needs every pair of lines to interchange directly, not just a connected network, this fails and I need Splice's reading. Tide's T2 is still not proposed: Harbour Road has no legal turn for it (T-C1/T-L1), and S2 covers the same plots.",
+    "Assumptions, unverified: (1) the starline-green park fills the Lantern Lane block interior (x -180..-66, z -419..-594); only its centre point is in the passages. (2) Market Street's median breaks at the Boulevard, so the pylon span there is about 28 m, under spanStraight 30. If either is wrong, S-C1 or S-P2 fails at the west turn.",
+    "Conflict between sources: notes.why (e20799...) still describes the old network (single track, the r88 Sphere loop, a separate harbour balloon). notes.concept and the current lines describe the trunk and balloon design. notes.concept also says the network has only one interchange; S2 adds a second at Records. Aster should rewrite both notes.",
+    "Evidence gap: I have no shell, so the plan checker was not run. Every check here was done by hand from the passed geometry."
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "352b7a6ac9f8c5a12afcbeff",
+    "8753ed1758ca27e6cf152279",
+    "c5fb128448665c55b7c335fb",
+    "e6ffe1ba0919c87923015de5",
+    "3a5bfc801124ffde12492b1a",
+    "d455bd85bd15e441cf14f08d",
+    "e20799f1f673824d09ce452d"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "Please place S2 stations on its trunk straight. Suggested: Lantern about (-105,-410), platform clear of the curve tangent at x -80; Market/Records about (100,-410), as the interchange with T1 Records (0,-380), 104 m apart; Harbour East about (310,-410). That clears N-R1 for rocket-west, lantern-west, harbour-east and docks-east. Also, from last round: S1 Harbour to Skyport is 190 m, under 200."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "New sky rail line S2 Market Line: water loop east, Market Street trunk, balloon loop over the starline-green park west. It needs a timetable once Vantage has placed its stations. T1 and S1 are unchanged. No T2 Harbour Line."
+    }
+  ]
+}

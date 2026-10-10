@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass: every strict checker rule passes. Last round's faults are closed: S2 is withdrawn, and S1 Harbour to Skyport is 230 m. The T2 stops are placed. Plausible values: tram 8 m/s, 120 s, 15 s; sky rail 12 m/s, 90 s, 12 s. No fare, matching §02; the open questions go to Motive. Open, not faults: (1) the claim about notes.concept can't be checked (passage cut off). (2) S1 Harbour 340→300 in the stations list is advisory. (3) A Vantage note calls harbour-court the worst reach; the checker says crown-terraces, 221 m.",
+  "faults": [],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "0e426f4211a2f1f25c328968",
+    "d9cd5166b54ff42ba1ea56ae",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

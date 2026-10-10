@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "Fail: checker rule N-R1 fails on four areas (docks-east 294, lantern-west 289, rocket-west 273, harbour-east 270 m; reach 250). Vantage's blocking handoff to Datum already records it. Datum's note justifies dropping T2 with reach that is wrong. All other checks pass. Timetable is plausible: time-only boarding, no fare, open questions go to Motive. Open: stale notes.why for Aster; retiring old loops needs Sky's OK.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "critic",
+      "fault": "Datum's note drops T2 and offers no other coverage, saying existing stops reach Docks, Harbour and Lantern \"within about 255 m\". That breaks standards.transit.reach (250 m), and the checker (N-R1) shows docks-east at 294 m, lantern-west at 289 m, rocket-west at 273 m and harbour-east at 270 m. The reason for holding back further line coverage is therefore false.",
+      "fix": "Remove the reach claim. Add line coverage that brings every plot within 250 m of a stop or station: a tram or sky rail branch near x ±260, e.g. Harbour Road / Sunset Way, with a legal turn or loop. Then hand it to Vantage for stops and to Pulse for a timetable.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b",
+        "352b7a6ac9f8c5a12afcbeff"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "0e426f4211a2f1f25c328968",
+    "352b7a6ac9f8c5a12afcbeff",
+    "d9cd5166b54ff42ba1ea56ae"
+  ]
+}

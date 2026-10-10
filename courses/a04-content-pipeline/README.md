@@ -10,20 +10,20 @@
 | Retrieval over the game's own sources | SurrealDB HNSW + BM25 with reciprocal rank fusion (`tools/rag/retrieval.ts`). Each call record in `runs/levels/harbour-district/r006/round-*/*.call.json` lists the queries and every retrieved passage, with its source, section, signals and score. |
 | Three generated outputs | `runs/levels/harbour-district/r006/round-3/`: `datum.json` (lines), `vantage.json` (stops and stations), `pulse.json` + `timetable.json` (timetable). |
 | Query, retrieved chunks and output side by side | [`report.html`](report.html), one section per call. |
-| A critic correction | `round-1/keel.json` and `round-1/faults.json` (faults with owners and cited chunks) → the owner's revised output in `round-2/` → `round-3/keel.json` (pass). The summary is under "Critic correction" below. |
+| A critic correction | Two kinds, all unseeded. **The checker and owner hand-offs** in the submitted r006: `round-1/faults.json` (T-S2, N-R1 and two blocking hand-offs, each with an owner) → revised outputs in `round-2/` and `round-3/` → `round-3/keel.json` (pass). In r006, Keel (the model critic) only restated the checker. **Keel's own catches**, which no rule covered, are in [r004](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) `round-1/keel.json` (a Skyport station over water, a run time off by 1 s, a miscounted spacing note, all fixed by round 3) and r007 `round-1/keel.json` (a reach claim that broke the standard). |
 | Before / after | Sheets `evidence/r006/sheets/harbour-district-v0.1.0.html` (before) and `…-v0.2.0-r006.3.html` (accepted). `round-*/checks.json` gives each rule's result per round. |
 | README | This file. |
 | Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweak's ranks before and after are in `evidence/ranks.json`. |
-| Reproducibility | `bun run levels:replay r006` rebuilds every round offline from the committed record. A fresh clone produced and replayed its own accepted run (r007), with timings under "Measured from nothing" below. |
+| Reproducibility | `bun run levels:replay r006` rebuilds every round offline from the committed record. Fresh clones have produced their own runs: r004 (ACCEPTED, committed), a fresh-install run with an empty Docker (ACCEPTED in 2 rounds; timings under "Measured from nothing", folder not kept) and r007 (a simulated AI marker's run from a fresh GitHub clone, REJECTED, committed). |
 
 ### Verify it: pick the level your environment allows
 | level | needs | command | time | expect |
 |---|---|---|---|---|
 | 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r006/` | none | — |
 | 1 · offline | Bun | `bun install && bun run verify` | under 2 min | `VERIFY OK …`: typecheck, every recorded run replayed, checker clean |
-| 1b · full tests | Bun | `bun run check` | 3–8 min | exit 0 |
+| 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0 |
 | 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "boarding fast travel price time only"` | about 3 min the first time | ranked passages from SurrealDB, each tagged `semantic+keyword` |
-| 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 7–12 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
+| 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min, $0.90–3.31 so far | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
 
 AI tools with a 2-minute command limit should run levels 1b, 2 and 3 in the background, or with a longer timeout. Every command is read-only towards committed files, except `levels transit`, which adds a new run folder.
 
@@ -94,8 +94,9 @@ The run pins its world inputs. The block is copied to `input.block.json`, with i
 | [`r003`](evidence/r003/report.html) | v0.15.0 | ACCEPTED | Neither Pulse nor Keel retrieved §02, so Keel faulted Pulse's true boarding rule. The new walk rule shows its S1 Harbour had no walk. | §02 queries were added. A claim Keel can't find in its passages is now "unverified", not a fault. Rules W-2 and W-3 were added. |
 | [`r004`](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) | v0.15.0 | ACCEPTED, from a **fresh clone** | The README works end to end. The same §02 miss came back. Vantage's Skyport hand-off to Datum was never routed. | `handoffs` were added to every builder schema, and a blocking hand-off is a fault for its owner. Datum planned the Skyport Pier and apron. |
 | [`r005`](evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html) | v0.15.0 | REJECTED | With the checker clean, the last fault was Pulse's hand-computed run times, which matched stale stop positions. That arithmetic error also appeared in r002 and r004. | Run times and journey totals are derived in code (`timetable.ts`). Pulse chooses speed, dwell, headway and routes. |
+| [`r007`](evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html) | v0.15.0 | REJECTED, a simulated **AI marker's** run from a fresh GitHub clone (after r006) | Keel caught a reach claim that broke the standard (round 1). The run ended REJECTED because Datum raised a new blocking hand-off to Vantage in round 3, when there was no round left to answer it. | Not fixed. Recorded as an open weakness in the self-assessment. |
 
-Every run from r002 to r006 replays OK, with drift labelled by cause: "recorded against GDD v0.14.0" and "checker rules added since the run: W-2, W-3".
+Every run from r002 to r007 replays OK, with drift labelled by cause: "recorded against GDD v0.14.0" and "checker rules added since the run: W-2, W-3".
 
 ## Prerequisites
 - [Bun](https://bun.sh) 1.4 or later, and git.
@@ -129,8 +130,8 @@ bun run levels:sheets          # re-render every run's sheets + out/levels/index
 | replay r006 | 20 s |
 | `up` | 163 s |
 | `ingest` | 24 s |
-| `levels transit` (r007, ACCEPTED in 2 rounds) | 414 s |
-| replay r007 | 14 s |
+| `levels transit` (ACCEPTED in 2 rounds; that run folder was not kept) | 414 s |
+| replay of that run | 14 s |
 | sheets | 97 s |
 
 That is about 12 minutes in total.
@@ -149,10 +150,10 @@ That is about 12 minutes in total.
 | `levels transit`: a call fails twice and the run ends with ERROR | Look at `out/levels/harbour-district/r00N/calls/*.stderr.txt`. If you're not signed in, run `claude` once and sign in. For a model access error, prefix the run with `CLAUDE_MODEL=sonnet`. |
 | The first `up` is slow or times out | The model download needs network access to Hugging Face. Rerun `bun run up`, which resumes. |
 
-Optional: `bun run check` runs the typecheck, the tests (model-free, about 3 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
+Optional: `bun run check` runs the typecheck, the tests (model-free, 3–10 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
 
 ## Time and cost per run
-r006 made 11 model calls in 3 rounds, with 509 s of model time and about 10 minutes of wall time (calls run in sequence). The CLI reported $1.90. Runs r002–r006 cost $1.83–2.64 each. A run that needs all 3 rounds makes up to 12 calls (4 per round, or more if a call is retried), so expect roughly 8–15 minutes and $1–3. A test run that needed 3 rounds made 11 calls, took 585 s and cost $2.06. On a subscription the dollar figure is notional usage, not a charge.
+r006 made 11 model calls in 3 rounds, with 509 s of model time and about 10 minutes of wall time (calls run in sequence). The CLI reported $1.90. Across every run so far (r002–r007, plus two fresh-clone runs that were not kept), a run made 4–12 calls, took 4–16 minutes of model time and cost $0.90–3.31. The cheapest was a 1-round ACCEPTED run from a fresh clone; the dearest was r007, which went 3 rounds while `bun run check` ran alongside it. Budget about 20 minutes and $3.50 for one run. On a subscription the dollar figure is notional usage, not a charge.
 
 ## Where outputs land
 - `runs/levels/<plan>/r00N/`: committed and small. This is everything replay needs.

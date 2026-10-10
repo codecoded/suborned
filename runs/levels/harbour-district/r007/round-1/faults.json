@@ -1,0 +1,28 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "critic",
+    "fault": "Datum's note drops T2 and offers no other coverage, saying existing stops reach Docks, Harbour and Lantern \"within about 255 m\". That breaks standards.transit.reach (250 m), and the checker (N-R1) shows docks-east at 294 m, lantern-west at 289 m, rocket-west at 273 m and harbour-east at 270 m. The reason for holding back further line coverage is therefore false.",
+    "fix": "Remove the reach claim. Add line coverage that brings every plot within 250 m of a stop or station: a tram or sky rail branch near x ±260, e.g. Harbour Road / Sunset Way, with a legal turn or loop. Then hand it to Vantage for stops and to Pulse for a timetable.",
+    "chunks": [
+      "7dfdfdf13043a24e8e964b0b",
+      "352b7a6ac9f8c5a12afcbeff"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "N-R1",
+    "fault": "Every area (plot centroid) is within standards.transit.reach of a tram stop or sky rail station: worst docks-east 294 m (limit ≤ 250 m); out of reach: docks-east 294 m, lantern-west 289 m, rocket-west 273 m, harbour-east 270 m",
+    "fix": "bring the plan inside the rule",
+    "chunks": [],
+    "synthesized": true
+  },
+  {
+    "owner": "Datum",
+    "rule": "handoff",
+    "fault": "Vantage hands off to Datum (blocking): N-R1 fails on 4 plots: rocket-west, lantern-west (x≈-260) and harbour-east, docks-east (x≈262). Each is >250 m from T1 (x 0) and S1 (z 0). Moving stops can't fix it. Add line coverage near x ±260 (e.g. a Harbour Road / Sunset Way tram or a sky rail branch), or change the plots or reach. Then I'll place stops on it.",
+    "fix": "N-R1 fails on 4 plots: rocket-west, lantern-west (x≈-260) and harbour-east, docks-east (x≈262). Each is >250 m from T1 (x 0) and S1 (z 0). Moving stops can't fix it. Add line coverage near x ±260 (e.g. a Harbour Road / Sunset Way tram or a sky rail branch), or change the plots or reach. Then I'll place stops on it.",
+    "chunks": [],
+    "synthesized": true
+  }
+]

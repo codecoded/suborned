@@ -1,0 +1,29 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "S-P1",
+    "fault": "S2 pylon spans: the longest is 69.5 m, against limits of 30, 23 and 18 m by curvature. There is no allowed ground at 405–436 m on the trunk (30.5 m, where it crosses the Boulevard), at 136–206 m on wloop (69.5 m) or at 237–256 m on wloop (18.9 m at tight radius). This disproves Datum's assumptions that the park fills the loop footprint and that the Boulevard span is about 28 m.",
+    "fix": "Realign the S2 Boulevard crossing and the west balloon loop so every span lands on median, mall, park, quay, water or island ground within its span limit. Do not loosen the rule; if no alignment works, ask Splice, with a reason.",
+    "chunks": [
+      "ba506de42600790962a866a2"
+    ]
+  },
+  {
+    "owner": "Datum",
+    "rule": "S-S1",
+    "fault": "S2 has 1 of 2 stations on straight beam. Market Cross's platform (x -90 to -40) runs into the r70 fillet, where the straight ends at x -80. Vantage showed that no straight position also keeps lantern-west within the 250 m reach (x must be ≤ -62.3). The cause is the line geometry.",
+    "fix": "Move the S2 west corner west to extend the straight beam to at least x -90, keeping r ≥ 70 and legal pylon ground. Then Vantage re-checks Market Cross against S-S1 and N-R1, and Pulse refreshes S2.",
+    "chunks": [
+      "ba506de42600790962a866a2",
+      "7dfdfdf13043a24e8e964b0b"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "handoff",
+    "fault": "Datum hands off to Vantage (blocking): Please place S2 stations on its trunk straight. Suggested: Lantern about (-105,-410), platform clear of the curve tangent at x -80; Market/Records about (100,-410), as the interchange with T1 Records (0,-380), 104 m apart; Harbour East about (310,-410). That clears N-R1 for rocket-west, lantern-west, harbour-east and docks-east. Also, from last round: S1 Harbour to Skyport is 190 m, under 200.",
+    "fix": "Please place S2 stations on its trunk straight. Suggested: Lantern about (-105,-410), platform clear of the curve tangent at x -80; Market/Records about (100,-410), as the interchange with T1 Records (0,-380), 104 m apart; Harbour East about (310,-410). That clears N-R1 for rocket-west, lantern-west, harbour-east and docks-east. Also, from last round: S1 Harbour to Skyport is 190 m, under 200.",
+    "chunks": [],
+    "synthesized": true
+  }
+]
