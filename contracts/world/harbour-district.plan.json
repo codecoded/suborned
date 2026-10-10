@@ -202,21 +202,13 @@
   ],
 
   "civic": {
-    "note": "The Handover block at exact geometry. Testbed frame (contracts/world/handover-block.json) → block frame by HandoverSite.Zones (mirrored here) → plan by blockToPlan. Block frame is the Unity block at yaw 90: x runs south, y east.",
-    "manifest": "contracts/world/handover-block.json",
-    "destinations": "contracts/world/handover-block.json",
+    "note": "The civic block at exact geometry: contracts/world/handover-block.json (suborned.block/2, block frame, written by bun run block from the Oct 9 city-scale sources with their sha256) → plan by blockToPlan. Block frame is the Unity block at yaw 90: x runs south, y east.",
+    "block": "contracts/world/handover-block.json",
     "blockToPlan": { "origin": [-130, -230], "x": [0, -1], "y": [1, 0] },
-    "zones": [
-      { "name": "court", "from": [-16.5, 16.5, -28.5, 12.7], "turns": 1, "shift": [-12, -29] },
-      { "name": "getaway", "from": [-16, 0, -44, -29], "turns": 2, "shift": [0, -86] },
-      { "name": "office", "from": [20, 56, -33, 3], "turns": 3, "shift": [77.5, 6.5] },
-      { "name": "official bay", "from": [20, 56, 3, 12], "turns": 1, "shift": [87.2, -68.5] },
-      { "name": "monument", "from": [28, 46, -44, -39], "turns": 3, "shift": [67.1, 17] }
-    ],
+    "scale": { "cafe": { "width": 22, "depth": 11.3, "height": 34.8 }, "civic-office": { "wings": 15.5, "crown": 38 }, "source": "Oct 9 city-scale block: HandoverCafe.cs (X 11, Front -1.3, Back 10, Height 34.8), HandoverKit.cs (Hall set x0.75 plan, x1.4 height; towers x2). Rule C-0 holds the block to it." },
     "walk": 4,
     "blocks": { "square": [-26, 31, -50, -8], "office": [44, 80, -50, 4] },
-    "crossing": [31, 44, -32.5, -27.5],
-    "dropIn": "the loop road and its kerb globes stay behind (no zone)"
+    "crossing": [31, 44, -32.5, -27.5]
   },
 
   "notes": {

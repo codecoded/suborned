@@ -6,13 +6,14 @@ import { derive, type Plan } from '../plan/plan';
 import { root } from '../rag/config';
 
 const read = async (p: string) => JSON.parse(await Bun.file(resolve(root, p)).text());
-export async function inProcess(plan: Plan, strict = true): Promise<Report> {
-  return check(plan, derive(plan), civic(plan.civic, await read(plan.civic.manifest), await read(plan.civic.destinations)), strict);
+/** `block`: the run's pinned block (parsed); default is whatever plan.civic.block names on disk. */
+export async function inProcess(plan: Plan, strict = true, block?: unknown): Promise<Report> {
+  return check(plan, derive(plan), civic(plan.civic, block ?? await read(plan.civic.block)), strict);
 }
 
 /** `bun tools/plan/cli.ts <plan> --strict --out <sheet> --json <report>`; returns the exit code. */
-export async function viaCli(planFile: string, sheet: string, report: string, log?: string): Promise<number> {
-  const p = Bun.spawn(['bun', 'tools/plan/cli.ts', planFile, '--strict', '--out', sheet, '--json', report], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
+export async function viaCli(planFile: string, sheet: string, report: string, log?: string, block?: string): Promise<number> {
+  const p = Bun.spawn(['bun', 'tools/plan/cli.ts', planFile, '--strict', '--out', sheet, '--json', report, ...(block ? ['--block', block] : [])], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
   const [out, err, code] = await Promise.all([new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited]);
   if (log) await Bun.write(log, out + err);
   return code;

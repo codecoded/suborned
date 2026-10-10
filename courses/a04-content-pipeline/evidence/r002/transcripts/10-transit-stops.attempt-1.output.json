@@ -1,0 +1,140 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "main",
+      "at": [
+        306.5,
+        0
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-lane",
+      "name": "Harbour Lane",
+      "path": "main",
+      "at": [
+        306.5,
+        -330
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "main",
+      "at": [
+        40,
+        -416.5
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Corner",
+      "path": "main",
+      "at": [
+        -280,
+        -403.5
+      ],
+      "fronts": "market-street"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    }
+  ],
+  "notes": [
+    "Checked by hand only. I have not run the plan checker; the done-check is that bun tools/plan/cli.ts exits 0. Stop spacing: T1 is 308 then 310 m. T2 is about 330, 331.5 and 321 m. S1 is 255 then 245 m. Every platform (30 m tram, 50 m sky) is on straight track or beam. T2/sunset's platform ends about 3 m short of the Sunset Way fillet.",
+    "Reach (N-R1), worst cases: crown-terraces is 247.1 m from S1/gardens and crescent-north is 247 m from S1/circus. Both are under the 250 m limit, but only just. crescent-east is 198.6 m from T2/harbour. rocket-west and lantern-west are only in reach through T2/sunset (109 m and 161 m).",
+    "Interchange pairs: T1/circus to S1/circus is 119 m, T1/records to T2/market 55 m, and T2/harbour to S1/harbour 33.5 m. All are within the 150 m limit, so the three lines form one network (S-I1, N-C1).",
+    "For Datum, via Aster: there is no Skyport station. On the S1 trunk, the 200 m minimum from Harbour puts it at x 540 or beyond, and that is all water up to the loop at x 708, so no one can walk to it. Once the plan has walkable public space in that stretch that joins Crown Parade or Harbour Road, I will place the station there. I have not moved any plan geometry.",
+    "For Aster, on T2's status: the concept [cfba…] calls Crown Circus the one interchange and ends T1 on the circus loop. Datum's T2 adds two more interchanges, Records/Market Street and Harbour, so whether T2 is accepted needs Sky's decision. If T2 is dropped, rocket-west fails reach (273 m from T1/records), T1/records loses its interchange, and I place the stops again.",
+    "Source dispute for Aster. The critic says 0e426f… (walking standard) and c1909f… (open questions) were not retrieved, but both appear in this brief's retrieved list. I have left them out of sources as the critic asked and cite cfba… instead. Please settle which list is right. I also dropped a675bd… and 43d9e2…, which are not in this brief's list.",
+    "S1/harbour at (340,0) stands on the quay pier (x 330 to 385). Its entrance opens onto the quay walk beside Harbour Road. S1/gardens is over Circus Road's median, with its entrance at the north end of Garden Walk on the Records Axis (x −160).",
+    "Handoffs. Waymark: T2/sunset and T2/market sit on Market Street outside the Records Precinct gates, so police could seal them as stations. Pulse: the biggest transfer crowd will be at Boulevard × Market Street, between T1/records and T2/market."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d"
+  ]
+}

@@ -7,7 +7,8 @@ Scope (Sky, 2026-10-10): "we're just meant to be world building here, and then a
 The city's buildings are world, including the civic block: the café's corner building, the Records Office, the square, fountain, gardens, pavilions, kerb bays and cabinets, at the Oct 9 scale. The mission layer is not world: places and destinations, crew start, cast, mission routes, mission checks and mission markers. That layer is fitted to this world in 003. Nothing in the world is chosen for a mission (camera, heights, gates).
 
 ## A0 · Splice · the civic block at its Oct 9 scale, without the mission
-objective: `bun run block` writes `contracts/world/civic-block.json` (`suborned.block/2`, block frame), recording each source path and sha256. It replaces `handover-block.json`. It holds:
+Already done on `assignment-04` (merge it first): `bun run block` writes `handover-block.json` as `suborned.block/2` from the Oct 9 sources, and rule C-0 locks the café and office scale.
+objective: rename it `contracts/world/civic-block.json` (`bun run block`). It holds:
 - buildings: the café's corner building (22 × 11.3 m, 34.8 m) and the Records Office;
 - structures and street furniture: fountain, gardens, pavilions, cabinets and monument;
 - kerb bays, named by place (office bay, square bay).

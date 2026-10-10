@@ -1,0 +1,70 @@
+{
+  "lines": [
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; south-west down Sunset Way past Comet Row. Both termini and the depot are off-sheet and not yet planned",
+      "paths": [
+        {
+          "id": "main",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              308,
+              320
+            ],
+            [
+              308,
+              -728,
+              50
+            ],
+            [
+              -140,
+              -728,
+              200
+            ],
+            [
+              -240,
+              -712,
+              200
+            ],
+            [
+              -348,
+              -712,
+              50
+            ],
+            [
+              -348,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "main"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Kept as they are (not listed): S1 Skyport Line, a straight double trunk with a skyport loop, and T1, the Boulevard trunk with its balloon loop round the circus island. Tide's 'T1 through the circus' is how T1 already works: it turns on the island loop (T-L1). Running on up Crown Avenue to Crown Road is still an open plan question for Sky. I have not changed it.",
+    "Sky Loop rejected under S-C1. At the ring corners, a radius-70 fillet (the S-R1 minimum) cuts about 29 m inside the corner point. The kerb corner of a 24 m road is only about 17 m in, so the beam would pass over corner plots such as Crown Terraces. It also conflicts with the plan concept of one straight trunk, with the Sphere and quay loops retired; that is still Sky's open question.",
+    "T2 runs in Harbour Road's east carriageway (track centre x 308, rails inside the 312 kerb, quay beyond). It turns west on Comet Row with a radius-50 fillet whose inner rail clears the kerb corner by about 5 m. It crosses to the north carriageway between x −140 and −240 (radius-200 fillets), then turns south onto Sunset Way's west carriageway (same clearance) and leaves the sheet at y −780.",
+    "Why T2 doesn't join T1 on the Boulevard: turning from Comet Row into the 28 m Boulevard at radius 50 clears the kerb by under 1 m. The Harbour Road to Market Street turn fails T-C1 outright. So T2 leaves the sheet at both ends on primary roads. That meets N-D1 without a terminal loop, and no balloon fits in street space here.",
+    "N-C1, for Vantage: T2 runs 32 m from the S1 Harbour station (340,0). T2 crosses T1 at the Boulevard (0,−728) on a flat diamond crossing, about 40 m from T1's Comet Row stop (0,−690). Both pairs are inside the 150 m interchange limit.",
+    "Coverage: Harbour Road stops serve Harbour East, Docks East and Docks South, which are about 260 m from T1 stops (reach 250). Comet Row stops serve Lantern West and Docks South. Vantage places the stops; spacing is 300–500 m.",
+    "I have not run the plan checker; I have no shell here. Fillet clearances are hand-calculated against road widths. Splice should confirm that T-C1 counts the junction area between kerb corners as street space, and that it tests the rails, not just the centreline.",
+    "No speeds, timetables or fares are set here. Those are Pulse's. No off-sheet destinations are named, because no source names them."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c1909f164651d9c88cd65c53",
+    "7dfdfdf13043a24e8e964b0b"
+  ]
+}

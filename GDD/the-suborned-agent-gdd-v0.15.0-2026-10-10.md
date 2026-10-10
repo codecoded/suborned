@@ -1,5 +1,5 @@
-# THE SUBORNED · AGENT GDD v0.14.0 · 2026-10-10
-src: the-suborned-gdd-v0.14.0-2026-10-10.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible (the-suborned-art-bible-v0.14.0-2026-10-10.html; machine copy contracts/style/suborned.style.json, which wins on conflict).
+# THE SUBORNED · AGENT GDD v0.15.0 · 2026-10-10
+src: the-suborned-gdd-v0.15.0-2026-10-10.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible (the-suborned-art-bible-v0.15.0-2026-10-10.html; machine copy contracts/style/suborned.style.json, which wins on conflict).
 tags: [B] built, proven in top-down test · [S] spec, starting value, tune by playtest · [L] after capstone
 load: every agent = §01 + its own §14 block · Aster = §01–§13 + its §14 block · Vela, Forma, Glint, Glyph also §15 · open other sections by number on demand
 units: s seconds · m:ss mission clock · $ cash · T Trail · A Alert
@@ -34,6 +34,7 @@ campaign: turned people pay cash/arms/tips → turn more people (snowball). Cont
 | Alert 0–3 | mission | security response now | witness reports, found faults, shots |
 | Standing | district | who agrees, crowd behaviour | witnessed acts only |
 rule: every order shows full price before commit ($, time, T, A risk).
+travel [S]: boarding a tram or sky rail is fast travel round the city: board at any stop or station, ride to any other on the network. Price = time only: wait for the next service + the ride, both from the timetable. No fare.
 chain: Handover route A is itself a chain (watch café → clear Inez's debt → loop camera → coffee spill pulls guard → take Vale). Each person sees only their part; city investigates backward, link by link [S]. Later operations chain more links across a district [L].
 
 ## §03 CELL
@@ -81,6 +82,7 @@ rivals [B]: same target, own schedule. False tip: away 3:50. Gunfire: arrive wit
 | 2 search [B] | response unit to reported route | 2nd incident or any gunfire |
 | 3 lockdown [B] | doors lock; district seals | violence seen by a civilian → 3 at once |
 witness [S]: clear sightline within 13 m of a traceable act → +1 T per incident, moves standing. Crowds also block guard/camera sightlines.
+watchers [S]: cameras and civic robots stand at key places on the district plan (stations, stops, gates, squares). Any op in a watcher's sightline is logged with place + time, act or no act. Once a Trail is open, investigators can pull the log: each sighting is a lead (place + time). Hot (Heat over threshold, Motive sets it) or Menace standing in the district: a sighting counts as a witness report (Alert table).
 investigators [S][L]: on foot question ~every 20 s; cars move fast, stop to question; count rises with A and T. Pick civilians near last incident by sightline + distance, not luck. Useful answer = fact with place + time → go there, question again; ~60–90 s per hop.
 visible: questioning icon, dotted line joining held leads, unit following it.
 counters: keep moving (sightings go stale) · reach witness first (pay/reassure/threaten; threat adds fear) · Scout false tip · citizens block cars · break sightlines in a crowd.
@@ -201,10 +203,10 @@ hold: Handover is the reference case the generator must match. Ships only if 2+ 
 also: Pulse (schedules), Motive (prices).
 opens: §07–09 · tests T5, T6
 ### Datum · World planner · Opus 5.5
-owns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations. Edit the plan; the sheet is generated from it.
+owns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.
 receives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.
 delivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.
-hold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations: no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Never loosen a rule to pass; ask Splice, with a reason.
+hold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations (boarding = fast travel, priced in time): no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Watchers stand where a city watches, never placed for one mission. Never loosen a rule to pass; ask Splice, with a reason.
 opens: §07, §09, §15 · tool: plan checker
 ### Vantage · Level designer · Opus 5.5
 owns: Block layouts inside the plan's plots: buildings, entrances, mission points, sightlines, cover, crowd anchors, station entrances.
@@ -222,7 +224,7 @@ opens: §04, §09 · test T7
 ### Pulse · Schedule and AI designer · GPT 6.1 Sol
 owns: Routines for people, security, transit and rivals; crowds; investigators; fight AI.
 receives: Motive's rules, Keel's rulebook, Datum's plan, Vantage's block layouts.
-delivers: Schedules and behaviour, tram and sky rail timetables. Keel checks; Latch builds.
+delivers: Schedules and behaviour, tram and sky rail timetables (the wait + ride that prices boarding). Keel checks; Latch builds.
 hold: Handover: rival car 3:10, last driver turn 5:40, Vale out 5:50, over 8:00. Patrol breaks to gunfire within 30 m; seal 2:25 after the response unit. Witness = sightline within 13 m. Investigators question every ~20 s, 60–90 s per lead. Crowds scatter, block or join; 30 combatants max.
 opens: §05–07 · tests T1, T4
 ### Keel · Simulation engineer · Opus 5.5

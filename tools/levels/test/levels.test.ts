@@ -3,10 +3,12 @@
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { cp, mkdir, mkdtemp, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { createHash } from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { root } from '../../rag/config';
 import { hash, loadCorpus } from '../../rag/corpus';
 import { apply, seedStationOnPlot } from '../apply';
+import { citedBlock, citeFaults } from '../cite';
 import { ownerOf } from '../checker';
 import { nextMinor, candidateVersion } from '../paths';
 import { replay } from '../replay';
@@ -55,6 +57,21 @@ describe('levels transit, stubbed', () => {
     expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.ok).toBe(true);
   });
 
+  test('gdd is recorded from the loaded files; a different GDD version is labelled drift, the same version with a changed card still FAILs', async () => {
+    const src = join(runs, 'harbour-district', 'r001'), run = await Bun.file(join(src, 'run.json')).json(), cur = (await readdir(resolve(root, 'GDD'))).filter(f => f.includes('agent-gdd') && f.endsWith('.md')).sort().at(-1)!;
+    expect(run.gdd).toEqual({ version: cur.match(/v\d+\.\d+\.\d+/)![0], agent: `GDD/${cur}`, human: expect.stringMatching(/^GDD\/.*\.html$/) });
+    const mk = async (name: string, edit: (r: any) => void) => {
+      const copy = join(scratch, name); await cp(runs, copy, { recursive: true });
+      const d = join(copy, 'harbour-district', 'r001'), f = join(d, 'run.json'), j = await Bun.file(f).json(); edit(j); await Bun.write(f, JSON.stringify(j));
+      const cf = join(d, 'round-1', 'datum.call.json'), c = await Bun.file(cf).json(); c.card.sourceHash = '0'.repeat(64); await Bun.write(cf, JSON.stringify(c));
+      process.env.LEVELS_RUNS = copy; try { return await replay('harbour-district', 'r001'); } finally { delete process.env.LEVELS_RUNS; }
+    };
+    const same = await mk('runs-same', () => {}); expect(same.ok).toBe(false); expect(same.lines.join('\n')).toContain('FAIL  round-1/datum: card');
+    const older = await mk('runs-older', j => { j.gdd.version = 'v0.0.1'; }); expect(older.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(older.ok).toBe(true);
+    expect(older.lines.join('\n')).toContain('round-1/datum: card .claude/agents/world-planner.md changed since the run (recorded against GDD v0.0.1)');
+    const inferred = await mk('runs-inferred', j => { delete j.gdd; }); expect(inferred.ok).toBe(false); // no record, hits name the current GDD: same version, so strict
+    expect(inferred.lines.join('\n')).toContain('(inferred from retrieved sources)');
+  });
   test('a seeded run is labelled everywhere and ends with the correction', async () => {
     const r = await levels('--seed', 'station-on-plot');
     expect(r.stdout).toContain('[SEEDED station-on-plot]'); expect(r.stdout).toContain('r002 ACCEPTED');
@@ -100,6 +117,36 @@ describe('levels, hardening', () => {
     } finally { delete process.env.SUBORNED_PLANS; delete process.env.LEVELS_RUNS; }
   });
 
+  test('the civic block is pinned per run; replay uses the pinned bytes even if the block on disk changes', async () => {
+    const rr = join(scratch, 'runs-pin'), blk = join(scratch, 'block.json'), pf = join(scratch, 'plan-pin.json'), real = resolve(root, base.civic.block);
+    await Bun.write(blk, Bun.file(real)); await Bun.write(pf, JSON.stringify({ ...base, civic: { ...base.civic, block: blk } }));
+    const r = await levelsWith({ LEVELS_RUNS: rr }, pf); expect(r.code).toBe(0);
+    const dir = join(rr, 'harbour-district', 'r001'), run = await Bun.file(join(dir, 'run.json')).json(), bytes = Buffer.from(await Bun.file(join(dir, 'input.block.json')).arrayBuffer());
+    expect(bytes.equals(Buffer.from(await Bun.file(real).arrayBuffer()))).toBe(true);
+    expect(run.inputBlock).toEqual({ source: blk, sha256: createHash('sha256').update(bytes).digest('hex') });
+    const rep = JSON.parse(await Bun.file(join(dir, 'round-2', 'checks.json')).text()); expect(rep.ok).toBe(true);
+    await Bun.write(blk, '{"schema":"suborned.block/2","stale":true}'); // the file on disk now differs (and would crash the checker)
+    process.env.LEVELS_RUNS = rr;
+    try {
+      const ok = await replay('harbour-district', 'r001'); expect(ok.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(ok.ok).toBe(true);
+      expect(ok.lines.join('\n')).toContain('checker rerun matches checks.json');
+      await Bun.write(join(dir, 'input.block.json'), bytes.toString('utf8') + ' '); // tampered pin
+      const bad = await replay('harbour-district', 'r001'); expect(bad.ok).toBe(false); expect(bad.lines.join('\n')).toContain('input.block.json does not match');
+    } finally { delete process.env.LEVELS_RUNS; }
+  });
+
+  test('a run with no pinned block is superseded drift: fails, or warns with --allow-drift; no throw, no checker rerun', async () => {
+    const copy = join(scratch, 'runs-old'); await cp(runs, copy, { recursive: true });
+    const dir = join(copy, 'harbour-district', 'r001'), f = join(dir, 'run.json'), j = await Bun.file(f).json(); delete j.inputBlock; await Bun.write(f, JSON.stringify(j));
+    await Bun.$`rm -f ${join(dir, 'input.block.json')}`; // r001 of the shared fixture runs predates pinning
+    const line = 'superseded: recorded against the Oct 5 block, replays at commit 3dbb9ca';
+    process.env.LEVELS_RUNS = copy;
+    try {
+      const a = await replay('harbour-district', 'r001'); expect(a.ok).toBe(false); expect(a.lines).toContain('FAIL  ' + line); expect(a.lines.join('\n')).not.toContain('checker rerun');
+      const b = await replay('harbour-district', 'r001', true); expect(b.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(b.ok).toBe(true); expect(b.lines).toContain('warn  ' + line);
+    } finally { delete process.env.LEVELS_RUNS; }
+  });
+
   test('an impossible fillet is a Datum problem: the line is not applied, the checker and Pulse are skipped that round, and the run goes on', async () => {
     const fx = join(scratch, 'fixtures'), rr = join(scratch, 'runs-fillet'); await cp(join(here, 'fixtures'), fx, { recursive: true });
     const good = await Bun.file(join(fx, 'transit-lines.1.json')).json(); await Bun.write(join(fx, 'transit-lines.2.json'), JSON.stringify(good));
@@ -114,6 +161,18 @@ describe('levels, hardening', () => {
     try { const res = await replay('harbour-district', 'r001'); expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); } finally { delete process.env.LEVELS_RUNS; }
   });
 
+  test("Keel's named owner wins: a fault {rule:'N-R1', owner:'Datum'} routes to Datum, who reruns next round", async () => {
+    const fx = join(scratch, 'fixtures-owner'), rr = join(scratch, 'runs-owner'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+    const k = await Bun.file(join(fx, 'transit-critic.1.json')).json(); k.faults.push({ owner: 'Datum', rule: 'N-R1', fault: 'No stop can fix this reach gap.', fix: 'Extend a line.', chunks: ['__CHUNK__'] });
+    await Bun.write(join(fx, 'transit-critic.1.json'), JSON.stringify(k));
+    const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr }, planFile); expect(r.code).toBe(0);
+    const run = await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json();
+    expect(run.rounds[0].faultOwners).toContain('Datum'); expect(run.rounds[0].faultOwners).toContain('Vantage');
+    const f = await Bun.file(join(rr, 'harbour-district', 'r001', 'round-1', 'faults.json')).json();
+    expect(f.filter((x: any) => x.rule === 'N-R1').map((x: any) => x.owner)).toEqual(['Datum']);
+    expect(run.rounds[1].ran).toContain('datum');
+  });
+
   test('--rounds is clamped to 1..3 and NaN means 3', async () => {
     const rr = join(scratch, 'runs-rounds'), one = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '0');
     expect(one.stdout).toContain('r001 REJECTED'); expect((await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json()).rounds).toHaveLength(1);
@@ -125,8 +184,15 @@ describe('levels units', () => {
   test('versions: next minor, round and run in the pre-release', () => {
     expect(nextMinor('0.1.0')).toBe('0.2.0'); expect(candidateVersion('0.1.0', 3, 2)).toBe('0.2.0-r003.2');
   });
-  test('checker faults route to the owner who can fix them', () => {
-    expect(ownerOf('N-R1')).toBe('Vantage'); expect(ownerOf('S-S2')).toBe('Vantage'); expect(ownerOf('N-D1')).toBe('Datum'); expect(ownerOf('T-R1')).toBe('Datum');
+  test('ownerOf only names the owner of checker failures Keel did not name', () => {
+    expect(ownerOf('S-S2')).toBe('Vantage'); expect(ownerOf('N-D1')).toBe('Datum'); expect(ownerOf('T-R1')).toBe('Datum');
+  });
+  test('cite: an id outside the builder\'s own hits is a synthesized fault for that owner; one inside its own hits but outside Keel\'s is not', () => {
+    const [A, B, C] = ['a', 'b', 'c'].map(x => x.repeat(24)), hit = (key: string) => ({ key, section: '§09', text: `text ${key}` });
+    const built = { datum: { out: { sources: [A] }, call: { retrieval: { hits: [hit(A)] } } }, vantage: { out: { sources: [A, B] }, call: { retrieval: { hits: [hit(B)] } } }, pulse: { out: { sources: [C] }, call: { retrieval: { hits: [hit(C)] } } } };
+    const f = citeFaults(built); // keel's own top-8 is irrelevant: only each builder's own hits count
+    expect(f).toHaveLength(1); expect(f[0]).toMatchObject({ owner: 'Vantage', rule: 'cite', synthesized: true }); expect(f[0]!.fault).toContain(A); expect(f[0]!.fault).not.toContain(B);
+    const block = citedBlock(built); expect(block).toContain(`Pulse retrieved: ${C} (§09)`); expect(block).toContain(`[${C}] (§09, cited by Pulse) text ${C}`);
   });
   test('apply: unknown references are problems, not silent fixes; the waivers never reach a candidate', () => {
     const stops = { stops: [{ line: 'T9', id: 'x', name: 'X', path: 'p', at: [0, 0] as [number, number], fronts: 'nope' }], notes: [], sources: [] };

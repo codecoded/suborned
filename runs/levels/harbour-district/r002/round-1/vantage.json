@@ -1,0 +1,151 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "main",
+      "at": [
+        306.5,
+        0
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-lane",
+      "name": "Harbour Lane",
+      "path": "main",
+      "at": [
+        306.5,
+        -330
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "main",
+      "at": [
+        40,
+        -416.5
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Corner",
+      "path": "main",
+      "at": [
+        -280,
+        -403.5
+      ],
+      "fronts": "market-street"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        545,
+        0
+      ],
+      "length": 50,
+      "fronts": "crown-parade"
+    }
+  ],
+  "notes": [
+    "Hand-computed only; the plan checker has not been run. Spacing measured along the line: T1 310/308 m. T2 (with fillets) 320→330→331.5→321 m; on the straight polyline it is 330/353/321. S1 255/245/205 m. All 30 m tram platforms and 50 m sky platforms sit on straight track or beam, clear of the fillets.",
+    "Changed Datum's S1 Skyport station from x 530 to 545. At 530 it was 190 m along the line from Harbour (x 340), which breaks S-S2 (min 200). At 545 the platform runs x 520–570 on the trunk and on the straight loop lead, which reaches x 600.",
+    "Open issue for Datum: Skyport (545,0) is over water and no road or foot path in the plan reaches it. `fronts: crown-parade` is a placeholder only. It needs a skyport apron or foot path added to the plan. I have not moved any geometry.",
+    "N-R1 reach, by hand: worst plots are crescent-north (98,247), 247 m from S1/circus, and crown-terraces (-168,247), 247 m from S1/gardens. Both are under 250 m but have no margin. rocket-west and lantern-west are only in reach because of T2/sunset. Without T2 they fail (rocket-west is 273 m from T1/records).",
+    "Interchange pairs: T1/circus–S1/circus 119 m, T1/records–T2/market 55 m, T2/harbour–S1/harbour 33.5 m. All are within 150 m, so the network is one connected whole (N-C1).",
+    "Waymark: T2/sunset and T2/market sit on Market Street, outside the Records Precinct gates (Rocket Lane, Satellite Street). These are places police can seal. T2/market is 40 m east of the T1×T2 diamond. Pulse: the busiest transfer crowd stands at Boulevard/Market.",
+    "T2 depends on Sky accepting the line (Datum's open question). If T2 is dropped, rocket-west fails N-R1 and T1/records loses its interchange; the stops would need to be placed again."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d"
+  ]
+}

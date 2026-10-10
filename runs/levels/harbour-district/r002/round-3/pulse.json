@@ -1,0 +1,193 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 150,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/comet",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T2/harbour",
+          "to": "T2/harbour-lane",
+          "sec": 42
+        },
+        {
+          "from": "T2/harbour-lane",
+          "to": "T2/market",
+          "sec": 42
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/sunset",
+          "sec": 41
+        },
+        {
+          "from": "T2/sunset",
+          "to": "T2/market",
+          "sec": 41
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/harbour-lane",
+          "sec": 42
+        },
+        {
+          "from": "T2/harbour-lane",
+          "to": "T2/harbour",
+          "sec": 42
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 21
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus",
+          "sec": 21
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens",
+          "sec": 22
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "T1/circus",
+      "sec": 93,
+      "via": []
+    },
+    {
+      "from": "T2/harbour",
+      "to": "T2/sunset",
+      "sec": 155,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/harbour",
+      "sec": 55,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "T2/sunset",
+      "sec": 80,
+      "via": [
+        "T1/records"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/harbour",
+      "sec": 60,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T2/harbour-lane",
+      "to": "S1/gardens",
+      "sec": 97,
+      "via": [
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "S1/harbour",
+      "sec": 114,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T2/sunset",
+      "to": "S1/gardens",
+      "sec": 210,
+      "via": [
+        "T2/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding a tram or sky rail to move around the city (fast travel) cost anything: cash, Trail, Alert, a cooldown, or a witness exposure? Is it allowed during a mission?",
+      "for": "Motive",
+      "why": "Datum's hold lists boarding as fast travel but the GDD sets no price or rule; none is assumed in these timetables."
+    },
+    {
+      "question": "Is boarding fast travel meant to be available to the player at all, and should it count as a traceable act or a witnessed one?",
+      "for": "Sky",
+      "why": "It affects pillar 2 (open or close a window the player can see coming); only Sky can decide that."
+    },
+    {
+      "question": "Headways (T1 150 s, T2 180 s, S1 120 s) and dwells (trams 15 s, sky rail 12 s) are not in the GDD. Does Motive want other values?",
+      "for": "Motive",
+      "why": "They are starting values [S] to tune by playtest."
+    },
+    {
+      "question": "The S1 Skyport balloon loop has no stop or chainage in the candidate lines. Datum's plan notes (c1909f16, e20799f1, cfba161c) ask whether to retire the old Sphere and harbour loops. Keep the loop, and where is its station?",
+      "for": "Sky",
+      "why": "I timed no loop and no S1/skyport runs because that stop is not in the checker's list."
+    }
+  ],
+  "notes": [
+    "Speeds are my assumptions: trams 8 m/s (about 29 km/h), sky rail 12 m/s (about 43 km/h). Rule: run sec = checker chainage gap / speed, rounded up to the next whole second. No acceleration allowance.",
+    "Recomputed: T1 310 m and 308 m give 39 s each; T2 330, 331 and 322 m give 42, 42 and 41 s; S1 255 and 245 m give 22 and 21 s.",
+    "Journey sec = in-vehicle run times plus dwell at each intermediate stop on the same line. Excludes origin dwell, waiting up to one headway, and the interchange walk (not priced in the plan beyond the 150 m limit).",
+    "Interchanges: T1/records with T2/market, T1/circus with S1/circus, T2/harbour with S1/harbour. Via names the stop on the line the rider leaves. Both directions use the same run times; the plan gives no turnback timing.",
+    "Sources fix: dropped two ids that were never retrieved (538618090dd534247cab5493, 7dfdfdf13043a24e8e964b0b). c1909f16 is in the retrieved set (its 'retire both loops' question is the basis for the loop question), so I kept it and added cfba161c and e20799f1; the critic's claim that it was not retrieved looks mistaken.",
+    "No S1/skyport runs or journeys: that stop is not in the checker's stop list. T1 terminates on the circus loop as drawn (plan question open)."
+  ],
+  "sources": [
+    "a675bd376f6046013acaec83",
+    "ba506de42600790962a866a2",
+    "c1909f164651d9c88cd65c53",
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb"
+  ]
+}

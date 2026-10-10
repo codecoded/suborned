@@ -1,0 +1,184 @@
+{
+  "run": "r003",
+  "plan": "harbour-district",
+  "date": "2026-10-10T04:35:35.559Z",
+  "objective": "transit",
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.1.0",
+    "hash": "835e8ce9e07cf2e9ccd9e0e94a923a4d8e6655488fa927b39d8203896efeb5ee",
+    "rawHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/handover-block.json",
+    "sha256": "6e45e44e14ca2e18a2e8c8a89110be0296cabeee6bff8798a775eb1367e8b87d"
+  },
+  "gdd": {
+    "version": "v0.15.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+    "human": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html"
+  },
+  "toolsHash": "ebf46e1fdfd3af2d2ba255607e42b2b083eb1bb0d27bf2a5d0c2be488fa1dbce",
+  "corpusHash": "3acb05ba5c76d4ff52f87611cdabedcd24ce8d105df8fc23496698debf3cdd46",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "world-planner": {
+      "source": ".claude/agents/world-planner.md",
+      "sourceHash": "daadb7d143a674de45e886ef86c119ae2f9d2926abc661263c89975d0bbd171a"
+    },
+    "level-designer": {
+      "source": ".claude/agents/level-designer.md",
+      "sourceHash": "7eba7b07f544788d96b286cf913d665a2ee42b6d82424e0f87d517d120b4f29f"
+    },
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "65c6d759478c6a3d6b0b832f915bb38af99242f1c5b4b08c512d2c3ef34da7c5"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.2.0-r003.1",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "N-R1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "faults": 3,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Datum",
+        "Vantage",
+        "Pulse"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.2.0-r003.2",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 0,
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "citeFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 2.1092,
+    "calls": 8
+  },
+  "calls": [
+    {
+      "id": "01-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.6347284,
+      "seconds": 220
+    },
+    {
+      "id": "02-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.32991499999999996,
+      "seconds": 86
+    },
+    {
+      "id": "03-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.059716000000000005,
+      "seconds": 25
+    },
+    {
+      "id": "04-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2596804,
+      "seconds": 43
+    },
+    {
+      "id": "05-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2920878,
+      "seconds": 86
+    },
+    {
+      "id": "06-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.28053,
+      "seconds": 69
+    },
+    {
+      "id": "07-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.05402559999999999,
+      "seconds": 19
+    },
+    {
+      "id": "08-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1985416,
+      "seconds": 27
+    }
+  ],
+  "finalVersion": "0.2.0-r003.2"
+}

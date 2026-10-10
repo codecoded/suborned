@@ -1,0 +1,12 @@
+{
+  "verdict": "pass",
+  "summary": "Pass: strict checks clean, no other fault. Last round's three faults are fixed. A new T2 stop at Sunset Way covers rocket-west; the worst area is now 247 m (limit 250). The Skyport station over water is removed, not left unreachable. Pulse states no boarding price; speeds and headways are tagged [S] and cost is a question for Motive. All run times and journey sums check out. Open: no skyport station, so the airport loop carries no passengers until Datum plans a walkable apron; Aster decides if the draft can stand so.",
+  "faults": [],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "cfba161c458af766f224f713",
+    "ddab53626d020f8340f019b3"
+  ]
+}

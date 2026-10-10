@@ -1,4 +1,5 @@
 // One transit run: Datum → Vantage → Pulse propose, the plan checker and Keel judge, faults go back to their owner (≤ 3 rounds).
+import { createHash } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { z } from 'zod';
@@ -6,11 +7,13 @@ import { runAgent, type Call } from '../rag/agent';
 import { hash, loadCorpus } from '../rag/corpus';
 import type { retrieve } from '../rag/retrieval';
 import { root, writeJson } from '../rag/config';
+import { citedBlock, citeFaults } from './cite';
 import { apply, seedStationOnPlot, type Proposals } from './apply';
 import { inProcess, ownerOf, viaCli } from './checker';
 import { geometry, plots, transit } from './digest';
 import { objectives } from './objectives';
 import { agents, type Agent, type Verdict } from './schemas';
+import { currentGdd } from './gdd';
 import { toolsHash } from './toolhash';
 import { candidateVersion, nextRun, outRoot, pad, runsRoot } from './paths';
 
@@ -28,6 +31,10 @@ export async function runLevels(o: Opts) {
   const rdir = resolve(runsRoot(), planId, runId), odir = resolve(outRoot(), planId, runId), max = Number.isFinite(o.rounds) ? Math.min(3, Math.max(1, Math.trunc(o.rounds!))) : 3, tools = await toolsHash();
   await mkdir(rdir, { recursive: true }); await mkdir(odir, { recursive: true });
   await Bun.write(`${rdir}/input.plan.raw.json`, raw); await writeJson(`${rdir}/input.plan.json`, input);
+  // pin the civic block the input plan names: exact bytes, so every check in this run (and its replay) sees the same block
+  const blockSrc: string = input.civic.block, blockBytes = new Uint8Array(await Bun.file(resolve(root, blockSrc)).arrayBuffer()), blockFile = `${rdir}/input.block.json`;
+  await Bun.write(blockFile, blockBytes);
+  const inputBlock = { source: blockSrc, sha256: createHash('sha256').update(blockBytes).digest('hex') }, block = JSON.parse(new TextDecoder().decode(blockBytes));
   let corpusHash = '', keys = new Set<string>();
   const calls: Call[] = [], rounds: any[] = [], outs: Proposals = {}, saved: Record<string, any> = {};
   const feedback: Record<string, string[]> = { datum: [], vantage: [], pulse: [], keel: [] }, previous: Record<string, unknown> = {};
@@ -35,7 +42,7 @@ export async function runLevels(o: Opts) {
   const label = o.seed ? `[SEEDED ${o.seed}] ` : '';
   const summary = (outcome: string, extra: object = {}) => ({
     run: runId, plan: planId, date: new Date().toISOString(), objective: 'transit', outcome, seeded: o.seed ?? false,
-    inputPlan: { version: input.version, hash: hash(JSON.stringify(input)), rawHash: hash(raw), source: o.plan }, toolsHash: tools, corpusHash, embeddingModel: 'BAAI/bge-small-en-v1.5', retrieval: o.retrieval ?? 'hybrid (SurrealDB)',
+    inputPlan: { version: input.version, hash: hash(JSON.stringify(input)), rawHash: hash(raw), source: o.plan }, inputBlock, gdd: currentGdd(), toolsHash: tools, corpusHash, embeddingModel: 'BAAI/bge-small-en-v1.5', retrieval: o.retrieval ?? 'hybrid (SurrealDB)',
     cards: Object.fromEntries(calls.map(c => [c.role, { source: c.card.source, sourceHash: c.card.sourceHash }])), rounds,
     cost: { usd: Math.round(calls.reduce((s, c) => s + (c.costUsd ?? 0), 0) * 1e4) / 1e4, calls: calls.length },
     calls: calls.map(c => ({ id: c.id, objective: c.objective, role: c.role, model: c.model, attempt: c.attempt, status: c.status, costUsd: c.costUsd, seconds: c.seconds })), ...extra,
@@ -62,7 +69,7 @@ export async function runLevels(o: Opts) {
           const view = state().plan;
           const task = a === 'datum' ? `Task: propose the lines.\nPlan standards (JSON): ${std}\nPlan geometry (JSON): ${geometry(input)}\nCurrent lines (JSON): ${transit(input)}`
             : a === 'vantage' ? `Task: place the stops and stations.\nPlan standards (JSON): ${std}\nPlan geometry (JSON): ${geometry(input)}\nCandidate lines from Datum (JSON): ${transit(view)}\nDatum's notes: ${(outs.datum?.notes ?? []).join(' | ')}`
-            : `Task: write the timetable.\nCandidate lines (JSON): ${transit(view)}\nStops in order with chainage (from the plan checker):\n${stopTable(await inProcess(view))}`;
+            : `Task: write the timetable.\nCandidate lines (JSON): ${transit(view)}\nStops in order with chainage (from the plan checker):\n${stopTable(await inProcess(view, true, block))}`;
           let { out, rec } = await run1(a, task) as { out: any; rec: any };
           if (a === 'vantage' && o.seed && round === 1) {
             const s = seedStationOnPlot(out, view, plots(input));
@@ -78,7 +85,7 @@ export async function runLevels(o: Opts) {
       let exit = -1, report: { ok: boolean; checks: any[]; stops: any[]; stations: any[] } = { ok: false, checks: [], stops: [], stations: [] };
       if (!skipped.includes('checker')) {
         await writeJson(planFile, plan);
-        exit = await viaCli(planFile, `${odir}/sheets/${planId}-v${version}.html`, checksFile, `${od}/checker.txt`);
+        exit = await viaCli(planFile, `${odir}/sheets/${planId}-v${version}.html`, checksFile, `${od}/checker.txt`, blockFile);
         report = await Bun.file(checksFile).json();
       }
       const checkerOk = !skipped.length && exit === 0 && report.ok && !problems.length;
@@ -86,15 +93,18 @@ export async function runLevels(o: Opts) {
 
       const schemas = Object.fromEntries(BUILD.map(a => [a, z.toJSONSchema(agents[a])]));
       const reportText = skipped.includes('checker') ? `Plan checker not run this round: a proposed line could not be built, so no timetable was written and the plan was not checked.\n${problems.map(p => `PROBLEM ${p}`).join('\n')}` : `Plan checker report on the candidate (strict):\n${checkerText(report, problems)}`;
-      const keelTask = `Task: judge the candidate.\nObjective under test: ${OBJECTIVE}\n\nOutput schemas (JSON): ${j(schemas)}\n\n${reportText}\n\nStops and stations as placed:\n${stopTable(report)}\n\nCandidate proposals (JSON): ${j({ lines: outs.datum, stops: outs.vantage, timetable: skipped.includes('pulse') ? null : outs.pulse })}${round > 1 ? `\n\nThis is a revision. The faults from last round (JSON), to recheck:\n${j(lastFaults)}` : ''}`;
+      const built = Object.fromEntries(BUILD.map(a => [a, skipped.includes(a) ? undefined : { out: (outs as any)[a], call: saved[a] }]));
+      const keelTask = `Task: judge the candidate.\nObjective under test: ${OBJECTIVE}\n\nOutput schemas (JSON): ${j(schemas)}\n\n${reportText}\n\nStops and stations as placed:\n${stopTable(report)}\n\nCandidate proposals (JSON): ${j({ lines: outs.datum, stops: outs.vantage, timetable: skipped.includes('pulse') ? null : outs.pulse })}\n\nWhat each builder retrieved and cites. Code has already checked that every cited id was retrieved by its own builder: raise no fault for citation membership. Judge whether the claims are true to the cited text:\n${citedBlock(built)}${round > 1 ? `\n\nThis is a revision. The faults from last round (JSON), to recheck:\n${j(lastFaults)}` : ''}`;
       const k = await run1('keel', keelTask), verdict = k.out as Verdict;
       await writeJson(`${rd}/keel.json`, verdict); await writeJson(`${rd}/keel.call.json`, k.rec);
-      const faults: Fault[] = verdict.faults.map(f => ({ ...f, owner: isRule(f.rule) ? ownerOf(f.rule) : f.owner, chunks: f.chunks.filter(c => keys.has(c)) }));
+      const faults: Fault[] = verdict.faults.map(f => ({ ...f, owner: f.owner in OWNER_AGENT ? f.owner : isRule(f.rule) ? ownerOf(f.rule) : f.owner, // Keel's named owner wins; ownerOf only when it is missing/invalid
+         chunks: f.chunks.filter(c => keys.has(c)) }));
       const uncited = faults.filter(f => !f.chunks.length).length;
       for (const c of report.checks.filter(c => !c.ok)) if (!faults.some(f => f.rule === c.id)) faults.push({ owner: ownerOf(c.id), rule: c.id, fault: `${c.rule}: ${c.value} (limit ${c.limit})${c.detail ? '; ' + c.detail : ''}`, fix: 'bring the plan inside the rule', chunks: [], synthesized: true });
       for (const p of problems) faults.push({ owner: p.startsWith('timetable') ? 'Pulse' : p.startsWith('line') ? 'Datum' : 'Vantage', rule: 'apply', fault: p, fix: 'make the proposal reference what exists', chunks: [], synthesized: true });
+      const cites = citeFaults(built); faults.push(...cites);
       const pass = checkerOk && verdict.verdict === 'pass' && !faults.length;
-      rounds.push({ round, version, seeded, ran, reused, skipped, checkerExit: exit, checkerOk, failedChecks: report.checks.filter(c => !c.ok).map(c => c.id), problems, verdict: pass ? 'pass' : 'fail', keelVerdict: verdict.verdict, faults: faults.length, uncitedFaults: uncited, faultOwners: [...new Set(faults.map(f => f.owner))] });
+      rounds.push({ round, version, seeded, ran, reused, skipped, checkerExit: exit, checkerOk, failedChecks: report.checks.filter(c => !c.ok).map(c => c.id), problems, verdict: pass ? 'pass' : 'fail', keelVerdict: verdict.verdict, citeFaults: cites.length, faults: faults.length, uncitedFaults: uncited, faultOwners: [...new Set(faults.map(f => f.owner))] });
       await writeJson(`${rd}/faults.json`, faults);
       console.log(`${label}round ${round}: Keel ${verdict.verdict}, ${faults.length} fault(s)${uncited ? ` (${uncited} without a valid cited passage)` : ''} → ${pass ? 'ACCEPTED' : faults.length ? [...new Set(faults.map(f => f.owner))].join(', ') : 'rejected'}`);
       await writeJson(`${rdir}/run.json`, summary('INCOMPLETE'));

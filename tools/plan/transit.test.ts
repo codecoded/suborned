@@ -9,7 +9,7 @@ import { derive, type Plan } from './plan';
 setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../..'), read = async (p: string) => JSON.parse(await Bun.file(resolve(root, p)).text());
 const base: Plan = await read('contracts/world/harbour-district.plan.json');
-const civ = civic(base.civic, await read(base.civic.manifest), await read(base.civic.destinations));
+const civ = civic(base.civic, await read(base.civic.block));
 const run = (mutate: (p: any) => void = () => {}) => {
   const p = structuredClone(base) as any; mutate(p);
   const R = check(p, derive(p), civ, true), by = (id: string) => R.checks.filter(c => c.id === id);

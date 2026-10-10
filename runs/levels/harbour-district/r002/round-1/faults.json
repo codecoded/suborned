@@ -1,0 +1,41 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "S1/skyport at (545,0) stands over water, and no road, foot path or apron in the plan reaches it. `fronts: crown-parade` is a placeholder; Vantage's own note admits this. Water blocks a walk, so no person can get to this station. That breaks the rule that every person reaches their places. N-P2 passes only because water is not a plot.",
+    "fix": "Do not accept the station until it can be reached. Ask Datum, through Aster, to add a skyport apron or foot path joined to Crown Parade or Harbour Road. Then set `fronts` to that path's id, or move the station onto beam over walkable public space while keeping S-S2 at 200 m or more.",
+    "chunks": [
+      "cfba161c458af766f224f713",
+      "a675bd376f6046013acaec83",
+      "43d9e2f3aa221a781606b1eb"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The run times break the timetable's stated method: chainage gap ÷ speed, rounded up. At 8 m/s, T2's 330, 331 and 322 m give 42, 42 and 41 s, not 41, 41 and 40. At 12 m/s, S1's 255, 245 and 205 m give 22, 21 and 18 s, not 21, 20 and 17. Every journey built on these runs is wrong by the same amount, so the timetable does not match the plan it was built from.",
+    "fix": "Recompute every run from the checker's chainages using one stated rounding rule. Then recompute the journey totals, or change the note to match whatever rounding is used.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144",
+      "7dfdfdf13043a24e8e964b0b"
+    ]
+  },
+  {
+    "owner": "Datum",
+    "rule": "critic",
+    "fault": "The sources list e6ffe1ba0919c87923015de5, c1909f164651d9c88cd65c53 and e20799f1f673824d09ce452d. None of these is among the retrieved passages, so the claims resting on them (including the 'tide's draft' references) cannot be checked.",
+    "fix": "Cite only retrieved passage ids. Drop the unretrieved ids, or restate the claims they supported as open questions for Aster.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "The sources list e20799f1f673824d09ce452d. It is not among the retrieved passages, so the claim cannot be checked.",
+    "fix": "Remove the unretrieved id, or replace it with a retrieved passage that supports the claim.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144"
+    ]
+  }
+]

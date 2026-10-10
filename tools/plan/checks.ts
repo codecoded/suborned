@@ -165,6 +165,15 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
   C.push(...transitChecks(plan, d));
 
   // ---- civic ----
+  // C-0 holds the civic block to its Oct 9 city scale (plan.civic.scale): the café and office regressed to an older,
+  // smaller block twice when a stale file was copied in; this makes that a failed check instead of a silent change.
+  const sc = plan.civic.scale, bb = (p: V[]) => [Math.max(...p.map(v => v[0])) - Math.min(...p.map(v => v[0])), Math.max(...p.map(v => v[1])) - Math.min(...p.map(v => v[1]))].sort((a, b) => b - a);
+  const cafe = civ.buildings.find(b => b.id === 'cafe'), office = civ.buildings.find(b => b.id === 'civic-office');
+  const near = (a: number, b: number) => Math.abs(a - b) < .01;
+  const [cw, cd] = cafe ? bb(cafe.poly) : [0, 0];
+  const scaleOk = !!cafe && !!office && near(cw, sc.cafe.width) && near(cd, sc.cafe.depth) && near(cafe.height, sc.cafe.height)
+    && near(office.heights?.wings, sc['civic-office'].wings) && near(office.heights?.crown, sc['civic-office'].crown);
+  add({ id: 'C-0', group: 'Civic', rule: 'Civic block at its city scale (café footprint and height, office wings and crown)', value: cafe ? `café ${f(cw, 1)} × ${f(cd, 1)} × ${cafe.height} m, office ${office?.heights?.wings ?? '?'} / ${office?.heights?.crown ?? '?'} m` : 'no café', limit: `café ${sc.cafe.width} × ${sc.cafe.depth} × ${sc.cafe.height} m, office ${sc['civic-office'].wings} / ${sc['civic-office'].crown} m`, ok: scaleOk });
   const diffs = ['square', 'office'].map(id => { const p = plan.plots.find(x => x.civic === id)!, r = blockPlanRect(plan.civic, id); return { id, ok: p.rect!.every((v, i) => Math.abs(v - r[i]) < .01), r }; });
   add({ id: 'C-1', group: 'Civic', rule: 'Records Square and Office plots = HandoverSite blocks', value: diffs.map(x => `${x.id} ${x.ok ? '=' : '≠ ' + x.r.join(',')}`).join(', '), limit: 'equal', ok: diffs.every(x => x.ok) });
   const plotOf = (id: string) => d.plots.find(p => p.civic === id)!.polyV;

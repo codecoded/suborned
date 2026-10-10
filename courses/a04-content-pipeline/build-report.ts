@@ -27,7 +27,7 @@ async function callBlock(round: string, agent: typeof AGENTS[number], seen: Set<
   seen.add(call.id);
   const hits = call.retrieval.hits.map((h, i) => `<details><summary>${i + 1}. <code>${esc(h.key)}</code> ${esc(h.section)} <span class="sig">${esc(h.signals.join('+'))}${h.score ? ' · ' + h.score.toFixed(4) : ''}</span></summary>${pre(h.text)}</details>`).join('');
   return `<section class="call"><h4>${esc(call.id)} · ${esc(NAME[agent])}</h4>
-<p class="meta">${esc(call.model)} · ${call.seconds} s · $${call.costUsd.toFixed(3)} · prompt: <a href="evidence/transcripts/${esc(call.id)}.prompt.txt">${esc(call.id)}.prompt.txt</a> · transcript: <a href="evidence/transcripts/${esc(call.id)}.attempt-1.events.jsonl">events.jsonl</a></p>
+<p class="meta">${esc(call.model)} · ${call.seconds} s · $${call.costUsd.toFixed(3)} · prompt: <a href="evidence/${runId}/transcripts/${esc(call.id)}.prompt.txt">${esc(call.id)}.prompt.txt</a> · transcript: <a href="evidence/${runId}/transcripts/${esc(call.id)}.attempt-1.events.jsonl">events.jsonl</a></p>
 <div class="grid"><div><h5>Query</h5><ol>${call.retrieval.queries.map(q => `<li>${esc(q)}</li>`).join('')}</ol>${call.retrieval.pinned.length ? `<p>Pinned (critic-cited): ${call.retrieval.pinned.map(k => `<code>${esc(k)}</code>`).join(' ')}</p>` : ''}</div>
 <div><h5>Retrieved chunks (top ${call.retrieval.hits.length})</h5>${hits}</div>
 <div><h5>Output</h5><details open><summary>${esc(agent)}.json</summary>${pre(out)}</details></div></div></section>`;
@@ -47,7 +47,7 @@ for (const [i, r] of rounds.entries()) {
   for (const a of AGENTS) calls.push(await callBlock(r, a, seen));
   const failed = checks.checks.filter((c: { ok: boolean }) => !c.ok);
   body += `<h3>Round ${meta.round} · <code>${esc(meta.version)}</code> · checker ${meta.checkerOk ? 'clean' : 'FAIL'} (${checks.checks.length - failed.length}/${checks.checks.length}) · Keel ${esc(meta.keelVerdict)}</h3>
-<p>Ran: ${esc(meta.ran.join(', '))}${meta.reused.length ? ` · reused: ${esc(meta.reused.join(', '))}` : ''} · sheet: <a href="evidence/sheets/${plan}-v${esc(meta.version)}.html">${plan}-v${esc(meta.version)}.html</a></p>
+<p>Ran: ${esc(meta.ran.join(', '))}${meta.reused.length ? ` · reused: ${esc(meta.reused.join(', '))}` : ''} · sheet: <a href="evidence/${runId}/sheets/${plan}-v${esc(meta.version)}.html">${plan}-v${esc(meta.version)}.html</a></p>
 ${calls.join('\n')}
 <h4>Critic verdict · round ${meta.round}: ${esc(keel.verdict)}</h4><p>${esc(keel.summary)}</p>${faultsTable(keel.faults)}`;
 }
@@ -65,7 +65,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f3eee2;padding:.5em;m
 <p>Plan <code>${plan}</code> ${esc(run.inputPlan.version)} → <code>${esc(run.rounds.at(-1).version)}</code> · ${run.rounds.length} rounds · ${run.cost.calls} model calls · $${run.cost.usd.toFixed(2)} (CLI-reported) · ${run.calls.reduce((a: number, c: { seconds: number }) => a + c.seconds, 0)} s of model time · seeded: ${run.seeded} · date ${esc(run.date)}</p>
 <p>Corpus <code>${esc(run.corpusHash.slice(0, 12))}</code> · embeddings ${esc(run.embeddingModel)} · checker code <code>${esc(run.toolsHash.slice(0, 12))}</code> · committed record: <code>runs/levels/${plan}/${runId}/</code> · replay: <code>bun run levels:replay ${runId}</code></p>
 <h2>Pipeline</h2><p>Objective (layer-4 brief) → hybrid retrieval (BGE HNSW + BM25, reciprocal rank fusion) → crew member (card as system prompt, structured output only, no tools) → zod schema → proposal applied to a copy of the plan → deterministic plan checker (strict, exit code) + CAD sheet → Keel critic (cites chunk ids, names an owner) → faults routed to their owner with the cited chunks pinned (≤ 3 rounds). ACCEPTED = checker exit 0 and Keel pass.</p>
-<h2>Sheets</h2><ul><li>Before: <a href="evidence/sheets/${plan}-v0.1.0.html">v0.1.0</a> (strict: fails N-R1 reach, S-S2 sky station spacing)</li>${run.rounds.map((r: { version: string; verdict: string }) => `<li><a href="evidence/sheets/${plan}-v${esc(r.version)}.html">v${esc(r.version)}</a> · ${esc(r.verdict)}</li>`).join('')}</ul>
+<h2>Sheets</h2><ul><li>Before: <a href="evidence/${runId}/sheets/${plan}-v0.1.0.html">v0.1.0</a> (strict: fails N-R1 reach, S-S2 sky station spacing)</li>${run.rounds.map((r: { version: string; verdict: string }) => `<li><a href="evidence/${runId}/sheets/${plan}-v${esc(r.version)}.html">v${esc(r.version)}</a> · ${esc(r.verdict)}</li>`).join('')}</ul>
 <h2>Retrieval tweak: where <code>standards › tram</code> (home of <code>stopSpacing</code>) ranks</h2>
 <table><tr><th>query set</th><th>queries</th><th>rank (top 8 = in context)</th></tr>${rankRows}</table>
 <h2>Calls: query · retrieved chunks · output</h2>${body}

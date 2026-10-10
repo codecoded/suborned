@@ -10,11 +10,16 @@ const rows: string[] = [];
 for (const planId of (existsSync(runsRoot()) ? readdirSync(runsRoot()) : []).filter(d => !d.startsWith('.')).sort()) {
   for (const runId of runDirs(planId)) {
     const dir = resolve(runsRoot(), planId, runId), od = resolve(outRoot(), planId, runId), run = await Bun.file(`${dir}/run.json`).json();
-    const links: string[] = [];
+    const links: string[] = [], pinned = run.inputBlock ? `${dir}/input.block.json` : undefined;
+    if (!pinned) { // predates block pinning: re-rendering against today's block would be wrong
+      console.log(`${planId}/${runId}: superseded, not re-rendered`);
+      rows.push(`<tr><td>${esc(planId)}/${runId}</td><td>${esc(String(run.date).slice(0, 16).replace('T', ' '))}</td><td class="${run.outcome === 'ACCEPTED' ? 'ok' : 'bad'}">${esc(run.outcome)}</td><td>${run.rounds.length}</td><td>$${esc(run.cost?.usd ?? '?')}</td><td>${esc(run.finalVersion ?? '')}</td><td>superseded: recorded against the Oct 5 block, replays at commit 3dbb9ca</td></tr>`);
+      continue;
+    }
     for (const r of run.rounds as any[]) {
       const sheet = `${od}/sheets/${planId}-v${r.version}.html`;
       if (r.skipped?.includes('checker')) { links.push(`${esc(r.version)} (checker skipped)`); continue; }
-      await viaCli(`${dir}/round-${r.round}/plan.json`, sheet, `${od}/round-${r.round}/checks.rerender.json`);
+      await viaCli(`${dir}/round-${r.round}/plan.json`, sheet, `${od}/round-${r.round}/checks.rerender.json`, undefined, pinned);
       links.push(`<a href="${esc(relative(outRoot(), sheet))}">${esc(r.version)}</a> ${r.verdict === 'pass' ? '✓' : '✗'}`);
     }
     console.log(`${planId}/${runId}: ${links.length} sheet(s)`);

@@ -1,0 +1,229 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 150,
+      "dwellSec": 20,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/comet",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 180,
+      "dwellSec": 20,
+      "runs": [
+        {
+          "from": "T2/harbour",
+          "to": "T2/docks",
+          "sec": 55
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/comet",
+          "sec": 59
+        },
+        {
+          "from": "T2/comet",
+          "to": "T2/lantern",
+          "sec": 47
+        },
+        {
+          "from": "T2/lantern",
+          "to": "T2/sunset",
+          "sec": 58
+        },
+        {
+          "from": "T2/sunset",
+          "to": "T2/lantern",
+          "sec": 58
+        },
+        {
+          "from": "T2/lantern",
+          "to": "T2/comet",
+          "sec": 47
+        },
+        {
+          "from": "T2/comet",
+          "to": "T2/docks",
+          "sec": 59
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/harbour",
+          "sec": 55
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 25,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 21
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 20
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus",
+          "sec": 20
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens",
+          "sec": 21
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "T1/circus",
+      "sec": 98,
+      "via": []
+    },
+    {
+      "from": "T1/circus",
+      "to": "T1/comet",
+      "sec": 98,
+      "via": []
+    },
+    {
+      "from": "T1/records",
+      "to": "T1/circus",
+      "sec": 39,
+      "via": []
+    },
+    {
+      "from": "T2/harbour",
+      "to": "T2/comet",
+      "sec": 134,
+      "via": []
+    },
+    {
+      "from": "T2/harbour",
+      "to": "T2/lantern",
+      "sec": 201,
+      "via": []
+    },
+    {
+      "from": "T2/harbour",
+      "to": "T2/sunset",
+      "sec": 279,
+      "via": []
+    },
+    {
+      "from": "T2/docks",
+      "to": "T2/lantern",
+      "sec": 126,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/circus",
+      "sec": 21,
+      "via": []
+    },
+    {
+      "from": "S1/circus",
+      "to": "S1/harbour",
+      "sec": 20,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/harbour",
+      "sec": 66,
+      "via": []
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/harbour",
+      "sec": 59,
+      "via": [
+        "T1/circus",
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "T2/docks",
+      "sec": 98,
+      "via": [
+        "T1/comet",
+        "T2/comet"
+      ]
+    },
+    {
+      "from": "T2/harbour",
+      "to": "S1/gardens",
+      "sec": 66,
+      "via": [
+        "T2/harbour",
+        "S1/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything beyond what the timetable gives (wait and ride), such as a fare, cooldown, noise or Trail?",
+      "for": "Motive",
+      "why": "I have set only headways, dwells and run times; no other cost is defined or invented here."
+    },
+    {
+      "question": "Is the wait a fixed readable schedule or a random draw within the headway, and are line phase offsets set?",
+      "for": "Motive",
+      "why": "This decides whether the player can predict the wait; I assumed independent arrivals."
+    },
+    {
+      "question": "Are loop turnaround times (T1 circus balloon loop, S1 Skyport loop) part of any journey, and can the cell board at a loop terminus?",
+      "for": "Motive",
+      "why": "The stop lists have no loop stops, and S1/skyport is not in the stop list, so it is not timetabled."
+    },
+    {
+      "question": "Do the plan's open questions stand: T1 extension to Crown Road, and the trunk replacing the Sphere loop and harbour line?",
+      "for": "Sky",
+      "why": "A different network would change the timetable."
+    }
+  ],
+  "notes": [
+    "[S] Speed: average running speed including accel and braking, tram 8 m/s (~29 km/h), sky rail 12 m/s (~43 km/h). Run sec = chainage gap / speed, rounded.",
+    "[S] Headways: T1 150 s, T2 180 s, S1 120 s. Dwell: tram 20 s, sky rail 25 s. Starting values, tune by playtest.",
+    "Journey sec = in-vehicle ride plus dwell at each intermediate stop. Waiting for a service and walking between interchange stops are not included.",
+    "Cross-line journeys sum ride time on each line only; the second wait is not included.",
+    "Runs are symmetric in both directions on double track.",
+    "Beyond-sheet extents of T1 and T2 and S1 Skyport (not in the stop list) are not timetabled."
+  ],
+  "sources": [
+    "c1909f164651d9c88cd65c53",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493"
+  ]
+}

@@ -9,7 +9,7 @@ Assignment 4 asks for: a game-specific pipeline, three generated outputs, query 
 ## Three outputs
 1. **Lines** (Datum): sky rail and tram alignments as plan edits: paths, fillet radii, double track, inside `plan.standards`. Starting point (tide's draft, a proposal, not a given): a two-way Sky Loop round the district; T1 running through the circus; a T2 Harbour Line on Harbour Road.
 2. **Stops and stations** (Vantage): positions on the lines, platforms, entrances fronting public space, interchange pairs; every area in reach of one.
-3. **Timetable** (Pulse): headway, dwell and run times per line; journey times between stations. Boarding as fast travel is in Datum's hold but not yet priced in the GDD: record it as an open question for Motive and Sky, never invent a price.
+3. **Timetable** (Pulse): headway, dwell and run times per line; journey times between stations. Datum's hold says the cell rides trams and sky rail between stops and stations; boarding has no price in the GDD: record it as an open question for Motive and Sky, never invent a price.
 
 ## Submission flow (Sky, 2026-10-10)
 1. The crew works on branch `assignment-04`, on this brief only. 002 (visible world) and 003 (missions) run on main afterwards.

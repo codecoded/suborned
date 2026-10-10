@@ -1,0 +1,30 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "critic",
+    "fault": "The sources still list four passage ids that were not retrieved: 0e426f4211a2f1f25c328968, e6ffe1ba0919c87923015de5, c1909f164651d9c88cd65c53 and e20799f1f673824d09ce452d. The notes say these passages are in the retrieved set, but they are not. So the claims about T1's draft through the circus, the plan's open questions and the retired Sky Loop cannot be checked.",
+    "fix": "Remove all four ids. Restate what they supported as open questions for Aster, who can confirm the brief draft and the plan's open questions, or get those passages retrieved before citing them.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144",
+      "a675bd376f6046013acaec83"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "The sources list 0e426f4211a2f1f25c328968 and c1909f164651d9c88cd65c53, and neither was retrieved. The note that T2 depends on Sky's acceptance relies on c1909f…, so it cannot be checked.",
+    "fix": "Remove the two ids. Cite cfba161c458af766f224f713 for the concept's single interchange, or raise T2's status as an open question for Aster.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The sources list c1909f164651d9c88cd65c53, which was not retrieved. The open question about retiring the old Sphere and harbour loops rests on it, so that question cannot be checked.",
+    "fix": "Remove the id. Keep the question, but attribute it to Datum's note or to cfba161c458af766f224f713, not to an unretrieved passage.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144"
+    ]
+  }
+]

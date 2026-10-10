@@ -1,44 +1,32 @@
-// The Handover block in plan coordinates: testbed frame → block frame (HandoverSite.Zones) → plan (blockToPlan).
-import { type Rect, type V, add, rectPoly } from './geom';
+// The Handover block in plan coordinates: block frame (contracts/world/handover-block.json, suborned.block/2) → plan by blockToPlan.
+import { type Rect, type V, rectPoly } from './geom';
 
 export type Civic = {
-  buildings: { id: string; name: string; poly: V[] }[];
-  structures: { id: string; name: string; poly: V[] }[];
-  objects: { id: string; kind: string; poly: V[] }[];
+  buildings: { id: string; name: string; poly: V[]; height: number; z: number; [k: string]: any }[];
+  structures: { id: string; name: string; category: string; poly: V[]; height: number; z: number }[];
+  objects: { id: string; kind: string; poly: V[]; height: number; z: number }[];
   bays: { id: string; poly: V[] }[];
-  points: { name: string; p: V; zone: string }[];
+  points: { name: string; p: V; surface: string }[];
+  crew: { name: string; p: V; surface: string }[];
   blocks: { id: string; outer: V[]; core: V[] }[];
   crossing: V[];
 };
 
-const turn = ([x, y]: V, t: number): V => [[x, y], [-y, x], [-x, -y], [y, -x]][t & 3] as V;
-
-export function civic(spec: any, manifest: any, destinations: any): Civic {
+export function civic(spec: any, block: any): Civic {
+  if (block.schema !== 'suborned.block/2') throw new Error(`handover block is ${block.schema}, expected suborned.block/2 (bun run block)`);
   const o: V = spec.blockToPlan.origin, ax: V = spec.blockToPlan.x, ay: V = spec.blockToPlan.y;
   const toPlan = ([bx, by]: V): V => [o[0] + bx * ax[0] + by * ay[0], o[1] + bx * ax[1] + by * ay[1]];
-  const zoneOf = (p: V) => (spec.zones as any[]).find(z => p[0] >= z.from[0] && p[0] <= z.from[1] && p[1] >= z.from[2] && p[1] <= z.from[3]);
-  const map = (p: V, z = zoneOf(p)): V | null => (z ? toPlan(add(turn(p, z.turns), z.shift)) : null);
-  const mapAll = (pts: V[]) => { const z = zoneOf(centre(pts)); return z ? pts.map(p => map(p, z)!) : null; };
-  const centre = (pts: V[]): V => [pts.reduce((s, p) => s + p[0], 0) / pts.length, pts.reduce((s, p) => s + p[1], 0) / pts.length];
-  const box = (pos: any, dim: any, deg = 0): V[] => {
-    const a = (deg * Math.PI) / 180, hw = dim.width / 2, hd = dim.depth / 2;
-    return ([[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]] as V[]).map(([x, y]) => [pos.x + x * Math.cos(a) - y * Math.sin(a), pos.y + x * Math.sin(a) + y * Math.cos(a)] as V);
-  };
   const blockRect = (r: Rect) => rectPoly(r).map(toPlan);
   const w = spec.walk;
-  const keep = <T,>(x: (T | null)[]) => x.filter(Boolean) as T[];
+  const place = (d: any) => ({ name: d.name as string, p: toPlan(d.at), surface: d.surface as string });
 
   return {
-    buildings: keep(manifest.buildings.map((b: any) => {
-      const poly = mapAll(b.footprint.vertices.map((v: any) => [v.x, v.y] as V));
-      return poly && { id: b.id, name: b.name, poly };
-    })),
-    structures: keep(manifest.structures.map((s: any) => { const poly = mapAll(box(s.position, s.dimensions, s.authoringHeadingDegrees ?? 0)); return poly && { id: s.id, name: s.name, poly }; })),
-    objects: keep(manifest.sceneObjects.filter((x: any) => ['fountain', 'planter', 'table'].includes(x.category)).map((x: any) => {
-      const poly = mapAll(box(x.position, x.dimensions, x.authoringHeadingDegrees ?? 0)); return poly && { id: x.id, kind: x.category, poly };
-    })),
-    bays: keep(['officialBay', 'getawayBay'].map(k => { const b = manifest.roads[k]; const poly = b && mapAll(rectPoly([b.x[0], b.x[1], b.y[0], b.y[1]])); return poly && { id: k, poly }; })),
-    points: keep(destinations.destinations.map((d: any) => { const z = zoneOf([d.x, d.y]); return z && { name: d.name, p: map([d.x, d.y], z)!, zone: z.name }; })),
+    buildings: block.buildings.map(({ polygon, towers, ...b }: any) => ({ ...b, poly: polygon.map(toPlan), ...(towers ? { towers: towers.map((x: any) => ({ ...x, at: toPlan(x.at) })) } : {}) })),
+    structures: block.structures.map(({ polygon, ...s }: any) => ({ ...s, poly: polygon.map(toPlan) })),
+    objects: block.objects.map(({ polygon, ...x }: any) => ({ ...x, poly: polygon.map(toPlan) })),
+    bays: block.bays.map((b: any) => ({ id: b.id, poly: b.polygon.map(toPlan) })),
+    points: block.destinations.map(place),
+    crew: block.crew.map(place),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),
     crossing: blockRect(spec.crossing),
   };

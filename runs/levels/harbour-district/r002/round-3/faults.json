@@ -1,0 +1,33 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "critic",
+    "fault": "The sources still cite e6ffe1ba0919c87923015de5 and c1909f164651d9c88cd65c53, and neither was retrieved this round. The notes about T1 running on up Crown Avenue and retiring the Sky Loop lean on c1909f…, so they cannot be checked. The note saying all four ids are in the retrieved list is wrong.",
+    "fix": "Remove e6ffe1… and c1909f… from sources. Put the T1 extension and the loop retirement to Aster as open questions, and cite cfba161c458af766f224f713 for the concept's T1 balloon loop and single S1 trunk.",
+    "chunks": [
+      "6e037fc577c7f2aa61117144",
+      "cfba161c458af766f224f713"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "The sources cite e20799f1f673824d09ce452d, which was not retrieved. The notes also say a675bd376f6046013acaec83 and 43d9e2f3aa221a781606b1eb are not in this brief's list, but both were retrieved. That misreports the source set to Aster.",
+    "fix": "Remove e20799f… from sources. Correct the note: a675bd… and 43d9e2… are retrieved and may be cited, for example a675bd… for Datum's hold on reach and interchanges ≤150 m.",
+    "chunks": [
+      "a675bd376f6046013acaec83",
+      "6e037fc577c7f2aa61117144"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The sources cite c1909f164651d9c88cd65c53, e20799f1f673824d09ce452d and c5fb128448665c55b7c335fb, and none of these was retrieved. The Skyport loop question still names c1909f16 and e20799f1 as its basis. The notes say 538618090dd534247cab5493 and 7dfdfdf13043a24e8e964b0b were never retrieved, but both were. The fast-travel question also says Datum's hold calls boarding 'fast travel'. It does not: the hold says the cell rides between stops and stations.",
+    "fix": "Remove c1909f…, e20799f… and c5fb12… from sources. Base the loop question on cfba161c458af766f224f713 (loop round the skyport) and on Vantage's note that there is no Skyport station. Correct the note about 538618… and 7dfdfd…. Reword the boarding question so it quotes a675bd…'s actual wording.",
+    "chunks": [
+      "cfba161c458af766f224f713",
+      "a675bd376f6046013acaec83",
+      "538618090dd534247cab5493"
+    ]
+  }
+]

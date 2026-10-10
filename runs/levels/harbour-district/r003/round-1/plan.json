@@ -1,0 +1,2053 @@
+{
+  "schema": "suborned.plan/1",
+  "id": "harbour-district",
+  "name": "Harbour District",
+  "version": "0.2.0-r003.1",
+  "date": "2026-10-10",
+  "status": "candidate (generated, not promoted)",
+  "frame": {
+    "units": "m",
+    "x": "east",
+    "y": "north",
+    "origin": "Crown Circus centre",
+    "unity": "(x, height, y)"
+  },
+  "sheet": {
+    "drawing": "SBN-PLN-001",
+    "x": [
+      -400,
+      740
+    ],
+    "y": [
+      -780,
+      320
+    ],
+    "grid": 100,
+    "scale": "1:2500 @ A1",
+    "inset": {
+      "drawing": "SBN-PLN-002",
+      "name": "Records Precinct",
+      "x": [
+        -236,
+        18
+      ],
+      "y": [
+        -428,
+        -176
+      ],
+      "scale": "1:500 @ A1"
+    }
+  },
+  "standards": {
+    "tram": {
+      "radiusRunning": 50,
+      "radiusLoop": 25,
+      "stopSpacing": [
+        300,
+        500
+      ],
+      "platform": 30,
+      "trackCentres": 3.6
+    },
+    "skyrail": {
+      "radiusLine": 70,
+      "radiusLoop": 40,
+      "spanStraight": 30,
+      "spanCurve": 23,
+      "spanTight": 18,
+      "tightBelow": 180,
+      "interchange": 150,
+      "stationSpacing": [
+        200,
+        500
+      ],
+      "height": 24,
+      "beamCentres": 6,
+      "pylonZones": [
+        "median",
+        "mall",
+        "park",
+        "quay",
+        "water",
+        "island"
+      ]
+    },
+    "transit": {
+      "reach": 250,
+      "onLine": 3
+    },
+    "roads": {
+      "junctionSpacing": {
+        "primary": 250,
+        "district": 60
+      },
+      "frontage": 1
+    },
+    "walking": {
+      "crossAnywhere": true,
+      "grid": 2,
+      "directness": 1.5,
+      "from": [
+        "Café door",
+        "Office entrance"
+      ],
+      "note": "Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over."
+    }
+  },
+  "nodes": {
+    "sw": [
+      -340,
+      -720
+    ],
+    "se": [
+      300,
+      -720
+    ],
+    "ne": [
+      300,
+      280
+    ],
+    "nw": [
+      -340,
+      280
+    ],
+    "w_market": [
+      -340,
+      -410
+    ],
+    "w_circus": [
+      -340,
+      0
+    ],
+    "n_avenue": [
+      0,
+      280
+    ],
+    "s_boulevard": [
+      0,
+      -720
+    ],
+    "e_market": [
+      300,
+      -410
+    ],
+    "c_s": [
+      0,
+      -37
+    ],
+    "c_w": [
+      -37,
+      0
+    ],
+    "c_n": [
+      0,
+      37
+    ],
+    "m_boulevard": [
+      0,
+      -410
+    ],
+    "g_rocket": [
+      -186,
+      -410
+    ],
+    "g_satellite": [
+      -60,
+      -410
+    ],
+    "g_dock_w": [
+      120,
+      -410
+    ],
+    "g_dock_e": [
+      230,
+      -410
+    ],
+    "g_lamp_w": [
+      -250,
+      0
+    ],
+    "g_lamp_e": [
+      -100,
+      0
+    ],
+    "g_cres_s": [
+      0,
+      110
+    ],
+    "g_terrace": [
+      0,
+      220
+    ],
+    "r_north_w": [
+      -186,
+      -198
+    ],
+    "r_garden_n": [
+      -132,
+      -198
+    ],
+    "r_north_e": [
+      -60,
+      -198
+    ],
+    "r_orbit_w": [
+      -186,
+      -267.5
+    ],
+    "r_garden_s": [
+      -132,
+      -267.5
+    ],
+    "r_pylon_n": [
+      -120,
+      -267.5
+    ],
+    "r_orbit_e": [
+      -60,
+      -267.5
+    ],
+    "r_apron_w": [
+      -186,
+      -316
+    ],
+    "r_pylon_s": [
+      -120,
+      -316
+    ],
+    "r_apron_e": [
+      -60,
+      -316
+    ],
+    "l_sw": [
+      -250,
+      -120
+    ],
+    "l_se": [
+      -100,
+      -120
+    ],
+    "a_obs": [
+      -100,
+      90
+    ],
+    "a_terr": [
+      -322,
+      220
+    ],
+    "b_se": [
+      180,
+      110
+    ],
+    "b_ne": [
+      180,
+      220
+    ],
+    "h_nw": [
+      120,
+      -140
+    ],
+    "h_ne": [
+      230,
+      -140
+    ],
+    "f_sw": [
+      120,
+      -600
+    ],
+    "f_se": [
+      230,
+      -600
+    ],
+    "e_sw": [
+      -186,
+      -600
+    ],
+    "e_se": [
+      -60,
+      -600
+    ],
+    "off_southside": [
+      -340,
+      -780
+    ],
+    "off_west": [
+      -400,
+      280
+    ],
+    "off_seagates": [
+      300,
+      320
+    ],
+    "off_circus_west": [
+      -400,
+      0
+    ],
+    "off_boulevard_south": [
+      0,
+      -780
+    ]
+  },
+  "links": [
+    {
+      "node": "off_southside",
+      "to": "Southside",
+      "via": "Sunset Way"
+    },
+    {
+      "node": "off_boulevard_south",
+      "to": "Southside",
+      "via": "The Boulevard (and tram T1)"
+    },
+    {
+      "node": "off_west",
+      "to": "West End",
+      "via": "Crown Road"
+    },
+    {
+      "node": "off_circus_west",
+      "to": "West End",
+      "via": "Circus Road (and sky rail S1)"
+    },
+    {
+      "node": "off_seagates",
+      "to": "Sea Gates",
+      "via": "Harbour Road"
+    }
+  ],
+  "roads": [
+    {
+      "id": "sunset-way",
+      "name": "Sunset Way",
+      "class": "primary",
+      "w": 24,
+      "median": 4,
+      "path": [
+        "off_southside",
+        "sw",
+        "w_market",
+        "w_circus",
+        "nw"
+      ]
+    },
+    {
+      "id": "crown-road",
+      "name": "Crown Road",
+      "class": "primary",
+      "w": 24,
+      "median": 4,
+      "path": [
+        "off_west",
+        "nw",
+        "n_avenue",
+        "ne"
+      ]
+    },
+    {
+      "id": "comet-row",
+      "name": "Comet Row",
+      "class": "primary",
+      "w": 24,
+      "median": 4,
+      "path": [
+        "sw",
+        "s_boulevard",
+        "se"
+      ]
+    },
+    {
+      "id": "harbour-road",
+      "name": "Harbour Road",
+      "class": "primary",
+      "w": 24,
+      "median": 4,
+      "path": [
+        "se",
+        "e_market",
+        "ne",
+        "off_seagates"
+      ]
+    },
+    {
+      "id": "boulevard",
+      "name": "The Boulevard",
+      "class": "district",
+      "w": 28,
+      "reservation": 10,
+      "path": [
+        "off_boulevard_south",
+        "s_boulevard",
+        "m_boulevard",
+        "c_s"
+      ]
+    },
+    {
+      "id": "crown-avenue",
+      "name": "Crown Avenue",
+      "class": "district",
+      "w": 18,
+      "median": 6,
+      "path": [
+        "c_n",
+        "g_cres_s",
+        "g_terrace",
+        "n_avenue"
+      ]
+    },
+    {
+      "id": "circus-road",
+      "name": "Circus Road",
+      "class": "district",
+      "w": 18,
+      "median": 6,
+      "path": [
+        "off_circus_west",
+        "w_circus",
+        "g_lamp_w",
+        "g_lamp_e",
+        "c_w"
+      ]
+    },
+    {
+      "id": "market-street",
+      "name": "Market Street",
+      "class": "district",
+      "w": 18,
+      "median": 6,
+      "path": [
+        "w_market",
+        "g_rocket",
+        "g_satellite",
+        "m_boulevard",
+        "g_dock_w",
+        "g_dock_e",
+        "e_market"
+      ]
+    },
+    {
+      "id": "crown-circus",
+      "name": "Crown Circus",
+      "class": "district",
+      "w": 12,
+      "gyratory": true,
+      "arc": [
+        0,
+        0
+      ],
+      "cw": true,
+      "path": [
+        "c_s",
+        "c_w",
+        "c_n",
+        "c_s"
+      ]
+    },
+    {
+      "id": "rocket-lane",
+      "name": "Rocket Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_rocket",
+        "r_apron_w",
+        "r_orbit_w",
+        "r_north_w"
+      ]
+    },
+    {
+      "id": "starline-street",
+      "name": "Starline Street",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "r_north_w",
+        "r_garden_n",
+        "r_north_e"
+      ]
+    },
+    {
+      "id": "garden-row",
+      "name": "Garden Row",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "r_garden_n",
+        "r_garden_s"
+      ]
+    },
+    {
+      "id": "orbit-walk",
+      "name": "Orbit Walk",
+      "class": "access",
+      "w": 13,
+      "path": [
+        "r_orbit_w",
+        "r_garden_s",
+        "r_pylon_n",
+        "r_orbit_e"
+      ]
+    },
+    {
+      "id": "pylon-row",
+      "name": "Pylon Row",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "r_pylon_n",
+        "r_pylon_s"
+      ]
+    },
+    {
+      "id": "apron-road",
+      "name": "Apron Road",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "r_apron_w",
+        "r_pylon_s",
+        "r_apron_e"
+      ]
+    },
+    {
+      "id": "satellite-street",
+      "name": "Satellite Street",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_satellite",
+        "r_apron_e",
+        "r_orbit_e",
+        "r_north_e"
+      ]
+    },
+    {
+      "id": "lamplight-lane",
+      "name": "Lamplight Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_lamp_w",
+        "l_sw",
+        "l_se",
+        "g_lamp_e"
+      ]
+    },
+    {
+      "id": "observatory-lane",
+      "name": "Observatory Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_lamp_e",
+        "a_obs"
+      ]
+    },
+    {
+      "id": "terrace-row",
+      "name": "Terrace Row",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_terrace",
+        "a_terr"
+      ]
+    },
+    {
+      "id": "crescent-lane",
+      "name": "Crescent Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_cres_s",
+        "b_se",
+        "b_ne",
+        "g_terrace"
+      ]
+    },
+    {
+      "id": "harbour-lane",
+      "name": "Harbour Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_dock_w",
+        "h_nw",
+        "h_ne",
+        "g_dock_e"
+      ]
+    },
+    {
+      "id": "dock-road",
+      "name": "Dock Road",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_dock_w",
+        "f_sw",
+        "f_se",
+        "g_dock_e"
+      ]
+    },
+    {
+      "id": "lantern-lane",
+      "name": "Lantern Lane",
+      "class": "access",
+      "w": 12,
+      "path": [
+        "g_rocket",
+        "e_sw",
+        "e_se",
+        "g_satellite"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "rocket-gate",
+      "name": "Rocket Gate",
+      "node": "g_rocket",
+      "road": "rocket-lane",
+      "area": "records"
+    },
+    {
+      "id": "satellite-gate",
+      "name": "Satellite Gate",
+      "node": "g_satellite",
+      "road": "satellite-street",
+      "area": "records"
+    },
+    {
+      "id": "lamplight-west",
+      "name": "Lamplight W",
+      "node": "g_lamp_w",
+      "road": "lamplight-lane",
+      "area": "lamplight"
+    },
+    {
+      "id": "lamplight-east",
+      "name": "Lamplight E",
+      "node": "g_lamp_e",
+      "road": "lamplight-lane",
+      "area": "lamplight"
+    },
+    {
+      "id": "observatory-gate",
+      "name": "Observatory",
+      "node": "g_lamp_e",
+      "road": "observatory-lane",
+      "area": "gardens"
+    },
+    {
+      "id": "terrace-gate",
+      "name": "Terrace",
+      "node": "g_terrace",
+      "road": "terrace-row",
+      "area": "gardens"
+    },
+    {
+      "id": "crescent-south",
+      "name": "Crescent S",
+      "node": "g_cres_s",
+      "road": "crescent-lane",
+      "area": "crescent"
+    },
+    {
+      "id": "crescent-north",
+      "name": "Crescent N",
+      "node": "g_terrace",
+      "road": "crescent-lane",
+      "area": "crescent"
+    },
+    {
+      "id": "harbour-west",
+      "name": "Harbour W",
+      "node": "g_dock_w",
+      "road": "harbour-lane",
+      "area": "harbour"
+    },
+    {
+      "id": "harbour-east",
+      "name": "Harbour E",
+      "node": "g_dock_e",
+      "road": "harbour-lane",
+      "area": "harbour"
+    },
+    {
+      "id": "dock-west",
+      "name": "Dock W",
+      "node": "g_dock_w",
+      "road": "dock-road",
+      "area": "docks"
+    },
+    {
+      "id": "dock-east",
+      "name": "Dock E",
+      "node": "g_dock_e",
+      "road": "dock-road",
+      "area": "docks"
+    },
+    {
+      "id": "lantern-west",
+      "name": "Lantern W",
+      "node": "g_rocket",
+      "road": "lantern-lane",
+      "area": "lantern"
+    },
+    {
+      "id": "lantern-east",
+      "name": "Lantern E",
+      "node": "g_satellite",
+      "road": "lantern-lane",
+      "area": "lantern"
+    }
+  ],
+  "areas": [
+    {
+      "id": "records",
+      "name": "Records Precinct",
+      "rect": [
+        -328,
+        -14,
+        -401,
+        -192
+      ],
+      "label": [
+        -260,
+        -300
+      ]
+    },
+    {
+      "id": "lamplight",
+      "name": "Lamplight",
+      "rect": [
+        -328,
+        -14,
+        -192,
+        -9
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ],
+      "label": [
+        -246,
+        -162
+      ]
+    },
+    {
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "rect": [
+        -328,
+        -9,
+        9,
+        268
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ],
+      "label": [
+        -217,
+        178
+      ]
+    },
+    {
+      "id": "crescent",
+      "name": "Crescent Quarter",
+      "rect": [
+        9,
+        288,
+        20,
+        268
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ],
+      "label": [
+        92,
+        162
+      ]
+    },
+    {
+      "id": "harbour",
+      "name": "Harbour Quarter",
+      "rect": [
+        14,
+        288,
+        -401,
+        -20
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ],
+      "label": [
+        175,
+        -272
+      ],
+      "size": 7
+    },
+    {
+      "id": "lantern",
+      "name": "Lantern Quarter",
+      "rect": [
+        -328,
+        -14,
+        -708,
+        -419
+      ],
+      "label": [
+        -260,
+        -566
+      ]
+    },
+    {
+      "id": "docks",
+      "name": "Market Docks",
+      "rect": [
+        14,
+        288,
+        -708,
+        -419
+      ],
+      "label": [
+        175,
+        -508
+      ]
+    }
+  ],
+  "plots": [
+    {
+      "id": "records-square",
+      "name": "Records Square",
+      "use": "square",
+      "area": "records",
+      "rect": [
+        -180,
+        -138,
+        -261,
+        -204
+      ],
+      "civic": "square"
+    },
+    {
+      "id": "records-office",
+      "name": "Records Office",
+      "use": "civic",
+      "area": "records",
+      "rect": [
+        -180,
+        -126,
+        -310,
+        -274
+      ],
+      "civic": "office"
+    },
+    {
+      "id": "garden-row-east",
+      "use": "mixed",
+      "area": "records",
+      "rect": [
+        -126,
+        -66,
+        -261,
+        -204
+      ]
+    },
+    {
+      "id": "pylon-row-east",
+      "use": "mixed",
+      "area": "records",
+      "rect": [
+        -114,
+        -66,
+        -310,
+        -274
+      ]
+    },
+    {
+      "id": "orbit-gardens",
+      "name": "Orbit Gardens",
+      "use": "open",
+      "area": "records",
+      "rect": [
+        -180,
+        -66,
+        -401,
+        -322
+      ]
+    },
+    {
+      "id": "rocket-west",
+      "use": "residential",
+      "area": "records",
+      "rect": [
+        -328,
+        -192,
+        -401,
+        -192
+      ]
+    },
+    {
+      "id": "boulevard-west",
+      "use": "commercial",
+      "area": "records",
+      "rect": [
+        -54,
+        -14,
+        -401,
+        -192
+      ]
+    },
+    {
+      "id": "lamplight-west",
+      "use": "residential",
+      "area": "lamplight",
+      "rect": [
+        -328,
+        -256,
+        -126,
+        -9
+      ]
+    },
+    {
+      "id": "lamplight-court-w",
+      "use": "residential",
+      "area": "lamplight",
+      "rect": [
+        -244,
+        -164,
+        -114,
+        -9
+      ]
+    },
+    {
+      "id": "lamplight-court-e",
+      "use": "residential",
+      "area": "lamplight",
+      "rect": [
+        -156,
+        -106,
+        -114,
+        -9
+      ]
+    },
+    {
+      "id": "lamplight-east",
+      "use": "mixed",
+      "area": "lamplight",
+      "rect": [
+        -94,
+        -14,
+        -126,
+        -9
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ]
+    },
+    {
+      "id": "lamplight-south-w",
+      "use": "residential",
+      "area": "lamplight",
+      "rect": [
+        -328,
+        -164,
+        -192,
+        -126
+      ]
+    },
+    {
+      "id": "lamplight-south-e",
+      "use": "residential",
+      "area": "lamplight",
+      "rect": [
+        -156,
+        -14,
+        -192,
+        -126
+      ]
+    },
+    {
+      "id": "sphere-gardens",
+      "name": "Sphere Gardens",
+      "use": "park",
+      "area": "gardens",
+      "poly": [
+        [
+          -328,
+          9
+        ],
+        [
+          -106,
+          9
+        ],
+        [
+          -106,
+          96
+        ],
+        [
+          -94,
+          96
+        ],
+        [
+          -94,
+          214
+        ],
+        [
+          -328,
+          214
+        ]
+      ]
+    },
+    {
+      "id": "avenue-court",
+      "use": "mixed",
+      "area": "gardens",
+      "rect": [
+        -94,
+        -9,
+        9,
+        214
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ]
+    },
+    {
+      "id": "crown-terraces",
+      "name": "Crown Terraces",
+      "use": "residential",
+      "area": "gardens",
+      "rect": [
+        -328,
+        -9,
+        226,
+        268
+      ]
+    },
+    {
+      "id": "parade-north",
+      "use": "mixed",
+      "area": "crescent",
+      "rect": [
+        9,
+        288,
+        20,
+        104
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ]
+    },
+    {
+      "id": "crescent-court",
+      "use": "residential",
+      "area": "crescent",
+      "rect": [
+        9,
+        174,
+        116,
+        214
+      ]
+    },
+    {
+      "id": "crescent-east",
+      "use": "commercial",
+      "area": "crescent",
+      "rect": [
+        186,
+        288,
+        104,
+        268
+      ]
+    },
+    {
+      "id": "crescent-north",
+      "use": "residential",
+      "area": "crescent",
+      "rect": [
+        9,
+        186,
+        226,
+        268
+      ]
+    },
+    {
+      "id": "harbour-boulevard",
+      "use": "commercial",
+      "area": "harbour",
+      "rect": [
+        14,
+        114,
+        -401,
+        -20
+      ],
+      "notch": [
+        0,
+        0,
+        51
+      ]
+    },
+    {
+      "id": "harbour-court",
+      "use": "mixed",
+      "area": "harbour",
+      "rect": [
+        126,
+        224,
+        -401,
+        -146
+      ]
+    },
+    {
+      "id": "parade-south",
+      "use": "mixed",
+      "area": "harbour",
+      "rect": [
+        114,
+        288,
+        -134,
+        -20
+      ]
+    },
+    {
+      "id": "harbour-east",
+      "name": "Ferry offices",
+      "use": "port",
+      "area": "harbour",
+      "rect": [
+        236,
+        288,
+        -401,
+        -134
+      ]
+    },
+    {
+      "id": "docks-boulevard",
+      "use": "commercial",
+      "area": "docks",
+      "rect": [
+        14,
+        114,
+        -708,
+        -419
+      ]
+    },
+    {
+      "id": "docks-court",
+      "use": "industrial",
+      "area": "docks",
+      "rect": [
+        126,
+        224,
+        -594,
+        -419
+      ]
+    },
+    {
+      "id": "docks-south",
+      "use": "industrial",
+      "area": "docks",
+      "rect": [
+        114,
+        288,
+        -708,
+        -606
+      ]
+    },
+    {
+      "id": "docks-east",
+      "name": "Quay sheds",
+      "use": "port",
+      "area": "docks",
+      "rect": [
+        236,
+        288,
+        -606,
+        -419
+      ]
+    },
+    {
+      "id": "lantern-west",
+      "use": "residential",
+      "area": "lantern",
+      "rect": [
+        -328,
+        -192,
+        -708,
+        -419
+      ]
+    },
+    {
+      "id": "starline-green",
+      "name": "Starline Green",
+      "use": "park",
+      "area": "lantern",
+      "rect": [
+        -180,
+        -66,
+        -594,
+        -419
+      ]
+    },
+    {
+      "id": "lantern-south",
+      "use": "residential",
+      "area": "lantern",
+      "rect": [
+        -192,
+        -14,
+        -708,
+        -606
+      ]
+    },
+    {
+      "id": "lantern-boulevard",
+      "use": "commercial",
+      "area": "lantern",
+      "rect": [
+        -54,
+        -14,
+        -606,
+        -419
+      ]
+    }
+  ],
+  "foot": [
+    {
+      "id": "crown-parade",
+      "name": "Crown Parade",
+      "kind": "mall",
+      "w": 40,
+      "pts": [
+        [
+          43,
+          0
+        ],
+        [
+          288,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "garden-walk",
+      "name": "Garden Walk",
+      "kind": "walk",
+      "w": 8,
+      "pts": [
+        [
+          -160,
+          -192
+        ],
+        [
+          -160,
+          -9
+        ]
+      ]
+    }
+  ],
+  "circus": {
+    "c": [
+      0,
+      0
+    ],
+    "island": 31,
+    "garden": 24,
+    "ring": [
+      31,
+      43
+    ],
+    "pavement": 51
+  },
+  "water": [
+    [
+      [
+        330,
+        -780
+      ],
+      [
+        740,
+        -780
+      ],
+      [
+        740,
+        320
+      ],
+      [
+        330,
+        320
+      ]
+    ]
+  ],
+  "quay": [
+    [
+      [
+        312,
+        -780
+      ],
+      [
+        330,
+        -780
+      ],
+      [
+        330,
+        320
+      ],
+      [
+        312,
+        320
+      ]
+    ],
+    [
+      [
+        330,
+        -25
+      ],
+      [
+        385,
+        -25
+      ],
+      [
+        385,
+        25
+      ],
+      [
+        330,
+        25
+      ]
+    ]
+  ],
+  "beyond": [
+    [
+      [
+        -400,
+        -780
+      ],
+      [
+        -352,
+        -780
+      ],
+      [
+        -352,
+        320
+      ],
+      [
+        -400,
+        320
+      ]
+    ],
+    [
+      [
+        -352,
+        292
+      ],
+      [
+        312,
+        292
+      ],
+      [
+        312,
+        320
+      ],
+      [
+        -352,
+        320
+      ]
+    ],
+    [
+      [
+        -352,
+        -780
+      ],
+      [
+        312,
+        -780
+      ],
+      [
+        312,
+        -732
+      ],
+      [
+        -352,
+        -732
+      ]
+    ]
+  ],
+  "landmarks": [
+    {
+      "id": "sphere",
+      "name": "The Sphere",
+      "c": [
+        -200,
+        110
+      ],
+      "r": 40
+    },
+    {
+      "id": "skyport",
+      "name": "Skyport",
+      "c": [
+        650,
+        0
+      ],
+      "r": 24
+    },
+    {
+      "id": "monument",
+      "name": "Crown monument",
+      "c": [
+        0,
+        0
+      ],
+      "r": 6
+    }
+  ],
+  "tram": [
+    {
+      "id": "T1",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "stops": [
+        {
+          "id": "circus",
+          "name": "Crown Circus",
+          "path": "trunk",
+          "at": [
+            0,
+            -72
+          ],
+          "interchange": "S1/circus",
+          "fronts": "boulevard"
+        },
+        {
+          "id": "records",
+          "name": "Records",
+          "path": "trunk",
+          "at": [
+            0,
+            -380
+          ],
+          "fronts": "boulevard"
+        },
+        {
+          "id": "comet",
+          "name": "Comet Row",
+          "path": "trunk",
+          "at": [
+            0,
+            -690
+          ],
+          "interchange": "T2/comet",
+          "fronts": "boulevard"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; south-west down Sunset Way past Comet Row. Both termini and the depot are off-sheet and not yet planned",
+      "paths": [
+        {
+          "id": "main",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              308,
+              320
+            ],
+            [
+              308,
+              -728,
+              50
+            ],
+            [
+              -140,
+              -728,
+              200
+            ],
+            [
+              -240,
+              -712,
+              200
+            ],
+            [
+              -348,
+              -712,
+              50
+            ],
+            [
+              -348,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "main"
+      ],
+      "stops": [
+        {
+          "id": "harbour",
+          "name": "Harbour",
+          "path": "main",
+          "at": [
+            308,
+            0
+          ],
+          "interchange": "S1/harbour",
+          "fronts": "harbour-road"
+        },
+        {
+          "id": "docks",
+          "name": "Docks",
+          "path": "main",
+          "at": [
+            308,
+            -440
+          ],
+          "fronts": "harbour-road"
+        },
+        {
+          "id": "comet",
+          "name": "Comet Row",
+          "path": "main",
+          "at": [
+            100,
+            -728
+          ],
+          "interchange": "T1/comet",
+          "fronts": "comet-row"
+        },
+        {
+          "id": "lantern",
+          "name": "Lantern West",
+          "path": "main",
+          "at": [
+            -277,
+            -712
+          ],
+          "fronts": "comet-row"
+        }
+      ]
+    }
+  ],
+  "skyrail": [
+    {
+      "id": "S1",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "stations": [
+        {
+          "id": "gardens",
+          "name": "Sphere Gardens",
+          "path": "trunk",
+          "at": [
+            -160,
+            0
+          ],
+          "length": 50,
+          "fronts": "garden-walk"
+        },
+        {
+          "id": "circus",
+          "name": "Crown Circus",
+          "path": "trunk",
+          "at": [
+            95,
+            0
+          ],
+          "length": 50,
+          "interchange": "T1/circus",
+          "fronts": "crown-parade"
+        },
+        {
+          "id": "harbour",
+          "name": "Harbour",
+          "path": "trunk",
+          "at": [
+            325,
+            0
+          ],
+          "length": 50,
+          "interchange": "T2/harbour",
+          "fronts": "harbour-road"
+        },
+        {
+          "id": "skyport",
+          "name": "Skyport",
+          "path": "trunk",
+          "at": [
+            530,
+            0
+          ],
+          "length": 50,
+          "fronts": "harbour-road"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "getaway",
+      "name": "Getaway: crew car from Rocket Lane",
+      "from": "r_orbit_w",
+      "to": [
+        "off_southside",
+        "off_boulevard_south",
+        "off_west",
+        "off_circus_west",
+        "off_seagates"
+      ]
+    },
+    {
+      "id": "official",
+      "name": "Official arrival: Vale's car from the West End to Apron Road",
+      "from": "off_west",
+      "to": [
+        "r_pylon_s"
+      ],
+      "toName": "the official bay"
+    }
+  ],
+  "civic": {
+    "note": "The civic block at exact geometry: contracts/world/handover-block.json (suborned.block/2, block frame, written by bun run block from the Oct 9 city-scale sources with their sha256) → plan by blockToPlan. Block frame is the Unity block at yaw 90: x runs south, y east.",
+    "block": "contracts/world/handover-block.json",
+    "blockToPlan": {
+      "origin": [
+        -130,
+        -230
+      ],
+      "x": [
+        0,
+        -1
+      ],
+      "y": [
+        1,
+        0
+      ]
+    },
+    "scale": {
+      "cafe": {
+        "width": 22,
+        "depth": 11.3,
+        "height": 34.8
+      },
+      "civic-office": {
+        "wings": 15.5,
+        "crown": 38
+      },
+      "source": "Oct 9 city-scale block: HandoverCafe.cs (X 11, Front -1.3, Back 10, Height 34.8), HandoverKit.cs (Hall set x0.75 plan, x1.4 height; towers x2). Rule C-0 holds the block to it."
+    },
+    "walk": 4,
+    "blocks": {
+      "square": [
+        -26,
+        31,
+        -50,
+        -8
+      ],
+      "office": [
+        44,
+        80,
+        -50,
+        4
+      ]
+    },
+    "crossing": [
+      31,
+      44,
+      -32.5,
+      -27.5
+    ]
+  },
+  "notes": {
+    "why": [
+      "Tram: one track (x −2.5) in a 16 m street from z −40, ending 6 m short of the circus. No loop, no crossover, no second track, one stop island; the line starts and ends nowhere.",
+      "Sky rail: a closed loop 24 m up the west promenade, straight over the tram street, round the Sphere station at r 88, then diagonally back across the west city with pylons dropped onto whatever is underneath.",
+      "Harbour line: a second closed loop on the quay with a balloon round the skyport (R 48). It shares no station with the sky rail or the tram.",
+      "Roads: the street kit is one straight street and a side street. The map graph (harbour-map.json) links the civic block to Comet Row and Sunset Way by two exit roads; nothing defines the district's road hierarchy or where those roads go."
+    ],
+    "concept": [
+      "Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.",
+      "Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.",
+      "Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.",
+      "Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.",
+      "Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island and Circus Road's median. Trains turn on a loop round the skyport.",
+      "The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).",
+      "The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.",
+      "Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets."
+    ],
+    "questions": [
+      "Scale: 1.1 × 1.1 km with seven environmental areas. Keep that, or plan only the Records Precinct and Lamplight for the slice and leave the rest as massing?",
+      "Tram: terminate on the circus loop (as drawn), or run on up Crown Avenue to Crown Road?",
+      "Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?",
+      "Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?",
+      "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
+    ],
+    "sources": [
+      "C. Buchanan et al., Traffic in Towns (HMSO, 1963): distributor hierarchy, environmental areas, no frontage access on distributors.",
+      "W. Disney, EPCOT film (1966): radial hub, transit spine, segregated levels.",
+      "Alweg / Seattle Center Monorail (1962): beams about 0.9 × 1.5 m; spans ≤ 30.5 m straight, 22.9 m at R ≥ 183 m, 18.3 m at R < 91 m.",
+      "Tokyo Monorail (1964): the airport line; Hitachi straddle monorail minimum radius 70 m (large type) and 40 m (small type).",
+      "Tram practice: running radius ≥ 50 m, ≥ 25 m at junctions and terminal loops (18 m absolute, Riga); stops 300–500 m apart; track centres 3.2–3.8 m."
+    ]
+  },
+  "timetable": {
+    "lines": [
+      {
+        "line": "T1",
+        "headwaySec": 150,
+        "dwellSec": 20,
+        "runs": [
+          {
+            "from": "T1/comet",
+            "to": "T1/records",
+            "sec": 39
+          },
+          {
+            "from": "T1/records",
+            "to": "T1/circus",
+            "sec": 39
+          },
+          {
+            "from": "T1/circus",
+            "to": "T1/records",
+            "sec": 39
+          },
+          {
+            "from": "T1/records",
+            "to": "T1/comet",
+            "sec": 39
+          }
+        ]
+      },
+      {
+        "line": "T2",
+        "headwaySec": 180,
+        "dwellSec": 20,
+        "runs": [
+          {
+            "from": "T2/harbour",
+            "to": "T2/docks",
+            "sec": 55
+          },
+          {
+            "from": "T2/docks",
+            "to": "T2/comet",
+            "sec": 59
+          },
+          {
+            "from": "T2/comet",
+            "to": "T2/lantern",
+            "sec": 47
+          },
+          {
+            "from": "T2/lantern",
+            "to": "T2/comet",
+            "sec": 47
+          },
+          {
+            "from": "T2/comet",
+            "to": "T2/docks",
+            "sec": 59
+          },
+          {
+            "from": "T2/docks",
+            "to": "T2/harbour",
+            "sec": 55
+          }
+        ]
+      },
+      {
+        "line": "S1",
+        "headwaySec": 120,
+        "dwellSec": 25,
+        "runs": [
+          {
+            "from": "S1/gardens",
+            "to": "S1/circus",
+            "sec": 21
+          },
+          {
+            "from": "S1/circus",
+            "to": "S1/harbour",
+            "sec": 19
+          },
+          {
+            "from": "S1/harbour",
+            "to": "S1/skyport",
+            "sec": 17
+          },
+          {
+            "from": "S1/skyport",
+            "to": "S1/harbour",
+            "sec": 17
+          },
+          {
+            "from": "S1/harbour",
+            "to": "S1/circus",
+            "sec": 19
+          },
+          {
+            "from": "S1/circus",
+            "to": "S1/gardens",
+            "sec": 21
+          }
+        ]
+      }
+    ],
+    "journeys": [
+      {
+        "from": "T1/comet",
+        "to": "T1/circus",
+        "sec": 98,
+        "via": []
+      },
+      {
+        "from": "T1/circus",
+        "to": "T1/comet",
+        "sec": 98,
+        "via": []
+      },
+      {
+        "from": "T1/records",
+        "to": "T1/circus",
+        "sec": 39,
+        "via": []
+      },
+      {
+        "from": "T2/harbour",
+        "to": "T2/comet",
+        "sec": 134,
+        "via": []
+      },
+      {
+        "from": "T2/harbour",
+        "to": "T2/lantern",
+        "sec": 201,
+        "via": []
+      },
+      {
+        "from": "T2/docks",
+        "to": "T2/lantern",
+        "sec": 126,
+        "via": []
+      },
+      {
+        "from": "S1/gardens",
+        "to": "S1/circus",
+        "sec": 21,
+        "via": []
+      },
+      {
+        "from": "S1/gardens",
+        "to": "S1/harbour",
+        "sec": 65,
+        "via": []
+      },
+      {
+        "from": "S1/gardens",
+        "to": "S1/skyport",
+        "sec": 107,
+        "via": []
+      },
+      {
+        "from": "S1/circus",
+        "to": "S1/skyport",
+        "sec": 61,
+        "via": []
+      },
+      {
+        "from": "T1/records",
+        "to": "S1/harbour",
+        "sec": 58,
+        "via": [
+          "T1/circus",
+          "S1/circus"
+        ]
+      },
+      {
+        "from": "T1/records",
+        "to": "T2/docks",
+        "sec": 98,
+        "via": [
+          "T1/comet",
+          "T2/comet"
+        ]
+      },
+      {
+        "from": "T2/harbour",
+        "to": "S1/gardens",
+        "sec": 65,
+        "via": [
+          "T2/harbour",
+          "S1/harbour"
+        ]
+      }
+    ],
+    "openQuestions": [
+      {
+        "question": "Does boarding cost anything beyond wait + ride (fare, cooldown, noise, Trail)?",
+        "for": "Motive",
+        "why": "GDD §02 says time only; I have priced nothing else."
+      },
+      {
+        "question": "Is the wait a fixed schedule the player can read, or a random draw within the headway?",
+        "for": "Motive",
+        "why": "Determines whether travel time is predictable for planning; I assumed a fixed timetable."
+      },
+      {
+        "question": "Should the T1 balloon loop and the S1 Skyport loop turnaround time be part of the journey price, and can the cell board at a loop terminus?",
+        "for": "Motive",
+        "why": "The stop lists do not include loop time."
+      },
+      {
+        "question": "Do the tram T1 extension to Crown Road and the retirement of the Sphere loop and harbour line stand (Datum's plan questions)?",
+        "for": "Sky",
+        "why": "A different network would change the timetable."
+      }
+    ],
+    "notes": [
+      "Speed: average running speed incl. accel/braking, tram 8 m/s (~29 km/h), sky rail 12 m/s (~43 km/h). Run sec = chainage gap / speed, rounded. Starting values [S], tune by playtest.",
+      "Headways [S]: T1 150 s, T2 180 s, S1 120 s. Dwell [S]: tram 20 s, sky rail 25 s.",
+      "Journey sec = in-vehicle ride time only, plus dwell at each intermediate stop. Total price of boarding = wait + ride; expected wait is half the headway (max one full headway).",
+      "Cross-line journeys count ride on each line only; the wait for the second service and the walk between stops are added separately.",
+      "Interchange walk: sky station to tram stop at Crown Circus is about 120 m per the plan; no walking time is set here.",
+      "Both directions assumed symmetric; reverse journeys have the same ride time. Lines are double-track so no single-track conflicts.",
+      "T1 and T2 beyond-sheet extents (Southside, north/south-west termini) are not timetabled; S1 loop at Skyport and T1 circus balloon loop not in stop list, so turnaround time is not priced.",
+      "Phase offsets between lines are not specified; waits assume independent arrival."
+    ]
+  }
+}

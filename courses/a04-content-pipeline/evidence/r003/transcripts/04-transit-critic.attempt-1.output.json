@@ -1,0 +1,47 @@
+{
+  "verdict": "fail",
+  "summary": "Fail. The strict checker fails N-R1: plot rocket-west is 273 m from the nearest stop (limit 250 m). No stop on the current lines can reach it, so the fix is a line change and is Datum's. Two faults the checker cannot see: S1 Skyport (530,0) stands over water with a placeholder 'fronts', so nobody can walk to the entrance. And the timetable states 'price of boarding = wait + ride' as a rule the GDD has not decided: prices are Motive's, and Pulse lists it as an open question. Pulse's run and journey times add up correctly.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "N-R1",
+      "fault": "Plot rocket-west (centroid about −260,−296) is 273 m from the nearest stop or station; the reach limit is 250 m. Vantage's notes say T1 is 260 m or more away, S1 296 m or more and T2 about 418 m, so no stop placed on the current lines can cover it.",
+      "fix": "Change the lines so a stop can fall within 250 m of rocket-west: for example, run a line on Sunset Way or Market Street west with a stop there. Vantage then places the stop, and the checker is rerun until N-R1 passes.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b"
+      ]
+    },
+    {
+      "owner": "Vantage",
+      "rule": "critic",
+      "fault": "S1/skyport at (530,0) stands over water. Vantage's own note says there is no road, foot path or apron there and that 'fronts: harbour-road' is only a placeholder. Under the walking standard water blocks, so the entrance does not front public space and no one can walk to it.",
+      "fix": "Ask Datum to plan the skyport's public space (an apron or a foot path joined to Harbour Road) and front the station onto it. Otherwise move the station to a spot on the trunk where its entrance really fronts a walkable street, keeping S-S2 spacing.",
+      "chunks": [
+        "0e426f4211a2f1f25c328968",
+        "c5fb128448665c55b7c335fb",
+        "cfba161c458af766f224f713"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "The timetable notes state 'Total price of boarding = wait + ride' as a settled rule, and the open question says 'GDD §02 says time only'. The cited passage (§14 roles) only shows that schedules are Pulse's and prices are Motive's; it says nothing about §02. Pulse's own open question asks whether boarding costs anything else, so the note states a price rule the GDD has not decided.",
+      "fix": "Remove the boarding-price statement from the notes. Give only headways, dwells and ride times, tagged [S], and leave the cost of boarding wholly in the open question to Motive, with no claim about §02 unless a retrieved passage shows it.",
+      "chunks": [
+        "352b7a6ac9f8c5a12afcbeff",
+        "c1909f164651d9c88cd65c53"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "cfba161c458af766f224f713",
+    "c5fb128448665c55b7c335fb",
+    "0e426f4211a2f1f25c328968",
+    "352b7a6ac9f8c5a12afcbeff",
+    "c1909f164651d9c88cd65c53",
+    "ddab53626d020f8340f019b3"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "fronts": "boulevard",
+      "interchange": "S1/circus"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard",
+      "interchange": "T2/comet"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "main",
+      "at": [
+        308,
+        0
+      ],
+      "fronts": "harbour-road",
+      "interchange": "S1/harbour"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "main",
+      "at": [
+        308,
+        -440
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "main",
+      "at": [
+        100,
+        -728
+      ],
+      "fronts": "comet-row",
+      "interchange": "T1/comet"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern West",
+      "path": "main",
+      "at": [
+        -277,
+        -712
+      ],
+      "fronts": "comet-row"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "fronts": "garden-walk",
+      "length": 50
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "fronts": "crown-parade",
+      "length": 50,
+      "interchange": "T1/circus"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        325,
+        0
+      ],
+      "fronts": "harbour-road",
+      "length": 50,
+      "interchange": "T2/harbour"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "fronts": "harbour-road",
+      "length": 50
+    }
+  ],
+  "notes": [
+    "Not run through the plan checker (I have no shell here). Every distance below is worked out by hand from the plan geometry. N-R1 WILL FAIL. Splice or Datum should run bun tools/plan/cli.ts to confirm.",
+    "N-R1 fail, for Datum: plot rocket-west (-260,-296) is 260 m or more from T1, 296 m or more from S1 and about 418 m from T2. No stop on the current lines can reach it (reach 250). It needs a line change, e.g. a stop on Sunset Way or Market Street west. All other plots are covered; closest are crown-terraces and crescent-north at 247 m.",
+    "S1 Harbour moved from x 340 to x 325. At 340 it was only 190 m from Skyport (S-S2 minimum is 200). S1 spacing is now 255 / 230 / 205 m. At 325 it is 17 m from the T2 Harbour stop (308,0).",
+    "T1 stops kept where Datum had them. Spacing is 308 and 310 m. T1/circus (0,-72) is 119 m from S1/circus (95,0), inside the 150 m interchange limit.",
+    "T2 stop distances along the line from (308,320): Harbour 320, Docks 760, Comet Row ≈1234, Lantern West ≈1612. Spacing is 440 / 474 / 378 m. Comet Row (100,-728) is 107 m from T1/comet, clear of the diamond at (0,-728). Lantern West sits on the short y −712 straight; its 30 m platform fits with about 6 m spare each end.",
+    "Interchange pairs: S1/circus–T1/circus, S1/harbour–T2/harbour, T1/comet–T2/comet. All three lines join into one network (N-C1).",
+    "For Datum: S1 Skyport (530,0) stands over water. The plan has no road, foot path or apron there, so 'fronts: harbour-road' is only a placeholder until the skyport's public space is planned. No T2 stop north of Crown Parade: a stop clear of the Crown Road junction would sit at about y 300, only 300 m from Harbour and at the sheet edge.",
+    "S1 Sphere Gardens entrance opens south onto Garden Walk at x −160, keeping the Records Axis. Docks (308,−440) keeps its platform clear of the Market Street junction (y −401 to −419)."
+  ],
+  "sources": [
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

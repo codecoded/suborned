@@ -1,0 +1,152 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "interchange": "T2/comet",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "main",
+      "at": [
+        308,
+        0
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "main",
+      "at": [
+        308,
+        -440
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "main",
+      "at": [
+        100,
+        -728
+      ],
+      "interchange": "T1/comet",
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern West",
+      "path": "main",
+      "at": [
+        -277,
+        -728
+      ],
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "main",
+      "at": [
+        -348,
+        -310
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    }
+  ],
+  "notes": [
+    "I have not run the plan checker because I have no shell. Every figure here is worked out by hand. Datum or Splice needs to run bun tools/plan/cli.ts to confirm. By my count N-R1 now passes. The worst plots are crescent-north at about 247.0 m (from S1 Crown Circus) and crown-terraces at about 247.1 m (from S1 Sphere Gardens), both under the 250 m reach. That margin is only 3 m.",
+    "Critic fault: I removed S1 Skyport rather than leave it unreachable. Every point on the trunk east of the quay pier (x 385) is over water, so no station there can open onto public space. For Datum: plan the skyport's public space (an apron, or a foot path joined to Harbour Road), then I will add Skyport at least 200 m east of Harbour (x ≥ 540).",
+    "Until Datum plans that, the Skyport Line has no station at the skyport, and trains turn on the loop empty. This is a gap in the airport line. Aster should decide whether that is acceptable for the draft.",
+    "S1 Harbour is back at Datum's x 340. Its 50 m platform runs from x 315 to 365, over the quay pier (x 330–385, y ±25), which is walkable. The entrance lands on the quay at the east edge of Harbour Road (x 312). S1 spacing is 255 / 245 m. Harbour is 32 m from T2 Harbour (308,0), inside the 150 m interchange limit.",
+    "New T2 stop: Sunset Way (-348,-310), on the west-lane straight. The R300 reverse curve starts at about y -230, so the 30 m platform (y -325 to -295) is on straight track. This stop covers rocket-west at 88 m. Distance along the line from Lantern West is about 467 m (21 m of straight, the 78.5 m R50 arc, then 368 m). That is inside 300–500.",
+    "Lantern West moved to (-277,-728) to sit on Datum's revised path. The R50 corner fillet begins at x -298, so the platform (x -292 to -262) is on straight track. T2 spacing: Harbour→Docks 440, Docks→Comet ≈475, Comet→Lantern 377, Lantern→Sunset ≈467 m. T1 spacing is 308 / 310 m.",
+    "Interchange pairs: T1/circus with S1/circus (119 m), T2/harbour with S1/harbour (32 m), and T1/comet with T2/comet (107 m). These join all three lines into one network (N-C1). I did not use the optional S1 station over Circus Road at x -360. It would sit exactly at the 200 m minimum spacing, with no margin, and nothing needs it for reach or connection.",
+    "Next owner: Datum. Inputs: these stops plus the skyport apron request. Done-check: bun tools/plan/cli.ts exits 0 with N-R1, T-S1, S-S2 and N-C1 passing. Datum's T-C1 clearance question at the Sunset/Circus corner (2.1 m) is still open for Splice."
+  ],
+  "sources": [
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "0e426f4211a2f1f25c328968",
+    "c5fb128448665c55b7c335fb"
+  ]
+}

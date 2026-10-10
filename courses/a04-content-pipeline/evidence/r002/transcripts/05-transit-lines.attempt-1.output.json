@@ -1,0 +1,70 @@
+{
+  "lines": [
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north on Harbour Road past Crown Road (y 320); south on Sunset Way past Comet Row (y -780); termini and depot off-sheet",
+      "paths": [
+        {
+          "id": "main",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              306.5,
+              320
+            ],
+            [
+              306.5,
+              -416.5,
+              50
+            ],
+            [
+              -140,
+              -416.5,
+              50
+            ],
+            [
+              -200,
+              -403.5,
+              50
+            ],
+            [
+              -348,
+              -403.5,
+              50
+            ],
+            [
+              -348,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": []
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "On sources: the critic says e6ffe1ba…, c1909f… and e20799f… were not retrieved, but all three are in the retrieved set (the T1 line, the plan's open questions and the 'why' notes), so I still cite them. Tide's draft comes from the brief itself, not from a passage. Aster: please confirm what the draft contains, since no passage holds it.",
+    "S1 and T1 are kept unchanged. The plan's concept note [cfba…] ends T1 on the circus balloon loop. The brief's draft runs T1 through the circus. The plan's open questions [c190…] leave this to Sky, so I have not resolved it. If Sky wants it, T1 can run on over the island, up Crown Avenue, then turn west on Crown Road at R50 to the sheet edge.",
+    "No two-way Sky Loop is proposed. The concept [cfba…] picks one straight S1 trunk over public space, and retiring the loops is an open question for Sky [c190…]. Geometry: an R70 fillet (minimum from the skyrail standards) at a ring corner swings about 29 m inside the vertex. The kerb corner of two 24 m roads is only about 17 m in, so the beam would pass over corner plots, which fails S-C1.",
+    "T2 Harbour Line runs through. There is no street south of Comet Row and no street space on the sheet for a balloon loop of R25 or more, so T2 cannot end inside the sheet (T-L1). Route: north edge, down Harbour Road, west along Market Street crossing T1 at grade, down Sunset Way to the south edge. Both ends reach the sheet edge (N-D1). One path, so no order is needed.",
+    "T-C1 corners, worked by hand, not yet run through the checker. Harbour Road/Market Street: arc centre (256.5,-366.5), kerb corner 46.7 m away, inner track at r 48.2. Market Street/Sunset Way: arc centre (-298,-453.5), kerb corner 45.7 m away, inner track at r 48.2. The S-curve between x -140 and -200 moves the line 13 m across Market Street's median on R50 fillets.",
+    "N-C1 room for interchanges (Vantage places the stops). T2 meets T1 at Boulevard × Market Street (0,-416.5), 36 m from T1's Records stop. T2 meets S1 under the beam at Harbour Road (306.5,0), 33.5 m from Harbour station. Both are within the 150 m interchange limit.",
+    "Conflict for Aster: the plan concept calls Crown Circus 'the one interchange' [cfba…]. If Sky accepts T2, there are two more: Records/Market Street and Harbour. The concept note would then need updating, and that note belongs to the plan owner (me) once Sky decides.",
+    "Handoffs. Waymark: T2 runs along Market Street past both Records Precinct gates (Rocket Lane and Satellite Street), so a T2 stop there is a station for police to seal. Pulse: T1 and T2 cross on the level (a diamond crossing) at Boulevard × Market Street. Done-check: bun tools/plan/cli.ts exits 0. I have not run it here (no shell). Keel to review."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "6e037fc577c7f2aa61117144",
+    "e6ffe1ba0919c87923015de5",
+    "c1909f164651d9c88cd65c53",
+    "e20799f1f673824d09ce452d"
+  ]
+}

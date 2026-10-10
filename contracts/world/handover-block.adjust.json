@@ -1,0 +1,31 @@
+{
+ "schema": "suborned.block-adjust/1",
+ "owner": "Vantage",
+ "frame": "block frame (handover-block.json frame; plan x = -130 + y, plan y = -230 - x). Applied by tools/plan/block.ts; every entry needs a reason; an entry naming an id the source lacks stops the build.",
+ "adjustments": [
+  {
+   "op": "addBay", "id": "officialBay",
+   "polygon": [[77, -38.2], [80, -38.2], [80, -23.8], [77, -23.8]],
+   "reason": "Vantage: the official bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -168.2..-153.8, y -310..-307. The Oct 9 source has no bay object (the ground is one flat floor), so the lay-by is stated here. Checker C-4."
+  },
+  {
+   "op": "addBay", "id": "getawayBay",
+   "polygon": [[4, -50], [13, -50], [13, -47], [4, -47]],
+   "reason": "Vantage: the getaway bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -180..-177, y -243..-234. Not in the Oct 9 source. Checker C-4."
+  },
+  {
+   "op": "addStructure",
+   "item": { "id": "official-boarding-pavilion", "name": "Official pickup pavilion B", "category": "boarding-canopy", "polygon": [[73.173, -38.5], [77, -38.5], [77, -23.5], [73.173, -23.5]], "z": 0, "height": 4.62 },
+   "reason": "Vantage: canopies stand on the pavement edge beside the lay-by, not over it. The Oct 9 nav has only the pavilion's two supports (inside the bay); the canopy footprint (15 x 3.827) and height 4.62 are carried from the Oct 5 testbed manifest at the position Vantage set."
+  },
+  {
+   "op": "addStructure",
+   "item": { "id": "getaway-boarding-pavilion", "name": "Getaway canopy", "category": "boarding-canopy", "polygon": [[4.3, -47], [12.7, -47], [12.7, -44.858], [4.3, -44.858]], "z": 0, "height": 2.587 },
+   "reason": "Vantage: as the official canopy; footprint 8.4 x 2.143 and height 2.587 from the Oct 5 testbed manifest, on the pavement edge at y -47."
+  },
+  { "op": "edit", "id": "boarding-pavilion-support-0", "move": [-2.3, 0], "z": 0, "height": 3.633, "reason": "Supports follow the canopy out of the lay-by (x 77.3..79.3 -> 75..77, inside the canopy footprint); z -0.18 was the lay-by level, now they stand on the pavement, height cut by the 0.18 so the top stays where the source had it." },
+  { "op": "edit", "id": "boarding-pavilion-support-1", "move": [-2.3, 0], "z": 0, "height": 3.633, "reason": "As boarding-pavilion-support-0." },
+  { "op": "edit", "id": "getaway-pavilion-support-0", "move": [0, 1.16], "z": 0, "height": 1.955, "reason": "Supports follow the canopy out of the lay-by (y -48.16..-47.04 -> -47..-45.88, inside the canopy footprint); z -0.18 was the lay-by level, now they stand on the pavement, height cut by the 0.18 so the top stays where the source had it." },
+  { "op": "edit", "id": "getaway-pavilion-support-1", "move": [0, 1.16], "z": 0, "height": 1.955, "reason": "As getaway-pavilion-support-0." }
+ ]
+}

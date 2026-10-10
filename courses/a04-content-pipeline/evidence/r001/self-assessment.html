@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>A04 content pipeline · self-assessment</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;max-width:900px;padding:0 1rem;color:#1d2a30;background:#fbf8f1}h1,h2{color:#0f5d63}code{background:#eee6d6;padding:0 .25em;border-radius:3px}td,th{border:1px solid #d8cfbd;padding:.35em;vertical-align:top;text-align:left}table{border-collapse:collapse;width:100%}</style>
+<p style="background:#f6e2c8;padding:.5em"><b>Superseded.</b> r001 was recorded against the Oct 5 civic block; it replays at commit 3dbb9ca. The submitted run is r003 (see ../../README.md).</p><h1>Self-assessment · A04 content pipeline (run r001)</h1>
+
+<h2>What the pipeline does well</h2>
+<ul>
+<li><b>Game-specific.</b> It is built for this game. The outputs are edits to the district plan that the Unity graybox is derived from. They are judged by the same plan checker that gates every plan. The GDD rule "no AI at runtime, exact replay" holds: <code>bun run levels:replay r001</code> rebuilds every round from committed data without Docker or a model.</li>
+<li><b>Deterministic and model critics split the work.</b> The checker (45 rules, including 7 new transit rules, each with a source and a failing test) catches geometry. Keel catches what the rules can't. In r001 the checker was clean in round 1 and Keel still found 3 real faults:
+  <ul>
+  <li>A station over water. The plot rule N-P2 doesn't cover water.</li>
+  <li>A journey time that added a ride which never happens.</li>
+  <li>An open question claiming the GDD makes boarding a fast-travel power, which it does not.</li>
+  </ul>
+  Each fault cited chunk ids. Those chunks were pinned into the owner's next retrieval, and both owners fixed their faults in round 2.</li>
+<li><b>Nothing invented.</b> Pulse left boarding unpriced and raised it as an open question for Sky and Motive. Vantage refused to keep an entrance nobody could walk to and handed the gap back.</li>
+<li><b>Everything is versioned.</b> Every round has a version (<code>0.2.0-r001.N</code>) and a sheet named with that version. Card, corpus and checker-code hashes are recorded.</li>
+</ul>
+
+<h2>Weaknesses found</h2>
+<table><tr><th>issue</th><th>evidence</th><th>effect</th></tr>
+<tr><td>Agent notes addressed to another owner are not routed</td><td>Vantage, round 2: "For Datum (blocking): the airport line has no airport station…". Keel passed, so the run ended.</td><td>The accepted S1 "Skyport Line" has no Skyport station. This is a design gap for Sky.</td></tr>
+<tr><td>The checker has no "entrance reachable on foot" rule for stations</td><td>Keel caught the station over water, but no rule did. W-1 checks walks only from the Café and Office doors.</td><td>Correctness relied on the model critic.</td></tr>
+<tr><td>An unsupported claim in my own brief leaked into retrieval</td><td>Brief 001 says boarding as fast travel "is in Datum's hold". Datum's query repeats that. Pulse's round-1 question then misquoted the hold.</td><td>Keel caught it, at the cost of one round.</td></tr>
+<tr><td>Flat tram crossing T1 × T2 with no rule</td><td>Keel noted it twice as out of scope.</td><td>Unchecked.</td></tr>
+<tr><td>Agents can't run the checker</td><td>Every proposal says "not run through the checker, I have no shell".</td><td>Geometry is hand-calculated, and the loop catches errors after the fact.</td></tr>
+</table>
+
+<h2>Retrieval tweak (applied)</h2>
+<p><code>standards › tram</code> holds <code>stopSpacing</code>. The single query "tram stop spacing sky rail stations every area in reach of a stop interchange" ranked it 9th, outside the top 8 the agents see, because the plan's notes outranked it. Every objective now leads with a literal standards query, <code>standards tram stopSpacing radiusRunning radiusLoop platform trackCentres</code>. With that change it ranks 3rd for Datum, 2nd for Vantage and 5th for Pulse and Keel (<code>evidence/ranks.json</code>, <code>bun run levels:ranks</code>).</p>
+
+<h2>Next concrete tweaks</h2>
+<ol>
+<li><b>Prompt or retrieval:</b> in <code>tools/levels/objectives/index.ts</code>, replace Datum's query "Datum holds boarding as fast travel; …" with "the cell rides trams and sky rail between stops and stations". That stops the unsupported claim at its source.</li>
+<li><b>Routing:</b> add an optional <code>handoffs: [{owner, blocking, ask}]</code> field to each builder schema. A blocking handoff becomes a fault for its owner, just like a Keel fault, so Vantage's Skyport request would have reached Datum in round 3.</li>
+<li><b>Checker:</b> add a rule that every stop and station entrance has a direct walk from public space (reusing <code>walk.ts</code>), so a station over water fails deterministically.</li>
+</ol>
+
+<h2>Grade against the brief</h2>
+<p>Every brief item is met: the game-specific pipeline, three outputs, side-by-side evidence (<a href="report.html">report.html</a>), a natural critic correction, a README and this self-assessment. The open design gap (no Skyport station) is honest and recorded. It is not hidden.</p>
+</html>

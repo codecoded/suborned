@@ -1,0 +1,76 @@
+{
+  "lines": [
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; west along Circus Road past Sunset Way. Both termini and the depot are off-sheet and not yet planned",
+      "paths": [
+        {
+          "id": "main",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              308,
+              320
+            ],
+            [
+              308,
+              -728,
+              50
+            ],
+            [
+              -348,
+              -728,
+              50
+            ],
+            [
+              -348,
+              -200,
+              300
+            ],
+            [
+              -332,
+              -120,
+              300
+            ],
+            [
+              -332,
+              6,
+              50
+            ],
+            [
+              -400,
+              6
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "main"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Rocket-west reach fix: T2 now runs north up Sunset Way. Rocket-west (-260,-296) is 88 m from the track at x -348, so a Sunset Way stop near y -300 falls inside the 250 m reach. The run also passes Lantern West and Lamplight West. T2 then turns west into Circus Road and leaves the sheet at x -400.",
+    "T-C1, hand-calculated, checker not run. Lanes: Harbour Road east carriageway x 308; Comet Row south y -728; Sunset Way west x -348. At y -200 to -120, R300 reverse curves cross the 4 m median to the east lane, x -332. Circus Road: north lane, y 6.",
+    "Clearance to each inside kerb corner, centreline / inner track: Harbour/Comet 7.6/5.8 m; Comet/Sunset 7.6/5.8 m; Sunset/Circus 3.9/2.1 m, which is tight. Splice should confirm whether T-C1 tests the rails or the vehicle envelope.",
+    "T2 stays out of Circus Road's 6 m median, where S1 pylons stand (S-P2). Its double track (y 4.2 and 7.8) fits the 6 m north carriageway, with S1 24 m overhead.",
+    "N-C1, for Vantage: T2 runs 32 m from the S1 Harbour station (340,0). It crosses T1 at (0,-728), about 38 m from T1's Comet Row stop (0,-690). Optional: an S1 station over Circus Road near x -360 would be 200 m from Sphere Gardens, the minimum spacing, and directly above T2. Vantage's call.",
+    "Kept unchanged: T1 (Boulevard trunk plus balloon loop round the circus island, which already covers 'T1 through the circus') and S1 (straight trunk plus skyport loop). Running T1 up Crown Avenue, and retiring the Sphere and quay loops, are still open questions for Sky.",
+    "The Sky Loop is still rejected under S-C1. An R70 fillet cuts about 29 m inside each ring corner, but the kerb corner of a 24 m road is only about 17 m in, so the beam would pass over corner plots.",
+    "No speeds, timetables, fares or off-sheet destinations are set; no source gives them. Done-check: Vantage places the stops, then bun tools/plan/cli.ts must exit 0 with N-R1 passing."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "c1909f164651d9c88cd65c53",
+    "d455bd85bd15e441cf14f08d"
+  ]
+}
