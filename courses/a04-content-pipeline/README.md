@@ -72,22 +72,55 @@ Every run from r002 to r006 replays OK, with drift labelled by cause: "recorded 
 
 ## Prerequisites
 - [Bun](https://bun.sh) 1.4 or later, and git.
-- Docker, running. The stack uses the fixed compose project name `suborned` on ports `127.0.0.1:18504` (SurrealDB) and `18505` (embeddings). Any checkout reuses the same containers and volumes, and other services must not hold those ports. `bun run up` from a second checkout rebuilds and recreates those containers, which interrupts any run in progress in another checkout, so don't run two checkouts' generation at once.
-- [Claude Code](https://code.claude.com), signed in, with `claude` on `PATH`. Set `CLAUDE_BIN` to use another path. Calls run on your Claude plan. The models come from the crew cards: Opus for Datum, Vantage and Keel; Sonnet for Pulse.
+- Docker (Desktop, or Engine with Compose v2), running. The stack needs about 1 GB of disk for images and the model, and 1.5 GB of memory.
+  - It uses the fixed compose project name `suborned`, on ports `127.0.0.1:18504` (SurrealDB) and `18505` (embeddings). Other services must not hold those ports.
+  - Any checkout reuses the same containers and volumes. Running `bun run up` from a second checkout recreates those containers, so don't run generation from two checkouts at once.
+- [Claude Code](https://code.claude.com), signed in, with `claude` on `PATH` (tested with 2.1.296). Set `CLAUDE_BIN` to use another path.
+  - Calls run on your Claude plan. The crew cards ask for Opus (Datum, Vantage, Keel) and Sonnet (Pulse).
+  - If your plan has no Opus in Claude Code, prefix the run with `CLAUDE_MODEL=sonnet`.
 - Unity is **not** needed.
+- Tested from a fresh GitHub clone with an empty Docker (no images, volumes or model) on macOS arm64. The Docker images are also built and run on linux/amd64.
 
 ## Run it from a fresh clone
 ```sh
 git clone -b assignment-04 https://github.com/codecoded/suborned.git suborned-a04 && cd suborned-a04
 bun install
+bun run doctor                 # preflight: Bun, Docker, ports, Claude Code and its flags; one line per check, with the fix for any FAIL
 bun run levels:replay r006     # offline: no Docker, no model. Checks schemas, hashes, retrieved text and the pinned block, reruns the checker → REPLAY OK
-bun run up                     # SurrealDB + embedding service; the first start builds the image and downloads the model (a few minutes)
-bun run ingest                 # index the GDD and the plan
+bun run up                     # SurrealDB + embedding service. First start pulls SurrealDB, builds the image and downloads the model (about 3 min)
+bun run ingest                 # index the GDD and the plan into SurrealDB (about 25 s)
+bun run doctor                 # optional: now also checks SurrealDB, the embeddings and that the corpus is current
 bun run levels transit         # the generation run → runs/levels/harbour-district/r00N/ (the next free id) (exit 0 ACCEPTED, exit 1 REJECTED or ERROR; see below)
 bun run levels:replay r00N     # replay the new run
 bun run levels:sheets          # re-render every run's sheets + out/levels/index.html
 ```
+**Measured from nothing** (fresh GitHub clone, empty Docker):
+
+| step | time |
+|---|---|
+| clone + install | 7 s |
+| replay r006 | 20 s |
+| `up` | 163 s |
+| `ingest` | 24 s |
+| `levels transit` (r007, ACCEPTED in 2 rounds) | 414 s |
+| replay r007 | 14 s |
+| sheets | 97 s |
+
+That is about 12 minutes in total.
+
+**Where the database is used:** every model call in `levels transit` retrieves its passages from SurrealDB, with an HNSW vector search and a BM25 full-text search merged by reciprocal rank fusion. `levels:replay` doesn't need the database. Each call record stores the exact passages retrieved, and replay checks them against the GDD and plan on disk.
+
 **Exit codes:** `levels transit` exits 0 only when the run is ACCEPTED. Any outcome still writes its `r00N` folder with `run.json` and every round. Exit 1 means REJECTED (3 rounds without an accepted round) or ERROR (a call failed twice). Either way, carry on: `levels:replay` and `levels:sheets` work for every recorded run. A REJECTED run is a valid outcome of the critic loop, not a broken install. The faults that stayed open are in `round-3/faults.json`.
+
+**If something fails:**
+
+| symptom | fix |
+|---|---|
+| `bun run up`: port is already allocated | Something else holds 18504 or 18505. Stop it. `bun run doctor` names the port. |
+| `bun run up`: cannot connect to the Docker daemon | Start Docker Desktop, or the Docker service. |
+| `levels transit`: "No corpus indexed" or "changed since the last ingest" | Run `bun run ingest`. Run it again after any GDD or plan change. |
+| `levels transit`: a call fails twice and the run ends with ERROR | Look at `out/levels/harbour-district/r00N/calls/*.stderr.txt`. If you're not signed in, run `claude` once and sign in. For a model access error, prefix the run with `CLAUDE_MODEL=sonnet`. |
+| The first `up` is slow or times out | The model download needs network access to Hugging Face. Rerun `bun run up`, which resumes. |
 
 Optional: `bun run check` runs the typecheck, the tests (model-free, about 3 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
 
