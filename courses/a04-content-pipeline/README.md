@@ -5,7 +5,7 @@ Three outputs for The Suborned's Harbour District, as edits to the district plan
 
 1. **Lines** (Datum, world planner): tram and sky rail routes, with fillet radii, double track and a path `order`.
 2. **Stops and stations** (Vantage, level designer): positions on the lines, platforms, the public space each entrance fronts, and interchange pairs.
-3. **Timetable** (Pulse, schedule and AI designer): headway, dwell and run times per line, plus journey times. Boarding as fast travel has no price in the GDD, so it goes out as an open question and is never priced.
+3. **Timetable** (Pulse, schedule and AI designer): speed, dwell and headway per line, plus the route of each journey. Run times and journey totals are derived in code from the checker's chainages. GDD v0.15 §02 makes boarding fast travel priced in time only (the wait plus the ride), so anything beyond that goes to Motive as an open question and is never invented.
 
 ## Why this matters for this game
 The Suborned is a commander game. The cell moves through a city that runs on schedules, and a tram or sky rail is a window the player can see coming (pillar: orchestrate the city). Interchanges and stations are where the police seal the district. The GDD's house rule is "no AI at runtime; content generated at build time; same orders → same result". So the network is generated once, checked deterministically, and committed with everything needed to replay it.
@@ -15,10 +15,15 @@ The Suborned is a commander game. The cell moves through a city that runs on sch
 - **Retrieval:** SurrealDB HNSW (BGE-small) and BM25 run per query, merged by reciprocal rank fusion, over the agent GDD, the human GDD and the plan.
 - **Crew member:** runs headless through `claude -p`. Its crew card is the system prompt and structured output is its only tool.
 - **Validation:** each output is checked against its zod schema, then applied to a copy of the plan.
-- **Plan checker:** `tools/plan/cli.ts --strict` gives exit code 0 or 1 and draws a CAD sheet.
-- **Critic:** Keel judges the candidate. Every fault names an owner and cites chunk ids.
+- **Plan checker:** `tools/plan/cli.ts --strict` gives exit code 0 or 1 and draws a CAD sheet. It checks the run's pinned civic block, and its rules include reach, spacing, connectivity and walk access to every stop (W-2, W-3).
+- **Checks in code:**
+  - every cited passage was in that builder's own retrieval (`cite.ts`);
+  - the timetable is derived and its routes checked (`timetable.ts`);
+  - a blocking hand-off between owners becomes a fault for its owner (`handoff.ts`).
+- **Critic:** Keel judges what no rule covers. Every fault names an owner and cites chunk ids. A claim Keel can't find in its passages is an open question, not a fault.
 - **Revision:** each fault goes back to its owner with the cited chunks pinned into their retrieval, for up to 3 rounds.
-- **ACCEPTED** means checker exit 0 and Keel pass.
+- **ACCEPTED** means checker exit 0, Keel pass and no open fault from the code checks.
+- **Replay:** `levels:replay` rebuilds a run offline from `runs/`. It labels drift by cause (GDD version, superseded block, checker rules added since the run). Integrity failures still fail.
 
 ## The submitted run: `r006`, ACCEPTED in 3 rounds
 r006 ran on:
@@ -82,7 +87,7 @@ bun run levels transit         # the generation run → runs/levels/harbour-dist
 bun run levels:replay r00N     # replay the new run
 bun run levels:sheets          # re-render every run's sheets + out/levels/index.html
 ```
-**Exit codes:** `levels transit` exits 0 only when the run is ACCEPTED. Any outcome still writes its `r00N` folder with `run.json` and every round. Exit 1 means REJECTED (3 rounds without checker exit 0 and Keel pass) or ERROR (a call failed twice). Either way, carry on: `levels:replay` and `levels:sheets` work for every recorded run. A REJECTED run is a valid outcome of the critic loop, not a broken install. The faults that stayed open are in `round-3/keel.json`.
+**Exit codes:** `levels transit` exits 0 only when the run is ACCEPTED. Any outcome still writes its `r00N` folder with `run.json` and every round. Exit 1 means REJECTED (3 rounds without an accepted round) or ERROR (a call failed twice). Either way, carry on: `levels:replay` and `levels:sheets` work for every recorded run. A REJECTED run is a valid outcome of the critic loop, not a broken install. The faults that stayed open are in `round-3/faults.json`.
 
 Optional: `bun run check` runs the typecheck, the tests (model-free, about 3 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
 
