@@ -1,0 +1,117 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        545,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "I checked these by hand only. I had no shell, so I did not run `bun tools/plan/cli.ts`, and it still needs to exit 0. T-S1 passes: T1 stops are 308 m and 310 m apart. S-S2 passes: S1 station gaps are 255, 245 and 205 m.",
+    "T-S2/S-S1 pass: every platform is on straight track or beam. T1 circus covers z -57 to -87 and the trunk ends at -56. S1 Skyport covers x 520 to 570 and the trunk ends at 575. N-P1 passes: every stop is on its line's trunk, 0 m off.",
+    "W-3: tram stops front the Boulevard (its 28 m reservation). Gardens fronts Circus Road; Crown Circus fronts the Crown Parade mall. Harbour and Skyport are over water, so they front skyport-pier. Harbour Road's edge (x 312) is 28 m from Harbour station, too far to name. W-2 passes: every stop is on a road, the mall, the pier or the apron.",
+    "S-I1/N-C1 pass: T1/circus (0,-72) to S1/circus (95,0) is 119 m, within 150. The two lines join there, so the network is one connected whole.",
+    "N-R1 FAILS on the current lines; no stop placement fixes it. Nearest stop to each failing plot: docks-east 293 m (worst), lantern-west 289 m, harbour-east 278 m, rocket-west 273 m. Plots at x ±260 are more than 250 m from the T1 trunk at x 0 whatever the z.",
+    "Every other plot centroid is within 250 m. Two are close to the limit: crown-terraces is 247 m from Sphere Gardens and crescent-north 247 m from S1 Crown Circus. Do not move those stations without rechecking these two."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 fails on the current lines. Over reach 250: docks-east (262,-512) 293 m, lantern-west (-260,-563) 289 m, harbour-east (262,-267) 278 m, rocket-west (-260,-296) 273 m. East: add a line on Harbour Road, e.g. your deferred T2. West: add one on or near Sunset Way or Lantern/Rocket Lane. I can then place stops near z -270/-510 and -300/-560."
+    }
+  ],
+  "answers": [
+    {
+      "from": "Datum",
+      "ask": "S1 stations break stationSpacing [200, 500]: Harbour (340) to Skyport (530) is 190 m. The S1 trunk now runs to x 575. Move Skyport to about x 545 (a 50 m station fits 520 to 570 on the apron), or move Harbour to about x 325, so every gap is at least 200 m.",
+      "done": true,
+      "note": "Moved Skyport to x 545 (platform x 520 to 570, on the apron quay, fronting skyport-pier). Harbour to Skyport is now 205 m. Station gaps are now 255, 245 and 205 m."
+    }
+  ]
+}

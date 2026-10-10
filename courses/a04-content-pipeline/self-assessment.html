@@ -1,58 +1,57 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><title>A04 content pipeline · self-assessment</title>
-<style>body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;max-width:960px;padding:0 1rem;color:#1d2a30;background:#fbf8f1}h1,h2{color:#0f5d63}code{background:#eee6d6;padding:0 .25em;border-radius:3px}td,th{border:1px solid #d8cfbd;padding:.35em;vertical-align:top;text-align:left}table{border-collapse:collapse;width:100%}</style>
-<h1>Self-assessment · A04 content pipeline (run r006)</h1>
-<p>Submitted run: <code>runs/levels/harbour-district/r006/</code>, ACCEPTED in 3 rounds. It ran on GDD v0.15.0, the Oct 9 civic block (café 22 × 11.3 × 34.8 m, rule C-0) and the plan with the Skyport Pier. The five runs before it are kept as evidence. Each found a defect, and each defect was fixed before the next run.</p>
+<style>body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;max-width:980px;padding:0 1rem;color:#1d2a30;background:#fbf8f1}h1,h2{color:#0f5d63}code{background:#eee6d6;padding:0 .25em;border-radius:3px}td,th{border:1px solid #d8cfbd;padding:.35em;vertical-align:top;text-align:left}table{border-collapse:collapse;width:100%}</style>
+<h1>Self-assessment · A04 content pipeline (run r008)</h1>
+<p>Submitted run: <code>runs/levels/harbour-district/r008/</code>, ACCEPTED in 3 rounds. It ran on GDD v0.15.0, retrieval chunker v2 and the Oct 9 civic block (café 22 × 11.3 × 34.8 m, rule C-0). Every number below comes from a committed record, or is marked as not reproducible from this commit.</p>
 
 <h2>What the pipeline does well</h2>
 <ul>
-<li><b>Game-specific.</b> The outputs are edits to the district plan that the Unity graybox is derived from. They are judged by the same plan checker that gates every plan. The GDD rule "no AI at runtime, exact replay" holds: <code>bun run levels:replay r006</code> rebuilds every round from committed data, without Docker or a model. That includes the derived timetable.</li>
-<li><b>Models decide; code computes and checks.</b> In r006 each kind of work went to whoever does it best:
-  <ul>
-  <li>Datum chose to add a T3 Sunset Line;</li>
-  <li>Vantage placed the stops;</li>
-  <li>Pulse chose speeds, dwells, headways and routes;</li>
-  <li>code derived every run time and journey total;</li>
-  <li>code checked citations and walk access;</li>
-  <li>Keel judged what no rule can.</li>
-  </ul>
-  r006 recorded 0 citation faults and 0 timetable faults.</li>
-<li><b>Owners talk through the loop.</b> In round 1, Vantage told Datum that N-R1 couldn't pass on the current lines, and Datum asked Vantage for T2 interchanges. Both blocking hand-offs became faults for their owners. In round 2 Keel passed, but Datum's ask for T3 stops was still open, so the run went to round 3 rather than accepting a network with an unstopped line.</li>
-<li><b>The Skyport gap is closed.</b> Runs r001–r005 could not place a Skyport station because nobody could walk to it. Datum planned a pier and apron. In r006, Vantage placed S1 Skyport there, and rule W-2 confirms every station can be reached on foot.</li>
-<li><b>Replay explains drift instead of hiding it.</b> Runs pin their block and record their GDD version. Replay labels drift by cause: <code>superseded: recorded against the Oct 5 block</code>, <code>recorded against GDD v0.14.0</code>, <code>checker rules added since the run: W-2, W-3; this plan would FAIL W-2, W-3</code>. A changed result on a rule the run recorded is still a FAIL.</li>
+<li><b>Game-specific and replayable.</b> The outputs are edits to the district plan that the game's graybox is derived from. They are judged by the same plan checker that gates every plan. <code>bun run verify</code> replays all eight runs offline in under a minute, with no Docker or model. That includes the derived timetable, and the drift is labelled by cause.</li>
+<li><b>Models decide; code computes and checks.</b> Datum chooses lines, Vantage places stops, and Pulse chooses speeds, dwells, headways and routes. Code derives every run time and journey total, and checks citations, walk access and whether hand-offs were answered. In r008 there were 0 citation faults and 0 timetable faults.</li>
+<li><b>Owners coordinate through the loop.</b> In r008, Vantage answered four of Datum's asks <code>done: true</code> in the same round as they were made, and Keel checked that the answers held. The one ask Vantage answered <code>done: false</code> became a fault for Vantage. Faults went to the owner who can fix them: Keel sent the reach failure to Datum (a line problem), and the line-end failure in round 2 also went to Datum.</li>
+<li><b>The GDD rules reach the agents by retrieval, not by prompt.</b> The briefs no longer state the boarding rule. In every r008 round, the chunk <code>§02 LOOP + RESOURCES › travel</code> reached Pulse at rank 4 and Keel at rank 8 from a natural question, and Keel judged the timetable against it ("time only, no fare").</li>
 </ul>
 
-<h2>What each run taught</h2>
-<table><tr><th>run</th><th>finding (evidence)</th><th>fix</th></tr>
-<tr><td>r001</td><td>The checker read the civic block from disk. After the Oct 5 → Oct 9 change, replay crashed.</td><td><code>input.block.json</code> plus its sha256 per run, and <code>--block</code> on the checker CLI.</td></tr>
-<tr><td>r002</td><td>Every cited id was in that builder's own retrieval, but Keel judged citations against its own top 8. The false faults never cleared, and the run was REJECTED.</td><td>Citation membership checked in code (<code>cite.ts</code>). Keel sees each builder's retrieved ids and cited text.</td></tr>
-<tr><td>r003</td><td>§02 "Price = time only: wait + ride" wasn't in Pulse's or Keel's top 8. Keel faulted a true claim, and Pulse withdrew it.</td><td>A §02 query for Pulse and Keel (Pulse 11 → 2; Keel from outside the top 12 → 7). A claim Keel can't find in its passages is now "unverified", an open question, not a fault.</td></tr>
-<tr><td>r001–r004</td><td>Keel had to catch a station over water in every run. The new rule also shows that r003's and r004's accepted S1 Harbour had no walk, which Keel missed.</td><td>Rules W-2 (every stop can be reached on foot) and W-3 (<code>fronts</code> touches the road or path it names), each with failing examples.</td></tr>
-<tr><td>r004 (fresh clone)</td><td>Vantage's "Skyport needs walkable ground" went to Datum in a note and never arrived.</td><td><code>handoffs: [{owner, blocking, ask}]</code> on every builder, and a blocking hand-off is a fault for its owner. Datum planned the Skyport Pier.</td></tr>
-<tr><td>r005</td><td>Pulse's hand-computed run times matched stale stop positions, and the run was REJECTED. The same arithmetic faults appear in r002 and r004.</td><td>Run times and journey totals are derived in code (<code>timetable.ts</code>), with deterministic route checks.</td></tr>
+<h2>Where the critic (Keel) helped, and where it didn't</h2>
+<table><tr><th>run</th><th>Keel caught something no rule covered</th><th>Keel was wrong or added nothing</th></tr>
+<tr><td>r003</td><td>A Skyport station over water that nobody could walk to. Vantage removed the station.</td><td>It faulted Pulse's boarding rule, which was true, because §02 wasn't retrieved.</td></tr>
+<tr><td>r004</td><td>A run time off by 1 s and a miscounted spacing note, both fixed. The Skyport station over water was held open, not fixed.</td><td>The same false §02 fault again.</td></tr>
+<tr><td>r007</td><td>A reach claim that broke the standard.</td><td>—</td></tr>
+<tr><td>r008 (submitted)</td><td>—</td><td>Its two faults restate checker failures (N-R1, T-L1). It added a diagnosis and the right owner, but no independent catch.</td></tr>
+</table>
+<p>Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
+
+<h2>What each run taught (fixed before the next)</h2>
+<table><tr><th>run</th><th>finding</th><th>fix</th></tr>
+<tr><td>r001</td><td>The checker read the civic block from disk, so a block change broke replay.</td><td>A pinned <code>input.block.json</code> and its sha256 per run.</td></tr>
+<tr><td>r002</td><td>Keel judged builders' citations against its own retrieval, so its faults were false and never cleared.</td><td>Citations are checked in code against each builder's own hits.</td></tr>
+<tr><td>r003–r004</td><td>Stations over water were caught only by the model critic.</td><td>Walk rules W-2 and W-3, each with failing examples.</td></tr>
+<tr><td>r004</td><td>A blocking request from Vantage to Datum was left in a note and never arrived.</td><td><code>handoffs</code> on every builder. Datum planned the Skyport Pier.</td></tr>
+<tr><td>r005</td><td>Pulse's hand-computed run times matched stale stop positions.</td><td>Run times and journey totals are derived in code.</td></tr>
+<tr><td>r006, r007</td><td>A simulated AI marker found two bugs. Hand-offs were never checked as answered, which made r006's round 3 redundant and rejected r007. N-R1 always went to Vantage.</td><td>Hand-off answering, and N-R1 routed to both Datum and Vantage.</td></tr>
+</table>
+
+<h2>Retrieval tweaks, measured</h2>
+<p>All ranks are positions in the fused top 8 that an agent sees. Unless marked otherwise, they come from <a href="evidence/ranks.json">evidence/ranks.json</a> on the current index, and reproduce with <code>bun run levels:ranks</code>.</p>
+<table><tr><th>tweak</th><th>before</th><th>after</th></tr>
+<tr><td><b>1 · Literal standards query.</b> <code>standards › tram</code> holds <code>stopSpacing</code>. Every objective now leads with "standards tram stopSpacing radiusRunning…".</td><td>The old single query "tram stop spacing sky rail stations every area in reach of a stop interchange" ranks it <b>9th</b>, outside the top 8.</td><td>Datum 5, Vantage 2, Pulse 3, Keel 2.</td></tr>
+<tr><td><b>2 · A first attempt at §02, rejected as circular.</b> The query "boarding is fast travel priced in time only: wait for the next service plus the ride" nearly quotes its target line. The briefs also stated the rule outright.</td><td>—</td><td>Pulse 1, Keel 5 (<code>travel.circular</code>). These ranks prove nothing about retrieval, so the query was dropped and the rule removed from the briefs.</td></tr>
+<tr><td><b>3 · Chunking the agent GDD by entry (chunker v2).</b> Sections over 1000 characters split at their tagged entries, and each chunk is titled with its § path, e.g. <code>§02 LOOP + RESOURCES › travel</code>. The query is a natural question: "how does the player use trams and sky rail and what does riding cost".</td><td>With whole-section chunks (v1), §02 ranked 11th for Pulse and wasn't retrieved for Keel. <i>This was measured on the v1 index while developing the fix. That index no longer exists, so it doesn't reproduce from this commit.</i></td><td>Pulse <b>4</b>, Keel <b>8</b> (<code>travel.after</code>), the same as in every round of r008's call records. The corpus grew from 132 to 190 chunks. Other hits got more specific (e.g. <code>§14 ROLES › Keel</code> instead of the whole §14).</td></tr>
 </table>
 
 <h2>Weaknesses still open</h2>
 <table><tr><th>issue</th><th>evidence</th><th>effect</th></tr>
-<tr><td><b>A blocking hand-off raised in the final round can't be answered</b></td><td>r007, a simulated AI marker's run from a fresh GitHub clone: in round 3 the checker was clean and Keel passed, but Datum opened a new blocking hand-off to Vantage, so the run ended REJECTED.</td><td>A run can fail with nothing wrong in the plan. Fix: in the last round, a new blocking hand-off becomes an open question for Aster rather than a fault, or it earns one extra owner-only round.</td></tr>
-<tr><td>In the submitted run, the critic added nothing beyond the checker</td><td>In r006, Keel's only fault was the checker's T-S2. The correction came from the checker and the hand-offs. Keel's independent catches are in r003, r004 and r007 (stations over water, a run-time error, a reach claim).</td><td>Keel's value shows across runs rather than in any one run. Seeding a challenge each run would show it every time.</td></tr>
-<tr><td>§02 is Keel's 7th of 8 passages</td><td><code>evidence/ranks.json</code></td><td>A longer critic query list, or a new feedback query, could push it out. Splitting the long §02 chunk in <code>tools/rag</code> would give it margin.</td></tr>
-<tr><td>Walking pace is assumed</td><td>Interchange walks use 1.4 m/s, an [S] starting value that the GDD does not state.</td><td>A question for Motive and Sky. It changes journey totals, not the network.</td></tr>
-<tr><td>Off-sheet termini and loop turnarounds are not timetabled</td><td>Keel's r006 round 3 lists them as open: "T1/T2 shared off-sheet track not timetabled".</td><td>The journeys cover the sheet only.</td></tr>
-<tr><td>Agent notes can go stale</td><td>Keel, round 3: "stale note distances (34 m, ~315 m; checker governs)".</td><td>Harmless, because the checker governs, but notes can mislead a human reader.</td></tr>
+<tr><td>§02 travel is Keel's 8th of 8 passages</td><td><code>evidence/ranks.json</code>, and r008's keel call records. Keel's four queries pull plan standards from several lists, while travel comes from only one.</td><td>One more query could push the rule out of Keel's context. Fewer overlapping standards queries for Keel would give it margin.</td></tr>
+<tr><td>Hand-off answers are matched on exact text</td><td><code>handoff.ts</code>: the answer must copy the ask (whitespace aside).</td><td>If a model paraphrases the ask, a fulfilled hand-off still becomes a fault and costs a round.</td></tr>
+<tr><td>Walking pace is assumed</td><td>1.4 m/s in <code>timetable.ts</code>, an [S] starting value that the GDD doesn't state. Pulse raised it as an open question.</td><td>It changes journey totals, not the network. A question for Motive and Sky.</td></tr>
+<tr><td>A flat tram crossing has no standard</td><td>Keel r008 round 3: "the flat T1×T2 crossing at (0,-726) has no standard".</td><td>Unchecked until the GDD sets a rule.</td></tr>
+<tr><td>Agent notes go stale</td><td>Keel r008 round 3: "the T2 'shorter way round' question is out of date now it is not a ring".</td><td>The checker governs, so this is harmless, but notes can mislead a human reader.</td></tr>
 </table>
-
-<h2>Retrieval tweaks (applied)</h2>
-<ul>
-<li><code>standards › tram</code> holds <code>stopSpacing</code>. The single query "tram stop spacing sky rail stations every area in reach of a stop interchange" misses it, ranking 9th on the v0.14 corpus and 8th now. Every objective leads with a literal standards query, which ranks it 2nd to 6th.</li>
-<li>For §02 travel, a query "boarding fast travel price time only wait for the next service plus the ride from the timetable" moved it from 11th to 2nd for Pulse, and from outside the top 12 to 7th for Keel. In r006 Keel cites §02 and judges the time-only price correctly.</li>
-</ul>
-<p>Evidence: <a href="evidence/ranks.json">evidence/ranks.json</a>, produced by <code>bun run levels:ranks --evidence</code>.</p>
 
 <h2>Next concrete tweaks</h2>
 <ol>
-<li><b>Retrieval:</b> chunk the agent GDD's long §02 by its tagged entries (<code>travel [S]</code>, …) in <code>tools/rag/corpus.ts</code>, so that a single rule can rank on its own text.</li>
-<li><b>Prompt:</b> ask builders for distances in notes only as the checker reports them, not as their own estimates.</li>
-<li><b>Checker:</b> loop turnarounds and off-sheet termini as explicit timetable entries.</li>
+<li><b>Retrieval:</b> drop Keel's skyrail standards query, which overlaps the tram one, so that the travel rule gains margin. Measure with <code>levels:ranks</code>.</li>
+<li><b>Prompt and code:</b> match hand-off answers by an id that code issues, not by copied text.</li>
+<li><b>Checker:</b> a rule for flat crossings, once the GDD decides one.</li>
 </ol>
 
 <h2>Grade against the brief</h2>
@@ -61,9 +60,10 @@
 <li>a game-specific pipeline;</li>
 <li>three generated outputs;</li>
 <li>query, retrieved chunks and output side by side (<a href="report.html">report.html</a>);</li>
-<li>unseeded corrections from the checker and owner hand-offs (r006) and from Keel (r003, r004, r007);</li>
+<li>unseeded corrections from the checker, the critic and owner hand-offs;</li>
 <li>an ACCEPTED run that replays offline;</li>
-<li>a README proven by a fresh-clone run;</li>
-<li>this self-assessment, with a concrete retrieval tweak and its ranks before and after.</li>
+<li>a README proven by fresh-clone runs;</li>
+<li>this self-assessment, with measured retrieval tweaks, including one that was rejected.</li>
 </ul>
+<p>The submitted run's corrections came from the checker and the hand-offs. Keel's independent catches are in earlier runs, as the table above shows.</p>
 </html>

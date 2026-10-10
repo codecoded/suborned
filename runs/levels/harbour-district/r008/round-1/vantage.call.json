@@ -1,0 +1,218 @@
+{
+  "id": "02-transit-stops",
+  "objective": "transit-stops",
+  "role": "level-designer",
+  "model": "claude-opus-5-5",
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.2622918,
+  "seconds": 57,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/level-designer.md",
+    "sourceHash": "7eba7b07f544788d96b286cf913d665a2ee42b6d82424e0f87d517d120b4f29f"
+  },
+  "retrieval": {
+    "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones ‖ every area in reach of a stop or station; entrances fronting public space; interchange pairs ‖ platform on straight track stop spacing station positions on the lines",
+    "queries": [
+      "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+      "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
+      "every area in reach of a stop or station; entrances fronting public space; interchange pairs",
+      "platform on straight track stop spacing station positions on the lines"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "578345597d2b0ebe0a6c50f9cc6d9e5225ece4d8f92afed1b053fd97a02878f5",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.25533924267706964,
+        "key": "ba506de42600790962a866a2",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyrail",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.11249279777737438,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.10516214370727539,
+        "key": "538618090dd534247cab5493",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › tram",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.1115561460081699,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3076891486459451,
+        "key": "7dfdfdf13043a24e8e964b0b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › transit",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › transit\nreach: 250\nonLine: 3",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.10691109916653396,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.31128573417663574,
+        "key": "e54a1a5c3874c8a545458768",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › roads",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › roads\njunctionSpacing: {\"primary\":250,\"district\":60}\nfrontage: 1",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.09281900894804121,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3281391458594278,
+        "key": "e20799f1f673824d09ce452d",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › why",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › notes › why\n- Tram: one track (x −2.5) in a 16 m street from z −40, ending 6 m short of the circus. No loop, no crossover, no second track, one stop island; the line starts and ends nowhere.\n- Sky rail: a closed loop 24 m up the west promenade, straight over the tram street, round the Sphere station at r 88, then diagonally back across the west city with pylons dropped onto whatever is underneath.\n- Harbour line: a second closed loop on the quay with a balloon round the skyport (R 48). It shares no station with the sky rail or the tram.\n- Roads: the street kit is one straight street and a side street. The map graph (harbour-map.json) links the civic block to Comet Row and Sunset Way by two exit roads; nothing defines the district's road hierarchy or where those roads go.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.09112149235100055,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3669673015763548,
+        "key": "0e426f4211a2f1f25c328968",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › walking",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › walking\ncrossAnywhere: true\ngrid: 2\ndirectness: 1.5\nfrom: Café door, Office entrance\nnote: Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.08837931421377301,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.30403971672058105,
+        "key": "d455bd85bd15e441cf14f08d",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › sources",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › notes › sources\n- C. Buchanan et al., Traffic in Towns (HMSO, 1963): distributor hierarchy, environmental areas, no frontage access on distributors.\n- W. Disney, EPCOT film (1966): radial hub, transit spine, segregated levels.\n- Alweg / Seattle Center Monorail (1962): beams about 0.9 × 1.5 m; spans ≤ 30.5 m straight, 22.9 m at R ≥ 183 m, 18.3 m at R < 91 m.\n- Tokyo Monorail (1964): the airport line; Hitachi straddle monorail minimum radius 70 m (large type) and 40 m (small type).\n- Tram practice: running radius ≥ 50 m, ≥ 25 m at junctions and terminal loops (18 m absolute, Riga); stops 300–500 m apart; track centres 3.2–3.8 m.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.0779214048803601,
+        "signals": [
+          "semantic:1",
+          "semantic:2",
+          "semantic:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3043532371520996,
+        "key": "8753ed1758ca27e6cf152279",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › concept",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › notes › concept\n- Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.\n- Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.\n- Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.\n- Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.\n- Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island, Circus Road's median and the Skyport Pier. Trains turn on a loop over the water round the skyport pad; the Skyport station stands on the pier's apron, the landside end.\n- The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).\n- The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.\n- Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.07485416168847518,
+        "signals": [
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "keyword:4"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

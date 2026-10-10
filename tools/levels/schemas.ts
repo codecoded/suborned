@@ -13,6 +13,10 @@ export const handoffs = z.array(z.object({
   owner: Owner, blocking: z.boolean().describe('true: the candidate cannot be accepted until the owner acts; false: advisory'), ask: z.string().min(1).max(400),
 })).optional().describe('asks for another builder (not yourself), e.g. a line that must move for a stop to fit; omit when none');
 
+export const answers = z.array(z.object({
+  from: Owner, ask: z.string().min(1).max(400).describe('the hand-off ask, copied exactly'), done: z.boolean().describe('true only if your output now does what was asked'), note: z.string().max(300),
+})).optional().describe('one entry per blocking hand-off addressed to you in the task; omit when there are none');
+
 export const LinesOut = z.object({
   lines: z.array(z.object({
     id, mode: z.enum(['tram', 'skyrail']), name: z.string().max(60), beyond: z.string().max(160).describe('where the line goes off-sheet, or "" if it does not'),
@@ -30,16 +34,16 @@ export const StopsOut = z.object({
     interchange: z.string().optional().describe('"<line>/<stop id>" of the paired stop on another line'),
     fronts: id.describe('id of the road or foot path whose public space the entrance fronts'),
   })),
-  notes, sources, handoffs,
+  notes, sources, handoffs, answers,
 });
 
 const ref = z.string().regex(/^[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+$/).describe('"<line>/<stop id>"');
-const oq = z.array(z.object({ question: z.string().max(300), for: z.enum(['Motive', 'Sky']), why: z.string().max(300) })).describe('what the GDD has not decided (e.g. whether boarding costs anything); never a price or a rule invented here');
+const oq = z.array(z.object({ question: z.string().max(300), for: z.enum(['Motive', 'Sky']), why: z.string().max(300) })).describe('what the GDD has not decided; never a price or a rule invented here');
 /** What Pulse proposes (runs recorded `timetable: 'derived'`): choices only. Run times and journey sums are computed by code (timetable.ts). */
 export const PulseOut = z.object({
   lines: z.array(z.object({ line: id, speed: z.number().positive().describe('cruising speed, m/s'), headwaySec: z.number().positive(), dwellSec: z.number().positive() })),
   journeys: z.array(z.object({ legs: z.array(z.object({ from: ref, to: ref })).min(1).describe('ordered rides, one line per leg; a leg ends where you change lines and the next leg starts at its interchange partner') })),
-  openQuestions: oq, notes, sources, handoffs,
+  openQuestions: oq, notes, sources, handoffs, answers,
 });
 /** The timetable as the plan carries it (and as Pulse's output was before derivation: runs recorded without `timetable: 'derived'`). */
 export const TimetableOut = z.object({

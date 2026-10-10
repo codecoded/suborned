@@ -1,102 +1,106 @@
 # A04 · Content pipeline: the Harbour District transit network
 
 ## For markers (human or AI)
-**Submitted run:** `r006`, ACCEPTED in 3 rounds. Five earlier runs are kept as evidence of the critic loop and the fixes it drove.
+**Submitted run:** `r008`, ACCEPTED in 3 rounds. The seven earlier runs (r001–r007) are kept as evidence. Each found a defect that was fixed before the next run.
 
 ### Where each requirement is met
 | requirement | evidence |
 |---|---|
 | A game-specific pipeline | "Why this matters" and "How it works" below. The code is in `tools/levels/` (pipeline), `tools/rag/` (retrieval) and `tools/plan/` (deterministic checker). |
-| Retrieval over the game's own sources | SurrealDB HNSW + BM25 with reciprocal rank fusion (`tools/rag/retrieval.ts`). Each call record in `runs/levels/harbour-district/r006/round-*/*.call.json` lists the queries and every retrieved passage, with its source, section, signals and score. |
-| Three generated outputs | `runs/levels/harbour-district/r006/round-3/`: `datum.json` (lines), `vantage.json` (stops and stations), `pulse.json` + `timetable.json` (timetable). |
+| Retrieval over the game's own sources | SurrealDB HNSW + BM25 with reciprocal rank fusion (`tools/rag/retrieval.ts`). Each call record `runs/levels/harbour-district/r008/round-*/*.call.json` lists its queries and every retrieved passage, with source, section, signals and score. |
+| Three generated outputs | `runs/levels/harbour-district/r008/round-3/`: `datum.json` (lines), `vantage.json` (stops and stations), `pulse.json` (speed, dwell, headway, routes) and `timetable.json` (the timetable derived from them in code). |
 | Query, retrieved chunks and output side by side | [`report.html`](report.html), one section per call. |
-| A critic correction | Two kinds, all unseeded. **The checker and owner hand-offs** in the submitted r006: `round-1/faults.json` (T-S2, N-R1 and two blocking hand-offs, each with an owner) → revised outputs in `round-2/` and `round-3/` → `round-3/keel.json` (pass). In r006, Keel (the model critic) only restated the checker. **Keel's own catches**, which no rule covered, are in [r004](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) `round-1/keel.json` (a Skyport station over water, a run time off by 1 s, a miscounted spacing note, all fixed by round 3) and r007 `round-1/keel.json` (a reach claim that broke the standard). |
-| Before / after | Sheets `evidence/r006/sheets/harbour-district-v0.1.0.html` (before) and `…-v0.2.0-r006.3.html` (accepted). `round-*/checks.json` gives each rule's result per round. |
+| A critic correction | "How the submitted run went" below. In r008 the corrections come from the checker, the critic's diagnosis and owner hand-offs. Keel's own catches, which no rule covers, are in earlier runs: see the "Earlier runs" table. |
+| Before / after | Sheets [`evidence/r008/sheets/harbour-district-v0.1.0.html`](evidence/r008/sheets/harbour-district-v0.1.0.html) (before) and [`…-v0.2.0-r008.3.html`](evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html) (accepted). Every round's `checks.json` gives each rule's result. |
 | README | This file. |
-| Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweak's ranks before and after are in `evidence/ranks.json`. |
-| Reproducibility | `bun run levels:replay r006` rebuilds every round offline from the committed record. Fresh clones have produced their own runs: r004 (ACCEPTED, committed), a fresh-install run with an empty Docker (ACCEPTED in 2 rounds; timings under "Measured from nothing", folder not kept) and r007 (a simulated AI marker's run from a fresh GitHub clone, REJECTED, committed). |
+| Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweaks' ranks are in `evidence/ranks.json` and reproduce with `bun run levels:ranks`. |
+| Reproducibility | `bun run verify` replays every committed run offline. Fresh clones produced r004 (ACCEPTED) and r007 (a simulated AI marker's run, REJECTED); both are committed. A third fresh-install run, with an empty Docker, was ACCEPTED, but its folder was not kept; only its timings are reported under "Measured from nothing". |
 
 ### Verify it: pick the level your environment allows
 | level | needs | command | time | expect |
 |---|---|---|---|---|
-| 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r006/` | none | — |
-| 1 · offline | Bun | `bun install && bun run verify` | under 2 min | `VERIFY OK …`: typecheck, every recorded run replayed, checker clean |
+| 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r008/` | none | — |
+| 1 · offline | Bun | `bun install && bun run verify` | about 1 min | one line per run with its drift labelled by cause, then `VERIFY OK: 8 runs replayed (submitted r008 ACCEPTED) …` |
 | 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0 |
-| 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "boarding fast travel price time only"` | about 3 min the first time | ranked passages from SurrealDB, each tagged `semantic+keyword` |
-| 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min, $0.90–3.31 so far | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
+| 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "how does the player use trams and sky rail and what does riding cost"` | about 3 min the first time | ranked passages from SurrealDB, `§02 LOOP + RESOURCES › travel` among the first; each hit names its signals (`semantic`, `keyword` or both) |
+| 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
 
-AI tools with a 2-minute command limit should run levels 1b, 2 and 3 in the background, or with a longer timeout. Every command is read-only towards committed files, except `levels transit`, which adds a new run folder.
+AI tools with a 2-minute command limit should run levels 1b, 2 and 3 in the background, or with a longer timeout. Only `levels transit` adds files: a new run folder. `levels:ranks --evidence` would rewrite `evidence/ranks.json`; plain `levels:ranks` only writes to `out/`.
 
 ## What it generates
 Three outputs for The Suborned's Harbour District, as edits to the district plan (`contracts/world/harbour-district.plan.json`, schema `suborned.plan/1`):
 
 1. **Lines** (Datum, world planner): tram and sky rail routes, with fillet radii, double track and a path `order`.
-2. **Stops and stations** (Vantage, level designer): positions on the lines, platforms, the public space each entrance fronts, and interchange pairs.
-3. **Timetable** (Pulse, schedule and AI designer): speed, dwell and headway per line, plus the route of each journey. Run times and journey totals are derived in code from the checker's chainages. GDD v0.15 §02 makes boarding fast travel priced in time only (the wait plus the ride), so anything beyond that goes to Motive as an open question and is never invented.
+2. **Stops and stations** (Vantage, level designer): positions on the lines, platforms, the road or path each entrance fronts, and interchange pairs.
+3. **Timetable** (Pulse, schedule and AI designer): speed, dwell and headway per line, and the route of each journey. Run times and journey totals are derived in code from the checker's chainages. The GDD's boarding rules have to come from retrieval: the briefs say only "cite the GDD", not what the rules are. Anything the GDD doesn't decide goes to Motive as an open question.
 
 ## Why this matters for this game
 The Suborned is a commander game. The cell moves through a city that runs on schedules, and a tram or sky rail is a window the player can see coming (pillar: orchestrate the city). Interchanges and stations are where the police seal the district. The GDD's house rule is "no AI at runtime; content generated at build time; same orders → same result". So the network is generated once, checked deterministically, and committed with everything needed to replay it.
 
 ## How it works
 - **Objective:** a layer-4 brief, one per crew member, in `tools/levels/objectives/`.
-- **Retrieval:** SurrealDB HNSW (BGE-small) and BM25 run per query, merged by reciprocal rank fusion, over the agent GDD, the human GDD and the plan.
-- **Crew member:** runs headless through `claude -p`. Its crew card is the system prompt and structured output is its only tool.
+- **Retrieval:** SurrealDB HNSW (BGE-small) and BM25 run per query, merged by reciprocal rank fusion. The index covers the agent GDD (chunked per section, with long sections split into their tagged entries, e.g. `§02 LOOP + RESOURCES › travel`), the human GDD (by heading) and the plan (by part).
+- **Crew member:** runs headless through `claude -p`. Its crew card is the system prompt and structured output is its only tool. Builders run in order: Datum, then Vantage, then Pulse.
 - **Validation:** each output is checked against its zod schema, then applied to a copy of the plan.
-- **Plan checker:** `tools/plan/cli.ts --strict` gives exit code 0 or 1 and draws a CAD sheet. It checks the run's pinned civic block, and its rules include reach, spacing, connectivity and walk access to every stop (W-2, W-3).
+- **Plan checker:** `tools/plan/cli.ts --strict` gives exit code 0 or 1 and draws a CAD sheet. It checks against the run's pinned civic block. Its rules cover reach, spacing, connectivity, line ends, and walk access to every stop (W-2, W-3).
 - **Checks in code:**
   - every cited passage was in that builder's own retrieval (`cite.ts`);
   - the timetable is derived and its routes checked (`timetable.ts`);
-  - a blocking hand-off between owners becomes a fault for its owner (`handoff.ts`).
-- **Critic:** Keel judges what no rule covers. Every fault names an owner and cites chunk ids. A claim Keel can't find in its passages is an open question, not a fault.
-- **Revision:** each fault goes back to its owner with the cited chunks pinned into their retrieval, for up to 3 rounds.
+  - a blocking hand-off between owners is a fault unless the recipient runs later in the same round and answers it `done: true` (`handoff.ts`).
+- **Critic:** Keel judges what no rule covers, and whether `done: true` answers are true. Keel's faults name an owner and cite chunk ids. Faults made by code name the checker rule or code check instead, with no chunk ids. A claim Keel can't find in its passages is an open question, not a fault.
+- **Revision:** each fault goes back to its owner, with Keel's cited chunks pinned into their retrieval, for up to 3 rounds. A reach failure (N-R1) goes to both Datum and Vantage, because a new line or a moved stop can fix it.
 - **ACCEPTED** means checker exit 0, Keel pass and no open fault from the code checks.
-- **Replay:** `levels:replay` rebuilds a run offline from `runs/`. It labels drift by cause (GDD version, superseded block, checker rules added since the run). Integrity failures still fail.
+- **Replay:** `levels:replay` rebuilds a run offline from `runs/`. It labels drift by cause: GDD version, chunker version, superseded block, checker rules added since the run. Integrity failures still fail.
 
-## The submitted run: `r006`, ACCEPTED in 3 rounds
-r006 ran on:
-- GDD v0.15.0, corpus `dfd554a9695c`;
-- the corrected civic block: the Oct 9 city scale, with the café as the 22 × 11.3 × 34.8 m corner building. Rule C-0 holds the block at that scale;
-- the plan with Datum's Skyport Pier and apron.
+## The submitted run: `r008`, ACCEPTED in 3 rounds
+r008 ran on GDD v0.15.0, chunker v2 (corpus of 190 chunks) and the corrected civic block: the Oct 9 city scale, with the café as the 22 × 11.3 × 34.8 m corner building, held by rule C-0. It also ran on the plan with Datum's Skyport Pier and apron. The run pins its block (`input.block.json` and its sha256) and records its GDD and chunker versions.
 
-The run pins its world inputs. The block is copied to `input.block.json`, with its sha256 in `run.json`, and the GDD version is recorded too. Replay and sheets use the pinned copies, never whatever is on disk.
-
-- **Record:** `runs/levels/harbour-district/r006/`, committed. It holds:
+- **Record:** `runs/levels/harbour-district/r008/`, committed. It holds:
   - `run.json`;
   - the input plan and the input block;
-  - for each round: the plan, the checks, each agent's output, its call record (card hash and retrieved text), the derived timetable and Keel's verdict.
+  - for each round: the plan, the checks, each agent's output and call record, the derived timetable, the faults and Keel's verdict.
 
-  Replay it with `bun run levels:replay r006` → `REPLAY OK`.
-- **Report:** [`report.html`](report.html) shows each call's query, retrieved chunks and output side by side, plus each critic verdict. Rebuild it with `bun courses/a04-content-pipeline/build-report.ts r006`.
+  Replay it with `bun run levels:replay r008` → `REPLAY OK`.
+- **Report:** [`report.html`](report.html). Rebuild it with `bun courses/a04-content-pipeline/build-report.ts r008`.
 - **Self-assessment:** [`self-assessment.html`](self-assessment.html).
 - **Sheets:**
-  - [before, v0.1.0](evidence/r006/sheets/harbour-district-v0.1.0.html): strict mode fails N-R1 (reach) and S-S2 (station spacing).
-  - [round 1, 0.2.0-r006.1](evidence/r006/sheets/harbour-district-v0.2.0-r006.1.html): fails T-S2 and N-R1.
-  - [round 2, 0.2.0-r006.2](evidence/r006/sheets/harbour-district-v0.2.0-r006.2.html): checker clean, but a blocking hand-off is still open.
-  - [accepted, 0.2.0-r006.3](evidence/r006/sheets/harbour-district-v0.2.0-r006.3.html)
-- **Transcripts:** `evidence/r006/transcripts/` holds the prompt, card snapshot, retrieval, schema, stream-json events and output for each call. These are copied from `out/`.
-- **What the accepted network has:**
-  - three tram lines, T1, T2 and a new T3 Sunset Line, which brings lantern-west and rocket-west into reach (worst area 247 m, limit 250 m);
-  - the S1 sky rail, with stations at Sunset Way, Gardens, Crown Circus, Harbour and **Skyport**. Skyport stands on the new pier apron, and you can walk to every station (rule W-2).
-  - The timetable is derived in code from the checker's chainages. Boarding is fast travel priced in time only, as GDD §02 says.
-- **Critic correction:** this happened without seeding, so no seeded challenge was run.
-  - Round 1: the checker failed T-S2 (a T2 platform off straight track) and N-R1 (two areas out of reach). Datum and Vantage also raised blocking hand-offs to each other.
-  - Round 2: Datum added T3 and Vantage moved the platform. The checker was clean and Keel passed, but a blocking hand-off from Datum (place the T3 stops and the Sunset Way interchange) was still open, so the run went on.
-  - Round 3: Vantage placed those stops, and the run was ACCEPTED.
-- **Retrieval tweaks:** see `evidence/ranks.json` (`bun run levels:ranks --evidence`).
-  - `standards › tram`, home of `stopSpacing`, now ranks 2nd to 6th with the per-objective queries.
-  - §02 travel (boarding as fast travel, time only) moved from 11th to 2nd for Pulse, and from outside the top 12 to 7th for Keel.
+  - [before, v0.1.0](evidence/r008/sheets/harbour-district-v0.1.0.html): strict mode fails N-R1 and S-S2.
+  - [round 1](evidence/r008/sheets/harbour-district-v0.2.0-r008.1.html): N-R1 fails.
+  - [round 2](evidence/r008/sheets/harbour-district-v0.2.0-r008.2.html): T-L1 fails.
+  - [accepted, round 3](evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html)
+- **Transcripts:** `evidence/r008/transcripts/` holds the prompt, card snapshot, retrieval, schema, stream-json events and output for each call.
+- **The accepted plan** passes all 48 strict rules:
+  - the worst area is 247 m from transit (crescent-north; the limit is 250 m);
+  - S1 station spacing is 255, 245 and 205 m, with Skyport on the pier apron;
+  - every stop can be reached on foot and touches the road or path it fronts (W-2 and W-3, 14/14);
+  - the café is 22.0 × 11.3 × 34.8 m (C-0).
+
+### How the submitted run went (all unseeded)
+- **Round 1:** the checker failed N-R1, with four areas out of reach (docks-east 294 m, lantern-west 289 m, harbour-east 279 m, rocket-west 273 m).
+  - Keel diagnosed it as a line problem and routed it to Datum: no stop on the existing lines could reach those areas.
+  - Vantage raised the same point as a blocking hand-off to Datum.
+  - Vantage also answered `done: true` to Datum's ask to move Skyport for spacing, and Keel confirmed the answer held (Skyport at x 545, gap 205 m).
+- **Round 2:** Datum added T2 as a ring, which fixed reach. The checker then failed T-L1, because it read the ring's two ends as open with no turning loop.
+  - Keel explained the cause and routed it to Datum.
+  - Vantage answered one of Datum's asks `done: false`, which became a fault for Vantage.
+- **Round 3:** Datum made T2 an open U, and Vantage placed its 7 stops and answered every ask. The checker was clean and Keel passed: ACCEPTED.
+
+In r008 Keel's two faults restate checker failures, with a diagnosis and the right owner, and it raised no fault of its own. Its independent catches are in earlier runs (below).
+
+**Retrieval:** in every round the GDD's boarding rule (`§02 … › travel`) reached Pulse at rank 4 and Keel at rank 8 from a natural question, with no rule text in the prompts. Keel judged the timetable against it ("time only, no fare").
 
 ### Earlier runs, kept as evidence
-| run | GDD | outcome | what it taught | fix before the next run |
-|---|---|---|---|---|
-| [`r001`](evidence/r001/report.html) | v0.14.0 | ACCEPTED, now **superseded** | The checker read the civic block from disk, so the Oct 5 → Oct 9 block change broke replay. | Runs pin `input.block.json` and its sha256. `levels:replay r001` reports `superseded: recorded against the Oct 5 block, replays at commit 3dbb9ca` and exits 1, because its checker can't be rerun. |
-| [`r002`](evidence/r002/report.html) | v0.14.0 | REJECTED | The critic checked builders' citations against its own retrieval, so false "unretrieved id" faults never cleared. | Citations are checked in code (`cite.ts`), and Keel sees each builder's retrieved set. |
-| [`r003`](evidence/r003/report.html) | v0.15.0 | ACCEPTED | Neither Pulse nor Keel retrieved §02, so Keel faulted Pulse's true boarding rule. The new walk rule shows its S1 Harbour had no walk. | §02 queries were added. A claim Keel can't find in its passages is now "unverified", not a fault. Rules W-2 and W-3 were added. |
-| [`r004`](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) | v0.15.0 | ACCEPTED, from a **fresh clone** | The README works end to end. The same §02 miss came back. Vantage's Skyport hand-off to Datum was never routed. | `handoffs` were added to every builder schema, and a blocking hand-off is a fault for its owner. Datum planned the Skyport Pier and apron. |
-| [`r005`](evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html) | v0.15.0 | REJECTED | With the checker clean, the last fault was Pulse's hand-computed run times, which matched stale stop positions. That arithmetic error also appeared in r002 and r004. | Run times and journey totals are derived in code (`timetable.ts`). Pulse chooses speed, dwell, headway and routes. |
-| [`r007`](evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html) | v0.15.0 | REJECTED, a simulated **AI marker's** run from a fresh GitHub clone (after r006) | Keel caught a reach claim that broke the standard (round 1). The run ended REJECTED because Datum raised a new blocking hand-off to Vantage in round 3, when there was no round left to answer it. | Not fixed. Recorded as an open weakness in the self-assessment. |
+| run | outcome | what it taught (from its records) | fix before the next run |
+|---|---|---|---|
+| [`r001`](evidence/r001/report.html) | ACCEPTED, now **superseded** | The checker read the civic block from disk, so the Oct 5 → Oct 9 block change broke replay. | Runs pin `input.block.json` and its sha256. r001 replays as `superseded … replays at commit 3dbb9ca`. |
+| [`r002`](evidence/r002/report.html) | REJECTED | Keel checked builders' citations against its own retrieval, so its "unretrieved id" faults were false and never cleared. | Citations are checked in code (`cite.ts`), and Keel sees each builder's retrieved set. |
+| [`r003`](evidence/r003/report.html) | ACCEPTED | **Keel's own catch:** a Skyport station over water that nobody could walk to. The station was removed. **Keel's error:** it faulted Pulse's boarding rule, which was true, because neither had retrieved §02. Its accepted plan also fails the W-2 and W-3 walk rules added later (replay reports it). | W-2 and W-3 walk rules. A claim Keel can't find in its passages is "unverified", not a fault. |
+| [`r004`](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) | ACCEPTED, from a fresh clone | **Keel's own catches** (round 1): a run time off by 1 s and a miscounted spacing note were fixed; the Skyport station over water was held open, not fixed. **Keel's error, again:** it faulted Pulse's true "§02 says time only". Vantage's Skyport hand-off to Datum was never routed. | `handoffs` on every builder. Datum planned the Skyport Pier and apron. |
+| [`r005`](evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html) | REJECTED | The first run to place Skyport on the new apron. It still failed on Pulse's hand-computed run times, which matched stale stop positions. | Run times and journey totals are derived in code (`timetable.ts`). |
+| [`r006`](evidence/r006/report.html) | ACCEPTED | A simulated AI marker found round 3 redundant: hand-offs were never checked as answered, and N-R1 always went to Vantage. The §02 query nearly quoted its target, so its rank proved nothing. | Hand-off answering, N-R1 routed to both owners, natural §02 queries and v2 chunking. |
+| [`r007`](evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html) | REJECTED, a simulated AI marker's run from a fresh GitHub clone | **Keel's own catch:** a reach claim that broke the standard (round 1). The run was rejected only because Vantage had fulfilled Datum's round-3 hand-off but nothing checked it as answered. | The same hand-off answering fix. |
 
-Every run from r002 to r007 replays OK, with drift labelled by cause: "recorded against GDD v0.14.0" and "checker rules added since the run: W-2, W-3".
+`bun run verify` replays every run and labels drift by cause: GDD v0.14.0, chunker v1, checker rules added since the run (W-2, W-3), and r001's superseded block.
 
 ## Prerequisites
 - [Bun](https://bun.sh) 1.4 or later, and git.
@@ -115,7 +119,7 @@ git clone -b assignment-04 https://github.com/codecoded/suborned.git suborned-a0
 bun install
 bun run doctor                 # preflight: Bun, Docker, ports, Claude Code and its flags; one line per check, with the fix for any FAIL
 bun run levels:replay r006     # offline: no Docker, no model. Checks schemas, hashes, retrieved text and the pinned block, reruns the checker → REPLAY OK
-bun run up                     # SurrealDB + embedding service. First start pulls SurrealDB, builds the image and downloads the model (about 3 min)
+bun run up                     # SurrealDB + embedding service. First start pulls SurrealDB, builds the image and downloads the embedding model from Hugging Face (about 3 min)
 bun run ingest                 # index the GDD and the plan into SurrealDB (about 25 s)
 bun run doctor                 # optional: now also checks SurrealDB, the embeddings and that the corpus is current
 bun run levels transit         # the generation run → runs/levels/harbour-district/r00N/ (the next free id) (exit 0 ACCEPTED, exit 1 REJECTED or ERROR; see below)
@@ -148,12 +152,12 @@ That is about 12 minutes in total.
 | `bun run up`: cannot connect to the Docker daemon | Start Docker Desktop, or the Docker service. |
 | `levels transit`: "No corpus indexed" or "changed since the last ingest" | Run `bun run ingest`. Run it again after any GDD or plan change. |
 | `levels transit`: a call fails twice and the run ends with ERROR | Look at `out/levels/harbour-district/r00N/calls/*.stderr.txt`. If you're not signed in, run `claude` once and sign in. For a model access error, prefix the run with `CLAUDE_MODEL=sonnet`. |
-| The first `up` is slow or times out | The model download needs network access to Hugging Face. Rerun `bun run up`, which resumes. |
+| The first `up` is slow or times out | On first start the embedding service downloads its model, `BAAI/bge-small-en-v1.5` (about 130 MB, the local model that embeds passages and queries for SurrealDB's vector search; not Claude), from the Hugging Face Hub into the `embedding-cache` volume. That needs network access to huggingface.co the first time; after that it's cached and needs no network. If the download fails, rerun `bun run up`. |
 
 Optional: `bun run check` runs the typecheck, the tests (model-free, 3–10 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
 
 ## Time and cost per run
-r006 made 11 model calls in 3 rounds, with 509 s of model time and about 10 minutes of wall time (calls run in sequence). The CLI reported $1.90. Across every run so far (r002–r007, plus two fresh-clone runs that were not kept), a run made 4–12 calls, took 4–16 minutes of model time and cost $0.90–3.31. The cheapest was a 1-round ACCEPTED run from a fresh clone; the dearest was r007, which went 3 rounds while `bun run check` ran alongside it. Budget about 20 minutes and $3.50 for one run. On a subscription the dollar figure is notional usage, not a charge.
+r008 made 12 model calls in 3 rounds, with 658 s of model time and about 12 minutes of wall time (calls run in sequence). The CLI reported $2.66. The committed runs r002–r008 made 8–12 calls and used 486–931 s of model time each, at $1.83–3.31. Budget about 20 minutes and $3.50 for one run. On a subscription the dollar figure is notional usage, not a charge.
 
 ## Where outputs land
 - `runs/levels/<plan>/r00N/`: committed and small. This is everything replay needs.

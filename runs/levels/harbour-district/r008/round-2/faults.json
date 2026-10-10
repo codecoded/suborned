@@ -1,0 +1,20 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "T-L1",
+    "fault": "T2 Ring Line fails T-L1 (0/2 ends loop at (306,0)). The ring is one running path that starts and ends at (306,0), and the checker reads those as two open ends with no turning loop. Datum's note says T-L1 needs no loop because the ring closes on itself; the checker contradicts this.",
+    "fix": "Model T2 in a form T-L1 accepts as closed, or add a terminal loop (R ≥ 25) in street space. If a closed running ring should pass by design, ask Splice through Aster to change the rule. Then rerun the strict checker.",
+    "chunks": [
+      "538618090dd534247cab5493",
+      "e20799f1f673824d09ce452d"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "handoff",
+    "fault": "Datum hands off to Vantage (blocking): Place T2 Ring Line stops on path 'ring', 300 to 500 m apart. They must include: Harbour Road near (306,-270) and (306,-510); Sunset Way near (-346,-300) and (-346,-560); an interchange near (306,0), within 150 m of S1 Harbour (340,0); an interchange on Comet Row near (0,-726), within 150 m of T1 Comet (0,-690). Then rerun N-R1.",
+    "fix": "Place T2 Ring Line stops on path 'ring', 300 to 500 m apart. They must include: Harbour Road near (306,-270) and (306,-510); Sunset Way near (-346,-300) and (-346,-560); an interchange near (306,0), within 150 m of S1 Harbour (340,0); an interchange on Comet Row near (0,-726), within 150 m of T1 Comet (0,-690). Then rerun N-R1.",
+    "chunks": [],
+    "synthesized": true
+  }
+]

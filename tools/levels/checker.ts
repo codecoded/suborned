@@ -20,3 +20,5 @@ export async function viaCli(planFile: string, sheet: string, report: string, lo
 }
 
 export const ownerOf = (rule: string) => (/^(T-S|S-S|S-I|N-P|N-R|N-C)/.test(rule) ? 'Vantage' : 'Datum') as 'Datum' | 'Vantage';
+// N-R1 (reach) is fixed by a line (Datum) or a stop (Vantage): both hear a synthesized one. Keel's named owner suppresses it (run.ts).
+export const ownersOf = (rule: string): ('Datum' | 'Vantage')[] => (rule === 'N-R1' ? ['Datum', 'Vantage'] : [ownerOf(rule)]);

@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "Fail: the strict checker fails N-R1. Four areas are out of the 250 m reach: docks-east 294, lantern-west 289, harbour-east 279, rocket-west 273 m. Every other rule passes. Vantage's done:true holds (Skyport x 545, gap 205 m). Its hand-off to Datum is code's to resolve and not repeated. Headways, dwells and speeds are plausible and agree with §02 (time only, no fare). Open questions rightly go to Motive; the 1.4 m/s walk is an [S] assumption raised as a question. notes › why is stale; Datum flagged it to Aster.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "N-R1",
+      "fault": "No placement of stops on the current lines can reach docks-east, lantern-west, harbour-east or rocket-west within 250 m. Their centroids sit at x ±260, too far from the T1 trunk at x 0 and the S1 beam at y 0. Datum chose not to add T2 and suggested more T1 stops first, but stops at x 0 cannot fix plots at x ±260.",
+      "fix": "East: add a line along Harbour Road (Datum's deferred T2) ending in a loop in street space. West: add one on or near Sunset Way or Lantern/Rocket Lane. Join both by interchanges. Vantage then places stops near z −270/−510 (east) and z −300/−560 (west), and the checker is run again.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b",
+        "538618090dd534247cab5493"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "e20799f1f673824d09ce452d"
+  ]
+}

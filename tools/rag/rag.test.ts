@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { root } from './config';
-import { chunkDocument, loadCorpus } from './corpus';
+import { chunkDocument, chunkSection, loadCorpus, SPLIT_OVER } from './corpus';
 import { fuse, terms } from './retrieval';
 import { card, claudeArgs, cliSchema, interpretClaude, invokeClaude } from './claude';
 
@@ -26,6 +26,26 @@ describe('corpus', () => {
     const chunk = (await loadCorpus()).find(c => c.kind === 'gdd-agent' && c.text.includes('### Datum'))!;
     const lines = (await Bun.file(join(root, chunk.source)).text()).split('\n').slice(chunk.lineStart - 1, chunk.lineEnd).join('\n');
     expect(lines).toContain('### Datum');
+  });
+});
+
+describe('agent GDD chunking', () => {
+  const meta = { authority: 'a', version: 'v', kind: 'gdd-agent' }, split = (md: string) => chunkSection('x.md', md.split('\n'), 10, meta);
+  test('a long section splits on its tagged entries, each prefixed with the section title and holding its true lines', () => {
+    const md = `## §02 LOOP + RESOURCES (extra)\nmission: ${'a '.repeat(300)}\n| t | u |\n| 1 | 2 |\ntravel [S]: boarding a tram is fast travel. Price = time only. ${'c '.repeat(60)}\nchain: ${'b '.repeat(200)}`;
+    const c = split(md);
+    expect(c.map(x => x.section)).toEqual(['§02 LOOP + RESOURCES › mission', '§02 LOOP + RESOURCES › travel', '§02 LOOP + RESOURCES › chain']);
+    expect(c[1]!.text.startsWith('§02 LOOP + RESOURCES › travel\ntravel [S]: boarding a tram is fast travel. Price = time only.')).toBe(true);
+    expect(c[0]!.text).toContain('| 1 | 2 |'); expect([c[1]!.lineStart, c[1]!.lineEnd]).toEqual([15, 15]);
+  });
+  test('a short section stays whole; a short entry joins the next untagged one', () => {
+    const c = split('## §03 CELL\nplan: one.\nnote: two.\n'); expect(c).toHaveLength(1); expect(c[0]!.text).toBe('§03 CELL\nplan: one.\nnote: two.');
+    const long = `## §09 X\nrule: short\nnext: ${'w '.repeat(SPLIT_OVER)}`;
+    expect(split(long).map(x => x.section)).toEqual(['§09 X › rule']);
+  });
+  test('the live corpus has the boarding rule as its own chunk', async () => {
+    const t = (await loadCorpus()).find(c => c.section === '§02 LOOP + RESOURCES › travel')!;
+    expect(t.text).toContain('Price = time only');
   });
 });
 

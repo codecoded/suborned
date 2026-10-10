@@ -7,11 +7,11 @@ import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { root } from '../../rag/config';
-import { hash, loadCorpus } from '../../rag/corpus';
+import { CHUNKER, hash, loadCorpus } from '../../rag/corpus';
 import { apply, seedStationOnPlot } from '../apply';
 import { citedBlock, citeFaults } from '../cite';
-import { ownerOf } from '../checker';
-import { collectHandoffs, handoffFaults } from '../handoff';
+import { ownerOf, ownersOf } from '../checker';
+import { collectHandoffs, handoffFaults, pendingFor } from '../handoff';
 import { nextMinor, candidateVersion } from '../paths';
 import { replay } from '../replay';
 import { z } from 'zod';
@@ -75,6 +75,22 @@ describe('levels transit, stubbed', () => {
     expect(older.lines.join('\n')).toContain('round-1/datum: card .claude/agents/world-planner.md changed since the run (recorded against GDD v0.0.1)');
     const inferred = await mk('runs-inferred', j => { delete j.gdd; }); expect(inferred.ok).toBe(false); // no record, hits name the current GDD: same version, so strict
     expect(inferred.lines.join('\n')).toContain('(inferred from retrieved sources)');
+  });
+  test('chunker: a run records it; a different (or missing = v1) chunker labels corpus hash and GDD passage changes as drift, the same chunker still FAILs', async () => {
+    const run = await Bun.file(join(runs, 'harbour-district', 'r001', 'run.json')).json(); expect(run.chunker).toBe(CHUNKER);
+    const mk = async (name: string, edit: (r: any) => void) => {
+      const copy = join(scratch, name); await cp(runs, copy, { recursive: true });
+      const d = join(copy, 'harbour-district', 'r001'), f = join(d, 'run.json'), j = await Bun.file(f).json(); edit(j); await Bun.write(f, JSON.stringify(j));
+      const cf = join(d, 'round-1', 'datum.call.json'), c = await Bun.file(cf).json(), g = c.retrieval.hits.find((h: any) => String(h.source).startsWith('GDD/'));
+      if (g) g.text = 'text cut by another chunker'; await Bun.write(cf, JSON.stringify(c));
+      process.env.LEVELS_RUNS = copy; try { return { g: !!g, res: await replay('harbour-district', 'r001') }; } finally { delete process.env.LEVELS_RUNS; }
+    };
+    const fails = (r: { lines: string[] }) => r.lines.filter(l => l.startsWith('FAIL') && /corpus hash|retrieved GDD text/.test(l));
+    const same = await mk('runs-chunk-same', j => { j.corpusHash = '0'.repeat(64); }); expect(fails(same.res).length).toBeGreaterThan(0);
+    const old = await mk('runs-chunk-old', j => { j.corpusHash = '0'.repeat(64); j.chunker = CHUNKER - 1; }); expect(fails(old.res)).toEqual([]);
+    expect(old.res.lines.join('\n')).toContain(`corpus hash changed: recorded 000000000000, now ${hash(JSON.stringify(await loadCorpus())).slice(0, 12)} (recorded with chunker v${CHUNKER - 1}, now v${CHUNKER})`);
+    if (old.g) expect(old.res.lines.join('\n')).toMatch(/retrieved GDD text no longer matches the corpus \(\d+ missing, \d+ changed of \d+\) \(recorded with chunker/);
+    const none = await mk('runs-chunk-none', j => { j.corpusHash = '0'.repeat(64); delete j.chunker; }); expect(fails(none.res)).toEqual([]); expect(none.res.lines.join('\n')).toContain('recorded with chunker v1');
   });
   test('a seeded run is labelled everywhere and ends with the correction', async () => {
     const r = await levels('--seed', 'station-on-plot');
@@ -197,6 +213,28 @@ describe('levels, hardening', () => {
     try { const res = await replay('harbour-district', 'r001'); expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.lines.join('\n')).toContain('round-1: hand-offs match (2, 1 blocking)'); } finally { delete process.env.LEVELS_RUNS; }
   });
 
+  test('hand-offs: a same-round blocking hand-off that the owner answers done: true is not a fault; the answer is checked on replay', async () => {
+    const fx = join(scratch, 'fixtures-ans'), rr = join(scratch, 'runs-ans'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+    const d = await Bun.file(join(fx, 'transit-lines.1.json')).json(), ask = 'ANSASK place the T2 stops';
+    d.handoffs = [{ owner: 'Vantage', blocking: true, ask }]; await Bun.write(join(fx, 'transit-lines.1.json'), JSON.stringify(d));
+    const v = await Bun.file(join(fx, 'transit-stops.1.json')).json(); v.answers = [{ from: 'Datum', ask, done: true, note: 'placed' }]; await Bun.write(join(fx, 'transit-stops.1.json'), JSON.stringify(v));
+    const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_OUT: join(scratch, 'out-ans') }, planFile); expect(r.code).toBe(0);
+    const dir = join(rr, 'harbour-district', 'r001'), run = await Bun.file(join(dir, 'run.json')).json();
+    expect(run.handoffMode).toBe('answered'); expect(run.rounds[0].handoffs).toHaveLength(1); expect(run.rounds[0].handoffFaults).toBe(0);
+    expect((await Bun.file(join(dir, 'round-1', 'faults.json')).json()).filter((x: any) => x.rule === 'handoff')).toEqual([]);
+    const calls = join(scratch, 'out-ans', 'harbour-district', 'r001', 'calls'), stops = (await readdir(calls)).filter(x => x.includes('transit-stops') && x.endsWith('.prompt.txt'));
+    expect(await Bun.file(join(calls, stops[0]!)).text()).toContain('ANSASK');
+    process.env.LEVELS_RUNS = rr;
+    try { const res = await replay('harbour-district', 'r001'); expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.lines.join('\n')).toContain('round-1: hand-offs match (1, 0 blocking)'); } finally { delete process.env.LEVELS_RUNS; }
+  });
+
+  test('a synthesized N-R1 (reach) goes to both Datum and Vantage when Keel names no owner for it', async () => {
+    const p = JSON.parse(JSON.stringify(base)), pf = join(scratch, 'plan-reach.json'), rr = join(scratch, 'runs-reach'); p.standards.transit.reach = 1; await Bun.write(pf, JSON.stringify(p));
+    const r = await levelsWith({ LEVELS_RUNS: rr }, pf, '--rounds', '1'); expect(r.code).not.toBe(2);
+    const f = await Bun.file(join(rr, 'harbour-district', 'r001', 'round-1', 'faults.json')).json();
+    expect(f.filter((x: any) => x.rule === 'N-R1' && x.synthesized).map((x: any) => x.owner).sort()).toEqual(['Datum', 'Vantage']);
+  });
+
   test('--rounds is clamped to 1..3 and NaN means 3', async () => {
     const rr = join(scratch, 'runs-rounds'), one = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '0');
     expect(one.stdout).toContain('r001 REJECTED'); expect((await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json()).rounds).toHaveLength(1);
@@ -269,6 +307,24 @@ describe('levels units', () => {
     const outs = { datum: { handoffs: [{ owner: 'Vantage' as const, blocking: true, ask: 'a' }, { owner: 'Pulse' as const, blocking: false, ask: 'b' }] }, pulse: { handoffs: [{ owner: 'Datum' as const, blocking: true, ask: 'c' }] } };
     expect(collectHandoffs(outs, ['datum', 'pulse'])).toHaveLength(3); expect(collectHandoffs(outs, ['pulse'])).toHaveLength(1); expect(collectHandoffs({}, ['datum'])).toEqual([]);
     expect(handoffFaults(collectHandoffs(outs, ['datum', 'pulse'])).map(f => [f.owner, f.rule])).toEqual([['Vantage', 'handoff'], ['Datum', 'handoff']]);
+  });
+  test('handoffFaults with answers: same-round answered is no fault; unanswered, done:false and upstream owners fault', () => {
+    const ask = 'place T2 stops', h = (from: string, owner: string, blocking = true, a = ask) => ({ from, owner: owner as 'Vantage', blocking, ask: a }), ran = ['datum', 'vantage', 'pulse'];
+    const run = (hs: ReturnType<typeof h>[], outs: any) => handoffFaults(hs, { outs, ran }).map(f => f.owner);
+    const yes = { vantage: { answers: [{ from: 'Datum' as const, ask: ' place T2  stops ', done: true, note: '' }] } };
+    expect(run([h('Datum', 'Vantage')], yes)).toEqual([]);
+    expect(run([h('Datum', 'Vantage')], { vantage: {} })).toEqual(['Vantage']);
+    expect(run([h('Datum', 'Vantage')], { vantage: { answers: [{ from: 'Datum', ask, done: false, note: '' }] } })).toEqual(['Vantage']);
+    expect(run([h('Datum', 'Vantage')], { vantage: { answers: [{ from: 'Pulse', ask, done: true, note: '' }] } })).toEqual(['Vantage']); // answer must name the asker and the ask
+    expect(run([h('Vantage', 'Datum')], { datum: { answers: [{ from: 'Vantage', ask, done: true, note: '' }] } })).toEqual(['Datum']); // upstream owner: cannot answer this round
+    expect(handoffFaults([h('Datum', 'Pulse')], { outs: { pulse: {} }, ran: ['datum', 'vantage'] }).map(f => f.owner)).toEqual(['Pulse']); // owner did not run
+    expect(run([h('Datum', 'Vantage', false)], {})).toEqual([]);
+    expect(handoffFaults([h('Datum', 'Vantage')]).map(f => f.owner)).toEqual(['Vantage']); // no answers: recorded before the field, every blocking one faults
+    expect(pendingFor('vantage', { datum: { handoffs: [{ owner: 'Vantage', blocking: true, ask }, { owner: 'Pulse', blocking: true, ask }] } }, ['datum', 'vantage']).map(x => x.ask)).toEqual([ask]);
+    expect(pendingFor('datum', { pulse: { handoffs: [{ owner: 'Datum', blocking: true, ask }] } }, ['datum', 'pulse'])).toEqual([]); // nothing is delivered upstream
+  });
+  test('N-R1 is both Datum and Vantage; other rules keep one owner', () => {
+    expect(ownersOf('N-R1')).toEqual(['Datum', 'Vantage']); expect(ownersOf('S-S2')).toEqual(['Vantage']); expect(ownersOf('T-R1')).toEqual(['Datum']);
   });
   test('versions: next minor, round and run in the pre-release', () => {
     expect(nextMinor('0.1.0')).toBe('0.2.0'); expect(candidateVersion('0.1.0', 3, 2)).toBe('0.2.0-r003.2');

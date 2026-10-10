@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "stops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "short id, e.g. T2, trunk, circus"
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "short id, e.g. T2, trunk, circus"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "short id, e.g. T2, trunk, circus"
+          },
+          "at": {
+            "minItems": 2,
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "exactly [x, y] in metres [x east, y north], plan origin at Crown Circus centre"
+          },
+          "length": {
+            "description": "sky rail station length m",
+            "type": "number"
+          },
+          "interchange": {
+            "description": "\"<line>/<stop id>\" of the paired stop on another line",
+            "type": "string"
+          },
+          "fronts": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "id of the road or foot path whose public space the entrance fronts"
+          }
+        },
+        "required": [
+          "line",
+          "id",
+          "name",
+          "path",
+          "at",
+          "fronts"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "notes": {
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 400
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{24}$",
+        "description": "a 24-hex passage id from the retrieved passages"
+      },
+      "description": "passage ids the proposal rests on"
+    },
+    "handoffs": {
+      "description": "asks for another builder (not yourself), e.g. a line that must move for a stop to fit; omit when none",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "true: the candidate cannot be accepted until the owner acts; false: advisory"
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "owner",
+          "blocking",
+          "ask"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "answers": {
+      "description": "one entry per blocking hand-off addressed to you in the task; omit when there are none",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "description": "the hand-off ask, copied exactly"
+          },
+          "done": {
+            "type": "boolean",
+            "description": "true only if your output now does what was asked"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "from",
+          "ask",
+          "done",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "stops",
+    "notes",
+    "sources"
+  ],
+  "additionalProperties": false
+}

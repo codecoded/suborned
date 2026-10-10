@@ -1,0 +1,20 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "N-R1",
+    "fault": "No placement of stops on the current lines can reach docks-east, lantern-west, harbour-east or rocket-west within 250 m. Their centroids sit at x ±260, too far from the T1 trunk at x 0 and the S1 beam at y 0. Datum chose not to add T2 and suggested more T1 stops first, but stops at x 0 cannot fix plots at x ±260.",
+    "fix": "East: add a line along Harbour Road (Datum's deferred T2) ending in a loop in street space. West: add one on or near Sunset Way or Lantern/Rocket Lane. Join both by interchanges. Vantage then places stops near z −270/−510 (east) and z −300/−560 (west), and the checker is run again.",
+    "chunks": [
+      "7dfdfdf13043a24e8e964b0b",
+      "538618090dd534247cab5493"
+    ]
+  },
+  {
+    "owner": "Datum",
+    "rule": "handoff",
+    "fault": "Vantage hands off to Datum (blocking): N-R1 fails on the current lines. Over reach 250: docks-east (262,-512) 293 m, lantern-west (-260,-563) 289 m, harbour-east (262,-267) 278 m, rocket-west (-260,-296) 273 m. East: add a line on Harbour Road, e.g. your deferred T2. West: add one on or near Sunset Way or Lantern/Rocket Lane. I can then place stops near z -270/-510 and -300/-560.",
+    "fix": "N-R1 fails on the current lines. Over reach 250: docks-east (262,-512) 293 m, lantern-west (-260,-563) 289 m, harbour-east (262,-267) 278 m, rocket-west (-260,-296) 273 m. East: add a line on Harbour Road, e.g. your deferred T2. West: add one on or near Sunset Way or Lantern/Rocket Lane. I can then place stops near z -270/-510 and -300/-560.",
+    "chunks": [],
+    "synthesized": true
+  }
+]

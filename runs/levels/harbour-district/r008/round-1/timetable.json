@@ -1,0 +1,110 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 12,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 21
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 18
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 230,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/gardens",
+      "sec": 147,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T1/comet",
+      "sec": 201,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/harbour",
+      "to": "T1/records",
+      "sec": 146,
+      "via": [
+        "S1/circus"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the wait for the next service the full headway, the average (half headway), or modelled from the mission clock?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not define how the wait is computed."
+    },
+    {
+      "question": "Is there a walking pace, and does boarding count the interchange walk as part of the price?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace; 1.4 m/s is an [S] assumption for interchange walks."
+    },
+    {
+      "question": "Can a boarded vehicle be seen, stopped or sealed (e.g. Alert 3 closing stations)?",
+      "for": "Motive",
+      "why": "The timetable assumes continuous service; the GDD travel rule does not cover closures."
+    }
+  ],
+  "notes": [
+    "T1 speed 8 m/s [S]: street tram on a 16 m street with stops 300-500 m apart; runs of ~310 m take ~39 s, with 15 s dwell for boarding at a street island.",
+    "S1 speed 12 m/s [S]: elevated rail, faster than the tram on 200-500 m station spacing; runs of ~245 m take ~21 s, so a ride never dominates the wait.",
+    "Headways [S]: T1 180 s, S1 120 s. A fast-travel wait of 1-3 min fits an 8-12 min mission, so travel is a real cost but not a stall. Dwell S1 12 s, T1 15 s.",
+    "Only one interchange exists (T1/circus <-> S1/circus, about 119 m apart, within the 150 m limit), so every cross-line journey changes there.",
+    "Journeys chosen: Comet Row to Skyport, Records to Sphere Gardens, Sphere Gardens to Comet Row, Harbour to Records. They cover both lines and both directions.",
+    "Boarding is fast travel priced in time only (wait + ride), no fare, per the GDD travel rule."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

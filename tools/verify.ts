@@ -5,22 +5,25 @@ import { inProcess } from './levels/checker';
 import { runDirs, runsRoot } from './levels/paths';
 import { root } from './rag/config';
 
-const PLAN = 'harbour-district', SUBMITTED = 'r006', bad: string[] = [];
+const PLAN = 'harbour-district', SUBMITTED = 'r008', bad: string[] = [];
 const tsc = Bun.spawn(['bun', 'run', 'typecheck'], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); // runs while the replays use this thread
 const tscOut = Promise.all([new Response(tsc.stdout).text(), new Response(tsc.stderr).text(), tsc.exited]);
 
 /** Pure: label a replay's drift from its warn lines, and say whether its only failure is the expected "superseded". */
 function summarise(lines: string[]) {
-  let sup = false; const gdd = new Map<string, number>(), added = new Set<string>(), other: string[] = [];
+  let sup = false; const gdd = new Map<string, number>(), added = new Set<string>(), other: string[] = [], chunk = new Map<string, number>();
   for (const l of lines.filter(l => l.startsWith('warn'))) {
     const g = l.match(/recorded against GDD (v[\d.]+)/), r = l.match(/rules added since the run: ([\w\-, ]+?)(?:;|\)|$)/);
     if (g) gdd.set(g[1]!, (gdd.get(g[1]!) ?? 0) + 1);
     if (r) for (const id of r[1]!.split(',')) added.add(id.trim());
+    const c = !g && l.match(/recorded with chunker (v\d+)/);
+    if (c) chunk.set(c[1]!, (chunk.get(c[1]!) ?? 0) + 1);
     if (/superseded run, pre-pinning/.test(l)) sup = true;
-    else if (!g && !r) other.push(l);
+    else if (!g && !r && !c) other.push(l);
   }
   const fails = lines.filter(l => l.startsWith('FAIL')), superseded = fails.length > 0 && fails.every(l => /^FAIL\s+superseded:/.test(l));
   const parts = [...gdd].map(([v, n]) => `recorded against GDD ${v} ×${n}`);
+  for (const [v, n] of chunk) parts.push(`recorded with chunker ${v} ×${n}`);
   if (sup) parts.push('superseded: pre-pinning, Oct 5 block');
   if (added.size) parts.push(`rules added ${[...added].sort().join(',')}`);
   if (other.length) parts.push(`other warnings ×${other.length}`);
@@ -39,7 +42,7 @@ for (const [i, id] of ids.entries()) {
   if (!ok && !s.superseded) { bad.push(`${id} replay`); for (const f of s.fails) console.log('      ' + f.slice(0, 200)); } else replayed++;
   if (id === SUBMITTED) accepted = run.outcome;
 }
-const missing = ['r001', 'r002', 'r003', 'r004', 'r005', 'r006'].filter(r => !ids.includes(r)); // committed runs; a marker's own new runs are replayed too
+const missing = ['r001', 'r002', 'r003', 'r004', 'r005', 'r006', 'r007', 'r008'].filter(r => !ids.includes(r)); // committed runs; a marker's own new runs are replayed too
 if (missing.length) bad.push(`committed runs missing: ${missing.join(',')}`);
 if (accepted !== 'ACCEPTED') bad.push(`${SUBMITTED} is ${accepted || 'missing'}, not ACCEPTED`);
 

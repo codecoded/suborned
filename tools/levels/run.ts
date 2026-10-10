@@ -4,14 +4,14 @@ import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { z } from 'zod';
 import { runAgent, type Call } from '../rag/agent';
-import { hash, loadCorpus } from '../rag/corpus';
+import { CHUNKER, hash, loadCorpus } from '../rag/corpus';
 import type { retrieve } from '../rag/retrieval';
 import { root, writeJson } from '../rag/config';
 import { citedBlock, citeFaults } from './cite';
-import { collectHandoffs, handoffFaults } from './handoff';
+import { collectHandoffs, handoffFaults, handoffText, pendingFor } from './handoff';
 import { apply, seedStationOnPlot, type Proposals } from './apply';
 import { applyDerived } from './timetable';
-import { inProcess, ownerOf, viaCli } from './checker';
+import { inProcess, ownersOf, viaCli } from './checker';
 import { geometry, plots, transit } from './digest';
 import { objectives } from './objectives';
 import { agents, type Agent, type Pulse, type Timetable, type Verdict } from './schemas';
@@ -43,8 +43,8 @@ export async function runLevels(o: Opts) {
   const std = (() => { const s = structuredClone(input.standards); delete s.transit?.waived; return j(s); })();
   const label = o.seed ? `[SEEDED ${o.seed}] ` : '';
   const summary = (outcome: string, extra: object = {}) => ({
-    run: runId, plan: planId, date: new Date().toISOString(), objective: 'transit', timetable: 'derived', outcome, seeded: o.seed ?? false,
-    inputPlan: { version: input.version, hash: hash(JSON.stringify(input)), rawHash: hash(raw), source: o.plan }, inputBlock, gdd: currentGdd(), toolsHash: tools, corpusHash, embeddingModel: 'BAAI/bge-small-en-v1.5', retrieval: o.retrieval ?? 'hybrid (SurrealDB)',
+    run: runId, plan: planId, date: new Date().toISOString(), objective: 'transit', timetable: 'derived', handoffMode: 'answered', outcome, seeded: o.seed ?? false,
+    inputPlan: { version: input.version, hash: hash(JSON.stringify(input)), rawHash: hash(raw), source: o.plan }, inputBlock, gdd: currentGdd(), toolsHash: tools, corpusHash, chunker: CHUNKER, embeddingModel: 'BAAI/bge-small-en-v1.5', retrieval: o.retrieval ?? 'hybrid (SurrealDB)',
     cards: Object.fromEntries(calls.map(c => [c.role, { source: c.card.source, sourceHash: c.card.sourceHash }])), rounds,
     cost: { usd: Math.round(calls.reduce((s, c) => s + (c.costUsd ?? 0), 0) * 1e4) / 1e4, calls: calls.length },
     calls: calls.map(c => ({ id: c.id, objective: c.objective, role: c.role, model: c.model, attempt: c.attempt, status: c.status, costUsd: c.costUsd, seconds: c.seconds })), ...extra,
@@ -60,7 +60,7 @@ export async function runLevels(o: Opts) {
       const pre = () => apply(input, { datum: outs.datum, vantage: outs.vantage }, version); // lines and stops as proposed, before the timetable (which is derived from them)
       const run1 = async (a: Agent, task: string) => {
         const obj = objectives[a], fb = feedback[a], first = calls.length;
-        const text = `${task}${previous[a] ? `\n\nYour previous proposal (JSON):\n${j(previous[a])}` : ''}${fb.length ? `\n\nCritic faults on it, to be fixed (passages they cite are pinned above):\n${fb.map(f => '- ' + f).join('\n')}` : ''}`;
+        const text = `${task}${a === 'datum' || a === 'keel' ? '' : handoffText(pendingFor(a, outs, ran))}${previous[a] ? `\n\nYour previous proposal (JSON):\n${j(previous[a])}` : ''}${fb.length ? `\n\nCritic faults on it, to be fixed (passages they cite are pinned above):\n${fb.map(f => '- ' + f).join('\n')}` : ''}`;
         const out = await runAgent(obj, text, agents[a] as z.ZodType<any>, calls, odir, fb, o.retriever);
         const c = calls.at(-1)!, rec = { id: c.id, objective: c.objective, role: c.role, model: c.model, modelsUsed: c.modelsUsed, tools: c.tools, cliVersion: c.cliVersion, costUsd: c.costUsd, seconds: c.seconds, attempts: calls.length - first, card: { source: c.card.source, sourceHash: c.card.sourceHash }, retrieval: c.retrieval, pinning: c.pinning };
         return { out, rec };
@@ -100,14 +100,14 @@ export async function runLevels(o: Opts) {
       const keelTask = `Task: judge the candidate.\nObjective under test: ${OBJECTIVE}\n\nOutput schemas (JSON): ${j(schemas)}\n\n${reportText}\n\nStops and stations as placed:\n${stopTable(report)}\n\nCandidate proposals (JSON): ${j({ lines: outs.datum, stops: outs.vantage, timetable: skipped.includes('pulse') ? null : { derivedByCode: 'run times and journey totals below are computed from the stop table; judge the choices, not the sums', ...(timetable as Timetable) } })}\n\nWhat each builder retrieved and cites. Code has already checked that every cited id was retrieved by its own builder: raise no fault for citation membership. Judge whether the claims are true to the cited text:\n${citedBlock(built)}${round > 1 ? `\n\nThis is a revision. The faults from last round (JSON), to recheck:\n${j(lastFaults)}` : ''}`;
       const k = await run1('keel', keelTask), verdict = k.out as Verdict;
       await writeJson(`${rd}/keel.json`, verdict); await writeJson(`${rd}/keel.call.json`, k.rec);
-      const faults: Fault[] = verdict.faults.map(f => ({ ...f, owner: f.owner in OWNER_AGENT ? f.owner : isRule(f.rule) ? ownerOf(f.rule) : f.owner, // Keel's named owner wins; ownerOf only when it is missing/invalid
+      const faults: Fault[] = verdict.faults.map(f => ({ ...f, owner: f.owner in OWNER_AGENT ? f.owner : isRule(f.rule) ? ownersOf(f.rule)[0]! : f.owner, // Keel's named owner wins; ownerOf only when it is missing/invalid
          chunks: f.chunks.filter(c => keys.has(c)) }));
       const uncited = faults.filter(f => !f.chunks.length).length;
-      for (const c of report.checks.filter(c => !c.ok)) if (!faults.some(f => f.rule === c.id)) faults.push({ owner: ownerOf(c.id), rule: c.id, fault: `${c.rule}: ${c.value} (limit ${c.limit})${c.detail ? '; ' + c.detail : ''}`, fix: 'bring the plan inside the rule', chunks: [], synthesized: true });
+      for (const c of report.checks.filter(c => !c.ok)) if (!faults.some(f => f.rule === c.id)) faults.push(...ownersOf(c.id).map(owner => ({ owner, rule: c.id, fault: `${c.rule}: ${c.value} (limit ${c.limit})${c.detail ? '; ' + c.detail : ''}`, fix: 'bring the plan inside the rule', chunks: [], synthesized: true as const })));
       for (const p of problems) faults.push({ owner: p.startsWith('timetable') ? 'Pulse' : p.startsWith('line') ? 'Datum' : 'Vantage', rule: 'apply', fault: p, fix: 'make the proposal reference what exists', chunks: [], synthesized: true });
       const ttF: Fault[] = ttFaults.map(f => ({ owner: 'Pulse', rule: 'timetable', fault: f, fix: 'make the journeys use existing stops and real interchanges', chunks: [], synthesized: true })); faults.push(...ttF);
       const cites = citeFaults(built); faults.push(...cites);
-      const hand = collectHandoffs(outs, ran), handFaults = handoffFaults(hand); faults.push(...handFaults);
+      const hand = collectHandoffs(outs, ran), handFaults = handoffFaults(hand, { outs, ran }); faults.push(...handFaults);
       const pass = checkerOk && verdict.verdict === 'pass' && !faults.length;
       rounds.push({ round, version, seeded, ran, reused, skipped, checkerExit: exit, checkerOk, failedChecks: report.checks.filter(c => !c.ok).map(c => c.id), problems, verdict: pass ? 'pass' : 'fail', keelVerdict: verdict.verdict, citeFaults: cites.length, timetableFaults: ttF.length, handoffs: hand, handoffFaults: handFaults.length, faults: faults.length, uncitedFaults: uncited, faultOwners: [...new Set(faults.map(f => f.owner))] });
       await writeJson(`${rd}/faults.json`, faults);

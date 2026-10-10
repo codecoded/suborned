@@ -1,0 +1,180 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 240,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T2/harbour",
+          "to": "T2/harbour-court",
+          "sec": 39
+        },
+        {
+          "from": "T2/harbour-court",
+          "to": "T2/docks",
+          "sec": 39
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/comet",
+          "sec": 62
+        },
+        {
+          "from": "T2/comet",
+          "to": "T2/lantern",
+          "sec": 55
+        },
+        {
+          "from": "T2/lantern",
+          "to": "T2/rocket",
+          "sec": 39
+        },
+        {
+          "from": "T2/rocket",
+          "to": "T2/terraces",
+          "sec": 54
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 12,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 21
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 18
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 230,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/gardens",
+      "sec": 147,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T1/comet",
+      "sec": 201,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/harbour",
+      "to": "T1/records",
+      "sec": 146,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/skyport",
+      "sec": 311,
+      "via": [
+        "T1/comet",
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T2/terraces",
+      "to": "T1/records",
+      "sec": 559,
+      "via": [
+        "T2/harbour",
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T2/lantern",
+      "sec": 290,
+      "via": [
+        "S1/circus",
+        "T1/comet"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the wait for the next service the full headway, the average (half headway), or modelled from the mission clock?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not define how the wait is computed."
+    },
+    {
+      "question": "Is there a walking pace, and does boarding count the interchange walk as part of the price?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace; 1.4 m/s is an [S] assumption for interchange walks."
+    },
+    {
+      "question": "Can a boarded vehicle be seen, stopped or sealed (e.g. Alert 3 closing stations)?",
+      "for": "Motive",
+      "why": "The timetable assumes continuous service; the GDD travel rule does not cover closures. The plan notes police sealing stations rather than streets."
+    },
+    {
+      "question": "Does T2 run in both directions, and does a rider choose the shorter way round?",
+      "for": "Motive",
+      "why": "The GDD does not say; journeys here assume either direction on the line."
+    }
+  ],
+  "notes": [
+    "Fault fixed: the last proposal used T2/crescent, which does not exist. It is now T2/terraces. T2 stops are harbour, harbour-court, docks, comet, lantern, rocket, terraces.",
+    "T1 speed 8 m/s [S]: street tram in a 16 m street, stops 300-500 m apart; a ~310 m run takes ~39 s. Dwell 15 s, headway 180 s. Unchanged.",
+    "T2 speed 8 m/s [S]: same street running as T1, runs of 305-491 m. Headway 240 s [S] because the line is long (about 2.5 km chainage). Dwell 15 s. Unchanged.",
+    "S1 speed 12 m/s [S]: elevated rail, faster than the trams on 205-255 m station spacing. Headway 120 s, dwell 12 s. Unchanged.",
+    "Interchange pairs used: T1/circus-S1/circus, T1/comet-T2/comet, T2/harbour-S1/harbour. Each is within the 150 m limit. Code computes the walks.",
+    "Boarding is fast travel priced in time only (wait + ride), no fare, per the GDD travel rule."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

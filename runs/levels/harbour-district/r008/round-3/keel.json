@@ -1,0 +1,14 @@
+{
+  "verdict": "pass",
+  "summary": "Strict checker clean. Last round's faults fixed: T2 is an open U, so T-L1 passes; Vantage placed 7 T2 stops and moved Skyport, and its answers match the stops. Timetable values are plausible and its time-only price fits the GDD travel rule. Open, not faults: the flat T1×T2 crossing at (0,-726) has no standard (Keel/Splice); Pulse did not act on the advisory ask to stagger timetables there; the T2 'shorter way round' question is out of date now it is not a ring; the 1.4 m/s walk pace is an assumption for Motive; Datum reports a stale-source conflict in notes›why for Aster.",
+  "faults": [],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "c5fb128448665c55b7c335fb",
+    "0e426f4211a2f1f25c328968",
+    "e20799f1f673824d09ce452d"
+  ]
+}

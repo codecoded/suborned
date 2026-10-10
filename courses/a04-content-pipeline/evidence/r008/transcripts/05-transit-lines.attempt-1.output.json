@@ -1,0 +1,226 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Ring Line",
+      "beyond": "",
+      "paths": [
+        {
+          "id": "ring",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              306,
+              0
+            ],
+            [
+              306,
+              -726,
+              50
+            ],
+            [
+              -346,
+              -726,
+              50
+            ],
+            [
+              -346,
+              286,
+              50
+            ],
+            [
+              306,
+              286,
+              50
+            ],
+            [
+              306,
+              0
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "ring"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              575,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              575,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              575,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Fixes N-R1 with a new line, T2 Ring Line: one closed double-track path round the primary ring (Harbour Road x 306, Comet Row z -726, Sunset Way x -346, Crown Road z 286). It closes on itself, so N-D1 and T-L1 need no loop. This is tide's two-way loop, built as a tram on the ring roads; it takes in T2 on Harbour Road.",
+    "Reach, worked by hand: harbour-east and docks-east (x 262) are 44 m from x 306. rocket-west and lantern-west (x -260) are 86 m from x -346. All four fall within reach 250 once stops are placed abreast of them.",
+    "T-C1/T-R1: the track runs 6 m outboard of each road's centreline (outer rail 7.8 m, kerb 12 m), so the R 50 corners stay in street space. At each corner the inner kerb point lies within the arc radius (32²+32² ≤ 50²; inner rail 2*30.2² ≤ 48.2²). On the centreline the arc would clip the corner plot.",
+    "Because of the offset, T2 runs in a kerbside reservation beside the 4 m median, not in it.",
+    "N-C1: T2 crosses S1 at (306,0), 34 m from S1 Harbour (340,0). T2 meets T1 on Comet Row at x 0, about 36 m from T1 Comet (0,-690). T2 also passes under S1 at (-346,0), where there is no station.",
+    "T2 crosses T1 at grade at (0,-726). No standard covers flat tram crossings; flagged for Keel and Splice, not assumed fine.",
+    "T1 is unchanged. S1 keeps its trunk to x 575 for Skyport spacing. Still open: notes › why contradicts notes › concept and looks stale (for Aster). The crown-circus 'via' is a chord polygon, a T-C1 risk for the T1 balloon.",
+    "Evidence: there is no shell in this run, so the plan checker was not run; all checks are by hand. `bun tools/plan/cli.ts` must exit 0 after Vantage places the stops."
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "c1909f164651d9c88cd65c53"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "Place T2 Ring Line stops on path 'ring', 300 to 500 m apart. They must include: Harbour Road near (306,-270) and (306,-510); Sunset Way near (-346,-300) and (-346,-560); an interchange near (306,0), within 150 m of S1 Harbour (340,0); an interchange on Comet Row near (0,-726), within 150 m of T1 Comet (0,-690). Then rerun N-R1."
+    },
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "S1 station spacing: Harbour (340) to Skyport (530) is 190 m, under 200. The trunk now runs to x 575. Move Skyport to about x 545 (fits 520 to 570 on the apron), or move Harbour to about x 325."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 is a closed two-way ring (about 3.3 km) with no termini; timetable it as continuous circulation both ways. It crosses T1 at grade at (0,-726), so the two timetables need to stagger there."
+    }
+  ]
+}

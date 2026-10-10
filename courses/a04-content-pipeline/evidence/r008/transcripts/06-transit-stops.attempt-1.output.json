@@ -1,0 +1,228 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "interchange": "T2/comet",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour Gate",
+      "path": "ring",
+      "at": [
+        306,
+        -20
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-court",
+      "name": "Harbour Court",
+      "path": "ring",
+      "at": [
+        306,
+        -330
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "ring",
+      "at": [
+        306,
+        -650
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "ring",
+      "at": [
+        -30,
+        -726
+      ],
+      "interchange": "T1/comet",
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern",
+      "path": "ring",
+      "at": [
+        -346,
+        -560
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "rocket",
+      "name": "Rocket",
+      "path": "ring",
+      "at": [
+        -346,
+        -200
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "terraces",
+      "name": "Crown Terraces",
+      "path": "ring",
+      "at": [
+        -346,
+        160
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "crown-road",
+      "name": "Crown Road",
+      "path": "ring",
+      "at": [
+        -100,
+        286
+      ],
+      "fronts": "crown-road"
+    },
+    {
+      "line": "T2",
+      "id": "crescent",
+      "name": "Crescent",
+      "path": "ring",
+      "at": [
+        220,
+        286
+      ],
+      "fronts": "crown-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        545,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "I checked everything by hand. I had no shell, so I did not run `bun tools/plan/cli.ts`; it must exit 0 before acceptance. The T2 ring is 3242 m (2928 m straight plus four R50 arcs of 78.5 m). I measured from (306,0), heading south, then west, north and east.",
+    "T-S1 on T2: the stops are at s 20, 330, 650, 1040.5, 1501, 1861, 2221, 2571.5, 2891.5. Gaps are 310, 320, 390.5, 460.5, 360, 360, 350.5, 320, and 370.5 for the wrap back to Harbour Gate. All are in 300–500. T1 is unchanged (308, 310). S1 gaps are 255, 245 and 205.",
+    "T-S2: every T2 platform (±15 m) is on straight track at least 15 m from an arc tangent point. Tangent points are 50 m from each corner (e.g. (306,-676), (-296,-726), (-346,236), (256,286)). N-P1: every stop is 0 m off its path. N-P2/W-2: every T2 stop is inside its primary road's carriageway (24 m wide), not on a plot.",
+    "W-3: each T2 track is 6 m off the road centreline and the half-width is 12 m. That puts each stop 6 m inside the road edge, which passes. Harbour Gate, Harbour Court and Docks front harbour-road. Comet fronts comet-row. Lantern, Rocket and Terraces front sunset-way. Crown Road and Crescent front crown-road.",
+    "S-I1/N-C1: T2/harbour (306,-20) to S1/harbour (340,0) is 39 m. T2/comet (-30,-726) to T1/comet (0,-690) is 47 m. T1/circus to S1/circus is 119 m. All three lines form one network. T2 Comet sits 30 m west of the flat T1×T2 crossing at (0,-726), so its platform (x -15 to -45) is clear of the T1 tracks.",
+    "N-R1 by hand: the four plots that failed before now pass. harbour-east is 77 m from Harbour Court, docks-east 145 m from Docks, lantern-west 86 m from Lantern and rocket-west 129 m from Rocket. records-square is about 190 m from Rocket and starline-green 175 m from T1 Records. I found no plot over 250 m. The checker still has to confirm this.",
+    "Conflict in Datum's ask: (306,-270) and (306,-510) are 240 m apart, and (-346,-300) and (-346,-560) are 260 m apart. Both pairs are below the tram stopSpacing minimum of 300. I kept reach and spacing and moved the stops to (306,-330), (306,-650), (-346,-560) and (-346,-200).",
+    "Still open from Datum, not resolved by me: no standard covers the flat tram crossing at (0,-726), so Keel and Splice need to rule on it. T2 also passes under S1 at (-346,0) with no station there; S1 Gardens is 186 m away, outside the interchange limit, and none is required."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "8753ed1758ca27e6cf152279"
+  ],
+  "answers": [
+    {
+      "from": "Datum",
+      "ask": "Place T2 Ring Line stops on path 'ring', 300 to 500 m apart. They must include: Harbour Road near (306,-270) and (306,-510); Sunset Way near (-346,-300) and (-346,-560); an interchange near (306,0), within 150 m of S1 Harbour (340,0); an interchange on Comet Row near (0,-726), within 150 m of T1 Comet (0,-690). Then rerun N-R1.",
+      "done": false,
+      "note": "Not all done. I placed 9 T2 stops 310–460.5 m apart, with interchanges 39 m from S1 Harbour and 47 m from T1 Comet; by hand, N-R1 passes. The asked pairs are 240 m and 260 m apart, below 300, so I used -330/-650 and -560/-200. I could not run the checker."
+    },
+    {
+      "from": "Datum",
+      "ask": "S1 station spacing: Harbour (340) to Skyport (530) is 190 m, under 200. The trunk now runs to x 575. Move Skyport to about x 545 (fits 520 to 570 on the apron), or move Harbour to about x 325.",
+      "done": true,
+      "note": "Skyport is now at x 545, platform x 520 to 570 on the apron, fronting skyport-pier. Harbour to Skyport is 205 m."
+    }
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "Your T2 ask put stops at Harbour Road z -270 and -510 (240 m apart) and Sunset Way z -300 and -560 (260 m apart). Both are below tram stopSpacing 300. I used (306,-330), (306,-650), (-346,-560) and (-346,-200), which reach every plot. Please confirm, or change the positions or the standard."
+    }
+  ]
+}

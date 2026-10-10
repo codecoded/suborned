@@ -2,7 +2,7 @@
 // usage: bun run ingest
 import { resolve } from 'node:path';
 import { root, embeddingModel, writeJson } from './config';
-import { hash, loadCorpus } from './corpus';
+import { CHUNKER, hash, loadCorpus } from './corpus';
 import { sql, literal } from './database';
 import { embed } from './embeddings';
 
@@ -18,7 +18,7 @@ export async function ingest() {
   await sql(`UPSERT corpus:current CONTENT ${literal({ corpusHash, embeddingModel, chunks: chunks.length })};`);
   const bySource = new Map<string, { source: string; sha256: string; version: string; chunks: number }>();
   for (const c of chunks) { const e = bySource.get(c.source) ?? { source: c.source, sha256: c.sourceHash, version: c.version, chunks: 0 }; e.chunks++; bySource.set(c.source, e); }
-  const manifest = { corpusHash, embeddingModel, dimensions: 384, chunks: chunks.length, sources: [...bySource.values()] };
+  const manifest = { corpusHash, chunker: CHUNKER, embeddingModel, dimensions: 384, chunks: chunks.length, sources: [...bySource.values()] };
   await writeJson('out/rag/corpus-manifest.json', manifest);
   console.log(`Indexed ${chunks.length} chunks (${manifest.sources.map(s => `${s.source} ${s.chunks}`).join(', ')}); corpus ${corpusHash.slice(0, 12)}`);
   return manifest;

@@ -1,0 +1,25 @@
+{
+  "verdict": "fail",
+  "summary": "Fail: the checker fails T-L1 for T2. The ring ends at (306,0) are read as open with no loop. N-R1 and Skyport spacing (now 205 m) are fixed. Open questions, not faults: no standard covers the flat T1×T2 crossing at (0,-726) (Keel/Splice to rule). Notes › why contradicts notes › concept (for Aster). Timetable choices and open questions are plausible and do not contradict the GDD travel rule. Pulse calls the ring about 2.9 km; Vantage measured 3242 m. This is minor.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "T-L1",
+      "fault": "T2 Ring Line fails T-L1 (0/2 ends loop at (306,0)). The ring is one running path that starts and ends at (306,0), and the checker reads those as two open ends with no turning loop. Datum's note says T-L1 needs no loop because the ring closes on itself; the checker contradicts this.",
+      "fix": "Model T2 in a form T-L1 accepts as closed, or add a terminal loop (R ≥ 25) in street space. If a closed running ring should pass by design, ask Splice through Aster to change the rule. Then rerun the strict checker.",
+      "chunks": [
+        "538618090dd534247cab5493",
+        "e20799f1f673824d09ce452d"
+      ]
+    }
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "ab3dc10b8f9e98b62bfe5738"
+  ]
+}

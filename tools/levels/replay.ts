@@ -4,7 +4,7 @@
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { root } from '../rag/config';
-import { hash, loadCorpus } from '../rag/corpus';
+import { CHUNKER, hash, loadCorpus } from '../rag/corpus';
 import { apply } from './apply';
 import { citeFaults } from './cite';
 import { collectHandoffs, handoffFaults } from './handoff';
@@ -33,8 +33,12 @@ export async function replay(planId: string, runId: string, allowDrift = false):
   const rec = run.gdd ?? inferGdd(hitSources), older = !!rec && rec.version !== now.version, label = `recorded against GDD ${rec?.version}`;
   lines.push(rec ? `ok    GDD ${rec.version}${run.gdd ? '' : ' (inferred from retrieved sources)'}${older ? `; now ${now.version}: GDD drift is labelled "${label}"` : ''}` : 'warn  GDD version unknown (no record, no retrieved sources)');
   const gddDrift = (m: string) => (older ? warn(`${m} (${label})`) : drift(m));
+  // chunker: how the corpus is cut into passages; a run without the field was cut by v1 (the whole § by paragraph). A different chunker explains changed GDD passages and the corpus hash, nothing else.
+  const chunker = Number(run.chunker ?? 1), chunkerLabel = chunker !== CHUNKER ? `recorded with chunker v${chunker}, now v${CHUNKER}` : '';
+  if (chunkerLabel) lines.push(`ok    chunker v${chunker} (${chunkerLabel}): GDD passage and corpus hash differences are labelled drift`);
+  const corpusDrift = (m: string) => (chunkerLabel ? warn(`${m} (${chunkerLabel}${older ? `; ${label}` : ''})`) : gddDrift(m));
   const corpus = await loadCorpus(rawText === undefined ? {} : { [run.inputPlan?.source ?? '']: rawText }), byKey = new Map(corpus.map(c => [c.key, c])), corpusHash = hash(JSON.stringify(corpus));
-  run.corpusHash === corpusHash ? ok(`corpus hash ${corpusHash.slice(0, 12)}`) : gddDrift(`corpus hash changed: recorded ${String(run.corpusHash).slice(0, 12)}, now ${corpusHash.slice(0, 12)}`);
+  run.corpusHash === corpusHash ? ok(`corpus hash ${corpusHash.slice(0, 12)}`) : corpusDrift(`corpus hash changed: recorded ${String(run.corpusHash).slice(0, 12)}, now ${corpusHash.slice(0, 12)}`);
   const derived = run.timetable === 'derived'; // runs before the field (r001-r005) carry Pulse's own run times; they replay as recorded
   lines.push(derived ? 'ok    timetable derived by code' : 'ok    timetable as proposed (recorded before derivation)');
   const input = await read('input.plan.json');
@@ -74,7 +78,7 @@ export async function replay(planId: string, runId: string, allowDrift = false):
         const g = String(h.source).startsWith('GDD/');
         if (!c) g ? gm++ : missing++; else if (c.text !== h.text || c.sourceHash !== h.sourceHash || c.section !== h.section) g ? gc++ : changed++;
       }
-      if (gm || gc) gddDrift(`${n}/${a}: retrieved GDD text no longer matches the corpus (${gm} missing, ${gc} changed of ${call.retrieval.hits.length})`);
+      if (gm || gc) corpusDrift(`${n}/${a}: retrieved GDD text no longer matches the corpus (${gm} missing, ${gc} changed of ${call.retrieval.hits.length})`);
       if (missing || changed) drift(`${n}/${a}: retrieved text no longer matches the corpus (${missing} missing, ${changed} changed of ${call.retrieval.hits.length})`);
       else if (!gm && !gc) ok(`${n}/${a}: ${call.retrieval.hits.length} retrieved passages match the corpus`);
     }
@@ -119,7 +123,7 @@ export async function replay(planId: string, runId: string, allowDrift = false):
     if ('handoffs' in r) { // rounds recorded with hand-offs: recompute from the outputs of the builders that ran
       const o: Record<string, any> = {}; for (const a of ['datum', 'vantage', 'pulse']) if (!skipped.includes(a)) o[a] = await read(`${n}/${a}.json`);
       const want = collectHandoffs(o, r.ran ?? []), got = ((await read(`${n}/faults.json`)) ?? []).filter((f: any) => f.rule === 'handoff').map((f: any) => `${f.owner}|${f.fault}`).sort();
-      JSON.stringify(want) === JSON.stringify(r.handoffs) && JSON.stringify(handoffFaults(want).map(f => `${f.owner}|${f.fault}`).sort()) === JSON.stringify(got) && r.handoffFaults === got.length ? ok(`${n}: hand-offs match (${want.length}, ${got.length} blocking)`) : fail(`${n}: hand-offs differ from a recomputation`);
+      JSON.stringify(want) === JSON.stringify(r.handoffs) && JSON.stringify(handoffFaults(want, run.handoffMode === 'answered' ? { outs: o, ran: r.ran ?? [] } : undefined).map(f => `${f.owner}|${f.fault}`).sort()) === JSON.stringify(got) && r.handoffFaults === got.length ? ok(`${n}: hand-offs match (${want.length}, ${got.length} blocking)`) : fail(`${n}: hand-offs differ from a recomputation`);
     }
     const keel = await read(`${n}/keel.json`);
     if (keel && r.keelVerdict !== keel.verdict) fail(`${n}: run.json keelVerdict ${r.keelVerdict} vs keel.json ${keel.verdict}`);

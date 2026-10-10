@@ -1,0 +1,230 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north off-sheet along Harbour Road (x 306, z 320) and west off-sheet along Crown Road (x -400, z 286): through-running at both ends",
+      "paths": [
+        {
+          "id": "harbour",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              306,
+              320
+            ],
+            [
+              306,
+              -726,
+              50
+            ],
+            [
+              -346,
+              -726,
+              50
+            ],
+            [
+              -346,
+              100,
+              50
+            ],
+            [
+              -334,
+              180,
+              50
+            ],
+            [
+              -334,
+              286,
+              50
+            ],
+            [
+              -400,
+              286
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "harbour"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              575,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              575,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              575,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "T-L1 fix: T2 is no longer a closed ring. It is tide's Harbour Line, extended into a U: from the sheet edge at (306,320) south down Harbour Road, west along Comet Row, north up Sunset Way, then west along Crown Road to the sheet edge at (-400,286). Both ends leave the sheet (N-D1), so T-L1 needs no loop. No rule change is asked of Splice.",
+    "T-C1/T-R1: at each R 50 corner the track runs 6 m from the centreline on the outside of the turn, so the inner kerb corner is about 45 m from the arc centre, under 50, and the arc stays in street space. On Sunset Way the track moves from x -346 to x -334 between z 100 and z 180 (bend of about 8.5°, R 50 fillets, over the median), ready for the turn into Crown Road.",
+    "Reach, worked by hand (transit.reach 250): harbour-east and docks-east 44 m from x 306; rocket-west and lantern-west 86 m from x -346; lamplight-west 54 m; crown-terraces about 170 m; crescent-east 69 m. Each holds only if a stop is placed abreast of the plot.",
+    "N-C1: T2 passes under S1 at (306,0), 34 m from S1 Harbour (340,0). It meets T1 on Comet Row at (0,-726), 36 m from T1 Comet (0,-690). T2 also passes under S1 at (-340,0), where there is no station.",
+    "T2 crosses T1 at grade at (0,-726). No standard covers a flat tram crossing; flagged for Keel and Splice via Aster, not assumed fine.",
+    "T1 is unchanged. S1 trunk still ends at x 575. Stale-source conflict for Aster: notes › why (a single-track tram with no loop, a Sphere loop and a separate harbour loop) contradicts notes › concept and the current lines. I followed concept and the current lines.",
+    "Evidence: there is no shell in this run, so the plan checker was not run; all checks are by hand. `bun tools/plan/cli.ts` must exit 0 after Vantage places the stops."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "e6ffe1ba0919c87923015de5",
+    "c1909f164651d9c88cd65c53"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "Place T2 Harbour Line stops on path 'harbour', 300 to 500 m apart. Include: an interchange near (306,0), within 150 m of S1 Harbour (340,0); stops abreast of (306,-270) and (306,-510); an interchange near (0,-726), within 150 m of T1 Comet (0,-690); stops near (-346,-560) and (-346,-300); one near (-340,150)."
+    },
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "S1 station spacing: Harbour (340) to Skyport (530) is 190 m, under the 200 m minimum. The trunk runs to x 575. Move Skyport to about x 545 (on the apron, 520 to 570), or move Harbour to about x 325."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 runs through at both ends (Harbour Road north, Crown Road west); its termini are off-sheet. It crosses T1 at grade at (0,-726), so stagger the two timetables there."
+    }
+  ]
+}
