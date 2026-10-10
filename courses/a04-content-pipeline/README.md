@@ -20,12 +20,12 @@
 | level | needs | command | time | expect |
 |---|---|---|---|---|
 | 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r008/` | none | — |
-| 1 · offline | Bun | `bun install && bun run verify` | 1–2 min | one line per run with its drift labelled by cause, then `VERIFY OK: 9 runs replayed (submitted r008 ACCEPTED) …` |
+| 1 · offline | Bun | `bun install && bun run verify` | 1–2.5 min | one line per run with its drift labelled by cause, then `VERIFY OK: 9 runs replayed (submitted r008 ACCEPTED) …` |
 | 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0 |
 | 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "how does the player use trams and sky rail and what does riding cost"` | about 3 min the first time | ranked passages from SurrealDB, `§02 LOOP + RESOURCES › travel` among the first; each hit names its signals (`semantic`, `keyword` or both) |
 | 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
 
-AI tools with a 2-minute command limit should give `verify` a 5-minute timeout (it took 35–114 s in our runs, depending on load), and run levels 1b, 2 and 3 in the background or with a longer timeout. Only `levels transit` adds files: a new run folder. `levels:ranks --evidence` would rewrite `evidence/ranks.json`; plain `levels:ranks` only writes to `out/`.
+AI tools with a 2-minute command limit should give `verify` a 5-minute timeout (it took 35–140 s in our runs, depending on load), and run levels 1b, 2 and 3 in the background or with a longer timeout. Only `levels transit` adds files: a new run folder. `levels:ranks --evidence` would rewrite `evidence/ranks.json`; plain `levels:ranks` only writes to `out/`.
 
 ## What it generates
 Three outputs for The Suborned's Harbour District, as edits to the district plan (`contracts/world/harbour-district.plan.json`, schema `suborned.plan/1`):
