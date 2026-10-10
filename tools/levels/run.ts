@@ -10,6 +10,7 @@ import { root, writeJson } from '../rag/config';
 import { citedBlock, citeFaults } from './cite';
 import { collectHandoffs, handoffFaults, handoffText, pendingFor } from './handoff';
 import { apply, seedStationOnPlot, type Proposals } from './apply';
+import { seedFareClaim, SEEDED_AGENT, type Seed } from './seed';
 import { applyDerived } from './timetable';
 import { inProcess, ownersOf, viaCli } from './checker';
 import { geometry, plots, transit } from './digest';
@@ -19,7 +20,7 @@ import { currentGdd } from './gdd';
 import { toolsHash } from './toolhash';
 import { candidateVersion, nextRun, outRoot, pad, runsRoot } from './paths';
 
-export type Opts = { plan: string; seed?: 'station-on-plot'; rounds?: number; retriever: typeof retrieve; retrieval?: string };
+export type Opts = { plan: string; seed?: Seed; rounds?: number; retriever: typeof retrieve; retrieval?: string };
 type Fault = Verdict['faults'][number] & { synthesized?: boolean };
 const BUILD: Agent[] = ['datum', 'vantage', 'pulse'], OWNER_AGENT = { Datum: 'datum', Vantage: 'vantage', Pulse: 'pulse' } as const;
 const j = (x: unknown) => JSON.stringify(x), isLine = (p: string) => p.startsWith('line'), isRule = (r: string) => /^[A-Z]+-[A-Z]\d+$/.test(r);
@@ -73,8 +74,8 @@ export async function runLevels(o: Opts) {
             : a === 'vantage' ? `Task: place the stops and stations.\nPlan standards (JSON): ${std}\nPlan geometry (JSON): ${geometry(input)}\nCandidate lines from Datum (JSON): ${transit(view)}\nDatum's notes: ${(outs.datum?.notes ?? []).join(' | ')}`
             : `Task: write the timetable choices.\nCandidate lines (JSON): ${transit(view)}\nStops in order with chainage (from the plan checker; code derives every run time and journey total from these, you only state speeds, dwells, headways and the legs of each journey):\n${stopTable(await inProcess(view, true, block))}`;
           let { out, rec } = await run1(a, task) as { out: any; rec: any };
-          if (a === 'vantage' && o.seed && round === 1) {
-            const s = seedStationOnPlot(out, view, plots(input));
+          if (o.seed && round === 1 && a === SEEDED_AGENT[o.seed]) {
+            const s = o.seed === 'fare-claim' ? seedFareClaim(out, rec.retrieval?.hits ?? []) : seedStationOnPlot(out, view, plots(input));
             console.log(`${label}${s.note}`); rec = { ...rec, seeded: o.seed, seedNote: s.note, original: out }; out = s.out; seeded = true;
           }
           (outs as any)[a] = out; saved[a] = rec; previous[a] = out; ran.push(a);

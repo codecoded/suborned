@@ -1,0 +1,170 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T2/harbour",
+          "to": "T2/docks",
+          "sec": 59
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/comet",
+          "sec": 60
+        },
+        {
+          "from": "T2/comet",
+          "to": "T2/lantern",
+          "sec": 39
+        },
+        {
+          "from": "T2/lantern",
+          "to": "T2/rocket",
+          "sec": 40
+        },
+        {
+          "from": "T2/rocket",
+          "to": "T2/sunset",
+          "sec": 52
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 18
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 19
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 231,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/skyport",
+      "sec": 177,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T1/records",
+      "sec": 147,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/comet",
+      "sec": 231,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "S1/gardens",
+      "sec": 201,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/circus",
+      "sec": 306,
+      "via": [
+        "S1/harbour",
+        "T2/comet"
+      ]
+    },
+    {
+      "from": "T2/sunset",
+      "to": "S1/gardens",
+      "sec": 380,
+      "via": [
+        "T2/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the interchange wait for the second service counted in a boarding's price, or only the first wait plus the rides?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not say how a change of line is priced."
+    },
+    {
+      "question": "What interchange walking pace should apply? I used 1.4 m/s as an [S] value.",
+      "for": "Motive",
+      "why": "The GDD states no walking pace."
+    },
+    {
+      "question": "Do trams and sky rail keep running, and can the player board, at Alert 2-3 when police seal stations?",
+      "for": "Motive",
+      "why": "The GDD hold says the police seal stations. It does not say whether boarding stays open."
+    }
+  ],
+  "notes": [
+    "Boarding is fast travel priced in time only: the wait for the next service plus the ride, both from the timetable. No fare (GDD §02 travel, ab3dc10b8f9e98b62bfe5738). The earlier $5 fare note is deleted.",
+    "T1 and T2 speed 8 m/s: street trams with 300-500 m stop spacing; runs of about 39-52 s. [S] starting value.",
+    "S1 speed 12 m/s: elevated and unobstructed with 200-500 m station spacing; runs of about 18-22 s, faster than a tram so the sky rail pays off. [S] starting value.",
+    "Headways T1 and T2 180 s, S1 120 s: the average wait is half a headway (90 s and 60 s), short enough that fast travel is a planning choice, not a chore. Dwell 15 s on all lines. [S]",
+    "Interchange pairs used: T1/circus-S1/circus (about 119 m apart), S1/harbour-T2/harbour, T2/comet-T1/comet. Each is a pair on different lines.",
+    "Source conflict, not resolved: the plan passage puts S1 Harbour at x=340, but the candidate line and stop table use 310 (gap 220 m). I used the stop table. Datum should confirm.",
+    "Runs are modelled as bidirectional on each line. T1 and T2 have off-sheet termini, which the plan leaves open."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "a61013bb832308b31e1ef07b",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

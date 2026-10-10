@@ -1,0 +1,32 @@
+{
+  "verdict": "fail",
+  "summary": "Fail. Checker N-R1 failed: docks-east, lantern-west, rocket-west and harbour-east are beyond the 250 m reach. Datum added no east or west line, and Vantage shows no stop placement can fix it. Code will raise Vantage's blocking hand-off, so it is not repeated. Pulse adds a $5 fare, but GDD §02 says no fare. Open question, not a fault: Pulse's Alert 2–3 question cites the plan's open question as if the GDD had settled station sealing; it is rightly left for Motive. The Harbour 340→310 change is documented and is not a fault.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "N-R1",
+      "fault": "Four areas are beyond the 250 m reach of any tram stop or sky rail station: docks-east 294 m, lantern-west 289 m, rocket-west 273 m and harbour-east 272 m. With only T1 on the Boulevard and S1 at y 0, no stop placement can reach them, so the lines must change.",
+      "fix": "Add an east line, such as T2 on Harbour Road with the road carried to the sheet edge, and a west line, such as a tram on Sunset Way, each meeting the tram and sky rail standards. Vantage then places stops on them, and the checker must run clean.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b",
+        "538618090dd534247cab5493"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "A timetable note sets the boarding price as 'a flat $5 fare per ride, charged at the gate, plus the wait (GDD §02 travel)'. The cited §02 travel rule says the price is time only, the wait plus the ride, with no fare. The note invents a price that contradicts the GDD.",
+      "fix": "Delete the $5 fare note. The price is the wait for the next service plus the ride, both read from the timetable, with no fare.",
+      "chunks": [
+        "ab3dc10b8f9e98b62bfe5738"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ab3dc10b8f9e98b62bfe5738",
+    "ba506de42600790962a866a2",
+    "c5fb128448665c55b7c335fb"
+  ]
+}

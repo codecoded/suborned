@@ -42,7 +42,7 @@ for (const [i, id] of ids.entries()) {
   if (!ok && !s.superseded) { bad.push(`${id} replay`); for (const f of s.fails) console.log('      ' + f.slice(0, 200)); } else replayed++;
   if (id === SUBMITTED) accepted = run.outcome;
 }
-const missing = ['r001', 'r002', 'r003', 'r004', 'r005', 'r006', 'r007', 'r008'].filter(r => !ids.includes(r)); // committed runs; a marker's own new runs are replayed too
+const missing = ['r001', 'r002', 'r003', 'r004', 'r005', 'r006', 'r007', 'r008', 'r009'].filter(r => !ids.includes(r)); // committed runs; a marker's own new runs are replayed too
 if (missing.length) bad.push(`committed runs missing: ${missing.join(',')}`);
 if (accepted !== 'ACCEPTED') bad.push(`${SUBMITTED} is ${accepted || 'missing'}, not ACCEPTED`);
 

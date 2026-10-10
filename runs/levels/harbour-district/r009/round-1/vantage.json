@@ -1,0 +1,115 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        310,
+        0
+      ],
+      "length": 50,
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "No checker run: this task has no shell. All figures below are hand checks against the standards. `bun tools/plan/cli.ts` still needs to run and exit 0 before handover.",
+    "Fix: Harbour station moves from x 340 to 310. Datum's Harbour (340) to Skyport (530) was 190 m, under the 200 m minimum (S-S2). New sky rail spacing: 255, 215, 220. Tram spacing: 308, 310 (T-S1 is 300–500).",
+    "Harbour at (310,0) stands over Harbour Road's carriageway (x 288–312), so it fronts harbour-road and has no plot under it (N-P2). Skyport at (530,0) fronts the pier, over the apron. Its 50 m platform runs x 505–555, all on the straight trunk, which ends at 560.",
+    "Interchange: the T1 Crown Circus stop (0,-72) is ≈119 m from the S1 Crown Circus station (95,0), within the 150 m limit. Both are marked, which makes the network one connected whole (N-C1, read as connected).",
+    "Fails N-R1, and no stop placement can fix it: rocket-west (-260,-296) and lantern-west (-260,-563) are 260 m east–west from T1 alone, and every S1 point lies on y 0, at least 296 m away. That puts both outside reach 250.",
+    "Fails N-R1 the same way: harbour-east (262,-267) is ≈278 m from the nearest stop and docks-east (262,-512) ≈293 m. Both are 262 m from T1, and S1 is at least 267 m off. They need T2 on Harbour Road, Datum's proposal.",
+    "Borderline reach, keep in mind if stops move: crown-terraces is 247 m from Sphere Gardens, crescent-north 247 m from S1 Crown Circus, crescent-east ≈200 m from Harbour."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 can't pass on T1+S1: harbour-east (262,-267), docks-east (262,-512), rocket-west (-260,-296), lantern-west (-260,-563) are >250 m from every point on both lines. Add an east line (your T2 on Harbour Road x 300, road carried to y -780) and a west line (e.g. tram on Sunset Way x -340); I'll place stops on them."
+    },
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "If T2 runs on Harbour Road, its crossing with S1 at (300,0) is ≈10 m from the S1 Harbour station, now at (310,0). Please keep T2 straight there so a tram stop near (300,±30) can interchange with S1/harbour."
+    }
+  ]
+}

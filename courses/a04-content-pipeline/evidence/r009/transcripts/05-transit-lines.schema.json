@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "lines": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "short id, e.g. T2, trunk, circus"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "tram",
+              "skyrail"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "beyond": {
+            "type": "string",
+            "maxLength": 160,
+            "description": "where the line goes off-sheet, or \"\" if it does not"
+          },
+          "paths": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+                  "description": "short id, e.g. T2, trunk, circus"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "running",
+                    "line",
+                    "loop"
+                  ],
+                  "description": "tram: running|loop; sky rail: line|loop"
+                },
+                "double": {
+                  "type": "boolean"
+                },
+                "pts": {
+                  "minItems": 2,
+                  "type": "array",
+                  "items": {
+                    "minItems": 2,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "description": "[x, y] or [x, y, fillet radius m]"
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "role",
+                "double",
+                "pts"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "order": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "path ids end to end (\"-id\" runs a path against its drawn direction); [] = as listed"
+          }
+        },
+        "required": [
+          "id",
+          "mode",
+          "name",
+          "beyond",
+          "paths",
+          "order"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "remove": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+        "description": "short id, e.g. T2, trunk, circus"
+      },
+      "description": "ids of existing lines to delete; [] for none"
+    },
+    "notes": {
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 400
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{24}$",
+        "description": "a 24-hex passage id from the retrieved passages"
+      },
+      "description": "passage ids the proposal rests on"
+    },
+    "handoffs": {
+      "description": "asks for another builder (not yourself), e.g. a line that must move for a stop to fit; omit when none",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "true: the candidate cannot be accepted until the owner acts; false: advisory"
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "owner",
+          "blocking",
+          "ask"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "lines",
+    "remove",
+    "notes",
+    "sources"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Last round's faults are fixed and the strict checker is clean. T2 brings every area in reach (worst 247 m), the $5 fare is gone, and the stop table bears out Vantage's done:true. Open questions, not faults: S1 Harbour sits at x 310 but the plan passage says 340, and Datum's notes still use 340. No rule I can see covers the T1/T2 crossing at grade or the Sunset/Circus clearance (both for Splice). Walk pace 1.4 m/s and boarding at Alert 2–3 are already Pulse's open questions for Motive. Pulse left the advisory crossing hand-off unanswered.",
+  "faults": [],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

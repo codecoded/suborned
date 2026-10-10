@@ -1,0 +1,121 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 18
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 19
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 231,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/skyport",
+      "sec": 177,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/gardens",
+      "to": "T1/records",
+      "sec": 147,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/comet",
+      "sec": 231,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "S1/gardens",
+      "sec": 201,
+      "via": [
+        "T1/circus"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the interchange wait for the second service counted in a boarding's price, or only the first wait plus the rides?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not say how a change of line is priced."
+    },
+    {
+      "question": "What interchange walking pace should apply? I used 1.4 m/s as an [S] value.",
+      "for": "Motive",
+      "why": "The GDD states no walking pace."
+    },
+    {
+      "question": "Do trams and sky rail keep running, and can the player board, at Alert 2-3 when police seal stations?",
+      "for": "Motive",
+      "why": "The GDD hold says the police seal stations. It does not say whether boarding stays open."
+    }
+  ],
+  "notes": [
+    "T1 speed 8 m/s: a tram on a 16 m street with 300-500 m stop spacing; about 40 s per run. [S] starting value.",
+    "S1 speed 12 m/s: elevated, unobstructed, 200-500 m station spacing; runs of about 18-23 s, faster than a tram so the sky rail pays off. [S] starting value.",
+    "Headways T1 180 s, S1 120 s: the average wait is half a headway (90 s and 60 s), short enough that fast travel is a planning choice, not a chore. Dwell 15 s on both. [S]",
+    "Boarding is fast travel priced in time only (wait + ride, no fare), per the GDD travel rule, passage ab3dc10b8f9e98b62bfe5738.",
+    "Journeys use the only interchange pair, T1/circus and S1/circus (about 119 m apart, within the 150 m standard). Every cross-line trip goes through it.",
+    "Source conflict: the plan passage gives Harbour at x=340, but the candidate line and the stop table use 310 (gap 220 m). I used the stop table and did not resolve it. Datum should confirm.",
+    "Runs are modelled as bidirectional on each line. T1 is through-running with off-sheet termini, which the plan questions still leave open.",
+    "Boarding price: a flat $5 fare per ride, charged at the gate, plus the wait (GDD §02 travel)."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "c1909f164651d9c88cd65c53"
+  ]
+}

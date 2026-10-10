@@ -16,9 +16,10 @@
 <tr><td>r003</td><td>A Skyport station over water that nobody could walk to. Vantage removed the station.</td><td>It faulted Pulse's boarding rule, which was true, because §02 wasn't retrieved.</td></tr>
 <tr><td>r004</td><td>A run time off by 1 s and a miscounted spacing note, both fixed. The Skyport station over water was held open, not fixed.</td><td>The same false §02 fault again.</td></tr>
 <tr><td>r007</td><td>A false reach claim in Datum's notes. The defect itself was also flagged by the checker's N-R1 in the same round.</td><td>—</td></tr>
+<tr><td>r009 (seeded, labelled)</td><td>A planted false claim in Pulse's notes ("a flat $5 fare per ride … (GDD §02 travel)"), which no rule or code check reads. Keel cited the §02 passage it contradicts, Pulse repaired it, and Keel confirmed it in round 2.</td><td>—</td></tr>
 <tr><td>r008 (submitted)</td><td>—</td><td>Its two faults restate checker failures (N-R1, T-L1). It added a diagnosis and the right owner, but no independent catch.</td></tr>
 </table>
-<p>Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
+<p>The seeded run shows the critic working on its own: it caught a contradiction of the GDD that only a reader of the GDD could see, using a passage it had to retrieve. Without seeding, Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
 
 <h2>What each run taught (fixed before the next)</h2>
 <table><tr><th>run</th><th>finding</th><th>fix</th></tr>
@@ -64,10 +65,10 @@
 <li>a game-specific pipeline;</li>
 <li>three generated outputs;</li>
 <li>query, retrieved chunks and output side by side (<a href="report.html">report.html</a>);</li>
-<li>unseeded corrections from the checker, the critic and owner hand-offs;</li>
+<li>unseeded corrections from the checker and owner hand-offs (r008), Keel's own catches (r003, r004, r007), and a labelled seeded challenge that only the critic could catch (r009);</li>
 <li>an ACCEPTED run that replays offline;</li>
 <li>a README proven by fresh-clone runs;</li>
 <li>this self-assessment, with measured retrieval tweaks, including one that was rejected.</li>
 </ul>
-<p>The submitted run's corrections came from the checker and the hand-offs. Keel's independent catches are in earlier runs, as the table above shows.</p>
+
 </html>

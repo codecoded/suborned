@@ -14,6 +14,7 @@ import { ownerOf, ownersOf } from '../checker';
 import { collectHandoffs, handoffFaults, pendingFor } from '../handoff';
 import { nextMinor, candidateVersion } from '../paths';
 import { replay } from '../replay';
+import { FARE_CLAIM, seedFareClaim } from '../seed';
 import { z } from 'zod';
 import { cliSchema } from '../../rag/claude';
 import { agents } from '../schemas';
@@ -100,6 +101,36 @@ describe('levels transit, stubbed', () => {
     expect(run.rounds[0].failedChecks).toContain('N-P2');
     expect((await Bun.file(join(dir, 'round-1', 'vantage.call.json')).json()).seeded).toBe('station-on-plot');
     expect((await withRuns(() => replay('harbour-district', 'r002'))).ok).toBe(true);
+  });
+
+  test('seed fare-claim lands only in round-1 Pulse notes, is labelled, and leaves lines, journeys, the checker and the derived timetable alone', async () => {
+    const base1 = await levels(), r = await levels('--seed', 'fare-claim'), id = (x: string) => x.match(/(r\d{3}) ACCEPTED/)![1]!;
+    expect(r.stdout).toContain('[SEEDED fare-claim]'); expect(r.stdout).toContain('ACCEPTED');
+    const rid = id(r.stdout), dir = join(runs, 'harbour-district', rid), rd = async (f: string) => Bun.file(join(dir, f)).json(), run = await rd('run.json');
+    expect(run.seeded).toBe('fare-claim'); expect(run.rounds[0].seeded).toBe(true); expect(run.rounds[1].seeded).toBe(false);
+    const call = await rd('round-1/pulse.call.json'), p1 = await rd('round-1/pulse.json'), p2 = await rd('round-2/pulse.json');
+    expect(call).toMatchObject({ seeded: 'fare-claim', seedNote: expect.stringContaining('false fare claim') });
+    expect(p1.notes).toContain(FARE_CLAIM); expect(p1.notes).toEqual([...call.original.notes, FARE_CLAIM]);
+    expect({ ...p1, notes: 0, sources: 0 }).toEqual({ ...call.original, notes: 0, sources: 0 }); // lines, journeys, questions, handoffs untouched
+    expect(JSON.stringify(p2)).not.toContain('flat $5'); // round 2: Pulse's output no longer carries it
+    expect((await rd('round-1/vantage.call.json')).seeded).toBeUndefined();
+    const t = await rd('round-1/timetable.json'), u = await Bun.file(join(runs, 'harbour-district', id(base1.stdout), 'round-1', 'timetable.json')).json(); // the same stub, unseeded
+    expect({ ...t, notes: 0, sources: 0 }).toEqual({ ...u, notes: 0, sources: 0 }); expect((await rd('round-1/checks.json')).checks).toEqual((await Bun.file(join(runs, 'harbour-district', id(base1.stdout), 'round-1', 'checks.json')).json()).checks);
+    expect(await Bun.file(join(dir, 'round-1', 'plan.json')).json()).toBeTruthy();
+    const res = await withRuns(() => replay('harbour-district', rid));
+    expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.ok).toBe(true);
+    expect(res.lines.join('\n')).toContain('pulse.json = the original + the seeded note'); expect(res.lines.join('\n')).toMatch(/seeded fare claim (is gone|SURVIVED)/);
+    const bad = join(scratch, 'fare-tampered'); await cp(runs, bad, { recursive: true });
+    const f = join(bad, 'harbour-district', rid, 'round-1', 'pulse.json'), j = await Bun.file(f).json(); j.notes = j.notes.slice(0, -1); await Bun.write(f, JSON.stringify(j));
+    process.env.LEVELS_RUNS = bad; try { expect((await replay('harbour-district', rid)).ok).toBe(false); } finally { delete process.env.LEVELS_RUNS; }
+  });
+  test('seedFareClaim: appends one note, cites the travel passage only if retrieved, never touches the rest', () => {
+    const p: any = { lines: [], journeys: [], openQuestions: [], notes: ['a'], sources: ['x'.repeat(24)] }, travel = { key: 'b'.repeat(24), text: 'Price = time only: wait ... No fare.' };
+    const s = seedFareClaim(p, [{ key: 'c'.repeat(24), text: 'other' }, travel]);
+    expect(s.out.notes).toEqual(['a', FARE_CLAIM]); expect(s.out.sources).toEqual(['x'.repeat(24), 'b'.repeat(24)]); expect(p.notes).toEqual(['a']);
+    expect(seedFareClaim(p, []).out.sources).toEqual(p.sources);
+    expect(seedFareClaim({ ...p, notes: Array(8).fill('n') }, []).out.notes).toHaveLength(8);
+    expect(FARE_CLAIM.length).toBeLessThan(400);
   });
 
   test('tampering one byte of a recorded plan, or breaking a schema, fails replay', async () => {

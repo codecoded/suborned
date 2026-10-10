@@ -14,6 +14,7 @@ import { toolsHash } from './toolhash';
 import { candidateVersion, runsRoot } from './paths';
 import { schemaFor, type Agent, agents } from './schemas';
 import { applyDerived } from './timetable';
+import { FARE_CLAIM, seedFareClaim, SEEDED_AGENT } from './seed';
 
 const KINDS = Object.keys(agents) as Agent[];
 
@@ -128,8 +129,16 @@ export async function replay(planId: string, runId: string, allowDrift = false):
     const keel = await read(`${n}/keel.json`);
     if (keel && r.keelVerdict !== keel.verdict) fail(`${n}: run.json keelVerdict ${r.keelVerdict} vs keel.json ${keel.verdict}`);
     if (run.seeded && r.round === 1) {
-      const v = await read(`${n}/vantage.call.json`);
+      const sa = (SEEDED_AGENT as Record<string, Agent>)[run.seeded], v = sa ? await read(`${n}/${sa}.call.json`) : undefined;
       v?.seeded === run.seeded && r.seeded ? ok(`${n}: seeded ${run.seeded} is labelled`) : fail(`${n}: run is seeded but round 1 is not labelled`);
+      if (run.seeded === 'fare-claim' && v) { // round-1 pulse.json = Pulse's untouched output + the seeded note, recomputed
+        const want = v.original ? seedFareClaim(v.original, v.retrieval?.hits ?? []).out : undefined, got = await read(`${n}/pulse.json`);
+        want && Bun.deepEquals(want, got) ? ok(`${n}: pulse.json = the original + the seeded note`) : fail(`${n}: pulse.json is not the recorded original plus the seeded note`);
+      }
+    }
+    if (run.seeded === 'fare-claim' && r.round > 1 && !skipped.includes('pulse')) {
+      const p = await read(`${n}/pulse.json`), seeded = (p?.notes ?? []).some((x: string) => x.includes(FARE_CLAIM));
+      lines.push(seeded ? `warn  ${n}: seeded fare claim SURVIVED in Pulse's output${r.reused?.includes('pulse') ? ' (reused, not re-proposed)' : ''}; the run's outcome to judge` : `ok    ${n}: seeded fare claim is gone from Pulse's output (repaired)`);
     }
   }
 

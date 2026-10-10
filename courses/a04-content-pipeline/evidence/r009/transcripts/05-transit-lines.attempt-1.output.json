@@ -1,0 +1,228 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; west along Circus Road to the West End; both termini off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              308,
+              320
+            ],
+            [
+              308,
+              -728,
+              50
+            ],
+            [
+              -348,
+              -728,
+              50
+            ],
+            [
+              -348,
+              -450,
+              100
+            ],
+            [
+              -332,
+              -250,
+              100
+            ],
+            [
+              -332,
+              7,
+              50
+            ],
+            [
+              -400,
+              7
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "T1 and S1 are unchanged, so their stops stay valid. New T2 Harbour Line: one double running path. It enters at the north edge (308,320), then runs south on Harbour Road, west on Comet Row, north on Sunset Way and west on Circus Road. It leaves at the west edge (-400,7). Both ends are on the sheet edge, so it passes N-D1 and needs no turning loop (T-L1).",
+    "T-C1 at the r50 corners: the track runs on the outer side of each road. The inner rail (r48.2) clears each inner kerb corner by 5.8 m at Harbour/Comet and at Comet/Sunset, and by 2.9 m at Sunset/Circus. All outer rails stay inside the kerbs. On Sunset Way the track shifts from x -348 to x -332 on a diagonal across the median between y -450 and -250 (r100 fillets).",
+    "This now meets the reach rule. Distances by hand to the nearest T2 track: harbour-east 46 m, docks-east 46 m, rocket-west about 76 m, lantern-west about 88 m. All are within transit.reach 250, once Vantage places stops on T2.",
+    "Interchanges: T2 has a direct one with each other line, so N-C1 passes under either reading (every pair, or a connected network). T2 crosses S1 at (308,0), 32 m from Harbour station (340,0). It crosses T1 at grade at (0,-728), 38 m from T1's Comet Row stop (0,-690). At the west end it runs 7 m beside the S1 trunk.",
+    "Dropped from last round: extending Harbour Road to y -780. T2 turns onto Comet Row instead, so I make no road edit.",
+    "Still rejected from Tide's draft: the Sky Loop on the ring roads. An r70 corner swings 29 m in from the junction vertex, but the inner kerb corner is only about 17 m away, so the curve passes over plots (S-C1/S-P2). Tide's T2 on Harbour Road is kept and carried on round the ring.",
+    "For Splice, two items. (1) T2 crosses T1 at grade at the Boulevard/Comet Row junction. I found no rule in the standards on two tram lines crossing; please confirm the checker allows it. (2) The Sunset/Circus corner clears the kerb by only 2.9 m and the Circus Road leg rails by only 0.2 m. If the checker tests a vehicle envelope rather than rail lines, this corner needs rework.",
+    "Evidence: I could not run the checker, because this task has no shell. All geometry here was checked by hand against standards.tram, standards.skyrail and the sheet limits. bun tools/plan/cli.ts must exit 0 before this goes to Latch and Waymark."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "c1909f164651d9c88cd65c53",
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "e6ffe1ba0919c87923015de5",
+    "275bf85e298eff5499feb12d",
+    "538618090dd534247cab5493"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "Please place T2 stops on 'trunk' at 300–500 m spacing, on straight track. Cover harbour-east, docks-east, rocket-west and lantern-west. Interchange stops: one on Harbour Road near (308,0) for Harbour station; one on Comet Row about 40 m clear of the T1 crossing (0,-728) for T1 Comet Row (0,-690). Optional: an S1 station near x -360 paired with a T2 stop near (-332,-70)."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T1 and T2 cross at grade at the Boulevard/Comet Row junction (0,-728). The timetables need to space the two lines' trams through that crossing."
+    }
+  ]
+}
