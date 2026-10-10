@@ -1,0 +1,120 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>A04 · Run evidence</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;margin:2rem auto;max-width:1100px;padding:0 1rem;color:#1d2a30;background:#fbf8f1}h1,h2,h3{color:#0f5d63}code{background:#eee6d6;padding:0 .25em;border-radius:3px}td,th{border:1px solid #d8cfbd;padding:.35em;vertical-align:top;text-align:left}table{border-collapse:collapse;width:100%;margin:.6rem 0}</style>
+<h1>A04 · Run evidence</h1>
+<p>Every run of the transit pipeline, from its committed record in <code>runs/levels/harbour-district/</code>. Back to the <a href="README.md">README</a>.</p>
+<h2>The submitted run: <code>r008</code>, ACCEPTED in 3 rounds</h2>
+<p>r008 ran on GDD v0.15.0, chunker v2 (corpus of 190 chunks) and the corrected civic block: the Oct 9 city scale, with the café as the 22 × 11.3 × 34.8 m corner building, held by rule C-0. It also ran on the plan with Datum's Skyport Pier and apron. The run pins its block (<code>input.block.json</code> and its sha256) and records its GDD and chunker versions.</p>
+<ul>
+<li>
+<p><strong>Record:</strong> <code>runs/levels/harbour-district/r008/</code>, committed. It holds:</p>
+<ul>
+<li><code>run.json</code>;</li>
+<li>the input plan and the input block;</li>
+<li>for each round: the plan, the checks, each agent's output and call record, the derived timetable, the faults and Keel's verdict.</li>
+</ul>
+<p>Replay it with <code>bun run levels:replay r008</code> → <code>REPLAY OK</code>.</p>
+</li>
+<li>
+<p><strong>Report:</strong> <a href="report.html"><code>report.html</code></a>. Rebuild it with <code>bun courses/a04-content-pipeline/build-report.ts r008</code>.</p>
+</li>
+<li>
+<p><strong>Self-assessment:</strong> <a href="self-assessment.html"><code>self-assessment.html</code></a>.</p>
+</li>
+<li>
+<p><strong>Sheets:</strong></p>
+<ul>
+<li><a href="evidence/r008/sheets/harbour-district-v0.1.0.html">before, v0.1.0</a>: strict mode fails N-R1 and S-S2.</li>
+<li><a href="evidence/r008/sheets/harbour-district-v0.2.0-r008.1.html">round 1</a>: N-R1 fails.</li>
+<li><a href="evidence/r008/sheets/harbour-district-v0.2.0-r008.2.html">round 2</a>: T-L1 fails.</li>
+<li><a href="evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html">accepted, round 3</a></li>
+</ul>
+</li>
+<li>
+<p><strong>Transcripts:</strong> <code>evidence/r008/transcripts/</code> holds the prompt, card snapshot, retrieval, schema, stream-json events and output for each call.</p>
+</li>
+<li>
+<p><strong>The accepted plan</strong> passes all 48 strict rules:</p>
+<ul>
+<li>the worst area is 247 m from transit (crescent-north; the limit is 250 m);</li>
+<li>S1 station spacing is 255, 245 and 205 m, with Skyport on the pier apron;</li>
+<li>every stop can be reached on foot and touches the road or path it fronts (W-2 and W-3, 14/14);</li>
+<li>the café is 22.0 × 11.3 × 34.8 m (C-0).</li>
+</ul>
+</li>
+</ul>
+<h3>How the submitted run went (all unseeded)</h3>
+<ul>
+<li><strong>Round 1:</strong> the checker failed N-R1, with four areas out of reach (docks-east 294 m, lantern-west 289 m, harbour-east 279 m, rocket-west 273 m).
+<ul>
+<li>Keel diagnosed it as a line problem and routed it to Datum: no stop on the existing lines could reach those areas.</li>
+<li>Vantage raised the same point as a blocking hand-off to Datum.</li>
+<li>Vantage moved Skyport to x 545 (gap 205 m) and answered Datum's spacing ask <code>done: true</code>; Keel confirmed it.</li>
+</ul>
+</li>
+<li><strong>Round 2:</strong> Datum added T2 as a ring, which fixed reach. The checker then failed T-L1, because it read the ring's two ends as open with no turning loop.
+<ul>
+<li>Keel explained the cause and routed it to Datum.</li>
+<li>Vantage answered one of Datum's asks <code>done: false</code>, which became a fault for Vantage.</li>
+</ul>
+</li>
+<li><strong>Round 3:</strong> Datum made T2 an open U with both ends running off the sheet, which T-L1 accepts (&quot;ends joined or off-sheet&quot;). Vantage placed its 7 stops and answered every ask. The checker was clean and Keel passed: ACCEPTED.</li>
+</ul>
+<p>Datum re-asked the Skyport move in rounds 2 and 3, although it was already done. Its task shows the input plan's geometry, not Vantage's placed stops, so two of Vantage's four <code>done: true</code> answers repeat an ask already met. The self-assessment lists this as a weakness.</p>
+<p>In r008 Keel's two faults restate checker failures, with a diagnosis and the right owner, and it raised no fault of its own. Its independent catches are in earlier runs (see "Earlier runs, kept as evidence").</p>
+<p><strong>Retrieval:</strong> the GDD's boarding rule (<code>§02 … › travel</code>) reached Pulse at rank 4 and Keel at rank 8, with no rule text in the prompts. Pulse's and Keel's queries didn't change between rounds and nothing was pinned for them, so for those two this is one result seen three times. Datum's queries did change (4, 6 and 5 queries, with 2 chunks pinned in rounds 2 and 3). Vantage's were identical in rounds 1 and 2, and round 3 added one (the text of a hand-off). The natural question on its own ranks the rule 1st: run the level-2 retrieval command in the README. Pulse also cited §02, so the passage reached Keel a second way, as cited text. <strong>Source mix:</strong> Datum's and Vantage's top 8 were all plan chunks in every round; Pulse's and Keel's had 1–2 agent-GDD chunks each. No human-GDD passage was retrieved. The self-assessment lists this as a weakness. Keel judged the timetable against it (&quot;time only, no fare&quot;).</p>
+<h3>Seeded critic challenges: <code>r010</code> (uncited) and <code>r009</code> (cited), both ACCEPTED</h3>
+<p>Brief 001 allows a seeded challenge, labelled as seeded everywhere. Each seed plants one false claim in Pulse's round-1 notes. The claim contradicts GDD v0.15 §02 travel (<em>&quot;Price = time only: wait for the next service + the ride&quot;</em>). No checker rule or code check reads notes, so only the critic can catch it.</p>
+<p><strong>What these runs do and don't show:</strong> in both, Pulse's own unseeded notes already state the true rule in the same list. r010 note 2 says <em>&quot;Boarding is fast travel priced in time only, with no fare (GDD §02 travel)&quot;</em>, and r009 note 3 says <em>&quot;priced in time only (wait + ride, no fare)&quot;</em>. So Keel could catch the planted claim as a contradiction inside Pulse's own output, without checking it against the GDD. The runs show that the critic reads the outputs and routes a content fault to its owner, who repairs it. They don't prove that the critic knows the GDD. A stronger seed would remove Pulse's own statement of the rule as well.</p>
+<p>Every seeded run is labelled:</p>
+<ul>
+<li>in the console (<code>[SEEDED …]</code>);</li>
+<li>in <code>run.json</code> (<code>seeded</code>);</li>
+<li>in <code>round-1/pulse.call.json</code> (<code>seeded</code>, <code>seedNote</code>, and <code>original</code>, Pulse's untouched output).</li>
+</ul>
+<p>Neither Keel nor Pulse is told. <code>bun run levels:replay</code> checks that round 1 equals the original plus the seed, and reports in each later round whether the claim survived.</p>
+<table>
+<thead>
+<tr><th>run</th><th>seed</th><th>what Keel had</th><th>round 1: Keel's fault (<code>round-1/faults.json</code>)</th><th>repair</th></tr>
+</thead>
+<tbody>
+<tr><td><strong><a href="evidence/r010/report.html"><code>r010</code></a></strong> <code>--seed fare-claim-uncited</code></td><td><em>&quot;Boarding price: a flat $5 fare per ride, charged at the gate, plus the wait.&quot;</em> No citation; <code>sources</code> untouched.</td><td>Nothing in the planted claim points to §02. But §02 travel was in Keel's context through its own retrieval (rank 8) and Pulse's own citation, and Pulse's note 2 states the rule outright (see above).</td><td><code>[Pulse/critic]</code> <em>&quot;GDD §02 says the price is time only (the wait plus the ride) and that there is no fare. This is an invented price that contradicts the GDD.&quot;</em> It cites chunk <code>ab3dc10b…</code>.</td><td>Round 2, Pulse: <em>&quot;Boarding is priced in time only … No fare (GDD §02 travel). The earlier fare note is removed.&quot;</em> Keel confirmed the fix. In round 2 Keel also called a <code>done: true</code> from Vantage false, using the checker's T-S2 failure (6 of 7 T2 platforms on straight track). ACCEPTED in round 3. 11 calls, $2.04.</td></tr>
+<tr><td><a href="evidence/r009/report.html"><code>r009</code></a> <code>--seed fare-claim</code></td><td>The same claim plus <em>&quot;(GDD §02 travel)&quot;</em>. The seed added the §02 chunk to <code>sources</code>.</td><td>The cited passage itself, because <code>cite.ts</code> gives Keel the text of every cited passage. <strong>This makes it the easier test:</strong> the claim points to the passage that refutes it.</td><td><code>[Pulse/critic]</code> <em>&quot;The cited §02 travel rule says the price is time only, the wait plus the ride, with no fare. The note invents a price that contradicts the GDD.&quot;</em></td><td>Round 2, Pulse states the time-only rule. Keel: <em>&quot;the $5 fare is gone&quot;</em>. ACCEPTED in round 2. 8 calls, $1.89.</td></tr>
+</tbody>
+</table>
+<h3>Earlier runs, kept as evidence</h3>
+<table>
+<thead>
+<tr><th>run</th><th>outcome</th><th>what it taught (from its records)</th><th>fix before the next run</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="evidence/r001/report.html"><code>r001</code></a></td><td>ACCEPTED, now <strong>superseded</strong></td><td>The checker read the civic block from disk, so the Oct 5 → Oct 9 block change broke replay.</td><td>Runs pin <code>input.block.json</code> and its sha256. r001 replays as <code>superseded … replays at commit 3dbb9ca</code>.</td></tr>
+<tr><td><a href="evidence/r002/report.html"><code>r002</code></a></td><td>REJECTED</td><td>Keel checked builders' citations against its own retrieval, so its &quot;unretrieved id&quot; faults were false and never cleared.</td><td>Citations are checked in code (<code>cite.ts</code>), and Keel sees each builder's retrieved set.</td></tr>
+<tr><td><a href="evidence/r003/report.html"><code>r003</code></a></td><td>ACCEPTED</td><td><strong>Keel's own catch:</strong> a Skyport station over water that nobody could walk to. The station was removed. <strong>Keel's error:</strong> it faulted Pulse's boarding rule, which was true, because neither had retrieved §02. Its accepted plan also fails the W-2 and W-3 walk rules added later (replay reports it).</td><td>W-2 and W-3 walk rules. A claim Keel can't find in its passages is &quot;unverified&quot;, not a fault.</td></tr>
+<tr><td><a href="evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html"><code>r004</code></a></td><td>ACCEPTED, from a fresh clone</td><td><strong>Keel's own catches</strong> (round 1): a run time off by 1 s and a miscounted spacing note were fixed; the Skyport station over water was held open, not fixed. <strong>Keel's error, again:</strong> it faulted Pulse's true &quot;§02 says time only&quot;. Vantage's Skyport hand-off to Datum was never routed.</td><td><code>handoffs</code> on every builder. Datum planned the Skyport Pier and apron.</td></tr>
+<tr><td><a href="evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html"><code>r005</code></a></td><td>REJECTED</td><td>The first run to place Skyport on the new apron. It still failed on Pulse's hand-computed run times, which matched stale stop positions.</td><td>Run times and journey totals are derived in code (<code>timetable.ts</code>).</td></tr>
+<tr><td><a href="evidence/r006/report.html"><code>r006</code></a></td><td>ACCEPTED</td><td>A simulated AI marker found round 3 redundant: hand-offs were never checked as answered, and N-R1 always went to Vantage. The §02 query nearly quoted its target, so its rank proved nothing.</td><td>Hand-off answering, N-R1 routed to both owners, natural §02 queries and v2 chunking.</td></tr>
+<tr><td><a href="evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html"><code>r007</code></a></td><td>REJECTED, a simulated AI marker's run from a fresh GitHub clone</td><td><strong>Keel:</strong> caught a false reach claim in Datum's notes (round 1). The checker's N-R1 flagged the defect itself in the same round. The run was rejected only because Vantage had fulfilled Datum's round-3 hand-off but nothing checked it as answered.</td><td>The same hand-off answering fix.</td></tr>
+</tbody>
+</table>
+<p><code>bun run verify</code> replays every run and labels drift by cause: GDD v0.14.0, chunker v1, checker rules added since the run (W-2, W-3), and r001's superseded block.</p>
+<h2>Time and cost per run</h2>
+<p>r008 made 12 model calls in 3 rounds, with 658 s of model time and about 12 minutes of wall time (calls run in sequence). The CLI reported $2.66. The committed runs r002–r008 made 8–12 calls and used 486–931 s of model time each, at $1.83–3.31. Budget about 20 minutes and $3.50 for one run. On a subscription the dollar figure is notional usage, not a charge.</p>
+<h2>What each requirement rests on</h2>
+<table>
+<thead>
+<tr><th>requirement</th><th>evidence</th></tr>
+</thead>
+<tbody>
+<tr><td>A game-specific pipeline</td><td>The README. The code is in <code>tools/levels/</code> (pipeline), <code>tools/rag/</code> (retrieval) and <code>tools/plan/</code> (deterministic checker).</td></tr>
+<tr><td>Retrieval over the game's own sources</td><td>SurrealDB HNSW + BM25 with reciprocal rank fusion (<code>tools/rag/retrieval.ts</code>). Each call record <code>runs/levels/harbour-district/r008/round-*/*.call.json</code> lists its queries and every retrieved passage, with source, section, signals and score.</td></tr>
+<tr><td>Three generated outputs</td><td><code>runs/levels/harbour-district/r008/round-3/</code>: <code>datum.json</code> (lines), <code>vantage.json</code> (stops and stations), <code>pulse.json</code> (speed, dwell, headway, routes) and <code>timetable.json</code> (the timetable derived from them in code).</td></tr>
+<tr><td>Query, retrieved chunks and output side by side</td><td><a href="report.html"><code>report.html</code></a>, one section per call.</td></tr>
+<tr><td>A critic correction</td><td><strong>The critic alone:</strong> r010 and r009, labelled seeded challenges, as brief 001 allows. One false claim was planted in Pulse's notes, which no checker rule or code check reads. Keel faulted it, citing the GDD passage it contradicts. Pulse repaired it, and Keel confirmed it. In r010 the claim cites nothing (see &quot;Seeded critic challenges&quot;). <strong>Unseeded:</strong> in the submitted r008, the checker, Keel's diagnosis and owner hand-offs corrected it (see &quot;How the submitted run went&quot;). Keel's own unseeded catches that don't depend on the checker are in r003 and r004 (see &quot;Earlier runs&quot;); both runs also contain false faults from Keel.</td></tr>
+<tr><td>Before / after</td><td>Sheets <a href="evidence/r008/sheets/harbour-district-v0.1.0.html"><code>evidence/r008/sheets/harbour-district-v0.1.0.html</code></a> (before) and <a href="evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html"><code>…-v0.2.0-r008.3.html</code></a> (accepted). Every round's <code>checks.json</code> gives each rule's result.</td></tr>
+<tr><td>README</td><td>This file.</td></tr>
+<tr><td>Self-assessment with a concrete tweak</td><td><a href="self-assessment.html"><code>self-assessment.html</code></a>. The retrieval tweaks' ranks are in <code>evidence/ranks.json</code> and reproduce with <code>bun run levels:ranks</code>.</td></tr>
+<tr><td>Reproducibility</td><td><code>bun run verify</code> replays every committed run offline. r004 (ACCEPTED) and r007 (a simulated AI marker's run, REJECTED) were produced from fresh clones and are committed. Where a run was made is not recorded in <code>run.json</code>; it is stated here from the sessions that ran them. A third fresh-install run, with an empty Docker, was ACCEPTED, but its folder was not kept, so its timings (from an empty Docker: clone and install 7 s, <code>up</code> 163 s, <code>ingest</code> 24 s, the run 414 s, about 12 min in total) can't be checked from this commit.</td></tr>
+</tbody>
+</table>
+
+</html>
