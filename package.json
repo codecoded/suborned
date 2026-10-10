@@ -7,6 +7,7 @@
     "down": "docker compose down",
     "plan": "bun tools/plan/cli.ts",
     "doctor": "bun tools/doctor.ts",
+    "verify": "bun tools/verify.ts",
     "block": "bun tools/plan/block.ts",
     "crew": "bun tools/crew/cards.ts",
     "ingest": "bun tools/rag/ingest.ts",

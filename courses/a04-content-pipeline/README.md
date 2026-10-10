@@ -1,5 +1,32 @@
 # A04 · Content pipeline: the Harbour District transit network
 
+## For markers (human or AI)
+**Submitted run:** `r006`, ACCEPTED in 3 rounds. Five earlier runs are kept as evidence of the critic loop and the fixes it drove.
+
+### Where each requirement is met
+| requirement | evidence |
+|---|---|
+| A game-specific pipeline | "Why this matters" and "How it works" below. The code is in `tools/levels/` (pipeline), `tools/rag/` (retrieval) and `tools/plan/` (deterministic checker). |
+| Retrieval over the game's own sources | SurrealDB HNSW + BM25 with reciprocal rank fusion (`tools/rag/retrieval.ts`). Each call record in `runs/levels/harbour-district/r006/round-*/*.call.json` lists the queries and every retrieved passage, with its source, section, signals and score. |
+| Three generated outputs | `runs/levels/harbour-district/r006/round-3/`: `datum.json` (lines), `vantage.json` (stops and stations), `pulse.json` + `timetable.json` (timetable). |
+| Query, retrieved chunks and output side by side | [`report.html`](report.html), one section per call. |
+| A critic correction | `round-1/keel.json` and `round-1/faults.json` (faults with owners and cited chunks) → the owner's revised output in `round-2/` → `round-3/keel.json` (pass). The summary is under "Critic correction" below. |
+| Before / after | Sheets `evidence/r006/sheets/harbour-district-v0.1.0.html` (before) and `…-v0.2.0-r006.3.html` (accepted). `round-*/checks.json` gives each rule's result per round. |
+| README | This file. |
+| Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweak's ranks before and after are in `evidence/ranks.json`. |
+| Reproducibility | `bun run levels:replay r006` rebuilds every round offline from the committed record. A fresh clone produced and replayed its own accepted run (r007), with timings under "Measured from nothing" below. |
+
+### Verify it: pick the level your environment allows
+| level | needs | command | time | expect |
+|---|---|---|---|---|
+| 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r006/` | none | — |
+| 1 · offline | Bun | `bun install && bun run verify` | under 2 min | `VERIFY OK …`: typecheck, every recorded run replayed, checker clean |
+| 1b · full tests | Bun | `bun run check` | 3–8 min | exit 0 |
+| 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "boarding fast travel price time only"` | about 3 min the first time | ranked passages from SurrealDB, each tagged `semantic+keyword` |
+| 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 7–12 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
+
+AI tools with a 2-minute command limit should run levels 1b, 2 and 3 in the background, or with a longer timeout. Every command is read-only towards committed files, except `levels transit`, which adds a new run folder.
+
 ## What it generates
 Three outputs for The Suborned's Harbour District, as edits to the district plan (`contracts/world/harbour-district.plan.json`, schema `suborned.plan/1`):
 
