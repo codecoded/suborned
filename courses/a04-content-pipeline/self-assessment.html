@@ -15,12 +15,12 @@
 <table><tr><th>run</th><th>Keel caught something no rule covered</th><th>Keel was wrong or added nothing</th></tr>
 <tr><td>r003</td><td>A Skyport station over water that nobody could walk to. Vantage removed the station.</td><td>It faulted Pulse's boarding rule, which was true, because §02 wasn't retrieved.</td></tr>
 <tr><td>r004</td><td>A run time off by 1 s and a miscounted spacing note, both fixed. The Skyport station over water was held open, not fixed.</td><td>The same false §02 fault again.</td></tr>
-<tr><td>r007</td><td>A false reach claim in Datum's notes. The defect itself was also flagged by the checker's N-R1 in the same round.</td><td>—</td></tr>
-<tr><td>r010 (seeded, uncited)</td><td>A planted false claim with no citation ("a flat $5 fare per ride, charged at the gate, plus the wait"), which no rule or code check reads. Keel faulted it from §02 travel, Pulse repaired it, and Keel confirmed it. In round 2 Keel also found a false <code>done: true</code> from Vantage.</td><td>§02 was in Keel's context two ways: its own retrieval (rank 8), and Pulse's own citation of §02 for other notes. So the catch doesn't prove retrieval alone.</td></tr>
+<tr><td>r007</td><td>—</td><td>Keel flagged a false reach claim in Datum's notes, but its fault quotes the checker's N-R1, which caught the defect. So this is not an independent catch.</td></tr>
+<tr><td>r010 (seeded, uncited)</td><td>A planted false claim with no citation ("a flat $5 fare per ride, charged at the gate, plus the wait"), which no rule or code check reads. Keel faulted it from §02 travel, Pulse repaired it, and Keel confirmed it. In round 2 Keel also found a false <code>done: true</code> from Vantage.</td><td>Pulse's own note 2 already said "time only, with no fare", so Keel could catch the planted claim as a contradiction within Pulse's notes, without the GDD.</td></tr>
 <tr><td>r009 (seeded, cited)</td><td>The same claim, citing §02. Caught, repaired and confirmed.</td><td>An easier test: <code>cite.ts</code> handed Keel the cited passage, which refutes the claim.</td></tr>
 <tr><td>r008 (submitted)</td><td>—</td><td>Its two faults restate checker failures (N-R1, T-L1). It added a diagnosis and the right owner, but no independent catch.</td></tr>
 </table>
-<p>The seeded runs show the critic catching what nothing else in the pipeline can: a claim that contradicts the GDD. r009 was easy, because the claim cited its own refutation. r010 was harder, because the claim cited nothing. Without seeding, Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
+<p>The seeded runs show the critic catching a content fault that no rule or code check reads, routing it to its owner and confirming the repair. They don't prove that the critic knows the GDD. In both runs Pulse's own notes already stated the true rule, so the planted claim contradicted Pulse's other notes. In r009 it also cited its own refutation. The independent catches checked against the GDD are only in r003 and r004. Without seeding, Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
 
 <h2>What each run taught (fixed before the next)</h2>
 <table><tr><th>run</th><th>finding</th><th>fix</th></tr>
@@ -68,7 +68,7 @@
 <li>a game-specific pipeline;</li>
 <li>three generated outputs;</li>
 <li>query, retrieved chunks and output side by side (<a href="report.html">report.html</a>);</li>
-<li>unseeded corrections from the checker and owner hand-offs (r008), Keel's own catches (r003, r004, r007), and labelled seeded challenges that only the critic could catch (r010 uncited, r009 cited);</li>
+<li>unseeded corrections from the checker and owner hand-offs (r008), Keel's own catches (r003, r004), and labelled seeded challenges, caught only by the critic, though made easy by Pulse's own notes (r010, r009);</li>
 <li>an ACCEPTED run that replays offline;</li>
 <li>a README followed end to end from fresh clones: r004 and r007 are committed, and where they were made is stated rather than recorded in <code>run.json</code>;</li>
 <li>this self-assessment, with measured retrieval tweaks, including one that was rejected.</li>

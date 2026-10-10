@@ -33,13 +33,13 @@ function summarise(lines: string[]) {
 const t0 = performance.now(), ids = runDirs(PLAN);
 // walk-grid checks dominate (about 5 s per round plan), so each run replays in its own process, in parallel
 const jobs = ids.map(id => { const p = Bun.spawn(['bun', 'tools/levels/replay.ts', id, PLAN], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); return Promise.all([new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited]); });
-let replayed = 0, accepted = '';
+let replayed = 0, superseded = 0, accepted = '';
 for (const [i, id] of ids.entries()) {
   const run = await Bun.file(resolve(runsRoot(), PLAN, id, 'run.json')).json().catch(() => ({}));
   const [o, e, code] = await jobs[i]!, lines = (o + e).split('\n').filter(Boolean), ok = code === 0, s = summarise(lines);
   const status = ok ? 'REPLAY OK' : s.superseded ? 'REPLAY SUPERSEDED (expected)' : 'REPLAY FAILED';
   console.log(`${id}  ${run.outcome ?? '?'}  ${status}  drift: ${s.drift}`);
-  if (!ok && !s.superseded) { bad.push(`${id} replay`); for (const f of s.fails) console.log('      ' + f.slice(0, 200)); } else replayed++;
+  if (!ok && !s.superseded) { bad.push(`${id} replay`); for (const f of s.fails) console.log('      ' + f.slice(0, 200)); } else if (ok) replayed++; else superseded++;
   if (id === SUBMITTED) accepted = run.outcome;
 }
 const missing = ['r001', 'r002', 'r003', 'r004', 'r005', 'r006', 'r007', 'r008', 'r009', 'r010'].filter(r => !ids.includes(r)); // committed runs; a marker's own new runs are replayed too
@@ -59,6 +59,6 @@ line(`${SUBMITTED} ${last} plan (strict, pinned block)`, await inProcess(await B
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);
 if (code !== 0) { bad.push('typecheck'); console.log((out + err).split('\n').slice(0, 15).join('\n')); }
-console.log(bad.length ? `VERIFY FAILED: ${bad.join('; ')}` : `VERIFY OK: ${replayed} runs replayed (submitted ${SUBMITTED} ACCEPTED), checker clean, typecheck clean`);
+console.log(bad.length ? `VERIFY FAILED: ${bad.join('; ')}` : `VERIFY OK: ${replayed} runs replayed${superseded ? `, ${superseded} superseded (expected)` : ''} (submitted ${SUBMITTED} ACCEPTED), checker clean, typecheck clean`);
 console.error(`(${((performance.now() - t0) / 1000).toFixed(0)} s)`);
 process.exit(bad.length ? 1 : 0);
