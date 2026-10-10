@@ -1,0 +1,602 @@
+{
+ "plan": "harbour-district",
+ "version": "0.2.0-r010.3",
+ "strict": true,
+ "ok": true,
+ "checks": [
+  {
+   "id": "R-C1",
+   "group": "Roads",
+   "rule": "One connected network",
+   "value": "48/48 nodes",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "R-H1",
+   "group": "Roads",
+   "rule": "No access road joins a primary",
+   "value": "0",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "id": "R-H2p",
+   "group": "Roads",
+   "rule": "Junction spacing on primary distributors",
+   "value": "280 m",
+   "limit": "≥ 250 m",
+   "ok": true,
+   "detail": "closest: Sunset Way at nw"
+  },
+  {
+   "id": "R-H2d",
+   "group": "Roads",
+   "rule": "Junction spacing on district distributors",
+   "value": "60 m",
+   "limit": "≥ 60 m",
+   "ok": true,
+   "detail": "closest: Crown Avenue at n_avenue"
+  },
+  {
+   "id": "R-E1",
+   "group": "Roads",
+   "rule": "No access route links two distributors (no rat-runs)",
+   "value": "0 of 8 networks",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "id": "R-G1",
+   "group": "Roads",
+   "rule": "Every way in is a declared gate (seal point)",
+   "value": "14 found, 14 declared",
+   "limit": "equal",
+   "ok": true
+  },
+  {
+   "id": "R-F1",
+   "group": "Roads",
+   "rule": "Every plot fronts an access road (parks: any street or walk)",
+   "value": "32/32",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "R-O1",
+   "group": "Roads",
+   "rule": "No plot overlaps a street, walk, the circus or another plot",
+   "value": "0",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "id": "R-A1",
+   "group": "Roads",
+   "rule": "Every plot sits in its environmental area",
+   "value": "32/32",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "T-R1",
+   "group": "Tram",
+   "rule": "T1 running radius",
+   "value": "straight",
+   "limit": "≥ 50 m",
+   "ok": true
+  },
+  {
+   "id": "T-R2",
+   "group": "Tram",
+   "rule": "T1 terminal loop radius",
+   "value": "R 25 m",
+   "limit": "≥ 25 m",
+   "ok": true
+  },
+  {
+   "id": "T-S1",
+   "group": "Tram",
+   "rule": "T1 stop spacing",
+   "value": "303, 307 m",
+   "limit": "300–500 m",
+   "ok": true
+  },
+  {
+   "id": "T-S2",
+   "group": "Tram",
+   "rule": "T1 platforms (30 m) on straight track",
+   "value": "3/3",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "T-L1",
+   "group": "Tram",
+   "rule": "T1 turns on a loop at every end inside the sheet (single-ended trams, no crossover)",
+   "value": "1/1 ends loop",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "T-C1",
+   "group": "Tram",
+   "rule": "T1 runs in street space or the circus island",
+   "value": "0 m off",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "id": "T-R1",
+   "group": "Tram",
+   "rule": "T2 running radius",
+   "value": "R 50 m",
+   "limit": "≥ 50 m",
+   "ok": true
+  },
+  {
+   "id": "T-R2",
+   "group": "Tram",
+   "rule": "T2 terminal loop radius",
+   "value": "straight",
+   "limit": "≥ 25 m",
+   "ok": true
+  },
+  {
+   "id": "T-S1",
+   "group": "Tram",
+   "rule": "T2 stop spacing",
+   "value": "320, 310, 461, 461, 310, 430 m",
+   "limit": "300–500 m",
+   "ok": true
+  },
+  {
+   "id": "T-S2",
+   "group": "Tram",
+   "rule": "T2 platforms (30 m) on straight track",
+   "value": "7/7",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "T-L1",
+   "group": "Tram",
+   "rule": "T2 turns on a loop at every end inside the sheet (single-ended trams, no crossover)",
+   "value": "all ends off-sheet",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "T-C1",
+   "group": "Tram",
+   "rule": "T2 runs in street space or the circus island",
+   "value": "0 m off",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "id": "S-R1",
+   "group": "Sky rail",
+   "rule": "S1 line radius",
+   "value": "straight",
+   "limit": "≥ 70 m",
+   "ok": true
+  },
+  {
+   "id": "S-R2",
+   "group": "Sky rail",
+   "rule": "S1 terminal loop radius",
+   "value": "R 40 m",
+   "limit": "≥ 40 m",
+   "ok": true
+  },
+  {
+   "id": "S-P1",
+   "group": "Sky rail",
+   "rule": "S1 pylon spans (30 / 23 / 18 m by curvature)",
+   "value": "53 pylons, longest 30.0 m",
+   "limit": "within limit",
+   "ok": true
+  },
+  {
+   "id": "S-P2",
+   "group": "Sky rail",
+   "rule": "S1 pylons stand in medians, malls, parks, quays, water or the island",
+   "value": "53/53",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "S-S1",
+   "group": "Sky rail",
+   "rule": "S1 stations on straight beam",
+   "value": "4/4",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "S-C1",
+   "group": "Sky rail",
+   "rule": "S1 passes over public space only (no plots)",
+   "value": "0 m over plots",
+   "limit": "0",
+   "ok": true
+  },
+  {
+   "group": "Transit",
+   "id": "N-O1",
+   "rule": "Each line has an order of its paths that chains end to end",
+   "value": "0 faults",
+   "limit": "0",
+   "ok": true,
+   "source": "brief 001 · a line `order` so stop spacing reads across paths"
+  },
+  {
+   "group": "Transit",
+   "id": "N-P1",
+   "rule": "Every stop and station sits on a path of its own line",
+   "value": "0 faults",
+   "limit": "0",
+   "ok": true,
+   "source": "brief 001 · stops and stations: positions on the lines"
+  },
+  {
+   "group": "Transit",
+   "id": "N-P2",
+   "rule": "No stop or station stands on a plot (entrances front public space)",
+   "value": "0",
+   "limit": "0",
+   "ok": true,
+   "source": "brief 001 · entrances fronting public space; plan.standards.roads.frontage"
+  },
+  {
+   "group": "Transit",
+   "id": "N-D1",
+   "rule": "No dead ends: every path end joins another path of its line or leaves the sheet; closed loops (longer than 4 beam centres) are fine",
+   "value": "0 dead ends",
+   "limit": "0",
+   "ok": true,
+   "source": "brief 001 · no dead ends"
+  },
+  {
+   "group": "Transit",
+   "id": "N-R1",
+   "rule": "Every area (plot centroid) is within standards.transit.reach of a tram stop or sky rail station",
+   "value": "worst crescent-north 247 m",
+   "limit": "≤ 250 m",
+   "ok": true,
+   "source": "plan.standards.transit.reach · brief 001 · every plot centroid within 250 m of a stop or station (settled)"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange T1/comet ↔ tram T2/comet",
+   "value": "63 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange T1/circus ↔ sky rail S1/circus",
+   "value": "119 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange T2/parade ↔ sky rail S1/harbour",
+   "value": "34 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange T2/comet ↔ tram T1/comet",
+   "value": "63 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange S1/circus ↔ tram T1/circus",
+   "value": "119 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-I1",
+   "rule": "Interchange S1/harbour ↔ tram T2/parade",
+   "value": "34 m",
+   "limit": "≤ 150 m, partner names no other stop",
+   "ok": true,
+   "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "N-C1",
+   "rule": "The network is connected: every line reaches every other through interchanges",
+   "value": "1 network, 3 lines",
+   "limit": "1",
+   "ok": true,
+   "source": "brief 001 · network connected through interchanges; plan.standards.skyrail.interchange"
+  },
+  {
+   "group": "Transit",
+   "id": "S-S2",
+   "rule": "S1 station spacing",
+   "value": "250, 200, 240 m",
+   "limit": "200–500 m",
+   "ok": true,
+   "source": "brief 001 · sky rail station spacing 200–500 m; plan.standards.skyrail.stationSpacing"
+  },
+  {
+   "id": "C-0",
+   "group": "Civic",
+   "rule": "Civic block at its city scale (café footprint and height, office wings and crown)",
+   "value": "café 22.0 × 11.3 × 34.8 m, office 15.5 / 38 m",
+   "limit": "café 22 × 11.3 × 34.8 m, office 15.5 / 38 m",
+   "ok": true
+  },
+  {
+   "id": "C-1",
+   "group": "Civic",
+   "rule": "Records Square and Office plots = HandoverSite blocks",
+   "value": "square =, office =",
+   "limit": "equal",
+   "ok": true
+  },
+  {
+   "id": "C-2",
+   "group": "Civic",
+   "rule": "Café and office footprints inside their blocks",
+   "value": "2/2",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "C-3",
+   "group": "Civic",
+   "rule": "Mission points land on a plot or a street",
+   "value": "21/21",
+   "limit": "all",
+   "ok": true
+  },
+  {
+   "id": "M-1",
+   "group": "Mission",
+   "rule": "Every mission route reaches its end",
+   "value": "getaway 667 m, official 1064 m",
+   "limit": "finite",
+   "ok": true
+  },
+  {
+   "id": "W-1",
+   "group": "Walking",
+   "rule": "Escape walks are direct (players cross any road; only buildings and water block)",
+   "value": "Café door → tram Records 274 m; Café door → sky rail Sphere Gardens 234 m; Office entrance → tram Records 224 m; Office entrance → sky rail Sphere Gardens 287 m",
+   "limit": "walk ÷ straight ≤ 1.5",
+   "ok": true,
+   "detail": "least direct: Café door → tram Records ×1.20"
+  },
+  {
+   "group": "Walking",
+   "id": "W-2",
+   "rule": "Every tram stop and sky rail station can be walked to from public space (water and buildings block, roads are crossable)",
+   "value": "14/14 reached",
+   "limit": "all",
+   "ok": true,
+   "source": "plan.standards.walking (only buildings, plots and water block) · plan.standards.roads.frontage (entrances front public space) · players reach every stop on foot"
+  },
+  {
+   "group": "Walking",
+   "id": "W-3",
+   "rule": "Every entrance fronts an existing road or foot path it touches (edge within tolerance); once any stop names fronts, all must",
+   "value": "14/14 fronted",
+   "limit": "all, edge ≤ 6 m",
+   "ok": true,
+   "source": "plan.standards.walking (only buildings, plots and water block) · plan.standards.roads.frontage (entrances front public space) · entrances fronting public space"
+  }
+ ],
+ "routes": [
+  {
+   "id": "getaway",
+   "name": "Getaway: crew car from Rocket Lane",
+   "to": "Southside (off-sheet)",
+   "length": 666.5,
+   "roads": [
+    "Rocket Lane",
+    "Market Street",
+    "Sunset Way"
+   ],
+   "gates": [
+    "Rocket Gate"
+   ]
+  },
+  {
+   "id": "official",
+   "name": "Official arrival: Vale's car from the West End to Apron Road",
+   "to": "the official bay",
+   "length": 1064,
+   "roads": [
+    "Crown Road",
+    "Sunset Way",
+    "Market Street",
+    "Rocket Lane",
+    "Apron Road"
+   ],
+   "gates": [
+    "Rocket Gate"
+   ]
+  }
+ ],
+ "stops": [
+  {
+   "line": "T1",
+   "id": "comet",
+   "name": "Comet Row",
+   "at": [
+    0,
+    -688
+   ],
+   "chainage": 92,
+   "next": 303
+  },
+  {
+   "line": "T1",
+   "id": "records",
+   "name": "Records",
+   "at": [
+    0,
+    -385
+   ],
+   "chainage": 395,
+   "next": 307
+  },
+  {
+   "line": "T1",
+   "id": "circus",
+   "name": "Crown Circus",
+   "at": [
+    0,
+    -78
+   ],
+   "chainage": 702
+  },
+  {
+   "line": "T2",
+   "id": "parade",
+   "name": "Harbour Parade",
+   "at": [
+    306,
+    30
+   ],
+   "chainage": 290,
+   "next": 320
+  },
+  {
+   "line": "T2",
+   "id": "harbourside",
+   "name": "Harbourside",
+   "at": [
+    306,
+    -290
+   ],
+   "chainage": 610,
+   "next": 310
+  },
+  {
+   "line": "T2",
+   "id": "docks",
+   "name": "Docks",
+   "at": [
+    306,
+    -600
+   ],
+   "chainage": 920,
+   "next": 460.5398163397449
+  },
+  {
+   "line": "T2",
+   "id": "comet",
+   "name": "Comet Row",
+   "at": [
+    -50,
+    -726
+   ],
+   "chainage": 1380.539816339745,
+   "next": 461.47699191833385
+  },
+  {
+   "line": "T2",
+   "id": "lantern",
+   "name": "Lantern",
+   "at": [
+    -334,
+    -540
+   ],
+   "chainage": 1842.0168082580788,
+   "next": 310.34899467990795
+  },
+  {
+   "line": "T2",
+   "id": "rocket",
+   "name": "Rocket",
+   "at": [
+    -334,
+    -230
+   ],
+   "chainage": 2152.3658029379867,
+   "next": 429.79087830067783
+  },
+  {
+   "line": "T2",
+   "id": "terraces",
+   "name": "Crown Terraces",
+   "at": [
+    -334,
+    200
+   ],
+   "chainage": 2582.1566812386645
+  }
+ ],
+ "stations": [
+  {
+   "line": "S1",
+   "id": "gardens",
+   "name": "Sphere Gardens",
+   "at": [
+    -160,
+    0
+   ],
+   "chainage": 240,
+   "next": 249.99999999999994,
+   "length": 50
+  },
+  {
+   "line": "S1",
+   "id": "circus",
+   "name": "Crown Circus",
+   "at": [
+    90,
+    0
+   ],
+   "chainage": 489.99999999999994,
+   "next": 200.00000000000006,
+   "length": 50
+  },
+  {
+   "line": "S1",
+   "id": "harbour",
+   "name": "Harbour",
+   "at": [
+    290,
+    0
+   ],
+   "chainage": 690,
+   "next": 240,
+   "length": 50
+  },
+  {
+   "line": "S1",
+   "id": "skyport",
+   "name": "Skyport",
+   "at": [
+    530,
+    0
+   ],
+   "chainage": 930,
+   "length": 50
+  }
+ ],
+ "pylons": 53
+}

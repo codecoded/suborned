@@ -1,0 +1,193 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -688
+      ],
+      "interchange": "T2/comet",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -385
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -78
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "parade",
+      "name": "Harbour Parade",
+      "path": "main",
+      "at": [
+        306,
+        30
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbourside",
+      "name": "Harbourside",
+      "path": "main",
+      "at": [
+        306,
+        -290
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "main",
+      "at": [
+        306,
+        -600
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "main",
+      "at": [
+        -50,
+        -726
+      ],
+      "interchange": "T1/comet",
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern",
+      "path": "main",
+      "at": [
+        -334,
+        -575
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "rocket",
+      "name": "Rocket",
+      "path": "main",
+      "at": [
+        -334,
+        -265
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "terraces",
+      "name": "Crown Terraces",
+      "path": "main",
+      "at": [
+        -334,
+        200
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        90,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        290,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/parade",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "I checked these by hand only. I have no shell, so the plan checker (bun tools/plan/cli.ts) has not run on them. Latch or Aster must run it before the candidate is accepted. T1 and S1 stops are unchanged, except that T1 comet and S1 harbour now carry the interchange marks.",
+    "T2 stops in line order from (306,320): parade z 30, harbourside z -290, docks z -600 (all at x 306), comet (-50,-726), then lantern z -575, rocket z -265 and terraces z 200 (all at x -334). Gaps along the track, counting the r50 fillet as 78.5 m in place of 100: 320, 310, ~461, ~427, 310 and 465 m. All are inside 300–500.",
+    "Each 30 m platform is on straight track. Docks (-615 to -585) ends before the corner tangent at z -676. Comet (x -65 to -35) sits between the T1 flat crossing (Boulevard edge at x -14) and the tangent at x -296. Lantern (-590 to -560) starts after the Sunset shift ends at about z -590. Terraces (185 to 215) ends before the Crown Road fillet at z 236.",
+    "Reach for the four plots that failed: harbour-east 50 m (to harbourside), docks-east 98 m (to docks), rocket-west 80 m (to rocket), lantern-west 75 m (to lantern). Terraces brings crown-terraces from 247 m down to about 172 m. All other plots were already inside 222 m.",
+    "Interchanges: T2/parade (306,30) to S1/harbour (290,0) is 34 m. T2/comet (-50,-726) to T1/comet (0,-688) is 63 m. Both are under 150. T1, S1 and T2 now form one connected network (N-C1).",
+    "Fronts (W-3): T2 stops sit 6 m from the centrelines of 24 m primary roads, inside the carriageway (Harbour Road x 300, Comet Row z -720, Sunset Way x -340). Roads are walkable, so W-2 holds.",
+    "Mismatch with Datum's ask: it puts S1 Harbour at (340,0), but the station is at (290,0) in both the candidate and my stops. The pairing works either way. Also still open for Aster: notes/why describes the old draft and contradicts notes/concept."
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "8753ed1758ca27e6cf152279",
+    "0e426f4211a2f1f25c328968",
+    "e20799f1f673824d09ce452d"
+  ],
+  "answers": [
+    {
+      "from": "Datum",
+      "ask": "Place T2 Harbour Line stops, 300–500 m apart, on straight track. Cover harbour-east (≈306,-267), docks-east (≈306,-512), rocket-west (≈-334,-296) and lantern-west (≈-334,-563). Add interchanges: T2 stop near (306,0..40) ↔ S1 Harbour (340,0), and T2 Comet Row stop near (-40,-726) ↔ T1 Comet Row (0,-690). Keep stops off the curves at the corners (r50) and off the Sunset shift (z -680 to -590).",
+      "done": true,
+      "note": "7 T2 stops, gaps 310–465 m by hand, all on straight track. The four plots are 50–98 m from a stop. Interchanges: T2/parade (306,30) ↔ S1/harbour (actually at 290,0), and T2/comet (-50,-726) ↔ T1/comet. The checker has not been run."
+    }
+  ]
+}

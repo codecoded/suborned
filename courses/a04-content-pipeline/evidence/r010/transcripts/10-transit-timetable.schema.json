@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "description": "short id, e.g. T2, trunk, circus"
+          },
+          "speed": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "cruising speed, m/s"
+          },
+          "headwaySec": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "dwellSec": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "line",
+          "speed",
+          "headwaySec",
+          "dwellSec"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "journeys": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "legs": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$",
+                  "description": "\"<line>/<stop id>\""
+                },
+                "to": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$",
+                  "description": "\"<line>/<stop id>\""
+                }
+              },
+              "required": [
+                "from",
+                "to"
+              ],
+              "additionalProperties": false
+            },
+            "description": "ordered rides, one line per leg; a leg ends where you change lines and the next leg starts at its interchange partner"
+          }
+        },
+        "required": [
+          "legs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "for": {
+            "type": "string",
+            "enum": [
+              "Motive",
+              "Sky"
+            ]
+          },
+          "why": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "question",
+          "for",
+          "why"
+        ],
+        "additionalProperties": false
+      },
+      "description": "what the GDD has not decided; never a price or a rule invented here"
+    },
+    "notes": {
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 400
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{24}$",
+        "description": "a 24-hex passage id from the retrieved passages"
+      },
+      "description": "passage ids the proposal rests on"
+    },
+    "handoffs": {
+      "description": "asks for another builder (not yourself), e.g. a line that must move for a stop to fit; omit when none",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "true: the candidate cannot be accepted until the owner acts; false: advisory"
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "owner",
+          "blocking",
+          "ask"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "answers": {
+      "description": "one entry per blocking hand-off addressed to you in the task; omit when there are none",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "ask": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "description": "the hand-off ask, copied exactly"
+          },
+          "done": {
+            "type": "boolean",
+            "description": "true only if your output now does what was asked"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "from",
+          "ask",
+          "done",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "lines",
+    "journeys",
+    "openQuestions",
+    "notes",
+    "sources"
+  ],
+  "additionalProperties": false
+}

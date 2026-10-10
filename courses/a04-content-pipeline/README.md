@@ -1,7 +1,7 @@
 # A04 · Content pipeline: the Harbour District transit network
 
 ## For markers (human or AI)
-**Submitted run:** `r008`, ACCEPTED in 3 rounds, unseeded. **Seeded critic challenge:** `r009`, ACCEPTED in 2 rounds. The seven earlier runs (r001–r007) are kept as evidence. Each found a defect that was fixed before the next run.
+**Submitted run:** `r008`, ACCEPTED in 3 rounds, unseeded. **Seeded critic challenges:** `r010` (uncited claim) and `r009` (cited claim), both ACCEPTED. The seven earlier runs (r001–r007) are kept as evidence. Each found a defect that was fixed before the next run.
 
 ### Where each requirement is met
 | requirement | evidence |
@@ -10,7 +10,7 @@
 | Retrieval over the game's own sources | SurrealDB HNSW + BM25 with reciprocal rank fusion (`tools/rag/retrieval.ts`). Each call record `runs/levels/harbour-district/r008/round-*/*.call.json` lists its queries and every retrieved passage, with source, section, signals and score. |
 | Three generated outputs | `runs/levels/harbour-district/r008/round-3/`: `datum.json` (lines), `vantage.json` (stops and stations), `pulse.json` (speed, dwell, headway, routes) and `timetable.json` (the timetable derived from them in code). |
 | Query, retrieved chunks and output side by side | [`report.html`](report.html), one section per call. |
-| A critic correction | **The critic alone:** r009, a seeded challenge labelled as seeded everywhere, as brief 001 allows. One false claim was planted in Pulse's round-1 notes, which no checker rule or code check reads. Keel faulted it, citing the GDD passage it contradicts. Pulse repaired it, and Keel confirmed it in round 2 (see "Seeded critic challenge" below). **Unseeded:** in the submitted r008, the checker, Keel's diagnosis and owner hand-offs corrected it (see "How the submitted run went"). Keel's own unseeded catches are in r003, r004 and r007 (see "Earlier runs"). |
+| A critic correction | **The critic alone:** r010 and r009, labelled seeded challenges, as brief 001 allows. One false claim was planted in Pulse's notes, which no checker rule or code check reads. Keel faulted it, citing the GDD passage it contradicts. Pulse repaired it, and Keel confirmed it. In r010 the claim cites nothing (see "Seeded critic challenges"). **Unseeded:** in the submitted r008, the checker, Keel's diagnosis and owner hand-offs corrected it (see "How the submitted run went"). Keel's own unseeded catches are in r003, r004 and r007 (see "Earlier runs"). |
 | Before / after | Sheets [`evidence/r008/sheets/harbour-district-v0.1.0.html`](evidence/r008/sheets/harbour-district-v0.1.0.html) (before) and [`…-v0.2.0-r008.3.html`](evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html) (accepted). Every round's `checks.json` gives each rule's result. |
 | README | This file. |
 | Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweaks' ranks are in `evidence/ranks.json` and reproduce with `bun run levels:ranks`. |
@@ -20,8 +20,8 @@
 | level | needs | command | time | expect |
 |---|---|---|---|---|
 | 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r008/` | none | — |
-| 1 · offline | Bun | `bun install && bun run verify` | 1–2.5 min | one line per run with its drift labelled by cause, then `VERIFY OK: 9 runs replayed (submitted r008 ACCEPTED) …` |
-| 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0 |
+| 1 · offline | Bun | `bun install && bun run verify` | 1–2.5 min | one line per run with its drift labelled by cause, then `VERIFY OK: 10 runs replayed (submitted r008 ACCEPTED) …` |
+| 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0. On a heavily loaded machine one walk-grid test can exceed its 30 s limit; it passes when run alone. |
 | 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "how does the player use trams and sky rail and what does riding cost"` | about 3 min the first time | ranked passages from SurrealDB, `§02 LOOP + RESOURCES › travel` among the first; each hit names its signals (`semantic`, `keyword` or both) |
 | 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
 
@@ -89,19 +89,22 @@ Datum re-asked the Skyport move in rounds 2 and 3, although it was already done.
 
 In r008 Keel's two faults restate checker failures, with a diagnosis and the right owner, and it raised no fault of its own. Its independent catches are in earlier runs (below).
 
-**Retrieval:** the GDD's boarding rule (`§02 … › travel`) reached Pulse at rank 4 and Keel at rank 8, with no rule text in the prompts. The queries didn't change between rounds and nothing was pinned, so this is one result seen three times. The natural question alone ranks it 1st; the owners' other queries pull it down. Keel judged the timetable against it ("time only, no fare").
+**Retrieval:** the GDD's boarding rule (`§02 … › travel`) reached Pulse at rank 4 and Keel at rank 8, with no rule text in the prompts. Pulse's and Keel's queries didn't change between rounds and nothing was pinned for them, so for those two this is one result seen three times. Datum's and Vantage's queries did change (Datum ran 4, 6 and 5 queries, with 2 chunks pinned in rounds 2 and 3). The natural question on its own ranks the rule 1st: run the level-2 command above. Pulse also cited §02, so the passage reached Keel a second way, as cited text. **Source mix:** Datum's and Vantage's top 8 were all plan chunks in every round; Pulse's and Keel's had 1–2 agent-GDD chunks each. No human-GDD passage was retrieved. The self-assessment lists this as a weakness. Keel judged the timetable against it ("time only, no fare").
 
-### Seeded critic challenge: `r009`, ACCEPTED in 2 rounds
-r009 is `bun run levels transit --seed fare-claim`: the same pipeline, with one labelled seed. It is labelled in the console (`[SEEDED fare-claim]`), in `run.json` (`seeded: "fare-claim"`) and in `round-1/pulse.call.json` (`seeded`, `seedNote`, and `original`, Pulse's untouched output). Neither Keel nor Pulse is told.
+### Seeded critic challenges: `r010` (uncited) and `r009` (cited), both ACCEPTED
+Brief 001 allows a seeded challenge, labelled as seeded everywhere. Each seed plants one false claim in Pulse's round-1 notes. The claim contradicts GDD v0.15 §02 travel (*"Price = time only: wait for the next service + the ride"*). No checker rule or code check reads notes, so only the critic can catch it.
 
-- **The seed:** after Pulse's round-1 output, one note is added: *"Boarding price: a flat $5 fare per ride, charged at the gate, plus the wait (GDD §02 travel)."*
-  - It cites the §02 travel passage Pulse retrieved, so the citation check passes.
-  - No checker rule or code check reads notes, so only the critic can catch it.
-  - It contradicts GDD v0.15 §02: *"Price = time only: wait for the next service + the ride."*
-- **Round 1 (`round-1/faults.json`):** Keel raised `[Pulse/critic]`: *"The cited §02 travel rule says the price is time only, the wait plus the ride, with no fare. The note invents a price that contradicts the GDD."*, citing chunk `ab3dc10b…` (`§02 LOOP + RESOURCES › travel`, which Keel retrieved at rank 8). In the same round the checker failed N-R1, which went to Datum.
-- **Round 2:** Pulse's note now reads *"Boarding is fast travel priced in time only: the wait for the next service plus the ride … No fare (GDD §02 travel …). The earlier $5 fare note is deleted."* Keel: *"the $5 fare is gone"*. The checker was clean and the run was ACCEPTED.
-- **Replay:** `bun run levels:replay r009` checks that the seed is labelled, that round 1 equals the original plus the seeded note, and that round 2 no longer has it (`seeded fare claim is gone from Pulse's output (repaired)`).
-- **Evidence:** [report](evidence/r009/report.html) and [sheets](evidence/r009/sheets/harbour-district-v0.2.0-r009.2.html). The run took 8 calls, 475 s of model time and $1.89.
+Every seeded run is labelled:
+- in the console (`[SEEDED …]`);
+- in `run.json` (`seeded`);
+- in `round-1/pulse.call.json` (`seeded`, `seedNote`, and `original`, Pulse's untouched output).
+
+Neither Keel nor Pulse is told. `bun run levels:replay` checks that round 1 equals the original plus the seed, and reports in each later round whether the claim survived.
+
+| run | seed | what Keel had | round 1: Keel's fault (`round-1/faults.json`) | repair |
+|---|---|---|---|---|
+| **[`r010`](evidence/r010/report.html)** `--seed fare-claim-uncited` | *"Boarding price: a flat $5 fare per ride, charged at the gate, plus the wait."* No citation; `sources` untouched. | §02 travel came only from Keel's own retrieval (rank 8) and from Pulse's own citation of §02 for its other notes. Nothing in the planted claim points to it. | `[Pulse/critic]` *"GDD §02 says the price is time only (the wait plus the ride) and that there is no fare. This is an invented price that contradicts the GDD."* It cites chunk `ab3dc10b…`. | Round 2, Pulse: *"Boarding is priced in time only … No fare (GDD §02 travel). The earlier fare note is removed."* Keel confirmed the fix. In round 2 Keel also found a false `done: true` from Vantage, which the checker's T-S2 confirmed. ACCEPTED in round 3. 11 calls, $2.04. |
+| [`r009`](evidence/r009/report.html) `--seed fare-claim` | The same claim plus *"(GDD §02 travel)"*. The seed added the §02 chunk to `sources`. | The cited passage itself, because `cite.ts` gives Keel the text of every cited passage. **This makes it the easier test:** the claim points to the passage that refutes it. | `[Pulse/critic]` *"The cited §02 travel rule says the price is time only, the wait plus the ride, with no fare. The note invents a price that contradicts the GDD."* | Round 2, Pulse states the time-only rule. Keel: *"the $5 fare is gone"*. ACCEPTED in round 2. 8 calls, $1.89. |
 
 ### Earlier runs, kept as evidence
 | run | outcome | what it taught (from its records) | fix before the next run |
@@ -134,7 +137,7 @@ bun install
 bun run doctor                 # preflight: Bun, Docker, ports, Claude Code and its flags; one line per check, with the fix for any FAIL
 bun run levels:replay r006     # offline: no Docker, no model. Checks schemas, hashes, retrieved text and the pinned block, reruns the checker → REPLAY OK
 bun run up                     # SurrealDB + embedding service. First start pulls SurrealDB, builds the image and downloads the embedding model from Hugging Face (about 3 min)
-bun run ingest                 # index the GDD and the plan into SurrealDB (about 25 s)
+bun run ingest                 # index the GDD and the plan into SurrealDB (25–90 s)
 bun run doctor                 # optional: now also checks SurrealDB, the embeddings and that the corpus is current
 bun run levels transit         # the generation run → runs/levels/harbour-district/r00N/ (the next free id) (exit 0 ACCEPTED, exit 1 REJECTED or ERROR; see below)
 bun run levels:replay r00N     # replay the new run
@@ -147,7 +150,7 @@ bun run levels:sheets          # re-render every run's sheets + out/levels/index
 | clone + install | 7 s |
 | replay r006 | 20 s |
 | `up` | 163 s |
-| `ingest` | 24 s |
+| `ingest` | 24 s (91 s on a busy machine) |
 | `levels transit` (ACCEPTED in 2 rounds; that run folder was not kept) | 414 s |
 | replay of that run | 14 s |
 | sheets | 97 s |

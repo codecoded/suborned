@@ -1,0 +1,111 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 38
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 90,
+      "dwellSec": 12,
+      "speed": 12,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 21
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 17
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 20
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 227,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/gardens",
+      "sec": 146,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/comet",
+      "sec": 227,
+      "via": [
+        "S1/circus"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "S1/harbour",
+      "sec": 142,
+      "via": [
+        "T1/circus"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the wait for the next service the exact timetable wait from the player's arrival, or an average of half the headway?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not say how the wait is computed."
+    },
+    {
+      "question": "What walking pace and route apply to an interchange between a tram stop and a sky rail station?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace. 1.4 m/s is used as a [S] placeholder."
+    },
+    {
+      "question": "Can a player board a service that is already dwelling at the stop, and does dwell count as wait?",
+      "for": "Motive",
+      "why": "The GDD does not decide this, and it affects the cost of a tight interchange."
+    }
+  ],
+  "notes": [
+    "T1 speed 8 m/s [S]: stops are 300–500 m apart (tram standard), so about 38 s per run is readable, and the tram stays slower than the sky rail. Dwell 15 s, headway 120 s.",
+    "S1 speed 12 m/s [S]: stations are 200–500 m apart and the beam is 24 m up, so runs of about 17–21 s keep the sky rail the quicker network. Dwell 12 s, headway 90 s.",
+    "Headways, dwells and speeds are all [S] starting values, to be tuned by playtest. Boarding is fast travel priced in time only, with no fare (GDD §02 travel).",
+    "The only interchange is T1/circus with S1/circus. Every cross-line journey uses it. The straight-line gap is about 119 m by the candidate coordinates, inside the 150 m limit.",
+    "Journeys cover the main trips: Comet Row to Skyport, Records to Sphere Gardens, Skyport to Comet Row, and Records to Harbour.",
+    "Mismatch: the plan passage gives S1 Crown Circus at 95 and Harbour at 340, while the candidate lines and stop table use 90 and 290. I used the stop table and left both unchanged. Datum should confirm which is current.",
+    "Boarding price: a flat $5 fare per ride, charged at the gate, plus the wait."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "c5fb128448665c55b7c335fb"
+  ]
+}

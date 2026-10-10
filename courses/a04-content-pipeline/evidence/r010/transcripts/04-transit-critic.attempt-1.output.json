@@ -1,0 +1,32 @@
+{
+  "verdict": "fail",
+  "summary": "Fail. N-R1 fails: docks-east, lantern-west, rocket-west and harbour-east are 269–291 m from any stop (limit 250). Pulse's notes add a $5 fare, but GDD §02 says no fare. Everything else passes: the interchange is 119 m, and the headways, dwells and speeds are plausible. Open questions, not faults: the plan stop list (S1 at x 95/340) differs from the candidate (90/290), and the old notes/why are for Aster. The 1.4 m/s walking pace placeholder is rightly sent to Motive.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "N-R1",
+      "fault": "Four areas are beyond the 250 m transit reach of every tram stop and sky rail station: docks-east 291 m, lantern-west 288 m, rocket-west 275 m and harbour-east 269 m. With T1 on the Boulevard and S1 on the z 0 trunk, no stop position can bring these corner areas within reach.",
+      "fix": "Add or move a line so it passes near x ±260 (Sunset Way / Harbour Road side), for example an east-side tram once the road plan allows a terminal loop. Otherwise escalate to Aster to change the reach standard or the plots. Then rerun the plan checker.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "A timetable note says boarding costs 'a flat $5 fare per ride, charged at the gate, plus the wait.' GDD §02 says the price is time only (the wait plus the ride) and that there is no fare. This is an invented price that contradicts the GDD.",
+      "fix": "Remove the fare note. Price boarding in time only (wait plus ride from the timetable). Send any fare idea to Motive as an open question, not as a rule.",
+      "chunks": [
+        "ab3dc10b8f9e98b62bfe5738"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ab3dc10b8f9e98b62bfe5738",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c5fb128448665c55b7c335fb",
+    "e20799f1f673824d09ce452d"
+  ]
+}

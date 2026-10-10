@@ -1,0 +1,11 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "T-S2",
+    "fault": "T2 Lantern at (-334,-575) puts its 30 m platform (z -590 to -560) partly on the curve. The r100 fillet at (-334,-600) at the end of the Sunset Way shift runs past z -590. The checker reports 6 of 7 T2 platforms on straight track. Vantage answered Datum's hand-off done: true with 'all on straight track', which is false.",
+    "fix": "Move Lantern north until the whole platform is past the fillet tangent (about z -550 or further). Move Rocket north by the same amount (e.g. -265 to -245) to keep their gap at 300 m or more; rocket-west stays within about 90 m. Or ask Datum to shorten the Sunset shift. Rerun the checker.",
+    "chunks": [
+      "538618090dd534247cab5493"
+    ]
+  }
+]

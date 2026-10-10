@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 600
+    },
+    "faults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "Datum",
+              "Vantage",
+              "Pulse"
+            ]
+          },
+          "rule": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "plan checker rule id, or \"critic\" for a fault the checker cannot see"
+          },
+          "fault": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "fix": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "chunks": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{24}$",
+              "description": "a 24-hex passage id from the retrieved passages"
+            },
+            "description": "passage ids that show the rule being broken"
+          }
+        },
+        "required": [
+          "owner",
+          "rule",
+          "fault",
+          "fix",
+          "chunks"
+        ],
+        "additionalProperties": false
+      },
+      "description": "empty when verdict is pass"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{24}$",
+        "description": "a 24-hex passage id from the retrieved passages"
+      },
+      "description": "passage ids the proposal rests on"
+    }
+  },
+  "required": [
+    "verdict",
+    "summary",
+    "faults",
+    "sources"
+  ],
+  "additionalProperties": false
+}

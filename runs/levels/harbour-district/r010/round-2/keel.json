@@ -1,0 +1,23 @@
+{
+  "verdict": "fail",
+  "summary": "Fails on checker rule T-S2: the T2 Lantern platform is not on straight track, so Vantage's done: true is false. Other rules pass, and last round's N-R1, fare and hand-off faults are fixed. Open questions, not faults: S1 Crown Circus/Harbour at 90/290 here vs 95/340 in the plan text (Pulse has asked Datum); no standard covers the T1×T2 flat crossing at (0,-726) or how its headways fit; notes/why is still stale (for Aster).",
+  "faults": [
+    {
+      "owner": "Vantage",
+      "rule": "T-S2",
+      "fault": "T2 Lantern at (-334,-575) puts its 30 m platform (z -590 to -560) partly on the curve. The r100 fillet at (-334,-600) at the end of the Sunset Way shift runs past z -590. The checker reports 6 of 7 T2 platforms on straight track. Vantage answered Datum's hand-off done: true with 'all on straight track', which is false.",
+      "fix": "Move Lantern north until the whole platform is past the fillet tangent (about z -550 or further). Move Rocket north by the same amount (e.g. -265 to -245) to keep their gap at 300 m or more; rocket-west stays within about 90 m. Or ask Datum to shorten the Sunset shift. Rerun the checker.",
+      "chunks": [
+        "538618090dd534247cab5493"
+      ]
+    }
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "ba506de42600790962a866a2",
+    "e20799f1f673824d09ce452d"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. Checker clean; T-S2 now 7/7 with Lantern at z -540, so Vantage's done: true holds. Timetable matches §02 travel (time only, no fare) and its values are plausible. Open questions, not faults: plan text puts S1 Circus and Harbour at 95/340 but they are placed at 90/290 (Datum/Aster to update the text); no rule in my passages for the flat T1×T2 crossing at (0,-726) (Splice/Keel); notes/why contradicts notes/concept (already with Aster); Pulse's boarding questions are with Motive.",
+  "faults": [],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "ab3dc10b8f9e98b62bfe5738",
+    "c5fb128448665c55b7c335fb",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

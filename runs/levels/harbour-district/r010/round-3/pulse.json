@@ -1,0 +1,137 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "speed": 8,
+      "headwaySec": 120,
+      "dwellSec": 15
+    },
+    {
+      "line": "T2",
+      "speed": 8,
+      "headwaySec": 120,
+      "dwellSec": 15
+    },
+    {
+      "line": "S1",
+      "speed": 12,
+      "headwaySec": 90,
+      "dwellSec": 12
+    }
+  ],
+  "journeys": [
+    {
+      "legs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/skyport"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "S1/skyport",
+          "to": "S1/circus"
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/comet"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T2/docks",
+          "to": "T2/comet"
+        },
+        {
+          "from": "T1/comet",
+          "to": "T1/circus"
+        }
+      ]
+    },
+    {
+      "legs": [
+        {
+          "from": "T1/records",
+          "to": "T1/circus"
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour"
+        },
+        {
+          "from": "T2/parade",
+          "to": "T2/harbourside"
+        }
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Is the wait for the next service the exact timetable wait from the player's arrival, or an average of half the headway?",
+      "for": "Motive",
+      "why": "The GDD says price = wait + ride from the timetable but does not say how the wait is computed."
+    },
+    {
+      "question": "What walking pace and route apply to an interchange between stops?",
+      "for": "Motive",
+      "why": "The GDD states no walking pace. 1.4 m/s is used as an [S] placeholder."
+    },
+    {
+      "question": "Can a player board a service already dwelling at the stop, and does dwell count as wait?",
+      "for": "Motive",
+      "why": "The GDD does not decide this, and it affects the cost of a tight interchange."
+    }
+  ],
+  "notes": [
+    "T1 and T2 speed 8 m/s [S]: stops are 300–500 m apart (tram standard), so runs of about 38–58 s are readable and trams stay slower than the sky rail. Dwell 15 s, headway 120 s [S].",
+    "S1 speed 12 m/s [S]: stations 200–500 m apart, beam 24 m up, runs of about 17–21 s keep the sky rail the quicker network. Dwell 12 s, headway 90 s [S].",
+    "Boarding is priced in time only: wait for next service (from headway) plus the ride. No fare (GDD §02 travel).",
+    "Interchange pairs used: T1/circus–S1/circus (~119 m apart), T1/comet–T2/comet (~63 m), S1/harbour–T2/parade (~34 m), all within the 150 m limit.",
+    "Mismatch not resolved here: plan text gives S1 Crown Circus at 95 and Harbour at 340; the candidate lines and stop table use 90 and 290. I used the stop table."
+  ],
+  "sources": [
+    "ab3dc10b8f9e98b62bfe5738",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "c5fb128448665c55b7c335fb"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "Confirm S1 station chainage: plan text says Crown Circus 95 and Harbour 340; the stop table uses 90 and 290."
+    }
+  ]
+}

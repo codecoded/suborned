@@ -1,0 +1,112 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -688
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -385
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -78
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        90,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        290,
+        0
+      ],
+      "length": 50,
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "Checked by hand only. I have no shell here, so the plan checker (bun tools/plan/cli.ts) has not been run on these stops. Latch or Aster should run it before anyone accepts the candidate.",
+    "T1, in line order along the trunk: Comet Row at z -688, Records at -385, Crown Circus at -78. Gaps are 303 m and 307 m (rule: 300–500). All 30 m platforms are on straight trunk. Circus (-93 to -63) stays clear of the loop join at -56. Records (-400 to -370) stays clear of Market Street. Comet (-703 to -673) stays clear of Comet Row.",
+    "S1, west to east: Gardens x -160, Crown Circus 90, Harbour 290, Skyport 530. Gaps are 250, 200 and 240 m (rule: 200–500). All 50 m platforms are on the straight trunk; Skyport ends at x 555, short of the loop at 560. Gardens stays on the Records Axis (x -160). Skyport fronts the pier because it stands over the water.",
+    "Interchange: T1/circus (0,-78) and S1/circus (90,0) are 119 m apart, inside the 150 m limit. The two lines join at this one pair, so the network is connected (N-C1).",
+    "Every entrance fronts a road or foot path whose centreline is under 6 m away: the Boulevard, the Circus Road median, the Crown Parade mall and the Skyport Pier. All of it is walkable public space (W-2/W-3).",
+    "N-R1 fails, and no stop position on these lines can fix it. Best case for four plots: harbour-east 268 m, rocket-west 275, lantern-west 288, docks-east 291 (limit 250). Tram spacing (at least 300 m) and the interchange (circus stop no further south than about -150) leave no better positions.",
+    "Positions chosen for tight reach: the Gardens station keeps crown-terraces at 247 m. The S1 circus station at x 90 keeps crescent-north at 247 m and leaves Harbour at x 290 exactly 200 m away. All other plots are inside 222 m.",
+    "Mismatch for Aster, repeated from Datum: notes/why still describes the old draft and contradicts notes/concept. I placed stops on the current lines, as notes/concept describes."
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "8753ed1758ca27e6cf152279",
+    "0e426f4211a2f1f25c328968",
+    "e20799f1f673824d09ce452d"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 cannot pass on T1 + S1 as drawn. These plots are beyond the 250 m reach of any possible stop: harbour-east (262,-267), rocket-west (-260,-296), lantern-west (-260,-563), docks-east (262,-512), at 268–291 m. They need a line near x ±260 (near Sunset Way and Harbour Road). Otherwise Aster must change the reach standard or the plots."
+    }
+  ]
+}

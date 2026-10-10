@@ -1,11 +1,11 @@
-// usage: bun run levels transit [--plan contracts/world/harbour-district.plan.json] [--seed station-on-plot|fare-claim] [--rounds 3]
+// usage: bun run levels transit [--plan contracts/world/harbour-district.plan.json] [--seed station-on-plot|fare-claim|fare-claim-uncited] [--rounds 3]
 // Needs `bun run up` + `bun run ingest` and a signed-in Claude Code. The final plan is never written to contracts/.
 import { retrieve } from '../rag/retrieval';
 import { runLevels } from './run';
 import { SEEDS, type Seed } from './seed';
 
 const args = process.argv.slice(2), opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined);
-if (args[0] !== 'transit') { console.error('usage: bun run levels transit [--plan <plan.json>] [--seed station-on-plot|fare-claim] [--rounds 3]'); process.exit(2); }
+if (args[0] !== 'transit') { console.error('usage: bun run levels transit [--plan <plan.json>] [--seed station-on-plot|fare-claim|fare-claim-uncited] [--rounds 3]'); process.exit(2); }
 const seed = opt('--seed');
 if (seed && !(SEEDS as readonly string[]).includes(seed)) { console.error(`unknown seed ${seed}; known: ${SEEDS.join(', ')}`); process.exit(2); }
 const offline = process.env.LEVELS_TEST_RETRIEVER === 'lexical';

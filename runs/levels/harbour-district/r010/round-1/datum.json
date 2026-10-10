@@ -1,0 +1,164 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Kept T1 and S1, re-listed with order [trunk, loop]. Checked by hand only; the plan checker has not been run. T1 trunk runs in the Boulevard (28 m, x 0) and leaves the south sheet edge. The loop joins both tracks (±1.8) at z -56; fillets are 25 to 28 m (minimum 25) and all fit their segments. The r28 arcs are centred on 0,0, inside the 31 m island.",
+    "S1: double trunk at z 0 over Circus Road's median, the circus island, Crown Parade (mall), Harbour Road (24 m span on the median) and the Skyport Pier. The loop runs over water with r40 fillets (minimum 40) at ±3 m, stays inside x 740 and closes on the trunk end at x 560. It is two-way, as tide asked.",
+    "Rejected tide's Sky Loop round the district. A ring over the primary-road medians needs r70 or more at four right-angle corners. A 90° r70 fillet cuts in about 29 m, past the 12 m road half-width, so it passes over built plots (fails S-C1 and the pylon zones). The straight trunk does the job with no rule failures.",
+    "Rejected T2 on Harbour Road. Its south end at z -720 is inside the sheet and needs a loop (T-L1); a loop of r25 or more needs about 50 m and won't fit in a 24 m street. A 90° r50 turn onto Comet Row or Market Street cuts in about 21 m, past the 12 m half-width (fails T-C1). T2 needs a road change first (e.g. a turning space at Harbour Road × Comet Row), a road-plan question for Aster.",
+    "Did not extend T1 up Crown Avenue (questions note): the avenue stops at Crown Road (z 280), short of the sheet edge (z 320), so it would need another in-sheet loop. The circus balloon already serves that end.",
+    "N-C1: the one interchange is T1 Crown Circus stop (0,-72) with S1 Crown Circus (95,0), about 119 m apart, inside the 150 m limit. Two lines, so that pair is enough.",
+    "Source mismatch for Aster: the plan's notes/why still describe the old draft (single-track tram with no loop, a 24 m Sphere loop, a separate Harbour loop). They contradict notes/concept and the current lines; I followed notes/concept.",
+    "Reach (250 m) is judged per area. Area centres are within reach, but corner plots at x ±260 (lantern-west, rocket-west, docks-east, harbour-east) are about 270 to 320 m from any stop on these lines. If the checker measures per plot, that is the case for a later east-side tram once the roads allow one."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "8753ed1758ca27e6cf152279",
+    "c1909f164651d9c88cd65c53",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968"
+  ]
+}
