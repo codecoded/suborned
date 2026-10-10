@@ -5,17 +5,17 @@
 
 <h2>What the pipeline does well</h2>
 <ul>
-<li><b>Game-specific and replayable.</b> The outputs are edits to the district plan that the game's graybox is derived from. They are judged by the same plan checker that gates every plan. <code>bun run verify</code> replays all eight runs offline in under a minute, with no Docker or model. That includes the derived timetable, and the drift is labelled by cause.</li>
+<li><b>Game-specific and replayable.</b> The outputs are edits to the district plan that the game's graybox is derived from. They are judged by the same plan checker that gates every plan. <code>bun run verify</code> replays all eight runs offline in 1–2 minutes, with no Docker or model. That includes the derived timetable, and the drift is labelled by cause.</li>
 <li><b>Models decide; code computes and checks.</b> Datum chooses lines, Vantage places stops, and Pulse chooses speeds, dwells, headways and routes. Code derives every run time and journey total, and checks citations, walk access and whether hand-offs were answered. In r008 there were 0 citation faults and 0 timetable faults.</li>
-<li><b>Owners coordinate through the loop.</b> In r008, Vantage answered four of Datum's asks <code>done: true</code> in the same round as they were made, and Keel checked that the answers held. The one ask Vantage answered <code>done: false</code> became a fault for Vantage. Faults went to the owner who can fix them: Keel sent the reach failure to Datum (a line problem), and the line-end failure in round 2 also went to Datum.</li>
-<li><b>The GDD rules reach the agents by retrieval, not by prompt.</b> The briefs no longer state the boarding rule. In every r008 round, the chunk <code>§02 LOOP + RESOURCES › travel</code> reached Pulse at rank 4 and Keel at rank 8 from a natural question, and Keel judged the timetable against it ("time only, no fare").</li>
+<li><b>Owners coordinate through the loop.</b> In r008, Vantage moved Skyport for spacing (round 1) and placed T2's seven stops (round 3), answering Datum's asks <code>done: true</code> in the same round. Keel checked that the answers held. The one ask Vantage answered <code>done: false</code> became a fault for Vantage. Two of the four <code>done: true</code> answers repeat the Skyport ask, which was already met (see weaknesses). Faults went to the owner who can fix them: Keel sent the reach failure to Datum (a line problem), and the line-end failure in round 2 also went to Datum.</li>
+<li><b>The GDD rules reach the agents by retrieval, not by prompt.</b> The briefs no longer state the boarding rule. In r008 the chunk <code>§02 LOOP + RESOURCES › travel</code> reached Pulse at rank 4 and Keel at rank 8. The queries were unchanged across rounds, so this is one result, not three. The natural question alone ranks it 1st, and Keel judged the timetable against it ("time only, no fare").</li>
 </ul>
 
 <h2>Where the critic (Keel) helped, and where it didn't</h2>
 <table><tr><th>run</th><th>Keel caught something no rule covered</th><th>Keel was wrong or added nothing</th></tr>
 <tr><td>r003</td><td>A Skyport station over water that nobody could walk to. Vantage removed the station.</td><td>It faulted Pulse's boarding rule, which was true, because §02 wasn't retrieved.</td></tr>
 <tr><td>r004</td><td>A run time off by 1 s and a miscounted spacing note, both fixed. The Skyport station over water was held open, not fixed.</td><td>The same false §02 fault again.</td></tr>
-<tr><td>r007</td><td>A reach claim that broke the standard.</td><td>—</td></tr>
+<tr><td>r007</td><td>A false reach claim in Datum's notes. The defect itself was also flagged by the checker's N-R1 in the same round.</td><td>—</td></tr>
 <tr><td>r008 (submitted)</td><td>—</td><td>Its two faults restate checker failures (N-R1, T-L1). It added a diagnosis and the right owner, but no independent catch.</td></tr>
 </table>
 <p>Keel's value is real but uneven. Over the runs, its independent catches (stations over water, arithmetic slips) were turned into code: rules W-2 and W-3, and the derived timetable. So the submitted run left it less to catch.</p>
@@ -33,7 +33,7 @@
 <h2>Retrieval tweaks, measured</h2>
 <p>All ranks are positions in the fused top 8 that an agent sees. Unless marked otherwise, they come from <a href="evidence/ranks.json">evidence/ranks.json</a> on the current index, and reproduce with <code>bun run levels:ranks</code>.</p>
 <table><tr><th>tweak</th><th>before</th><th>after</th></tr>
-<tr><td><b>1 · Literal standards query.</b> <code>standards › tram</code> holds <code>stopSpacing</code>. Every objective now leads with "standards tram stopSpacing radiusRunning…".</td><td>The old single query "tram stop spacing sky rail stations every area in reach of a stop interchange" ranks it <b>9th</b>, outside the top 8.</td><td>Datum 5, Vantage 2, Pulse 3, Keel 2.</td></tr>
+<tr><td><b>1 · Literal standards query.</b> <code>standards › tram</code> holds <code>stopSpacing</code>. Every objective now leads with "standards tram stopSpacing radiusRunning…".</td><td>The old single query "tram stop spacing sky rail stations every area in reach of a stop interchange" ranks it <b>9th</b>, outside the top 8.</td><td>Datum 5, Vantage 2, Pulse 3, Keel 2. These ranks come from each objective's full query set (3–4 queries), so the gain isn't down to the literal query alone. The comparison is confounded.</td></tr>
 <tr><td><b>2 · A first attempt at §02, rejected as circular.</b> The query "boarding is fast travel priced in time only: wait for the next service plus the ride" nearly quotes its target line. The briefs also stated the rule outright.</td><td>—</td><td>Pulse 1, Keel 5 (<code>travel.circular</code>). These ranks prove nothing about retrieval, so the query was dropped and the rule removed from the briefs.</td></tr>
 <tr><td><b>3 · Chunking the agent GDD by entry (chunker v2).</b> Sections over 1000 characters split at their tagged entries, and each chunk is titled with its § path, e.g. <code>§02 LOOP + RESOURCES › travel</code>. The query is a natural question: "how does the player use trams and sky rail and what does riding cost".</td><td>With whole-section chunks (v1), §02 ranked 11th for Pulse and wasn't retrieved for Keel. <i>This was measured on the v1 index while developing the fix. That index no longer exists, so it doesn't reproduce from this commit.</i></td><td>Pulse <b>4</b>, Keel <b>8</b> (<code>travel.after</code>), the same as in every round of r008's call records. The corpus grew from 132 to 190 chunks. Other hits got more specific (e.g. <code>§14 ROLES › Keel</code> instead of the whole §14).</td></tr>
 </table>
@@ -41,6 +41,9 @@
 <h2>Weaknesses still open</h2>
 <table><tr><th>issue</th><th>evidence</th><th>effect</th></tr>
 <tr><td>§02 travel is Keel's 8th of 8 passages</td><td><code>evidence/ranks.json</code>, and r008's keel call records. Keel's four queries pull plan standards from several lists, while travel comes from only one.</td><td>One more query could push the rule out of Keel's context. Fewer overlapping standards queries for Keel would give it margin.</td></tr>
+<tr><td>Datum works from stale context</td><td>Datum's task in rounds 2+ shows the input plan's geometry and its own previous proposal, not Vantage's placed stops. In r008 it re-asked the Skyport move in rounds 2 and 3, after Skyport was already at x 545 (<code>round-1/plan.json</code>).</td><td>Repeated asks and answers that cost tokens. They hide which asks are new.</td></tr>
+<tr><td>A stale plan note is in every agent's context</td><td>The plan chunk <code>notes › why</code> is in every owner's top 8 (Datum 1, Vantage 5, Pulse 7, Keel 3; <code>evidence/ranks.json</code>), but still describes the old network (closed loops, a balloon round the skyport). Keel flagged it only as a conflict for the lead.</td><td>It can steer builders towards a network the plan no longer wants. Datum should rewrite it.</td></tr>
+<tr><td>A line can pass T-L1 by leaving the sheet</td><td>r008's T2 passes T-L1 with "all ends off-sheet". The rule accepts off-sheet ends by design (brief 001: "ends joined or off-sheet").</td><td>Whether the termini beyond the sheet exist is an open question for the next district plan.</td></tr>
 <tr><td>Hand-off answers are matched on exact text</td><td><code>handoff.ts</code>: the answer must copy the ask (whitespace aside).</td><td>If a model paraphrases the ask, a fulfilled hand-off still becomes a fault and costs a round.</td></tr>
 <tr><td>Walking pace is assumed</td><td>1.4 m/s in <code>timetable.ts</code>, an [S] starting value that the GDD doesn't state. Pulse raised it as an open question.</td><td>It changes journey totals, not the network. A question for Motive and Sky.</td></tr>
 <tr><td>A flat tram crossing has no standard</td><td>Keel r008 round 3: "the flat T1×T2 crossing at (0,-726) has no standard".</td><td>Unchecked until the GDD sets a rule.</td></tr>
@@ -49,7 +52,8 @@
 
 <h2>Next concrete tweaks</h2>
 <ol>
-<li><b>Retrieval:</b> drop Keel's skyrail standards query, which overlaps the tram one, so that the travel rule gains margin. Measure with <code>levels:ranks</code>.</li>
+<li><b>Retrieval:</b> drop Keel's "rulebook" query, which contributes no hit to its top 8, so that the travel rule gains margin. Measure with <code>levels:ranks</code>, changing one query at a time so the before/after isn't confounded.</li>
+<li><b>Context:</b> give Datum the candidate's placed stops in rounds 2+, so it doesn't re-ask what's already done.</li>
 <li><b>Prompt and code:</b> match hand-off answers by an id that code issues, not by copied text.</li>
 <li><b>Checker:</b> a rule for flat crossings, once the GDD decides one.</li>
 </ol>

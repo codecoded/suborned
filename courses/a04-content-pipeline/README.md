@@ -14,13 +14,13 @@
 | Before / after | Sheets [`evidence/r008/sheets/harbour-district-v0.1.0.html`](evidence/r008/sheets/harbour-district-v0.1.0.html) (before) and [`…-v0.2.0-r008.3.html`](evidence/r008/sheets/harbour-district-v0.2.0-r008.3.html) (accepted). Every round's `checks.json` gives each rule's result. |
 | README | This file. |
 | Self-assessment with a concrete tweak | [`self-assessment.html`](self-assessment.html). The retrieval tweaks' ranks are in `evidence/ranks.json` and reproduce with `bun run levels:ranks`. |
-| Reproducibility | `bun run verify` replays every committed run offline. Fresh clones produced r004 (ACCEPTED) and r007 (a simulated AI marker's run, REJECTED); both are committed. A third fresh-install run, with an empty Docker, was ACCEPTED, but its folder was not kept; only its timings are reported under "Measured from nothing". |
+| Reproducibility | `bun run verify` replays every committed run offline. r004 (ACCEPTED) and r007 (a simulated AI marker's run, REJECTED) were produced from fresh clones and are committed. Where a run was made is not recorded in `run.json`; it is stated here from the sessions that ran them. A third fresh-install run, with an empty Docker, was ACCEPTED, but its folder was not kept, so its timings under "Measured from nothing" can't be checked from this commit. |
 
 ### Verify it: pick the level your environment allows
 | level | needs | command | time | expect |
 |---|---|---|---|---|
 | 0 · read | nothing | open `report.html`, `self-assessment.html`, `runs/levels/harbour-district/r008/` | none | — |
-| 1 · offline | Bun | `bun install && bun run verify` | about 1 min | one line per run with its drift labelled by cause, then `VERIFY OK: 8 runs replayed (submitted r008 ACCEPTED) …` |
+| 1 · offline | Bun | `bun install && bun run verify` | 1–2 min | one line per run with its drift labelled by cause, then `VERIFY OK: 8 runs replayed (submitted r008 ACCEPTED) …` |
 | 1b · full tests | Bun | `bun run check` | 3–10 min | exit 0 |
 | 2 · retrieval | + Docker | `bun run up && bun run ingest && bun run retrieve "how does the player use trams and sky rail and what does riding cost"` | about 3 min the first time | ranked passages from SurrealDB, `§02 LOOP + RESOURCES › travel` among the first; each hit names its signals (`semantic`, `keyword` or both) |
 | 3 · generation | + Claude Code, signed in | `bun run doctor && bun run levels transit` | 5–17 min | a new `r00N`. ACCEPTED (exit 0) or REJECTED (exit 1) are both valid outcomes. Then `bun run levels:replay r00N` → REPLAY OK |
@@ -79,15 +79,17 @@ r008 ran on GDD v0.15.0, chunker v2 (corpus of 190 chunks) and the corrected civ
 - **Round 1:** the checker failed N-R1, with four areas out of reach (docks-east 294 m, lantern-west 289 m, harbour-east 279 m, rocket-west 273 m).
   - Keel diagnosed it as a line problem and routed it to Datum: no stop on the existing lines could reach those areas.
   - Vantage raised the same point as a blocking hand-off to Datum.
-  - Vantage also answered `done: true` to Datum's ask to move Skyport for spacing, and Keel confirmed the answer held (Skyport at x 545, gap 205 m).
+  - Vantage moved Skyport to x 545 (gap 205 m) and answered Datum's spacing ask `done: true`; Keel confirmed it.
 - **Round 2:** Datum added T2 as a ring, which fixed reach. The checker then failed T-L1, because it read the ring's two ends as open with no turning loop.
   - Keel explained the cause and routed it to Datum.
   - Vantage answered one of Datum's asks `done: false`, which became a fault for Vantage.
-- **Round 3:** Datum made T2 an open U, and Vantage placed its 7 stops and answered every ask. The checker was clean and Keel passed: ACCEPTED.
+- **Round 3:** Datum made T2 an open U with both ends running off the sheet, which T-L1 accepts ("ends joined or off-sheet"). Vantage placed its 7 stops and answered every ask. The checker was clean and Keel passed: ACCEPTED.
+
+Datum re-asked the Skyport move in rounds 2 and 3, although it was already done. Its task shows the input plan's geometry, not Vantage's placed stops, so two of Vantage's four `done: true` answers repeat an ask already met. The self-assessment lists this as a weakness.
 
 In r008 Keel's two faults restate checker failures, with a diagnosis and the right owner, and it raised no fault of its own. Its independent catches are in earlier runs (below).
 
-**Retrieval:** in every round the GDD's boarding rule (`§02 … › travel`) reached Pulse at rank 4 and Keel at rank 8 from a natural question, with no rule text in the prompts. Keel judged the timetable against it ("time only, no fare").
+**Retrieval:** the GDD's boarding rule (`§02 … › travel`) reached Pulse at rank 4 and Keel at rank 8, with no rule text in the prompts. The queries didn't change between rounds and nothing was pinned, so this is one result seen three times. The natural question alone ranks it 1st; the owners' other queries pull it down. Keel judged the timetable against it ("time only, no fare").
 
 ### Earlier runs, kept as evidence
 | run | outcome | what it taught (from its records) | fix before the next run |
@@ -98,7 +100,7 @@ In r008 Keel's two faults restate checker failures, with a diagnosis and the rig
 | [`r004`](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) | ACCEPTED, from a fresh clone | **Keel's own catches** (round 1): a run time off by 1 s and a miscounted spacing note were fixed; the Skyport station over water was held open, not fixed. **Keel's error, again:** it faulted Pulse's true "§02 says time only". Vantage's Skyport hand-off to Datum was never routed. | `handoffs` on every builder. Datum planned the Skyport Pier and apron. |
 | [`r005`](evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html) | REJECTED | The first run to place Skyport on the new apron. It still failed on Pulse's hand-computed run times, which matched stale stop positions. | Run times and journey totals are derived in code (`timetable.ts`). |
 | [`r006`](evidence/r006/report.html) | ACCEPTED | A simulated AI marker found round 3 redundant: hand-offs were never checked as answered, and N-R1 always went to Vantage. The §02 query nearly quoted its target, so its rank proved nothing. | Hand-off answering, N-R1 routed to both owners, natural §02 queries and v2 chunking. |
-| [`r007`](evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html) | REJECTED, a simulated AI marker's run from a fresh GitHub clone | **Keel's own catch:** a reach claim that broke the standard (round 1). The run was rejected only because Vantage had fulfilled Datum's round-3 hand-off but nothing checked it as answered. | The same hand-off answering fix. |
+| [`r007`](evidence/r007/sheets/harbour-district-v0.2.0-r007.3.html) | REJECTED, a simulated AI marker's run from a fresh GitHub clone | **Keel:** caught a false reach claim in Datum's notes (round 1). The checker's N-R1 flagged the defect itself in the same round. The run was rejected only because Vantage had fulfilled Datum's round-3 hand-off but nothing checked it as answered. | The same hand-off answering fix. |
 
 `bun run verify` replays every run and labels drift by cause: GDD v0.14.0, chunker v1, checker rules added since the run (W-2, W-3), and r001's superseded block.
 
