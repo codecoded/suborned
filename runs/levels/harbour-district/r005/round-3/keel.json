@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "Fail on one fault. The strict checker passes everything, and last round's faults are fixed: T-C1 passes, and the T2/harbour → T1/circus via is right. Datum's bend geometry and Vantage's distances check out by hand, and the T1 and S1 run times match. Pulse's T2 run times don't match the T2 stop spacing at 7 m/s. Open questions, not faults: whether the off-sheet termini exist, and the T1/T2 crossing slot Datum asked Pulse for (advisory).",
+  "faults": [
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "Pulse's note says run sec = chainage gap ÷ speed, with trams at 7 m/s. The T2 gaps as placed are 363, 480 and 315 m, which give 52, 69 and 45 s. The timetable says 57, 62 and 44 s, which fits the old stop positions. So the T2 journeys built on these runs are wrong too, and the time price the player sees (wait + ride, taken from the timetable) is wrong.",
+      "fix": "Set T2 runs both ways: lantern↔market 52, market↔harbour-east 69, harbour-east↔harbour 45. Recompute the journeys: lantern→harbour-east 141, market→harbour 134, lantern↔harbour 206, comet→T2/harbour 178, lantern→T1/circus 95, lantern→S1/skyport 227.5.",
+      "chunks": [
+        "d9cd5166b54ff42ba1ea56ae",
+        "538618090dd534247cab5493"
+      ]
+    }
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

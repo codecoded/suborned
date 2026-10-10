@@ -1,0 +1,115 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -680
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -375
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        315,
+        0
+      ],
+      "length": 50,
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "Checked by hand only. I had no shell, so the plan checker was not run. Latch or Splice should run `bun tools/plan/cli.ts` on this list.",
+    "T1 stops are at z -680, -375 and -72. They are 305 m and 303 m apart, so T-S1 passes. All three platforms are on the straight x 0 trunk. Each platform clears its junction: Comet Row's edge is at -708 and Market Street's at -401 to -419.",
+    "S1 stations are at x -160, 95, 315 and 530. They are 255, 220 and 215 m apart, so S-S2 passes. Datum's Skyport at 530 was only 190 m from Harbour at 340, which breaks the 200 m minimum. I moved Harbour west to 315. That leaves the station 3 m from Harbour Road's edge, so W-3 passes, and it stands on the 312–330 quay.",
+    "Interchange: the T1 circus stop (0,-72) is about 119 m from the S1 circus station (95,0), inside the 150 m limit (S-I1/N-C1). Sphere Gardens stays on x -160, the Records Axis.",
+    "N-R1 passes for 28 of 32 plots, but some only just: Crown Terraces 247 m, Crescent North 247 m, Crescent East 202 m. Do not move Gardens, S1 Circus or Harbour without checking these again.",
+    "N-R1 FAILS for 4 plots, and no stop on the current lines can fix it. Rocket West (-260,-296): best 272 m. Lantern West (-260,-563): best 285 m. Harbour East (262,-267): best 272 m. Docks East (262,-512): best 296 m, the worst plot. Every point on T1 (x 0) or S1 (z 0) is more than 250 m from these plots."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 fails for Harbour East (262,-267) and Docks East (262,-512): best reach is 272 m and 296 m. As you offered, bring back an eastern line, e.g. a tram on Harbour Road or Dock Road. It needs stops near z -270 and -510 within about 140 m of x 262, linked to the network. Once the line exists, I will place its stops."
+    },
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 fails for Rocket West (-260,-296) and Lantern West (-260,-563): best reach is 272 m and 285 m. No line runs within 250 m of them. Please add a line on Sunset Way, Market Street or Lantern Lane that can take a stop near x -200 to -260, at about z -300 and z -560. Or move a line so these plots fall in reach. I will not loosen the reach rule."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "Fail: the strict checker fails N-R1. Four plots are more than 250 m from any stop or station: docks-east 296 m, lantern-west 285 m, harbour-east 273 m and rocket-west 272 m. Vantage has already raised this as two blocking handoffs to Datum, so it is listed once here under the checker rule. All other checker rules pass. The timetable is correct: run times match the gaps at 7 m/s (tram) and 10 m/s (sky rail), journeys add dwell correctly, and there is no fare, which matches §02. Unverified, not faults: Datum's Harbour Road and circus geometry claims, and both builders checking by hand only.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "N-R1",
+      "fault": "Four plots are out of reach of any stop or station, against a 250 m reach standard: docks-east 296 m, lantern-west 285 m, harbour-east 273 m, rocket-west 272 m. T1 runs on x 0 and S1 on y 0, so no stop placed on either line can reach them. This is a fault in the lines, not in where the stops stand. Vantage's two blocking handoffs to Datum ask for this same fix.",
+      "fix": "Add or reroute lines so these plots are in reach. East: e.g. a tram on Harbour Road or Dock Road with stops near (262,-270) and (262,-510). West: a line on Sunset Way, Market Street or Lantern Lane with stops near (-230,-300) and (-230,-560). Each new line needs a 150 m interchange and end loops. Keep the reach rule; rerun the checker.",
+      "chunks": [
+        "7dfdfdf13043a24e8e964b0b",
+        "352b7a6ac9f8c5a12afcbeff"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "352b7a6ac9f8c5a12afcbeff",
+    "d9cd5166b54ff42ba1ea56ae",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -75
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "interchange": "T2/comet",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "crown",
+      "name": "Crown Road",
+      "path": "harbour",
+      "at": [
+        306,
+        298
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "harbour",
+      "at": [
+        306,
+        -5
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "lane",
+      "name": "Harbour Lane",
+      "path": "harbour",
+      "at": [
+        306,
+        -310
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "harbour",
+      "at": [
+        306,
+        -620
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "harbour",
+      "at": [
+        80,
+        -714.71
+      ],
+      "interchange": "T1/comet",
+      "fronts": "comet-row"
+    },
+    {
+      "line": "T3",
+      "id": "lantern",
+      "name": "Lantern",
+      "path": "sunset",
+      "at": [
+        -331,
+        -620
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T3",
+      "id": "rocket",
+      "name": "Rocket Lane",
+      "path": "sunset",
+      "at": [
+        -331,
+        -310
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T3",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "sunset",
+      "at": [
+        -331,
+        0
+      ],
+      "interchange": "S1/sunset",
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "S1",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "trunk",
+      "at": [
+        -365,
+        0
+      ],
+      "length": 50,
+      "interchange": "T3/sunset",
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        330,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        532,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "I had no tools this round, so I did not run the plan checker. Every check here is by hand. Next round, run `bun tools/plan/cli.ts` on this output.",
+    "This round makes every change in Datum's blocking handoff. T3 stops are at z -620, -310 and 0 on x -331, so both gaps are 310 m. The S1 Sunset Way station is at (-365,0), 34 m from T3 Sunset Way. T2 Harbour is at z -5, 34 m from S1 Harbour. The T1/T2 pair is at Comet Row.",
+    "N-R1 recheck: lantern-west is 91 m from T3 Lantern and rocket-west 72 m from T3 Rocket Lane. The tightest plots are crown-terraces and crescent-north, both about 247 m from their nearest station (limit 250). records-square is 189 m from T3 Rocket Lane.",
+    "I moved T2 Comet Row to (80,-714.71), on the Comet Row straight. Its platform runs x 65 to 95, which leaves about 10 m before the Boulevard fillet's tangent at x≈55. It is 84 m from T1 Comet Row. T2 gaps are 303, 305, 310, then about 315 m along the path: 59 m straight, 79 m of R52 arc and 177 m of straight.",
+    "T1 gaps are 310 and 305 m. The T1 Crown Circus platform runs z -90 to -60, which is all on trunk straight. The trunk ends at -56. It is 121 m from S1 Crown Circus.",
+    "S1 gaps are 205, 255, 235 and 202 m, all on the trunk straight. Skyport and Harbour both front the skyport-pier, and Skyport stands on the walkable apron.",
+    "N-C1: T1 and S1 meet at the circus, T2 and S1 at Harbour, T1 and T2 at Comet Row, and T3 and S1 at Sunset Way. That makes one connected network.",
+    "I removed a source id from my last proposal that was not among the retrieved passages."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "275bf85e298eff5499feb12d",
+    "c1909f164651d9c88cd65c53"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "The S1 Sunset Way station at (-365,0) has a platform from x -390 to -340. It crosses Sunset Way and the Circus Road median. Please confirm the S1 trunk pylons there stand in median zones. If they do not, I can move the station to x -375, which is still within 150 m of T3 and at least 200 m from Sphere Gardens."
+    }
+  ]
+}

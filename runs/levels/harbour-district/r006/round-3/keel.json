@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass: checker clean; last round's blocking handoff done (T3 stops, S1 Sunset Way, T2 Harbour, Comet Row pair). Timetable is time-only, no fare, per §02; headways, dwells and speeds plausible [S]; journeys cover all interchanges. Open: Vantage's pylon advisory (S-P2 already 57/57); T1/T2 shared off-sheet track not timetabled (Pulse); stale note distances (34 m, ~315 m; checker governs); terminus and loops (c1909f) wait on Sky.",
+  "faults": [],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

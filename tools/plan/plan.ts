@@ -5,7 +5,7 @@ import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inP
 export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
 export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string };
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
-export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string };
+export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string; fronts?: string };
 export type Line = { id: string; name: string; beyond: string; paths: Path[]; order?: string[]; stops?: Stop[]; stations?: Stop[] };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;

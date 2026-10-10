@@ -1,0 +1,197 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T2/crown",
+          "to": "T2/harbour",
+          "sec": 38
+        },
+        {
+          "from": "T2/harbour",
+          "to": "T2/lane",
+          "sec": 39
+        },
+        {
+          "from": "T2/lane",
+          "to": "T2/docks",
+          "sec": 39
+        },
+        {
+          "from": "T2/docks",
+          "to": "T2/comet",
+          "sec": 40
+        }
+      ]
+    },
+    {
+      "line": "T3",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T3/lantern",
+          "to": "T3/rocket",
+          "sec": 40
+        },
+        {
+          "from": "T3/rocket",
+          "to": "T3/sunset",
+          "sec": 38
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 90,
+      "dwellSec": 15,
+      "speed": 14,
+      "runs": [
+        {
+          "from": "S1/sunset",
+          "to": "S1/gardens",
+          "sec": 15
+        },
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 19
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 17
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 15
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/gardens",
+      "sec": 204,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T2/docks",
+      "to": "S1/skyport",
+      "sec": 131,
+      "via": [
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "T2/crown",
+      "sec": 199,
+      "via": [
+        "T1/circus",
+        "S1/harbour"
+      ]
+    },
+    {
+      "from": "T2/crown",
+      "to": "S1/gardens",
+      "sec": 107,
+      "via": [
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "T2/docks",
+      "sec": 318,
+      "via": [
+        "T1/circus",
+        "S1/harbour"
+      ]
+    },
+    {
+      "from": "T2/docks",
+      "to": "T1/records",
+      "sec": 136,
+      "via": [
+        "T2/comet"
+      ]
+    },
+    {
+      "from": "T3/lantern",
+      "to": "S1/circus",
+      "sec": 172,
+      "via": [
+        "T3/sunset"
+      ]
+    },
+    {
+      "from": "T3/rocket",
+      "to": "T2/lane",
+      "sec": 201,
+      "via": [
+        "T3/sunset",
+        "S1/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything besides the wait and the ride (no fare is stated)? Can any person ride, or is the cell only, and are there limits for a wanted or recognised cell?",
+      "for": "Motive",
+      "why": "GDD §02 prices boarding in time only; anything further is undecided and not set in the timetable."
+    },
+    {
+      "question": "Can a cell be seen or reported while waiting on a platform or riding, which would add Trail or Alert risk to the time price?",
+      "for": "Motive",
+      "why": "Watchers stand at stations and stops, but the GDD does not say whether boarding is a witnessed act."
+    },
+    {
+      "question": "Do the trams and sky rail run through the whole mission clock, including the 5:40 to 8:00 handover window, and do they change with Alert or lockdown?",
+      "for": "Motive",
+      "why": "Headways are assumed constant; the GDD does not say service changes, and the plan questions raise the police sealing stations."
+    }
+  ],
+  "notes": [
+    "Correction to last round: T3 was missing from lines and is now added; T1 and T2 do meet directly at Comet Row (T1/comet and T2/comet are an interchange pair), so a tram-to-tram trip need not go via the sky rail.",
+    "T1, T2, T3 tram speed 8 m/s (~29 km/h): stops are 300 to 320 m apart, so a run takes about 38 to 40 s, short but readable. [S]",
+    "S1 sky rail speed 14 m/s (~50 km/h): faster than the trams as an elevated trunk with 200 to 255 m station gaps, so it pays as the cross-city link. [S]",
+    "Tram dwell 20 s, sky rail dwell 15 s: paid only at pass-through stops, so it affects only journeys of 3 or more stops. [S]",
+    "Headway: trams 120 s, sky rail 90 s, since the trunk runs more often. Average wait is half a headway, so boarding costs 45 to 60 s before the ride. [S]",
+    "Interchange pairs used: T1/circus-S1/circus, T2/harbour-S1/harbour, T3/sunset-S1/sunset, T1/comet-T2/comet. Journeys cover the likely cross-city trips, including Rocket Lane (the getaway street) to Harbour Lane."
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "a61013bb832308b31e1ef07b",
+    "352b7a6ac9f8c5a12afcbeff",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

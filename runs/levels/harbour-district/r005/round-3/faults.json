@@ -1,0 +1,12 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "Pulse's note says run sec = chainage gap ÷ speed, with trams at 7 m/s. The T2 gaps as placed are 363, 480 and 315 m, which give 52, 69 and 45 s. The timetable says 57, 62 and 44 s, which fits the old stop positions. So the T2 journeys built on these runs are wrong too, and the time price the player sees (wait + ride, taken from the timetable) is wrong.",
+    "fix": "Set T2 runs both ways: lantern↔market 52, market↔harbour-east 69, harbour-east↔harbour 45. Recompute the journeys: lantern→harbour-east 141, market→harbour 134, lantern↔harbour 206, comet→T2/harbour 178, lantern→T1/circus 95, lantern→S1/skyport 227.5.",
+    "chunks": [
+      "d9cd5166b54ff42ba1ea56ae",
+      "538618090dd534247cab5493"
+    ]
+  }
+]

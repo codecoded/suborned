@@ -1,0 +1,174 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "terraces",
+      "name": "Crown Terraces",
+      "path": "trunk",
+      "at": [
+        -90,
+        289
+      ],
+      "fronts": "crown-road"
+    },
+    {
+      "line": "T2",
+      "id": "sunset",
+      "name": "Sunset Way",
+      "path": "trunk",
+      "at": [
+        -349,
+        -670
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "rocket",
+      "name": "Rocket Lane",
+      "path": "trunk",
+      "at": [
+        -270,
+        -406
+      ],
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "trunk",
+      "at": [
+        80,
+        -413.2
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-court",
+      "name": "Harbour Court",
+      "path": "trunk",
+      "at": [
+        309,
+        -295
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "parade",
+      "name": "Harbour Parade",
+      "path": "trunk",
+      "at": [
+        309,
+        10
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "garden-walk"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        332,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/parade",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        535,
+        0
+      ],
+      "length": 50,
+      "fronts": "crown-parade"
+    }
+  ],
+  "notes": [
+    "Not checker-run. I have no shell here, so every spacing and reach figure below is worked out by hand. Next owner runs `bun tools/plan/cli.ts`; any T-/S-/N- failure comes back to Vantage, or to Datum if it involves geometry.",
+    "S1 is listed again because Datum's stations break S-S2: Harbour 340 to Skyport 530 is 190 m, under the 200 m minimum. Harbour moves to x 332 (over the quay). Skyport moves to x 535, the farthest it can go and keep its 50 m platform straight before the loop at x 560. New spacings: 255, 237 and 203 m. No line geometry was moved.",
+    "T1 spacing along the path: 310, 308 and about 435 m. No stop fits in Crown Avenue. Spacing puts the next stop at y ≥ 228, but a 30 m platform before the R50 corner needs its centre at y ≤ 224. So the stop goes on Crown Road at x −90. T1's next stop, off-sheet, must be at x ≤ −390.",
+    "T2 spacing: 321.5, 350, 341.6, 326.6 and 305 m. The Market stop is at x 80 on the shallow diagonal, not at (0,−410), to keep it out of the Boulevard/Market junction and the tram crossing. It is 87 m from T1 Records. Placing it there brings harbour-east within 233 m.",
+    "Interchanges, each pair 150 m or less: T1/circus–S1/circus 119 m, T1/records–T2/market 87 m, S1/harbour–T2/parade 25 m. All three lines connect into one network (N-C1).",
+    "N-R1, worst cases by hand: crescent-east 190 m, crescent-north 193 m, docks-south 204 m (T1 Comet), docks-east 207 m, and the closest of all, records-square 217 m from T1 Records (232 m from Sphere Gardens). Every plot is within the 250 m reach.",
+    "For Datum: the plan has no ground at x 535 near the Skyport station (it is over water, and the skyport apron and island are not drawn). Its `fronts` is a placeholder of crown-parade. Please add skyport ground or a foot path, and I'll re-front the station. Datum's track geometry and junction polygons are still only hand-checked.",
+    "For Aster: the sources conflict. The concept note says T1 runs on an R28 balloon loop and that Crown Circus is the only interchange. This proposal follows Datum's run-through T1 and has three interchanges. Open question 2 still needs Sky to decide, and the notes need updating."
+  ],
+  "sources": [
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "cfba161c458af766f224f713",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

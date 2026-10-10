@@ -1,0 +1,183 @@
+{
+  "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ timetable headway dwell run times journey times between stations ‖ boarding is fast travel priced in time only: wait for the next service plus the ride ‖ The journey T2/harbour",
+  "queries": [
+    "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+    "timetable headway dwell run times journey times between stations",
+    "boarding is fast travel priced in time only: wait for the next service plus the ride",
+    "The journey T2/harbour"
+  ],
+  "pinned": [
+    "d9cd5166b54ff42ba1ea56ae"
+  ],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "dfd554a9695c2a5898210c4945850fb84877fe6df95026c851677bb001cbc283",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+      "distance": 0.3076891486459451,
+      "key": "7dfdfdf13043a24e8e964b0b",
+      "kind": "plan",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "Harbour District › standards › transit",
+      "source": "contracts/world/harbour-district.plan.json",
+      "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+      "text": "Harbour District plan › standards › transit\nreach: 250\nonLine: 3",
+      "version": "v0.1.0 2026-10-10",
+      "score": 0.0931523332908326,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "semantic:3",
+        "semantic:4",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+      "distance": 0.25533924267706964,
+      "key": "ba506de42600790962a866a2",
+      "kind": "plan",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "Harbour District › standards › skyrail",
+      "source": "contracts/world/harbour-district.plan.json",
+      "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+      "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+      "version": "v0.1.0 2026-10-10",
+      "score": 0.0772013587974108,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "semantic:4",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+      "distance": 0.10516214370727539,
+      "key": "538618090dd534247cab5493",
+      "kind": "plan",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "Harbour District › standards › tram",
+      "source": "contracts/world/harbour-district.plan.json",
+      "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+      "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+      "version": "v0.1.0 2026-10-10",
+      "score": 0.07679550390183168,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "semantic:4",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+      "distance": 0.31128573417663574,
+      "key": "e54a1a5c3874c8a545458768",
+      "kind": "plan",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "Harbour District › standards › roads",
+      "source": "contracts/world/harbour-district.plan.json",
+      "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+      "text": "Harbour District plan › standards › roads\njunctionSpacing: {\"primary\":250,\"district\":60}\nfrontage: 1",
+      "version": "v0.1.0 2026-10-10",
+      "score": 0.0763666693244158,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "semantic:4",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "bm25": 1.5302066802978516,
+      "key": "352b7a6ac9f8c5a12afcbeff",
+      "kind": "gdd-agent",
+      "lineEnd": 209,
+      "lineStart": 203,
+      "section": "§14 ROLES (each agent loads only its own block)",
+      "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+      "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+      "text": "§14 ROLES (each agent loads only its own block)\nalso: Pulse (schedules), Motive (prices).\nopens: §07–09 · tests T5, T6\n### Datum · World planner · Opus 5.5\nowns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.\nreceives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.\ndelivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.\nhold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations (boarding = fast travel, priced in time): no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Watchers stand where a city watches, never placed for one mission. Never loosen a rule to pass; ask Splice, with a reason.",
+      "version": "v0.15.0",
+      "score": 0.0743353099609208,
+      "signals": [
+        "keyword:1",
+        "semantic:2",
+        "keyword:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.35798346996307373,
+      "key": "d9cd5166b54ff42ba1ea56ae",
+      "kind": "gdd-agent",
+      "lineEnd": 37,
+      "lineStart": 25,
+      "section": "§02 LOOP + RESOURCES",
+      "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+      "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+      "text": "§02 LOOP + RESOURCES\n## §02 LOOP + RESOURCES\nmission: Watch → Learn → Turn → Time → Take → Fight → Inherit\ncampaign: turned people pay cash/arms/tips → turn more people (snowball). Contacts grow braver or bitter. T + Standing set pushback.\n| resource | scope | drives | from |\n| Cash | campaign | fees, debts, bribes, turning | sources (skimming clerk, bookmaker) |\n| Arms | campaign | winning fights, arming joiners | sources (quartermaster, hijack) |\n| Assets | campaign | access, income, fight allies | Fixer, introductions |\n| Time | mission | actions 6–62 s; events don't wait | — |\n| Trail | campaign | investigations; part of Heat | traceable acts: threats, visible payments, gunfire |\n| Alert 0–3 | mission | security response now | witness reports, found faults, shots |\n| Standing | district | who agrees, crowd behaviour | witnessed acts only |\nrule: every order shows full price before commit ($, time, T, A risk).\ntravel [S]: boarding a tram or sky rail is fast travel round the city: board at any stop or station, ride to any other on the network. Price = time only: wait for the next service + the ride, both from the timetable. No fare.",
+      "version": "v0.15.0",
+      "score": 0.06332301578203219,
+      "signals": [
+        "semantic:2",
+        "keyword:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    },
+    {
+      "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+      "distance": 0.33020877838134766,
+      "key": "c1909f164651d9c88cd65c53",
+      "kind": "plan",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "Harbour District › notes › questions",
+      "source": "contracts/world/harbour-district.plan.json",
+      "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+      "text": "Harbour District plan › notes › questions\n- Scale: 1.1 × 1.1 km with seven environmental areas. Keep that, or plan only the Records Precinct and Lamplight for the slice and leave the rest as massing?\n- Tram: terminate on the circus loop (as drawn), or run on up Crown Avenue to Crown Road?\n- Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?\n- Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?\n- Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?",
+      "version": "v0.1.0 2026-10-10",
+      "score": 0.061144903129949434,
+      "signals": [
+        "semantic:1",
+        "semantic:2",
+        "keyword:2",
+        "semantic:4"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3798115849494934,
+      "key": "a61013bb832308b31e1ef07b",
+      "kind": "gdd-human",
+      "lineEnd": 229,
+      "lineStart": 210,
+      "section": "Watch, turn, time, take, inherit › What the player manages",
+      "source": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html",
+      "sourceHash": "6cd750fe86eec027d0b322e8f3a3c815ebba104f68798dc5cfefd8de747b231d",
+      "text": "Watch, turn, time, take, inherit › What the player manages\nResource | Scope | Buys or drives | Comes from |\nCash | Campaign | Fees, debts, bribes. Turning people. | Sources (a skimming clerk, a crooked bookmaker) |\nArms | Campaign | Winning fights. Arming citizens who join you. | Sources (a quartermaster, a hijacked shipment) |\nAssets | Campaign | Turned people: access, income, allies in fights | The Fixer's work, and introductions from other assets |\nTime | Mission | Every action takes 6–62 s, and scheduled events keep coming | — |\nTrail | Campaign | Investigations. Fight frequency, as part of Heat. | Traceable acts: threats, conspicuous payments, gunfire |\nAlert 0–3 | Mission | Security's response right now | Witness reports, discovered faults, shots |\nStanding | District | Who agrees easily, who refuses, how crowds behave | Witnessed acts only (§04) |\nEvery order shows its full price before you commit: cash, time, Trail and Alert risk.\nFast travel. Boarding a tram or the sky rail takes the cell across the city: board at any stop or station and ride to any other. It costs time only: the wait for the next service plus the ride, both from the timetable. There is no fare. Spec\n03 · THE CELL",
+      "version": "v0.15.0",
+      "score": 0.06044093477892226,
+      "signals": [
+        "semantic:2",
+        "keyword:2",
+        "semantic:3",
+        "keyword:3"
+      ]
+    }
+  ]
+}

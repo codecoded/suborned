@@ -2,41 +2,36 @@
  "lines": [
   {
    "line": "T1",
+   "speed": 7,
    "headwaySec": 240,
-   "dwellSec": 20,
-   "runs": [
-    {
-     "from": "T1/circus",
-     "to": "T1/records",
-     "sec": 60
-    },
-    {
-     "from": "T1/records",
-     "to": "T1/comet",
-     "sec": 60
-    }
-   ]
+   "dwellSec": 20
   },
   {
    "line": "S1",
+   "speed": 8,
    "headwaySec": 180,
-   "dwellSec": 20,
-   "runs": [
-    {
-     "from": "S1/gardens",
-     "to": "S1/circus",
-     "sec": 40
-    }
-   ]
+   "dwellSec": 20
   }
  ],
  "journeys": [
   {
-   "from": "T1/circus",
-   "to": "S1/circus",
-   "sec": 30,
-   "via": [
-    "S1/circus"
+   "legs": [
+    {
+     "from": "T1/circus",
+     "to": "T1/comet"
+    }
+   ]
+  },
+  {
+   "legs": [
+    {
+     "from": "T1/comet",
+     "to": "T1/circus"
+    },
+    {
+     "from": "S1/circus",
+     "to": "S1/gardens"
+    }
    ]
   }
  ],

@@ -150,11 +150,12 @@
 
   "foot": [
     { "id": "crown-parade", "name": "Crown Parade", "kind": "mall", "w": 40, "pts": [[43, 0], [288, 0]] },
-    { "id": "garden-walk", "name": "Garden Walk", "kind": "walk", "w": 8, "pts": [[-160, -192], [-160, -9]] }
+    { "id": "garden-walk", "name": "Garden Walk", "kind": "walk", "w": 8, "pts": [[-160, -192], [-160, -9]] },
+    { "id": "skyport-pier", "name": "Skyport Pier", "kind": "walk", "w": 12, "pts": [[312, 0], [590, 0]] }
   ],
   "circus": { "c": [0, 0], "island": 31, "garden": 24, "ring": [31, 43], "pavement": 51 },
-  "water": [[[330, -780], [740, -780], [740, 320], [330, 320]]],
-  "quay": [[[312, -780], [330, -780], [330, 320], [312, 320]], [[330, -25], [385, -25], [385, 25], [330, 25]]],
+  "water": [[[330, -780], [740, -780], [740, 320], [330, 320], [330, 25], [480, 25], [480, 40], [590, 40], [590, -40], [480, -40], [480, -25], [330, -25]]],
+  "quay": [[[312, -780], [330, -780], [330, 320], [312, 320]], [[330, -25], [480, -25], [480, 25], [330, 25]], [[480, -40], [590, -40], [590, 40], [480, 40]]],
   "beyond": [
     [[-400, -780], [-352, -780], [-352, 320], [-400, 320]],
     [[-352, 292], [312, 292], [312, 320], [-352, 320]],
@@ -223,7 +224,7 @@
       "Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.",
       "Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.",
       "Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.",
-      "Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island and Circus Road's median. Trains turn on a loop round the skyport.",
+      "Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island, Circus Road's median and the Skyport Pier. Trains turn on a loop over the water round the skyport pad; the Skyport station stands on the pier's apron, the landside end.",
       "The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).",
       "The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.",
       "Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets."
@@ -234,6 +235,9 @@
       "Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?",
       "Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?",
       "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
+    ],
+    "history": [
+      "2026-10-10 (Datum, input edit, version kept at 0.1.0; generation runs bump it): the Skyport Pier. The S1 trunk past Harbour stood over open water, so no Skyport station could be placed (runs r001–r004: Vantage held it each round; Keel: the airport loop carries no passengers). The quay pier (x 330–385) becomes a causeway x 330–480, z ±25, ending in the Skyport apron x 480–590, z ±40, carved out of the water so it is walkable ground; the Skyport Pier foot path (12 m, z 0) joins it to Harbour Road's east kerb at x 312, opposite the end of Crown Parade. The apron covers trunk chainage x 515–590, where a 50 m station sits ≥ 200 m past Harbour on straight beam before the loop; the pad itself (x 650) stays offshore inside the loop. Station placement is left to the generation run."
     ],
     "sources": [
       "C. Buchanan et al., Traffic in Towns (HMSO, 1963): distributor hierarchy, environmental areas, no frontage access on distributors.",

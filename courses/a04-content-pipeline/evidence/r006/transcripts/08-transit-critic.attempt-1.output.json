@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass: strict checker clean. Last round's faults fixed: T2 Crown Road platform on straight (T-S2 5/5); T3 Sunset Line brings lantern-west and rocket-west within reach (N-R1 worst 247 m); T2 stops and interchanges placed (N-C1). The remaining hand-offs are advisory. Timetable: time only, no fare (§02); [S] headways, dwells and speeds are plausible; open questions go to Motive. Not faults: Datum's stale \"34 m to S1 Harbour\" (now 25 m). Unverified, open: Vantage's 185 m from records-square; loop retirement and T1 terminus (c1909f) await Sky.",
+  "faults": [],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "0e426f4211a2f1f25c328968",
+    "d9cd5166b54ff42ba1ea56ae",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

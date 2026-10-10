@@ -56,7 +56,7 @@
    ],
    "length": 50,
    "interchange": "T1/circus",
-   "fronts": "circus-road"
+   "fronts": "crown-parade"
   },
   {
    "line": "S1",
@@ -68,7 +68,7 @@
     0
    ],
    "length": 50,
-   "fronts": "circus-road"
+   "fronts": "skyport-pier"
   },
   {
    "line": "S1",
@@ -80,7 +80,7 @@
     0
    ],
    "length": 50,
-   "fronts": "circus-road"
+   "fronts": "skyport-pier"
   }
  ],
  "notes": [

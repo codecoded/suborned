@@ -1,0 +1,296 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 52
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 51
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/terraces",
+          "sec": 73
+        },
+        {
+          "from": "T1/terraces",
+          "to": "T1/circus",
+          "sec": 73
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records",
+          "sec": 51
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/comet",
+          "sec": 52
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 180,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "T2/sunset",
+          "to": "T2/rocket",
+          "sec": 54
+        },
+        {
+          "from": "T2/rocket",
+          "to": "T2/market",
+          "sec": 58
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/harbour-court",
+          "sec": 55
+        },
+        {
+          "from": "T2/harbour-court",
+          "to": "T2/parade",
+          "sec": 51
+        },
+        {
+          "from": "T2/parade",
+          "to": "T2/harbour-court",
+          "sec": 51
+        },
+        {
+          "from": "T2/harbour-court",
+          "to": "T2/market",
+          "sec": 55
+        },
+        {
+          "from": "T2/market",
+          "to": "T2/rocket",
+          "sec": 58
+        },
+        {
+          "from": "T2/rocket",
+          "to": "T2/sunset",
+          "sec": 54
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 32
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 30
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 25
+        },
+        {
+          "from": "S1/skyport",
+          "to": "S1/harbour",
+          "sec": 25
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus",
+          "sec": 30
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens",
+          "sec": 32
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "T1/records",
+      "sec": 52,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "T1/circus",
+      "sec": 118,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "T1/terraces",
+      "sec": 206,
+      "via": []
+    },
+    {
+      "from": "T1/records",
+      "to": "T1/circus",
+      "sec": 51,
+      "via": []
+    },
+    {
+      "from": "T1/records",
+      "to": "T1/terraces",
+      "sec": 139,
+      "via": []
+    },
+    {
+      "from": "T1/circus",
+      "to": "T1/terraces",
+      "sec": 73,
+      "via": []
+    },
+    {
+      "from": "T2/sunset",
+      "to": "T2/rocket",
+      "sec": 54,
+      "via": []
+    },
+    {
+      "from": "T2/sunset",
+      "to": "T2/market",
+      "sec": 127,
+      "via": []
+    },
+    {
+      "from": "T2/sunset",
+      "to": "T2/harbour-court",
+      "sec": 197,
+      "via": []
+    },
+    {
+      "from": "T2/sunset",
+      "to": "T2/parade",
+      "sec": 263,
+      "via": []
+    },
+    {
+      "from": "T2/rocket",
+      "to": "T2/market",
+      "sec": 58,
+      "via": []
+    },
+    {
+      "from": "T2/rocket",
+      "to": "T2/harbour-court",
+      "sec": 128,
+      "via": []
+    },
+    {
+      "from": "T2/rocket",
+      "to": "T2/parade",
+      "sec": 194,
+      "via": []
+    },
+    {
+      "from": "T2/market",
+      "to": "T2/harbour-court",
+      "sec": 55,
+      "via": []
+    },
+    {
+      "from": "T2/market",
+      "to": "T2/parade",
+      "sec": 121,
+      "via": []
+    },
+    {
+      "from": "T2/harbour-court",
+      "to": "T2/parade",
+      "sec": 51,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/circus",
+      "sec": 32,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/harbour",
+      "sec": 82,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/skyport",
+      "sec": 127,
+      "via": []
+    },
+    {
+      "from": "S1/circus",
+      "to": "S1/harbour",
+      "sec": 30,
+      "via": []
+    },
+    {
+      "from": "S1/circus",
+      "to": "S1/skyport",
+      "sec": 75,
+      "via": []
+    },
+    {
+      "from": "S1/harbour",
+      "to": "S1/skyport",
+      "sec": 25,
+      "via": []
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Do headways (T1/T2 180 s, S1 120 s) and dwells (trams 15 s, sky rail 20 s) stand? The GDD gives none; they are starting values from Pulse.",
+      "for": "Motive",
+      "why": "They set the wait half of the boarding price (average wait is about half the headway, worst case a full headway)."
+    },
+    {
+      "question": "Does the walk between linked stops (T1/circus to S1/circus is about 120 m; T1/records to T2/market) count as part of a journey's time?",
+      "for": "Motive",
+      "why": "Interchange walking time is not in the timetable. Journeys here are single-line, so the cross-line price is undecided."
+    },
+    {
+      "question": "Does boarding cost anything beyond wait plus ride, and do services run the whole mission clock?",
+      "for": "Sky",
+      "why": "GDD §02 says time only, with no fare. Operating hours and any extra cost are not specified, so none is invented."
+    },
+    {
+      "question": "Should T1 and T2 be extended past the sheet (Southside, Crown Road west, Harbour Road north)?",
+      "for": "Sky",
+      "why": "Termini are off-sheet, so the timetable only covers the listed stops. Datum's open question on the tram terminal and the sky rail loop also bears on this."
+    }
+  ],
+  "notes": [
+    "Speeds (starting values [S]): trams 6 m/s (about 22 km/h, street running with stops 300-500 m apart); sky rail 8 m/s (about 29 km/h, short station spacing of 200-250 m). Run sec = chainage gap / speed, rounded to whole seconds, with acceleration and braking folded in.",
+    "Journey sec = ride time plus the dwell at each intermediate stop. It excludes the wait for the first service. Wait is 0 to one headway: T1 and T2 up to 180 s, S1 up to 120 s.",
+    "Run times are the same in both directions because the lines are double track. Reverse journeys have the same sec as the forward ones listed. All journeys are single-line, so via is empty.",
+    "The S1 skyport loop and the off-sheet termini are not timetabled. The chainage gaps given stop at Skyport, Terraces, Parade and Sunset Way.",
+    "The T1 Crown Circus to S1 Crown Circus interchange is about 120 m, within the 150 m standard. The plan notes list it as the one interchange, yet T1/records to T2/market is also tagged as one."
+  ],
+  "sources": [
+    "c1909f164651d9c88cd65c53",
+    "c5fb128448665c55b7c335fb",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "cfba161c458af766f224f713",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

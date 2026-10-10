@@ -1,0 +1,302 @@
+{
+  "run": "r005",
+  "plan": "harbour-district",
+  "date": "2026-10-10T06:03:54.839Z",
+  "objective": "transit",
+  "outcome": "REJECTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.1.0",
+    "hash": "395bdf42880045d76154b63974231f799a644ed75770dee608f33786fc62b27d",
+    "rawHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/handover-block.json",
+    "sha256": "6e45e44e14ca2e18a2e8c8a89110be0296cabeee6bff8798a775eb1367e8b87d"
+  },
+  "gdd": {
+    "version": "v0.15.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+    "human": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html"
+  },
+  "toolsHash": "21b5bd5e428a784515b03cd4d8bb7356aff08a84512241cdccc31f91249336da",
+  "corpusHash": "dfd554a9695c2a5898210c4945850fb84877fe6df95026c851677bb001cbc283",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "world-planner": {
+      "source": ".claude/agents/world-planner.md",
+      "sourceHash": "daadb7d143a674de45e886ef86c119ae2f9d2926abc661263c89975d0bbd171a"
+    },
+    "level-designer": {
+      "source": ".claude/agents/level-designer.md",
+      "sourceHash": "7eba7b07f544788d96b286cf913d665a2ee42b6d82424e0f87d517d120b4f29f"
+    },
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "65c6d759478c6a3d6b0b832f915bb38af99242f1c5b4b08c512d2c3ef34da7c5"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.2.0-r005.1",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "N-R1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": false,
+          "ask": "When you place stops and stations on T1 and S1, check that the Harbour East (262,-267) and Docks East (262,-512) plots are within 250 m of a stop or station. If either is out of reach, send it back to Datum as a line fault, with the distance, so an eastern line can be planned."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": true,
+          "ask": "N-R1 fails for Harbour East (262,-267) and Docks East (262,-512): best reach is 272 m and 296 m. As you offered, bring back an eastern line, e.g. a tram on Harbour Road or Dock Road. It needs stops near z -270 and -510 within about 140 m of x 262, linked to the network. Once the line exists, I will place its stops."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": true,
+          "ask": "N-R1 fails for Rocket West (-260,-296) and Lantern West (-260,-563): best reach is 272 m and 285 m. No line runs within 250 m of them. Please add a line on Sunset Way, Market Street or Lantern Lane that can take a stop near x -200 to -260, at about z -300 and z -560. Or move a line so these plots fall in reach. I will not loosen the reach rule."
+        }
+      ],
+      "handoffFaults": 2,
+      "faults": 3,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Datum"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.2.0-r005.2",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "T-C1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": false,
+          "ask": "Please place T2 stops with 300–500 m spacing. Suggested sites: Sunset Way near (-346,-560); Market Street near (-230,-410) and near (±40,-410), the interchange with T1 Records; Market Street near (230,-410); Harbour Road near (306,-267) and near (306,-30), the interchange with S1 Harbour. Then rerun the reach check for Harbour East, Docks East, Rocket West and Lantern West."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "T2 crosses T1 at grade at the Boulevard and Market Street junction (0,-410). Please give them timetable slots that don't conflict at that crossing."
+        }
+      ],
+      "handoffFaults": 0,
+      "faults": 2,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Datum",
+        "Pulse"
+      ]
+    },
+    {
+      "round": 3,
+      "version": "0.2.0-r005.3",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 0,
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": false,
+          "ask": "Please place T2 stops 300 to 500 m apart. Suggested sites: Sunset Way near (-349.5,-560); Market Street near (-230,-403.5) and near (40,-416.5), the interchange with T1 Records; Market Street near (230,-416.5); Harbour Road near (309.5,-267) and near (309.5,-30), the interchange with S1 Harbour. Keep stops off the cross-over stretch between x -170 and -80. Then rerun the reach check."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "T2 crosses T1 at grade at the Boulevard and Market Street junction (0,-416.5). Please set their timetable slots so they don't conflict at that crossing."
+        }
+      ],
+      "handoffFaults": 0,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Pulse"
+      ]
+    }
+  ],
+  "cost": {
+    "usd": 2.6375,
+    "calls": 12
+  },
+  "calls": [
+    {
+      "id": "01-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.5677624000000001,
+      "seconds": 184
+    },
+    {
+      "id": "02-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.20978399999999997,
+      "seconds": 58
+    },
+    {
+      "id": "03-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.058354,
+      "seconds": 21
+    },
+    {
+      "id": "04-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.21772760000000002,
+      "seconds": 28
+    },
+    {
+      "id": "05-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2883168,
+      "seconds": 77
+    },
+    {
+      "id": "06-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.17381439999999998,
+      "seconds": 49
+    },
+    {
+      "id": "07-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.05722869999999999,
+      "seconds": 21
+    },
+    {
+      "id": "08-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.282659,
+      "seconds": 48
+    },
+    {
+      "id": "09-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2944148,
+      "seconds": 82
+    },
+    {
+      "id": "10-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1773304,
+      "seconds": 49
+    },
+    {
+      "id": "11-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.054830699999999996,
+      "seconds": 17
+    },
+    {
+      "id": "12-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2552974,
+      "seconds": 36
+    }
+  ],
+  "finalVersion": "0.2.0-r005.3"
+}

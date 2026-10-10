@@ -14,7 +14,8 @@ export function geometry(plan: Plan) {
     roads: plan.roads.map(x => ({ id: x.id, name: x.name, class: x.class, w: x.w, median: x.median, via: x.path.map(n => nodes[n]!.map(r)) })),
     foot: plan.foot.map(w => ({ id: w.id, kind: w.kind, w: w.w, pts: w.pts })),
     circus: { c: plan.circus.c, island: plan.circus.island },
-    quay: plan.quay.map(bbox), water: plan.water.map(bbox), plotCentres: plots(plan),
+    quay: plan.quay.map(bbox), water: plan.water.map(w => w.map(p => p.map(r))),
+    waterNote: 'water is the polygon in water (x z points) and blocks walking; quay boxes [xmin, xmax, zmin, zmax] are walkable and carved out of it (the causeway and apron over the water); foot paths (e.g. skyport-pier) are walkable too', plotCentres: plots(plan),
   });
 }
 

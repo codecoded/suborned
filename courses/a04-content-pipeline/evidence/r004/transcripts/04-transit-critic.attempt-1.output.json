@@ -1,0 +1,51 @@
+{
+  "verdict": "fail",
+  "summary": "The checker report is clean, but I found four faults it cannot see. (1) The Skyport station stands over water with no ground or foot path, so nobody can walk to it, and its fronts value is a stand-in. (2) Pulse states fare and boarding-price rules as GDD decisions without a source. (3) One T2 run time does not match its chainage gap. (4) Vantage's T2 spacing note does not match the placed stops. The T1 run-through and three interchanges go against the concept note, but both builders flagged this to Aster, so I raise no fault.",
+  "faults": [
+    {
+      "owner": "Vantage",
+      "rule": "critic",
+      "fault": "S1/skyport sits at (535, 0) over water. Vantage's own note says the plan has no ground, apron or foot path there. Under the walking standard water blocks the way, so a person cannot get to the station. Its fronts value, crown-parade, is a stand-in, not the public space the entrance really faces. N-P2 passes only because the station is not on a plot.",
+      "fix": "Hold the station until Datum draws skyport ground or a foot path that joins the walkable network. Then re-front the station on that id and check that the S-S2 spacing (≥ 200 m from Harbour) still holds. Send the ground request to Datum through Aster.",
+      "chunks": [
+        "0e426f4211a2f1f25c328968",
+        "ba506de42600790962a866a2"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "Open question 3 says 'GDD §02 says time only, with no fare', and open question 1 says headways set 'the wait half of the boarding price'. Both are fare and pricing rules stated as decided. No passage Pulse cites says either. Its own cited role passage gives prices to Motive.",
+      "fix": "Take out the claim about §02 and the 'wait half of the boarding price' framing. Ask Motive, as an open question, whether boarding has a price and what it is made of, without saying the GDD has already decided.",
+      "chunks": [
+        "352b7a6ac9f8c5a12afcbeff"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "The T2 market→harbour-court run is 55 s. The chainage gap is 326 m (1108 − 782), and at the stated 6 m/s rounded to whole seconds that is 54 s. The run does not follow Pulse's own stated method, and the journey times built on it carry the extra second.",
+      "fix": "Set the run to 54 s both ways and work out the T2 journeys that pass through it again (e.g. sunset→harbour-court 196, sunset→parade 262, rocket→harbour-court 127, rocket→parade 193, market→harbour-court 54, market→parade 120).",
+      "chunks": [
+        "538618090dd534247cab5493"
+      ]
+    },
+    {
+      "owner": "Vantage",
+      "rule": "critic",
+      "fault": "Vantage's note gives five T2 spacings (321.5, 350, 341.6, 326.6, 305 m), but T2 has five stops and so four gaps. The checker measures 321, 350, 327 and 305 m. The note does not match the stops as placed.",
+      "fix": "Correct the note to the four gaps measured on the placed chainage (321, 350, 327, 305 m).",
+      "chunks": [
+        "538618090dd534247cab5493"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "cfba161c458af766f224f713",
+    "ddab53626d020f8340f019b3",
+    "e833ff4a45f54e712531eb9d"
+  ]
+}

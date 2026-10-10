@@ -1,0 +1,71 @@
+{
+  "lines": [
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Market Line",
+      "beyond": "both ends leave the sheet: south on Sunset Way past y -780, north on Harbour Road past y 320; termini and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              -346,
+              -780
+            ],
+            [
+              -346,
+              -410,
+              50
+            ],
+            [
+              306,
+              -410,
+              50
+            ],
+            [
+              306,
+              320
+            ]
+          ]
+        }
+      ],
+      "order": []
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "I added tram T2 (Market Line) and left T1 and S1 as they were. I checked it by hand only. I have not run the plan checker, so I can't show exit 0 yet. Rerun bun tools/plan/cli.ts before this is accepted.",
+    "T2 is one double-track running path. It enters at the south edge on Sunset Way (x -346), turns east (R50) at (-346,-410), runs in Market Street's median (z -410, tracks ±1.8), then turns north (R50) at (306,-410) onto Harbour Road and leaves at y 320. Both ends reach the edge, so no loops are needed (T-L1, N-D1).",
+    "T-C1 by hand: on Sunset Way and Harbour Road the tracks run 6 m off centre, beside the medians, so each R50 bend stays in the carriageway. Bend midpoints are at x ≈ -331 (Sunset Way spans -352 to -328) and x ≈ 291 (Harbour Road spans 288 to 312). The inner tracks also fit. A bend on the centreline would cut about 3 m into the corner plots.",
+    "Reach, straight-line distance to the stop sites I'm suggesting: Lantern West (-260,-563) is about 86 m from Sunset Way at z -560. Rocket West (-260,-296) is about 118 m from Market Street at x -230. Docks East (262,-512) is about 107 m from Market Street at x 230. Harbour East (262,-267) is about 44 m from Harbour Road at z -267. All four are under 250 m, with margin left for detours.",
+    "Interchanges (N-C1): T1's Records stop (0,-380) is about 50 m from a T2 stop near (±40,-410). S1's Harbour station (340,0) is about 45 m from a T2 stop near (306,-30). All three lines now connect within 150 m.",
+    "T2 crosses T1 at grade at (0,-410); the standards have no rule on this. On Harbour Road it runs under S1 at y 0, clear of the median pylons. T2 partly brings back tide's Harbour Line. Harbour Road's south end still can't take a terminus. The Sky Loop stays rejected for the corner-plot S-C1 reasons I gave last round.",
+    "The off-sheet continuations are my assumption; the sources don't say where T2 goes. Aster should confirm with Sky, along with the open questions from last round: whether T1 ends at the circus, and whether the Sphere and harbour loops are retired. The circus conflict is still there (the drawn road shape and the island ring don't match). I will fix it when I next edit the roads."
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "352b7a6ac9f8c5a12afcbeff",
+    "ba506de42600790962a866a2",
+    "e6ffe1ba0919c87923015de5",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "d455bd85bd15e441cf14f08d",
+    "c1909f164651d9c88cd65c53",
+    "e20799f1f673824d09ce452d"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": false,
+      "ask": "Please place T2 stops with 300–500 m spacing. Suggested sites: Sunset Way near (-346,-560); Market Street near (-230,-410) and near (±40,-410), the interchange with T1 Records; Market Street near (230,-410); Harbour Road near (306,-267) and near (306,-30), the interchange with S1 Harbour. Then rerun the reach check for Harbour East, Docks East, Rocket West and Lantern West."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 crosses T1 at grade at the Boulevard and Market Street junction (0,-410). Please give them timetable slots that don't conflict at that crossing."
+    }
+  ]
+}

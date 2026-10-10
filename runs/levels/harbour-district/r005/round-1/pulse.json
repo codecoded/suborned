@@ -1,0 +1,171 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 150,
+      "dwellSec": 20,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 44
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 43
+        },
+        {
+          "from": "T1/circus",
+          "to": "T1/records",
+          "sec": 43
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/comet",
+          "sec": 44
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 120,
+      "dwellSec": 15,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 25.5
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 22
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 21.5
+        },
+        {
+          "from": "S1/skyport",
+          "to": "S1/harbour",
+          "sec": 21.5
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/circus",
+          "sec": 22
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/gardens",
+          "sec": 25.5
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "T1/records",
+      "sec": 44,
+      "via": []
+    },
+    {
+      "from": "T1/records",
+      "to": "T1/circus",
+      "sec": 43,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "T1/circus",
+      "sec": 107,
+      "via": []
+    },
+    {
+      "from": "T1/circus",
+      "to": "T1/comet",
+      "sec": 107,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/circus",
+      "sec": 25.5,
+      "via": []
+    },
+    {
+      "from": "S1/circus",
+      "to": "S1/harbour",
+      "sec": 22,
+      "via": []
+    },
+    {
+      "from": "S1/harbour",
+      "to": "S1/skyport",
+      "sec": 21.5,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/harbour",
+      "sec": 62.5,
+      "via": []
+    },
+    {
+      "from": "S1/circus",
+      "to": "S1/skyport",
+      "sec": 58.5,
+      "via": []
+    },
+    {
+      "from": "S1/gardens",
+      "to": "S1/skyport",
+      "sec": 99,
+      "via": []
+    },
+    {
+      "from": "T1/comet",
+      "to": "S1/skyport",
+      "sec": 165.5,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "S1/skyport",
+      "to": "T1/comet",
+      "sec": 165.5,
+      "via": [
+        "S1/circus"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything besides the wait and the ride (e.g. Trail, Alert exposure to watchers at stops, or limits on who may ride)?",
+      "for": "Motive",
+      "why": "GDD §02 says time only, no fare; anything more is undecided and not in this timetable."
+    },
+    {
+      "question": "How long does an interchange transfer on foot take (T1/circus to S1/circus is roughly 119 m straight-line) and is it priced as walk time?",
+      "for": "Motive",
+      "why": "Cross-line journey times here exclude the walk between platforms and the second line's wait."
+    }
+  ],
+  "notes": [
+    "Speeds are starting values [S], tune by playtest: tram 7 m/s (about 25 km/h) and sky rail 10 m/s (36 km/h) between stops. Run sec = chainage gap / speed, rounded for the tram.",
+    "Dwell is a starting value: tram 20 s, sky rail 15 s. Headway is a starting value: tram 150 s, sky rail 120 s.",
+    "Journey sec = in-vehicle time only: runs plus dwell at each intermediate stop. Price of a trip = wait + sec. Wait is 0 to headway (average half), from the headway above.",
+    "Cross-line journeys (via the Crown Circus interchange) add one dwell-free change: sec excludes the platform walk and the second line's wait (up to 120 s for S1, 150 s for T1).",
+    "Both directions run on the double track with the same run times. The T1 and S1 loop paths carry no stops, so they are turnaround only and have no timed run.",
+    "Plan questions on ending the tram at the circus and on retiring the Sphere loop and harbour line are Datum's. If the lines change, these times must be recomputed."
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "a61013bb832308b31e1ef07b",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

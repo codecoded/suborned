@@ -1,0 +1,207 @@
+{
+  "id": "04-transit-critic",
+  "objective": "transit-critic",
+  "role": "simulation-engineer",
+  "model": "claude-opus-5-5",
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.26223599999999997,
+  "seconds": 47,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/simulation-engineer.md",
+    "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+  },
+  "retrieval": {
+    "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones ‖ plan checker rules: no dead ends, every area in reach, network connected, station spacing, order ‖ rulebook: each event needs, changes, witnesses; unknown is rejected",
+    "queries": [
+      "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+      "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
+      "plan checker rules: no dead ends, every area in reach, network connected, station spacing, order",
+      "rulebook: each event needs, changes, witnesses; unknown is rejected"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "3acb05ba5c76d4ff52f87611cdabedcd24ce8d105df8fc23496698debf3cdd46",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3076891486459451,
+        "key": "7dfdfdf13043a24e8e964b0b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › transit",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+        "text": "Harbour District plan › standards › transit\nreach: 250\nonLine: 3",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.09039514437615842,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.25533924267706964,
+        "key": "ba506de42600790962a866a2",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyrail",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+        "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.0791294568042842,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.7487980127334595,
+        "key": "3695d1ed1c7f1514a17a1079",
+        "kind": "gdd-agent",
+        "lineEnd": 252,
+        "lineStart": 241,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+        "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+        "text": "§14 ROLES (each agent loads only its own block)\nopens: §07, §10, §11 · tool: Unity (owner)\n### Suture · Playtest and QA lead · Opus 5.5\nowns: Uncoached playtests, test reports and tests T1–T7.\nreceives: The build, the scenario, the expected outcome and the questions to ask players.\ndelivers: Reports with steps to reproduce, expected against observed, and clips. Sends bugs to their owners and retests.\nhold: Six new players per test; most pass bars are 5 of 6. Handover wins when Vale reaches the car alive. It fails if Vale dies, leaves or is taken, the district seals, the Enforcer goes down, or the entry is seen. Checks the gate every week from week 3.\nopens: §07, §11, §13 · tool: Unity (checks)\n### Splice · Tools engineer · GPT 6.1 Sol\nowns: The checking tools, including the plan checker (workbench/Tools/Plan).\nreceives: Keel's rulebook; planning standards and rule requests from Datum and Vantage.\ndelivers: A Unity checking tool that catches missing people, unreachable places or impossible actions before Latch builds; plan checker rules, each with an id, a source and a failing example.\nhold: Every generated person reaches their places and has one clear need. Anything not in the rulebook is rejected, however plausible it looks.",
+        "version": "v0.15.0",
+        "score": 0.07309700630596153,
+        "signals": [
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.851359248161316,
+        "key": "e833ff4a45f54e712531eb9d",
+        "kind": "gdd-agent",
+        "lineEnd": 139,
+        "lineStart": 130,
+        "section": "§09 GENERATION",
+        "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+        "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+        "text": "§09 GENERATION\n## §09 GENERATION\nnothing hand-authored. Sky writes rules + generators. The simulation plays every generated mission before a player sees it. Build time only.\n| content | from | checked by |\n| people | occupation × temperament × need × relationships × routine, fit to district schedules | reach their places; one clear need |\n| missions | template (objective, target, closing event, fight trigger) + district people | mission checker |\n| dialogue, portraits, voices | person data + state (brave, resentful, promoted) | tone + rating filters; sampled review |\n| district plans | Datum (roads, transit, plots, gates) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun workbench/Tools/Plan/cli.ts) |\n| consequences | rules on mission log | replay → same result |\nmission checker: ships only if ≥ 2 quiet routes win · loud route exists and costs more T · every fail condition reachable · no single contact essential · fully informed player finishes ≥ 1:00 before closing event.\nrisk: sameness (Watch Dogs: Legion). Fix: history, not backstory; people are memorable via what the systems record. Text = light layer. Live AI chatter [L] only if it never touches rules.",
+        "version": "v0.15.0",
+        "score": 0.07223564425770308,
+        "signals": [
+          "keyword:1",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3793586492538452,
+        "key": "cfba161c458af766f224f713",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › concept",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+        "text": "Harbour District plan › notes › concept\n- Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.\n- Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.\n- Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.\n- Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.\n- Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island and Circus Road's median. Trains turn on a loop round the skyport.\n- The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).\n- The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.\n- Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.07031017004541013,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.10516214370727539,
+        "key": "538618090dd534247cab5493",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › tram",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+        "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.06504494976203068,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      },
+      {
+        "authority": "Human GDD (wins on conflict)",
+        "bm25": 2.7984375953674316,
+        "key": "ddab53626d020f8340f019b3",
+        "kind": "gdd-human",
+        "lineEnd": 460,
+        "lineStart": 441,
+        "section": "Nothing hand-authored, everything checked (1/3)",
+        "source": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html",
+        "sourceHash": "6cd750fe86eec027d0b322e8f3a3c815ebba104f68798dc5cfefd8de747b231d",
+        "text": "Nothing hand-authored, everything checked\nNo person, mission or line of dialogue is written by hand. Sky writes the rules and the generators. The simulation plays every generated mission before a player sees it.\nContent | Generated from | Checked by |\nPeople | Occupation × temperament × need × relationships × routine, fitted to district schedules | Automatic checks: every person can reach their places and has one clear need |\nMissions | Template (objective, target, closing event, fight trigger) filled with district people | The mission checker (below) |\nDialogue, portraits, voices | Each person's data plus their state (brave, resentful, promoted), produced at build time | Tone and rating filters, plus a sampled review |\nDistrict plans | Roads, transit lines, plots and gates proposed by Datum, block layouts by Vantage, both inside the planning standards | The plan checker : road hierarchy, gates, track and sky rail standards, walking reach, no dead ends |",
+        "version": "v0.15.0",
+        "score": 0.06168458525348346,
+        "signals": [
+          "keyword:1",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.31128573417663574,
+        "key": "e54a1a5c3874c8a545458768",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › roads",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "b9e25902244182a154192c19939f5da88b0271b7ddbc30cccdbe28a53db1ef4f",
+        "text": "Harbour District plan › standards › roads\njunctionSpacing: {\"primary\":250,\"district\":60}\nfrontage: 1",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.061072261072261075,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

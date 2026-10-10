@@ -1,0 +1,12 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "S1/harbour at (332, 0) gives crown-parade as the public space its entrance faces. Vantage's own note says the parade ends at x 288 and the station sits on the quay pier, so crown-parade is a stand-in, not the space the entrance faces. This is the same fault raised last round against S1/skyport. N-P2 passes only because the station is not on a plot.",
+    "fix": "Front the station on the public space it actually faces. The 50 m platform spans about x 307 to 357, so it crosses Harbour Road at x 309, where T2/parade already fronts harbour-road. Name harbour-road if the entrance opens there. Otherwise ask Datum, through Aster, for a quay id and front on that. Then rerun bun tools/plan/cli.ts.",
+    "chunks": [
+      "e54a1a5c3874c8a545458768",
+      "cfba161c458af766f224f713"
+    ]
+  }
+]

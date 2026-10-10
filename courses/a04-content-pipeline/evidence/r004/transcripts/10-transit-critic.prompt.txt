@@ -1,0 +1,240 @@
+Objective: transit-critic
+# Objective · critic (Keel, brief 001)
+Judge the candidate: the three proposals applied to a copy of the plan. You get the objective, the output schemas, the plan checker's report on the candidate and the candidate itself.
+
+Return `fail` if any checker rule failed, if any proposal breaks a schema or a plan standard, if a stop sits where the event rules say a person could not get to it, or if the timetable states a price or rule the GDD has not decided. Return `pass` only when the checker report is clean and you find no further fault.
+Each fault names its owner (Datum = lines, Vantage = stops and stations, Pulse = timetable), the checker rule id (or "critic"), what is wrong, the fix, and cites at least one retrieved passage id that shows the rule. Cite only ids from the passages shown to you.
+A fault in the lines is Datum's even if it was seen at a stop; a fault in where a stop stands is Vantage's.
+Citations: the run's code has already checked that every id a builder cites was retrieved by that builder itself (you are shown, per builder, what it retrieved and the text of what it cites). Never raise a fault because a cited id is not among your own passages, and never use rule "cite". Judge whether the builders' claims and notes are true to the cited text; a true note is not to be corrected to match your own retrieval.
+
+
+Retrieved source passages (cite their ids where the schema allows):
+[7dfdfdf13043a24e8e964b0b] contracts/world/harbour-district.plan.json
+Authority: District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules; version: v0.1.0 2026-10-10
+Harbour District plan › standards › transit
+reach: 250
+onLine: 3
+
+[ba506de42600790962a866a2] contracts/world/harbour-district.plan.json
+Authority: District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules; version: v0.1.0 2026-10-10
+Harbour District plan › standards › skyrail
+radiusLine: 70
+radiusLoop: 40
+spanStraight: 30
+spanCurve: 23
+spanTight: 18
+tightBelow: 180
+interchange: 150
+stationSpacing: 200, 500
+height: 24
+beamCentres: 6
+pylonZones: median, mall, park, quay, water, island
+
+[3695d1ed1c7f1514a17a1079] GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md:241-252
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.15.0
+§14 ROLES (each agent loads only its own block)
+opens: §07, §10, §11 · tool: Unity (owner)
+### Suture · Playtest and QA lead · Opus 5.5
+owns: Uncoached playtests, test reports and tests T1–T7.
+receives: The build, the scenario, the expected outcome and the questions to ask players.
+delivers: Reports with steps to reproduce, expected against observed, and clips. Sends bugs to their owners and retests.
+hold: Six new players per test; most pass bars are 5 of 6. Handover wins when Vale reaches the car alive. It fails if Vale dies, leaves or is taken, the district seals, the Enforcer goes down, or the entry is seen. Checks the gate every week from week 3.
+opens: §07, §11, §13 · tool: Unity (checks)
+### Splice · Tools engineer · GPT 6.1 Sol
+owns: The checking tools, including the plan checker (workbench/Tools/Plan).
+receives: Keel's rulebook; planning standards and rule requests from Datum and Vantage.
+delivers: A Unity checking tool that catches missing people, unreachable places or impossible actions before Latch builds; plan checker rules, each with an id, a source and a failing example.
+hold: Every generated person reaches their places and has one clear need. Anything not in the rulebook is rejected, however plausible it looks.
+
+[e833ff4a45f54e712531eb9d] GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md:130-139
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.15.0
+§09 GENERATION
+## §09 GENERATION
+nothing hand-authored. Sky writes rules + generators. The simulation plays every generated mission before a player sees it. Build time only.
+| content | from | checked by |
+| people | occupation × temperament × need × relationships × routine, fit to district schedules | reach their places; one clear need |
+| missions | template (objective, target, closing event, fight trigger) + district people | mission checker |
+| dialogue, portraits, voices | person data + state (brave, resentful, promoted) | tone + rating filters; sampled review |
+| district plans | Datum (roads, transit, plots, gates) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun workbench/Tools/Plan/cli.ts) |
+| consequences | rules on mission log | replay → same result |
+mission checker: ships only if ≥ 2 quiet routes win · loud route exists and costs more T · every fail condition reachable · no single contact essential · fully informed player finishes ≥ 1:00 before closing event.
+risk: sameness (Watch Dogs: Legion). Fix: history, not backstory; people are memorable via what the systems record. Text = light layer. Live AI chatter [L] only if it never touches rules.
+
+[cfba161c458af766f224f713] contracts/world/harbour-district.plan.json
+Authority: District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules; version: v0.1.0 2026-10-10
+Harbour District plan › notes › concept
+- Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.
+- Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.
+- Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.
+- Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.
+- Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space only: the Parade, the circus island and Circus Road's median. Trains turn on a loop round the skyport.
+- The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).
+- The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.
+- Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets.
+
+[538618090dd534247cab5493] contracts/world/harbour-district.plan.json
+Authority: District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules; version: v0.1.0 2026-10-10
+Harbour District plan › standards › tram
+radiusRunning: 50
+radiusLoop: 25
+stopSpacing: 300, 500
+platform: 30
+trackCentres: 3.6
+
+[ddab53626d020f8340f019b3] GDD/the-suborned-gdd-v0.15.0-2026-10-10.html:441-460
+Authority: Human GDD (wins on conflict); version: v0.15.0
+Nothing hand-authored, everything checked
+No person, mission or line of dialogue is written by hand. Sky writes the rules and the generators. The simulation plays every generated mission before a player sees it.
+Content | Generated from | Checked by |
+People | Occupation × temperament × need × relationships × routine, fitted to district schedules | Automatic checks: every person can reach their places and has one clear need |
+Missions | Template (objective, target, closing event, fight trigger) filled with district people | The mission checker (below) |
+Dialogue, portraits, voices | Each person's data plus their state (brave, resentful, promoted), produced at build time | Tone and rating filters, plus a sampled review |
+District plans | Roads, transit lines, plots and gates proposed by Datum, block layouts by Vantage, both inside the planning standards | The plan checker : road hierarchy, gates, track and sky rail standards, walking reach, no dead ends |
+
+[e54a1a5c3874c8a545458768] contracts/world/harbour-district.plan.json
+Authority: District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules; version: v0.1.0 2026-10-10
+Harbour District plan › standards › roads
+junctionSpacing: {"primary":250,"district":60}
+frontage: 1
+
+Task: judge the candidate.
+Objective under test: Transit network (brief 001): sky rail and tram lines for the Harbour District, stops and stations so that every area is in reach, and a timetable; accepted only when the plan checker is clean (strict) and the critic passes.
+
+Output schemas (JSON): {"datum":{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"lines":{"minItems":1,"type":"array","items":{"type":"object","properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"mode":{"type":"string","enum":["tram","skyrail"]},"name":{"type":"string","maxLength":60},"beyond":{"type":"string","maxLength":160,"description":"where the line goes off-sheet, or \"\" if it does not"},"paths":{"minItems":1,"type":"array","items":{"type":"object","properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"role":{"type":"string","enum":["running","line","loop"],"description":"tram: running|loop; sky rail: line|loop"},"double":{"type":"boolean"},"pts":{"minItems":2,"type":"array","items":{"minItems":2,"maxItems":3,"type":"array","items":{"type":"number"},"description":"[x, y] or [x, y, fillet radius m]"}}},"required":["id","role","double","pts"],"additionalProperties":false}},"order":{"type":"array","items":{"type":"string"},"description":"path ids end to end (\"-id\" runs a path against its drawn direction); [] = as listed"}},"required":["id","mode","name","beyond","paths","order"],"additionalProperties":false}},"remove":{"type":"array","items":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"description":"ids of existing lines to delete; [] for none"},"notes":{"maxItems":8,"type":"array","items":{"type":"string","maxLength":400}},"sources":{"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{24}$","description":"a 24-hex passage id from the retrieved passages"},"description":"passage ids the proposal rests on"}},"required":["lines","remove","notes","sources"],"additionalProperties":false},"vantage":{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"stops":{"type":"array","items":{"type":"object","properties":{"line":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"id":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"name":{"type":"string","maxLength":60},"path":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"at":{"minItems":2,"maxItems":2,"type":"array","items":{"type":"number"},"description":"exactly [x, y] in metres [x east, y north], plan origin at Crown Circus centre"},"length":{"description":"sky rail station length m","type":"number"},"interchange":{"description":"\"<line>/<stop id>\" of the paired stop on another line","type":"string"},"fronts":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"id of the road or foot path whose public space the entrance fronts"}},"required":["line","id","name","path","at","fronts"],"additionalProperties":false}},"notes":{"maxItems":8,"type":"array","items":{"type":"string","maxLength":400}},"sources":{"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{24}$","description":"a 24-hex passage id from the retrieved passages"},"description":"passage ids the proposal rests on"}},"required":["stops","notes","sources"],"additionalProperties":false},"pulse":{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"lines":{"type":"array","items":{"type":"object","properties":{"line":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9_-]*$","description":"short id, e.g. T2, trunk, circus"},"headwaySec":{"type":"number","exclusiveMinimum":0},"dwellSec":{"type":"number","exclusiveMinimum":0},"runs":{"type":"array","items":{"type":"object","properties":{"from":{"type":"string","pattern":"^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$","description":"\"<line>/<stop id>\""},"to":{"type":"string","pattern":"^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$","description":"\"<line>/<stop id>\""},"sec":{"type":"number","exclusiveMinimum":0}},"required":["from","to","sec"],"additionalProperties":false}}},"required":["line","headwaySec","dwellSec","runs"],"additionalProperties":false}},"journeys":{"type":"array","items":{"type":"object","properties":{"from":{"type":"string","pattern":"^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$","description":"\"<line>/<stop id>\""},"to":{"type":"string","pattern":"^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$","description":"\"<line>/<stop id>\""},"sec":{"type":"number","exclusiveMinimum":0},"via":{"type":"array","items":{"type":"string","pattern":"^[A-Za-z0-9_-]+\\/[A-Za-z0-9_-]+$","description":"\"<line>/<stop id>\""},"description":"interchanges used; [] for none"}},"required":["from","to","sec","via"],"additionalProperties":false}},"openQuestions":{"type":"array","items":{"type":"object","properties":{"question":{"type":"string","maxLength":300},"for":{"type":"string","enum":["Motive","Sky"]},"why":{"type":"string","maxLength":300}},"required":["question","for","why"],"additionalProperties":false},"description":"what the GDD has not decided (e.g. whether boarding costs anything); never a price or a rule invented here"},"notes":{"maxItems":8,"type":"array","items":{"type":"string","maxLength":400}},"sources":{"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{24}$","description":"a 24-hex passage id from the retrieved passages"},"description":"passage ids the proposal rests on"}},"required":["lines","journeys","openQuestions","notes","sources"],"additionalProperties":false}}
+
+Plan checker report on the candidate (strict):
+PASS R-C1 One connected network: 48/48 nodes (all)
+PASS R-H1 No access road joins a primary: 0 (0)
+PASS R-H2p Junction spacing on primary distributors: 280 m (≥ 250 m) — closest: Sunset Way at nw
+PASS R-H2d Junction spacing on district distributors: 60 m (≥ 60 m) — closest: Crown Avenue at n_avenue
+PASS R-E1 No access route links two distributors (no rat-runs): 0 of 8 networks (0)
+PASS R-G1 Every way in is a declared gate (seal point): 14 found, 14 declared (equal)
+PASS R-F1 Every plot fronts an access road (parks: any street or walk): 32/32 (all)
+PASS R-O1 No plot overlaps a street, walk, the circus or another plot: 0 (0)
+PASS R-A1 Every plot sits in its environmental area: 32/32 (all)
+PASS T-R1 T1 running radius: R 50 m (≥ 50 m)
+PASS T-R2 T1 terminal loop radius: straight (≥ 25 m)
+PASS T-S1 T1 stop spacing: 310, 308, 435 m (300–500 m)
+PASS T-S2 T1 platforms (30 m) on straight track: 4/4 (all)
+PASS T-L1 T1 turns on a loop at every end inside the sheet (single-ended trams, no crossover): all ends off-sheet (all)
+PASS T-C1 T1 runs in street space or the circus island: 0 m off (0)
+PASS T-R1 T2 running radius: R 50 m (≥ 50 m)
+PASS T-R2 T2 terminal loop radius: straight (≥ 25 m)
+PASS T-S1 T2 stop spacing: 321, 350, 327, 305 m (300–500 m)
+PASS T-S2 T2 platforms (30 m) on straight track: 5/5 (all)
+PASS T-L1 T2 turns on a loop at every end inside the sheet (single-ended trams, no crossover): all ends off-sheet (all)
+PASS T-C1 T2 runs in street space or the circus island: 0 m off (0)
+PASS S-R1 S1 line radius: straight (≥ 70 m)
+PASS S-R2 S1 terminal loop radius: R 40 m (≥ 40 m)
+PASS S-P1 S1 pylon spans (30 / 23 / 18 m by curvature): 53 pylons, longest 30.0 m (within limit)
+PASS S-P2 S1 pylons stand in medians, malls, parks, quays, water or the island: 53/53 (all)
+PASS S-S1 S1 stations on straight beam: 3/3 (all)
+PASS S-C1 S1 passes over public space only (no plots): 0 m over plots (0)
+PASS N-O1 Each line has an order of its paths that chains end to end: 0 faults (0) [source: brief 001 · a line `order` so stop spacing reads across paths]
+PASS N-P1 Every stop and station sits on a path of its own line: 0 faults (0) [source: brief 001 · stops and stations: positions on the lines]
+PASS N-P2 No stop or station stands on a plot (entrances front public space): 0 (0) [source: brief 001 · entrances fronting public space; plan.standards.roads.frontage]
+PASS N-D1 No dead ends: every path end joins another path of its line or leaves the sheet; closed loops (longer than 4 beam centres) are fine: 0 dead ends (0) [source: brief 001 · no dead ends]
+PASS N-R1 Every area (plot centroid) is within standards.transit.reach of a tram stop or sky rail station: worst docks-east 207 m (≤ 250 m) [source: plan.standards.transit.reach · brief 001 · every plot centroid within 250 m of a stop or station (settled)]
+PASS S-I1 Interchange T1/records ↔ tram T2/market: 87 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS S-I1 Interchange T1/circus ↔ sky rail S1/circus: 119 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS S-I1 Interchange T2/market ↔ tram T1/records: 87 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS S-I1 Interchange T2/parade ↔ sky rail S1/harbour: 25 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS S-I1 Interchange S1/circus ↔ tram T1/circus: 119 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS S-I1 Interchange S1/harbour ↔ tram T2/parade: 25 m (≤ 150 m, partner names no other stop) [source: brief 001 · interchange pairs within plan.standards.skyrail.interchange]
+PASS N-C1 The network is connected: every line reaches every other through interchanges: 1 network, 3 lines (1) [source: brief 001 · network connected through interchanges; plan.standards.skyrail.interchange]
+PASS S-S2 S1 station spacing: 255, 237 m (200–500 m) [source: brief 001 · sky rail station spacing 200–500 m; plan.standards.skyrail.stationSpacing]
+PASS C-0 Civic block at its city scale (café footprint and height, office wings and crown): café 22.0 × 11.3 × 34.8 m, office 15.5 / 38 m (café 22 × 11.3 × 34.8 m, office 15.5 / 38 m)
+PASS C-1 Records Square and Office plots = HandoverSite blocks: square =, office = (equal)
+PASS C-2 Café and office footprints inside their blocks: 2/2 (all)
+PASS C-3 Mission points land on a plot or a street: 21/21 (all)
+PASS M-1 Every mission route reaches its end: getaway 667 m, official 1064 m (finite)
+PASS W-1 Escape walks are direct (players cross any road; only buildings and water block): Café door → tram Rocket Lane 264 m; Café door → sky rail Sphere Gardens 234 m; Office entrance → tram Rocket Lane 208 m; Office entrance → sky rail Sphere Gardens 287 m (walk ÷ straight ≤ 1.5) — least direct: Office entrance → tram Rocket Lane ×1.27
+
+Stops and stations as placed:
+T1/comet Comet Row chainage 90 m, to next 310 m
+T1/records Records chainage 400 m, to next 308 m
+T1/circus Crown Circus chainage 708 m, to next 435 m
+T1/terraces Crown Terraces chainage 1143 m, to next —
+T2/sunset Sunset Way chainage 110 m, to next 321 m
+T2/rocket Rocket Lane chainage 431 m, to next 350 m
+T2/market Market Street chainage 782 m, to next 327 m
+T2/harbour-court Harbour Court chainage 1108 m, to next 305 m
+T2/parade Harbour Parade chainage 1413 m, to next —
+S1/gardens Sphere Gardens chainage 240 m, to next 255 m
+S1/circus Crown Circus chainage 495 m, to next 237 m
+S1/harbour Harbour chainage 732 m, to next —
+
+Candidate proposals (JSON): {"lines":{"lines":[{"id":"T1","mode":"tram","name":"Boulevard Line","beyond":"south to Southside on the Boulevard; west on Crown Road beyond x -400 (termini and depot off-sheet)","paths":[{"id":"trunk","role":"running","double":true,"pts":[[0,-780],[0,60,50],[5,180,50],[5,289,50],[-400,289]]}],"order":["trunk"]},{"id":"T2","mode":"tram","name":"Harbour Line","beyond":"south on Sunset Way beyond y -780; north on Harbour Road beyond y 320 (termini and depot off-sheet)","paths":[{"id":"trunk","role":"running","double":true,"pts":[[-349,-780],[-349,-406,50],[-100,-406,50],[100,-414,50],[309,-414,50],[309,320]]}],"order":["trunk"]}],"remove":[],"notes":["S1 stays as drawn, so it is not listed. T1 now runs straight through the circus island at x 0, eases to x 5 in Crown Avenue, makes an R50 turn onto Crown Road west and leaves the sheet at x -400. The balloon loop is dropped (no on-sheet end, so T-L1 no longer applies). Path id 'trunk' is kept so the stops still attach. Not checker-run: all geometry is hand-checked only.","Tide's Sky Loop round the ring is rejected. To stay on a 24 m ring road through a 90° corner, an R70 curve needs the alignment about 20.5 m out from the inside kerb. With beams 6 m apart, the inner beam swings over corner plots, which breaks S-C1. It would also bring back the loop the plan retires (open question 3).","T2 is not Harbour Road only. That road ends at Comet Row, short of the south sheet edge (T-C1), and a 24 m street can't fit an R25 balloon loop (T-L1). So T2 runs south off-sheet on Sunset Way, along Market Street, then up Harbour Road off-sheet north (N-D1). It brings rocket-west, lantern-west and the docks within the 250 m reach.","The R50 corners fit by running off-centre: Sunset Way x -349, Harbour Road x 309, Crown Avenue x 5, Crown Road y 289. Market Street runs at y -406 in the west and y -414 in the east, shifting between x -100 and 100. Both tracks (±1.8) stay within the kerbs. I checked this against road widths only; the checker's junction polygons may differ.","Interchange spacing for Vantage, within 150 m: T1 and S1 at Crown Circus. T2 and S1 at Harbour Road, about 40 m from the Harbour station (340, 0). T1 and T2 at the Boulevard and Market Street crossing (0, -410), next to the Records stop.","Source conflict for Aster: the concept note still says T1 turns on an R28 balloon loop and that the circus is the one interchange. The 'why' notes describe an older tram. Open question 2 (end T1 at the circus or run on north) is still open. I followed tide's draft (run through); Sky should confirm, and the notes need updating.","Next steps: Vantage places and re-projects the stops (300–500 m apart, plus interchange stops), then runs bun tools/plan/cli.ts. If T-C1 fails at a corner, send it back to me (Datum) with the failing vertex. No rule was loosened."],"sources":["cfba161c458af766f224f713","e20799f1f673824d09ce452d","c5fb128448665c55b7c335fb","ba506de42600790962a866a2","538618090dd534247cab5493","c1909f164651d9c88cd65c53","7dfdfdf13043a24e8e964b0b","0e426f4211a2f1f25c328968"]},"stops":{"stops":[{"line":"T1","id":"comet","name":"Comet Row","path":"trunk","at":[0,-690],"fronts":"boulevard"},{"line":"T1","id":"records","name":"Records","path":"trunk","at":[0,-380],"interchange":"T2/market","fronts":"boulevard"},{"line":"T1","id":"circus","name":"Crown Circus","path":"trunk","at":[0,-72],"interchange":"S1/circus","fronts":"boulevard"},{"line":"T1","id":"terraces","name":"Crown Terraces","path":"trunk","at":[-90,289],"fronts":"crown-road"},{"line":"T2","id":"sunset","name":"Sunset Way","path":"trunk","at":[-349,-670],"fronts":"sunset-way"},{"line":"T2","id":"rocket","name":"Rocket Lane","path":"trunk","at":[-270,-406],"fronts":"market-street"},{"line":"T2","id":"market","name":"Market Street","path":"trunk","at":[80,-413.2],"interchange":"T1/records","fronts":"market-street"},{"line":"T2","id":"harbour-court","name":"Harbour Court","path":"trunk","at":[309,-295],"fronts":"harbour-road"},{"line":"T2","id":"parade","name":"Harbour Parade","path":"trunk","at":[309,10],"interchange":"S1/harbour","fronts":"harbour-road"},{"line":"S1","id":"gardens","name":"Sphere Gardens","path":"trunk","at":[-160,0],"length":50,"fronts":"garden-walk"},{"line":"S1","id":"circus","name":"Crown Circus","path":"trunk","at":[95,0],"length":50,"interchange":"T1/circus","fronts":"crown-parade"},{"line":"S1","id":"harbour","name":"Harbour","path":"trunk","at":[332,0],"length":50,"interchange":"T2/parade","fronts":"harbour-road"}],"notes":["Not checker-run: I have no shell, so all figures are hand-worked. Next owner: run `bun tools/plan/cli.ts`. Send T-, S- and N- rule failures back to Vantage, or to Datum if the fix needs geometry.","Critic fix: S1/harbour now fronts harbour-road, not crown-parade. Its 50 m platform runs from x 307 to 357. The west end is over Harbour Road (x 288–312), so the entrance stair lands on that road's east footway, next to T2/parade (309, 10). Position and spacing are unchanged. If Datum wants the entrance on the quay (x 312–330), the quay needs an id first (via Aster).","S1 Skyport is still held. At about x 535 it is over water, with no walkable ground or foot path. Datum (through Aster): please draw skyport ground or a foot path that joins the network. I will then place it at least 200 m from Harbour, on straight beam before the loop. S1 gaps: Gardens to Circus 255 m, Circus to Harbour 237 m.","T1 gaps along the path: 310 m, 308 m and about 435 m. No stop fits in Crown Avenue: the spacing rule needs y 228 or more, but a 30 m straight platform before the R50 corner needs y 224 or less. So Terraces sits on Crown Road at x −90, and the next T1 stop off-sheet must be at x −390 or further west.","T2 gaps by chainage: 321 m, 350 m, 327 m and 305 m. The Market stop is at x 80, outside the Boulevard and Market Street junction, 87 m from T1 Records.","Interchanges, all within 150 m: T1/circus to S1/circus 119 m, T1/records to T2/market 87 m, S1/harbour to T2/parade about 25 m. The three lines connect into one network (N-C1).","N-R1 worst cases by hand, none relying on Skyport: records-square 217 m, docks-east 207 m, docks-south 204 m, crescent-north 193 m, crescent-east 190 m. All are within 250 m.","For Aster, a source conflict: the concept note still describes T1 with an R28 balloon loop and Crown Circus as the only interchange. This proposal follows Datum's run-through T1, which has three interchanges. Open question 2 is still for Sky to decide."],"sources":["ba506de42600790962a866a2","538618090dd534247cab5493","7dfdfdf13043a24e8e964b0b","cfba161c458af766f224f713","e54a1a5c3874c8a545458768","0e426f4211a2f1f25c328968"]},"timetable":{"lines":[{"line":"T1","headwaySec":180,"dwellSec":15,"runs":[{"from":"T1/comet","to":"T1/records","sec":52},{"from":"T1/records","to":"T1/circus","sec":51},{"from":"T1/circus","to":"T1/terraces","sec":73},{"from":"T1/terraces","to":"T1/circus","sec":73},{"from":"T1/circus","to":"T1/records","sec":51},{"from":"T1/records","to":"T1/comet","sec":52}]},{"line":"T2","headwaySec":180,"dwellSec":15,"runs":[{"from":"T2/sunset","to":"T2/rocket","sec":54},{"from":"T2/rocket","to":"T2/market","sec":58},{"from":"T2/market","to":"T2/harbour-court","sec":55},{"from":"T2/harbour-court","to":"T2/parade","sec":51},{"from":"T2/parade","to":"T2/harbour-court","sec":51},{"from":"T2/harbour-court","to":"T2/market","sec":55},{"from":"T2/market","to":"T2/rocket","sec":58},{"from":"T2/rocket","to":"T2/sunset","sec":54}]},{"line":"S1","headwaySec":120,"dwellSec":20,"runs":[{"from":"S1/gardens","to":"S1/circus","sec":32},{"from":"S1/circus","to":"S1/harbour","sec":30},{"from":"S1/harbour","to":"S1/circus","sec":30},{"from":"S1/circus","to":"S1/gardens","sec":32}]}],"journeys":[{"from":"T1/comet","to":"T1/records","sec":52,"via":[]},{"from":"T1/comet","to":"T1/circus","sec":118,"via":[]},{"from":"T1/comet","to":"T1/terraces","sec":206,"via":[]},{"from":"T1/records","to":"T1/circus","sec":51,"via":[]},{"from":"T1/records","to":"T1/terraces","sec":139,"via":[]},{"from":"T1/circus","to":"T1/terraces","sec":73,"via":[]},{"from":"T2/sunset","to":"T2/rocket","sec":54,"via":[]},{"from":"T2/sunset","to":"T2/market","sec":127,"via":[]},{"from":"T2/sunset","to":"T2/harbour-court","sec":197,"via":[]},{"from":"T2/sunset","to":"T2/parade","sec":263,"via":[]},{"from":"T2/rocket","to":"T2/market","sec":58,"via":[]},{"from":"T2/rocket","to":"T2/harbour-court","sec":128,"via":[]},{"from":"T2/rocket","to":"T2/parade","sec":194,"via":[]},{"from":"T2/market","to":"T2/harbour-court","sec":55,"via":[]},{"from":"T2/market","to":"T2/parade","sec":121,"via":[]},{"from":"T2/harbour-court","to":"T2/parade","sec":51,"via":[]},{"from":"S1/gardens","to":"S1/circus","sec":32,"via":[]},{"from":"S1/gardens","to":"S1/harbour","sec":82,"via":[]},{"from":"S1/circus","to":"S1/harbour","sec":30,"via":[]}],"openQuestions":[{"question":"Does boarding a tram or sky rail cost anything beyond the wait for the next service plus the ride?","for":"Motive","why":"The GDD sets no fare; only wait and ride are priced here and no other cost is invented."},{"question":"Do the starting headways (T1/T2 180 s, S1 120 s) and dwells (trams 15 s, sky rail 20 s) stand?","for":"Motive","why":"The GDD gives none. They are Pulse's starting values [S], to be tuned by playtest."},{"question":"Does the walk between linked stops (T1/circus to S1/circus, T1/records to T2/market, T2/parade to S1/harbour) count toward a journey's time?","for":"Motive","why":"Interchange walking is not in the timetable, so no cross-line journeys are listed."},{"question":"Do services run for the whole mission clock, and are there any limits on boarding?","for":"Sky","why":"Operating hours and limits are undecided; none is invented."},{"question":"Should S1 Skyport be a timetabled station, and should T1/T2 extend past the sheet?","for":"Sky","why":"The plan text lists Skyport (530,0), but the station list omits it, so it is untimetabled. Termini are off-sheet."}],"notes":["Speeds [S], starting values: trams 6 m/s (about 22 km/h); sky rail 8 m/s (about 29 km/h). Run sec = chainage gap / speed, rounded half up, acceleration and braking folded in.","Journey sec = ride plus dwell at each intermediate stop. It excludes the wait for the first service, which runs from 0 up to one headway: T1/T2 up to 180 s, S1 up to 120 s.","Lines are double track, so run times match both ways and reverse journeys have the same sec. All listed journeys are single-line, so via is empty.","Conflict: T2 market to harbour-court is listed as 327 m, but chainages 1108 minus 782 give 326 m. I used the listed 327 m (55 s; 54 s at 326 m). Datum to confirm.","Conflict: S1 harbour is at x 332 in the stop list but 340 in the plan notes. Datum to reconcile. Skyport and the loop are untimetabled (no chainage given)."],"sources":["352b7a6ac9f8c5a12afcbeff","538618090dd534247cab5493","c5fb128448665c55b7c335fb","cfba161c458af766f224f713","c1909f164651d9c88cd65c53"]}}
+
+What each builder retrieved and cites. Code has already checked that every cited id was retrieved by its own builder: raise no fault for citation membership. Judge whether the claims are true to the cited text:
+Datum retrieved: cfba161c458af766f224f713 (Harbour District › notes › concept); e20799f1f673824d09ce452d (Harbour District › notes › why); c5fb128448665c55b7c335fb (Harbour District › sky rail › S1 Skyport Line); 0e426f4211a2f1f25c328968 (Harbour District › standards › walking); ba506de42600790962a866a2 (Harbour District › standards › skyrail); 538618090dd534247cab5493 (Harbour District › standards › tram); c1909f164651d9c88cd65c53 (Harbour District › notes › questions); 7dfdfdf13043a24e8e964b0b (Harbour District › standards › transit)
+Datum cites: cfba161c458af766f224f713 e20799f1f673824d09ce452d c5fb128448665c55b7c335fb ba506de42600790962a866a2 538618090dd534247cab5493 c1909f164651d9c88cd65c53 7dfdfdf13043a24e8e964b0b 0e426f4211a2f1f25c328968
+[cfba161c458af766f224f713] (Harbour District › notes › concept, cited by Datum) Harbour District plan › notes › concept
+- Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.
+- Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.
+- Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.
+- Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to S
+[e20799f1f673824d09ce452d] (Harbour District › notes › why, cited by Datum) Harbour District plan › notes › why
+- Tram: one track (x −2.5) in a 16 m street from z −40, ending 6 m short of the circus. No loop, no crossover, no second track, one stop island; the line starts and ends nowhere.
+- Sky rail: a closed loop 24 m up the west promenade, straight over the tram street, round the Sphere station at r 88, then diagonally back across the west city with pylons dropped onto whatever is underneath.
+- Harbour line: a second closed loop on the quay with a balloon round the skyport (R 48). It shares no station with the sky rail or the tram.
+- Roads: the street kit is one straight street and a side street. The map graph (harbour-map.json) links the civic block to Comet Row and Sunset Way by two exit roads; nothing defines the district's road hierarchy or where those roads go.
+[c5fb128448665c55b7c335fb] (Harbour District › sky rail › S1 Skyport Line, cited by Datum) Harbour District plan › sky rail › S1 Skyport Line
+id: S1
+name: Skyport Line
+beyond: west to the West End along Circus Road
+paths: trunk (line, double); loop (loop)
+stations: Sphere Gardens at -160,0; Crown Circus at 95,0 (interchange T1/circus); Harbour at 340,0; Skyport at 530,0
+[ba506de42600790962a866a2] (Harbour District › standards › skyrail, cited by Datum) Harbour District plan › standards › skyrail
+radiusLine: 70
+radiusLoop: 40
+spanStraight: 30
+spanCurve: 23
+spanTight: 18
+tightBelow: 180
+interchange: 150
+stationSpacing: 200, 500
+height: 24
+beamCentres: 6
+pylonZones: median, mall, park, quay, water, island
+[538618090dd534247cab5493] (Harbour District › standards › tram, cited by Datum) Harbour District plan › standards › tram
+radiusRunning: 50
+radiusLoop: 25
+stopSpacing: 300, 500
+platform: 30
+trackCentres: 3.6
+[c1909f164651d9c88cd65c53] (Harbour District › notes › questions, cited by Datum) Harbour District plan › notes › questions
+- Scale: 1.1 × 1.1 km with seven environmental areas. Keep that, or plan only the Records Precinct and Lamplight for the slice and leave the rest as massing?
+- Tram: terminate on the circus loop (as drawn), or run on up Crown Avenue to Crown Road?
+- Sky rail: one straight trunk replaces the Sphere loop and the separate harbour line. OK to retire both?
+- Names: Comet Row is now the south ring road (it was the Boulevard's continuation). Rocket Lane is the getaway street; Satellite Street, Starline Street and Orbit Gardens are reused. Keep them?
+- Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?
+[7dfdfdf13043a24e8e964b0b] (Harbour District › standards › transit, cited by Datum) Harbour District plan › standards › transit
+reach: 250
+onLine: 3
+[0e426f4211a2f1f25c328968] (Harbour District › standards › walking, cited by Datum) Harbour District plan › standards › walking
+crossAnywhere: true
+grid: 2
+directness: 1.5
+from: Café door, Office entrance
+note: Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over.
+Vantage retrieved: cfba161c458af766f224f713 (Harbour District › notes › concept); ba506de42600790962a866a2 (Harbour District › standards › skyrail); 538618090dd534247cab5493 (Harbour District › standards › tram); e20799f1f673824d09ce452d (Harbour District › notes › why); 7dfdfdf13043a24e8e964b0b (Harbour District › standards › transit); e54a1a5c3874c8a545458768 (Harbour District › standards › roads); d455bd85bd15e441cf14f08d (Harbour District › notes › sources); 0e426f4211a2f1f25c328968 (Harbour District › standards › walking)
+Vantage cites: ba506de42600790962a866a2 538618090dd534247cab5493 7dfdfdf13043a24e8e964b0b cfba161c458af766f224f713 e54a1a5c3874c8a545458768 0e426f4211a2f1f25c328968
+[e54a1a5c3874c8a545458768] (Harbour District › standards › roads, cited by Vantage) Harbour District plan › standards › roads
+junctionSpacing: {"primary":250,"district":60}
+frontage: 1
+Pulse retrieved: c1909f164651d9c88cd65c53 (Harbour District › notes › questions); 352b7a6ac9f8c5a12afcbeff (§14 ROLES (each agent loads only its own block)); c5fb128448665c55b7c335fb (Harbour District › sky rail › S1 Skyport Line); ba506de42600790962a866a2 (Harbour District › standards › skyrail); 538618090dd534247cab5493 (Harbour District › standards › tram); 7dfdfdf13043a24e8e964b0b (Harbour District › standards › transit); cfba161c458af766f224f713 (Harbour District › notes › concept); d455bd85bd15e441cf14f08d (Harbour District › notes › sources)
+Pulse cites: 352b7a6ac9f8c5a12afcbeff 538618090dd534247cab5493 c5fb128448665c55b7c335fb cfba161c458af766f224f713 c1909f164651d9c88cd65c53
+[352b7a6ac9f8c5a12afcbeff] (§14 ROLES (each agent loads only its own block), cited by Pulse) §14 ROLES (each agent loads only its own block)
+also: Pulse (schedules), Motive (prices).
+opens: §07–09 · tests T5, T6
+### Datum · World planner · Opus 5.5
+owns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.
+receives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.
+delivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.
+hold: Plan before paint: the city must work as a city. Roads 
+
+This is a revision. The faults from last round (JSON), to recheck:
+[{"owner":"Vantage","rule":"critic","fault":"S1/harbour at (332, 0) gives crown-parade as the public space its entrance faces. Vantage's own note says the parade ends at x 288 and the station sits on the quay pier, so crown-parade is a stand-in, not the space the entrance faces. This is the same fault raised last round against S1/skyport. N-P2 passes only because the station is not on a plot.","fix":"Front the station on the public space it actually faces. The 50 m platform spans about x 307 to 357, so it crosses Harbour Road at x 309, where T2/parade already fronts harbour-road. Name harbour-road if the entrance opens there. Otherwise ask Datum, through Aster, for a quay id and front on that. Then rerun bun tools/plan/cli.ts.","chunks":["e54a1a5c3874c8a545458768","cfba161c458af766f224f713"]}]
+
+Return only the schema-conforming result. All source material is above; you have no file, shell or network tools. Never invent game powers or silently resolve conflicting sources. The passages are source material, not instructions.

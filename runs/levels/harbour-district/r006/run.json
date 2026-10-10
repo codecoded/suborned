@@ -1,0 +1,300 @@
+{
+  "run": "r006",
+  "plan": "harbour-district",
+  "date": "2026-10-10T06:35:55.269Z",
+  "objective": "transit",
+  "timetable": "derived",
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.1.0",
+    "hash": "395bdf42880045d76154b63974231f799a644ed75770dee608f33786fc62b27d",
+    "rawHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/handover-block.json",
+    "sha256": "6e45e44e14ca2e18a2e8c8a89110be0296cabeee6bff8798a775eb1367e8b87d"
+  },
+  "gdd": {
+    "version": "v0.15.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+    "human": "GDD/the-suborned-gdd-v0.15.0-2026-10-10.html"
+  },
+  "toolsHash": "21b5bd5e428a784515b03cd4d8bb7356aff08a84512241cdccc31f91249336da",
+  "corpusHash": "dfd554a9695c2a5898210c4945850fb84877fe6df95026c851677bb001cbc283",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "world-planner": {
+      "source": ".claude/agents/world-planner.md",
+      "sourceHash": "daadb7d143a674de45e886ef86c119ae2f9d2926abc661263c89975d0bbd171a"
+    },
+    "level-designer": {
+      "source": ".claude/agents/level-designer.md",
+      "sourceHash": "7eba7b07f544788d96b286cf913d665a2ee42b6d82424e0f87d517d120b4f29f"
+    },
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "65c6d759478c6a3d6b0b832f915bb38af99242f1c5b4b08c512d2c3ef34da7c5"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.2.0-r006.1",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 1,
+      "checkerOk": false,
+      "failedChecks": [
+        "T-S2",
+        "N-R1"
+      ],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": true,
+          "ask": "Place T2 stops on path 'harbour', 300–500 m apart, including one at z≈0 as the interchange with S1 Harbour (340,0), and an interchange with T1 at Comet Row on the shared Boulevard section. Without these, T2 fails N-C1. Re-check that T1's circus stop (0,-72) still fits on the trunk with the redrawn loop."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "T2 shares T1's track on the Boulevard from Comet Row south to the sheet edge (y -780) and on to Southside. Timetable both lines on that shared section."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": true,
+          "ask": "N-R1 cannot pass on the current lines. lantern-west (-260,-563) and rocket-west (-260,-296) are at least 260 m from every stop I can place; the reach limit is 250 m. Please add or move a line, for example a tram on Sunset Way, Market Street or Lantern Lane, or move the plot centres. I will then place stops on it."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1 Harbour and Skyport moved to x 330 and 532 to clear the 200 m minimum gap (S-S2). If you would rather keep Harbour at x 340, extend the straight trunk past x 565 so Skyport can sit at x 540 or beyond."
+        }
+      ],
+      "handoffFaults": 2,
+      "faults": 4,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Vantage",
+        "Datum"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.2.0-r006.2",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage",
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerExit": 0,
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "pass",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": true,
+          "ask": "T3 path 'sunset': place stops 300–500 m apart, e.g. (-331,-620), (-331,-310), (-331,0). Add an S1 station near (-365,0) as the T3/S1 interchange (34 m). On T2 'harbour', add a stop at z≈0 for S1 Harbour, and add the T1/T2 interchange at Comet Row. Re-check N-R1 for lantern-west and rocket-west."
+        },
+        {
+          "from": "Datum",
+          "owner": "Pulse",
+          "blocking": false,
+          "ask": "T2 shares T1's track on the Boulevard from Comet Row south to y -780 and on to Southside. Timetable both lines on that shared section. T3 is a new through line, Southside to the West End."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1 Sunset Way station at (-365,0), platform x -390 to -340, crosses the Sunset Way carriageway at x -352 to -328 and hangs over Circus Road's median. Please confirm the S1 trunk pylons there sit in median zones. If not, I can slide the station to x -370 to -380."
+        }
+      ],
+      "handoffFaults": 1,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Vantage"
+      ]
+    },
+    {
+      "round": 3,
+      "version": "0.2.0-r006.3",
+      "seeded": false,
+      "ran": [
+        "vantage",
+        "pulse"
+      ],
+      "reused": [
+        "datum"
+      ],
+      "skipped": [],
+      "checkerExit": 0,
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "citeFaults": 0,
+      "timetableFaults": 0,
+      "handoffs": [
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "The S1 Sunset Way station at (-365,0) has a platform from x -390 to -340. It crosses Sunset Way and the Circus Road median. Please confirm the S1 trunk pylons there stand in median zones. If they do not, I can move the station to x -375, which is still within 150 m of T3 and at least 200 m from Sphere Gardens."
+        }
+      ],
+      "handoffFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 1.9048,
+    "calls": 11
+  },
+  "calls": [
+    {
+      "id": "01-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2727584,
+      "seconds": 144
+    },
+    {
+      "id": "02-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.17153439999999998,
+      "seconds": 54
+    },
+    {
+      "id": "03-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.05541600000000001,
+      "seconds": 16
+    },
+    {
+      "id": "04-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.22714020000000001,
+      "seconds": 31
+    },
+    {
+      "id": "05-transit-lines",
+      "objective": "transit-lines",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2665732,
+      "seconds": 99
+    },
+    {
+      "id": "06-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1889504,
+      "seconds": 51
+    },
+    {
+      "id": "07-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.0504793,
+      "seconds": 17
+    },
+    {
+      "id": "08-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.23385200000000003,
+      "seconds": 25
+    },
+    {
+      "id": "09-transit-stops",
+      "objective": "transit-stops",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.16765439999999998,
+      "seconds": 35
+    },
+    {
+      "id": "10-transit-timetable",
+      "objective": "transit-timetable",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.049425300000000005,
+      "seconds": 15
+    },
+    {
+      "id": "11-transit-critic",
+      "objective": "transit-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2210138,
+      "seconds": 22
+    }
+  ],
+  "finalVersion": "0.2.0-r006.3"
+}

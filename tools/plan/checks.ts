@@ -6,6 +6,7 @@ import { offSheet, placements, stopsOf } from './transit';
 import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect } from './civic';
 import { type Walk, walks as footWalks } from './walk';
+import { entranceChecks } from './entrances';
 
 export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string; source?: string; waived?: string };
 export type Route = { id: string; name: string; to: string; length: number; roads: string[]; gates: string[] };
@@ -197,6 +198,7 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
   const walks = footWalks(plan, d, civ), lim = std.walking.directness;
   const worst = walks.reduce((b, w) => (w.m / w.straight > b.m / b.straight ? w : b));
   add({ id: 'W-1', group: 'Walking', rule: 'Escape walks are direct (players cross any road; only buildings and water block)', value: walks.map(w => `${w.from} → ${w.to} ${f(w.m)} m`).join('; '), limit: `walk ÷ straight ≤ ${lim}`, ok: walks.every(w => w.m / w.straight <= lim), detail: `least direct: ${worst.from} → ${worst.to} ×${(worst.m / worst.straight).toFixed(2)}` });
+  C.push(...entranceChecks(plan, d, civ));
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;
   if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }
   return { checks: C, routes, crossings, stops, stations, walks };

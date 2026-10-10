@@ -1,0 +1,213 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -36,
+              25
+            ],
+            [
+              -26,
+              -12,
+              25
+            ],
+            [
+              -26,
+              26,
+              26
+            ],
+            [
+              26,
+              26,
+              26
+            ],
+            [
+              26,
+              -12,
+              25
+            ],
+            [
+              1.8,
+              -36,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; south with T1 down the Boulevard to Southside",
+      "paths": [
+        {
+          "id": "harbour",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              306,
+              320
+            ],
+            [
+              306,
+              -728,
+              52
+            ],
+            [
+              0,
+              -710,
+              52
+            ],
+            [
+              0,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": []
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              595,
+              3,
+              40
+            ],
+            [
+              640,
+              55,
+              45
+            ],
+            [
+              710,
+              55,
+              45
+            ],
+            [
+              710,
+              -55,
+              45
+            ],
+            [
+              640,
+              -55,
+              45
+            ],
+            [
+              595,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Kept from tide's draft: T1 through the circus and a T2 Harbour Line on Harbour Road. Dropped: the two-way Sky Loop round the district. Its corners over the ring roads need R≥70, and the arc midpoint then sits 20.5 m inside the corner, over plots (S-C1). It also repeats S1's reach. The plan's concept is one S1 trunk (open question c1909f: retire the loops?). Sky should confirm.",
+    "Why T2 is needed: no stop on T1 (x=0) or S1 Harbour (340,0) reaches docks-east (262,-512) or harbour-east (262,-267) within transit.reach 250. T2 runs kerbside on the quay side of Harbour Road (x=306, tracks at 304.2/307.8, inside the 288–312 carriageway). It leaves the sheet at y 320.",
+    "Where T2 turns: south at Comet Row, R52 (vertex 306,-728), then west along Comet Row, sloping from z -728 to -710. It turns again with R52 (vertex 0,-710) into the Boulevard and shares T1's track to the sheet edge at y -780. That way no in-sheet terminus or loop is needed (T-L1). I checked both offset tracks (r±1.8) by hand against the street edges. The margins are about 1–2 m.",
+    "T1 loop is redrawn. On the old diagonal, near (-15,-32), the path left street space: it was 0.9 m outside the Boulevard and 7 m off the circus ring centreline (ring half-width 6). The new balloon stays in the Boulevard and on the ring, then in the island (≤30.1 m from centre). Radii are 25/26 (≥ radiusLoop 25). The ends at (±1.8,-56) meet the trunk's two tracks.",
+    "S1 loop is redrawn. On the old one, the fillets at (650,60) and (708,0) overlapped: tangent lengths 43.5 + 41.4 on an 83.4 m segment. The new balloon uses R40/45 (≥ radiusLoop 40). Every segment is long enough for its two tangents. It stays over the apron and water, x ≤ 755 of the 740 limit? No: the arc peak is x≈710, so it stays inside the sheet. The trunk and stations are unchanged.",
+    "Interchange distances (I don't place interchanges): T2 to S1 Harbour (340,0) is 34 m. T1 Crown Circus stop (0,-72) to S1 Crown Circus (95,0) is about 119 m. T2 to T1 is shared track on the Boulevard south of Comet Row. All are ≤150.",
+    "Open, not resolved here: plan question c1909f, whether T1 terminates on the circus loop or runs up Crown Avenue. I kept the loop. I have not run the plan checker; the geometry above was checked by hand only."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c1909f164651d9c88cd65c53",
+    "d455bd85bd15e441cf14f08d"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "Place T2 stops on path 'harbour', 300–500 m apart, including one at z≈0 as the interchange with S1 Harbour (340,0), and an interchange with T1 at Comet Row on the shared Boulevard section. Without these, T2 fails N-C1. Re-check that T1's circus stop (0,-72) still fits on the trunk with the redrawn loop."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 shares T1's track on the Boulevard from Comet Row south to the sheet edge (y -780) and on to Southside. Timetable both lines on that shared section."
+    }
+  ]
+}

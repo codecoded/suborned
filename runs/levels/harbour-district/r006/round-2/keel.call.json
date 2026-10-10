@@ -1,0 +1,200 @@
+{
+  "id": "08-transit-critic",
+  "objective": "transit-critic",
+  "role": "simulation-engineer",
+  "model": "claude-opus-5-5",
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.23385200000000003,
+  "seconds": 25,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/simulation-engineer.md",
+    "sourceHash": "25dda1f04cfee41435fd784b61d614ec92601be92eac40391dd4d9a3a9fb2444"
+  },
+  "retrieval": {
+    "query": "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres ‖ standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones ‖ rulebook: each event needs, changes, witnesses; unknown is rejected ‖ boarding is fast travel priced in time only: wait for the next service plus the ride",
+    "queries": [
+      "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+      "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
+      "rulebook: each event needs, changes, witnesses; unknown is rejected",
+      "boarding is fast travel priced in time only: wait for the next service plus the ride"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "dfd554a9695c2a5898210c4945850fb84877fe6df95026c851677bb001cbc283",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3076891486459451,
+        "key": "7dfdfdf13043a24e8e964b0b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › transit",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › transit\nreach: 250\nonLine: 3",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.07586050724637682,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.10516214370727539,
+        "key": "538618090dd534247cab5493",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › tram",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › tram\nradiusRunning: 50\nradiusLoop: 25\nstopSpacing: 300, 500\nplatform: 30\ntrackCentres: 3.6",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.06504494976203068,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.25533924267706964,
+        "key": "ba506de42600790962a866a2",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyrail",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › skyrail\nradiusLine: 70\nradiusLoop: 40\nspanStraight: 30\nspanCurve: 23\nspanTight: 18\ntightBelow: 180\ninterchange: 150\nstationSpacing: 200, 500\nheight: 24\nbeamCentres: 6\npylonZones: median, mall, park, quay, water, island",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.06504494976203068,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.31128573417663574,
+        "key": "e54a1a5c3874c8a545458768",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › roads",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › roads\njunctionSpacing: {\"primary\":250,\"district\":60}\nfrontage: 1",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.061072261072261075,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: draft for review); the plan checker owns its rules",
+        "distance": 0.3669673015763548,
+        "key": "0e426f4211a2f1f25c328968",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › walking",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "f55c0ac711efaeabc308df7afc8316c0b1c26750339df4fe4080c01bbf0b600d",
+        "text": "Harbour District plan › standards › walking\ncrossAnywhere: true\ngrid: 2\ndirectness: 1.5\nfrom: Café door, Office entrance\nnote: Players cross any road anywhere: carriageways, kerbs, medians, the tram reservation and the circus are walkable ground. Only buildings, built plots, landmarks and water block. Crossings are traffic calming and dressing, never the only way over.",
+        "version": "v0.1.0 2026-10-10",
+        "score": 0.05880766820377085,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.5302066802978516,
+        "key": "352b7a6ac9f8c5a12afcbeff",
+        "kind": "gdd-agent",
+        "lineEnd": 209,
+        "lineStart": 203,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+        "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+        "text": "§14 ROLES (each agent loads only its own block)\nalso: Pulse (schedules), Motive (prices).\nopens: §07–09 · tests T5, T6\n### Datum · World planner · Opus 5.5\nowns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.\nreceives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.\ndelivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.\nhold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations (boarding = fast travel, priced in time): no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Watchers stand where a city watches, never placed for one mission. Never loosen a rule to pass; ask Splice, with a reason.",
+        "version": "v0.15.0",
+        "score": 0.05794186733796998,
+        "signals": [
+          "keyword:1",
+          "keyword:2",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.35545092821121216,
+        "key": "d9cd5166b54ff42ba1ea56ae",
+        "kind": "gdd-agent",
+        "lineEnd": 37,
+        "lineStart": 25,
+        "section": "§02 LOOP + RESOURCES",
+        "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+        "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+        "text": "§02 LOOP + RESOURCES\n## §02 LOOP + RESOURCES\nmission: Watch → Learn → Turn → Time → Take → Fight → Inherit\ncampaign: turned people pay cash/arms/tips → turn more people (snowball). Contacts grow braver or bitter. T + Standing set pushback.\n| resource | scope | drives | from |\n| Cash | campaign | fees, debts, bribes, turning | sources (skimming clerk, bookmaker) |\n| Arms | campaign | winning fights, arming joiners | sources (quartermaster, hijack) |\n| Assets | campaign | access, income, fight allies | Fixer, introductions |\n| Time | mission | actions 6–62 s; events don't wait | — |\n| Trail | campaign | investigations; part of Heat | traceable acts: threats, visible payments, gunfire |\n| Alert 0–3 | mission | security response now | witness reports, found faults, shots |\n| Standing | district | who agrees, crowd behaviour | witnessed acts only |\nrule: every order shows full price before commit ($, time, T, A risk).\ntravel [S]: boarding a tram or sky rail is fast travel round the city: board at any stop or station, ride to any other on the network. Price = time only: wait for the next service + the ride, both from the timetable. No fare.",
+        "version": "v0.15.0",
+        "score": 0.046871392288155164,
+        "signals": [
+          "semantic:3",
+          "semantic:4",
+          "keyword:4"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.33609626698780826,
+        "key": "70189d1e235120c732dfe8c1",
+        "kind": "gdd-agent",
+        "lineEnd": 202,
+        "lineStart": 193,
+        "section": "§14 ROLES (each agent loads only its own block)",
+        "source": "GDD/the-suborned-agent-gdd-v0.15.0-2026-10-10.md",
+        "sourceHash": "a9bfbc2f552d25889b625a19e070370f28f763c8133d91a29960cce736b0339b",
+        "text": "§14 ROLES (each agent loads only its own block)\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3\n### Waymark · Mission designer · Opus 5.5\nowns: The mission generator and the mission checker.\nreceives: The template (objective, target, closing event, fight trigger), the district's people, the rulebook, Vantage's block layout and Datum's gates.\ndelivers: Missions with a route and clue map, how they close and fail, and what starts the fight. Keel checks; Latch builds.\nhold: Handover is the reference case the generator must match. Ships only if 2+ quiet routes win, a loud route costs more Trail, every fail can happen, no contact is essential, and an informed player has a minute to spare. One block, 8–12 min.",
+        "version": "v0.15.0",
+        "score": 0.046649531024531024,
+        "signals": [
+          "semantic:3",
+          "keyword:3",
+          "semantic:4"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

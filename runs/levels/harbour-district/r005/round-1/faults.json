@@ -1,0 +1,28 @@
+[
+  {
+    "owner": "Datum",
+    "rule": "N-R1",
+    "fault": "Four plots are out of reach of any stop or station, against a 250 m reach standard: docks-east 296 m, lantern-west 285 m, harbour-east 273 m, rocket-west 272 m. T1 runs on x 0 and S1 on y 0, so no stop placed on either line can reach them. This is a fault in the lines, not in where the stops stand. Vantage's two blocking handoffs to Datum ask for this same fix.",
+    "fix": "Add or reroute lines so these plots are in reach. East: e.g. a tram on Harbour Road or Dock Road with stops near (262,-270) and (262,-510). West: a line on Sunset Way, Market Street or Lantern Lane with stops near (-230,-300) and (-230,-560). Each new line needs a 150 m interchange and end loops. Keep the reach rule; rerun the checker.",
+    "chunks": [
+      "7dfdfdf13043a24e8e964b0b",
+      "352b7a6ac9f8c5a12afcbeff"
+    ]
+  },
+  {
+    "owner": "Datum",
+    "rule": "handoff",
+    "fault": "Vantage hands off to Datum (blocking): N-R1 fails for Harbour East (262,-267) and Docks East (262,-512): best reach is 272 m and 296 m. As you offered, bring back an eastern line, e.g. a tram on Harbour Road or Dock Road. It needs stops near z -270 and -510 within about 140 m of x 262, linked to the network. Once the line exists, I will place its stops.",
+    "fix": "N-R1 fails for Harbour East (262,-267) and Docks East (262,-512): best reach is 272 m and 296 m. As you offered, bring back an eastern line, e.g. a tram on Harbour Road or Dock Road. It needs stops near z -270 and -510 within about 140 m of x 262, linked to the network. Once the line exists, I will place its stops.",
+    "chunks": [],
+    "synthesized": true
+  },
+  {
+    "owner": "Datum",
+    "rule": "handoff",
+    "fault": "Vantage hands off to Datum (blocking): N-R1 fails for Rocket West (-260,-296) and Lantern West (-260,-563): best reach is 272 m and 285 m. No line runs within 250 m of them. Please add a line on Sunset Way, Market Street or Lantern Lane that can take a stop near x -200 to -260, at about z -300 and z -560. Or move a line so these plots fall in reach. I will not loosen the reach rule.",
+    "fix": "N-R1 fails for Rocket West (-260,-296) and Lantern West (-260,-563): best reach is 272 m and 285 m. No line runs within 250 m of them. Please add a line on Sunset Way, Market Street or Lantern Lane that can take a stop near x -200 to -260, at about z -300 and z -560. Or move a line so these plots fall in reach. I will not loosen the reach rule.",
+    "chunks": [],
+    "synthesized": true
+  }
+]

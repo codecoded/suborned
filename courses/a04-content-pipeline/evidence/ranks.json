@@ -2,11 +2,12 @@
   "chunk": "standards › tram",
   "topN": 8,
   "old": {
+    "chunk": "standards › tram",
     "queries": [
       "tram stop spacing sky rail stations every area in reach of a stop interchange"
     ],
-    "rank": 9,
-    "inTop8": false,
+    "rank": 8,
+    "inTop8": true,
     "top8": [
       "Harbour District › sky rail › S1 Skyport Line",
       "Harbour District › notes › why",
@@ -14,8 +15,8 @@
       "Harbour District › notes › questions",
       "Harbour District › standards › skyrail",
       "Harbour District › foot paths, circus, landmarks, off-sheet links",
-      "Harbour District › standards › transit",
-      "§14 ROLES (each agent loads only its own block)"
+      "§14 ROLES (each agent loads only its own block)",
+      "Harbour District › standards › tram"
     ]
   },
   "datum": {
@@ -24,20 +25,24 @@
       "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
       "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
       "sky rail loop round the district tram line through the circus Harbour Road alignment fillet radii double track",
-      "Datum holds boarding as fast travel; lines run in street space or over public space"
+      "trams and sky rail are networks the cell rides between stops and stations; lines run in street space or over public space"
     ],
-    "rank": 3,
+    "rank": 6,
     "inTop8": true,
     "top8": [
+      "Harbour District › notes › why",
+      "Harbour District › sky rail › S1 Skyport Line",
       "Harbour District › notes › concept",
       "Harbour District › standards › walking",
-      "Harbour District › standards › tram",
       "Harbour District › standards › skyrail",
-      "Harbour District › notes › why",
-      "Harbour District › standards › transit",
+      "Harbour District › standards › tram",
       "Harbour District › notes › questions",
-      "Harbour District › tram › T1 Boulevard Line"
-    ]
+      "Harbour District › notes › sources"
+    ],
+    "travel": {
+      "rank": null,
+      "inTop8": false
+    }
   },
   "vantage": {
     "objective": "transit-stops",
@@ -53,52 +58,130 @@
       "Harbour District › standards › skyrail",
       "Harbour District › standards › tram",
       "Harbour District › standards › transit",
-      "Harbour District › notes › why",
-      "Harbour District › notes › concept",
       "Harbour District › standards › roads",
+      "Harbour District › notes › why",
       "Harbour District › notes › sources",
+      "Harbour District › notes › concept",
       "Harbour District › standards › walking"
-    ]
+    ],
+    "travel": {
+      "rank": null,
+      "inTop8": false
+    }
   },
   "pulse": {
     "objective": "transit-timetable",
     "queries": [
       "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
       "timetable headway dwell run times journey times between stations",
-      "boarding as fast travel is not priced in the GDD; open question for Motive and Sky"
+      "boarding is fast travel priced in time only: wait for the next service plus the ride"
     ],
-    "rank": 5,
+    "rank": 6,
     "inTop8": true,
     "top8": [
-      "Harbour District › notes › questions",
       "§14 ROLES (each agent loads only its own block)",
-      "Harbour District › standards › skyrail",
-      "Harbour District › notes › why",
-      "Harbour District › standards › tram",
+      "§02 LOOP + RESOURCES",
       "Harbour District › standards › transit",
+      "Watch, turn, time, take, inherit › What the player manages",
+      "Harbour District › standards › skyrail",
+      "Harbour District › standards › tram",
       "Harbour District › standards › roads",
-      "Harbour District › standards › walking"
-    ]
+      "Harbour District › notes › questions"
+    ],
+    "travel": {
+      "rank": 2,
+      "inTop8": true
+    }
   },
   "keel": {
     "objective": "transit-critic",
     "queries": [
       "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
       "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
-      "plan checker rules: no dead ends, every area in reach, network connected, station spacing, order",
-      "rulebook: each event needs, changes, witnesses; unknown is rejected"
+      "rulebook: each event needs, changes, witnesses; unknown is rejected",
+      "boarding is fast travel priced in time only: wait for the next service plus the ride"
     ],
-    "rank": 5,
+    "rank": 2,
     "inTop8": true,
     "top8": [
       "Harbour District › standards › transit",
-      "Harbour District › standards › skyrail",
-      "§14 ROLES (each agent loads only its own block)",
-      "Harbour District › notes › concept",
       "Harbour District › standards › tram",
-      "Nothing hand-authored, everything checked (1/3)",
+      "Harbour District › standards › skyrail",
       "Harbour District › standards › roads",
+      "Harbour District › standards › walking",
+      "§14 ROLES (each agent loads only its own block)",
+      "§02 LOOP + RESOURCES",
       "§14 ROLES (each agent loads only its own block)"
-    ]
+    ],
+    "travel": {
+      "rank": 7,
+      "inTop8": true
+    }
+  },
+  "travel": {
+    "chunk": "§02 LOOP + RESOURCES (travel)",
+    "topN": 8,
+    "before": {
+      "pulse": {
+        "queries": [
+          "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+          "timetable headway dwell run times journey times between stations",
+          "the cell rides trams and sky rail between stops and stations; boarding has no price in the GDD; open question for Motive and Sky"
+        ],
+        "rank": 11,
+        "inTop8": false,
+        "top8": [
+          "Harbour District › notes › questions",
+          "§14 ROLES (each agent loads only its own block)",
+          "Harbour District › sky rail › S1 Skyport Line",
+          "Harbour District › standards › skyrail",
+          "Harbour District › standards › tram",
+          "Harbour District › standards › transit",
+          "Harbour District › notes › sources",
+          "Harbour District › standards › roads"
+        ]
+      },
+      "keel": {
+        "queries": [
+          "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+          "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
+          "plan checker rules: no dead ends, every area in reach, network connected, station spacing, order",
+          "rulebook: each event needs, changes, witnesses; unknown is rejected"
+        ],
+        "rank": null,
+        "inTop8": false,
+        "top8": [
+          "Harbour District › standards › transit",
+          "Harbour District › standards › skyrail",
+          "§14 ROLES (each agent loads only its own block)",
+          "§09 GENERATION",
+          "Harbour District › standards › tram",
+          "Nothing hand-authored, everything checked (1/3)",
+          "Harbour District › standards › roads",
+          "§14 ROLES (each agent loads only its own block)"
+        ]
+      }
+    },
+    "after": {
+      "pulse": {
+        "queries": [
+          "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+          "timetable headway dwell run times journey times between stations",
+          "boarding is fast travel priced in time only: wait for the next service plus the ride"
+        ],
+        "rank": 2,
+        "inTop8": true
+      },
+      "keel": {
+        "queries": [
+          "standards tram stopSpacing radiusRunning radiusLoop platform trackCentres",
+          "standards skyrail stationSpacing radiusLine radiusLoop beamCentres interchange pylonZones",
+          "rulebook: each event needs, changes, witnesses; unknown is rejected",
+          "boarding is fast travel priced in time only: wait for the next service plus the ride"
+        ],
+        "rank": 7,
+        "inTop8": true
+      }
+    }
   }
 }

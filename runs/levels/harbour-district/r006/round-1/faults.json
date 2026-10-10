@@ -1,0 +1,35 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "T-S2",
+    "fault": "T2 Crown Road stop at (306,305) sits at chainage 15 m on path 'harbour', which starts at y 320. Its 30 m platform runs from chainage 0 to 30, right up to the path end, and the checker says it is not fully on straight track (3/4).",
+    "fix": "Move Crown Road south so the whole 30 m platform has straight track on both sides and the gap to Harbour (y 0) stays 300–500 m. If no position fits, ask Datum to extend T2's straight path north past y 320.",
+    "chunks": [
+      "538618090dd534247cab5493"
+    ]
+  },
+  {
+    "owner": "Vantage",
+    "rule": "N-R1",
+    "fault": "Every area (plot centroid) is within standards.transit.reach of a tram stop or sky rail station: worst lantern-west 289 m (limit ≤ 250 m); out of reach: lantern-west 289 m, rocket-west 273 m",
+    "fix": "bring the plan inside the rule",
+    "chunks": [],
+    "synthesized": true
+  },
+  {
+    "owner": "Vantage",
+    "rule": "handoff",
+    "fault": "Datum hands off to Vantage (blocking): Place T2 stops on path 'harbour', 300–500 m apart, including one at z≈0 as the interchange with S1 Harbour (340,0), and an interchange with T1 at Comet Row on the shared Boulevard section. Without these, T2 fails N-C1. Re-check that T1's circus stop (0,-72) still fits on the trunk with the redrawn loop.",
+    "fix": "Place T2 stops on path 'harbour', 300–500 m apart, including one at z≈0 as the interchange with S1 Harbour (340,0), and an interchange with T1 at Comet Row on the shared Boulevard section. Without these, T2 fails N-C1. Re-check that T1's circus stop (0,-72) still fits on the trunk with the redrawn loop.",
+    "chunks": [],
+    "synthesized": true
+  },
+  {
+    "owner": "Datum",
+    "rule": "handoff",
+    "fault": "Vantage hands off to Datum (blocking): N-R1 cannot pass on the current lines. lantern-west (-260,-563) and rocket-west (-260,-296) are at least 260 m from every stop I can place; the reach limit is 250 m. Please add or move a line, for example a tram on Sunset Way, Market Street or Lantern Lane, or move the plot centres. I will then place stops on it.",
+    "fix": "N-R1 cannot pass on the current lines. lantern-west (-260,-563) and rocket-west (-260,-296) are at least 260 m from every stop I can place; the reach limit is 250 m. Please add or move a line, for example a tram on Sunset Way, Market Street or Lantern Lane, or move the plot centres. I will then place stops on it.",
+    "chunks": [],
+    "synthesized": true
+  }
+]

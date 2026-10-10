@@ -1,0 +1,33 @@
+{
+  "verdict": "fail",
+  "summary": "Last round's N-R1 fault and both handoffs are fixed (worst plot 247 m, limit 250 m). Still failing: T-C1, T2 runs 8 m outside street space, so Datum's hand check of the R50 bends was wrong. Also one journey lists the wrong `via`. All run times, journey sums, interchange distances (89/119/36 m) and chainages check out, and travel is time-only with no fare. Open questions, not faults: T2's off-sheet route, and pricing of interchange walks (sent to Motive). Datum's crossing handoff to Pulse is advisory and unanswered.",
+  "faults": [
+    {
+      "owner": "Datum",
+      "rule": "T-C1",
+      "fault": "The strict checker reports that T2 runs 8 m outside street space and the circus island (limit 0). Datum checked by hand that the two R50 bends, at (-346,-410) and (306,-410), stay inside Sunset Way, Market Street and Harbour Road. The checker contradicts that: part of the double track crosses corner plots. This is a fault in the line.",
+      "fix": "Re-draw T2's bends so both tracks stay in carriageway. For example, move the corner points or the 6 m track offset so each R50 arc runs through the junction space, keeping R ≥ 50 m. Rerun bun tools/plan/cli.ts until T-C1 passes. Do not loosen the rule; if no R50 bend can fit, take it to Splice with a reason.",
+      "chunks": [
+        "538618090dd534247cab5493",
+        "352b7a6ac9f8c5a12afcbeff"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "The journey T2/harbour → T1/circus (22 s) lists via [\"T2/harbour\"], which is its own starting stop, not an interchange. Pulse's own note describes the route as transfer to S1 at Harbour, ride S1 to Crown Circus (22 s), then transfer to T1 at Crown Circus. So via should list S1/harbour and S1/circus. As written, the price the player sees before boarding (wait plus ride, from the timetable) does not match the journey record.",
+      "fix": "Set via to [\"S1/harbour\",\"S1/circus\"]. Alternatively, record it as the S1/harbour → S1/circus leg and say in the notes that both ends are interchange walks.",
+      "chunks": [
+        "d9cd5166b54ff42ba1ea56ae"
+      ]
+    }
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "352b7a6ac9f8c5a12afcbeff",
+    "d9cd5166b54ff42ba1ea56ae",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -36,
+              25
+            ],
+            [
+              -26,
+              -12,
+              25
+            ],
+            [
+              -26,
+              26,
+              26
+            ],
+            [
+              26,
+              26,
+              26
+            ],
+            [
+              26,
+              -12,
+              25
+            ],
+            [
+              1.8,
+              -36,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "north along Harbour Road past Crown Road; south with T1 down the Boulevard to Southside",
+      "paths": [
+        {
+          "id": "harbour",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              306,
+              320
+            ],
+            [
+              306,
+              -728,
+              52
+            ],
+            [
+              0,
+              -710,
+              52
+            ],
+            [
+              0,
+              -780
+            ]
+          ]
+        }
+      ],
+      "order": []
+    },
+    {
+      "id": "T3",
+      "mode": "tram",
+      "name": "Sunset Line",
+      "beyond": "south to Southside along Sunset Way; west to the West End along Crown Road",
+      "paths": [
+        {
+          "id": "sunset",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              -331,
+              -780
+            ],
+            [
+              -331,
+              289,
+              50
+            ],
+            [
+              -400,
+              289
+            ]
+          ]
+        }
+      ],
+      "order": []
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              595,
+              3,
+              40
+            ],
+            [
+              640,
+              55,
+              45
+            ],
+            [
+              710,
+              55,
+              45
+            ],
+            [
+              710,
+              -55,
+              45
+            ],
+            [
+              640,
+              -55,
+              45
+            ],
+            [
+              595,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Fix for Vantage's N-R1 fault: new tram T3 Sunset Line on Sunset Way, kerbside in the east carriageway at x -331 (tracks -332.8/-329.2, inside the street's -352..-328). It is 71 m from lantern-west (-260,-563) and rocket-west (-260,-296), well inside reach 250. Both ends leave the sheet (y -780 south; x -400 west on Crown Road), so no loop is needed (T-L1, N-D1).",
+    "T3 turns from Sunset Way west onto Crown Road with R50 (vertex -331,289, centre -381,239). Checked by hand: outer track r51.8 meets the street edges (x ≤ -328, z ≤ 292). The inner track r48.2 clears the inside kerb corner (-352,268) at 41 m from centre. Margins are about 1.2 m. I chose kerbside over the median because a median line cannot make R50 inside the junction (T-C1).",
+    "T3 connects through S1: the S1 trunk crosses T3 at z 0. An S1 station near (-365,0), over Circus Road's median, would be 34 m from T3 (interchange ≤150) and 205 m from Sphere Gardens (station spacing 200–500). Then T3 reaches T1 and T2 via S1 (N-C1).",
+    "Kept from tide's draft: T1 through the circus and T2 Harbour Line on Harbour Road. Dropped: the two-way Sky Loop. Its ring-road corners need R≥70, and the arcs would cut over plots (S-C1). The plan's concept is one S1 trunk; open question c1909f (retire the loops?) still needs Sky's answer.",
+    "T2 runs kerbside on Harbour Road (x 306). It turns R52 into Comet Row, then R52 into the Boulevard, and leaves with T1 at y -780. No in-sheet terminus. It is 34 m from S1 Harbour (340,0).",
+    "T1 loop is redrawn to stay in the Boulevard, the circus ring and the island, at R25/26 (≥ radiusLoop 25). S1 loop is redrawn at R40/45 so each fillet has room on its segment. Its arc peak is at x≈710, inside the 740 limit. The S1 trunk is unchanged.",
+    "Open: whether T1 ends on the circus loop or runs up Crown Avenue (c1909f). I kept the loop. Not verified: I have not run the plan checker; all geometry is hand-checked."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "ba506de42600790962a866a2",
+    "c1909f164651d9c88cd65c53",
+    "d455bd85bd15e441cf14f08d",
+    "3a5bfc801124ffde12492b1a",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": true,
+      "ask": "T3 path 'sunset': place stops 300–500 m apart, e.g. (-331,-620), (-331,-310), (-331,0). Add an S1 station near (-365,0) as the T3/S1 interchange (34 m). On T2 'harbour', add a stop at z≈0 for S1 Harbour, and add the T1/T2 interchange at Comet Row. Re-check N-R1 for lantern-west and rocket-west."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 shares T1's track on the Boulevard from Comet Row south to y -780 and on to Southside. Timetable both lines on that shared section. T3 is a new through line, Southside to the West End."
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -680
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -375
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern Gate",
+      "path": "trunk",
+      "at": [
+        -346,
+        -563
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "trunk",
+      "at": [
+        -82,
+        -410
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-east",
+      "name": "Harbour Court",
+      "path": "trunk",
+      "at": [
+        306,
+        -340
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        306,
+        -35
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        315,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "What changed: I placed four T2 stops on Datum's Market Line. T1 and S1 stay as in my last proposal; the only change there is that T1 Records and S1 Harbour now name their T2 interchange partners. I had no shell, so this is checked by hand only. Someone must run `bun tools/plan/cli.ts` before it is accepted.",
+    "T2 distances along the line, measured from the south edge, with the R50 bends at about 78.5 m each: Lantern s217, Market s612, Harbour Court s1049, Harbour s1354. The gaps are 396, 437 and 305 m, so T-S1 (300–500 m) passes.",
+    "T-S2: every 30 m platform is on straight track. Lantern spans z -578 to -548 (the bend starts at -460). Market spans x -97 to -67 (the bend ends at -296). It clears the Satellite Street junction, whose edge is at -66. Harbour Court spans z -355 to -325 (the bend ends at -360). Harbour spans z -50 to -20.",
+    "W-3: each T2 stop is on its track, 6 m off the road centreline, inside the carriageway of the street it fronts.",
+    "N-R1: the four plots that failed last round now pass. Lantern West to Lantern Gate is 86 m. Rocket West to Market is 211 m. Harbour East to Harbour Court is 73 m. Docks East to Harbour Court is 178 m, now the closest call of the four. Crown Terraces and Crescent North are still the worst plots, both at 247 m to S1 Gardens or Circus. That passes, but only just.",
+    "S-I1/N-C1: T1 Records to T2 Market is 89 m. S1 Harbour to T2 Harbour is 36 m. T1 Circus to S1 Circus is 119 m. All three are under 150 m, so the three lines form one connected network.",
+    "S1 is unchanged. The station gaps are 255, 220 and 215 m (S-S2 passes). Harbour sits at x 315 because the 200 m minimum to Skyport rules out Datum's x 340.",
+    "I did not put a T2 stop north of Harbour. The 300 m minimum would put it at z 265 or higher, and its platform would then cross the Crown Road junction, which ends at z 268. No plot needs one."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968",
+    "e54a1a5c3874c8a545458768"
+  ]
+}

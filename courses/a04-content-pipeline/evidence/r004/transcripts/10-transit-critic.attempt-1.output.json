@@ -1,0 +1,12 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. The strict checker report is clean. Last round's fault is fixed: S1/harbour now fronts harbour-road, over walkable street. I rechecked the timetable: each run equals the gap ÷ speed, rounded half up, and each journey equals rides plus dwells. Headways and speeds are marked [S]. Fare, interchange walk and operating hours are left as open questions. Still open but flagged for Aster or Sky, not resolved silently: Skyport is held (it stands over water), the R28 loop note conflicts with the run-through T1, and S1 Harbour is at x 332 here against 340 in the plan.",
+  "faults": [],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "cfba161c458af766f224f713",
+    "e54a1a5c3874c8a545458768"
+  ]
+}

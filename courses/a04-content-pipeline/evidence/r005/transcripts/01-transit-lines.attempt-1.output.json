@@ -1,0 +1,170 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside: through-running; second terminus and depot off-sheet",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              -56
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              -1.8,
+              -56
+            ],
+            [
+              -1.8,
+              -45,
+              25
+            ],
+            [
+              -28,
+              -19,
+              25
+            ],
+            [
+              -28,
+              28,
+              28
+            ],
+            [
+              28,
+              28,
+              28
+            ],
+            [
+              28,
+              -19,
+              25
+            ],
+            [
+              1.8,
+              -45,
+              25
+            ],
+            [
+              1.8,
+              -56
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    },
+    {
+      "id": "S1",
+      "mode": "skyrail",
+      "name": "Skyport Line",
+      "beyond": "west to the West End along Circus Road",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "line",
+          "double": true,
+          "pts": [
+            [
+              -400,
+              0
+            ],
+            [
+              560,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "loop",
+          "role": "loop",
+          "double": false,
+          "pts": [
+            [
+              560,
+              3
+            ],
+            [
+              600,
+              3,
+              40
+            ],
+            [
+              650,
+              60,
+              40
+            ],
+            [
+              708,
+              0,
+              40
+            ],
+            [
+              650,
+              -60,
+              40
+            ],
+            [
+              600,
+              -3,
+              40
+            ],
+            [
+              560,
+              -3
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk",
+        "loop"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "Kept T1 and S1 unchanged; checked by hand only, plan checker not run. T1 starts at the sheet edge (y -780); its terminal loop sits at x ±1.8 (half the 3.6 m track centres), with R25 bends and R28 round the island. S1 starts at the edge at x -400; straight trunk, R40 turning loop over water, inside x 740.",
+    "Rejected the two-way Sky Loop from tide's draft. A ring above the primary roads fails S-C1: an R70 curve at each corner cuts about 20 m into corner plots (Lamplight West, Crown Terraces, Docks South, Crescent East), with no public space there. S1's straight trunk runs over public space only: Circus Road median, island, Parade, Harbour Road, quays, pier.",
+    "No T2 Harbour Line. Harbour Road ends at Comet Row, 60 m short of the south sheet edge, with quay and water to the east. An R25 turning loop needs about 50 m of street; the 24 m road and its junction don't give that (T-C1, T-L1). Running through needs a 90° R50 bend onto Comet Row that only fits off-centre, puts a tram on the primary ring and crosses T1 at grade.",
+    "Network check: S1 Crown Circus station (95,0) is about 119 m from T1 Crown Circus stop (0,-72). That is within the 150 m interchange limit, so N-C1 passes. There are no dead ends: every path end either joins its partner path or reaches the sheet edge.",
+    "Sources conflict: the road geometry draws Crown Circus as a half-diamond plus a line through the island (no east half); the plan's circus object gives a ring round a 31 m island. T1's loop diagonals, about 35 m from centre, fit the ring (31–43 m) but not the drawn shape. If the checker uses the drawn shape, T-C1 fails. Roads are mine; I will redraw the circus road as a full ring.",
+    "Still open with Sky, via Aster, and not settled here: whether T1 stops at the circus loop or runs on up Crown Avenue to Crown Road, and whether the old Sphere loop and harbour loop can be formally retired. The plan draft asks both. This proposal assumes the answers in the concept notes: stop at the circus and retire both loops.",
+    "Coverage risk: the port plots Harbour East (262,-267) and Docks East (262,-512) may be more than 250 m from any stop on T1 (x 0) or S1 (y 0). If Vantage finds the reach check fails there, I will bring back an eastern tram with a terminus that fits, rather than loosen the reach rule."
+  ],
+  "sources": [
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c1909f164651d9c88cd65c53",
+    "d455bd85bd15e441cf14f08d",
+    "0e426f4211a2f1f25c328968"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": false,
+      "ask": "When you place stops and stations on T1 and S1, check that the Harbour East (262,-267) and Docks East (262,-512) plots are within 250 m of a stop or station. If either is out of reach, send it back to Datum as a line fault, with the distance, so an eastern line can be planned."
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -380
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -690
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "crown",
+      "name": "Crown Road",
+      "path": "harbour",
+      "at": [
+        306,
+        305
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "harbour",
+      "at": [
+        306,
+        0
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "lane",
+      "name": "Harbour Lane",
+      "path": "harbour",
+      "at": [
+        306,
+        -310
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "docks",
+      "name": "Docks",
+      "path": "harbour",
+      "at": [
+        306,
+        -620
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        330,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "skyport-pier"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        532,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "Not run through the plan checker: I have no tools here. Everything below was checked by hand from the geometry in the task.",
+    "S1 changes: Datum's Harbour 340 to Skyport 530 gap was 190 m, under the 200 m minimum (S-S2). I moved Harbour to x 330 and Skyport to x 532. Gaps are now 255, 235 and 202 m. The Skyport platform (507 to 557) stays on the straight trunk, which ends at x 560. Both stations front the skyport-pier walk.",
+    "T1 stops at z -72, -380 and -690: gaps 308 and 310 m, all platforms on straight track. Crown Circus T1 (0,-72) to S1 Crown Circus (95,0) is 119 m, under the 150 m interchange limit.",
+    "T2 stops at z 305, 0, -310 and -620 at x 306: gaps 305, 310 and 310 m, all on straight track (the R52 fillet starts at z -676). They front Harbour Road, whose kerb edge is x 312. T2 Harbour (306,0) to S1 Harbour (330,0) is 24 m. Network: T1, S1 and T2 are joined by two interchanges.",
+    "N-R1 fails for two plots, and no stop on these lines can fix it. lantern-west (-260,-563) and rocket-west (-260,-296) are each at least 260 m from the T1 line at x 0, and over 300 m from Sphere Gardens. The reach limit is 250 m.",
+    "Close but passing: crescent-north is 247 m from S1 Crown Circus (it is 220 m from T2 Crown Road), crown-terraces is 247 m from S1 Sphere Gardens, and records-square is 217 m from T1 Records.",
+    "I gave T2 no stop on its Comet Row or Boulevard section. The fillets leave too little straight track, and T1 Comet Row (0,-690) is close by."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "0e426f4211a2f1f25c328968",
+    "e20799f1f673824d09ce452d"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": true,
+      "ask": "N-R1 cannot pass on the current lines. lantern-west (-260,-563) and rocket-west (-260,-296) are at least 260 m from every stop I can place; the reach limit is 250 m. Please add or move a line, for example a tram on Sunset Way, Market Street or Lantern Lane, or move the plot centres. I will then place stops on it."
+    },
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "S1 Harbour and Skyport moved to x 330 and 532 to clear the 200 m minimum gap (S-S2). If you would rather keep Harbour at x 340, extend the straight trunk past x 565 so Skyport can sit at x 540 or beyond."
+    }
+  ]
+}

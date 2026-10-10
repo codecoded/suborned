@@ -1,0 +1,22 @@
+{
+  "verdict": "fail",
+  "summary": "Fail: two checker rules failed. T-S2: T2 Crown Road platform is not on straight track (Vantage, below). N-R1: lantern-west and rocket-west are out of the 250 m reach (Datum). It is not listed again because Vantage's blocking handoff already counts it. Datum's blocking ask for a T1/T2 interchange at Comet Row is also counted already. The timetable is plausible and matches §02: time-only price, no fare. Open questions go to Motive. Unverified, not faulted: Datum's hand-checked T2 fillet margins.",
+  "faults": [
+    {
+      "owner": "Vantage",
+      "rule": "T-S2",
+      "fault": "T2 Crown Road stop at (306,305) sits at chainage 15 m on path 'harbour', which starts at y 320. Its 30 m platform runs from chainage 0 to 30, right up to the path end, and the checker says it is not fully on straight track (3/4).",
+      "fix": "Move Crown Road south so the whole 30 m platform has straight track on both sides and the gap to Harbour (y 0) stays 300–500 m. If no position fits, ask Datum to extend T2's straight path north past y 320.",
+      "chunks": [
+        "538618090dd534247cab5493"
+      ]
+    }
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "d9cd5166b54ff42ba1ea56ae",
+    "352b7a6ac9f8c5a12afcbeff"
+  ]
+}

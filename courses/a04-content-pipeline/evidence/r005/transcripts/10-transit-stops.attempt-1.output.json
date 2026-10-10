@@ -1,0 +1,152 @@
+{
+  "stops": [
+    {
+      "line": "T1",
+      "id": "comet",
+      "name": "Comet Row",
+      "path": "trunk",
+      "at": [
+        0,
+        -680
+      ],
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "records",
+      "name": "Records",
+      "path": "trunk",
+      "at": [
+        0,
+        -375
+      ],
+      "interchange": "T2/market",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        0,
+        -72
+      ],
+      "interchange": "S1/circus",
+      "fronts": "boulevard"
+    },
+    {
+      "line": "T2",
+      "id": "lantern",
+      "name": "Lantern Gate",
+      "path": "trunk",
+      "at": [
+        -349.5,
+        -563
+      ],
+      "fronts": "sunset-way"
+    },
+    {
+      "line": "T2",
+      "id": "market",
+      "name": "Market Street",
+      "path": "trunk",
+      "at": [
+        -125,
+        -410
+      ],
+      "interchange": "T1/records",
+      "fronts": "market-street"
+    },
+    {
+      "line": "T2",
+      "id": "harbour-east",
+      "name": "Harbour Court",
+      "path": "trunk",
+      "at": [
+        309.5,
+        -350
+      ],
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "T2",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        309.5,
+        -35
+      ],
+      "interchange": "S1/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        315,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "harbour-road"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        530,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier"
+    }
+  ],
+  "notes": [
+    "What changed: I moved the T2 stops onto Datum's redrawn track. The track now runs at x ±309.5/-349.5, so my old stops at x -346 and x 306 were 3.5 m off the line and failed N-P1 (limit 3 m). Lantern, Harbour Court and Harbour now sit exactly on x -349.5 or x 309.5. T1 and S1 are unchanged. These are hand checks only: run `bun tools/plan/cli.ts` and confirm exit 0 before accepting.",
+    "Market moves from (-82,-410) to (-125,-410), on the straight diagonal between Datum's two r200 fillets (straight from about x -156 to x -94). At x -82 the platform would have sat on the eastern fillet, which runs from about x -94 to x -66, and failed T-S2. The new 30 m platform spans about x -140 to -110 and stays on straight track. It is on Market Street's centreline.",
+    "I rejected Datum's suggested site near (40,-416.5). It leaves Rocket West 256 m from the nearest stop (N-R1 fails at 250), and it opens a 529 m gap after Lantern (T-S1 fails). At (-125,-410), Rocket West is 177 m from Market.",
+    "T2 distances along the line from the south edge (R50 bends 78.5 m, r200 fillets about 28.7 m): Lantern s217, Market s580, Harbour Court s1060, Harbour s1375. The gaps are 363, 480 and 315 m, so T-S1 passes. Harbour Court moves to z -350 to keep the middle gap under 500 m. Its platform, z -365 to -335, stays clear of the bend's end at z -366.5.",
+    "Interchanges, all under the 150 m limit: T2 Market to T1 Records 130 m, T2 Harbour to S1 Harbour 35 m, T1 Circus to S1 Circus 119 m. The network is one connected whole.",
+    "N-R1 closest calls: Lantern South is 105 m from T1 Comet, Docks East 169 m from Harbour Court, and Crown Terraces and Crescent North about 247 m from S1, all under 250 m.",
+    "W-3: every T2 stop lies inside the carriageway of the road it fronts. S1 Harbour is 3 m beyond Harbour Road's edge, within the 6 m allowed."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2",
+    "7dfdfdf13043a24e8e964b0b",
+    "8753ed1758ca27e6cf152279",
+    "e20799f1f673824d09ce452d",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

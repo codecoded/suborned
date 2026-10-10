@@ -1,6 +1,7 @@
 // The whole pipeline with no model and no index: a stub CLAUDE_BIN answers from fixtures, retrieval is lexical, and every
 // run lands in a scratch folder (LEVELS_RUNS / LEVELS_OUT), never in runs/.
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
@@ -10,11 +11,14 @@ import { hash, loadCorpus } from '../../rag/corpus';
 import { apply, seedStationOnPlot } from '../apply';
 import { citedBlock, citeFaults } from '../cite';
 import { ownerOf } from '../checker';
+import { collectHandoffs, handoffFaults } from '../handoff';
 import { nextMinor, candidateVersion } from '../paths';
 import { replay } from '../replay';
 import { z } from 'zod';
 import { cliSchema } from '../../rag/claude';
 import { agents } from '../schemas';
+import { applyDerived, deriveTimetable } from '../timetable';
+import { inProcess } from '../checker';
 import { schemaProblems } from './schema-lint';
 
 setDefaultTimeout(180000);
@@ -89,7 +93,7 @@ describe('levels transit, stubbed', () => {
     await Bun.write(file, bytes);
     process.env.LEVELS_RUNS = copy;
     try {
-      const a = await replay('harbour-district', 'r001'); expect(a.ok).toBe(false); expect(a.lines.join('\n')).toContain('plan.json is not the input plan');
+      const a = await replay('harbour-district', 'r001'); expect(a.ok).toBe(false); expect(a.lines.join('\n')).toContain('plan.json differs from the input plan');
       const v = join(copy, 'harbour-district', 'r002', 'round-2', 'vantage.json'), j = await Bun.file(v).json(); delete j.stops; await Bun.write(v, JSON.stringify(j));
       const b = await replay('harbour-district', 'r002'); expect(b.ok).toBe(false); expect(b.lines.join('\n')).toContain('fails its schema');
     } finally { delete process.env.LEVELS_RUNS; }
@@ -173,6 +177,26 @@ describe('levels, hardening', () => {
     expect(run.rounds[1].ran).toContain('datum');
   });
 
+  test('hand-offs: a blocking one reaches its owner as a fault and feedback, a non-blocking one is only recorded; replay passes', async () => {
+    const fx = join(scratch, 'fixtures-hand'), rr = join(scratch, 'runs-hand'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+    const d = await Bun.file(join(fx, 'transit-lines.1.json')).json();
+    d.handoffs = [{ owner: 'Vantage', blocking: true, ask: 'BLOCKASK keep stops off the new loop' }, { owner: 'Pulse', blocking: false, ask: 'SOFTASK check the loop headway' }];
+    await Bun.write(join(fx, 'transit-lines.1.json'), JSON.stringify(d));
+    const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_OUT: join(scratch, 'out-hand') }, planFile); expect(r.code).toBe(0);
+    const dir = join(rr, 'harbour-district', 'r001'), run = await Bun.file(join(dir, 'run.json')).json();
+    expect(run.rounds[0].handoffs).toEqual([{ from: 'Datum', owner: 'Vantage', blocking: true, ask: d.handoffs[0].ask }, { from: 'Datum', owner: 'Pulse', blocking: false, ask: d.handoffs[1].ask }]);
+    expect(run.rounds[0].handoffFaults).toBe(1); expect(run.rounds[0].faultOwners).not.toContain('Pulse');
+    const f = await Bun.file(join(dir, 'round-1', 'faults.json')).json(), h = f.filter((x: any) => x.rule === 'handoff');
+    expect(h).toHaveLength(1); expect(h[0]).toMatchObject({ owner: 'Vantage', synthesized: true }); expect(h[0].fault).toContain('BLOCKASK');
+    expect(run.rounds[1].handoffs).toEqual([]); // datum was reused in round 2: its hand-off was delivered already
+    const calls = join(scratch, 'out-hand', 'harbour-district', 'r001', 'calls'), prompts = (await readdir(calls)).filter(x => x.endsWith('.prompt.txt'));
+    const texts = await Promise.all(prompts.map(async x => [x, await Bun.file(join(calls, x)).text()] as const));
+    const of = (o: string) => texts.filter(([x]) => x.includes(o)).map(([, t]) => t).join('\n');
+    expect(of('transit-stops')).toContain('BLOCKASK'); expect(of('transit-timetable')).not.toContain('BLOCKASK'); expect(of('transit-timetable')).not.toContain('SOFTASK'); expect(of('transit-stops')).not.toContain('SOFTASK');
+    process.env.LEVELS_RUNS = rr;
+    try { const res = await replay('harbour-district', 'r001'); expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.lines.join('\n')).toContain('round-1: hand-offs match (2, 1 blocking)'); } finally { delete process.env.LEVELS_RUNS; }
+  });
+
   test('--rounds is clamped to 1..3 and NaN means 3', async () => {
     const rr = join(scratch, 'runs-rounds'), one = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '0');
     expect(one.stdout).toContain('r001 REJECTED'); expect((await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json()).rounds).toHaveLength(1);
@@ -180,7 +204,72 @@ describe('levels, hardening', () => {
   });
 });
 
+describe('derived timetable', () => {
+  const lines = (speed: number) => [{ line: 'T1', speed, headwaySec: 240, dwellSec: 20 }, { line: 'S1', speed, headwaySec: 180, dwellSec: 20 }];
+  const pulse = (js: any[], speed = 7) => ({ lines: lines(speed), journeys: js, openQuestions: [], notes: [], sources: [] });
+  const fixture = async (f: string) => JSON.parse((await Bun.file(join(here, 'fixtures', f)).text()).replaceAll('__CHUNK__', 'a'.repeat(24)));
+  const candidate = async () => {
+    const d = await fixture('transit-lines.1.json'), v = await fixture('transit-stops.1.json'), b = apply(base, { datum: d, vantage: v }, '0.2.0-r001.1').plan;
+    return { d, v, plan: b, report: await inProcess(b, true) };
+  };
+  test('run secs are ceil(gap / speed) from the stop table; journey = rides + dwells + interchange walk', async () => {
+    const { plan, report } = await candidate(), t1 = report.stops.filter((s: any) => s.line === 'T1').sort((a: any, b: any) => a.chainage - b.chainage);
+    const { timetable: tt, faults } = deriveTimetable(pulse([{ legs: [{ from: `T1/${t1[0].id}`, to: `T1/${t1.at(-1).id}` }] }]), plan, report);
+    expect(faults).toEqual([]);
+    const runs = tt.lines.find(l => l.line === 'T1')!.runs; expect(runs.map(r => r.sec)).toEqual(t1.slice(0, -1).map((s: any) => Math.ceil(Math.round(s.next) / 7)));
+    expect(tt.journeys[0]!.sec).toBe(runs.reduce((a, r) => a + r.sec, 0) + (t1.length - 2) * 20); expect(tt.journeys[0]!.via).toEqual([]);
+  });
+  test('stops move between rounds: runs are recomputed, a stale Pulse value cannot survive', async () => {
+    const { d, v, plan, report } = await candidate(), p = pulse([{ legs: [{ from: 'T1/circus', to: 'T1/comet' }] }]);
+    const before = deriveTimetable(p, plan, report).timetable.journeys[0]!.sec;
+    const v2 = structuredClone(v); const comet = v2.stops.find((s: any) => s.line === 'T1' && s.id === 'comet'); comet.at = [0, -640];
+    const moved = apply(base, { datum: d, vantage: v2 }, '0.2.0-r001.2').plan, after = deriveTimetable(p, moved, await inProcess(moved, true)).timetable.journeys[0]!.sec;
+    expect(after).toBeLessThan(before);
+    const legacy = { ...p, lines: [{ ...p.lines[0], runs: [{ from: 'T1/circus', to: 'T1/records', sec: 999 }] }, p.lines[1]], journeys: [{ ...p.journeys[0], sec: 9999 }] } as any;
+    expect(JSON.stringify(deriveTimetable(legacy, moved, await inProcess(moved, true)).timetable)).not.toContain('999'); // Pulse-written sums are never read
+    expect(deriveTimetable(pulse(p.journeys, 14), plan, report).timetable.journeys[0]!.sec).toBeLessThan(before);
+  });
+  test('a bad via, a same-stop change, an unknown stop or a cross-line leg is a fault; a real interchange costs a walk', async () => {
+    const { plan, report } = await candidate(), f = (js: any[]) => deriveTimetable(pulse(js), plan, report);
+    const ok = f([{ legs: [{ from: 'T1/comet', to: 'T1/circus' }, { from: 'S1/circus', to: 'S1/gardens' }] }]);
+    expect(ok.faults).toEqual([]); expect(ok.timetable.journeys[0]!.via).toEqual(['T1/circus']);
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/records' }, { from: 'S1/gardens', to: 'S1/circus' }] }]).faults.join()).toContain('not an interchange pair');
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/circus' }, { from: 'T1/circus', to: 'T1/records' }] }]).faults.join()).toContain('must change lines');
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/nowhere' }] }]).faults.join()).toContain('unknown stop T1/nowhere');
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'S1/circus' }] }]).faults.join()).toContain('different lines');
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/comet' }] }]).faults.join()).toContain('starts and ends');
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/circus' }] }]).timetable.journeys).toHaveLength(1);
+    expect(f([{ legs: [{ from: 'T1/comet', to: 'T1/nowhere' }] }]).timetable.journeys).toHaveLength(0);
+    expect(deriveTimetable({ ...pulse([]), lines: [lines(7)[0]!] }, plan, report).faults.join()).toContain('line S1 has no speed');
+  });
+  test('applyDerived feeds the derived timetable to apply; a run records timetable derived and replays by recomputation', async () => {
+    const { d, v } = await candidate(), r = await applyDerived(base, { datum: d, vantage: v, pulse: pulse([{ legs: [{ from: 'T1/circus', to: 'T1/comet' }] }]) }, '0.2.0-r001.1');
+    expect(r.problems).toEqual([]); expect(r.plan.timetable.journeys[0].sec).toBe(r.timetable!.journeys[0]!.sec);
+    const run = await Bun.file(join(runs, 'harbour-district', 'r001', 'run.json')).json(); expect(run.timetable).toBe('derived');
+    expect(await Bun.file(join(runs, 'harbour-district', 'r001', 'round-2', 'timetable.json')).json()).toMatchObject({ journeys: [{ via: [] }, { via: ['T1/circus'] }] });
+    const copy = join(scratch, 'runs-stale'); await cp(runs, copy, { recursive: true });
+    const f = join(copy, 'harbour-district', 'r001', 'round-2', 'timetable.json'), t = await Bun.file(f).json(); t.journeys[0].sec += 1; await Bun.write(f, JSON.stringify(t));
+    process.env.LEVELS_RUNS = copy; try { const bad = await replay('harbour-district', 'r001'); expect(bad.ok).toBe(false); expect(bad.lines.join('\n')).toContain('timetable.json differs'); } finally { delete process.env.LEVELS_RUNS; }
+  });
+  test('runs recorded before derivation (r002-r005) still replay as recorded', async () => {
+    for (const r of ['r002', 'r003', 'r004', 'r005']) { const res = await replay('harbour-district', r); expect(res.lines.filter(l => l.startsWith('FAIL')), r).toEqual([]); expect(res.lines).toContain('ok    timetable as proposed (recorded before derivation)'); }
+  });
+});
+
 describe('levels units', () => {
+  test('handoffs are optional in every builder schema and validated when present', () => {
+    const h = { owner: 'Pulse', blocking: true, ask: 'x' };
+    for (const f of ['transit-lines.1.json', 'transit-stops.1.json', 'transit-timetable.1.json']) {
+      const agent = ({ 'transit-lines': 'datum', 'transit-stops': 'vantage', 'transit-timetable': 'pulse' } as const)[f.split('.')[0] as 'transit-lines'], fx = JSON.parse(readFileSync(join(here, 'fixtures', f), 'utf8').replaceAll('__CHUNK__', 'a'.repeat(24)));
+      expect('handoffs' in fx).toBe(false); expect(agents[agent].safeParse(fx).success).toBe(true);
+      expect(agents[agent].safeParse({ ...fx, handoffs: [h] }).success).toBe(true); expect(agents[agent].safeParse({ ...fx, handoffs: [{ ...h, owner: 'Keel' }] }).success).toBe(false);
+    }
+  });
+  test('handoffFaults: only blocking ones from builders that ran', () => {
+    const outs = { datum: { handoffs: [{ owner: 'Vantage' as const, blocking: true, ask: 'a' }, { owner: 'Pulse' as const, blocking: false, ask: 'b' }] }, pulse: { handoffs: [{ owner: 'Datum' as const, blocking: true, ask: 'c' }] } };
+    expect(collectHandoffs(outs, ['datum', 'pulse'])).toHaveLength(3); expect(collectHandoffs(outs, ['pulse'])).toHaveLength(1); expect(collectHandoffs({}, ['datum'])).toEqual([]);
+    expect(handoffFaults(collectHandoffs(outs, ['datum', 'pulse'])).map(f => [f.owner, f.rule])).toEqual([['Vantage', 'handoff'], ['Datum', 'handoff']]);
+  });
   test('versions: next minor, round and run in the pre-release', () => {
     expect(nextMinor('0.1.0')).toBe('0.2.0'); expect(candidateVersion('0.1.0', 3, 2)).toBe('0.2.0-r003.2');
   });

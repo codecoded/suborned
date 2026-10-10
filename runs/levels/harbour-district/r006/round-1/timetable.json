@@ -1,0 +1,144 @@
+{
+  "lines": [
+    {
+      "line": "T1",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T1/comet",
+          "to": "T1/records",
+          "sec": 39
+        },
+        {
+          "from": "T1/records",
+          "to": "T1/circus",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "T2",
+      "headwaySec": 120,
+      "dwellSec": 20,
+      "speed": 8,
+      "runs": [
+        {
+          "from": "T2/crown",
+          "to": "T2/harbour",
+          "sec": 39
+        },
+        {
+          "from": "T2/harbour",
+          "to": "T2/lane",
+          "sec": 39
+        },
+        {
+          "from": "T2/lane",
+          "to": "T2/docks",
+          "sec": 39
+        }
+      ]
+    },
+    {
+      "line": "S1",
+      "headwaySec": 90,
+      "dwellSec": 15,
+      "speed": 14,
+      "runs": [
+        {
+          "from": "S1/gardens",
+          "to": "S1/circus",
+          "sec": 19
+        },
+        {
+          "from": "S1/circus",
+          "to": "S1/harbour",
+          "sec": 17
+        },
+        {
+          "from": "S1/harbour",
+          "to": "S1/skyport",
+          "sec": 15
+        }
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "from": "T1/comet",
+      "to": "S1/gardens",
+      "sec": 203,
+      "via": [
+        "T1/circus"
+      ]
+    },
+    {
+      "from": "T2/docks",
+      "to": "S1/skyport",
+      "sec": 131,
+      "via": [
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T1/records",
+      "to": "T2/crown",
+      "sec": 199,
+      "via": [
+        "T1/circus",
+        "S1/harbour"
+      ]
+    },
+    {
+      "from": "T2/crown",
+      "to": "S1/gardens",
+      "sec": 108,
+      "via": [
+        "T2/harbour"
+      ]
+    },
+    {
+      "from": "T1/comet",
+      "to": "T2/docks",
+      "sec": 317,
+      "via": [
+        "T1/circus",
+        "S1/harbour"
+      ]
+    }
+  ],
+  "openQuestions": [
+    {
+      "question": "Does boarding cost anything besides the wait and the ride (no fare is stated)? Can any person ride, or is the cell only, and are there limits for a wanted or recognised cell?",
+      "for": "Motive",
+      "why": "GDD §02 prices boarding in time only; anything further is undecided and not set in the timetable."
+    },
+    {
+      "question": "Can a cell be seen or reported while waiting on a platform or riding, which would add Trail or Alert risk to the time price?",
+      "for": "Motive",
+      "why": "Watchers stand at stations and stops, but the GDD does not say whether boarding is a witnessed act."
+    },
+    {
+      "question": "Do the T1 and T2 trams and the sky rail run through the whole mission clock, including the 5:40 to 8:00 handover window?",
+      "for": "Motive",
+      "why": "Headways are assumed constant; the GDD does not say service changes with Alert or lockdown (the police sealing stations is raised in the plan questions)."
+    }
+  ],
+  "notes": [
+    "T1 and T2 tram speed 8 m/s (~29 km/h): stops are 300 to 310 m apart, so a run takes about 39 s, which keeps a hop short but readable. [S]",
+    "S1 sky rail speed 14 m/s (~50 km/h): faster than the trams as an elevated trunk with 200 to 255 m station gaps, so it pays as the cross-city link. [S]",
+    "Tram dwell 20 s, sky rail dwell 15 s: dwell is paid only at pass-through stops, so it only affects the 3-stop-plus journeys. [S]",
+    "Tram headway 120 s, sky rail headway 90 s: the sky rail is the trunk and runs more often. The average wait is half a headway, so boarding costs 45 to 60 s before the ride. [S]",
+    "Journeys use the two interchange pairs T1/circus with S1/circus and T2/harbour with S1/harbour. T1 and T2 do not meet directly, so any tram-to-tram trip goes via the sky rail.",
+    "Journeys cover the cases the player will often need: Comet Row to Gardens, Docks to Skyport, Records to Crown Road (three legs), Crown Road to Gardens, and Comet Row to Docks (three legs)."
+  ],
+  "sources": [
+    "d9cd5166b54ff42ba1ea56ae",
+    "a61013bb832308b31e1ef07b",
+    "352b7a6ac9f8c5a12afcbeff",
+    "538618090dd534247cab5493",
+    "ba506de42600790962a866a2"
+  ]
+}

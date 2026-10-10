@@ -20,37 +20,50 @@ The Suborned is a commander game. The cell moves through a city that runs on sch
 - **Revision:** each fault goes back to its owner with the cited chunks pinned into their retrieval, for up to 3 rounds.
 - **ACCEPTED** means checker exit 0 and Keel pass.
 
-## The submitted run: `r003`, ACCEPTED in 2 rounds
-r003 ran on GDD v0.15.0 (corpus `3acb05ba5c76`) and on the corrected civic block: the Oct 9 city scale, with the café as the 22 × 11.3 × 34.8 m corner building. Rule C-0 holds the block at that scale. The run pins its world inputs:
-- the block is copied to `input.block.json`, with its sha256 in `run.json`;
-- the GDD version is recorded in `run.json`.
+## The submitted run: `r006`, ACCEPTED in 3 rounds
+r006 ran on:
+- GDD v0.15.0, corpus `dfd554a9695c`;
+- the corrected civic block: the Oct 9 city scale, with the café as the 22 × 11.3 × 34.8 m corner building. Rule C-0 holds the block at that scale;
+- the plan with Datum's Skyport Pier and apron.
 
-Replay and sheets use the pinned copies, never whatever is on disk.
+The run pins its world inputs. The block is copied to `input.block.json`, with its sha256 in `run.json`, and the GDD version is recorded too. Replay and sheets use the pinned copies, never whatever is on disk.
 
-- **Record:** `runs/levels/harbour-district/r003/`, committed. It holds:
+- **Record:** `runs/levels/harbour-district/r006/`, committed. It holds:
   - `run.json`;
   - the input plan and the input block;
-  - for each round: the plan, the checks, each agent's output, its call record (card hash and retrieved text) and Keel's verdict.
+  - for each round: the plan, the checks, each agent's output, its call record (card hash and retrieved text), the derived timetable and Keel's verdict.
 
-  Replay it with `bun run levels:replay r003` → `REPLAY OK`.
-- **Report:** [`report.html`](report.html) shows each call's query, retrieved chunks and output side by side, plus each critic verdict. Rebuild it with `bun courses/a04-content-pipeline/build-report.ts r003`.
+  Replay it with `bun run levels:replay r006` → `REPLAY OK`.
+- **Report:** [`report.html`](report.html) shows each call's query, retrieved chunks and output side by side, plus each critic verdict. Rebuild it with `bun courses/a04-content-pipeline/build-report.ts r006`.
 - **Self-assessment:** [`self-assessment.html`](self-assessment.html).
 - **Sheets:**
-  - [before, v0.1.0](evidence/r003/sheets/harbour-district-v0.1.0.html): strict mode fails N-R1 (reach) and S-S2 (station spacing); C-0 passes.
-  - [round 1, 0.2.0-r003.1](evidence/r003/sheets/harbour-district-v0.2.0-r003.1.html): fails N-R1.
-  - [accepted, 0.2.0-r003.2](evidence/r003/sheets/harbour-district-v0.2.0-r003.2.html)
-- **Transcripts:** `evidence/r003/transcripts/` holds the prompt, card snapshot, retrieval, schema, stream-json events and output for each call. These are copied from `out/`.
-- **Retrieval tweak:** see `evidence/ranks.json`. With the old single query, `standards › tram` (home of `stopSpacing`) ranked 9th, outside the top 8. With the per-objective queries it ranks 2nd to 5th.
-- **Critic correction:** this happened without seeding, so no seeded challenge was run. In round 1 the checker failed N-R1, and Keel raised 3 faults:
-  - plot rocket-west was 273 m from any stop, over the 250 m limit (→ Datum);
-  - S1/skyport stood over water, where nobody could walk to it (→ Vantage);
-  - the timetable stated a boarding-price rule it hadn't cited (→ Pulse).
-
-  In round 2, Datum added a T2 stop at Sunset Way (worst reach now 247 m), Vantage removed the Skyport station and handed the missing apron to Datum, and Pulse moved boarding cost into an open question. The checker was clean and Keel passed.
+  - [before, v0.1.0](evidence/r006/sheets/harbour-district-v0.1.0.html): strict mode fails N-R1 (reach) and S-S2 (station spacing).
+  - [round 1, 0.2.0-r006.1](evidence/r006/sheets/harbour-district-v0.2.0-r006.1.html): fails T-S2 and N-R1.
+  - [round 2, 0.2.0-r006.2](evidence/r006/sheets/harbour-district-v0.2.0-r006.2.html): checker clean, but a blocking hand-off is still open.
+  - [accepted, 0.2.0-r006.3](evidence/r006/sheets/harbour-district-v0.2.0-r006.3.html)
+- **Transcripts:** `evidence/r006/transcripts/` holds the prompt, card snapshot, retrieval, schema, stream-json events and output for each call. These are copied from `out/`.
+- **What the accepted network has:**
+  - three tram lines, T1, T2 and a new T3 Sunset Line, which brings lantern-west and rocket-west into reach (worst area 247 m, limit 250 m);
+  - the S1 sky rail, with stations at Sunset Way, Gardens, Crown Circus, Harbour and **Skyport**. Skyport stands on the new pier apron, and you can walk to every station (rule W-2).
+  - The timetable is derived in code from the checker's chainages. Boarding is fast travel priced in time only, as GDD §02 says.
+- **Critic correction:** this happened without seeding, so no seeded challenge was run.
+  - Round 1: the checker failed T-S2 (a T2 platform off straight track) and N-R1 (two areas out of reach). Datum and Vantage also raised blocking hand-offs to each other.
+  - Round 2: Datum added T3 and Vantage moved the platform. The checker was clean and Keel passed, but a blocking hand-off from Datum (place the T3 stops and the Sunset Way interchange) was still open, so the run went on.
+  - Round 3: Vantage placed those stops, and the run was ACCEPTED.
+- **Retrieval tweaks:** see `evidence/ranks.json` (`bun run levels:ranks --evidence`).
+  - `standards › tram`, home of `stopSpacing`, now ranks 2nd to 6th with the per-objective queries.
+  - §02 travel (boarding as fast travel, time only) moved from 11th to 2nd for Pulse, and from outside the top 12 to 7th for Keel.
 
 ### Earlier runs, kept as evidence
-- **`r002`** (GDD v0.14.0, REJECTED after 3 rounds; [report](evidence/r002/report.html), [self-assessment](evidence/r002/self-assessment.html)). It exposed a critic-scope defect. From round 2 on, the only faults were false "cites an unretrieved id" faults: each builder cited only passages from its own retrieval, but Keel checked them against its own top 8. The fix, made before r003: citation membership is checked in code (`tools/levels/cite.ts`), and Keel is shown each builder's retrieved ids and cited text. `levels:replay r002` → `REPLAY OK … outcome REJECTED (recorded)`, with drift labelled "recorded against GDD v0.14.0".
-- **`r001`** (superseded; ACCEPTED in 2 rounds; [evidence](evidence/r001/report.html)). It was recorded against the stale Oct 5 civic block, with no pinned block. `levels:replay r001` reports `superseded: recorded against the Oct 5 block, replays at commit 3dbb9ca` and exits 1, because its checker can't be rerun on this tree. Its card and corpus drift is labelled "recorded against GDD v0.14.0".
+| run | GDD | outcome | what it taught | fix before the next run |
+|---|---|---|---|---|
+| [`r001`](evidence/r001/report.html) | v0.14.0 | ACCEPTED, now **superseded** | The checker read the civic block from disk, so the Oct 5 → Oct 9 block change broke replay. | Runs pin `input.block.json` and its sha256. `levels:replay r001` reports `superseded: recorded against the Oct 5 block, replays at commit 3dbb9ca` and exits 1, because its checker can't be rerun. |
+| [`r002`](evidence/r002/report.html) | v0.14.0 | REJECTED | The critic checked builders' citations against its own retrieval, so false "unretrieved id" faults never cleared. | Citations are checked in code (`cite.ts`), and Keel sees each builder's retrieved set. |
+| [`r003`](evidence/r003/report.html) | v0.15.0 | ACCEPTED | Neither Pulse nor Keel retrieved §02, so Keel faulted Pulse's true boarding rule. The new walk rule shows its S1 Harbour had no walk. | §02 queries were added. A claim Keel can't find in its passages is now "unverified", not a fault. Rules W-2 and W-3 were added. |
+| [`r004`](evidence/r004/sheets/harbour-district-v0.2.0-r004.3.html) | v0.15.0 | ACCEPTED, from a **fresh clone** | The README works end to end. The same §02 miss came back. Vantage's Skyport hand-off to Datum was never routed. | `handoffs` were added to every builder schema, and a blocking hand-off is a fault for its owner. Datum planned the Skyport Pier and apron. |
+| [`r005`](evidence/r005/sheets/harbour-district-v0.2.0-r005.3.html) | v0.15.0 | REJECTED | With the checker clean, the last fault was Pulse's hand-computed run times, which matched stale stop positions. That arithmetic error also appeared in r002 and r004. | Run times and journey totals are derived in code (`timetable.ts`). Pulse chooses speed, dwell, headway and routes. |
+
+Every run from r002 to r006 replays OK, with drift labelled by cause: "recorded against GDD v0.14.0" and "checker rules added since the run: W-2, W-3".
 
 ## Prerequisites
 - [Bun](https://bun.sh) 1.4 or later, and git.
@@ -62,7 +75,7 @@ Replay and sheets use the pinned copies, never whatever is on disk.
 ```sh
 git clone -b assignment-04 https://github.com/codecoded/suborned.git suborned-a04 && cd suborned-a04
 bun install
-bun run levels:replay r003     # offline: no Docker, no model. Checks schemas, hashes, retrieved text and the pinned block, reruns the checker → REPLAY OK
+bun run levels:replay r006     # offline: no Docker, no model. Checks schemas, hashes, retrieved text and the pinned block, reruns the checker → REPLAY OK
 bun run up                     # SurrealDB + embedding service; the first start builds the image and downloads the model (a few minutes)
 bun run ingest                 # index the GDD and the plan
 bun run levels transit         # the generation run → runs/levels/harbour-district/r00N/ (the next free id) (exit 0 ACCEPTED, exit 1 REJECTED or ERROR; see below)
@@ -74,7 +87,7 @@ bun run levels:sheets          # re-render every run's sheets + out/levels/index
 Optional: `bun run check` runs the typecheck, the tests (model-free, about 3 min) and the plan checker. `bun run levels:ranks` reprints the retrieval ranks. `bun run levels transit --seed station-on-plot` forces a labelled critic challenge.
 
 ## Time and cost per run
-r003 made 8 model calls in 2 rounds, with 575 s of model time and about 10 minutes of wall time (calls run in sequence). The CLI reported $2.11. r002 needed all 3 rounds: 12 calls, 591 s, $2.34. A run that needs all 3 rounds makes up to 12 calls (4 per round, or more if a call is retried), so expect roughly 8–15 minutes and $1–3. A test run that needed 3 rounds made 11 calls, took 585 s and cost $2.06. On a subscription the dollar figure is notional usage, not a charge.
+r006 made 11 model calls in 3 rounds, with 509 s of model time and about 10 minutes of wall time (calls run in sequence). The CLI reported $1.90. Runs r002–r006 cost $1.83–2.64 each. A run that needs all 3 rounds makes up to 12 calls (4 per round, or more if a call is retried), so expect roughly 8–15 minutes and $1–3. A test run that needed 3 rounds made 11 calls, took 585 s and cost $2.06. On a subscription the dollar figure is notional usage, not a charge.
 
 ## Where outputs land
 - `runs/levels/<plan>/r00N/`: committed and small. This is everything replay needs.

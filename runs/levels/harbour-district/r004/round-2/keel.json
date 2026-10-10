@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "The candidate fails on one Vantage fault the checker can't see. The checker report is clean, and all four faults from last round are fixed: Skyport is held, the pricing questions are neutral and go to Motive, T2 market→harbour-court is 54 s, and the note lists four T2 gaps. I recomputed every run and journey time and all are correct. The fault: S1/harbour's entrance names crown-parade, but its own note says the parade ends at x 288, short of the station's centre at x 332. Vantage admits this is a stand-in.",
+  "faults": [
+    {
+      "owner": "Vantage",
+      "rule": "critic",
+      "fault": "S1/harbour at (332, 0) gives crown-parade as the public space its entrance faces. Vantage's own note says the parade ends at x 288 and the station sits on the quay pier, so crown-parade is a stand-in, not the space the entrance faces. This is the same fault raised last round against S1/skyport. N-P2 passes only because the station is not on a plot.",
+      "fix": "Front the station on the public space it actually faces. The 50 m platform spans about x 307 to 357, so it crosses Harbour Road at x 309, where T2/parade already fronts harbour-road. Name harbour-road if the entrance opens there. Otherwise ask Datum, through Aster, for a quay id and front on that. Then rerun bun tools/plan/cli.ts.",
+      "chunks": [
+        "e54a1a5c3874c8a545458768",
+        "cfba161c458af766f224f713"
+      ]
+    }
+  ],
+  "sources": [
+    "7dfdfdf13043a24e8e964b0b",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "cfba161c458af766f224f713",
+    "e54a1a5c3874c8a545458768",
+    "e833ff4a45f54e712531eb9d"
+  ]
+}

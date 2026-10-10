@@ -6,15 +6,27 @@ import type { Derived, Plan } from './plan';
 import type { Civic } from './civic';
 
 export type Walk = { from: string; to: string; kind: string; m: number; straight: number; path: V[] };
+/** One tram stop or sky rail station and its shortest walk (m) from the nearest origin; Infinity = no walk at all. */
+export type Reach = { line: string; id: string; kind: string; name: string; at: V; m: number };
 
 const OPEN = new Set(['park', 'open', 'square', 'civic']); // civic plots: only their building footprints block
 
-export function walks(plan: Plan, d: Derived, civ: Civic): Walk[] {
+const memo = new WeakMap<Derived, { walks: Walk[]; reach: Reach[] }>();
+export const walks = (plan: Plan, d: Derived, civ: Civic): Walk[] => solve(plan, d, civ).walks;
+/** Every stop and station against the walkable ground reached from the walking origins (water, buildings and landmarks block). */
+export const reach = (plan: Plan, d: Derived, civ: Civic): Reach[] => solve(plan, d, civ).reach;
+
+function solve(plan: Plan, d: Derived, civ: Civic) {
+  const hit = memo.get(d); if (hit) return hit;
+  const r = run(plan, d, civ); memo.set(d, r); return r;
+}
+
+function run(plan: Plan, d: Derived, civ: Civic) {
   const W = plan.standards.walking, cell = W.grid as number;
   const origins = (W.from as string[]).map(name => ({ name, p: civ.points.find(x => x.name === name)!.p }));
   const targets = [
-    ...plan.tram.flatMap(l => (l.stops ?? []).map(s => ({ kind: 'tram', name: s.name, p: s.at }))),
-    ...plan.skyrail.flatMap(l => (l.stations ?? []).map(s => ({ kind: 'sky rail', name: s.name, p: s.at }))),
+    ...plan.tram.flatMap(l => (l.stops ?? []).map(s => ({ kind: 'tram', line: l.id, id: s.id, name: s.name, p: s.at }))),
+    ...plan.skyrail.flatMap(l => (l.stations ?? []).map(s => ({ kind: 'sky rail', line: l.id, id: s.id, name: s.name, p: s.at }))),
   ];
   const all = [...origins.map(o => o.p), ...targets.map(t => t.p)], pad = 80;
   const x0 = Math.min(...all.map(p => p[0])) - pad, y0 = Math.min(...all.map(p => p[1])) - pad;
@@ -39,7 +51,8 @@ export function walks(plan: Plan, d: Derived, civ: Civic): Walk[] {
   const steps: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1], [1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]];
   const sight = (a: V, b: V) => { const n = Math.ceil(dist(a, b) / (cell * .4)); for (let k = 1; k < n; k++) { const t = k / n; if (blocked[idx([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t])]) return false; } return true; };
 
-  return origins.flatMap(o => {
+  const shortest = targets.map(() => Infinity);
+  const walks = origins.flatMap(o => {
     const D = new Float64Array(nx * ny).fill(Infinity), prev = new Int32Array(nx * ny).fill(-1), heap: [number, number][] = [];
     const push = (k: number, v: number) => { heap.push([v, k]); let c = heap.length - 1; while (c) { const p = (c - 1) >> 1; if (heap[p][0] <= heap[c][0]) break; [heap[p], heap[c]] = [heap[c], heap[p]]; c = p; } };
     const pop = () => { const top = heap[0], last = heap.pop()!; if (heap.length) { heap[0] = last; let c = 0; for (;;) { const l = 2 * c + 1, r = l + 1; let m = c; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === c) break; [heap[m], heap[c]] = [heap[c], heap[m]]; c = m; } } return top; };
@@ -55,8 +68,9 @@ export function walks(plan: Plan, d: Derived, civ: Civic): Walk[] {
       }
     }
     const best = new Map<string, Walk>();
-    for (const t of targets) {
+    for (const [ti, t] of targets.entries()) {
       const k = idx(t.p); if (D[k] === Infinity) continue;
+      shortest[ti] = Math.min(shortest[ti]!, D[k]!);
       const raw: V[] = [t.p]; for (let c = prev[k]; c >= 0 && c !== s; c = prev[c]) raw.push(centre(c)); raw.push(o.p); raw.reverse();
       const path: V[] = [raw[0]]; let a = 0;
       while (a < raw.length - 1) { let b = raw.length - 1; while (b > a + 1 && !sight(raw[a], raw[b])) b--; path.push(raw[b]); a = b; }
@@ -66,4 +80,6 @@ export function walks(plan: Plan, d: Derived, civ: Civic): Walk[] {
     }
     return [...best.values()];
   });
+  const reach: Reach[] = targets.map((t, i) => ({ line: t.line, id: t.id, kind: t.kind, name: t.name, at: t.p, m: shortest[i]! }));
+  return { walks, reach };
 }

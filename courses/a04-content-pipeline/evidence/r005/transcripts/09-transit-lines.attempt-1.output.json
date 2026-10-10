@@ -1,0 +1,79 @@
+{
+  "lines": [
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Market Line",
+      "beyond": "both ends leave the sheet: south on Sunset Way past y -780, north on Harbour Road past y 320; termini and depot off-sheet (assumed)",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              -349.5,
+              -780
+            ],
+            [
+              -349.5,
+              -403.5,
+              50
+            ],
+            [
+              -170,
+              -403.5,
+              200
+            ],
+            [
+              -80,
+              -416.5,
+              200
+            ],
+            [
+              309.5,
+              -416.5,
+              50
+            ],
+            [
+              309.5,
+              320
+            ]
+          ]
+        }
+      ],
+      "order": []
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "What changed: I redrew T2's two R50 bends to fix the T-C1 fault. Last round I put the bends 6 m in from the road edge. That was wrong: on an R50 quarter arc the inner track (r 48.2) cuts the inner corner of the junction unless that corner lies within 48.2 m of the arc centre. I checked this by hand. I have not run the checker: run bun tools/plan/cli.ts and confirm exit 0 before accepting.",
+    "West bend: the path runs at x -349.5 and z -403.5, so the outer track sits at x -351.3 and z -401.7, inside Sunset Way (x -352 to -328) and Market Street (z -419 to -401). The arc centre is (-299.5,-453.5). The inner plot corner is (-328,-419), 44.7 m from the centre, inside the inner track's 48.2 m. Margin is 3.5 m on the inner track and 0.6 to 0.7 m at the outer kerbs.",
+    "East bend: the path runs at x 309.5 and z -416.5, so the outer track sits at x 311.3 and z -418.3, inside Harbour Road (x 288 to 312) and Market Street. The arc centre is (259.5,-366.5) and the inner corner (288,-401) is 44.7 m away. The margins are the same as the west bend.",
+    "No single straight line along Market Street serves both bends: the west bend needs z -407.9 or further north, the east bend z -412.1 or further south. So T2 shifts 13 m across the street between x -170 and x -80, with r 200 fillets (about 8°, tangents about 14 m). It stays inside Market Street's 18 m width, crossing the median, clear of the stop sites and both R50 tangents.",
+    "Unchanged from last round: T1 and S1. T2 crosses T1 at grade at (0,-416.5) in the Boulevard junction. Interchange distances: a T2 stop near (40,-416.5) is about 54 m from T1 Records (0,-380), and one near (309.5,-30) is about 43 m from S1 Harbour (340,0). Both are within 150 m. Reach to the four stop sites I suggested last round is unchanged to within a few metres.",
+    "Still open for Aster to take to Sky: the off-sheet continuations for T2 are my assumption; whether T1 ends at the circus; whether the Sphere and harbour loops from tide's draft are retired; and the circus road/island mismatch, which I will fix when I next edit the roads. The Sky Loop stays rejected on S-C1, because it would run over corner plots."
+  ],
+  "sources": [
+    "538618090dd534247cab5493",
+    "352b7a6ac9f8c5a12afcbeff",
+    "ba506de42600790962a866a2",
+    "c5fb128448665c55b7c335fb",
+    "8753ed1758ca27e6cf152279",
+    "c1909f164651d9c88cd65c53",
+    "e20799f1f673824d09ce452d",
+    "3a5bfc801124ffde12492b1a"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": false,
+      "ask": "Please place T2 stops 300 to 500 m apart. Suggested sites: Sunset Way near (-349.5,-560); Market Street near (-230,-403.5) and near (40,-416.5), the interchange with T1 Records; Market Street near (230,-416.5); Harbour Road near (309.5,-267) and near (309.5,-30), the interchange with S1 Harbour. Keep stops off the cross-over stretch between x -170 and -80. Then rerun the reach check."
+    },
+    {
+      "owner": "Pulse",
+      "blocking": false,
+      "ask": "T2 crosses T1 at grade at the Boulevard and Market Street junction (0,-416.5). Please set their timetable slots so they don't conflict at that crossing."
+    }
+  ]
+}

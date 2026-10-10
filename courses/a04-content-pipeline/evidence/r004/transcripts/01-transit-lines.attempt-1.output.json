@@ -1,0 +1,111 @@
+{
+  "lines": [
+    {
+      "id": "T1",
+      "mode": "tram",
+      "name": "Boulevard Line",
+      "beyond": "south to Southside on the Boulevard; west on Crown Road beyond x -400 (termini and depot off-sheet)",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              0,
+              -780
+            ],
+            [
+              0,
+              60,
+              50
+            ],
+            [
+              5,
+              180,
+              50
+            ],
+            [
+              5,
+              289,
+              50
+            ],
+            [
+              -400,
+              289
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk"
+      ]
+    },
+    {
+      "id": "T2",
+      "mode": "tram",
+      "name": "Harbour Line",
+      "beyond": "south on Sunset Way beyond y -780; north on Harbour Road beyond y 320 (termini and depot off-sheet)",
+      "paths": [
+        {
+          "id": "trunk",
+          "role": "running",
+          "double": true,
+          "pts": [
+            [
+              -349,
+              -780
+            ],
+            [
+              -349,
+              -406,
+              50
+            ],
+            [
+              -100,
+              -406,
+              50
+            ],
+            [
+              100,
+              -414,
+              50
+            ],
+            [
+              309,
+              -414,
+              50
+            ],
+            [
+              309,
+              320
+            ]
+          ]
+        }
+      ],
+      "order": [
+        "trunk"
+      ]
+    }
+  ],
+  "remove": [],
+  "notes": [
+    "S1 stays as drawn, so it is not listed. T1 now runs straight through the circus island at x 0, eases to x 5 in Crown Avenue, makes an R50 turn onto Crown Road west and leaves the sheet at x -400. The balloon loop is dropped (no on-sheet end, so T-L1 no longer applies). Path id 'trunk' is kept so the stops still attach. Not checker-run: all geometry is hand-checked only.",
+    "Tide's Sky Loop round the ring is rejected. To stay on a 24 m ring road through a 90° corner, an R70 curve needs the alignment about 20.5 m out from the inside kerb. With beams 6 m apart, the inner beam swings over corner plots, which breaks S-C1. It would also bring back the loop the plan retires (open question 3).",
+    "T2 is not Harbour Road only. That road ends at Comet Row, short of the south sheet edge (T-C1), and a 24 m street can't fit an R25 balloon loop (T-L1). So T2 runs south off-sheet on Sunset Way, along Market Street, then up Harbour Road off-sheet north (N-D1). It brings rocket-west, lantern-west and the docks within the 250 m reach.",
+    "The R50 corners fit by running off-centre: Sunset Way x -349, Harbour Road x 309, Crown Avenue x 5, Crown Road y 289. Market Street runs at y -406 in the west and y -414 in the east, shifting between x -100 and 100. Both tracks (±1.8) stay within the kerbs. I checked this against road widths only; the checker's junction polygons may differ.",
+    "Interchange spacing for Vantage, within 150 m: T1 and S1 at Crown Circus. T2 and S1 at Harbour Road, about 40 m from the Harbour station (340, 0). T1 and T2 at the Boulevard and Market Street crossing (0, -410), next to the Records stop.",
+    "Source conflict for Aster: the concept note still says T1 turns on an R28 balloon loop and that the circus is the one interchange. The 'why' notes describe an older tram. Open question 2 (end T1 at the circus or run on north) is still open. I followed tide's draft (run through); Sky should confirm, and the notes need updating.",
+    "Next steps: Vantage places and re-projects the stops (300–500 m apart, plus interchange stops), then runs bun tools/plan/cli.ts. If T-C1 fails at a corner, send it back to me (Datum) with the failing vertex. No rule was loosened."
+  ],
+  "sources": [
+    "cfba161c458af766f224f713",
+    "e20799f1f673824d09ce452d",
+    "c5fb128448665c55b7c335fb",
+    "ba506de42600790962a866a2",
+    "538618090dd534247cab5493",
+    "c1909f164651d9c88cd65c53",
+    "7dfdfdf13043a24e8e964b0b",
+    "0e426f4211a2f1f25c328968"
+  ]
+}

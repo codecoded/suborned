@@ -1,0 +1,10 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "handoff",
+    "fault": "Datum hands off to Vantage (blocking): T3 path 'sunset': place stops 300–500 m apart, e.g. (-331,-620), (-331,-310), (-331,0). Add an S1 station near (-365,0) as the T3/S1 interchange (34 m). On T2 'harbour', add a stop at z≈0 for S1 Harbour, and add the T1/T2 interchange at Comet Row. Re-check N-R1 for lantern-west and rocket-west.",
+    "fix": "T3 path 'sunset': place stops 300–500 m apart, e.g. (-331,-620), (-331,-310), (-331,0). Add an S1 station near (-365,0) as the T3/S1 interchange (34 m). On T2 'harbour', add a stop at z≈0 for S1 Harbour, and add the T1/T2 interchange at Comet Row. Re-check N-R1 for lantern-west and rocket-west.",
+    "chunks": [],
+    "synthesized": true
+  }
+]
