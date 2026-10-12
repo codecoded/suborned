@@ -1,0 +1,721 @@
+{
+  "note": "Variant look table (Vela): A · Lagoon Expo. Same schema as look.json; every colour is an exact hex (value 1) in this file's palette, keys prefixed 'lagoon.'. Surfaces 'x@area' are derived by out/palette/gen.ts from the use surface x per district; frontage/sign/awning/roof are not in the export yet. Turquoise-led and cool: sea-glass enamel, flamingo and lemon accents on white-cream stone, aqua water, a clear blue sky. The friendliest and the most 'resort'.",
+  "surfaces": {
+    "asphalt": {
+      "palette": "lagoon.asphalt",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "kerb": {
+      "palette": "lagoon.kerb",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "pavement": {
+      "palette": "lagoon.pavement",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "quay": {
+      "palette": "lagoon.quay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "foot": {
+      "palette": "lagoon.foot",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "open": {
+      "palette": "lagoon.open",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "square": {
+      "palette": "lagoon.square",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "water": {
+      "palette": "lagoon.water",
+      "value": 1,
+      "smoothness": 0.8
+    },
+    "circus/island": {
+      "palette": "lagoon.circus/island",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "park": {
+      "palette": "lagoon.park",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "median": {
+      "palette": "lagoon.median",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "beyond": {
+      "palette": "lagoon.beyond",
+      "value": 1,
+      "smoothness": 0.05
+    },
+    "bay": {
+      "palette": "lagoon.bay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "track": {
+      "palette": "lagoon.track",
+      "value": 1,
+      "smoothness": 0.3,
+      "metallic": 0.5
+    },
+    "beam": {
+      "palette": "lagoon.beam",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "pylon": {
+      "palette": "lagoon.pylon",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "column": {
+      "palette": "lagoon.column",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "platform": {
+      "palette": "lagoon.platform",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "gate": {
+      "palette": "lagoon.gate",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "limestone": {
+      "palette": "lagoon.limestone",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "deck": {
+      "palette": "lagoon.deck",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "stair": {
+      "palette": "lagoon.stair",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "civic": {
+      "palette": "lagoon.civic",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "enamel": {
+      "palette": "lagoon.enamel",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "trim": {
+      "palette": "lagoon.trim",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
+    "landmark": {
+      "palette": "lagoon.landmark",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.5
+    },
+    "mega": {
+      "palette": "lagoon.mega",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "residential": {
+      "palette": "lagoon.residential",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed": {
+      "palette": "lagoon.mixed",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial": {
+      "palette": "lagoon.commercial",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower": {
+      "palette": "lagoon.tower",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial": {
+      "palette": "lagoon.industrial",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port": {
+      "palette": "lagoon.port",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage": {
+      "palette": "lagoon.frontage",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign": {
+      "palette": "lagoon.sign",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning": {
+      "palette": "lagoon.awning",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "roof": {
+      "palette": "lagoon.roof",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@lantern": {
+      "palette": "lagoon.residential@lantern",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@lantern": {
+      "palette": "lagoon.mixed@lantern",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@lantern": {
+      "palette": "lagoon.commercial@lantern",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@lantern": {
+      "palette": "lagoon.tower@lantern",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@lantern": {
+      "palette": "lagoon.industrial@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@lantern": {
+      "palette": "lagoon.port@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@lantern": {
+      "palette": "lagoon.frontage@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@lantern": {
+      "palette": "lagoon.sign@lantern",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@lantern": {
+      "palette": "lagoon.awning@lantern",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@docks": {
+      "palette": "lagoon.residential@docks",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@docks": {
+      "palette": "lagoon.mixed@docks",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@docks": {
+      "palette": "lagoon.commercial@docks",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@docks": {
+      "palette": "lagoon.tower@docks",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@docks": {
+      "palette": "lagoon.industrial@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@docks": {
+      "palette": "lagoon.port@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@docks": {
+      "palette": "lagoon.frontage@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@docks": {
+      "palette": "lagoon.sign@docks",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@docks": {
+      "palette": "lagoon.awning@docks",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@crescent": {
+      "palette": "lagoon.residential@crescent",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@crescent": {
+      "palette": "lagoon.mixed@crescent",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@crescent": {
+      "palette": "lagoon.commercial@crescent",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@crescent": {
+      "palette": "lagoon.tower@crescent",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@crescent": {
+      "palette": "lagoon.industrial@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@crescent": {
+      "palette": "lagoon.port@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@crescent": {
+      "palette": "lagoon.frontage@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@crescent": {
+      "palette": "lagoon.sign@crescent",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@crescent": {
+      "palette": "lagoon.awning@crescent",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@lamplight": {
+      "palette": "lagoon.residential@lamplight",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@lamplight": {
+      "palette": "lagoon.mixed@lamplight",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@lamplight": {
+      "palette": "lagoon.commercial@lamplight",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@lamplight": {
+      "palette": "lagoon.tower@lamplight",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@lamplight": {
+      "palette": "lagoon.industrial@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@lamplight": {
+      "palette": "lagoon.port@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@lamplight": {
+      "palette": "lagoon.frontage@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@lamplight": {
+      "palette": "lagoon.sign@lamplight",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@lamplight": {
+      "palette": "lagoon.awning@lamplight",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@central": {
+      "palette": "lagoon.residential@central",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@central": {
+      "palette": "lagoon.mixed@central",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@central": {
+      "palette": "lagoon.commercial@central",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@central": {
+      "palette": "lagoon.tower@central",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@central": {
+      "palette": "lagoon.industrial@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@central": {
+      "palette": "lagoon.port@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@central": {
+      "palette": "lagoon.frontage@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@central": {
+      "palette": "lagoon.sign@central",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@central": {
+      "palette": "lagoon.awning@central",
+      "value": 1,
+      "smoothness": 0.2
+    }
+  },
+  "sky": {
+    "palette": "lagoon.sky",
+    "value": 1
+  },
+  "ambient": {
+    "palette": "lagoon.ambient",
+    "value": 0.8
+  },
+  "sun": {
+    "palette": "lagoon.sun",
+    "value": 1,
+    "intensity": 1.2,
+    "pitch": 30,
+    "yaw": 60,
+    "note": "warm bright afternoon sun"
+  },
+  "fog": {
+    "palette": "lagoon.haze",
+    "value": 1,
+    "mode": "exponential",
+    "density": 0.0001,
+    "note": "light haze: colour survives"
+  },
+  "palette": {
+    "lagoon.asphalt": {
+      "hex": "#a9b4bc"
+    },
+    "lagoon.kerb": {
+      "hex": "#d9d6ce"
+    },
+    "lagoon.pavement": {
+      "hex": "#f7f2e6"
+    },
+    "lagoon.quay": {
+      "hex": "#efe9d9"
+    },
+    "lagoon.foot": {
+      "hex": "#f3eddf"
+    },
+    "lagoon.open": {
+      "hex": "#f5f0e4"
+    },
+    "lagoon.square": {
+      "hex": "#fcf9f0"
+    },
+    "lagoon.water": {
+      "hex": "#2fc1de"
+    },
+    "lagoon.circus/island": {
+      "hex": "#9fe0a8"
+    },
+    "lagoon.park": {
+      "hex": "#9fe0a8"
+    },
+    "lagoon.median": {
+      "hex": "#6fd08a"
+    },
+    "lagoon.beyond": {
+      "hex": "#efe9d9"
+    },
+    "lagoon.bay": {
+      "hex": "#d9d6ce"
+    },
+    "lagoon.track": {
+      "hex": "#8d99a3"
+    },
+    "lagoon.beam": {
+      "hex": "#f5849e"
+    },
+    "lagoon.pylon": {
+      "hex": "#e8edf1"
+    },
+    "lagoon.column": {
+      "hex": "#dfe5ea"
+    },
+    "lagoon.platform": {
+      "hex": "#fcbcc0"
+    },
+    "lagoon.gate": {
+      "hex": "#f5849e"
+    },
+    "lagoon.limestone": {
+      "hex": "#f5efe0"
+    },
+    "lagoon.deck": {
+      "hex": "#f8f3e9"
+    },
+    "lagoon.stair": {
+      "hex": "#ece6d7"
+    },
+    "lagoon.civic": {
+      "hex": "#f4e6bd"
+    },
+    "lagoon.enamel": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.trim": {
+      "hex": "#eadba6"
+    },
+    "lagoon.landmark": {
+      "hex": "#e3e9ee"
+    },
+    "lagoon.mega": {
+      "hex": "#faf6ec"
+    },
+    "lagoon.residential": {
+      "hex": "#f5f0e2"
+    },
+    "lagoon.mixed": {
+      "hex": "#fbf7ec"
+    },
+    "lagoon.commercial": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.tower": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.industrial": {
+      "hex": "#2f84e8"
+    },
+    "lagoon.port": {
+      "hex": "#fbe985"
+    },
+    "lagoon.frontage": {
+      "hex": "#f3eee0"
+    },
+    "lagoon.sign": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.awning": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.roof": {
+      "hex": "#fffaf0"
+    },
+    "lagoon.residential@lantern": {
+      "hex": "#fbe3ea"
+    },
+    "lagoon.mixed@lantern": {
+      "hex": "#fdeef1"
+    },
+    "lagoon.commercial@lantern": {
+      "hex": "#e8609a"
+    },
+    "lagoon.tower@lantern": {
+      "hex": "#f58aa8"
+    },
+    "lagoon.industrial@lantern": {
+      "hex": "#e8609a"
+    },
+    "lagoon.port@lantern": {
+      "hex": "#f58aa8"
+    },
+    "lagoon.frontage@lantern": {
+      "hex": "#fde6ee"
+    },
+    "lagoon.sign@lantern": {
+      "hex": "#fbe985"
+    },
+    "lagoon.awning@lantern": {
+      "hex": "#e8609a"
+    },
+    "lagoon.residential@docks": {
+      "hex": "#e4ecf7"
+    },
+    "lagoon.mixed@docks": {
+      "hex": "#eef2f8"
+    },
+    "lagoon.commercial@docks": {
+      "hex": "#2f84e8"
+    },
+    "lagoon.tower@docks": {
+      "hex": "#fbe985"
+    },
+    "lagoon.industrial@docks": {
+      "hex": "#2f84e8"
+    },
+    "lagoon.port@docks": {
+      "hex": "#fbe985"
+    },
+    "lagoon.frontage@docks": {
+      "hex": "#e9eff8"
+    },
+    "lagoon.sign@docks": {
+      "hex": "#fbe985"
+    },
+    "lagoon.awning@docks": {
+      "hex": "#2f84e8"
+    },
+    "lagoon.residential@crescent": {
+      "hex": "#d8f5ea"
+    },
+    "lagoon.mixed@crescent": {
+      "hex": "#e6f4fb"
+    },
+    "lagoon.commercial@crescent": {
+      "hex": "#86e3c4"
+    },
+    "lagoon.tower@crescent": {
+      "hex": "#aedcf6"
+    },
+    "lagoon.industrial@crescent": {
+      "hex": "#86e3c4"
+    },
+    "lagoon.port@crescent": {
+      "hex": "#aedcf6"
+    },
+    "lagoon.frontage@crescent": {
+      "hex": "#e0f6ee"
+    },
+    "lagoon.sign@crescent": {
+      "hex": "#aedcf6"
+    },
+    "lagoon.awning@crescent": {
+      "hex": "#86e3c4"
+    },
+    "lagoon.residential@lamplight": {
+      "hex": "#d6f1ef"
+    },
+    "lagoon.mixed@lamplight": {
+      "hex": "#e8f6f4"
+    },
+    "lagoon.commercial@lamplight": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.tower@lamplight": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.industrial@lamplight": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.port@lamplight": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.frontage@lamplight": {
+      "hex": "#ddf3f1"
+    },
+    "lagoon.sign@lamplight": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.awning@lamplight": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.residential@central": {
+      "hex": "#f5f0e2"
+    },
+    "lagoon.mixed@central": {
+      "hex": "#fbf7ec"
+    },
+    "lagoon.commercial@central": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.tower@central": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.industrial@central": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.port@central": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.frontage@central": {
+      "hex": "#f3eee0"
+    },
+    "lagoon.sign@central": {
+      "hex": "#5ab6ec"
+    },
+    "lagoon.awning@central": {
+      "hex": "#14b8b0"
+    },
+    "lagoon.sky": {
+      "hex": "#78c6f0"
+    },
+    "lagoon.sun": {
+      "hex": "#fff1d2"
+    },
+    "lagoon.haze": {
+      "hex": "#d3ebf5"
+    },
+    "lagoon.ambient": {
+      "hex": "#dcecf4"
+    },
+    "ink_black": {
+      "hex": "#292628"
+    },
+    "mint_enamel": {
+      "hex": "#9fd1c9"
+    },
+    "paper_cream": {
+      "hex": "#f3eadb"
+    },
+    "stone_shadow": {
+      "hex": "#a2937e"
+    },
+    "warm_sand": {
+      "hex": "#dac9b2"
+    },
+    "zenith_cobalt": {
+      "hex": "#296587"
+    }
+  }
+}

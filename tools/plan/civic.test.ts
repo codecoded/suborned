@@ -26,5 +26,16 @@ test('C-0 fails when the café or office loses height', () => {
 });
 
 test('an old suborned.block/1 file is refused, not drawn', () => {
-  expect(() => civic(plan.civic, { ...block, schema: 'suborned.block/1' })).toThrow('suborned.block/2');
+  expect(() => civic(plan.civic, { ...block, schema: 'suborned.block/1' })).toThrow('suborned.block/3');
+});
+
+test('the world block holds no mission: no destinations, no crew, bays named by place', () => {
+  expect(block.destinations).toBeUndefined(); expect(block.crew).toBeUndefined();
+  expect(block.bays.map((b: any) => b.id)).toEqual(['officeBay', 'squareBay']);
+});
+
+test('W-4 fails when a walk starts away from any building', () => {
+  const b = structuredClone(block); b.buildings[0].entrances[0].at = [-60, -29];
+  const R = check(plan, derive(plan), civic(plan.civic, b)).checks.find(c => c.id === 'W-4')!;
+  expect(R.ok).toBe(false);
 });

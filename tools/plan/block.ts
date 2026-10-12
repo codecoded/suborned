@@ -1,6 +1,6 @@
-// bun run block: write contracts/world/handover-block.json (suborned.block/2), the Handover block in BLOCK frame
+// bun run block: write contracts/world/civic-block.json (suborned.block/3), the civic block in BLOCK frame
 // (the Unity block at yaw 90: x runs south, y east; z up). The ONLY place that reads the old repo, and only here.
-// It reads the Oct 9 city-scale sources, applies contracts/world/handover-block.adjust.json (Vantage's explicit edits,
+// It reads the Oct 9 city-scale sources, applies contracts/world/civic-block.adjust.json (Vantage's explicit edits,
 // each with a reason), and records every source path + sha256 and every applied adjustment in the output.
 // usage (repo root): bun tools/plan/block.ts [--src <TheSuborned asset root>]
 import { createHash } from 'node:crypto';
@@ -11,8 +11,8 @@ import { resolve } from 'node:path';
 const SRC_LABEL = '~/Projects/the-suborned/game/Assets/TheSuborned';
 const root = resolve(import.meta.dir, '../..'), args = process.argv.slice(2);
 const srcRoot = (args.includes('--src') ? args[args.indexOf('--src') + 1] : undefined) ?? SRC_LABEL.replace('~', homedir());
-const OUT = resolve(root, 'contracts/world/handover-block.json');
-const ADJUST = resolve(root, 'contracts/world/handover-block.adjust.json');
+const OUT = resolve(root, 'contracts/world/civic-block.json');
+const ADJUST = resolve(root, 'contracts/world/civic-block.adjust.json');
 
 type P = [number, number];
 type Item = { id: string; name?: string; kind?: string; category?: string; polygon: P[]; z: number; height: number; [k: string]: unknown };
@@ -34,7 +34,10 @@ const read = (rel: string) => {
   return text.toString('utf8');
 };
 const nav = JSON.parse(read('Data/World/handover-navigation.json'));
-const dest = JSON.parse(read('Data/World/handover-destinations.json'));
+const doors = JSON.parse(read('Data/World/handover-destinations.json')).destinations; // only the two door positions are read: doors are world
+// The source names two bays and their pavilions after the old mission; the world names them by place.
+const BY_PLACE: [RegExp, string][] = [[/^getaway-pavilion-support-/, 'square-pavilion-support-'], [/^boarding-pavilion-support-/, 'office-pavilion-support-']];
+for (const s of nav.solids) for (const [re, to] of BY_PLACE) s.id = s.id.replace(re, to);
 read('Editor/World/HandoverCafe.cs'); read('Editor/World/HandoverKit.cs'); // hashed: the constants above come from them
 
 const r3 = (x: number) => { const v = Math.round(x * 1000) / 1000; return v === 0 ? 0 : v; };
@@ -53,10 +56,12 @@ if (Math.abs(cx1 - cx0 - CAFE.depth) > 1e-6 || Math.abs(cy1 - cy0 - CAFE.width) 
   throw new Error(`corner-cafe in the nav is ${r3(cy1 - cy0)} x ${r3(cx1 - cx0)} x ${cafeSolid.z[1]}, HandoverCafe.cs says ${CAFE.width} x ${CAFE.depth} x ${CAFE.height}`);
 const officePoly = poly(officeSolid), [ox0, ox1, oy0, oy1] = bbox(officePoly), faceY = r3((oy0 + oy1) / 2);
 // ids stay 'cafe' / 'civic-office' (the checker and Latch's builder key on them); `source` is the nav id.
+const door = (name: string): { at: P } => { const d = doors.find((x: any) => x.name === name); if (!d) throw new Error(`source has no door ${name}`); return { at: [r3(d.x), r3(d.y)] }; };
 const buildings = [
-  { id: 'cafe', name: 'Corner café', source: 'corner-cafe', polygon: poly(cafeSolid), z: 0, height: CAFE.height, interior: { floor: CAFE.terrace, ceiling: CAFE.ceiling, cornerArc: CAFE.cornerArc } },
+  { id: 'cafe', name: 'Corner café', source: 'corner-cafe', polygon: poly(cafeSolid), z: 0, height: CAFE.height, interior: { floor: CAFE.terrace, ceiling: CAFE.ceiling, cornerArc: CAFE.cornerArc }, entrances: [{ id: 'cafe-entrance', name: 'Café entrance', ...door('Café door') }] },
   {
     id: 'civic-office', name: 'Records Office', source: 'civic-office-site', polygon: officePoly, z: 0, height: OFFICE.wings,
+    entrances: [{ id: 'office-entrance', name: 'Office entrance', ...door('Office entrance') }],
     heights: { wings: OFFICE.wings, crown: OFFICE.crown, giantOrder: OFFICE.giantOrder },
     // entrance towers sit on the two long faces (public west, official east); the sources give no tower footprint
     towers: [{ id: 'public', at: [r3(ox0), faceY], height: OFFICE.crown }, { id: 'official', at: [r3(ox1), faceY], height: OFFICE.crown }],
@@ -73,9 +78,6 @@ const objects: Item[] = nav.solids
   .filter((s: any) => ['fountain', 'planter', 'table'].includes(s.kind))
   .map((s: any) => from(s, { kind: s.kind }));
 
-// ---- destinations: every one, by name; crew after ----
-const places = (a: any[]) => a.map(d => ({ name: d.name, at: [r3(d.x), r3(d.y)] as P, surface: d.surface }));
-const destinations = places(dest.destinations), crew = places(dest.crew);
 
 // ---- adjustments ----
 type Adj = { op: 'addBay' | 'addStructure' | 'edit'; id?: string; reason: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number };
@@ -97,7 +99,7 @@ for (const a of adj.adjustments) {
 }
 
 const out = {
-  schema: 'suborned.block/2', id: 'handover',
+  schema: 'suborned.block/3', id: 'civic',
   frame: {
     name: 'block', units: 'm', x: 'south (the Unity block at yaw 90)', y: 'east', z: 'up',
     z0: 'height above the local ground: pavement top (plan 0.18), or the lay-by surface inside a bay (plan 0)',
@@ -105,8 +107,8 @@ const out = {
   },
   sourceRoot: SRC_LABEL,
   sources,
-  adjustments: { file: 'contracts/world/handover-block.adjust.json', sha256: createHash('sha256').update(adjFile).digest('hex'), owner: adj.owner, applied: adj.adjustments },
-  buildings, structures, objects, bays, destinations, crew,
+  adjustments: { file: 'contracts/world/civic-block.adjust.json', sha256: createHash('sha256').update(adjFile).digest('hex'), owner: adj.owner, applied: adj.adjustments },
+  buildings, structures, objects, bays,
 };
 
 // numbers-only arrays on one line, everything else indented
@@ -115,6 +117,6 @@ writeFileSync(OUT, text);
 const kinds = (a: Item[]) => Object.entries(a.reduce<Record<string, number>>((m, i) => ((m[i.kind ?? i.category ?? '?'] = (m[i.kind ?? i.category ?? '?'] ?? 0) + 1), m), {})).map(([k, n]) => `${k} ${n}`).join(', ');
 console.log(`block → ${OUT} (${Buffer.byteLength(text)} bytes)`);
 console.log(`sources: ${sources.map(s => `${s.path} ${s.sha256.slice(0, 12)}`).join('; ')}`);
-console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, destinations ${destinations.length}, crew ${crew.length}`);
+console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
 console.log(`omitted from ${nav.solids.length} nav solids: cars, sentries, globes, lamps, chairs, parasols, street props, access ramps (not exported before; add when a consumer needs them)`);
 console.log(`adjustments applied: ${adj.adjustments.length} (${adj.owner})`);

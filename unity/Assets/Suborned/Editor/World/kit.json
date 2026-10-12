@@ -1,0 +1,127 @@
+{
+  "note": "Builder kit catalogue (Latch, graybox stage). street: one entry per export street-item kind (`kind/variant` wins over `kind`); each part is a Prim in the item's own frame, in fractions of the item size [a along yaw, b across, h] (by: 'h' = every fraction of h, for crowns and heads that outgrow the footprint). c = [along, across], base = fraction of h above the item's z; surface absent = the item's own surface; yaw = extra radians. An export kind missing here is rejected. connectors: surface per kind; vertical ones (foot = head) are shafts on their ring, inclined ones a sloped slab `slab` m thick. batchTile: metres per side of the square tiles meshes are combined into, per layer and material. Forma and Vela tune shapes; Glint and Vela own colour (surfaces are look.json keys).",
+  "batchTile": 64,
+  "connectors": {
+    "slab": 0.5,
+    "surfaces": { "stair": "stair", "stairTower": "stair", "ramp": "stair", "cartRamp": "stair", "escalator": "stair", "lift": "enamel", "goodsLift": "industrial" }
+  },
+  "street": {
+    "tree/phoenix": [
+      { "shape": "cyl", "size": [0.6, 0.6, 0.9], "surface": "column" },
+      { "shape": "sphere", "by": "h", "base": 0.82, "size": [0.16, 0.16, 0.14] },
+      { "shape": "saucer", "by": "h", "base": 0.86, "size": [0.5, 0.5, 0.07] }
+    ],
+    "tree/washingtonia": [
+      { "shape": "cyl", "size": [1, 1, 0.92], "surface": "column" },
+      { "shape": "sphere", "by": "h", "base": 0.84, "size": [0.2, 0.2, 0.14] }
+    ],
+    "tub-palm": [
+      { "shape": "cyl", "size": [1, 1, 0.15] },
+      { "shape": "cyl", "size": [0.15, 0.15, 0.75], "base": 0.15, "surface": "column" },
+      { "shape": "saucer", "by": "h", "base": 0.82, "size": [0.6, 0.6, 0.08], "surface": "park" }
+    ],
+    "lamp/atom-ring": [
+      { "shape": "cyl", "size": [1, 1, 0.9] },
+      { "shape": "sphere", "by": "h", "base": 0.88, "size": [0.07, 0.07, 0.07], "surface": "sign" },
+      { "shape": "saucer", "by": "h", "base": 0.9, "size": [0.2, 0.2, 0.02], "surface": "enamel" }
+    ],
+    "lamp/sputnik": [
+      { "shape": "cyl", "size": [1, 1, 0.88] },
+      { "shape": "sphere", "by": "h", "base": 0.86, "size": [0.1, 0.1, 0.1], "surface": "sign" },
+      { "shape": "box", "by": "h", "base": 0.905, "size": [0.26, 0.012, 0.012] },
+      { "shape": "box", "by": "h", "base": 0.905, "size": [0.26, 0.012, 0.012], "yaw": 1.5708 }
+    ],
+    "lamp/starburst-mast": [
+      { "shape": "cyl", "size": [1, 1, 0.92] },
+      { "shape": "sphere", "by": "h", "base": 0.885, "size": [0.05, 0.05, 0.05], "surface": "sign" },
+      { "shape": "box", "by": "h", "base": 0.905, "size": [0.2, 0.012, 0.012] },
+      { "shape": "box", "by": "h", "base": 0.905, "size": [0.2, 0.012, 0.012], "yaw": 1.0472 },
+      { "shape": "box", "by": "h", "base": 0.905, "size": [0.2, 0.012, 0.012], "yaw": 2.0944 }
+    ],
+    "lamp/twin-boomerang": [
+      { "shape": "cyl", "size": [1, 1, 0.94] },
+      { "shape": "wedge", "by": "h", "base": 0.93, "size": [0.04, 0.32, 0.03], "surface": "enamel" },
+      { "shape": "sphere", "by": "h", "c": [0, 0.15], "base": 0.9, "size": [0.04, 0.04, 0.04], "surface": "sign" },
+      { "shape": "sphere", "by": "h", "c": [0, -0.15], "base": 0.9, "size": [0.04, 0.04, 0.04], "surface": "sign" }
+    ],
+    "bollard": [{ "shape": "cyl", "size": [1, 1, 1] }],
+    "bin": [{ "shape": "cyl", "size": [1, 1, 1] }],
+    "bench": [
+      { "shape": "box", "c": [0, -0.08], "size": [1, 0.84, 0.53] },
+      { "shape": "box", "c": [0, 0.42], "size": [1, 0.16, 1] }
+    ],
+    "crossing": [{ "shape": "box", "size": [1, 1, 1] }],
+    "hydrant": [
+      { "shape": "cyl", "size": [0.8, 0.8, 0.8] },
+      { "shape": "sphere", "base": 0.68, "size": [0.8, 0.8, 0.32] }
+    ],
+    "phone-booth": [
+      { "shape": "box", "size": [1, 1, 0.92] },
+      { "shape": "box", "base": 0.92, "size": [1.1, 1.1, 0.08], "surface": "enamel" }
+    ],
+    "mailbox": [
+      { "shape": "cyl", "size": [1, 1, 0.75] },
+      { "shape": "sphere", "base": 0.52, "size": [1, 1, 0.46] }
+    ],
+    "beacon": [
+      { "shape": "cyl", "size": [0.4, 0.4, 0.86] },
+      { "shape": "sphere", "base": 0.86, "size": [1, 1, 0.14], "surface": "awning" }
+    ],
+    "pole-camera": [
+      { "shape": "cyl", "size": [1, 1, 0.95] },
+      { "shape": "box", "by": "h", "c": [0.04, 0], "base": 0.93, "size": [0.09, 0.04, 0.04], "surface": "enamel" }
+    ],
+    "canopy-camera": [{ "shape": "box", "size": [1, 1, 1], "surface": "enamel" }],
+    "mast-camera": [
+      { "shape": "cyl", "size": [1, 1, 0.96] },
+      { "shape": "box", "by": "h", "c": [0.04, 0], "base": 0.94, "size": [0.08, 0.04, 0.04], "surface": "enamel" }
+    ],
+    "public-clock": [
+      { "shape": "cyl", "size": [0.4, 0.4, 0.76] },
+      { "shape": "box", "base": 0.76, "size": [1.4, 0.5, 0.24], "surface": "enamel" }
+    ],
+    "timetable-column": [
+      { "shape": "cyl", "size": [1, 1, 1] },
+      { "shape": "saucer", "base": 0.84, "size": [2, 2, 0.06], "surface": "awning" }
+    ],
+    "advertising-column": [
+      { "shape": "cyl", "size": [1, 1, 0.92] },
+      { "shape": "saucer", "base": 0.9, "size": [1.2, 1.2, 0.1], "surface": "trim" }
+    ],
+    "civic-robot-dock": [
+      { "shape": "box", "size": [1, 1, 0.06], "surface": "trim" },
+      { "shape": "cyl", "base": 0.06, "size": [0.6, 0.6, 0.7] },
+      { "shape": "sphere", "base": 0.74, "size": [0.55, 0.55, 0.24], "surface": "sign" }
+    ],
+    "kiosk-food": [
+      { "shape": "box", "size": [1, 1, 0.8] },
+      { "shape": "box", "base": 0.8, "size": [1.2, 1.3, 0.08], "surface": "awning" }
+    ],
+    "kiosk-tickets": [
+      { "shape": "box", "size": [1, 1, 0.8] },
+      { "shape": "box", "base": 0.8, "size": [1.2, 1.3, 0.08], "surface": "awning" }
+    ],
+    "newsstand": [
+      { "shape": "box", "size": [1, 1, 0.78] },
+      { "shape": "box", "base": 0.78, "size": [1.1, 1.3, 0.08], "surface": "awning" }
+    ],
+    "planter": [
+      { "shape": "box", "size": [1, 1, 0.65], "surface": "limestone" },
+      { "shape": "sphere", "base": 0.5, "size": [0.9, 0.9, 0.5] }
+    ],
+    "station-entrance": [
+      { "shape": "box", "c": [0, 0.46], "size": [1, 0.08, 0.66], "surface": "column" },
+      { "shape": "box", "c": [0, -0.46], "size": [1, 0.08, 0.66], "surface": "column" },
+      { "shape": "vault", "base": 0.64, "size": [1, 1, 0.36] }
+    ],
+    "ticket-machine": [{ "shape": "box", "size": [1, 1, 1] }],
+    "tram-shelter": [
+      { "shape": "box", "c": [0, 0.45], "size": [1, 0.08, 0.93], "surface": "column" },
+      { "shape": "box", "base": 0.93, "size": [1.04, 1.2, 0.07] }
+    ],
+    "vending-robot": [
+      { "shape": "box", "size": [1, 1, 0.76] },
+      { "shape": "sphere", "base": 0.74, "size": [0.6, 0.8, 0.26], "surface": "sign" }
+    ]
+  }
+}

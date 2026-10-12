@@ -1,0 +1,54 @@
+{
+  "schema": "suborned.world/sample",
+  "source": "hand-made sample (Latch, 2026-10-11); stand-in until Splice's export",
+  "note": "Plan frame: x east, y north, metres. Building = the civic-block cafe corner at Oct 9 scale: 22 m frontage, 11.3 m deep, 34.8 m tall. Kerb 0.18 m (brief 002 B).",
+  "view": { "yaw": 30, "pitch": 38, "zoom": 14, "focus": [24, 8] },
+  "ground": {
+    "roads": [
+      { "id": "road/quay-street", "surface": "asphalt", "kerbSurface": "kerb", "line": [[-14, 0], [64, 0]], "width": 7.3, "level": 0, "kerbWidth": 0.3, "kerbHeight": 0.18 }
+    ],
+    "circuses": [
+      { "id": "circus/west", "surface": "asphalt", "islandSurface": "circus/island", "centre": [-26, 0], "radius": 12, "islandRadius": 6, "level": 0, "islandHeight": 0.18 }
+    ],
+    "water": [
+      { "id": "water/harbour", "surface": "water", "ring": [[-40, -30], [80, -30], [80, -12], [-40, -12]], "level": -1.2 }
+    ],
+    "quays": [
+      { "id": "quay/south", "surface": "quay", "ring": [[-14, -12], [64, -12], [64, -4], [-14, -4]], "base": -1.2, "height": 1.38 }
+    ]
+  },
+  "transit": {
+    "tram": [
+      { "id": "tram/quay-street", "surface": "track", "line": [[-14, 1.2], [64, 1.2]], "width": 1.6, "level": 0.03, "depth": 0.03, "spacing": 0 }
+    ],
+    "skyRail": [
+      { "id": "skyrail/harbour-loop", "surface": "beam", "pylonSurface": "pylon", "line": [[-14, 24], [64, 24]], "pylons": [[-5, 24], [25, 24], [55, 24]], "height": 24, "width": 1.4, "depth": 1.6, "pylonSize": 1.6, "ground": 0, "spacing": 0, "capDepth": 0 }
+    ]
+  },
+  "buildings": [
+    { "id": "building/cafe-corner", "surface": "limestone", "ring": [[0, 4], [22, 4], [22, 15.3], [0, 15.3]], "base": 0, "height": 34.8 }
+  ],
+  "levels": [
+    {
+      "id": "level/deck", "name": "deck", "height": 6,
+      "decks": [
+        { "id": "deck/east", "surface": "deck", "columnSurface": "column", "ring": [[26, 6], [40, 6], [40, 18], [26, 18]], "thickness": 0.5, "columns": [[27, 7], [39, 7], [27, 17], [39, 17]], "columnSize": 0.6, "ground": 0.18 }
+      ],
+      "stairs": [
+        { "id": "stair/east", "surface": "stair", "foot": [50, 12], "head": [40, 12], "bottom": 0.18, "top": 6, "width": 2.4, "riser": 0.17 }
+      ]
+    }
+  ],
+  "megastructures": [
+    {
+      "id": "mega/pier-tower",
+      "parts": [
+        { "id": "podium", "surface": "enamel", "ring": [[56, 6], [72, 6], [72, 20], [56, 20]], "base": 0, "height": 9 },
+        { "id": "tower", "surface": "limestone", "ring": [[60, 9], [68, 9], [68, 17], [60, 17]], "base": 9, "height": 40 }
+      ]
+    }
+  ],
+  "civic": [
+    { "id": "civic/records-office", "surface": "limestone", "ring": [[-12, 6], [-2, 6], [-2, 21.5], [-12, 21.5]], "base": 0, "height": 15.5 }
+  ]
+}

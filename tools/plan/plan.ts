@@ -7,6 +7,17 @@ export type Plot = { id: string; name?: string; use: string; area: string; rect?
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
 export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string; fronts?: string };
 export type Line = { id: string; name: string; beyond: string; paths: Path[]; order?: string[]; stops?: Stop[]; stations?: Stop[] };
+/** A sited megastructure (brief 004 A1). Footprints and bridges are rects [x0, x1, y0, y1]; levels name standards.levels ids. */
+export type MegaLevel = { level: string; z?: number; what: string; mix?: Record<string, number> };
+export type MegaBridge = { id: string; level: string; rect: Rect; joins: string; clearSpan?: number; supports?: string[] };
+export type Megastructure = {
+  id: string; name: string; kind: string; areas: string[]; footprint: Rect[];
+  spans: { plots: string[]; roads?: string[]; foot?: string[]; zones?: string[]; skyrail?: string };
+  height: number; levels: MegaLevel[]; bridges?: MegaBridge[]; connectors?: unknown; supports: { zones: string[]; [k: string]: unknown };
+  why: string; source: string; [k: string]: unknown;
+};
+/** A landmark disc: r its ground, `top` the height cap (above the datum), `kit` the piece standing on it; the skyport has a caisson and `pads` (c, yaw in degrees) for its kit pieces. */
+export type Landmark = { id: string; name: string; c: V; r: number; kit?: string; top?: number; caisson?: { r: number; deck: number; how?: string }; pads?: { c: V; yaw: number }[]; [k: string]: unknown };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
@@ -15,8 +26,8 @@ export type Plan = {
   areas: { id: string; name: string; rect: Rect; notch?: [number, number, number]; label?: V; size?: number }[]; plots: Plot[];
   foot: { id: string; name: string; kind: string; w: number; pts: V[] }[];
   circus: { c: V; island: number; garden: number; ring: V; pavement: number };
-  water: V[][]; quay: V[][]; beyond: V[][]; landmarks: { id: string; name: string; c: V; r: number }[];
-  tram: Line[]; skyrail: Line[]; routes: { id: string; name: string; from: string; to: string[]; toName?: string }[];
+  water: V[][]; quay: V[][]; beyond: V[][]; landmarks: Landmark[]; megastructures?: Megastructure[];
+  tram: Line[]; skyrail: Line[]; routes?: { id: string; name: string; from: string; to: string[]; toName?: string }[];
   civic: any; notes: { why: string[]; concept: string[]; questions: string[]; sources: string[] };
 };
 

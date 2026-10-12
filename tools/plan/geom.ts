@@ -111,12 +111,13 @@ export const area = (poly: V[]) => Math.abs(poly.reduce((s, p, i) => s + cross(p
 export const centroid = (poly: V[]): V => mul(poly.reduce(add, [0, 0] as V), 1 / poly.length);
 
 export function segDist(p: V, a: V, b: V) {
-  const ab = sub(b, a), t = Math.max(0, Math.min(1, dot(sub(p, a), ab) / (dot(ab, ab) || 1)));
-  return dist(p, add(a, mul(ab, t)));
+  const abx = b[0] - a[0], aby = b[1] - a[1], t = Math.max(0, Math.min(1, ((p[0] - a[0]) * abx + (p[1] - a[1]) * aby) / (abx * abx + aby * aby || 1)));
+  return Math.hypot(p[0] - (a[0] + abx * t), p[1] - (a[1] + aby * t));
 }
+const orient = (p: V, q: V, r: V) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]));
 function segsCross(a: V, b: V, c: V, d: V) {
-  const o = (p: V, q: V, r: V) => Math.sign(cross(sub(q, p), sub(r, p)));
-  return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0;
+  if (Math.max(a[0], b[0]) < Math.min(c[0], d[0]) || Math.max(c[0], d[0]) < Math.min(a[0], b[0]) || Math.max(a[1], b[1]) < Math.min(c[1], d[1]) || Math.max(c[1], d[1]) < Math.min(a[1], b[1])) return false;
+  return orient(a, b, c) * orient(a, b, d) < 0 && orient(c, d, a) * orient(c, d, b) < 0;
 }
 /** Segment intersection point, or null. */
 export function segHit(a: V, b: V, c: V, d: V): V | null {
@@ -138,4 +139,32 @@ export function lineToPoly(line: V[], poly: V[]) {
   }
   return best;
 }
-export const lineDist = (p: V, line: V[]) => line.slice(1).reduce((m, b, i) => Math.min(m, segDist(p, line[i], b)), Infinity);
+export function lineDist(p: V, line: V[]) {
+  let m = Infinity;
+  const x = p[0], y = p[1];
+  for (let i = 1; i < line.length; i++) {
+    const a = line[i - 1], b = line[i];
+    // bounding-box lower bound: skip a segment that cannot beat the best so far (same result, far fewer hypots)
+    const dx = Math.max(Math.min(a[0], b[0]) - x, x - Math.max(a[0], b[0]), 0), dy = Math.max(Math.min(a[1], b[1]) - y, y - Math.max(a[1], b[1]), 0);
+    if (dx > m || dy > m) continue;
+    const d = segDist(p, a, b); if (d < m) m = d;
+  }
+  return m;
+}
+const boxes = new WeakMap<V[], Float64Array>();
+const boxOf = (line: V[]) => {
+  let b = boxes.get(line);
+  if (!b) { b = new Float64Array(line.length * 4); line.forEach((v, i) => { b![i * 4] = v[0]; b![i * 4 + 1] = v[1]; }); boxes.set(line, b); }
+  return b;
+};
+/** lineDist(p, line) <= tol (< when strict), stopping at the first segment in range and skipping segments whose box is out of range. */
+export function nearLine(p: V, line: V[], tol: number, strict = false) {
+  const [x, y] = p, e = tol + 1e-6, b = boxOf(line);
+  for (let i = 1; i < line.length; i++) {
+    const ax = b[(i - 1) * 4], ay = b[(i - 1) * 4 + 1], bx = b[i * 4], by = b[i * 4 + 1];
+    if (ax < bx ? x < ax - e || x > bx + e : x < bx - e || x > ax + e) continue;
+    if (ay < by ? y < ay - e || y > by + e : y < by - e || y > ay + e) continue;
+    const d = segDist(p, line[i - 1], line[i]); if (strict ? d < tol : d <= tol) return true;
+  }
+  return false;
+}

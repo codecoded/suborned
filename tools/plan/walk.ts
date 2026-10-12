@@ -23,7 +23,7 @@ function solve(plan: Plan, d: Derived, civ: Civic) {
 
 function run(plan: Plan, d: Derived, civ: Civic) {
   const W = plan.standards.walking, cell = W.grid as number;
-  const origins = (W.from as string[]).map(name => ({ name, p: civ.points.find(x => x.name === name)!.p }));
+  const origins = civ.walkFrom;
   const targets = [
     ...plan.tram.flatMap(l => (l.stops ?? []).map(s => ({ kind: 'tram', line: l.id, id: s.id, name: s.name, p: s.at }))),
     ...plan.skyrail.flatMap(l => (l.stations ?? []).map(s => ({ kind: 'sky rail', line: l.id, id: s.id, name: s.name, p: s.at }))),
@@ -32,11 +32,12 @@ function run(plan: Plan, d: Derived, civ: Civic) {
   const x0 = Math.min(...all.map(p => p[0])) - pad, y0 = Math.min(...all.map(p => p[1])) - pad;
   const nx = Math.ceil((Math.max(...all.map(p => p[0])) + pad - x0) / cell), ny = Math.ceil((Math.max(...all.map(p => p[1])) + pad - y0) / cell);
   const blockers: V[][] = [...d.plots.filter(p => !OPEN.has(p.use)).map(p => p.polyV), ...civ.buildings.map(b => b.poly), ...plan.water];
+  const boxed = blockers.map(b => ({ b, x0: Math.min(...b.map(v => v[0])), x1: Math.max(...b.map(v => v[0])), y0: Math.min(...b.map(v => v[1])), y1: Math.max(...b.map(v => v[1])) }));
   const rounds = plan.landmarks.filter(l => l.id !== 'skyport');
   const blocked = new Uint8Array(nx * ny);
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
     const p: V = [x0 + (i + .5) * cell, y0 + (j + .5) * cell];
-    blocked[j * nx + i] = blockers.some(b => inPoly(p, b)) || rounds.some(l => dist(p, l.c) < l.r) ? 1 : 0;
+    blocked[j * nx + i] = boxed.some(k => p[0] >= k.x0 && p[0] <= k.x1 && p[1] >= k.y0 && p[1] <= k.y1 && inPoly(p, k.b)) || rounds.some(l => dist(p, l.c) < l.r) ? 1 : 0;
   }
   const idx = (p: V) => Math.max(0, Math.min(ny - 1, Math.floor((p[1] - y0) / cell))) * nx + Math.max(0, Math.min(nx - 1, Math.floor((p[0] - x0) / cell)));
   const centre = (k: number): V => [x0 + ((k % nx) + .5) * cell, y0 + (Math.floor(k / nx) + .5) * cell];

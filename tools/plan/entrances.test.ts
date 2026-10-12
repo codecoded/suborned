@@ -5,14 +5,16 @@ import { check } from './checks';
 import { civic } from './civic';
 import { lineDist, type V } from './geom';
 import { derive, type Plan } from './plan';
+import { legacyOverlay } from '../missions/handover/overlay';
 
 setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../..'), read = async (p: string) => JSON.parse(await Bun.file(resolve(root, p)).text());
-const base: Plan = await read('contracts/world/harbour-district.plan.json');
-const civ = civic(base.civic, await read(base.civic.block));
+// pinned draft (r008's input plan and block): these rules' failing examples must not move with the live world
+const base: Plan = await read('tools/levels/fixtures/harbour-district.plan.json');
+const block = await read('tools/levels/fixtures/handover-block.json'), civ = civic(base.civic, block);
 const run = (mutate: (p: any) => void = () => {}) => {
   const p = structuredClone(base) as any; mutate(p);
-  const by = (id: string) => check(p, derive(p), civ, true).checks.filter(c => c.id === id);
+  const by = (id: string) => check(p, derive(p), civ, true, legacyOverlay(p, block)).checks.filter(c => c.id === id);
   return { by, fails: (id: string) => by(id).some(c => !c.ok), passes: (id: string) => by(id).length > 0 && by(id).every(c => c.ok) };
 };
 const swim = (p: any) => { p.skyrail[0].stations[3].at = [650, -300]; }; // open water, nothing built there
@@ -37,8 +39,8 @@ describe('entrance rules', () => {
   });
   test('W-2 and W-3 are waivable only outside strict (like the other transit rules)', () => {
     const p = structuredClone(base) as any; p.standards.transit.waived['W-2'] = 'draft'; p.skyrail[0].stations[3].at = [650, -300];
-    expect(check(p, derive(p), civ).checks.find(c => c.id === 'W-2')!.ok).toBe(true);
-    expect(check(p, derive(p), civ, true).checks.find(c => c.id === 'W-2')!.ok).toBe(false);
+    expect(check(p, derive(p), civ, false, legacyOverlay(p, block)).checks.find(c => c.id === 'W-2')!.ok).toBe(true);
+    expect(check(p, derive(p), civ, true, legacyOverlay(p, block)).checks.find(c => c.id === 'W-2')!.ok).toBe(false);
   });
   test('W-3 passes with no fronts at all, and with every stop fronting a road it touches', () => {
     expect(run().passes('W-3')).toBe(true);

@@ -1,0 +1,129 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Suborned.World
+{
+    // C# side of the world export. Plan frame: x east, y north, metres; Unity = (x, height, y).
+    // Splice owns the real schema (contracts/world/); these DTOs and WorldReader are the only code that changes with it.
+    // Every height and size is data: the builder holds no height constants.
+
+    public sealed class WorldDto
+    {
+        public string Schema, Source;
+        public ViewDto View;
+        public GroundDto Ground = new();
+        public TransitDto Transit = new();
+        public List<MassDto> Buildings = new();
+        public List<RoofDto> Roofs = new();
+        public List<FrontageDto> Frontages = new();
+        public List<ConnectorDto> Connectors = new();
+        public List<StreetItemDto> Street = new();
+        public List<LevelDto> Levels = new();
+        public List<MegaDto> Megastructures = new();
+        public List<MassDto> Civic = new();
+        public List<LandmarkDto> Landmarks = new();
+        public List<MassDto> Gates = new();
+        /// <summary>Elements per layer as the exporter declares them (`counts`); null when the export has none (the sample).</summary>
+        public Dictionary<string, int> Counts;
+    }
+
+    /// <summary>Play camera: yaw (compass degrees, 90 = looking east), pitch above horizontal, zoom = orthographic size,
+    /// focus in plan.</summary>
+    public sealed class ViewDto { public float Yaw, Pitch, Zoom; public Vector2 Focus; }
+
+    public sealed class GroundDto
+    {
+        public List<RoadDto> Roads = new();
+        public List<CircusDto> Circuses = new();
+        public List<WaterDto> Water = new();
+        public List<MassDto> Quays = new();
+        public List<RoadDto> Foot = new();   // flat ribbons, no kerbs
+        public List<MassDto> Medians = new();
+        public List<WaterDto> Flats = new(); // flat land layers (surface at Level)
+        public List<MassDto> Plots = new();  // one 0.18 m pavement slab per plot
+    }
+
+    /// <summary>Carriageway ribbon at Level, kerb strips either side (KerbWidth wide, KerbHeight proud).</summary>
+    public sealed class RoadDto { public string Id, Surface, KerbSurface; public Vector2[] Line; public float Width, Level, KerbWidth, KerbHeight; }
+
+    /// <summary>Round carriageway with a raised island.</summary>
+    public sealed class CircusDto { public string Id, Surface, IslandSurface; public Vector2 Centre; public float Radius, IslandRadius, Level, IslandHeight; }
+
+    public sealed class WaterDto { public string Id, Surface; public Vector2[] Ring; public float Level; }
+
+    /// <summary>Extruded footprint from Base to Base + Height (buildings, civic, quays, megastructure parts).</summary>
+    public sealed class MassDto { public string Id, Surface; public Vector2[] Ring; public float Base, Height; }
+
+    public sealed class TransitDto
+    {
+        public List<TrackDto> Tram = new();
+        public List<SkyRailDto> SkyRail = new();
+        public List<MassDto> Stops = new(), Stations = new();
+    }
+
+    public sealed class TrackDto { public string Id, Surface; public Vector2[] Line; public float Width, Level, Depth, Spacing; } // Spacing > 0: two ribbons that far apart
+
+    /// <summary>Beam with its top at Height; pylons from the ground to the beam soffit.</summary>
+    public sealed class SkyRailDto
+    {
+        public string Id, Surface, PylonSurface;
+        public Vector2[] Line, Pylons;
+        public float Height, Width, Depth, PylonSize, Ground, Spacing, CapDepth; // Spacing > 0: two beams, pylon carries a cross-head CapDepth deep
+    }
+
+    /// <summary>A named walkable level (street, deck, sky concourse) with its decks and the stairs that reach it.</summary>
+    public sealed class LevelDto
+    {
+        public string Id, Name;
+        public float Height;
+        public List<DeckDto> Decks = new();
+        public List<StairDto> Stairs = new();
+    }
+
+    /// <summary>Slab with its top at the level height, on square columns down to Ground.</summary>
+    public sealed class DeckDto
+    {
+        public string Id, Surface, ColumnSurface;
+        public Vector2[] Ring, Columns;
+        public float Thickness, ColumnSize, Ground;
+        public string Group; // walkable piece: decks that touch at one level share it
+    }
+
+    /// <summary>Straight flight from Foot at Bottom to Head at Top; steps no taller than Riser.</summary>
+    public sealed class StairDto { public string Id, Surface; public Vector2 Foot, Head; public float Bottom, Top, Width, Riser; }
+
+    /// <summary>Sphere (radius standing on Base) or cylinder (Radius, Base to Base + Height). Kit = the piece that is the landmark;
+    /// Kits = pieces standing on its top (Base + Height) at their At, the landmark itself staying procedural (the skyport's pads).</summary>
+    public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); }
+
+    /// <summary>Gateway: a kit arch standing on the quay under its At (its Yaw turns the piece's +X).</summary>
+    public sealed class MegaDto { public string Id; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }
+
+    /// <summary>Primitive solid. Shape: box | cyl | sphere | vault | saucer | wedge. Size = (a along Yaw, b across, h); Base = lowest z; Yaw radians from +x toward +y in plan.</summary>
+    public sealed class PrimDto { public string Id, Shape, Surface; public Vector2 Centre; public float Base, Yaw; public Vector3 Size; }
+
+    /// <summary>One programme on a roof at Z (top of the roof slab); Parts are in world frame.</summary>
+    /// <summary>Kit = the programme's piece (hover-pad: SkyPad_Roof) standing on the slab at its At; its procedural stand-in is then not in Parts.</summary>
+    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit; }
+
+    /// <summary>A tenancy a to b on a facade at Z facing Normal; Sign carries Motif, Icon and a palette key (no text).</summary>
+    public sealed class FrontageDto
+    {
+        public string Id, Host, Level, Trade, Area, Street, SpillKind, Motif, Icon, Palette;
+        public float Z, Width, Yaw, SpillDepth; public bool Lobby, Anchor, Staffed; public float HoursFrom, HoursTo; public bool HoursService;
+        public Vector2 A, B, Normal;
+        public PrimDto Front, Entrance, Canopy, Sign, Service; // Service null where the trade has no bay here
+        public string Source; public KitRefDto SignKit; // SignKit adds a blade or wall sign at its At, lowest point at its Base; the fascia stays procedural
+    }
+
+    /// <summary>stair | ramp | cartRamp | escalator | lift | goodsLift | stairTower from level From (Bottom) to level To (Top); Serves lists the deck ids it lands on.</summary>
+    public sealed class ConnectorDto { public string Id, Kind, Host, From, To; public string[] Serves; public Vector2 Foot, Head; public Vector2[] Ring; public float Bottom, Top, Width, Yaw; public bool StepFree; }
+
+    /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
+    public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit; }
+
+    /// <summary>A DecoKit piece (contracts/world/kit.json id) standing in for an element. Scale = (across, up, depth) on the piece's own
+    /// size = Unity local (x, y, z). Yaw (plan radians from +x toward +y) turns the piece's +X; its front (+Z) faces Yaw + 90°; NaN = the
+    /// element's own yaw. At, Base, Mount only on signs.</summary>
+    public sealed class KitRefDto { public string Id, Mount; public Vector3 Scale; public float Yaw = float.NaN, Base; public Vector2 At; }
+}

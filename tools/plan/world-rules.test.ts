@@ -1,0 +1,87 @@
+// Failing examples for the world rules (B, L, MS, F, SF): each rule fails on a world with one thing broken, and passes on the
+// world it was copied from. The base is the generated world of the live plan, cloned per test; it moves with the plan, but the
+// mutations are written to fail whatever the plan says. F-2 fails on the live world today (Datum: trades' `wants`), so the
+// clean-pass test names it as known.
+import { describe, expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { civic } from './civic';
+import { lineDist, type V } from './geom';
+import { quayEdges } from './street-zones';
+import { derive, type Plan } from './plan';
+import { ctxOf, generated } from './world-ctx';
+import { worldRules } from './world-rules';
+
+setDefaultTimeout(120000);
+const root = resolve(import.meta.dir, '../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
+const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block));
+const base = generated(plan, d, civ);
+const KNOWN = ['F-2']; // fails on the live world: report to Datum, not weakened
+
+type W = any;
+/** The rules on a clone of the world with `mutate(w, gen, plan)` applied; returns the ids that fail. */
+const failing = (mutate: (w: W, g: W, p: W) => void): string[] => {
+  const w = structuredClone(base.w) as W, g = { ...base.gen } as W, p = structuredClone(plan) as W;
+  g.connectors = w.connectors; g.frontages = w.frontages; g.street = w.street; g.blds = base.gen.blds.map(b => ({ ...b })); g.decks = base.gen.decks.map(x => ({ ...x })); g.travel = base.gen.travel.map(t => ({ ...t }));
+  mutate(w, g, p);
+  return worldRules(ctxOf(p, d, civ, { w, gen: g })).filter(c => !c.ok).map(c => c.id);
+};
+const first = <T>(a: T[], f: (t: T) => boolean) => a.find(f)!;
+
+describe('world rules', () => {
+  test('the unmodified world passes every rule but the known failures', () => {
+    expect(failing(() => {}).filter(id => !KNOWN.includes(id))).toEqual([]);
+  });
+  const cases: [string, string, (w: W, g: W, p: W) => void][] = [
+    ['B-2', 'a building taller than its band', (_w, g) => { first(g.blds, (b: W) => !b.tower && b.kind !== 'shed').z += 40; }],
+    ['B-3', 'a building shoved off its plot', (w) => { for (const m of w.buildings) m.ring = m.ring.map((v: number[]) => [v[0] + 60, v[1]]); }],
+    ['B-4', 'two buildings overlapping', (w) => { const b = w.buildings.filter((m: W) => m.base < 1); b[1].ring = b[0].ring.map((v: number[]) => [...v]); }],
+    ['L-1', 'a deck with no way down', (w, g) => { w.connectors.length = 0; g.connectors.length = 0; }],
+    ['B-1', 'a plot with no band', (_w, _g, p) => { p.plots[0].use = 'no-such-use'; }],
+    ['B-5', 'a tower under its minimum storeys', (_w, g) => { first(g.blds, (b: W) => b.tower).n = 1; }],
+    ['B-6', 'a building part standing in the sky rail beam', (w, _g, p) => { const [x, y] = d.pylons[0]!.p; w.buildings[0] = { ...w.buildings[0], ring: [[x - 4, y - 4], [x + 4, y - 4], [x + 4, y + 4], [x - 4, y + 4]], base: 6, height: 20 }; }],
+    ['L-2', 'a deck whose worst point is too far from a way down', (_w, g) => { g.travel[0].max = g.travel[0].limit + 5; }],
+    ['L-3', 'a stair 1 m wide', (w) => { first(w.connectors, (k: W) => k.kind === 'stair').width = 1; }],
+    ['L-4', 'a deck level 3 m up over a carriageway', (w) => { w.levels = w.levels.map((l: W) => l.name === 'deck' ? { ...l, height: 3 } : l); }],
+    ['L-5', 'stations with no stair bank, run or lift', (w, g) => { w.connectors = w.connectors.filter((k: W) => !/^bank\//.test(k.id)); g.connectors = w.connectors; }],
+    ['MS-1', 'a megastructure with no reason', (_w, _g, p) => { p.megastructures[0].why = ''; }],
+    ['MS-2', 'a footprint off the land it spans', (_w, _g, p) => { p.megastructures[0].footprint = [[900, 1000, 900, 1000]]; }],
+    ['MS-3', 'a bridge over a sky rail pylon', (_w, _g, p) => { const [x, y] = d.pylons[0]!.p; const m = p.megastructures.find((q: W) => q.bridges?.length); m.bridges[0].rect = [x - 1, x + 1, y - 1, y + 1]; }],
+    ['MS-4', 'a pier leg on the sky rail line', (_w, _g, p) => { const [x, y] = d.pylons[0]!.p; p.megastructures.find((q: W) => q.supports.portal).legs[0] = [x - .2, x + .2, y - .2, y + .2]; }],
+    ['MS-5', 'a deck column in the carriageway', (w) => { const m = w.levels.flatMap((l: W) => l.decks).find((x: W) => x.id.startsWith('mega/')); m.columns = [[200, 0]]; }],
+    ['F-1', 'a tenancy off its building line', (w) => { const f = w.frontages[5]; f.a = [f.a[0] + 7, f.a[1] + 7]; f.b = [f.b[0] + 7, f.b[1] + 7]; }],
+    ['F-2', 'a tenancy on a primary distributor', (w, _g, p) => { w.frontages[0].street = p.roads.find((r: W) => r.class === 'primary').id; }],
+    ['F-4', 'a service bay of the wrong size', (w) => { const f = first(w.frontages, (q: W) => q.service); f.service = { ...f.service, size: [9, f.service.size[1], f.service.size[2]] }; }],
+    ['F-5', 'buildings with no lobby', (w) => { for (const f of w.frontages) if (f.trade === 'lobby') f.trade = 'florist'; }],
+    ['SF-2', 'a lamp in a doorway', (w) => { first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1).at = w.frontages.find((f: W) => f.z < 1 && f.entrance).entrance.c.slice(0, 2); }],
+    ['SF-3', 'a lamp on the tram reservation', (w) => { first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1).at = d.tram[0]!.samples[10]!.p; }],
+    ['SF-4', 'a tree under the sky rail beam', (w) => { const t = first(w.street, (s: W) => s.kind === 'tree' && s.z < 1); t.at = d.pylons[0]!.p; }],
+    ['SF-6', 'a lamp that does not fit its zone', (w) => { const t = first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1); t.at = [t.at[0] + 1.5, t.at[1] + 1.5]; }],
+    ['SF-7', 'trees closer than the spacing', (w) => { const t = first(w.street, (s: W) => s.kind === 'tree' && s.z < 1); w.street.push({ ...t, id: `${t.id}-x`, at: [t.at[0] + 1, t.at[1]] }); }],
+    ['SF-8', 'a sight-blocking item at a junction corner', (w) => { for (const s of w.street) if (s.z < 1) s.sight = 'blocks'; }],
+    ['SF-9', 'a station with no watchers', (w) => { w.street = w.street.filter((s: W) => !/camera|robot/.test(s.kind)); }],
+    ['SF-11', 'a tree on a pylon face', (w) => { first(w.street, (s: W) => s.kind === 'tree' && s.z < 1).at = d.pylons[0]!.p; }],
+    ['SF-12', 'a tram stop with no kit', (w) => { w.street = w.street.filter((s: W) => !s.edge.startsWith('stop/')); }],
+    ['SF-13', 'a station bank in the beam envelope', (w) => { const [x, y] = d.pylons[0]!.p, k = first(w.connectors, (q: W) => /^bank\/.+\/tower$/.test(q.id)); k.ring = [[x - 1, y - 1], [x + 1, y - 1], [x + 1, y + 1], [x - 1, y + 1]]; }],
+    ['SF-15', 'a roof with an unknown programme', (w) => { w.roofs = w.roofs.map((r: W) => ({ ...r })); w.roofs[0].programme = 'no-such-programme'; }],
+    ['SF-16', 'spill deeper than the frontage zone', (w) => { w.frontages[0].spill = { kind: 'tables', depth: 99 }; }],
+    ['SF-5', 'a hydrant on the kerb face', (w) => { // pulled straight toward its road's centre line until 0.1 m off the kerb face
+      const h = first(w.street, (s: W) => s.kind === 'hydrant' && s.z < 1 && /\/e\d/.test(s.edge)), r = d.roads.reduce((a, b) => lineDist(h.at, b.line) - b.w / 2 < lineDist(h.at, a.line) - a.w / 2 ? b : a);
+      let best: V = r.line[0]!, bd = Infinity;
+      for (let i = 1; i < r.line.length; i++) { const a = r.line[i - 1]!, b = r.line[i]!, l2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2, t = Math.max(0, Math.min(1, ((h.at[0] - a[0]) * (b[0] - a[0]) + (h.at[1] - a[1]) * (b[1] - a[1])) / l2)), q: V = [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])], dd = Math.hypot(q[0] - h.at[0], q[1] - h.at[1]); if (dd < bd) { bd = dd; best = q; } }
+      const k = (bd - r.w / 2 - 0.1) / bd; h.at = [h.at[0] + (best[0] - h.at[0]) * k, h.at[1] + (best[1] - h.at[1]) * k];
+    }],
+    ['L-6', 'a duplicate id', (w) => { w.street[1].id = w.street[0].id; }],
+    ['F-3', 'the same trade side by side', (w) => { const f = w.frontages; const i = f.findIndex((x: W, k: number) => k && f[k - 1].host === x.host && f[k - 1].street === x.street && x.trade !== f[k - 1].trade); f[i].trade = f[i - 1].trade; }],
+    ['F-6', 'a trade not in the area mix', (w) => { w.frontages[3].trade = 'no-such-trade'; }],
+    ['SF-1', 'a lamp moved into the walking zone', (w) => { const t = first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1); t.at = [t.at[0] + 1.5, t.at[1] + 1.5]; }],
+    ['SF-10', 'a staffed item with no hours', (w) => { first(w.street, (s: W) => s.staffed).staffed.hours = undefined; }],
+    ['SF-14', 'a bench on the quay edge', (w, _g, p) => { // 0.3 m inside the quay from the middle of a water edge (quays are rectangles)
+      const [a, b] = quayEdges({ plan: p, d: derive(p) })[0]!, q = p.quay.find((r: number[][]) => r.some(v => v[0] === a[0] && v[1] === a[1]))!, xs = q.map((v: number[]) => v[0]), ys = q.map((v: number[]) => v[1]);
+      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      first(w.street, (s: W) => s.kind === 'bench' && s.z < 1).at = a[0] === b[0] ? [m[0] + Math.sign(cx - m[0]) * .3, m[1]] : [m[0], m[1] + Math.sign(cy - m[1]) * .3];
+    }],
+    ['SF-17', 'a sign outside the city palette', (w) => { w.frontages[0].sign.palette = 'no-such-colour'; }],
+  ];
+  for (const [id, what, mutate] of cases) test(`${id} fails on ${what}`, () => { expect(failing(mutate)).toContain(id); });
+});

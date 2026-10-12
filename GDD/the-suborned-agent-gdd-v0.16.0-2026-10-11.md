@@ -1,11 +1,11 @@
-# THE SUBORNED · AGENT GDD v0.15.0 · 2026-10-10
-src: the-suborned-gdd-v0.15.0-2026-10-10.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible (the-suborned-art-bible-v0.15.0-2026-10-10.html; machine copy contracts/style/suborned.style.json, which wins on conflict).
+# THE SUBORNED · AGENT GDD v0.16.0 · 2026-10-11
+src: the-suborned-gdd-v0.16.0-2026-10-11.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible (the-suborned-art-bible-v0.15.0-2026-10-10.html; machine copy contracts/style/suborned.style.json, which wins on conflict).
 tags: [B] built, proven in top-down test · [S] spec, starting value, tune by playtest · [L] after capstone
 load: every agent = §01 + its own §14 block · Aster = §01–§13 + its §14 block · Vela, Forma, Glint, Glyph also §15 · open other sections by number on demand
 units: s seconds · m:ss mission clock · $ cash · T Trail · A Alert
 
 ## §01 GAME + CORE (loaded first by every agent)
-game: single-player real-time tactics + social infiltration · PC · Unity · camera above street, never first person · exteriors only (interiors = timed off-screen actions) · mission = 1 block, 8–12 min, live clock
+game: single-player real-time tactics + social infiltration · PC · Unity · camera above street, never first person · exteriors only (interiors = timed off-screen actions; shops, bars and workshops are frontages) · multi-level exteriors: street 0, deck 9.43 m, sky concourse 24 m (sky rail platforms) · mission = 1 block, 8–12 min, live clock
 fantasy: commander. The city carries out your plan without knowing it: turn ordinary people, time their small acts into one plan.
 arc: one person → networks → districts. Every system adds to or tests that growth.
 look: bright retro-future (cream stone, teal enamel, coral transit, chrome; skyline of towers, rockets, planets). Optimistic surface, coercive underneath.
@@ -82,6 +82,7 @@ rivals [B]: same target, own schedule. False tip: away 3:50. Gunfire: arrive wit
 | 2 search [B] | response unit to reported route | 2nd incident or any gunfire |
 | 3 lockdown [B] | doors lock; district seals | violence seen by a civilian → 3 at once |
 witness [S]: clear sightline within 13 m of a traceable act → +1 T per incident, moves standing. Crowds also block guard/camera sightlines.
+levels [S]: street, deck and sky concourse are all exterior. Sightlines and the 13 m run in 3D: a slab blocks sight straight up and down, an open edge does not. People change level only by stair, ramp, escalator or lift (time from the plan). Watchers stand per level; a station watcher covers its concourse.
 watchers [S]: cameras and civic robots stand at key places on the district plan (stations, stops, gates, squares). Any op in a watcher's sightline is logged with place + time, act or no act. Once a Trail is open, investigators can pull the log: each sighting is a lead (place + time). Hot (Heat over threshold, Motive sets it) or Menace standing in the district: a sighting counts as a witness report (Alert table).
 investigators [S][L]: on foot question ~every 20 s; cars move fast, stop to question; count rises with A and T. Pick civilians near last incident by sightline + distance, not luck. Useful answer = fact with place + time → go there, question again; ~60–90 s per hop.
 visible: questioning icon, dotted line joining held leads, unit following it.
@@ -130,16 +131,17 @@ replay freely before Continue; after, the result stands.
 ## §09 GENERATION
 nothing hand-authored. Sky writes rules + generators. The simulation plays every generated mission before a player sees it. Build time only.
 | content | from | checked by |
-| people | occupation × temperament × need × relationships × routine, fit to district schedules | reach their places; one clear need |
+| people | occupation (from the trades on their block) × temperament × need × relationships × routine, fit to district schedules | reach their places; one clear need |
 | missions | template (objective, target, closing event, fight trigger) + district people | mission checker |
 | dialogue, portraits, voices | person data + state (brave, resentful, promoted) | tone + rating filters; sampled review |
-| district plans | Datum (roads, transit, plots, gates) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun workbench/Tools/Plan/cli.ts) |
+| district plans | Datum (roads, transit, plots, gates, levels, megastructures, frontage program) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun tools/plan/cli.ts) |
+| world | generator fills each plot from plan.standards, seeded by plot id: masses, towers, roofs, frontage trades, decks, stairs, lifts; 2–4 megastructures per district from the plan | plan checker (B, L, MS, F rules) · same plan → same world |
 | consequences | rules on mission log | replay → same result |
 mission checker: ships only if ≥ 2 quiet routes win · loud route exists and costs more T · every fail condition reachable · no single contact essential · fully informed player finishes ≥ 1:00 before closing event.
 risk: sameness (Watch Dogs: Legion). Fix: history, not backstory; people are memorable via what the systems record. Text = light layer. Live AI chatter [L] only if it never touches rules.
 
 ## §10 PRESENTATION
-camera: fixed tactical view. Capstone = static 2.5D scene with 3D projection; full 3D if time; rules unchanged. Characters 40–60 px tall at 1080p (job, silhouette, facing readable).
+camera: fixed tactical view. Capstone = static 2.5D scene with 3D projection; full 3D if time; rules unchanged. Characters 40–60 px tall at 1080p (job, silhouette, facing readable). Levels: architecture above the selected person's level ghosts (§15, 0.2).
 split: painted static = buildings, paving, skyline. Live 3D = people, vehicles, doors, surveillance, barricades, posters, anything with state. Match lighting on 1 character + 1 vehicle before building more.
 controls: click select/move · Shift group · 1–4 operative · E engage · F fire · C call · click person/door/camera → action card with full price · Next Event jumps to next scheduled change · live clock + tactical pause (T1).
 readability: cones red · guard amber · rivals violet. No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue. Dossier separates known / suspected / planned.
@@ -203,7 +205,7 @@ hold: Handover is the reference case the generator must match. Ships only if 2+ 
 also: Pulse (schedules), Motive (prices).
 opens: §07–09 · tests T5, T6
 ### Datum · World planner · Opus 5.5
-owns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.
+owns: District master plans (contracts/world/<district>.plan.json, schema suborned.plan/1): road hierarchy, environmental areas, gates, plots, building and level standards, the frontage program (trades and their mix per area), megastructures, tram and sky rail lines with stops and stations, watcher sites (cameras, civic robots) at stations, stops, gates and squares. Edit the plan; the sheet is generated from it.
 receives: Sky's direction for the district (via Aster), the mission sites that must fit (Handover: café + civic office at exact geometry), Waymark's routes, plan.standards.
 delivers: A plan that passes the plan checker (exit 0) plus its sheet, to Vantage (blocks), Latch (graybox), Pulse (timetables) and Waymark (gates, routes). Keel reviews; Splice owns the rules.
 hold: Plan before paint: the city must work as a city. Roads by hierarchy (ring → distributors → access); every way into an environmental area is a gate, which is where a mission seals. Trams and sky rail are networks the cell rides between stops and stations (boarding = fast travel, priced in time): no dead ends, every area in reach of a stop, interchanges ≤150 m. People cross roads anywhere; only buildings, built plots, landmarks and water block a walk. Composed, never a grid (circus, parade, harbour, gardens). Watchers stand where a city watches, never placed for one mission. Never loosen a rule to pass; ask Splice, with a reason.
@@ -246,7 +248,7 @@ delivers: Reports with steps to reproduce, expected against observed, and clips.
 hold: Six new players per test; most pass bars are 5 of 6. Handover wins when Vale reaches the car alive. It fails if Vale dies, leaves or is taken, the district seals, the Enforcer goes down, or the entry is seen. Checks the gate every week from week 3.
 opens: §07, §11, §13 · tool: Unity (checks)
 ### Splice · Tools engineer · GPT 6.1 Sol
-owns: The checking tools, including the plan checker (workbench/Tools/Plan).
+owns: The checking tools, including the plan checker (tools/plan), and the world generator and export (tools/world, bun run world).
 receives: Keel's rulebook; planning standards and rule requests from Datum and Vantage.
 delivers: A Unity checking tool that catches missing people, unreachable places or impossible actions before Latch builds; plan checker rules, each with an id, a source and a failing example.
 hold: Every generated person reaches their places and has one clear need. Anything not in the rulebook is rejected, however plausible it looks.

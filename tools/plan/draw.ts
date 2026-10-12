@@ -146,7 +146,7 @@ export function inset(plan: Plan, d: Derived, civ: Civic, R: Report) {
     + civ.bays.map(b => P.poly(b.poly, 'bay')).join('')
     + P.poly(civ.crossing, 'crossing')
     + civ.buildings.map(b => P.text(add(centroid(b.poly), [0, -1]), b.id === 'cafe' ? 'CAFÉ' : 'RECORDS OFFICE', 'bldg-lab', [1, 0], 2.6)).join(''));
-  const pts = civ.points.filter((p, i, A) => A.findIndex(q => dist(q.p, p.p) < .3) === i);
+  const pts = civ.walkFrom.filter((p, i, A) => A.findIndex(q => dist(q.p, p.p) < .3) === i);
   const points = layer('points', pts.map((p, i) => P.line([add(p.p, [-1, 0]), add(p.p, [1, 0])], 'pt') + P.line([add(p.p, [0, -1]), add(p.p, [0, 1])], 'pt')
     + P.text(add(p.p, [1.4, .5]), `${i + 1}`, 'pt-lab', [1, 0], 1.8)).join(''));
   const sq = civ.blocks.find(b => b.id === 'square')!.outer, of = civ.blocks.find(b => b.id === 'office')!.outer;

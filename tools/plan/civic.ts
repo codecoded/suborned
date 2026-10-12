@@ -1,4 +1,5 @@
-// The Handover block in plan coordinates: block frame (contracts/world/handover-block.json, suborned.block/2) → plan by blockToPlan.
+// The civic block in plan coordinates: block frame (contracts/world/civic-block.json, suborned.block/3) → plan by blockToPlan.
+// A pinned suborned.block/2 (recorded runs) reads the same: its destinations and crew belong to an overlay, not here.
 import { type Rect, type V, rectPoly } from './geom';
 
 export type Civic = {
@@ -6,27 +7,32 @@ export type Civic = {
   structures: { id: string; name: string; category: string; poly: V[]; height: number; z: number }[];
   objects: { id: string; kind: string; poly: V[]; height: number; z: number }[];
   bays: { id: string; poly: V[] }[];
-  points: { name: string; p: V; surface: string }[];
-  crew: { name: string; p: V; surface: string }[];
+  entrances: { id: string; name: string; building: string; p: V }[];
+  /** Where walks start: the building entrances (an overlay may replace them). */
+  walkFrom: { name: string; p: V }[];
   blocks: { id: string; outer: V[]; core: V[] }[];
   crossing: V[];
 };
 
-export function civic(spec: any, block: any): Civic {
-  if (block.schema !== 'suborned.block/2') throw new Error(`handover block is ${block.schema}, expected suborned.block/2 (bun run block)`);
+export function toPlanFn(spec: any) {
   const o: V = spec.blockToPlan.origin, ax: V = spec.blockToPlan.x, ay: V = spec.blockToPlan.y;
-  const toPlan = ([bx, by]: V): V => [o[0] + bx * ax[0] + by * ay[0], o[1] + bx * ax[1] + by * ay[1]];
+  return ([bx, by]: V): V => [o[0] + bx * ax[0] + by * ay[0], o[1] + bx * ax[1] + by * ay[1]];
+}
+
+export function civic(spec: any, block: any): Civic {
+  if (!['suborned.block/2', 'suborned.block/3'].includes(block.schema)) throw new Error(`civic block is ${block.schema}, expected suborned.block/3 (bun run block)`);
+  const toPlan = toPlanFn(spec);
   const blockRect = (r: Rect) => rectPoly(r).map(toPlan);
   const w = spec.walk;
-  const place = (d: any) => ({ name: d.name as string, p: toPlan(d.at), surface: d.surface as string });
+  const entrances = block.buildings.flatMap((b: any) => (b.entrances ?? []).map((e: any) => ({ id: e.id as string, name: e.name as string, building: b.id as string, p: toPlan(e.at) })));
 
   return {
-    buildings: block.buildings.map(({ polygon, towers, ...b }: any) => ({ ...b, poly: polygon.map(toPlan), ...(towers ? { towers: towers.map((x: any) => ({ ...x, at: toPlan(x.at) })) } : {}) })),
+    buildings: block.buildings.map(({ polygon, towers, entrances: _e, ...b }: any) => ({ ...b, poly: polygon.map(toPlan), ...(towers ? { towers: towers.map((x: any) => ({ ...x, at: toPlan(x.at) })) } : {}) })),
     structures: block.structures.map(({ polygon, ...s }: any) => ({ ...s, poly: polygon.map(toPlan) })),
     objects: block.objects.map(({ polygon, ...x }: any) => ({ ...x, poly: polygon.map(toPlan) })),
     bays: block.bays.map((b: any) => ({ id: b.id, poly: b.polygon.map(toPlan) })),
-    points: block.destinations.map(place),
-    crew: block.crew.map(place),
+    entrances,
+    walkFrom: entrances.map((e: any) => ({ name: e.name, p: e.p })),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),
     crossing: blockRect(spec.crossing),
   };

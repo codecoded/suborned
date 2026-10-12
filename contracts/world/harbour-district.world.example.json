@@ -1,0 +1,884 @@
+{
+ "schema": "suborned.world/2",
+ "source": "harbour-district v0.2.0 (2026-10-12)",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "view": {
+  "yaw": 30,
+  "pitch": 38,
+  "zoom": 14,
+  "focus": [
+   -159
+  ]
+ },
+ "ground": {
+  "roads": [
+   {
+    "id": "road/sunset-way",
+    "surface": "asphalt",
+    "kerbSurface": "kerb",
+    "line": [
+     [
+      -340
+     ]
+    ],
+    "width": 24,
+    "level": 0,
+    "kerbWidth": 0.3,
+    "kerbHeight": 0.18
+   }
+  ],
+  "foot": [
+   {
+    "id": "foot/crown-parade",
+    "surface": "foot",
+    "kerbSurface": "kerb",
+    "line": [
+     [
+      43
+     ]
+    ],
+    "width": 40,
+    "level": 0.02,
+    "kerbWidth": 0,
+    "kerbHeight": 0
+   }
+  ],
+  "medians": [
+   {
+    "id": "median/0",
+    "surface": "median",
+    "ring": [
+     [
+      -342
+     ]
+    ],
+    "base": 0,
+    "height": 0.18
+   }
+  ],
+  "circuses": [
+   {
+    "id": "circus/crown",
+    "surface": "asphalt",
+    "islandSurface": "circus/island",
+    "centre": [
+     0
+    ],
+    "radius": 43,
+    "islandRadius": 31,
+    "level": 0,
+    "islandHeight": 0.18
+   }
+  ],
+  "water": [
+   {
+    "id": "water/0",
+    "surface": "water",
+    "ring": [
+     [
+      330
+     ]
+    ],
+    "level": -1
+   }
+  ],
+  "quays": [
+   {
+    "id": "quay/0",
+    "surface": "quay",
+    "ring": [
+     [
+      312
+     ]
+    ],
+    "base": -2.5,
+    "height": 2.68
+   }
+  ],
+  "flats": [
+   {
+    "id": "ground/land",
+    "surface": "pavement",
+    "ring": [
+     [
+      -400
+     ]
+    ],
+    "level": -0.03
+   }
+  ],
+  "plots": [
+   {
+    "id": "plot/records-square",
+    "surface": "square",
+    "ring": [
+     [
+      -180
+     ]
+    ],
+    "base": 0,
+    "height": 0.18
+   }
+  ]
+ },
+ "transit": {
+  "tram": [
+   {
+    "id": "tram/T1/trunk",
+    "surface": "track",
+    "line": [
+     [
+      0
+     ]
+    ],
+    "width": 1.6,
+    "level": 0.04,
+    "depth": 0.04,
+    "spacing": 3.6
+   }
+  ],
+  "skyRail": [
+   {
+    "id": "skyrail/S1/trunk",
+    "surface": "beam",
+    "pylonSurface": "pylon",
+    "line": [
+     [
+      -400
+     ]
+    ],
+    "pylons": [
+     [
+      -400
+     ]
+    ],
+    "height": 24,
+    "width": 1.5,
+    "depth": 1.6,
+    "pylonSize": 1.6,
+    "ground": -2.5,
+    "spacing": 6,
+    "capDepth": 1
+   }
+  ],
+  "stops": [
+   {
+    "id": "stop/T1/comet/l",
+    "surface": "platform",
+    "ring": [
+     [
+      -3.1
+     ]
+    ],
+    "base": 0,
+    "height": 0.3
+   }
+  ],
+  "stations": [
+   {
+    "id": "station/S1/gardens/l",
+    "surface": "platform",
+    "ring": [
+     [
+      -185
+     ]
+    ],
+    "base": 22.8,
+    "height": 1.2
+   }
+  ]
+ },
+ "buildings": [
+  {
+   "id": "bld/garden-row-east/0/podium",
+   "surface": "limestone",
+   "ring": [
+    [
+     -119.5
+    ]
+   ],
+   "base": 0,
+   "height": 9.43
+  }
+ ],
+ "roofs": [
+  {
+   "id": "bld/garden-row-east/0/roof",
+   "building": "bld/garden-row-east/0",
+   "programme": "water-sphere",
+   "surface": "roof",
+   "z": 34.98,
+   "c": [
+    -96,
+    -232.5
+   ],
+   "size": [
+    35,
+    32
+   ],
+   "yaw": 0,
+   "parapet": 0.6,
+   "parts": [
+    {
+     "id": "bld/garden-row-east/0/roof/sphere",
+     "shape": "sphere",
+     "surface": "trim",
+     "c": [
+      -96,
+      -232.5
+     ],
+     "base": 38.98,
+     "size": [
+      6,
+      6,
+      6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/leg-0",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      -98,
+      -230.5
+     ],
+     "base": 34.98,
+     "size": [
+      0.4,
+      0.4,
+      4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/leg-1",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      -94,
+      -230.5
+     ],
+     "base": 34.98,
+     "size": [
+      0.4,
+      0.4,
+      4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/leg-2",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      -98,
+      -234.5
+     ],
+     "base": 34.98,
+     "size": [
+      0.4,
+      0.4,
+      4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/leg-3",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      -94,
+      -234.5
+     ],
+     "base": 34.98,
+     "size": [
+      0.4,
+      0.4,
+      4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/plant",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      -81.5,
+      -245.5
+     ],
+     "base": 34.98,
+     "size": [
+      6,
+      6,
+      3.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-0",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -109.333,
+      -247.3
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-1",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -104,
+      -217.7
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-2",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -98.667,
+      -247.3
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-3",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -93.333,
+      -217.7
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-4",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -88,
+      -247.3
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/garden-row-east/0/roof/vent-5",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -82.667,
+      -217.7
+     ],
+     "base": 34.98,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "bld/crescent-east/15/roof",
+   "building": "bld/crescent-east/15",
+   "programme": "hover-pad",
+   "surface": "roof",
+   "z": 31.38,
+   "c": [
+    252,
+    245
+   ],
+   "size": [
+    30,
+    24
+   ],
+   "yaw": 3.1416,
+   "parapet": 1.1,
+   "parts": [
+    {
+     "id": "bld/crescent-east/15/roof/kiosk",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      239.5,
+      235.5
+     ],
+     "base": 31.38,
+     "size": [
+      3,
+      3,
+      3
+     ],
+     "yaw": 3.1416
+    },
+    {
+     "id": "bld/crescent-east/15/roof/plant",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      240,
+      254
+     ],
+     "base": 31.38,
+     "size": [
+      6,
+      6,
+      3.6
+     ],
+     "yaw": 3.1416
+    },
+    {
+     "id": "bld/crescent-east/15/roof/vent-3",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      241.875,
+      234.2
+     ],
+     "base": 31.38,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 3.1416
+    }
+   ],
+   "kit": {
+    "id": "SkyPad_Roof",
+    "scale": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 3.1416,
+    "at": [
+     257.615,
+     249.93
+    ]
+   }
+  }
+ ],
+ "frontages": [
+  {
+   "id": "bld/garden-row-east/0/e0-3",
+   "host": "bld/garden-row-east/0",
+   "level": "street",
+   "z": 0.18,
+   "trade": "diner",
+   "area": "records",
+   "street": "orbit-walk",
+   "a": [
+    -93.5,
+    -254.5
+   ],
+   "b": [
+    -72.5,
+    -254.5
+   ],
+   "w": 21,
+   "normal": [
+    0,
+    -1
+   ],
+   "yaw": 0,
+   "hours": [
+    6,
+    24
+   ],
+   "staffed": true,
+   "spill": {
+    "kind": "booth glazing, kerb tables",
+    "depth": 2.5
+   },
+   "lobby": false,
+   "anchor": true,
+   "front": {
+    "id": "bld/garden-row-east/0/e0-3/front",
+    "shape": "box",
+    "surface": "frontage",
+    "c": [
+     -83,
+     -254.8
+    ],
+    "base": 0.18,
+    "size": [
+     21,
+     0.6,
+     4.6
+    ],
+    "yaw": 0
+   },
+   "entrance": {
+    "id": "bld/garden-row-east/0/e0-3/door",
+    "shape": "box",
+    "surface": "trim",
+    "c": [
+     -83,
+     -255.2
+    ],
+    "base": 0.18,
+    "size": [
+     2.4,
+     0.2,
+     2.4
+    ],
+    "yaw": 0
+   },
+   "canopy": {
+    "id": "bld/garden-row-east/0/e0-3/canopy",
+    "shape": "box",
+    "surface": "awning",
+    "c": [
+     -83,
+     -256.3
+    ],
+    "base": 3.98,
+    "size": [
+     21,
+     2.4,
+     0.25
+    ],
+    "yaw": 0
+   },
+   "sign": {
+    "id": "bld/garden-row-east/0/e0-3/sign",
+    "shape": "box",
+    "surface": "sign",
+    "c": [
+     -83,
+     -255.3
+    ],
+    "base": 5.08,
+    "size": [
+     9,
+     0.3,
+     1.2
+    ],
+    "yaw": 0,
+    "motif": "boomerang",
+    "icon": "cup",
+    "palette": "teal_enamel"
+   },
+   "source": "kit",
+   "signKit": {
+    "id": "BladeSign_Cafe",
+    "scale": [
+     0.53,
+     0.53,
+     0.53
+    ],
+    "yaw": -3.1416,
+    "at": [
+     -78.2,
+     -255.35
+    ],
+    "base": 2.782,
+    "mount": "blade"
+   }
+  }
+ ],
+ "connectors": [
+  {
+   "id": "mega/parade-galleries/range-0-0/core-0/stair",
+   "kind": "stair",
+   "host": "mega/parade-galleries",
+   "serves": [
+    "mega/parade-galleries/range-0-0/gallery"
+   ],
+   "from": "street",
+   "to": "concourse",
+   "foot": [
+    95
+   ],
+   "head": [
+    95
+   ],
+   "bottom": 0.18,
+   "top": 24,
+   "width": 3,
+   "stepFree": false,
+   "ring": [
+    [
+     91.5
+    ]
+   ],
+   "yaw": 0
+  }
+ ],
+ "street": [
+  {
+   "id": "street/stop/T1/comet/l/tram-shelter-0",
+   "kind": "tram-shelter",
+   "at": [
+    -5.35,
+    -690
+   ],
+   "yaw": 1.5708,
+   "z": 0.3,
+   "size": [
+    8,
+    1.5,
+    2.8
+   ],
+   "surface": "enamel",
+   "edge": "stop/T1/comet/l",
+   "sight": "glazed",
+   "source": "procedural"
+  },
+  {
+   "id": "street/garden-row-east/e0/lamp-328",
+   "kind": "lamp",
+   "at": [
+    -99,
+    -260.4
+   ],
+   "yaw": -1.5708,
+   "z": 0.18,
+   "size": [
+    0.3,
+    0.3,
+    6
+   ],
+   "surface": "trim",
+   "edge": "garden-row-east/e0",
+   "sight": "open",
+   "variant": "atom-ring",
+   "source": "kit",
+   "kit": {
+    "id": "PlazaSphereLamp",
+    "scale": [
+     1.295,
+     1.295,
+     1.295
+    ]
+   }
+  }
+ ],
+ "levels": [
+  {
+   "id": "level/street",
+   "name": "street",
+   "height": 0,
+   "decks": [],
+   "stairs": []
+  }
+ ],
+ "megastructures": [
+  {
+   "id": "mega/skyport-tower",
+   "parts": [
+    {
+     "id": "mega/skyport-tower/leg-0",
+     "surface": "mega",
+     "ring": [
+      [
+       523
+      ]
+     ],
+     "base": 0,
+     "height": 34
+    }
+   ],
+   "prims": [
+    {
+     "id": "mega/skyport-tower/frame-n",
+     "shape": "box",
+     "surface": "mega",
+     "c": [
+      545
+     ],
+     "base": 30,
+     "size": [
+      44
+     ],
+     "yaw": 0
+    }
+   ],
+   "gateway": {
+    "id": "ParabolicArch",
+    "scale": [
+     1
+    ],
+    "yaw": 1.5708,
+    "at": [
+     482.5
+    ]
+   }
+  }
+ ],
+ "civic": [
+  {
+   "id": "civic/cafe",
+   "surface": "limestone",
+   "ring": [
+    [
+     -170
+    ]
+   ],
+   "base": 0.18,
+   "height": 34.8
+  }
+ ],
+ "landmarks": [
+  {
+   "id": "landmark/sphere",
+   "surface": "landmark",
+   "shape": "sphere",
+   "centre": [
+    -200,
+    110
+   ],
+   "radius": 31,
+   "base": 0.18,
+   "height": 80,
+   "source": "kit",
+   "kit": {
+    "id": "SphereStation",
+    "scale": [
+     0.425,
+     0.425,
+     0.425
+    ]
+   }
+  },
+  {
+   "id": "landmark/skyport",
+   "surface": "landmark",
+   "shape": "cylinder",
+   "centre": [
+    650,
+    0
+   ],
+   "radius": 24,
+   "base": -2.5,
+   "height": 3.7,
+   "source": "kit",
+   "kits": [
+    {
+     "id": "SkyPad_Roof",
+     "scale": [
+      1,
+      1,
+      1
+     ],
+     "yaw": 0,
+     "at": [
+      662,
+      0
+     ]
+    },
+    {
+     "id": "SkyPad_Roof",
+     "scale": [
+      1,
+      1,
+      1
+     ],
+     "yaw": 2.0944,
+     "at": [
+      644,
+      10.392
+     ]
+    },
+    {
+     "id": "SkyPad_Roof",
+     "scale": [
+      1,
+      1,
+      1
+     ],
+     "yaw": 4.1888,
+     "at": [
+      644,
+      -10.392
+     ]
+    }
+   ]
+  },
+  {
+   "id": "landmark/monument",
+   "surface": "landmark",
+   "shape": "cylinder",
+   "centre": [
+    0,
+    0
+   ],
+   "radius": 14,
+   "base": 0.18,
+   "height": 30,
+   "source": "kit",
+   "kit": {
+    "id": "CircusMonument",
+    "scale": [
+     1.007,
+     1.007,
+     1.007
+    ]
+   }
+  }
+ ],
+ "gates": [
+  {
+   "id": "gate/rocket-gate",
+   "surface": "gate",
+   "ring": [
+    [
+     -195.2
+    ]
+   ],
+   "base": 0,
+   "height": 10
+  }
+ ],
+ "counts": {
+  "ground": 95,
+  "transit": 33,
+  "buildings": 478,
+  "roofs": 361,
+  "frontages": 1192,
+  "connectors": 121,
+  "street": 3548,
+  "levels": 3,
+  "decks": 29,
+  "megastructures": 4,
+  "civic": 42,
+  "landmarks": 3,
+  "gates": 14
+ }
+}

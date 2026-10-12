@@ -1,0 +1,61 @@
+// The street layer: what has been placed (so keep-clear distances hold), and the catalogue's items as export records.
+import type { StreetItem } from '../../../../contracts/world/world.schema';
+import { type V, dist } from '../../../plan/geom';
+import { type Ctx, r3, r4, rv } from '../common';
+import { type Rect, inRect, pointInRing } from '../geo';
+import { Grid } from '../../../plan/street-geo';
+import { FLAT, beamBlock, footprintOf, quayBlock, ringGap, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
+
+const SURF: Record<string, string> = { tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel' };
+const sightOf = (s: unknown): StreetItem['sight'] => (String(s).startsWith('blocks') ? 'blocks' : String(s).startsWith('glazed') ? 'glazed' : 'open');
+
+/** Tree keep-clear (streetscape.trees.keepClear): a tree stays 3 m from a lamp and 2 m from a hydrant, centre to centre. */
+const CLEAR = (a: string, b: string) => (a === 'tree' && b === 'lamp') || (a === 'lamp' && b === 'tree') ? 3 : (a === 'tree' && b === 'hydrant') || (a === 'hydrant' && b === 'tree') ? 2 : 0;
+
+/** Kinds allowed next to a crossing (streetscape.rules SF-2): bollards and the crossing's beacons. */
+const NEAR_CROSSING = new Set(['bollard', 'beacon', 'crossing']);
+
+export class Layer {
+  items: StreetItem[] = [];
+  private placed = new Grid<{ p: V; r: number; k: string }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
+  private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
+  private boxes: Float64Array; private doorGrid = new Grid<V[]>(8, c => c[0]!);
+  constructor(readonly ctx: Ctx, readonly solids: V[][], readonly decks: Rect[], readonly columns: V[], readonly keep: Rect[], readonly pylons: V[], readonly doors: V[][] = []) {
+    this.boxes = new Float64Array(solids.length * 4);
+    solids.forEach((s, i) => { this.boxes[i * 4] = Math.min(...s.map(q => q[0])); this.boxes[i * 4 + 1] = Math.max(...s.map(q => q[0])); this.boxes[i * 4 + 2] = Math.min(...s.map(q => q[1])); this.boxes[i * 4 + 3] = Math.max(...s.map(q => q[1])); });
+    for (const d of doors) this.doorGrid.add(d);
+  }
+
+  /** True if p is free of solids, deck footprints (ground-level items), columns, pylons and keep-clear rects, and r clear of other items. */
+  free(p: V, r: number, ground = true, kind = ''): boolean {
+    if (this.placed.near(p, 10).some(o => dist(o.p, p) < Math.max(o.r + r, CLEAR(kind, o.k)))) return false;
+    if (this.keep.some(k => inRect(p, k, r))) return false;
+    if (this.pylons.some(q => dist(q, p) < 3 + 0.8 + r)) return false;
+    if (ground && (this.columns.some(c => dist(c, p) < 6) && kind === 'tree')) return false;
+    if (ground && kind === 'tree' && this.decks.some(d => inRect(p, d))) return false;
+    const b = this.boxes;
+    for (let i = 0; i < this.solids.length; i++) if (p[0] >= b[i * 4]! && p[0] <= b[i * 4 + 1]! && p[1] >= b[i * 4 + 2]! && p[1] <= b[i * 4 + 3]! && pointInRing(p, this.solids[i]!)) return false;
+    return true;
+  }
+  /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
+  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string } = {}): boolean {
+    const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
+    if (!o.force && !this.free(at, r, o.ground ?? true, kind)) return false;
+    const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
+    if ((o.ground ?? true) && !FLAT.has(kind)) {
+      // skip, never squeeze: the clear walking zone and the tram's own space stay clear (SF-1, SF-3); crossings keep 2 m clear (SF-2)
+      if (!o.force && (walkBlock(this.ctx, samples9(ring), edge) || tramBlock(this.ctx, samples9(ring)))) return false;
+      if (!NEAR_CROSSING.has(kind) && !edge.startsWith('stop/') && (this.crossings.some(c => ringGap(ring, c) < 2) || this.doorGrid.near(at, 10).some(c => ringGap(ring, c) < 2))) return false;
+      if (kind === 'tree' && !o.force && beamBlock(this.ctx, at, ring, o.variant, z)) return false;
+      if (!o.force && kind !== 'lamp' && kind !== 'mooring-cleat' && quayBlock(this.ctx, samples9(ring))) return false; // the quay edge is the water's (SF-14)
+    }
+    if (kind === 'crossing') this.crossings.push(ring);
+    this.placed.add({ p: at, r, k: kind });
+    const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
+    this.items.push({
+      id: o.id ?? `street/${edge}/${kind}-${this.items.length}`, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
+      sight: c ? sightOf(c.sight) : kind === 'tree' ? 'open' : 'open', ...(staffed ? { staffed } : {}), ...(o.variant ? { variant: o.variant } : {}),
+    });
+    return true;
+  }
+}

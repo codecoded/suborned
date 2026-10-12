@@ -1,0 +1,361 @@
+{
+  "note": "Builder look table (Latch, graybox stage). Every colour is a §15 palette key from contracts/style/suborned.style.json (or this file's `palette` for §15 keys it lacks), scaled by value (1 = palette hex). Glint and Vela own the tuning; no colour lives in C#. Active palette: harbour (looks/harbour.json). Sign palette keys the export uses (ink_black, mint_enamel, paper_cream, stone_shadow, warm_sand, zenith_cobalt) are §15 hexes copied from the GDD; the style contract lacks them.",
+  "surfaces": {
+    "asphalt": {
+      "palette": "harbour.asphalt",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "kerb": {
+      "palette": "harbour.kerb",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "pavement": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "quay": {
+      "palette": "harbour.quay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "foot": {
+      "palette": "harbour.foot",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "open": {
+      "palette": "harbour.open",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "square": {
+      "palette": "harbour.square",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "circus/island": {
+      "palette": "harbour.circus/island",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "park": {
+      "palette": "harbour.park",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "median": {
+      "palette": "harbour.median",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "beyond": {
+      "palette": "harbour.beyond",
+      "value": 1,
+      "smoothness": 0.05
+    },
+    "bay": {
+      "palette": "harbour.bay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "track": {
+      "palette": "harbour.track",
+      "value": 1,
+      "smoothness": 0.3,
+      "metallic": 0.5
+    },
+    "pylon": {
+      "palette": "harbour.pylon",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "column": {
+      "palette": "harbour.column",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "limestone": {
+      "palette": "harbour.limestone",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "deck": {
+      "palette": "harbour.deck",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "stair": {
+      "palette": "harbour.stair",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "civic": {
+      "palette": "harbour.civic",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "trim": {
+      "palette": "harbour.trim",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
+    "residential": {
+      "palette": "harbour.residential",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed": {
+      "palette": "harbour.mixed",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "frontage": {
+      "palette": "harbour.frontage",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "roof": {
+      "palette": "harbour.roof",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "commercial": {
+      "palette": "harbour.commercial",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "industrial": {
+      "palette": "harbour.industrial",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port": {
+      "palette": "harbour.port",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "water": {
+      "palette": "harbour.water",
+      "value": 1,
+      "smoothness": 0.35
+    },
+    "beam": {
+      "palette": "harbour.beam",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "platform": {
+      "palette": "harbour.platform",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "gate": {
+      "palette": "harbour.gate",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "tower": {
+      "palette": "harbour.tower",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "mega": {
+      "palette": "harbour.mega",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "landmark": {
+      "palette": "harbour.landmark",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.5
+    },
+    "enamel": {
+      "palette": "harbour.enamel",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "sign": {
+      "palette": "harbour.sign",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning": {
+      "palette": "harbour.awning",
+      "value": 1,
+      "smoothness": 0.2
+    }
+  },
+  "sky": {
+    "palette": "harbour.sky",
+    "value": 1
+  },
+  "ambient": {
+    "palette": "harbour.ambient",
+    "value": 0.85
+  },
+  "sun": {
+    "palette": "harbour.sun",
+    "value": 1,
+    "intensity": 1.0,
+    "pitch": 34,
+    "yaw": 20,
+    "note": "warm bright afternoon sun"
+  },
+  "fog": {
+    "palette": "harbour.haze",
+    "value": 1,
+    "mode": "exponential",
+    "density": 0.00016,
+    "note": "light haze: colour survives"
+  },
+  "palette": {
+    "harbour.asphalt": {
+      "hex": "#a5a2a8"
+    },
+    "harbour.kerb": {
+      "hex": "#ddd4c5"
+    },
+    "harbour.pavement": {
+      "hex": "#f9efdc"
+    },
+    "harbour.quay": {
+      "hex": "#f1e4cc"
+    },
+    "harbour.foot": {
+      "hex": "#f5e9d4"
+    },
+    "harbour.open": {
+      "hex": "#f8eedb"
+    },
+    "harbour.square": {
+      "hex": "#fdf7e8"
+    },
+    "harbour.circus/island": {
+      "hex": "#a6e29c"
+    },
+    "harbour.park": {
+      "hex": "#a6e29c"
+    },
+    "harbour.median": {
+      "hex": "#78cf7e"
+    },
+    "harbour.beyond": {
+      "hex": "#f1e4cc"
+    },
+    "harbour.bay": {
+      "hex": "#ddd4c5"
+    },
+    "harbour.track": {
+      "hex": "#96979c"
+    },
+    "harbour.pylon": {
+      "hex": "#eceded"
+    },
+    "harbour.column": {
+      "hex": "#e2e2e4"
+    },
+    "harbour.limestone": {
+      "hex": "#f8eed9"
+    },
+    "harbour.deck": {
+      "hex": "#faf1df"
+    },
+    "harbour.stair": {
+      "hex": "#eee1c9"
+    },
+    "harbour.civic": {
+      "hex": "#fbe8b8"
+    },
+    "harbour.trim": {
+      "hex": "#eadba6"
+    },
+    "harbour.residential": {
+      "hex": "#f8eedb"
+    },
+    "harbour.mixed": {
+      "hex": "#fdf5e4"
+    },
+    "harbour.frontage": {
+      "hex": "#f6ecd8"
+    },
+    "harbour.roof": {
+      "hex": "#fff6e6"
+    },
+    "harbour.commercial": {
+      "hex": "#f9e2cc"
+    },
+    "harbour.industrial": {
+      "hex": "#f3e1c6"
+    },
+    "harbour.port": {
+      "hex": "#f1e4cc"
+    },
+    "harbour.water": {
+      "hex": "#2fc1de"
+    },
+    "harbour.beam": {
+      "hex": "#f5849e"
+    },
+    "harbour.platform": {
+      "hex": "#fcbcc0"
+    },
+    "harbour.gate": {
+      "hex": "#f5849e"
+    },
+    "harbour.tower": {
+      "hex": "#1cb9c6"
+    },
+    "harbour.mega": {
+      "hex": "#8fe3c2"
+    },
+    "harbour.landmark": {
+      "hex": "#2f84e8"
+    },
+    "harbour.enamel": {
+      "hex": "#2f84e8"
+    },
+    "harbour.sign": {
+      "hex": "#fdeb8c"
+    },
+    "harbour.awning": {
+      "hex": "#e8609a"
+    },
+    "harbour.sky": {
+      "hex": "#86cff2"
+    },
+    "harbour.sun": {
+      "hex": "#ffd9a0"
+    },
+    "harbour.haze": {
+      "hex": "#a9cfe6"
+    },
+    "harbour.ambient": {
+      "hex": "#e2e2ee"
+    },
+    "ink_black": {
+      "hex": "#292628"
+    },
+    "mint_enamel": {
+      "hex": "#9fd1c9"
+    },
+    "paper_cream": {
+      "hex": "#f3eadb"
+    },
+    "stone_shadow": {
+      "hex": "#a2937e"
+    },
+    "warm_sand": {
+      "hex": "#dac9b2"
+    },
+    "zenith_cobalt": {
+      "hex": "#296587"
+    }
+  }
+}

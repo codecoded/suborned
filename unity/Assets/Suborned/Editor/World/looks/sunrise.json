@@ -1,0 +1,721 @@
+{
+  "note": "Variant look table (Vela): B · Googie Sunrise. Same schema as look.json; every colour is an exact hex (value 1) in this file's palette, keys prefixed 'sunrise.'. Surfaces 'x@area' are derived by out/palette/gen.ts from the use surface x per district; frontage/sign/awning/roof are not in the export yet. Warm and loud: sunshine, melon-orange and flamingo on warm cream, with turquoise as the cool counterpoint. The most Googie diner / motel-sign; riskiest near the signals, handled by lightening.",
+  "surfaces": {
+    "asphalt": {
+      "palette": "sunrise.asphalt",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "kerb": {
+      "palette": "sunrise.kerb",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "pavement": {
+      "palette": "sunrise.pavement",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "quay": {
+      "palette": "sunrise.quay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "foot": {
+      "palette": "sunrise.foot",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "open": {
+      "palette": "sunrise.open",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "square": {
+      "palette": "sunrise.square",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "water": {
+      "palette": "sunrise.water",
+      "value": 1,
+      "smoothness": 0.8
+    },
+    "circus/island": {
+      "palette": "sunrise.circus/island",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "park": {
+      "palette": "sunrise.park",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "median": {
+      "palette": "sunrise.median",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "beyond": {
+      "palette": "sunrise.beyond",
+      "value": 1,
+      "smoothness": 0.05
+    },
+    "bay": {
+      "palette": "sunrise.bay",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "track": {
+      "palette": "sunrise.track",
+      "value": 1,
+      "smoothness": 0.3,
+      "metallic": 0.5
+    },
+    "beam": {
+      "palette": "sunrise.beam",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "pylon": {
+      "palette": "sunrise.pylon",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "column": {
+      "palette": "sunrise.column",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
+    "platform": {
+      "palette": "sunrise.platform",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "gate": {
+      "palette": "sunrise.gate",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "limestone": {
+      "palette": "sunrise.limestone",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "deck": {
+      "palette": "sunrise.deck",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "stair": {
+      "palette": "sunrise.stair",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "civic": {
+      "palette": "sunrise.civic",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "enamel": {
+      "palette": "sunrise.enamel",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "trim": {
+      "palette": "sunrise.trim",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
+    "landmark": {
+      "palette": "sunrise.landmark",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.5
+    },
+    "mega": {
+      "palette": "sunrise.mega",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "residential": {
+      "palette": "sunrise.residential",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed": {
+      "palette": "sunrise.mixed",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial": {
+      "palette": "sunrise.commercial",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower": {
+      "palette": "sunrise.tower",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial": {
+      "palette": "sunrise.industrial",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port": {
+      "palette": "sunrise.port",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage": {
+      "palette": "sunrise.frontage",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign": {
+      "palette": "sunrise.sign",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning": {
+      "palette": "sunrise.awning",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "roof": {
+      "palette": "sunrise.roof",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@lantern": {
+      "palette": "sunrise.residential@lantern",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@lantern": {
+      "palette": "sunrise.mixed@lantern",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@lantern": {
+      "palette": "sunrise.commercial@lantern",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@lantern": {
+      "palette": "sunrise.tower@lantern",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@lantern": {
+      "palette": "sunrise.industrial@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@lantern": {
+      "palette": "sunrise.port@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@lantern": {
+      "palette": "sunrise.frontage@lantern",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@lantern": {
+      "palette": "sunrise.sign@lantern",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@lantern": {
+      "palette": "sunrise.awning@lantern",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@docks": {
+      "palette": "sunrise.residential@docks",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@docks": {
+      "palette": "sunrise.mixed@docks",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@docks": {
+      "palette": "sunrise.commercial@docks",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@docks": {
+      "palette": "sunrise.tower@docks",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@docks": {
+      "palette": "sunrise.industrial@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@docks": {
+      "palette": "sunrise.port@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@docks": {
+      "palette": "sunrise.frontage@docks",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@docks": {
+      "palette": "sunrise.sign@docks",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@docks": {
+      "palette": "sunrise.awning@docks",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@crescent": {
+      "palette": "sunrise.residential@crescent",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@crescent": {
+      "palette": "sunrise.mixed@crescent",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@crescent": {
+      "palette": "sunrise.commercial@crescent",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@crescent": {
+      "palette": "sunrise.tower@crescent",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@crescent": {
+      "palette": "sunrise.industrial@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@crescent": {
+      "palette": "sunrise.port@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@crescent": {
+      "palette": "sunrise.frontage@crescent",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@crescent": {
+      "palette": "sunrise.sign@crescent",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@crescent": {
+      "palette": "sunrise.awning@crescent",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@lamplight": {
+      "palette": "sunrise.residential@lamplight",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@lamplight": {
+      "palette": "sunrise.mixed@lamplight",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@lamplight": {
+      "palette": "sunrise.commercial@lamplight",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@lamplight": {
+      "palette": "sunrise.tower@lamplight",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@lamplight": {
+      "palette": "sunrise.industrial@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@lamplight": {
+      "palette": "sunrise.port@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@lamplight": {
+      "palette": "sunrise.frontage@lamplight",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@lamplight": {
+      "palette": "sunrise.sign@lamplight",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@lamplight": {
+      "palette": "sunrise.awning@lamplight",
+      "value": 1,
+      "smoothness": 0.2
+    },
+    "residential@central": {
+      "palette": "sunrise.residential@central",
+      "value": 1,
+      "smoothness": 0.1
+    },
+    "mixed@central": {
+      "palette": "sunrise.mixed@central",
+      "value": 1,
+      "smoothness": 0.15
+    },
+    "commercial@central": {
+      "palette": "sunrise.commercial@central",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "tower@central": {
+      "palette": "sunrise.tower@central",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "industrial@central": {
+      "palette": "sunrise.industrial@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "port@central": {
+      "palette": "sunrise.port@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "frontage@central": {
+      "palette": "sunrise.frontage@central",
+      "value": 1,
+      "smoothness": 0.3
+    },
+    "sign@central": {
+      "palette": "sunrise.sign@central",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "awning@central": {
+      "palette": "sunrise.awning@central",
+      "value": 1,
+      "smoothness": 0.2
+    }
+  },
+  "sky": {
+    "palette": "sunrise.sky",
+    "value": 1
+  },
+  "ambient": {
+    "palette": "sunrise.ambient",
+    "value": 0.8
+  },
+  "sun": {
+    "palette": "sunrise.sun",
+    "value": 1,
+    "intensity": 1.2,
+    "pitch": 30,
+    "yaw": 60,
+    "note": "warm bright afternoon sun"
+  },
+  "fog": {
+    "palette": "sunrise.haze",
+    "value": 1,
+    "mode": "exponential",
+    "density": 0.0001,
+    "note": "light haze: colour survives"
+  },
+  "palette": {
+    "sunrise.asphalt": {
+      "hex": "#a5a2a8"
+    },
+    "sunrise.kerb": {
+      "hex": "#ddd4c5"
+    },
+    "sunrise.pavement": {
+      "hex": "#f9efdc"
+    },
+    "sunrise.quay": {
+      "hex": "#f1e4cc"
+    },
+    "sunrise.foot": {
+      "hex": "#f5e9d4"
+    },
+    "sunrise.open": {
+      "hex": "#f8eedb"
+    },
+    "sunrise.square": {
+      "hex": "#fdf7e8"
+    },
+    "sunrise.water": {
+      "hex": "#27bcd8"
+    },
+    "sunrise.circus/island": {
+      "hex": "#a6e29c"
+    },
+    "sunrise.park": {
+      "hex": "#a6e29c"
+    },
+    "sunrise.median": {
+      "hex": "#78cf7e"
+    },
+    "sunrise.beyond": {
+      "hex": "#f1e4cc"
+    },
+    "sunrise.bay": {
+      "hex": "#ddd4c5"
+    },
+    "sunrise.track": {
+      "hex": "#96979c"
+    },
+    "sunrise.beam": {
+      "hex": "#0fa7ad"
+    },
+    "sunrise.pylon": {
+      "hex": "#eceded"
+    },
+    "sunrise.column": {
+      "hex": "#e2e2e4"
+    },
+    "sunrise.platform": {
+      "hex": "#8fdcd9"
+    },
+    "sunrise.gate": {
+      "hex": "#0fa7ad"
+    },
+    "sunrise.limestone": {
+      "hex": "#f8eed9"
+    },
+    "sunrise.deck": {
+      "hex": "#faf1df"
+    },
+    "sunrise.stair": {
+      "hex": "#eee1c9"
+    },
+    "sunrise.civic": {
+      "hex": "#fbe8b8"
+    },
+    "sunrise.enamel": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.trim": {
+      "hex": "#eadba6"
+    },
+    "sunrise.landmark": {
+      "hex": "#e8e8ea"
+    },
+    "sunrise.mega": {
+      "hex": "#fcf3e2"
+    },
+    "sunrise.residential": {
+      "hex": "#f8eedb"
+    },
+    "sunrise.mixed": {
+      "hex": "#fdf5e4"
+    },
+    "sunrise.commercial": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.tower": {
+      "hex": "#0e9298"
+    },
+    "sunrise.industrial": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.port": {
+      "hex": "#0e9298"
+    },
+    "sunrise.frontage": {
+      "hex": "#f6ecd8"
+    },
+    "sunrise.sign": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.awning": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.roof": {
+      "hex": "#fff6e6"
+    },
+    "sunrise.residential@lantern": {
+      "hex": "#fde0e6"
+    },
+    "sunrise.mixed@lantern": {
+      "hex": "#fdece4"
+    },
+    "sunrise.commercial@lantern": {
+      "hex": "#ff86ae"
+    },
+    "sunrise.tower@lantern": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.industrial@lantern": {
+      "hex": "#ff86ae"
+    },
+    "sunrise.port@lantern": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.frontage@lantern": {
+      "hex": "#fde4e1"
+    },
+    "sunrise.sign@lantern": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.awning@lantern": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.residential@docks": {
+      "hex": "#e9efe9"
+    },
+    "sunrise.mixed@docks": {
+      "hex": "#f3f0e0"
+    },
+    "sunrise.commercial@docks": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.tower@docks": {
+      "hex": "#0e9298"
+    },
+    "sunrise.industrial@docks": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.port@docks": {
+      "hex": "#0e9298"
+    },
+    "sunrise.frontage@docks": {
+      "hex": "#efeedd"
+    },
+    "sunrise.sign@docks": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.awning@docks": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.residential@crescent": {
+      "hex": "#dcf5ea"
+    },
+    "sunrise.mixed@crescent": {
+      "hex": "#fee9d6"
+    },
+    "sunrise.commercial@crescent": {
+      "hex": "#9fe6cb"
+    },
+    "sunrise.tower@crescent": {
+      "hex": "#ffd2a8"
+    },
+    "sunrise.industrial@crescent": {
+      "hex": "#9fe6cb"
+    },
+    "sunrise.port@crescent": {
+      "hex": "#ffd2a8"
+    },
+    "sunrise.frontage@crescent": {
+      "hex": "#e4f6ee"
+    },
+    "sunrise.sign@crescent": {
+      "hex": "#ffd2a8"
+    },
+    "sunrise.awning@crescent": {
+      "hex": "#9fe6cb"
+    },
+    "sunrise.residential@lamplight": {
+      "hex": "#dcf1ec"
+    },
+    "sunrise.mixed@lamplight": {
+      "hex": "#f4efdf"
+    },
+    "sunrise.commercial@lamplight": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.tower@lamplight": {
+      "hex": "#66bdf0"
+    },
+    "sunrise.industrial@lamplight": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.port@lamplight": {
+      "hex": "#66bdf0"
+    },
+    "sunrise.frontage@lamplight": {
+      "hex": "#e2f3ee"
+    },
+    "sunrise.sign@lamplight": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.awning@lamplight": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.residential@central": {
+      "hex": "#f8eedb"
+    },
+    "sunrise.mixed@central": {
+      "hex": "#fdf5e4"
+    },
+    "sunrise.commercial@central": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.tower@central": {
+      "hex": "#0e9298"
+    },
+    "sunrise.industrial@central": {
+      "hex": "#17bdb4"
+    },
+    "sunrise.port@central": {
+      "hex": "#0e9298"
+    },
+    "sunrise.frontage@central": {
+      "hex": "#f6ecd8"
+    },
+    "sunrise.sign@central": {
+      "hex": "#fdeb8c"
+    },
+    "sunrise.awning@central": {
+      "hex": "#ffbb9a"
+    },
+    "sunrise.sky": {
+      "hex": "#86cff2"
+    },
+    "sunrise.sun": {
+      "hex": "#ffe9bc"
+    },
+    "sunrise.haze": {
+      "hex": "#f3e8d4"
+    },
+    "sunrise.ambient": {
+      "hex": "#f3ead8"
+    },
+    "ink_black": {
+      "hex": "#292628"
+    },
+    "mint_enamel": {
+      "hex": "#9fd1c9"
+    },
+    "paper_cream": {
+      "hex": "#f3eadb"
+    },
+    "stone_shadow": {
+      "hex": "#a2937e"
+    },
+    "warm_sand": {
+      "hex": "#dac9b2"
+    },
+    "zenith_cobalt": {
+      "hex": "#296587"
+    }
+  }
+}

@@ -13,7 +13,7 @@ const LAYERS = [['base', 'Water + quay'], ['plots', 'Plots'], ['areas', 'Environ
 const LEGEND: [string, string][] = [
   ['sw-primary', 'Primary distributor'], ['sw-district', 'District distributor'], ['sw-access', 'Access road'], ['sw-mall', 'Mall / walk'],
   ['sw-tram', 'Tram track · ◆ stop'], ['sw-sky', 'Sky rail beams · pylon'], ['sw-station', 'Sky rail station ▲'], ['sw-gate', 'Gate (seal point)'],
-  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-civic', 'Civic (Handover block)'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
+  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-civic', 'Civic block'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
   ['sw-port', 'Port / industrial'], ['sw-water', 'Water'], ['sw-beyond', 'Beyond the plan'],
 ];
 
@@ -151,13 +151,13 @@ export function sheet(plan: Plan, R: Report, svgs: { district: string; inset: st
 <div class="cols"><div class="panel"><h3>Tram T1 · ${esc(plan.tram[0].name)}</h3>${stops}<p class="detail">Beyond: ${esc(plan.tram[0].beyond)}. Tram crosses traffic (signals for cars and trams) at: ${crossTxt}. People cross anywhere.</p></div>
 <div class="panel"><h3>Sky rail S1 · ${esc(plan.skyrail[0].name)}</h3>${stations}<p class="detail">Beyond: ${esc(plan.skyrail[0].beyond)}. Beam height ${std.skyrail.height} m; trains turn on the loop round the Skyport.</p></div>
 <div class="panel"><h3>Gates by environmental area</h3>${table(['Area', 'Gates'], byArea)}</div>
-<div class="panel"><h3>Handover routes</h3><ul>${routes}</ul><h3 style="margin-top:12px">Nearest transit on foot (cross anywhere)</h3><ul>${walks}</ul></div></div>
+<div class="panel">${routes ? `<h3>Routes</h3><ul>${routes}</ul>` : ''}<h3 style="margin-top:12px">Nearest transit on foot (cross anywhere)</h3><ul>${walks}</ul></div></div>
 
 <h2>Checks</h2>
 <div class="panel">${checks}</div>
 
 <h2>Sheet 2 · ${esc(s.inset.name)}</h2>
-<div class="card"><div class="inset"><div class="view">${svgs.inset}</div><div><ol>${svgs.legend}</ol></div></div>${tb(s.inset.drawing, `${s.inset.name}: the Handover block at exact geometry`, s.inset.scale)}</div>
+<div class="card"><div class="inset"><div class="view">${svgs.inset}</div><div><ol>${svgs.legend}</ol></div></div>${tb(s.inset.drawing, `${s.inset.name}: the civic block at exact geometry`, s.inset.scale)}</div>
 
 <h2>Design basis</h2>
 <div class="cols"><div class="panel">${basis}</div><div class="panel"><h3>Sources</h3><ul>${plan.notes.sources.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>

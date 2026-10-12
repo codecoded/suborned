@@ -1,38 +1,35 @@
 // The plan's rules: roads (Buchanan hierarchy, sealed environmental areas, gates, frontage), tram, sky rail, the civic
-// block, plus the mission routes. Each check reports a value against its limit.
-import { type V, centroid, dist, inPoly, lineDist, lineToPoly, segHit } from './geom';
+// block, plus whatever an overlay adds (tools/plan/overlay.ts). Each check reports a value against its limit.
+import { type V, centroid, dist, inPoly, lineDist, nearLine, lineToPoly, segHit } from './geom';
 import { type Derived, type Plan, inZone, spanLimit } from './plan';
 import { offSheet, placements, stopsOf } from './transit';
 import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect } from './civic';
 import { type Walk, walks as footWalks } from './walk';
 import { entranceChecks } from './entrances';
+import { edges } from './graph';
+import type { Overlay, Route } from './overlay';
 
 export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string; source?: string; waived?: string };
-export type Route = { id: string; name: string; to: string; length: number; roads: string[]; gates: string[] };
 export type Report = { checks: Check[]; routes: Route[]; crossings: { line: string; road: string; p: V }[]; stops: any[]; stations: any[]; walks: Walk[] };
 
 const f = (x: number, d = 0) => x.toFixed(d);
-type Edge = { a: string; b: string; road: string; len: number };
-
-function edges(plan: Plan, d: Derived): Edge[] {
-  return d.roads.flatMap(r => r.path.slice(1).map((b, i) => ({ a: r.path[i], b, road: r.id, len: r.segs[i]?.len ?? dist(plan.nodes[r.path[i]], plan.nodes[b]) })));
-}
-
-function dijkstra(E: Edge[], from: string) {
-  const D = new Map<string, number>([[from, 0]]), prev = new Map<string, Edge>(), done = new Set<string>();
-  for (;;) {
-    let u: string | undefined, best = Infinity;
-    for (const [n, v] of D) if (!done.has(n) && v < best) { best = v; u = n; }
-    if (u === undefined) break; done.add(u);
-    for (const e of E) for (const [x, y] of [[e.a, e.b], [e.b, e.a]]) if (x === u && best + e.len < (D.get(y) ?? Infinity)) { D.set(y, best + e.len); prev.set(y, e); }
-  }
-  const trace = (to: string) => { const out: Edge[] = []; let n = to; while (prev.has(n)) { const e = prev.get(n)!; out.unshift(e); n = e.a === n ? e.b : e.a; } return out; };
-  return { D, trace };
-}
-
 /** `strict` ignores `standards.transit.waived` (rule id → reason), which lets a draft plan pass `bun run plan` while generation runs never use it. */
-export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Report {
+/** Points just inside a polygon (0.3 m along the inward edge normals): each vertex on the bisector of its two edges, each edge's midpoint. Right for L-shapes, where nudging toward the centroid lands outside. */
+export function inset(P: V[], d = .3): V[] {
+  const n = P.length, area = P.reduce((a, v, i) => a + (v[0] * P[(i + 1) % n][1] - P[(i + 1) % n][0] * v[1]), 0), sg = area >= 0 ? 1 : -1;
+  const nor = (a: V, b: V): V => { const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [-sg * (b[1] - a[1]) / l, sg * (b[0] - a[0]) / l]; };
+  const out: V[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = P[(i + n - 1) % n], v = P[i], b = P[(i + 1) % n], n1 = nor(a, v), n2 = nor(v, b);
+    const bx = n1[0] + n2[0], by = n1[1] + n2[1], k = Math.hypot(bx, by) || 1;
+    out.push([v[0] + bx / k * d, v[1] + by / k * d], [(v[0] + b[0]) / 2 + n2[0] * d, (v[1] + b[1]) / 2 + n2[1] * d]);
+  }
+  return out;
+}
+
+export function check(plan: Plan, d: Derived, civic: Civic, strict = false, overlay?: Overlay): Report {
+  const civ: Civic = overlay ? { ...civic, walkFrom: overlay.origins(plan, civic) } : civic;
   const C: Check[] = [], add = (c: Check) => C.push(c), std = plan.standards;
   const E = edges(plan, d), roadById = new Map(d.roads.map(r => [r.id, r]));
   const at = (n: string) => d.roads.filter(r => r.path.includes(n));
@@ -98,9 +95,8 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
     if (p.polyV.some(v => dist(v, plan.circus.c) < plan.circus.pavement - .5)) clash.push(`${p.id}×circus`);
   }
   for (let i = 0; i < built.length; i++) for (let j = i + 1; j < built.length; j++) {
-    const A = built[i].polyV, B = built[j].polyV, cA = centroid(A), cB = centroid(B);
-    const inner = (P: V[], c: V) => P.map(v => [v[0] + Math.sign(c[0] - v[0]) * .3, v[1] + Math.sign(c[1] - v[1]) * .3] as V);
-    if (inner(A, cA).some(v => inPoly(v, B)) || inner(B, cB).some(v => inPoly(v, A))) clash.push(`${built[i].id}×${built[j].id}`);
+    const A = built[i].polyV, B = built[j].polyV;
+    if (inset(A).some(v => inPoly(v, B)) || inset(B).some(v => inPoly(v, A))) clash.push(`${built[i].id}×${built[j].id}`);
   }
   add({ id: 'R-O1', group: 'Roads', rule: 'No plot overlaps a street, walk, the circus or another plot', value: `${clash.length}`, limit: '0', ok: !clash.length, detail: clash.slice(0, 8).join(', ') || undefined });
 
@@ -127,14 +123,24 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
     const tails = running.flatMap(p => [p.samples[0].p, p.samples[p.samples.length - 1].p].filter(e => !offSheet(plan, e) && !running.some(o => o !== p && o.samples.some(x => dist(x.p, e) <= half + .05))));
     const open = tails.filter(e => !loops.some(l => Math.abs(dist(l.samples[0].p, e) - half) < .05 && Math.abs(dist(l.samples[l.samples.length - 1].p, e) - half) < .05));
     add({ id: 'T-L1', group: 'Tram', rule: `${line.id} turns on a loop at every end inside the sheet (single-ended trams, no crossover)`, value: tails.length ? `${tails.length - open.length}/${tails.length} ends loop` : 'all ends off-sheet', limit: 'all', ok: !open.length, detail: open.map(e => `no loop at (${e.map(v => v.toFixed(0))})`).join('; ') || undefined });
-    const street = (p: V) => d.roads.some(r => lineDist(p, r.line) <= r.w / 2 + .01) || dist(p, plan.circus.c) <= plan.circus.island;
+    const street = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !street(s.p));
     add({ id: 'T-C1', group: 'Tram', rule: `${line.id} runs in street space or the circus island`, value: `${off.length / 2} m off`, limit: '0', ok: !off.length });
     for (const p of paths) for (const r of d.roads.filter(r => r.id !== 'boulevard')) {
       const pl = p.samples.map(s => s.p);
-      for (let i = 1; i < pl.length; i++) for (let j = 1; j < r.line.length; j++) { const h = segHit(pl[i - 1], pl[i], r.line[j - 1], r.line[j]); if (h) crossings.push({ line: `${line.id} ${p.id}`, road: r.name, p: h }); }
+      const apart = (A: V[], B: V[]) => Math.max(...A.map(v => v[0])) < Math.min(...B.map(v => v[0])) || Math.max(...B.map(v => v[0])) < Math.min(...A.map(v => v[0])) || Math.max(...A.map(v => v[1])) < Math.min(...B.map(v => v[1])) || Math.max(...B.map(v => v[1])) < Math.min(...A.map(v => v[1]));
+      const rx0 = Math.min(...r.line.map(v => v[0])), rx1 = Math.max(...r.line.map(v => v[0])), ry0 = Math.min(...r.line.map(v => v[1])), ry1 = Math.max(...r.line.map(v => v[1]));
+      if (!apart(pl, r.line)) for (let i = 1; i < pl.length; i++) {
+        const lx = Math.min(pl[i - 1][0], pl[i][0]), hx = Math.max(pl[i - 1][0], pl[i][0]), ly = Math.min(pl[i - 1][1], pl[i][1]), hy = Math.max(pl[i - 1][1], pl[i][1]);
+        if (hx < rx0 || rx1 < lx || hy < ry0 || ry1 < ly) continue;
+        for (let j = 1; j < r.line.length; j++) {
+          const c = r.line[j - 1], e = r.line[j];
+          if (hx < Math.min(c[0], e[0]) || Math.max(c[0], e[0]) < lx || hy < Math.min(c[1], e[1]) || Math.max(c[1], e[1]) < ly) continue;
+          const h = segHit(pl[i - 1], pl[i], c, e); if (h) crossings.push({ line: `${line.id} ${p.id}`, road: r.name, p: h });
+        }
+      }
       // a road whose vertex sits on the track (a junction on the tram's own street) crosses it there
-      for (const v of r.line) if (lineDist(v, pl) < .05 && (r.line.length > 1)) crossings.push({ line: `${line.id} ${p.id}`, road: r.name, p: v });
+      for (const v of r.line) if (nearLine(v, pl, .05, true) && (r.line.length > 1)) crossings.push({ line: `${line.id} ${p.id}`, road: r.name, p: v });
     }
   }
 
@@ -157,7 +163,7 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
     placed.forEach((s, i) => stations.push({ line: line.id, id: s.id, name: s.name, at: s.at, chainage: s.s, next: sgaps[i], length: s.length }));
     const curved = placed.filter(s => s.path.samples.some(x => Math.abs(x.s - s.local) <= (s.length ?? 50) / 2 && x.r !== Infinity));
     add({ id: 'S-S1', group: 'Sky rail', rule: `${line.id} stations on straight beam`, value: `${placed.length - curved.length}/${placed.length}`, limit: 'all', ok: !curved.length });
-    const pub = (p: V) => d.roads.some(r => lineDist(p, r.line) <= r.w / 2 + .01) || plan.foot.some(w => lineDist(p, w.pts) <= w.w / 2 + .01)
+    const pub = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || plan.foot.some(w => nearLine(p, w.pts, w.w / 2 + .01))
       || d.zones.some(z => ['park', 'quay', 'water'].includes(z.kind) && inZone(p, z)) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
@@ -181,23 +187,18 @@ export function check(plan: Plan, d: Derived, civ: Civic, strict = false): Repor
   const homes: Record<string, string> = { cafe: 'square', 'civic-office': 'office' };
   const out = civ.buildings.filter(b => !b.poly.every(v => inPoly(v, plotOf(homes[b.id] ?? 'square'))));
   add({ id: 'C-2', group: 'Civic', rule: 'Café and office footprints inside their blocks', value: `${civ.buildings.length - out.length}/${civ.buildings.length}`, limit: 'all', ok: !out.length && civ.buildings.length === 2 });
-  const lost = civ.points.filter(pt => !d.plots.some(p => inPoly(pt.p, p.polyV)) && !d.roads.some(r => lineDist(pt.p, r.line) <= r.w / 2));
-  add({ id: 'C-3', group: 'Civic', rule: 'Mission points land on a plot or a street', value: `${civ.points.length - lost.length}/${civ.points.length}`, limit: 'all', ok: !lost.length, detail: lost.map(p => p.name).join(', ') || undefined });
+  const ctx = { plan, d, civ, E, roadById };
+  C.push(...(overlay?.civic(ctx) ?? []));
 
   // ---- routes and walks ----
-  const gateAt = new Map(plan.gates.map(g => [`${g.node}|${g.road}`, g.name]));
-  const routes: Route[] = plan.routes.map(r => {
-    const { D, trace } = dijkstra(E, r.from), to = r.to.reduce((b, t) => ((D.get(t) ?? Infinity) < (D.get(b) ?? Infinity) ? t : b));
-    const path = trace(to), names: string[] = [];
-    for (const e of path) { const n = roadById.get(e.road)!.name; if (names[names.length - 1] !== n) names.push(n); }
-    const gates = path.flatMap(e => [gateAt.get(`${e.a}|${e.road}`), gateAt.get(`${e.b}|${e.road}`)]).filter(Boolean) as string[];
-    const link = plan.links.find(l => l.node === to);
-    return { id: r.id, name: r.name, to: link ? `${link.to} (off-sheet)` : r.toName ?? to, length: D.get(to) ?? Infinity, roads: names, gates: [...new Set(gates)] };
-  });
-  add({ id: 'M-1', group: 'Mission', rule: 'Every mission route reaches its end', value: routes.map(r => `${r.id} ${f(r.length)} m`).join(', '), limit: 'finite', ok: routes.every(r => r.length < Infinity) });
+  const { checks: routeChecks, routes } = overlay?.routes(ctx) ?? { checks: [], routes: [] as Route[] };
+  C.push(...routeChecks);
   const walks = footWalks(plan, d, civ), lim = std.walking.directness;
   const worst = walks.reduce((b, w) => (w.m / w.straight > b.m / b.straight ? w : b));
   add({ id: 'W-1', group: 'Walking', rule: 'Escape walks are direct (players cross any road; only buildings and water block)', value: walks.map(w => `${w.from} → ${w.to} ${f(w.m)} m`).join('; '), limit: `walk ÷ straight ≤ ${lim}`, ok: walks.every(w => w.m / w.straight <= lim), detail: `least direct: ${worst.from} → ${worst.to} ×${(worst.m / worst.straight).toFixed(2)}` });
+  const ring = (b: Civic['buildings'][number]) => [...b.poly, b.poly[0]], DOOR = 1; // a door stands within 1 m of its building's footprint edge
+  const stray = civ.walkFrom.filter(o => !civ.buildings.some(b => lineDist(o.p, ring(b)) <= DOOR));
+  add({ id: 'W-4', group: 'Walking', rule: 'Every walk starts at a building entrance (doors are world)', value: `${civ.walkFrom.length - stray.length}/${civ.walkFrom.length}`, limit: `all, within ${DOOR} m of a building edge`, ok: !stray.length && civ.walkFrom.length > 0, detail: stray.map(o => o.name).join(', ') || undefined, source: 'plan.standards.walking · GDD §01 exteriors only: the player starts at a door' });
   C.push(...entranceChecks(plan, d, civ));
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;
   if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }

@@ -1,0 +1,9 @@
+{
+  "note": "Procedural facade probe views (Vela): play, eye and corner on the hero stretch of Harbour Lane; skyline over the district. Used with -views.",
+  "views": [
+    { "name": "play",    "projection": "export",      "size": [1920, 1080], "look": [134.5, -338, 0], "shadowDistance": 260, "fog": false, "clear": "sky", "main": true },
+    { "name": "eye",     "projection": "perspective", "size": [1920, 1080], "eye": [124, -402, 1.75], "look": [128, -340, 7], "fov": 62, "near": 0.2, "shadowDistance": 400, "fog": false, "clear": "sky" },
+    { "name": "corner",  "projection": "perspective", "size": [1920, 1080], "eye": [121, -406, 1.9], "look": [118, -386, 14], "fov": 80, "near": 0.2, "shadowDistance": 400, "fog": false, "clear": "sky" },
+    { "name": "skyline", "projection": "perspective", "size": [1920, 1080], "eye": [20, -462, 52], "look": [125, -330, 18], "fov": 46, "near": 1, "shadowDistance": 3000, "fog": true, "clear": "fog" }
+  ]
+}

@@ -1,7 +1,7 @@
 // Network rules for any number of tram and sky rail lines (brief 001, "A · Splice"): paths in order, stops on their line
 // and in public space, no dead ends, every plot in reach of a stop, one connected network, sky rail station spacing.
 import type { Check } from './checks';
-import { centroid, dist, inPoly, lineDist, type V } from './geom';
+import { centroid, dist, inPoly, nearLine, type V } from './geom';
 import type { Derived, Plan } from './plan';
 import { joinTol, modeOf, offSheet, placements, stopsOf, ends } from './transit';
 
@@ -42,7 +42,7 @@ export function transitChecks(plan: Plan, d: Derived): Check[] {
     const paths = d[mode].filter(p => p.line === line.id), tol = joinTol(plan, mode);
     for (const p of paths) {
       const a = p.samples[0]!.p, b = p.samples.at(-1)!.p, others = paths.filter(o => o !== p);
-      if (others.length && p.samples.every(x => others.some(o => lineDist(x.p, o.samples.map(y => y.p)) <= tol))) { dead.push(`${line.id} ${p.id} lies along the line's other paths (a stub)`); continue; }
+      if (others.length && p.samples.every(x => others.some(o => nearLine(x.p, o.samples.map(y => y.p), tol)))) { dead.push(`${line.id} ${p.id} lies along the line's other paths (a stub)`); continue; }
       if (dist(a, b) <= tol && p.length > 4 * tol) continue;
       for (const e of [a, b]) if (!off(e) && !others.some(o => o.samples.some(x => dist(x.p, e) <= tol))) dead.push(`${line.id} ${p.id} ends at ${fmt(e)}`);
     }

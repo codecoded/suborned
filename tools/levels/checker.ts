@@ -2,13 +2,15 @@
 import { resolve } from 'node:path';
 import { check, type Report } from '../plan/checks';
 import { civic } from '../plan/civic';
+import { legacyOverlay } from '../missions/handover/overlay';
 import { derive, type Plan } from '../plan/plan';
 import { root } from '../rag/config';
 
 const read = async (p: string) => JSON.parse(await Bun.file(resolve(root, p)).text());
 /** `block`: the run's pinned block (parsed); default is whatever plan.civic.block names on disk. */
 export async function inProcess(plan: Plan, strict = true, block?: unknown): Promise<Report> {
-  return check(plan, derive(plan), civic(plan.civic, block ?? await read(plan.civic.block)), strict);
+  const b: any = block ?? await read(plan.civic.block);
+  return check(plan, derive(plan), civic(plan.civic, b), strict, legacyOverlay(plan, b)); // a recorded run's pinned block carries its mission; a world-only block has none
 }
 
 /** `bun tools/plan/cli.ts <plan> --strict --out <sheet> --json <report>`; returns the exit code. */

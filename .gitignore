@@ -1,6 +1,11 @@
 node_modules/
 out/
 .DS_Store
+# Machine-local agent preferences and generated Python/editor backups
+.claude/settings.local.json
+__pycache__/
+*.py[cod]
+tools/plan/*.ts-E
 # Unity
 unity/[Ll]ibrary/
 unity/[Tt]emp/
@@ -12,3 +17,13 @@ unity/*.csproj
 unity/*.sln
 unity/.vs/
 unity/.idea/
+
+# Generated world scene (Latch builder, brief 004 C)
+unity/Assets/Scenes/HarbourDistrict.unity
+unity/Assets/Scenes/HarbourDistrict.unity.meta
+
+# DecoKit binaries copied by `bun run kit` (brief 006 A); catalogue = contracts/world/kit.json
+unity/Assets/Suborned/Kit/
+unity/Assets/Suborned/Kit.meta
+unity/Assets/Scenes/probe-*
+unity/Assets/Scenes/probe-*.meta

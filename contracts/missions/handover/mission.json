@@ -1,0 +1,157 @@
+{
+ "schema": "suborned.mission/1",
+ "id": "handover",
+ "note": "The Handover mission layer, moved unchanged out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts",
+ "destinations": [
+  {
+   "name": "Courtyard",
+   "at": [-6.8, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Café door",
+   "at": [-10.3, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Behind café",
+   "at": [-23.4, -35],
+   "surface": "ground"
+  },
+  {
+   "name": "West side",
+   "at": [-11.4, -43],
+   "surface": "ground"
+  },
+  {
+   "name": "East side",
+   "at": [-11.4, -15],
+   "surface": "ground"
+  },
+  {
+   "name": "Steps",
+   "at": [-3.6, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Between tables",
+   "at": [-7.1, -35.45],
+   "surface": "ground"
+  },
+  {
+   "name": "Under parasol",
+   "at": [-7.92, -23.88],
+   "surface": "ground"
+  },
+  {
+   "name": "Fountain",
+   "at": [11, -30],
+   "surface": "ground"
+  },
+  {
+   "name": "Plaza east",
+   "at": [6.5, -25.5],
+   "surface": "ground"
+  },
+  {
+   "name": "Plaza west",
+   "at": [6.5, -34.5],
+   "surface": "ground"
+  },
+  {
+   "name": "Getaway bay",
+   "at": [8.5, -48.2],
+   "surface": "ground"
+  },
+  {
+   "name": "Official drop-off",
+   "at": [78.2, -31],
+   "surface": "ground"
+  },
+  {
+   "name": "Service lane",
+   "at": [62.5, -43.2],
+   "surface": "ground"
+  },
+  {
+   "name": "South walkway",
+   "at": [26.6, -17],
+   "surface": "ground"
+  },
+  {
+   "name": "Office approach",
+   "at": [52, -30.5],
+   "surface": "ground"
+  },
+  {
+   "name": "Boarding pavilion",
+   "at": [78.3, -31],
+   "surface": "ground"
+  },
+  {
+   "name": "Office entrance",
+   "at": [54.65, -30.5],
+   "surface": "office-public"
+  },
+  {
+   "name": "Official entrance",
+   "at": [73.25, -31],
+   "surface": "office-official"
+  },
+  {
+   "name": "Meet Vale",
+   "at": [73.25, -31],
+   "surface": "office-official"
+  },
+  {
+   "name": "Meet driver",
+   "at": [78.1, -33.7],
+   "surface": "ground"
+  }
+ ],
+ "crew": [
+  {
+   "name": "Fixer",
+   "at": [1.168, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Tech",
+   "at": [2.368, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Scout",
+   "at": [3.568, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Enforcer",
+   "at": [4.768, -49.666],
+   "surface": "ground"
+  }
+ ],
+ "routes": [
+  {
+   "id": "getaway",
+   "name": "Getaway: crew car from Rocket Lane",
+   "from": "r_orbit_w",
+   "to": [
+    "off_southside",
+    "off_boulevard_south",
+    "off_west",
+    "off_circus_west",
+    "off_seagates"
+   ]
+  },
+  {
+   "id": "official",
+   "name": "Official arrival: Vale's car from the West End to Apron Road",
+   "from": "off_west",
+   "to": [
+    "r_pylon_s"
+   ],
+   "toName": "the official bay"
+  }
+ ]
+}

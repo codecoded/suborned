@@ -26,7 +26,9 @@ setDefaultTimeout(180000);
 const here = import.meta.dir, scratch = await mkdtemp(join(tmpdir(), 'levels-'));
 const runs = join(scratch, 'runs'), out = join(scratch, 'out'), state = join(scratch, 'state'), planFile = join(scratch, 'plan.json');
 await Bun.$`mkdir -p ${state}`;
-const base = await Bun.file(resolve(root, 'contracts/world/harbour-district.plan.json')).json();
+// pinned: r008's input plan and block (the live plan moves with the world); the plan's own block path is repointed at the pinned copy
+const base = await Bun.file(resolve(root, 'tools/levels/fixtures/harbour-district.plan.json')).json();
+base.civic.block = 'tools/levels/fixtures/handover-block.json';
 base.standards.transit.reach = 300; // so the fixtures' unchanged network is a valid one; the draft's own waivers are stripped by the run
 await Bun.write(planFile, JSON.stringify(base));
 const env = { ...process.env, LEVELS_RUNS: runs, LEVELS_OUT: out, LEVELS_TEST_RETRIEVER: 'lexical', CLAUDE_BIN: join(here, 'claude-stub.ts') };

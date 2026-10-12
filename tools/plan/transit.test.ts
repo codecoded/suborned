@@ -5,14 +5,16 @@ import { check } from './checks';
 import { civic } from './civic';
 import { centroid } from './geom';
 import { derive, type Plan } from './plan';
+import { legacyOverlay } from '../missions/handover/overlay';
 
 setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../..'), read = async (p: string) => JSON.parse(await Bun.file(resolve(root, p)).text());
-const base: Plan = await read('contracts/world/harbour-district.plan.json');
-const civ = civic(base.civic, await read(base.civic.block));
+// pinned draft (r008's input plan and block): these rules' failing examples must not move with the live world
+const base: Plan = await read('tools/levels/fixtures/harbour-district.plan.json');
+const block = await read('tools/levels/fixtures/handover-block.json'), civ = civic(base.civic, block);
 const run = (mutate: (p: any) => void = () => {}) => {
   const p = structuredClone(base) as any; mutate(p);
-  const R = check(p, derive(p), civ, true), by = (id: string) => R.checks.filter(c => c.id === id);
+  const R = check(p, derive(p), civ, true, legacyOverlay(p, block)), by = (id: string) => R.checks.filter(c => c.id === id);
   return { R, by, fails: (id: string) => by(id).some(c => !c.ok), passes: (id: string) => by(id).length > 0 && by(id).every(c => c.ok) };
 };
 const t2 = (x: number, stopAt: [number, number]) => ({ id: 'T2', name: 'Harbour Line', beyond: 'off-sheet', paths: [{ id: 'main', role: 'running', double: true, pts: [[x, -780], [x, 320]] }], stops: [{ id: 'quay', name: 'Quay', path: 'main', at: stopAt }] });
@@ -27,7 +29,7 @@ describe('transit rules', () => {
   test('the draft plan passes every old rule and every new one except its two waived ones', () => {
     const r = run(), failed = r.R.checks.filter(c => !c.ok && c.id !== 'W-2').map(c => c.id).sort(); // W-2 has its own tests (entrances.test.ts)
     expect(failed).toEqual(['N-R1', 'S-S2']);
-    expect(check(base as Plan, derive(base), civ).checks.every(c => c.ok)).toBe(true);
+    expect(check(base as Plan, derive(base), civ, false, legacyOverlay(base, block)).checks.every(c => c.ok)).toBe(true);
   });
   test('every new rule names its source', () => {
     for (const c of run().R.checks.filter(c => c.group === 'Transit' || c.id === 'S-S2')) expect(c.source).toBeTruthy();
