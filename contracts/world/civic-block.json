@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "6cc15dda01df1c2c6d9c1e0952fe09342743f9da47dcc308e9668c7af3eb471b",
+  "sha256": "55dac70d99743b41b0d4e0586de37ed93cb62be8242cdebea924588c0c94e8f9",
   "owner": "Vantage",
   "applied": [
    {
@@ -60,18 +60,18 @@
     "op": "addStructure",
     "item": {
      "id": "office-boarding-pavilion",
-     "name": "Office bay canopy",
+     "name": "Official door canopy",
      "category": "boarding-canopy",
      "polygon": [
-      [73.173, -38.5],
-      [77, -38.5],
-      [77, -23.5],
-      [73.173, -23.5]
+      [75.5, -33],
+      [78.5, -33],
+      [78.5, -27],
+      [75.5, -27]
      ],
-     "z": 0,
-     "height": 4.62
+     "z": 4.05,
+     "height": 0.57
     },
-    "reason": "Vantage: canopies stand on the pavement edge beside the lay-by, not over it. The Oct 9 nav has only the pavilion's two supports (inside the bay); the canopy footprint (15 x 3.827) and height 4.62 are carried from the Oct 5 testbed manifest at the position Vantage set."
+    "reason": "Vantage, brief 008 B2 (L2; Sky's walk note 'parking bay goes into building'): the 15 x 3.827 pavilion at x 73.173..77 stood 2.327 x 6 m inside tower-official (x 69.5..75.5, y -33..-27). It is now a canopy carried on the tower's south face: back edge on the face (x 75.5, overlap 0), the tower's width (y -33..-27), 3 m out over the 1.5 m pavement and the kerb half of the lay-by (x 77..78.5). No posts: the pavement at the tower is 1.5 m and stays clear. z 4.05 is the soffit above the pavement (4.23 above the lay-by), top 4.62 as before; nothing of it stands on the ground. Why not the pavilion moved over the bay: a 15 m roof to x 80 hides the door from the play camera (yaw 30, pitch 38: at the door everything above 0.9 m), and its piers have no ground but the wide pavement or the lay-by. At 3 m a person at the door point (76.25, -30) is seen whole (hidden only above 2.0 m) and Vale is under cover from the door to the car door; 'Official drop-off' (78.2) and 'Boarding pavilion' (78.3) stay under it."
    },
    {
     "op": "addStructure",
@@ -96,7 +96,7 @@
     "move": [-2.3, 0],
     "z": 0,
     "height": 3.633,
-    "reason": "Supports follow the canopy out of the lay-by (x 77.3..79.3 -> 75..77, inside the canopy footprint); z -0.18 was the lay-by level, now they stand on the pavement, height cut by the 0.18 so the top stays where the source had it."
+    "reason": "Out of the lay-by onto the pavement (x 77.3..79.3 -> 75..77), z -0.18 -> 0, height cut by the 0.18. Brief 008 B2: the canopy is now carried on the tower and this pier carries nothing; it is removed by the pending `remove` below. Until that op exists it stays here, clear of the tower (y -37.75..-35.75) and of the bay."
    },
    {
     "op": "edit",
@@ -104,7 +104,7 @@
     "move": [-2.3, 0],
     "z": 0,
     "height": 3.633,
-    "reason": "As office-pavilion-support-0."
+    "reason": "As office-pavilion-support-0 (y -26.25..-24.25). Until it is removed it still overlaps the civic-office-north bed by about 0.7 x 1.6 m, as it did before."
    },
    {
     "op": "edit",
@@ -121,6 +121,64 @@
     "z": 0,
     "height": 1.955,
     "reason": "As square-pavilion-support-0."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "office-public-landing",
+     "name": "Public door landing",
+     "category": "entrance-landing",
+     "polygon": [
+      [51, -32.3],
+      [52.5, -32.3],
+      [52.5, -27.7],
+      [51, -27.7]
+     ],
+     "z": 0,
+     "height": 0.75
+    },
+    "reason": "Vantage, brief 008 B2 (L1, H4): steps are real geometry. The public door is on tower-public's north face (x 52.5), on the tower's axis y -30, which is also the axis of the Orbit Walk crossing (y -32.5..-27.5) and of the fountain. Landing 1.5 m deep (x 51..52.5), 4.6 m wide, top at 0.75: 'Office entrance' stands on it at (51.75, -30), 0.75 m off the face. Sizes are Vela's RecordsEntrance (pivot 52.5, -30; front north)."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "office-public-steps",
+     "name": "Public door steps",
+     "category": "entrance-steps",
+     "polygon": [
+      [49.2, -32.3],
+      [51, -32.3],
+      [51, -27.7],
+      [49.2, -27.7]
+     ],
+     "z": 0,
+     "height": 0.625,
+     "risers": 6,
+     "rise": 0.125,
+     "going": 0.36,
+     "foot": [49.2, -30],
+     "top": [51, -30],
+     "landing": "office-public-landing"
+    },
+    "reason": "Vantage, brief 008 B2 (L1, H4): the flight to the landing. 6 risers of 0.125 m (0.75 m), 5 treads of 0.36 m (1.8 m), foot at x 49.2, 3.3 m out from the face; height 0.625 is the top tread. 'Office approach' stands at the foot, (48.6, -30), 0.6 m before the first riser. How the sim takes the height is Keel's (H4)."
+   },
+   {
+    "op": "edit",
+    "id": "civic-entrance-west",
+    "move": [0, 0.5],
+    "reason": "Brief 008 B2: the two entrance beds sat about y -30.4, the door is on the tower axis y -30. RecordsEntrance's pier plinth reaches y -26.02 (x 51.47..52.73) and this bed reached y -26.302: 0.28 m overlap. Moved 0.5 m east: the bed starts at y -25.802, 0.22 m off the plinth, 1.2 m off the tower flank (y -27). Chosen over centring the door on y -30.4 (the arch would sit 0.4 m off the tower's axis: 0.4 and 1.2 m of face beside it, one pier in the tower's corner) and over narrowing the piers (a piece change for 0.02 m of clearance)."
+   },
+   {
+    "op": "edit",
+    "id": "civic-entrance-east",
+    "move": [0, 0.4],
+    "reason": "As civic-entrance-west, so the pair is centred on the door: this bed's edge at the pier line (x 51.47) goes from y -34.578 to -34.178, 0.20 m off the plinth (y -33.98). Corridor between the beds 8.30 m, centre y -29.95."
+   },
+   {
+    "op": "edit",
+    "id": "civic-office-north",
+    "move": [0, 1.4],
+    "reason": "Brief 008 B2: this bed reached y -27.219 at x 74.1..75.0, 0.22 m inside tower-official (y -33..-27, x to 75.5), and its east side lay under the official door's east pier (plinth y -26.98..-26.02, x 75.27..76.53). Moved 1.4 m east along the wing face: it starts at y -25.819, 0.2 m off the pier and 1.18 m off the tower; still 1.34 m off the wing face (x 72.5) and 1.26 m off the lay-by (x 77)."
    }
   ]
  },
@@ -347,16 +405,16 @@
   },
   {
    "id": "office-boarding-pavilion",
-   "name": "Office bay canopy",
+   "name": "Official door canopy",
    "category": "boarding-canopy",
    "polygon": [
-    [73.173, -38.5],
-    [77, -38.5],
-    [77, -23.5],
-    [73.173, -23.5]
+    [75.5, -33],
+    [78.5, -33],
+    [78.5, -27],
+    [75.5, -27]
    ],
-   "z": 0,
-   "height": 4.62
+   "z": 4.05,
+   "height": 0.57
   },
   {
    "id": "square-boarding-pavilion",
@@ -370,6 +428,38 @@
    ],
    "z": 0,
    "height": 2.587
+  },
+  {
+   "id": "office-public-landing",
+   "name": "Public door landing",
+   "category": "entrance-landing",
+   "polygon": [
+    [51, -32.3],
+    [52.5, -32.3],
+    [52.5, -27.7],
+    [51, -27.7]
+   ],
+   "z": 0,
+   "height": 0.75
+  },
+  {
+   "id": "office-public-steps",
+   "name": "Public door steps",
+   "category": "entrance-steps",
+   "polygon": [
+    [49.2, -32.3],
+    [51, -32.3],
+    [51, -27.7],
+    [49.2, -27.7]
+   ],
+   "z": 0,
+   "height": 0.625,
+   "risers": 6,
+   "rise": 0.125,
+   "going": 0.36,
+   "foot": [49.2, -30],
+   "top": [51, -30],
+   "landing": "office-public-landing"
   }
  ],
  "objects": [
@@ -673,42 +763,42 @@
    "id": "civic-entrance-west",
    "kind": "planter",
    "polygon": [
-    [50.15, -19.9],
-    [50.15, -23.5],
-    [50.171, -23.898],
-    [50.233, -24.292],
-    [50.337, -24.677],
-    [50.48, -25.049],
-    [50.725, -25.597],
-    [50.889, -25.864],
-    [51.116, -26.08],
-    [51.392, -26.229],
-    [51.697, -26.302],
-    [52.01, -26.293],
-    [52.31, -26.204],
-    [52.577, -26.04],
-    [52.792, -25.812],
-    [52.941, -25.537],
-    [53.014, -25.232],
-    [53.006, -24.919],
-    [52.916, -24.619],
-    [52.672, -24.071],
-    [52.619, -23.934],
-    [52.581, -23.792],
-    [52.558, -23.647],
-    [52.55, -23.5],
-    [52.55, -19.9],
-    [52.509, -19.589],
-    [52.389, -19.3],
-    [52.199, -19.051],
-    [51.95, -18.861],
-    [51.661, -18.741],
-    [51.35, -18.7],
-    [51.039, -18.741],
-    [50.75, -18.861],
-    [50.501, -19.051],
-    [50.311, -19.3],
-    [50.191, -19.589]
+    [50.15, -19.4],
+    [50.15, -23],
+    [50.171, -23.398],
+    [50.233, -23.792],
+    [50.337, -24.177],
+    [50.48, -24.549],
+    [50.725, -25.097],
+    [50.889, -25.364],
+    [51.116, -25.58],
+    [51.392, -25.729],
+    [51.697, -25.802],
+    [52.01, -25.793],
+    [52.31, -25.704],
+    [52.577, -25.54],
+    [52.792, -25.312],
+    [52.941, -25.037],
+    [53.014, -24.732],
+    [53.006, -24.419],
+    [52.916, -24.119],
+    [52.672, -23.571],
+    [52.619, -23.434],
+    [52.581, -23.292],
+    [52.558, -23.147],
+    [52.55, -23],
+    [52.55, -19.4],
+    [52.509, -19.089],
+    [52.389, -18.8],
+    [52.199, -18.551],
+    [51.95, -18.361],
+    [51.661, -18.241],
+    [51.35, -18.2],
+    [51.039, -18.241],
+    [50.75, -18.361],
+    [50.501, -18.551],
+    [50.311, -18.8],
+    [50.191, -19.089]
    ],
    "z": 0,
    "height": 0.52
@@ -717,40 +807,40 @@
    "id": "civic-entrance-east",
    "kind": "planter",
    "polygon": [
-    [50.103, -35.58],
-    [50.287, -37.873],
-    [50.29, -38.062],
-    [50.269, -38.251],
-    [50.225, -38.436],
-    [50.033, -39.057],
-    [49.989, -39.314],
-    [50.013, -39.574],
-    [50.104, -39.819],
-    [50.254, -40.032],
-    [50.455, -40.198],
-    [50.693, -40.308],
-    [50.95, -40.351],
-    [51.21, -40.327],
-    [51.455, -40.237],
-    [51.668, -40.086],
-    [51.834, -39.885],
-    [51.943, -39.648],
-    [52.135, -39.027],
-    [52.239, -38.596],
-    [52.288, -38.156],
-    [52.281, -37.713],
-    [52.097, -35.42],
-    [52.042, -35.165],
-    [51.923, -34.932],
-    [51.748, -34.739],
-    [51.529, -34.597],
-    [51.281, -34.516],
-    [51.02, -34.503],
-    [50.765, -34.558],
-    [50.532, -34.677],
-    [50.339, -34.852],
-    [50.197, -35.071],
-    [50.116, -35.319]
+    [50.103, -35.18],
+    [50.287, -37.473],
+    [50.29, -37.662],
+    [50.269, -37.851],
+    [50.225, -38.036],
+    [50.033, -38.657],
+    [49.989, -38.914],
+    [50.013, -39.174],
+    [50.104, -39.419],
+    [50.254, -39.632],
+    [50.455, -39.798],
+    [50.693, -39.908],
+    [50.95, -39.951],
+    [51.21, -39.927],
+    [51.455, -39.837],
+    [51.668, -39.686],
+    [51.834, -39.485],
+    [51.943, -39.248],
+    [52.135, -38.627],
+    [52.239, -38.196],
+    [52.288, -37.756],
+    [52.281, -37.313],
+    [52.097, -35.02],
+    [52.042, -34.765],
+    [51.923, -34.532],
+    [51.748, -34.339],
+    [51.529, -34.197],
+    [51.281, -34.116],
+    [51.02, -34.103],
+    [50.765, -34.158],
+    [50.532, -34.277],
+    [50.339, -34.452],
+    [50.197, -34.671],
+    [50.116, -34.919]
    ],
    "z": 0,
    "height": 0.52
@@ -867,32 +957,32 @@
    "id": "civic-office-north",
    "kind": "planter",
    "polygon": [
-    [74.255, -22.91],
-    [73.836, -26.385],
-    [73.839, -26.581],
-    [73.891, -26.769],
-    [73.991, -26.938],
-    [74.131, -27.075],
-    [74.302, -27.171],
-    [74.491, -27.219],
-    [74.687, -27.217],
-    [74.876, -27.165],
-    [75.044, -27.065],
-    [75.181, -26.925],
-    [75.277, -26.754],
-    [75.326, -26.565],
-    [75.745, -23.09],
-    [75.742, -22.894],
-    [75.69, -22.705],
-    [75.59, -22.537],
-    [75.45, -22.4],
-    [75.279, -22.304],
-    [75.09, -22.255],
-    [74.894, -22.258],
-    [74.705, -22.31],
-    [74.537, -22.41],
-    [74.4, -22.55],
-    [74.304, -22.721]
+    [74.255, -21.51],
+    [73.836, -24.985],
+    [73.839, -25.181],
+    [73.891, -25.369],
+    [73.991, -25.538],
+    [74.131, -25.675],
+    [74.302, -25.771],
+    [74.491, -25.819],
+    [74.687, -25.817],
+    [74.876, -25.765],
+    [75.044, -25.665],
+    [75.181, -25.525],
+    [75.277, -25.354],
+    [75.326, -25.165],
+    [75.745, -21.69],
+    [75.742, -21.494],
+    [75.69, -21.305],
+    [75.59, -21.137],
+    [75.45, -21],
+    [75.279, -20.904],
+    [75.09, -20.855],
+    [74.894, -20.858],
+    [74.705, -20.91],
+    [74.537, -21.01],
+    [74.4, -21.15],
+    [74.304, -21.321]
    ],
    "z": 0,
    "height": 0.52
