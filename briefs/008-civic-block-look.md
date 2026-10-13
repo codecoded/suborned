@@ -1,6 +1,6 @@
 # 008 · The civic block reads as the original paintings
 
-**Status (2026-10-14): A done (`out/review/008-civic-parts.html`). B started:** Sky approved the first cut and the three calls ("go ahead, do what ya need to").
+**Status (2026-10-14): A done (`out/review/008-civic-parts.html`). B1 done:** 26 candidate pieces in `out/decokit-008/` (sheet `out/review/008-pieces.html`; `PottedTopiary_Play` not built). **B4's fade is built** (`ArchitectureFade`, shots in `out/shots/fade/`). **B2 running**, then B3, the rebuild, B5 and B6. Sky approved the first cut and the three calls ("go ahead, do what ya need to").
 
 Goal (Sky, 2026-10-14, after walking the generated world): "with these placeholders, like the café, how can we get back to the high quality café we had before this?" The café is a plain mass with loose tables on bare ground; the Records Office and the square are no better. This is the block the Handover is played on, and Sky signs the world off by walking it.
 
@@ -41,8 +41,10 @@ One finished corner, generated like everything else: block adjustment or generat
 done-check: `bun run check` and the Handover overlay pass; 0 console errors; three shots beside their paintings (play camera home frame, eye level at the café, eye level at the Office door); new LOD0 triangles on the block ≤ 110k; frame time reported.
 next owner: Sky walks the block.
 
-Owed, outside this cut: an entrance camera site at the Office door (route A loops it; Datum, H5) · `DK_Enamel_Coral` #E07560 is ΔE 12 from the cones signal and is bound by 59 kit pieces (Vela, C2) · the reference and palette decisions into the next GDD version.
+Owed, outside this cut: kerb-to-kerb crossings (the export has 1.8 m landing patches, 35 % with no partner across the road; Splice for the rule, Latch for the stripes) · the walk tool stamps the export's sha256 in the scene and in each note, so a note can be traced to its build (Latch, with the next rebuild) · the station kit bakes the name HARBOUR, so Gardens reads HARBOUR (`tools/decokit/atompunk.py`; Vela) · an entrance camera site at the Office door (route A loops it; Datum, H5) · `DK_Enamel_Coral` #E07560 is ΔE 12 from the cones signal and is bound by 59 kit pieces (Vela, C2) · the reference and palette decisions into the next GDD version.
 
 ## Known faults (Sky's walk, 2026-10-14)
-- On this block: the official bay runs into the Records Office tower (`civic/bay/officeBay` against `civic/civic-office/tower-official`). Owner: Vantage.
-- On the Parade, not this block: a café's blade sign passes through its canopy (`bld/parade-north/12`; Sky's note reads "Cafe sound is occluded", taken to mean the sign, not confirmed). A checks whether the civic café's frontage has the same fault. Owner: Splice.
+- On this block: the official bay runs into the Records Office tower (`civic/bay/officeBay` against `civic/civic-office/tower-official`). Owner: Vantage (B2).
+- On the Parade, not this block: a café's blade sign passed through its canopy (`bld/parade-north/12`; Sky's note reads "Cafe sound is occluded", taken to mean the sign, not confirmed). **Fixed** in the generator with rule F-7; before and after in `out/shots/notes/note-2-cafe-sign.png`. The civic café has no sign or canopy yet.
+- At Crown Circus: a sky rail pylon stood on the monument's steps. **Fixed** with `standards.skyrail.pylonClear` and rule SF-18 (`out/shots/notes/note-3-crown-steps.png`); the moved pylons stood 0.2 m off the basin, so the clearance goes to 3 m with a longer span over the monument (Splice, running).
+- Crossings: see Owed.

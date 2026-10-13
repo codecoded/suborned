@@ -76,7 +76,10 @@ done-check:
 - The `assignment-04` branch is untouched.
 next owner: Aster (accept), Sky (approve the plan), Latch (rebuild).
 
-**Status (2026-10-14): step 1 done.** The loop is in `tools/gen/` (plug-in interface, loop, replay, crew checks) and transit runs on it unchanged: 850 offline output files identical before and after, all ten recorded runs replay byte-identical, VERIFY OK. Step 2 (the skyline plug-in) is designed in `out/review/007F-skyline-plugin.html`, not built.
+**Status (2026-10-14): built and reviewed; the paid run is next.** The loop is in `tools/gen/` (plug-in interface, loop, replay, crew checks, continue-run, live guard) with transit and skyline as plug-ins under `tools/levels/`; the decisions below are built. Redline reviewed it (`out/review/007F-pipeline-review.html`), the must-fix items were fixed and retested, and his answer is yes to one paid skyline run from the current plan with `--approved-by` and the $10 ceiling. All ten recorded runs replay, VERIFY OK; the A04 tools hash moved once, declared in the drift ledger.
+Before the run: the civic block (brief 008 B2) and the Crown Circus pylon clearance are committed, then `contracts/world`, `tools/plan`, `tools/world`, the skyline objectives, cards and concept sheets are frozen while it is live · `bun run ingest` · `bun run levels skyline --preview` says checker clean (about $1.4 a round) · the run's `tools/levels/skyline/drift.json` is committed with the run.
+Decided from the image experiment (`briefs/007/image-vs-digest/`, one call per arm): Datum, Vantage and Keel get the Blocks and AtomicAge sheets as images; no prose digest.
+Open after the run: `--no-world` lets a transit run accept a candidate that breaks a world rule (fix before the next paid transit run) · review items M5, M7 to M10.
 
 Decisions (Sky, 2026-10-14), done before step 2:
 - **The critic runs only on a checker-clean candidate.** A candidate the checker fails goes straight back to its owner with the checker's faults (in the ten A04 runs Keel judged 11 candidates the checker had already failed). Recorded runs made under the old rule must still replay.
