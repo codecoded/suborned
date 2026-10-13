@@ -1,0 +1,280 @@
+{
+  "towerTypes": [
+    {
+      "name": "Stepped setback tower",
+      "claim": "Cream tower with vertical fluting that steps back in tiers to a narrow top; the most common tall type, both as block towers and filling the background skyline.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/needle_trio",
+        "blocks/rail_through",
+        "blocks/hanging_terraces",
+        "atomic/exposition_palace",
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Tapered rocket or bullet tower",
+      "claim": "Smooth, rounded tower tapering to a point like a rocket or shell, with little setback; shown in pairs or as a single glazed teal tower.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock"
+      ]
+    },
+    {
+      "name": "Saucer spire",
+      "claim": "Slim shaft carrying one or more disc-shaped saucer decks near the top, finished by a needle; several stand together on one block, and the same form appears as a hotel tower at street level.",
+      "tiles": [
+        "blocks/saucer_spires",
+        "blocks/mixed_skyline",
+        "atomic/starlight_hotel",
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Skyport tower",
+      "claim": "One tower with several stacked circular landing decks cantilevered around the shaft, small craft parked on and flying near them, and rocket-like spires at the top.",
+      "tiles": [
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Machine-crowned tower",
+      "claim": "Setback towers whose tops carry dishes, red-and-white lattice masts and antennae rather than an architectural finish; a whole block of them is shown.",
+      "tiles": [
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Round-cornered banded slab or drum",
+      "claim": "Mid-height streamline building with curved corners and horizontal bands of window and balcony, sometimes cylindrical and glazed; lower than the spired towers around it.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/rail_through",
+        "atomic/grand_hotel"
+      ]
+    },
+    {
+      "name": "Arched-fin tower",
+      "claim": "Tower with a round-arched top outlined in coral vertical stripes, standing at a block edge or as a neighbour rather than the central tower.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Megastructure blocks (not towers, but they carry towers)",
+      "claim": "A stepped ziggurat of planted terraces with towers rising behind it, and a raised slab on giant legs carrying a park, a lake and two towers above a lower city beneath.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock"
+      ]
+    }
+  ],
+  "crowns": [
+    {
+      "name": "Needle or spire",
+      "claim": "Thin pointed spire, often gold, finishing stepped setback towers and tapered towers; the default crown across the background skyline.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/lifted_megablock",
+        "blocks/hanging_terraces",
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Starburst",
+      "claim": "Gold radiating star on a mast, carried by a stepped setback tower in the aerial view and by a clock tower and a free-standing pylon at street level.",
+      "tiles": [
+        "blocks/needle_trio",
+        "atomic/monorail_terminal",
+        "atomic/googie_cafe"
+      ]
+    },
+    {
+      "name": "Atom or orbit rings",
+      "claim": "Sphere with orbit rings on a mast, carried by a lower tower in the aerial view and by low and stepped civic buildings at street level; a larger ring version wraps a dome.",
+      "tiles": [
+        "blocks/needle_trio",
+        "atomic/exposition_palace",
+        "atomic/corner_cafe",
+        "atomic/planetarium",
+        "atomic/grand_hotel"
+      ]
+    },
+    {
+      "name": "Saucer or ring disc",
+      "claim": "Horizontal disc or halo ring near the top of a slim shaft, usually with a needle above it; carried by saucer spires and by the stepped tower over the rail.",
+      "tiles": [
+        "blocks/saucer_spires",
+        "blocks/mixed_skyline",
+        "atomic/starlight_hotel",
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Machine crown",
+      "claim": "Dishes, red-and-white lattice masts and antennae on the top of setback towers; a red lattice mast also appears as a secondary element on other blocks.",
+      "tiles": [
+        "blocks/machine_crowns",
+        "blocks/needle_trio",
+        "blocks/mixed_skyline"
+      ]
+    },
+    {
+      "name": "Landing decks with rockets",
+      "claim": "Stacked circular decks with a cluster of rocket-like spires above, shown only on the skyport tower.",
+      "tiles": [
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Lantern or small dome",
+      "claim": "Small domed or lantern cap, sometimes teal or gold, on secondary towers and podium corners rather than on the tallest tower.",
+      "tiles": [
+        "blocks/needle_trio",
+        "blocks/skyport_tower",
+        "blocks/lifted_megablock"
+      ]
+    },
+    {
+      "name": "Stepped fin crown",
+      "claim": "Stack of coral and cream vertical fins stepping up to a point, carried by the tower the rail passes through; a neon-outlined version tops the cinema front.",
+      "tiles": [
+        "blocks/rail_through",
+        "atomic/cinema"
+      ]
+    }
+  ],
+  "railMeetsBuilding": [
+    {
+      "name": "Through the tower",
+      "claim": "The elevated rail passes straight through the base of the block's central tower above the podium roof, entering on one side and leaving on the other, with a train on the line.",
+      "tiles": [
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Glazed hall on the podium",
+      "claim": "Beside the pierced tower, a glazed barrel-vaulted hall sits over the rail on the podium roof, reading as the station enclosure.",
+      "tiles": [
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Viaduct on pylons past the frontage",
+      "claim": "A single-beam rail on slim pylons curves around the tower's low podium above street level, with shopfronts and pedestrians continuing underneath.",
+      "tiles": [
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Terminal hall with clock tower",
+      "claim": "A stand-alone terminal of repeated pointed shell vaults with a clock tower; trains run on at least two raised levels beside it and a rounded platform canopy projects over one track, with a pedestrian terrace and stairs below.",
+      "tiles": [
+        "atomic/monorail_terminal"
+      ]
+    },
+    {
+      "name": "Elevated ways at the block edge",
+      "claim": "Elevated ways on piers run past the block without entering it; whether they are rail or road is not readable at this size.",
+      "tiles": [
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Enclosed bridge between buildings",
+      "claim": "A glazed tube bridge links two buildings above the street, and a high arch links two towers; neither shows a train, so they read as walkways rather than rail.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/hanging_terraces"
+      ]
+    }
+  ],
+  "composition": [
+    {
+      "name": "Towers rise from a shared podium",
+      "claim": "Each block is a continuous low podium with rounded corners and street frontage all round; towers stand on or inside it rather than meeting the street directly, and the podium roof carries pools, gardens and domes.",
+      "tiles": [
+        "blocks/needle_trio",
+        "blocks/rail_through",
+        "blocks/saucer_spires",
+        "blocks/skyport_tower",
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Tallest toward the centre or back, low at the street",
+      "claim": "Height steps up from the street edge to the block's interior or rear; the perimeter stays low and the tallest element sits inboard.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/needle_trio",
+        "blocks/rail_through",
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "One dominant with lower companions",
+      "claim": "A block has a single clearly tallest tower with smaller towers or drums beside it.",
+      "tiles": [
+        "blocks/rail_through",
+        "blocks/skyport_tower",
+        "blocks/mixed_skyline"
+      ]
+    },
+    {
+      "name": "Clusters of two to five with unequal heights",
+      "claim": "Where towers of one type group, they come as a pair, a trio or a cluster of four or five, with heights and crowns varied within the group rather than matched.",
+      "tiles": [
+        "blocks/needle_trio",
+        "blocks/saucer_spires",
+        "blocks/machine_crowns",
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock"
+      ]
+    },
+    {
+      "name": "One theme per block, with one mixed exception",
+      "claim": "Seven of the eight blocks hold to a single tower or crown theme; one block deliberately mixes saucer, setback, glazed drum and lattice mast.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/saucer_spires",
+        "blocks/machine_crowns",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "name": "Dense backdrop of setback towers",
+      "claim": "Behind every block the skyline is a dense, hazy field of stepped setback towers with needle crowns, against which the themed block stands out.",
+      "tiles": [
+        "blocks/lifted_megablock",
+        "blocks/saucer_spires",
+        "blocks/skyport_tower",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "name": "Street-level buildings are a low centre tower with symmetric wings",
+      "claim": "At street level, single buildings are shown as a central stepped tower or pylon flanked by low rounded wings, with a forecourt of water or paving in front.",
+      "tiles": [
+        "atomic/exposition_palace",
+        "atomic/starlight_hotel",
+        "atomic/power_spire",
+        "atomic/grand_hotel"
+      ]
+    }
+  ],
+  "notDecidable": [
+    "Heights and storey counts: no scale, dimensions or level markers on either sheet, so tower height bands and height ratios within a block can only be read as relative.",
+    "Which tiles are Harbour: no tile is labelled with a district, and only blocks/mixed_skyline and atomic/grand_hotel show open water at the edge.",
+    "Whether the eight block themes are alternatives for one site or types meant to sit side by side, and how often each should occur across a district.",
+    "Spacing between tower blocks and how themed blocks are placed relative to each other, the water or the road hierarchy: each aerial tile shows one block in isolation.",
+    "Rail level and whether it matches the sky concourse: the rail is shown elevated, but its height against the podium and deck levels is not given.",
+    "Whether the tower the rail passes through contains a stop, or the rail only passes through; no platform is visible in blocks/rail_through.",
+    "Rail network layout: no tile shows a line beyond one block, so routes, stop spacing, interchanges and whether the terminal in atomic/monorail_terminal is an end of line are not shown.",
+    "Whether the elevated ways in blocks/machine_crowns are rail or road, and whether the tube bridge in blocks/mixed_skyline and the arch in blocks/hanging_terraces are walkways.",
+    "No street-level tram is clearly shown on either sheet, so how a tram stop meets a building cannot be drawn from them.",
+    "Whether crown type signifies building use: the sheets show crowns on hotels, a terminal, a café and civic buildings without a consistent rule.",
+    "The two sheets differ in view and rendering (aerial blocks against street-level single buildings), and no tile ties a street-level building to a place in an aerial block.",
+    "atomic/hotel_lobby and atomic/fashion_arcade are interiors and give no skyline information."
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "towerTypes": [
+    {
+      "name": "Stepped fluted spire tower",
+      "claim": "A stepped, often fluted tower ending in a spire or needle; it is the most frequent dominant, shown with coral fins in one block and as a stepped cylinder of cream, gold and teal fluting at street level.",
+      "tiles": [
+        "blocks/rail_through",
+        "blocks/needle_trio",
+        "blocks/mixed_skyline",
+        "blocks/lifted_megablock",
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Slender needle tower",
+      "claim": "Thin white needle towers rising from a low podium, in a pair linked by a glazed bridge arch or as a group of three spires on one long podium.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "name": "Saucer observation tower",
+      "claim": "A needle or white shaft carrying a saucer observation deck (ring and cabin), shown singly at the edge of a mixed block and as a cluster of three to four over a curved podium; a fluted hotel tower between low wings carries the same saucer and needle.",
+      "tiles": [
+        "blocks/saucer_spires",
+        "blocks/mixed_skyline",
+        "atomic/starlight_hotel"
+      ]
+    },
+    {
+      "name": "Rounded tower",
+      "claim": "A rounded-plan tower with a smooth top: a coral-ribboned one with a rounded cap and a capsule-topped one on a park deck. A white rounded-balcony stepped hotel tower with a vertical fin is the street-level relative, of mid height.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock",
+        "atomic/grand_hotel"
+      ]
+    },
+    {
+      "name": "Glass cylinder tower",
+      "claim": "A glass cylinder tower with teal bands and a rooftop sphere, from which a glazed tube sky bridge leaves. Shown once.",
+      "tiles": [
+        "blocks/mixed_skyline"
+      ]
+    },
+    {
+      "name": "Machine-crowned stepped tower",
+      "claim": "Stepped towers of mid height in a tight cluster of five to six on a broad podium, each topped by equipment rather than an ornament.",
+      "tiles": [
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Skyport disc tower",
+      "claim": "A single central pier tower with three stacked landing discs carrying air cars and a rocket-like gold spire above. Shown once, as the block's dominant.",
+      "tiles": [
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Red lattice tower or mast",
+      "claim": "A red (or red-and-white) lattice structure, shown as a free-standing lattice tower or mast at the side of a block and as a mast on top of a tower; always secondary, never the dominant.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/needle_trio",
+        "blocks/rail_through",
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Low and mid landmark buildings with a vertical mark",
+      "claim": "Not towers: low or mid buildings that reach the skyline only through a mark, such as a clock tower on the terminal, a starburst spire beside a café, a tiered neon blade on a cinema, or a stepped palace with a central block.",
+      "tiles": [
+        "atomic/monorail_terminal",
+        "atomic/googie_cafe",
+        "atomic/cinema",
+        "atomic/exposition_palace"
+      ]
+    }
+  ],
+  "crowns": [
+    {
+      "name": "Spire, needle or finial",
+      "claim": "Plain or gold spires and finials top the slender needles and the stepped spired towers; a needle also finishes the stepped crown of the rail_through central tower.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock",
+        "blocks/mixed_skyline",
+        "blocks/saucer_spires",
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Gold stepped crown with needle and sphere",
+      "claim": "The central stepped, fluted tower of the rail block carries a gold stepped crown with a needle and a silver sphere. Shown once.",
+      "tiles": [
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Starburst",
+      "claim": "A gold starburst crowns the tallest, fluted centre spire of the trio; at street level a starburst sits on the terminal's clock tower and on a slim needle beside a low café.",
+      "tiles": [
+        "blocks/needle_trio",
+        "atomic/monorail_terminal",
+        "atomic/googie_cafe"
+      ]
+    },
+    {
+      "name": "Atom (sphere in orbit rings)",
+      "claim": "A silver atom tops one rival spire of the trio; elsewhere it is carried by mid and low buildings: the palace's central stepped block, the hotel's fin, a corner café roof. Orbit hoops also ring the planetarium dome.",
+      "tiles": [
+        "blocks/needle_trio",
+        "atomic/exposition_palace",
+        "atomic/grand_hotel",
+        "atomic/corner_cafe",
+        "atomic/planetarium"
+      ]
+    },
+    {
+      "name": "Saucer deck or halo ring with needle",
+      "claim": "A saucer observation deck on a needle or shaft, usually finished with a needle or finial; carried by the saucer observation towers, the fluted hotel tower, and (as a halo or saucer ring with needle) the stepped cylindrical power spire.",
+      "tiles": [
+        "blocks/saucer_spires",
+        "blocks/mixed_skyline",
+        "atomic/starlight_hotel",
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Dome, capsule or rounded cap",
+      "claim": "Smooth rounded tops: a capsule dome on the rounded tower of the megablock, a rounded cap on the coral-ribboned tower, a teal dome with finial on the slimmer fluted tower of the trio.",
+      "tiles": [
+        "blocks/lifted_megablock",
+        "blocks/hanging_terraces",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "name": "Sphere or ball",
+      "claim": "A rooftop sphere on the glass cylinder tower, chrome spheres on roofs in the rail block, and a gold ball in the saucer cluster.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/rail_through",
+        "blocks/saucer_spires"
+      ]
+    },
+    {
+      "name": "Machine crown (dish, lattice mast, antenna, insulators)",
+      "claim": "Radar dishes, red-and-white lattice masts, antennas and ringed insulators crown every tower of the machine cluster; a red lattice mast also tops the right-hand tower of the rail block.",
+      "tiles": [
+        "blocks/machine_crowns",
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Stacked discs with rocket spire",
+      "claim": "Three stacked landing discs under a rocket-like gold spire, carried only by the skyport pier tower.",
+      "tiles": [
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Neon blade",
+      "claim": "A tall tiered neon blade sign serves as the crown of the low cinema hall; it is a street-level mark, not shown on a tower.",
+      "tiles": [
+        "atomic/cinema"
+      ]
+    }
+  ],
+  "railMeetsBuilding": [
+    {
+      "name": "Through the tower at arched portals",
+      "claim": "The monorail on slim pylons runs along the street, enters the central tower through an arched opening about a third of the way up, leaves on the far side, then enters a second tower through another arch.",
+      "tiles": [
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Station gallery attached to the tower at rail level",
+      "claim": "A glazed barrel-vault station gallery is attached to the central tower at the same mid-storey level as the portals.",
+      "tiles": [
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Past the tower base into a glazed station at the foot",
+      "claim": "The monorail on slim pylons curves past the base of the power spire and touches a glazed station at the tower's foot, described as at street level; it does not pierce the tower.",
+      "tiles": [
+        "atomic/power_spire"
+      ]
+    },
+    {
+      "name": "Alongside a terminal on its own pylons",
+      "claim": "Two monorail trains run beside the terminal on their own pylon structure at two heights, meeting the building at platform level rather than entering it.",
+      "tiles": [
+        "atomic/monorail_terminal"
+      ]
+    },
+    {
+      "name": "Along the block edge, no contact",
+      "claim": "An elevated road or rail passes at the left edge of the block only, without meeting any building; the digest does not settle whether it is road or rail.",
+      "tiles": [
+        "blocks/machine_crowns"
+      ]
+    },
+    {
+      "name": "Sky bridge, not rail",
+      "claim": "A glazed tube bridge leaves the cylinder tower, and a glazed bridge arch links the two needles; both are building-to-building bridges and the digest marks the first as not a rail.",
+      "tiles": [
+        "blocks/mixed_skyline",
+        "blocks/hanging_terraces"
+      ]
+    }
+  ],
+  "composition": [
+    {
+      "name": "Towers rise from a shared podium or deck",
+      "claim": "In every block the towers stand on one common low base: a terraced garden ziggurat, a park deck lifted on an arched frame, a broad or long podium, or a wide curved podium, usually with a pool, glass dome or gardens on it.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock",
+        "blocks/machine_crowns",
+        "blocks/mixed_skyline",
+        "blocks/needle_trio",
+        "blocks/saucer_spires",
+        "blocks/skyport_tower"
+      ]
+    },
+    {
+      "name": "Single dominant at the centre",
+      "claim": "Where one tower dominates it sits centrally: the central stepped fluted tower of the rail block, the central disc tower of the skyport, the centre spire of the trio with rivals at about two thirds of its height.",
+      "tiles": [
+        "blocks/rail_through",
+        "blocks/skyport_tower",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "name": "Rival pair",
+      "claim": "Two towers of comparable standing over a low wide base: two needles linked by a bridge arch over a terraced mass, or a capsule tower and a stepped spired tower over a park deck.",
+      "tiles": [
+        "blocks/hanging_terraces",
+        "blocks/lifted_megablock"
+      ]
+    },
+    {
+      "name": "Rival cluster",
+      "claim": "Several towers of similar height grouped tightly: five to six machine-crowned towers with no single dominant, or three to four saucer spires with one coral-and-white spire tallest.",
+      "tiles": [
+        "blocks/machine_crowns",
+        "blocks/saucer_spires"
+      ]
+    },
+    {
+      "name": "Mixed types, one tallest",
+      "claim": "One block mixes different tower types (saucer tower at the left, glass cylinder at the right, lattice tower) with a tall stepped spire behind as the tallest.",
+      "tiles": [
+        "blocks/mixed_skyline"
+      ]
+    },
+    {
+      "name": "Crowns vary within a block, or share one family",
+      "claim": "Within a group each tower usually carries a different crown (atom, starburst, dome and finial on the trio; saucer, spire, sphere, lattice on the mixed block), while the machine cluster and the saucer cluster each hold one crown family throughout.",
+      "tiles": [
+        "blocks/needle_trio",
+        "blocks/mixed_skyline",
+        "blocks/machine_crowns",
+        "blocks/saucer_spires"
+      ]
+    },
+    {
+      "name": "Lattice mast as an edge accent",
+      "claim": "A red lattice mast or tower appears at the side of the group (far right of the trio, right-hand tower of the rail block) as a secondary accent, not as the dominant.",
+      "tiles": [
+        "blocks/needle_trio",
+        "blocks/rail_through"
+      ]
+    },
+    {
+      "name": "Low buildings carry a single vertical mark",
+      "claim": "At street level, low and mid buildings join the skyline through one mark only: a starburst needle, a neon blade, a clock tower, a rocket on a plinth, or low wings flanking a central tower.",
+      "tiles": [
+        "atomic/googie_cafe",
+        "atomic/cinema",
+        "atomic/monorail_terminal",
+        "atomic/planetarium",
+        "atomic/starlight_hotel"
+      ]
+    }
+  ],
+  "notDecidable": [
+    "Absolute heights and storey counts: the source gives only classes (low, mid, dominant) and two ratios (rivals at about two thirds; portal about a third of the way up). Nothing maps these to the plan's levels (street, deck, sky concourse).",
+    "Whether the rail portal level corresponds to the sky concourse: the source says only 'mid-storeys' and 'about a third of the way up' one tower.",
+    "The rail level conflicts between tiles: mid-storey through towers (blocks/rail_through), a station at the tower foot described as street level (atomic/power_spire), and two heights beside a terminal (atomic/monorail_terminal). The sheets do not say which is the rule, or whether these are different lines or station types.",
+    "Whether the two heights at atomic/monorail_terminal are two separate lines, two levels of one line, or sky rail over tram. Trams are not identified on any tile.",
+    "Whether the elevated structure at the edge of blocks/machine_crowns is a road or a rail.",
+    "Only one of eight block tiles shows rail meeting buildings, so how common a rail-through tower is, and which tower types may take a portal, is not settled; only the stepped fluted tower and a lattice-masted second tower are shown pierced.",
+    "Portal dimensions, the number of portals per tower, whether trains stop inside the tower, and how the attached station gallery connects to the street or deck.",
+    "Pylon spacing, track curvature and clearances over streets.",
+    "How many towers a block should carry and how they are spaced: counts run from one to about six, with no plot sizes, footprints or distances given.",
+    "Where the dominant sits relative to streets, gates, water or the block edge: each aerial tile shows one block in isolation, with no orientation and no neighbours.",
+    "How blocks compose into a district skyline: which block type goes where, whether dominants repeat or step towards the harbour, and sightlines between blocks.",
+    "Which crown belongs to which use or owner: crowns are described by shape only, and the same crown (atom, starburst, saucer) appears on both towers and low buildings.",
+    "Building use for the towers on the Blocks sheet; only the AtomicAge tiles are named by use, and they are single buildings rather than skylines.",
+    "Whether air-car landing discs (blocks/skyport_tower) and sky bridges (blocks/mixed_skyline, blocks/hanging_terraces) are walkable or transit elements for the plan, or look only.",
+    "Whether the lifted park deck and the terraced podiums correspond to the plan's deck level, and how they are reached beyond the red stairs shown on blocks/lifted_megablock.",
+    "This digest is a secondhand text reading of the sheets, one line per tile; colours, proportions and anything the digest writer did not note cannot be checked from it. Two AtomicAge tiles (hotel_lobby, fashion_arcade) are interiors and give no skyline information."
+  ]
+}

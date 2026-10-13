@@ -3,7 +3,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
 import { viaCli } from './checker';
-import { outRoot, runDirs, runsRoot } from './paths';
+import { outRoot, runDirs, runsRoot } from '../gen/paths';
 
 const esc = (s: unknown) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const rows: string[] = [];

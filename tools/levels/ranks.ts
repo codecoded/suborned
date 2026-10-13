@@ -3,7 +3,7 @@
 // `travelBefore` = the Pulse/Keel queries as they stood before the v0.15 §02 fix (BEFORE). Needs the index (bun run up, bun run ingest); no model call.
 import { retrieve } from '../rag/retrieval';
 import { objectives, OLD_QUERY, TRAM_STANDARDS, SKY_STANDARDS } from './objectives';
-import { outRoot } from './paths';
+import { outRoot } from '../gen/paths';
 
 type R = Awaited<ReturnType<typeof retrieve>>;
 const TRAM = (s: string) => s.endsWith('standards › tram'), TRAVEL = (s: string) => s.startsWith('§02') && s.endsWith('travel');

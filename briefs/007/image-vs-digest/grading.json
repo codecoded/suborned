@@ -1,0 +1,113 @@
+{
+  "reader": "Splice, by looking at the sheets: full-resolution crops of blocks/rail_through, blocks/mixed_skyline and atomic/power_spire, the sheets themselves for the rest. A reading, not ground truth; the same person wrote the digest. Every item below can be checked on the sheets in a minute.",
+  "scale": {
+    "right": "matches the sheet",
+    "partial": "true but incomplete or too confident",
+    "wrong": "contradicts the sheet",
+    "missing": "a fact on the sheet the arm does not have"
+  },
+  "checks": [
+    {
+      "topic": "blocks/rail_through: the beam enters two towers (the central one, then the right-hand arched tower)",
+      "image": [
+        "partial",
+        "Reports one pierced tower. The right-hand tower is listed as an 'arched-fin tower' with no rail."
+      ],
+      "digest": [
+        "right",
+        "Both portals; I had looked at this tile at full resolution."
+      ]
+    },
+    {
+      "topic": "blocks/rail_through: where the beam meets the central tower",
+      "image": [
+        "right",
+        "'The base of the central tower above the podium roof': the arch sits a few storeys over the podium roof."
+      ],
+      "digest": [
+        "partial",
+        "'About a third of the way up' is generous; on the crop the arch is much lower than that."
+      ]
+    },
+    {
+      "topic": "atomic/power_spire: rail height against the street",
+      "image": [
+        "right",
+        "On slim pylons 'above street level, shopfronts and pedestrians continuing underneath'."
+      ],
+      "digest": [
+        "wrong",
+        "'A glazed station at the tower's foot, street level' is an error in my digest: the beam runs a storey above the shop windows and the train meets the building at that height. The arm repeated it and added a rail-level conflict (mid-storey against street level) to notDecidable that exists only because of the error."
+      ]
+    },
+    {
+      "topic": "A dense hazy backdrop of stepped, needle-crowned towers behind every Blocks tile",
+      "image": [
+        "right",
+        "A composition entry, cited to four tiles."
+      ],
+      "digest": [
+        "missing",
+        "Not in the digest: I did not record it."
+      ]
+    },
+    {
+      "topic": "Open water at the block edge (blocks/mixed_skyline right and bottom; atomic/grand_hotel left): the Harbour",
+      "image": [
+        "right",
+        "Named in notDecidable: only those two tiles show open water at the edge."
+      ],
+      "digest": [
+        "missing",
+        "Not in the digest."
+      ]
+    },
+    {
+      "topic": "Round banded drum towers (blocks/rail_through both sides, atomic/grand_hotel)",
+      "image": [
+        "right",
+        "Listed as a tower type, three tiles."
+      ],
+      "digest": [
+        "partial",
+        "Only the glass cylinder of mixed_skyline and the grand_hotel; the drums flanking the rail tower are not in the digest."
+      ]
+    },
+    {
+      "topic": "Crown of the central tower in blocks/rail_through",
+      "image": [
+        "partial",
+        "Coral and cream fins stepping to a point: right, but no finial, needle or silver sphere."
+      ],
+      "digest": [
+        "partial",
+        "Gold stepped crown with needle and silver sphere: right, but the coral fins appear only in the tower-type entry."
+      ]
+    },
+    {
+      "topic": "atomic/monorail_terminal: how the rail meets it",
+      "image": [
+        "right",
+        "Two raised levels, a rounded platform canopy over one track, a terrace and stairs below: more than the digest holds."
+      ],
+      "digest": [
+        "right",
+        "Two heights on its own pylons, meeting the building at platform level."
+      ]
+    },
+    {
+      "topic": "'Seven of the eight blocks hold to a single tower or crown theme; one mixes'",
+      "image": [
+        "partial",
+        "hanging_terraces (needles, rounded coral tower, arch), rail_through and lifted_megablock each hold more than one tower type; the count rests on no definition of 'theme'."
+      ],
+      "digest": null
+    }
+  ],
+  "verdict": [
+    "Yes: in this test the images added things the digest lost, and it lost them because its writer did not record them, not because text cannot hold them. The backdrop skyline behind every block, the open water at the edge of mixed_skyline and grand_hotel (the Harbour), the banded drums and the rail's height at the Power Spire came through only in the image arm. One of those is a correction: my digest line for power_spire was wrong, the digest arm repeated it and built a conflict on it.",
+    "The reverse held too: the digest, written from the sheets with rail_through looked at in full resolution, kept what the image arm skipped: the rail entering a second tower in rail_through, the crown ornaments (silver sphere, needle, gold finial), the height relations inside a block. The image arm also stated a count across the sheet ('seven of eight blocks hold one theme') that the sheets do not support. Neither arm invented powers or places; both cited tiles for every entry and both listed what the sheets do not settle.",
+    "For step 2 (inferred, not tested): keep a per-tile text digest as the committed, replayable, reviewable input, because it is a text artefact that can be diffed, cited and pinned; use the sheets as pictures in a separate audit call whose job is to check a description or a digest against them, which would have caught the Power Spire error. A digest told to record the backdrop, the edge conditions (water, neighbours) and the rail's height against the street would close the gaps seen here. Pictures alone leave retrieval and review nothing to quote or diff.",
+    "Limits: one call per arm, no repeat, so wording differences between the arms may be run-to-run noise; the items above are facts on the sheets, which is why they were chosen. The digest is the best case for text (one reader who looked at every tile, written before the comparison) and still carried an error. Grading is my reading."
+  ]
+}

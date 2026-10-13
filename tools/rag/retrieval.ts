@@ -31,12 +31,22 @@ async function keyword(q: string): Promise<Chunk[]> {
   return [...score.values()].sort((a, b) => b.s - a.s || a.row.key.localeCompare(b.row.key)).slice(0, 16).map(e => e.row);
 }
 
-export async function retrieve(query: string | string[], limit = 8, pinned: string[] = []) {
+/**
+ * `expect`: the corpus hash a run checked once, at its first call. Later calls of the run compare the index with that hash
+ * and do not read the corpus files again, so an edit to the GDD, a plan or the kit in the middle of a run (the working
+ * tree is shared) cannot abort it. Without `expect` the files are checked against the index, as every standalone
+ * retrieval does.
+ */
+export async function retrieve(query: string | string[], limit = 8, pinned: string[] = [], expect?: string) {
   const queries = (Array.isArray(query) ? query : [query]).map(q => q.trim()).filter(Boolean);
   if (!queries.length || !Number.isInteger(limit) || limit < 1 || limit > 12) throw new Error('Use a nonempty query and limit 1-12');
   const manifest = (await sql<{ corpusHash: string; embeddingModel: string }[]>('SELECT * FROM corpus:current;'))[0]?.[0];
   if (!manifest) throw new Error('No corpus indexed. Run bun run ingest first.');
-  if (manifest.embeddingModel !== embeddingModel || manifest.corpusHash !== hash(JSON.stringify(await loadCorpus()))) throw new Error('GDD, plan or embedding model changed since the last ingest. Run bun run ingest.');
+  if (expect !== undefined) {
+    if (manifest.corpusHash !== expect) throw new Error('The index was re-ingested during the run; its passages are no longer the ones the run started with.');
+  } else if (manifest.embeddingModel !== embeddingModel || manifest.corpusHash !== hash(JSON.stringify(await loadCorpus()))) {
+    throw new Error('GDD, plan or embedding model changed since the last ingest. Run bun run ingest.');
+  }
   const vectors = await embed(queries, 'query'), lists: { signal: string; rows: Chunk[] }[] = [];
   for (const [i, q] of queries.entries()) {
     const tag = queries.length > 1 ? `:${i + 1}` : '';

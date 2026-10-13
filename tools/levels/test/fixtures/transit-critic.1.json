@@ -1,17 +1,7 @@
 {
- "verdict": "fail",
- "summary": "Sky rail station spacing breaks the standard.",
- "faults": [
-  {
-   "owner": "Vantage",
-   "rule": "S-S2",
-   "fault": "Harbour to Skyport is 190 m, under the 200 m minimum.",
-   "fix": "Move Skyport east so the gap is at least 200 m.",
-   "chunks": [
-    "__CHUNK__"
-   ]
-  }
- ],
+ "verdict": "pass",
+ "summary": "Checker clean; no further fault.",
+ "faults": [],
  "sources": [
   "__CHUNK__"
  ]

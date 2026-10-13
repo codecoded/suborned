@@ -1,0 +1,44 @@
+{
+ "schema": "suborned.skyline-concepts/1",
+ "note": "The concept sheets the skyline objective shows its crew as images, and the tile ids a site may cite (briefs/007 F, Sky 2026-10-14). Ids only: the pictures are the source, never a description of them. A tile id is the sheet id, a slash, and the caption printed on the sheet, lower case with underscores.",
+ "sheets": [
+  {
+   "id": "blocks",
+   "path": "briefs/007/concepts/Blocks/contact_sheet.jpg",
+   "sha256": "ac0e7f8dca32d58dc73dbd7c31a6b53ff9e5d4e8d2a98176976d530852567b11",
+   "provenance": "briefs/007/concepts/Blocks/PROVENANCE.json",
+   "provenanceSha256": "9fc4af92befc2967092d2dbf74b45830b4fc5268d916cff14381223245f422f6",
+   "tiles": [
+    "blocks/hanging_terraces",
+    "blocks/lifted_megablock",
+    "blocks/machine_crowns",
+    "blocks/mixed_skyline",
+    "blocks/needle_trio",
+    "blocks/rail_through",
+    "blocks/saucer_spires",
+    "blocks/skyport_tower"
+   ]
+  },
+  {
+   "id": "atomic",
+   "path": "briefs/007/concepts/AtomicAge/contact_sheet.jpg",
+   "sha256": "f38540aca89810b6f8f28cdcf1320b69e5bf7f68b95737a905e78e827519141b",
+   "provenance": "briefs/007/concepts/AtomicAge/PROVENANCE.json",
+   "provenanceSha256": "c236e322a29e031938e72452c98a6f229e70ddacf4bf3fc32241368fc49e9e41",
+   "tiles": [
+    "atomic/exposition_palace",
+    "atomic/power_spire",
+    "atomic/monorail_terminal",
+    "atomic/grand_hotel",
+    "atomic/starlight_hotel",
+    "atomic/hotel_lobby",
+    "atomic/googie_cafe",
+    "atomic/corner_cafe",
+    "atomic/couture_house",
+    "atomic/fashion_arcade",
+    "atomic/planetarium",
+    "atomic/cinema"
+   ]
+  }
+ ]
+}

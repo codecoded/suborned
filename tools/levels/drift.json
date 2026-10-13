@@ -13,6 +13,9 @@
   ],
   "89aae7753fb05518da05f9c6e7c7ec327c5607cab40166acf4d37386e7826ed2": [
    "brief 007 round 2: L-7 (every lift attached to a structure along its whole run) added and L-6 counts connector dress ids; none changes a rule the A04 plans run"
+  ],
+  "7b81f26cda7d899bc9a89bb1c8e0716fad762dda897a8bcf1e98d4e79ca48009": [
+   "brief 007 round 3 walk: opt-in standards.skyrail.pylonClear keeps a pylon off a landmark disc (derive places pylons as before when a plan lacks it, so the A04 plans' pylons are unchanged); world rules F-7, SF-18, L-8, SF-19 registered in world-rules.ts and run only on a plan with the world standards; none changes a rule the A04 plans run"
   ]
  }
 }

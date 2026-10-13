@@ -9,10 +9,9 @@ import { join, resolve } from 'node:path';
 import { root } from '../../rag/config';
 import { CHUNKER, hash, loadCorpus } from '../../rag/corpus';
 import { apply, seedStationOnPlot } from '../apply';
-import { citedBlock, citeFaults } from '../cite';
 import { ownerOf, ownersOf } from '../checker';
-import { collectHandoffs, handoffFaults, pendingFor } from '../handoff';
-import { nextMinor, candidateVersion } from '../paths';
+import { crewOf } from '../../gen/crew';
+import { nextMinor, candidateVersion } from '../../gen/paths';
 import { replay } from '../replay';
 import { FARE_CLAIM, seedFareClaim } from '../seed';
 import { z } from 'zod';
@@ -21,6 +20,9 @@ import { agents } from '../schemas';
 import { applyDerived, deriveTimetable } from '../timetable';
 import { inProcess } from '../checker';
 import { schemaProblems } from './schema-lint';
+import { transit } from '../transit';
+
+const { collectHandoffs, handoffFaults, pendingFor, citeFaults, citedBlock } = crewOf(transit.builders);
 
 setDefaultTimeout(180000);
 const here = import.meta.dir, scratch = await mkdtemp(join(tmpdir(), 'levels-'));
@@ -32,6 +34,8 @@ base.civic.block = 'tools/levels/fixtures/handover-block.json';
 base.standards.transit.reach = 300; // so the fixtures' unchanged network is a valid one; the draft's own waivers are stripped by the run
 await Bun.write(planFile, JSON.stringify(base));
 const env = { ...process.env, LEVELS_RUNS: runs, LEVELS_OUT: out, LEVELS_TEST_RETRIEVER: 'lexical', CLAUDE_BIN: join(here, 'claude-stub.ts') };
+/** Keel's verdict on a candidate, as the first stub fixture had it before loop 2: a fault on the station spacing, owner Vantage. */
+const V1_FAIL = () => ({ verdict: 'fail', summary: 'Sky rail station spacing breaks the standard.', faults: [{ owner: 'Vantage', rule: 'S-S2', fault: 'Harbour to Skyport is 190 m, under the 200 m minimum.', fix: 'Move Skyport east so the gap is at least 200 m.', chunks: ['__CHUNK__'] }], sources: ['__CHUNK__'] });
 const levelsWith = async (extra: Record<string, string>, plan: string, ...args: string[]) => {
   await Bun.$`rm -rf ${state} && mkdir -p ${state}`;
   const p = Bun.spawn(['bun', 'tools/levels/cli.ts', 'transit', '--plan', plan, ...args], { cwd: root, env: { ...env, ...extra, STUB_STATE: state }, stdout: 'pipe', stderr: 'pipe' });
@@ -43,19 +47,26 @@ const withRuns = async <T>(f: () => Promise<T>) => { process.env.LEVELS_RUNS = r
 
 describe('levels transit, stubbed', () => {
   test('fixtures satisfy the output schemas', async () => {
-    for (const f of await readdir(join(here, 'fixtures'))) {
-      const agent = ({ 'transit-lines': 'datum', 'transit-stops': 'vantage', 'transit-timetable': 'pulse', 'transit-critic': 'keel' } as const)[f.split('.')[0] as 'transit-lines'];
-      const r = agents[agent].safeParse(JSON.parse((await Bun.file(join(here, 'fixtures', f)).text()).replaceAll('__CHUNK__', 'a'.repeat(24))));
-      expect(r.success, f).toBe(true);
+    const agentOf = {
+      'transit-lines': 'datum', 'transit-stops': 'vantage', 'transit-timetable': 'pulse', 'transit-critic': 'keel',
+    } as const;
+    for (const f of (await readdir(join(here, 'fixtures'))).filter(x => /\.\d+\.json$/.test(x))) {
+      const agent = agentOf[f.split('.')[0] as keyof typeof agentOf];
+      const text = (await Bun.file(join(here, 'fixtures', f)).text()).replaceAll('__CHUNK__', 'a'.repeat(24));
+      expect(agents[agent].safeParse(JSON.parse(text)).success, f).toBe(true);
     }
   });
 
-  test('a full run: round 1 fails the checker, the owner repairs it, round 2 is ACCEPTED; replay passes', async () => {
+  test('a full run: round 1 fails the checker (Keel is not called), the owner repairs it, round 2 is ACCEPTED; replay passes', async () => {
     const r = await levels();
     expect(r.stdout).toContain('r001 ACCEPTED (0.2.0-r001.2)'); expect(r.code).toBe(0);
+    expect(r.stdout).toContain('round 1: Keel not called (the checks failed)');
     const dir = join(runs, 'harbour-district', 'r001'), run = await Bun.file(join(dir, 'run.json')).json();
-    expect(run).toMatchObject({ outcome: 'ACCEPTED', seeded: false, objective: 'transit', finalVersion: '0.2.0-r001.2', inputPlan: { version: '0.1.0' } });
+    expect(run).toMatchObject({ outcome: 'ACCEPTED', seeded: false, objective: 'transit', loop: 2, finalVersion: '0.2.0-r001.2', inputPlan: { version: '0.1.0' }, cost: { calls: 6 } });
     expect(run.rounds.map((x: any) => [x.checkerOk, x.verdict, x.faultOwners])).toEqual([[false, 'fail', ['Vantage']], [true, 'pass', []]]);
+    expect(run.rounds.map((x: any) => [x.criticRan, x.keelVerdict, x.assessFaults])).toEqual([[false, null, 0], [true, 'pass', 0]]);
+    expect(await Bun.file(join(dir, 'round-1', 'keel.json')).exists()).toBe(false); expect(await Bun.file(join(dir, 'round-2', 'keel.json')).exists()).toBe(true);
+    expect(run.inputKit).toMatchObject({ source: 'contracts/world/kit.json', assets: expect.any(Number) }); expect(await Bun.file(join(dir, 'input.kit.digest.json')).exists()).toBe(true);
     expect(run.rounds[1].ran).toEqual(['vantage', 'pulse']); expect(run.rounds[1].reused).toEqual(['datum']);
     const sheets = await readdir(join(out, 'harbour-district', 'r001', 'sheets')); expect(sheets).toContain('harbour-district-v0.2.0-r001.2.html'); expect(sheets).toContain('harbour-district-v0.2.0-r001.1.html');
     expect(await Bun.file(join(dir, 'round-1', 'plan.json')).json()).toMatchObject({ version: '0.2.0-r001.1' });
@@ -216,8 +227,11 @@ describe('levels, hardening', () => {
 
   test("Keel's named owner wins: a fault {rule:'N-R1', owner:'Datum'} routes to Datum, who reruns next round", async () => {
     const fx = join(scratch, 'fixtures-owner'), rr = join(scratch, 'runs-owner'); await cp(join(here, 'fixtures'), fx, { recursive: true });
-    const k = await Bun.file(join(fx, 'transit-critic.1.json')).json(); k.faults.push({ owner: 'Datum', rule: 'N-R1', fault: 'No stop can fix this reach gap.', fix: 'Extend a line.', chunks: ['__CHUNK__'] });
-    await Bun.write(join(fx, 'transit-critic.1.json'), JSON.stringify(k));
+    // Keel sees only a clean candidate: round 1 uses the clean stops, and Keel's verdict on it names two owners
+    await Bun.write(join(fx, 'transit-stops.1.json'), await Bun.file(join(fx, 'transit-stops.2.json')).text());
+    const pass = await Bun.file(join(fx, 'transit-critic.1.json')).text(), k = V1_FAIL();
+    k.faults.push({ owner: 'Datum', rule: 'N-R1', fault: 'No stop can fix this reach gap.', fix: 'Extend a line.', chunks: ['__CHUNK__'] });
+    await Bun.write(join(fx, 'transit-critic.1.json'), JSON.stringify(k)); await Bun.write(join(fx, 'transit-critic.2.json'), pass);
     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr }, planFile); expect(r.code).toBe(0);
     const run = await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json();
     expect(run.rounds[0].faultOwners).toContain('Datum'); expect(run.rounds[0].faultOwners).toContain('Vantage');
@@ -272,6 +286,87 @@ describe('levels, hardening', () => {
     const rr = join(scratch, 'runs-rounds'), one = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '0');
     expect(one.stdout).toContain('r001 REJECTED'); expect((await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json()).rounds).toHaveLength(1);
     const nan = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', 'abc'); expect(nan.stdout).toContain('r002 ACCEPTED');
+  });
+});
+
+describe('levels, loop rule and continuation', () => {
+  const fixturesWith = async (name: string, edit: (fx: string) => Promise<void>) => { const fx = join(scratch, name); await cp(join(here, 'fixtures'), fx, { recursive: true }); await edit(fx); return fx; };
+  const read = async (rr: string, f: string) => Bun.file(join(rr, 'harbour-district', f)).json();
+
+  test('the old rule (loop 1) still runs: Keel judges a candidate the checker failed, no gate fields; a run without the field replays as loop 1', async () => {
+    const rr = join(scratch, 'runs-v1'), fx = await fixturesWith('fixtures-v1', async d => {
+      await Bun.write(join(d, 'transit-critic.2.json'), await Bun.file(join(d, 'transit-critic.1.json')).text()); await Bun.write(join(d, 'transit-critic.1.json'), JSON.stringify(V1_FAIL()));
+    });
+    const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_LOOP: '1' }, planFile);
+    expect(r.stdout).toContain('round 1: Keel fail'); expect(r.stdout).toContain('r001 ACCEPTED (0.2.0-r001.2)');
+    const run = await read(rr, 'r001/run.json');
+    expect(run).toMatchObject({ loop: 1, cost: { calls: 7 } });
+    expect(run.rounds.map((x: any) => [x.keelVerdict, 'criticRan' in x, 'assessFaults' in x])).toEqual([['fail', false, false], ['pass', false, false]]);
+    const copy = join(scratch, 'runs-v1-nofield'); await cp(rr, copy, { recursive: true });
+    const f = join(copy, 'harbour-district', 'r001', 'run.json'), j = await Bun.file(f).json();
+    delete j.loop; delete j.inputKit; j.chunker = 2; await Bun.write(f, JSON.stringify(j)); // recorded before both fields
+    for (const dir of [rr, copy]) {
+      process.env.LEVELS_RUNS = dir;
+      try { const res = await replay('harbour-district', 'r001'); expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.lines.join('\n')).not.toContain('loop rule'); } finally { delete process.env.LEVELS_RUNS; }
+    }
+  });
+
+  test('--continue starts from the rejected run: its last candidate and open faults, a link pinned by hash; the new run replays alone', async () => {
+    const rr = join(scratch, 'runs-cont'), out2 = join(scratch, 'out-cont');
+    const parent = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '1');
+    expect(parent.stdout).toContain('r001 REJECTED'); expect(parent.code).toBe(1);
+    const fx = await fixturesWith('fixtures-cont', async d => { await Bun.write(join(d, 'transit-stops.1.json'), await Bun.file(join(d, 'transit-stops.2.json')).text()); }); // Vantage's next try is the clean one
+    const child = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_OUT: out2 }, planFile, '--continue', 'r001');
+    expect(child.stdout).toContain('continuing harbour-district/r001 (round 1, 1 open fault(s)); round 1 reruns from vantage'); expect(child.stdout).toContain('r002 ACCEPTED (0.2.0-r002.1)'); expect(child.code).toBe(0);
+
+    const run = await read(rr, 'r002/run.json'), inh = await read(rr, 'r002/inherited.json');
+    expect(run.continues).toMatchObject({ plan: 'harbour-district', run: 'r001', outcome: 'REJECTED', round: 1, version: '0.2.0-r001.1', file: 'inherited.json', sameInputs: true });
+    expect(run.continues.sha256).toBe(createHash('sha256').update(await Bun.file(join(rr, 'harbour-district', 'r002', 'inherited.json')).bytes()).digest('hex'));
+    expect(run.continues.runSha256).toBe(createHash('sha256').update(await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).bytes()).digest('hex'));
+    expect(run.rounds).toHaveLength(1); expect(run.rounds[0]).toMatchObject({ ran: ['vantage', 'pulse'], reused: ['datum'], criticRan: true, verdict: 'pass' });
+    expect(inh.proposals.datum).toEqual(await read(rr, 'r001/round-1/datum.json')); expect(inh.proposals.vantage).toEqual(await read(rr, 'r001/round-1/vantage.json'));
+    expect(inh.faults.map((f: any) => [f.owner, f.rule])).toEqual([['Vantage', 'S-S2']]);
+    expect(await read(rr, 'r002/round-1/datum.json')).toEqual(inh.proposals.datum); // reused as it was
+    expect(await read(rr, 'r002/round-1/vantage.json')).not.toEqual(inh.proposals.vantage); // asked again
+    const prompt = await Bun.file(join(out2, 'harbour-district', 'r002', 'calls', '01-transit-stops.prompt.txt')).text();
+    expect(prompt).toContain('Your previous proposal (JSON):'); expect(prompt).toContain('Critic faults on it, to be fixed'); expect(prompt).toContain('S-S2');
+    const keelPrompt = await Bun.file(join(out2, 'harbour-district', 'r002', 'calls', '03-transit-critic.prompt.txt')).text();
+    expect(keelPrompt).toContain('This is a revision. The faults from last round'); // the critic is told, in round 1 of the new run
+
+    const replayIn = async (dir: string) => { process.env.LEVELS_RUNS = dir; try { return await replay('harbour-district', 'r002'); } finally { delete process.env.LEVELS_RUNS; } };
+    const both = await replayIn(rr); expect(both.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(both.ok).toBe(true);
+    expect(both.lines).toContain('ok    parent r001 on disk is the run inherited from'); expect(both.lines.join('\n')).toContain('round-1: reuses datum, reruns from vantage, as the inherited faults say');
+    const alone = join(scratch, 'runs-alone'); await mkdir(join(alone, 'harbour-district'), { recursive: true }); await cp(join(rr, 'harbour-district', 'r002'), join(alone, 'harbour-district', 'r002'), { recursive: true });
+    const solo = await replayIn(alone); expect(solo.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(solo.ok).toBe(true); // the parent is not there
+    expect(solo.lines).toContain('ok    parent r001 is not on this machine; the inherited state is the run\'s own pin');
+
+    const tamper = async (name: string, edit: (dir: string) => Promise<void>) => { const dir = join(scratch, name); await cp(alone, dir, { recursive: true }); await edit(join(dir, 'harbour-district', 'r002')); return replayIn(dir); };
+    const a = await tamper('cont-t1', async d => { const j = await Bun.file(join(d, 'inherited.json')).json(); j.faults = []; await Bun.write(join(d, 'inherited.json'), JSON.stringify(j, null, 2) + '\n'); });
+    expect(a.ok).toBe(false); expect(a.lines).toContain('FAIL  inherited.json does not match the recorded sha256');
+    const b = await tamper('cont-t2', async d => { const f = join(d, 'round-1', 'datum.json'), j = await Bun.file(f).json(); j.notes = [...(j.notes ?? []), 'edited']; await Bun.write(f, JSON.stringify(j)); });
+    expect(b.ok).toBe(false); expect(b.lines.join('\n')).toContain('round-1/datum: differs from the inherited proposal');
+    const c = await tamper('cont-t3', async d => { await Bun.$`rm ${join(d, 'inherited.json')}`; });
+    expect(c.ok).toBe(false); expect(c.lines.join('\n')).toContain('inherited.json is missing');
+    const withParent = join(scratch, 'cont-t4'); await cp(rr, withParent, { recursive: true });
+    const pf = join(withParent, 'harbour-district', 'r001', 'run.json'), pj = await Bun.file(pf).json(); pj.date = '2000-01-01'; await Bun.write(pf, JSON.stringify(pj));
+    const d = await replayIn(withParent); expect(d.ok).toBe(false); expect(d.lines.join('\n')).toContain('parent r001 on disk differs from the run inherited from');
+  });
+
+  test('--continue refuses what it cannot continue, says why, and writes nothing', async () => {
+    const rr = join(scratch, 'runs-refuse'), accepted = await levelsWith({ LEVELS_RUNS: rr }, planFile); expect(accepted.stdout).toContain('r001 ACCEPTED');
+    for (const [id, run] of [['r002', { objective: 'transit', outcome: 'ERROR', error: 'Error: claude exited 1' }], ['r003', { objective: 'transit', outcome: 'INCOMPLETE', rounds: [] }], ['r004', { objective: 'toy', outcome: 'REJECTED', rounds: [] }]] as const) {
+      await mkdir(join(rr, 'harbour-district', id), { recursive: true }); await Bun.write(join(rr, 'harbour-district', id, 'run.json'), JSON.stringify(run));
+    }
+    const before = (await readdir(join(rr, 'harbour-district'))).sort();
+    const refuse = async (extra: string[], text: string) => { const r = await levelsWith({ LEVELS_RUNS: rr }, planFile, ...extra); expect(r.code).toBe(2); expect(r.stderr).toContain('refused: '); expect(r.stderr).toContain(text); };
+    await refuse(['--continue', 'r001'], 'r001 is ACCEPTED: there is nothing to repair');
+    await refuse(['--continue', 'r002'], 'r002 ended in ERROR (Error: claude exited 1)');
+    await refuse(['--continue', 'r003'], 'r003 is INCOMPLETE');
+    await refuse(['--continue', 'r004'], 'r004 belongs to the toy objective; this is the transit objective');
+    await refuse(['--continue', 'r099'], 'there is no harbour-district/r099');
+    await refuse(['--continue', 'r001', '--seed', 'fare-claim'], 'cannot be combined');
+    expect((await readdir(join(rr, 'harbour-district'))).sort()).toEqual(before); // no run folder, no ERROR record
+    const bare = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--continue'); expect(bare.code).toBe(2); expect(bare.stderr).toContain('--continue needs a run id');
   });
 });
 

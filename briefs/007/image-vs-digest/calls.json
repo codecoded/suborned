@@ -1,0 +1,143 @@
+[
+  {
+    "arm": "image",
+    "id": "01-skyline-grammar-image",
+    "role": "world-planner",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [
+      "claude-opus-5-5"
+    ],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.296",
+    "card": {
+      "source": ".claude/agents/world-planner.md",
+      "sha256": "f728a776bfada8680c9475ec99eea217a88e9d91002cd7e9b865501df858935a"
+    },
+    "status": "accepted",
+    "attempt": 1,
+    "seconds": 41,
+    "costUsd": 0.174076,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 12106,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 3861,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 12106,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 3861,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 12106,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 12106
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "images": [
+      {
+        "path": "~/Projects/the-suborned-store/concepts/Blocks/contact_sheet.jpg",
+        "mediaType": "image/jpeg",
+        "bytes": 727168,
+        "sha256": "ac0e7f8dca32d58dc73dbd7c31a6b53ff9e5d4e8d2a98176976d530852567b11"
+      },
+      {
+        "path": "~/Projects/the-suborned-store/concepts/AtomicAge/contact_sheet.jpg",
+        "mediaType": "image/jpeg",
+        "bytes": 1385139,
+        "sha256": "f38540aca89810b6f8f28cdcf1320b69e5bf7f68b95737a905e78e827519141b"
+      }
+    ],
+    "retrieval": {
+      "method": "none: experiment, the concept sheets are the only source",
+      "hits": 0
+    },
+    "prompt": {
+      "bytes": 2011,
+      "sha256": "bdc81c94cc219361b27ed3854221be50244a02b0057bf7452b04224dde76542b"
+    }
+  },
+  {
+    "arm": "digest",
+    "id": "01-skyline-grammar-digest",
+    "role": "world-planner",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [
+      "claude-opus-5-5"
+    ],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.296",
+    "card": {
+      "source": ".claude/agents/world-planner.md",
+      "sha256": "f728a776bfada8680c9475ec99eea217a88e9d91002cd7e9b865501df858935a"
+    },
+    "status": "accepted",
+    "attempt": 1,
+    "seconds": 46,
+    "costUsd": 0.1259102,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 3414,
+      "cache_read_input_tokens": 4051,
+      "output_tokens": 4889,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 3414,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 4889,
+          "cache_read_input_tokens": 4051,
+          "cache_creation_input_tokens": 3414,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 3414
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "images": [],
+    "retrieval": {
+      "method": "none: experiment, the concept sheets are the only source",
+      "hits": 0
+    },
+    "prompt": {
+      "bytes": 7634,
+      "sha256": "4fb0c5ff9f53d2cb0ece1948faa24e651d2ded23505fa6e8c17b3ea37bd45ef3"
+    }
+  }
+]

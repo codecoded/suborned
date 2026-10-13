@@ -4,9 +4,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { root } from './config';
-import { chunkDocument, chunkSection, loadCorpus, SPLIT_OVER } from './corpus';
+import { CHUNKER, chunkDocument, chunkSection, loadCorpus, SPLIT_OVER } from './corpus';
+import { kitChunks, kitDigest } from './kit-corpus';
+import { planChunks } from './plan-corpus';
 import { fuse, terms } from './retrieval';
-import { card, claudeArgs, cliSchema, interpretClaude, invokeClaude } from './claude';
+import { card, claudeArgs, cliSchema, interpretClaude, invokeClaude, isLive, liveGuard, userMessage, type Spawn } from './claude';
+import { imageNote, loadImages, MAX_IMAGE_BYTES, sha256 } from './images';
 
 describe('corpus', () => {
   test('source changes invalidate identity; chunks keep auditable source lines', () => {
@@ -16,7 +19,7 @@ describe('corpus', () => {
   });
   test('the live corpus covers every agent GDD section, the human GDD and the plan', async () => {
     const chunks = await loadCorpus(), kinds = new Set(chunks.map(c => c.kind));
-    expect([...kinds].sort()).toEqual(['gdd-agent', 'gdd-human', 'plan']);
+    expect([...kinds].sort()).toEqual(['gdd-agent', 'gdd-human', 'kit', 'plan']);
     const sections = new Set(chunks.filter(c => c.kind === 'gdd-agent').map(c => c.section.slice(0, 3)));
     for (let n = 1; n <= 15; n++) expect(sections.has(`§${String(n).padStart(2, '0')}`)).toBe(true);
     expect(chunks.some(c => c.kind === 'plan' && c.text.includes('stopSpacing'))).toBe(true);
@@ -26,6 +29,56 @@ describe('corpus', () => {
     const chunk = (await loadCorpus()).find(c => c.kind === 'gdd-agent' && c.text.includes('### Datum'))!;
     const lines = (await Bun.file(join(root, chunk.source)).text()).split('\n').slice(chunk.lineStart - 1, chunk.lineEnd).join('\n');
     expect(lines).toContain('### Datum');
+  });
+});
+
+describe('skyline and kit chunks (chunker v3)', () => {
+  const plan = async () => JSON.parse(await Bun.file(join(root, 'contracts/world/harbour-district.plan.json')).text());
+  const kitText = () => Bun.file(join(root, 'contracts/world/kit.json')).text();
+
+  test('the chunker version is 3, and the live plan yields a chunk per signature, megastructure and tower site', async () => {
+    expect(CHUNKER).toBe(3);
+    const p = await plan(), chunks = (await loadCorpus()).filter(c => c.kind === 'plan'), sections = chunks.map(c => c.section);
+    for (const s of p.signatures) expect(sections).toContain(`${p.name} › signature › ${s.id}`);
+    for (const m of p.megastructures) expect(sections).toContain(`${p.name} › megastructure › ${m.id}`);
+    for (const t of p.standards.buildings.towers.sites) expect(sections).toContain(`${p.name} › tower site › ${t.id}`);
+    expect(sections).toContain(`${p.name} › tower sites`);
+    const hq = chunks.find(c => c.section.endsWith('signature › space-hq'))!;
+    expect(hq.text).toContain('crown: atom'); expect(hq.text).toContain('kit: SpaceHQ'); expect(hq.text).toContain('252');
+  });
+  test('additive: a plan without signatures, megastructures or tower sites chunks as before (recorded runs keep their keys)', async () => {
+    const old = await Bun.file(join(root, 'tools/levels/fixtures/harbour-district.plan.json')).text();
+    expect(JSON.parse(old).signatures).toBeUndefined();
+    const sections = planChunks('p.json', old).map(c => c.section);
+    expect(sections.some(s => /signature|megastructure|tower site/.test(s))).toBe(false);
+    const live = planChunks('p.json', JSON.stringify(await plan()));
+    const base = live.filter(c => !/signature|megastructure|tower site/.test(c.section)).length;
+    expect(live.length).toBeGreaterThan(base);
+  });
+  test('kit chunks: one per category and one per adopted piece, with size, tags and status; no hashes, files or candidates as pieces', async () => {
+    const kit = JSON.parse(await kitText()), chunks = kitChunks('contracts/world/kit.json', await kitText());
+    const adopted = kit.assets.filter((a: any) => a.status === 'adopted'), categories = new Set(kit.assets.map((a: any) => a.category));
+    expect(chunks).toHaveLength(categories.size + adopted.length);
+    const needle = chunks.find(c => c.section === 'DecoKit › Highrise › Tower_Needle')!;
+    expect(needle.text).toContain('size: 34.2 × 175.6 × 34.2 m'); expect(needle.text).toContain('tags: use tower'); expect(needle.text).toContain('(adopted)');
+    const candidate = kit.assets.find((a: any) => a.status === 'candidate')!;
+    expect(chunks.some(c => c.section.endsWith(`› ${candidate.id}`))).toBe(false);
+    expect(chunks.find(c => c.section === `DecoKit › ${candidate.category}`)!.text).toContain(`candidate: `);
+    for (const c of chunks) { expect(c.text).not.toMatch(/sha256|\.fbx|\.prefab|[0-9a-f]{64}/); expect(c.kind).toBe('kit'); }
+    expect(new Set(chunks.map(c => c.key)).size).toBe(chunks.length);
+  });
+  test('the pinned digest is small, idempotent, and gives the same chunks as kit.json itself', async () => {
+    const raw = await kitText(), digest = kitDigest(raw);
+    expect(digest.length).toBeLessThan(raw.length / 10); expect(kitDigest(digest)).toBe(digest);
+    expect(kitChunks('k.json', digest)).toEqual(kitChunks('k.json', raw));
+    const adopt = JSON.parse(raw); adopt.assets.find((a: any) => a.status === 'candidate').status = 'adopted';
+    expect(kitChunks('k.json', JSON.stringify(adopt)).length).toBe(kitChunks('k.json', raw).length + 1); // a later adoption changes the live corpus, not a pinned digest's
+  });
+  test('loadCorpus reads the kit through the override map, so a pinned digest stands in for kit.json', async () => {
+    const live = await loadCorpus(), raw = await kitText(), adopt = JSON.parse(raw);
+    adopt.assets.find((a: any) => a.status === 'candidate').status = 'adopted';
+    const edited = await loadCorpus({ 'contracts/world/kit.json': JSON.stringify(adopt) }), pinned = await loadCorpus({ 'contracts/world/kit.json': kitDigest(raw) });
+    expect(edited.length).toBe(live.length + 1); expect(pinned).toEqual(live);
   });
 });
 
@@ -80,6 +133,44 @@ describe('claude transcript', () => {
   });
 });
 
+describe('images in a crew call', () => {
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]);
+  test('the arguments are the same without pictures; with them only the input format changes, and the call stays tool-less', async () => {
+    const c = await card('Datum'), schema = cliSchema(z.object({ ok: z.boolean() })), plain = claudeArgs(c, schema), withImages = claudeArgs(c, schema, undefined, undefined, true);
+    expect(plain).not.toContain('--input-format');
+    expect(withImages.filter(a => !['--input-format', 'stream-json'].includes(a))).toEqual(plain.filter(a => !['--input-format', 'stream-json'].includes(a)));
+    expect(withImages[withImages.indexOf('--input-format') + 1]).toBe('stream-json');
+    expect(withImages).toContain('--tools='); expect(withImages).toContain('--strict-mcp-config'); expect(withImages).not.toContain('--allowedTools'); expect(withImages).not.toContain('--add-dir');
+  });
+  test('one stream-json user message: the images first, in order, as base64 blocks, then the prompt text', () => {
+    const line = userMessage('PROMPT', [{ mediaType: 'image/png', data: png }, { mediaType: 'image/jpeg', data: new Uint8Array([9, 9]) }]), m = JSON.parse(line);
+    expect(line.endsWith('\n')).toBe(true); expect(m).toMatchObject({ type: 'user', message: { role: 'user' } });
+    expect(m.message.content.map((b: any) => b.type)).toEqual(['image', 'image', 'text']); expect(m.message.content[2].text).toBe('PROMPT');
+    expect(m.message.content[0].source).toMatchObject({ type: 'base64', media_type: 'image/png' }); expect(Buffer.from(m.message.content[0].source.data, 'base64')).toEqual(Buffer.from(png));
+  });
+  test('loadImages pins sha256 and size, and refuses a missing file, an unknown type and an oversize picture', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'img-')), ok = join(dir, 'a.png'), big = join(dir, 'big.jpg');
+    await Bun.write(ok, png); await Bun.write(big, new Uint8Array(MAX_IMAGE_BYTES + 1)); await Bun.write(join(dir, 'x.tiff'), png);
+    const [x] = await loadImages([ok]); expect(x).toMatchObject({ path: ok, mediaType: 'image/png', bytes: 8, sha256: sha256(png) });
+    await expect(loadImages([join(dir, 'none.png')])).rejects.toThrow('not found'); await expect(loadImages([join(dir, 'x.tiff')])).rejects.toThrow('unsupported type');
+    await expect(loadImages([big])).rejects.toThrow('over the');
+    expect(await loadImages()).toEqual([]); expect(imageNote([])).toBe(''); expect(imageNote([x!])).toContain(sha256(png).slice(0, 12));
+  });
+  test('invokeClaude sends the message on stdin, with the input format flag, and without pictures sends the plain prompt', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'fake-claude-img-')), bin = join(dir, 'claude');
+    await Bun.write(bin, `#!/bin/sh\ncat > "${dir}/stdin.txt"\necho "$@" > "${dir}/args.txt"\nprintf '%s\\n' '${JSON.stringify(init())}' '${JSON.stringify(result())}'\n`);
+    await chmod(bin, 0o755); process.env.CLAUDE_BIN = bin;
+    try {
+      const schema = z.object({ ok: z.boolean() }), run = await invokeClaude(await card('Fable'), 'PROMPT BODY', schema, undefined, [{ path: 'a.png', mediaType: 'image/png', bytes: 8, sha256: sha256(png), data: png }], undefined, {});
+      expect(run.ok).toBe(true); expect(run.tools).toEqual(['StructuredOutput']);
+      expect(await Bun.file(join(dir, 'args.txt')).text()).toContain('--input-format stream-json');
+      expect(JSON.parse(await Bun.file(join(dir, 'stdin.txt')).text()).message.content.map((b: any) => b.type)).toEqual(['image', 'text']);
+      await invokeClaude(await card('Fable'), 'PLAIN', schema, undefined, [], undefined, {});
+      expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PLAIN'); expect(await Bun.file(join(dir, 'args.txt')).text()).not.toContain('--input-format');
+    } finally { delete process.env.CLAUDE_BIN; }
+  });
+});
+
 describe('claude invocation', () => {
   test('crew card as system prompt, no built-in tools, project-only settings, $schema-free schema', async () => {
     const c = await card('Keel'), args = claudeArgs(c, cliSchema(z.object({ pass: z.boolean() })), 'high');
@@ -96,7 +187,7 @@ describe('claude invocation', () => {
     await chmod(bin, 0o755);
     process.env.CLAUDE_BIN = bin;
     try {
-      const run = await invokeClaude(await card('Fable'), 'PROMPT BODY', z.object({ ok: z.boolean() }));
+      const run = await invokeClaude(await card('Fable'), 'PROMPT BODY', z.object({ ok: z.boolean() }), undefined, [], undefined, {});
       expect(run.ok).toBe(true);
       expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PROMPT BODY');
       expect((await Bun.file(join(dir, 'cwd.txt')).text()).trim()).toBe(root);
@@ -111,5 +202,45 @@ describe('claude invocation', () => {
   test('a card resolves by GDD name or agent name', async () => {
     expect((await card('Keel')).name).toBe('simulation-engineer');
     expect((await card('simulation-engineer')).source).toBe((await card('keel')).source);
+  });
+});
+
+describe('live call guard', () => {
+  const agent = { CLAUDECODE: '1' }, stub = join(root, 'tools/levels/test/claude-stub.ts');
+  const schema = z.object({ ok: z.boolean() });
+  /** A process that has already answered, for the injected spawn: no real binary is ever started. */
+  const answered = () => {
+    const text = (t: string) => new Response(t).body!;
+    return { stdout: text(`${JSON.stringify(init())}\n${JSON.stringify(result())}\n`), stderr: text(''), exited: Promise.resolve(0) };
+  };
+
+  test('an agent session may not start a live call, unless it uses a stand-in or opts in; a person in a terminal is unaffected', () => {
+    const refusal = liveGuard(agent)!;
+    expect(refusal).toContain('refusing a live model call');
+    expect(refusal).not.toContain('SUBORNED_LIVE'); // names no way round it
+    expect(refusal).not.toMatch(/=1|bun run/);
+    expect(liveGuard({ ...agent, CLAUDE_BIN: stub })).toBeUndefined(); // a stand-in says so itself
+    expect(liveGuard({ ...agent, SUBORNED_LIVE: '1' })).toBeUndefined();
+    expect(liveGuard({ ...agent, SUBORNED_LIVE: '0' })).toBeDefined();
+    expect(liveGuard({})).toBeUndefined();
+    expect(liveGuard({ CLAUDECODE: '' })).toBeUndefined();
+  });
+  test('a truthy CLAUDE_BIN alone does not disable the guard: only a binary that says it is a stand-in does', () => {
+    expect(liveGuard({ ...agent, CLAUDE_BIN: 'claude' })).toBeDefined();
+    expect(liveGuard({ ...agent, CLAUDE_BIN: '/no/such/claude' })).toBeDefined();
+    expect(liveGuard({ ...agent, CLAUDE_BIN: process.execPath })).toBeDefined(); // a real executable that is no stand-in
+    expect(isLive({ CLAUDE_BIN: stub })).toBe(false);
+    expect(isLive({ CLAUDE_BIN: process.execPath })).toBe(true);
+    expect(isLive({})).toBe(true);
+  });
+  test('invokeClaude refuses before it starts anything; opted in, the call goes through (an injected spawn, no process)', async () => {
+    const started: string[][] = [], spawn: Spawn = cmd => { started.push(cmd); return answered(); };
+    const ask = async (env: Record<string, string>) => invokeClaude(await card('Fable'), 'PROMPT', schema, undefined, [], spawn, env);
+    await expect(ask(agent)).rejects.toThrow('refusing a live model call');
+    await expect(ask({ ...agent, CLAUDE_BIN: 'claude' })).rejects.toThrow('refusing a live model call');
+    expect(started).toEqual([]);
+    expect((await ask({ ...agent, SUBORNED_LIVE: '1' })).ok).toBe(true);
+    expect((await ask({})).ok).toBe(true); // a person in a terminal
+    expect(started).toHaveLength(2);
   });
 });

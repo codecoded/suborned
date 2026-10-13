@@ -10,7 +10,7 @@
     "verify": "bun tools/verify.ts",
     "kit": "bun tools/kit/cli.ts",
     "decokit": "bun tools/decokit/run.ts",
-    "block":"bun tools/plan/block.ts",
+    "block": "bun tools/plan/block.ts",
     "world": "bun tools/world/export.ts",
     "life": "bun tools/life/cli.ts",
     "crew": "bun tools/crew/cards.ts",

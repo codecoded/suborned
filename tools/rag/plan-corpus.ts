@@ -1,6 +1,7 @@
 // A district plan as retrievable facts: one chunk per standard, road class, area (with its plots), transit line, and note list.
 // Raw node coordinates and the civic transform stay out: they are geometry for code, not text for a planner.
 import { hash, type Chunk } from './corpus';
+import { skylineParts } from './plan-skyline';
 
 const show = (v: unknown): string => (Array.isArray(v) && v.every(x => typeof x !== 'object') ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v));
 const fields = (o: Record<string, unknown>, skip: string[] = []) => Object.entries(o).filter(([k]) => !skip.includes(k)).map(([k, v]) => `${k}: ${show(v)}`).join('\n');
@@ -17,6 +18,7 @@ export function planChunks(source: string, text: string): Chunk[] {
     ...[...(p.tram as any[]).map(l => ['tram', l]), ...(p.skyrail as any[]).map(l => ['sky rail', l])].map(([mode, l]): [string, string] => [`${mode} › ${l.id} ${l.name}`, `${fields(l, ['paths', 'stops', 'stations'])}\npaths: ${(l.paths as any[]).map(x => `${x.id} (${x.role}${x.double ? ', double' : ''})`).join('; ')}\n${mode === 'tram' ? 'stops' : 'stations'}: ${((l.stops ?? l.stations) as any[]).map(s => `${s.name} at ${s.at}${s.interchange ? ` (interchange ${s.interchange})` : ''}`).join('; ')}`]),
     ...(p.routes ? [['routes', (p.routes as any[]).map(r => `${r.name}: ${fields(r, ['id', 'name'])}`).join('\n')] as [string, string]] : []),
     ...Object.entries(p.notes as Record<string, string[]>).map(([k, v]): [string, string] => [`notes › ${k}`, v.map(x => `- ${x}`).join('\n')]),
+    ...skylineParts(p), // chunker v3: appended, so every earlier chunk keeps its key
   ];
   return parts.map(([section, body]) => ({ key: hash(`${source}:${section}:${body}`).slice(0, 24), source, sourceHash, section: `${p.name} › ${section}`, lineStart: 0, lineEnd: 0, text: `${p.name} plan › ${section}\n${body}`, ...meta }));
 }
