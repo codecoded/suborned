@@ -1,7 +1,7 @@
 {
     "name": "Suborned.World.Editor",
     "rootNamespace": "Suborned.World",
-    "references": ["Suborned.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.GPUDriven.Runtime"],
+    "references": ["Suborned.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.GPUDriven.Runtime", "Unity.InputSystem"],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

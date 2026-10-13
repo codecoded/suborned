@@ -1,21 +1,29 @@
-// The 2.5D camera's cutaway (TheSuborned.DKCutaway sets the globals). Architecture (renderers DecoKitCutawayTags marks)
-// standing above the floor and hiding the ground within a disc round the focus thins to a dithered ghost, so towers
-// and walls never bury the play space yet still stand in the view. A fragment hides the ground point its view ray lands
-// on: in "band" mode it thins when that point is in the disc (only the slice that covers the disc); in "column" mode
-// also when anything below it on its vertical does (the crown goes with the slice, nothing floats solid over a ghost).
+// The play camera's architecture fade (GDD §10, §15: "tagged architecture ghosts to 0.2 + ghost shadow"). Suborned.ArchitectureFade
+// sets the globals while the play camera renders; the builder's FadeTags marks what may fade (rendering-layer bit DK_CUT_LAYER).
+// Tagged architecture standing above the floor, on the camera's side of the focus, and hiding the ground within a disc round the
+// focus thins to a dithered ghost, so towers and walls never bury the play space yet still stand in the view. A fragment hides
+// the ground point its view ray lands on: in "band" mode it thins when that point is in the disc (only the slice that covers
+// the disc); in "column" mode also when anything below it on its vertical does (the crown goes with the slice, nothing floats
+// solid over a ghost). What stands more than `back` metres beyond the focus along the view stays whole: it hides only ground
+// further back, and its near face is what the player reads (doors, shopfronts, signs).
 // With shadows on, the ghost casts a ghost shadow (the same cut in the shadow map), so a cut shell's inside and the
 // street behind a tower light up instead of reading as a dark pit under a roof that is no longer there.
-// Ported from the-suborned (brief 006 C): include path made relative; no cutaway controller here yet, so the globals stay 0 = cut off.
-// Included by DK_LitCutaway / DK_ComplexLitCutaway (Tools/Unity/make_cutaway_shaders.py) once per pass, after the
-// pass's own include, with DK_CUT_FORWARD, DK_CUT_DEPTH, DK_CUT_DEPTH_NORMALS or DK_CUT_SHADOW defined.
+// Ported from the-suborned (brief 006 C; DKCutaway there); the `back` limit, the controller and _DK_CUT are brief 008 B4.
+// _DK_CUT (a multi_compile in each pass) is the variant that cuts. Without it the passes are URP Lit's own with no discard in
+// them: a shader that may discard loses the GPU's hidden-surface removal on every pixel it covers, cut or not, so only what the
+// cut can reach draws with it. In Play Mode Suborned.FadeReach gives those renderers a twin material with the keyword; where
+// there is no reach (Edit Mode renders) ArchitectureFade sets the keyword for the whole of its camera's render instead.
+// Included by DK_LitCutaway / DK_ComplexLitCutaway (Tools/Unity/make_cutaway_shaders.py) and Suborned/FacadeLit once per pass,
+// after the pass's own include, with DK_CUT_FORWARD, DK_CUT_DEPTH, DK_CUT_DEPTH_NORMALS or DK_CUT_SHADOW defined.
 #ifndef DK_CUTAWAY_INCLUDED
 #define DK_CUTAWAY_INCLUDED
 
-#define DK_CUT_LAYER (1u << 20)  // DecoKitCutawayTags.Layer
+#define DK_CUT_LAYER (1u << 20)  // Suborned.ArchitectureFade.Layer
 
 float4 _DKCutFocus;  // xyz the focus on the ground (world); w the disc's radius (m), 0 = off
 float4 _DKCutView;   // xyz the camera's forward (world, unit); w the floor (m): nothing lower is cut
 float4 _DKCutShape;  // x feather (m); y ghost (what stays inside the disc: 0 = clean away); z column mode (0 / 1); w shadows cut too (0 / 1)
+float4 _DKCutBack;   // x how far beyond the focus along the view the cut reaches (m); y its feather (m)
 
 float DKBayer4(float2 px)
 {
@@ -40,16 +48,21 @@ float DKCutKeep(float3 p)
     float d = _DKCutShape.z > .5 ? DKSegmentDistance(_DKCutFocus.xz, p.xz + k * (_DKCutView.w - _DKCutFocus.y), hit)
                                  : length(hit - _DKCutFocus.xz);
     float feather = max(_DKCutShape.x, 1e-3);
-    return lerp(_DKCutShape.y, 1.0, saturate((d - (_DKCutFocus.w - feather)) / feather));
+    float outside = saturate((d - (_DKCutFocus.w - feather)) / feather);
+    float2 ahead = _DKCutView.xz / max(length(_DKCutView.xz), 1e-3);  // the view on the ground
+    float beyond = saturate((dot(p.xz - _DKCutFocus.xz, ahead) - _DKCutBack.x) / max(_DKCutBack.y, 1e-3) + 1.0);
+    return lerp(_DKCutShape.y, 1.0, max(outside, beyond));
 }
 
 bool DKCutOn() { return _DKCutFocus.w > 0.0 && (GetMeshRenderingLayer() & DK_CUT_LAYER) != 0u; }
 
 void DKCutaway(float4 positionCS)
 {
+#if defined(_DK_CUT)
     if (!DKCutOn()) return;
     float3 p = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(positionCS), positionCS.z, UNITY_MATRIX_I_VP);
     clip(DKCutKeep(p) - DKBayer4(positionCS.xy));
+#endif
 }
 
 #endif
@@ -126,7 +139,9 @@ DKShadowVaryings DKShadowPassVertex(Attributes input)
 half4 DKShadowPassFragment(DKShadowVaryings input) : SV_TARGET
 {
     UNITY_SETUP_INSTANCE_ID(input);
+#if defined(_DK_CUT)
     if (_DKCutShape.w > .5 && DKCutOn()) clip(DKCutKeep(input.positionWS) - DKBayer4(input.positionCS.xy));
+#endif
     Varyings v = (Varyings)0;
     UNITY_TRANSFER_INSTANCE_ID(input, v);
 #if defined(_ALPHATEST_ON)

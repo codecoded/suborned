@@ -116,7 +116,7 @@ Shader "Suborned/FacadeLit"
             // -------------------------------------
             // Shader Stages
             #pragma vertex LitPassVertex
-            #pragma fragment LitPassFragment
+            #pragma fragment DKLitPassFragment
 
             // -------------------------------------
             // Material Keywords
@@ -187,12 +187,17 @@ Shader "Suborned/FacadeLit"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Assets/Suborned/Shaders/FacadeForward.hlsl"
+            // The play camera's architecture fade (Suborned.ArchitectureFade): a dithered cut on renderers the builder tagged.
+            #pragma multi_compile_fragment _ _DK_CUT
+            #define DK_CUT_FORWARD
+            #include "Assets/Suborned/Shaders/DecoKit/DK_Cutaway.hlsl"
             ENDHLSL
         }
 
-        UsePass "Universal Render Pipeline/Lit/SHADOWCASTER"
-        UsePass "Universal Render Pipeline/Lit/DEPTHONLY"
-        UsePass "Universal Render Pipeline/Lit/DEPTHNORMALS"
+        // URP Lit's passes with the same cut, so depth, normals (SSAO) and the shadow (a ghost shadow) agree with the colour pass.
+        UsePass "DecoKit/Lit Cutaway/SHADOWCASTER"
+        UsePass "DecoKit/Lit Cutaway/DEPTHONLY"
+        UsePass "DecoKit/Lit Cutaway/DEPTHNORMALS"
     }
     FallBack "Universal Render Pipeline/Lit"
 }

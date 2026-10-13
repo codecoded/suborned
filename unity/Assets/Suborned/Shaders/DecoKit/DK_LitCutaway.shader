@@ -188,6 +188,7 @@ Shader "DecoKit/Lit Cutaway"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
+            #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_FORWARD
             #include "DK_Cutaway.hlsl"
             ENDHLSL
@@ -240,6 +241,7 @@ Shader "DecoKit/Lit Cutaway"
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_SHADOW
             #include "DK_Cutaway.hlsl"
             ENDHLSL
@@ -377,6 +379,7 @@ Shader "DecoKit/Lit Cutaway"
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+            #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH
             #include "DK_Cutaway.hlsl"
             ENDHLSL
@@ -434,6 +437,7 @@ Shader "DecoKit/Lit Cutaway"
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
+            #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH_NORMALS
             #include "DK_Cutaway.hlsl"
             ENDHLSL

@@ -114,6 +114,8 @@ namespace Suborned.World
             Rig.Build(cameras, Nodes.Group(null, "lighting"), root, world, Views.Load(ViewsPath), look);
             skyline.Horizon(Nodes.Group(root, "horizon"), Nodes.Group(null, "sea"), world.Horizon, world.Ground); // after Rig: views frame the district, not the 16 km band
             ReflectionCube.Build(look);
+            var (fadeKit, fadeBatches) = FadeTags.Apply(root, batches, facade.Spec.Atlas);
+            Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer})");
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
 

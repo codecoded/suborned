@@ -11,7 +11,8 @@ namespace Suborned.World
     /// export: the export's view, "zoom 14 at 38°" = orthographic size view.zoom, pitch view.pitch, yaw view.yaw (compass,
     ///   90 = looking east), centred on view.focus at the street datum (0); stands back just far enough to clear the
     ///   geometry in its frame column (not the whole district's tallest object), and carries TacticalShadows fitted to that
-    ///   depth from light.json `shadows.tactical` (brief 007 round 3: the play camera had no shadows at 423 m).
+    ///   depth from light.json `shadows.tactical` (brief 007 round 3: the play camera had no shadows at 423 m), and
+    ///   ArchitectureFade about its focus (GDD §15: tagged architecture ghosts; FadeTags marks what may).
     /// perspective: yaw/pitch/fov fitted so every corner of the frame's bounds is in view, or standing at `eye` looking at
     ///   `look`, or standing on `along` (a road or foot line) at eyeHeight looking down the line.</summary>
     public static class Rig
@@ -94,6 +95,7 @@ namespace Suborned.World
             ts.focusDepth = standOff;
             ts.nearBand = J.F(t, "nearBand"); ts.farBand = J.F(t, "farBand"); ts.cascades = (int)J.F(t, "cascades"); ts.fade = J.F(t, "fade");
             var air = J.A(t, "airSplits"); ts.airSplits = new Vector2((float)(double)air[0], (float)(double)air[1]);
+            cam.gameObject.AddComponent<ArchitectureFade>().focus = focus;
         }
 
         /// <summary>Distance from the focus back along the view at which an orthographic camera of this size clears its frame column.</summary>
