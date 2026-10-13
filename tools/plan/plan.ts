@@ -161,7 +161,11 @@ export function derive(plan: Plan): Derived {
   ];
   const sky = paths(plan.skyrail), tram = paths(plan.tram);
   const kinds = new Set(plan.standards.skyrail.pylonZones as string[]);
-  const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z));
+  // standards.skyrail.pylonClear (opt-in, brief 007 round 3): a pylon's centre keeps `landmark` metres outside every landmark disc
+  // (the Crown monument's basin and steps fill its disc). A plan without it places pylons as it always did: recorded runs rederive.
+  const clear = plan.standards.skyrail.pylonClear?.landmark as number | undefined;
+  const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z))
+    && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9));
   const pylons: Pylon[] = [], pylonGaps: Derived['pylonGaps'] = [];
   for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p)); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
   return {

@@ -63,8 +63,29 @@ export function wayRect(c: Connector): Rect {
 }
 export const isWayDown = (kind: Connector['kind'], level: string) => kind !== 'goodsLift' && (kind !== 'lift' || level === 'concourse');
 
+/**
+ * A core's lift car: at the core's south-west corner, or, where that corner is further than `joint` from every surface
+ * the lift lands on, against the core's edge that faces the nearest of them, centred on the overlap (L-8: a lift
+ * landing 13.6 m from its deck).
+ */
+export function carIn(core: Rect, car: [number, number], landings: Rect[], joint: number): Rect {
+  const corner: Rect = [core[0], core[0] + car[0], core[2], core[2] + car[1]];
+  if (!landings.length || landings.some(r => rectGap(corner, r) <= joint)) return corner;
+  const to = landings.reduce((a, b) => (rectGap(core, b) < rectGap(core, a) ? b : a));
+  // along one axis: flush to the core's edge that faces the landing, else centred on where they overlap
+  const place = (lo: number, hi: number, size: number, t0: number, t1: number): number => {
+    if (t1 <= lo) return lo;
+    if (t0 >= hi) return hi - size;
+    return Math.max(lo, Math.min(hi - size, (Math.max(lo, t0) + Math.min(hi, t1) - size) / 2));
+  };
+  const x = place(core[0], core[1], car[0], to[0], to[1]), y = place(core[2], core[3], car[1], to[2], to[3]);
+  return [x, x + car[0], y, y + car[1]];
+}
+
 export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[], solids: V[][]): Out {
   const L = ctx.L, zs = L.list as { id: string; z: number }[], connectors: Connector[] = [], extra: DeckRec[] = [];
+  // two goings: the most a lift car may stand off the deck it lands on (L-8)
+  const joint = 2 * (L.connectors.stair.going as number);
   const decks = megas.flatMap(m => m.decks);
   const platforms: DeckPiece[] = stations.map(s => ({ id: s.id, level: 'concourse', rect: bbox(s.ring) }));
   const zOfLv = (lv: string, host: string) => {
@@ -82,7 +103,9 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
     const serves = servesOf(c.rect, z0, z1, pool);
     if (c.stair) connectors.push({ id: `${c.id}/stair`, kind: 'stair', host: c.host, serves, from: c.from, to: c.to, foot: rv(ctr), head: rv(ctr), bottom: r3(z0), top: r3(z1), width: L.minWidth.stair, stepFree: false, ring: ringRect(c.rect), yaw: 0 });
     if (c.lift) {
-      const car = L.connectors.lift.car as [number, number], lr: Rect = [c.rect[0], c.rect[0] + car[0], c.rect[2], c.rect[2] + car[1]];
+      const car = L.connectors.lift.car as [number, number];
+      const landings = pool.filter(d => serves.includes(d.id) && d.level === c.to).map(d => d.rect);
+      const lr = carIn(c.rect, car, landings, joint);
       connectors.push({ id: `${c.id}/lift`, kind: 'lift', host: c.host, serves, from: c.from, to: c.to, foot: rv(rectCentre(lr)), head: rv(rectCentre(lr)), bottom: r3(z0), top: r3(z1), width: car[0], stepFree: true, ring: ringRect(lr), yaw: 0 });
     }
   }
@@ -118,8 +141,10 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
         if (spec) { // the plan's forecourt: tower and lift east of the clear axis, run A west of it, run B and the mezzanine over it, the bridge from `bridge.from` to `bridge.to`
           const t = Math.abs(spec.bridge.from), [s0] = spec.span, ac = spec.axisClear, ys = (c0: number, c1: number) => [side * (t + c0), side * (t + c1)].sort((a, b) => a - b) as [number, number];
           const at = (x0: number, x1: number, c0: number, c1: number): Rect => [x0, x1, ys(c0, c1)[0], ys(c0, c1)[1]], tx = Math.max(s0 + runB.size[0], ac[1]);
-          const towerR = at(tx, tx + tower.along, 0, tower.across), aR = at(ac[0] - (runA.size[0] - 8), ac[0], 0, pairW / 2 + 0.2), mzR = at(aR[0] - mz[0], aR[0], 0, mz[1] + 2.4);
-          const bR = at(tx - runB.size[0], tx, 4.4, 4.4 + pairW / 2 + 0.2), liftR = at(tx, tx + liftSz[0], 7.2, 7.2 + liftSz[1]), cx = (towerR[0] + towerR[1]) / 2;
+          const towerR = at(tx, tx + tower.along, 0, tower.across), aR = at(ac[0] - (runA.size[0] - 8), ac[0], 0, pairW / 2 + 0.2);
+          const bR = at(tx - runB.size[0], tx, 4.4, 4.4 + pairW / 2 + 0.2);
+          const mzR = at(Math.min(aR[0] - mz[0], bR[0]), aR[0], 0, mz[1] + 2.4); // on to the foot of run B (L-8)
+          const liftR = at(tx, tx + liftSz[0], 7.2, 7.2 + liftSz[1]), cx = (towerR[0] + towerR[1]) / 2;
           const bounds: Rect = [Math.min(mzR[0], bR[0]), towerR[1], Math.min(towerR[2], mzR[2], liftR[2]), Math.max(towerR[3], mzR[3], liftR[3])];
           yield { t, d: -1, towerR, liftR, aR, mzR, bR, bounds, bridge: { x: [cx - spec.bridge.w / 2, cx + spec.bridge.w / 2], y: [Math.min(spec.bridge.from, spec.bridge.to), Math.max(spec.bridge.from, spec.bridge.to)] } };
           return;
@@ -129,7 +154,7 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
           const xa = (px0 + px1) / 2 + sx, tx = [xa, xa + d * tower.along].sort((a, b) => a - b) as [number, number];
           if (tx[0] < px0 + 0.5 || tx[1] > px1 - 0.5) continue;
           const cl = (l0: number, l1: number, c0: number, c1: number): Rect => { const xs = [xa + d * l0, xa + d * l1].sort((a, b) => a - b), ys = [side * (t + c0), side * (t + c1)].sort((a, b) => a - b); return [xs[0]!, xs[1]!, ys[0]!, ys[1]!]; };
-          const lay = { t, d, towerR: cl(0, tower.along, 0, tower.across), aR: cl(13, 13 + runA.size[0] - 8, 0, pairW / 2 + 0.2), mzR: cl(34, 34 + mz[0], 0, mz[1] + 2.4), bR: cl(42 - runB.size[0] + 0, 42, 4.4, 4.4 + pairW / 2 + 0.2), bounds: cl(0, 42, 0, 10.2) };
+          const lay = { t, d, towerR: cl(0, tower.along, 0, tower.across), aR: cl(13, 13 + runA.size[0], 0, pairW / 2 + 0.2), mzR: cl(34, 34 + mz[0], 0, mz[1] + 2.4), bR: cl(tower.along, tower.along + runB.size[0], 4.4, 4.4 + pairW / 2 + 0.2), bounds: cl(0, 42, 0, 10.2) };
           yield { ...lay, liftR: cl(0, liftSz[0], 7.2, 7.2 + liftSz[1]) }; // the lift beyond the tower, away from the line
           yield { ...lay, liftR: cl(tower.along + 0.4, tower.along + 0.4 + liftSz[0], 0, liftSz[1]) }; // or beside it, in the tower's own band (where the walk zone is beyond)
         }

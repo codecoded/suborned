@@ -22,9 +22,11 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       const sec = S.sections[kind], par = nrm[0] + nrm[1] > 0 ? 0 : 1, tree = kind === 'district' || (kind === 'access' && avenue.has(plot.area));
       if (len < 14) continue;
       if (kind === 'primary') { for (let s = 45 + par * 20; s < len - 10; s += dense ? 90 : 150) L.add('hydrant', at(s, 0.8), 0, z, id); continue; }
-      // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings
+      // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings.
+      // A crossing's size is [depth from the kerb, width along the road] and its yaw across the road (SF-19: it was
+      // [w, depth], which ran the 4 m across the road)
       for (const s of [5, len - 5]) {
-        L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, z, id, { size: [S.crossings.w, 1.8, 0.02], r: 2.2, force: true });
+        L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, z, id, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force: true });
         for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, z, id, { size: S.bollards.size, r: 0.2 });
         if (kind === 'district') for (const o of [-2.6, 2.6]) L.add('beacon', at(s + o, 0.7), yaw, z, id, { size: [0.4, 0.4, S.crossings.beacons.h], r: 0.3 });
       }

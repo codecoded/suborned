@@ -29,7 +29,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const conn = { ...conn0, connectors: dressConnectors(conn0.connectors, megaOut.flatMap(m => m.parts.map(p => ({ ring: p.ring, z0: p.base, z1: p.base + p.height })))) };
   const decks: DeckRec[] = [...megaOut.flatMap(m => m.decks), ...conn.decks];
   const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
-  const frontages = signKit(ctx, linkFacades(generateFrontages(ctx, hosts), fac.facades));
+  const frontages = signKit(ctx, linkFacades(generateFrontages(ctx, hosts), fac.facades), megaOut, masses);
   const roofs = generateRoofs(ctx, blds, megaOut.flatMap(m => m.terraces ?? []));
   // procedural skins (grammar §2-3) for every plot building; its speed bands carry the skin's accent
   const plain = blds.filter(b => !b.tower), near = (id: string) => { const me = plain.find(b => b.id === id)!; return plain.filter(o => o.id !== id && o.plot === me.plot && adjacent(me.ring, o.ring)).map(o => o.id); };

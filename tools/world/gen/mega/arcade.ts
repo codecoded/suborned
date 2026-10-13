@@ -80,7 +80,9 @@ export function arcade(ctx: Ctx, m: Megastructure, sites: Site[]): MegaOut {
   // gate towers carry a core each (their podium is solid at deck level): lifts from the street to the concourse
   podiums.forEach((p, j) => {
     const fc = faces.find(x => rectsTouch(x.f, p, 0.5)) ?? faces[0]!, c = slice(p, fc.axis, fc.dir, gal + 0.5, gal + 0.5 + CORE[1]);
-    const core: Rect = fc.axis === 1 ? [p[0] + 0.5, p[0] + 0.5 + CORE[0], c[2], c[3]] : [c[0], c[1], p[2] + 0.5, p[2] + 0.5 + CORE[0]];
+    // the core stands one INSET inside the podium face, as the promenade stops one INSET short of it: a joint of
+    // 2 × INSET (L-8)
+    const core: Rect = fc.axis === 1 ? [p[0] + INSET, p[0] + INSET + CORE[0], c[2], c[3]] : [c[0], c[1], p[2] + INSET, p[2] + INSET + CORE[0]];
     out.cores.push({ id: `${id}/gate-core-${j}`, host: id, rect: core, from: co.from, to: co.to, lift: true, stair: true });
   });
   // maxTravel: where a deck point is further than standards.levels.spacing.deck.maxTravel from a way down, one more core in a tall strip

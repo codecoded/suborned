@@ -29,6 +29,12 @@
       "height": 24,
       "beamCentres": 6,
       "pylonZones": ["median", "mall", "park", "quay", "water", "island"],
+      "pylonClear": {
+        "tag": "[S]",
+        "landmark": 0.8,
+        "status": "Datum 2026-10-14: opt-in. Present, the pylon placement (derive) keeps a pylon's centre this far outside every landmark disc (landmarks[].c, r); absent, pylons are placed as before, so recorded runs rederive what they were made with",
+        "why": "Sky's walk of 2026-10-14, note 3, \"pillar in middle of steps\": S1/trunk's pylon at 6.5, 0 stood inside the Crown monument (landmarks.monument, r 14), whose basin and steps fill that disc: the CircusMonument piece is the orrery on a fluted column in a basin, 27.8 × 28.7 m (kitFit), r 6 → 14 = the basin, so walkers go round it in the garden ring. pylonZones said where a pylon may stand (the island is a disc r 24), not what else stands there. 0.8 = half the pylon footprint (pylonSize 1.6): the pylon's face then stands at most on the disc's edge, never in it. SF-18 (a pylon's footprint clears steps, landmarks, bays, buildings; 2 m from crossings and doorways) checks the export"
+      },
       "beamUnderside": 21.5,
       "beamUndersideWhy": "[S] height 24 − 1.0 (car floor over beam top, Alweg straddle) − 1.5 (beam depth, Seattle 1962). SF-4 (tree canopies ≥ 5 m from the beam envelope) and levels.headroom.underBeam measure from it; streetscape.skyrailEnvelope.underside repeats it",
       "portal": {

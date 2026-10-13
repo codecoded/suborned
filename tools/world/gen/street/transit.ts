@@ -51,7 +51,7 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     L.add('pole-camera', at(-len / 2 + 0.6, w / 2 - 0.2), yaw, top, id, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera', force: true });
     if (!done.has(`${line}/${stop}`)) { // once per stop: crossings at both platform ends, kiosks and phone booths on the pavement facing it
       done.add(`${line}/${stop}`);
-      for (const s of [-(len / 2 + 5), len / 2 + 5]) L.add('crossing', at(s, 0), yaw + Math.PI / 2, z, id, { size: [S.crossings.w, 8, 0.02], r: 2, force: true });
+      for (const s of [-(len / 2 + 5), len / 2 + 5]) L.add('crossing', at(s, 0), yaw + Math.PI / 2, z, id, { size: [8, S.crossings.w, 0.02], r: 2, force: true });
       const k = kerbNear(segs, c, 40);
       if (k && k.kind !== 'primary') {
         const off = (s: number): V => [k.q[0] + Math.cos(k.yaw) * s, k.q[1] + Math.sin(k.yaw) * s];
@@ -74,9 +74,9 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     };
     // the crossing first (flat, it keeps its place); then each item takes the nearest spot that keeps the walk zones, the beam and the crossing's 2 m clear
     // the crossing lies across the road beyond the bank; with the tower now outside the platform it is moved in until it is 1.7 m clear of a quay edge (SF-14)
-    const offQuay = (p: V) => !quayBlock(ctx, samples9(boxRing(p, S.crossings.w, 3, Math.PI / 2)));
+    const offQuay = (p: V) => !quayBlock(ctx, samples9(boxRing(p, 3, S.crossings.w, Math.PI / 2)));
     const cross = [8, 6.5, 5, 3.5, 2].map(o => at(0, 3.5 + o)).find(offQuay) ?? at(0, 3.5 + 2);
-    L.add('crossing', cross, Math.PI / 2, z, id, { size: [S.crossings.w, 3, 0.02], r: 2, force: true });
+    L.add('crossing', cross, Math.PI / 2, z, id, { size: [3, S.crossings.w, 0.02], r: 2, force: true });
     const near = (kind: string, s: number, o: number, yaw: number, opt: { size?: [number, number, number]; variant?: string } = {}) => {
       for (const ds of [0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15, 18, -18, 24, -24]) for (const dd of [0, -1.5, -3, 1.5, -4.5, -6, 3, 4.5, -7.5, -9]) if (L.add(kind, at(s + ds, o + dd), yaw, z, id, opt)) return true;
       return false;

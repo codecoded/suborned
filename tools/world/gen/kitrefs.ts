@@ -4,16 +4,36 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Kit, KitAsset } from '../../../contracts/world/kit.schema';
-import type { Frontage, KitRef, Landmark, StreetItem } from '../../../contracts/world/world.schema';
+import type { Frontage, KitRef, Landmark, Mass, Prim, StreetItem } from '../../../contracts/world/world.schema';
 import { Grid } from '../../plan/street-geo';
 import { type Slot, type Scale, fit } from '../../kit/fit';
+import { signBox, signObstacles } from './box';
 import { type Ctx, r3, r4, rng } from './common';
 import type { V } from '../../plan/geom';
 import type { Landmark as PlanLandmark } from '../../plan/plan';
 
-let cache: KitAsset[] | undefined;
-/** The adopted pieces of contracts/world/kit.json (candidates and rejects never reach the generator). */
-export const adopted = (): KitAsset[] => (cache ??= (JSON.parse(readFileSync(resolve(import.meta.dir, '../../../contracts/world/kit.json'), 'utf8')) as Kit).assets.filter(a => a.status === 'adopted'));
+const KIT = resolve(import.meta.dir, '../../../contracts/world/kit.json');
+const catalogues = new Map<string, KitAsset[]>();
+let pinned: string | undefined;
+/** The adopted pieces of contracts/world/kit.json (candidates and rejects never reach the generator), or of the catalogue `withKit` names. */
+export function adopted(): KitAsset[] {
+  const file = pinned ?? KIT;
+  let assets = catalogues.get(file);
+  if (!assets) {
+    assets = (JSON.parse(readFileSync(file, 'utf8')) as Kit).assets.filter(a => a.status === 'adopted');
+    catalogues.set(file, assets);
+  }
+  return assets;
+}
+/**
+ * Runs `fn` with `file` as the catalogue: a kit.json, or the kit digest a run pinned (both list `assets[]` with status, size and tags,
+ * which is all the generator reads). A pinned run re-checks against the pieces it ran with, not whatever Vela has adopted since.
+ */
+export function withKit<T>(file: string | undefined, fn: () => T): T {
+  const before = pinned;
+  pinned = file;
+  try { return fn(); } finally { pinned = before; }
+}
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
 
 /** Metres within which two items of one kind must not use the same piece. */
@@ -75,9 +95,17 @@ export function streetKit(ctx: Ctx, items: StreetItem[]): StreetItem[] {
   });
 }
 
-/** Signs: a blade or wall sign beside the fascia on tenancies the kit has a sign for; adjacent tenancies never share a piece. */
-export function signKit(ctx: Ctx, fronts: Frontage[]): Frontage[] {
+/** Metres a blade sign's lowest point stands above the top of its tenancy's canopy slab. */
+export const BLADE_CLEAR = 0.1;
+/**
+ * Signs: a blade or wall sign beside the fascia on tenancies the kit has a sign for; adjacent tenancies never share a
+ * piece, and a sign whose box would pass through anything (F-7: a canopy, a gallery roof, a podium) is not placed.
+ */
+export function signKit(
+  ctx: Ctx, fronts: Frontage[], megas: { prims: Prim[]; parts: Mass[] }[], buildings: Mass[],
+): Frontage[] {
   const g = new Grid<{ at: V; w: number; id: string }>(8, o => o.at);
+  const obstacles = signObstacles(fronts, megas, buildings);
   return fronts.map(f => {
     const none = { ...f, source: 'procedural' as const }, r = rng(`kit/${f.id}/sign`), sg = f.sign;
     if (!r.chance(0.7)) return none;
@@ -87,13 +115,18 @@ export function signKit(ctx: Ctx, fronts: Frontage[]): Frontage[] {
     const neigh = g.near(c, 40).filter(o => Math.hypot(o.at[0] - c[0], o.at[1] - c[1]) < (o.w + f.w) / 2 + 2);
     const pick = choose(f.id, fitting(use, slot, a => !!a.tags.trade?.includes(f.trade)), neigh.map(o => o.id), neigh.map(o => o.id));
     if (!pick || neigh.some(o => o.id === pick.a.id)) return none; // no contrasting piece: the fascia alone
-    g.add({ at: c, w: f.w, id: pick.a.id });
-    const x: V = [f.normal[1], -f.normal[0]], hh = pick.a.size[1] * pick.k[1];
+    const x: V = [f.normal[1], -f.normal[0]];
     // a blade's pivot is its wall plane: put it on the shopfront face (the front prim's depth from the facade line), not proud of the fascia
     const proud = (c[0] - f.a[0]) * f.normal[0] + (c[1] - f.a[1]) * f.normal[1] - f.front.size[1], out = wall ? 0.2 : -proud, side = wall ? 0 : sg.size[0] / 2 + 0.3;
     const at: V = [c[0] + f.normal[0] * out + u[0] * side, c[1] + f.normal[1] * out + u[1] * side];
-    const base = wall ? sg.base + sg.size[2] + 0.2 : Math.max(f.z + 2.6, sg.base + sg.size[2] - hh);
-    return { ...f, source: 'kit' as const, signKit: { id: pick.a.id, scale: pick.k, yaw: r4(Math.atan2(x[1], x[0])), at: [r3(at[0]), r3(at[1])], base: r3(base), mount: wall ? 'wall' : 'blade' } };
+    // a wall sign stands over the sign board; a blade rises from just over the canopy slab (F-7: it used to hang
+    // from the fascia down to head height, through the awning)
+    const base = wall ? sg.base + sg.size[2] + 0.2 : f.canopy.base + f.canopy.size[2] + BLADE_CLEAR;
+    const mount = wall ? 'wall' as const : 'blade' as const;
+    const sign = { id: pick.a.id, scale: pick.k, yaw: r4(Math.atan2(x[1], x[0])), at: [r3(at[0]), r3(at[1])] as V, base: r3(base), mount };
+    if (obstacles.hits(signBox(pick.a, sign)).length) return none; // it would pass through something: the fascia alone
+    g.add({ at: c, w: f.w, id: pick.a.id });
+    return { ...f, source: 'kit' as const, signKit: sign };
   });
 }
 
