@@ -10,6 +10,7 @@ import { copyAdopted } from './copy';
 import { fit } from './fit';
 import { GEN_ROOT, kitRoot } from './store';
 import { WAVE1 } from './tags';
+import { LOD_CATEGORIES } from './lod';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const root = kitRoot();
@@ -43,4 +44,42 @@ test('fit scales inside the range and refuses what does not fit', () => {
   const sky = kit.assets.find(a => a.id === 'Skyport_Tower')!;
   expect(fit(sky, { foot: 48, maxH: 24.68 })).toBeNull();
   expect(fit(kit.assets.find(a => a.id === 'SphereStation')!, { foot: 80, maxH: 80 })).not.toBeNull();
+});
+
+test('LOD categories (Vela, brief 007 round 3): every piece names one; its LOD switch points are the category\'s', () => {
+  expect(kit.lodCategories).toEqual(LOD_CATEGORIES);
+  expect(kit.lodCategories.street).toEqual({ l1: 0.008, l2: 0.003 }); expect(kit.lodCategories.towers).toEqual({ l1: 0.3, l2: 0.1 });
+  for (const a of kit.assets) {
+    expect(Object.keys(kit.lodCategories), a.id).toContain(a.lodCategory);
+    (a.lods ?? []).forEach((l, i) => expect(l.screen, `${a.id} LOD${i + 1}`).toBe(i === 0 ? kit.lodCategories[a.lodCategory].l1 : kit.lodCategories[a.lodCategory].l2));
+  }
+  const cat = (id: string) => kit.assets.find(a => a.id === id)!.lodCategory;
+  expect([cat('Bollard'), cat('CafeSet_Tulip'), cat('Cypress'), cat('StreamBay_6'), cat('StreamCorner_4'), cat('Tower_Saucer@harbour-hotel'), cat('Crown_Atom'), cat('SpaceHQ_Portal'), cat('DiscTower@avenue-gate-w'), cat('Horizon_RocketPad')])
+    .toEqual(['street', 'street', 'trees', 'facades', 'facades', 'towers', 'towers', 'signatures', 'signatures', 'horizon']);
+});
+
+test('Vela\'s slimmed street props (round 3) are the generator\'s binaries; Bollard and RecyclingBins have no LODs', () => {
+  for (const id of ['Bollard', 'Hydrant', 'RecyclingBins', 'DomeCamera', 'CCTVPole', 'PhoneBooth']) {
+    const a = kit.assets.find(x => x.id === id)!, fbx = a.files.find(f => f.role === 'fbx')!;
+    expect(fbx.root, id).toBe('generated'); expect(a.files.some(f => f.role === 'fbx-meta'), id).toBe(true); // the DecoKit meta keeps the GUID the prefab uses
+    expect(a.tris, id).toBeLessThanOrEqual(1500);
+  }
+  for (const id of ['Bollard', 'RecyclingBins']) { const a = kit.assets.find(x => x.id === id)!; expect(a.lods).toBeUndefined(); expect(a.files.some(f => f.role === 'lod')).toBe(false); }
+});
+
+test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece\'s materials', () => {
+  const by = (id: string) => kit.assets.find(a => a.id === id)!;
+  expect(by('SpaceHQ').status).toBe('rejected'); expect(by('SpaceHQ_Portal').status).toBe('adopted');
+  expect(by('PlanterArc').status).toBe('adopted'); expect(by('PlanterArc').pivot).toBe('footprint-centre-ground');
+  const liner = by('OceanLiner');
+  expect(liner.status).toBe('adopted'); expect(liner.lods?.length).toBe(2);
+  for (const m of ['DK_Accent_Coral', 'DK_Accent_Teal', 'DK_Accent_Gold', 'DK_Liner_White', 'DK_Liner_Teak', 'DK_Liner_Dome', 'DK_Liner_Pool']) expect(liner.materials, m).toContain(m);
+  for (const m of ['DK_Faience_Teal', 'DK_GroundCover']) expect(by('PlanterArc').materials, m).toContain(m);
+  // a far version built by hand (tools/decokit kit.asset far=) is a separate mesh: the copy brings only the piece's listed materials, so a LOD naming another would import pink
+  // (pieces whose L0 is the generator's own binary; the legacy DecoKit pieces' generator LODs carry DK_Beacon_Rose where their L0 has the DecoKit beacon: open, Vela)
+  for (const a of kit.assets.filter(x => x.status === 'adopted' && x.files.some(f => f.role === 'fbx' && f.root === 'generated') && !x.files.some(f => f.role === 'fbx-meta')))
+    for (const f of a.files.filter(x => x.role === 'lod' && x.root === 'generated')) {
+      const names = new Set([...readFileSync(join(GEN_ROOT, f.path)).toString('latin1').matchAll(/DK_[A-Za-z0-9_]+/g)].map(m => m[0]).filter(n => kit.assets.every(x => !n.startsWith(`DK_${x.id.split('@')[0]}`))));
+      for (const n of names) if (/^DK_(Accent|Liner|Enamel|Window|Faience|Limestone|Gold|Chrome|Leaf|Flower|GroundCover|Beacon|Terrazzo|Bronze|Hull|Steel|Lamp)/.test(n)) expect(a.materials, `${a.id} ${f.path} uses ${n}`).toContain(n);
+    }
 });

@@ -102,7 +102,8 @@
       "fov": 60,
       "hold": 3,
       "travel": 7,
-      "shadowDistance": 400
+      "shadowDistance": 400,
+      "shift": 4.0
     },
     {
       "name": "deck",
@@ -111,7 +112,8 @@
       "eyeHeight": 1.7,
       "fov": 60,
       "hold": 3,
-      "shadowDistance": 500
+      "shadowDistance": 500,
+      "side": 4.0
     },
     {
       "name": "sky-rail",
@@ -120,7 +122,8 @@
       "eyeHeight": 1.7,
       "fov": 60,
       "hold": 3,
-      "shadowDistance": 700
+      "shadowDistance": 700,
+      "side": -2.0
     },
     {
       "name": "rail-run",
@@ -156,7 +159,7 @@
       "kind": "along",
       "id": "quay/0",
       "at": 0.2,
-      "side": -2,
+      "side": -10.0,
       "eyeHeight": 4,
       "ahead": 120,
       "lookHeight": 3,
@@ -168,13 +171,12 @@
       "name": "liner-dock",
       "kind": "fit",
       "frame": [
-        "signature/ocean-liner",
-        "landmark/liner-berth"
+        "signature/ocean-liner"
       ],
-      "yaw": 285,
-      "pitch": 11,
-      "fov": 45,
-      "margin": 1.3,
+      "yaw": 216,
+      "pitch": 17,
+      "fov": 50,
+      "margin": 1.35,
       "hold": 3.5,
       "drift": 2,
       "shadowDistance": 1500

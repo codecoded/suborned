@@ -6,6 +6,32 @@
   "manifestSha256": "8372a2bb6e979ee2d7b04b68de172bc3e9fb612d146e9eb753947c87150a3da0",
   "materialsSha256": "24faa748f989e49f40508b11f79eefc9d15dc20be2b7ec7146dac58b38a24b05"
  },
+ "lodCategories": {
+  "street": {
+   "l1": 0.008,
+   "l2": 0.003
+  },
+  "trees": {
+   "l1": 0.08,
+   "l2": 0.025
+  },
+  "facades": {
+   "l1": 0.2,
+   "l2": 0.07
+  },
+  "towers": {
+   "l1": 0.3,
+   "l2": 0.1
+  },
+  "signatures": {
+   "l1": 0.15,
+   "l2": 0.05
+  },
+  "horizon": {
+   "l1": 0.2,
+   "l2": 0.06
+  }
+ },
  "assets": [
   {
    "id": "Bollard",
@@ -13,34 +39,24 @@
    "size": [
     0.54,
     0.82,
-    0.54
+    0.5136
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 5116,
+   "tris": 398,
    "materials": [
     "DK_Chrome",
     "DK_Enamel_Red",
     "DK_Steel"
    ],
-   "lods": [
-    {
-     "file": "Models/Street/DK_Bollard_L1.fbx",
-     "tris": 1278,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Street/DK_Bollard_L2.fbx",
-     "tris": 306,
-     "screen": 0.12
-    }
-   ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Street/DK_Bollard.fbx",
-     "sha256": "0e476fd74fb96c30aa57770861610cadd7fc5c0e19d86b3a485e69964bedc400",
-     "bytes": 122892
+     "sha256": "00683f88aeec310407ed39c86eaec933273334540508ac1002745838caf80bac",
+     "bytes": 25548
     },
     {
      "role": "fbx-meta",
@@ -97,20 +113,6 @@
      "path": "Materials/DK_Steel.mat.meta",
      "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
      "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Street/DK_Bollard_L1.fbx",
-     "sha256": "3c981abbf1c74de7d53dab1307851ea4debaae0efb962fd985176e68908f1da0",
-     "bytes": 54316
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Street/DK_Bollard_L2.fbx",
-     "sha256": "8a9e18ab8979fb7c141fc1fb8b081f816118d672396b6ce2dc98603404755d52",
-     "bytes": 27100
     }
    ],
    "tags": {
@@ -151,14 +153,15 @@
     {
      "file": "Models/Street/DK_Streetlamp_L1.fbx",
      "tris": 1445,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Street/DK_Streetlamp_L2.fbx",
      "tris": 345,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -270,13 +273,13 @@
    "id": "Hydrant",
    "category": "Street",
    "size": [
-    0.43,
+    0.4265,
     0.79,
-    0.422
+    0.4229
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 6840,
+   "tris": 400,
    "materials": [
     "DK_Chrome",
     "DK_Enamel_Red",
@@ -285,21 +288,18 @@
    "lods": [
     {
      "file": "Models/Street/DK_Hydrant_L1.fbx",
-     "tris": 1710,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Street/DK_Hydrant_L2.fbx",
-     "tris": 409,
-     "screen": 0.12
+     "tris": 100,
+     "screen": 0.008
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Street/DK_Hydrant.fbx",
-     "sha256": "0dc1fd0e551c0f43e5b76ad54d2f0ccac043bb2ad2b6a5f46bacb09715ff4c36",
-     "bytes": 176796
+     "sha256": "71654c5b8e6c4dfab9e6ccbed723b66499e108efd6d897cc17d6162742e8127e",
+     "bytes": 29036
     },
     {
      "role": "fbx-meta",
@@ -361,15 +361,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Street/DK_Hydrant_L1.fbx",
-     "sha256": "243036b94e027984f8b1c7569f62c9eab7276c3768b168f4ac9da179ea522aaa",
-     "bytes": 63660
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Street/DK_Hydrant_L2.fbx",
-     "sha256": "d4612819f47f0d9ed4a30280b6e32088b5dc09240bc12749230bc2bbaa0e1fb5",
-     "bytes": 31292
+     "sha256": "b0a1bb6b83bc9ac26ace412187f80853b462f1ca3c2f1204f906d6a687567bbf",
+     "bytes": 21260
     }
    ],
    "tags": {
@@ -405,14 +398,15 @@
     {
      "file": "Models/Street/DK_Bench_L1.fbx",
      "tris": 852,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Street/DK_Bench_L2.fbx",
      "tris": 378,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -520,6 +514,7 @@
     "DK_Enamel_Red",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -601,13 +596,13 @@
    "id": "RecyclingBins",
    "category": "Street",
    "size": [
-    1.06,
-    0.89,
-    0.42
+    1.0624,
+    0.8915,
+    0.4161
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 3708,
+   "tris": 399,
    "materials": [
     "DK_Chrome",
     "DK_Enamel_Teal",
@@ -615,24 +610,14 @@
     "DK_Decal_Transit",
     "DK_Enamel_Mustard"
    ],
-   "lods": [
-    {
-     "file": "Models/Street/DK_RecyclingBins_L1.fbx",
-     "tris": 2876,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Street/DK_RecyclingBins_L2.fbx",
-     "tris": 2876,
-     "screen": 0.12
-    }
-   ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Street/DK_RecyclingBins.fbx",
-     "sha256": "3f8984435a58267724abca1114f32dd15970fc09bb060138ad21ad0e398098c0",
-     "bytes": 73292
+     "sha256": "b1f0a80c9aaad85492b9bda802ae1cc1f0691429e6d94b0d1148c4d98d26f290",
+     "bytes": 35644
     },
     {
      "role": "fbx-meta",
@@ -725,20 +710,6 @@
      "path": "Textures/decals_transit_v1_alpha.png.meta",
      "sha256": "70290db197b8925b17a4b6ed7b5e5d7a812b14f0bce9cd02826ded5a69198aae",
      "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Street/DK_RecyclingBins_L1.fbx",
-     "sha256": "d2439934c23dbc0cf9ba7481f81af914294352f89a83d8e2453cac9124fa0244",
-     "bytes": 67340
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Street/DK_RecyclingBins_L2.fbx",
-     "sha256": "a2ca6879a4070fe08f7563685d3419d0de9971b357d2ff6d3acd2059a7d42fa8",
-     "bytes": 67340
     }
    ],
    "tags": {
@@ -769,6 +740,7 @@
     "DK_Chrome",
     "DK_Enamel_Royal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -849,6 +821,7 @@
     "DK_Chrome",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -934,7 +907,7 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate"
+   "status": "adopted"
   },
   {
    "id": "FacetedPot",
@@ -953,6 +926,7 @@
     "DK_Enamel_Mustard",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -1061,6 +1035,7 @@
     "DK_Enamel_Red",
     "DK_Calib_Grey18"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -1174,6 +1149,7 @@
     "DK_SignalLens_Green",
     "DK_Signal_Green"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -1351,9 +1327,9 @@
    "id": "CCTVPole",
    "category": "Signals",
    "size": [
-    0.677,
-    3.1822,
-    1.2196
+    0.6772,
+    3.1815,
+    1.2197
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
@@ -1361,7 +1337,7 @@
     0.185
    ],
    "front": "+Z",
-   "tris": 11778,
+   "tris": 1498,
    "materials": [
     "DK_Chrome",
     "DK_Enamel_Teal",
@@ -1375,21 +1351,18 @@
    "lods": [
     {
      "file": "Models/Signals/DK_CCTVPole_L1.fbx",
-     "tris": 2943,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Signals/DK_CCTVPole_L2.fbx",
-     "tris": 706,
-     "screen": 0.12
+     "tris": 371,
+     "screen": 0.008
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_CCTVPole.fbx",
-     "sha256": "f8b4b79fdf59b95a0748213452ae4aad5433ec93ef90a26b65714e3538d74f97",
-     "bytes": 305916
+     "sha256": "4f3e5c21451ebd1827f7e3a1692261894086161cb1cd17eb73cfd56276f24e31",
+     "bytes": 64796
     },
     {
      "role": "fbx-meta",
@@ -1511,15 +1484,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_CCTVPole_L1.fbx",
-     "sha256": "ba28b9a5d99686587b47a8014f52205de2f9cedcec992dda1dc98878c6878644",
-     "bytes": 110700
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Signals/DK_CCTVPole_L2.fbx",
-     "sha256": "2f4b74a192155adfdaab571bf594938dfc9796704873af255fe72c8d87ad9bcb",
-     "bytes": 40988
+     "sha256": "8e60d42afe0e3e29b4103ec04f595a87332858c5ea3b5916cd0939e437fd155c",
+     "bytes": 37340
     }
    ],
    "tags": {
@@ -1539,17 +1505,17 @@
    "id": "DomeCamera",
    "category": "Signals",
    "size": [
-    0.405,
-    0.44,
-    0.6025
+    0.3885,
+    0.4371,
+    0.593
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
     0,
-    0.301
+    0.298
    ],
    "front": "+Z",
-   "tris": 10302,
+   "tris": 398,
    "materials": [
     "DK_Enamel_Teal",
     "DK_Enamel_Red",
@@ -1560,24 +1526,14 @@
     "DK_Enamel_Charcoal",
     "DK_Iron"
    ],
-   "lods": [
-    {
-     "file": "Models/Signals/DK_DomeCamera_L1.fbx",
-     "tris": 2574,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Signals/DK_DomeCamera_L2.fbx",
-     "tris": 618,
-     "screen": 0.12
-    }
-   ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_DomeCamera.fbx",
-     "sha256": "d49ff9097940bced4b88dcb9c9a9f592cef3279cd46a61d325cadd3fd119dc0a",
-     "bytes": 273916
+     "sha256": "41105c4ee0d1909d4e18c2985eb014acfa885be44edacf0f34be77561bdd35bd",
+     "bytes": 39756
     },
     {
      "role": "fbx-meta",
@@ -1694,20 +1650,6 @@
      "path": "Materials/DK_Iron.mat.meta",
      "sha256": "017b21e643b2a1b1ec1e8a27030904b51d74563821a4853aa4f0901143c8b750",
      "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Signals/DK_DomeCamera_L1.fbx",
-     "sha256": "8b3ef4d44ffa644d89b90eb94a155faa12a824b097691becda7d5c2143f8b980",
-     "bytes": 106764
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Signals/DK_DomeCamera_L2.fbx",
-     "sha256": "81a44e4b296dba12bf2a8c7ff9d3853c44af53915a31f61f8adb190cfdc1f2de",
-     "bytes": 46924
     }
    ],
    "tags": {
@@ -1740,6 +1682,7 @@
     "DK_Lightbox_Travel",
     "DK_Enamel_Ivory"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -1864,14 +1807,15 @@
     {
      "file": "Models/Signals/DK_PlazaSphereLamp_L1.fbx",
      "tris": 1982,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signals/DK_PlazaSphereLamp_L2.fbx",
      "tris": 475,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -1989,45 +1933,42 @@
    "id": "PhoneBooth",
    "category": "Booths",
    "size": [
-    2.5838,
-    2.3627,
-    1.2616
+    2.5808,
+    2.3624,
+    1.2656
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 34744,
+   "tris": 1495,
    "materials": [
     "DK_Rubber",
     "DK_Enamel_Coral",
     "DK_Chrome",
     "DK_Enamel_Seafoam",
-    "DK_Enamel_Ivory",
     "DK_Enamel_Cream",
     "DK_Enamel_Teal",
     "DK_Iron",
     "DK_Screen_Amber",
     "DK_Decal_Transit",
     "DK_Bakelite",
-    "DK_LampSoft"
+    "DK_LampSoft",
+    "DK_Enamel_Ivory"
    ],
    "lods": [
     {
      "file": "Models/Booths/DK_PhoneBooth_L1.fbx",
-     "tris": 8685,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Booths/DK_PhoneBooth_L2.fbx",
-     "tris": 2083,
-     "screen": 0.12
+     "tris": 367,
+     "screen": 0.008
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Booths/DK_PhoneBooth.fbx",
-     "sha256": "655253b7bf40357b3c5ea1b4ead044041c734b2772e58147d21c2222ccb5d05a",
-     "bytes": 1030524
+     "sha256": "b34f692b92728d05cd6a8c8d775ee8c5e4d59e3be53495a6b209dcf8a3b0dbc6",
+     "bytes": 92188
     },
     {
      "role": "fbx-meta",
@@ -2093,18 +2034,6 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Seafoam.mat.meta",
      "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Enamel_Ivory.mat",
-     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
-     "bytes": 3852
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Enamel_Ivory.mat.meta",
-     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
      "bytes": 188
     },
     {
@@ -2192,6 +2121,18 @@
      "bytes": 188
     },
     {
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
+     "bytes": 3852
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
      "role": "texture",
      "path": "Textures/decals_transit_v1_alpha.png",
      "sha256": "9c8019da8af8f690332d62b392104803a243e353564532bd8a6e3bf30b73d6fb",
@@ -2207,15 +2148,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Booths/DK_PhoneBooth_L1.fbx",
-     "sha256": "af755358ee4671867acefd7a4186292a00bc4f1ad9c85ea5ae2935befb6f244a",
-     "bytes": 296668
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Booths/DK_PhoneBooth_L2.fbx",
-     "sha256": "b8f85d1c355a1f0a181e65b3966d8390442e28bfb9c80d9d9e926cf20c203c5e",
-     "bytes": 110652
+     "sha256": "2e4bc7ebb196b0c91d621595ae9b46562c4c9b0fd4929e8882cf6355277a5a88",
+     "bytes": 49852
     }
    ],
    "tags": {
@@ -2259,14 +2193,15 @@
     {
      "file": "Models/Booths/DK_TicketMachine_L1.fbx",
      "tris": 2297,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Booths/DK_TicketMachine_L2.fbx",
      "tris": 538,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -2479,6 +2414,7 @@
     "DK_Steel",
     "DK_Screen"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -2672,6 +2608,19 @@
     "DK_Decal_Transit",
     "DK_Enamel_Ivory"
    ],
+   "lods": [
+    {
+     "file": "Models/Booths/DK_UtilityCabinet_L1.fbx",
+     "tris": 1212,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Booths/DK_UtilityCabinet_L2.fbx",
+     "tris": 1060,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -2794,6 +2743,20 @@
      "path": "Textures/decals_transit_v1_alpha.png.meta",
      "sha256": "70290db197b8925b17a4b6ed7b5e5d7a812b14f0bce9cd02826ded5a69198aae",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Booths/DK_UtilityCabinet_L1.fbx",
+     "sha256": "32dff6cc5c1c887e18ff7fa1fe86d81a894e899781bbd370243970ab7b36f4d7",
+     "bytes": 58636
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Booths/DK_UtilityCabinet_L2.fbx",
+     "sha256": "659c327a412e47ab693668b683a06864ae3b862927afa512a647c76608074910",
+     "bytes": 53580
     }
    ],
    "tags": {
@@ -2832,6 +2795,7 @@
     "DK_GlassDark",
     "DK_Rubber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3016,6 +2980,7 @@
     "DK_Iron",
     "DK_Tile_Grey"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3170,6 +3135,7 @@
     "DK_Steel",
     "DK_Tile_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3300,6 +3266,7 @@
     "DK_Tile_Red",
     "DK_Tile_Blue"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3462,6 +3429,7 @@
     "DK_Stone_Dark",
     "DK_Tile_Ivory"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3542,6 +3510,7 @@
     "DK_Terrazzo_Seafoam",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3696,6 +3665,7 @@
     "DK_Terrazzo_Ivory",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3849,6 +3819,7 @@
     "DK_Concrete",
     "DK_Stone_Dark"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -3976,6 +3947,7 @@
     "DK_Steel",
     "DK_Steel_Satin"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4068,6 +4040,7 @@
     "DK_Iron",
     "DK_Chrome"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4175,6 +4148,7 @@
     "DK_Limestone_Tex",
     "DK_Enamel_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4357,6 +4331,7 @@
     "DK_Enamel_Mustard",
     "DK_Enamel_Powder"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4511,6 +4486,7 @@
     "DK_Enamel_Red",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4617,6 +4593,7 @@
     "DK_Enamel_Teal",
     "DK_Enamel_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4726,6 +4703,7 @@
     "DK_Enamel_Seafoam",
     "DK_Timber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -4885,6 +4863,7 @@
     "DK_Signal_Red",
     "DK_Steel"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5098,6 +5077,7 @@
     "DK_Whitewall",
     "DK_Steel"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5320,6 +5300,7 @@
     "DK_Glass",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5503,6 +5484,7 @@
     "DK_Signal_Red",
     "DK_Rubber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5643,6 +5625,7 @@
     "DK_Terrazzo_Seafoam",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5747,6 +5730,7 @@
     "DK_Terrazzo_Seafoam",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5851,6 +5835,7 @@
     "DK_Terrazzo_Seafoam",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -5965,14 +5950,15 @@
     {
      "file": "Models/Plants/DK_CoconutPalm_L1.fbx",
      "tris": 1576,
-     "screen": 0.35
+     "screen": 0.08
     },
     {
      "file": "Models/Plants/DK_CoconutPalm_L2.fbx",
      "tris": 378,
-     "screen": 0.12
+     "screen": 0.025
     }
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6111,14 +6097,15 @@
     {
      "file": "Models/Plants/DK_FanPalm_L1.fbx",
      "tris": 1048,
-     "screen": 0.35
+     "screen": 0.08
     },
     {
      "file": "Models/Plants/DK_FanPalm_L2.fbx",
      "tris": 251,
-     "screen": 0.12
+     "screen": 0.025
     }
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6241,14 +6228,15 @@
     {
      "file": "Models/Plants/DK_Cypress_L1.fbx",
      "tris": 1251,
-     "screen": 0.35
+     "screen": 0.08
     },
     {
      "file": "Models/Plants/DK_Cypress_L2.fbx",
      "tris": 300,
-     "screen": 0.12
+     "screen": 0.025
     }
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6379,6 +6367,7 @@
     "DK_Leaf_CypressOlive",
     "DK_Leaf_Cypress"
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6493,6 +6482,7 @@
     "DK_Leaf_CoreShrub",
     "DK_Leaf_Shrub"
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6584,6 +6574,7 @@
     "DK_Leaf_Shrub",
     "DK_Flower_Coral"
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6704,6 +6695,7 @@
     "DK_Leaf_CypressOlive",
     "DK_Leaf_Cypress"
    ],
+   "lodCategory": "trees",
    "files": [
     {
      "role": "fbx",
@@ -6875,6 +6867,7 @@
     "DK_Soil",
     "DK_Leaf_Shrub"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -7119,6 +7112,7 @@
     "DK_Soil",
     "DK_Leaf_Shrub"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -7358,6 +7352,7 @@
     "DK_Glass",
     "DK_Steel"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -7667,6 +7662,7 @@
     "DK_Limestone",
     "DK_Chrome"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -7798,6 +7794,7 @@
     "DK_Gold",
     "DK_Spray"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -7940,6 +7937,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8066,6 +8064,7 @@
     "DK_Limestone",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8144,6 +8143,7 @@
     "DK_Limestone",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8221,6 +8221,7 @@
    "materials": [
     "DK_Pave_Flags"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8322,6 +8323,7 @@
    "materials": [
     "DK_Pave_Flags"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8423,6 +8425,7 @@
    "materials": [
     "DK_Pave_Flags"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8524,6 +8527,7 @@
    "materials": [
     "DK_Pave_Flags"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8628,6 +8632,7 @@
     "DK_Stone_Dark",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8804,6 +8809,7 @@
     "DK_Stone_Dark",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -8980,6 +8986,7 @@
     "DK_Granite_Kerb_B",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -9192,6 +9199,7 @@
     "DK_Granite_Kerb_B",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -9404,6 +9412,7 @@
     "DK_Granite_Kerb_B",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -9616,6 +9625,7 @@
     "DK_Granite_Kerb_B",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -9829,6 +9839,7 @@
     "DK_Bronze",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -10018,6 +10029,7 @@
     "DK_Bronze",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -10207,6 +10219,7 @@
     "DK_Bronze",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -10396,6 +10409,7 @@
     "DK_Bronze",
     "DK_Soil"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -10584,6 +10598,7 @@
     "DK_Granite_Kerb_B",
     "DK_Gutter_Setts"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -10787,7 +10802,11 @@
     26.5,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 2230,
    "materials": [
@@ -10803,6 +10822,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamBay_6_L1.fbx",
+     "tris": 472,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamBay_6_L2.fbx",
+     "tris": 176,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -11021,6 +11053,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_6_L1.fbx",
+     "sha256": "76bdd544688f6e9eac23d05de5ff611a9a4a0a7baba009fbc76ae8d2b4045487",
+     "bytes": 42268
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_6_L2.fbx",
+     "sha256": "b2ffff7398f9cd2f97bfaccdf295c613294c0cf4b961d9699114ad5fad1bfdde",
+     "bytes": 37260
     }
    ],
    "tags": {
@@ -11045,7 +11091,11 @@
     36.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 3016,
    "materials": [
@@ -11061,6 +11111,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamBay_9_L1.fbx",
+     "tris": 634,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamBay_9_L2.fbx",
+     "tris": 242,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -11279,6 +11342,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_9_L1.fbx",
+     "sha256": "a8e01d4f80201b0ad3eb462f5bd0ece680134bbd3184368064259315be33a869",
+     "bytes": 45804
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_9_L2.fbx",
+     "sha256": "ef37cb6ca29abc8ac81d50ad3ba374719bd26e98efe3f35758ef7fa66505c2c6",
+     "bytes": 39116
     }
    ],
    "tags": {
@@ -11303,7 +11380,11 @@
     36.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 3016,
    "materials": [
@@ -11319,6 +11400,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamBay_9W_L1.fbx",
+     "tris": 634,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamBay_9W_L2.fbx",
+     "tris": 242,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -11501,6 +11595,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_9W_L1.fbx",
+     "sha256": "de474868aeac64103ec1d6786f6ec8cad6c4697b97e25acfdc9396f4742bd9fe",
+     "bytes": 43804
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamBay_9W_L2.fbx",
+     "sha256": "f81b3f1bfe6b9562147412e261569566e295b590060dc0a3f5b322b1125f72dd",
+     "bytes": 37116
     }
    ],
    "tags": {
@@ -11525,7 +11633,11 @@
     43.6,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 894,
    "materials": [
@@ -11541,6 +11653,14 @@
     "DK_Enamel_Charcoal",
     "DK_Bronze"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_DecoBay_10_L1.fbx",
+     "tris": 160,
+     "screen": 0.2
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -11759,6 +11879,13 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_DecoBay_10_L1.fbx",
+     "sha256": "0ef1f107b410bba3bba8c84a88e1c5d4771485ce6195abc70091e58930d4edae",
+     "bytes": 35676
     }
    ],
    "tags": {
@@ -11783,7 +11910,11 @@
     43.6,
     9.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
    "front": "+Z",
    "tris": 32244,
    "materials": [
@@ -11799,6 +11930,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamCorner_9_L1.fbx",
+     "tris": 8061,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamCorner_9_L2.fbx",
+     "tris": 1892,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -12017,6 +12161,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamCorner_9_L1.fbx",
+     "sha256": "9cda8aa636303787962d1d12cad34677b95a9ef439f0976bc30b1694402ff8fc",
+     "bytes": 260540
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamCorner_9_L2.fbx",
+     "sha256": "0c1115c38f6a1771fa0e9183d633fd87ed66c1e3fd7d33d0948faf1788b727c6",
+     "bytes": 94012
     }
    ],
    "tags": {
@@ -12051,6 +12209,7 @@
     "DK_Gold",
     "DK_Chrome"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -12205,6 +12364,7 @@
     "DK_Limestone_Tex",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -12349,6 +12509,7 @@
     "DK_Chrome",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -12548,18 +12709,7 @@
     "DK_Enamel_Red",
     "DK_Iron"
    ],
-   "lods": [
-    {
-     "file": "Models/Landmarks/DK_SpaceHQ_L1.fbx",
-     "tris": 8100,
-     "screen": 0.35
-    },
-    {
-     "file": "Models/Landmarks/DK_SpaceHQ_L2.fbx",
-     "tris": 1952,
-     "screen": 0.12
-    }
-   ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -12768,20 +12918,6 @@
      "path": "Textures/hull_panels_v1_normal.png.meta",
      "sha256": "d5593dd03e1ac3ca4ebb7f44c4b2d9d1e9c6492a2a0d608793651e2f386ac183",
      "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Landmarks/DK_SpaceHQ_L1.fbx",
-     "sha256": "88cedc47254f462d3b61457fc06337d51061380fa4b6d0b2f1f16c1ee53ce484",
-     "bytes": 317276
-    },
-    {
-     "root": "generated",
-     "role": "lod",
-     "path": "Models/Landmarks/DK_SpaceHQ_L2.fbx",
-     "sha256": "6381a30d6341eba57988513ee22bd5484d24d2d8e3fd40f4bd039756b858a79f",
-     "bytes": 112172
     }
    ],
    "tags": {
@@ -12795,7 +12931,7 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted"
+   "status": "rejected"
   },
   {
    "id": "SphereStation",
@@ -12819,14 +12955,15 @@
     {
      "file": "Models/Landmarks/DK_SphereStation_L1.fbx",
      "tris": 4604,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_SphereStation_L2.fbx",
      "tris": 1105,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -13030,6 +13167,7 @@
     "DK_Enamel_Red",
     "DK_Steel_Ivory"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -13183,6 +13321,7 @@
     "DK_Steel_Ivory",
     "DK_Steel"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -13311,6 +13450,7 @@
     "DK_Hull_Ivory",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -13488,6 +13628,7 @@
     "DK_Chrome",
     "DK_Signal_Red"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -13642,6 +13783,7 @@
     "DK_Chrome",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -13783,6 +13925,7 @@
     "DK_Hull_Ivory",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -13971,6 +14114,7 @@
     "DK_Enamel_Teal",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -14113,6 +14257,7 @@
     "DK_Chrome",
     "DK_Enamel_Ivory"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -14268,7 +14413,11 @@
     26.5,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 15764,
    "materials": [
@@ -14284,6 +14433,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamEnd_6_L1.fbx",
+     "tris": 3832,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamEnd_6_L2.fbx",
+     "tris": 916,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -14502,6 +14664,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_6_L1.fbx",
+     "sha256": "552f3735d9241c87a8ba37bb0dc18b18051bed6c0de87d8f1dc8309bfe6d526b",
+     "bytes": 138892
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_6_L2.fbx",
+     "sha256": "f67aceafa79121cf60e08dc714736a38d9c9f8a033d79504b55b5a0fc9df942d",
+     "bytes": 62348
     }
    ],
    "tags": {
@@ -14526,7 +14702,11 @@
     36.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 20828,
    "materials": [
@@ -14542,6 +14722,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamEnd_9_L1.fbx",
+     "tris": 5040,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamEnd_9_L2.fbx",
+     "tris": 1208,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -14760,6 +14953,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_9_L1.fbx",
+     "sha256": "8ba5311e5a449eaeb7f4b8dc598aeebfa29c4f4a035fe4b161efd612e4ec8479",
+     "bytes": 169916
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_9_L2.fbx",
+     "sha256": "47396282c4a40312f5770d17cd3db07a448d06b4886dfa4df46622d47440f28b",
+     "bytes": 70988
     }
    ],
    "tags": {
@@ -14784,7 +14991,11 @@
     36.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 20828,
    "materials": [
@@ -14800,6 +15011,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Skyline/DK_StreamEnd_9W_L1.fbx",
+     "tris": 5040,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Skyline/DK_StreamEnd_9W_L2.fbx",
+     "tris": 1208,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -14982,6 +15206,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_9W_L1.fbx",
+     "sha256": "84ba17862c860ac34632772d76f6c34bcf5795b8b59ce9657d0969463092e184",
+     "bytes": 167916
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Skyline/DK_StreamEnd_9W_L2.fbx",
+     "sha256": "7795f0952479b226f42b211ba564947e1b0c2c355e0c6aa6131146fb618324d6",
+     "bytes": 68988
     }
    ],
    "tags": {
@@ -15020,14 +15258,15 @@
     {
      "file": "Models/Landmarks/DK_ParabolicArch_L1.fbx",
      "tris": 1780,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_ParabolicArch_L2.fbx",
      "tris": 426,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15201,6 +15440,7 @@
     "DK_Concrete",
     "DK_Steel"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15437,6 +15677,7 @@
     "DK_Enamel_Teal",
     "DK_Enamel_Ivory"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15579,6 +15820,7 @@
     "DK_Enamel_Charcoal",
     "DK_Lamp"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15708,6 +15950,7 @@
     "DK_Chrome",
     "DK_Enamel_Charcoal"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15822,6 +16065,7 @@
     "DK_Limestone_Tex",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -15935,6 +16179,7 @@
    "materials": [
     "DK_Enamel_Ivory"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16001,6 +16246,7 @@
     "DK_Enamel_Ivory",
     "DK_Steel_Ivory"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16081,6 +16327,7 @@
     "DK_Chrome",
     "DK_Flame"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16185,6 +16432,7 @@
     "DK_Chrome",
     "DK_Flame"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16291,6 +16539,7 @@
     "DK_Lamp",
     "DK_Flame"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16455,6 +16704,7 @@
     "DK_Iron",
     "DK_Flame"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -16601,6 +16851,7 @@
     "DK_Lamp",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -16797,6 +17048,7 @@
     "DK_Lamp",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -16995,6 +17247,7 @@
     "DK_Lamp",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -17198,6 +17451,7 @@
     "DK_Iron",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -17500,6 +17754,7 @@
     "DK_Signal_Red",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -17808,6 +18063,7 @@
     "DK_Steel",
     "DK_Enamel_Charcoal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -17978,6 +18234,7 @@
     "DK_Steel",
     "DK_Enamel_Charcoal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -18146,6 +18403,7 @@
     "DK_Steel",
     "DK_Enamel_Charcoal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -18322,14 +18580,15 @@
     {
      "file": "Models/Signage/DK_BladeSign_Cafe_L1.fbx",
      "tris": 930,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signage/DK_BladeSign_Cafe_L2.fbx",
      "tris": 216,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -18491,14 +18750,15 @@
     {
      "file": "Models/Signage/DK_BladeSign_Hotel_L1.fbx",
      "tris": 964,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signage/DK_BladeSign_Hotel_L2.fbx",
      "tris": 218,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -18647,14 +18907,15 @@
     {
      "file": "Models/Signage/DK_BladeSign_Cinema_L1.fbx",
      "tris": 1100,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signage/DK_BladeSign_Cinema_L2.fbx",
      "tris": 256,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -18813,6 +19074,7 @@
     "DK_Neon_Red",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -19011,14 +19273,15 @@
     {
      "file": "Models/Signage/DK_AdColumn_L1.fbx",
      "tris": 1197,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signage/DK_AdColumn_L2.fbx",
      "tris": 287,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -19179,6 +19442,7 @@
     "DK_Enamel_Mustard",
     "DK_Rubber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -19335,14 +19599,15 @@
     {
      "file": "Models/Signage/DK_NeonStar_Wall_L1.fbx",
      "tris": 730,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Signage/DK_NeonStar_Wall_L2.fbx",
      "tris": 171,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -19518,7 +19783,11 @@
     34.76,
     9.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
    "front": "+Z",
    "tris": 18546,
    "materials": [
@@ -19539,6 +19808,19 @@
     "DK_Iron",
     "DK_Render_White"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCorner_6_L1.fbx",
+     "tris": 4435,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCorner_6_L2.fbx",
+     "tris": 1075,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -19819,6 +20101,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_6_L1.fbx",
+     "sha256": "30134436b9a1829e5aed3c12ad303952bb3225d4dc61ab28790476d1984f3c11",
+     "bytes": 168652
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_6_L2.fbx",
+     "sha256": "2fa46d43651f410e69765c605ff7bbb04cf12f1fa2fbd8d4f762660cddf8c598",
+     "bytes": 77132
     }
    ],
    "tags": {
@@ -19843,7 +20139,11 @@
     57.4,
     9.9162
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.958,
+    -3.042
+   ],
    "front": "+Z",
    "tris": 11748,
    "materials": [
@@ -19866,6 +20166,19 @@
     "DK_Steel",
     "DK_Iron"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_DecoCorner_10_L1.fbx",
+     "tris": 2816,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_DecoCorner_10_L2.fbx",
+     "tris": 1055,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -20170,6 +20483,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_DecoCorner_10_L1.fbx",
+     "sha256": "64239fe624a891478a96f1038ceac811969c361b6019e3b7ee686392034f2952",
+     "bytes": 125548
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_DecoCorner_10_L2.fbx",
+     "sha256": "1056c3cad389fffa5b742d5cc982fd23f51a65d2c91830cbaafe01bc0834667f",
+     "bytes": 78444
     }
    ],
    "tags": {
@@ -20194,7 +20521,11 @@
     45.6,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 8032,
    "materials": [
@@ -20215,6 +20546,19 @@
     "DK_Iron",
     "DK_Render_White"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_DecoEnd_10_L1.fbx",
+     "tris": 1964,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_DecoEnd_10_L2.fbx",
+     "tris": 998,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -20495,6 +20839,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_DecoEnd_10_L1.fbx",
+     "sha256": "0b1a287d6fd2e80fc2c3169a5d87cebad97cd6e68e5d6e47dcfa2455417f60dd",
+     "bytes": 82620
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_DecoEnd_10_L2.fbx",
+     "sha256": "47f0123f4cfbf68f959350190d0727cc5e6a34a86e14ed1c2f4a112b953e2e91",
+     "bytes": 66252
     }
    ],
    "tags": {
@@ -20519,7 +20877,11 @@
     32.26,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 8978,
    "materials": [
@@ -20536,6 +20898,19 @@
     "DK_Enamel_Charcoal",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_PortholeBay_7_L1.fbx",
+     "tris": 2202,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_PortholeBay_7_L2.fbx",
+     "tris": 532,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -20732,6 +21107,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_7_L1.fbx",
+     "sha256": "117cfbdab929da52f0034ef7dded98d76c8ef59ffec5c1f9d142b0f6366ee34b",
+     "bytes": 101516
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_7_L2.fbx",
+     "sha256": "0c51bbbc2409e18463523952dd100164e65d2560e211a87225bea50069462ffb",
+     "bytes": 51196
     }
    ],
    "tags": {
@@ -20756,7 +21145,11 @@
     33.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 9390,
    "materials": [
@@ -20774,6 +21167,19 @@
     "DK_Soil",
     "DK_Leaf_Shrub"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_BalconyBay_8_L1.fbx",
+     "tris": 2166,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_BalconyBay_8_L2.fbx",
+     "tris": 563,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -21028,6 +21434,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_8_L1.fbx",
+     "sha256": "b14c4644af37f409129cd9dfc05299b9e6c34b041baadb44c5838f7fcae5f943",
+     "bytes": 99452
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_8_L2.fbx",
+     "sha256": "2a758dc8009c833456515b01ae5fd623785b443c2c148ffaaf39341763bac764",
+     "bytes": 56780
     }
    ],
    "tags": {
@@ -21052,7 +21472,11 @@
     21.21,
     17.175
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -5.412
+   ],
    "front": "+Z",
    "tris": 5380,
    "materials": [
@@ -21073,6 +21497,19 @@
     "DK_Steel",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_ArcadeBay_3_L1.fbx",
+     "tris": 1272,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_ArcadeBay_3_L2.fbx",
+     "tris": 392,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -21319,6 +21756,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_ArcadeBay_3_L1.fbx",
+     "sha256": "03eed1069bb4fe65d963356617425bbfd6f63f96dae8c0dbd3c98be1eebee374",
+     "bytes": 83260
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_ArcadeBay_3_L2.fbx",
+     "sha256": "77614204e671e3528df9554482c09f89779fa3b3eff77b349d74af75c9cb356b",
+     "bytes": 53788
     }
    ],
    "tags": {
@@ -21369,6 +21820,7 @@
     "DK_Glass",
     "DK_Neon_Coral"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -21779,6 +22231,7 @@
     "DK_Enamel_Mustard",
     "DK_Rubber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -21909,6 +22362,7 @@
     "DK_Enamel_Coral",
     "DK_Enamel_Mustard"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22018,6 +22472,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22174,6 +22629,7 @@
     "DK_Chrome",
     "DK_Enamel_Mustard"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22303,6 +22759,7 @@
     "DK_Chrome",
     "DK_Lamp"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22393,6 +22850,7 @@
     "DK_Timber",
     "DK_Timber_B"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22474,6 +22932,7 @@
     "DK_Enamel_Ivory",
     "DK_Gold"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22598,6 +23057,7 @@
     "DK_Lamp",
     "DK_Iron"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22755,6 +23215,7 @@
     "DK_Enamel_Mustard",
     "DK_Lamp"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -22926,6 +23387,7 @@
     "DK_Lamp",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -23073,6 +23535,7 @@
     "DK_Enamel_Red",
     "DK_Enamel_Ivory"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -23254,6 +23717,7 @@
     "DK_Enamel_Mustard",
     "DK_Enamel_Seafoam"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -23580,6 +24044,7 @@
     "DK_Enamel_Seafoam",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -23920,6 +24385,7 @@
     "DK_Enamel_Seafoam",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -24259,6 +24725,7 @@
     "DK_Gold",
     "DK_Enamel_Seafoam"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -24583,6 +25050,7 @@
     "DK_Rubber",
     "DK_Enamel_Seafoam"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -24890,6 +25358,7 @@
     "DK_Cola",
     "DK_Glass"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -25097,6 +25566,7 @@
     "DK_Signal_Red",
     "DK_Decal_Transit"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -25412,6 +25882,7 @@
     "DK_Cola",
     "DK_Signal_Amber"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -25699,6 +26170,7 @@
     "DK_Chrome",
     "DK_Terrazzo_Ivory"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -25813,6 +26285,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -25884,7 +26357,11 @@
     1.088,
     1.8789
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -0.187,
+    0
+   ],
    "front": "+Z",
    "tris": 3984,
    "materials": [
@@ -25896,6 +26373,19 @@
     "DK_Enamel_Mustard",
     "DK_Petiole"
    ],
+   "lods": [
+    {
+     "file": "Models/Furnish/DK_CafeSet_Tulip_L1.fbx",
+     "tris": 996,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Furnish/DK_CafeSet_Tulip_L2.fbx",
+     "tris": 239,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26030,6 +26520,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Furnish/DK_CafeSet_Tulip_L1.fbx",
+     "sha256": "43b4a5b30da4f209447614af5209449e50d0c11e5d7b8962b3789d405b786ae3",
+     "bytes": 63388
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Furnish/DK_CafeSet_Tulip_L2.fbx",
+     "sha256": "3fbf5d3f7a637fc4116aaf3be33163dd88eab28e1492a87117b57135fdb66dbc",
+     "bytes": 37548
     }
    ],
    "tags": {
@@ -26064,6 +26568,7 @@
     "DK_Fabric_Ivory",
     "DK_Enamel_Mustard"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26196,6 +26701,7 @@
     "DK_Leaf_Shrub",
     "DK_Leaf_CoreShrub"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26335,6 +26841,7 @@
     "DK_Enamel_Seafoam",
     "DK_Awning_Teal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26452,6 +26959,7 @@
     "DK_Gold",
     "DK_Enamel_Teal"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26574,6 +27082,7 @@
     "DK_Bakelite",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26732,6 +27241,7 @@
     "DK_Water",
     "DK_Enamel_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -26894,6 +27404,7 @@
     "DK_Enamel_Charcoal",
     "DK_Glass"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27106,6 +27617,7 @@
     "DK_Enamel_Coral",
     "DK_Enamel_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27289,6 +27801,7 @@
     "DK_Enamel_Red",
     "DK_Rope"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27412,6 +27925,7 @@
     "DK_Leaf_CoreShrub",
     "DK_Leaf_Shrub"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27619,6 +28133,7 @@
     "DK_Leaf_Shrub",
     "DK_Flower_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27814,6 +28329,19 @@
     "DK_Petiole",
     "DK_Leaf_PalmFan"
    ],
+   "lods": [
+    {
+     "file": "Models/Furnish/DK_PottedPalm_Small_L1.fbx",
+     "tris": 598,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Furnish/DK_PottedPalm_Small_L2.fbx",
+     "tris": 143,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -27962,6 +28490,20 @@
      "path": "Textures/palm_frond_fan_v1_alpha.png.meta",
      "sha256": "4da68d06d8ca6d96123d1dc4cc18c7aa10c767de91c62452394660b45998deb3",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Furnish/DK_PottedPalm_Small_L1.fbx",
+     "sha256": "f5955817444bb0beda7ad15ded67dcc8df429f35b8efb4faa9409d59649abee5",
+     "bytes": 60620
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Furnish/DK_PottedPalm_Small_L2.fbx",
+     "sha256": "6f0c420662e3693a62ea5b85e8c0a2831c494a4a54b9f815648e511045dfd9e4",
+     "bytes": 41852
     }
    ],
    "tags": {
@@ -27997,6 +28539,7 @@
     "DK_Leaf_CoreShrub",
     "DK_Leaf_PalmFeather"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -28156,6 +28699,7 @@
     "DK_Leaf_Shrub",
     "DK_Flower_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -28352,6 +28896,7 @@
     "DK_Leaf_Shrub",
     "DK_Flower_Coral"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -28552,14 +29097,15 @@
     {
      "file": "Models/Skyport/DK_Skyport_Tower_L1.fbx",
      "tris": 8219,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_Skyport_Tower_L2.fbx",
      "tris": 2355,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -28939,14 +29485,15 @@
     {
      "file": "Models/Skyport/DK_SkyPad_Roof_L1.fbx",
      "tris": 915,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_SkyPad_Roof_L2.fbx",
      "tris": 337,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -29237,14 +29784,15 @@
     {
      "file": "Models/Skyport/DK_CircusMonument_L1.fbx",
      "tris": 4683,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_CircusMonument_L2.fbx",
      "tris": 1101,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -29483,6 +30031,7 @@
     "DK_Hull_Ivory",
     "DK_Window_Tower"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -29809,6 +30358,7 @@
     "DK_Enamel_Ivory",
     "DK_Chrome"
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "role": "fbx",
@@ -29956,6 +30506,7 @@
     "DK_Enamel_Coral",
     "DK_Signal_Red"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -30164,6 +30715,7 @@
     "DK_RobotButler_Head_Face"
    ],
    "lod1": "Models/Robots/DK_RobotButler_Far.fbx",
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -30385,7 +30937,7 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate"
+   "status": "adopted"
   },
   {
    "id": "RobotPorter",
@@ -30421,6 +30973,7 @@
     "DK_RobotPorter_Head_Face"
    ],
    "lod1": "Models/Robots/DK_RobotPorter_Far.fbx",
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -30694,6 +31247,7 @@
     "DK_RobotWaiter_Head_Face"
    ],
    "lod1": "Models/Robots/DK_RobotWaiter_Far.fbx",
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -30986,6 +31540,7 @@
     "DK_RobotNanny_Head_Face"
    ],
    "lod1": "Models/Robots/DK_RobotNanny_Far.fbx",
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -31219,6 +31774,7 @@
     "DK_RobotShopkeeper_Head_Face"
    ],
    "lod1": "Models/Robots/DK_RobotShopkeeper_Far.fbx",
+   "lodCategory": "street",
    "files": [
     {
      "role": "fbx",
@@ -31512,7 +32068,11 @@
     12.9,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 1182,
    "materials": [
@@ -31528,6 +32088,14 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBay_2_L1.fbx",
+     "tris": 256,
+     "screen": 0.2
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -31746,6 +32314,13 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBay_2_L1.fbx",
+     "sha256": "9b484899305b1759d6ba6b47b97b883bb1d756a67b0376aeea48a951520de1fe",
+     "bytes": 37564
     }
    ],
    "tags": {
@@ -31770,7 +32345,11 @@
     16.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 1444,
    "materials": [
@@ -31786,6 +32365,14 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBay_3_L1.fbx",
+     "tris": 310,
+     "screen": 0.2
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -32004,6 +32591,13 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBay_3_L1.fbx",
+     "sha256": "34115e7e9652e2cc7bb3ac5015717e68e8c2dcf66e119bc96256c70240a1e28b",
+     "bytes": 38812
     }
    ],
    "tags": {
@@ -32028,7 +32622,11 @@
     16.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 1444,
    "materials": [
@@ -32044,6 +32642,14 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBay_3W_L1.fbx",
+     "tris": 310,
+     "screen": 0.2
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -32226,6 +32832,13 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBay_3W_L1.fbx",
+     "sha256": "987211aac5fa2f8302e7f062325535f460b6c3335c196bef4300e9963fd1c31b",
+     "bytes": 36812
     }
    ],
    "tags": {
@@ -32250,7 +32863,11 @@
     12.9,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 9012,
    "materials": [
@@ -32266,6 +32883,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEnd_2_L1.fbx",
+     "tris": 2228,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEnd_2_L2.fbx",
+     "tris": 528,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -32484,6 +33114,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_2_L1.fbx",
+     "sha256": "62b291dbe2565c410d3097c9f6e40fedd6847f80baec0939d2d5b1cfc8b25b58",
+     "bytes": 98668
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_2_L2.fbx",
+     "sha256": "e76711e819be3a59d670b3f8c4a3c07ea58ef657ad090ee12c5b5e823a6ebe51",
+     "bytes": 51116
     }
    ],
    "tags": {
@@ -32508,7 +33152,11 @@
     16.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 10700,
    "materials": [
@@ -32524,6 +33172,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEnd_3_L1.fbx",
+     "tris": 2632,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEnd_3_L2.fbx",
+     "tris": 626,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -32742,6 +33403,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_3_L1.fbx",
+     "sha256": "4493b801db07747448cef66fd9e28fe6d91173b8ab5e2b6dbcd3d68a21eff1cf",
+     "bytes": 109628
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_3_L2.fbx",
+     "sha256": "e84781ade07b36d98a0517193e4fe48beeaf35310fc97f68d8ac3cc526a9f03b",
+     "bytes": 53900
     }
    ],
    "tags": {
@@ -32766,7 +33441,11 @@
     16.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 10700,
    "materials": [
@@ -32782,6 +33461,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEnd_3W_L1.fbx",
+     "tris": 2632,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEnd_3W_L2.fbx",
+     "tris": 626,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -32964,6 +33656,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_3W_L1.fbx",
+     "sha256": "31e87aa68ca071a7d6618238122042e6193dd6427aada0e42974d028ba76e4a7",
+     "bytes": 107628
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_3W_L2.fbx",
+     "sha256": "c1fdd05c47fcc1a1abd14085e63c108eb61ef885ca7493e4238c2c96928c1919",
+     "bytes": 51900
     }
    ],
    "tags": {
@@ -32988,7 +33694,11 @@
     21.16,
     9.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
    "front": "+Z",
    "tris": 10338,
    "materials": [
@@ -33006,6 +33716,19 @@
     "DK_Steel",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCorner_2_L1.fbx",
+     "tris": 2526,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCorner_2_L2.fbx",
+     "tris": 605,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -33250,6 +33973,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_2_L1.fbx",
+     "sha256": "507e709a2c9806beecf5eb0aba343b300aa842478e219e4566134cc52875ed9f",
+     "bytes": 113100
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_2_L2.fbx",
+     "sha256": "8cdbe1c0377e7f95a82405bccd736a31c8a8d08df2fed1200093b34b91f488a0",
+     "bytes": 57612
     }
    ],
    "tags": {
@@ -33274,7 +34011,11 @@
     24.56,
     9.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
    "front": "+Z",
    "tris": 12170,
    "materials": [
@@ -33292,6 +34033,19 @@
     "DK_Steel",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCorner_3_L1.fbx",
+     "tris": 2962,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCorner_3_L2.fbx",
+     "tris": 711,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -33536,6 +34290,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_3_L1.fbx",
+     "sha256": "293a60a375a61f5282238a758511c2a2211e4a5319f900483cbb900940c99f59",
+     "bytes": 125052
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_3_L2.fbx",
+     "sha256": "e250483861513ada5a49166e488fee8f60e1125fa75124af15dd8e444968f094",
+     "bytes": 60988
     }
    ],
    "tags": {
@@ -33560,7 +34328,11 @@
     18.66,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 4354,
    "materials": [
@@ -33577,6 +34349,19 @@
     "DK_Enamel_Charcoal",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_PortholeBay_3_L1.fbx",
+     "tris": 1062,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_PortholeBay_3_L2.fbx",
+     "tris": 253,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -33773,6 +34558,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_3_L1.fbx",
+     "sha256": "a26a01898c7d8d41e09876844a0fc63ed559acbca80fd912c6873229c3a0cb52",
+     "bytes": 64892
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_3_L2.fbx",
+     "sha256": "b0775726f8988e850950a31dbf2c10f9484f7964cb81a97362193f615ae53830",
+     "bytes": 40988
     }
    ],
    "tags": {
@@ -33797,7 +34596,11 @@
     16.3,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 3340,
    "materials": [
@@ -33815,6 +34618,19 @@
     "DK_Soil",
     "DK_Leaf_Shrub"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_BalconyBay_3_L1.fbx",
+     "tris": 774,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_BalconyBay_3_L2.fbx",
+     "tris": 202,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -34069,6 +34885,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_3_L1.fbx",
+     "sha256": "31c98e6cd41bc97afbc8162effe78a041f7ac32cef099c5a899bad9b79eda0fd",
+     "bytes": 58332
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_3_L2.fbx",
+     "sha256": "055450a3ebc164ec6a5555a023895c6b8aee0e13254e391d33b65bf35340d836",
+     "bytes": 43356
     }
    ],
    "tags": {
@@ -34110,6 +34940,7 @@
     "DK_Foliage",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -34380,6 +35211,7 @@
     "DK_Pool_Water",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -34650,6 +35482,7 @@
     "DK_Foliage",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -34914,6 +35747,7 @@
     "DK_Enamel_Coral",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35080,6 +35914,7 @@
     "DK_Gold",
     "DK_Foliage"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35246,6 +36081,7 @@
     "DK_Gold",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35388,6 +36224,7 @@
     "DK_Enamel_Teal",
     "DK_Enamel_Seafoam"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35493,6 +36330,7 @@
     "DK_Chrome",
     "DK_Signal_Red"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35649,6 +36487,7 @@
     "DK_Foliage",
     "DK_Enamel_Coral"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -35780,7 +36619,11 @@
     19.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 1706,
    "materials": [
@@ -35796,6 +36639,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamBay_4_L1.fbx",
+     "tris": 364,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamBay_4_L2.fbx",
+     "tris": 132,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -36014,6 +36870,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBay_4_L1.fbx",
+     "sha256": "2d18b5a7414644478aebbf63a1f87e16198345dab82b032356f563dbd5c67fb6",
+     "bytes": 39948
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamBay_4_L2.fbx",
+     "sha256": "096e464bda288108911ad94891c1680f1969fdaadf605bd839602bc9085b5f48",
+     "bytes": 35916
     }
    ],
    "tags": {
@@ -36038,7 +36908,11 @@
     19.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 12388,
    "materials": [
@@ -36054,6 +36928,19 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamEnd_4_L1.fbx",
+     "tris": 3040,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamEnd_4_L2.fbx",
+     "tris": 722,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -36272,6 +37159,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_4_L1.fbx",
+     "sha256": "712758d3823c1b21ad52b88820089ea9ed38408df1e39f7d3ba855e257e8f8c1",
+     "bytes": 120028
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamEnd_4_L2.fbx",
+     "sha256": "43e9e371116b628eb2f3282d1e19f2aeb5063a3c900572762c44f4a59a5375b9",
+     "bytes": 56636
     }
    ],
    "tags": {
@@ -36296,7 +37197,11 @@
     27.96,
     9.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.815,
+    -3.185
+   ],
    "front": "+Z",
    "tris": 14002,
    "materials": [
@@ -36314,6 +37219,19 @@
     "DK_Steel",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_StreamCorner_4_L1.fbx",
+     "tris": 3398,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_StreamCorner_4_L2.fbx",
+     "tris": 817,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -36558,6 +37476,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_4_L1.fbx",
+     "sha256": "5ac41b3ef5606afc9463bd71102fcda7acf698cf3e1bac1792202fb8b3556be4",
+     "bytes": 136620
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_StreamCorner_4_L2.fbx",
+     "sha256": "1216c4c46f2961f901942ad0b7c4785a01fb57f55dac48335cac233bf8d14f4e",
+     "bytes": 64396
     }
    ],
    "tags": {
@@ -36595,6 +37527,7 @@
     "DK_Hull_Ivory",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -36829,6 +37762,7 @@
     "DK_Foliage",
     "DK_Gold"
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "role": "fbx",
@@ -37082,7 +38016,11 @@
     22.06,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 5510,
    "materials": [
@@ -37099,6 +38037,19 @@
     "DK_Enamel_Charcoal",
     "DK_Signal_Red"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_PortholeBay_4_L1.fbx",
+     "tris": 1347,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_PortholeBay_4_L2.fbx",
+     "tris": 321,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -37295,6 +38246,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_4_L1.fbx",
+     "sha256": "7e8f177da5c826b6270ed7ff8b220e1db82679855bc1b0f57124528ecefba336",
+     "bytes": 74348
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_PortholeBay_4_L2.fbx",
+     "sha256": "533e3eeead99f867a09399845aba97d490c9dc05cc3181a506c8d2fb8691e899",
+     "bytes": 43724
     }
    ],
    "tags": {
@@ -37319,7 +38284,11 @@
     19.7,
     15.63
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -6.185
+   ],
    "front": "+Z",
    "tris": 4550,
    "materials": [
@@ -37337,6 +38306,19 @@
     "DK_Soil",
     "DK_Leaf_Shrub"
    ],
+   "lods": [
+    {
+     "file": "Models/Facades/DK_BalconyBay_4_L1.fbx",
+     "tris": 1054,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Facades/DK_BalconyBay_4_L2.fbx",
+     "tris": 273,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -37591,6 +38573,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_4_L1.fbx",
+     "sha256": "2f0bfad435d8c232e3a02359979277e09dd9f3b0d11e028ac9915c7112c19e5c",
+     "bytes": 66508
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Facades/DK_BalconyBay_4_L2.fbx",
+     "sha256": "2507baadb3d269c5b8b00d61813141e91c1bd22c0a5f055987f7d82e15734a96",
+     "bytes": 45788
     }
    ],
    "tags": {
@@ -37626,6 +38622,7 @@
     "DK_Enamel_Coral",
     "DK_Chrome"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -37791,6 +38788,7 @@
     "DK_Chrome",
     "DK_Enamel_Charcoal"
    ],
+   "lodCategory": "facades",
    "files": [
     {
      "role": "fbx",
@@ -37915,14 +38913,15 @@
     {
      "file": "Models/Plaza/DK_AtomFountain_L1.fbx",
      "tris": 883,
-     "screen": 0.35
+     "screen": 0.008
     },
     {
      "file": "Models/Plaza/DK_AtomFountain_L2.fbx",
      "tris": 309,
-     "screen": 0.12
+     "screen": 0.003
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "root": "generated",
@@ -38118,9 +39117,10 @@
     {
      "file": "Models/Plaza/DK_BoardingPavilion_Office_L1.fbx",
      "tris": 116,
-     "screen": 0.35
+     "screen": 0.008
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "root": "generated",
@@ -38237,9 +39237,10 @@
     {
      "file": "Models/Plaza/DK_BoardingPavilion_Square_L1.fbx",
      "tris": 106,
-     "screen": 0.35
+     "screen": 0.008
     }
    ],
+   "lodCategory": "street",
    "files": [
     {
      "root": "generated",
@@ -38358,9 +39359,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Antenna_L1.fbx",
      "tris": 322,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -38502,14 +39504,15 @@
     {
      "file": "Models/Crowns/DK_Crown_Atom_L1.fbx",
      "tris": 715,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Crowns/DK_Crown_Atom_L2.fbx",
      "tris": 180,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -38624,9 +39627,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Dish_L1.fbx",
      "tris": 198,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -38730,9 +39734,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Finial_L1.fbx",
      "tris": 301,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -38837,9 +39842,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Needle_L1.fbx",
      "tris": 153,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -38957,9 +39963,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Saucer_L1.fbx",
      "tris": 296,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -39085,9 +40092,10 @@
     {
      "file": "Models/Crowns/DK_Crown_Starburst_L1.fbx",
      "tris": 164,
-     "screen": 0.35
+     "screen": 0.3
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -39200,14 +40208,15 @@
     {
      "file": "Models/Landmarks/DK_DiscTower@avenue-gate-e_L1.fbx",
      "tris": 2069,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_DiscTower@avenue-gate-e_L2.fbx",
      "tris": 496,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -39479,14 +40488,15 @@
     {
      "file": "Models/Landmarks/DK_DiscTower@avenue-gate-w_L1.fbx",
      "tris": 2069,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_DiscTower@avenue-gate-w_L2.fbx",
      "tris": 496,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -39732,37 +40742,45 @@
    "id": "Horizon_Massif",
    "category": "Horizon",
    "size": [
-    120.8,
+    122.4,
     190,
-    80.8
+    82.4
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 532,
+   "tris": 1530,
    "materials": [
     "DK_Far_Stone",
-    "DK_Far_Band"
+    "DK_Far_Band",
+    "DK_Far_Shade",
+    "DK_Far_Gold"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Massif_L1.fbx",
-     "tris": 132,
-     "screen": 0.35
+     "tris": 342,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Horizon/DK_Horizon_Massif_L2.fbx",
+     "tris": 154,
+     "screen": 0.06
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Massif.fbx",
-     "sha256": "38af2b8902ca890afa83bad33d5b053f0441fa7083590dbdba69b8dc45d08b9e",
-     "bytes": 27212
+     "sha256": "a5806e81fe4044af765521218a18f09a09fd114b16acc0725807e2926299587d",
+     "bytes": 46220
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -39776,7 +40794,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -39788,10 +40806,45 @@
     },
     {
      "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Shade.mat",
+     "sha256": "a6443edef70bf7ff9be678990e60a72cf293584baaf75f29f613376187422b6f",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Shade.mat.meta",
+     "sha256": "794984ca57fc3eb43d058b6245633b76ff5b55fc08b7700a27f0c6445327182d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Gold.mat",
+     "sha256": "1b57a2663b86c9cc9aacd0912afc717fb61fd7333d68dcf993f232bab06c8040",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Gold.mat.meta",
+     "sha256": "5f633a6bcf12e137bc2cf9569038cba36ced2b174e12b0dd86249341f935965d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Massif_L1.fbx",
-     "sha256": "8352c99e0a7c02b5404dcd148650b1ca81add6f89409e786f7cf94569411ab67",
-     "bytes": 21116
+     "sha256": "f60395acf36289ee9580086322adff36b1d011b9718af4056d2456f680e61423",
+     "bytes": 29756
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Horizon/DK_Horizon_Massif_L2.fbx",
+     "sha256": "1e5d935b0c45052e5ef46e5c152fe0122673adb03bd18f2ed9d5bc788b287984",
+     "bytes": 23100
     }
    ],
    "tags": {
@@ -39827,9 +40880,10 @@
     {
      "file": "Models/Horizon/DK_Horizon_Moon_L1.fbx",
      "tris": 176,
-     "screen": 0.35
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
@@ -39910,14 +40964,15 @@
     {
      "file": "Models/Horizon/DK_Horizon_PlanetRinged_L1.fbx",
      "tris": 808,
-     "screen": 0.35
+     "screen": 0.2
     },
     {
      "file": "Models/Horizon/DK_Horizon_PlanetRinged_L2.fbx",
      "tris": 193,
-     "screen": 0.12
+     "screen": 0.06
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
@@ -40053,20 +41108,21 @@
     {
      "file": "Models/Horizon/DK_Horizon_RocketAscent_L1.fbx",
      "tris": 492,
-     "screen": 0.35
+     "screen": 0.2
     },
     {
      "file": "Models/Horizon/DK_Horizon_RocketAscent_L2.fbx",
      "tris": 118,
-     "screen": 0.12
+     "screen": 0.06
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_RocketAscent.fbx",
-     "sha256": "0d61463fa27c7136a132d76f089ef06575a6e7c2d221fd396630c74a06865157",
+     "sha256": "ba45a39eccfebe8c76e07766b6b29ecac6203154c4a5d4cd76f8cd8b8c175ffb",
      "bytes": 68572
     },
     {
@@ -40085,7 +41141,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40169,14 +41225,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_RocketAscent_L1.fbx",
-     "sha256": "f00f35b6baa8b3692b031d6a4b1d562e7f8982d7e4728603832585b4fbce9d3a",
+     "sha256": "4c5c5602dd6aefa2f42d9eebed526232062d2e66879c3f1cb22004bf0a37e80b",
      "bytes": 43964
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_RocketAscent_L2.fbx",
-     "sha256": "e420d137350052be0022f19cb75587f8b8301f001c7e19b6c3f852f1629b332e",
+     "sha256": "4ece5008177f4dba02fc9cf769e185f73e7e0ed1dae3c47bf67626077250f211",
      "bytes": 28956
     }
    ],
@@ -40216,22 +41272,23 @@
     {
      "file": "Models/Horizon/DK_Horizon_RocketPad_L1.fbx",
      "tris": 212,
-     "screen": 0.35
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_RocketPad.fbx",
-     "sha256": "10e812a3ab2fba48a59568fb0fe27b7ad480a06e049afbeb8b4a486a351fe8be",
+     "sha256": "ae098385803515d995d12c4d129b7e16f1e529ba034adf3e774c663c25dba13a",
      "bytes": 34380
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -40257,7 +41314,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40297,8 +41354,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_RocketPad_L1.fbx",
-     "sha256": "a9fcb48b919daa8aeb21f12d13465756c11b993c618abe37292b0be05408abf5",
-     "bytes": 25740
+     "sha256": "5070eeef554541512292759b5df5dfa0dc8f247029effc93f9f30c7c41c55a88",
+     "bytes": 25820
     }
    ],
    "tags": {
@@ -40319,38 +41376,41 @@
    "id": "Horizon_Spire_A",
    "category": "Horizon",
    "size": [
-    56.8,
+    58.4,
     270,
-    56.8
+    58.4
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 482,
+   "tris": 1256,
    "materials": [
     "DK_Far_Stone",
     "DK_Far_Band",
+    "DK_Far_Shade",
+    "DK_Far_Gold",
     "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Spire_A_L1.fbx",
-     "tris": 120,
-     "screen": 0.35
+     "tris": 250,
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Spire_A.fbx",
-     "sha256": "6c52a4bea8fbe9551660b01e7bb5791e34d3e3c9699702bd67c5263bab716d71",
-     "bytes": 25724
+     "sha256": "66f0536ec76b6efed40736e142977a6cf5ca8e29e266db401ad7a962369e2a02",
+     "bytes": 41084
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -40364,7 +41424,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40372,6 +41432,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Far_Band.mat.meta",
      "sha256": "d8cc1ac7881e535dd0ca057c432fbb98f42c9fdbe7ecc80f29522e941d906d34",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Shade.mat",
+     "sha256": "a6443edef70bf7ff9be678990e60a72cf293584baaf75f29f613376187422b6f",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Shade.mat.meta",
+     "sha256": "794984ca57fc3eb43d058b6245633b76ff5b55fc08b7700a27f0c6445327182d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Gold.mat",
+     "sha256": "1b57a2663b86c9cc9aacd0912afc717fb61fd7333d68dcf993f232bab06c8040",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Gold.mat.meta",
+     "sha256": "5f633a6bcf12e137bc2cf9569038cba36ced2b174e12b0dd86249341f935965d",
      "bytes": 188
     },
     {
@@ -40390,8 +41478,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Spire_A_L1.fbx",
-     "sha256": "9a67ade5b447bbe10c6f233c2bd6ca057c238ec82b362359ad1b9b7a1bdfc9c5",
-     "bytes": 20908
+     "sha256": "1e2e46568b76c3293f49f7e5efa0197f32f70065f3a9664ef92b1adf67521a7c",
+     "bytes": 27404
     }
    ],
    "tags": {
@@ -40418,33 +41506,37 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 492,
+   "tris": 932,
    "materials": [
     "DK_Far_Stone",
     "DK_Far_Band",
+    "DK_Far_Shade",
+    "DK_Far_Gold",
+    "DK_Far_Coral",
     "DK_Glass",
     "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Spire_B_L1.fbx",
-     "tris": 123,
-     "screen": 0.35
+     "tris": 233,
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Spire_B.fbx",
-     "sha256": "ccf0767e4c58dc21a32690aaac3361331bed7a3e7ca35b06f4c06ae2053cfe39",
-     "bytes": 29100
+     "sha256": "5bbfee5bcf0080af29bdc76b7d288909aee95a8e2c7a5af265869cc8e5246371",
+     "bytes": 41020
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -40458,7 +41550,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40466,6 +41558,48 @@
      "role": "material-meta",
      "path": "Materials/DK_Far_Band.mat.meta",
      "sha256": "d8cc1ac7881e535dd0ca057c432fbb98f42c9fdbe7ecc80f29522e941d906d34",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Shade.mat",
+     "sha256": "a6443edef70bf7ff9be678990e60a72cf293584baaf75f29f613376187422b6f",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Shade.mat.meta",
+     "sha256": "794984ca57fc3eb43d058b6245633b76ff5b55fc08b7700a27f0c6445327182d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Gold.mat",
+     "sha256": "1b57a2663b86c9cc9aacd0912afc717fb61fd7333d68dcf993f232bab06c8040",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Gold.mat.meta",
+     "sha256": "5f633a6bcf12e137bc2cf9569038cba36ced2b174e12b0dd86249341f935965d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Coral.mat",
+     "sha256": "327d03bf10efacc8bb262fccc58d9ab970f80667518a9de64553d81f168cd214",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Coral.mat.meta",
+     "sha256": "cdbda2eb9131917c43473fdfb515d1ca7fdda5b060ed7db5b750d7fb70314932",
      "bytes": 188
     },
     {
@@ -40496,8 +41630,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Spire_B_L1.fbx",
-     "sha256": "e2b464f17431ec022323b03d8a312ec694e6307e819f8ee0944fc1f07417672c",
-     "bytes": 23100
+     "sha256": "d7026515360447a7aa73c471c86b38dc66b0068895d1a288d53507442ceb1a36",
+     "bytes": 29628
     }
    ],
    "tags": {
@@ -40519,38 +41653,41 @@
    "category": "Horizon",
    "size": [
     70.8,
-    198,
+    184,
     34.8
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 618,
+   "tris": 1404,
    "materials": [
     "DK_Far_Stone",
     "DK_Far_Band",
+    "DK_Far_Gold",
     "DK_Far_Shade",
+    "DK_Far_Coral",
     "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Spire_C_L1.fbx",
-     "tris": 154,
-     "screen": 0.35
+     "tris": 350,
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Spire_C.fbx",
-     "sha256": "3cbc565083466a6b7fc5c5d319b927281dae4a4b40cf7e6872ee2590bd886df2",
-     "bytes": 29804
+     "sha256": "925c823effdbad6db269497279e33c1fab8220d3e846f123c8a3725d43ef8f05",
+     "bytes": 45068
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -40564,7 +41701,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40577,8 +41714,22 @@
     {
      "root": "generated",
      "role": "material",
+     "path": "Materials/DK_Far_Gold.mat",
+     "sha256": "1b57a2663b86c9cc9aacd0912afc717fb61fd7333d68dcf993f232bab06c8040",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Gold.mat.meta",
+     "sha256": "5f633a6bcf12e137bc2cf9569038cba36ced2b174e12b0dd86249341f935965d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
      "path": "Materials/DK_Far_Shade.mat",
-     "sha256": "91739ad7ad1ea2f5fa9fbd19ac6317e8d76f918c78c975583e2eed8030ec7d7f",
+     "sha256": "a6443edef70bf7ff9be678990e60a72cf293584baaf75f29f613376187422b6f",
      "bytes": 3831
     },
     {
@@ -40586,6 +41737,20 @@
      "role": "material-meta",
      "path": "Materials/DK_Far_Shade.mat.meta",
      "sha256": "794984ca57fc3eb43d058b6245633b76ff5b55fc08b7700a27f0c6445327182d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Coral.mat",
+     "sha256": "327d03bf10efacc8bb262fccc58d9ab970f80667518a9de64553d81f168cd214",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Coral.mat.meta",
+     "sha256": "cdbda2eb9131917c43473fdfb515d1ca7fdda5b060ed7db5b750d7fb70314932",
      "bytes": 188
     },
     {
@@ -40604,8 +41769,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Spire_C_L1.fbx",
-     "sha256": "a2dd24eaf3b6d2e56e1ed85f53168e54d09897ff5b1a1eaa26dd5eb078d07b00",
-     "bytes": 23532
+     "sha256": "1b6d54354289ae2a107ab742d3e79a44f6eeff7cebf730d081bed3946ae597ba",
+     "bytes": 33164
     }
    ],
    "tags": {
@@ -40632,32 +41797,35 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 542,
+   "tris": 1430,
    "materials": [
     "DK_Far_Stone",
     "DK_Far_Band",
+    "DK_Far_Shade",
+    "DK_Far_Gold",
     "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Spire_D_L1.fbx",
-     "tris": 135,
-     "screen": 0.35
+     "tris": 348,
+     "screen": 0.2
     }
    ],
+   "lodCategory": "horizon",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Spire_D.fbx",
-     "sha256": "67c7bcf679c35275410d01d2530e3b73167d75c16e3b17afbb069fb15a8c3980",
-     "bytes": 28556
+     "sha256": "6dfda46782514670c6fba36b614348990029cf0f0e12f8b7a497c58547798da9",
+     "bytes": 46908
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Stone.mat",
-     "sha256": "2d89950562531cd4346f71ef656b1a0daf9a187087521ce7c0e8eb4342b95185",
+     "sha256": "64b77253c23bb70c9eb0eb90c89e494f87dcfb47e69431ab42c8a21c98a391ad",
      "bytes": 3831
     },
     {
@@ -40671,7 +41839,7 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Far_Band.mat",
-     "sha256": "bcbe1efad34a6e8cc457d3c4c5f21fff1ae29f113518e6484bf750f386adb14d",
+     "sha256": "1bfacfeff3e84ea9a9d7b21e94f0e53496f2ce3448f1994ddf2839d2416a27c0",
      "bytes": 3830
     },
     {
@@ -40679,6 +41847,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Far_Band.mat.meta",
      "sha256": "d8cc1ac7881e535dd0ca057c432fbb98f42c9fdbe7ecc80f29522e941d906d34",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Shade.mat",
+     "sha256": "a6443edef70bf7ff9be678990e60a72cf293584baaf75f29f613376187422b6f",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Shade.mat.meta",
+     "sha256": "794984ca57fc3eb43d058b6245633b76ff5b55fc08b7700a27f0c6445327182d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Far_Gold.mat",
+     "sha256": "1b57a2663b86c9cc9aacd0912afc717fb61fd7333d68dcf993f232bab06c8040",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Far_Gold.mat.meta",
+     "sha256": "5f633a6bcf12e137bc2cf9569038cba36ced2b174e12b0dd86249341f935965d",
      "bytes": 188
     },
     {
@@ -40697,8 +41893,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Spire_D_L1.fbx",
-     "sha256": "ce61ee1893256a38ba607182c9bc18c795cf7129fbf206416c34c0fe113327d6",
-     "bytes": 22668
+     "sha256": "79e1c291e56df4508b48ed8efa641e6cb9060963fea2290786b3fd735a6ecc87",
+     "bytes": 31820
     }
    ],
    "tags": {
@@ -40750,22 +41946,23 @@
    "lods": [
     {
      "file": "Models/Landmarks/DK_LinerDock@liner-berth_L1.fbx",
-     "tris": 3706,
-     "screen": 0.35
+     "tris": 3691,
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_LinerDock@liner-berth_L2.fbx",
-     "tris": 894,
-     "screen": 0.12
+     "tris": 892,
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth.fbx",
-     "sha256": "250c1e926d3efd342d8d337694d2404fc84678a1d81999d8b43ce281767568f0",
-     "bytes": 345564
+     "sha256": "7aa2d66d9d38036905107d3ad6925d444cbbbb15e77765b881031478e8d70146",
+     "bytes": 345612
     },
     {
      "role": "material",
@@ -41059,15 +42256,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth_L1.fbx",
-     "sha256": "325a055cb4c2655383de3599d9192b4e8edd1a9567fc6a13d26315297d402fc5",
-     "bytes": 168908
+     "sha256": "5305392bd889297cb00b2158dbf20eb639a1ce43b100d371ed647788d83ccbe9",
+     "bytes": 169196
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth_L2.fbx",
-     "sha256": "f5df6b59a0b94dc01596e6b3db6ff7e67cb9ecea10e868c0d60fbc88dcc627c8",
-     "bytes": 83916
+     "sha256": "259f4708c7ce1a48f22b0bfd483529e14942fb7280db94d86bd790d1e946e748",
+     "bytes": 84236
     }
    ],
    "tags": {
@@ -41088,127 +42285,106 @@
    "id": "OceanLiner",
    "category": "Landmarks",
    "size": [
-    16.5,
-    34.1,
-    95.8
+    16.358,
+    36,
+    95.5256
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
     0,
-    0.1
+    0.137
    ],
    "front": "+Z",
-   "tris": 9924,
+   "tris": 10708,
    "materials": [
-    "DK_Enamel_Red",
-    "DK_Hull_Navy",
-    "DK_Terrazzo_Ivory",
-    "DK_Gold",
-    "DK_Hull_Ivory",
-    "DK_Window_Tower",
+    "DK_Accent_Coral",
+    "DK_Liner_White",
+    "DK_Accent_Gold",
+    "DK_Liner_Teak",
     "DK_Window_Teal",
+    "DK_Liner_Dome",
     "DK_Chrome",
-    "DK_Enamel_Turquoise",
+    "DK_Window_Tower",
+    "DK_Accent_Teal",
+    "DK_Liner_Pool",
     "DK_Beacon_Rose",
-    "DK_Steel",
     "DK_Enamel_Flamingo"
    ],
    "lods": [
     {
      "file": "Models/Landmarks/DK_OceanLiner_L1.fbx",
-     "tris": 2088,
-     "screen": 0.35
+     "tris": 2595,
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_OceanLiner_L2.fbx",
-     "tris": 589,
-     "screen": 0.12
+     "tris": 1078,
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_OceanLiner.fbx",
-     "sha256": "c4065ee31ad232806bb52b75b62af4f895eb29e76564f07de4a5aff46994e24b",
-     "bytes": 205372
+     "sha256": "8a78356afc2c521d81374d63e613208184a9b3188514829588f2bea13a12b48d",
+     "bytes": 288012
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Red.mat",
-     "sha256": "4dc0b2e3acf71ca81df442fd1a455acdbf23e4f9626aca64747820d8a5692d6b",
+     "path": "Materials/DK_Accent_Coral.mat",
+     "sha256": "347acaecb65eb0d77f743dc438586fed3b51573d4c7132daace7497fe72c66dd",
      "bytes": 3834
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Red.mat.meta",
-     "sha256": "6ab5bbb6f4e29377ef8ca73346b5b73f1963d7d4acc9a072e53e328259912367",
+     "path": "Materials/DK_Accent_Coral.mat.meta",
+     "sha256": "6505249a3135215305fa4f5de64958508d04cbde5a476fe4d92a3c41b0b9672d",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Hull_Navy.mat",
-     "sha256": "c47537ad1f208abb21adcefb8f23948704495bdd01042c7f3161dcb82ffca036",
-     "bytes": 3831
+     "path": "Materials/DK_Liner_White.mat",
+     "sha256": "5f2e886d442a3f52caa305555ec4a2429f68f6e49ada7058e35b8bcc9170f4d4",
+     "bytes": 3832
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Hull_Navy.mat.meta",
-     "sha256": "c6d38b181f340c290a7da48ba58fc004b9d63f734c21e89a924760fb656ab580",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Terrazzo_Ivory.mat",
-     "sha256": "b80a4e6b3c269f91de0dcd9453dcab721357c064bf5ac78f32fbf1c618a1f872",
-     "bytes": 4092
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Terrazzo_Ivory.mat.meta",
-     "sha256": "bcc2f4d1a9ee462d6bbffbc617def3dae3b70fdd975fa43c2678771cbab6ac55",
+     "path": "Materials/DK_Liner_White.mat.meta",
+     "sha256": "fec16c808ceea85cd96d337bc975ab3aeb0fb9673f47ecddea202940fe6bce22",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Accent_Gold.mat",
+     "sha256": "5c1d67d78cd8d1e803d5b41a0dc43fe6077fc46759aa5f2ca04de673d276f4f6",
+     "bytes": 3913
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Accent_Gold.mat.meta",
+     "sha256": "cda008c386b31c67fce6f2bda3ae39d96746fdf6dfd4d2a6e4ffd2ce94a4fa03",
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Hull_Ivory.mat",
-     "sha256": "cebe6f0d6b03c302ad80c68438c2a683b5fdb1c43eba4c0539edc689c70f1be9",
-     "bytes": 4134
+     "path": "Materials/DK_Liner_Teak.mat",
+     "sha256": "fc411bced05ec022b425882185600a66147104eab5dea5aa9f70991ceb0bf456",
+     "bytes": 3912
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Hull_Ivory.mat.meta",
-     "sha256": "393363b2a41129e279c1170247fa548860345afb304aec9ef57514f69c20f631",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Window_Tower.mat",
-     "sha256": "924ee5d002ed8956c3f4c06ad67b5e472296e44544183d165c8393c824ca09d9",
-     "bytes": 3854
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Window_Tower.mat.meta",
-     "sha256": "6d5b6b1854f0c91560a0123867bfd616a88fd71775517eedb256d098f6733691",
+     "path": "Materials/DK_Liner_Teak.mat.meta",
+     "sha256": "e70fdd4faee92b322c83d2e00e930208f6e13ddd62bc26cd3171711c548a7346",
      "bytes": 188
     },
     {
@@ -41224,6 +42400,20 @@
      "bytes": 188
     },
     {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Liner_Dome.mat",
+     "sha256": "e6d8f1ffa4b94aca880da7a34c29857369285670284dcd35cb3964cbab7729cc",
+     "bytes": 3832
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Liner_Dome.mat.meta",
+     "sha256": "63381f230dc4468ade49ef0eeb457f7f378d459c74fffb7118a3af3b0c10f53d",
+     "bytes": 188
+    },
+    {
      "role": "material",
      "path": "Materials/DK_Chrome.mat",
      "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
@@ -41236,17 +42426,43 @@
      "bytes": 188
     },
     {
+     "role": "material",
+     "path": "Materials/DK_Window_Tower.mat",
+     "sha256": "924ee5d002ed8956c3f4c06ad67b5e472296e44544183d165c8393c824ca09d9",
+     "bytes": 3854
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Window_Tower.mat.meta",
+     "sha256": "6d5b6b1854f0c91560a0123867bfd616a88fd71775517eedb256d098f6733691",
+     "bytes": 188
+    },
+    {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Turquoise.mat",
-     "sha256": "a3ca22aa89fb775370a6b6e22e51fd473baf1d5a5351f732b01e48283fd534d8",
-     "bytes": 3837
+     "path": "Materials/DK_Accent_Teal.mat",
+     "sha256": "653aa385ac2cd8d0e6de16ec05bc2ced62a2c0bc90d274b1b7637ac6386537e7",
+     "bytes": 3833
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Turquoise.mat.meta",
-     "sha256": "de9c852de916f742f4d2849711b02b317ce9e2b9571886df4acdc1f69c476405",
+     "path": "Materials/DK_Accent_Teal.mat.meta",
+     "sha256": "3b0f200bcb3d6a081a9a7bddc204af8b17b710a43449bef1f4102103895a27a0",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Liner_Pool.mat",
+     "sha256": "28d8fccd67c814d86a822d2911361a0733bc2a80d675096de3682fc443c57b0b",
+     "bytes": 3831
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Liner_Pool.mat.meta",
+     "sha256": "b5d95f527847ea6f65914f8032b4e709b2ce73c6d2c1968a520dd4dd88c29b42",
      "bytes": 188
     },
     {
@@ -41264,18 +42480,6 @@
      "bytes": 188
     },
     {
-     "role": "material",
-     "path": "Materials/DK_Steel.mat",
-     "sha256": "2e91b8a259d374eb12df3fde03c73a7c1f9c764726ac1040c43a0e18916b6628",
-     "bytes": 3925
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Steel.mat.meta",
-     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
-     "bytes": 188
-    },
-    {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Enamel_Flamingo.mat",
@@ -41290,78 +42494,18 @@
      "bytes": 188
     },
     {
-     "role": "texture",
-     "path": "Textures/hull_panels_v1.png",
-     "sha256": "4f0d70bf2ee055a38609d635056506400882eb645ab43edd97af6ae56beda2fc",
-     "bytes": 37249
-    },
-    {
-     "role": "texture-meta",
-     "path": "Textures/hull_panels_v1.png.meta",
-     "sha256": "9152e2415ed64f5cf7697ebd029434a686c70a7260929c7199a6669affd9827e",
-     "bytes": 2714
-    },
-    {
-     "role": "texture",
-     "path": "Textures/hull_panels_v1_mask.png",
-     "sha256": "d8e088bb09177cd9655d3323dfb3aca7ae4aa7c64f5155066149c6f0a4427e88",
-     "bytes": 24324
-    },
-    {
-     "role": "texture-meta",
-     "path": "Textures/hull_panels_v1_mask.png.meta",
-     "sha256": "7341dc02bbc7828ece7c86047b9e73ea2f380dabf887d59db3730005ca0c8ad1",
-     "bytes": 2714
-    },
-    {
-     "role": "texture",
-     "path": "Textures/hull_panels_v1_normal.png",
-     "sha256": "212d1215d78042da3bdff4e36e685a89c5e7640ea90a6899d257c6bd062aa8fb",
-     "bytes": 2105345
-    },
-    {
-     "role": "texture-meta",
-     "path": "Textures/hull_panels_v1_normal.png.meta",
-     "sha256": "d5593dd03e1ac3ca4ebb7f44c4b2d9d1e9c6492a2a0d608793651e2f386ac183",
-     "bytes": 2714
-    },
-    {
-     "role": "texture",
-     "path": "Textures/terrazzo_ivory_v1.png",
-     "sha256": "a6fcb0e55bafea9cd5c30dbc14702aeba895c70aa145ce403aaf3ac8bc08785b",
-     "bytes": 2059914
-    },
-    {
-     "role": "texture-meta",
-     "path": "Textures/terrazzo_ivory_v1.png.meta",
-     "sha256": "be16a2c16bcd5924d609056aae60db17549db514bd39a328535c404762fbeb47",
-     "bytes": 2714
-    },
-    {
-     "role": "texture",
-     "path": "Textures/terrazzo_ivory_v1_normal.png",
-     "sha256": "008e79179db5b2b1eebc8d92d799acb372ef9520868c6adaa9daaea2fe5bc5e5",
-     "bytes": 2646503
-    },
-    {
-     "role": "texture-meta",
-     "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
-     "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
-     "bytes": 2714
-    },
-    {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_OceanLiner_L1.fbx",
-     "sha256": "8163e2e995756e11ec69a9eb30fb449d6201ea294b5e6b1e9ac2006ec5624885",
-     "bytes": 103340
+     "sha256": "a3969bb13c6201e7c22356d11869d66222374c9d2893d0d7f3d04cdfde07a628",
+     "bytes": 134732
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_OceanLiner_L2.fbx",
-     "sha256": "2ae589bc67032a9a909e7fde7a74a86cedd171aa350ef748a7a5dafb155d860e",
-     "bytes": 56780
+     "sha256": "8ddd648f513e14b4397f65c60f41d1da209f285820b7d650cba5ab34aa2a5e5a",
+     "bytes": 50636
     }
    ],
    "tags": {
@@ -41409,14 +42553,15 @@
     {
      "file": "Models/Skyport/DK_ParadeGate_Block_L1.fbx",
      "tris": 2742,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_ParadeGate_Block_L2.fbx",
      "tris": 706,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -41707,6 +42852,7 @@
     "DK_Enamel_Turquoise",
     "DK_Chrome"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "root": "generated",
@@ -41833,6 +42979,7 @@
     "DK_Enamel_Turquoise",
     "DK_Chrome"
    ],
+   "lodCategory": "street",
    "files": [
     {
      "root": "generated",
@@ -41943,6 +43090,239 @@
    "source": "generated"
   },
   {
+   "id": "PlanterArc",
+   "category": "Plaza",
+   "size": [
+    4.6323,
+    1.0197,
+    1.8681
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 3016,
+   "materials": [
+    "DK_Limestone",
+    "DK_Limestone_Tex",
+    "DK_Faience_Teal",
+    "DK_Accent_Gold",
+    "DK_GroundCover",
+    "DK_Leaf_CoreShrub",
+    "DK_Leaf_Shrub",
+    "DK_Flower_Coral"
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterArc_L1.fbx",
+     "tris": 754,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterArc_L2.fbx",
+     "tris": 180,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Plaza/DK_PlanterArc.fbx",
+     "sha256": "875d60236e22dbef8abe7c6e90185b038d1f2ed3112610caa4dc08638bd05dcb",
+     "bytes": 159708
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "5519447ec69a2537cc77352f49196340610a8d94d660aa9ca72b8ca16fd6509b",
+     "bytes": 3930
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Limestone_Tex.mat",
+     "sha256": "59da0d88c11e46753ba4e5e8b4e0c28e5b89cd271354879e253b0e4d349774d3",
+     "bytes": 4218
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone_Tex.mat.meta",
+     "sha256": "ae76f47b08ffe2a83dcaf6efeaf41bdcdab4b24c4280b18c81d9e98f88f7498f",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Faience_Teal.mat",
+     "sha256": "005c5ebf4468dac4e35a833a4ab43a084afd6e5404ac7753ac57c9ccceaf4940",
+     "bytes": 3915
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Faience_Teal.mat.meta",
+     "sha256": "63b17f0dce7a06b9057f83d397e9289a658d3829b239dd4699c5afcb034e115c",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Accent_Gold.mat",
+     "sha256": "5c1d67d78cd8d1e803d5b41a0dc43fe6077fc46759aa5f2ca04de673d276f4f6",
+     "bytes": 3913
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Accent_Gold.mat.meta",
+     "sha256": "cda008c386b31c67fce6f2bda3ae39d96746fdf6dfd4d2a6e4ffd2ce94a4fa03",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_GroundCover.mat",
+     "sha256": "6ba9f81780af17c14ce8c57955841b843707eddc2d4c75455f2a163094c0eae2",
+     "bytes": 3900
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_GroundCover.mat.meta",
+     "sha256": "f9bfa9c71a66ce3655cabbabc81cd223b14ba4756d41b2faf536363e8f46cf7d",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Leaf_CoreShrub.mat",
+     "sha256": "bfe439bfd2931da92fcc7493bb356e879ad8a40c450f269a3d9f05dd232a3ac9",
+     "bytes": 3936
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Leaf_CoreShrub.mat.meta",
+     "sha256": "9eca0066961b1845e595b7d6c8b94086c0f0541873cec844cbcf997354381d31",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Leaf_Shrub.mat",
+     "sha256": "017376fe489edd8a5ec445e344a34f1f9916662332b29a3da9c22e4a4dd3ff5a",
+     "bytes": 4078
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Leaf_Shrub.mat.meta",
+     "sha256": "5734ca4cf183d96e8eda706bdab1950e271aa93b0aa464f1caf49618a970b71c",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Flower_Coral.mat",
+     "sha256": "e44408ab23e1594f6aa2b077ef0e6cf2fde3d7e8614032df0e855c2be40308ed",
+     "bytes": 4079
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Flower_Coral.mat.meta",
+     "sha256": "722c66f48208269d454e12707f703df844528200434eba73b649fe8562a025f0",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1.png",
+     "sha256": "a31650a4306be29596e4b7acc3c76ed7ba46e4867554756628a0379ba7e37ab9",
+     "bytes": 3059895
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1.png.meta",
+     "sha256": "03f3cb4660fb18faa240d8e5fba563a766fa67256fb3de74118e5197167eda86",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_mask.png",
+     "sha256": "06b88718b39837b5229f3fb20de9756e46c6e95cd60bd1a056a09b2ccea2a88d",
+     "bytes": 974447
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_mask.png.meta",
+     "sha256": "a58d4e958ddacf146aadb10a18b9e1502bcd77f235a2e29af3fb3209a289af93",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/facade_panel_v1_normal.png",
+     "sha256": "af57c53efdeb3bc4dca92ce8eb4c0f86c7ba6f08710115e61dc6f701b78d9465",
+     "bytes": 987621
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/facade_panel_v1_normal.png.meta",
+     "sha256": "276cdae04b563c96228b2dcb3170f5ca04031d1d5382c064131945bcfd8557b5",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/flower_cluster_coral_v1_alpha.png",
+     "sha256": "dd075b6b73b5e99d191df64812f88e1d9cd4f6e6dac10921004970951e1d1197",
+     "bytes": 1532828
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/flower_cluster_coral_v1_alpha.png.meta",
+     "sha256": "4bbebba57b0b2772a9db617298abcb1aa2fcc2d86ff8479b10b5b74ff274496b",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/shrub_leaves_v1_alpha.png",
+     "sha256": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f",
+     "bytes": 1531866
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/shrub_leaves_v1_alpha.png.meta",
+     "sha256": "7e8f5124f1abde77613b242a2f46436a634f0826bd4d40486bfdd8b76bb925fa",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Plaza/DK_PlanterArc_L1.fbx",
+     "sha256": "18904cf451411b5dd1ca8584610030409c10dd2468afe408969b4219b8045402",
+     "bytes": 83452
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Plaza/DK_PlanterArc_L2.fbx",
+     "sha256": "8661c2d211780ad1ade6073e802fb1cdb3b533244e57cbad154a7ce9294534ba",
+     "bytes": 57708
+    }
+   ],
+   "tags": {
+    "use": [
+     "planter:fountain-garden"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "Skyport_Tower_Portal",
    "category": "Skyport",
    "size": [
@@ -41979,14 +43359,15 @@
     {
      "file": "Models/Skyport/DK_Skyport_Tower_Portal_L1.fbx",
      "tris": 6847,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_Skyport_Tower_Portal_L2.fbx",
      "tris": 2235,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -42342,14 +43723,15 @@
     {
      "file": "Models/Skyport/DK_SkyRailStation_Decks_L1.fbx",
      "tris": 963,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_SkyRailStation_Decks_L2.fbx",
      "tris": 239,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -42549,14 +43931,15 @@
     {
      "file": "Models/Skyport/DK_SkyRailStation_Twin_L1.fbx",
      "tris": 5477,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Skyport/DK_SkyRailStation_Twin_L2.fbx",
      "tris": 1608,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -42912,14 +44295,15 @@
     {
      "file": "Models/Landmarks/DK_SpaceHQ_Portal_L1.fbx",
      "tris": 16482,
-     "screen": 0.35
+     "screen": 0.15
     },
     {
      "file": "Models/Landmarks/DK_SpaceHQ_Portal_L2.fbx",
      "tris": 4113,
-     "screen": 0.12
+     "screen": 0.05
     }
    ],
+   "lodCategory": "signatures",
    "files": [
     {
      "root": "generated",
@@ -43265,14 +44649,15 @@
     {
      "file": "Models/Highrise/DK_Tower_Atom@crescent-tower_L1.fbx",
      "tris": 4619,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Highrise/DK_Tower_Atom@crescent-tower_L2.fbx",
      "tris": 1508,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -43598,14 +44983,15 @@
     {
      "file": "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L1.fbx",
      "tris": 2942,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L2.fbx",
      "tris": 919,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -43903,14 +45289,15 @@
     {
      "file": "Models/Highrise/DK_Tower_Needle@avenue-needle_L1.fbx",
      "tris": 1519,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Highrise/DK_Tower_Needle@avenue-needle_L2.fbx",
      "tris": 372,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -44152,106 +45539,75 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 8634,
+   "tris": 5750,
    "materials": [
-    "DK_Render_White",
-    "DK_Window_Tower",
-    "DK_Enamel_Coral",
+    "DK_Render_Cream",
+    "DK_Window_Teal",
+    "DK_Enamel_Turquoise",
+    "DK_Gold",
+    "DK_Enamel_Coral17",
     "DK_Enamel_Ivory",
-    "DK_Enamel_Teal",
-    "DK_Chrome",
-    "DK_Gold"
+    "DK_Chrome"
    ],
    "lods": [
     {
      "file": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L1.fbx",
-     "tris": 2156,
-     "screen": 0.35
+     "tris": 1343,
+     "screen": 0.3
     },
     {
      "file": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L2.fbx",
-     "tris": 517,
-     "screen": 0.12
+     "tris": 344,
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel.fbx",
-     "sha256": "a9385b615c8e731b36c387a0113276920727d0f9482b4da9af39b7599ab6d6d8",
-     "bytes": 170300
+     "sha256": "b8590b50169dcb46a7d6bef3dda7c9076273e852fb7109faf4ebed4d45c793cb",
+     "bytes": 130476
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Render_White.mat",
-     "sha256": "ed122f275d552956e2020ba4f45e3217654796a47f1ea5cc82260eaadfb20b34",
-     "bytes": 3932
+     "path": "Materials/DK_Render_Cream.mat",
+     "sha256": "94657864f76f9adc1b3f644894e4a7010ed43b517ef94cd47266e26a9d50dc1a",
+     "bytes": 3915
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Render_White.mat.meta",
-     "sha256": "9f445023bdd52db428458bd0841ebca9cb4cfd491e6309ea5fb95d3c40cdc2d9",
+     "path": "Materials/DK_Render_Cream.mat.meta",
+     "sha256": "d5ea16df0a2a163558748b9c0af36c50ab9c614d9335859f41b697eb950b971b",
      "bytes": 188
     },
     {
      "role": "material",
-     "path": "Materials/DK_Window_Tower.mat",
-     "sha256": "924ee5d002ed8956c3f4c06ad67b5e472296e44544183d165c8393c824ca09d9",
-     "bytes": 3854
+     "path": "Materials/DK_Window_Teal.mat",
+     "sha256": "7ea3ec71c2dee5611eb23fb4c574762127ab4c06bffbb31b9941ae5b9c4e80f7",
+     "bytes": 3853
     },
     {
      "role": "material-meta",
-     "path": "Materials/DK_Window_Tower.mat.meta",
-     "sha256": "6d5b6b1854f0c91560a0123867bfd616a88fd71775517eedb256d098f6733691",
+     "path": "Materials/DK_Window_Teal.mat.meta",
+     "sha256": "ec0fcdaa494ad1d383befef06b41c5d49aad824569737c61094378d73d8bd4f2",
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Coral.mat",
-     "sha256": "35e8848bf5125fbd6c7b4f1730c48be9367d7e80528f5c597b21f1b55c93e74b",
-     "bytes": 3852
+     "path": "Materials/DK_Enamel_Turquoise.mat",
+     "sha256": "a3ca22aa89fb775370a6b6e22e51fd473baf1d5a5351f732b01e48283fd534d8",
+     "bytes": 3837
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Coral.mat.meta",
-     "sha256": "3aa2ca5abab73eec452837aa9f4a885318f53f051b838d1db69b1fb2d626807f",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Enamel_Ivory.mat",
-     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
-     "bytes": 3852
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Enamel_Ivory.mat.meta",
-     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Enamel_Teal.mat",
-     "sha256": "b4aaf9df4d9d6e6d78b45bdcf7bdcd8daa79b89b43f2e709cd1bc4da33ca9c92",
-     "bytes": 3854
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Enamel_Teal.mat.meta",
-     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
-     "bytes": 188
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
-     "bytes": 3929
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Enamel_Turquoise.mat.meta",
+     "sha256": "de9c852de916f742f4d2849711b02b317ce9e2b9571886df4acdc1f69c476405",
      "bytes": 188
     },
     {
@@ -44270,17 +45626,55 @@
     },
     {
      "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Coral17.mat",
+     "sha256": "2f86714de1bc1074a84c4323db1866f89b978b67de9f5a44da2cc3196d938a4b",
+     "bytes": 3836
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Coral17.mat.meta",
+     "sha256": "643a3b5a8ec8e35cb90a759a592151a500b9783fbe26d9f65d2c67ffe5254610",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
+     "bytes": 3852
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
+     "bytes": 3929
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L1.fbx",
-     "sha256": "d9d2d0b993e7a28d86dbbd15ca67f457f9e9f0ae5198ac959ae00f9c3ec4f444",
-     "bytes": 83708
+     "sha256": "ad447dbddff2f81ba317cd045b0759b60d7f7166cd8d429e25d81ce74f201877",
+     "bytes": 67052
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L2.fbx",
-     "sha256": "61c0514bc1b221bdea99d455503bfc1ade8d12f1e79b5afb2e509e144e3ecce4",
-     "bytes": 41100
+     "sha256": "0c95e535d121882047e1cda92e2ab1040602ecf0a4e50367189b1677dca53109",
+     "bytes": 35020
     }
    ],
    "tags": {
@@ -44359,14 +45753,15 @@
     {
      "file": "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L1.fbx",
      "tris": 4415,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L2.fbx",
      "tris": 1847,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -44660,14 +46055,15 @@
     {
      "file": "Models/Skyline/DK_Tower_Stepped@parade-gate-n_L1.fbx",
      "tris": 432,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Skyline/DK_Tower_Stepped@parade-gate-n_L2.fbx",
      "tris": 382,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -44839,14 +46235,15 @@
     {
      "file": "Models/Skyline/DK_Tower_Stepped@parade-gate-s_L1.fbx",
      "tris": 432,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Skyline/DK_Tower_Stepped@parade-gate-s_L2.fbx",
      "tris": 382,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",
@@ -45026,14 +46423,15 @@
     {
      "file": "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L1.fbx",
      "tris": 4832,
-     "screen": 0.35
+     "screen": 0.3
     },
     {
      "file": "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L2.fbx",
      "tris": 1527,
-     "screen": 0.12
+     "screen": 0.1
     }
    ],
+   "lodCategory": "towers",
    "files": [
     {
      "root": "generated",

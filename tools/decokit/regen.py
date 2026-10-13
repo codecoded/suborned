@@ -18,6 +18,22 @@ from geo import Shape, rrect, stadium
 from kit import asset
 from mats import accent, pal, register
 
+register("DK_Render_Cream", "stone", "#F1E4C8")          # cream render (round 3 Tower_Saucer): dE2000 24.4 from guard
+register("DK_Window_Teal", "enamel", "#2E6D70")           # as highrise.py (register is first-wins)
+register("DK_Enamel_Turquoise", "enamel", accent("turquoise"))
+register("DK_Enamel_Coral17", "enamel", accent("coral"))
+
+
+def _stad(w, d, n=12):
+    """stadium() without its repeated points (the two arcs of each end meet at one point): a clean n-gon cap."""
+    out = []
+    for p in stadium(w, d, n):
+        if not out or abs(p[0] - out[-1][0]) + abs(p[1] - out[-1][1]) > 1e-6:
+            out.append(p)
+    if abs(out[0][0] - out[-1][0]) + abs(out[0][1] - out[-1][1]) <= 1e-6:
+        out.pop()
+    return out
+
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 ORDERS = {}
 GRID = {}
@@ -128,17 +144,44 @@ def stepped(s, o, ex, canopy):
 # ----------------------------------------------------------------- Tower_Saucer
 
 def saucer(s, o, ex, canopy):
+    """Brief 007 round 3 (Sky: "black-and-white bands read as modern"): a cream deco slab, not a striped curtain wall.
+    Per tier: a cream render core with teal glass set back in short window strips (1.6 of the 3.6 storey) between full-height
+    cream pilasters every ~3 m on the long faces and every 30 deg round the ends (AtomicAge power_spire, starlight_hotel), a
+    teal faience spandrel band every third storey, a gold band and a cream coping at every tier top, teal faience panels on
+    the round ends' centre lines, and the coral front fin with a gold edge. Outer envelope = the order's stadium (w x d)."""
     g = GRID
     (wl, d, top), t = o["regen"]["body"], _tiers(o)
     fl = g["storey"]
-    for w, z0, z1 in t:
-        z = z0
+    for ti, (w, z0, z1) in enumerate(t):
+        cw, cd = w - 0.9, d - 0.9                          # core (window wall) set 0.45 inside the pilaster face
+        s.extrude(_stad(cw, cd), z0, z1 - 0.9, pal.Render_Cream, top=False, bottom=(ti == 0))
+        z, k = z0, 0
         while z < z1 - EPS:
-            s.extrude(stadium(w, d), z, z + 1.2, pal.Render_White, top=False, bottom=False)
-            s.extrude(stadium(w - 0.6, d - 0.6), z + 1.2, z + 3.2, pal.Window_Tower, top=False, bottom=False)
-            s.extrude(stadium(w, d), z + 3.2, z + fl, pal.Render_White, top=(z + fl >= z1 - EPS), bottom=False)
-            z += fl
-    s.box((-0.5, -(d / 2 + 0.7), 0.0), (0.5, -(d / 2 - 0.6), top + 6.5), pal.Enamel_Coral)  # front fin
+            zt = min(z + fl, z1)
+            if k % 3 == 2:                                 # teal faience speed band every third storey, wrapping the pilasters
+                s.extrude(_stad(w, d), z + 0.05, z + 1.0, pal.Enamel_Turquoise, top=False, bottom=False)
+            s.extrude(_stad(cw + 0.06, cd + 0.06), z + 1.1, z + 2.7, pal.Window_Teal, top=False, bottom=False)
+            z, k = zt, k + 1
+        # pilasters: long faces every ~3 m (straight run of the stadium), ends every 30 deg
+        run = w - d
+        n = max(2, int(round(run / 3.0)))
+        for i in range(n + 1):
+            x = -run / 2 + run * i / n
+            for sy in (-1, 1):
+                y0, y1 = sorted((sy * (cd / 2 - 0.1), sy * (d / 2 - 0.05)))
+                s.box((x - 0.35, y0, z0), (x + 0.35, y1, z1 - 0.9), pal.Render_Cream)
+        R = d / 2
+        for sx in (-1, 1):
+            for a in (-60, -30, 0, 30, 60):
+                with s.at((sx * run / 2, 0.0, 0.0), (0, 0, a + (0 if sx > 0 else 180))):
+                    s.box((cd / 2 - 0.1, -0.35, z0), (R - 0.05, 0.35, z1 - 0.9), pal.Render_Cream)
+            with s.at((sx * run / 2, 0.0, 0.0), (0, 0, 0 if sx > 0 else 180)):   # end panel: teal faience between the piers
+                s.box((cd / 2 + 0.02, -1.3, z0 + 1.0), (cd / 2 + 0.2, 1.3, z1 - 1.0), pal.Enamel_Turquoise)
+        s.extrude(_stad(w, d), z1 - 0.9, z1 - 0.5, pal.Gold, top=False, bottom=False)          # gold band
+        s.extrude(_stad(w, d), z1 - 0.5, z1, pal.Render_Cream, top=True, bottom=False)       # coping
+    s.box((-0.5, -(d / 2 + 0.7), 0.0), (0.5, -(d / 2 - 0.6), top + 6.5), pal.Enamel_Coral17)  # front fin
+    for sx in (-1, 1):                                                                         # its gold edge beads
+        s.box((sx * 0.5 - 0.06, -(d / 2 + 0.7), 0.0), (sx * 0.5 + 0.06, -(d / 2 - 0.6), top + 6.5), pal.Gold)
     R = t[-1][0] / 2 + g["halfBay"] - 0.02               # the saucer overhangs the upper tier by the half bay (teal ring 0.02 proud)
     total = _num(o["regen"]["crown"], r"total ≤ (\d+(?:\.\d+)?)", o["id"])[0]
     stem_h = 1.6
@@ -146,9 +189,10 @@ def saucer(s, o, ex, canopy):
     prof = [(2.4, 0.0), (13.5, 2.0), (15.0, 3.2), (15.0, 3.8), (13.0, 5.4), (6.0, 7.0), (0.0, 7.4)]
     zs = top + stem_h
     assert stem_h + prof[-1][1] <= total + EPS, "saucer taller than the order's total"
-    s.lathe([(3.0, top), (3.0, zs), (2.4, zs)], pal.Render_White, seg=24, cap_bottom=False)
+    s.lathe([(3.0, top), (3.0, zs), (2.4, zs)], pal.Render_Cream, seg=24, cap_bottom=False)
     s.lathe([(r * sk if r > 3 else r, zs + z) for r, z in prof], pal.Enamel_Ivory, seg=48)
-    s.lathe([(15.02 * sk, zs + 3.1), (15.02 * sk, zs + 3.9)], pal.Enamel_Teal, seg=48, cap_bottom=False, cap_top=False)
+    s.lathe([(15.02 * sk, zs + 3.1), (15.02 * sk, zs + 3.9)], pal.Enamel_Turquoise, seg=48, cap_bottom=False, cap_top=False)
+    s.lathe([(13.6 * sk, zs + 2.05), (14.4 * sk, zs + 2.55)], pal.Gold, seg=48, cap_bottom=False, cap_top=False)  # gold soffit bead
     from skyline import spire
     z0 = zs + prof[-1][1]
     spire(s, z0, _tip_top(o) - z0, 0.6)                  # cut to the tip

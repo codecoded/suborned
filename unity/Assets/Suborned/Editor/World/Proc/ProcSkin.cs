@@ -13,12 +13,14 @@ namespace Suborned.World
     {
         static readonly Dictionary<string, SkinDto> byMass = new(System.StringComparer.Ordinal);
         static readonly Dictionary<string, List<SkinFaceDto>> faces = new(System.StringComparer.Ordinal);
+        static readonly Dictionary<string, SkinDto> byBuilding = new(System.StringComparer.Ordinal);
         static readonly Dictionary<SkinDto, Transform> elements = new();
-        public static int Matched, Unmatched, Cells;
+        public static int Matched, Unmatched, Cells, Panels, Spandrels, BalconyFronts, Fins;
 
         public static void Init(WorldDto w)
         {
-            byMass.Clear(); faces.Clear(); elements.Clear(); Matched = Unmatched = Cells = 0;
+            byMass.Clear(); faces.Clear(); elements.Clear(); byBuilding.Clear(); Matched = Unmatched = Cells = Panels = Spandrels = BalconyFronts = Fins = 0;
+            foreach (var s in w.Skins) byBuilding[s.Building] = s;
             foreach (var s in w.Skins)
                 foreach (var f in s.Faces)
                 {
@@ -32,7 +34,14 @@ namespace Suborned.World
         public static IEnumerable<string> Surfaces(WorldDto w)
         {
             var r = new SortedSet<string>(System.StringComparer.Ordinal);
-            foreach (var s in w.Skins) { r.Add(s.Accent); r.Add(s.FrameSurface); r.Add(s.RingSurface); }
+            foreach (var s in w.Skins)
+            {
+                r.Add(s.Accent); r.Add(s.FrameSurface); r.Add(s.RingSurface); r.Add(s.Accent2); r.Add(s.Trim); r.Add(s.PanelSurface); r.Add(s.Spandrel?.Surface);
+                foreach (var f in s.Fins) { r.Add(f.Surface); r.Add(f.BeadSurface); }
+            }
+            foreach (var a in w.Fabric.Awnings) foreach (var st in a.Stripes) r.Add(st);
+            foreach (var b in w.Fabric.Banners) { r.Add(b.Surface); r.Add(b.BorderSurface); }
+            foreach (var f in w.Fabric.Flags) { r.Add(f.Surface); if (f.Mast != "chrome") r.Add(f.Mast); } // chrome is the facade atlas swatch
             r.Remove(null);
             return r;
         }
@@ -45,6 +54,8 @@ namespace Suborned.World
         }
 
         public static SkinDto Of(string massId) => byMass.TryGetValue(massId, out var s) ? s : null;
+        /// <summary>The skin of a plot building (frontage hosts), or null.</summary>
+        public static SkinDto OfBuilding(string buildingId) => buildingId != null && byBuilding.TryGetValue(buildingId, out var s) ? s : null;
         public static Transform Element(SkinDto s) => elements[s];
 
         /// <summary>After the buildings: a skin with no geometry (every wall under kit facades, or its masses under a stand-in) is covered
@@ -188,8 +199,10 @@ namespace Suborned.World
             {
                 Plain(c, k);
                 c.B.R(c.Glass(), Cls.Glass, k.W, h0, h1, g0, g1, 0.03f, 0.85f, 0.95f);
+                Spandrel(c, s, k, h0, h1, g0);
                 return;
             }
+            Spandrel(c, s, k, h0, h1, g0);
             float r = c.D >= 2 ? s.Reveal : s.Reveal * 0.5f;
             ProcWindows.Holes(c, k, new() { (h0, h1) }, g0, g1);
             ProcWindows.Opening(c, k, h0, h1, g0, g1, r, c.Glass());
@@ -200,6 +213,19 @@ namespace Suborned.World
                 float x = Mathf.Lerp(h0, h1, i / (float)nm);
                 c.B.R("chrome", Cls.Chrome, k.W, x - 0.035f, x + 0.035f, g0, g1, -r + 0.05f);
             }
+        }
+
+        /// <summary>Grammar §2a.3: an accent panel under the ribbon, its width, `h` high ending at the sill (under the frame's sill bar);
+        /// a 1.9 m one runs down to the head of the storey below, never into the ground storey.</summary>
+        static void Spandrel(Pc c, SkinDto s, in Cell k, float h0, float h1, float g0)
+        {
+            if (s.Spandrel == null) return;
+            float fw = c.D == 0 ? 0f : Mathf.Min(s.Frame, 0.2f);
+            float z1 = g0 - fw, z0 = Mathf.Max(g0 - s.Spandrel.H, c.GroundTop + 0.05f);
+            if (z1 - z0 < 0.2f) return;
+            if (c.D == 0) c.B.R(Swatch(s.Spandrel.Surface), Cls.Enamel, k.W, h0, h1, z0, z1, 0.03f);
+            else c.B.Box(Swatch(s.Spandrel.Surface), Cls.Enamel, k.W, h0, h1, z0, z1, 0f, 0.05f);
+            Spandrels++;
         }
 
         /// <summary>A slim surround (pier frame surface) proud of the wall round an opening; width min(frame, 0.2) so a 0.45 m frame
@@ -229,6 +255,10 @@ namespace Suborned.World
         static void Porthole(Pc c, SkinDto s, in Cell k, float cs, float zc, float rad, bool _)
         {
             var w = k.W; int N = c.D >= 2 ? 16 : c.D == 1 ? 12 : 8; float ring = c.D == 0 ? 0f : s.PortholeRing;
+            // grammar §2a.3a: the accent panel behind it, flush on the wall (1.5 cm proud so it never z-fights), inside the storey
+            float pw = s.PanelW * 0.5f, ph = s.PanelH * 0.5f;
+            float p0 = Mathf.Max(zc - ph, k.Z0 + 0.05f), p1 = Mathf.Min(zc + ph, k.Z1 - 0.05f);
+            if (pw > rad && p1 - p0 > 2f * rad) { c.B.R(Swatch(s.PanelSurface), Cls.Enamel, w, cs - pw, cs + pw, p0, p1, 0.015f); Panels++; }
             var disc = new List<Vector3>(); var outer = new List<Vector3>();
             for (int i = 0; i < N; i++)
             {
@@ -254,7 +284,9 @@ namespace Suborned.World
             {
                 Plain(c, k);
                 c.B.R(c.Glass(), Cls.Glass, k.W, m - dw * 0.5f, m + dw * 0.5f, g0, g1, 0.03f, 0.85f, 0.95f);
-                c.B.Box("white", Cls.Stone, k.W, m - Mathf.Min(k.Bw * 0.42f, 2.3f), m + Mathf.Min(k.Bw * 0.42f, 2.3f), k.Z0 - 0.04f, k.Z0 + 0.16f, 0f, 1.2f);
+                float hs = Mathf.Min(k.Bw * 0.42f, 2.3f);
+                c.B.Box("white", Cls.Stone, k.W, m - hs, m + hs, k.Z0 - 0.04f, k.Z0 + 0.16f, 0f, 1.2f);
+                if (s.Spandrel != null) { c.B.R(Swatch(s.Spandrel.Surface), Cls.Enamel, k.W, m - hs, m + hs, k.Z0 + 0.16f, k.Z0 + s.Spandrel.BalconyH, 1.2f); BalconyFronts++; }
                 return;
             }
             ProcWindows.Holes(c, k, new() { (m - dw * 0.5f, m + dw * 0.5f) }, g0, g1);
@@ -278,13 +310,40 @@ namespace Suborned.World
                 var o = Pb.OutOf(w, outline[i + 1].x - outline[i].x, outline[i + 1].y - outline[i].y);
                 c.B.Quad("white", Cls.Stone, bot[i], top[i], top[i + 1], bot[i + 1], o, 0.85f, 1f, 1f, 0.85f);
             }
-            // rail: chrome top rail along the outline and translucent panels
+            // rail: chrome top rail along the outline over translucent panels, or (grammar §2a.3) a solid accent front `balcony.h` high
+            bool solid = s.Spandrel != null; float rail = solid ? k.Z0 + s.Spandrel.BalconyH : k.Z0 + 1.0f;
+            string panel = solid ? Swatch(s.Spandrel.Surface) : "glass_t"; int pc = solid ? Cls.Enamel : Cls.Glass;
             for (int i = 0; i + 1 < outline.Count; i++)
             {
                 var p0 = outline[i]; var p1 = outline[i + 1];
                 var o = Pb.OutOf(w, p1.x - p0.x, p1.y - p0.y);
-                c.B.Quad("glass_t", Cls.Glass, w.P(p0.x, z1, p0.y), w.P(p0.x, k.Z0 + 1.0f, p0.y), w.P(p1.x, k.Z0 + 1.0f, p1.y), w.P(p1.x, z1, p1.y), o, 0.9f, 1f, 1f, 0.9f);
-                c.B.Quad("chrome", Cls.Chrome, w.P(p0.x, k.Z0 + 1.0f, p0.y), w.P(p0.x, k.Z0 + 1.07f, p0.y), w.P(p1.x, k.Z0 + 1.07f, p1.y), w.P(p1.x, k.Z0 + 1.0f, p1.y), o);
+                c.B.Quad(panel, pc, w.P(p0.x, z1, p0.y), w.P(p0.x, rail, p0.y), w.P(p1.x, rail, p1.y), w.P(p1.x, z1, p1.y), o, 0.9f, 1f, 1f, 0.9f);
+                if (solid) c.B.Quad(panel, pc, w.P(p0.x, z1, p0.y - 0.03f), w.P(p0.x, rail, p0.y - 0.03f), w.P(p1.x, rail, p1.y - 0.03f), w.P(p1.x, z1, p1.y - 0.03f), -o, 0.8f, 0.9f, 0.9f, 0.8f);
+                c.B.Quad("chrome", Cls.Chrome, w.P(p0.x, rail, p0.y), w.P(p0.x, rail + 0.07f, p0.y), w.P(p1.x, rail + 0.07f, p1.y), w.P(p1.x, rail, p1.y), o);
+            }
+            if (solid) BalconyFronts++;
+        }
+
+        /// <summary>Grammar §2a.4: every skin's fins under its element (`<skin id>/fins`): a slab `w` along the wall, `d` proud, z0 to z1, in
+        /// the fin surface, its outer face's two vertical edges beaded in gold; the fin's top capped in gold.</summary>
+        public static void FinsAll(Nodes nodes, Atlas atlas)
+        {
+            foreach (var kv in elements)
+            {
+                var s = kv.Key; if (s.Fins.Count == 0) continue;
+                var kit = new MeshKit(); var B = new Pb(kit, atlas);
+                foreach (var f in s.Fins)
+                {
+                    var n = f.Normal.normalized; var u = new Vector2(-n.y, n.x);
+                    var w = new WallFrame(f.At - u * (f.W * 0.5f), f.At + u * (f.W * 0.5f));
+                    if (Vector2.Dot(w.N, n) < 0) w = new WallFrame(f.At + u * (f.W * 0.5f), f.At - u * (f.W * 0.5f));
+                    B.Box(Swatch(f.Surface), Cls.Enamel, w, 0f, w.Len, f.Z0, f.Z1, 0f, f.D, 0.04f);
+                    B.Box(Swatch(f.BeadSurface), Cls.Brass, w, 0f, f.BeadW, f.Z0, f.Z1, f.D - 0.02f, f.D + 0.03f);
+                    B.Box(Swatch(f.BeadSurface), Cls.Brass, w, w.Len - f.BeadW, w.Len, f.Z0, f.Z1, f.D - 0.02f, f.D + 0.03f);
+                    B.Box(Swatch(f.BeadSurface), Cls.Brass, w, -0.02f, w.Len + 0.02f, f.Z1, f.Z1 + 0.12f, 0f, f.D + 0.04f);
+                    Fins++;
+                }
+                nodes.Part(kv.Value, s.Id + "/fins", kit, atlas.Matte);
             }
         }
 

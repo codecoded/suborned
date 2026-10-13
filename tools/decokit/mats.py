@@ -64,6 +64,21 @@ def accent(name):
     return ACCENT[name]
 
 
+# look.json accent_* roles (grammar round 3: the Unity world's own colour table; brief 007 round 3). Shared kit materials so a
+# piece's coral or teal is the facade's coral or teal: DK_Accent_<Role> enamel, DK_Faience_Teal glazed tile, DK_Accent_Gold metal.
+LOOK = json.loads((Path(__file__).resolve().parents[2] / "unity/Assets/Suborned/Editor/World/look.json").read_text())["palette"]
+
+
+def look_hex(role):
+    return LOOK["harbour." + role]["hex"].upper()
+
+
+for _r in ("teal", "coral", "turquoise", "mint", "flamingo", "peach"):
+    LIB.setdefault("DK_Accent_" + _r.capitalize(), ("enamel", look_hex("accent_" + _r)))
+LIB.setdefault("DK_Accent_Gold", ("metal", look_hex("accent_gold")))       # brass gold, dE2000 20.9 from guard
+LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal faience bands (planters, piers)
+
+
 # Kit materials whose colour was retuned so the UNLIT base is >= 20 dE2000 from cones / guard / rivals (brief 007: signals
 # render unlit and emissive, so the gate is on the unlit palette). They sit in LIB above; this records the why.
 # old -> new, dE2000 min over the three signals: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
@@ -264,6 +279,7 @@ def signal_gate(rows=None):
     Returns (failures, report): gated = the retuned and v0.17 accent materials (must pass); the rest are reported as a to-do."""
     from deltae import min_signal
     gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
+    gated |= {n for n in LIB if n.startswith(("DK_Liner_", "DK_Accent_", "DK_Faience_"))}  # brief 007 round 3: liner, look.json accents
     fails, report = [], []
     for name, (kind, hexstr, *_) in LIB.items():
         if name in TEXTURES or kind == "glass" or hexstr.upper() == "#FFFFFF":

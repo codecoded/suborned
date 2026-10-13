@@ -31,6 +31,7 @@ namespace Suborned.World
                 ["transit"] = w.Transit.Tram.Count + w.Transit.SkyRail.Count + w.Transit.Stops.Count + w.Transit.Stations.Count,
                 ["buildings"] = w.Buildings.Count,
                 ["skins"] = w.Skins.Count,
+                ["fabric"] = w.Fabric.Awnings.Count + w.Fabric.Banners.Count + w.Fabric.Flags.Count,
                 ["roofs"] = w.Roofs.Count,
                 ["frontages"] = w.Frontages.Count,
                 ["connectors"] = w.Connectors.Count,
@@ -88,7 +89,7 @@ namespace Suborned.World
                 ("facades", w.Facades.Count, 0, 0),
                 ("signatures", w.Signatures.Count(x => x.Kit != null), w.Signatures.Count(x => x.Kit == null), 0),
                 ("horizon", w.Horizon?.Pieces.Count ?? 0, 0, 0),
-                ("civic", w.Civic.Count(m => m.Kit != null), w.Civic.Count(m => m.Kit == null), 0),
+                ("civic", w.Civic.Count(m => m.Kit != null), w.Civic.Count(m => m.Kit == null || FacadeKit.HasPlinth(m)), 0),
                 ("megastructures", w.Megastructures.Count(m => m.Gateway != null) + s.Megas, w.Megastructures.Count(m => !s.Covers(m)), 0),
             };
             int bad = 0; var sb = new StringBuilder("World: kit/procedural/covered");

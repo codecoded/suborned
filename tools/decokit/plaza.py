@@ -8,7 +8,7 @@ Hall modules face -Y. Pivot = footprint FRONT-centre at z = 0: the facade plane 
                      right-hand corner mirror X (scale -1), or rotate +90 deg and place at (+4, +4).
   HallEntranceTower  12 x 8 m, 21 m; its entrance floor and landing sit at z = 1.1, landing out to y = -2.
   GrandStair         10 x 3 m, pivot = bottom-nosing front-centre, rises 1.1 m toward +Y (at the tower: y = -5).
-Plaza pieces pivot at their footprint centre: PlazaFountain, CafeSet, PlanterBed, PlanterHex."""
+Plaza pieces pivot at their footprint centre: PlazaFountain, CafeSet, PlanterBed, PlanterHex, PlanterArc."""
 
 import math
 
@@ -24,6 +24,7 @@ register("DK_Fabric_Banner", "fabric", "#04897C")  # banner slab edge/back field
 register("DK_Limestone_Joint", "stone", "#C8B899")
 register("DK_Spray", "glass", "#EEF9FA")
 register("DK_Lobby", "enamel", "#4A3826")
+register("DK_GroundCover", "stone", "#6FA866")  # PlanterArc ground cover (park / median family, a shade deeper), dE2000 36.7 from guard
 
 FRONT = (90, 0, 0)  # local XY -> world XZ, extrusion -> world -Y
 SIDE = (90, 0, 90)  # local X -> world Y, local Y -> world Z, extrusion -> world X
@@ -372,3 +373,75 @@ def planter_hex(s):
             (0.01, 0.56), (0.17, 0.56), (0.19, 0.54), (0.19, 0.44)]
     s.loft([(hexa(0.9 - i), z) for i, z in prof], pal.Limestone, cap_bottom=False, cap_top=False)
     s.extrude(hexa(0.9 - 0.192), 0.4, 0.5, pal.Soil, bottom=False)
+
+
+# ----------------------------------------------------------------- the fountain garden's curved beds (brief 007 round 3)
+
+ARC_R, ARC_HW, ARC_HALF, ARC_H = 6.21, 0.85, 13.75, 0.52   # civic-block fountain-garden-*: r 5.36..7.06 about the fountain
+ARC_C = 6.12                                               # the fountain's centre on local +Y from the pivot
+
+
+def _arc_pt(r, a):
+    return (r * math.cos(math.radians(a)), ARC_C + r * math.sin(math.radians(a)))
+
+
+def arc_outline(hw, n_arc=20, n_cap=8):
+    """CCW outline of a band of half-width hw on the arc (radius ARC_R about (0, ARC_C), +-ARC_HALF deg about -Y) with
+    round (stadium) ends: outer arc, right cap, inner arc, left cap. Same point count for any hw (lofts)."""
+    a0, a1 = -90.0 - ARC_HALF, -90.0 + ARC_HALF
+    cap = lambda ac, af: [(_arc_pt(ARC_R, ac)[0] + hw * math.cos(math.radians(af + 180.0 * k / n_cap)),   # noqa: E731
+                           _arc_pt(ARC_R, ac)[1] + hw * math.sin(math.radians(af + 180.0 * k / n_cap))) for k in range(1, n_cap)]
+    return ([_arc_pt(ARC_R + hw, a0 + (a1 - a0) * k / n_arc) for k in range(n_arc + 1)] + cap(a1, a1)
+            + [_arc_pt(ARC_R - hw, a1 + (a0 - a1) * k / n_arc) for k in range(n_arc + 1)] + cap(a0, a0 + 180.0))
+
+
+def arc_fill(s, hw, z, mat, n_arc=20, n_cap=8):
+    """The band's top face as quads across it and a fan in each cap (no concave n-gon for the importer)."""
+    pts = [(x, y, z) for x, y in arc_outline(hw, n_arc, n_cap)]
+    m = n_arc + 1
+    outer, rcap, inner, lcap = pts[:m], pts[m:m + n_cap - 1], pts[m + n_cap - 1:2 * m + n_cap - 1], pts[2 * m + n_cap - 1:]
+    inner = inner[::-1]                                       # now runs a0 -> a1 like outer
+    for k in range(n_arc):
+        s.face([outer[k], outer[k + 1], inner[k + 1], inner[k]], mat)
+    for ring_, ac, a, b in ((rcap, -90.0 + ARC_HALF, outer[-1], inner[-1]), (lcap, -90.0 - ARC_HALF, inner[0], outer[0])):
+        c = (*_arc_pt(ARC_R, ac), z)
+        seq = [a] + ring_ + [b]
+        for k in range(len(seq) - 1):
+            s.face([c, seq[k], seq[k + 1]], mat)
+
+
+@asset("PlanterArc", "Plaza", bevel=0.0)
+def planter_arc(s):
+    """The fountain garden's curved bed (Latch's civic-square review, Splice round 3: no kit piece fitted the four
+    fountain-garden-* planters; they are 1.7 m bands on r 6.21 about the AtomFountain, round-ended, 0.52 m, not discs).
+    Limestone kick plinth and wall, a teal faience band, a gold bead, an overhanging limestone coping; soil, clipped boxwood
+    balls and coral flower clumps along the arc. 4.65 x 1.88 x 0.52 m, the coping lip on the footprint (planting to ~1.0).
+    Pivot = footprint (bbox) centre on the ground; the convex side faces -Y (front, the path) and the fountain's centre lies
+    6.12 m along local +Y. The four beds are one piece turned 0 / 90 / 180 / 270 deg about the fountain."""
+    import random
+    from furnish_parts import mound
+    from plants import Cards
+    rng = random.Random(7307)
+    cd = Cards(s)
+    bands = (
+        ((0.05, 0.0), (0.05, 0.06)), pal.Limestone,                          # kick plinth
+        ((0.02, 0.06), (0.02, 0.32)), pal.Limestone_Tex,                     # wall
+        ((0.035, 0.32), (0.035, 0.42)), pal.Faience_Teal,                    # faience band
+        ((0.035, 0.42), (0.055, 0.435), (0.035, 0.45)), pal.Accent_Gold,     # bead
+        ((0.06, 0.45), (0.07, 0.47), (0.07, 0.505), (0.05, 0.52), (-0.14, 0.52), (-0.16, 0.5), (-0.16, 0.42)), pal.Limestone,  # coping
+    )
+    for prof, mat in zip(bands[::2], bands[1::2]):
+        s.loft([(arc_outline(ARC_HW - 0.07 + off), z) for off, z in prof], mat, smooth=True, cap_bottom=False, cap_top=False)  # coping lip = the footprint
+    arc_fill(s, ARC_HW - 0.23, 0.43, pal.GroundCover)                     # low ground cover, not bare soil: the bed reads planted
+    # planting: seven clipped boxwood balls on the centreline, coral flower clumps between and to the sides
+    for k in range(7):
+        a = math.radians(-90.0 - ARC_HALF + 2 * ARC_HALF * k / 6)
+        c = (ARC_R * math.cos(a), ARC_C + ARC_R * math.sin(a), 0.72)
+        with s.at(c):                                                     # solid clipped core: gaps read as shade, not soil
+            s.lathe([(0.0, -0.26)] + dome(0.26, 0.0, -0.26, 2)[::-1][1:] + dome(0.26, 0.0, 0.26, 2)[1:], pal.Leaf_CoreShrub, seg=8)
+        mound(cd, rng, c, 0.3, pal.Leaf_Shrub, 0.2, per=14, up=0.2)
+    for k in range(6):
+        a = math.radians(-90.0 - ARC_HALF + 2 * ARC_HALF * (k + 0.5) / 6)
+        for dr in (-0.36, 0.36):
+            r = ARC_R + dr
+            mound(cd, rng, (r * math.cos(a), ARC_C + r * math.sin(a), 0.55), 0.17, pal.Flower_Coral, 0.17, per=4, fill=False, up=0.7)

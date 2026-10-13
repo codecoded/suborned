@@ -23,6 +23,10 @@ namespace Suborned.World
         readonly Dictionary<string, string> bodySurface = new();
 
         public FacadeSpec Spec => spec;
+        public int Plinths; // civic monument plinths drawn under their kit piece
+        /// <summary>A civic kit piece standing on a plinth of its mass ring (build.ts `plinth` mode): it starts above the mass base by less than
+        /// half the mass height (a canopy piece hangs at the top).</summary>
+        public static bool HasPlinth(MassDto m) { if (m.Kit == null) return false; float gap = m.Kit.Base - m.Base; return gap > 0.02f && gap < 0.5f * m.Height; }
         public QuadKit Quads => sf;
 
         public FacadeKit(Nodes nodes, FacadeSpec spec, WorldDto world)
@@ -98,12 +102,23 @@ namespace Suborned.World
         }
 
         /// <summary>Civic block: limestone buildings by the style kit, objects with a kit ref (grammar §11: fountain, pavilions and
-        /// their piers, café sets, palms) as that piece at its At on its Base, the rest as extrusions.</summary>
+        /// their piers, café sets, palms) as that piece at its At with its lowest point on its Base (the export's canopy base is
+        /// the canopy's underside, and the BoardingPavilion pieces are modelled at their height, not on a ground pivot), the rest
+        /// as extrusions.</summary>
         public void Civic(Transform layer, List<MassDto> masses, KitPlacer placer)
         {
             foreach (var m in masses)
             {
-                if (m.Kit != null) placer.Place(Nodes.Element(layer, m.Id), layer.name, m.Kit, m.Kit.At, m.Kit.Base, 0f);
+                if (m.Kit != null)
+                {
+                    var el = Nodes.Element(layer, m.Id);
+                    placer.Place(el, layer.name, m.Kit, m.Kit.At, placer.PivotForLowest(m.Kit, m.Kit.Base), 0f);
+                    // tools/world/build.ts `plinth` mode: a monument piece shorter than its mass stands on a plinth of the mass ring up to
+                    // kit.base (the steward robot). A canopy piece (boarding pavilions) also starts above its mass base but hangs at the
+                    // top, its piers separate: no plinth when the gap is most of the mass (the export has no flag for it yet).
+                    if (HasPlinth(m))
+                    { nodes.Part(el, m.Id + "/plinth", new MeshKit().Prism(Poly.Clean(m.Ring), m.Base, m.Kit.Base), m.Surface); Plinths++; }
+                }
                 else if (m.Surface == "limestone") Building(layer, m, true);
                 else nodes.Solid(layer, m.Id, new MeshKit().Prism(m.Ring, m.Base, m.Base + m.Height), m.Surface);
             }

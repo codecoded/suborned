@@ -22,25 +22,31 @@ namespace Suborned.World
             var kit = new MeshKit(); var B = new Pb(kit, spec.Atlas);
             int D = ProcKit.Detail((f.A + f.B) * 0.5f);
             var d = new Dice(f.Id, 11);
-            const float fd = 0.62f, pw = 0.4f;
+            const float fd = 0.62f;
             float bv = D >= 2 ? 0.05f : 0f;
+            // grammar §2a.1 on a skinned host (not lobbies): the bulkhead in the family's plinth faience up to plinth + bulkhead, and the
+            // piers between shop bays in the building's accent (half a pier each side of the tenancy line)
+            var sk = civic ? null : ProcSkin.OfBuilding(f.Host);
+            float pw = sk != null && sk.FaiencePiers ? sk.FaiencePier * 0.5f : 0.4f;
+            float bt = sk != null ? z0 + sk.FaiencePlinth + sk.FaienceBulkhead : z0 + 1.0f; // bulkhead top
+            string pier = sk != null && sk.FaiencePiers ? ProcSkin.Swatch(sk.Accent) : trade;
 
             // A kit facade piece stands over this tenancy (f.Facade): the piece carries its own shopfront and canopy, so the shell is
             // laid out (its canopy fixes the sign's height) but not drawn; the sign stays (brief 007 E).
             var S = f.Facade == null ? B : new Pb(new MeshKit(), spec.Atlas);
             S.Box(h.Plinth, Cls.Stone, w, 0, W, z0, z0 + 0.55f, 0f, 0.7f, bv);
-            S.Box(trade, Cls.Enamel, w, 0, pw, z0 + 0.55f, z0 + H, 0f, fd, bv);
-            S.Box(trade, Cls.Enamel, w, W - pw, W, z0 + 0.55f, z0 + H, 0f, fd, bv);
+            S.Box(pier, Cls.Enamel, w, 0, pw, z0 + 0.55f, z0 + H, 0f, fd, bv);
+            S.Box(pier, Cls.Enamel, w, W - pw, W, z0 + 0.55f, z0 + H, 0f, fd, bv);
             S.Box(trade, Cls.Enamel, w, pw, W - pw, z0 + 3.6f, z0 + H, 0f, fd, bv, null, true);
-            // bulkhead (mosaic enamel), glazing set back, reveals
-            S.R(civic ? "white" : stripe, Cls.Enamel, w, pw, W - pw, z0 + 0.55f, z0 + 1.0f, 0.44f, 0.8f, 1f);
-            if (D >= 1) S.Box("chrome", Cls.Chrome, w, pw, W - pw, z0 + 1.0f, z0 + 1.06f, 0.26f, 0.5f);
+            // bulkhead (mosaic enamel; faience on a skinned host), glazing set back, reveals
+            S.R(civic ? "white" : sk != null ? h.Plinth : stripe, Cls.Enamel, w, pw, W - pw, z0 + 0.55f, bt, 0.44f, 0.8f, 1f);
+            if (D >= 1) S.Box("chrome", Cls.Chrome, w, pw, W - pw, bt, bt + 0.06f, 0.26f, 0.5f);
             string gl = spec.Glass[d.Int(spec.Glass.Length)];
-            S.R(gl, Cls.Glass, w, pw, W - pw, z0 + 1.06f, z0 + 3.6f, 0.26f, 0.8f, 0.92f);
+            S.R(gl, Cls.Glass, w, pw, W - pw, bt + 0.06f, z0 + 3.6f, 0.26f, 0.8f, 0.92f);
             if (D >= 1)
             {
-                S.Quad(trade, Cls.Enamel, w.P(pw, z0 + 1f, 0.26f), w.P(pw, z0 + 3.6f, 0.26f), w.P(pw, z0 + 3.6f, fd), w.P(pw, z0 + 1f, fd), w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
-                S.Quad(trade, Cls.Enamel, w.P(W - pw, z0 + 1f, 0.26f), w.P(W - pw, z0 + 3.6f, 0.26f), w.P(W - pw, z0 + 3.6f, fd), w.P(W - pw, z0 + 1f, fd), -w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
+                S.Quad(pier, Cls.Enamel, w.P(pw, bt, 0.26f), w.P(pw, z0 + 3.6f, 0.26f), w.P(pw, z0 + 3.6f, fd), w.P(pw, bt, fd), w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
+                S.Quad(pier, Cls.Enamel, w.P(W - pw, bt, 0.26f), w.P(W - pw, z0 + 3.6f, 0.26f), w.P(W - pw, z0 + 3.6f, fd), w.P(W - pw, bt, fd), -w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
             }
             float sd = f.Entrance != null ? w.S(f.Entrance.Centre) : W * 0.5f;
             int nm = Mathf.Max(1, Mathf.RoundToInt((W - 0.8f) / 1.5f));
@@ -80,7 +86,8 @@ namespace Suborned.World
                         break;
                 }
                 if (D >= 1) S.Box(civic ? stripe : trade, Cls.Enamel, w, 0, W, cz - 0.36f, cz, c1 - 0.08f, c1, 0.03f);
-                if (D >= 2) S.Box("chrome", Cls.Chrome, w, 0, W, cz + 0.05f, cz + 0.1f, c1, c1 + 0.04f);
+                if (sk != null && D >= 1) S.Box(ProcSkin.Swatch(sk.Trim), Cls.Brass, w, 0, W, cz + 0.04f, cz + 0.14f, c1, c1 + 0.05f); // §2a.5 the marquee's gold edge
+                else if (D >= 2) S.Box("chrome", Cls.Chrome, w, 0, W, cz + 0.05f, cz + 0.1f, c1, c1 + 0.05f);
                 if (!civic)
                 {
                     int ns = Mathf.Max(2, Mathf.RoundToInt(W / 0.75f)); float sw = W / ns;

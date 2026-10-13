@@ -183,7 +183,7 @@ def starburst(s, r, spikes, length, mat):
                 [r * 0.22, r * 0.09, 0.0015], mat, seg=8)
 
 
-@asset("PhoneBooth", "Booths", bevel=0.004)
+@asset("PhoneBooth", "Booths", bevel=0.0, lean=0.45, cap=1500)
 def phone_booth(s):
     """Twin acoustic hoods, teal and cream, back to back on a coral drum; each opens toward the walk at head
     height with a videophone on its back wall, a ledge, a lamp; a chrome starburst rides the join."""

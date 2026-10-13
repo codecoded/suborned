@@ -10,7 +10,8 @@ namespace Suborned.World
     /// top: orthographic, straight down, north up, fitting the frame.
     /// export: the export's view, "zoom 14 at 38°" = orthographic size view.zoom, pitch view.pitch, yaw view.yaw (compass,
     ///   90 = looking east), centred on view.focus at the street datum (0); stands back just far enough to clear the
-    ///   tallest object, so the URP shadow distance covers the frame.
+    ///   geometry in its frame column (not the whole district's tallest object), and carries TacticalShadows fitted to that
+    ///   depth from light.json `shadows.tactical` (brief 007 round 3: the play camera had no shadows at 423 m).
     /// perspective: yaw/pitch/fov fitted so every corner of the frame's bounds is in view, or standing at `eye` looking at
     ///   `look`, or standing on `along` (a road or foot line) at eyeHeight looking down the line.</summary>
     public static class Rig
@@ -29,7 +30,7 @@ namespace Suborned.World
                     switch (v.Projection)
                     {
                         case "top": Top(cam, Frame(root, v, all), v); break;
-                        case "export": Export(cam, all, world.View, Focus(root, world, v), float.IsNaN(v.Zoom) ? world.View.Zoom : v.Zoom); break;
+                        case "export": Export(cam, all, world.View, Focus(root, world, v), float.IsNaN(v.Zoom) ? world.View.Zoom : v.Zoom, v.Aspect, look); break;
                         default:
                             if (v.Eye is { } eye) Stand(cam, eye, v.Look.Value, v);
                             else if (v.Along != null) Along(cam, world, v);
@@ -76,14 +77,98 @@ namespace Suborned.World
             cam.farClipPlane = b.size.y + 20f;
         }
 
-        static void Export(Camera cam, Bounds all, ViewDto view, Vector3 focus, float zoom)
+        /// <summary>Clearance (m) in front of the frame's ground plane that the camera needs.</summary>
+        const float StandMargin = 5f;
+
+        static void Export(Camera cam, Bounds all, ViewDto view, Vector3 focus, float zoom, float aspect, Look look)
         {
             cam.orthographic = true;
             cam.orthographicSize = zoom;
             var rot = Quaternion.Euler(view.Pitch, view.Yaw, 0f);
-            float standOff = (all.max.y - focus.y) / Mathf.Sin(view.Pitch * Mathf.Deg2Rad) + zoom;
+            float standOff = StandOff(rot, focus, zoom, aspect);
             cam.transform.SetPositionAndRotation(focus - rot * Vector3.forward * standOff, rot);
             cam.farClipPlane = standOff + all.size.magnitude;
+            var t = look.Light("shadows") is { } sh ? J.Get(sh, "tactical") : null;
+            if (t == null) throw new InvalidDataException("World: light.json has no shadows.tactical (the export views' shadow fit)");
+            var ts = cam.gameObject.AddComponent<TacticalShadows>();
+            ts.focusDepth = standOff;
+            ts.nearBand = J.F(t, "nearBand"); ts.farBand = J.F(t, "farBand"); ts.cascades = (int)J.F(t, "cascades"); ts.fade = J.F(t, "fade");
+            var air = J.A(t, "airSplits"); ts.airSplits = new Vector2((float)(double)air[0], (float)(double)air[1]);
+        }
+
+        /// <summary>Distance from the focus back along the view at which an orthographic camera of this size clears its frame column.</summary>
+        public static float StandOff(Quaternion rot, Vector3 focus, float zoom, float aspect) => Mathf.Max(Clearance(rot, focus, zoom * aspect, zoom) + StandMargin, zoom);
+
+        /// <summary>How far back along the view (m, from the focus) the nearest geometry inside the orthographic frame column lies:
+        /// the column is the frame rectangle (halfW × halfH about the focus) extended toward the camera. Generated meshes are tested
+        /// per triangle (camera-space box against the rectangle); kit instances (asset meshes) by their renderer bounds. Runs before
+        /// the horizon band and the sea are built.</summary>
+        static float Clearance(Quaternion rot, Vector3 focus, float halfW, float halfH)
+        {
+            var toCam = Matrix4x4.TRS(focus, rot, Vector3.one).inverse;
+            float need = 0f;
+            var poly = new List<Vector3>(9); var tmp = new List<Vector3>(9);
+            foreach (var mf in Object.FindObjectsByType<MeshFilter>())
+            {
+                var mesh = mf.sharedMesh;
+                if (!mesh || !mf.TryGetComponent<MeshRenderer>(out var r) || !r.enabled || !mf.gameObject.activeInHierarchy) continue;
+                var (lo, hi) = Box(toCam, r.bounds);
+                if (lo.x > halfW || hi.x < -halfW || lo.y > halfH || hi.y < -halfH || -lo.z <= need) continue;
+                if (UnityEditor.AssetDatabase.Contains(mesh) || !mesh.isReadable) { need = Mathf.Max(need, -lo.z); continue; }
+                var m = toCam * mf.transform.localToWorldMatrix;
+                var v = mesh.vertices;
+                for (int i = 0; i < v.Length; i++) v[i] = m.MultiplyPoint3x4(v[i]);
+                for (int s = 0; s < mesh.subMeshCount; s++)
+                {
+                    var tri = mesh.GetTriangles(s);
+                    for (int i = 0; i < tri.Length; i += 3)
+                    {
+                        Vector3 a = v[tri[i]], b = v[tri[i + 1]], c = v[tri[i + 2]];
+                        if (-Mathf.Min(a.z, Mathf.Min(b.z, c.z)) <= need) continue;
+                        if (Mathf.Min(a.x, Mathf.Min(b.x, c.x)) > halfW || Mathf.Max(a.x, Mathf.Max(b.x, c.x)) < -halfW) continue;
+                        if (Mathf.Min(a.y, Mathf.Min(b.y, c.y)) > halfH || Mathf.Max(a.y, Mathf.Max(b.y, c.y)) < -halfH) continue;
+                        need = Mathf.Max(need, -NearestInColumn(a, b, c, halfW, halfH, poly, tmp));
+                    }
+                }
+            }
+            return need;
+        }
+
+        /// <summary>Smallest camera-space z of triangle abc inside the column |x| ≤ halfW, |y| ≤ halfH (the triangle clipped to the
+        /// column; z is linear over it, so the minimum is at a vertex of the clipped polygon); +∞ when it misses the column.</summary>
+        static float NearestInColumn(Vector3 a, Vector3 b, Vector3 c, float halfW, float halfH, List<Vector3> poly, List<Vector3> tmp)
+        {
+            poly.Clear(); poly.Add(a); poly.Add(b); poly.Add(c);
+            Clip(poly, tmp, 0, 1f, halfW); Clip(poly, tmp, 0, -1f, halfW); Clip(poly, tmp, 1, 1f, halfH); Clip(poly, tmp, 1, -1f, halfH);
+            float z = float.PositiveInfinity;
+            foreach (var p in poly) z = Mathf.Min(z, p.z);
+            return z;
+        }
+
+        /// <summary>Keeps the part of poly where sign·p[axis] ≤ limit (Sutherland–Hodgman, one plane).</summary>
+        static void Clip(List<Vector3> poly, List<Vector3> tmp, int axis, float sign, float limit)
+        {
+            if (poly.Count == 0) return;
+            tmp.Clear();
+            for (int i = 0; i < poly.Count; i++)
+            {
+                Vector3 p = poly[i], q = poly[(i + 1) % poly.Count];
+                float dp = sign * p[axis] - limit, dq = sign * q[axis] - limit;
+                if (dp <= 0f) tmp.Add(p);
+                if ((dp < 0f && dq > 0f) || (dp > 0f && dq < 0f)) tmp.Add(Vector3.Lerp(p, q, dp / (dp - dq)));
+            }
+            poly.Clear(); poly.AddRange(tmp);
+        }
+
+        static (Vector3 lo, Vector3 hi) Box(Matrix4x4 m, Bounds b)
+        {
+            Vector3 lo = Vector3.positiveInfinity, hi = Vector3.negativeInfinity;
+            for (int i = 0; i < 8; i++)
+            {
+                var p = m.MultiplyPoint3x4(b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)));
+                lo = Vector3.Min(lo, p); hi = Vector3.Max(hi, p);
+            }
+            return (lo, hi);
         }
 
         /// <summary>Tightest fit of the bounds' eight corners (camera-local c, relative to the bounds centre) for a fixed

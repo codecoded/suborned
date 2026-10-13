@@ -8,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 namespace Suborned.World
 {
     /// <summary>Renders every views.json view of the built scene to &lt;repo&gt;/out/shots/&lt;prefix&gt;-&lt;view&gt;.png at the
-    /// view's size. Per view: the URP shadow distance (restored afterwards) and fog on or off. Needs a GPU: batchmode
+    /// view's size. Per view: the URP shadow distance (restored afterwards; an export view's TacticalShadows fit wins) and fog on or off. Needs a GPU: batchmode
     /// without -nographics.
     ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Shots.Render [-shots &lt;prefix&gt;]</summary>
     public static class Shots
@@ -42,7 +42,11 @@ namespace Suborned.World
                     urp.shadowDistance = float.IsNaN(v.ShadowDistance) ? shadowDistance : v.ShadowDistance;
                     RenderSettings.fog = v.Fog;
                     if (!warm) { Shot(cam, 64, 64, null); warm = true; } // the first render after opening a scene in batchmode comes out flat
-                    Shot(cam, v.Width, v.Height, Path.Combine(dir, $"{prefix}-{v.Name}.png"));
+                    using (go.TryGetComponent<TacticalShadows>(out var ts) ? ts.Use() : null) // export views: shadows fitted to the camera's depth
+                    {
+                        if (ts) Debug.Log($"World: view {v.Name}: tactical shadows, focus {ts.focusDepth:F1} m, distance {ts.Distance:F1} m, {ts.cascades} cascades");
+                        Shot(cam, v.Width, v.Height, Path.Combine(dir, $"{prefix}-{v.Name}.png"));
+                    }
                     Perf(cam);
                 }
             }

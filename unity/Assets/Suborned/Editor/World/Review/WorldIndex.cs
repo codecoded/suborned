@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Suborned.World.Review
 {
     /// <summary>A kit piece the export (or a generated stand-in) puts on an element: at plan `At`, standing on `Z`.</summary>
-    public sealed class KitWant { public string Id, Why; public Vector2 At; public float Z; }
+    public sealed class KitWant { public string Id, Why; public Vector2 At; public float Z; public bool Lowest; } // Lowest: Z is the piece's lowest point, not its pivot
 
     /// <summary>One export element (or a part of one: a pylon, a roof item, a megastructure part, a frontage sign) with the
     /// box its geometry must occupy, computed from the export alone (Unity frame: x east, y up, z north). Source:
@@ -36,7 +36,7 @@ namespace Suborned.World.Review
         public readonly StandIns StandIns;
 
         public static readonly string[] LayerOrder =
-            { "ground", "transit", "buildings", "skins", "facades", "roofs", "frontages", "connectors", "street", "levels", "decks", "megastructures", "civic", "gates", "landmarks", "signatures", "horizon" };
+            { "ground", "transit", "buildings", "skins", "fabric", "facades", "roofs", "frontages", "connectors", "street", "levels", "decks", "megastructures", "civic", "gates", "landmarks", "signatures", "horizon" };
 
         public WorldIndex(WorldDto w)
         {
@@ -82,8 +82,26 @@ namespace Suborned.World.Review
                 }
                 if (lo > hi) { lo = 0; hi = 1; }
                 bool covered = sk.Faces.TrueForAll(f => w.Buildings.Exists(m => m.Id == f.Mass && StandIns.Covers(m)));
-                Add("skins", sk.Id, "skin:" + sk.Family, Ring(pts.ToArray(), lo, hi), covered ? "covered" : "procedural");
+                var skin = Add("skins", sk.Id, "skin:" + sk.Family, Ring(pts.ToArray(), lo, hi), covered ? "covered" : "procedural");
+                foreach (var fin in sk.Fins)
+                {
+                    var n = fin.Normal.normalized; var u = new Vector2(-n.y, n.x) * (fin.W * 0.5f);
+                    Sub(skin, fin.Id, "fin:" + fin.Kind, Ring(new[] { fin.At - u, fin.At + u, fin.At + u + n * fin.D, fin.At - u + n * fin.D }, fin.Z0, fin.Z1));
+                }
             }
+
+            foreach (var a in w.Fabric.Awnings)
+            {
+                var n = a.Normal.normalized; var u = new Vector2(-n.y, n.x) * (a.W * 0.5f);
+                Add("fabric", a.Id, "fabric:awning", Ring(new[] { a.At - u, a.At + u, a.At + u + n * a.D, a.At - u + n * a.D }, a.Z - a.Fall - a.Valance, a.Z));
+            }
+            foreach (var b in w.Fabric.Banners)
+            {
+                var n = b.Normal.normalized; var u = new Vector2(-n.y, n.x) * (b.W * 0.5f);
+                Add("fabric", b.Id, "fabric:banner-" + b.Kind, Ring(new[] { b.At - u, b.At + u, b.At + u + n * b.Arm, b.At - u + n * b.Arm }, b.Z0, b.Z0 + b.H));
+            }
+            foreach (var f in w.Fabric.Flags)
+                Add("fabric", f.Id, "fabric:flag-" + f.Kind, Box(f.At, 0.3f, f.Z, f.Z + f.H));
 
             foreach (var f in w.Facades)
             {
@@ -166,8 +184,8 @@ namespace Suborned.World.Review
 
             foreach (var m in w.Civic)
             {
-                var it = Add("civic", m.Id, "civic:" + CivicStem(m.Id), Mass(m), m.Kit != null ? "kit" : "procedural");
-                if (m.Kit != null) it.Kits.Add(new KitWant { Id = m.Kit.Id, Why = "civic object", At = m.Kit.At, Z = m.Kit.Base });
+                var it = Add("civic", m.Id, "civic:" + CivicStem(m.Id), Mass(m), m.Kit == null ? "procedural" : FacadeKit.HasPlinth(m) ? "mixed" : "kit");
+                if (m.Kit != null) it.Kits.Add(new KitWant { Id = m.Kit.Id, Why = "civic object", At = m.Kit.At, Z = m.Kit.Base, Lowest = true });
             }
             foreach (var m in w.Gates) Add("gates", m.Id, "gate", Mass(m));
             foreach (var l in w.Landmarks)

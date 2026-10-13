@@ -1,0 +1,3 @@
+[test]
+# out/ is generated scratch (agents copy trees there); its files are never the project's tests
+pathIgnorePatterns = ["out/**"]

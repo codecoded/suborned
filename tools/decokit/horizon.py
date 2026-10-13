@@ -22,7 +22,11 @@ from structures import soft_extrude
 
 for n, h in (("Planet_1", "#E9D9B4"), ("Planet_2", "#E6D3B0"), ("Planet_3", "#EBD0B8"), ("Planet_4", "#F3E6C8"),
              ("Planet_Ring", "#F4E7C8"), ("Moon_1", "#EFE6D2"), ("Moon_2", "#DCD3C3"),
-             ("Far_Stone", "#F6EBD6"), ("Far_Band", "#8FD9CB"), ("Far_Shade", "#E4D2B6")):
+             # round 3 (Sky: ring A read as "stacked grey boxes"): cream a step warmer than the haze #f3eee4, fins in a
+             # deeper stone so the vertical rhythm survives the fog, teal faience bands, coral fins, gold crowns.
+             # dE2000 to the nearest signal: Stone 23.6, Band 42.1, Shade 22.0, Coral 22.7, Gold 20.9.
+             ("Far_Stone", "#F2E3C6"), ("Far_Band", "#5CC0B5"), ("Far_Shade", "#E2CDAA"),
+             ("Far_Coral", "#F4A08E"), ("Far_Gold", "#D0C848")):
     register("DK_" + n, "enamel", h)
 register("DK_Enamel_Turquoise", "enamel", accent("turquoise"))
 register("DK_Enamel_Flamingo", "enamel", accent("flamingo"))
@@ -33,66 +37,109 @@ register("DK_Plume_Shade", "stone", "#D9CFC0")       # shadow-side puffs, 24.4
 
 
 
-def tier(s, w, d, z0, z1, r=3.0, band_z=None):
+def tier(s, w, d, z0, z1, r=3.0, band_z=None, fins=3, stripe=False):
+    """A deco tier: rounded plate, `fins` full-height pilaster fins per face in the deeper stone (the vertical rhythm that
+    reads at 1 km), optional teal faience bands (horizontal, few) and a teal centre stripe per face, a gold coping."""
     poly = rrect(w, d, min(r, w / 2.2, d / 2.2), n=3)
     s.extrude(poly, z0, z1, pal.Far_Stone, smooth_sides=True)
-    if band_z:
-        for z in band_z:  # horizontal speed bands
-            s.extrude(rrect(w + 0.8, d + 0.8, min(r, w / 2.2) + 0.4, n=3), z, z + 2.2, pal.Far_Band, smooth_sides=True,
-                      top=False, bottom=False)
+    for z in band_z or ():
+        s.extrude(rrect(w + 0.8, d + 0.8, min(r, w / 2.2) + 0.4, n=3), z, z + 2.2, pal.Far_Band, smooth_sides=True,
+                  top=False, bottom=False)
+    fw = max(1.2, min(w, d) * 0.05)
+    for rot, half_len, half_dep in ((0, w / 2, d / 2), (90, d / 2, w / 2), (180, w / 2, d / 2), (270, d / 2, w / 2)):
+        with s.at((0, 0, 0), (0, 0, rot)):
+            for i in range(fins):
+                x = (-0.6 + 1.2 * i / max(1, fins - 1)) * (half_len - min(r, w / 2.2)) if fins > 1 else 0.0
+                s.box((x - fw / 2, -half_dep - 1.2, z0), (x + fw / 2, -half_dep + 0.1, z1 + 2.0), pal.Far_Shade)
+            if stripe:
+                s.box((-fw * 0.9, -half_dep - 0.5, z0 + 4.0), (fw * 0.9, -half_dep + 0.1, z1 - 4.0), pal.Far_Band)
+    s.extrude(rrect(w + 0.6, d + 0.6, min(r, w / 2.2) + 0.3, n=3), z1 - 1.2, z1, pal.Far_Gold, smooth_sides=True, bottom=False)
 
 
 def needle(s, z, h, r=2.0, mat=None):
     s.lathe([(r, z), (r * 0.25, z + h * 0.7), (0.0, z + h)], mat or pal.Chrome, seg=6, cap_bottom=False)
 
 
+def crown_steps(s, w, z, h):
+    """Ziggurat crown: three gold-edged setbacks and a lantern drum (AtomicAge exposition_palace, Blocks needle_trio)."""
+    for k, f in enumerate((0.8, 0.6, 0.4)):
+        ww = w * f
+        s.extrude(rrect(ww, ww, ww * 0.18, n=2), z + h * 0.18 * k, z + h * 0.18 * (k + 1), pal.Far_Stone, smooth_sides=True)
+        s.extrude(rrect(ww + 0.4, ww + 0.4, ww * 0.18 + 0.2, n=2), z + h * 0.18 * (k + 1) - 0.8, z + h * 0.18 * (k + 1),
+                  pal.Far_Gold, smooth_sides=True, bottom=False)
+    s.lathe([(w * 0.16, z + h * 0.54), (w * 0.16, z + h * 0.72), (w * 0.12, z + h * 0.78), (0.0, z + h * 0.8)], pal.Far_Gold, seg=8)
+
+
 @asset("Horizon_Spire_A", "Horizon", bevel=0.0)
 def spire_a(s):
-    tier(s, 56, 56, 0, 70, 6, (16, 36, 56))
-    tier(s, 40, 40, 70, 140, 5, (92, 116))
-    tier(s, 24, 24, 140, 200, 4, (160, 180))
-    tier(s, 12, 12, 200, 218, 3)
-    needle(s, 218, 52, 3.0)
+    """Stepped deco tower (AtomicAge power_spire): three finned tiers, teal stripes, ziggurat crown, needle. 220 m + needle."""
+    tier(s, 56, 56, 0, 70, 6, (66,), fins=4)
+    tier(s, 40, 40, 70, 140, 5, (136,), fins=3, stripe=True)
+    tier(s, 26, 26, 140, 192, 4, fins=3, stripe=True)
+    crown_steps(s, 26, 192, 34)
+    needle(s, 218, 52, 2.4)
 
 
 @asset("Horizon_Spire_B", "Horizon", bevel=0.0)
 def spire_b(s):
-    tier(s, 30, 26, 0, 190, 10, (30, 70, 110, 150))
+    """Saucer spire (Blocks saucer_spires): finned shaft, coral fins at the foot, teal-rimmed saucer with a gold band."""
+    tier(s, 30, 26, 0, 60, 10, (56,), fins=3)
+    tier(s, 24, 20, 60, 188, 8, fins=2, stripe=True)
+    for rot in (0, 90, 180, 270):  # coral buttress fins at the foot
+        with s.at((0, 0, 0), (0, 0, rot + 45)):
+            with s.at((0, 0, 0), (90, 0, 0)):
+                s.extrude([(10, 0), (30, 0), (14, 60), (10, 80)], -1.0, 1.0, pal.Far_Coral)
     s.lathe([(0.0, 188), (24, 192), (38, 200), (34, 207), (16, 211), (0.0, 213)], pal.Far_Stone, seg=24)
     s.lathe([(38.1, 198), (38.1, 202)], pal.Far_Band, seg=24, cap_bottom=False, cap_top=False)
+    s.lathe([(30.0, 207.5), (24.0, 209.5)], pal.Far_Gold, seg=24, cap_bottom=False, cap_top=False)
     s.lathe([(8, 211), (5, 222), (0.0, 224)], pal.Glass, seg=12)
     needle(s, 224, 46, 1.5)
 
 
 @asset("Horizon_Spire_C", "Horizon", bevel=0.0)
 def spire_c(s):
-    s.extrude(rrect(70, 34, 12, n=5), 0, 150, pal.Far_Stone, smooth_sides=True)
-    for z in range(14, 150, 22):  # speed bands wrap the rounded ends
-        s.extrude(rrect(70.8, 34.8, 12.4, n=5), z, z + 3.0, pal.Far_Band, smooth_sides=True, top=False, bottom=False)
-    s.extrude(rrect(46, 24, 9, n=5), 150, 176, pal.Far_Shade, smooth_sides=True)
-    ball(s, (0, 0, 190), 8.0, pal.Chrome, seg=10, n=5)
-    needle(s, 176, 14, 1.5)
+    """Twin streamline towers on a shared podium joined by a central fin (Blocks mixed_skyline, hanging_terraces), atom
+    crown: no more one fat slab."""
+    s.extrude(rrect(70, 34, 12, n=5), 0, 40, pal.Far_Stone, smooth_sides=True)
+    for z in (14, 30):
+        s.extrude(rrect(70.8, 34.8, 12.4, n=5), z, z + 2.4, pal.Far_Band, smooth_sides=True, top=False, bottom=False)
+    for x, h in ((-17, 150), (17, 128)):
+        with s.at((x, 0, 0)):
+            s.extrude(rrect(26, 26, 12.9, n=5), 40, h, pal.Far_Stone, smooth_sides=True)
+            for z in range(52, int(h) - 6, 14):  # speed bands wrap the round towers
+                s.extrude(rrect(26.8, 26.8, 13.3, n=5), z, z + 1.8, pal.Far_Band, smooth_sides=True, top=False, bottom=False)
+            s.extrude(rrect(27.2, 27.2, 13.5, n=5), h - 1.2, h, pal.Far_Gold, smooth_sides=True, bottom=False)
+            s.extrude(rrect(16, 16, 7.9, n=4), h, h + 10, pal.Far_Shade, smooth_sides=True)
+    with s.at((0, 0, 0), (90, 0, 0)):  # the central fin, coral, rising past both
+        s.extrude([(-3, 40), (3, 40), (3, 160), (0, 176), (-3, 160)], -1.5, 1.5, pal.Far_Coral)
+    ball(s, (-17, 0, 167), 6.0, pal.Chrome, seg=10, n=5)       # atom ball on the taller tower
+    with s.at((-17, 0, 0)):
+        s.lathe([(10.0, 166.6), (10.0, 167.4)], pal.Far_Gold, seg=16, cap_bottom=False, cap_top=False)  # its orbit
+        needle(s, 172, 12, 1.0)
+    with s.at((17, 0, 0)):
+        needle(s, 138, 16, 1.2)
 
 
 @asset("Horizon_Spire_D", "Horizon", bevel=0.0)
 def spire_d(s):
     s.extrude(rrect(90, 40, 12, n=5), 0, 36, pal.Far_Stone, smooth_sides=True)
     s.extrude(rrect(90.8, 40.8, 12.4, n=5), 20, 24, pal.Far_Band, smooth_sides=True, top=False, bottom=False)
-    # towers built at their own x via local frames
     for x, h, w in ((-26, 200, 16), (0, 300, 22), (28, 240, 18)):
         with s.at((x, 0, 0)):
-            tier(s, w, w, 36, 36 + h * 0.7, 4, (36 + h * 0.3,))
-            s.lathe([(w * 0.42, 36 + h * 0.7), (w * 0.2, 36 + h * 0.86), (0.0, 36 + h)], pal.Far_Stone, seg=8, cap_bottom=False)
+            tier(s, w, w, 36, 36 + h * 0.62, 4, fins=2, stripe=(x == 0))
+            tier(s, w * 0.72, w * 0.72, 36 + h * 0.62, 36 + h * 0.74, 3, fins=1)
+            s.lathe([(w * 0.34, 36 + h * 0.74), (w * 0.18, 36 + h * 0.88), (0.0, 36 + h)], pal.Far_Stone, seg=8, cap_bottom=False)
+            s.lathe([(w * 0.35, 36 + h * 0.74), (w * 0.33, 36 + h * 0.765)], pal.Far_Gold, seg=8, cap_bottom=False, cap_top=False)
             needle(s, 36 + h, 30, 1.2)
 
 
 @asset("Horizon_Massif", "Horizon", bevel=0.0)
 def massif(s):
-    tier(s, 120, 80, 0, 36, 14, (12,))
-    tier(s, 90, 56, 36, 60, 10, (46,))
+    tier(s, 120, 80, 0, 36, 14, (12,), fins=5)
+    tier(s, 90, 56, 36, 60, 10, (46,), fins=4)
     for x, y, w, h in ((-30, 0, 24, 130), (6, 10, 20, 100), (34, -6, 22, 90)):
         with s.at((x, y, 0)):
-            tier(s, w, w, 60, 60 + h * 0.8, 4, (60 + h * 0.4,))
+            tier(s, w, w, 60, 60 + h * 0.8, 4, fins=2, stripe=True)
             s.lathe([(w * 0.4, 60 + h * 0.8), (w * 0.2, 60 + h * 0.92), (0.0, 60 + h)], pal.Far_Stone, seg=8, cap_bottom=False)
 
 

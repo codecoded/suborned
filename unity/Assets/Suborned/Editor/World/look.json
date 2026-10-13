@@ -56,6 +56,21 @@
       "value": 1,
       "smoothness": 0.05
     },
+    "beyond_ground": {
+      "palette": "harbour.beyond_ground",
+      "value": 1,
+      "smoothness": 0.05
+    },
+    "beyond_green": {
+      "palette": "harbour.beyond_green",
+      "value": 1,
+      "smoothness": 0.05
+    },
+    "beyond_hill": {
+      "palette": "harbour.beyond_hill",
+      "value": 1,
+      "smoothness": 0.05
+    },
     "bay": {
       "palette": "harbour.bay",
       "value": 1,
@@ -197,6 +212,47 @@
       "palette": "harbour.awning",
       "value": 1,
       "smoothness": 0.2
+    },
+    "accent_teal": {
+      "palette": "harbour.accent_teal",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "accent_turquoise": {
+      "palette": "harbour.accent_turquoise",
+      "value": 1,
+      "smoothness": 0.6
+    },
+    "accent_coral": {
+      "palette": "harbour.accent_coral",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_flamingo": {
+      "palette": "harbour.accent_flamingo",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_gold": {
+      "palette": "harbour.accent_gold",
+      "value": 1,
+      "smoothness": 0.7,
+      "metallic": 0.5
+    },
+    "accent_mint": {
+      "palette": "harbour.accent_mint",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_peach": {
+      "palette": "harbour.accent_peach",
+      "value": 1,
+      "smoothness": 0.4
+    },
+    "canvas": {
+      "palette": "harbour.canvas",
+      "value": 1,
+      "smoothness": 0.2
     }
   },
   "sky": {
@@ -281,7 +337,7 @@
       "hex": "#fbe8b8"
     },
     "harbour.trim": {
-      "hex": "#eadba6"
+      "hex": "#d0c848"
     },
     "harbour.residential": {
       "hex": "#f8eedb"
@@ -363,6 +419,39 @@
     },
     "zenith_cobalt": {
       "hex": "#296587"
+    },
+    "harbour.beyond_ground": {
+      "hex": "#c4bf9c"
+    },
+    "harbour.beyond_green": {
+      "hex": "#9fb585"
+    },
+    "harbour.beyond_hill": {
+      "hex": "#a9a28e"
+    },
+    "harbour.accent_teal": {
+      "hex": "#36b0a8"
+    },
+    "harbour.accent_turquoise": {
+      "hex": "#1cb9c6"
+    },
+    "harbour.accent_coral": {
+      "hex": "#fc9c84"
+    },
+    "harbour.accent_flamingo": {
+      "hex": "#e8609a"
+    },
+    "harbour.accent_gold": {
+      "hex": "#d0c848"
+    },
+    "harbour.accent_mint": {
+      "hex": "#7fd0b8"
+    },
+    "harbour.accent_peach": {
+      "hex": "#fcc4ac"
+    },
+    "harbour.canvas": {
+      "hex": "#f7f4ec"
     }
   }
 }

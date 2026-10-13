@@ -77,7 +77,10 @@ namespace Suborned.World
             AssetDatabase.SaveAssets();
             Debug.Log($"World: kit import {models} models, {missing} unmapped materials");
             if (missing > 0) throw new InvalidDataException("World: kit materials unmapped");
-            Check(new KitPlacer(Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts", "world", "kit.json")));
+            var placer = new KitPlacer(Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts", "world", "kit.json"));
+            Generated(placer);
+            Check(placer);
+            KitLods.Build(placer);
         });
 
         /// <summary>Generated pieces (FBX only): import settings and the material remap on the model, then a prefab of the model under
@@ -97,7 +100,7 @@ namespace Suborned.World
                 }
                 if (!Configured(mi)) { Configure(mi); mi.SaveAndReimport(); }
                 if (Remap(mi, fbx) > 0) throw new InvalidDataException($"World: kit `{id}` materials unmapped");
-                var path = kit.Prefabs[id];
+                var path = kit.Sources[id];
                 if (AssetDatabase.LoadAssetAtPath<GameObject>(path)) continue;
                 Folder(Path.GetDirectoryName(path).Replace('\\', '/'));
                 var go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(fbx));
@@ -125,9 +128,9 @@ namespace Suborned.World
         public static void Check(KitPlacer kit)
         {
             int bad = 0, mats = 0;
-            foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
+            foreach (var id in kit.Sources.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
             {
-                var go = kit.Prefab(id);
+                var go = kit.Source(id);
                 var rs = go.GetComponentsInChildren<MeshRenderer>();
                 if (rs.Length == 0) { bad++; Debug.LogError($"World: kit {id}: no renderers"); }
                 foreach (var r in rs)
@@ -141,7 +144,7 @@ namespace Suborned.World
                         { bad++; Debug.LogError($"World: kit {id}/{r.name}: material {m.name} shader `{(s ? s.name : "none")}` missing or broken"); }
                     }
             }
-            Debug.Log($"World: kit check {kit.Prefabs.Count} prefabs, {mats} material slots, {bad} problems");
+            Debug.Log($"World: kit check {kit.Sources.Count} prefabs, {mats} material slots, {bad} problems");
             if (bad > 0) throw new InvalidDataException("World: kit check failed");
         }
     }

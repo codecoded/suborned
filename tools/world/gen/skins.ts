@@ -12,13 +12,14 @@ import { type Ctx, r3, rng } from './common';
 import { isStreetClass } from './grammar';
 import { kindOf } from './edges';
 import { floorTop, type Bld } from './masses';
+import { ACCENT_ROLES } from './colour';
 
 export const SKIN = {
   bay: 6, glassShare: 0.55, maxPane: 4, sill: 0.9, head: 2.6, reveal: 0.35, mullion: 1.3, frame: 0.45,
   porthole: { d: 0.9, ring: 0.1, perBay: 2 }, balcony: { door: 1.8, doorH: 2.4 }, minFace: 4, cap: 0.9,
 } as const;
-/** §2 accent roles (look.json surfaces): turquoise 40, flamingo 25, mint 15, sunshine 10 (cobalt is civic only). */
-const ACCENTS: [string, number][] = [['tower', 40], ['awning', 25], ['mega', 15], ['sign', 10]];
+/** §2 accent roles (look.json `accent_*` surfaces, grammar round 3): teal 35, coral 20, turquoise 15, mint 10, flamingo 10, peach 10 (cobalt is civic only, gold the trim). */
+const ACCENTS = ACCENT_ROLES;
 const FAMILIES: Record<string, [Skin['family'], number][]> = {
   residential: [['balcony', 4], ['ribbon', 3], ['porthole', 2]], commercial: [['ribbon', 5], ['porthole', 2]], mixed: [['ribbon', 3], ['balcony', 2], ['porthole', 2]],
   port: [['porthole', 3], ['ribbon', 2]], office: [['porthole', 3], ['ribbon', 2]],
@@ -37,8 +38,11 @@ function rhythm(family: Skin['family'], n: number, street: boolean, seed: string
   return Array.from({ length: n }, (_, i) => family === 'porthole' ? (i % 2 ? 'R' : 'P') : family === 'balcony' ? (i === 0 || i === n - 1 ? 'R' : 'B') : family === 'shed' ? 'P' : (i + off) % 4 === 3 ? 'P' : 'R').join('');
 }
 
-export function generateSkins(ctx: Ctx, blds: Bld[], masses: Mass[], near: (id: string) => string[]): Skin[] {
-  const B = ctx.B, pav = ctx.pav, out: Skin[] = [], chosen = new Map<string, { family: string; accent: string }>();
+/** A skin before its colour life (gen/colour.ts adds the §2a fields). */
+export type BaseSkin = Omit<Skin, 'accent2' | 'trim' | 'faience' | 'spandrel' | 'fins' | 'share' | 'porthole'> & { porthole: Omit<Skin['porthole'], 'panel'> };
+
+export function generateSkins(ctx: Ctx, blds: Bld[], masses: Mass[], near: (id: string) => string[]): BaseSkin[] {
+  const B = ctx.B, pav = ctx.pav, out: BaseSkin[] = [], chosen = new Map<string, { family: string; accent: string }>();
   const byB = new Map<string, Mass[]>();
   for (const m of masses) { const id = m.id.slice(0, m.id.lastIndexOf('/')); if (/\/(podium|body|step|upper)$/.test(m.id)) (byB.get(id) ?? byB.set(id, []).get(id)!).push(m); }
   for (const b of blds) {

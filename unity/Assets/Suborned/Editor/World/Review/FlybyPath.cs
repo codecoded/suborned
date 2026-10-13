@@ -10,6 +10,9 @@ namespace Suborned.World.Review
     {
         public Vector3 Position; public Quaternion Rotation;
         public float Fov, OrthoSize, Near, Far, ShadowDistance;
+        /// <summary>Set on the play stop and the moves into and out of it: the street focus lies this far along the view, and the
+        /// shadows are fitted to it as the game's TacticalShadows does (NaN = the plain ShadowDistance).</summary>
+        public float ShadowFocus;
         public bool Ortho;
         public string Label; public int Stop; public bool Holding;
 
@@ -100,7 +103,7 @@ namespace Suborned.World.Review
                         var mid = (best.A + best.B) * 0.5f; var along = (best.B - best.A).normalized; float h = Opt(s, "eyeHeight", 1.7f), z = best.Z;
                         var outward = best.Normal * Opt(s, "out", 7f);
                         var k = K(name);
-                        Look(k, P(mid + outward - along * 22f, z + h), P(mid + best.Normal * 2f + along * 25f, z + 3.5f));
+                        Look(k, Nudge(s, P(mid + outward - along * 22f, z + h), P(mid + best.Normal * 2f + along * 25f, z + Opt(s, "lookHeight", 3.5f))));
                         Keys.Add(k); break;
                     }
                     case "deck":
@@ -110,7 +113,7 @@ namespace Suborned.World.Review
                         var (c, axis, len) = Axis(deck.Ring);
                         float h = Opt(s, "eyeHeight", 1.7f);
                         var k = K(name);
-                        Look(k, P(c - axis * len * 0.42f, level.Height + h), P(c + axis * len * 0.45f, level.Height + 1.5f));
+                        Look(k, Nudge(s, P(c - axis * len * 0.42f, level.Height + h), P(c + axis * len * 0.45f, level.Height + 1.5f)));
                         Keys.Add(k); break;
                     }
                     case "station":
@@ -120,7 +123,7 @@ namespace Suborned.World.Review
                         var (c, axis, len) = Axis(st.Ring);
                         float top = st.Base + st.Height, h = Opt(s, "eyeHeight", 1.7f);
                         var k = K(name);
-                        Look(k, P(c - axis * len * 0.45f, top + h), P(c + axis * (len * 0.5f + 60f), top + 2f));
+                        Look(k, Nudge(s, P(c - axis * len * 0.45f, top + h), P(c + axis * (len * 0.5f + 60f), top + 2f)));
                         Keys.Add(k); break;
                     }
                     case "along":
@@ -223,6 +226,18 @@ namespace Suborned.World.Review
             return b.size.x >= b.size.z ? (c, Vector2.right, b.size.x) : (c, Vector2.up, b.size.z);
         }
 
+        /// <summary>Stop options `side` (m to the right of the view, level) and `shift` (m along it), applied to eye and look alike, so a
+        /// ground-level stop can step clear of a column or tree standing in front of the lens without changing what it frames.</summary>
+        static (Vector3 eye, Vector3 look) Nudge(object s, Vector3 eye, Vector3 look)
+        {
+            float side = J.Get(s, "side") is double a ? (float)a : 0f, shift = J.Get(s, "shift") is double b ? (float)b : 0f;
+            var f = new Vector3(look.x - eye.x, 0f, look.z - eye.z).normalized; var r = new Vector3(f.z, 0f, -f.x);
+            var o = r * side + f * shift;
+            return (eye + o, look + o);
+        }
+
+        static void Look(Key k, (Vector3 eye, Vector3 look) p) => Look(k, p.eye, p.look);
+
         /// <summary>Key standing at eye looking at look.</summary>
         static void Look(Key k, Vector3 eye, Vector3 look)
         {
@@ -262,7 +277,8 @@ namespace Suborned.World.Review
             if (s <= a.Hold || i == Keys.Count - 1)
             {
                 var p = Orbit(a.Target, a.Yaw + a.Drift * Mathf.Min(s, a.Hold), a.Pitch, a.Dist, a.Fov, 0f, a.Shadow);
-                if (!float.IsNaN(a.Ortho)) { p.Ortho = true; p.OrthoSize = a.Ortho; }
+                p.ShadowFocus = float.NaN;
+                if (!float.IsNaN(a.Ortho)) { p.Ortho = true; p.OrthoSize = a.Ortho; p.ShadowFocus = a.Dist; }
                 p.Label = a.Name; p.Stop = i; p.Holding = true;
                 return p;
             }
@@ -277,6 +293,7 @@ namespace Suborned.World.Review
                 2f * Mathf.Atan(Mathf.Exp(Mathf.Lerp(Mathf.Log(Mathf.Tan(a.Fov * 0.5f * Mathf.Deg2Rad)), Mathf.Log(Mathf.Tan(b.Fov * 0.5f * Mathf.Deg2Rad)), e))) * Mathf.Rad2Deg,
                 floor, Mathf.Exp(Mathf.Lerp(Mathf.Log(a.Shadow), Mathf.Log(b.Shadow), e)));
             pose.Label = $"{a.Name} → {b.Name}"; pose.Stop = i; pose.Holding = false;
+            pose.ShadowFocus = !float.IsNaN(a.Ortho) || !float.IsNaN(b.Ortho) ? Vector3.Distance(pose.Position, target) : float.NaN;
             return pose;
         }
 

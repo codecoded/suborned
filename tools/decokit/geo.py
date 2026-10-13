@@ -104,6 +104,10 @@ class Shape:
         self.mats = []
         self._stack = [Matrix.Identity(4)]
         self.parts = {}
+        self.lean = 1.0  # segment scale for small street props (kit.asset lean=; brief 007 round 3, Redline's per-pixel caps)
+
+    def _seg(self, seg, lo):
+        return seg if self.lean == 1.0 else max(lo, int(round(seg * self.lean)))
 
     @property
     def m(self):
@@ -156,6 +160,7 @@ class Shape:
     def lathe(self, profile, mat, seg=32, smooth=True, cap_bottom=True, cap_top=True):
         """Revolve (r, z) points (bottom to top) about local Z. r == 0 makes a pole.
         Faces point right of the travel: up a wall faces out, a flat step inward faces up, outward faces down."""
+        seg = self._seg(seg, 8)
         verts, rings = [], []
         for r, z in profile:
             if r < 1e-6:
@@ -185,6 +190,7 @@ class Shape:
 
     def sweep(self, path, radius, mat, seg=12, caps=True, smooth=True):
         """Round tube along a 3D polyline; radius may be a float or a per-point list."""
+        seg = self._seg(seg, 5)
         P = [Vector(p) for p in path]
         R = radius if hasattr(radius, "__len__") else [radius] * len(P)
         T = []
@@ -268,6 +274,7 @@ class Shape:
 
     def rbox(self, mn, mx, r, mat, seg=3):
         """Box with every edge rounded to radius r (bmesh bevel on this box only)."""
+        seg = self._seg(seg, 1)
         (x0, y0, z0), (x1, y1, z1) = mn, mx
         r = min(r, (x1 - x0) / 2.01, (y1 - y0) / 2.01, (z1 - z0) / 2.01)
         before = set(self.bm.faces)

@@ -26,6 +26,7 @@ namespace Suborned.World
         public List<FacadeDto> Facades = new();
         public List<SignatureDto> Signatures = new();
         public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
+        public FabricDto Fabric = new(); // grammar §2a colour life: balcony awnings, banners, flag masts
         public HorizonDto Horizon; // null when the export has none (the sample)
         /// <summary>Elements per layer as the exporter declares them (`counts`); null when the export has none (the sample).</summary>
         public Dictionary<string, int> Counts;
@@ -71,7 +72,7 @@ namespace Suborned.World
     public sealed class HorizonDto
     {
         public Vector2 Centre; public string Haze; public string SeaSurface; public Vector2 SeaCentre; public float SeaSize, SeaLevel, SeaFadeFrom;
-        public List<WaterDto> SeaSectors = new(), Land = new(); public List<MassDto> Banks = new();
+        public List<WaterDto> SeaSectors = new(), Land = new(), Patches = new(); public List<MassDto> Banks = new(), Hills = new(); // Patches: flats over the land (beyond_green parks and tree clumps, quay promenades); Hills: terraced prisms (beyond_hill)
         public List<HorizonPieceDto> Pieces = new();
     }
 
@@ -84,7 +85,32 @@ namespace Suborned.World
         public string PierSurface, FrameSurface; public float Frame;
         public float PortholeD, PortholeRing; public string RingSurface; public int PerBay;
         public List<SkinFaceDto> Faces = new();
+        // grammar §2a colour life (brief 007 round 3)
+        public string Accent2, Trim; // Accent2: banners only; Trim: gold (coping bead, marquee edge, fin beads)
+        public float FaiencePlinth, FaienceBand, FaienceBulkhead, FaiencePier; public bool FaiencePiers; // in the family's plinth faience (`<family>_p`); piers in the accent
+        public SpandrelDto Spandrel; // null = plain stone under the ribbons
+        public float PanelW, PanelH; public string PanelSurface; // the accent panel behind every porthole, flush, ring proud of it
+        public List<FinDto> Fins = new();
     }
+
+    /// <summary>Accent panels under every ribbon window (H m high, ending at the sill, the ribbon's width) and the solid front of every balcony (BalconyW x BalconyH at the floor).</summary>
+    public sealed class SpandrelDto { public float H, BalconyW, BalconyH; public string Surface; }
+
+    /// <summary>A vertical fin: W wide along the wall, D proud, its back on the wall at At facing Normal, from Z0 to Z1, its outer edge beaded BeadW in BeadSurface.</summary>
+    public sealed class FinDto { public string Id, Kind, Surface, BeadSurface; public Vector2 At, Normal; public float W, D, Z0, Z1, BeadW; }
+
+    /// <summary>Striped fabric, banners and flags (grammar §2a); every surface an accent role or `canvas`.</summary>
+    public sealed class FabricDto { public List<AwningDto> Awnings = new(); public List<BannerDto> Banners = new(); public List<FlagDto> Flags = new(); }
+
+    /// <summary>A balcony awning: back edge on the wall at At (Z high, W wide), sloping D out and Fall down, a Valance drop at the front; stripes
+    /// Stripe wide down the slope alternating Stripes[0] / Stripes[1].</summary>
+    public sealed class AwningDto { public string Id, Building, Face; public Vector2 At, Normal; public float Yaw, Z, W, D, Fall, Valance, Stripe; public string[] Stripes; }
+
+    /// <summary>A banner on an arm Arm m out from the wall at At facing Normal: W x H from Z0 in Surface with a BorderW border in BorderSurface.</summary>
+    public sealed class BannerDto { public string Id, Building, Kind, Surface, BorderSurface; public Vector2 At, Normal; public float Yaw, Z0, W, H, Arm, BorderW; }
+
+    /// <summary>A flag mast H high in Mast at At (base Z) with a PennantW x PennantH pennant in Surface at the top flying toward Yaw (plan radians).</summary>
+    public sealed class FlagDto { public string Id, Kind, Host, Mast, Surface; public Vector2 At; public float Z, H, PennantW, PennantH, Yaw; }
 
     /// <summary>One wall of a building mass: Bays = one letter per equal bay along A→B (R ribbon, P porthole bay, B balcony bay, - plain stone);
     /// Rows = floor z of each storey with windows; Portholes = positions along A→B of vertical porthole columns.</summary>

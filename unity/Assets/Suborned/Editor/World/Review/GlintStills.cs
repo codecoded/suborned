@@ -28,7 +28,7 @@ namespace Suborned.World.Review
                     var k = path.Keys[i];
                     if (!k.Contact) continue;
                     var pose = path.Evaluate(k.Start + k.Hold * 0.5f);
-                    pose.Apply(cam); session.ShadowDistance = pose.ShadowDistance;
+                    pose.Apply(cam); session.Shadows(pose);
                     File.WriteAllBytes(Path.Combine(dir, $"stop-{i:D2}-{Slug(k.Name)}.png"), session.Grab(cam, 960, 540).EncodeToPNG());
                 }
                 Debug.Log($"World: glint stills {tag} -> {dir}");

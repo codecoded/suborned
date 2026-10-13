@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces), a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -579,7 +579,7 @@
    "id": "bld/garden-row-east/0/skin",
    "building": "bld/garden-row-east/0",
    "family": "ribbon",
-   "accent": "mega",
+   "accent": "accent_flamingo",
    "glass": {
     "surface": "glass",
     "tint": "clear",
@@ -599,7 +599,12 @@
     "d": 0.9,
     "ring": 0.1,
     "ringSurface": "trim",
-    "perBay": 2
+    "perBay": 2,
+    "panel": {
+     "w": 1.5,
+     "h": 1.5,
+     "surface": "accent_flamingo"
+    }
    },
    "faces": [
     {
@@ -656,9 +661,127 @@
      "portholes": [],
      "glass": 0.21
     }
-   ]
+   ],
+   "accent2": "accent_turquoise",
+   "trim": "accent_gold",
+   "faience": {
+    "swatch": "family_p",
+    "plinth": 0.5,
+    "band": 0.4,
+    "bulkhead": 0.9,
+    "piers": true,
+    "pier": 1.05
+   },
+   "spandrel": null,
+   "fins": [
+    {
+     "id": "bld/garden-row-east/0/e0-0/fin",
+     "kind": "entrance",
+     "at": [
+      -116.5,
+      -254.5
+     ],
+     "normal": [
+      0,
+      -1
+     ],
+     "w": 1.2,
+     "d": 0.6,
+     "z0": 4.53,
+     "z1": 9.43,
+     "surface": "accent_coral",
+     "bead": {
+      "surface": "accent_gold",
+      "w": 0.08
+     }
+    }
+   ],
+   "share": {
+    "lower": 0.236,
+    "whole": 0.048,
+    "elements": [
+     "faience",
+     "fins",
+     "gold-trim",
+     "piers"
+    ],
+    "target": true
+   }
   }
  ],
+ "fabric": {
+  "awnings": [
+   {
+    "id": "bld/rocket-west/2/podium/e2/awning-1-583",
+    "building": "bld/rocket-west/2",
+    "face": "bld/rocket-west/2/podium#2",
+    "at": [
+     -281.367,
+     -208
+    ],
+    "normal": [
+     0,
+     -1
+    ],
+    "yaw": -3.1416,
+    "z": 9.08,
+    "w": 2.4,
+    "d": 0.9,
+    "fall": 0.45,
+    "valance": 0.3,
+    "stripe": 0.4,
+    "stripes": [
+     "accent_mint",
+     "canvas"
+    ]
+   }
+  ],
+  "banners": [
+   {
+    "id": "bld/rocket-west/10/e0-0/banner",
+    "building": "bld/rocket-west/10",
+    "kind": "lobby",
+    "at": [
+     -316.9,
+     -393
+    ],
+    "normal": [
+     0,
+     -1
+    ],
+    "yaw": -3.1416,
+    "z0": 9.83,
+    "w": 1.2,
+    "h": 6,
+    "arm": 0.6,
+    "surface": "accent_peach",
+    "border": {
+     "surface": "accent_gold",
+     "w": 0.12
+    }
+   }
+  ],
+  "flags": [
+   {
+    "id": "flags/parade/n/0",
+    "kind": "parade",
+    "host": "foot/crown-parade",
+    "at": [
+     48.5,
+     10.5
+    ],
+    "z": 0.18,
+    "h": 8,
+    "mast": "chrome",
+    "pennant": [
+     1.2,
+     1.8
+    ],
+    "surface": "accent_teal",
+    "yaw": 3.4916
+   }
+  ]
+ },
  "facades": [
   {
    "id": "bld/garden-row-east/0/f0",
@@ -2098,6 +2221,7 @@
   "buildings": 737,
   "roofs": 359,
   "skins": 310,
+  "fabric": 819,
   "facades": 972,
   "frontages": 1077,
   "connectors": 113,

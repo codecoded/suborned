@@ -139,7 +139,7 @@ def traffic_light(s):
                 pal.Chrome, seg=28, cap_bottom=False)
 
 
-@asset("CCTVPole", "Signals")
+@asset("CCTVPole", "Signals", bevel=0.0, lean=0.2, cap=1500)
 def cctv_pole(s):
     s.lathe(soft([(0.335, 0), (0.34, 0.04), (0.32, 0.06), (0.26, 0.075), (0.25, 0.09), (0.25, 0.21), (0.235, 0.235),
                   (0.2, 0.25), (0, 0.25)], 0.012), pal.Chrome, seg=32, cap_bottom=False)
@@ -177,7 +177,7 @@ def cctv_pole(s):
                 s.lathe([(0, 0.004)] + dome(0.118, 0.004, 0.045, n=6), pal.GlassDark, seg=32, cap_bottom=False)
 
 
-@asset("DomeCamera", "Signals")
+@asset("DomeCamera", "Signals", bevel=0.0, lean=0.15, cap=400)
 def dome_camera(s):
     with s.at((0, 0, 0.22), FRONT):  # wall plate: back face on y = 0, bottom at z = 0
         slab(s, 0.15, 0.44, 0.07, 0, 0.028, pal.Enamel_Teal, e=0.01)

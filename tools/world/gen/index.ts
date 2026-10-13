@@ -1,5 +1,5 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
-import type { Connector, Deck, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
+import type { Connector, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import { type Ctx, rv } from './common';
 import { type Travel, generateConnectors } from './connectors';
@@ -13,10 +13,11 @@ import { generateStreet } from './street';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
 import { adjacent } from './facades';
+import { colourLife } from './colour';
 import type { DeckRec, Host, MegaOut } from './types';
 
 export type Generated = {
-  signatures: SignatureOut[]; skins: Skin[]; facades: Facade[]; facadeWhy: Map<string, string>; faceMetres: Map<string, { street: number; kit: number }>; buildings: Mass[]; slabs: Mass[]; roofs: Roof[]; frontages: Frontage[]; connectors: Connector[]; street: StreetItem[];
+  signatures: SignatureOut[]; skins: Skin[]; fabric: Fabric; facades: Facade[]; facadeWhy: Map<string, string>; faceMetres: Map<string, { street: number; kit: number }>; buildings: Mass[]; slabs: Mass[]; roofs: Roof[]; frontages: Frontage[]; connectors: Connector[]; street: StreetItem[];
   decks: DeckRec[]; megas: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; blds: Bld[]; megaOut: MegaOut[]; issues: string[]; travel: Travel[];
 };
 
@@ -32,11 +33,13 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const roofs = generateRoofs(ctx, blds, megaOut.flatMap(m => m.terraces ?? []));
   // procedural skins (grammar §2-3) for every plot building; its speed bands carry the skin's accent
   const plain = blds.filter(b => !b.tower), near = (id: string) => { const me = plain.find(b => b.id === id)!; return plain.filter(o => o.id !== id && o.plot === me.plot && adjacent(me.ring, o.ring)).map(o => o.id); };
-  const skins = generateSkins(ctx, blds, masses, near), accentOf = new Map(skins.map(s => [s.building, s.accent]));
+  const skins0 = generateSkins(ctx, blds, masses, near), accentOf = new Map(skins0.map(s => [s.building, s.accent]));
   for (const m of masses) if (/\/band-\d+$/.test(m.id)) m.surface = accentOf.get(m.id.slice(0, m.id.lastIndexOf('/'))) ?? m.surface;
-  const street = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
+  // grammar §2a colour life: faience, spandrels, fins, balcony awnings and banners per skin; flags along the Parade, hotels and civic fronts
+  const life = colourLife(ctx, blds, masses, skins0, fac.facades, frontages), skins = life.skins;
+  const { items: street, flags } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: p.polyV.map(rv), base: 0, height: ctx.pav }));
-  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel };
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel };
 }
 
 /** A DeckRec as the export's Deck. */

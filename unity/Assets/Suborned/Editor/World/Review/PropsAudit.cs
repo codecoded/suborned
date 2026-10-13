@@ -201,7 +201,7 @@ namespace Suborned.World.Review
                 .OrderBy(t => Vector2.Distance(new Vector2(t.position.x, t.position.z), want.At)).FirstOrDefault();
             if (!match) return missing ? $"kit `{want.Id}`: prefab instance whose asset is missing" : $"kit `{want.Id}` ({want.Why}) not placed (expected {path})";
             instances.Remove(match);
-            var rs = match.GetComponentsInChildren<MeshRenderer>(true);
+            var rs = KitLods.Lod0(match.gameObject).ToArray(); // LOD0: the LOD levels share its frame (KitLods)
             if (rs.Length == 0) return $"kit `{want.Id}`: no renderers";
             Bounds? b = null;
             foreach (var mr in rs)
@@ -216,7 +216,8 @@ namespace Suborned.World.Review
             if (size.x < 0.01f || size.y < 0.01f || size.z < 0.01f) return $"kit `{want.Id}`: zero-size bounds {size}";
             float off = Vector2.Distance(new Vector2(match.position.x, match.position.z), want.At);
             if (off > 0.05f) return $"kit `{want.Id}`: placed {off:F2} m from the export's point";
-            if (!float.IsNaN(want.Z) && Mathf.Abs(match.position.y - want.Z) > 0.05f) return $"kit `{want.Id}`: stands at {match.position.y:F2} m, export says {want.Z:F2} m";
+            if (!float.IsNaN(want.Z) && want.Lowest && Mathf.Abs(b.Value.min.y - want.Z) > 0.05f) return $"kit `{want.Id}`: lowest point at {b.Value.min.y:F2} m, export says {want.Z:F2} m";
+            if (!float.IsNaN(want.Z) && !want.Lowest && Mathf.Abs(match.position.y - want.Z) > 0.05f) return $"kit `{want.Id}`: stands at {match.position.y:F2} m, export says {want.Z:F2} m";
             if (it.Layer == "street" && index.World.Street.Find(s => s.Id == it.Id) is { } si && si.Size.z > 0.05f)
             {
                 float ratio = size.y / si.Size.z;

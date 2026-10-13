@@ -16,6 +16,8 @@ namespace Suborned.World.Review
         readonly GPUResidentDrawerMode drawer;
         readonly float shadowDistance;
         readonly bool asyncCompilation;
+        readonly IDisposable cascades;
+        readonly TacticalShadows play;
         RenderTexture rt;
         Texture2D tex;
 
@@ -27,6 +29,17 @@ namespace Suborned.World.Review
             drawer = urp.gpuResidentDrawerMode; shadowDistance = urp.shadowDistance; asyncCompilation = ShaderUtil.allowAsyncCompilation;
             urp.gpuResidentDrawerMode = GPUResidentDrawerMode.Disabled;
             ShaderUtil.allowAsyncCompilation = false;
+            cascades = TacticalShadows.Save(urp);
+            play = GameObject.Find("cameras/play") is { } p && p.TryGetComponent<TacticalShadows>(out var ts) ? ts : null;
+        }
+
+        /// <summary>A pose's shadows: fitted to its street focus like the play camera (its bands) when it has one, else the plain
+        /// distance with the asset's own cascades.</summary>
+        public void Shadows(Pose pose)
+        {
+            cascades.Dispose(); // back to the asset's own cascades
+            if (!float.IsNaN(pose.ShadowFocus) && play) TacticalShadows.Fit(urp, pose.ShadowFocus, play.nearBand, play.farBand, play.cascades, play.airSplits, play.fade);
+            else ShadowDistance = pose.ShadowDistance;
         }
 
         public float ShadowDistance { set => urp.shadowDistance = value > 0 ? value : shadowDistance; }
@@ -55,6 +68,7 @@ namespace Suborned.World.Review
 
         public void Dispose()
         {
+            cascades.Dispose();
             urp.gpuResidentDrawerMode = drawer; urp.shadowDistance = shadowDistance;
             ShaderUtil.allowAsyncCompilation = asyncCompilation;
             if (rt != null) { rt.Release(); UnityEngine.Object.DestroyImmediate(rt); }

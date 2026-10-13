@@ -62,6 +62,26 @@ namespace Suborned.World
                 Dress = Each(c, "dress", Prim),
             });
             w.Skins = Each(o, "skins", Skin);
+            if (J.Get(o, "fabric") is { } fab)
+            {
+                w.Fabric.Awnings = Each(fab, "awnings", x => new AwningDto
+                {
+                    Id = Id(x), Building = J.S(x, "building"), Face = J.S(x, "face"), At = J.P(x, "at"), Normal = J.P(x, "normal"), Yaw = J.F(x, "yaw"), Z = J.F(x, "z"),
+                    W = J.F(x, "w"), D = J.F(x, "d"), Fall = J.F(x, "fall"), Valance = J.F(x, "valance"), Stripe = J.F(x, "stripe"), Stripes = Strs(x, "stripes"),
+                });
+                w.Fabric.Banners = Each(fab, "banners", x => new BannerDto
+                {
+                    Id = Id(x), Building = J.S(x, "building"), Kind = J.S(x, "kind"), At = J.P(x, "at"), Normal = J.P(x, "normal"), Yaw = J.F(x, "yaw"), Z0 = J.F(x, "z0"),
+                    W = J.F(x, "w"), H = J.F(x, "h"), Arm = J.F(x, "arm"), Surface = J.S(x, "surface"), BorderSurface = J.S(Req(x, "border"), "surface"), BorderW = J.F(Req(x, "border"), "w"),
+                });
+                w.Fabric.Flags = Each(fab, "flags", x => new FlagDto
+                {
+                    Id = Id(x), Kind = J.S(x, "kind"), Host = J.S(x, "host"), At = J.P(x, "at"), Z = J.F(x, "z"), H = J.F(x, "h"), Mast = J.S(x, "mast"),
+                    PennantW = J.A(x, "pennant") is { Count: 2 } pn ? (float)(double)pn[0] : throw new InvalidDataException($"World: flag {Id(x)} pennant"), PennantH = (float)(double)J.A(x, "pennant")[1],
+                    Surface = J.S(x, "surface"), Yaw = J.F(x, "yaw"),
+                });
+                foreach (var a in w.Fabric.Awnings) if (a.Stripes.Length != 2) throw new InvalidDataException($"World: awning {a.Id} needs two stripe surfaces");
+            }
             w.Street = Each(o, "street", StreetItem);
             w.Levels = Each(o, "levels", l => new LevelDto
             {
@@ -103,7 +123,7 @@ namespace Suborned.World
                 {
                     Centre = J.P(hz, "centre"), Haze = J.S(hz, "haze"), SeaSurface = J.S(sea, "surface"), SeaCentre = J.P(sea, "centre"),
                     SeaSize = J.F(sea, "size"), SeaLevel = J.F(sea, "level"), SeaFadeFrom = J.F(sea, "fadeFrom"),
-                    SeaSectors = Each(sea, "sectors", Flat), Land = Each(hz, "land", Flat), Banks = Each(hz, "banks", Mass),
+                    SeaSectors = Each(sea, "sectors", Flat), Land = Each(hz, "land", Flat), Patches = Each(hz, "patches", Flat), Hills = Each(hz, "hills", Mass), Banks = Each(hz, "banks", Mass),
                     Pieces = Each(hz, "pieces", x => new HorizonPieceDto
                     {
                         Id = Id(x), Ring = J.S(x, "ring"), Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: horizon piece {Id(x)} has no kit"), Base = J.F(x, "base"), Haze = J.F(x, "haze"),
@@ -129,9 +149,18 @@ namespace Suborned.World
 
         static SkinDto Skin(object x)
         {
-            var g = Req(x, "glass"); var p = Req(x, "pier"); var ph = Req(x, "porthole");
+            var g = Req(x, "glass"); var p = Req(x, "pier"); var ph = Req(x, "porthole"); var fa = Req(x, "faience"); var panel = Req(ph, "panel"); var sp = J.Get(x, "spandrel");
             return new SkinDto
             {
+                Accent2 = J.S(x, "accent2"), Trim = J.S(x, "trim") ?? throw new InvalidDataException($"World: skin {Id(x)} has no trim"),
+                FaiencePlinth = J.F(fa, "plinth"), FaienceBand = J.F(fa, "band"), FaienceBulkhead = J.F(fa, "bulkhead"), FaiencePiers = J.B(fa, "piers"), FaiencePier = J.F(fa, "pier"),
+                Spandrel = sp == null ? null : new SpandrelDto { H = J.F(sp, "h"), Surface = J.S(sp, "surface"), BalconyW = J.F(Req(sp, "balcony"), "w"), BalconyH = J.F(Req(sp, "balcony"), "h") },
+                PanelW = J.F(panel, "w"), PanelH = J.F(panel, "h"), PanelSurface = J.S(panel, "surface"),
+                Fins = Each(x, "fins", f => new FinDto
+                {
+                    Id = Id(f), Kind = J.S(f, "kind"), At = J.P(f, "at"), Normal = J.P(f, "normal"), W = J.F(f, "w"), D = J.F(f, "d"), Z0 = J.F(f, "z0"), Z1 = J.F(f, "z1"),
+                    Surface = J.S(f, "surface"), BeadSurface = J.S(Req(f, "bead"), "surface"), BeadW = J.F(Req(f, "bead"), "w"),
+                }),
                 Id = Id(x), Building = J.S(x, "building"), Family = J.S(x, "family"), Accent = J.S(x, "accent"),
                 GlassSurface = J.S(g, "surface"), GlassShare = J.F(g, "share"), MaxPane = J.F(g, "maxPane"), Sill = J.F(g, "sill"), Head = J.F(g, "head"), Reveal = J.F(g, "reveal"), Mullion = J.F(g, "mullion"),
                 PierSurface = J.S(p, "surface"), Frame = J.F(p, "frame"), FrameSurface = J.S(p, "frameSurface"),

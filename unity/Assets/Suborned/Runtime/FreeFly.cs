@@ -2,20 +2,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+#if UNITY_EDITOR || SUBORNED_FREEFLY
 namespace Suborned
 {
-    /// <summary>Review tool, not a game system: in Play mode on the generated HarbourDistrict scene, a free-fly camera spawns
-    /// at the play camera (perspective, drawn over it). Tab toggles it; hold right mouse to look; WASD move, Q/E down/up,
-    /// Shift x5, scroll changes the base speed. Nothing is added to the scene file. Editor and development builds only.</summary>
+    /// <summary>Review tool, not a game system: in Play mode on the generated HarbourDistrict scene, a free-fly camera is ready at
+    /// the play camera, OFF (opt-in, Redline 007 C4: it used to draw a second full-city view over the play camera by default).
+    /// Tab turns it on, which turns the play camera off, so only one camera renders; Tab again hands back. Hold right mouse to
+    /// look; WASD move, Q/E down/up, Shift x5, scroll changes the base speed. Nothing is added to the scene file. Editor only,
+    /// or a player built with the SUBORNED_FREEFLY define (never in profiling builds by default).</summary>
     public sealed class FreeFly : MonoBehaviour
     {
         float yaw, pitch, speed = 20f;
-        Camera cam;
+        Camera cam, main;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Spawn()
         {
-            if (!Application.isEditor && !Debug.isDebugBuild) return;
             if (SceneManager.GetActiveScene().name != "HarbourDistrict" || FindAnyObjectByType<FreeFly>()) return;
             var main = Camera.main;
             var go = new GameObject("free-fly");
@@ -29,7 +31,8 @@ namespace Suborned
                 go.transform.SetPositionAndRotation(start, main.transform.rotation);
             }
             cam.fieldOfView = 60f; cam.nearClipPlane = 0.2f; cam.farClipPlane = 5000f; cam.depth = 50;
-            go.AddComponent<FreeFly>();
+            cam.enabled = false;
+            go.AddComponent<FreeFly>().main = main;
         }
 
         void Awake()
@@ -42,7 +45,11 @@ namespace Suborned
         {
             var kb = Keyboard.current; var mouse = Mouse.current;
             if (kb == null) return;
-            if (kb.tabKey.wasPressedThisFrame) cam.enabled = !cam.enabled;
+            if (kb.tabKey.wasPressedThisFrame)
+            {
+                cam.enabled = !cam.enabled;
+                if (main) main.enabled = !cam.enabled;
+            }
             if (!cam.enabled) return;
             if (mouse != null)
             {
@@ -68,3 +75,4 @@ namespace Suborned
         }
     }
 }
+#endif

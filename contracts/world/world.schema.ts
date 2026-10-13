@@ -21,6 +21,7 @@ export type World = {
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
   roofs: Roof[]; // one programme per building roof
   skins: Skin[]; // the procedural facade of every plot building (grammar §2-3): window family, accent and per-face bay rhythm; Unity draws walls the kit does not cover from these, never a glass grid
+  fabric: Fabric; // grammar §2a colour life: balcony awnings, banners and flag masts (never red), seeded per building / frontage / street
   facades: Facade[]; // kit bays, ends and corners standing on the street faces of generated buildings (wave 2); the procedural wall on the covered span is hidden
   frontages: Frontage[]; // tenancies along building lines, megastructure facades and decks
   connectors: Connector[]; // stairs, ramps, escalators, lifts, stair towers: every deck and concourse reaches the street
@@ -75,10 +76,45 @@ export type Facade = { id: string; building: string; form: 'bay' | 'end' | 'corn
  *  head above each row's floor, set back `reveal`, chrome mullions every `mullion` m. pier: the stone between ribbons, with a chrome-or-stone `frame` round each. */
 export type Skin = {
   id: string; building: string; family: 'ribbon' | 'porthole' | 'balcony' | 'shed'; accent: string;
+  /** Grammar §2a colour life. accent: the building's one accent role (look.json `accent_*`; its speed bands, piers, spandrels and balcony awnings carry it);
+   *  accent2: the second role, on its banners only; trim: gold (`accent_gold`): parapet coping bead, marquee edge, crown collar, fin edge beads. */
+  accent2: string; trim: string;
+  /** The ground storey in faience: plinth (`plinth` m from the pavement), a ground-top band (`band` m under the first upper floor) and shop bulkheads (`bulkhead`
+   *  m above the plinth under each shopfront) in the family's plinth swatch (facade.json `<family>_p`); piers: the stone piers between shop bays (`pier` m wide)
+   *  are in the accent instead of limestone. */
+  faience: { swatch: 'family_p'; plinth: number; band: number; bulkhead: number; piers: boolean; pier: number };
+  /** Spandrel panels in the accent: under every ribbon window (R bays) `h` m high ending at the sill, the ribbon's width (0.9 = floor to sill; 1.9 = the
+   *  whole wall from the head of the storey below), and the solid front of every balcony bay (B), `balcony.w` x `balcony.h` at the floor; null = plain stone. */
+  spandrel: { h: number; surface: string; balcony: { w: number; h: number } } | null;
+  fins: Fin[]; // coral or teal vertical fins: one per procedural street corner, one over every lobby entrance
+  /** Measured accent share of the procedural street walls (kit-faced spans excluded): `lower` over the ground storey + the first two upper storeys
+   *  (target 0.20-0.30), `whole` over the full height (10-15%); `elements` = which §2a elements this building carries (>= 4). Null shares: no procedural street wall.
+   *  target: the 20-30% band applies (>= 12 m of procedural street face and not a port or industrial shed); remnants beside kit pieces are measured only. */
+  share: { lower: number | null; whole: number | null; elements: string[]; target: boolean };
   glass: { surface: string; tint: 'clear'; share: number; maxPane: number; sill: number; head: number; reveal: number; mullion: number };
-  pier: { surface: string; frame: number; frameSurface: string }; porthole: { d: number; ring: number; ringSurface: string; perBay: number };
+  pier: { surface: string; frame: number; frameSurface: string };
+  /** Portholes: diameter `d`, chrome ring `ring` in `ringSurface`, `perBay` side by side in a P bay. panel (grammar §2a item 3a): a `w` x `h` panel in `surface`
+   *  (the building's accent) behind every porthole (P bays, porthole columns, a shed's eave row), centred on it, flush on the wall with the ring proud of it. */
+  porthole: { d: number; ring: number; ringSurface: string; perBay: number; panel: { w: number; h: number; surface: string } };
   faces: SkinFace[];
 };
+/** A vertical fin (grammar §2a.4): a slab `w` wide standing `d` proud of the wall at `at` (where its back meets the wall), facing `normal`, from z0 to z1
+ *  (full height of the body), in `surface` (accent_coral or accent_teal), its outer edge beaded in `bead.surface` (gold) `bead.w` m. kind: corner (on the
+ *  bisector of a procedural street corner) or entrance (over a lobby entrance, from its canopy up). */
+export type Fin = { id: string; kind: 'corner' | 'entrance'; at: V; normal: V; w: number; d: number; z0: number; z1: number; surface: string; bead: { surface: string; w: number } };
+/** Striped fabric, banners and flags (grammar §2a). Every fabric surface is an accent role (look.json `accent_*`) or `canvas` (white awning cloth, facade.json
+ *  `white` #f7f4ec); never the cone red. */
+export type Fabric = { awnings: Awning[]; banners: Banner[]; flags: Flag[] };
+/** A balcony awning over an upper-storey window: its back edge on the wall at `at`, `z` high, `w` wide; it slopes out `d` m and down `fall` m, with a
+ *  `valance` m drop at the front. Stripes run down the slope, `stripe` m wide, alternating `stripes[0]` (the building's accent) and `stripes[1]` (canvas).
+ *  `face` = the skin face (mass id + edge) it hangs on. */
+export type Awning = { id: string; building: string; face: string; at: V; normal: V; yaw: number; z: number; w: number; d: number; fall: number; valance: number; stripe: number; stripes: [string, string] };
+/** A vertical banner on an arm `arm` m out from the wall at `at`, facing `normal` (its face is the street side): `w` x `h` from `z0`, in `surface` with a
+ *  `border.w` m border in `border.surface` (gold). kind: lobby (beside a lobby entrance) or corner (hung off a corner fin). */
+export type Banner = { id: string; building: string; kind: 'lobby' | 'corner'; at: V; normal: V; yaw: number; z0: number; w: number; h: number; arm: number; surface: string; border: { surface: string; w: number } };
+/** A flag mast standing on the pavement at `at` (base `z`), `h` high in `mast` (chrome), a pennant `pennant` [w, h] at the top in `surface`, flying toward
+ *  `yaw` (plan frame, radians: one wind for the district). kind: civic, hotel (along those frontages) or parade (both sides of Crown Parade), `pitch` m apart. */
+export type Flag = { id: string; kind: 'civic' | 'hotel' | 'parade'; host: string; at: V; z: number; h: number; mast: string; pennant: [number, number]; surface: string; yaw: number };
 /** One wall of a building mass (`mass` id, ring `edge` a→b, outward = right of a→b on the CCW ring). bays: one letter per equal bay along a→b — R ribbon window,
  *  P porthole bay (perBay portholes side by side), B balcony bay (a glazed door and a rounded balcony slab), - plain stone. rows: floor z of each storey that has
  *  windows (sill = row + glass.sill). portholes: positions along a→b of vertical porthole columns (one per row). glass: this face's glass share of its wall (<= 0.55). */
@@ -111,10 +147,15 @@ export type StreetItem = {
 export type HorizonPiece = { id: string; ring: 'A' | 'B' | 'C' | 'shore' | 'rocket-pad' | 'rocket-ascent' | 'planet' | 'moon'; kit: KitRef & { at: V }; base: number; haze: number; tilt?: { deg: number; yaw: number } };
 /** sea.sectors: the visual sea, the bay sector only (draw these at sea.level, NOT a square plane; `size` is the world's extent about `centre`, `fadeFrom` where it fades into the haze):
  *  bounded by the coast rays leaving the plan water's corners on the district edge at +-60° and the far-shore arc (r 5000 about `centre`).
- *  land: west, north and south flats (surface 'beyond', the look's ground role for land beyond the district) at the district edge's ground level; with the sea they
+ *  The coasts are seeded natural shapes (a curved bay by the district, a mole, headlands further out), never leaving that sector.
+ *  land: west, north and south flats (surface 'beyond_ground', the suburban ground beyond the district) at the district edge's ground level; with the sea they
  *  partition the square outside the sheet, so they never overlap. North and south reach round the bay to the far shore. banks: thin walls on the land side of
- *  every land/sea edge (top 0.02 under the land plane), so the step down to the water is a face. */
-export type Horizon = { centre: V; haze: string; sea: { surface: string; centre: V; size: number; level: number; fadeFrom: number; sectors: Flat[] }; land: Flat[]; banks: Mass[]; pieces: HorizonPiece[] };
+ *  every land/sea edge (top 0.02 under the land plane), so the step down to the water is a face.
+ *  patches: flats drawn OVER the land at their own level (a few cm above it): parks and tree clumps ('beyond_green', ids horizon/park/* and horizon/trees/*),
+ *  the coastal promenade along each coast and the mole's top ('quay', ids horizon/promenade/*). They never overlap each other, the hills or the sea.
+ *  hills: terraced hills ('beyond_hill'), each a stack of nested prisms (ids horizon/hill/<n>/tier-<k>); a tier's base sits inside the tier below, the first
+ *  1 m under the land. Every ground piece's `base` is the land plane or the top of the terrace it stands on, the same under its whole footprint. */
+export type Horizon = { centre: V; haze: string; sea: { surface: string; centre: V; size: number; level: number; fadeFrom: number; sectors: Flat[] }; land: Flat[]; patches: Flat[]; hills: Mass[]; banks: Mass[]; pieces: HorizonPiece[] };
 
 /** A plan signature structure standing on its ground (brief 007 A): `kit` = the piece placed at its centre (the regenerated `variant` when it is adopted, else the base piece and `pending` names the variant still to regenerate); `tip` = base + piece height. */
 export type SignatureOut = { id: string; kind: 'signature' | 'tower' | 'skybridge' | 'station' | 'portal'; source: Source; kit?: KitRef & { at: V }; ground?: [number, number, number, number]; base: number; tip: number; pending?: string; why?: string }; // kind: signature (SpaceHQ, with `ground`), tower (a site's regenerated piece, base = podium top), skybridge, station (SkyRailStation_Twin / _Decks, pivot on the line), portal (the Parade gate block)

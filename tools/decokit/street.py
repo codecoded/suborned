@@ -9,7 +9,7 @@ SIDE = (90, 0, 90)  # extrude frame: local X -> world Y, local Y -> world Z, ext
 FRONT = (90, 0, 0)  # local XY -> world XZ (a panel facing -Y), extrusion -> world -Y
 
 
-@asset("Bollard", "Street")
+@asset("Bollard", "Street", bevel=0.0, lean=0.2, cap=400)
 def bollard(s):
     s.lathe([(0, 0), (0.27, 0), (0.27, 0.025), (0.25, 0.045), (0.16, 0.055), (0, 0.055)], pal.Chrome, seg=48)
     s.lathe(ring(0.17, 0.215, 0.04, 0.058), pal.Enamel_Red, seg=48, cap_bottom=False, cap_top=False)
@@ -36,7 +36,7 @@ def streetlamp(s):
         s.lathe([(0.045, 0.12)] + dome(0.045, 0.16, 0.05), pal.Chrome, seg=16)
 
 
-@asset("Hydrant", "Street")
+@asset("Hydrant", "Street", bevel=0.0, lean=0.2, cap=400)
 def hydrant(s):
     s.lathe([(0, 0), (0.2, 0), (0.2, 0.03), (0.17, 0.05), (0, 0.05)], pal.Chrome, seg=40)
     body = [(0.15, 0.05), (0.15, 0.085), (0.125, 0.11), (0.125, 0.52), (0.14, 0.535), (0.14, 0.585),
@@ -88,7 +88,7 @@ def barrier(s):
         s.extrude(rrect(1.5, 0.29, 0.1, n=8), -0.018, 0.018, pal.Enamel_Teal)
 
 
-@asset("RecyclingBins", "Street", bevel=0.006)
+@asset("RecyclingBins", "Street", bevel=0.0, cap=400)
 def recycling_bins(s):
     for x, col, icon in ((-0.28, pal.Enamel_Teal, DECAL["recycle_teal"]),
                          (0.28, pal.Enamel_Mustard, DECAL["recycle_mustard"])):

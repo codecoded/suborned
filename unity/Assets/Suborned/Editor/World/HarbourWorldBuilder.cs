@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Suborned.World
 {
     /// <summary>Builds Assets/Scenes/HarbourDistrict.unity (generated, git-ignored) from a world export, from scratch,
-    /// one marker root per layer (ground, transit, buildings, skins, facades, roofs, frontages, connectors, street, levels, decks,
+    /// one marker root per layer (ground, transit, buildings, skins, fabric, facades, roofs, frontages, connectors, street, levels, decks,
     /// megastructures, civic, gates, landmarks, signatures, horizon; the sea sectors, land and banks under `sea`) and their geometry combined under `batches` per layer, material and tile.
     /// Menu: Suborned/World/Build Harbour District (Sample). Batchmode:
     ///   Unity -batchmode -nographics -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build
@@ -62,6 +62,8 @@ namespace Suborned.World
         {
             var t0 = DateTime.UtcNow;
             var world = WorldReader.Load(path);
+            // an empty scene first: KitLods rewrites the placed prefabs, which must not be live in the open scene (thousands of instances)
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var look = new Look(StylePath, LookPath);
             var kit = new Catalogue(KitPath);
             var nodes = new Nodes(look);
@@ -69,11 +71,11 @@ namespace Suborned.World
             var placer = new KitPlacer(KitCataloguePath);
             KitImport.Generated(placer);
             KitImport.Check(placer);
+            KitLods.Build(placer);
             KitCover.Init(world, placer);
             var city = new CityLayers(nodes, kit, placer);
             Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile);
 
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var facade = new FacadeKit(nodes, new FacadeSpec(FacadePath, look, world), world); // after NewScene: it would destroy the atlas materials
             ProcKit.Init(world, facade);
             var standIns = new StandIns(placer, world);
@@ -87,8 +89,10 @@ namespace Suborned.World
             var buildings = Nodes.Group(root, "buildings");
             ProcSkin.Elements(Nodes.Group(root, "skins"), world.Skins);
             facade.Buildings(buildings, world.Buildings, standIns);
+            ProcSkin.FinsAll(nodes, facade.Spec.Atlas);
             ProcSkin.Finish(buildings);
-            Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells");
+            new FabricKit(nodes, facade.Spec.Atlas).Build(Nodes.Group(root, "fabric"), world.Fabric);
+            Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells; colour life: {ProcSkin.Panels} porthole panels, {ProcSkin.Spandrels} spandrels, {ProcSkin.BalconyFronts} balcony fronts, {ProcSkin.Fins} fins");
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
             var frontages = Nodes.Group(root, "frontages");
@@ -99,6 +103,7 @@ namespace Suborned.World
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
+            Debug.Log($"World: civic monument plinths {facade.Plinths}");
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);

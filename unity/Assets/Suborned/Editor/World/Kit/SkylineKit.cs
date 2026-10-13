@@ -99,7 +99,7 @@ namespace Suborned.World
 
         /// <summary>The horizon ground under `root` (not an export layer: the export counts the pieces only): the bay sector(s) at
         /// sea.level in the water material, fading into the haze from fadeFrom to the edge of the world (size / 2); the land beyond the
-        /// district (`beyond`) at its level; the banks as prisms (quay-coloured: their surface) so the step down to the water is a face.
+        /// district (`beyond_ground`) at its level, the patches over it and the terraced hills; the banks as prisms (quay-coloured: their surface) so the step down to the water is a face.
         /// No square sea plane: the sectors and the land partition the square outside the sheet.</summary>
         void Sea(Transform root, HorizonDto h, GroundDto g, Color haze)
         {
@@ -107,6 +107,12 @@ namespace Suborned.World
             look.SeaFade(h.SeaCentre, h.SeaFadeFrom, h.SeaSize * 0.5f, haze);
             foreach (var s in h.SeaSectors) Flat(root, s.Id, new MeshKit().Flat(Poly.Clean(s.Ring), h.SeaLevel), s.Surface);
             foreach (var l in h.Land) Flat(root, l.Id, new MeshKit().Flat(Poly.Clean(l.Ring), l.Level), l.Surface);
+            // patches (parks, tree clumps, promenades) lie a few cm over the land; hills are terraced prisms. One mesh per surface.
+            var bySurface = new SortedDictionary<string, MeshKit>(System.StringComparer.Ordinal);
+            MeshKit Of(string surface) => bySurface.TryGetValue(surface, out var k) ? k : bySurface[surface] = new MeshKit();
+            foreach (var p in h.Patches) Of(p.Surface).Flat(Poly.Clean(p.Ring), p.Level);
+            foreach (var hl in h.Hills) Of(hl.Surface).Prism(Poly.Clean(hl.Ring), hl.Base, hl.Base + hl.Height);
+            foreach (var kv in bySurface) Flat(root, "horizon/" + kv.Key, kv.Value, kv.Key);
             var banks = new MeshKit();
             string bankSurface = null;
             foreach (var b in h.Banks)

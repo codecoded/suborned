@@ -109,7 +109,7 @@ namespace Suborned.World.Review
                 for (int i = 0; i < n && Frame < Frames; i++, Frame++)
                 {
                     var pose = path.Evaluate(Frame / (float)path.Fps);
-                    pose.Apply(cam); session.ShadowDistance = pose.ShadowDistance;
+                    pose.Apply(cam); session.Shadows(pose);
                     var tex = session.Grab(cam, path.Width, path.Height);
                     File.WriteAllBytes(Path.Combine(OutDir, $"frame-{Frame:D5}.jpg"), tex.EncodeToJPG(path.Quality));
                     if (video != null) { var raw = tex.GetRawTextureData<byte>(); video.Write(raw.ToArray(), 0, raw.Length); }
@@ -121,7 +121,7 @@ namespace Suborned.World.Review
                     var k = path.Keys[contact];
                     if (!k.Contact) continue;
                     var pose = path.Evaluate(k.Start + k.Hold * 0.5f);
-                    pose.Apply(cam); session.ShadowDistance = pose.ShadowDistance;
+                    pose.Apply(cam); session.Shadows(pose);
                     var file = $"stop-{contact:D2}.png";
                     File.WriteAllBytes(Path.Combine(OutDir, file), session.Grab(cam, path.ContactWidth, path.ContactHeight).EncodeToPNG());
                     contacts.Add((k.Name, file));

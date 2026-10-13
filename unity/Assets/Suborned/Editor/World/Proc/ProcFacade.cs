@@ -174,7 +174,18 @@ namespace Suborned.World
             // stone base wall (covered bays stay behind their shopfronts), contact shadow at the foot
             B.R(c.Wall, Cls.Stone, w, 0, w.Len, z0, z0 + 1.2f, 0f, 0.78f, 1f);
             B.R(c.Wall, Cls.Stone, w, 0, w.Len, z0 + 1.2f, z1, 0f, 1f, 0.88f);
-            if (c.D >= 1) B.Box(c.Plinth, Cls.Stone, w, 0, w.Len, z0, z0 + spec.Plinth, 0f, 0.14f, c.D >= 2 ? 0.05f : 0f);
+            var sk = c.Skin;
+            if (sk != null)
+            {   // grammar §2a.1: the ground storey in the family's plinth faience, plinth and ground-top band (every tier: they carry the share)
+                if (c.D == 0) { B.R(c.Plinth, Cls.Enamel, w, 0, w.Len, z0, z0 + sk.FaiencePlinth, 0.03f); B.R(c.Plinth, Cls.Enamel, w, 0, w.Len, z1 - sk.FaienceBand, z1, 0.03f); }
+                else
+                {
+                    B.Box(c.Plinth, Cls.Enamel, w, 0, w.Len, z0, z0 + sk.FaiencePlinth, 0f, 0.14f, c.D >= 2 ? 0.04f : 0f);
+                    B.Box(c.Plinth, Cls.Enamel, w, 0, w.Len, z1 - sk.FaienceBand, z1, 0f, 0.16f, c.D >= 2 ? 0.03f : 0f);
+                    B.Box(ProcSkin.Swatch(sk.Trim), Cls.Brass, w, 0, w.Len, z1 - sk.FaienceBand - 0.06f, z1 - sk.FaienceBand, 0f, 0.12f);
+                }
+            }
+            else if (c.D >= 1) B.Box(c.Plinth, Cls.Stone, w, 0, w.Len, z0, z0 + spec.Plinth, 0f, 0.14f, c.D >= 2 ? 0.05f : 0f);
             if (!bands && w.Len >= 2.5f)
             {
                 int nb = Mathf.Max(1, Mathf.RoundToInt(w.Len / g.Bay)); float bw = w.Len / nb; var cov = Covered(c.H, w, c, nb);
@@ -192,7 +203,7 @@ namespace Suborned.World
                     if (c.D >= 1) B.Box("white", Cls.Stone, w, m - 1.05f, m + 1.05f, z0 + 4.0f, z0 + 4.14f, 0f, 0.1f);
                 }
             }
-            if (c.D >= 1 && c.GroundTop > c.Base + 1f) Course(c, w, 0, w.Len, z1 - 0.46f, 0.55f, 0, 0, true);
+            if (sk == null && c.D >= 1 && c.GroundTop > c.Base + 1f) Course(c, w, 0, w.Len, z1 - 0.46f, 0.55f, 0, 0, true);
         }
 
         static bool[] Covered(Host h, in WallFrame w, Pc c, int nb)
@@ -257,7 +268,8 @@ namespace Suborned.World
                 const float t = 0.3f;
                 B.Quad(c.Roof, Cls.Matte, w.P(a, top + Parapet, 0), w.P(a, top + Parapet, -t), w.P(b, top + Parapet, -t), w.P(b, top + Parapet, 0), Vector3.up);
                 B.Quad(c.Roof, Cls.Matte, w.P(a, top, -t), w.P(a, top + Parapet, -t), w.P(b, top + Parapet, -t), w.P(b, top, -t), -w.Out, 0.8f, 0.9f, 0.9f, 0.8f);
-                if (c.D >= 2) B.Box("white", Cls.Stone, w, a - eL, b + eR, top + Parapet - 0.02f, top + Parapet + 0.1f, -0.06f, 0.1f, 0.02f);
+                if (c.Skin != null && c.D >= 1) B.Box(ProcSkin.Swatch(c.Skin.Trim), Cls.Brass, w, a - eL, b + eR, top + Parapet - 0.02f, top + Parapet + 0.1f, -0.06f, 0.1f); // §2a.5 gold coping bead
+                else if (c.D >= 2) B.Box("white", Cls.Stone, w, a - eL, b + eR, top + Parapet - 0.02f, top + Parapet + 0.1f, -0.06f, 0.1f, 0.02f);
             }
         }
 

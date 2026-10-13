@@ -8,6 +8,19 @@
     "yaw": 52,
     "note": "clear warm-white sun; strong enough over a lower ambient that shadows read crisp (concept: shadows read, not smeared)"
   },
+  "shadows": {
+    "note": "Latch, brief 007 round 3 (Glint to tune). The sun's shadows for the orthographic tactical camera (views.json export views; the game's play camera). The camera stands back only as far as the geometry in its frame column needs (about 85 m at the civic square, 420 m under SpaceHQ); TacticalShadows sets the URP shadow distance to that depth + farBand (fading out over the last `fade` m: URP fades by distance from the camera, so a share-of-distance border faded the street itself at 400 m) and puts the last cascade on the street band [depth - nearBand, depth + farBand] while the camera renders, then restores the asset. At zoom 14 the band's cascade is ~5 cm per shadow texel (4096 atlas, 2048 per cascade): about 2 px at 1080p. Soft shadows (URP high-quality PCF) stay on. Other cameras keep the URP asset's own distance (views.json / flyby.json shadowDistance).",
+    "tactical": {
+      "nearBand": 60,
+      "farBand": 40,
+      "cascades": 4,
+      "airSplits": [
+        0.3,
+        0.65
+      ],
+      "fade": 8
+    }
+  },
   "ambient": {
     "mode": "trilight",
     "sky": {

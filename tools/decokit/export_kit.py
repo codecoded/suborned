@@ -55,18 +55,28 @@ def _fixed_fbx_header():
 
 
 def make_lods(n, cat, src, srcs, tris):
-    """Decimated distance versions of an asset (and its parts), exported beside it. Plain collapse: the symmetric variant is not reproducible run to run."""
+    """Decimated distance versions of an asset (and its parts), exported beside it. Plain collapse: the symmetric variant is not reproducible run to run.
+    An asset with a hand-built far version (kit.asset far=) exports that as its L2 instead."""
     out = []
     for tag, ratio, screen, floor in LOD_SPEC:
         if tris < floor:
             continue
-        for o in srcs:
-            dec = o.modifiers.new("LOD", "DECIMATE")
-            dec.ratio = ratio
-        far = baked_tree(src, lambda nm: nm.replace(f"DK_{n}", f"DK_{n}_{tag}", 1))  # not _LOD1: Unity reads that suffix as its LODs
+        hand = tag == "L2" and kit.REGISTRY[n].get("far")  # a hand-built far version (kit.asset far=) replaces the 6% collapse
+        if hand:
+            fobj = kit.build_far(n)
+            far = baked_tree(fobj, lambda nm: nm)
+            for o in [fobj, *fobj.children_recursive]:
+                bpy.data.meshes.remove(o.data)
+        else:
+            for o in srcs:
+                dec = o.modifiers.new("LOD", "DECIMATE")
+                dec.ratio = ratio
+            far = baked_tree(src, lambda nm: nm.replace(f"DK_{n}", f"DK_{n}_{tag}", 1))  # not _LOD1: Unity reads that suffix as its LODs
         for nm, b in far:
             b.name = nm
         lo = [b for _, b in far]
+        for b in lo:
+            _split_warped_ngons(b.data)
         for b in lo:  # decimate leaves ~1 ulp noise in a few UVs between runs; snap to 1e-3 (a texel at 1k) so the file is reproducible
             for layer in b.data.uv_layers:
                 for d in layer.data:
@@ -76,9 +86,31 @@ def make_lods(n, cat, src, srcs, tris):
         out.append(dict(file=path, tris=tri_count(lo), screen=screen))
         for b in lo:
             bpy.data.meshes.remove(b.data)
-        for o in srcs:
-            o.modifiers.remove(o.modifiers["LOD"])
+        if not hand:
+            for o in srcs:
+                o.modifiers.remove(o.modifiers["LOD"])
     return out
+
+
+def _split_warped_ngons(me):
+    """Collapse decimation can leave an n-gon (> 4 sides) out of its plane; Unity's FBX importer drops such polygons as
+    self-intersecting (LinerDock L1, brief 007 round 3). Triangulate only those, so a clean LOD's file is unchanged."""
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    warped = []
+    for f in bm.faces:
+        if len(f.verts) <= 4:
+            continue
+        n, p0 = f.normal, f.verts[0].co
+        tol = 1e-3 * max(1.0, math.sqrt(max(f.calc_area(), 0.0)))
+        if max(abs((v.co - p0).dot(n)) for v in f.verts) > tol:
+            warped.append(f)
+    if warped:
+        bmesh.ops.triangulate(bm, faces=warped, quad_method="BEAUTY", ngon_method="BEAUTY")
+        bm.to_mesh(me)
+        print(f"[DK-EXPORT] {me.name}: triangulated {len(warped)} warped n-gons")
+    bm.free()
 
 
 def baked(obj):

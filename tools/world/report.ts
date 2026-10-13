@@ -2,6 +2,7 @@
 import type { World } from '../../contracts/world/world.schema';
 import type { Derived } from '../plan/plan';
 import type { Generated } from './gen';
+import { civicClearance } from './build';
 
 export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`counts ${Object.entries(w.counts).map(([k, v]) => `${k} ${v}`).join(', ')}`);
@@ -16,6 +17,15 @@ export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`gallery canopies ${cp.length} (glazed barrels: ${cp.map(p => `${p.id} len ${p.size[0]} span ${p.size[1]} rise ${p.size[2]} springing ${p.base}`).join('; ')}); ribs ${w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/rib-/.test(p.id)).length}, piers ${w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/pier-/.test(p.id)).length}`);
   console.log(`pylons ${w.transit.skyRail.reduce((n, s) => n + s.pylons.length, 0)} (checker ${d.pylons.length}), stops ${w.transit.stops.length / 2}, stations ${w.transit.stations.length / 2}`);
   console.log(`horizon: ${w.horizon.pieces.length} pieces; sea sectors ${w.horizon.sea.sectors.length} (${w.horizon.sea.sectors.map(f => f.id).join(', ')}); land rings ${w.horizon.land.length} (${w.horizon.land.map(f => f.id.replace('horizon/land/', '')).join(', ')}); banks ${w.horizon.banks.length}; no square sea plane`);
+  { const h = w.horizon, coast = h.sea.sectors[0]!.ring.filter(p => Math.hypot(p[0] - h.centre[0], p[1] - h.centre[1]) < 4999), n = (re: RegExp) => h.patches.filter(f => re.test(f.id)).length;
+    const hills = new Set(h.hills.map(m => m.id.replace(/\/tier-\d+$/, ''))).size, onHill = h.pieces.filter(p => !['planet', 'moon', 'rocket-ascent'].includes(p.ring) && p.base > 0).length;
+    console.log(`horizon land: coastline vertices ${coast.length} (north ${coast.filter(p => p[1] > h.centre[1]).length}, south ${coast.filter(p => p[1] <= h.centre[1]).length}, incl. the mole); patches ${h.patches.length} (parks ${n(/^horizon\/park\//)}, tree clumps ${n(/^horizon\/trees\//)}, promenade ${n(/^horizon\/promenade\//)}); hills ${hills} (${h.hills.length} terraces); pieces on a terrace ${onHill}`); }
+  const ck = w.civic.filter(m => m.kit), cpro = w.civic.filter(m => !m.kit && m.id.split('/').length === 2 && m.surface !== 'limestone');
+  console.log(`civic kit pieces ${ck.length}: ${Object.entries(ck.reduce((o, m) => ({ ...o, [m.kit!.id]: (o[m.kit!.id] ?? 0) + 1 }), {} as Record<string, number>)).map(([k, v]) => `${k} ${v} x${[...new Set(ck.filter(m => m.kit!.id === k).map(m => m.kit!.scale[0]))].join('/')}`).join(', ')}`);
+  console.log(`civic objects with no kit piece ${cpro.length}: ${cpro.map(m => m.id.replace('civic/', '')).join(', ')}`);
+  const clr = civicClearance(w.civic);
+  console.log(`civic person-scale clearance: ${clr.length ? `${clr.length} overlaps\n  ${clr.join('\n  ')}` : 'clear'}`);
+  colour(w);
   coverage(w, gen);
 }
 
@@ -61,4 +71,22 @@ function faces(w: World, gen: Generated): void {
   const glazed = sf.filter(f => /[RPB]/.test(f.bays));
   console.log(`skins ${w.skins.length} (procedural walls by the grammar, no curtain wall): families ${Object.entries(fam).map(([k, v]) => `${k} ${v}`).join(', ')}; accents ${Object.entries(acc).map(([k, v]) => `${k} ${v}`).join(', ')}; faces ${sf.length} (${glazed.length} glazed, ${sf.length - glazed.length} stone with porthole columns ${sf.reduce((n, f) => n + f.portholes.length, 0)}); glass share max ${Math.max(...sf.map(f => f.glass)).toFixed(2)}, mean ${(glazed.reduce((a, f) => a + f.glass, 0) / Math.max(1, glazed.length)).toFixed(2)} (limit 0.55)`);
   console.log(`street corners: ${w.facades.filter(f => f.form === 'corner').length} kit corners; the rest of the procedural bodies' street corners are rounded arcs (grammar §1)`);
+}
+
+/** Grammar §2a: the accent share of every procedural street facade (lower storeys and whole), the elements, and the fabric counts. */
+export function colour(w: World): void {
+  const sk = w.skins.filter(k => k.share.lower !== null), xs = sk.map(k => k.share.lower!).sort((a, b) => a - b), q = (f: number) => xs[Math.min(xs.length - 1, Math.floor(f * xs.length))]!;
+  const whole = sk.map(k => k.share.whole!).sort((a, b) => a - b), tg = sk.filter(k => k.share.target), inBand = tg.filter(k => k.share.lower! >= 0.2 - 1e-9 && k.share.lower! <= 0.3 + 1e-9);
+  const tl = tg.map(k => k.share.lower!).sort((a, b) => a - b), tw = tg.map(k => k.share.whole!).sort((a, b) => a - b);
+  console.log(`accent share (grammar §2a, lower = ground + 2 upper storeys of the procedural street walls): ${sk.length} facades measured (${w.skins.length - sk.length} all kit-faced); all: lower min ${q(0).toFixed(3)} median ${q(0.5).toFixed(3)} max ${q(1).toFixed(3)}, whole median ${whole[Math.floor(whole.length / 2)]!.toFixed(3)}`);
+  console.log(`accent share, held to 20-30% (>= 12 m procedural street face, not a shed): ${tg.length} facades, in band ${inBand.length}, under ${tg.filter(k => k.share.lower! < 0.2).length}, over ${tg.filter(k => k.share.lower! > 0.3).length}; lower min ${tl[0]!.toFixed(3)} median ${tl[Math.floor(tl.length / 2)]!.toFixed(3)} max ${tl[tl.length - 1]!.toFixed(3)}; whole min ${tw[0]!.toFixed(3)} median ${tw[Math.floor(tw.length / 2)]!.toFixed(3)} max ${tw[tw.length - 1]!.toFixed(3)} (10-15%)`);
+  const ids = (xs: typeof tg) => xs.map(k => `${k.building} ${k.share.lower!.toFixed(3)}`).join(', ') || 'none';
+  const pf = sk.filter(k => k.family === 'porthole' || k.faces.some(f => f.bays.includes('P'))), pfT = pf.filter(k => k.share.target);
+  console.log(`accent band (grammar §2a, 3a porthole panels ${w.skins[0]?.porthole.panel.w ?? 0} x ${w.skins[0]?.porthole.panel.h ?? 0} m behind every porthole; sheds exempt): street facades under 20%: ${tg.filter(k => k.share.lower! < 0.2).length} (${ids(tg.filter(k => k.share.lower! < 0.2))}); over 30%: ${tg.filter(k => k.share.lower! > 0.3).length} (${ids(tg.filter(k => k.share.lower! > 0.3))}); porthole fronts held ${pfT.length}, under 20% ${pfT.filter(k => k.share.lower! < 0.2).length}`);
+  console.log('accent share per facade (building lower/whole, * = held to the band): ' + sk.map(k => `${k.building.replace(/^bld\//, '')} ${k.share.lower!.toFixed(2)}/${k.share.whole!.toFixed(2)}${k.share.target ? '*' : ''}`).join(', '));
+  const el: Record<string, number> = {}; for (const k of w.skins) for (const e of k.share.elements) el[e] = (el[e] ?? 0) + 1;
+  console.log(`colour elements per building: min ${Math.min(...w.skins.map(k => k.share.elements.length))}; ${Object.entries(el).map(([k, v]) => `${k} ${v}`).join(', ')}; spandrels ${w.skins.filter(k => k.spandrel).length}, accent piers ${w.skins.filter(k => k.faience.piers).length}; fins ${w.skins.reduce((n, k) => n + k.fins.length, 0)} (corner ${w.skins.reduce((n, k) => n + k.fins.filter(f => f.kind === 'corner').length, 0)}, entrance ${w.skins.reduce((n, k) => n + k.fins.filter(f => f.kind === 'entrance').length, 0)})`);
+  const by = <T,>(xs: T[], f: (x: T) => string) => Object.entries(xs.reduce((o, x) => ({ ...o, [f(x)]: (o[f(x)] ?? 0) + 1 }), {} as Record<string, number>)).map(([k, v]) => `${k} ${v}`).join(', ');
+  const F = w.fabric;
+  console.log(`fabric: awnings ${F.awnings.length} on ${new Set(F.awnings.map(a => a.building)).size} buildings (${by(F.awnings, a => a.stripes[0])}); banners ${F.banners.length} (${by(F.banners, b => b.kind)}; ${by(F.banners, b => b.surface)}); flags ${F.flags.length} (${by(F.flags, f => f.kind)}; ${by(F.flags, f => f.surface)})`);
 }

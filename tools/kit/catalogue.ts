@@ -5,6 +5,7 @@ import { join, relative } from 'node:path';
 import type { Kit, KitAsset, KitBuilt, KitFile, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
+import { LOD_CATEGORIES, lodCategoryOf, lodScreens } from './lod';
 
 type Lod = { file: string; tris: number; screen: number };
 type GenRow = { name: string; bounds?: [number, number, number, number]; lods?: Lod[]; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; order?: KitOrder; built?: KitBuilt };
@@ -59,12 +60,18 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     return c && Math.hypot(c[0], c[1]) > 0.05 ? { pivot: 'origin-ground', pivotOffset: c } : { pivot: 'footprint-centre-ground' };
   };
   const status = new Map((prior?.assets ?? []).map(a => [a.id, a.status]));
-  const assets = manifest.map((a): KitAsset => {
-    const files: KitFile[] = [...pair('fbx', a.fbx), ...pair('prefab', a.fbx.replace(/^Models\//, 'Prefabs/').replace(/\.fbx$/, '.prefab')), ...matFiles(a.materials)];
-    const st: KitStatus = status.get(a.name) ?? (WAVE1.has(a.name) ? 'adopted' : 'candidate');
+  const assets = manifest.map((a0): KitAsset => {
+    const st: KitStatus = status.get(a0.name) ?? (WAVE1.has(a0.name) ? 'adopted' : 'candidate');
+    // An adopted DecoKit piece the generator re-exported in full (its fbx is in the generator's output, e.g. Vela's slimmed street props, brief 007 round 3):
+    // the generator's binary, size, triangles and materials win; the DecoKit's fbx meta (GUID, import settings) and prefab stay, so references hold.
+    const g = st === 'adopted' && gen ? genManifest.find(x => x.name === a0.name && x.fbx === a0.fbx && existsSync(join(gen, x.fbx))) : undefined;
+    const a = g ? { ...a0, tris: g.tris, size: g.size, materials: g.materials, parts: g.parts ?? a0.parts } : a0;
+    const fbx: KitFile[] = g ? [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(readFileSync(join(gen!, g.fbx))), bytes: statSync(join(gen!, g.fbx)).size }, ...pair('fbx', a.fbx).filter(f => f.role === 'fbx-meta')] : pair('fbx', a.fbx);
+    const files: KitFile[] = [...fbx, ...pair('prefab', a.fbx.replace(/^Models\//, 'Prefabs/').replace(/\.fbx$/, '.prefab')), ...matFiles(a.materials)];
     const lo = st === 'adopted' ? lodsOf(a.name) : { files: [] }; // LOD files exist for the pieces the generator was asked about (adopted)
     files.push(...lo.files);
-    return { id: a.name, category: a.category, size: a.size as [number, number, number], ...pivotOf(a.name), front: '+Z', tris: a.tris, materials: a.materials, ...(a.parts ? { parts: a.parts } : {}), ...(a.lod1 ? { lod1: a.lod1 } : {}), ...('lods' in lo ? { lods: lo.lods } : {}), files, tags: tagsOf(a.name, a.category), status: st };
+    const lc = lodCategoryOf(a.name, a.category);
+    return { id: a.name, category: a.category, size: a.size as [number, number, number], ...pivotOf(a.name), front: '+Z', tris: a.tris, materials: a.materials, ...(a.parts ? { parts: a.parts } : {}), ...(a.lod1 ? { lod1: a.lod1 } : {}), ...('lods' in lo ? { lods: lodScreens(lo.lods, lc) } : {}), lodCategory: lc, files, tags: tagsOf(a.name, a.category), status: st };
   });
   // Pieces the generator built to a plan order (tools/decokit): adopted, source generated, the order's hash and each file's sha256.
   // No generator output here: the prior catalogue's generated entries are kept as they are (copy then needs `bun run decokit`).
@@ -73,17 +80,17 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   for (const g of genManifest.filter(g => g.order && g.built)) {
     const fbxAbs = join(gen!, g.fbx), b = readFileSync(fbxAbs), files: KitFile[] = [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(b), bytes: b.length }];
     files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
-    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length ? { lods: g.lods } : {}), files, tags: generatedTags(g.name), status: status.get(g.name) ?? 'adopted', source: 'generated', order: g.order!, built: g.built! });
+    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category)) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: generatedTags(g.name), status: status.get(g.name) ?? 'adopted', source: 'generated', order: g.order!, built: g.built! });
   }
   // Pieces the generator built without an order (tools/decokit atompunk.py, horizon.py: crowns, fountain, pavilions, horizon band, twin station): fixed size, tags by category.
   const plain = genManifest.filter(g => !(g.order && g.built) && !manifestIds.has(g.name));
   for (const g of plain) {
     const fbxAbs = join(gen!, g.fbx), b = readFileSync(fbxAbs), files: KitFile[] = [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(b), bytes: b.length }];
     files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
-    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.lods?.length ? { lods: g.lods } : {}), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
+    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.lods?.length ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category)) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
   }
-  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) generated.push(a);
+  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files, tags, status: st, source, order, built, ...rest } = a; generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, assets };
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, assets };
 }

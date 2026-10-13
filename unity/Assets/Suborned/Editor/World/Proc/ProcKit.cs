@@ -6,15 +6,16 @@ using UnityEngine;
 namespace Suborned.World
 {
     /// <summary>Shared state of the procedural facades (Vela's grammar, the default for every building): detail tiers and the
-    /// vertex tallies. Detail falls off with distance from the nearest hero point (the export's play focus and Harbour Lane, the
-    /// probe street) so the district stays cheap.</summary>
+    /// vertex tallies. Every facade is built at the hero tier (2): the tactical camera can stand anywhere in the district, so play
+    /// zoom must look and cost the same on every block (Redline 007 C1; the old tiers fell off with distance from the export focus
+    /// and a hard-coded probe street, which left SpaceHQ on the cheapest facades). Distance detail belongs to LODGroups, not to a
+    /// baked distance from fixed points. Tiers 0 and 1 stay in the grammar for LOD levels.</summary>
     public static class ProcKit
     {
         /// <summary>Profile end caps (hidden against neighbours nearly everywhere; off keeps the vertex count down).</summary>
         public const bool ProfileCaps = false;
-        public const float Near = 80f, Mid = 260f;
-        static readonly Vector2 HarbourLane = new(120f, -330f);
-        static Vector2[] heroes = { HarbourLane };
+        /// <summary>The tier every facade is built at (2 = hero: neon tubes, chrome rails, canopy stripes).</summary>
+        public const int Tier = 2;
 
         public static readonly Dictionary<string, long> Cost = new();
         public static readonly long[] VertsByTier = new long[3];
@@ -26,17 +27,13 @@ namespace Suborned.World
             key = d + ":" + key; Cost[key] = (Cost.TryGetValue(key, out var v) ? v : 0) + (to - from);
         }
 
-        public static int Detail(Vector2 p)
-        {
-            float d = float.MaxValue; foreach (var h in heroes) d = Mathf.Min(d, (p - h).magnitude);
-            return d < Near ? 2 : d < Mid ? 1 : 0;
-        }
+        /// <summary>Facade detail tier at plan point p: the same everywhere (see the class note).</summary>
+        public static int Detail(Vector2 p) => Tier;
 
-        /// <summary>After the facade kit exists: reset the tallies, set the hero points, decide every host's grammar and every sign.</summary>
+        /// <summary>After the facade kit exists: reset the tallies, decide every host's grammar and every sign.</summary>
         public static void Init(WorldDto world, FacadeKit fk)
         {
             Cost.Clear(); System.Array.Clear(VertsByTier, 0, 3); System.Array.Clear(MassesByTier, 0, 3);
-            heroes = world.View != null ? new[] { world.View.Focus, HarbourLane } : new[] { HarbourLane };
             Pc.GlassSw = fk.Spec.Glass;
             ProcSkin.Init(world);
             ProcGrammar.Assign(world, fk);
