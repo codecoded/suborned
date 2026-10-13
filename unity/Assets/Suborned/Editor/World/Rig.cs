@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,6 +18,9 @@ namespace Suborned.World
     ///   `look`, or standing on `along` (a road or foot line) at eyeHeight looking down the line.</summary>
     public static class Rig
     {
+        /// <summary>How far (m) from its plan point a `kind@x,y` street item may stand and still be the one meant.</summary>
+        const float AnchorReach = 3f;
+
         public static void Build(Transform cameras, Transform lighting, Transform root, WorldDto world, List<ViewSpec> views, Look look)
         {
             var all = Inspect.Bounds(root);
@@ -30,12 +34,12 @@ namespace Suborned.World
                 {
                     switch (v.Projection)
                     {
-                        case "top": Top(cam, Frame(root, v, all), v); break;
+                        case "top": Top(cam, Frame(root, world, v, all), v); break;
                         case "export": Export(cam, all, world.View, Focus(root, world, v), float.IsNaN(v.Zoom) ? world.View.Zoom : v.Zoom, v.Aspect, look); break;
                         default:
                             if (v.Eye is { } eye) Stand(cam, eye, v.Look.Value, v);
                             else if (v.Along != null) Along(cam, world, v);
-                            else Fit(cam, Frame(root, v, all), v);
+                            else Fit(cam, Frame(root, world, v, all), v);
                             break;
                     }
                 }
@@ -245,18 +249,38 @@ namespace Suborned.World
                 Quaternion.Euler(v.Pitch, Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg, 0f));
         }
 
-        /// <summary>Union of the renderer bounds of the named layers or elements ('*' = all).</summary>
-        static Bounds Frame(Transform root, ViewSpec v, Bounds all)
+        /// <summary>Union of the renderer bounds of the named layers or elements ('*' = all). An entry `kind@x,y` names a street
+        /// item by its place (StreetItemAt), not by its id.</summary>
+        static Bounds Frame(Transform root, WorldDto w, ViewSpec v, Bounds all)
         {
             Bounds? b = null;
-            foreach (var name in v.Frame)
+            foreach (var entry in v.Frame)
             {
-                if (name == "*") return all;
+                if (entry == "*") return all;
+                string name = entry.Contains("@") ? StreetItemAt(w, v, entry) : entry;
                 var t = FindDeep(root, name) ?? throw new AnchorMissing($"World: view {v.Name} skipped: `{name}` not in this build");
                 var tb = Inspect.Bounds(t);
                 if (b is { } have) { have.Encapsulate(tb); b = have; } else b = tb;
             }
             return b ?? throw new InvalidDataException($"World: view {v.Name} has no frame");
+        }
+
+        /// <summary>The id of the street item `kind@x,y`: the one of that kind standing within AnchorReach of that plan point.
+        /// Street item ids are numbered along the whole district and renumber whenever street furniture changes (a view that
+        /// named `tree-366` would then frame the next tree down the row, without a word); a place does not.</summary>
+        static string StreetItemAt(WorldDto w, ViewSpec v, string anchor)
+        {
+            int cut = anchor.IndexOf('@');
+            var xy = anchor.Substring(cut + 1).Split(',');
+            if (cut == 0 || xy.Length != 2 || !float.TryParse(xy[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float x)
+                || !float.TryParse(xy[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float y))
+                throw new InvalidDataException($"World: view {v.Name}: `{anchor}` is not kind@x,y");
+            string kind = anchor.Substring(0, cut), id = null;
+            var at = new Vector2(x, y);
+            float least = AnchorReach;
+            foreach (var s in w.Street)
+                if (s.Kind == kind && (s.At - at).magnitude <= least) { least = (s.At - at).magnitude; id = s.Id; }
+            return id ?? throw new AnchorMissing($"World: view {v.Name} skipped: no `{kind}` within {AnchorReach} m of ({x}, {y}) in this build");
         }
 
         static Transform FindDeep(Transform t, string name)
