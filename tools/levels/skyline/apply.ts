@@ -66,24 +66,42 @@ function editSignature(plan: Plan, e: SignatureEdit, known: Known, problems: Pro
   const here = `signature ${e.id}`, areas = new Set(plan.areas.map(a => a.id));
   const { concepts, ...rest } = e;
   checkTiles(here, concepts, known, problems);
-  const list = (plan.signatures ??= []) as unknown as Entry[];
-  const next = merged(list.find(sameId(e.id)), { ...rest, conceptTiles: concepts }, ['regen', 'portal']);
-  checkSignaturePiece(here, e, (next.regen as { variant?: string } | undefined)?.variant, known, problems);
+  const list = (plan.signatures ??= []) as unknown as Entry[], old = list.find(sameId(e.id));
+  const next = merged(old, { ...rest, conceptTiles: concepts }, ['regen', 'portal']);
+  const variant = (next.regen as { variant?: string } | undefined)?.variant;
+  checkSignaturePiece(here, e, old?.kit as string | undefined, variant, known, problems);
   for (const a of e.areas) if (!areas.has(a)) problems.push(datum(`${here}: no such environmental area ${a}`));
   upsert(list, next);
 }
 
+/** The piece a regenerated signature is built from: it has to be in the catalogue and adopted (built). */
+function checkVariant(here: string, piece: string | undefined, known: Known, problems: Problem[]) {
+  if (piece === undefined) return;
+  const status = known.kit.get(piece);
+  if (status === undefined || status === 'rejected') {
+    checkPiece('Datum', here, 'regen.variant', piece, known, problems);
+  } else if (status !== 'adopted') {
+    const why = `is a ${status} piece in the kit catalogue, not an adopted one`;
+    problems.push(datum(`${here}: regen.variant ${piece} ${why}`));
+  }
+}
+
 /**
  * The piece a signature is built from. When it is regenerated (`regen.variant`), the variant is the piece that is
- * built, so the variant is judged and the base piece is not: the plan's SpaceHQ is a rejected piece with an adopted
- * variant, and that is correct as it stands. A variant that is not in the catalogue is a problem.
+ * built, so the variant is judged (it has to be adopted) and a base piece the plan already names is not: the plan's
+ * SpaceHQ is a rejected piece with an adopted variant, and that is correct as it stands. A kit the edit changes is
+ * still a name that has to be in the catalogue, whatever the variant. Without a variant the kit is judged as it is.
  */
 function checkSignaturePiece(
-  here: string, e: SignatureEdit, variant: string | undefined, known: Known, problems: Problem[],
+  here: string, e: SignatureEdit, oldKit: string | undefined, variant: string | undefined,
+  known: Known, problems: Problem[],
 ) {
   const named = e.regen?.variant !== undefined || (e.kit !== undefined && variant !== undefined);
-  if (named) checkPiece('Datum', here, 'regen.variant', variant, known, problems);
-  else checkPiece('Datum', here, 'kit', e.kit, known, problems);
+  if (named) checkVariant(here, variant, known, problems);
+  if (variant === undefined) checkPiece('Datum', here, 'kit', e.kit, known, problems);
+  else if (e.kit !== undefined && e.kit !== oldKit && !known.kit.has(e.kit)) {
+    problems.push(datum(`${here}: kit ${e.kit} is not a piece in the kit catalogue`));
+  }
 }
 
 function editSite(plan: Plan, e: SiteEdit, known: Known, problems: Problem[]) {

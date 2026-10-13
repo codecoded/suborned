@@ -27,14 +27,23 @@ export async function card(who: string): Promise<Card> {
 }
 
 export const cliSchema = (schema: z.ZodType) => { const { $schema: _, ...rest } = z.toJSONSchema(schema) as Record<string, unknown>; return JSON.stringify(rest); };
-export const claudeArgs = (c: Card, schemaJson: string, effort = DEFAULT_EFFORT, model = process.env.CLAUDE_MODEL ?? c.model, withImages = false) => [
-  process.env.CLAUDE_BIN ?? 'claude', '-p', '--system-prompt', c.body, '--tools=',
-  ...(withImages ? ['--input-format', 'stream-json'] : []), // pictures travel as image blocks of one user message, which only the stream-json input takes
-  '--output-format', 'stream-json', '--verbose', '--json-schema', schemaJson, '--effort', effort, '--no-session-persistence',
-  // Project settings only: no user hooks, plugins or MCP servers inside a generation call.
-  '--setting-sources', 'project', '--strict-mcp-config',
-  ...(model && model !== 'inherit' ? ['--model', model] : []),
-];
+/** The command line of a call. The binary and the model come from `env`: the one the live guard judged. */
+export function claudeArgs(
+  c: Card, schemaJson: string, effort = DEFAULT_EFFORT, model?: string, withImages = false,
+  env: Record<string, string | undefined> = process.env,
+) {
+  const chosen = model ?? env.CLAUDE_MODEL ?? c.model;
+  return [
+    env.CLAUDE_BIN ?? 'claude', '-p', '--system-prompt', c.body, '--tools=',
+    // pictures travel as image blocks of one user message, which only the stream-json input takes
+    ...(withImages ? ['--input-format', 'stream-json'] : []),
+    '--output-format', 'stream-json', '--verbose', '--json-schema', schemaJson, '--effort', effort,
+    '--no-session-persistence',
+    // Project settings only: no user hooks, plugins or MCP servers inside a generation call.
+    '--setting-sources', 'project', '--strict-mcp-config',
+    ...(chosen && chosen !== 'inherit' ? ['--model', chosen] : []),
+  ];
+}
 /** No CLAUDE.md reaches a generation call: those are development instructions, not design sources. */
 export const claudeEnv = (env: Record<string, string | undefined> = process.env) => ({ ...env, CLAUDE_CODE_DISABLE_CLAUDE_MDS: '1' });
 
@@ -114,8 +123,9 @@ export async function invokeClaude(
   const refused = liveGuard(env);
   if (refused) throw new Error(refused);
   const stdin = images.length ? userMessage(prompt, images) : prompt;
-  const args = claudeArgs(c, cliSchema(schema), effort, undefined, images.length > 0);
-  const proc = spawn(args, { cwd: root, env: claudeEnv(), stdin: new Blob([stdin]) });
+  // the binary and the child's environment come from the env the guard judged, never from process.env
+  const args = claudeArgs(c, cliSchema(schema), effort, undefined, images.length > 0, env);
+  const proc = spawn(args, { cwd: root, env: claudeEnv(env), stdin: new Blob([stdin]) });
   const text = (s: ReadableStream<Uint8Array>) => new Response(s).text();
   const [stdout, stderr, exitCode] = await Promise.all([text(proc.stdout), text(proc.stderr), proc.exited]);
   return { stdout, stderr, exitCode, ...interpretClaude(stdout, exitCode) };

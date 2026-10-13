@@ -189,6 +189,23 @@ describe('continuing a rejected run', () => {
     await refused('r004', 'r004 belongs to the other objective; this is the toy objective'); await refused('r099', 'there is no toy/r099');
     expect((await readdir(runs)).sort()).toEqual(before);
   });
+  test('a parent is replayed first: faults.json gone or miscounted, or a record that no longer replays, is refused', async () => {
+    const p = await parentRun(), fixtures = { 'toy-b.1.json': { n: 2, sources: [] }, 'toy-critic.1.json': pass };
+    const broken = async (name: string, f: (round: string) => Promise<void>) => {
+      const dir = join(scratch, name), runs = join(dir, 'runs', 'toy'); await cp(p.dir, dir, { recursive: true });
+      await f(join(runs, 'r001', 'round-1'));
+      const before = (await readdir(runs)).sort();
+      const e = await run(name + '-child', fixtures, { dir, continue: 'r001' }).then(() => 'ran', (x: Error) => x.message);
+      expect((await readdir(runs)).sort()).toEqual(before); // refused before anything was written
+      return e;
+    };
+    expect(await broken('cont-nofaults', async r => { await Bun.$`rm ${join(r, 'faults.json')}`; }))
+      .toContain('faults.json is missing');
+    expect(await broken('cont-zerofaults', async r => { await Bun.write(join(r, 'faults.json'), '[]'); }))
+      .toContain('faults.json holds 0 fault(s), run.json says 1');
+    expect(await broken('cont-edited', async r => { await Bun.write(join(r, 'b.json'), JSON.stringify({ n: 2, sources: [] })); }))
+      .toContain('cannot continue r001: it does not replay');
+  });
 });
 
 describe('the kit digest is pinned into every run', () => {

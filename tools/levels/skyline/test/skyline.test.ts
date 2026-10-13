@@ -242,7 +242,11 @@ describe('levels skyline, stubbed', () => {
     const bare = await replayIn(copy, 'r001', again);
     expect(fails(bare).join('\n')).toContain('not declared');
     const { declareCause } = await import('../../drift');
-    declareCause(ledger, now, 'test: the generator moved the SK-1 count');
+    // N1: a cause that names another rule does not cover SK-1
+    declareCause(ledger, now, 'test: the generator moved the C-0 scale', ['C-0']);
+    const other = fails(await replayIn(copy, 'r001', again)).join('\n');
+    expect(other).toContain('no declared cause names them: SK-1');
+    declareCause(ledger, now, 'test: the generator moved the SK-1 count', ['SK-1']);
     const declared = await replayIn(copy, 'r001', again);
     expect(fails(declared)).toEqual([]);
     expect(declared.lines.join('\n')).toContain('the generator moved the SK-1 count');

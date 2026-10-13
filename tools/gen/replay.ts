@@ -100,7 +100,7 @@ export async function replayRun(
   const code = p.code, tools = await code.hash(), superseded = p.replay.superseded(run);
   // toolsAt: the line to resolve once the reruns say what changed; reran: rounds whose checker rerun was compared
   let toolsAt = -1, reran = 0, rerunDiffers = false;
-  const added = new Set<string>(), changed = new Set<string>();
+  const added = new Set<string>(), changed = new Set<string>(), failing = new Set<string>();
   const hashNow = tools.slice(0, 12), hashThen = String(run.toolsHash).slice(0, 12);
   c.rerunDrift = !!code.moves && run.toolsHash !== tools;
   if (run.toolsHash === tools) ok(`checker code hash ${hashNow}`);
@@ -142,6 +142,7 @@ export async function replayRun(
       if (rr.differs) rerunDiffers = true;
       for (const id of rr.added) added.add(id);
       for (const id of rr.changed ?? []) changed.add(id);
+      for (const id of rr.failing ?? []) failing.add(id);
     }
     if ('citeFaults' in r) { // rounds recorded with the citation check: recompute it from the recorded outputs and each call's own hits
       const built: Record<string, any> = {};
@@ -182,7 +183,7 @@ export async function replayRun(
   }
 
   if (toolsAt >= 0) {
-    const drifted = codeLine({ run, tools, code, allowDrift, reran, rerunDiffers, added, changed });
+    const drifted = codeLine({ run, tools, code, allowDrift, reran, rerunDiffers, added, changed, failing });
     lines[toolsAt] = drifted.line;
     if (drifted.failed) rep.countFailure();
   }

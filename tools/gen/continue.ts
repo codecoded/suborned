@@ -58,7 +58,12 @@ export async function loadParent(p: Plugin, planId: string, runId: string): Prom
     const { reused: _reused, ...record } = call;     // a builder reused in the parent's last round was last asked in an earlier round
     proposals[b.key] = out; calls[b.key] = record;
   }
-  const faults: Fault[] = (await read('faults.json')) ?? [];
+  const faults: Fault[] | undefined = await read('faults.json');
+  const at = `${runId} round ${last.round}`;
+  if (!Array.isArray(faults)) throw new ContinueRefused(`${at}: faults.json is missing, so its open faults are unknown`);
+  if (typeof last.faults === 'number' && faults.length !== last.faults) {
+    throw new ContinueRefused(`${at}: faults.json holds ${faults.length} fault(s), run.json says ${last.faults}`);
+  }
   const hitSources = Object.values(calls).flatMap(call => ((call.retrieval as any)?.hits ?? []).map((h: any) => h.source as string));
   const gdd = (run.gdd ?? inferGdd(hitSources))?.version as string | undefined;
   const parent = { plan: planId, run: runId, outcome: run.outcome as Continuable, round: last.round as number, version: last.version as string, runSha256: sha(text), gdd, chunker: Number(run.chunker ?? 1) };

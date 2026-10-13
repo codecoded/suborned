@@ -159,15 +159,14 @@ describe('images in a crew call', () => {
   test('invokeClaude sends the message on stdin, with the input format flag, and without pictures sends the plain prompt', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'fake-claude-img-')), bin = join(dir, 'claude');
     await Bun.write(bin, `#!/bin/sh\ncat > "${dir}/stdin.txt"\necho "$@" > "${dir}/args.txt"\nprintf '%s\\n' '${JSON.stringify(init())}' '${JSON.stringify(result())}'\n`);
-    await chmod(bin, 0o755); process.env.CLAUDE_BIN = bin;
-    try {
-      const schema = z.object({ ok: z.boolean() }), run = await invokeClaude(await card('Fable'), 'PROMPT BODY', schema, undefined, [{ path: 'a.png', mediaType: 'image/png', bytes: 8, sha256: sha256(png), data: png }], undefined, {});
-      expect(run.ok).toBe(true); expect(run.tools).toEqual(['StructuredOutput']);
-      expect(await Bun.file(join(dir, 'args.txt')).text()).toContain('--input-format stream-json');
-      expect(JSON.parse(await Bun.file(join(dir, 'stdin.txt')).text()).message.content.map((b: any) => b.type)).toEqual(['image', 'text']);
-      await invokeClaude(await card('Fable'), 'PLAIN', schema, undefined, [], undefined, {});
-      expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PLAIN'); expect(await Bun.file(join(dir, 'args.txt')).text()).not.toContain('--input-format');
-    } finally { delete process.env.CLAUDE_BIN; }
+    await chmod(bin, 0o755);
+    const env = { PATH: process.env.PATH, CLAUDE_BIN: bin }; // what the guard judges is what the child gets
+    const schema = z.object({ ok: z.boolean() }), run = await invokeClaude(await card('Fable'), 'PROMPT BODY', schema, undefined, [{ path: 'a.png', mediaType: 'image/png', bytes: 8, sha256: sha256(png), data: png }], undefined, env);
+    expect(run.ok).toBe(true); expect(run.tools).toEqual(['StructuredOutput']);
+    expect(await Bun.file(join(dir, 'args.txt')).text()).toContain('--input-format stream-json');
+    expect(JSON.parse(await Bun.file(join(dir, 'stdin.txt')).text()).message.content.map((b: any) => b.type)).toEqual(['image', 'text']);
+    await invokeClaude(await card('Fable'), 'PLAIN', schema, undefined, [], undefined, env);
+    expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PLAIN'); expect(await Bun.file(join(dir, 'args.txt')).text()).not.toContain('--input-format');
   });
 });
 
@@ -185,14 +184,12 @@ describe('claude invocation', () => {
     const dir = await mkdtemp(join(tmpdir(), 'fake-claude-')), bin = join(dir, 'claude');
     await Bun.write(bin, `#!/bin/sh\ncat > "${dir}/stdin.txt"\npwd > "${dir}/cwd.txt"\necho "$CLAUDE_CODE_DISABLE_CLAUDE_MDS" > "${dir}/mds.txt"\nprintf '%s\\n' '${JSON.stringify(init())}' '${JSON.stringify(result())}'\n`);
     await chmod(bin, 0o755);
-    process.env.CLAUDE_BIN = bin;
-    try {
-      const run = await invokeClaude(await card('Fable'), 'PROMPT BODY', z.object({ ok: z.boolean() }), undefined, [], undefined, {});
-      expect(run.ok).toBe(true);
-      expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PROMPT BODY');
-      expect((await Bun.file(join(dir, 'cwd.txt')).text()).trim()).toBe(root);
-      expect((await Bun.file(join(dir, 'mds.txt')).text()).trim()).toBe('1');
-    } finally { delete process.env.CLAUDE_BIN; }
+    const env = { PATH: process.env.PATH, CLAUDE_BIN: bin };
+    const run = await invokeClaude(await card('Fable'), 'PROMPT BODY', z.object({ ok: z.boolean() }), undefined, [], undefined, env);
+    expect(run.ok).toBe(true);
+    expect(await Bun.file(join(dir, 'stdin.txt')).text()).toBe('PROMPT BODY');
+    expect((await Bun.file(join(dir, 'cwd.txt')).text()).trim()).toBe(root);
+    expect((await Bun.file(join(dir, 'mds.txt')).text()).trim()).toBe('1');
   });
   test('every crew card parses, names itself and maps to a Claude model', async () => {
     const names = (await readdir(join(root, '.claude/agents'))).map(f => f.replace(/\.md$/, ''));
@@ -242,5 +239,22 @@ describe('live call guard', () => {
     expect((await ask({ ...agent, SUBORNED_LIVE: '1' })).ok).toBe(true);
     expect((await ask({})).ok).toBe(true); // a person in a terminal
     expect(started).toHaveLength(2);
+  });
+  test('the binary and the environment the child gets are the ones the guard judged, not process.env (N4)', async () => {
+    const seen: { cmd: string[]; env: Record<string, string | undefined> }[] = [];
+    const spawn: Spawn = (cmd, o) => { seen.push({ cmd, env: o.env }); return answered(); };
+    const mine = { CLAUDECODE: '1', CLAUDE_BIN: stub, CLAUDE_MODEL: 'sonnet', MARK: 'here' };
+    const was = { bin: process.env.CLAUDE_BIN, model: process.env.CLAUDE_MODEL };
+    process.env.CLAUDE_BIN = '/elsewhere/claude'; process.env.CLAUDE_MODEL = 'opus';
+    try { await invokeClaude(await card('Fable'), 'PROMPT', schema, undefined, [], spawn, mine); } finally {
+      for (const [k, v] of [['CLAUDE_BIN', was.bin], ['CLAUDE_MODEL', was.model]] as const) {
+        if (v === undefined) delete process.env[k]; else process.env[k] = v;
+      }
+    }
+    const [call] = seen;
+    expect(call!.cmd[0]).toBe(stub); // a guard satisfied by the stand-in starts the stand-in
+    expect(call!.cmd[call!.cmd.indexOf('--model') + 1]).toBe('sonnet');
+    expect(call!.env).toMatchObject({ CLAUDE_BIN: stub, MARK: 'here', CLAUDE_CODE_DISABLE_CLAUDE_MDS: '1' });
+    expect(call!.env.CLAUDE_MODEL).toBe('sonnet');
   });
 });

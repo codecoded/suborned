@@ -3,6 +3,7 @@
 // its deterministic checks, and nothing else: transit is the first (tools/levels/transit.ts); skyline and missions follow.
 import type { z } from 'zod';
 import type { Objective } from '../rag/agent';
+import type { Ledger } from './ledger';
 import type { retrieve } from '../rag/retrieval';
 
 /** A crew member. `key` names its files and call records (`<key>.json`), `owner` is how faults and hand-offs name it. */
@@ -36,8 +37,8 @@ export type Assessment = {
   criticTask(cited: string, lastFaults: Fault[]): string;  // the critic's task: the objective's evidence, the engine's block of what each builder retrieved and cites (`cited`), last round's faults
 };
 export type Seeds<S> = { names: readonly string[]; agent: Record<string, string>; apply(s: S, r: Round, name: string, out: any, rec: any): { out: any; note: string } };
+export type { Ledger } from './ledger';
 /** The code a verdict rests on (plan checker, apply step). Its hash is recorded per run; a changed hash is drift, labelled by cause in the ledger. */
-export type Ledger = { recorded: Record<string, string>; declared: Record<string, string[]> };
 export type Code = {
   label: string; hash(): Promise<string>; ledger(): Ledger; ledgerFile: string; declare: string;
   /** The code is expected to move between a run and its replays (the world generator): see replay-code.ts. */
@@ -59,10 +60,12 @@ export type Check = {
 };
 export type Pins = { overlay?: Record<string, string>; [k: string]: any }; // overlay: recorded source text the corpus uses instead of the file on disk
 /**
- * The candidate's checks were rerun: did a recorded rule change (`changed`: which), which rules are new, and (when the
- * objective can) the apply faults recomputed from the proposals.
+ * The candidate's checks were rerun: did a recorded rule change (`changed`: which; `failing`: which of those fail
+ * now), which rules are new, and (when the objective can) the apply faults recomputed from the proposals.
  */
-export type Rerun = { differs: boolean; added: string[]; changed?: string[]; assessFaults?: number };
+export type Rerun = {
+  differs: boolean; added: string[]; changed?: string[]; failing?: string[]; assessFaults?: number;
+};
 export type Replay = {
   skipNote: string; inputVersion(run: any): string; superseded(run: any): boolean; // superseded: recorded before inputs were pinned, cannot be rerun
   checksOk(r: any): boolean;                               // did the deterministic checks pass in this recorded round (the field the objective's `record` wrote)

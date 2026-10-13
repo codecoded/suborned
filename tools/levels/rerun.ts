@@ -17,7 +17,7 @@ export function changedRules(now: Rule[], recorded: Rule[]): string[] {
 /** `now`: the rules as they rerun; `rec`: the round's checks.json; `r`: the round's record in run.json. */
 export function compareChecks(
   c: Check, n: string, r: RoundRecord, now: Rule[], rec: { checks: Rule[] },
-): Pick<Rerun, 'differs' | 'added' | 'changed'> {
+): Pick<Rerun, 'differs' | 'added' | 'changed' | 'failing'> {
   const had = new Set(rec.checks.map(x => x.id));
   const kept = now.filter(x => had.has(x.id)), fresh = now.filter(x => !had.has(x.id));
   const same = JSON.stringify(kept) === JSON.stringify(rec.checks), changed = same ? [] : changedRules(now, rec.checks);
@@ -36,5 +36,6 @@ export function compareChecks(
   if (r.checkerOk !== (clean && !(r.problems ?? []).length)) {
     c.fail(`${n}: run.json checkerOk=${r.checkerOk} but checks.json clean=${clean}`);
   }
-  return { differs: !same, added: fresh.map(x => x.id), changed };
+  const failing = changed.filter(id => now.some(x => x.id === id && !x.ok));
+  return { differs: !same, added: fresh.map(x => x.id), changed, failing };
 }

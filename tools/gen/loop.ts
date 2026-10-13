@@ -10,6 +10,7 @@ import { writeJson } from '../rag/config';
 import type { retrieve } from '../rag/retrieval';
 import { DEFAULT_MAX_USD, SpendCeiling, spentUsd, withCeiling } from './ceiling';
 import { ContinueRefused, loadParent, pinInherited, startFrom } from './continue';
+import { replayParent } from './continue-parent';
 import { crewOf, feedbackLine, handoffText } from './crew';
 import { currentGdd } from './gdd';
 import { gitState } from './gitstate';
@@ -27,7 +28,9 @@ export async function generate<S>(p: Plugin<S>, o: Opts) {
   if (o.continue && o.seed) {
     throw new ContinueRefused('a seeded run starts from the base plan; --seed and --continue cannot be combined');
   }
-  const parent = o.continue ? await loadParent(p, id, o.continue) : undefined; // refuses before anything is written
+  // refuses before anything is written: a parent that does not replay is not a state to repair from
+  const parent = o.continue ? await loadParent(p, id, o.continue) : undefined;
+  if (o.continue) await replayParent(p, id, o.continue);
   const run = nextRun(id), runId = `r${pad(run)}`;
   const rdir = resolve(runsRoot(), id, runId), odir = resolve(outRoot(), id, runId), code = await p.code.hash();
   const max = Number.isFinite(o.rounds) ? Math.min(3, Math.max(1, Math.trunc(o.rounds!))) : 3;

@@ -17,6 +17,6 @@ What to do:
 How to answer:
 - Every `signatures`, `towerSites` and `portals` entry is an upsert by id on the plan you are shown; a field you leave out keeps its value. To delete one, name its id in `remove`. You do not edit the plan's standards.
 - Every site, signature and portal cites at least one concept tile in `concepts`, by the ids of the index in the task (for example `blocks/rail_through`). An id that is not in the index is a fault.
-- A piece that must be built or rebuilt at another size goes in `pieceRequests` (for Vela, outside this run); it is not applied to the plan. Name only kit pieces that exist in the catalogue passages; a rejected piece is not a choice.
+- A piece that must be built or rebuilt at another size goes in `pieceRequests` (for Vela, outside this run); it is not applied to the plan. Name only kit pieces that exist in the catalogue passages; a rejected piece is not a choice, and a signature's `regen.variant` has to be an adopted piece (a candidate is not built yet).
 - A sky rail line that threads a building needs the portal declared on the signature or megastructure it passes through. Declare it with the clearance the plan's standard gives.
 - Cite the passages you rely on by id in `sources`. Never invent a rule, a height or a price.

@@ -1,8 +1,8 @@
 // The skyline objective's drift ledger. The world generator moves every day, so a skyline run's code hash will differ
 // from the current one soon after the run:
 //   - a change that leaves every rule the run recorded rerunning identically is labelled drift with no declaration;
-//   - a rule whose result changes needs the change declared:
-//       bun tools/levels/skyline/drift.ts declare "<what changed in the generator, and why that rule moved>"
+//   - a rule whose result changes needs the change declared, naming the rule (a changed rule no cause names fails):
+//       bun tools/levels/skyline/drift.ts declare "<what changed in the generator, and why>" --rules <ID,ID,...|none>
 //   - `recorded` (the code states committed runs were made under) is written by the run itself when it ends.
 //   bun tools/levels/skyline/drift.ts show
 import type { Ledger } from '../../gen/plugin';
