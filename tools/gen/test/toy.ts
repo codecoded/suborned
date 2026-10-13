@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { lexical } from '../../levels/test/lexical';
 import { generate } from '../loop';
+import type { GitState } from '../gitstate';
 import type { Plugin } from '../plugin';
 import { replayRun } from '../replay';
 import { verdictOut } from '../verdict';
@@ -57,7 +58,7 @@ export const toy: Plugin<null> = {
 export const pass = { verdict: 'pass', summary: '', faults: [], sources: [] };
 export type RunOpts = {
   rounds?: number; preview?: boolean; plugin?: Plugin<null>; env?: Record<string, string>; maxUsd?: number; continue?: string;
-  approvedBy?: string;
+  approvedBy?: string; git?: () => GitState;
 };
 
 /** Runs the toy with the stub model answering from `fixtures` (file name → JSON). Returns the run, its folders and a replay of it. */
@@ -71,7 +72,7 @@ export async function runToy(name: string, fixtures: Record<string, unknown>, o:
   try {
     const plugin = o.plugin ?? toy;
     const r = await generate(plugin, { input: 'toy', rounds: o.rounds ?? 3, retriever: lexical, retrieval: 'lexical (test only)', preview: o.preview, maxUsd: o.maxUsd, continue: o.continue,
-      approvedBy: o.approvedBy });
+      approvedBy: o.approvedBy, git: o.git });
     const replay = async () => {
       Object.assign(process.env, env);
       try { return await replayRun({ toy: plugin }, 'toy', r.runId); } finally { restore(old); }

@@ -1,8 +1,9 @@
 // What a run records about how it was made (brief 007 F review, P5 and P6): each call names what it answered, run.json
 // the commit and the approval, and replay notices an edited brief or schema without failing the run.
 import { expect, setDefaultTimeout, test } from 'bun:test';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { fails, pass, runToy } from './toy';
+import { fails, pass, runToy, scratch } from './toy';
 
 setDefaultTimeout(120000);
 const num = (n: number) => ({ n, sources: [] });
@@ -45,4 +46,12 @@ test('replay tells an edited brief from an intact one, and a record without the 
   const { brief: _b, promptSha256: _p, schemaSha256: _s, effort: _e, ...old } = call;
   await Bun.write(callFile, JSON.stringify(old)); // recorded before the fields
   expect(fails(await t.replay())).toEqual([]);
+});
+
+test('the commit and the dirty flag are read before the run folder exists (r011 recorded dirty from a clean tree)', async () => {
+  const seen: boolean[] = [], commit = 'a'.repeat(40);
+  const t = await runToy('git-first', fixtures, { git: () => { seen.push(existsSync(join(scratch, 'git-first', 'runs'))); return { commit, dirty: false }; } });
+  expect(seen).toEqual([false]); // asked once, with nothing of the run on disk yet
+  expect(t.runJson).toMatchObject({ commit, dirty: false });
+  expect(existsSync(join(t.r.rdir, 'run.json'))).toBe(true);
 });

@@ -5,6 +5,7 @@ import type { z } from 'zod';
 import type { Objective } from '../rag/agent';
 import type { Ledger } from './ledger';
 import type { retrieve } from '../rag/retrieval';
+import type { GitState } from './gitstate';
 
 /** A crew member. `key` names its files and call records (`<key>.json`), `owner` is how faults and hand-offs name it. */
 export type Member = { key: string; owner: string; objective: Objective; schema: z.ZodType<any> };
@@ -21,6 +22,7 @@ export type Opts = {
   maxUsd?: number;
   // who allowed a run that reaches the real model; recorded in run.json
   approvedBy?: string; live?: boolean;
+  git?: () => GitState; // where the commit and the dirty flag come from (default gitState); a test reads when it is asked
 };
 
 /** The round in progress, as the hooks see it. `outs`: each builder's latest output (a reused builder keeps last round's). rd/od: this round's folder under runs/ and out/, odir: the run's folder under out/. */

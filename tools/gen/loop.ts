@@ -24,6 +24,8 @@ import { tokensOf } from './tokens';
 const j = (x: unknown) => JSON.stringify(x);
 
 export async function generate<S>(p: Plugin<S>, o: Opts) {
+  // first, before the run folder (untracked, so `dirty`) or any pin is written: r011 recorded dirty from a clean tree because this was read after
+  const git = (o.git ?? gitState)();
   const subject = await p.open(o.input), id = subject.id, loop = o.loop ?? LOOP;
   if (o.continue && o.seed) {
     throw new ContinueRefused('a seeded run starts from the base plan; --seed and --continue cannot be combined');
@@ -45,7 +47,7 @@ export async function generate<S>(p: Plugin<S>, o: Opts) {
   const previous: Record<string, unknown> = {};
   const label = o.preview ? '[PREVIEW, no model] ' : o.seed ? `[SEEDED ${o.seed}] ` : '';
   // read once, with the corpus below: a new GDD version in the shared tree must not change what the run records
-  const git = gitState(), maxUsd = o.maxUsd ?? DEFAULT_MAX_USD, gdd = currentGdd();
+  const maxUsd = o.maxUsd ?? DEFAULT_MAX_USD, gdd = currentGdd();
   // the corpus hash the first retrieval checked against the files; the run's later calls hold the index to it, and do
   // not read the GDD, the plans and the kit again (an edit in the shared tree must not abort a run halfway)
   let indexed: string | undefined;
