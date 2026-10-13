@@ -23,6 +23,10 @@ namespace Suborned.World
         public List<MassDto> Civic = new();
         public List<LandmarkDto> Landmarks = new();
         public List<MassDto> Gates = new();
+        public List<FacadeDto> Facades = new();
+        public List<SignatureDto> Signatures = new();
+        public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
+        public HorizonDto Horizon; // null when the export has none (the sample)
         /// <summary>Elements per layer as the exporter declares them (`counts`); null when the export has none (the sample).</summary>
         public Dictionary<string, int> Counts;
     }
@@ -52,7 +56,42 @@ namespace Suborned.World
     public sealed class WaterDto { public string Id, Surface; public Vector2[] Ring; public float Level; }
 
     /// <summary>Extruded footprint from Base to Base + Height (buildings, civic, quays, megastructure parts).</summary>
-    public sealed class MassDto { public string Id, Surface; public Vector2[] Ring; public float Base, Height; }
+    public sealed class MassDto { public string Id, Surface; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; } // Kit (civic objects): the piece standing in for the extrusion at its At, on its Base
+
+    /// <summary>A kit facade piece (bay, end or corner) on a generated building's street face A→B; Kit.At = the piece's footprint centre, Base = pavement top.</summary>
+    public sealed class FacadeDto { public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B; }
+
+    /// <summary>A plan signature structure (SpaceHQ, a tower site's regenerated piece, the SkyBridge, a sky rail station, the Parade gate block).
+    /// Ground (signature only) = [xmin, xmax, ymin, ymax], where no plot geometry stands. Kit null = procedural (Why says why).</summary>
+    public sealed class SignatureDto { public string Id, Kind, Source, Pending, Why; public KitRefDto Kit; public float[] Ground; public float Base, Tip; }
+
+    /// <summary>The horizon band: the sea plane and distant pieces, all hazed toward Haze.</summary>
+    /// <summary>Sea = the bay sector(s) at SeaLevel (never a square plane), fading into the haze from SeaFadeFrom about SeaCentre; Land = flats
+    /// beyond the district (surface `beyond`); Banks = thin quay-coloured walls on the land side of every land/sea edge.</summary>
+    public sealed class HorizonDto
+    {
+        public Vector2 Centre; public string Haze; public string SeaSurface; public Vector2 SeaCentre; public float SeaSize, SeaLevel, SeaFadeFrom;
+        public List<WaterDto> SeaSectors = new(), Land = new(); public List<MassDto> Banks = new();
+        public List<HorizonPieceDto> Pieces = new();
+    }
+
+    /// <summary>A procedural facade skin (tools/world/gen/skins.ts): family ribbon | porthole | balcony | shed; Accent = the look surface its
+    /// speed bands carry; glazing, piers and portholes as data; one face per mass wall (Mass, Edge, A→B).</summary>
+    public sealed class SkinDto
+    {
+        public string Id, Building, Family, Accent;
+        public string GlassSurface; public float GlassShare, MaxPane, Sill, Head, Reveal, Mullion;
+        public string PierSurface, FrameSurface; public float Frame;
+        public float PortholeD, PortholeRing; public string RingSurface; public int PerBay;
+        public List<SkinFaceDto> Faces = new();
+    }
+
+    /// <summary>One wall of a building mass: Bays = one letter per equal bay along A→B (R ribbon, P porthole bay, B balcony bay, - plain stone);
+    /// Rows = floor z of each storey with windows; Portholes = positions along A→B of vertical porthole columns.</summary>
+    public sealed class SkinFaceDto { public string Mass, Bays; public int Edge; public Vector2 A, B; public float[] Rows, Portholes; public float Glass; }
+
+    /// <summary>Ring A | B | C | shore | rocket-pad | rocket-ascent | planet | moon. Sky bodies and ascents: Base = centre height. Tilt leans the piece TiltDeg toward TiltYaw (plan radians).</summary>
+    public sealed class HorizonPieceDto { public string Id, Ring; public KitRefDto Kit; public float Base, Haze, TiltDeg, TiltYaw; }
 
     public sealed class TransitDto
     {
@@ -104,7 +143,7 @@ namespace Suborned.World
 
     /// <summary>One programme on a roof at Z (top of the roof slab); Parts are in world frame.</summary>
     /// <summary>Kit = the programme's piece (hover-pad: SkyPad_Roof) standing on the slab at its At; its procedural stand-in is then not in Parts.</summary>
-    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit; }
+    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit, Crown; } // Crown: the Crown_* piece at the roof centre
 
     /// <summary>A tenancy a to b on a facade at Z facing Normal; Sign carries Motif, Icon and a palette key (no text).</summary>
     public sealed class FrontageDto
@@ -113,11 +152,11 @@ namespace Suborned.World
         public float Z, Width, Yaw, SpillDepth; public bool Lobby, Anchor, Staffed; public float HoursFrom, HoursTo; public bool HoursService;
         public Vector2 A, B, Normal;
         public PrimDto Front, Entrance, Canopy, Sign, Service; // Service null where the trade has no bay here
-        public string Source; public KitRefDto SignKit; // SignKit adds a blade or wall sign at its At, lowest point at its Base; the fascia stays procedural
+        public string Source, Facade; public KitRefDto SignKit; // Facade = the kit facade piece over this tenancy (its shopfront is in the piece; the sign stays). SignKit adds a blade or wall sign at its At, lowest point at its Base; the fascia stays procedural
     }
 
     /// <summary>stair | ramp | cartRamp | escalator | lift | goodsLift | stairTower from level From (Bottom) to level To (Top); Serves lists the deck ids it lands on.</summary>
-    public sealed class ConnectorDto { public string Id, Kind, Host, From, To; public string[] Serves; public Vector2 Foot, Head; public Vector2[] Ring; public float Bottom, Top, Width, Yaw; public bool StepFree; }
+    public sealed class ConnectorDto { public string Id, Kind, Host, From, To; public string[] Serves; public Vector2 Foot, Head; public Vector2[] Ring; public float Bottom, Top, Width, Yaw; public bool StepFree; public List<PrimDto> Dress = new(); } // Dress: the dressed form, drawn instead of the ring prism
 
     /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
     public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit; }

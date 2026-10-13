@@ -20,6 +20,8 @@ export type World = {
   transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
   roofs: Roof[]; // one programme per building roof
+  skins: Skin[]; // the procedural facade of every plot building (grammar §2-3): window family, accent and per-face bay rhythm; Unity draws walls the kit does not cover from these, never a glass grid
+  facades: Facade[]; // kit bays, ends and corners standing on the street faces of generated buildings (wave 2); the procedural wall on the covered span is hidden
   frontages: Frontage[]; // tenancies along building lines, megastructure facades and decks
   connectors: Connector[]; // stairs, ramps, escalators, lifts, stair towers: every deck and concourse reaches the street
   street: StreetItem[]; // trees, lamps, furniture, transit kits, station entrances, watchers
@@ -27,7 +29,9 @@ export type World = {
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size
   landmarks: Landmark[];
+  signatures: SignatureOut[]; // plan signatures[] (SpaceHQ): the kit piece on its ground, no plot building on `ground`
   gates: Mass[];
+  horizon: Horizon; // derived (grammar §9): the sea plane and the distant band of kit pieces beyond the district; nothing here is in the plan
   counts: Record<string, number>; // elements per layer, as the Unity build must report them
 };
 
@@ -36,7 +40,7 @@ export type Road = { id: string; surface: string; kerbSurface: string; line: V[]
 export type Circus = { id: string; surface: string; islandSurface: string; centre: V; radius: number; islandRadius: number; level: number; islandHeight: number };
 export type Flat = { id: string; surface: string; ring: V[]; level: number };
 /** Extruded footprint from base to base + height. */
-export type Mass = { id: string; surface: string; ring: V[]; base: number; height: number };
+export type Mass = { id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number } }; // civic objects (grammar §11): `kit` stands in for the extrusion (the ring stays the footprint)
 /** spacing > 0: a double track, two ribbons spacing apart either side of `line`. */
 export type Track = { id: string; surface: string; line: V[]; width: number; level: number; depth: number; spacing: number };
 /** Beam(s) with the top at `height`; pylons from `ground` to the beam soffit; a double line's pylon carries a cross-head capDepth deep. */
@@ -60,21 +64,57 @@ export type Roof = {
   c: V; size: V; yaw: number; // the usable roof rect the programme was fitted to (after the parapet inset)
   parapet: number; parts: Prim[];
   kit?: KitRef & { at: V }; // the programme's kit piece (hover-pad: SkyPad_Roof) standing on the slab at `at`; its procedural stand-in is then not in `parts`
+  crown?: KitRef & { at: V }; // grammar §6: the kit crown (Crown_*) at the roof centre; absent on plan tower sites (their regen order carries the crown)
   form?: 'terrace'; // a stepped garden terrace: too shallow for the kit's programmes, planted along its length
 };
+/** A kit facade piece on a building's street face. `a`→`b` is the span of the face it covers (a corner's `a`→`b` is its front cell; its side cell runs 8 m × scale from the vertex along the leaving edge); `kit.at` = footprint centre, `base` = pavement top.
+ *  Bay: 6 m × x wide, body 14 m deep behind the face, a canopy (size z − 14) in front. End: closes a run at a party wall or court. Corner: 8 × 8 m quarter round at a convex 90° vertex. `edge` = index of the building ring's edge. */
+export type Facade = { id: string; building: string; form: 'bay' | 'end' | 'corner'; storeys: number; kit: KitRef & { at: V }; base: number; a: V; b: V; edge: number };
+/** A procedural facade skin (tools/world/gen/skins.ts). family: ribbon | porthole | balcony | shed (no curtain wall, ever). accent: the look surface of the
+ *  building's one accent role (its speed bands carry it). glass: clear (`surface` 'glass'), ribbon width = share x bay width, never wider than maxPane, sill and
+ *  head above each row's floor, set back `reveal`, chrome mullions every `mullion` m. pier: the stone between ribbons, with a chrome-or-stone `frame` round each. */
+export type Skin = {
+  id: string; building: string; family: 'ribbon' | 'porthole' | 'balcony' | 'shed'; accent: string;
+  glass: { surface: string; tint: 'clear'; share: number; maxPane: number; sill: number; head: number; reveal: number; mullion: number };
+  pier: { surface: string; frame: number; frameSurface: string }; porthole: { d: number; ring: number; ringSurface: string; perBay: number };
+  faces: SkinFace[];
+};
+/** One wall of a building mass (`mass` id, ring `edge` a→b, outward = right of a→b on the CCW ring). bays: one letter per equal bay along a→b — R ribbon window,
+ *  P porthole bay (perBay portholes side by side), B balcony bay (a glazed door and a rounded balcony slab), - plain stone. rows: floor z of each storey that has
+ *  windows (sill = row + glass.sill). portholes: positions along a→b of vertical porthole columns (one per row). glass: this face's glass share of its wall (<= 0.55). */
+export type SkinFace = { mass: string; edge: number; a: V; b: V; bays: string; rows: number[]; portholes: number[]; glass: number };
 /** One tenancy: a frontage a→b on a facade at z, facing `normal`. Prims are in world frame; `sign` carries motif + icon + palette key, never text. */
 export type Frontage = {
   id: string; host: string; level: string; z: number; trade: string; area: string; street: string; a: V; b: V; w: number; normal: V; yaw: number;
   hours: [number, number] | 'service'; staffed: boolean; spill: { kind: string; depth: number }; lobby: boolean; anchor: boolean;
   front: Prim; entrance: Prim; canopy: Prim; sign: Prim & { motif: string; icon: string; palette: string }; service?: Prim;
+  facade?: string; // id of the kit facade piece standing over this tenancy (its own shopfront is in the piece); the sign stays
   source?: Source; signKit?: KitRef & { at: V; base: number; mount: 'blade' | 'wall' }; // the fascia sign stays procedural; signKit adds a blade or wall sign at `at`, its lowest point at `base`
 };
 export type Connector = {
   id: string; kind: 'stair' | 'ramp' | 'cartRamp' | 'escalator' | 'lift' | 'goodsLift' | 'stairTower'; host: string; serves: string[]; // serves = ids of the decks (or station platforms) it lands on
   from: string; to: string; foot: V; head: V; bottom: number; top: number; width: number; stepFree: boolean; ring: V[]; yaw: number;
+  /** The dressed form (tools/world/gen/dress.ts, grammar §1-3): stair towers as glazed stadiums (rounded ends) with a limestone plinth and spine, band pairs
+   *  (chrome + accent: 'beam' coral on station banks, 'tower' turquoise elsewhere) and a stepped chrome cap; open lifts as glazed chrome-hooped tubes with a
+   *  parked car and an atom-ball crown. When present draw these prims INSTEAD of the ring prism; `ring` stays the footprint every rule reads. */
+  dress?: Prim[];
 };
 export type StreetItem = {
   id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached
 };
+
+/** The horizon band (contracts/world/harbour-district.grammar.md §9), derived from the plan's id and sheet: polar rings of distant kit pieces round `centre`,
+ *  rockets, planets and moons, and a visual sea plane. Pieces stand on `base`; `haze` = share of the haze colour mixed in; none casts shadows. Sky bodies and
+ *  rocket ascents are placed in 3D (`at` + `base` as their centre height); `tilt` leans a piece `deg` toward `yaw` (plan frame, radians). */
+export type HorizonPiece = { id: string; ring: 'A' | 'B' | 'C' | 'shore' | 'rocket-pad' | 'rocket-ascent' | 'planet' | 'moon'; kit: KitRef & { at: V }; base: number; haze: number; tilt?: { deg: number; yaw: number } };
+/** sea.sectors: the visual sea, the bay sector only (draw these at sea.level, NOT a square plane; `size` is the world's extent about `centre`, `fadeFrom` where it fades into the haze):
+ *  bounded by the coast rays leaving the plan water's corners on the district edge at +-60° and the far-shore arc (r 5000 about `centre`).
+ *  land: west, north and south flats (surface 'beyond', the look's ground role for land beyond the district) at the district edge's ground level; with the sea they
+ *  partition the square outside the sheet, so they never overlap. North and south reach round the bay to the far shore. banks: thin walls on the land side of
+ *  every land/sea edge (top 0.02 under the land plane), so the step down to the water is a face. */
+export type Horizon = { centre: V; haze: string; sea: { surface: string; centre: V; size: number; level: number; fadeFrom: number; sectors: Flat[] }; land: Flat[]; banks: Mass[]; pieces: HorizonPiece[] };
+
+/** A plan signature structure standing on its ground (brief 007 A): `kit` = the piece placed at its centre (the regenerated `variant` when it is adopted, else the base piece and `pending` names the variant still to regenerate); `tip` = base + piece height. */
+export type SignatureOut = { id: string; kind: 'signature' | 'tower' | 'skybridge' | 'station' | 'portal'; source: Source; kit?: KitRef & { at: V }; ground?: [number, number, number, number]; base: number; tip: number; pending?: string; why?: string }; // kind: signature (SpaceHQ, with `ground`), tower (a site's regenerated piece, base = podium top), skybridge, station (SkyRailStation_Twin / _Decks, pivot on the line), portal (the Parade gate block)

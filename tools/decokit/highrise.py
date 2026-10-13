@@ -201,13 +201,20 @@ def tower_atom(s):
     atom_crown(s, 93.1)
 
 
+STARBURST_PLANS = ((17.0, 16.0, 2.0, 0.0), (13.5, 10.5, 2.0, 2.6), (11.0, 8.5, 1.8, 3.2), (8.6, 6.8, 1.5, 3.4))
+
+
+def starburst(s, zs=(0.0, 54.0, 100.0, 132.0, 146.0)):
+    """zs = the four tiers' z edges (kit 54 / 100 / 132 / 146; a regen order moves them onto the 3.6 m grid)."""
+    top = STARBURST_PLANS[3]
+    stack(s, [(STARBURST_PLANS[i], zs[i], zs[i + 1]) for i in range(4)])
+    with s.at((0.0, top[3], 0.0)):
+        starburst_crown(s, zs[4] + 1.1, top[0], top[1])
+
+
 @asset("Tower_Starburst", "Highrise", bevel=0.0)
 def tower_starburst(s):
-    top = (8.6, 6.8, 1.5, 3.4)
-    stack(s, [((17.0, 16.0, 2.0, 0.0), 0.0, 54.0), ((13.5, 10.5, 2.0, 2.6), 54.0, 100.0),
-              ((11.0, 8.5, 1.8, 3.2), 100.0, 132.0), (top, 132.0, 146.0)])
-    with s.at((0.0, top[3], 0.0)):
-        starburst_crown(s, 147.1, top[0], top[1])
+    starburst(s)
 
 
 @asset("Tower_Lantern", "Highrise", bevel=0.0)
@@ -221,7 +228,12 @@ def tower_lantern(s):
 
 @asset("Tower_Needle", "Highrise", bevel=0.0)
 def tower_needle(s):
-    R, top = 5.5, 118.0
+    needle(s, 118.0)
+
+
+def needle(s, top=118.0):
+    """top = the saucer restaurant floor (kit 118; a regen order puts it on the storey grid). Foot, fins and rings as built."""
+    R = 5.5
     s.lathe([(8.2, 0.0), (8.2, 1.2), (7.4, 3.0), (6.2, 9.0), (R, 14.0)], pal.Limestone_Tex, seg=40,
             cap_bottom=False, cap_top=False)
     s.lathe(ring(8.22, 8.3, 1.5, 2.3), pal.Enamel_Teal, seg=40, cap_bottom=False, cap_top=False)
@@ -257,10 +269,18 @@ def hanging(s, plan, z, step=2.4):
 
 @asset("Tower_Terrace", "Highrise", bevel=0.0)
 def tower_terrace(s):
-    t = [(24.0, 22.0, 3.0, 0.0), (19.5, 17.5, 2.6, 0.0), (15.0, 13.0, 2.2, 0.0), (11.0, 9.5, 2.0, 0.0),
-         (8.0, 8.0, 2.0, 0.0)]
-    zs = [0.0, 14.0, 28.0, 42.0, 56.0, 96.0]
-    stack(s, [(t[i], zs[i], zs[i + 1]) for i in range(5)])
+    terrace_tower(s)
+
+
+TERRACE_PLANS = [(24.0, 22.0, 3.0, 0.0), (19.5, 17.5, 2.6, 0.0), (15.0, 13.0, 2.2, 0.0), (11.0, 9.5, 2.0, 0.0),
+                 (8.0, 8.0, 2.0, 0.0)]
+
+
+def terrace_tower(s, zs=(0.0, 14.0, 28.0, 42.0, 56.0, 96.0), plans=None, canopy=1.0):
+    """zs = the five terraces' z edges (kit 14 / 28 / 42 / 56 / 96; a regen order moves them onto the 3.6 m grid);
+    plans = the five (w, d, r, cy) plates (a regen order insets them so the built width is the order's)."""
+    t = plans or TERRACE_PLANS
+    stack(s, [(t[i], zs[i], zs[i + 1]) for i in range(5)], canopy)
     for i in range(4):
         hanging(s, t[i], zs[i + 1])
     z = zs[5] + 1.1  # belvedere: ivory columns, gold dome, finial

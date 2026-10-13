@@ -1,5 +1,5 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
-import type { Connector, Deck, Frontage, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
+import type { Connector, Deck, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import { type Ctx, rv } from './common';
 import { type Travel, generateConnectors } from './connectors';
@@ -8,26 +8,50 @@ import { type Bld, generateMasses, towerSites } from './masses';
 import { generateMegas } from './mega';
 import { signKit } from './kitrefs';
 import { generateRoofs } from './roofs';
+import { generateSignatures, generateStructures } from './signatures';
 import { generateStreet } from './street';
+import { dressConnectors } from './dress';
+import { generateSkins } from './skins';
+import { adjacent } from './facades';
 import type { DeckRec, Host, MegaOut } from './types';
 
 export type Generated = {
-  buildings: Mass[]; slabs: Mass[]; roofs: Roof[]; frontages: Frontage[]; connectors: Connector[]; street: StreetItem[];
+  signatures: SignatureOut[]; skins: Skin[]; facades: Facade[]; facadeWhy: Map<string, string>; faceMetres: Map<string, { street: number; kit: number }>; buildings: Mass[]; slabs: Mass[]; roofs: Roof[]; frontages: Frontage[]; connectors: Connector[]; street: StreetItem[];
   decks: DeckRec[]; megas: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; blds: Bld[]; megaOut: MegaOut[]; issues: string[]; travel: Travel[];
 };
 
 export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
-  const sites = towerSites(ctx), { masses, blds } = generateMasses(ctx, sites), megaOut = generateMegas(ctx, sites);
+  const sites = towerSites(ctx), { masses, blds, facades: fac } = generateMasses(ctx, sites), megaOut = generateMegas(ctx, sites);
   const solids: V[][] = [...masses.filter(m => m.base < 1).map(m => m.ring), ...megaOut.flatMap(m => m.parts.filter(p => p.base < 1).map(p => p.ring))];
-  const conn = generateConnectors(ctx, megaOut, stations, solids);
+  const conn0 = generateConnectors(ctx, megaOut, stations, solids);
+  // the dressed form of stair towers and open lifts (a lift inside a leg or a stair core keeps the enclosure as its face)
+  const conn = { ...conn0, connectors: dressConnectors(conn0.connectors, megaOut.flatMap(m => m.parts.map(p => ({ ring: p.ring, z0: p.base, z1: p.base + p.height })))) };
   const decks: DeckRec[] = [...megaOut.flatMap(m => m.decks), ...conn.decks];
   const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
-  const frontages = signKit(ctx, generateFrontages(ctx, hosts));
+  const frontages = signKit(ctx, linkFacades(generateFrontages(ctx, hosts), fac.facades));
   const roofs = generateRoofs(ctx, blds, megaOut.flatMap(m => m.terraces ?? []));
+  // procedural skins (grammar §2-3) for every plot building; its speed bands carry the skin's accent
+  const plain = blds.filter(b => !b.tower), near = (id: string) => { const me = plain.find(b => b.id === id)!; return plain.filter(o => o.id !== id && o.plot === me.plot && adjacent(me.ring, o.ring)).map(o => o.id); };
+  const skins = generateSkins(ctx, blds, masses, near), accentOf = new Map(skins.map(s => [s.building, s.accent]));
+  for (const m of masses) if (/\/band-\d+$/.test(m.id)) m.surface = accentOf.get(m.id.slice(0, m.id.lastIndexOf('/'))) ?? m.surface;
   const street = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: p.polyV.map(rv), base: 0, height: ctx.pav }));
-  return { buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel };
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel };
 }
 
 /** A DeckRec as the export's Deck. */
+/** A tenancy standing on a span a kit facade piece covers names that piece (its shopfront is in the piece; the sign stays). */
+function linkFacades(fronts: Frontage[], facades: Facade[]): Frontage[] {
+  const by = new Map<string, Facade[]>();
+  for (const f of facades) (by.get(f.building) ?? by.set(f.building, []).get(f.building)!).push(f);
+  return fronts.map(f => {
+    const mid: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2];
+    const hit = (by.get(f.host) ?? []).find(x => {
+      const u: V = [x.b[0] - x.a[0], x.b[1] - x.a[1]], L = Math.hypot(u[0], u[1]) || 1, s = ((mid[0] - x.a[0]) * u[0] + (mid[1] - x.a[1]) * u[1]) / L, d = Math.abs(((mid[0] - x.a[0]) * u[1] - (mid[1] - x.a[1]) * u[0]) / L);
+      return d < 0.8 && s > -0.1 && s < L + 0.1;
+    });
+    return hit ? { ...f, facade: hit.id } : f;
+  });
+}
+
 export const toDeck = ({ level: _l, rect: _r, host: _h, ...d }: DeckRec): Deck => d;

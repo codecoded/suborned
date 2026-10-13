@@ -40,6 +40,8 @@ namespace Suborned.World
             }
             // Megastructure and gate walls keep their look.json surface colour.
             foreach (var surface in MegaKit.Surfaces(world)) Atlas.Add(MegaKit.Swatch(surface), look.SurfaceColour(surface));
+            // Skin accents (speed bands), window frames and porthole rings keep their look.json surface colour too.
+            foreach (var surface in ProcSkin.Surfaces(world)) Atlas.Add(ProcSkin.Swatch(surface), look.SurfaceColour(surface));
             var mat = J.Get(o, "materials");
             Atlas.Bake(Shader.Find("Suborned/FacadeLit") ?? throw new InvalidDataException("World: Suborned/FacadeLit shader not found"), J.F(mat, "matte"), J.F(mat, "glossy"));
             foreach (var kv in J.O(J.Get(o, "families"))) Families[kv.Key] = Strs(kv.Value);

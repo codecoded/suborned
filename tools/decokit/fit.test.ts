@@ -1,4 +1,4 @@
-// The generated pieces in kit.json fit their sites: one per plan regen order, current hash, adopted, source generated, footprint and tip inside the order.
+// The generated pieces in kit.json that carry an order fit their sites: one per plan regen order, current hash, adopted, source generated, footprint and tip inside the order.
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,7 +7,7 @@ import { fitRow, printTable } from './fit';
 import { readOrders } from './orders';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
-const orders = readOrders(), gen = kit.assets.filter(a => a.source === 'generated');
+const orders = readOrders(), gen = kit.assets.filter(a => a.source === 'generated' && a.order); // pieces built to a plan order; generated pieces without one (crowns, horizon, civic, stations) have no site to fit
 
 test('every regen order in the plan has a generated, adopted piece in kit.json with its current hash', () => {
   expect(gen.map(a => a.id).sort()).toEqual(orders.pieces.map(p => p.id).sort());

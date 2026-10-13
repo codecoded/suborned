@@ -47,6 +47,11 @@ namespace Suborned.World
             foreach (var m in AssetDatabase.LoadAllAssetsAtPath(path).OfType<Material>())
             {
                 var lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + m.name + ".mat");
+                if (!lib && File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", Materials + m.name + ".mat")))
+                {   // copied by `bun run kit` while the Editor was not refreshing (the 007 D rebuild failed here): import it now
+                    AssetDatabase.ImportAsset(Materials + m.name + ".mat", ImportAssetOptions.ForceSynchronousImport);
+                    lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + m.name + ".mat");
+                }
                 if (!lib) { missing++; Debug.LogError($"World: kit {path}: material `{m.name}` not in {Materials}"); continue; }
                 var id = new AssetImporter.SourceAssetIdentifier(typeof(Material), m.name);
                 if (mi.GetExternalObjectMap().TryGetValue(id, out var have) && have == lib) continue;
@@ -79,6 +84,9 @@ namespace Suborned.World
         /// Kit/Prefabs/Generated/, built once (it references the model, so a re-copied FBX shows through). Unmapped material = reject.</summary>
         public static void Generated(KitPlacer kit)
         {
+            // `bun run kit` copies models, materials and prefabs from outside Unity; an Editor that has not refreshed since would see
+            // neither (Glint's 007 D rebuild: "materials unmapped", DK_ArcadeBay_3.prefab missing). Import everything new first.
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             int built = 0;
             foreach (var (id, fbx) in kit.Generated.OrderBy(kv => kv.Key, System.StringComparer.Ordinal).Select(kv => (kv.Key, kv.Value)))
             {

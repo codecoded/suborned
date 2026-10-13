@@ -1,0 +1,128 @@
+{
+  "note": "Harbour light (Glint, 007 D). One low warm sun, one haze colour, a sky graded from pale warm horizon to soft blue, then grade and bloom. Read by Look after look.json and wins for the keys it holds (sun, ambient, fog, sky, skyGradient, post, reflection); the palette keys here are lighting colours only. Haze = light.haze: the fog colour, the sky horizon, the below-horizon colour and the reflection horizon are all it, so far geometry, sea edge and the horizon band dissolve into one colour. Concept bar: concepts/AtomicAge, Blocks and Streets/spaceage contact sheets (round 2: clear air in the city, haze only at the horizon, cream bright not beige, crisp shadows). No colour constants in C#.",
+  "sun": {
+    "palette": "light.sun",
+    "value": 1,
+    "intensity": 2.5,
+    "pitch": 38,
+    "yaw": 52,
+    "note": "clear warm-white sun; strong enough over a lower ambient that shadows read crisp (concept: shadows read, not smeared)"
+  },
+  "ambient": {
+    "mode": "trilight",
+    "sky": {
+      "palette": "light.ambientSky",
+      "value": 0.7
+    },
+    "equator": {
+      "palette": "light.ambientEquator",
+      "value": 0.62
+    },
+    "ground": {
+      "palette": "light.ambientGround",
+      "value": 0.46
+    },
+    "note": "cool sky fill, warm bounce; lower than round 1 so the shade side reads against the sunlit side (crisp, never black)"
+  },
+  "fog": {
+    "palette": "light.haze",
+    "value": 1,
+    "mode": "linear",
+    "start": 1100,
+    "end": 7500,
+    "density": 0.0,
+    "note": "linear: 0 within 1.1 km so the district (<= 1 km) is clear air; the horizon rings 1.4-8 km fade from ~4 to ~90 percent into the haze"
+  },
+  "skyGradient": {
+    "zenith": "light.zenith",
+    "mid": "light.skyMid",
+    "horizon": "light.haze",
+    "below": "light.haze",
+    "sunGlow": "light.sunGlow",
+    "midHeight": 0.16,
+    "curve": 0.7,
+    "glowWidth": 40,
+    "glowStrength": 0.22,
+    "disc": 0.0
+  },
+  "reflection": {
+    "ground": "light.reflectGround"
+  },
+  "post": {
+    "tonemapping": "Neutral",
+    "bloom": {
+      "threshold": 1.1,
+      "intensity": 0.18,
+      "scatter": 0.6,
+      "tint": "light.bloomTint"
+    },
+    "colour": {
+      "postExposure": 0.05,
+      "contrast": 16,
+      "saturation": 14,
+      "filter": "light.filter"
+    },
+    "shadowsMidtonesHighlights": {
+      "shadows": "light.gradeShadows",
+      "shadowsWeight": 0.0,
+      "midtones": "light.gradeMid",
+      "midtonesWeight": 0.0,
+      "highlights": "light.gradeHighlights",
+      "highlightsWeight": 0.0
+    },
+    "vignette": {
+      "intensity": 0.1,
+      "smoothness": 0.5,
+      "colour": "light.haze"
+    },
+    "whiteBalance": {
+      "temperature": 3,
+      "tint": 0,
+      "note": "pulls the cream off yellow-beige toward bright warm white; the warmth comes from the sun, not the grade"
+    }
+  },
+  "palette": {
+    "light.sun": {
+      "hex": "#ffe9c9"
+    },
+    "light.sunGlow": {
+      "hex": "#ffe0b0"
+    },
+    "light.haze": {
+      "hex": "#f3eee4"
+    },
+    "light.skyMid": {
+      "hex": "#8fc2ee"
+    },
+    "light.zenith": {
+      "hex": "#3f86de"
+    },
+    "light.ambientSky": {
+      "hex": "#b2cbe6"
+    },
+    "light.ambientEquator": {
+      "hex": "#f8e6cc"
+    },
+    "light.ambientGround": {
+      "hex": "#dcb994"
+    },
+    "light.reflectGround": {
+      "hex": "#c9ae8e"
+    },
+    "light.bloomTint": {
+      "hex": "#fff0d6"
+    },
+    "light.filter": {
+      "hex": "#fffbf4"
+    },
+    "light.gradeShadows": {
+      "hex": "#9aa8d8"
+    },
+    "light.gradeMid": {
+      "hex": "#ffffff"
+    },
+    "light.gradeHighlights": {
+      "hex": "#ffd9a8"
+    }
+  }
+}

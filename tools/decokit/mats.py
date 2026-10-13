@@ -19,8 +19,8 @@ LIB = {
     # enamel
     "DK_Enamel_Ivory": ("enamel", "#EFE8D6"), "DK_Enamel_Cream": ("enamel", "#F3DDB0"),
     "DK_Enamel_Teal": ("enamel", "#1F6C67"), "DK_Enamel_Seafoam": ("enamel", "#72B5A7"),
-    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#C42A1F"),
-    "DK_Enamel_Mustard": ("enamel", "#EEA82D"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
+    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#820606"),
+    "DK_Enamel_Mustard": ("enamel", "#967509"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
     "DK_Enamel_Royal": ("enamel", "#2C56A6"), "DK_Enamel_Charcoal": ("enamel", "#2B2F33"),
     # ceramic paving
     "DK_Tile_Ivory": ("ceramic", "#E8E1CF"), "DK_Tile_Grey": ("ceramic", "#B9B7AF"),
@@ -31,11 +31,11 @@ LIB = {
     "DK_Soil": ("stone", "#3B2C22"),
     # metal
     "DK_Chrome": ("chrome", "#EDEDED"), "DK_Steel": ("metal", "#A9ABAE"),
-    "DK_Gold": ("metal", "#D6AE62"), "DK_Iron": ("metal", "#3A3C3E"),
+    "DK_Gold": ("metal", "#E3D681"), "DK_Iron": ("metal", "#3A3C3E"),
     # misc
     "DK_Rubber": ("rubber", "#1B1C1E"), "DK_Glass": ("glass", "#CFEDE6"),
     "DK_GlassDark": ("glass", "#35585A"),
-    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#FF3B26", 4.0),
+    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#E8609A", 4.0),
     "DK_Signal_Amber": ("emit", "#FFB21E", 4.0), "DK_Signal_Green": ("emit", "#2EE07A", 4.0),
     "DK_Screen": ("emit", "#7FE3D4", 1.5), "DK_RobotEye": ("emit", "#FF8A1E", 3.0),
     # textured (TEXTURES below): decals are alpha-keyed sheets, tiles are metric-scale albedo
@@ -49,6 +49,31 @@ LIB = {
     "DK_Leaf_Cypress": ("cutout", "#FFFFFF"), "DK_Leaf_Shrub": ("cutout", "#FFFFFF"),
     "DK_Flower_Coral": ("cutout", "#FFFFFF"),
 }
+
+# v0.17 palette: contracts/style/suborned.style.json (machine copy of GDD s15) is the source of the accent hexes, the signal
+# colours and the surface overrides; family modules ask accent("turquoise") instead of carrying their own literal.
+STYLE = json.loads((Path(__file__).resolve().parents[2] / "contracts/style/suborned.style.json").read_text())
+_ROLES = STYLE["palette_world"]["roles"]
+ACCENT = {r["accent"]: r["hex"].upper() for r in _ROLES.values() if "accent" in r}
+ACCENT["coral"] = _ROLES["beam"]["hex"].upper()                                   # coral transit
+GOLD_TRIM = STYLE["palette_world"]["surface_overrides"]["gold_trim"]["hex"].upper()  # world gold, clear of guard amber
+SIGNALS = {k: v.upper() for k, v in STYLE["signal_colours"].items() if k != "rule"}
+
+
+def accent(name):
+    return ACCENT[name]
+
+
+# Kit materials whose colour was retuned so the UNLIT base is >= 20 dE2000 from cones / guard / rivals (brief 007: signals
+# render unlit and emissive, so the gate is on the unlit palette). They sit in LIB above; this records the why.
+# old -> new, dE2000 min over the three signals: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
+# Gold #D6AE62 10.1 -> #E3D681 20.6 (pale atompunk gold); Enamel_Red #C42A1F 7.2 -> #820606 21.5 (oxblood);
+# Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
+WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
+LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
+LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
+ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
+
 DECAL = dict(recycle_teal=0, recycle_mustard=1, tickets_screen=2, keypad=3, lockers_1_6=4, lockers_7_12=5,
              harbour_line_7=6, bus_stop=7, no_parking=8, crossing=9, civic_plaza_arrow=10, info=11,
              city_crest=12, caution=13, vesper_transit=14, city_utility=15)
@@ -206,7 +231,7 @@ class _Pal:
     """Attribute access: pal.Enamel_Red -> DK_Enamel_Red."""
 
     def __getattr__(self, key):
-        return get("DK_" + key)
+        return get(ALIAS.get(key) or "DK_" + key)
 
 
 pal = _Pal()
@@ -217,6 +242,11 @@ def metric_tiling(name, kind):
 
 
 def export_json(path):
+    fails, report = signal_gate()
+    for r in report:
+        print(f"[DK-GATE] open: {r[0]} {r[2]} dE2000 {r[3]} from {r[4]}")
+    if fails:
+        raise SystemExit("[DK-GATE] FAIL " + "; ".join(f"{r[0]} {r[2]} dE {r[3]} from {r[4]}" for r in fails))
     rows = []
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
@@ -227,3 +257,19 @@ def export_json(path):
                          tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
+
+
+def signal_gate(rows=None):
+    """dE2000 >= 20 of every untextured, non-glass material's UNLIT base colour from cones / guard / rivals (brief 007).
+    Returns (failures, report): gated = the retuned and v0.17 accent materials (must pass); the rest are reported as a to-do."""
+    from deltae import min_signal
+    gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
+    fails, report = [], []
+    for name, (kind, hexstr, *_) in LIB.items():
+        if name in TEXTURES or kind == "glass" or hexstr.upper() == "#FFFFFF":
+            continue
+        d, sig = min_signal(hexstr, SIGNALS)
+        row = (name, kind, hexstr.upper(), round(d, 1), sig)
+        if d < 20:
+            (fails if name in gated else report).append(row)
+    return fails, report

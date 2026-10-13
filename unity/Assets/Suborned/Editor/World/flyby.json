@@ -1,0 +1,258 @@
+{
+  "note": "Flyby path (Latch). Stops are anchored on the export, never on scene objects; Flyby resolves each to a camera key (look target, yaw, pitch, distance, fov) and eases between them, lifting the eye on long moves so it does not drive through buildings. kind: fit (yaw/pitch/fov framing `frame` with `margin` (default 1.05; below 1 crops): '*', a layer, an element id or an id prefix ending in '*'), play (the export's play camera: orthographic `zoom` at its pitch and yaw on its focus; approached by a dolly zoom), street (eye at eyeHeight on the busiest street-level shopfront run of `street`, `out` m in front of the shops, looking along them), deck (the largest deck of `level`, eye at eyeHeight looking along its long axis), station (eye on the platform of station `id` looking along it and past its end), along (eye on element `id`'s long axis at fraction `at`, `side` m to its right, eyeHeight above its top, looking `ahead` m along it; `reverse` 1 turns it round), megas (one fit per megastructure, yaw + i * yawStep, or `yaws` per id). hold = seconds stopped (the camera drifts `drift` deg/s), travel = seconds to the next stop. shadowDistance (m) is applied to the URP asset while the flyby runs (restored after). render: frames for out/shots/flyby/. Brief 007 E adds: rail (ride sky rail `id` from `from` to `to` metres along its line at `speed` m/s, eye `eyeHeight` over the beam top, keys every `step` m at constant speed; contact images at its two ends) and toward (eye `eyeHeight` over element `from`'s top, looking at element `to`, or at height `lookZ` over it). render.ffmpeg: the encoder Render Flyby Frames pipes every frame into for flyby.mp4. Brief 007 round 2: spacehq-crown (the atom crown over the fluted tower), liner-dock frames the OceanLiner beside its terminal, bay-horizon looks out over the quay to the bay sector and the land arms. render.crf / render.preset: H.264 rate control (CRF 25, slow: about 200 MB for 3.5 min of 1080p30; CRF 18 made 397 MB).",
+  "render": {
+    "fps": 30,
+    "size": [
+      1920,
+      1080
+    ],
+    "quality": 85,
+    "contact": [
+      480,
+      270
+    ],
+    "ffmpeg": "/opt/homebrew/bin/ffmpeg",
+    "crf": 25,
+    "preset": "slow"
+  },
+  "defaults": {
+    "hold": 2.5,
+    "travel": 6,
+    "drift": 1.5,
+    "fov": 50,
+    "shadowDistance": 900
+  },
+  "stops": [
+    {
+      "name": "overview",
+      "kind": "fit",
+      "frame": [
+        "buildings",
+        "megastructures",
+        "civic",
+        "landmarks",
+        "transit",
+        "decks"
+      ],
+      "yaw": 30,
+      "pitch": 55,
+      "fov": 40,
+      "hold": 3,
+      "shadowDistance": 2500
+    },
+    {
+      "name": "spacehq",
+      "kind": "fit",
+      "frame": [
+        "signature/space-hq"
+      ],
+      "yaw": 215,
+      "pitch": 12,
+      "fov": 45,
+      "margin": 1.15,
+      "hold": 4,
+      "drift": 2,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "spacehq-crown",
+      "kind": "toward",
+      "from": "tower/crescent-tower",
+      "eyeHeight": 105,
+      "to": "signature/space-hq",
+      "lookZ": 222,
+      "back": 40,
+      "fov": 24,
+      "hold": 4,
+      "drift": 1.5,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "avenue-spires",
+      "kind": "fit",
+      "frame": [
+        "tower/avenue-needle",
+        "tower/avenue-starburst",
+        "tower/avenue-gate-w",
+        "tower/avenue-gate-e",
+        "skybridge/avenue-gate"
+      ],
+      "yaw": 160,
+      "pitch": 10,
+      "fov": 45,
+      "margin": 1.1,
+      "hold": 4,
+      "drift": 1.5,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "civic-play",
+      "kind": "play",
+      "hold": 4,
+      "drift": 0,
+      "travel": 7,
+      "shadowDistance": 850
+    },
+    {
+      "name": "shopping-street",
+      "kind": "street",
+      "street": "harbour-lane",
+      "eyeHeight": 1.7,
+      "out": 4,
+      "fov": 60,
+      "hold": 3,
+      "travel": 7,
+      "shadowDistance": 400
+    },
+    {
+      "name": "deck",
+      "kind": "deck",
+      "level": "deck",
+      "eyeHeight": 1.7,
+      "fov": 60,
+      "hold": 3,
+      "shadowDistance": 500
+    },
+    {
+      "name": "sky-rail",
+      "kind": "station",
+      "id": "station/S1/circus/l",
+      "eyeHeight": 1.7,
+      "fov": 60,
+      "hold": 3,
+      "shadowDistance": 700
+    },
+    {
+      "name": "rail-run",
+      "kind": "rail",
+      "id": "skyrail/S1/trunk",
+      "from": 860,
+      "to": 500,
+      "speed": 15,
+      "step": 24,
+      "eyeHeight": 2.4,
+      "ahead": 70,
+      "lookDrop": 3,
+      "fov": 62,
+      "hold": 1.5,
+      "travel": 7,
+      "shadowDistance": 600
+    },
+    {
+      "name": "megastructure",
+      "kind": "megas",
+      "yaw": 210,
+      "yawStep": 70,
+      "yaws": {
+        "mega/parade-galleries": 20
+      },
+      "pitch": 24,
+      "fov": 45,
+      "hold": 2.5,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "docks",
+      "kind": "along",
+      "id": "quay/0",
+      "at": 0.2,
+      "side": -2,
+      "eyeHeight": 4,
+      "ahead": 120,
+      "lookHeight": 3,
+      "fov": 60,
+      "hold": 3,
+      "shadowDistance": 900
+    },
+    {
+      "name": "liner-dock",
+      "kind": "fit",
+      "frame": [
+        "signature/ocean-liner",
+        "landmark/liner-berth"
+      ],
+      "yaw": 285,
+      "pitch": 11,
+      "fov": 45,
+      "margin": 1.3,
+      "hold": 3.5,
+      "drift": 2,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "skylon",
+      "kind": "fit",
+      "frame": [
+        "landmark/skylon"
+      ],
+      "yaw": 20,
+      "pitch": 10,
+      "fov": 45,
+      "margin": 1.25,
+      "hold": 3.5,
+      "drift": 2,
+      "shadowDistance": 1500
+    },
+    {
+      "name": "bay-horizon",
+      "kind": "fit",
+      "frame": [
+        "landmark/skyport",
+        "signature/ocean-liner",
+        "landmark/liner-berth"
+      ],
+      "yaw": 70,
+      "pitch": 6,
+      "fov": 50,
+      "margin": 2.2,
+      "hold": 4,
+      "drift": 1,
+      "shadowDistance": 3000
+    },
+    {
+      "name": "skyline",
+      "kind": "fit",
+      "frame": [
+        "buildings",
+        "megastructures",
+        "civic",
+        "landmarks",
+        "transit",
+        "decks"
+      ],
+      "yaw": 225,
+      "pitch": 7,
+      "fov": 40,
+      "margin": 0.5,
+      "hold": 4,
+      "drift": 1,
+      "shadowDistance": 3000
+    },
+    {
+      "name": "horizon-golden-hour",
+      "kind": "toward",
+      "from": "signature/space-hq",
+      "eyeHeight": -70,
+      "to": "horizon/planet/0",
+      "lookZ": 250,
+      "fov": 62,
+      "hold": 5,
+      "drift": 0,
+      "shadowDistance": 3000,
+      "back": -160
+    },
+    {
+      "name": "rocket-skyline",
+      "kind": "toward",
+      "from": "landmark/liner-berth",
+      "eyeHeight": 12,
+      "to": "horizon/rocket-ascent/0",
+      "lookZ": 200,
+      "back": -150,
+      "fov": 55,
+      "hold": 5,
+      "drift": 0,
+      "shadowDistance": 3000
+    }
+  ]
+}

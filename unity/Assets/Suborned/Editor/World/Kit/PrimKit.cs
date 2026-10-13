@@ -89,12 +89,24 @@ namespace Suborned.World
         }
 
         /// <summary>Half-cylinder lying along yaw: length 2a, span 2b, rise h; flat ends.</summary>
+        /// <summary>Arch profile point i of Arch: a circular segment through the springings (±b, 0) and the crown (0, h) when the rise is
+        /// under the half-span (a segmental vault, e.g. the Parade's gallery canopies: span 5, rise 1.25), else the half-ellipse.</summary>
+        static Vector2 ArchAt(int i, float b, float h)
+        {
+            if (h < b - 1e-4f && h > 1e-4f)
+            {
+                float R = (b * b + h * h) / (2f * h), half = Mathf.Asin(b / R), t = -half + 2f * half * (1f - i / (float)Arch);
+                return new Vector2(Mathf.Sin(t) * R, Mathf.Cos(t) * R - (R - h));
+            }
+            float u = Mathf.PI * i / Arch; return new Vector2(Mathf.Cos(u) * b, Mathf.Sin(u) * h);
+        }
+
         static MeshKit Vault(MeshKit k, Frame f, float a, float b, float h)
         {
             var e0 = new int[Arch + 1]; var e1 = new int[Arch + 1];
             for (int i = 0; i <= Arch; i++)
             {
-                float t = Mathf.PI * i / Arch, r = Mathf.Cos(t) * b, z = Mathf.Sin(t) * h;
+                var q = ArchAt(i, b, h); float r = q.x, z = q.y;
                 e0[i] = k.Vert(f.P(-a, r, z)); e1[i] = k.Vert(f.P(a, r, z));
             }
             for (int i = 0; i < Arch; i++)
@@ -106,7 +118,7 @@ namespace Suborned.World
             foreach (var s in new[] { -a, a })
             {
                 int c = k.Vert(f.P(s, 0, 0)); var ring = new int[Arch + 1];
-                for (int i = 0; i <= Arch; i++) { float t = Mathf.PI * i / Arch; ring[i] = k.Vert(f.P(s, Mathf.Cos(t) * b, Mathf.Sin(t) * h)); }
+                for (int i = 0; i <= Arch; i++) { var q = ArchAt(i, b, h); ring[i] = k.Vert(f.P(s, q.x, q.y)); }
                 var inside = f.P(-s, 0, h * 0.5f);
                 for (int i = 0; i < Arch; i++) Face(k, c, ring[i], ring[i + 1], inside);
             }

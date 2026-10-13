@@ -56,9 +56,16 @@ namespace Suborned.World
                 var m => throw new InvalidDataException($"World: fog mode `{m}`"),
             };
             RenderSettings.fogDensity = J.F(fog, "density");
+            if (RenderSettings.fogMode == FogMode.Linear) { RenderSettings.fogStartDistance = J.F(fog, "start"); RenderSettings.fogEndDistance = J.F(fog, "end"); }
             RenderSettings.skybox = null;
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = look.Colour(look.Entry("ambient"));
+            if (look.Light("ambient") == null) RenderSettings.ambientLight = look.Colour(look.Entry("ambient"));
+            Atmosphere.Apply(lighting, look);
+            foreach (var c in cameras.GetComponentsInChildren<Camera>(true))
+            {
+                if (Atmosphere.HasSky) c.clearFlags = CameraClearFlags.Skybox;
+                Atmosphere.Camera(c);
+            }
         }
 
         static void Top(Camera cam, Bounds b, ViewSpec v)

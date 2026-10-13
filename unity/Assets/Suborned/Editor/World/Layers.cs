@@ -34,7 +34,13 @@ namespace Suborned.World
             foreach (var f in g.Flats) nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), f.Surface);
             foreach (var w in g.Water) nodes.Solid(layer, w.Id, new MeshKit().Flat(w.Ring, w.Level), w.Surface);
             foreach (var q in g.Quays) Mass(layer, q);
-            foreach (var p in g.Plots) Mass(layer, p);
+            foreach (var p in g.Plots)
+            {   // a plan signature's ground (SpaceHQ's drum) is the piece's own floor: the pavement slab stops at its edge
+                var parts = KitCover.OutsideGrounds(Poly.Clean(p.Ring));
+                var kit = new MeshKit();
+                foreach (var q in parts) kit.Prism(q, p.Base, p.Base + p.Height);
+                nodes.Solid(layer, p.Id, kit, p.Surface);
+            }
         }
 
         public void Transit(Transform layer, TransitDto t)

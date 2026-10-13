@@ -23,8 +23,15 @@ claude --agent lead-producer  # the crew, led by the lead producer (Aster in the
 | Command | What it does |
 |---|---|
 | `bun run plan` | Check `contracts/world/harbour-district.plan.json` against its rules; draw the CAD sheet to `out/plan/` (exit 1 on any failed rule) |
+| `bun run block` | Write `contracts/world/civic-block.json` (café and Records Office at their Oct 9 scale) from the old repo's sources, with sha256 |
+| `bun run world` | Generate the district from the plan → `out/world/harbour-district.world.json` (buildings, frontages, levels, megastructures, street furniture, kit refs); exits 1 unless the plan passes the checker |
+| `bun run life` | Generate `contracts/world/harbour-district.life.json` (city-life rules: transit, traffic, deliveries, footfall) from `tools/life/`, the plan and the r008 timetable |
+| `bun run kit` | Write `contracts/world/kit.json` from the DecoKit manifest; copy only `adopted` pieces into `unity/Assets/Suborned/Kit/` (git-ignored), checked by hash |
+| `bun run decokit` | Run the Blender DecoKit generator (`tools/decokit`) → `out/decokit/` (needs Blender) |
 | `bun run crew` | Regenerate `.claude/agents/` from the agent GDD |
 | `bun run ingest` / `retrieve` | Build / query the retrieval index (HNSW + BM25, reciprocal rank fusion) |
+| `bun run levels transit` | The A04 transit pipeline (retrieval → crew → checker → Keel); `levels:replay`, `levels:sheets`, `levels:ranks` |
+| `bun run verify` / `doctor` | Offline replay of the recorded A04 runs / preflight for Bun, Docker, ports, Claude Code |
 | `bun run down` | Stop the local stack |
 
-Unity: open `unity/` with Unity 6000.6.2f1.
+Unity: open `unity/` with Unity 6000.6.2f1. The district scene `Assets/Scenes/HarbourDistrict.unity` is generated from the world export (git-ignored).

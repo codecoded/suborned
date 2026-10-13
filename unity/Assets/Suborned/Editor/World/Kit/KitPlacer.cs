@@ -48,9 +48,53 @@ namespace Suborned.World
         {
             if (loaded.TryGetValue(id, out var go)) return go;
             if (!prefabs.TryGetValue(id, out var path)) throw new InvalidDataException($"World: kit `{id}` is not adopted in contracts/world/kit.json");
-            go = AssetDatabase.LoadAssetAtPath<GameObject>(path) ?? throw new FileNotFoundException($"World: kit `{id}` prefab missing at {path} (run `bun run kit`)");
+            go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (!go && File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", path)))
+            {   // copied by `bun run kit` while the Editor was not refreshing: import it now
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+                go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            }
+            if (!go) throw new FileNotFoundException($"World: kit `{id}` prefab missing at {path} (run `bun run kit`)");
             return loaded[id] = go;
         }
+
+        readonly Dictionary<string, Bounds> local = new();
+
+        /// <summary>The prefab's mesh bounds in its own frame (scale 1, unrotated, pivot at the origin).</summary>
+        public Bounds LocalBounds(string id)
+        {
+            if (local.TryGetValue(id, out var have)) return have;
+            var root = Prefab(id).transform; Bounds? b = null;
+            foreach (var mf in root.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (!mf.sharedMesh) continue;
+                var m = root.worldToLocalMatrix * mf.transform.localToWorldMatrix; var mb = mf.sharedMesh.bounds;
+                for (int i = 0; i < 8; i++)
+                {
+                    var p = m.MultiplyPoint3x4(mb.center + Vector3.Scale(mb.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)));
+                    if (b is { } h) { h.Encapsulate(p); b = h; } else b = new Bounds(p, Vector3.zero);
+                }
+            }
+            return local[id] = b ?? throw new InvalidDataException($"World: kit `{id}` has no meshes");
+        }
+
+        /// <summary>Unity rotation of a ref at plan yaw θ (+X turns to (cos θ, sin θ)).</summary>
+        public static Quaternion Rotation(float yaw) => Quaternion.Euler(0f, -yaw * Mathf.Rad2Deg, 0f);
+
+        /// <summary>The pivot (plan) that puts the piece's footprint centre (its scaled, turned mesh bounds centre) on `centre`: facade
+        /// pieces are modelled with the pivot on the facade plane, the export gives their footprint centre.</summary>
+        public Vector2 PivotForCentre(KitRefDto r, Vector2 centre, float elementYaw = 0f)
+        {
+            var c = LocalBounds(r.Id).center; c.y = 0f;
+            var o = Rotation(float.IsNaN(r.Yaw) ? elementYaw : r.Yaw) * Vector3.Scale(c, r.Scale);
+            return centre - new Vector2(o.x, o.z);
+        }
+
+        /// <summary>Pivot height that puts the piece's lowest point on `z` (pieces modelled about their centre, e.g. the SkyBridge).</summary>
+        public float PivotForLowest(KitRefDto r, float z) => z - LocalBounds(r.Id).min.y * r.Scale.y;
+
+        /// <summary>Top of the piece (its highest point) when its pivot stands at z.</summary>
+        public float Top(KitRefDto r, float z) => z + LocalBounds(r.Id).max.y * r.Scale.y;
 
         /// <summary>A piece at scale 1 by id (stand-ins and generated pieces carry no export ref).</summary>
         public Transform Place(Transform el, string layer, string id, Vector2 at, float z, float yaw) =>

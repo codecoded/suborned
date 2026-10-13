@@ -21,7 +21,8 @@ test('kit.json is the manifest, normalised, and rebuilding it changes nothing', 
 });
 
 test('wave 1 is exactly the adopted set', () => {
-  expect(new Set(kit.assets.filter(a => a.status === 'adopted' && a.source !== 'generated').map(a => a.id))).toEqual(WAVE1); // generated pieces are adopted on top (decokit/fit.test.ts)
+  const adopted = new Set(kit.assets.filter(a => a.status === 'adopted' && a.source !== 'generated').map(a => a.id));
+  for (const id of WAVE1) expect(adopted.has(id), id).toBe(true); // wave 1 stays adopted; later waves (facades, civic square, signatures) are adopted on top by their briefs, generated pieces too (decokit/fit.test.ts)
 });
 
 test('copy verifies hashes, is idempotent, and refuses a tampered source', () => {

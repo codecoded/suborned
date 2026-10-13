@@ -18,6 +18,8 @@ export type Megastructure = {
 };
 /** A landmark disc: r its ground, `top` the height cap (above the datum), `kit` the piece standing on it; the skyport has a caisson and `pads` (c, yaw in degrees) for its kit pieces. */
 export type Landmark = { id: string; name: string; c: V; r: number; kit?: string; top?: number; caisson?: { r: number; deck: number; how?: string }; pads?: { c: V; yaw: number }[]; [k: string]: unknown };
+/** brief 007 A: a signature structure outside the megastructure list (SpaceHQ): `ground` its rect (no plot building stands on it), `kit` the piece, `regen.variant` the regenerated version, `portal` its declared sky rail portal, `height` its tip. */
+export type Signature = { id: string; name: string; c: V; ground: [number, number, number, number]; kit?: string; yaw?: unknown; height?: number; regen?: { variant?: string; tip?: number; [k: string]: unknown }; portal?: { kind?: string; beams?: string; line?: string; path?: string; clearHalfWidth?: number; soffit?: number; openings?: { at: [number, number]; clearHalfWidth: number; z: [number, number] }; station?: string; [k: string]: unknown }; [k: string]: unknown };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
@@ -26,7 +28,7 @@ export type Plan = {
   areas: { id: string; name: string; rect: Rect; notch?: [number, number, number]; label?: V; size?: number }[]; plots: Plot[];
   foot: { id: string; name: string; kind: string; w: number; pts: V[] }[];
   circus: { c: V; island: number; garden: number; ring: V; pavement: number };
-  water: V[][]; quay: V[][]; beyond: V[][]; landmarks: Landmark[]; megastructures?: Megastructure[];
+  water: V[][]; quay: V[][]; beyond: V[][]; landmarks: Landmark[]; megastructures?: Megastructure[]; signatures?: Signature[];
   tram: Line[]; skyrail: Line[]; routes?: { id: string; name: string; from: string; to: string[]; toName?: string }[];
   civic: any; notes: { why: string[]; concept: string[]; questions: string[]; sources: string[] };
 };
@@ -76,15 +78,27 @@ export function spanLimit(std: any, r: number) {
 
 /** Greedy pylons: each as far along as the span limit allows, backed off until it stands in an allowed zone. A loop's
  *  ends hang off the trunk's end pylon, so they are not placed again. */
-function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean) {
+function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean, portals: [number, number][] = []) {
   const out: Pylon[] = [], gaps: Derived['pylonGaps'] = [], S = path.samples, L = path.length;
   const at = (s: number) => S.reduce((b, x) => (Math.abs(x.s - s) < Math.abs(b.s - s) ? x : b));
   const limitOver = (s0: number, s1: number) => Math.min(...S.filter(x => x.s > s0 - .01 && x.s <= s1 + .01).map(x => spanLimit(std, x.r)));
   const hung = path.role === 'loop';
   let s = 0;
   if (!hung) { const first = S.find(x => allowed(x.p)); s = first?.s ?? 0; out.push({ p: first?.p ?? S[0].p, line: path.line, path: path.id, s, span: 0 }); }
+  const M = 3; // a pylon stands this far outside a portal's jamb (S-P3 / bridges keep 3 m from a pylon)
   while (s < L - .01) {
+    const pin = portals.find(q => q[0] - M <= s + .01 && s < q[1] + M - .01);
+    if (pin) { // inside a portal the building carries the beam: the next pylon stands just past it, and the span across is not a pylon span (brief 007 P-1)
+      const x = S.find(q => q.s >= pin[1] + M && allowed(q.p));
+      if (!x) break;
+      out.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: 0 }); s = x.s; continue;
+    }
     let lim = spanLimit(std, at(s).r);
+    const ahead = portals.find(q => q[0] - M > s + 1.99 && q[0] - M <= s + lim + 1e-6); // a portal within reach: the last pylon before it stands M outside its jamb
+    if (ahead) {
+      for (let t = ahead[0] - M; t >= s + 2; t -= .5) { const x = at(t); if (allowed(x.p)) { out.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: x.s - s }); s = x.s; break; } }
+      if (s >= ahead[0] - M - 6) continue; // placed (or no room to place one): the portal's pin takes over
+    }
     for (let k = 0; k < 3; k++) lim = limitOver(s, Math.min(L, s + lim));
     if (s + lim >= L - .01) {
       if (hung || allowed(S[S.length - 1].p)) { if (!hung) out.push({ p: S[S.length - 1].p, line: path.line, path: path.id, s: L, span: L - s }); break; }
@@ -102,6 +116,32 @@ function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean) {
     }
   }
   return { out, gaps };
+}
+
+type R4p = [number, number, number, number];
+/** A declared sky rail portal: where, the opening's half width and z range (the building carries the beam inside it). */
+export type Portal = { id: string; line: string; rect: R4p; half: number; z: [number, number]; ceiling: number };
+export function portalsOf(plan: Plan): Portal[] {
+  const out: Portal[] = [], run = plan.standards.skyrail?.portal?.running?.twin;
+  for (const s of plan.signatures ?? []) {
+    const p = s.portal; if (!p?.openings) continue;
+    out.push({ id: `signatures/${s.id}`, line: `${p.line}/${p.path}`, rect: [p.openings.at[0], p.openings.at[1], -p.clearHalfWidth!, p.clearHalfWidth!], half: p.openings.clearHalfWidth, z: p.openings.z, ceiling: p.soffit ?? p.openings.z[1] });
+  }
+  for (const m of plan.megastructures ?? []) {
+    for (const q of ((m as { portals?: { id: string; rect: R4p; opening: { clearHalfWidth: number; z: [number, number] } }[] }).portals ?? [])) out.push({ id: `${m.id}/${q.id}`, line: 'S1/trunk', rect: q.rect, half: q.opening?.clearHalfWidth ?? run?.clearHalfWidth ?? 6, z: q.opening?.z ?? run?.z ?? [21.5, 29], ceiling: (q.opening?.z ?? run?.z ?? [21.5, 29])[1] });
+    const sp = (m.supports as { portal?: { clearHalfWidth: number } } | undefined)?.portal;
+    if (sp) for (const f of m.footprint as R4p[]) out.push({ id: `${m.id}/supports`, line: 'S1/trunk', rect: f, half: sp.clearHalfWidth, z: [0, plan.standards.skyrail?.portal?.station?.soffit ?? 30], ceiling: plan.standards.skyrail?.portal?.station?.soffit ?? 30 });
+  }
+  return out;
+}
+
+
+/** Chainage intervals [s0, s1] of a sky path inside the portals declared for its line (the building carries the beam there: no pylon, no span limit). */
+function portalSpans(plan: Plan, line: string, path: PathGeo): [number, number][] {
+  return portalsOf(plan).filter(q => q.line === `${line}/${path.id}`).flatMap(q => {
+    const inside = path.samples.filter(x => x.p[0] >= q.rect[0] && x.p[0] <= q.rect[1] && x.p[1] >= q.rect[2] && x.p[1] <= q.rect[3]);
+    return inside.length ? [[Math.min(...inside.map(x => x.s)), Math.max(...inside.map(x => x.s))] as [number, number]] : [];
+  });
 }
 
 export function derive(plan: Plan): Derived {
@@ -123,7 +163,7 @@ export function derive(plan: Plan): Derived {
   const kinds = new Set(plan.standards.skyrail.pylonZones as string[]);
   const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z));
   const pylons: Pylon[] = [], pylonGaps: Derived['pylonGaps'] = [];
-  for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
+  for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p)); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
   return {
     roads, tram, sky, pylons, pylonGaps, zones,
     plots: plan.plots.map(p => ({ ...p, polyV: shape(p) })),

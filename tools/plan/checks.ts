@@ -1,7 +1,7 @@
 // The plan's rules: roads (Buchanan hierarchy, sealed environmental areas, gates, frontage), tram, sky rail, the civic
 // block, plus whatever an overlay adds (tools/plan/overlay.ts). Each check reports a value against its limit.
 import { type V, centroid, dist, inPoly, lineDist, nearLine, lineToPoly, segHit } from './geom';
-import { type Derived, type Plan, inZone, spanLimit } from './plan';
+import { type Derived, type Plan, inZone, portalsOf, spanLimit } from './plan';
 import { offSheet, placements, stopsOf } from './transit';
 import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect } from './civic';
@@ -165,7 +165,9 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
     add({ id: 'S-S1', group: 'Sky rail', rule: `${line.id} stations on straight beam`, value: `${placed.length - curved.length}/${placed.length}`, limit: 'all', ok: !curved.length });
     const pub = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || plan.foot.some(w => nearLine(p, w.pts, w.w / 2 + .01))
       || d.zones.some(z => ['park', 'quay', 'water'].includes(z.kind) && inZone(p, z)) || dist(p, plan.circus.c) <= plan.circus.island;
-    const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p));
+    // brief 007: a beam may also pass over a plot through a declared portal (signatures[].portal, megastructures[].portals, supports.portal), where the building carries it (P-1)
+    const portals = portalsOf(plan), inPortal = (p: V) => portals.some(q => p[0] >= q.rect[0] && p[0] <= q.rect[1] && Math.abs(p[1]) <= q.rect[3] && p[1] >= q.rect[2]);
+    const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p) && !inPortal(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
   }
 

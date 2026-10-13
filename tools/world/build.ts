@@ -9,14 +9,16 @@ import type { Circus, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World }
 import { ctxOf } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
-import { landmarkKit } from './gen/kitrefs';
+import { adoptedBy, landmarkKit } from './gen/kitrefs';
+import { horizonOf } from './gen/horizon';
+import { WATER_LEVEL } from './gen/signatures';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
   view: { yaw: 30, pitch: 38, zoom: 14 }, // play camera, brief 002 B: zoom 14 at 38°
   pavement: 0.18, // standards.buildings.datum: pavement top; plots and civic stand on it
   kerb: { width: 0.3, height: 0.18 }, // TODO standards.roads.kerb
-  water: -1, quayBase: -2.5, // TODO standards.harbour
+  water: WATER_LEVEL, quayBase: -2.5, // TODO standards.harbour
   foot: 0.02, ground: -0.03, beyond: -0.02, // flat layers kept apart in height so they never z-fight
   track: { width: 1.6, level: 0.04, depth: 0.04 }, // TODO standards.tram.track
   beam: { width: 1.5, depth: 1.6, pylon: 1.6, cap: 1 }, // beam half-width 0.75 is standards.transit's; TODO standards.skyrail.beam
@@ -94,8 +96,23 @@ function civicMasses(civ: Civic): Mass[] {
   for (const s of civ.structures) out.push({ id: `civic/${s.id}`, surface: sfc[s.category] ?? 'limestone', ring: ring(s.poly), base: base(s.z), height: s.height });
   const ofk: Record<string, string> = { fountain: 'enamel', planter: 'park', table: 'trim' };
   for (const o of civ.objects) out.push({ id: `civic/${o.id}`, surface: ofk[o.kind] ?? 'limestone', ring: ring(o.poly), base: base(o.z), height: o.height });
-  return out;
+  return out.map(civicKit);
 }
+
+/** Grammar §11: civic objects and structures a kit piece fits (uniform scale within the piece's tags, footprint inside the polygon's box, yaw turns the long axis). The extrusion stays for ids and footprint. */
+const CIVIC_KIT: [RegExp, string][] = [[/\/atom-fountain$/, 'AtomFountain'], [/\/cafe-table-\d+$/, 'CafeSet_Tulip'], [/\/cafe-palm-\d+$/, 'PottedPalm_Small'], [/\/office-boarding-pavilion$/, 'BoardingPavilion_Office'], [/\/square-boarding-pavilion$/, 'BoardingPavilion_Square'],
+  [/\/office-pavilion-support-\d+$/, 'PavilionPier_Office'], [/\/square-pavilion-support-\d+$/, 'PavilionPier_Square'], [/\/civic-(control|service)-cabinet/, 'UtilityCabinet']];
+export function civicKit(m: Mass): Mass {
+  const id = CIVIC_KIT.find(([re]) => re.test(m.id))?.[1], a = adoptedBy(id); if (!id || !a) return m;
+  const xs = m.ring.map(p => p[0]), ys = m.ring.map(p => p[1]), bw = Math.max(...xs) - Math.min(...xs), bd = Math.max(...ys) - Math.min(...ys), c: V = [(Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2];
+  const turn = (bw >= bd) !== (a.size[0] >= a.size[2]) && Math.abs(bw - bd) > 0.05 && Math.abs(a.size[0] - a.size[2]) > 0.05, [pw, pd] = turn ? [a.size[2], a.size[0]] : [a.size[0], a.size[2]];
+  const s = r3(Math.min(bw / pw, bd / pd)), [lo, hi] = a.tags.scale;
+  if (s < lo - 1e-6 || s > hi + 1e-6) return { ...m, source: 'procedural' };
+  const canopy = /boarding-pavilion$/.test(m.id), top = m.base + m.height; // a canopy-only piece hangs at the top of its mass
+  const yaw = turn ? Math.PI / 2 : 0, seeded = /cafe-(table|palm)/.test(m.id) ? r3(((hashY(m.id) % 628) / 100)) : yaw;
+  return { ...m, source: 'kit', kit: { id, scale: [s, s, s], yaw: seeded, at: rv(c), base: r3(canopy ? top - a.size[1] * s : m.base) } };
+}
+const hashY = (s: string) => [...s].reduce((h, ch) => (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0, 7);
 
 function landmarks(plan: Plan): Landmark[] {
   return plan.landmarks.map((l): Landmark => {
@@ -125,14 +142,14 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, frontages: gen.frontages, connectors: gen.connectors, street: gen.street,
-    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ), landmarks: landmarks(plan), gates: gates(plan, d),
+    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street,
+    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,
     transit: t.tram.length + t.skyRail.length + t.stops.length + t.stations.length,
-    buildings: w.buildings.length, roofs: w.roofs.length, frontages: w.frontages.length, connectors: w.connectors.length, street: w.street.length,
-    levels: w.levels.length, decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length,
+    buildings: w.buildings.length, roofs: w.roofs.length, skins: w.skins.length, facades: w.facades.length, frontages: w.frontages.length, connectors: w.connectors.length, street: w.street.length,
+    levels: w.levels.length, decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length, signatures: w.signatures.length, horizon: w.horizon.pieces.length,
   };
   return { world: { ...w, counts }, gen };
 }

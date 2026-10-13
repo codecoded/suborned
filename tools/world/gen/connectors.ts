@@ -16,6 +16,9 @@ const ringRect = (r: Rect): V[] => rectPts(r).map(rv);
 
 /** The plan's station bank on a forecourt plot (`plots[].bank` with `serves`), if one is laid for this station side. */
 type ForecourtBank = { serves: { line: string; station: string; side: string }; span: [number, number]; axisClear: [number, number]; keepClear: Rect[]; bridge: { w: number; from: number; to: number } };
+/** True if the point stands on a plan signature's ground (SpaceHQ's hall). */
+export const inSignature = (ctx: Ctx, p: V): boolean => (ctx.plan.signatures ?? []).some(s => inRect(p, s.ground as Rect));
+
 export function forecourtBank(ctx: Ctx, line: string, station: string, side: string): ForecourtBank | null {
   for (const p of ctx.plan.plots as { bank?: unknown }[]) {
     const b = p.bank as ForecourtBank | string | undefined;
@@ -121,7 +124,8 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
           yield { t, d: -1, towerR, liftR, aR, mzR, bR, bounds, bridge: { x: [cx - spec.bridge.w / 2, cx + spec.bridge.w / 2], y: [Math.min(spec.bridge.from, spec.bridge.to), Math.max(spec.bridge.from, spec.bridge.to)] } };
           return;
         }
-        for (let t = env + 1; t <= 40; t += 0.75) for (const sx of [0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15, 18, -18]) for (const d of [1, -1] as const) {
+        for (let t = Math.max(env + 1, (std.platformClear as number | undefined) ?? 0); t <= 40; t += 0.75) // t: the tower and lift stand from platformClear (outside the platform's outer edge), never under it (brief 007)
+           for (const sx of [0, 3, -3, 6, -6, 9, -9, 12, -12, 15, -15, 18, -18]) for (const d of [1, -1] as const) {
           const xa = (px0 + px1) / 2 + sx, tx = [xa, xa + d * tower.along].sort((a, b) => a - b) as [number, number];
           if (tx[0] < px0 + 0.5 || tx[1] > px1 - 0.5) continue;
           const cl = (l0: number, l1: number, c0: number, c1: number): Rect => { const xs = [xa + d * l0, xa + d * l1].sort((a, b) => a - b), ys = [side * (t + c0), side * (t + c1)].sort((a, b) => a - b); return [xs[0]!, xs[1]!, ys[0]!, ys[1]!]; };
@@ -136,7 +140,8 @@ export function generateConnectors(ctx: Ctx, megas: MegaOut[], stations: Mass[],
         if (!ok) continue;
         // the tower, run A and lift stand outside the beam envelope + 1 m of every line (SF-13), not only the trunk the bank is laid against
         if ([towerR, aR, liftR].some(r => beam.some(q => rectGap([q[0], q[0], q[1], q[1]], r) < env + 1 - 0.01))) continue;
-        if ([towerR, aR, liftR].some(r => walkBlock(ctx, samples9(ringRect(r)), ''))) continue; // and out of every walk zone (SF-13)
+        // and out of every walk zone (SF-13) — except inside a signature structure's ground (SpaceHQ's ground hall: brief 007, the hall's own lanes are the walk zones; Datum to confirm)
+        if ([towerR, aR, liftR].some(r => !inSignature(ctx, rectCentre(r)) && walkBlock(ctx, samples9(ringRect(r)), ''))) continue;
         // lay the bank
         const base = `bank/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`;
         const bridgeNeeded = t > platOut + 0.2 || !!bridge; // the bank stands clear of the platform: a concourse bridge joins them

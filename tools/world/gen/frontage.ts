@@ -49,6 +49,8 @@ function candidates(ctx: Ctx, h: Host, kind: string, room: number, prev: string,
   });
 }
 
+/** The sign board stands 0.8 m off the facade line (0.6 m shopfront + 0.2): on freestanding stalls and kiosks too, whose block is deeper (the 3.2 m of the first flyby). */
+export const SIGN_OFF = 0.8;
 const snap = (w: number, g: number) => Math.max(g, Math.round(w / g) * g);
 
 function prims(ctx: Ctx, h: Host, id: string, t: string, T: Trade, a: V, u: V, n: V, w: number, kind: string, spill: number, r: Rng) {
@@ -60,7 +62,7 @@ function prims(ctx: Ctx, h: Host, id: string, t: string, T: Trade, a: V, u: V, n
   const front = mk('front', 'box', 'frontage', at(depth / 2), [w, depth, cl], z);
   const entrance = mk('door', 'box', 'trim', at(depth + 0.1), [door, 0.2, 2.4], z);
   const canopy = mk('canopy', 'box', 'awning', at(depth + canopyD / 2), [w, canopyD, 0.25], z + cl - 0.8);
-  const sw = Math.min(w * 0.75, 9), sign = { ...mk('sign', 'box', 'sign', at(depth + 0.2), [sw, 0.3, 1.2], z + cl + 0.3), motif: T.sign[0], icon: T.sign[1], palette: T.sign[2] };
+  const sw = Math.min(w * 0.75, 9), sign = { ...mk('sign', 'box', 'sign', at(SIGN_OFF), [sw, 0.3, 1.2], z + cl + 0.3), motif: T.sign[0], icon: T.sign[1], palette: T.sign[2] };
   let service: Prim | undefined;
   const bays = /roller|bays/.test(T.service) && (['access', 'quay'].includes(kind) || h.level === 'street' && h.id.startsWith('mega/'));
   if (bays && w >= 4.5 + 3) service = mk('bay', 'box', 'trim', at(depth + 0.1, -(w / 2 - 2.8)), [4.5, 0.2, 4.6], z);
@@ -73,7 +75,11 @@ export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {
   const snapG = ctx.F.placement.widthSnap as number;
   for (const h of hosts) {
     const r = rng(`frontage/${h.id}`), lobbyEdge = h.level === 'street' && !h.free && h.id.startsWith('bld/')
-      ? h.edges.reduce((bi, e, i) => ((QUIET[e.kind] ?? 9) < (QUIET[h.edges[bi]!.kind] ?? 9) || ((QUIET[e.kind] ?? 9) === (QUIET[h.edges[bi]!.kind] ?? 9) && dist(e.a, e.b) > dist(h.edges[bi]!.a, h.edges[bi]!.b)) ? i : bi), 0) : -1;
+      ? h.edges.reduce((bi, e, i) => {
+        const ok = (x: HostEdge) => !T.lobby || T.lobby.wants.includes(x.kind); // the lobby stands only on a street kind it wants (F-2)
+        if (!ok(e)) return bi; if (bi < 0 || !ok(h.edges[bi]!)) return i;
+        return (QUIET[e.kind] ?? 9) < (QUIET[h.edges[bi]!.kind] ?? 9) || ((QUIET[e.kind] ?? 9) === (QUIET[h.edges[bi]!.kind] ?? 9) && dist(e.a, e.b) > dist(h.edges[bi]!.a, h.edges[bi]!.b)) ? i : bi;
+      }, -1) : -1;
     h.edges.forEach((e, ei) => {
       const L = dist(e.a, e.b), u: V = [(e.b[0] - e.a[0]) / L, (e.b[1] - e.a[1]) / L], segs: { t: string; w: number; anchor: boolean; lobby: boolean }[] = [];
       let t0 = 0, t1 = L, prev = '';

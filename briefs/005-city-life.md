@@ -1,5 +1,7 @@
 # 005 · City life: people, vehicles and the pulse of the Harbour District
 
+**Status (2026-10-12): A and B accepted; build not started.** The life builder is now in `tools/life/` (`bun run life`, deterministic). The committed life.json is stale against plan v0.2.0: Pulse regenerates it and reviews the diff (fewer visits, staff and homes). It still contains mission content (Vale anchors, the `records-handover` event, the "Handover starts 17:00" clock) that belongs in `contracts/missions/handover/`. The C# simulation library: Keel builds it, provisionally (GDD v0.17.0; Sky to confirm). It waits behind the world review, like 003.
+
 Goal (Sky, 2026-10-11): "the vehicles, pedestrians, the heart and vibrancy of the city". The built world (004) comes alive: trams and sky rail on their timetable, traffic on lanes, and streets busy at ≈ 0.12 people/m² (§15), every figure going somewhere for a reason.
 
 ## Fixed
@@ -32,7 +34,7 @@ done-check: every rule cites the plan or the GDD; the numbers reach §15 density
 next owner: Splice (generator), Keel (sim).
 
 ## Then
-Splice generates people and vehicles from B · Keel's sim steps them · Latch plays them back in Unity · Forma (people) and Vela (vehicles) dress them · Chime does the city's sound (bells, trams, crowd) · Suture checks readability (signal colours, 40–60 px).
+Pulse generates people and vehicles from B (`tools/life`, GDD v0.17.0) · Keel's sim (the C# library, Keel builds it, provisional) steps them · Latch plays them back in Unity · Forma (people) and Vela (vehicles) dress them · Chime does the city's sound (bells, trams, crowd) · Suture checks readability (signal colours, 40–60 px).
 
 ## Decisions (Aster, 2026-10-11)
 - B accepted. Density basis = foot ground (pavements, median, malls, walks), target ≈ 0.12 from §15 "density ≈0.12 people/m² reads busy".

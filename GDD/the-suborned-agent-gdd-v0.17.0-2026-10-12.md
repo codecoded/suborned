@@ -1,14 +1,15 @@
-# THE SUBORNED · AGENT GDD v0.16.0 · 2026-10-11
-src: the-suborned-gdd-v0.16.0-2026-10-11.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible (the-suborned-art-bible-v0.15.0-2026-10-10.html; machine copy contracts/style/suborned.style.json, which wins on conflict).
+# THE SUBORNED · AGENT GDD v0.17.0 · 2026-10-12
+src: the-suborned-gdd-v0.17.0-2026-10-12.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible; its machine copy contracts/style/suborned.style.json (v0.17.0) wins on conflict. The v0.15.0 html art bible is history (~/Projects/the-suborned/GDD/v0.15.0/): concept look reference only; its painted presentation and palette are superseded.
 tags: [B] built, proven in top-down test · [S] spec, starting value, tune by playtest · [L] after capstone
 load: every agent = §01 + its own §14 block · Aster = §01–§13 + its §14 block · Vela, Forma, Glint, Glyph also §15 · open other sections by number on demand
 units: s seconds · m:ss mission clock · $ cash · T Trail · A Alert
+v0.17.0 (Sky, 2026-10-12): presentation is a 3D world built from the plan (painted plates out) · palette = pastel base + saturated enamel accents, tuneable · owners settled in §12 decisions.
 
 ## §01 GAME + CORE (loaded first by every agent)
 game: single-player real-time tactics + social infiltration · PC · Unity · camera above street, never first person · exteriors only (interiors = timed off-screen actions; shops, bars and workshops are frontages) · multi-level exteriors: street 0, deck 9.43 m, sky concourse 24 m (sky rail platforms) · mission = 1 block, 8–12 min, live clock
 fantasy: commander. The city carries out your plan without knowing it: turn ordinary people, time their small acts into one plan.
 arc: one person → networks → districts. Every system adds to or tests that growth.
-look: bright retro-future (cream stone, teal enamel, coral transit, chrome; skyline of towers, rockets, planets). Optimistic surface, coercive underneath.
+look: bright retro-future (pastel cream + peach stone, saturated enamel accents, lagoon water, coral transit, chrome; skyline of towers, rockets, planets). Optimistic surface, coercive underneath.
 pillars (test):
 - subvert people: does knowing more make a person cheaper, quieter or more loyal?
 - orchestrate the city: does it open or close a window the player can see coming?
@@ -135,28 +136,28 @@ nothing hand-authored. Sky writes rules + generators. The simulation plays every
 | missions | template (objective, target, closing event, fight trigger) + district people | mission checker |
 | dialogue, portraits, voices | person data + state (brave, resentful, promoted) | tone + rating filters; sampled review |
 | district plans | Datum (roads, transit, plots, gates, levels, megastructures, frontage program) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun tools/plan/cli.ts) |
-| world | generator fills each plot from plan.standards, seeded by plot id: masses, towers, roofs, frontage trades, decks, stairs, lifts; 2–4 megastructures per district from the plan | plan checker (B, L, MS, F rules) · same plan → same world |
+| world | generator fills each plot from plan.standards, seeded by plot id: masses, towers, roofs, frontage trades, decks, stairs, lifts; 2–4 megastructures per district from the plan; each element dressed by a DecoKit piece (contracts/world/kit.json) or procedural to the same bar, seeded by id | plan checker (B, L, MS, F rules) · same plan → same world |
 | consequences | rules on mission log | replay → same result |
 mission checker: ships only if ≥ 2 quiet routes win · loud route exists and costs more T · every fail condition reachable · no single contact essential · fully informed player finishes ≥ 1:00 before closing event.
 risk: sameness (Watch Dogs: Legion). Fix: history, not backstory; people are memorable via what the systems record. Text = light layer. Live AI chatter [L] only if it never touches rules.
 
 ## §10 PRESENTATION
-camera: fixed tactical view. Capstone = static 2.5D scene with 3D projection; full 3D if time; rules unchanged. Characters 40–60 px tall at 1080p (job, silhouette, facing readable). Levels: architecture above the selected person's level ghosts (§15, 0.2).
-split: painted static = buildings, paving, skyline. Live 3D = people, vehicles, doors, surveillance, barricades, posters, anything with state. Match lighting on 1 character + 1 vehicle before building more.
+camera: fixed tactical view, play zoom 14 at 38°, never first person. Capstone = 3D world built from the plan (DecoKit kit where it counts, procedural fill to the same bar); rules unchanged. Painted plates [L] optional extra at most. Characters 40–60 px tall at 1080p (job, silhouette, facing readable). Levels: architecture above the selected person's level ghosts (§15, 0.2).
+split: built world (generated from the plan at build time, fixed in play) = buildings, paving, structures, street furniture, skyline. Live 3D state = people, vehicles, doors, surveillance, barricades, posters, anything with state. One material + light standard for both; match lighting on 1 character + 1 vehicle before building more.
 controls: click select/move · Shift group · 1–4 operative · E engage · F fire · C call · click person/door/camera → action card with full price · Next Event jumps to next scheduled change · live clock + tactical pause (T1).
 readability: cones red · guard amber · rivals violet. No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue. Dossier separates known / suspected / planned.
 payoff cut: plan lands → brief street-level cut → same state. Capstone has one (Inez spills coffee, guard walks off). More cuts + decisive shot [L].
 audio = clock: bell, café door, 5:30 handover chime · surveillance click at sweep edge · patrol sound changes when it breaks route · Alert adds music layers; fight = full score · contacts confirm calls aloud.
-look: locked (§15 ART + art bible). Retro-future city; cell = visitors from a nearby timeline (sharper, cleaner, no deco ornament) so the four read as outsiders at 50 px.
+look: §15 ART + style contract; palette current, tuneable (Sky reviews it in the world). Retro-future city; cell = visitors from a nearby timeline (sharper, cleaner, no deco ornament) so the four read as outsiders at 50 px.
 reskin rule: any era must provide watching institutions (for Tech), vehicles + dense crowds, jobs readable from clothing, respectable surface over coercive machine, firearms + plausible rigged vehicle.
 
 ## §11 BUILD
-built: top-down test of Handover (4 ops, 2 contacts, security, rivals, shooting, debrief, campaign lock; 28 scenarios pass) · 2.5D scene in progress.
-architecture: rules separate from engine · events carry conditions, effects, witnesses · exact replay from start state + orders · Unity must pass the same 28 scenarios before it's trusted · performance = frame rate at play zoom, not polygons.
+built: top-down test of Handover (4 ops, 2 contacts, security, rivals, shooting, debrief, campaign lock; 28 scenarios pass) · Harbour District 3D world from the plan in progress (generator + export, DecoKit + procedural, Unity builder; briefs 004, 006) · city sim architecture chosen (brief 005 A).
+architecture: rules separate from engine · events carry conditions, effects, witnesses · exact replay from start state + orders · Unity must pass the same 28 scenarios before it's trusted · one C# sim engine as a Unity-free library: Unity runs it live, build tools headless via dotnet; 10 Hz fixed tick, integer state, replay = orders + checksums · performance = frame rate at play zoom, not polygons.
 capstone, 5 weeks:
 | wk | deliverable | exit |
 | 1 | rules proven in top-down test | 2 routes win; loud fails at a cost [done] |
-| 2 | rules in Unity; Handover in 2.5D scene | 28 scenarios pass in Unity |
+| 2 | rules in Unity; Handover in the 3D world | 28 scenarios pass in Unity |
 | 3 | cell control, contacts, security, rivals, readability | first uncoached playtest |
 | 4 | final fight both branches, payoff cut, dossier, event log, debrief | new-player test; freeze rules |
 | 5 | tuning, fixes, audio cues; no new systems | final uncoached gate |
@@ -168,9 +169,15 @@ risks: combat feel + animation (only walk/run exist) · generated sameness · pl
 ## §12 CREW
 Aster leads 16 agents; Sky is the only human. Loop: assess → assign → review → continue. One owner per objective with a done-check; Suture/Redline review; Aster accepts or returns.
 models: Opus 5.5 = Aster, Motive, Keel, Latch, Waymark, Datum, Vantage, Suture, Redline · GPT 6.1 Sol = Glyph, Fable, Pulse, Splice, Vela, Forma, Glint, Chime.
-tools: Runware (Glyph, Vela, Forma, Glint, Chime; priced per run) · Blender (Vela, Forma, Glint; previews only) · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).
-order: plan before paint: Datum plans the district, Vantage the blocks; Latch grayboxes only a passing plan; art dresses the graybox. Motive + Keel draft rulebook first; others work in parallel against the draft; Latch owns critical path; rulebook frozen after week 4.
+tools: Runware (Glyph, Vela, Forma, Chime; concepts, priced per run) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).
+order: plan before dress: Datum plans the district, Vantage the blocks; Latch builds only a passing plan; art dresses the built world (kit + procedural). Motive + Keel draft rulebook first; others work in parallel against the draft; Latch owns critical path; rulebook frozen after week 4.
 budget: two 20× subscriptions (one Codex, one Claude). Aster drops optional work when allowance is low. Per-use credits (Runware, Meshy) priced first.
+decisions (v0.17.0, 2026-10-12):
+- Sky: presentation 3D (world built from the plan; DecoKit + procedural; painted plates [L] optional). Camera fixed tactical, zoom 14 at 38°.
+- Sky: palette = pastel base + saturated enamel accents (§15); current, tuneable after Sky sees it in the world.
+- Aster: DecoKit generator (tools/decokit) = Vela (pieces, materials, facade detail) + Splice (pipeline, catalogue, import, determinism).
+- Aster: C# sim library (005 A) = Keel builds and owns it (the rules live in it; Keel measured it); Latch owns the Unity host (live stepping, playback); Redline reviews code + perf; Suture replays. Open for Sky: confirm (alternative: Latch builds to Keel's spec; one more handoff on the critical path).
+- Aster: Splice's load cut to the checks + plan → world pipeline. Moves: people + vehicle generator and life builder (tools/life) → Pulse once Splice's 005 move lands; mission rule overlays (tools/missions) → Waymark. Designers own their generators (as Waymark, Fable).
 
 ## §13 TESTS (agent copy only; not in the human GDD)
 default: 6 new players.
@@ -200,7 +207,7 @@ opens: §02, §04–06, §08 · tests T2, T3
 ### Waymark · Mission designer · Opus 5.5
 owns: The mission generator and the mission checker.
 receives: The template (objective, target, closing event, fight trigger), the district's people, the rulebook, Vantage's block layout and Datum's gates.
-delivers: Missions with a route and clue map, how they close and fail, and what starts the fight. Keel checks; Latch builds.
+delivers: Missions with a route and clue map, how they close and fail, and what starts the fight; mission rule overlays on the plan checker (tools/missions). Keel checks; Latch builds.
 hold: Handover is the reference case the generator must match. Ships only if 2+ quiet routes win, a loud route costs more Trail, every fail can happen, no contact is essential, and an informed player has a minute to spare. One block, 8–12 min.
 also: Pulse (schedules), Motive (prices).
 opens: §07–09 · tests T5, T6
@@ -224,22 +231,22 @@ hold: History, not backstory: people are memorable through what the systems reco
 also: Chime (voices, contacts confirming calls aloud), Glyph (dossier text).
 opens: §04, §09 · test T7
 ### Pulse · Schedule and AI designer · GPT 6.1 Sol
-owns: Routines for people, security, transit and rivals; crowds; investigators; fight AI.
+owns: Routines for people, security, transit and rivals; crowds; investigators; fight AI; the people and vehicle generator (tools/life, bun run life) once Splice's 005 move lands.
 receives: Motive's rules, Keel's rulebook, Datum's plan, Vantage's block layouts.
 delivers: Schedules and behaviour, tram and sky rail timetables (the wait + ride that prices boarding). Keel checks; Latch builds.
 hold: Handover: rival car 3:10, last driver turn 5:40, Vale out 5:50, over 8:00. Patrol breaks to gunfire within 30 m; seal 2:25 after the response unit. Witness = sightline within 13 m. Investigators question every ~20 s, 60–90 s per lead. Crowds scatter, block or join; 30 combatants max.
 opens: §05–07 · tests T1, T4
 ### Keel · Simulation engineer · Opus 5.5
-owns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios.
+owns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).
 receives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.
 delivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.
-hold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert. Unity must pass the same 28 scenarios before content goes in. Locked only after the week 4 playtest.
+hold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.
 opens: §05, §06, §08, §11
 ### Latch · Unity engineer · Opus 5.5
 owns: The Unity build and its scenes. The only agent that edits scenes.
 receives: The rulebook, checked content, passing plans, approved art and audio, a playable target.
 delivers: The graybox built from a passing plan (the plan is the source; Unity primitives follow it), then a playable build that records every event and the debrief, to Suture and Redline.
-hold: Week 2: rules in Unity, Handover laid out. Week 3: cell, contacts, security, rivals. Week 4: final fight (both branches), payoff cut, dossier, debrief. Week 5: no new systems. Painted static scene; anything that changes state is live 3D. Controls: click, Shift, 1–4, E, F, C, Next Event, pause.
+hold: Week 2: rules in Unity, Handover laid out. Week 3: cell, contacts, security, rivals. Week 4: final fight (both branches), payoff cut, dossier, debrief. Week 5: no new systems. 3D world built from the plan (kit refs + procedural); anything that changes state is live 3D. Hosts Keel's C# sim: steps it live, plays it back. Controls: click, Shift, 1–4, E, F, C, Next Event, pause.
 opens: §07, §10, §11 · tool: Unity (owner)
 ### Suture · Playtest and QA lead · Opus 5.5
 owns: Uncoached playtests, test reports and tests T1–T7.
@@ -248,7 +255,7 @@ delivers: Reports with steps to reproduce, expected against observed, and clips.
 hold: Six new players per test; most pass bars are 5 of 6. Handover wins when Vale reaches the car alive. It fails if Vale dies, leaves or is taken, the district seals, the Enforcer goes down, or the entry is seen. Checks the gate every week from week 3.
 opens: §07, §11, §13 · tool: Unity (checks)
 ### Splice · Tools engineer · GPT 6.1 Sol
-owns: The checking tools, including the plan checker (tools/plan), and the world generator and export (tools/world, bun run world).
+owns: The checking tools (plan checker tools/plan, the Unity checking tool) and the plan → world pipeline: world generator and export (tools/world, bun run world), kit catalogue and import (tools/kit, bun run kit), the DecoKit run pipeline (tools/decokit run + orders; Vela owns the pieces), the build-time generation core (tools/rag, tools/levels).
 receives: Keel's rulebook; planning standards and rule requests from Datum and Vantage.
 delivers: A Unity checking tool that catches missing people, unreachable places or impossible actions before Latch builds; plan checker rules, each with an id, a source and a failing example.
 hold: Every generated person reaches their places and has one clear need. Anything not in the rulebook is rejected, however plausible it looks.
@@ -260,11 +267,11 @@ delivers: A review. Latch fixes; Redline retests.
 hold: Judge by frame rate at play zoom, not polygon counts. 30 active combatants at most; the background crowd can be far larger (a 10,000-citizen stress test already runs). Anything that breaks exact replay is a defect.
 opens: §11
 ### Vela · Environment artist · GPT 6.1 Sol
-owns: The 2.5D scene: paintings over simple 3D shapes.
-receives: Vantage's block layouts on Latch's graybox.
-delivers: A scene that keeps entrances, sightlines and routes readable, handed to Latch.
-hold: Retro-future: cream stone, teal enamel, coral transit, chrome, a skyline of towers, rockets and planets. Optimistic on the surface, coercive underneath. Painted and static: buildings, paving, skyline. Anything that changes state is live 3D. Exteriors only. The playable block stays dense; the skyline frames the edge. No surface uses a signal colour at full strength.
-opens: §07, §10, §15 · tools: Runware, Blender
+owns: The 3D environment: DecoKit kit pieces and their Blender generator (tools/decokit), procedural materials and facade detail, dressing the world built from the plan to one bar. Not paintings.
+receives: Datum's passing plan, Vantage's block layouts, the world export (kit refs + procedural stand-ins) in Latch's build.
+delivers: Kit pieces, materials and facade, sign and trim detail that keep entrances, sightlines and routes readable at play zoom; to Splice (catalogue, pipeline) and Latch (builder). Glint lights it; Suture checks readability.
+hold: Retro-future, §15 palette: pastel cream + peach base, saturated enamel accents on panels, awnings, signs, roofs and trim (never whole buildings), lagoon water, coral transit, chrome; a skyline of towers, rockets and planets. Optimistic on the surface, coercive underneath. Kit where it counts (landmarks, megastructure signatures, towers, civic block, frontages, signage, street furniture); procedural to the same bar elsewhere, every stand-in listed source: procedural. Neighbours differ (adjacent duplicates 0). Judge at play zoom against the concept work. Anything that changes state is live 3D. Exteriors only. The playable block stays dense; the skyline frames the edge. No surface within ΔE2000 20 of a signal colour.
+opens: §07, §10, §15 · tools: Blender (DecoKit generator), Runware (concepts, priced)
 ### Forma · Character artist and animator · GPT 6.1 Sol
 owns: People, rigs and animation.
 receives: Job silhouettes and the character-height target.
@@ -272,11 +279,11 @@ delivers: Figures, rigs and animation, including the combat set (shoot, melee, h
 hold: 40–60 px tall at 1080p; job, silhouette and facing readable. Only walk and run exist so far: combat animation is a top risk.
 opens: §06, §10, §15 · tools: Blender, Runware
 ### Glint · Lighting artist · GPT 6.1 Sol
-owns: Lighting that makes the live 3D sit in the painted scene.
-receives: The scene, the camera and the visual budget.
+owns: Lighting the 3D world: sun, sky, haze, ambient and material response, so the built world and live 3D read as one at play zoom.
+receives: The built world, the camera (zoom 14 at 38°), the palette and the visual budget.
 delivers: Lighting, checked in game by Latch.
-hold: Match one character and one vehicle before building more. Signal colours stay readable under every light. The budget is frame rate at play zoom.
-opens: §10, §15 · tools: Runware, Blender, Unity (checks)
+hold: Match one character and one vehicle against the built world before building more. The palette survives the light (haze light, accents stay saturated). Signal colours stay readable under every light. The budget is frame rate at play zoom.
+opens: §10, §15 · tools: Unity (checks), Blender (previews)
 ### Glyph · Interface artist · GPT 6.1 Sol
 owns: The HUD, dossier, action cards and signal colours.
 receives: Layout, information hierarchy and accessibility needs.
@@ -291,20 +298,27 @@ hold: Audio is part of the clock: a bell, the café door, the handover chime at 
 opens: §10 · tool: Runware
 
 ## §15 ART (art bible; Vela, Forma, Glint, Glyph load this)
+src: this § + contracts/style/suborned.style.json v0.17.0 (wins on conflict). The v0.15.0 html bible is history (~/Projects/the-suborned/GDD/v0.15.0/).
 era: bright retro-future, a 1952–1962 space age as the present, high art, optimistic surface over a coercive machine. Every district retro-future (streamline, Googie, space age); no old-city stone or brick.
-city: cream limestone under a warm hazy sun · teal + mint enamel trim · chrome fixtures · coral transit · palms, long soft shadows · skyline of towers, rockets, ringed planets, faded daytime moons · skyports, sky rail, harbour. Composed, never a grid (circus, parade, harbour, gardens). Every roof programmed; towers mixed in. One haze colour across fog, far band, massing; detail near, soft far; solar flare. Density ≈0.12 people/m² reads busy.
+city: pastel cream + peach limestone under a warm hazy sun · saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings · chrome fixtures · coral transit · lagoon turquoise water · palms, long soft shadows · skyline of towers, rockets, ringed planets, faded daytime moons · skyports, sky rail, harbour. Composed, never a grid (circus, parade, harbour, gardens). Every roof programmed; towers mixed in. One haze colour across fog, far band, massing; detail near, soft far; solar flare. Density ≈0.12 people/m² reads busy.
+world: 3D, built from the plan: DecoKit kit where it counts (landmarks, megastructure signatures, towers, civic block, frontages, signage, street furniture), procedural fill to the same bar · neighbours differ · judge at play zoom against the concept work (the-suborned-store/concepts: AtomicAge, Blocks, Streets) · painted plates [L] optional extra.
 camera: play zoom 14 at 38° · tagged architecture ghosts to 0.2 + ghost shadow · characters 40–60 px at 1080p.
 people: space-age couture as street clothing, mixed cast (ages, builds, ethnicities) · bright coats on cream, white boots + hats · full body, A-pose or relaxed · two space-age markers per figure, no present-day street items · no bubble helmets (≤1 helmet per sheet) · hems knee or above, nothing sheer/trailing/cloak-like, flat boots · job readable at distance = silhouette + one colour block.
 security + institutions: sleeker: ivory, ink black, gold trim, chrome couture, armour accents.
 cell: visitors from a nearby timeline = same materials + light, different design lineage · sharper + cleaner than the crowd, matte technical fabrics, fitted layers · NO deco motifs, gold trim or 1950s tailoring · pass in the street, stand out at 50 px · only the four cross timelines.
 robots: key characters · dot-matrix display faces · one personality prop each · no cartoon eyes.
 props: one object, centred, no people, no scenery, whole object with margin · cream enamel + limestone, teal/mint trim, chrome, coral accents.
-palette (hex; the spec keeps a 6-colour mood set cream_stone, teal_enamel, coral_transit, gold_trim, chrome, sky_cerulean; full roles listed here; the old brief-guide file is archived): cream_stone #e4e0d3 · warm_sand #dac9b2 · stone_shadow #a2937e · paper_cream #f3eadb · haze_teal #a7c2cb · sky_cerulean #719fb5 · zenith_cobalt #296587 · teal_enamel #94a9a3 · mint_enamel #9fd1c9 · coral_transit #c8835e · vermilion #b8432f (Harbour Syndicate) · chrome #cbc6c3 · ivory_uniform #f0efed · ink_black #292628 · gold_trim #c9a24f · violet_set #6b4f8f (Velvet Set) · green_circle #4f8f6b (Green Circle).
-signals (gameplay only, never full strength on a surface, always + shape or motion cue): cones #e03a2f · guard #f0a020 · rivals #8a4fd0.
-materials: honed cream limestone · flamed grey granite kerb · teal + mint vitreous enamel · chrome + brushed silver · white vinyl + lamé · clear acrylic · warm brass + gold trim · pale asphalt.
+palette [S] (current, tuneable; Sky reviews it in the world). World = unity/Assets/Suborned/Editor/World/looks/harbour.json (roles + signal ΔE table: out/review/palette.html); machine copy style.json palette_world.
+- base, pastel: pavement #f9efdc · limestone #f8eed9 · deck #faf1df · civic #fbe8b8 · commercial (peach) #f9e2cc · roof #fff6e6 · kerb #ddd4c5 · asphalt #a5a2a8 · trim #eadba6 · park #a6e29c · median #78cf7e
+- accents, saturated enamel: cobalt #2f84e8 (enamel, landmark) · flamingo #e8609a (awning) · sunshine #fdeb8c (sign) · mint #8fe3c2 (megastructure) · turquoise #1cb9c6 (tower)
+- water: lagoon #2fc1de · transit, coral: beam + gate #f5849e · platform #fcbcc0 · light: sky #86cff2 · sun #ffe9bc · haze #f3e8d4
+- gold trim on world surfaces #c9c08e (gold_trim #c9a24f is ΔE 10.2 from guard)
+- concept sheets (people, props; unchanged): cream_stone #e4e0d3 · warm_sand #dac9b2 · stone_shadow #a2937e · paper_cream #f3eadb · haze_teal #a7c2cb · sky_cerulean #719fb5 · zenith_cobalt #296587 · teal_enamel #94a9a3 · mint_enamel #9fd1c9 · coral_transit #c8835e · vermilion #b8432f (Harbour Syndicate) · chrome #cbc6c3 · ivory_uniform #f0efed · ink_black #292628 · gold_trim #c9a24f · violet_set #6b4f8f (Velvet Set) · green_circle #4f8f6b (Green Circle).
+signals (gameplay only, never on a surface: every world colour ≥ ΔE2000 20 from each; always + shape or motion cue): cones #e03a2f · guard #f0a020 · rivals #8a4fd0.
+materials: honed cream + peach limestone · flamed grey granite kerb · saturated vitreous enamel panels (cobalt, flamingo, sunshine, mint, turquoise) · chrome + brushed silver · white vinyl + lamé · clear acrylic · warm brass + gold trim · pale asphalt.
 style spec v0.11.3 is all in one: the prompt part sets look and framing (era without dates, each type's framing line, finish, rules, avoid list; the character and lineup lines add one couture sentence so a plain brief still gets the look), and the guide part (spec.guide plus types.*.guide, hml.style/2) is read only by Enhance, a manual button, as a menu to pick from: couture details (one or two per person, never all), colours on cream with one block per person, cast mix, roles shown by one telling detail never costume or tactical kit, security, agents and hard trades in darker blocks from the city palette on the same couture details; Enhance writes one numbered line per person when there are several; no references while a concept is being worked out, the player cell (violet accent only when the brief is about the cell), the city, robots, places, nature.
 types (hml.style/2: framing line, finish, reference policy, board; no fields): character (turnaround sheet front/three-quarter/side/back 1536×1024, arms a little away from the body, nothing loose below the hip, one couture sentence; finish gouache and marker, 1960s fashion illustration, crisp linework; redraw optional + 1 style ref, the commuters spaceage_bold lineup first) · model (final model sheet for 3D: front, side, back, orthographic, one baseline, A-pose arms ~30°, every garment resolved identically across views) · versions (one person drawn several times in a row, identical face and build; only the changes the brief names differ) · lineup (clearly different people in one row; People field 2/3/4/6/8, default 6, its option line states the exact count (a count in the brief alone lost to the sheet); same scale and gentle three-quarter front view, mixed ages, bodies and ethnicities, bold silhouettes, one couture sentence; 1536×1024 (cost: Seedream $0.048 vs $0.096 at 2K); always new, no style image: a lineup reference on a lineup task comes back as a near pixel copy; the four spaceage_bold lineups stay on the board as the look to judge against) · prop (sheet 1024²; redraw optional + 2) · scene (plate 1536×1024; 3 style refs) · building (plate; redraw optional + 2) · robot (sheet; redraw optional + 1) · nature (sheet 1024²; +1) · backdrop (plate; 2). Sheets: high-art gouache, matte paper, plain paper-cream backdrop, margin. Plates: painterly realism with gouache softness. All Seedream 5.0 Pro.
-split: painted static = buildings, paving, skyline · live 3D = anything with state · match lighting on 1 character + 1 vehicle first.
+split: built world (3D from the plan) = buildings, paving, structures, skyline · live 3D = anything with state · match lighting on 1 character + 1 vehicle first.
 always: no text, logos, watermarks · no living artist names in prompts.
 avoid: text, watermark, glossy CG render, photo render, present-day street clothes, astronaut suit, space helmet, cape.
 board: 29 images (cell 4 incl. Enforcer G3, citizens 4, security 5, city 8, props 4, robots 1, nature 3) · per-type `board` paths plus global `board.mood` in contracts/style/suborned.style.json · the type's own board goes first as style refs (character: commuters spaceage_bold lineup first; six people, so no single face is copied); a character's approved concept goes first as the subject image · judge new work against the board, not prose. Pending: robots round for corp, maker, civic.

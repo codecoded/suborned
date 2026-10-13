@@ -1,6 +1,7 @@
 // usage: bun run levels:replay r001 [plan-id] [--allow-drift]
 // Offline: no Docker, no model, no out/. Validates a recorded run from runs/ alone: schemas, card and corpus hashes, retrieved
 // text against the corpus, the checker rerun on every round plan, versions and the outcome.
+import { driftLedger } from './drift';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { root } from '../rag/config';
@@ -48,7 +49,7 @@ export async function replay(planId: string, runId: string, allowDrift = false):
   const tools = await toolsHash();
   const supersededRun = !run.inputBlock; // pre-pinning: its checker cannot be rerun, and its code changed with the Oct 9 block work (tools/plan civic.ts, checks.ts C-0), so the hash adds nothing beyond "superseded"
   const toolsMsg = `CHECKER CODE changed since the run (tools/plan, tools/levels/apply.ts): recorded ${String(run.toolsHash).slice(0, 12)}, now ${tools.slice(0, 12)}; the record itself may be intact`;
-  let toolsAt = -1; const added = new Set<string>(); let rerunDiffers = false; // toolsAt: line to resolve once the reruns say whether only rules were added
+  let toolsAt = -1; const added = new Set<string>(); let rerunDiffers = false, reran = 0; // reran: rounds whose checker rerun was compared; toolsAt: line to resolve once the reruns say whether only rules were added
   run.toolsHash === tools ? ok(`checker code hash ${tools.slice(0, 12)}`) : supersededRun ? warn(`checker code changed since the run (superseded run, pre-pinning: recorded ${String(run.toolsHash).slice(0, 12)}, now ${tools.slice(0, 12)}; the checker cannot be rerun on it either way)`) : (toolsAt = lines.push('') - 1);
   // the block is pinned per run; a run with no record predates pinning and cannot be checked against today's block
   let block: unknown, superseded = false;
@@ -108,7 +109,7 @@ export async function replay(planId: string, runId: string, allowDrift = false):
         const had = new Set<string>(rec.checks.map((c: any) => c.id)), kept = R.checks.filter(c => had.has(c.id)), fresh = R.checks.filter(c => !had.has(c.id));
         for (const c of fresh) added.add(c.id);
         const same = JSON.stringify(kept) === JSON.stringify(rec.checks);
-        if (!same) rerunDiffers = true;
+        reran++; if (!same) rerunDiffers = true;
         same ? ok(`${n}: checker rerun matches checks.json (${kept.filter(c => c.ok).length}/${kept.length})`) : fail(`${n}: checker rerun differs from checks.json`);
         if (fresh.length) warn(`${n}: checker rules added since the run: ${[...new Set(fresh.map(c => c.id))].join(', ')}${fresh.some(c => !c.ok) ? `; this plan would FAIL ${[...new Set(fresh.filter(c => !c.ok).map(c => c.id))].join(', ')}` : ''}`);
         const clean = kept.every(c => c.ok);
@@ -142,7 +143,15 @@ export async function replay(planId: string, runId: string, allowDrift = false):
     }
   }
 
-  if (toolsAt >= 0) lines[toolsAt] = !rerunDiffers && added.size ? `warn  ${toolsMsg.split(';')[0]} (labelled drift: checker rules added since the run: ${[...added].join(', ')}; every rule the run recorded reruns identically)` : (allowDrift ? 'warn  ' + toolsMsg + ' (drift allowed)' : (bad++, 'FAIL  ' + toolsMsg));
+  // Drift by cause (brief 007): the checker code changed since the run. A warning, not a failure, only when ALL of these hold: every rule the run recorded reruns
+  // identically; the run's recorded hash is a code state in tools/levels/drift.json (`recorded`: the states the committed runs were made under); and the current code
+  // hash is declared there with its causes (`declared`, written by `bun tools/levels/drift.ts declare "<cause>"`). Rules added since the run are named too. A rerun that
+  // differs on a recorded rule, an unknown recorded hash (a tampered record) or an undeclared change stays FAIL.
+  if (toolsAt >= 0) {
+    const ledger = driftLedger(), known = Object.keys(ledger.recorded).some(h => String(run.toolsHash).startsWith(h)), causes: string[] = ledger.declared[tools] ?? [];
+    const cause = [...(added.size ? [`checker rules added since the run: ${[...added].join(', ')}`] : []), ...causes].join('; ');
+    lines[toolsAt] = !rerunDiffers && reran && known && causes.length ? `warn  ${toolsMsg.split(';')[0]} (labelled drift: ${cause}; every rule the run recorded reruns identically)` : (allowDrift ? 'warn  ' + toolsMsg + ' (drift allowed)' : (bad++, `FAIL  ${toolsMsg}${!known ? ' [recorded hash is not a state in tools/levels/drift.json]' : !causes.length ? ' [current code hash not declared in tools/levels/drift.json: bun tools/levels/drift.ts declare "<cause>"]' : ''}`));
+  }
   const last = rounds.at(-1), expected = last && last.checkerOk && last.keelVerdict === 'pass' && last.verdict === 'pass' && !last.faults ? 'ACCEPTED' : 'REJECTED';
   run.outcome === expected ? ok(`outcome ${run.outcome}${run.outcome === 'REJECTED' ? ' (recorded)' : ''}`) : fail(`outcome recorded ${run.outcome}, recomputed ${expected}`);
   if (rounds.slice(0, -1).some((r: any) => r.verdict === 'pass')) fail('a round passed but the run went on');

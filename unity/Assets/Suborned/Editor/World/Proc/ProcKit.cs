@@ -37,6 +37,8 @@ namespace Suborned.World
         {
             Cost.Clear(); System.Array.Clear(VertsByTier, 0, 3); System.Array.Clear(MassesByTier, 0, 3);
             heroes = world.View != null ? new[] { world.View.Focus, HarbourLane } : new[] { HarbourLane };
+            Pc.GlassSw = fk.Spec.Glass;
+            ProcSkin.Init(world);
             ProcGrammar.Assign(world, fk);
         }
 

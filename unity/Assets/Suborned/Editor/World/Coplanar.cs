@@ -63,7 +63,7 @@ namespace Suborned.World
         public static List<MassDto> Masses(List<MassDto> masses)
         {
             var res = new List<MassDto>(masses.Count);
-            foreach (var m in masses) res.Add(new MassDto { Id = m.Id, Surface = m.Surface, Ring = Poly.Clean(m.Ring), Base = m.Base, Height = m.Height });
+            foreach (var m in masses) res.Add(new MassDto { Id = m.Id, Surface = m.Surface, Ring = Poly.Clean(m.Ring), Base = m.Base, Height = m.Height, Kit = m.Kit });
             for (int i = 0; i < res.Count; i++)
                 for (int j = i + 1; j < res.Count; j++)
                 {

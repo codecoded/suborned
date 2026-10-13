@@ -43,10 +43,10 @@ namespace Suborned.World
         static readonly Dictionary<string, (string, int)[]> FamByUse = new()
         {
             ["residential"] = new[] { ("punched", 2), ("balcony", 4), ("eyebrow", 3), ("louvre", 2), ("glassblock", 2), ("fins", 1), ("porthole", 1) },
-            ["commercial"] = new[] { ("ribbon", 4), ("brise", 3), ("fins", 2), ("curtain", 1), ("porthole", 2), ("sawtooth", 1), ("eyebrow", 1) },
+            ["commercial"] = new[] { ("ribbon", 4), ("brise", 3), ("fins", 2), ("porthole", 3), ("sawtooth", 1), ("eyebrow", 1) },
             ["mixed"] = new[] { ("ribbon", 2), ("eyebrow", 2), ("punched", 2), ("sawtooth", 2), ("balcony", 2), ("porthole", 2), ("louvre", 1), ("brise", 1) },
             ["industrial"] = new[] { ("sawtooth", 3), ("louvre", 3), ("glassblock", 2), ("ribbon", 2), ("porthole", 2) },
-            ["tower"] = new[] { ("curtain", 4), ("fins", 3), ("brise", 1), ("ribbon", 1) },
+            ["tower"] = new[] { ("fins", 4), ("ribbon", 3), ("porthole", 1), ("brise", 1) }, // no curtain wall (grammar §3)
             ["other"] = new[] { ("punched", 3), ("fins", 2), ("eyebrow", 2), ("ribbon", 1), ("balcony", 1) },
         };
 

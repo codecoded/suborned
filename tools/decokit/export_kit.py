@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
 import mats  # noqa: E402
 import regen  # noqa: E402
+import unity_mats  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DST = Path(os.environ.get("DECOKIT_OUT") or REPO / "out/decokit")  # generated binaries are never committed
@@ -43,6 +44,14 @@ def _fixed_fbx_header():
     # object ids come from hash(key): str hashes are randomised per process (Blender ignores PYTHONHASHSEED), so derive them from the key text
     fbx_utils._key_to_uuid = lambda uuids, key: int.from_bytes(hashlib.sha256(repr(key).encode()).digest()[:8], "big") >> 1 or 1
     eb.fbx_header_elements = lambda root, scene_data, time=None: orig(root, scene_data, datetime.datetime(2026, 1, 1))
+    # texture paths: the writer joins the output folder onto each image name (absolute Filename/Path), so the bytes changed with the
+    # folder the piece was exported into. Keep the name only, under a fixed virtual root; Unity binds textures by guid, never by this path.
+    orig_vid = eb._gen_vid_path
+
+    def vid_path(img, scene_data):
+        rel = os.path.basename(orig_vid(img, scene_data)[1].replace("\\", "/"))
+        return "/decokit/" + rel, rel
+    eb._gen_vid_path = vid_path
 
 
 def make_lods(n, cat, src, srcs, tris):
@@ -180,6 +189,8 @@ def main():
     for row in table["materials"]:
         _, row["normal"], row["mask"] = tex.get(row["name"], ("", "", ""))
     (DST / "decokit_materials.json").write_text(json.dumps(table, indent=1))
+    written = unity_mats.write(DST / "decokit_materials.json", DST, mats.WORLD_RETUNE)  # Unity .mat for the new and retuned colours
+    print(f"[DK-EXPORT] materials written ({len(written)}): {', '.join(written)}")
     old = {m["name"]: m for m in json.loads((DST / "decokit_manifest.json").read_text())["assets"]} \
         if only and (DST / "decokit_manifest.json").exists() else {}
     old.update({m["name"]: m for m in manifest})

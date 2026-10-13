@@ -27,6 +27,9 @@ function insetOnce(p: V[], d: number[]): V[] {
   });
 }
 
+/** Mitred offset of a polygon: edge i moved `d[i]` metres inward (negative: outward). No swallowed-edge handling: small offsets only. */
+export const offsetPts = (p: V[], d: number[]): V[] => insetOnce(p, d);
+
 /** Ring with `d[i]` metres taken off edge i: mitred where neighbours meet; an edge the offset swallows (it would turn round) is dropped.
  *  Edge classes follow the surviving edges. Null if it collapses. */
 export const insetRing = (r: Ring, d: number[]) => insetBoth(r, d)?.inner ?? null;

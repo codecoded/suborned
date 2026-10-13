@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'nod
 import { resolve, relative } from 'node:path';
 
 const root = resolve(import.meta.dir, '../..');
-const gddPath = process.argv[2] ?? `GDD/${readdirSync(resolve(root, 'GDD')).filter(f => f.includes('agent-gdd') && f.endsWith('.md')).sort().at(-1)}`;
+const gddPath = process.argv[2] ?? `GDD/${readdirSync(resolve(root, 'GDD')).filter(f => f.includes('agent-gdd') && f.endsWith('.md')).sort((a, b) => a.localeCompare(b, 'en', { numeric: true })).at(-1)}`; // numeric: v0.17.0 > v0.9.0
 const text = readFileSync(resolve(root, gddPath), 'utf8');
 const lines = text.split('\n');
 

@@ -11,13 +11,18 @@ namespace Suborned.World
     {
         /// <summary>A sky / haze / warm-paving gradient with a sun glow as the default reflection, so glass and chrome have
         /// something to mirror (the scene has no skybox).</summary>
-        public static void Build()
+        public static void Build(Look look)
         {
             const int N = 64;
             var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-reflection.asset";
             var cube = new Cubemap(N, TextureFormat.RGBA32, true) { name = Path.GetFileNameWithoutExtension(path) };
             var sunDir = RenderSettings.sun ? -RenderSettings.sun.transform.forward : new Vector3(0.4f, 0.7f, 0.3f).normalized;
-            Color zenith = new Color(0.30f, 0.52f, 0.72f), haze = new Color(0.93f, 0.90f, 0.82f), ground = new Color(0.70f, 0.64f, 0.55f), sun = new Color(1f, 0.93f, 0.78f);
+            // Colours from light.json when it has a sky (Glint); the haze is the fog colour, so chrome mirrors the same horizon.
+            var sky = look.Light("skyGradient");
+            Color zenith = sky != null ? look.Palette(J.S(sky, "zenith")) : new Color(0.30f, 0.52f, 0.72f);
+            Color haze = sky != null ? look.Palette(J.S(sky, "horizon")) : new Color(0.93f, 0.90f, 0.82f);
+            Color ground = look.Light("reflection") is { } rf ? look.Palette(J.S(rf, "ground")) : new Color(0.70f, 0.64f, 0.55f);
+            Color sun = sky != null ? look.Palette(J.S(sky, "sunGlow")) : new Color(1f, 0.93f, 0.78f);
             for (int f = 0; f < 6; f++)
             {
                 var px = new Color[N * N];

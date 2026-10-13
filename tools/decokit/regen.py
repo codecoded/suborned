@@ -16,7 +16,7 @@ import sys
 
 from geo import Shape, rrect, stadium
 from kit import asset
-from mats import pal
+from mats import accent, pal, register
 
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 ORDERS = {}
@@ -75,6 +75,10 @@ def extents(vs, lo, hi):
 def _split(o):
     if o["kind"] == "megastructure":
         return _num(o["regen"]["add"], r"frame (\d+(?:\.\d+)?) → (\d+(?:\.\d+)?)", o["id"])[1]
+    if o["kind"] == "signature":
+        return o["regen"]["drum"]["z"][1]
+    if "tiers" not in o["regen"]:  # shaft towers (Needle, DiscTower): the shaft below the saucer is the footprint
+        return o["regen"]["body"][2] + 0.5
     return o["regen"]["tiers"][0][2] + 1.4  # past the first terrace: parapet 1.1, planters 1.3 stand inside the tier below
 
 
@@ -83,7 +87,7 @@ def measure(name, obj):
     o, vs = ORDERS[name], _verts(obj)
     sp = _split(o)
     zmax = max(v[2] for v in vs)
-    roof = None if o["kind"] == "megastructure" else o["regen"]["tiers"][-1][2] + 1.2  # body roof incl. parapet: the crown stands above
+    roof = None if (o["kind"] != "tower" or "tiers" not in o["regen"]) else o["regen"]["tiers"][-1][2] + 1.2  # body roof incl. parapet: the crown stands above
     return dict(split=sp, roof=roof, lower=extents(vs, -1e9, sp + EPS), upper=extents(vs, sp + EPS, roof + EPS if roof else 1e9),
                 crown=extents(vs, roof + EPS, 1e9) if roof else None, tip=round(zmax, 3), tipPlan=round(zmax + (GRID["deck"] if o["kind"] == "tower" else 0.0), 3))
 
@@ -175,6 +179,30 @@ def lantern(s, o, ex, canopy):
     lantern_crown(s, top + 1.1, finial=finial)
 
 
+def starburst_tower(s, o, ex, canopy):
+    from highrise import starburst
+    zs = [0.0] + [z1 for _, _, z1 in _tiers(o)]
+    starburst(s, zs)
+
+
+def terrace_tower(s, o, ex, canopy):
+    from highrise import TERRACE_PLANS, terrace_tower as build
+    t = _tiers(o)
+    zs = [0.0] + [z1 for _, _, z1 in t]
+    plans = [(w - 2 * e, d - 2 * e, rr, cy) for (w, _, _), (_, d, rr, cy), e in zip(t, TERRACE_PLANS, ex)]
+    build(s, zs, plans, canopy)
+
+
+def needle_tower(s, o, ex, canopy):
+    from highrise import needle
+    needle(s, o["regen"]["body"][2])
+
+
+def disc_tower(s, o, ex, canopy):
+    from landmarks import disc_tower_at
+    disc_tower_at(s, o["regen"]["body"][2])
+
+
 def _inset_tower(fn):
     def build(s, o):
         ex = _excess(o, fn)
@@ -184,7 +212,9 @@ def _inset_tower(fn):
 
 
 TOWERS = {"Tower_Stepped": ("Skyline", stepped, False), "Tower_Saucer": ("Skyline", saucer, False),
-          "Tower_Atom": ("Highrise", atom, True), "Tower_Lantern": ("Highrise", lantern, True)}
+          "Tower_Atom": ("Highrise", atom, True), "Tower_Lantern": ("Highrise", lantern, True),
+          "Tower_Starburst": ("Highrise", starburst_tower, False), "Tower_Terrace": ("Highrise", terrace_tower, True),
+          "Tower_Needle": ("Highrise", needle_tower, False), "DiscTower": ("Landmarks", disc_tower, False)}
 
 
 # ----------------------------------------------------------------- Skyport_Tower_Portal
@@ -227,13 +257,88 @@ def portal(s, o):
     sk.crown(s, tip=r["tip"])
 
 
+# ----------------------------------------------------------------- SpaceHQ_Portal
+
+def _sector(s, r0, r1, a0, a1, z0, z1, mat, n=None):
+    """Annular sector prism (angles from +X, degrees)."""
+    n = n or max(2, int(abs(a1 - a0) / 5))
+    outer = [(r1 * math.cos(math.radians(a0 + (a1 - a0) * k / n)), r1 * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n + 1)]
+    inner = [(r0 * math.cos(math.radians(a1 - (a1 - a0) * k / n)), r0 * math.sin(math.radians(a1 - (a1 - a0) * k / n))) for k in range(n + 1)]
+    s.extrude(outer + inner, z0, z1, mat, smooth_sides=True)
+
+
+def _segment(sd, R, xcut, n=14):
+    """The part of the circle R beyond |x| = xcut on side sd (CCW)."""
+    a = math.degrees(math.acos(xcut / R))
+    arc = [(sd * R * math.cos(math.radians(-a + 2 * a * k / n)), R * math.sin(math.radians(-a + 2 * a * k / n))) for k in range(n + 1)]
+    return arc if sd > 0 else arc[::-1]
+
+
+def _floor(x0, x1, R):
+    xs = [x0 + (x1 - x0) * k / 6 for k in range(7)]
+    top = [(x, math.sqrt(R * R - x * x)) for x in xs]
+    return top + [(x, -y) for x, y in top[::-1]]
+
+
+def space_hq_portal(s, o):
+    """SpaceHQ on the terminal drum (plan signatures[0].regen): r 40, z 0..34. The line runs along local Y (the stair
+    side = +Y once yawed). Bearing halves |x| 20..40: limestone wall r 39.3 with pilasters to 39.9 every 6 deg, ribbon
+    windows at the street, deck and concourse storeys, the gold band at the deck line 9.43 and the teal speed band at the
+    concourse 24 wrapping them. Between the halves the Parade passes through at street level; the concourse floor (top 24)
+    covers |x| 4.6..20, the beam trench |x| < 4.6 stays open. The station hall (spacehq.hall): ribbed coffered ceiling,
+    rib soffit 30 (plan), coffer backs 31; pilasters, torcheres, mural band, lamp standards, terrazzo inlays. Each end:
+    the curved drum wall for |x| 12..20 and a flat portal frontispiece over |x| < 12, recessed to the chord, with the
+    12 x 7.5 arched opening (z 21.5..29.0, head r 6 on the spring 23; spacehq.portal_wall). Drum roof 31..34.
+    Above 34: spacehq.tower (Sky 2026-10-13: an atom over a needle mast, not a rocket); tip 252."""
+    import spacehq as hq
+    register("DK_Enamel_Coral17", "enamel", accent("coral"))
+    register("DK_Enamel_Sunshine", "enamel", accent("sunshine"))
+    dr = o["regen"]["drum"]
+    R, (z0, z1), (rz0, rz1) = 39.9, dr["z"], dr["roof"]
+    RW, ZR = 39.3, rz0 + 1.0                             # bearing-half wall (pilasters to R); coffer backs / roof soffit 31
+    XS, XT, XP = 20.0, 4.6, 12.0                          # slot half width (legs), beam trench half width, portal half width
+    L = pal.Limestone_Tex
+    ya = math.sqrt(R * R - XS * XS)
+    for sd in (1, -1):
+        s.extrude(_segment(sd, RW, XS), z0, ZR, L, smooth_sides=True)                      # bearing half
+        a = math.degrees(math.acos(XS / RW))
+        for za, zb, mat in ((9.2, 9.7, pal.Gold), (23.7, 24.9, pal.Enamel_Turquoise)):       # bands wrap the pilasters
+            _sector(s, RW, R + 0.1, (-a if sd > 0 else 180 - a), (a if sd > 0 else 180 + a), za, zb, mat)
+        xf = sd * XS
+        s.box((min(xf, xf - sd * 0.1), -ya, 9.2), (max(xf, xf - sd * 0.1), ya, 9.7), pal.Gold)  # gold line along the slot face
+        fl = _floor(XT, XS, R) if sd > 0 else [(-x, y) for x, y in _floor(XT, XS, R)][::-1]
+        s.extrude(fl, 23.6, 24.0, pal.Terrazzo_Ivory)                                        # concourse floor = platform decks
+        xi = sd * XT
+        s.box((min(xi, xi + sd * 0.1), -26.0, 22.4), (max(xi, xi + sd * 0.1), 26.0, 24.0), pal.Enamel_Ivory)   # platform fascia on the trench
+        s.box((min(xi, xi + sd * 0.45), -25.0, 24.0), (max(xi, xi + sd * 0.45), 25.0, 24.012), pal.Enamel_Sunshine)  # edge line, 50 m
+        for y in range(-24, 25, 6):
+            s.box((min(xi, xi + sd * 0.1) - 0.02, y - 0.1, 23.1), (max(xi, xi + sd * 0.1) + 0.02, y + 0.1, 23.6), pal.Chrome)
+    hq.drum_dress(s, RW, R, XS, ZR)
+    s.lathe([(0.0, ZR), (R, ZR), (R, rz1), (0.0, rz1)], L, seg=96)                            # drum roof, cornice over the pilasters
+    s.lathe([(R, rz1 - 0.9), (R + 0.1, rz1 - 0.9), (R + 0.1, rz1 - 0.3), (R, rz1 - 0.3)], pal.Gold, seg=96, cap_bottom=False, cap_top=False)
+    s.lathe([(R - 0.6, rz1), (R - 0.6, rz1 + 1.1), (R - 1.0, rz1 + 1.1), (R - 1.0, rz1)], L, seg=96, cap_bottom=False, cap_top=False)  # roof parapet
+    s.lathe([(R - 1.0, rz1 + 0.02), (0.0, rz1 + 0.02)], pal.Terrazzo_Ivory, seg=96, cap_bottom=False, cap_top=False)            # roof terrace
+    # hall end walls: curved drum wall for |x| 12..20, the flat portal frontispiece over |x| < 12
+    th0, th1 = math.degrees(math.acos(XS / R)), math.degrees(math.acos(XP / R))
+    for base in (0.0, 180.0):
+        _sector(s, R - 0.8, R, base + th0, base + th1, 24.0, ZR, L)
+        _sector(s, R - 0.8, R, base + 180 - th1, base + 180 - th0, 24.0, ZR, L)
+    yo = math.sqrt(R * R - XP * XP)
+    for sy in (1, -1):
+        hq.portal_wall(s, sy, R, yo, half=XP, z0=24.0, z1=ZR)
+    hq.hall(s, R, XS, XT, ya, z_floor=24.0, soffit=rz0, z_roof=ZR)
+    hq.tower(s, rz1)
+
+
 # ----------------------------------------------------------------- registry
 
 def _register():
     for name, o in ORDERS.items():
         if o["kind"] == "tower":
             cat, fn, inset = TOWERS[o["from"]]
-            build = _inset_tower(fn) if inset else (lambda s, o, fn=fn: fn(s, o, [0.0] * len(o["regen"]["tiers"]), 1.0))
+            build = _inset_tower(fn) if inset else (lambda s, o, fn=fn: fn(s, o, [0.0] * len(o["regen"].get("tiers", [])), 1.0))
+        elif o["kind"] == "signature":
+            cat, build = "Landmarks", space_hq_portal
         else:
             cat, build = "Skyport", portal
         asset(name, cat, bevel=0.0)(lambda s, o=o, build=build: build(s, o))

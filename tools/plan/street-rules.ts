@@ -3,7 +3,7 @@
 import { ctxOf as genCtx } from '../world/gen/common';
 import { kindOf, plotRing } from '../world/gen/edges';
 import type { Check } from './checks';
-import type { V } from './geom';
+import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
 import { quayBlock } from './street-zones';
 import { type WCtx, TOL, bb, f1, ringGap, rule } from './world-ctx';
@@ -85,14 +85,22 @@ export function streetRules(c: WCtx): Check[] {
 
   // SF-13 a station bank (stair tower, escalator run A, lift kiosk) stands on public ground, outside the beam envelope + 1 m, and leaves every walk zone clear
   const bad13: string[] = [], banks = w.connectors.filter(k => /^bank\/.+\/(tower|run-a|lift)$/.test(k.id)), env = S.skyrailEnvelope.half as number, built = new Set(['residential', 'mixed', 'commercial', 'industrial', 'port', 'civic']);
+  const HL = (S.transit.stationEntrance.hallLane as { half?: number } | undefined)?.half, inGround = (p: V) => (plan.signatures ?? []).some(sg => p[0] >= sg.ground[0] && p[0] <= sg.ground[1] && p[1] >= sg.ground[2] && p[1] <= sg.ground[3]);
+  const lineGap = (ring: V[]) => Math.min(...d.sky.map(sp => lineToPoly(sp.samples.map(q => q.p as V), ring)));
   for (const k of banks) {
     const ring = k.ring as V[], pts = [...ring, [(bb(ring)[0] + bb(ring)[1]) / 2, (bb(ring)[2] + bb(ring)[3]) / 2] as V], pl = d.plots.find(p => built.has(p.use) && inRing(pts[4]!, p.polyV));
     if (pl) bad13.push(`${k.id} stands on plot ${pl.id}`);
     if (pts.some(p => ix.sky.dist(p, env + 2) < env + 1 - TOL) || ringGap(ring, [[0, 0]]) < 0) bad13.push(`${k.id} inside the beam envelope + 1 m`);
-    const why = walkBlock(gc, [...pts, ...ring.map((p, i) => [(p[0] + ring[(i + 1) % 4]![0]) / 2, (p[1] + ring[(i + 1) % 4]![1]) / 2] as V)], '');
+    const pc = S.transit.stationEntrance.platformClear as number | undefined; // brief 007: tower and lift stand outside the platform's outer edge
+    if (pc && /\/(tower|lift)$/.test(k.id) && d.sky.some(sp => lineToPoly(sp.samples.map(q => q.p as V), ring) < pc - TOL)) bad13.push(`${k.id} under the platform (< ${pc} m from the line)`);
+    const inHall = inGround(pts[4]!); // a bank inside a signature's ground hall (SpaceHQ): the mall's walk bands do not apply, the hall lane does (stationEntrance.hallLane)
+    const why = inHall ? (HL && lineGap(ring) < HL - TOL ? `the hall lane (${f1(lineGap(ring))} m from the line, lane ±${HL} m)` : '') : walkBlock(gc, [...pts, ...ring.map((p, i) => [(p[0] + ring[(i + 1) % 4]![0]) / 2, (p[1] + ring[(i + 1) % 4]![1]) / 2] as V)], '');
     if (why) bad13.push(`${k.id} stands in ${why}`);
   }
-  out.push(rule('SF-13', G, 'Station banks (stair tower, escalator run A, lift) stand on public ground, outside the beam envelope + 1 m, and leave every walk zone clear', banks.length, bad13, 'all', 'streetscape.transit.stationEntrance.siting · levels.station'));
+  // hall lane: any street-level item standing in a signature's ground keeps the lane along the line clear too
+  const hallItems = HL ? gnd.filter(x => inGround(x.s.at)) : [];
+  for (const sp of hallItems) { const g = lineGap(sp.pts); if (g < HL! - TOL) bad13.push(`${tag(sp)} in the hall lane (${f1(g)} m from the line, lane ±${HL} m)`); }
+  out.push(rule('SF-13', G, 'Station banks (stair tower, escalator run A, lift) stand on public ground, outside the beam envelope + 1 m (tower and lift outside the platform, ≥ platformClear), and leave every walk zone clear', banks.length + hallItems.length, bad13, 'all', 'streetscape.transit.stationEntrance.siting · hallLane · levels.station'));
 
   // SF-14 nothing but lamps and mooring cleats within 1.5 m of a quay edge (the edge that faces water)
   const bad14: string[] = [];

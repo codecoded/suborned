@@ -167,8 +167,10 @@ export function frontageChecks(c: WCtx): Check[] {
   const bad5: string[] = [], bk = [...hosts.values()].filter(h => h.id.startsWith('bld/') && h.level === 'street');
   for (const h of bk) {
     const mine = fr.filter(f => f.host === h.id), lobby = mine.filter(f => f.trade === 'lobby');
-    if (!lobby.length) { if (h.edges.some(e => len(e.a, e.b) >= 6)) bad5.push(`${h.id} has no lobby`); continue; }
-    const best = Math.min(...h.edges.map(e => QUIET[e.kind] ?? 9)), got = Math.min(...lobby.map(f => QUIET[edgeOf(f)?.e.kind ?? ''] ?? 9));
+    // the lobby stands only on a street kind it wants (F-2): a building whose every street is one it does not want (a mall-only block) has no lobby to place
+    const wanted = h.edges.filter(e => !T.lobby || (T.lobby.wants as string[]).includes(e.kind));
+    if (!lobby.length) { if (wanted.some(e => len(e.a, e.b) >= 6)) bad5.push(`${h.id} has no lobby`); continue; }
+    const best = Math.min(...(wanted.length ? wanted : h.edges).map(e => QUIET[e.kind] ?? 9)), got = Math.min(...lobby.map(f => QUIET[edgeOf(f)?.e.kind ?? ''] ?? 9));
     if (got > best) bad5.push(`${h.id} lobby not on its quietest street`);
   }
   // a corner is where one run ends at the next run's start; one anchor on either run is enough

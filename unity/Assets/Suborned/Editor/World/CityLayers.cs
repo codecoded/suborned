@@ -16,6 +16,18 @@ namespace Suborned.World
         {
             foreach (var c in connectors)
             {
+                if (c.Dress.Count > 0)
+                {   // the dressed form (glazed stadium stair towers, hooped lift tubes) instead of the ring prism; one part per surface
+                    var el = Nodes.Element(layer, c.Id);
+                    var bySurface = new SortedDictionary<string, MeshKit>(System.StringComparer.Ordinal);
+                    foreach (var p in c.Dress)
+                    {
+                        if (!bySurface.TryGetValue(p.Surface, out var mkS)) bySurface[p.Surface] = mkS = new MeshKit();
+                        PrimKit.Add(mkS, p);
+                    }
+                    foreach (var kv in bySurface) nodes.Part(el, kv.Key, kv.Value, kv.Key);
+                    continue;
+                }
                 var surface = kit.ConnectorSurface(c.Kind);
                 var mk = new MeshKit();
                 if ((c.Head - c.Foot).sqrMagnitude < 1e-4f) mk.Prism(c.Ring, c.Bottom, c.Top);

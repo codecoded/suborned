@@ -70,7 +70,7 @@ test('the nearest earlier tree or lamp differs where fitting alternatives exist'
 
 test('landmarks: a kit piece fits the plan disc and height, or says why not', () => {
   for (const l of w.landmarks) {
-    if (l.kit) { const a = by.get(l.kit.id)!, [x, y, z] = scaled(a, l.kit.scale); expect(Math.max(x, z)).toBeLessThanOrEqual(2 * plan.landmarks.find(p => `landmark/${p.id}` === l.id)!.r + 1e-2); expect(y).toBeLessThanOrEqual(l.height + 1e-2); }
+    if (l.kit) { const a = by.get(l.kit.id)!, [x, y, z] = scaled(a, l.kit.scale); expect(Math.max(x, z)).toBeLessThanOrEqual(2 * plan.landmarks.find(p => `landmark/${p.id}` === l.id)!.r + 1e-2); const pl = plan.landmarks.find(q => `landmark/${q.id}` === l.id)!; expect(y).toBeLessThanOrEqual((pl.caisson && pl.top ? pl.top - pl.caisson.deck : l.height) + 1e-2); } // a caisson landmark's piece rises from the caisson deck to the plan's top
     else if (l.kits) expect(l.kits.length).toBe(plan.landmarks.find(p => `landmark/${p.id}` === l.id)!.pads!.length);
     else { expect(l.source).toBe('procedural'); expect(l.why).toBeTruthy(); }
   }

@@ -106,7 +106,8 @@ export function landmarkKit(l: Landmark, plan: PlanLandmark): Landmark {
   const a = adoptedBy(plan.kit) ?? forUse(`landmark:${plan.id}`)[0];
   if (!a) return { ...l, source: 'procedural', why: 'no adopted kit piece' };
   if (plan.pads?.length) return { ...l, source: 'kit', kits: plan.pads.map(p => ({ id: a.id, scale: [1, 1, 1] as Scale, yaw: r4((p.yaw * Math.PI) / 180), at: [r3(p.c[0]), r3(p.c[1])] as V })) };
-  const k = fit(a, { foot: 2 * plan.r, maxH: l.height });
+  // a caisson landmark (the liner berth) stands on the caisson deck: the piece may rise from there to the plan's top
+  const k = fit(a, { foot: 2 * plan.r, maxH: plan.caisson && plan.top ? plan.top - plan.caisson.deck : l.height });
   if (!k) return { ...l, source: 'procedural', why: `${a.id} ${a.size.join('×')} m does not fit the plan disc Ø${2 * plan.r} × ${r3(l.height)} m within scale ${a.tags.scale.join('–')}` };
   return { ...l, source: 'kit', kit: { id: a.id, scale: k } };
 }

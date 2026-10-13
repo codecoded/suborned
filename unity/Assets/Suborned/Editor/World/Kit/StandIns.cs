@@ -5,11 +5,12 @@ using UnityEngine;
 
 namespace Suborned.World
 {
-    /// <summary>Generated kit pieces (kit.json source generated) standing in for whole procedural elements, by their kit.json `tags.use`:
-    /// `site:&lt;id&gt;` = the tower at plan site &lt;id&gt; (masses tower/&lt;id&gt;/lower and /upper and its roof; the podium stays procedural),
-    /// `landmark:&lt;name&gt;` = the megastructure mega/&lt;name&gt; (its parts and prims; frontages and connectors stay).
-    /// A tower piece stands on its lower mass (pivot on the podium deck) at the lower footprint's centre; a megastructure piece on
-    /// the ground at its parts' centre. Yaw 0: the generator builds in the plan frame (+X east, +Z north).</summary>
+    /// <summary>Kit pieces standing in for whole procedural elements:
+    /// a plan tower site's regenerated piece (export `signatures`, kind tower, id tower/&lt;site&gt;) covers the masses tower/&lt;site&gt;/lower and
+    /// /upper and its roof (the podium stays procedural); the signatures layer places the piece (brief 007 E; before, this class placed it
+    /// from the kit's `site:` tag on the lower mass).
+    /// `landmark:&lt;name&gt;` (a generated piece's kit.json `tags.use`) = the megastructure mega/&lt;name&gt; (its parts and prims; frontages and
+    /// connectors stay), standing on the ground at its parts' centre. Yaw 0: the generator builds in the plan frame (+X east, +Z north).</summary>
     public sealed class StandIns
     {
         readonly KitPlacer placer;
@@ -21,11 +22,12 @@ namespace Suborned.World
             this.placer = placer;
             var hosts = new HashSet<string>(world.Buildings.Select(m => FacadeKit.HostOf(m.Id)), System.StringComparer.Ordinal);
             var megaIds = new HashSet<string>(world.Megastructures.Select(m => m.Id), System.StringComparer.Ordinal);
+            foreach (var sg in world.Signatures)
+                if (sg.Kind == "tower" && sg.Kit != null && hosts.Contains(sg.Id)) Bind(towers, sg.Id, sg.Kit.Id, true);
             foreach (var (use, id) in placer.Uses)
             {
                 if (!placer.Generated.ContainsKey(id)) continue; // adopted DecoKit pieces arrive through the export's kit refs
-                if (use.StartsWith("site:")) Bind(towers, "tower/" + use.Substring(5), id, hosts.Contains("tower/" + use.Substring(5)));
-                else if (use.StartsWith("landmark:")) Bind(megas, "mega/" + use.Substring(9), id, megaIds.Contains("mega/" + use.Substring(9)));
+                if (use.StartsWith("landmark:") && megaIds.Contains("mega/" + use.Substring(9))) Bind(megas, "mega/" + use.Substring(9), id, true);
             }
         }
 
@@ -47,14 +49,11 @@ namespace Suborned.World
         public int Towers => towers.Count;
         public int Megas => megas.Count;
 
-        /// <summary>Builds a covered mass: the lower carries the piece; the upper is a marker over its own volume.</summary>
-        public void Mass(Transform layer, MassDto m)
-        {
-            var el = Nodes.Element(layer, m.Id);
-            var b = Prism(m.Ring, m.Base, m.Base + m.Height);
-            if (m.Id.EndsWith("/lower")) placer.Place(el, layer.name, towers[FacadeKit.HostOf(m.Id)], new Vector2(b.center.x, b.center.z), m.Base, 0f);
-            else Combine.Cover(el, b);
-        }
+        /// <summary>The signature that covers a tower mass or roof (the kit id it is covered by).</summary>
+        public string CoveredBy(string host) => towers.TryGetValue(host, out var id) ? id : null;
+
+        /// <summary>Builds a covered mass: a marker over its own volume (the signatures layer stands the piece).</summary>
+        public void Mass(Transform layer, MassDto m) => Combine.Cover(Nodes.Element(layer, m.Id), Prism(m.Ring, m.Base, m.Base + m.Height));
 
         public void Roof(Transform layer, RoofDto r)
         {

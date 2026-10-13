@@ -25,10 +25,12 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   const texDir = join(root, 'Textures');
   for (const f of existsSync(texDir) ? walk(texDir) : []) if (f.endsWith('.meta')) { const g = /guid: ([0-9a-f]{32})/.exec(readFileSync(f, 'utf8'))?.[1]; if (g) guidTex.set(g, relative(root, f.slice(0, -5))); }
   const cache = new Map<string, KitFile>();
+  // Materials the generator wrote (tools/decokit unity_mats.py: the v0.17 colours and the retuned ones) win over the legacy root's.
+  const genMat = (path: string) => !!gen && /^Materials\/[^/]+\.mat(\.meta)?$/.test(path) && existsSync(join(gen, path));
   const file = (role: KitFile['role'], path: string): KitFile | null => {
-    const abs = join(root, path); if (!existsSync(abs)) return null;
+    const g = genMat(path), abs = join(g ? gen! : root, path); if (!existsSync(abs)) return null;
     const k = `${role}|${path}`; let f = cache.get(k);
-    if (!f) { const b = readFileSync(abs); f = { role, path, sha256: sha(b), bytes: statSync(abs).size }; cache.set(k, f); }
+    if (!f) { const b = readFileSync(abs); f = { ...(g ? { root: 'generated' as const } : {}), role, path, sha256: sha(b), bytes: statSync(abs).size }; cache.set(k, f); }
     return f;
   };
   const pair = (role: 'fbx' | 'prefab' | 'material' | 'texture', path: string): KitFile[] => [file(role, path), file(`${role}-meta` as KitFile['role'], `${path}.meta`)].filter((f): f is KitFile => !!f);
@@ -37,7 +39,7 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     const out: KitFile[] = [], tex = new Set<string>();
     for (const m of names) {
       const mp = `Materials/${m}.mat`; out.push(...pair('material', mp));
-      if (existsSync(join(root, mp))) for (const g of readFileSync(join(root, mp), 'utf8').matchAll(GUID)) { const t = guidTex.get(g[1]!); if (t) tex.add(t); }
+      if (existsSync(join(genMat(mp) ? gen! : root, mp))) for (const g of readFileSync(join(genMat(mp) ? gen! : root, mp), 'utf8').matchAll(GUID)) { const t = guidTex.get(g[1]!); if (t) tex.add(t); }
       const e = mats.find(x => x.name === m);
       for (const n of [e?.texture, e?.normal, e?.mask]) if (n && existsSync(join(texDir, n))) tex.add(`Textures/${n}`);
     }
@@ -73,7 +75,14 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
     generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length ? { lods: g.lods } : {}), files, tags: generatedTags(g.name), status: status.get(g.name) ?? 'adopted', source: 'generated', order: g.order!, built: g.built! });
   }
-  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !fresh.has(a.id) && !manifestIds.has(a.id)) generated.push(a);
+  // Pieces the generator built without an order (tools/decokit atompunk.py, horizon.py: crowns, fountain, pavilions, horizon band, twin station): fixed size, tags by category.
+  const plain = genManifest.filter(g => !(g.order && g.built) && !manifestIds.has(g.name));
+  for (const g of plain) {
+    const fbxAbs = join(gen!, g.fbx), b = readFileSync(fbxAbs), files: KitFile[] = [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(b), bytes: b.length }];
+    files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
+    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.lods?.length ? { lods: g.lods } : {}), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
+  }
+  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) generated.push(a);
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
   return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, assets };

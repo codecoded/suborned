@@ -7,8 +7,8 @@ using UnityEngine;
 namespace Suborned.World
 {
     /// <summary>Builds Assets/Scenes/HarbourDistrict.unity (generated, git-ignored) from a world export, from scratch,
-    /// one marker root per layer (ground, transit, buildings, roofs, frontages, connectors, street, levels, decks,
-    /// megastructures, civic, gates, landmarks) and their geometry combined under `batches` per layer, material and tile.
+    /// one marker root per layer (ground, transit, buildings, skins, facades, roofs, frontages, connectors, street, levels, decks,
+    /// megastructures, civic, gates, landmarks, signatures, horizon; the sea sectors, land and banks under `sea`) and their geometry combined under `batches` per layer, material and tile.
     /// Menu: Suborned/World/Build Harbour District (Sample). Batchmode:
     ///   Unity -batchmode -nographics -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build
     ///         [-world &lt;path&gt;]   (relative to the repo root; default the hand-made sample under Samples/)</summary>
@@ -24,6 +24,7 @@ namespace Suborned.World
         public static string SamplePath => InUnity(Here + "/Samples/sample.world.json");
         public static string StylePath => Path.Combine(RepoRoot, "contracts", "style", "suborned.style.json");
         public static string LookPath => InUnity(Here + "/look.json");
+        public static string LightPath => InUnity(Here + "/light.json");
         public static string ViewsPath => Arg("-views", InUnity(Here + "/views.json"));
         public static string FacadePath => InUnity(Here + "/facade.json");
         public static string KitPath => InUnity(Here + "/kit.json");
@@ -68,6 +69,7 @@ namespace Suborned.World
             var placer = new KitPlacer(KitCataloguePath);
             KitImport.Generated(placer);
             KitImport.Check(placer);
+            KitCover.Init(world, placer);
             var city = new CityLayers(nodes, kit, placer);
             Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile);
 
@@ -78,10 +80,16 @@ namespace Suborned.World
             var shops = new ShopKit(nodes, facade);
             var roofs = new RoofKit(nodes, facade);
             var megas = new MegaKit(nodes, facade, world);
+            var skyline = new SkylineKit(placer, look);
             var root = Nodes.Group(null, RootName);
             layers.Ground(Nodes.Group(root, "ground"), world.Ground);
             layers.Transit(Nodes.Group(root, "transit"), world.Transit);
-            facade.Buildings(Nodes.Group(root, "buildings"), world.Buildings, standIns);
+            var buildings = Nodes.Group(root, "buildings");
+            ProcSkin.Elements(Nodes.Group(root, "skins"), world.Skins);
+            facade.Buildings(buildings, world.Buildings, standIns);
+            ProcSkin.Finish(buildings);
+            Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells");
+            skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);
@@ -90,15 +98,17 @@ namespace Suborned.World
             city.Street(Nodes.Group(root, "street"), world.Street);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
-            facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic));
+            facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
+            skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
             var cameras = Nodes.Group(null, "cameras");
             Rig.Build(cameras, Nodes.Group(null, "lighting"), root, world, Views.Load(ViewsPath), look);
-            ReflectionCube.Build();
+            skyline.Horizon(Nodes.Group(root, "horizon"), Nodes.Group(null, "sea"), world.Horizon, world.Ground); // after Rig: views frame the district, not the 16 km band
+            ReflectionCube.Build(look);
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
 
@@ -107,6 +117,7 @@ namespace Suborned.World
             if (Inspect.Verify(root, world) + Inspect.VerifyKit(root, world, placer, standIns) > 0) throw new InvalidDataException("World: layer counts differ from the export");
             Directory.CreateDirectory(Path.GetDirectoryName(InUnity(ScenePath)));
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new IOException($"World: could not save {ScenePath}");
+            Debug.Log($"World: kit facades hide procedural walls on {KitCover.Hidden} wall edges");
             Debug.Log($"World: built {ScenePath} from {path} ({world.Schema}) in {(DateTime.UtcNow - t0).TotalSeconds:F2}s; " +
                 $"{renderers} batch renderers, {verts} vertices; {Coplanar.Faces} coplanar faces inset; fingerprint {Inspect.Fingerprint(root, batches, cameras)}");
         }

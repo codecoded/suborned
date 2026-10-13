@@ -11,6 +11,7 @@ namespace Suborned.World
     {
         readonly Dictionary<string, Color> palette = new();
         readonly object table;
+        readonly object light;
         readonly Dictionary<string, Material> cache = new();
         readonly Shader lit;
 
@@ -34,6 +35,18 @@ namespace Suborned.World
                     if (!ColorUtility.TryParseHtmlString(hex, out var c)) throw new InvalidDataException($"World: look palette {kv.Key} hex {hex}");
                     palette[kv.Key] = c;
                 }
+            // Lighting data (light.json, beside look.json): its keys and palette entries win over look.json's.
+            var lightPath = HarbourWorldBuilder.LightPath;
+            if (File.Exists(lightPath))
+            {
+                light = Json.Parse(File.ReadAllText(lightPath));
+                foreach (var kv in J.O(J.Get(light, "palette")))
+                {
+                    var hex = J.S(kv.Value, "hex");
+                    if (!ColorUtility.TryParseHtmlString(hex, out var c)) throw new InvalidDataException($"World: light palette {kv.Key} hex {hex}");
+                    palette[kv.Key] = c;
+                }
+            }
             lit = Shader.Find("Universal Render Pipeline/Lit") ?? throw new InvalidDataException("World: URP Lit shader not found");
         }
 
@@ -54,25 +67,78 @@ namespace Suborned.World
             return Color.HSVToRGB(h, s, Mathf.Clamp01(v * J.F(entry, "value")));
         }
 
+        /// <summary>A light.json entry or null (sky gradient, post, reflection).</summary>
+        public object Light(string key) => light != null ? J.Get(light, key) : null;
+
         /// <summary>A §15 palette colour by key (facade kit: sign boards).</summary>
         public Color Palette(string key) => palette.TryGetValue(key ?? "", out var c) ? c : throw new InvalidDataException($"World: palette key `{key}` not in §15 palette");
 
-        public object Entry(string key) => J.Get(table, key) ?? throw new InvalidDataException($"World: look.json has no `{key}`");
+        public object Entry(string key) => (light != null ? J.Get(light, key) : null) ?? J.Get(table, key) ?? throw new InvalidDataException($"World: look.json has no `{key}`");
 
         object Surface(string surface) => J.Get(Entry("surfaces"), surface) ?? throw new InvalidDataException($"World: surface `{surface}` not in look.json");
 
         /// <summary>A surface's base colour (facade kit: megastructure and gate walls keep their look colour).</summary>
         public Color SurfaceColour(string surface) => Colour(Surface(surface));
 
+        /// <summary>URP Lit, transparent alpha blend: the surface's colour at `alpha` coverage, highlights kept (glass).</summary>
+        static void Transparent(Material m, float alpha)
+        {
+            var c = m.GetColor("_BaseColor"); c.a = alpha; m.SetColor("_BaseColor", c);
+            m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", 0f); m.SetFloat("_AlphaClip", 0f);
+            m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One); m.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_ZWrite", 0f); m.SetFloat("_Cull", 0f);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); m.SetOverrideTag("RenderType", "Transparent");
+            m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            m.SetShaderPassEnabled("DepthOnly", false); m.SetShaderPassEnabled("ShadowCaster", true);
+        }
+
+        /// <summary>Signal rule (Sky, 2026-10-13, brief 007 Decisions): cones, guard and rival markers draw unlit and emissive, each with
+        /// its shape or motion cue, so lighting and grade never shift them; the ΔE2000 >= 20 gate is measured on the unlit palette against
+        /// the signal colours (style contract `signal_colours`). No signal visuals exist in the world build yet; when they do, they take
+        /// this material and nothing lit.</summary>
+        public static Material UnlitSignal(string name, Color colour)
+        {
+            var m = new Material(Shader.Find("Universal Render Pipeline/Unlit") ?? throw new InvalidDataException("World: URP Unlit shader not found")) { name = "signal/" + name };
+            m.SetColor("_BaseColor", colour);
+            return m;
+        }
+
+        /// <summary>The district water and the horizon sea (one material, so they never seam): Suborned/Water with the look's `water`
+        /// colour and smoothness, a grazing colour of the water mixed 55% toward the fog (haze) colour, and the haze it fades into.</summary>
+        Material Water(object e)
+        {
+            var shader = Shader.Find("Suborned/Water") ?? throw new InvalidDataException("World: shader Suborned/Water not found (Assets/Suborned/Shaders)");
+            var c = Colour(e); var haze = Colour(Entry("fog"));
+            var m = new Material(shader) { name = "water", enableInstancing = true };
+            m.SetColor("_BaseColor", c);
+            m.SetColor("_Horizon", Color.Lerp(c, haze, 0.55f));
+            m.SetColor("_Haze", haze);
+            m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0.6f);
+            m.SetFloat("_FadeFrom", 1e7f); m.SetFloat("_FadeTo", 2e7f); // no fade until the horizon sets it
+            return m;
+        }
+
+        /// <summary>The sea fades into `haze` from `from` to `to` metres about `centre` (plan); the district water shares the material.</summary>
+        public void SeaFade(Vector2 centre, float from, float to, Color haze)
+        {
+            var m = Mat("water");
+            m.SetVector("_FadeCentre", new Vector4(centre.x, centre.y, 0, 0));
+            m.SetFloat("_FadeFrom", from); m.SetFloat("_FadeTo", to);
+            m.SetColor("_Haze", haze);
+        }
+
         public Material Mat(string surface)
         {
             if (surface == null) throw new InvalidDataException("World: element has no surface");
             if (cache.TryGetValue(surface, out var m)) return m;
             var e = Surface(surface);
+            if (surface == "water") return cache[surface] = Water(e);
             m = new Material(lit) { name = surface, enableInstancing = true };
             m.SetColor("_BaseColor", Colour(e));
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0f);
             m.SetFloat("_Metallic", J.Get(e, "metallic") is double mt ? (float)mt : 0f);
+            if (J.Get(e, "alpha") is double al) Transparent(m, (float)al); // glazing (the Parade gallery canopies)
             cache[surface] = m;
             return m;
         }

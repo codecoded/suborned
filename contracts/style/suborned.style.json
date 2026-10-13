@@ -2,8 +2,8 @@
   "$schema": "../hml-style.v2.schema.json",
   "contract": "hml.style/2",
   "id": "suborned",
-  "version": "0.11.3",
-  "date": "2026-10-06",
+  "version": "0.17.0",
+  "date": "2026-10-12",
   "status": "simple style: look and framing in the prompt; brief guidance in guide, read by Enhance and Explore",
   "notes": [
     "Optimistic surface, coercive underneath (design intent, not a prompt line).",
@@ -36,7 +36,8 @@
     "v0.11.0 (2026-10-07): Sky wants variations of the same character in a lineup; Lineup is different people and cannot keep one. New type versions: the same person drawn 2-6 times in a row, identical apart from the change the brief names; takes a subject reference (Edit this design).",
     "v0.11.1 (2026-10-07): update_url added: the studio checks it and offers 'Style vX is available' with one-click Update. Also tells the agent to propose one Versions take for several versions of one person.",
     "v0.11.2 (2026-10-07): Sky: every version kept the full-length coat although a shorter jacket had been asked for. The Versions type now lets the brief give a change for all figures (it replaces what the reference shows), not only per figure; the Explore agent restates standing changes in every brief.",
-    "v0.11.3 (2026-10-07): Sky: Seedream 5.0 Pro dropped the chest plate and back harness when finishing a model sheet from a sketch; GPT Image 2 kept them. The Model sheet type now finishes with GPT Image 2."
+    "v0.11.3 (2026-10-07): Sky: Seedream 5.0 Pro dropped the chest plate and back harness when finishing a model sheet from a sketch; GPT Image 2 kept them. The Model sheet type now finishes with GPT Image 2.",
+    "v0.17.0 (2026-10-12): Sky: presentation is 3D (the world is built from the plan, DecoKit plus procedural; painted plates at most an optional extra) and the world palette is a mix: pastel cream and peach base with saturated enamel accents, lagoon water, coral transit. palette_world records it from unity/Assets/Suborned/Editor/World/looks/harbour.json (sha256 in palette_world.source), current and tuneable. palette (the 6-colour mood set the concept tools compose from) is unchanged and still serves concept sheets for people and props. GDD v0.17.0 §15 is the art bible; the v0.15.0 html bible is history."
   ],
   "era": "Bright retro-future: a space age imagined as the present, built as high art, optimistic and immaculate.",
   "rules": {
@@ -100,6 +101,194 @@
       "source": "sampled city"
     }
   },
+  "palette_world": {
+    "status": "current, tuneable: Sky reviews it in the world (2026-10-12)",
+    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon turquoise water; coral transit. Every world colour at least deltaE2000 20 from each signal colour.",
+    "source": {
+      "path": "unity/Assets/Suborned/Editor/World/looks/harbour.json",
+      "sha256": "ae751a7bfdb1f4ab6312289f351572a25ba16a19d09445c9b14c9c09a1ee7234",
+      "review": "out/review/palette.html (roles and signal deltaE table)",
+      "keys": "harbour.<role> in the look file"
+    },
+    "surface_overrides": {
+      "gold_trim": {
+        "hex": "#c9c08e",
+        "why": "gold_trim #c9a24f is deltaE2000 10.2 from guard #f0a020; world surfaces use #c9c08e (facade kit signal table)"
+      }
+    },
+    "roles": {
+      "asphalt": {
+        "hex": "#a5a2a8",
+        "group": "base"
+      },
+      "kerb": {
+        "hex": "#ddd4c5",
+        "group": "base"
+      },
+      "pavement": {
+        "hex": "#f9efdc",
+        "group": "base"
+      },
+      "quay": {
+        "hex": "#f1e4cc",
+        "group": "base"
+      },
+      "foot": {
+        "hex": "#f5e9d4",
+        "group": "base"
+      },
+      "open": {
+        "hex": "#f8eedb",
+        "group": "base"
+      },
+      "square": {
+        "hex": "#fdf7e8",
+        "group": "base"
+      },
+      "circus/island": {
+        "hex": "#a6e29c",
+        "group": "base"
+      },
+      "park": {
+        "hex": "#a6e29c",
+        "group": "base"
+      },
+      "median": {
+        "hex": "#78cf7e",
+        "group": "base"
+      },
+      "beyond": {
+        "hex": "#f1e4cc",
+        "group": "base"
+      },
+      "bay": {
+        "hex": "#ddd4c5",
+        "group": "base"
+      },
+      "track": {
+        "hex": "#96979c",
+        "group": "base"
+      },
+      "pylon": {
+        "hex": "#eceded",
+        "group": "base"
+      },
+      "column": {
+        "hex": "#e2e2e4",
+        "group": "base"
+      },
+      "limestone": {
+        "hex": "#f8eed9",
+        "group": "base"
+      },
+      "deck": {
+        "hex": "#faf1df",
+        "group": "base"
+      },
+      "stair": {
+        "hex": "#eee1c9",
+        "group": "base"
+      },
+      "civic": {
+        "hex": "#fbe8b8",
+        "group": "base"
+      },
+      "trim": {
+        "hex": "#eadba6",
+        "group": "base"
+      },
+      "residential": {
+        "hex": "#f8eedb",
+        "group": "base"
+      },
+      "mixed": {
+        "hex": "#fdf5e4",
+        "group": "base"
+      },
+      "frontage": {
+        "hex": "#f6ecd8",
+        "group": "base"
+      },
+      "roof": {
+        "hex": "#fff6e6",
+        "group": "base"
+      },
+      "commercial": {
+        "hex": "#f9e2cc",
+        "group": "base"
+      },
+      "industrial": {
+        "hex": "#f3e1c6",
+        "group": "base"
+      },
+      "port": {
+        "hex": "#f1e4cc",
+        "group": "base"
+      },
+      "water": {
+        "hex": "#2fc1de",
+        "group": "water"
+      },
+      "beam": {
+        "hex": "#f5849e",
+        "group": "transit"
+      },
+      "platform": {
+        "hex": "#fcbcc0",
+        "group": "transit"
+      },
+      "gate": {
+        "hex": "#f5849e",
+        "group": "transit"
+      },
+      "tower": {
+        "hex": "#1cb9c6",
+        "group": "accent",
+        "accent": "turquoise"
+      },
+      "mega": {
+        "hex": "#8fe3c2",
+        "group": "accent",
+        "accent": "mint"
+      },
+      "landmark": {
+        "hex": "#2f84e8",
+        "group": "accent",
+        "accent": "cobalt"
+      },
+      "enamel": {
+        "hex": "#2f84e8",
+        "group": "accent",
+        "accent": "cobalt"
+      },
+      "sign": {
+        "hex": "#fdeb8c",
+        "group": "accent",
+        "accent": "sunshine"
+      },
+      "awning": {
+        "hex": "#e8609a",
+        "group": "accent",
+        "accent": "flamingo"
+      },
+      "sky": {
+        "hex": "#86cff2",
+        "group": "light"
+      },
+      "sun": {
+        "hex": "#ffe9bc",
+        "group": "light"
+      },
+      "haze": {
+        "hex": "#f3e8d4",
+        "group": "light"
+      },
+      "ambient": {
+        "hex": "#f3ead8",
+        "group": "light"
+      }
+    }
+  },
   "signal_colours": {
     "rule": "No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue.",
     "cones": "#e03a2f",
@@ -107,8 +296,9 @@
     "rivals": "#8a4fd0"
   },
   "materials": [
-    "honed cream limestone",
+    "honed cream and peach limestone",
     "flamed grey granite kerb",
+    "saturated vitreous enamel panels (cobalt, flamingo, sunshine, mint, turquoise)",
     "teal and mint vitreous enamel",
     "chrome and brushed silver",
     "white vinyl and lame",

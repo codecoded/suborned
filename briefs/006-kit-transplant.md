@@ -1,5 +1,7 @@
 # 006 · Kit transplant: the planned district built from the DecoKit
 
+**Status (2026-10-12): partly done.** `kit.json` is in, with 29 pieces adopted. `bun run kit` copies only adopted pieces, checked by hash. Kit refs cover street items, signs, landmarks and roof pads. Wave 2 (facades and corners, civic, gates, megastructures) has no kit refs yet, so the adjacent-duplicate facade test is still owed. B's adopt/reject list is in the plan notes. C (import and place) has started; D and E are open. The work landed on `main` (de1a3db), not `world/harbour-district`.
+
 Goal (Sky, 2026-10-12): "proper planning and then transplanting some of that relevant kit and structures [from the-suborned], a better modelled world with real planning" · "good with procedural as well to fill things out if we can get it to amazing quality where it counts" · "in keeping with our atomic age / concept work and art bible".
 
 The plan decides what stands where and why (004); the DecoKit supplies how it looks. Procedural geometry fills what the kit lacks, to the same bar. Nothing is hand-placed: the old repo's placement builders (DecoKitCityPlan.cs, DecoKitStreetSkyline.cs, …) are layout reference only.
@@ -11,7 +13,7 @@ The plan decides what stands where and why (004); the DecoKit supplies how it lo
 - **Concept work (the bar):** `~/Projects/the-suborned-store/concepts/`: AtomicAge (18, contact_sheet.jpg), Blocks (9: skyport tower, hanging terraces, lifted megablock), Streets (39), Props (27), District (4), Horizon (25), Style (107). Judge shots against these, not prose.
 
 ## Fixed
-- **Look = the concept work.** Luminous cream limestone, streamline curves, pale teal and mint enamel, gold and chrome trim, coral as a touch, palms and cypress, warm haze. "Bright and colourful" = sunny and pastel, not saturated primaries. The harbour palette is re-tuned to the concept sheet; §15 is updated from the result (v0.17.0).
+- **Look = the concept work.** Luminous cream limestone, streamline curves, pale teal and mint enamel, gold and chrome trim, coral as a touch, palms and cypress, warm haze. "Bright and colourful" = an atompunk mix (Sky, 2026-10-12): a pastel cream and peach base with saturated enamel accents on panels, awnings, signs, roofs and trim (the 004 palette decision), not whole buildings in saturated primaries. The harbour palette is tuned to the concept sheet; §15 is updated from the result (v0.17.0).
 - **The plan rules everything:** sizes, heights, clearances and levels come from the plan and its checker; a kit piece is chosen to fit, or scaled within its stated range, never the other way round.
 - **Kit where it counts, procedural to fill:** landmarks, megastructure signatures, towers, the civic block, frontages, signage and street furniture come from the kit. Bulk masses, decks and connectors are procedural, built to the same material and trim standard. Every procedural stand-in is listed in the export (`source: "procedural"`) so gaps are visible.
 - **No repetition:** neighbouring buildings and signs must differ (metrics from Vela's probe: adjacent duplicates = 0).

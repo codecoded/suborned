@@ -1,5 +1,7 @@
 # 001 · Transit network, generated (Assignment 4)
 
+**Status (2026-10-12): done.** Submitted on `assignment-04` (tip `a0d05ff`, r008 ACCEPTED; `bun run verify` passes from a fresh clone). r008 promoted into the plan at v0.2.0 (Sky approved). The branch is frozen for marking: no changes.
+
 Deadline: **Sun 12 Oct, 11:59 BST**. Runs first; needs only the plan, the checker and `tools/rag`.
 
 Goal: Sky's direction, generated through the build-time pipeline instead of drawn by hand. "Sky rail… should run across the city, and we have stations for player to get on / off it, same for tram, player can board it for fast nav around city." Retrieval → crew member proposes → plan checker (deterministic) → Keel (critic) → revisions routed to the owner (≤ 3 rounds) → an accepted plan revision.

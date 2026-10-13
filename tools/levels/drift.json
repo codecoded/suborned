@@ -1,0 +1,18 @@
+{
+ "recorded": {
+  "6b8778c865c8946b": "assignment-04 run r001 (main, checker as of the A04 hand-in)",
+  "ebf46e1fdfd3af2d": "assignment-04 runs r002-r004",
+  "21b5bd5e428a7845": "assignment-04 runs r005-r010"
+ },
+ "declared": {
+  "6e8a279578385810ca084f089eee5391d38cbebb3635352cd28b2aa856c4d6fd": [
+   "brief 007 B: world rules added or refined (F-5 lobby kinds, L-5/SF-13 platformClear, SG-1, P-1, SK-1, SK-2), S-C1 through a declared portal, pylons skip declared portals; none changes a rule the A04 plans run"
+  ],
+  "2d9d1929ea45778044bd7a080176686f949993248327fe16610c7c96b4f83191": [
+   "brief 007 follow-up: SF-13 hall lane replaces the signature-ground exemption (stationEntrance.hallLane); kit catalogue prefers generated materials; none changes a rule the A04 plans run"
+  ],
+  "89aae7753fb05518da05f9c6e7c7ec327c5607cab40166acf4d37386e7826ed2": [
+   "brief 007 round 2: L-7 (every lift attached to a structure along its whole run) added and L-6 counts connector dress ids; none changes a rule the A04 plans run"
+  ]
+ }
+}

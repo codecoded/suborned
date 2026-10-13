@@ -81,7 +81,7 @@ namespace Suborned.World
             if (h.Id.StartsWith("civic") || h.Area == "records") return "grand";
             return surface switch
             {
-                "tower" => "curtain",
+                "tower" => "band", // no curtain wall (grammar §3)
                 "residential" => "punched",
                 "commercial" => "band",
                 "industrial" or "port" => "shed",
@@ -97,11 +97,14 @@ namespace Suborned.World
             foreach (var m in masses) { if (standIns.Covers(m)) standIns.Mass(layer, m); else Building(layer, m, false); }
         }
 
-        public void Civic(Transform layer, List<MassDto> masses)
+        /// <summary>Civic block: limestone buildings by the style kit, objects with a kit ref (grammar §11: fountain, pavilions and
+        /// their piers, café sets, palms) as that piece at its At on its Base, the rest as extrusions.</summary>
+        public void Civic(Transform layer, List<MassDto> masses, KitPlacer placer)
         {
             foreach (var m in masses)
             {
-                if (m.Surface == "limestone") Building(layer, m, true);
+                if (m.Kit != null) placer.Place(Nodes.Element(layer, m.Id), layer.name, m.Kit, m.Kit.At, m.Kit.Base, 0f);
+                else if (m.Surface == "limestone") Building(layer, m, true);
                 else nodes.Solid(layer, m.Id, new MeshKit().Prism(m.Ring, m.Base, m.Base + m.Height), m.Surface);
             }
         }
@@ -128,7 +131,7 @@ namespace Suborned.World
             var c = new Ctx { H = h, Style = style, Base = m.Base, Top = m.Base + m.Height, Podium = m.Id.EndsWith("/podium"), Dice = new Dice(m.Id, 3), Glass = spec.Glass };
             bool tower = m.Surface == "tower";
             c.Wall = wall ?? (tower ? h.A : h.Wall); c.Plinth = h.Plinth; c.Roof = h.Roof; c.A = h.A; c.B = h.B;
-            if (tower) { c.Glass = new[] { "glass_t" }; c.Fin = "chrome"; }
+            if (tower) c.Fin = "chrome";
             c.Fin ??= c.Style switch { "band" => "white", "grand" => h.A, "shed" => h.Plinth, _ => "white" };
             c.Sibling = c.Podium ? h.BodyRing : null;
             Ground(c); Storeys(c);
@@ -224,12 +227,12 @@ namespace Suborned.World
                 }
             foreach (var (z0, fh) in c.Floors)
                 for (int k = 0; k < nb; k++) Upper(M, G, w, c, k * bw, bw, z0, fh);
-            // fins at bay boundaries (curtain: two per bay)
-            if (c.Floors.Count > 0 && c.Style is "band" or "curtain" or "grand" or "shed")
+            // fins at bay boundaries
+            if (c.Floors.Count > 0 && c.Style is "band" or "grand" or "shed")
             {
                 float fz0 = c.GroundTop, fz1 = c.Top - 0.35f;
-                float fw = c.Style == "grand" ? 0.9f : c.Style == "curtain" ? 0.22f : 0.3f, fd = c.Style == "grand" ? 0.5f : c.Style == "curtain" ? 0.45f : 0.3f;
-                int per = c.Style == "curtain" ? 2 : 1;
+                float fw = c.Style == "grand" ? 0.9f : 0.3f, fd = c.Style == "grand" ? 0.5f : 0.3f;
+                const int per = 1;
                 for (int k = 0; k <= nb * per; k++)
                 {
                     float s = k * bw / per, a = Mathf.Max(0, s - fw * 0.5f), b = Mathf.Min(w.Len, s + fw * 0.5f);
@@ -259,9 +262,6 @@ namespace Suborned.World
                 case "band":
                     sf.Rect(M, c.A, w, s0, s0 + bw, z0, z0 + 0.95f, 0.06f);
                     sf.Rect(G, c.Glass[c.Dice.Int(c.Glass.Length)], w, s0 + 0.1f, s0 + bw - 0.1f, z0 + 0.95f, z0 + fh - 0.5f, 0.06f);
-                    break;
-                case "curtain":
-                    sf.Rect(G, c.Glass[0], w, s0, s0 + bw, z0 + 0.3f, z0 + fh - 0.1f, 0.06f);
                     break;
                 case "grand":
                     Window(M, G, w, c, s0 + 1.1f, s0 + bw - 1.1f, z0 + 0.7f, z0 + fh - 0.45f);

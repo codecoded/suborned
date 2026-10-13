@@ -1,4 +1,4 @@
-// The world rules, registered: B (buildings), L (levels), MS (megastructures), F (frontage), SF (streetscape) and K (kit fit) rules, run on
+// The world rules, registered: B (buildings), L (levels), MS (megastructures), F (frontage), SF (streetscape), K (kit fit), SG / P / SK (signatures, portals, skyline) rules, run on
 // the generator's output for a plan. `bun tools/plan/cli.ts` runs them after the plan rules; `bun run world` refuses to export
 // a world that fails them. They need the generated world, which takes seconds: it is cached by content hash (world-ctx.ts), so a
 // repeat run costs the rules alone. A plan without the world standards (a recorded run's plan) has nothing to check here.
@@ -9,6 +9,7 @@ import type { Civic } from './civic';
 import type { Derived, Plan } from './plan';
 import { kitFitChecks } from './kit-fit';
 import { levelChecks, megaChecks } from './level-checks';
+import { signatureChecks } from './signature-checks';
 import { streetChecks } from './street-checks';
 import { streetRules } from './street-rules';
 import { buildingChecks, frontageChecks } from './world-checks';
@@ -18,7 +19,7 @@ import { type WCtx, ctxOf } from './world-ctx';
 export const hasWorldStandards = (plan: Plan) => !!(plan.standards?.buildings && plan.standards?.levels && plan.standards?.frontage && plan.standards?.streetscape);
 
 /** Every world rule on an already-built context. */
-export const worldRules = (c: WCtx): Check[] => [...buildingChecks(c), ...levelChecks(c), ...megaChecks(c), ...frontageChecks(c), ...streetChecks(c), ...streetRules(c), ...kitFitChecks(c)];
+export const worldRules = (c: WCtx): Check[] => [...buildingChecks(c), ...levelChecks(c), ...megaChecks(c), ...frontageChecks(c), ...streetChecks(c), ...streetRules(c), ...kitFitChecks(c), ...signatureChecks(c)];
 
 /** The world rules for a plan: generated (or read from the cache) here unless the caller already has the world. */
 export function worldChecks(plan: Plan, d: Derived, civ: Civic, v?: { w: World; gen: Generated }): Check[] {

@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces), a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -202,6 +202,86 @@
   }
  ],
  "roofs": [
+  {
+   "id": "bld/parade-north/15/roof",
+   "building": "bld/parade-north/15",
+   "programme": "antenna-mast",
+   "surface": "roof",
+   "z": 38.58,
+   "c": [
+    189.879,
+    50
+   ],
+   "size": [
+    12.233,
+    14
+   ],
+   "yaw": 0,
+   "parapet": 0.6,
+   "parts": [
+    {
+     "id": "bld/parade-north/15/roof/plant",
+     "shape": "box",
+     "surface": "column",
+     "c": [
+      192.995,
+      46
+     ],
+     "base": 38.58,
+     "size": [
+      6,
+      6,
+      3.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/parade-north/15/roof/vent-0",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      187.57,
+      44.2
+     ],
+     "base": 38.58,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bld/parade-north/15/roof/vent-1",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      192.187,
+      55.8
+     ],
+     "base": 38.58,
+     "size": [
+      2,
+      2,
+      3.5
+     ],
+     "yaw": 0
+    }
+   ],
+   "crown": {
+    "id": "Crown_Needle",
+    "scale": [
+     1.4,
+     1.4,
+     1.4
+    ],
+    "yaw": 2.0288,
+    "at": [
+     189.879,
+     50
+    ]
+   }
+  },
   {
    "id": "bld/garden-row-east/0/roof",
    "building": "bld/garden-row-east/0",
@@ -494,6 +574,151 @@
    }
   }
  ],
+ "skins": [
+  {
+   "id": "bld/garden-row-east/0/skin",
+   "building": "bld/garden-row-east/0",
+   "family": "ribbon",
+   "accent": "mega",
+   "glass": {
+    "surface": "glass",
+    "tint": "clear",
+    "share": 0.55,
+    "maxPane": 4,
+    "sill": 0.9,
+    "head": 2.6,
+    "reveal": 0.35,
+    "mullion": 1.3
+   },
+   "pier": {
+    "surface": "limestone",
+    "frame": 0.45,
+    "frameSurface": "trim"
+   },
+   "porthole": {
+    "d": 0.9,
+    "ring": 0.1,
+    "ringSurface": "trim",
+    "perBay": 2
+   },
+   "faces": [
+    {
+     "mass": "bld/garden-row-east/0/podium",
+     "edge": 0,
+     "a": [
+      -119.5,
+      -254.5
+     ],
+     "b": [
+      -72.5,
+      -254.5
+     ],
+     "bays": "RRRPRRRP",
+     "rows": [
+      5.83
+     ],
+     "portholes": [],
+     "glass": 0.21
+    },
+    {
+     "mass": "bld/garden-row-east/0/podium",
+     "edge": 1,
+     "a": [
+      -72.5,
+      -254.5
+     ],
+     "b": [
+      -72.5,
+      -210.5
+     ],
+     "bays": "RRRPRRR",
+     "rows": [
+      5.83
+     ],
+     "portholes": [],
+     "glass": 0.231
+    },
+    {
+     "mass": "bld/garden-row-east/0/podium",
+     "edge": 2,
+     "a": [
+      -72.5,
+      -210.5
+     ],
+     "b": [
+      -119.5,
+      -210.5
+     ],
+     "bays": "RPRRRPRR",
+     "rows": [
+      5.83
+     ],
+     "portholes": [],
+     "glass": 0.21
+    }
+   ]
+  }
+ ],
+ "facades": [
+  {
+   "id": "bld/garden-row-east/0/f0",
+   "building": "bld/garden-row-east/0",
+   "form": "corner",
+   "storeys": 8,
+   "kit": {
+    "id": "StreamCorner_9",
+    "scale": [
+     0.948,
+     0.948,
+     0.948
+    ],
+    "yaw": -3.1416,
+    "at": [
+     -75.519,
+     -251.481
+    ]
+   },
+   "base": 0.18,
+   "a": [
+    -80.084,
+    -254.5
+   ],
+   "b": [
+    -72.5,
+    -254.5
+   ],
+   "edge": 0
+  },
+  {
+   "id": "bld/garden-row-east/0/f0",
+   "building": "bld/garden-row-east/0",
+   "form": "corner",
+   "storeys": 8,
+   "kit": {
+    "id": "StreamCorner_9",
+    "scale": [
+     0.948,
+     0.948,
+     0.948
+    ],
+    "yaw": -3.1416,
+    "at": [
+     -75.519,
+     -251.481
+    ]
+   },
+   "base": 0.18,
+   "a": [
+    -80.084,
+    -254.5
+   ],
+   "b": [
+    -72.5,
+    -254.5
+   ],
+   "edge": 0
+  }
+ ],
  "frontages": [
   {
    "id": "bld/garden-row-east/0/e0-3",
@@ -619,15 +844,18 @@
    "kind": "stair",
    "host": "mega/parade-galleries",
    "serves": [
-    "mega/parade-galleries/range-0-0/gallery"
+    "mega/parade-galleries/range-0-0/gallery",
+    "mega/parade-galleries/range-0-0/promenade"
    ],
    "from": "street",
    "to": "concourse",
    "foot": [
-    95
+    200,
+    36.7
    ],
    "head": [
-    95
+    200,
+    36.7
    ],
    "bottom": 0.18,
    "top": 24,
@@ -635,10 +863,901 @@
    "stepFree": false,
    "ring": [
     [
-     91.5
+     196.5,
+     33.6
+    ],
+    [
+     203.5,
+     33.6
+    ],
+    [
+     203.5,
+     39.8
+    ],
+    [
+     196.5,
+     39.8
     ]
    ],
    "yaw": 0
+  },
+  {
+   "id": "bank/S1/gardens/l/tower",
+   "kind": "stairTower",
+   "host": "bank/S1/gardens/l",
+   "serves": [
+    "bank/S1/gardens/l/mezzanine",
+    "bank/S1/gardens/l/bridge"
+   ],
+   "from": "street",
+   "to": "concourse",
+   "foot": [
+    -155.2,
+    18
+   ],
+   "head": [
+    -155.2,
+    18
+   ],
+   "bottom": 0.18,
+   "top": 27.6,
+   "width": 3,
+   "stepFree": false,
+   "ring": [
+    [
+     -160,
+     14.5
+    ],
+    [
+     -150.4,
+     14.5
+    ],
+    [
+     -150.4,
+     21.5
+    ],
+    [
+     -160,
+     21.5
+    ]
+   ],
+   "yaw": 0,
+   "dress": [
+    {
+     "id": "bank/S1/gardens/l/tower/dress/plinth/mid",
+     "shape": "box",
+     "surface": "limestone",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 0.18,
+     "size": [
+      2.6,
+      7,
+      0.45
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/plinth/end-a",
+     "shape": "cyl",
+     "surface": "limestone",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 0.18,
+     "size": [
+      7,
+      7,
+      0.45
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/plinth/end-b",
+     "shape": "cyl",
+     "surface": "limestone",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 0.18,
+     "size": [
+      7,
+      7,
+      0.45
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/glass/mid",
+     "shape": "box",
+     "surface": "glass",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 0.63,
+     "size": [
+      2.6,
+      6.84,
+      25.77
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/glass/end-a",
+     "shape": "cyl",
+     "surface": "glass",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 0.63,
+     "size": [
+      6.84,
+      6.84,
+      25.77
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/glass/end-b",
+     "shape": "cyl",
+     "surface": "glass",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 0.63,
+     "size": [
+      6.84,
+      6.84,
+      25.77
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/spine",
+     "shape": "box",
+     "surface": "limestone",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 0.18,
+     "size": [
+      2.6,
+      1.2,
+      26.22
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/fin",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -150.45,
+      18
+     ],
+     "base": 0.63,
+     "size": [
+      0.3,
+      0.6,
+      29.37
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/chrome/mid",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 9.43,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/chrome/end-a",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 9.43,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/chrome/end-b",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 9.43,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/accent/mid",
+     "shape": "box",
+     "surface": "beam",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 9.93,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/accent/end-a",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 9.93,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-0/accent/end-b",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 9.93,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/chrome/mid",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 16.63,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/chrome/end-a",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 16.63,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/chrome/end-b",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 16.63,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/accent/mid",
+     "shape": "box",
+     "surface": "beam",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 17.13,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/accent/end-a",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 17.13,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-1/accent/end-b",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 17.13,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/chrome/mid",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 23.83,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/chrome/end-a",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 23.83,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/chrome/end-b",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 23.83,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/accent/mid",
+     "shape": "box",
+     "surface": "beam",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 24.33,
+     "size": [
+      2.6,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/accent/end-a",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 24.33,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/band-2/accent/end-b",
+     "shape": "cyl",
+     "surface": "beam",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 24.33,
+     "size": [
+      7.3,
+      7.3,
+      0.25
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/cap/mid",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 26.4,
+     "size": [
+      2.6,
+      7.4,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/cap/end-a",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 26.4,
+     "size": [
+      7.4,
+      7.4,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/cap/end-b",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 26.4,
+     "size": [
+      7.4,
+      7.4,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/coping/mid",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      -155.2,
+      18
+     ],
+     "base": 27,
+     "size": [
+      2.6,
+      6.2,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/coping/end-a",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -156.5,
+      18
+     ],
+     "base": 27,
+     "size": [
+      6.2,
+      6.2,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "bank/S1/gardens/l/tower/dress/coping/end-b",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      -153.9,
+      18
+     ],
+     "base": 27,
+     "size": [
+      6.2,
+      6.2,
+      0.6
+     ],
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "mega/skyport-tower/lift-sw",
+   "kind": "lift",
+   "host": "mega/skyport-tower",
+   "serves": [
+    "mega/skyport-tower/lounge-s"
+   ],
+   "from": "street",
+   "to": "frame",
+   "foot": [
+    524.2,
+    -21.8
+   ],
+   "head": [
+    524.2,
+    -21.8
+   ],
+   "bottom": 0.18,
+   "top": 34,
+   "width": 2.4,
+   "stepFree": true,
+   "ring": [
+    [
+     523,
+     -23
+    ],
+    [
+     525.4,
+     -23
+    ],
+    [
+     525.4,
+     -20.6
+    ],
+    [
+     523,
+     -20.6
+    ]
+   ],
+   "yaw": 0
+  },
+  {
+   "id": "mega/skyport-tower/tube-0",
+   "kind": "lift",
+   "host": "mega/skyport-tower",
+   "serves": [],
+   "from": "frame",
+   "to": "discs",
+   "foot": [
+    549.6,
+    -7.967
+   ],
+   "head": [
+    549.6,
+    -7.967
+   ],
+   "bottom": 34,
+   "top": 38,
+   "width": 3,
+   "stepFree": true,
+   "ring": [
+    [
+     551.1,
+     -7.967
+    ],
+    [
+     550.899,
+     -7.217
+    ],
+    [
+     550.35,
+     -6.668
+    ],
+    [
+     549.6,
+     -6.467
+    ],
+    [
+     548.85,
+     -6.668
+    ],
+    [
+     548.301,
+     -7.217
+    ],
+    [
+     548.1,
+     -7.967
+    ],
+    [
+     548.301,
+     -8.717
+    ],
+    [
+     548.85,
+     -9.266
+    ],
+    [
+     549.6,
+     -9.467
+    ],
+    [
+     550.35,
+     -9.266
+    ],
+    [
+     550.899,
+     -8.717
+    ]
+   ],
+   "yaw": -1.0472,
+   "dress": [
+    {
+     "id": "mega/skyport-tower/tube-0/dress/plinth",
+     "shape": "cyl",
+     "surface": "limestone",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 34,
+     "size": [
+      3,
+      3,
+      0.45
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/glass",
+     "shape": "cyl",
+     "surface": "glass",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 34.45,
+     "size": [
+      2.84,
+      2.84,
+      2.65
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/hoop-0",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 34.45,
+     "size": [
+      3.2,
+      3.2,
+      0.4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/hoop-1",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 36.7,
+     "size": [
+      3.2,
+      3.2,
+      0.4
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/mullion-0",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      550.661,
+      -6.906
+     ],
+     "base": 34.45,
+     "size": [
+      0.1,
+      0.1,
+      2.65
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/mullion-1",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      548.539,
+      -6.906
+     ],
+     "base": 34.45,
+     "size": [
+      0.1,
+      0.1,
+      2.65
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/mullion-2",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      548.539,
+      -9.028
+     ],
+     "base": 34.45,
+     "size": [
+      0.1,
+      0.1,
+      2.65
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/mullion-3",
+     "shape": "box",
+     "surface": "trim",
+     "c": [
+      550.661,
+      -9.028
+     ],
+     "base": 34.45,
+     "size": [
+      0.1,
+      0.1,
+      2.65
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/car",
+     "shape": "cyl",
+     "surface": "sign",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 34.5,
+     "size": [
+      2.5,
+      2.5,
+      2.9
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/car-band",
+     "shape": "cyl",
+     "surface": "tower",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 35.7,
+     "size": [
+      2.54,
+      2.54,
+      0.8
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/cap",
+     "shape": "cyl",
+     "surface": "trim",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 37.1,
+     "size": [
+      3.4,
+      3.4,
+      0.6
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/dome",
+     "shape": "saucer",
+     "surface": "trim",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 37.7,
+     "size": [
+      3.4,
+      3.4,
+      0.3
+     ],
+     "yaw": 0
+    },
+    {
+     "id": "mega/skyport-tower/tube-0/dress/atom",
+     "shape": "sphere",
+     "surface": "tower",
+     "c": [
+      549.6,
+      -7.967
+     ],
+     "base": 38,
+     "size": [
+      0.6,
+      0.6,
+      0.6
+     ],
+     "yaw": 0
+    }
+   ]
   }
  ],
  "street": [
@@ -753,6 +1872,45 @@
    ],
    "base": 0.18,
    "height": 34.8
+  },
+  {
+   "id": "civic/office-pavilion-support-0",
+   "surface": "column",
+   "ring": [
+    [
+     -167.75,
+     -305
+    ],
+    [
+     -167.75,
+     -307
+    ],
+    [
+     -165.75,
+     -307
+    ],
+    [
+     -165.75,
+     -305
+    ]
+   ],
+   "base": 0.18,
+   "height": 3.633,
+   "source": "kit",
+   "kit": {
+    "id": "PavilionPier_Office",
+    "scale": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 0,
+    "at": [
+     -166.75,
+     -306
+    ],
+    "base": 0.18
+   }
   }
  ],
  "landmarks": [
@@ -853,6 +2011,74 @@
    }
   }
  ],
+ "signatures": [
+  {
+   "id": "signature/space-hq",
+   "kind": "signature",
+   "source": "kit",
+   "ground": [
+    56,
+    136,
+    -40,
+    40
+   ],
+   "base": 0.18,
+   "tip": 252.18,
+   "kit": {
+    "id": "SpaceHQ_Portal",
+    "scale": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 1.5708,
+    "at": [
+     96,
+     0
+    ]
+   }
+  },
+  {
+   "id": "tower/parade-gate-n",
+   "kind": "tower",
+   "source": "kit",
+   "base": 9.43,
+   "tip": 75,
+   "kit": {
+    "id": "Tower_Stepped@parade-gate-n",
+    "scale": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 0,
+    "at": [
+     276,
+     32
+    ]
+   }
+  },
+  {
+   "id": "station/S1/gardens",
+   "kind": "station",
+   "source": "kit",
+   "base": 0,
+   "tip": 33.438,
+   "kit": {
+    "id": "SkyRailStation_Twin",
+    "scale": [
+     1,
+     1,
+     1
+    ],
+    "yaw": 1.5708,
+    "at": [
+     -160,
+     0
+    ]
+   }
+  }
+ ],
  "gates": [
   {
    "id": "gate/rocket-gate",
@@ -869,16 +2095,570 @@
  "counts": {
   "ground": 95,
   "transit": 33,
-  "buildings": 478,
-  "roofs": 361,
-  "frontages": 1192,
-  "connectors": 121,
-  "street": 3548,
+  "buildings": 737,
+  "roofs": 359,
+  "skins": 310,
+  "facades": 972,
+  "frontages": 1077,
+  "connectors": 113,
+  "street": 3449,
   "levels": 3,
-  "decks": 29,
+  "decks": 31,
   "megastructures": 4,
   "civic": 42,
-  "landmarks": 3,
-  "gates": 14
+  "landmarks": 5,
+  "gates": 14,
+  "signatures": 18,
+  "horizon": 212
+ },
+ "horizon": {
+  "centre": [
+   170,
+   -230
+  ],
+  "haze": "#f3e8d4",
+  "sea": {
+   "surface": "water",
+   "centre": [
+    170,
+    -230
+   ],
+   "size": 16000,
+   "level": -1.05,
+   "fadeFrom": 4000,
+   "sectors": [
+    {
+     "id": "horizon/sea/bay",
+     "surface": "water",
+     "ring": [
+      [
+       740,
+       -780
+      ],
+      [
+       2856.952,
+       -4446.668
+      ],
+      [
+       3070.286,
+       -4302.879
+      ],
+      [
+       3275.942,
+       -4148.306
+      ],
+      [
+       3473.375,
+       -3983.36
+      ],
+      [
+       3662.062,
+       -3808.477
+      ],
+      [
+       3841.505,
+       -3624.121
+      ],
+      [
+       4011.226,
+       -3430.778
+      ],
+      [
+       4170.779,
+       -3228.961
+      ],
+      [
+       4319.739,
+       -3019.205
+      ],
+      [
+       4457.713,
+       -2802.064
+      ],
+      [
+       4584.336,
+       -2578.114
+      ],
+      [
+       4699.271,
+       -2347.947
+      ],
+      [
+       4802.216,
+       -2112.173
+      ],
+      [
+       4892.897,
+       -1871.416
+      ],
+      [
+       4971.074,
+       -1626.314
+      ],
+      [
+       5036.54,
+       -1377.515
+      ],
+      [
+       5089.122,
+       -1125.677
+      ],
+      [
+       5128.681,
+       -871.469
+      ],
+      [
+       5155.112,
+       -615.562
+      ],
+      [
+       5168.345,
+       -358.634
+      ],
+      [
+       5168.345,
+       -101.366
+      ],
+      [
+       5155.112,
+       155.562
+      ],
+      [
+       5128.681,
+       411.469
+      ],
+      [
+       5089.122,
+       665.677
+      ],
+      [
+       5036.54,
+       917.515
+      ],
+      [
+       4971.074,
+       1166.314
+      ],
+      [
+       4892.897,
+       1411.416
+      ],
+      [
+       4802.216,
+       1652.173
+      ],
+      [
+       4699.271,
+       1887.947
+      ],
+      [
+       4584.336,
+       2118.114
+      ],
+      [
+       4457.713,
+       2342.064
+      ],
+      [
+       4319.739,
+       2559.205
+      ],
+      [
+       4170.779,
+       2768.961
+      ],
+      [
+       4011.226,
+       2970.778
+      ],
+      [
+       3841.505,
+       3164.121
+      ],
+      [
+       3662.062,
+       3348.477
+      ],
+      [
+       3473.375,
+       3523.36
+      ],
+      [
+       3275.942,
+       3688.306
+      ],
+      [
+       3070.286,
+       3842.879
+      ],
+      [
+       2856.952,
+       3986.668
+      ],
+      [
+       740,
+       320
+      ]
+     ],
+     "level": -1.05
+    }
+   ]
+  },
+  "pieces": [
+   {
+    "id": "horizon/A/0",
+    "ring": "A",
+    "kit": {
+     "id": "Horizon_Spire_C",
+     "scale": [
+      0.613,
+      0.613,
+      0.613
+     ],
+     "yaw": 4.0097,
+     "at": [
+      -584.717,
+      103.724
+     ]
+    },
+    "base": 0,
+    "haze": 0.15
+   },
+   {
+    "id": "horizon/rocket-pad/0",
+    "ring": "rocket-pad",
+    "kit": {
+     "id": "Horizon_RocketPad",
+     "scale": [
+      1.5,
+      1.5,
+      1.5
+     ],
+     "yaw": 2.9969,
+     "at": [
+      -1173.503,
+      1113.503
+     ]
+    },
+    "base": 0,
+    "haze": 0.4
+   },
+   {
+    "id": "horizon/planet/0",
+    "ring": "planet",
+    "kit": {
+     "id": "Horizon_PlanetRinged",
+     "scale": [
+      4.8,
+      4.8,
+      4.8
+     ],
+     "yaw": 2.2662,
+     "at": [
+      5320.712,
+      -2104.706
+     ]
+    },
+    "base": 2440.42,
+    "haze": 0.25
+   }
+  ],
+  "land": [
+   {
+    "id": "horizon/land/west",
+    "surface": "beyond",
+    "ring": [
+     [
+      -7830,
+      -8230
+     ],
+     [
+      -400,
+      -8230
+     ],
+     [
+      -400,
+      7770
+     ],
+     [
+      -7830,
+      7770
+     ]
+    ],
+    "level": -0.02
+   },
+   {
+    "id": "horizon/land/north",
+    "surface": "beyond",
+    "ring": [
+     [
+      -400,
+      320
+     ],
+     [
+      740,
+      320
+     ],
+     [
+      2856.952,
+      3986.668
+     ],
+     [
+      3065.044,
+      3846.606
+     ],
+     [
+      3265.85,
+      3696.285
+     ],
+     [
+      3458.865,
+      3536.081
+     ],
+     [
+      3643.602,
+      3366.4
+     ],
+     [
+      3819.596,
+      3187.667
+     ],
+     [
+      3986.406,
+      3000.332
+     ],
+     [
+      4143.61,
+      2804.868
+     ],
+     [
+      4290.814,
+      2601.765
+     ],
+     [
+      4427.646,
+      2391.535
+     ],
+     [
+      4553.763,
+      2174.708
+     ],
+     [
+      4668.847,
+      1951.828
+     ],
+     [
+      4772.608,
+      1723.457
+     ],
+     [
+      4864.786,
+      1490.17
+     ],
+     [
+      4945.148,
+      1252.554
+     ],
+     [
+      5013.491,
+      1011.206
+     ],
+     [
+      5069.645,
+      766.734
+     ],
+     [
+      5113.467,
+      519.754
+     ],
+     [
+      5144.848,
+      270.887
+     ],
+     [
+      5163.708,
+      20.759
+     ],
+     [
+      5170,
+      -230
+     ],
+     [
+      8170,
+      -230
+     ],
+     [
+      8170,
+      7770
+     ],
+     [
+      -400,
+      7770
+     ]
+    ],
+    "level": -0.02
+   },
+   {
+    "id": "horizon/land/south",
+    "surface": "beyond",
+    "ring": [
+     [
+      -400,
+      -8230
+     ],
+     [
+      8170,
+      -8230
+     ],
+     [
+      8170,
+      -230
+     ],
+     [
+      5170,
+      -230
+     ],
+     [
+      5163.708,
+      -480.759
+     ],
+     [
+      5144.848,
+      -730.887
+     ],
+     [
+      5113.467,
+      -979.754
+     ],
+     [
+      5069.645,
+      -1226.734
+     ],
+     [
+      5013.491,
+      -1471.206
+     ],
+     [
+      4945.148,
+      -1712.554
+     ],
+     [
+      4864.786,
+      -1950.17
+     ],
+     [
+      4772.608,
+      -2183.457
+     ],
+     [
+      4668.847,
+      -2411.828
+     ],
+     [
+      4553.763,
+      -2634.708
+     ],
+     [
+      4427.646,
+      -2851.535
+     ],
+     [
+      4290.814,
+      -3061.765
+     ],
+     [
+      4143.61,
+      -3264.868
+     ],
+     [
+      3986.406,
+      -3460.332
+     ],
+     [
+      3819.596,
+      -3647.667
+     ],
+     [
+      3643.602,
+      -3826.4
+     ],
+     [
+      3458.865,
+      -3996.081
+     ],
+     [
+      3265.85,
+      -4156.285
+     ],
+     [
+      3065.044,
+      -4306.606
+     ],
+     [
+      2856.952,
+      -4446.668
+     ],
+     [
+      740,
+      -780
+     ],
+     [
+      -400,
+      -780
+     ]
+    ],
+    "level": -0.02
+   }
+  ],
+  "banks": [
+   {
+    "id": "horizon/bank/north-bay",
+    "surface": "quay",
+    "ring": [
+     [
+      330,
+      320
+     ],
+     [
+      740,
+      320
+     ],
+     [
+      740,
+      324
+     ],
+     [
+      330,
+      324
+     ]
+    ],
+    "base": -2.5,
+    "height": 2.46
+   },
+   {
+    "id": "horizon/bank/north-coast",
+    "surface": "quay",
+    "ring": [
+     [
+      740,
+      320
+     ],
+     [
+      2856.952,
+      3986.668
+     ],
+     [
+      2853.488,
+      3988.668
+     ],
+     [
+      736.536,
+      322
+     ]
+    ],
+    "base": -2.5,
+    "height": 2.46
+   }
+  ]
  }
 }

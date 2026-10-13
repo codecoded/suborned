@@ -2,6 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace Suborned.World
@@ -17,16 +18,21 @@ namespace Suborned.World
         {
             if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                 throw new System.InvalidOperationException("World: no graphics device; run Shots without -nographics");
-            ShaderUtil.allowAsyncCompilation = false;
-            EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var urp = UniversalRenderPipeline.asset ?? throw new System.InvalidOperationException("World: no URP asset active");
-            var prefix = Prefix();
-            var dir = Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "shots");
-            Directory.CreateDirectory(dir);
-            var views = Views.Load(HarbourWorldBuilder.ViewsPath);
             float shadowDistance = urp.shadowDistance; bool fog = RenderSettings.fog;
+            var drawerMode = urp.gpuResidentDrawerMode;
+            bool asyncCompilation = ShaderUtil.allowAsyncCompilation;
             try
             {
+                // Manual Camera.Render calls after a scene reload can leave the Editor's resident batches stale.
+                urp.gpuResidentDrawerMode = GPUResidentDrawerMode.Disabled;
+                ShaderUtil.allowAsyncCompilation = false;
+                EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
+                fog = RenderSettings.fog;
+                var prefix = Prefix();
+                var dir = Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "shots");
+                Directory.CreateDirectory(dir);
+                var views = Views.Load(HarbourWorldBuilder.ViewsPath);
                 bool warm = false;
                 foreach (var v in views)
                 {
@@ -40,7 +46,12 @@ namespace Suborned.World
                     Perf(cam);
                 }
             }
-            finally { urp.shadowDistance = shadowDistance; RenderSettings.fog = fog; }
+            finally
+            {
+                urp.shadowDistance = shadowDistance; RenderSettings.fog = fog;
+                urp.gpuResidentDrawerMode = drawerMode;
+                ShaderUtil.allowAsyncCompilation = asyncCompilation;
+            }
         });
 
         static string Prefix()

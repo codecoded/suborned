@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 export const PLAN = resolve(import.meta.dir, '../../contracts/world/harbour-district.plan.json');
 type Rect = [number, number, number, number];
 export type Order = {
-  id: string; from: string; kind: 'tower' | 'megastructure'; hash: string;
+  id: string; from: string; kind: 'tower' | 'megastructure' | 'signature'; hash: string;
   sites: { id: string; rect: Rect; storeys?: number }[]; regen: Record<string, unknown>; limits: Record<string, unknown>;
 };
 export type Orders = { plan: string; grid: { storey: number; bay: number; halfBay: number; deck: number; crownTip: number; setbackAbove: number }; pieces: Order[] };
@@ -27,6 +27,12 @@ export function readOrders(planPath = PLAN): Orders {
     const r = m.kit?.regen; if (!r) continue;
     const sitesOut = [{ id: m.id, rect: m.footprint[0]! }], limits = { legs: m.legs, height: m.height };
     pieces.push({ id: r.variant, from: r.from, kind: 'megastructure', sites: sitesOut, regen: r, limits, hash: sha({ regen: r, sites: sitesOut, limits, grid }) });
+  }
+  // brief 007 A: signatures[] (SpaceHQ_Portal): a regen order on a drum site; limits = its ground rect and portal
+  for (const g of (p.signatures ?? []) as { id: string; ground: Rect; c: [number, number]; height: number; portal?: unknown; regen?: { from: string; variant: string } & Record<string, unknown> }[]) {
+    const r = g.regen; if (!r) continue;
+    const sitesOut = [{ id: g.id, rect: g.ground }], limits = { c: g.c, height: g.height, portal: g.portal };
+    pieces.push({ id: r.variant, from: r.from, kind: 'signature', sites: sitesOut, regen: r, limits, hash: sha({ regen: r, sites: sitesOut, limits, grid }) });
   }
   return { plan: 'contracts/world/harbour-district.plan.json', grid, pieces };
 }

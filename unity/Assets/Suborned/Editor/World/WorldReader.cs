@@ -52,14 +52,16 @@ namespace Suborned.World
             w.Roofs = Each(o, "roofs", x => new RoofDto
             {
                 Id = Id(x), Building = J.S(x, "building"), Programme = J.S(x, "programme"), Surface = J.S(x, "surface"), Form = J.S(x, "form"), Z = J.F(x, "z"), Parapet = J.F(x, "parapet"), Yaw = J.F(x, "yaw"),
-                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")),
+                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")), Crown = Kit(J.Get(x, "crown")),
             });
             w.Frontages = Each(o, "frontages", Frontage);
             w.Connectors = Each(o, "connectors", c => new ConnectorDto
             {
                 Id = Id(c), Kind = J.S(c, "kind"), Host = J.S(c, "host"), From = J.S(c, "from"), To = J.S(c, "to"), Serves = Strs(c, "serves"), Foot = J.P(c, "foot"), Head = J.P(c, "head"),
                 Ring = J.Poly(c, "ring"), Bottom = J.F(c, "bottom"), Top = J.F(c, "top"), Width = J.F(c, "width"), Yaw = J.F(c, "yaw"), StepFree = J.B(c, "stepFree"),
+                Dress = Each(c, "dress", Prim),
             });
+            w.Skins = Each(o, "skins", Skin);
             w.Street = Each(o, "street", StreetItem);
             w.Levels = Each(o, "levels", l => new LevelDto
             {
@@ -84,6 +86,31 @@ namespace Suborned.World
                 Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit),
             });
             w.Gates = Each(o, "gates", Mass);
+            w.Facades = Each(o, "facades", f => new FacadeDto
+            {
+                Id = Id(f), Building = J.S(f, "building"), Form = J.S(f, "form"), Storeys = (int)J.F(f, "storeys"), Edge = (int)J.F(f, "edge"),
+                Kit = Kit(J.Get(f, "kit")) ?? throw new InvalidDataException($"World: facade {Id(f)} has no kit"), Base = J.F(f, "base"), A = J.P(f, "a"), B = J.P(f, "b"),
+            });
+            w.Signatures = Each(o, "signatures", x => new SignatureDto
+            {
+                Id = Id(x), Kind = J.S(x, "kind"), Source = J.S(x, "source"), Pending = J.S(x, "pending"), Why = J.S(x, "why"), Kit = Kit(J.Get(x, "kit")),
+                Ground = J.Get(x, "ground") is List<object> gr ? gr.ConvertAll(v => (float)(double)v).ToArray() : null, Base = J.F(x, "base"), Tip = J.F(x, "tip"),
+            });
+            if (J.Get(o, "horizon") is { } hz)
+            {
+                var sea = Req(hz, "sea");
+                w.Horizon = new HorizonDto
+                {
+                    Centre = J.P(hz, "centre"), Haze = J.S(hz, "haze"), SeaSurface = J.S(sea, "surface"), SeaCentre = J.P(sea, "centre"),
+                    SeaSize = J.F(sea, "size"), SeaLevel = J.F(sea, "level"), SeaFadeFrom = J.F(sea, "fadeFrom"),
+                    SeaSectors = Each(sea, "sectors", Flat), Land = Each(hz, "land", Flat), Banks = Each(hz, "banks", Mass),
+                    Pieces = Each(hz, "pieces", x => new HorizonPieceDto
+                    {
+                        Id = Id(x), Ring = J.S(x, "ring"), Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: horizon piece {Id(x)} has no kit"), Base = J.F(x, "base"), Haze = J.F(x, "haze"),
+                        TiltDeg = J.Get(x, "tilt") is { } t ? J.F(t, "deg") : 0f, TiltYaw = J.Get(x, "tilt") is { } t2 ? J.F(t2, "yaw") : 0f,
+                    }),
+                };
+            }
             if (J.Get(o, "counts") is Dictionary<string, object> counts)
             {
                 w.Counts = new Dictionary<string, int>();
@@ -92,9 +119,33 @@ namespace Suborned.World
             return w;
         }
 
+        static WaterDto Flat(object x) => new() { Id = Id(x), Surface = J.S(x, "surface"), Ring = J.Poly(x, "ring"), Level = J.F(x, "level") };
+
+        static float[] Floats(object o, string key)
+        {
+            var l = J.Get(o, key) as List<object>; if (l == null) return new float[0];
+            var r = new float[l.Count]; for (int i = 0; i < r.Length; i++) r[i] = (float)(double)l[i]; return r;
+        }
+
+        static SkinDto Skin(object x)
+        {
+            var g = Req(x, "glass"); var p = Req(x, "pier"); var ph = Req(x, "porthole");
+            return new SkinDto
+            {
+                Id = Id(x), Building = J.S(x, "building"), Family = J.S(x, "family"), Accent = J.S(x, "accent"),
+                GlassSurface = J.S(g, "surface"), GlassShare = J.F(g, "share"), MaxPane = J.F(g, "maxPane"), Sill = J.F(g, "sill"), Head = J.F(g, "head"), Reveal = J.F(g, "reveal"), Mullion = J.F(g, "mullion"),
+                PierSurface = J.S(p, "surface"), Frame = J.F(p, "frame"), FrameSurface = J.S(p, "frameSurface"),
+                PortholeD = J.F(ph, "d"), PortholeRing = J.F(ph, "ring"), RingSurface = J.S(ph, "ringSurface"), PerBay = (int)J.F(ph, "perBay"),
+                Faces = Each(x, "faces", f => new SkinFaceDto
+                {
+                    Mass = J.S(f, "mass"), Edge = (int)J.F(f, "edge"), A = J.P(f, "a"), B = J.P(f, "b"), Bays = J.S(f, "bays") ?? "", Rows = Floats(f, "rows"), Portholes = Floats(f, "portholes"), Glass = J.F(f, "glass"),
+                }),
+            };
+        }
+
         static MassDto Mass(object m) => new()
         {
-            Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"),
+            Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
         };
 
         static Vector3 V3(object o, string key) { var a = J.A(o, key); return new Vector3((float)(double)a[0], (float)(double)a[1], (float)(double)a[2]); }
@@ -120,7 +171,7 @@ namespace Suborned.World
                 A = J.P(f, "a"), B = J.P(f, "b"), Normal = J.P(f, "normal"), Lobby = J.B(f, "lobby"), Anchor = J.B(f, "anchor"), Staffed = J.B(f, "staffed"),
                 SpillKind = J.S(spill, "kind"), SpillDepth = J.F(spill, "depth"), HoursService = hours is string, HoursFrom = h != null ? (float)(double)h[0] : 0, HoursTo = h != null ? (float)(double)h[1] : 0,
                 Motif = J.S(sign, "motif"), Icon = J.S(sign, "icon"), Palette = J.S(sign, "palette"),
-                Source = J.S(f, "source"), SignKit = Kit(J.Get(f, "signKit")),
+                Source = J.S(f, "source"), Facade = J.S(f, "facade"), SignKit = Kit(J.Get(f, "signKit")),
                 Front = Prim(J.Get(f, "front")), Entrance = Prim(J.Get(f, "entrance")), Canopy = Prim(J.Get(f, "canopy")), Sign = Prim(sign), Service = svc != null ? Prim(svc) : null,
             };
         }

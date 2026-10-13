@@ -79,7 +79,7 @@ namespace Suborned.World
                 "stair" => "core",
                 "residential" => "punched",
                 "limestone" or "civic" => "grand",
-                "tower" => "curtain",
+                "tower" => "band", // no curtain wall (grammar §3)
                 _ => "band",
             };
         }

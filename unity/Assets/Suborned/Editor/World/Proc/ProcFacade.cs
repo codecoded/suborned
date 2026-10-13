@@ -21,7 +21,14 @@ namespace Suborned.World
                 B = B, G = g, H = h, Dice = new Dice(m.Id, 17), D = ProcKit.Detail(new Vector2(bounds.center.x, bounds.center.z)),
                 Wall = h.Wall, Plinth = h.Plinth, Roof = h.Roof, A = h.A, Bc = h.B,
                 Base = m.Base, Top = m.Base + m.Height, Podium = m.Id.EndsWith("/podium"), Tower = m.Surface == "tower",
+                MassId = m.Id, Skin = ProcSkin.Of(m.Id),
             };
+            MeshKit skinKit = null;
+            if (c.Skin != null)
+            {   // the export's skin decides family, accent, glass and bays (brief 007 round 2): one accent role per building
+                skinKit = new MeshKit(); c.S = new Pb(skinKit, spec.Atlas);
+                c.A = c.Bc = ProcSkin.Swatch(c.Skin.Accent);
+            }
             bool body = c.Base >= 1f;
             c.GroundTop = c.Base < 1f ? c.Base + spec.Ground : c.Base;
             if (h.Fronts.Any(f => f.Z >= c.Base - 0.3f && f.Z < c.Top)) c.GroundTop = Mathf.Max(c.GroundTop, c.Base + spec.GroundUpper);
@@ -42,14 +49,25 @@ namespace Suborned.World
                 var a = rr.Pts[i]; var b = rr.Pts[(i + 1) % rr.Pts.Length];
                 var w = new WallFrame(a, b);
                 if (w.Len < 0.2f) continue;
-                Edge(c, spec, w, rr.Facet[i], Ext(rr, i, 0), Ext(rr, (i + 1) % rr.Pts.Length, 1), floors, sib);
+                float eL = Ext(rr, i, 0), eR = Ext(rr, (i + 1) % rr.Pts.Length, 1);
+                var spans = KitCover.Spans(hostId, w, c.Base);
+                if (spans.Count == 0) { Edge(c, spec, w, rr.Facet[i], eL, eR, floors, sib); continue; }
+                // kit facade pieces stand on part of this wall (brief 007 E): leave them that span up to their top
+                foreach (var (s0, s1, top) in KitCover.Split(spans, w.Len))
+                {
+                    if (top >= c.Top + Parapet - 0.05f) continue;
+                    var sub = w.Sub(s0, s1);
+                    Edge(c, spec, sub, rr.Facet[i], s0 <= 0.01f ? eL : 0f, s1 >= w.Len - 0.01f ? eR : 0f, floors, sib, top);
+                }
             }
             int vg = kit.VertexCount;
-            if (!c.Podium || h.BodyRing == null) Googie(c, spec, rr.Pts, g);
-            if (body && g.Corner == "tower" && c.Top - c.Base >= 7f) CornerTower(c, spec, ring, g);
+            bool kitFaced = KitCover.HasCovers(hostId); // its street faces are kit pieces with their own crowns and corners
+            if ((!c.Podium || h.BodyRing == null) && !kitFaced) Googie(c, spec, rr.Pts, g);
+            if (body && g.Corner == "tower" && c.Top - c.Base >= 7f && !kitFaced) CornerTower(c, spec, ring, g);
             ProcKit.Tally("googie+tower", c.D, vg, kit.VertexCount);
             ProcKit.VertsByTier[c.D] += kit.VertexCount; ProcKit.MassesByTier[c.D]++;
             nodes.Part(el, m.Id + "/walls", kit, spec.Atlas.Matte);
+            if (skinKit != null) nodes.Part(ProcSkin.Element(c.Skin), m.Id + "/skin", skinKit, spec.Atlas.Matte);
         }
 
         /// <summary>Mitre extension of a profile at the start (side 0) or end (side 1) of edge i: depth * tan(turn / 2) at convex corners.</summary>
@@ -60,20 +78,35 @@ namespace Suborned.World
 
         // ------------------------------------------------------------------ one wall
 
-        static void Edge(Pc c, FacadeSpec spec, in WallFrame w, bool facet, float extL, float extR, List<(float z0, float h)> floors, Vector2[] sibling)
+        /// <summary>One wall. hidden = top of a kit facade piece standing on it (NegativeInfinity: none): storeys wholly under it, the
+        /// ground zone under it and (when it reaches the parapet) the crown are left to the piece.</summary>
+        static void Edge(Pc c, FacadeSpec spec, in WallFrame w, bool facet, float extL, float extR, List<(float z0, float h)> floors, Vector2[] sibling, float hidden = float.NegativeInfinity)
         {
             var B = c.B; var g = c.G;
             bool bands = facet || w.Len < 2.5f;
             // wall below the floors: ground zone (podium) or nothing (body starts at its base)
             int v0 = c.B.K.VertexCount;
-            if (c.Base < 1f) Ground(c, spec, w, bands);
+            if (c.Base < 1f && hidden < c.GroundTop) Ground(c, spec, w, bands);
             ProcKit.Tally("ground", c.D, v0, c.B.K.VertexCount);
             if (floors.Count > 0)
             {
                 int nb = bands ? 1 : Mathf.Max(1, Mathf.RoundToInt(w.Len / g.Bay)); float bw = w.Len / nb;
+                var face = c.Skin != null && !bands ? ProcSkin.Face(c.MassId, w) : null;
                 for (int fi = 0; fi < floors.Count; fi++)
                 {
                     var (z0, fh) = floors[fi];
+                    if (z0 + fh <= hidden + 0.01f) continue;
+                    if (c.Skin != null && ProcSkin.BandAt(z0) && z0 > c.Base + 0.05f && z0 + 0.8f < c.Top)
+                    { var keep = c.B; c.B = c.S; ProcSkin.Bands(c, c.Skin, w, z0, extL, extR); c.B = keep; }
+                    if (face != null)
+                    {   // the skin's bays on this face (a storey without a window row is plain stone)
+                        int vs = c.S.K.VertexCount;
+                        if (ProcSkin.HasRow(face, z0)) { var keep = c.B; c.B = c.S; ProcSkin.Storey(c, c.Skin, face, w, z0, fh); c.B = keep; }
+                        else ProcWindows.Wall(c, new Cell(w, 0, w.Len, z0, z0 + fh, 0, 1), c.Wall, Cls.Stone, 0, w.Len, z0, z0 + fh);
+                        ProcKit.Tally("skin", c.D, vs, c.S.K.VertexCount);
+                        CourseAt(c, g, w, fi, floors.Count, z0, extL, extR);
+                        continue;
+                    }
                     string zone = c.Podium || c.Base < 1f ? "pod" : c.Tower ? "mid" : floors.Count >= 3 && fi == 0 ? "base" : floors.Count >= 3 && fi == floors.Count - 1 ? "top" : floors.Count == 2 && fi == 1 ? "top" : "mid";
                     if (bands) { FacetBand(c, w, z0, fh); }
                     else
@@ -85,18 +118,33 @@ namespace Suborned.World
                             if (L == 'C') fam = g.Fam2;
                             int vv = B.K.VertexCount; ProcWindows.Draw(c, fam, cell, L); ProcKit.Tally("fam:" + (L == 'B' ? "pier" : fam), c.D, vv, B.K.VertexCount);
                         }
-                    // string courses: strong at the zone changes, slim at the others
-                    int vc = B.K.VertexCount;
-                    if (c.D >= 1 && fi > 0 && !(c.Podium && fi == 0))
-                    {
-                        bool strong = zone == "top" && floors.Count >= 3 || zone == "mid" && fi == 1 && floors.Count >= 4;
-                        if (strong) Course(c, w, 0, w.Len, z0 - 0.21f, 0.5f, extL, extR);
-                        else if (c.D >= 2 && ZoneFam(g, zone) != "ribbon") Course(c, w, 0, w.Len, z0 - 0.11f, 0.26f, 0, 0);
-                    }
-                    ProcKit.Tally("courses", c.D, vc, B.K.VertexCount);
+                    CourseAt(c, g, w, fi, floors.Count, z0, extL, extR);
                 }
             }
-            int vk = B.K.VertexCount; Crown(c, w, extL, extR, sibling); ProcKit.Tally("crown", c.D, vk, B.K.VertexCount);
+            if (c.Skin != null && !bands && ProcSkin.Face(c.MassId, w, false) is { } rowFace)
+                foreach (var z in rowFace.Rows)
+                {   // window rows that are no storey floor here (sheds: the porthole row under the eave)
+                    if (z < c.Base - 0.05f || z >= c.Top - 1f || z < hidden + 0.01f || floors.Exists(fl => Mathf.Abs(fl.z0 - z) < 0.15f)) continue;
+                    var keep = c.B; c.B = c.S; ProcSkin.Overlay(c, c.Skin, rowFace, w, z, c.Top - spec.Cap); c.B = keep;
+                }
+            int vk = B.K.VertexCount; if (hidden < c.Top + Parapet - 0.05f) Crown(c, w, extL, extR, sibling); ProcKit.Tally("crown", c.D, vk, B.K.VertexCount);
+        }
+
+        static string Zone(Pc c, int fi, int n) =>
+            c.Podium || c.Base < 1f ? "pod" : c.Tower ? "mid" : n >= 3 && fi == 0 ? "base" : n >= 3 && fi == n - 1 ? "top" : n == 2 && fi == 1 ? "top" : "mid";
+
+        /// <summary>String courses: strong at the zone changes, slim at the others (skinned faces: the strong ones only, the speed bands
+        /// mark the rest).</summary>
+        static void CourseAt(Pc c, Grammar g, in WallFrame w, int fi, int n, float z0, float extL, float extR)
+        {
+            var B = c.B; int vc = B.K.VertexCount; string zone = Zone(c, fi, n);
+            if (c.D >= 1 && fi > 0 && !(c.Podium && fi == 0))
+            {
+                bool strong = zone == "top" && n >= 3 || zone == "mid" && fi == 1 && n >= 4;
+                if (strong) Course(c, w, 0, w.Len, z0 - 0.21f, 0.5f, extL, extR);
+                else if (c.Skin == null && c.D >= 2 && ZoneFam(g, zone) != "ribbon") Course(c, w, 0, w.Len, z0 - 0.11f, 0.26f, 0, 0);
+            }
+            ProcKit.Tally("courses", c.D, vc, B.K.VertexCount);
         }
 
         static string ZoneFam(Grammar g, string zone) => zone switch { "base" => g.BaseFam, "top" => g.TopFam, "pod" => g.PodFam, _ => g.Fam };

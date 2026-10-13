@@ -1,10 +1,9 @@
 """Deco Kit landmark megastructures (Concepts/Streets/spaceage, mega): the 1950s space-age city's colossal
 machines, seen down the boulevard from 150-900 m. Pivot = footprint centre at ground (z = 0), front -Y, no bevel;
 the painted hull plating (hull_sheet.py, 8 m repeat) carries the hard-surface detail at scale.
-  SpaceHQ        space-fleet headquarters (spaceport_hq), the flagship's civic showpiece: limestone podium and
-                 grand stair, chrome flared skirt with gilded buttress fins, a fluted shaft of gold ribs, three chrome
-                 observation discs with gold rims, a 52 m chrome landing pad disc with a rocket liner, chrome gantry
-                 and radio mast; 250 m.
+  SpaceHQ        space-fleet headquarters, the flagship's civic showpiece: limestone podium and grand stair, then
+                 spacehq.tower: four stepped fluted cream tiers with gold ribs and turquoise speed bands, eight
+                 streamline buttresses, two chrome-and-gold galleries, a chrome-and-gold atom over a needle mast; 252 m.
   SphereStation  (sphere_station) 120 m panelled sphere on six lattice legs and a ring girder, equatorial gantry
                  trench, service towers, crown radome; 172 m.
   LinerDock      (liner_dock) 150 m rocket liner standing on its fins inside a 176 m lattice gantry with swing arms.
@@ -63,30 +62,10 @@ def space_hq(s):
     s.lathe([(40, 0), (40, 2.4), (36, 2.4), (36, 5.0), (0, 5.0)], pal.Limestone_Tex, seg=64)
     s.lathe([(36.05, 3.2), (36.05, 4.2)], pal.Gold, seg=64, cap_bottom=False, cap_top=False)
     grand_stair(s)
-    # flared skirt (concave), 12 buttress fins riding it out to the podium edge
-    flare = [(9.0 + 16.0 * (1 - k / 10) ** 2.2, 5.0 + 40.0 * k / 10) for k in range(11)]
-    s.lathe(flare, pal.Chrome, seg=64, cap_bottom=False, cap_top=False)
-    for k in range(12):
-        with s.at((0, 0, 0), (0, 0, 30 * k)), s.at((0, 0, 0), (90, 0, 0)):
-            fin = [(8.0, 5.0), (34.0, 5.0), (33.0, 9.0)] + [(r + 1.2, z) for r, z in flare[3:]] + [(8.0, 70.0)]
-            s.extrude(fin, -0.6, 0.6, pal.Gold)
-    fluted_shaft(s, 8.0, 45.0, 196.0, rib=pal.Gold)
-    s.lathe([(9.0, 45.0), (9.4, 47.0), (9.4, 49.0), (8.2, 50.0)], pal.Gold, seg=48, cap_bottom=False, cap_top=False)
-    for z, r in ((104.0, 19.0), (134.0, 16.5), (160.0, 14.0)):
-        lens(s, z, 8.4, r, 4.2, pal.Chrome, bead=pal.Gold)
-    # landing pad: the big chrome disc, an ivory deck with gold rings, a rail
-    lens(s, 196.0, 8.4, 26.0, 6.0, pal.Chrome, bead=pal.Gold)
-    s.lathe([(26.0 - 0.9, 202.0), (8.0, 202.0)], pal.Hull_Ivory, seg=64, cap_bottom=False, cap_top=False)
-    for r0, r1 in ((11.0, 12.0), (20.0, 21.0)):  # flat rings step inward to face up
-        s.lathe([(r1, 202.03), (r0, 202.03)], pal.Gold, seg=64, cap_bottom=False, cap_top=False)
-    s.lathe([(25.0, 202.0), (25.0, 203.1), (24.9, 203.1)], pal.Chrome, seg=64, cap_bottom=False, cap_top=False)
-    rocket(s, 202.0, 44.0, 3.0)
-    truss(s, (-13.0, 0.0, 202.0), (-13.0, 0.0, 250.0), 1.6, 1.0, 8, pal.Chrome)
-    for z in (215.0, 232.0):  # swing arms to the liner
-        strut(s, (-12.0, 0.0, z), (-3.2, 0.0, z), 0.6, pal.Chrome)
-    truss(s, (12.0, 6.0, 202.0), (12.0, 6.0, 238.0), 0.9, 0.3, 9, pal.Chrome)
-    with s.at((12.0, 6.0, 0.0)):  # radio mast needle
-        s.lathe([(0.0, 238.0), (0.25, 238.0), (0.05, 252.0), (0.0, 252.0)], pal.Chrome, seg=8)
+    # the flagship tower (spacehq.tower): stepped fluted tiers, buttresses, galleries, atom on a needle mast; tip 252.
+    # Sky 2026-10-13: an atom over a needle mast, not a rocket (the landing pad, liner and gantry are gone).
+    from spacehq import tower
+    tower(s, 5.0, fin_r=35.6)
 
 
 # ----------------------------------------------------------------- SphereStation
@@ -223,6 +202,11 @@ DT_R, DT_TOP = 9.0, 112.0
 def disc_tower(s):
     """(sky_bridges) Gate tower: flared limestone foot, fluted shaft ringed every 12 m, a panelled observation disc,
     glazed drum, a lattice crane jib and a ringed mast; 157 m."""
+    disc_tower_at(s, DT_TOP)
+
+
+def disc_tower_at(s, DT_TOP=DT_TOP):
+    """DT_TOP = the shaft top / disc floor (kit 112; a regen order puts it on the storey grid)."""
     s.lathe([(11.0, 0.0), (11.0, 2.0), (10.2, 4.0), (9.5, 10.0), (DT_R, 16.0)], pal.Limestone_Tex, seg=48,
             cap_bottom=False, cap_top=False)
     s.lathe([(11.03, 2.4), (11.03, 3.2)], pal.Enamel_Teal, seg=48, cap_bottom=False, cap_top=False)

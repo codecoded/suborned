@@ -20,6 +20,7 @@ namespace Suborned.World
                 if (standIns.Covers(r)) { standIns.Roof(layer, r); continue; }
                 var el = Nodes.Element(layer, r.Id);
                 if (r.Kit != null) placer.Place(el, layer.name, r.Kit, r.Kit.At, r.Z, r.Yaw);
+                if (r.Crown != null) placer.Place(el, layer.name, r.Crown, r.Crown.At, r.Z, r.Yaw); // grammar §6: every tower's crown
                 var h = fk.Resolve(r.Building); var d = new Dice(r.Id, 5);
                 string accent = d.Int(2) == 0 ? h.A : h.B;
                 foreach (var p in Coplanar.Boxes(r.Parts))

@@ -66,7 +66,11 @@ namespace Suborned.World
             return r;
         }
 
+        /// <summary>The element has batched or kit geometry registered.</summary>
+        public static bool HasGeometry(Transform el) => triangles.TryGetValue(el, out var n) && n > 0;
+
         /// <summary>Elements under `layer` registered without geometry.</summary>
+
         public static int Empty(Transform layer) =>
             elements.Count(e => e.IsChildOf(layer) && triangles[e] == 0 && !covered.Contains(e));
 

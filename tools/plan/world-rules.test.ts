@@ -16,7 +16,7 @@ setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block));
 const base = generated(plan, d, civ);
-const KNOWN = ['F-2']; // fails on the live world: report to Datum, not weakened
+const KNOWN = ['F-2']; // fail on the live world: report to Datum, not weakened
 
 type W = any;
 /** The rules on a clone of the world with `mutate(w, gen, plan)` applied; returns the ids that fail. */
@@ -44,6 +44,12 @@ describe('world rules', () => {
     ['L-3', 'a stair 1 m wide', (w) => { first(w.connectors, (k: W) => k.kind === 'stair').width = 1; }],
     ['L-4', 'a deck level 3 m up over a carriageway', (w) => { w.levels = w.levels.map((l: W) => l.name === 'deck' ? { ...l, height: 3 } : l); }],
     ['L-5', 'stations with no stair bank, run or lift', (w, g) => { w.connectors = w.connectors.filter((k: W) => !/^bank\//.test(k.id)); g.connectors = w.connectors; }],
+    ['L-7', 'the Skyport lift as first built: 0.18 -> 89.6 from the south-west leg (the leg stops at 34)', (w) => { const k = w.connectors.find((q: W) => q.id === 'mega/skyport-tower/lift-sw'); k.top = 89.6; k.to = 'saucer'; }],
+    ['L-7', 'a lift shaft standing alone on open ground', (w) => { const k = first(w.connectors, (q: W) => q.kind === 'lift' && q.id.startsWith('bank/')); k.ring = k.ring.map((p: number[]) => [p[0] + 200, p[1] + 400]); }],
+    ['SG-1', 'a plot building standing on the SpaceHQ ground', (w) => { const g = plan.signatures![0]!.ground; w.buildings.push({ id: 'bld/parade-north/99/body', surface: 'commercial', ring: [[g[0] + 5, g[2] + 5], [g[0] + 25, g[2] + 5], [g[0] + 25, g[2] + 25], [g[0] + 5, g[2] + 25]], base: 0.18, height: 20 }); }],
+    ['P-1', 'a part standing in the Parade gate opening (the gate block without its opening)', (w) => { w.megastructures[0].parts.push({ id: 'mega/parade-galleries/gate-block', surface: 'limestone', ring: [[264, -20], [288, -20], [288, 20], [264, 20]], base: 9.43, height: 25.37 }); }],
+    ['SK-1', 'LinerDock as built, 205.1 m, on the liner berth', (w) => { const s = w.signatures.find((x: W) => x.id === 'tower/avenue-needle'); s.tip = 205.1; }],
+    ['SK-2', 'two crowns of one type 90 m apart that are not a pair', (_w, _g, p) => { const s = p.standards.buildings.towers.sites; s.find((x: W) => x.id === 'avenue-needle').crownType = 'disc'; }],
     ['MS-1', 'a megastructure with no reason', (_w, _g, p) => { p.megastructures[0].why = ''; }],
     ['MS-2', 'a footprint off the land it spans', (_w, _g, p) => { p.megastructures[0].footprint = [[900, 1000, 900, 1000]]; }],
     ['MS-3', 'a bridge over a sky rail pylon', (_w, _g, p) => { const [x, y] = d.pylons[0]!.p; const m = p.megastructures.find((q: W) => q.bridges?.length); m.bridges[0].rect = [x - 1, x + 1, y - 1, y + 1]; }],
@@ -62,6 +68,7 @@ describe('world rules', () => {
     ['SF-9', 'a station with no watchers', (w) => { w.street = w.street.filter((s: W) => !/camera|robot/.test(s.kind)); }],
     ['SF-11', 'a tree on a pylon face', (w) => { first(w.street, (s: W) => s.kind === 'tree' && s.z < 1).at = d.pylons[0]!.p; }],
     ['SF-12', 'a tram stop with no kit', (w) => { w.street = w.street.filter((s: W) => !s.edge.startsWith('stop/')); }],
+    ['SF-13', 'a station bank in the SpaceHQ hall lane', (w, _g, p) => { const sg = p.signatures.find((q: W) => q.id === 'spacehq' || q.ground), k = first(w.connectors, (q: W) => /^bank\/.+\/tower$/.test(q.id)), x = (sg.ground[0] + sg.ground[1]) / 2; k.ring = [[x - 1, -1], [x + 1, -1], [x + 1, 1], [x - 1, 1]]; }],
     ['SF-13', 'a station bank in the beam envelope', (w) => { const [x, y] = d.pylons[0]!.p, k = first(w.connectors, (q: W) => /^bank\/.+\/tower$/.test(q.id)); k.ring = [[x - 1, y - 1], [x + 1, y - 1], [x + 1, y + 1], [x - 1, y + 1]]; }],
     ['SF-15', 'a roof with an unknown programme', (w) => { w.roofs = w.roofs.map((r: W) => ({ ...r })); w.roofs[0].programme = 'no-such-programme'; }],
     ['SF-16', 'spill deeper than the frontage zone', (w) => { w.frontages[0].spill = { kind: 'tables', depth: 99 }; }],

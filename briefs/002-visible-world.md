@@ -1,5 +1,7 @@
 # 002 · Visible world: the Harbour District plan as a Unity graybox
 
+**Status (2026-10-12): superseded by 004 from A1 on; kept for history.** A0 mostly done: `contracts/world/civic-block.json` (`suborned.block/3`), C-0 locks the café and office, the mission layer is in `contracts/missions/handover/` with its overlay checks. Left over: mission words in the plan notes and in `harbour-district.life.json` (Datum, Pulse). A1 done (B-1). A and B done under 004 (`tools/world/export.ts`, `HarbourWorldBuilder.cs`; the checker counts 52 pylons). C (Suture review) is folded into 004 E. Below, `handover-block.json`, `suborned.block/2`, `tools/plan/export.ts` and "53 pylons" are as first written.
+
 Goal: the city stands in Unity as a graybox, rebuilt from the plan in `contracts/world/harbour-district.plan.json` by one command, so every plan change is visible the same day. The plan is the source; nothing in Unity is placed by hand.
 
 Scope (Sky, 2026-10-10): "we're just meant to be world building here, and then adding the NPC's and mission objectives after to suit the world" · "but we need the cafe and office placed in our world".

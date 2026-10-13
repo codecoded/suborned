@@ -11,10 +11,11 @@ import type { Site } from '../masses';
 import { fillTravel } from '../travel';
 import type { Core, Host, MegaOut } from '../types';
 import { columnsOf, lifted, stripsOf } from './colonnade';
-import { INSET, box, deckRec, faceOf, faceSide, host, rectMass, servedBy, sideEdge, slice, zOf } from './kit';
+import { INSET, box, prim, deckRec, faceOf, faceSide, host, rectMass, servedBy, sideEdge, slice, zOf } from './kit';
 
 type Cores = { at: number[]; every: number; from: string; to: string };
 type Canopy = { depth: number; surface: string; edges: { footprint: number; edge: 'x0' | 'x1' | 'y0' | 'y1' }[] };
+type GalleryCanopies = { edges: { footprint: number; edge: string }[]; x: [number, number]; span: number; spring: number; rise: number; ribs: number; surface?: string; supports: { every: number; pier: [number, number] } };
 type Range = { n: string; r0: Rect; axis: 0 | 1; dir: 1 | -1; lo: number; hi: number };
 
 export function arcade(ctx: Ctx, m: Megastructure, sites: Site[]): MegaOut {
@@ -52,6 +53,15 @@ export function arcade(ctx: Ctx, m: Megastructure, sites: Site[]): MegaOut {
       if (ce) { // the continuous chrome canopy over the face's frontage zone (outside the walk)
         const len = axis === 1 ? r0[1] - r0[0] : r0[3] - r0[2], c: V = axis === 1 ? [(r0[0] + r0[1]) / 2, dir > 0 ? r0[2] - canopy.depth / 2 : r0[3] + canopy.depth / 2] : [dir > 0 ? r0[0] - canopy.depth / 2 : r0[1] + canopy.depth / 2, (r0[2] + r0[3]) / 2];
         out.prims.push(box(`${n}/canopy`, canopy.surface, c, axis === 1 ? [len, canopy.depth, 0.3] : [canopy.depth, len, 0.3], ctx.B.groundCeiling, 0));
+      }
+      const gcn = (m as unknown as { galleryCanopies?: GalleryCanopies }).galleryCanopies, gce = gcn?.edges.find(e => e.footprint === i && e.edge === ce?.edge);
+      if (gcn && gce && axis === 1) { // glazed barrel over the deck gallery strip (open Parade, brief 007): barrel + chrome ribs + piers on the Parade-face line, all at the planned springing height
+        const x0 = Math.max(gcn.x[0], A[0]), x1 = Math.min(gcn.x[1], A[1]), len = x1 - x0, yc = (A[2] + A[3]) / 2, faceY = dir > 0 ? A[2] : A[3], cn = `${n}/gallery-canopy`, rw = 0.12;
+        out.prims.push(prim(`${cn}/glass`, 'vault', 'glass', [(x0 + x1) / 2, yc], [len, gcn.span, gcn.rise], gcn.spring, 0));
+        const nr = Math.floor(len / gcn.ribs + 1e-9);
+        for (let k = 0; k <= nr; k++) { const x = k === nr && len - nr * gcn.ribs < 0.5 ? x1 - rw / 2 : x0 + rw / 2 + k * gcn.ribs; out.prims.push(prim(`${cn}/rib-${k}`, 'vault', 'trim', [Math.min(x, x1 - rw / 2), yc], [rw, gcn.span, gcn.rise], gcn.spring, 0)); }
+        const [pw, pd] = gcn.supports.pier, np = Math.floor(len / gcn.supports.every + 1e-9);
+        for (let k = 0; k <= np; k++) { const x = Math.min(x0 + pw / 2 + k * gcn.supports.every, x1 - pw / 2); out.prims.push(box(`${cn}/pier-${k}`, 'column', [x, faceY], [pw, pd, gcn.spring - zd], zd)); }
       }
       // cores in the tall strip: from the listed positions, then every `every` m along the range
       const lo = axis === 1 ? r0[0] : r0[2], hi = axis === 1 ? r0[1] : r0[3], inRange = (v: number) => v >= lo + 6 && v <= hi - 6, pos: number[] = [];

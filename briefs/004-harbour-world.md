@@ -1,5 +1,7 @@
 # 004 · Harbour World: the district as a living atompunk city in Unity
 
+**Status (2026-10-12): in review.** A1 and B done: the checker exits 0 with every owed rule, and `bun run world` is byte-identical twice. C done (`HarbourWorldBuilder.cs`, 0 console errors, five shots), except there's no evidence yet that a clean Unity rebuild is identical. D: palette chosen. Presentation is 3D and the palette is a pastel/saturated mix (Sky, 2026-10-12), going into GDD v0.17.0 and the style contract. E open: Sky's review (flyby, props audit, planning mistakes), then Suture.
+
 Goal (Sky, 2026-10-11): "Let's see if our world map planner can convert to a great looking Unity world. Create the harbour district, make sure it's interesting, multi level with megastructures and proper working architecture, include shops, bars, repair shops etc, all places an atompunk world would have in the retro future."
 
 This brief takes over 002 from A1 onward and widens it from a flat graybox to a built city. 002 A0 (civic block without the mission layer) still runs first. The chain stays plan → checker → export → Unity, and every step is generated: Datum writes rules and places the big moves, generators fill the plots, and nothing in Unity is placed by hand (§09: nothing hand-authored; systems > scripts).

@@ -1,9 +1,9 @@
-// Rules on levels (L-1…L-6) and megastructures (MS-1…MS-5): conditions in standards.levels and the plan's megastructures[]
+// Rules on levels (L-1…L-7) and megastructures (MS-1…MS-5): conditions in standards.levels and the plan's megastructures[]
 // (Datum's A1 hand-off); MS-3, MS-4, B-6 (world-checks) and L-5 are Datum's scratch check out/datum/mega-check.ts as rules.
 import { deckGroups, isWayDown } from '../world/gen/connectors';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist, lineToPoly } from './geom';
-import { type R4, type WCtx, TOL, bb, f1, rectDist, rule } from './world-ctx';
+import { type R4, type WCtx, TOL, bb, f1, rectDist, ringGap, rule } from './world-ctx';
 
 const zOf = (c: WCtx) => Object.fromEntries((c.L.list as { id: string; z: number }[]).map(l => [l.id, l.z])) as Record<string, number>;
 const skyLines = (c: WCtx) => c.d.sky.map(p => p.samples.map(s => s.p as V));
@@ -179,6 +179,9 @@ export function levelChecks(c: WCtx): Check[] {
       const plot = d.plots.find(p => built.has(p.use) && inPoly(ctr, p.polyV));
       if (plot) bad5.push(`${k.id} stands on plot ${plot.id}`);
       if (/\/(tower|run-a|lift)$/.test(k.id) && lines.some(l => lineToPoly(l, ring) < half + 1 - TOL)) bad5.push(`${k.id} inside the beam envelope + 1 m`);
+      // brief 007: the stair tower and the lift stand outside the platform's outer edge (platformClear 7.75 = envelope half + platform 4), never under it: bank/S1/circus/l/tower at y 4.75–11.75 fails
+      const pc = S.transit.stationEntrance.platformClear as number | undefined;
+      if (pc && /\/(tower|lift)$/.test(k.id) && lines.some(l => lineToPoly(l, ring) < pc - TOL)) bad5.push(`${k.id} under the platform (< ${pc} m from the line)`);
     }
   }
   const stations = (plan.skyrail as any[]).flatMap(l => (l.stations ?? []).map((s: any) => ({ ...s, line: l.id })));
@@ -193,13 +196,13 @@ export function levelChecks(c: WCtx): Check[] {
       for (const b of sb) if (Math.min(b.rect[1] - b.rect[0], b.rect[3] - b.rect[2]) < mw5(L) - TOL) bad5.push(`${m.id}/${b.id} narrower than a skybridge`);
     }
   }
-  out.push(rule('L-5', G, 'Stations: every side has a stair bank, escalator run and lift on public ground outside the beam envelope + 1 m; a megastructure concourse within 30 m joins by a skybridge ≥ 5 m', plats.length, bad5, 'all', 'standards.levels.station · out/datum/mega-check.ts L-5'));
+  out.push(rule('L-5', G, 'Stations: every side has a stair bank, escalator run and lift on public ground outside the beam envelope + 1 m (stair tower and lift outside the platform, ≥ platformClear); a megastructure concourse within 30 m joins by a skybridge ≥ 5 m', plats.length, bad5, 'all', 'standards.levels.station · out/datum/mega-check.ts L-5'));
 
   // L-6 ids and heights: ids are unique and well formed across every layer; connectors serve ids that exist; levels sit at the standard heights
   const bad6: string[] = [], all: string[] = [];
   const push = (xs: string[]) => all.push(...xs);
   push(w.buildings.map(m => m.id)); push(w.civic.map(m => m.id)); push(w.frontages.flatMap(f => [f.id, f.front.id, f.entrance.id, f.canopy.id, f.sign.id, ...(f.service ? [f.service.id] : [])]));
-  push(w.roofs.flatMap(r => [r.id, ...r.parts.map(p => p.id)])); push(conns.map(k => k.id)); push(w.street.map(s => s.id)); push(decks.map(x => x.id));
+  push(w.roofs.flatMap(r => [r.id, ...r.parts.map(p => p.id)])); push(conns.flatMap(k => [k.id, ...(k.dress ?? []).map(p => p.id)])); push(w.street.map(s => s.id)); push(decks.map(x => x.id));
   push(w.megastructures.flatMap(m => [...m.parts.map(p => p.id), ...m.prims.map(p => p.id)])); push(w.transit.stations.map(s => s.id)); push(w.transit.stops.map(s => s.id)); push(w.ground.plots.map(p => p.id));
   const seenId = new Set<string>(), dup = new Set<string>();
   for (const id of all) { if (seenId.has(id)) dup.add(id); seenId.add(id); if (!/^[A-Za-z0-9][A-Za-z0-9_\-./]*$/.test(id)) bad6.push(`${id}: malformed id`); }
@@ -213,6 +216,44 @@ export function levelChecks(c: WCtx): Check[] {
   if (Math.abs((z.concourse ?? 0) - plan.standards.skyrail.height) > TOL) bad6.push(`concourse z ${z.concourse} ≠ skyrail.height ${plan.standards.skyrail.height}`);
   for (const l of w.levels) if (Math.abs(l.height - (z[l.name] ?? NaN)) > TOL) bad6.push(`${l.id} height ${l.height} ≠ plan ${z[l.name]}`);
   out.push(rule('L-6', G, 'Ids are unique and well formed in every layer; connectors serve existing decks; levels are street 0, deck 9.43, concourse = sky rail height', all.length, bad6, 'all', 'brief 004 (every element has a stable id) · standards.levels.list'));
+
+  // L-7 a lift is attached along its whole run: at every height from its bottom to its top the shaft stands inside or within attachGap of a solid that is there
+  // at that height (a building, megastructure part or prim, civic mass, gate, stair tower or stair core, deck slab, station platform or landmark). Failing example (flyby
+  // 2026-10-13): mega/skyport-tower/lift-sw ran 0.18 -> 89.6 from the south-west leg, which stops at 34: above it the shaft stood alone 29 m from the stem.
+  const gap7 = (L.connectors.lift.attachGap as number | undefined) ?? ATTACH_GAP, bad7: string[] = [], shafts = conns.filter(k => k.kind === 'lift' || k.kind === 'goodsLift');
+  const solids = attachSolids(c);
+  for (const k of shafts) {
+    const kb = bb(k.ring as V[]), near = solids.filter(x => x.id !== k.id && x.bb[0] <= kb[1] + gap7 + 1 && x.bb[1] >= kb[0] - gap7 - 1 && x.bb[2] <= kb[3] + gap7 + 1 && x.bb[3] >= kb[2] - gap7 - 1);
+    const zs: number[] = []; for (let zz = k.bottom + 0.05; zz < k.top - 0.05; zz += 1) zs.push(zz); zs.push(k.top - 0.05);
+    let from = NaN, to = NaN, far = 0;
+    for (const zz of zs) {
+      const g = Math.min(Infinity, ...near.filter(x => x.z0 <= zz + 1e-6 && x.z1 >= zz - 1e-6).map(x => ringGap(k.ring as V[], x.ring)));
+      if (g > gap7 + TOL) { if (isNaN(from)) from = zz; to = zz; far = Math.max(far, g); }
+    }
+    if (!isNaN(from)) bad7.push(`${k.id} stands alone from z ${f1(from)} to ${f1(to)} (${isFinite(far) ? `${f1(far)} m` : 'nothing'} from the nearest structure at that height)`);
+  }
+  out.push(rule('L-7', G, `Every lift is attached to a structure along its whole run: at every height of the shaft a solid stands within ${gap7} m`, shafts.length, bad7, `≤ ${gap7} m`, 'standards.levels.connectors.lift (attachGap [S]; the kit lift_tube stands 0.7 m off the Skyport stem on a spine) · brief 007 round 2 (Skyport lifts floated above the legs)'));
+  return out;
+}
+
+/** L-7's default attach gap (m) until standards.levels.connectors.lift.attachGap is in the plan (Datum): the kit's lift tube stands LIFT_R 9.2 - r 1.5 - stem 7 = 0.7 m off the Skyport stem, tied by a spine. */
+export const ATTACH_GAP = 0.75;
+type Solid = { id: string; ring: V[]; z0: number; z1: number; bb: R4 };
+/** Everything a lift may be attached to, as plan rings with a z range. */
+export function attachSolids(c: WCtx): Solid[] {
+  const { w } = c, out: Solid[] = [], add = (id: string, ring: V[], z0: number, z1: number) => out.push({ id, ring, z0, z1, bb: bb(ring) });
+  const circle = (cc: V, r: number): V[] => { const R = r / Math.cos(Math.PI / 16); return Array.from({ length: 16 }, (_, i) => [cc[0] + R * Math.cos((i * Math.PI) / 8), cc[1] + R * Math.sin((i * Math.PI) / 8)] as V); }; // circumscribed: the polygon holds the whole round solid
+  const primRing = (p: { shape: string; c: V; size: [number, number, number]; yaw: number }): V[] => {
+    if (p.shape === 'cyl' || p.shape === 'sphere' || p.shape === 'saucer') return circle(p.c, p.size[0] / 2);
+    const [a, b] = [p.size[0] / 2, p.size[1] / 2], cs = Math.cos(p.yaw), sn = Math.sin(p.yaw);
+    return ([[-a, -b], [a, -b], [a, b], [-a, b]] as V[]).map(([x, y]) => [p.c[0] + x * cs - y * sn, p.c[1] + x * sn + y * cs] as V);
+  };
+  for (const m of [...w.buildings, ...w.civic, ...w.gates, ...w.transit.stations, ...w.megastructures.flatMap(g => g.parts)]) add(m.id, m.ring as V[], m.base, m.base + m.height);
+  for (const p of w.megastructures.flatMap(g => g.prims)) add(p.id, primRing(p as any), p.base, p.base + p.size[2]);
+  // stair towers and stair cores (a vertical stair: foot = head, the core's enclosure) are structures a lift car rides beside or inside
+  for (const k of w.connectors) if (k.kind === 'stairTower' || (k.kind === 'stair' && k.foot[0] === k.head[0] && k.foot[1] === k.head[1])) add(k.id, k.ring as V[], k.bottom, k.top);
+  for (const l of w.levels) for (const dk of l.decks) add(dk.id, dk.ring as V[], l.height - dk.thickness, l.height);
+  for (const l of w.landmarks) add(l.id, circle(l.centre as V, l.radius), l.base, l.base + (l.shape === 'sphere' ? 2 * l.radius : l.height));
   return out;
 }
 const mw5 = (L: any) => L.minWidth.skybridge as number;

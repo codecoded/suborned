@@ -30,6 +30,7 @@ namespace Suborned.World
                 ["ground"] = g.Roads.Count + g.Circuses.Count + g.Water.Count + g.Quays.Count + g.Foot.Count + g.Medians.Count + g.Flats.Count + g.Plots.Count,
                 ["transit"] = w.Transit.Tram.Count + w.Transit.SkyRail.Count + w.Transit.Stops.Count + w.Transit.Stations.Count,
                 ["buildings"] = w.Buildings.Count,
+                ["skins"] = w.Skins.Count,
                 ["roofs"] = w.Roofs.Count,
                 ["frontages"] = w.Frontages.Count,
                 ["connectors"] = w.Connectors.Count,
@@ -40,6 +41,9 @@ namespace Suborned.World
                 ["civic"] = w.Civic.Count,
                 ["gates"] = w.Gates.Count,
                 ["landmarks"] = w.Landmarks.Count,
+                ["facades"] = w.Facades.Count,
+                ["signatures"] = w.Signatures.Count,
+                ["horizon"] = w.Horizon?.Pieces.Count ?? 0,
             };
         }
 
@@ -79,8 +83,12 @@ namespace Suborned.World
                 ("street", w.Street.Count(x => x.Kit != null), w.Street.Count(x => x.Kit == null), 0),
                 ("frontages", w.Frontages.Count(f => f.SignKit != null), w.Frontages.Count, 0),
                 ("landmarks", w.Landmarks.Sum(l => (l.Kit != null ? 1 : 0) + l.Kits.Count), w.Landmarks.Count(l => l.Kit == null), 0),
-                ("buildings", s.Towers, w.Buildings.Count - coveredMasses, coveredMasses - s.Towers),
-                ("roofs", w.Roofs.Count(r => r.Kit != null && !s.Covers(r)), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
+                ("buildings", 0, w.Buildings.Count - coveredMasses, coveredMasses),
+                ("roofs", w.Roofs.Count(r => !s.Covers(r)) == 0 ? 0 : w.Roofs.Where(r => !s.Covers(r)).Sum(r => (r.Kit != null ? 1 : 0) + (r.Crown != null ? 1 : 0)), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
+                ("facades", w.Facades.Count, 0, 0),
+                ("signatures", w.Signatures.Count(x => x.Kit != null), w.Signatures.Count(x => x.Kit == null), 0),
+                ("horizon", w.Horizon?.Pieces.Count ?? 0, 0, 0),
+                ("civic", w.Civic.Count(m => m.Kit != null), w.Civic.Count(m => m.Kit == null), 0),
                 ("megastructures", w.Megastructures.Count(m => m.Gateway != null) + s.Megas, w.Megastructures.Count(m => !s.Covers(m)), 0),
             };
             int bad = 0; var sb = new StringBuilder("World: kit/procedural/covered");

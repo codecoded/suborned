@@ -10,8 +10,10 @@ namespace Suborned.World
         public int D;                        // detail tier: 2 hero (recesses, profiles, slats), 1 mid, 0 far (flat)
         public string Wall, Plinth, Roof, A, Bc;
         public float Base, Top, GroundTop; public bool Podium, Tower;
-        public static readonly string[] GlassSw = { "glass_a", "glass_b", "glass_c" };
-        public string Glass() => GlassSw[Dice.Int(3)];
+        public string MassId; public SkinDto Skin; public Pb S; // the export's skin for this mass (null: the grammar alone) and its painter (skins layer)
+        /// <summary>Clear glass swatches (facade.json `glass`; no blue tints, grammar §3), set from the spec each build.</summary>
+        public static string[] GlassSw = { "glass_clear" };
+        public string Glass() => GlassSw[Dice.Int(3) % GlassSw.Length];
         public float Recess => D >= 2 ? 0.34f : D == 1 ? 0.16f : 0f;
     }
 
@@ -24,7 +26,7 @@ namespace Suborned.World
     }
 
     /// <summary>Window families: ribbon, porthole, saw-tooth, louvre, glass block, brise-soleil, cantilevered balconies, fins,
-    /// eyebrow canopies, punched, curtain; each draws its whole cell (the wall around its openings included), openings set
+    /// eyebrow canopies, punched (no curtain wall: grammar §3); each draws its whole cell (the wall around its openings included), openings set
     /// back with reveals, sills and mullions at the hero tier.</summary>
     public static class ProcWindows
     {
@@ -91,7 +93,7 @@ namespace Suborned.World
             if (letter == 'B') { h0 = (k.S0 + k.S1) * 0.5f - 0.25f; h1 = h0 + 0.5f; g0 = k.Z0 + 0.9f; g1 = k.Z1 - 0.9f; }
             else switch (fam)
             {
-                case "ribbon": case "brise": case "curtain": h0 = k.S0 + 0.1f; h1 = k.S1 - 0.1f; below = c.A; break;
+                case "ribbon": case "brise": h0 = k.S0 + 0.1f; h1 = k.S1 - 0.1f; below = c.A; break;
                 case "porthole": case "glassblock": h0 = (k.S0 + k.S1) * 0.5f - 0.7f; h1 = h0 + 1.4f; g0 = k.Z0 + 0.9f; g1 = k.Z1 - 0.7f; break;
                 case "balcony": h0 = (k.S0 + k.S1) * 0.5f - 0.85f; h1 = h0 + 1.7f; break;
             }
@@ -115,7 +117,6 @@ namespace Suborned.World
                 case "balcony": Balcony(c, k); break;
                 case "fins": Fins(c, k); break;
                 case "eyebrow": Punched(c, k, true); break;
-                case "curtain": Curtain(c, k); break;
                 default: Punched(c, k, false); break;
             }
         }
@@ -153,19 +154,6 @@ namespace Suborned.World
             float fw = 0.34f;
             c.B.Box("white", Cls.Stone, k.W, k.S0 - fw * 0.5f, k.S0 + fw * 0.5f, k.Z0 - 0.1f, k.Z1 + 0.05f, 0f, 0.62f, c.D >= 2 ? 0.06f : 0f, null, false, 0.97f);
             if (k.Last) c.B.Box("white", Cls.Stone, k.W, k.S1 - fw * 0.5f, k.S1 + fw * 0.5f, k.Z0 - 0.1f, k.Z1 + 0.05f, 0f, 0.62f, c.D >= 2 ? 0.06f : 0f, null, false, 0.97f);
-        }
-
-        static void Curtain(Pc c, in Cell k)
-        {
-            Wall(c, k, c.A, Cls.Enamel, k.S0, k.S1, k.Z0, k.Z0 + 0.9f, 0.04f);
-            c.B.R(c.Glass(), Cls.Glass, k.W, k.S0, k.S1, k.Z0 + 0.9f, k.Z1, 0.02f, Ao(k, k.Z0 + 0.9f, 0.9f), 0.92f);
-            int n = Mathf.Max(2, Mathf.RoundToInt(k.Bw / 1.5f));
-            if (c.D >= 1) for (int i = 0; i <= n; i++)
-            {
-                float s = Mathf.Lerp(k.S0, k.S1, i / (float)n);
-                c.B.R("chrome", Cls.Chrome, k.W, s - 0.05f, s + 0.05f, k.Z0 + 0.9f, k.Z1, 0.1f);
-            }
-            if (c.D >= 1) c.B.Box("chrome", Cls.Chrome, k.W, k.S0, k.S1, k.Z0 + 0.82f, k.Z0 + 0.92f, 0f, 0.2f);
         }
 
         static void Pier(Pc c, in Cell k)

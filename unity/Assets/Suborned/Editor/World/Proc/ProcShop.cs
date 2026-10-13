@@ -25,19 +25,22 @@ namespace Suborned.World
             const float fd = 0.62f, pw = 0.4f;
             float bv = D >= 2 ? 0.05f : 0f;
 
-            B.Box(h.Plinth, Cls.Stone, w, 0, W, z0, z0 + 0.55f, 0f, 0.7f, bv);
-            B.Box(trade, Cls.Enamel, w, 0, pw, z0 + 0.55f, z0 + H, 0f, fd, bv);
-            B.Box(trade, Cls.Enamel, w, W - pw, W, z0 + 0.55f, z0 + H, 0f, fd, bv);
-            B.Box(trade, Cls.Enamel, w, pw, W - pw, z0 + 3.6f, z0 + H, 0f, fd, bv, null, true);
+            // A kit facade piece stands over this tenancy (f.Facade): the piece carries its own shopfront and canopy, so the shell is
+            // laid out (its canopy fixes the sign's height) but not drawn; the sign stays (brief 007 E).
+            var S = f.Facade == null ? B : new Pb(new MeshKit(), spec.Atlas);
+            S.Box(h.Plinth, Cls.Stone, w, 0, W, z0, z0 + 0.55f, 0f, 0.7f, bv);
+            S.Box(trade, Cls.Enamel, w, 0, pw, z0 + 0.55f, z0 + H, 0f, fd, bv);
+            S.Box(trade, Cls.Enamel, w, W - pw, W, z0 + 0.55f, z0 + H, 0f, fd, bv);
+            S.Box(trade, Cls.Enamel, w, pw, W - pw, z0 + 3.6f, z0 + H, 0f, fd, bv, null, true);
             // bulkhead (mosaic enamel), glazing set back, reveals
-            B.R(civic ? "white" : stripe, Cls.Enamel, w, pw, W - pw, z0 + 0.55f, z0 + 1.0f, 0.44f, 0.8f, 1f);
-            if (D >= 1) B.Box("chrome", Cls.Chrome, w, pw, W - pw, z0 + 1.0f, z0 + 1.06f, 0.26f, 0.5f);
+            S.R(civic ? "white" : stripe, Cls.Enamel, w, pw, W - pw, z0 + 0.55f, z0 + 1.0f, 0.44f, 0.8f, 1f);
+            if (D >= 1) S.Box("chrome", Cls.Chrome, w, pw, W - pw, z0 + 1.0f, z0 + 1.06f, 0.26f, 0.5f);
             string gl = spec.Glass[d.Int(spec.Glass.Length)];
-            B.R(gl, Cls.Glass, w, pw, W - pw, z0 + 1.06f, z0 + 3.6f, 0.26f, 0.8f, 0.92f);
+            S.R(gl, Cls.Glass, w, pw, W - pw, z0 + 1.06f, z0 + 3.6f, 0.26f, 0.8f, 0.92f);
             if (D >= 1)
             {
-                B.Quad(trade, Cls.Enamel, w.P(pw, z0 + 1f, 0.26f), w.P(pw, z0 + 3.6f, 0.26f), w.P(pw, z0 + 3.6f, fd), w.P(pw, z0 + 1f, fd), w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
-                B.Quad(trade, Cls.Enamel, w.P(W - pw, z0 + 1f, 0.26f), w.P(W - pw, z0 + 3.6f, 0.26f), w.P(W - pw, z0 + 3.6f, fd), w.P(W - pw, z0 + 1f, fd), -w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
+                S.Quad(trade, Cls.Enamel, w.P(pw, z0 + 1f, 0.26f), w.P(pw, z0 + 3.6f, 0.26f), w.P(pw, z0 + 3.6f, fd), w.P(pw, z0 + 1f, fd), w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
+                S.Quad(trade, Cls.Enamel, w.P(W - pw, z0 + 1f, 0.26f), w.P(W - pw, z0 + 3.6f, 0.26f), w.P(W - pw, z0 + 3.6f, fd), w.P(W - pw, z0 + 1f, fd), -w.Along, 0.5f, 0.5f, 0.85f, 0.85f);
             }
             float sd = f.Entrance != null ? w.S(f.Entrance.Centre) : W * 0.5f;
             int nm = Mathf.Max(1, Mathf.RoundToInt((W - 0.8f) / 1.5f));
@@ -46,18 +49,18 @@ namespace Suborned.World
                 {
                     float s = pw + (W - 2 * pw) * i / nm;
                     if (Mathf.Abs(s - sd) < 1.4f) continue;
-                    B.Box("chrome", Cls.Chrome, w, s - 0.035f, s + 0.035f, z0 + 1.06f, z0 + 3.6f, 0.26f, 0.34f);
+                    S.Box("chrome", Cls.Chrome, w, s - 0.035f, s + 0.035f, z0 + 1.06f, z0 + 3.6f, 0.26f, 0.34f);
                 }
             // entrance: chrome frame, dark glass door, bar handle
-            B.Box("chrome", Cls.Chrome, w, sd - 1.15f, sd - 1.05f, z0, z0 + 2.75f, 0.24f, 0.34f);
-            B.Box("chrome", Cls.Chrome, w, sd + 1.05f, sd + 1.15f, z0, z0 + 2.75f, 0.24f, 0.34f);
-            B.Box("chrome", Cls.Chrome, w, sd - 1.15f, sd + 1.15f, z0 + 2.65f, z0 + 2.75f, 0.24f, 0.34f);
-            B.R("glass_dark", Cls.Glass, w, sd - 1.05f, sd + 1.05f, z0, z0 + 2.65f, 0.2f, 0.7f, 0.9f);
+            S.Box("chrome", Cls.Chrome, w, sd - 1.15f, sd - 1.05f, z0, z0 + 2.75f, 0.24f, 0.34f);
+            S.Box("chrome", Cls.Chrome, w, sd + 1.05f, sd + 1.15f, z0, z0 + 2.75f, 0.24f, 0.34f);
+            S.Box("chrome", Cls.Chrome, w, sd - 1.15f, sd + 1.15f, z0 + 2.65f, z0 + 2.75f, 0.24f, 0.34f);
+            S.R("glass_dark", Cls.Glass, w, sd - 1.05f, sd + 1.05f, z0, z0 + 2.65f, 0.2f, 0.7f, 0.9f);
             if (D >= 2)
             {
-                B.Box("chrome", Cls.Chrome, w, sd - 0.03f, sd + 0.03f, z0, z0 + 2.65f, 0.2f, 0.26f);
-                B.Box("chrome", Cls.Chrome, w, sd - 0.55f, sd - 0.47f, z0 + 0.9f, z0 + 1.7f, 0.26f, 0.32f);
-                B.Box("chrome", Cls.Chrome, w, sd + 0.47f, sd + 0.55f, z0 + 0.9f, z0 + 1.7f, 0.26f, 0.32f);
+                S.Box("chrome", Cls.Chrome, w, sd - 0.03f, sd + 0.03f, z0, z0 + 2.65f, 0.2f, 0.26f);
+                S.Box("chrome", Cls.Chrome, w, sd - 0.55f, sd - 0.47f, z0 + 0.9f, z0 + 1.7f, 0.26f, 0.32f);
+                S.Box("chrome", Cls.Chrome, w, sd + 0.47f, sd + 0.55f, z0 + 0.9f, z0 + 1.7f, 0.26f, 0.32f);
             }
 
             float ct = z0 + 3.8f, c1 = 2.4f;
@@ -68,27 +71,27 @@ namespace Suborned.World
                 string cs = trade;
                 switch (d.Int(3))
                 {
-                    case 0: B.Box(cs, Cls.Enamel, w, 0, W, cz, ct, c0, c1, D >= 2 ? 0.07f : 0f, null, true); break;
+                    case 0: S.Box(cs, Cls.Enamel, w, 0, W, cz, ct, c0, c1, D >= 2 ? 0.07f : 0f, null, true); break;
                     case 1:
-                        B.Extrude(cs, Cls.Enamel, w, 0, W, new[] { new Vector2(c0, cz), new Vector2(c1, cz), new Vector2(c1, ct + 0.2f), new Vector2(c1 - 0.12f, ct + 0.2f), new Vector2(c1 - 0.12f, ct), new Vector2(c0, ct) });
+                        S.Extrude(cs, Cls.Enamel, w, 0, W, new[] { new Vector2(c0, cz), new Vector2(c1, cz), new Vector2(c1, ct + 0.2f), new Vector2(c1 - 0.12f, ct + 0.2f), new Vector2(c1 - 0.12f, ct), new Vector2(c0, ct) });
                         break;
                     default:
-                        B.Extrude(cs, Cls.Enamel, w, 0, W, new[] { new Vector2(c0, cz), new Vector2(c1 - 0.28f, cz), new Vector2(c1 - 0.08f, cz + 0.05f), new Vector2(c1, cz + 0.13f), new Vector2(c1, ct - 0.04f), new Vector2(c1 - 0.1f, ct), new Vector2(c0, ct) });
+                        S.Extrude(cs, Cls.Enamel, w, 0, W, new[] { new Vector2(c0, cz), new Vector2(c1 - 0.28f, cz), new Vector2(c1 - 0.08f, cz + 0.05f), new Vector2(c1, cz + 0.13f), new Vector2(c1, ct - 0.04f), new Vector2(c1 - 0.1f, ct), new Vector2(c0, ct) });
                         break;
                 }
-                if (D >= 1) B.Box(civic ? stripe : trade, Cls.Enamel, w, 0, W, cz - 0.36f, cz, c1 - 0.08f, c1, 0.03f);
-                if (D >= 2) B.Box("chrome", Cls.Chrome, w, 0, W, cz + 0.05f, cz + 0.1f, c1, c1 + 0.04f);
+                if (D >= 1) S.Box(civic ? stripe : trade, Cls.Enamel, w, 0, W, cz - 0.36f, cz, c1 - 0.08f, c1, 0.03f);
+                if (D >= 2) S.Box("chrome", Cls.Chrome, w, 0, W, cz + 0.05f, cz + 0.1f, c1, c1 + 0.04f);
                 if (!civic)
                 {
                     int ns = Mathf.Max(2, Mathf.RoundToInt(W / 0.75f)); float sw = W / ns;
                     for (int i = 1; i < ns; i += 2)
-                        B.Quad(stripe, Cls.Enamel, w.P(i * sw, ct + 0.01f, c0), w.P(i * sw, ct + 0.01f, c1 - 0.14f), w.P((i + 1) * sw, ct + 0.01f, c1 - 0.14f), w.P((i + 1) * sw, ct + 0.01f, c0), Vector3.up);
+                        S.Quad(stripe, Cls.Enamel, w.P(i * sw, ct + 0.01f, c0), w.P(i * sw, ct + 0.01f, c1 - 0.14f), w.P((i + 1) * sw, ct + 0.01f, c1 - 0.14f), w.P((i + 1) * sw, ct + 0.01f, c0), Vector3.up);
                 }
             }
             if (f.Service != null)
             {
                 var sv = f.Service; float s0 = w.S(sv.Centre) - sv.Size.x * 0.5f, s1 = w.S(sv.Centre) + sv.Size.x * 0.5f;
-                B.Box("service", Cls.Matte, w, s0, s1, sv.Base, sv.Base + sv.Size.z, w.D(sv.Centre) - sv.Size.y * 0.5f, w.D(sv.Centre) + sv.Size.y * 0.5f, bv);
+                S.Box("service", Cls.Matte, w, s0, s1, sv.Base, sv.Base + sv.Size.z, w.D(sv.Centre) - sv.Size.y * 0.5f, w.D(sv.Centre) + sv.Size.y * 0.5f, bv);
             }
             int v1 = kit.VertexCount;
             if (f.Sign != null && ProcGrammar.Signs.TryGetValue(f.Id, out var ss)) ProcSign(B, w, f, ss, W, ct, c1, z0, D);

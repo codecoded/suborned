@@ -12,6 +12,7 @@
     "decokit": "bun tools/decokit/run.ts",
     "block":"bun tools/plan/block.ts",
     "world": "bun tools/world/export.ts",
+    "life": "bun tools/life/cli.ts",
     "crew": "bun tools/crew/cards.ts",
     "ingest": "bun tools/rag/ingest.ts",
     "retrieve": "bun tools/rag/retrieval.ts",

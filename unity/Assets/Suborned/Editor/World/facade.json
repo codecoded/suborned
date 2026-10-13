@@ -1,5 +1,5 @@
 {
-  "note": "Facade kit data (Vela). Every colour the facade, shopfront and roof code uses lives here (hex, sRGB), baked into one 16x16 swatch atlas. Every value is at least dE2000 20 from the signals (cones #e03a2f, guard #f0a020, rivals #8a4fd0); the check is out/palette/facade-safety.ts. Geometry: bay and storey heights copy plan standards.buildings (bay 6, plinth 0.45, groundStorey 5.2, upperStorey 3.6); ground = plinth + groundStorey + the 0.18 pavement datum.",
+  "note": "Facade kit data (Vela). Every colour the facade, shopfront and roof code uses lives here (hex, sRGB), baked into one 16x16 swatch atlas. Every value is at least dE2000 20 from the signals (cones #e03a2f, guard #f0a020, rivals #8a4fd0); the check is out/palette/facade-safety.ts. Glass is clear (grammar §3: no blue curtain-wall tint): glass_clear = the kit window (DK_Window_Teal), glass_t = clear acrylic (DK_Glass) read opaque, glass_dark = shop doors (Latch, 007 round 2). Geometry: bay and storey heights copy plan standards.buildings (bay 6, plinth 0.45, groundStorey 5.2, upperStorey 3.6); ground = plinth + groundStorey + the 0.18 pavement datum.",
   "materials": { "matte": 0.12, "glossy": 0.6 },
   "geometry": { "bay": 6, "ground": 5.83, "groundUpper": 5.65, "storey": 3.6, "cap": 0.9, "parapet": 0.6, "plinth": 0.5, "shopHeight": 4.6 },
   "swatches": {
@@ -10,7 +10,7 @@
     "sky_w": "#cde3f1", "sky_p": "#b3d0e3", "sky_r": "#e4f0f8",
     "sand_w": "#e5d2b0", "sand_p": "#ddccad", "sand_r": "#f4e9d0",
     "ivory_w": "#f0efea", "ivory_p": "#dcdad2", "ivory_r": "#fafaf7",
-    "glass_a": "#3f7f9b", "glass_b": "#4d90aa", "glass_c": "#356f8a", "glass_t": "#6fb2c8", "glass_dark": "#295164",
+    "glass_clear": "#2e6d70", "glass_t": "#a9cfc8", "glass_dark": "#24484a",
     "teal": "#1cb9c6", "teal_soft": "#5fb8b0", "mint_e": "#8fe3c2", "cobalt": "#2f84e8", "sunshine": "#f8e26c", "flamingo": "#e8609a",
     "coral": "#f09a8a", "apricot": "#f8d0b6", "gold": "#c9c08e", "lilac": "#c4b2ec", "pastel_pink": "#f5a9c4", "pastel_sky": "#86cff2",
     "pastel_mint": "#b5ead7", "green": "#6cc481", "lime": "#b8d84a", "navy": "#296587",
@@ -37,7 +37,7 @@
     "gardens":   { "families": { "mint": 3, "cream": 4, "sky": 2 },               "enamel": ["e_mint", "e_green", "e_teal", "e_sky"] }
   },
   "paletteOverride": { "gold_trim": "#c9c08e" },
-  "glass": ["glass_a", "glass_b", "glass_c"],
+  "glass": ["glass_clear"],
   "roofs": ["roof_a", "roof_b", "roof_c", "roof_d", "roof_e"],
   "roofItems": { "trim": "@A", "column": "chrome", "park": "@leaf", "sign": "@B", "roof": "paper", "deck": "paper", "water": "pool", "awning": "@B", "landmark": "cobalt" },
   "greens": ["leaf_a", "leaf_b", "leaf_c"],
