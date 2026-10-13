@@ -1,11 +1,11 @@
 {
  "schema": "suborned.mission/2",
  "id": "handover",
- "note": "The Handover mission layer, moved unchanged out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Preserved only: nothing is re-sited or re-timed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
  "status": {
   "state": "preserved",
   "adjustable": ["timings", "placements"],
-  "note": "Sky 2026-10-14: the Handover mission is kept; its timings and placements can be adjusted now the world is regenerated (plan v0.2.0). Until Sky has walked the world and set them, the offsets are GDD §07's and the destinations, crew and routes are the ones moved out of the world, checked only by the overlay (C-3, M-1, W-1). Brief 003 stays on hold for that."
+  "note": "Sky 2026-10-14: the Handover mission is kept; its timings and placements can be adjusted now the world is regenerated (plan v0.2.0). Until Sky has walked the world and set them, the offsets are GDD §07's and the destinations, crew and routes are the ones moved out of the world but for the four door points re-sited to the Records Office tower faces and one rename (2026-10-14, see note; the lock in mission.test.ts declares each), checked only by the overlay (C-3, M-1, W-1, W-4). Brief 003 stays on hold for that."
  },
  "clock": {
   "unit": "m:ss",
@@ -129,7 +129,7 @@
    "surface": "ground"
   },
   {
-   "name": "Steps",
+   "name": "Terrace gate",
    "at": [-3.6, -29],
    "surface": "ground"
   },
@@ -180,7 +180,7 @@
   },
   {
    "name": "Office approach",
-   "at": [52, -30.5],
+   "at": [48.6, -30],
    "surface": "ground"
   },
   {
@@ -190,17 +190,17 @@
   },
   {
    "name": "Office entrance",
-   "at": [54.65, -30.5],
+   "at": [51.75, -30],
    "surface": "office-public"
   },
   {
    "name": "Official entrance",
-   "at": [73.25, -31],
+   "at": [76.25, -30],
    "surface": "office-official"
   },
   {
    "name": "Meet Vale",
-   "at": [73.25, -31],
+   "at": [76.25, -30],
    "surface": "office-official"
   },
   {
