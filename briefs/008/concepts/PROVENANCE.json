@@ -1,0 +1,47 @@
+{
+  "note": "The original concept paintings, made on 2026-09-26 alongside GDD v0.10.18. Copied unchanged on 2026-10-14. The generation prompts were not kept with the files.",
+  "source": "~/Projects/ai-game-dev/docs/",
+  "decision": "Sky, 2026-10-14: the reference for the civic block and the street-level character (brief 008).",
+  "files": [
+    {
+      "file": "the-suborned-city-hero-retrofuture-v2-2026-09-26.webp",
+      "sha256": "8ce1abc2e63a83a1748c18ce600bc287bafbb846702a68e5f6512de92393e118",
+      "shows": "The city on the bay: terraced white city, viaduct with coral trams, saucer towers."
+    },
+    {
+      "file": "the-suborned-city-kit-atomic-age-palette-2026-09-26.webp",
+      "sha256": "3f6a21775922eeb15e25c29164689cf969c1df42d10802c22b694ca5a8d6e6ad",
+      "shows": "City kit and palette: street furniture, vehicles, paving."
+    },
+    {
+      "file": "the-suborned-gameplay-plan-retrofuture-v3-2026-09-26.webp",
+      "sha256": "eff32d52327ee4af769bcabf689ce2ba3ce6893d7fae84baf9a190afc89214ad",
+      "shows": "The mission block at play angle, with the camera cone and the robot patrol line."
+    },
+    {
+      "file": "the-suborned-inez-cutaway-retrofuture-v3-2026-09-26.webp",
+      "sha256": "dc0e844e7d5f4a83eb501305ac4f01782da73be742acc890ebb878bc4a167d58",
+      "shows": "Inez and the guard at the Records Office door; café bay and parasol terrace beside it."
+    },
+    {
+      "file": "the-suborned-mission-block-retrofuture-v2-2026-09-26.webp",
+      "sha256": "d7f741088382357d52d3efff68a8b30ea015bf4db68542a0a4d4886c4d6d103e",
+      "shows": "The mission block from above: Records Office, café terrace, tram stop, service lorry, robot, fountain."
+    },
+    {
+      "file": "the-suborned-player-cell-concepts-2026-09-26.webp",
+      "sha256": "0ce833c9edc903a3da9596191e9dabca0a23fac8b1b0e4f937f6341e18c36fc7",
+      "shows": "Player cell concepts."
+    },
+    {
+      "file": "the-suborned-records-office-retrofuture-v2-2026-09-26.webp",
+      "sha256": "3b6a7f21ffe7855ebec1706cf898fe96491827992d0d9d1fcff3fea5916c5cc6",
+      "shows": "Records Office from the street: cream stone, teal bands, chrome globe, tram stop, fountain."
+    },
+    {
+      "file": "the-suborned-tactical-gameplay-hud-2026-09-26.webp",
+      "sha256": "f544ebc0313a9f9fffbd9ddff14eada1db17f0582d40b79108ca8e76d4325abb",
+      "shows": "Tactical view with HUD: crew portraits, routes, cones, café corner, atom fountain."
+    }
+  ]
+}
