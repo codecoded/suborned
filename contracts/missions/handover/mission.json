@@ -1,7 +1,107 @@
 {
- "schema": "suborned.mission/1",
+ "schema": "suborned.mission/2",
  "id": "handover",
- "note": "The Handover mission layer, moved unchanged out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts",
+ "note": "The Handover mission layer, moved unchanged out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Preserved only: nothing is re-sited or re-timed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "status": {
+  "state": "preserved",
+  "adjustable": ["timings", "placements"],
+  "note": "Sky 2026-10-14: the Handover mission is kept; its timings and placements can be adjusted now the world is regenerated (plan v0.2.0). Until Sky has walked the world and set them, the offsets are GDD §07's and the destinations, crew and routes are the ones moved out of the world, checked only by the overlay (C-3, M-1, W-1). Brief 003 stays on hold for that."
+ },
+ "clock": {
+  "unit": "m:ss",
+  "scale": "1 mission s = 1 day s (life.clock.scale): day time = startsAt + offset. This is the only day time in the file.",
+  "startsAt": "17:00",
+  "provisional": true,
+  "band": "peak",
+  "src": "removed life.clock.mission (startsAt 17:00, band peak). GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
+  "transit": "removed from life.transit.schedule: '(17:00 = 61200 s is a multiple of 120, 180 and 240)'. With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line has a forward departure from its first stop at mission 0:00 when the start is 17:00; any other start moves every service against the timeline.",
+  "contradiction": {
+   "what": "The removed data gave the shift chime (offset 5:30) two day times. Not resolved here: startsAt holds the start the removed data stored, as found.",
+   "readings": [
+    {
+     "startsAt": "17:00",
+     "chime": "17:05:30",
+     "from": [
+      "life.clock.mission.startsAt '17:00'",
+      "life.clock.anchors[2] at '17:05:30', mission '5:30'",
+      "life.events.list[0].at '17:05:30 mission clock'"
+     ]
+    },
+    {
+     "startsAt": "17:24:30",
+     "chime": "17:30",
+     "from": [
+      "life.clock.mission.note 'Handover starts 17:00 so the 5:30 chime lands at 17:30 [S]'",
+      "life.events.list[0].at '(17:30 day)'",
+      "life.generator.civicEmployers[0].shiftEnd '17:30' (src 'GDD §07; plan civic block')",
+      "startsAt 17:24:30 is arithmetic (17:30 less 5:30); no removed field stored it"
+     ]
+    }
+   ],
+   "decides": "Sky, after the world review"
+  }
+ },
+ "timeline": [
+  {
+   "at": "0:00",
+   "what": "Vale inside; routines run; cell at getaway car",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'Vale inside; routines run'. 'cell at getaway car' is §07's and was missing from the anchors."
+  },
+  {
+   "at": "3:10",
+   "what": "rival car parks near pickup",
+   "src": "GDD §07"
+  },
+  {
+   "at": "5:30",
+   "what": "handover chime",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
+  },
+  {
+   "at": "5:40",
+   "what": "last chance to turn driver",
+   "src": "GDD §07"
+  },
+  {
+   "at": "5:50",
+   "what": "Vale exits north (service lane if driver turned)",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faces north to the square. Not re-sited here."
+  },
+  {
+   "at": "6:10",
+   "what": "Vale at car",
+   "src": "GDD §07",
+   "note": "Not in the removed anchors (Pulse, life.json v0.2.0 review, flag F10); added from §07."
+  },
+  {
+   "at": "8:00",
+   "what": "rivals take Vale or car leaves = over",
+   "src": "GDD §07"
+  }
+ ],
+ "events": [
+  {
+   "id": "records-handover",
+   "area": "records",
+   "at": "5:30",
+   "windowS": 300,
+   "surge": 1.8,
+   "who": "Records Office staff leave by the front and service doors toward T1/records and the Circus",
+   "src": "GDD §07 (chime at 5:30); surge [S]; window and who have no source",
+   "note": "Removed life.events.list[0], src 'GDD §07', at '17:05:30 mission clock (17:30 day)'. §07 gives only the chime time. The removed events.src tags the surge '[S] surge numbers'; windowS and who are not in §07 and carried no source of their own. The 300 s window runs to 10:30, past the 8:00 close."
+  }
+ ],
+ "stands": [
+  {
+   "what": "Vale official car",
+   "where": "Records Office north",
+   "src": "GDD §07",
+   "note": "Removed life.traffic.rules[3]: 'Vale official car per GDD §07 stands at the Records Office north'. §07 names the official car, 'Vale exits north' and 'Vale at car' (6:10); it gives no stand and no arrival time. As sited, the official bay (destination Official drop-off) is on the Records Office's south kerb, Apron Road: see timeline 5:50."
+  }
+ ],
  "destinations": [
   {
    "name": "Courtyard",
