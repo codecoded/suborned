@@ -27,7 +27,7 @@ const failing = (mutate: (w: W) => void = () => {}): Record<string, string> => {
 const ids = (f: Record<string, string>) => Object.keys(f);
 const first = <T>(a: T[], f: (t: T) => boolean): T => a.find(f)!;
 const centre = (ring: V[]): V => [0, 1].map(i => ring.reduce((t, p) => t + p[i]! / ring.length, 0)) as V;
-/** The pylon nearest the monument: with standards.skyrail.pylonClear it stands just outside the disc (15, 0). */
+/** The pylon nearest the monument: with standards.skyrail.pylonClear it stands 3 m off the disc (−18, 0). */
 const monument = first(plan.landmarks, l => l.id === 'monument').c;
 const monumentPylon = (w: W) => {
   const pylons = w.transit.skyRail[0]!.pylons, near = (p: V) => Math.hypot(p[0] - monument[0], p[1] - monument[1]);

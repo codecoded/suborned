@@ -47,6 +47,12 @@
      "SF-19"
     ]
    }
+  ],
+  "167beeab799f38b28baab0a704477adc5d6358cc51304e6c5b233db3219276d7": [
+   {
+    "cause": "brief 007 round 3 walk, second pass: opt-in standards.skyrail.pylonClear {landmark, span, remnant}. derive keeps a pylon's face 3 m off a landmark disc, lets a span that crosses a disc reach pylonClear.span (S-P1 reads that limit for that span only), re-sets short spans beside a forced pylon and drops a portal stand-off pylon that would leave a stub. A plan without the keys places pylons as before, so the A04 plans' pylons and every recorded rule result are unchanged",
+    "rules": []
+   }
   ]
  }
 }

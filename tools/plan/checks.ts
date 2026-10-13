@@ -1,7 +1,7 @@
 // The plan's rules: roads (Buchanan hierarchy, sealed environmental areas, gates, frontage), tram, sky rail, the civic
 // block, plus whatever an overlay adds (tools/plan/overlay.ts). Each check reports a value against its limit.
 import { type V, centroid, dist, inPoly, lineDist, nearLine, lineToPoly, segHit } from './geom';
-import { type Derived, type Plan, inZone, portalsOf, spanLimit } from './plan';
+import { type Derived, type Plan, inZone, portalsOf, spanMax } from './plan';
 import { offSheet, placements, stopsOf } from './transit';
 import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect } from './civic';
@@ -154,8 +154,8 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
       add({ id: `S-R${role === 'line' ? 1 : 2}`, group: 'Sky rail', rule: `${line.id} ${role === 'line' ? 'line' : 'terminal loop'} radius`, value: min === Infinity ? 'straight' : `R ${f(min)} m`, limit: `≥ ${lim} m`, ok: min >= lim });
     }
     const pyl = d.pylons.filter(p => p.line === line.id), gaps = d.pylonGaps.filter(g => g.line === line.id);
-    const over = pyl.filter(p => { const path = paths.find(x => x.id === p.path)!; const lim = Math.min(...path.samples.filter(s => s.s >= p.s - p.span - .01 && s.s <= p.s + .01).map(s => spanLimit(S, s.r))); return p.span > lim + .01; });
-    add({ id: 'S-P1', group: 'Sky rail', rule: `${line.id} pylon spans (30 / 23 / 18 m by curvature)`, value: `${pyl.length} pylons, longest ${f(Math.max(...pyl.map(p => p.span)), 1)} m`, limit: 'within limit', ok: !over.length && !gaps.length, detail: [...over.map(p => `span ${f(p.span, 1)} m at ${f(p.s)} m`), ...gaps.map(g => `no allowed ground ${f(g.from)}–${f(g.to)} m on ${g.path}`)].join('; ') || undefined });
+    const over = pyl.filter(p => { const path = paths.find(x => x.id === p.path)!; return p.span > spanMax(S, plan.landmarks, path, p.s - p.span, p.s) + .01; });
+    add({ id: 'S-P1', group: 'Sky rail', rule: `${line.id} pylon spans (30 / 23 / 18 m by curvature${S.pylonClear?.span ? `; ${S.pylonClear.span} m over a landmark disc` : ''})`, value: `${pyl.length} pylons, longest ${f(Math.max(...pyl.map(p => p.span)), 1)} m`, limit: 'within limit', ok: !over.length && !gaps.length, detail: [...over.map(p => `span ${f(p.span, 1)} m at ${f(p.s)} m`), ...gaps.map(g => `no allowed ground ${f(g.from)}–${f(g.to)} m on ${g.path}`)].join('; ') || undefined });
     const kinds = new Set(S.pylonZones as string[]);
     const stray = pyl.filter(p => !d.zones.some(z => kinds.has(z.kind) && inZone(p.p, z)));
     add({ id: 'S-P2', group: 'Sky rail', rule: `${line.id} pylons stand in medians, malls, parks, quays, water or the island`, value: `${pyl.length - stray.length}/${pyl.length}`, limit: 'all', ok: !stray.length });

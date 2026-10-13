@@ -76,46 +76,133 @@ export function spanLimit(std: any, r: number) {
   return r === Infinity ? std.spanStraight : r >= std.tightBelow ? std.spanCurve : std.spanTight;
 }
 
-/** Greedy pylons: each as far along as the span limit allows, backed off until it stands in an allowed zone. A loop's
- *  ends hang off the trunk's end pylon, so they are not placed again. */
-function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean, portals: [number, number][] = []) {
-  const out: Pylon[] = [], gaps: Derived['pylonGaps'] = [], S = path.samples, L = path.length;
+type Disc = { c: V; r: number };
+/** True if the path between chainages s0 and s1 passes through the inside of a disc (a landmark's basin and steps). */
+const crossesDisc = (path: PathGeo, s0: number, s1: number, discs: Disc[]) =>
+  path.samples.some(x => x.s > s0 + .01 && x.s < s1 - .01 && discs.some(l => dist(x.p, l.c) < l.r - 1e-9));
+
+/**
+ * The longest span between chainages s0 and s1 of a sky path: by curvature (spanLimit), or, where the span crosses a
+ * landmark disc and the plan says so (standards.skyrail.pylonClear.span), that longer span (a deeper box beam there).
+ */
+export function spanMax(std: any, landmarks: Disc[], path: PathGeo, s0: number, s1: number) {
+  const byCurve = Math.min(...path.samples.filter(x => x.s >= s0 - .01 && x.s <= s1 + .01).map(x => spanLimit(std, x.r)));
+  const over = std.pylonClear?.span as number | undefined;
+  return over !== undefined && crossesDisc(path, s0, s1, landmarks) ? Math.max(byCurve, over) : byCurve;
+}
+
+/**
+ * Greedy pylons: each as far along as the span limit allows, backed off until it stands in an allowed zone. A loop's
+ * ends hang off the trunk's end pylon, so they are not placed again.
+ * With standards.skyrail.pylonClear (all opt-in, key by key; a plan without them places pylons as it always did):
+ *   landmark  allowed() keeps a pylon this far outside every landmark disc (derive);
+ *   span      a span that crosses a landmark disc may be that long: the beam steps from the last allowed ground before the disc
+ *             to the first past it instead of leaving a gap;
+ *   remnant   no span next to a forced pylon (a landmark's edge, a portal's, the line's ends) is shorter than this fraction
+ *             of its standard span. A pylon within that distance of a portal's last stand-off point is the last before it
+ *             (the building carries the beam from its jamb); a short span beside a landmark's edge is redistributed with the
+ *             free pylons behind it, equally and on allowed ground, taking the fewest pylons that works. No other pylon moves.
+ */
+function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean, portals: [number, number][] = [], landmarks: Disc[] = []) {
+  const out: Pylon[] = [], gaps: Derived['pylonGaps'] = [], S = path.samples, L = path.length, forced = new Set<Pylon>();
+  const pc = std.pylonClear as { landmark?: number; span?: number; remnant?: number } | undefined, margin = pc?.landmark;
+  const blocked = (p: V) => margin !== undefined && landmarks.some(l => dist(p, l.c) < l.r + margin - 1e-9);
   const at = (s: number) => S.reduce((b, x) => (Math.abs(x.s - s) < Math.abs(b.s - s) ? x : b));
   const limitOver = (s0: number, s1: number) => Math.min(...S.filter(x => x.s > s0 - .01 && x.s <= s1 + .01).map(x => spanLimit(std, x.r)));
+  const put = (x: Sample, from: number, force = false) => { // a pylon at sample x, its span measured from chainage `from`
+    const p: Pylon = { p: x.p, line: path.line, path: path.id, s: x.s, span: x.s - from };
+    if (force) forced.add(p);
+    out.push(p);
+    return p;
+  };
   const hung = path.role === 'loop';
   let s = 0;
-  if (!hung) { const first = S.find(x => allowed(x.p)); s = first?.s ?? 0; out.push({ p: first?.p ?? S[0].p, line: path.line, path: path.id, s, span: 0 }); }
+  if (!hung) { const first = S.find(x => allowed(x.p)); s = first?.s ?? 0; put(first ?? S[0]!, s, true); }
   const M = 3; // a pylon stands this far outside a portal's jamb (S-P3 / bridges keep 3 m from a pylon)
   while (s < L - .01) {
-    const pin = portals.find(q => q[0] - M <= s + .01 && s < q[1] + M - .01);
+    const rem = pc?.remnant === undefined ? 0 : pc.remnant * spanLimit(std, at(s).r); // 0 unless the plan sets pylonClear.remnant
+    const pin = portals.find(q => q[0] - M - rem <= s + .01 && s < q[1] + M - .01);
     if (pin) { // inside a portal the building carries the beam: the next pylon stands just past it, and the span across is not a pylon span (brief 007 P-1)
       const x = S.find(q => q.s >= pin[1] + M && allowed(q.p));
       if (!x) break;
-      out.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: 0 }); s = x.s; continue;
+      put(x, x.s, true); s = x.s; continue;
     }
     let lim = spanLimit(std, at(s).r);
     const ahead = portals.find(q => q[0] - M > s + 1.99 && q[0] - M <= s + lim + 1e-6); // a portal within reach: the last pylon before it stands M outside its jamb
     if (ahead) {
-      for (let t = ahead[0] - M; t >= s + 2; t -= .5) { const x = at(t); if (allowed(x.p)) { out.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: x.s - s }); s = x.s; break; } }
+      for (let t = ahead[0] - M; t >= s + 2; t -= .5) { const x = at(t); if (allowed(x.p)) { put(x, s, true); s = x.s; break; } }
       if (s >= ahead[0] - M - 6) continue; // placed (or no room to place one): the portal's pin takes over
     }
     for (let k = 0; k < 3; k++) lim = limitOver(s, Math.min(L, s + lim));
+    const wall = pc?.span === undefined ? undefined : S.find(x => x.s > s + .01 && x.s <= s + lim + 1e-6 && blocked(x.p));
+    if (wall) { // a landmark disc ahead: one pylon at the last allowed ground before it, the next at the first past it, the beam over the disc between
+      const A = S.slice(0, S.indexOf(wall)).reverse().find(x => x.s >= s - .01 && allowed(x.p)), B = S.find(x => x.s > wall.s && allowed(x.p));
+      if (A && B && A.s - s <= lim + 1e-6 && crossesDisc(path, A.s, B.s, landmarks) && B.s - A.s <= spanMax(std, landmarks, path, A.s, B.s) + 1e-6) {
+        if (A.s > s + .01) put(A, s, true);
+        put(B, A.s, true); s = B.s; continue;
+      }
+    }
     if (s + lim >= L - .01) {
-      if (hung || allowed(S[S.length - 1].p)) { if (!hung) out.push({ p: S[S.length - 1].p, line: path.line, path: path.id, s: L, span: L - s }); break; }
+      if (hung || allowed(S[S.length - 1]!.p)) { if (!hung) put(S[S.length - 1]!, s, true); break; }
     }
     let placed = false;
     for (let t = Math.min(L, s + lim); t >= s + 6; t -= .5) {
       const x = at(t);
-      if (x.s - s <= lim + 1e-6 && allowed(x.p)) { out.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: x.s - s }); s = x.s; placed = true; break; }
+      if (x.s - s <= lim + 1e-6 && allowed(x.p)) { put(x, s); s = x.s; placed = true; break; }
     }
     if (!placed) {
       const next = S.find(x => x.s > s + lim && allowed(x.p));
       gaps.push({ line: path.line, path: path.id, from: s, to: next?.s ?? L });
       if (!next) break;
-      out.push({ p: next.p, line: path.line, path: path.id, s: next.s, span: next.s - s }); s = next.s;
+      put(next, s); s = next.s;
     }
   }
+  if (pc?.remnant !== undefined) equalise(pc.remnant);
   return { out, gaps };
+
+  /** Spans beside a landmark's edge shorter than `frac` of their standard span: the free pylons behind them are set again, equally. */
+  function equalise(frac: number) {
+    for (let i = 1; i < out.length; i++) if (crossesDisc(path, out[i - 1]!.s, out[i]!.s, landmarks)) { forced.add(out[i - 1]!); forced.add(out[i]!); }
+    const min = (s0: number) => frac * spanLimit(std, at(s0).r) - 1e-6;
+    for (let i = 1; i < out.length; i++) {
+      const a = out[i - 1]!, b = out[i]!;
+      if (b.span <= 0 || b.span >= min(b.s) || forced.has(a) === forced.has(b)) continue; // not short, or no forced pylon to blame
+      i = reset(i, forced.has(b) ? -1 : 1, min) ?? i;
+    }
+  }
+
+  /** The k = 1..4 free pylons beside the forced end of short span i (dir -1: behind it, +1: ahead of it) set again as equal spans; the index to resume from. */
+  function reset(i: number, dir: number, min: (s0: number) => number): number | undefined {
+    for (let k = 1; k <= 4; k++) {
+      const lo = dir < 0 ? i - k - 1 : i - 1, hi = dir < 0 ? i : i + k;
+      if (lo < 0 || hi >= out.length || out.slice(lo + 1, hi).some(x => forced.has(x)) || out.slice(lo + 1, hi + 1).some(x => x.span <= 0)) return undefined; // a forced pylon or a portal's span ends the stretch
+      for (const n of [k + 1, k + 2]) { // as many spans as there are now, or one more
+        const set = even(out[lo]!, out[hi]!, n, min);
+        if (!set) continue;
+        out.splice(lo + 1, k, ...set);
+        const end = out[lo + set.length + 1]!;
+        end.span = end.s - set[set.length - 1]!.s;
+        return lo;
+      }
+    }
+    return undefined;
+  }
+
+  /** n equal spans from pylon `lo` to pylon `hi`, each new pylon nudged (up to 8 m) to allowed ground; undefined unless every span is within its limit and not short. */
+  function even(lo: Pylon, hi: Pylon, n: number, min: (s0: number) => number): Pylon[] | undefined {
+    const set: Pylon[] = [], fits = (s0: number, s1: number) => s1 - s0 <= spanMax(std, landmarks, path, s0, s1) + 1e-6 && s1 - s0 >= min(s0);
+    const ground = (s0: number) => [-1, 0, 1].every(o => allowed(at(s0 + o).p)); // a pylon's footprint (1.6 m) stands on allowed ground, not on its edge
+    let prev = lo.s;
+    for (let j = 1; j < n; j++) {
+      const t = lo.s + (j * (hi.s - lo.s)) / n;
+      let x: Sample | undefined;
+      for (let d = 0; d <= 8 && !x; d += .5) x = (d ? [t - d, t + d] : [t]).map(at).find(q => q.s > prev + 1 && ground(q.s) && !portals.some(w => q.s > w[0] - M && q.s < w[1] + M));
+      if (!x || !fits(prev, x.s)) return undefined;
+      set.push({ p: x.p, line: path.line, path: path.id, s: x.s, span: x.s - prev });
+      prev = x.s;
+    }
+    return fits(prev, hi.s) ? set : undefined;
+  }
 }
 
 type R4p = [number, number, number, number];
@@ -167,7 +254,7 @@ export function derive(plan: Plan): Derived {
   const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z))
     && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9));
   const pylons: Pylon[] = [], pylonGaps: Derived['pylonGaps'] = [];
-  for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p)); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
+  for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p), plan.landmarks); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
   return {
     roads, tram, sky, pylons, pylonGaps, zones,
     plots: plan.plots.map(p => ({ ...p, polyV: shape(p) })),
