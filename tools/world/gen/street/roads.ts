@@ -8,6 +8,18 @@ import type { Layer } from './kit';
 
 const ROADS = ['primary', 'district', 'access'];
 
+/** A crossing landing at `s` along a plot edge (`at(s, d)`: s along the edge, d in from the kerb line), flanked by bollards, and by beacons on a district road.
+ *  Recorded in L.landings with the ids it was placed with. */
+export function landing(ctx: Ctx, L: Layer, at: (s: number, d: number) => V, s: number, yaw: number, edge: string, cls: string, road: string, force = true): boolean {
+  const S = ctx.S, sec = S.sections[cls], n0 = L.items.length;
+  if (!L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, ctx.pav, edge, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force })) return false;
+  const id = L.items[L.items.length - 1]!.id;
+  for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, ctx.pav, edge, { size: S.bollards.size, r: 0.2 });
+  if (cls === 'district') for (const o of [-2.6, 2.6]) L.add('beacon', at(s + o, 0.7), yaw, ctx.pav, edge, { size: [0.4, 0.4, S.crossings.beacons.h], r: 0.3 });
+  L.landings.push({ id, road, cls, flank: L.items.slice(n0 + 1).map(x => x.id) });
+  return true;
+}
+
 export function dressRoads(ctx: Ctx, L: Layer): void {
   const S = ctx.S, z = ctx.pav, sparse: Record<string, V[]> = {};
   const far = (k: string, p: V, sep: number) => !(sparse[k] ??= []).some(q => dist(q, p) < sep);
@@ -25,11 +37,7 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings.
       // A crossing's size is [depth from the kerb, width along the road] and its yaw across the road (SF-19: it was
       // [w, depth], which ran the 4 m across the road)
-      for (const s of [5, len - 5]) {
-        L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, z, id, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force: true });
-        for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, z, id, { size: S.bollards.size, r: 0.2 });
-        if (kind === 'district') for (const o of [-2.6, 2.6]) L.add('beacon', at(s + o, 0.7), yaw, z, id, { size: [0.4, 0.4, S.crossings.beacons.h], r: 0.3 });
-      }
+      for (const s of [5, len - 5]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;
       if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, S.trees.species.washingtonia.top], variant: 'washingtonia', r: 1.5 });
       else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, S.trees.species.washingtonia.top], variant: 'washingtonia', r: 1.5 });

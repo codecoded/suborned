@@ -1,4 +1,4 @@
-// Failing examples for the world rules that live outside tools/plan (F-7, SF-18, L-8, SF-19): each fails on the live
+// Failing examples for the world rules that live outside tools/plan (F-7, SF-18, L-8, SF-19, SF-20): each fails on the live
 // world with one thing put back as Sky's walk found it, and passes on the world it was copied from.
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
@@ -35,7 +35,7 @@ const monumentPylon = (w: W) => {
 };
 
 describe('extra world rules', () => {
-  test('the live world passes all four', () => {
+  test('the live world passes all five', () => {
     expect(ids(failing())).toEqual([]);
   });
 
@@ -108,5 +108,52 @@ describe('extra world rules', () => {
     expect(f['SF-19'])
       .toMatch(/1 fail: street\/.*\/crossing-\d+ is 1\.80 m wide along its way \(size 4 × 1\.8\), needs 4/);
     expect(ids(f)).toEqual(['SF-19']);
+  });
+
+  describe('SF-20: a crossing is two landings and a strip between their kerbs', () => {
+    const kerb = (w: W, f: (c: NonNullable<W['crossings']>[number]) => boolean = () => true) => first(w.crossings!, c => c.kind === 'kerb' && f(c));
+    const mid = (a: V, b: V): V => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    /** A line through the middle of a crossing's strip, across it. */
+    const across = (c: { line: [V, V] }): V[] => {
+      const [a, b] = c.line, len = Math.hypot(b[0] - a[0], b[1] - a[1]), m = mid(a, b), n: V = [-(b[1] - a[1]) / len, (b[0] - a[0]) / len];
+      return [[m[0] - n[0] * 10, m[1] - n[1] * 10], [m[0] + n[0] * 10, m[1] + n[1] * 10]];
+    };
+
+    test('a landing with no partner: the crossing that joined it is gone, or its partner is', () => {
+      const gone = failing(w => { const x = kerb(w); w.crossings = w.crossings!.filter(c => c.id !== x.id); });
+      expect(gone['SF-20']).toMatch(/2 fail: street\/.*\/crossing-\d+ is a landing with no partner \(in 0 crossings\); street\/.*\/crossing-\d+ is a landing with no partner/);
+      expect(ids(gone)).toEqual(['SF-20']);
+      const half = failing(w => { const x = kerb(w); w.street = w.street.filter(s => s.id !== x.items[1]); });
+      expect(half['SF-20']).toContain('names a street item that is not a crossing patch');
+    });
+
+    test('a strip across a tram track fails; so does one across a bay', () => {
+      const track = failing(w => { const x = kerb(w); w.transit.tram[0]!.line = across(x) as V[]; });
+      expect(track['SF-20']).toMatch(/crossing\/.* strip crosses a tram track and the plan does not say a kerb crossing may/);
+      const bay = failing(w => { const x = kerb(w), m = mid(x.line[0], x.line[1]); w.ground.flats.push({ id: 'test/bay', surface: 'bay', level: 0, ring: [[m[0] - 1, m[1] - 1], [m[0] + 1, m[1] - 1], [m[0] + 1, m[1] + 1], [m[0] - 1, m[1] + 1]] }); });
+      expect(bay['SF-20']).toMatch(/crossing\/.* strip crosses a bay and the plan does not say a kerb crossing may/);
+    });
+
+    test('the plan can say a kind may cross a track: the tram stop crossings are the way to the platform', () => {
+      const p2: Plan = structuredClone(plan);
+      p2.standards.streetscape.crossings.strip.across.track = [];
+      const f = Object.fromEntries(extraRules(ctxOf(p2, derive(p2), civ, { w: structuredClone(base.w), gen: base.gen })).filter(c => !c.ok).map(c => [c.id, c.detail ?? '']));
+      expect(f['SF-20']).toMatch(/crossing\/stop\/.* strip crosses a tram track and the plan does not say a stop crossing may/);
+    });
+
+    test('the refuge and the control are kept where the median and the plan say', () => {
+      const none = failing(w => { kerb(w, c => c.refuges.length > 0).refuges = []; });
+      expect(none['SF-20']).toMatch(/crossing\/.* has 0 refuges, the median it crosses needs 1/);
+      const loose = failing(w => { delete kerb(w, c => c.control === 'zebra').control; });
+      expect(loose['SF-20']).toMatch(/control is none, the plan gives district roads zebra/);
+    });
+
+    test('opt-in: a plan without streetscape.crossings.strip is not held to it', () => {
+      const p2: Plan = structuredClone(plan);
+      delete p2.standards.streetscape.crossings.strip;
+      const rules = extraRules(ctxOf(p2, derive(p2), civ, { w: structuredClone(base.w), gen: base.gen })).map(c => c.id);
+      expect(rules).toContain('SF-19');
+      expect(rules).not.toContain('SF-20');
+    });
   });
 });

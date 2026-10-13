@@ -1,5 +1,5 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
-import type { Connector, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
+import type { Connector, Crossing, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import { type Ctx, rv } from './common';
 import { type Travel, generateConnectors } from './connectors';
@@ -10,6 +10,7 @@ import { signKit } from './kitrefs';
 import { generateRoofs } from './roofs';
 import { generateSignatures, generateStructures } from './signatures';
 import { generateStreet } from './street';
+import type { CrossingLog } from './street/crossings';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
 import { adjacent } from './facades';
@@ -19,6 +20,7 @@ import type { DeckRec, Host, MegaOut } from './types';
 export type Generated = {
   signatures: SignatureOut[]; skins: Skin[]; fabric: Fabric; facades: Facade[]; facadeWhy: Map<string, string>; faceMetres: Map<string, { street: number; kit: number }>; buildings: Mass[]; slabs: Mass[]; roofs: Roof[]; frontages: Frontage[]; connectors: Connector[]; street: StreetItem[];
   decks: DeckRec[]; megas: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; blds: Bld[]; megaOut: MegaOut[]; issues: string[]; travel: Travel[];
+  crossings?: Crossing[]; crossingLog?: CrossingLog; // streetscape.crossings.strip only
 };
 
 export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
@@ -37,9 +39,9 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   for (const m of masses) if (/\/band-\d+$/.test(m.id)) m.surface = accentOf.get(m.id.slice(0, m.id.lastIndexOf('/'))) ?? m.surface;
   // grammar §2a colour life: faience, spandrels, fins, balcony awnings and banners per skin; flags along the Parade, hotels and civic fronts
   const life = colourLife(ctx, blds, masses, skins0, fac.facades, frontages), skins = life.skins;
-  const { items: street, flags } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
+  const { items: street, flags, crossings, crossingLog } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: p.polyV.map(rv), base: 0, height: ctx.pav }));
-  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel };
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}) };
 }
 
 /** A DeckRec as the export's Deck. */

@@ -26,7 +26,7 @@ test('C-0 fails when the café or office loses height', () => {
 });
 
 test('an old suborned.block/1 file is refused, not drawn', () => {
-  expect(() => civic(plan.civic, { ...block, schema: 'suborned.block/1' })).toThrow('suborned.block/3');
+  expect(() => civic(plan.civic, { ...block, schema: 'suborned.block/1' })).toThrow('suborned.block/4');
 });
 
 test('the world block holds no mission: no destinations, no crew, bays named by place', () => {

@@ -1,5 +1,5 @@
 {
- "schema": "suborned.block/3",
+ "schema": "suborned.block/4",
  "id": "civic",
  "frame": {
   "name": "block",
@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "55dac70d99743b41b0d4e0586de37ed93cb62be8242cdebea924588c0c94e8f9",
+  "sha256": "9bc365acdce0072afd36ae136a27bc7cc9646de26f629b11480915a8fcea5b63",
   "owner": "Vantage",
   "applied": [
    {
@@ -179,6 +179,65 @@
     "id": "civic-office-north",
     "move": [0, 1.4],
     "reason": "Brief 008 B2: this bed reached y -27.219 at x 74.1..75.0, 0.22 m inside tower-official (y -33..-27, x to 75.5), and its east side lay under the official door's east pier (plinth y -26.98..-26.02, x 75.27..76.53). Moved 1.4 m east along the wing face: it starts at y -25.819, 0.2 m off the pier and 1.18 m off the tower; still 1.34 m off the wing face (x 72.5) and 1.26 m off the lay-by (x 77)."
+   },
+   {
+    "op": "towerFootprint",
+    "building": "civic-office",
+    "tower": "public",
+    "polygon": [
+     [52.5, -33],
+     [58.5, -33],
+     [58.5, -27],
+     [52.5, -27]
+    ],
+    "reason": "The block gives a tower only as `at`; its 6 x 6 m plan is a constant in tools/world/build.ts (PROV.tower). The checker and the walk grid therefore do not know the tower stands 3 m proud of the wing (wing face x 55.5), which is how the Oct 9 entrance point (54.65, -30.5) came to stand 2.15 m inside it. State the footprint in the block; W-4 and the walk blockers then use buildings and towers together."
+   },
+   {
+    "op": "towerFootprint",
+    "building": "civic-office",
+    "tower": "official",
+    "polygon": [
+     [69.5, -33],
+     [75.5, -33],
+     [75.5, -27],
+     [69.5, -27]
+    ],
+    "reason": "As public (wing face x 72.5). 'Official entrance' and 'Meet Vale' (73.25, -31) stand 2.25 m inside it today."
+   },
+   {
+    "op": "moveEntrance",
+    "id": "office-entrance",
+    "to": [51.75, -30],
+    "z": 0.75,
+    "on": "office-public-landing",
+    "face": "tower public, north face x 52.5",
+    "reason": "Brief 008 B2: entrances stand on the tower faces. On the landing, 0.75 m off the face (52.5 - 51.75), 0.75 m from the top riser (x 51), on the tower axis. Needs towerFootprint first: W-4 measures 1 m to the building ring and this point is 3.75 m from the wing face."
+   },
+   {
+    "op": "addEntrance",
+    "building": "civic-office",
+    "item": {
+     "id": "official-entrance",
+     "name": "Official entrance",
+     "at": [76.25, -30],
+     "z": 0
+    },
+    "face": "tower official, south face x 75.5",
+    "reason": "Flush door, no steps: 0.75 m off the face, 0.75 m from the lay-by (x 77), under the canopy. The block has no official entrance today; Vale's door is only a mission point."
+   },
+   {
+    "op": "remove",
+    "id": "office-pavilion-support-0",
+    "reason": "The canopy is carried on the tower; this 2 x 2 m pier (x 75..77, y -37.75..-35.75) carries nothing and stands on the kerb half of the 4.5 m pavement beside the lay-by."
+   },
+   {
+    "op": "remove",
+    "id": "office-pavilion-support-1",
+    "reason": "As support-0 (y -26.25..-24.25). Must go before RecordsEntrance_Official is placed: it overlaps that piece's east pier plinth (y -26.98..-26.02) by 0.23 m and the civic-office-north bed."
+   },
+   {
+    "op": "dressing",
+    "reason": "Copy the `dressing` key below into civic-block.json so the generator and Latch read zones and placements from the block, not from this file."
    }
   ]
  },
@@ -264,7 +323,16 @@
     {
      "id": "office-entrance",
      "name": "Office entrance",
-     "at": [54.65, -30.5]
+     "at": [51.75, -30],
+     "z": 0.75,
+     "on": "office-public-landing",
+     "face": "tower public, north face x 52.5"
+    },
+    {
+     "id": "official-entrance",
+     "name": "Official entrance",
+     "at": [76.25, -30],
+     "z": 0
     }
    ],
    "heights": {
@@ -276,43 +344,29 @@
     {
      "id": "public",
      "at": [55.5, -30],
-     "height": 38
+     "height": 38,
+     "polygon": [
+      [52.5, -33],
+      [58.5, -33],
+      [58.5, -27],
+      [52.5, -27]
+     ]
     },
     {
      "id": "official",
      "at": [72.5, -30],
-     "height": 38
+     "height": 38,
+     "polygon": [
+      [69.5, -33],
+      [75.5, -33],
+      [75.5, -27],
+      [69.5, -27]
+     ]
     }
    ]
   }
  ],
  "structures": [
-  {
-   "id": "office-pavilion-support-0",
-   "name": "office-pavilion-support-0",
-   "category": "pavilion-support",
-   "polygon": [
-    [75, -37.75],
-    [77, -37.75],
-    [77, -35.75],
-    [75, -35.75]
-   ],
-   "z": 0,
-   "height": 3.633
-  },
-  {
-   "id": "office-pavilion-support-1",
-   "name": "office-pavilion-support-1",
-   "category": "pavilion-support",
-   "polygon": [
-    [75, -26.25],
-    [77, -26.25],
-    [77, -24.25],
-    [75, -24.25]
-   ],
-   "z": 0,
-   "height": 3.633
-  },
   {
    "id": "square-pavilion-support-0",
    "name": "square-pavilion-support-0",
@@ -1455,5 +1509,603 @@
     [4, -47]
    ]
   }
- ]
+ ],
+ "dressing": {
+  "schema": "suborned.block-dressing/0 (proposed shape; nothing reads it yet, see pending op `dressing`)",
+  "frame": "Block frame, metres. yawDeg turns from +x (south) toward +y (east): a piece's local +X maps to (cos, sin). Pieces face local -Y, building on +Y. Pivots as each piece states.",
+  "checked": "Scratch nav check, 0.25 m grid, body 0.35 m, towers and Vela's ground solids as blockers: with everything below placed, all 300 walks between the 25 Handover points (21 destinations at their moved positions, 4 crew) keep their length to 0.05 m, with the terrace wall at x -4.8 and at x -4.3.",
+  "rules": [
+   "A keepClear zone bars the kinds it lists; kinds are planter, lamp, bollard, tree, parasol, band.",
+   "Every Handover point (mission.json destinations and crew): no planter, lamp, bollard or tree within 1.2 m; no parasol whose disc (R 1.3, rim 2.07 m) covers it or a person standing on it as the play camera sees them (the line from 0.35 m to 2.65 m out from the point toward the camera, direction +0.866 x, -0.5 y, stays outside the disc).",
+   "Bands are flat inlay (4 mm): they may pass under a Handover point or a walk. They may not enter a bay, crew-line-getaway, the steps or landing, or a planting bed.",
+   "Lamp rings (InlayArc_R2_W06, four per ring, R 2.3 outside) go only where `ring` is true and are centred on the pole.",
+   "Anything not placed here stays off the ground between the two buildings: ask Vantage."
+  ],
+  "keepClear": [
+   {
+    "id": "crew-line-getaway",
+    "polygon": [
+     [-2, -52],
+     [16, -52],
+     [16, -44],
+     [-2, -44]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol",
+     "band"
+    ],
+    "reason": "Crew start line (x 1.2..4.8, y -49.7) and the getaway bay with its canopy: the first thing the player reads and the last walk of the mission."
+   },
+   {
+    "id": "fountain-west-axis",
+    "polygon": [
+     [4.5, -44],
+     [8.5, -44],
+     [8.5, -33.3],
+     [4.5, -33.3]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Sightline and walk from the crew line to the fountain; 4 m wide on the fountain's centre x 6.5."
+   },
+   {
+    "id": "fountain-east-axis",
+    "polygon": [
+     [4.5, -26.7],
+     [8.5, -26.7],
+     [8.5, -8],
+     [4.5, -8]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The mirror axis to the east kerb: the crowd's way in from that street."
+   },
+   {
+    "id": "cafe-gate-spine",
+    "polygon": [
+     [-10.7, -31.6],
+     [3.2, -31.6],
+     [3.2, -26.4],
+     [-10.7, -26.4]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "Café door, through the 5.2 m terrace gate, to the pool: 'Café door', 'Courtyard', 'Steps' stand in it and the door must read at play zoom."
+   },
+   {
+    "id": "office-spine",
+    "polygon": [
+     [9.8, -32.5],
+     [49.2, -32.5],
+     [49.2, -27.5],
+     [9.8, -27.5]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Fountain to the foot of the public steps along the Orbit Walk crossing (y -32.5..-27.5): the long sightline that makes the Records Office door the block's far end."
+   },
+   {
+    "id": "pool-walk",
+    "ring": {
+     "centre": [6.5, -30],
+     "r0": 3.6,
+     "r1": 5.36
+    },
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Between the pool coping and the planter ring: 'Fountain', 'Plaza east', 'Plaza west' stand here."
+   },
+   {
+    "id": "court-walk",
+    "ring": {
+     "centre": [6.5, -30],
+     "r0": 7.9,
+     "r1": 9.8
+    },
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The Oct 9 patrol circle (R 8.85) and Vela's outer band (R 8.0..9.2)."
+   },
+   {
+    "id": "cafe-terrace",
+    "polygon": [
+     [-10.7, -34.7],
+     [-4.47, -34.7],
+     [-4.47, -23.3],
+     [-10.7, -23.3]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Tables and parasols only: the service aisle between the table sets and the wall is 1.0 m."
+   },
+   {
+    "id": "public-door",
+    "polygon": [
+     [47.3, -32.56],
+     [52.5, -32.56],
+     [52.5, -27.44],
+     [47.3, -27.44]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "Landing, steps and 1.9 m of forecourt at their foot, cheek to cheek: 'Office approach' and 'Office entrance'."
+   },
+   {
+    "id": "official-door",
+    "polygon": [
+     [75.5, -34],
+     [77, -34],
+     [77, -26],
+     [75.5, -26]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "The 1.5 m pavement at the official door: Vale's 2.2 m to the car."
+   },
+   {
+    "id": "official-bay",
+    "polygon": [
+     [76.4, -38.2],
+     [80, -38.2],
+     [80, -23.8],
+     [76.4, -23.8]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol",
+     "band"
+    ],
+    "reason": "The lay-by and 0.6 m of pavement along it (car doors)."
+   },
+   {
+    "id": "service-lane",
+    "polygon": [
+     [48, -46],
+     [77, -46],
+     [77, -40.5],
+     [48, -40.5]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The west side of the office: Tech's cabinets and the walk from 'Service lane' round to both doors."
+   }
+  ],
+  "pieces": [
+   {
+    "piece": "CafeBay",
+    "at": [-10.7, -29],
+    "yawDeg": 90,
+    "reason": "As built: front-centre of the ring's south face. Door flush at (-10.3, -29), no steps. Canopy to x -8.25 (soffit 4.22). Terrace wall line x -4.8 (0.66 wide), gate y -31.6..-26.4, arcs R 11.2 about (-16, -34.7) and (-16, -23.3) ending at (-13.1, -45.5) and (-13.1, -12.5). Clears every Handover point and block object.",
+    "solids": "the terrace wall (nav blocker)"
+   },
+   {
+    "piece": "RecordsEntrance",
+    "at": [52.5, -30],
+    "yawDeg": -90,
+    "on": [
+     "office-public-landing",
+     "office-public-steps"
+    ],
+    "reason": "Front north, on tower-public's north face and axis.",
+    "solids": [
+     {
+      "id": "cheek-w",
+      "polygon": [
+       [49.1, -32.56],
+       [52.5, -32.56],
+       [52.5, -32.3],
+       [49.1, -32.3]
+      ]
+     },
+     {
+      "id": "cheek-e",
+      "polygon": [
+       [49.1, -27.7],
+       [52.5, -27.7],
+       [52.5, -27.44],
+       [49.1, -27.44]
+      ]
+     },
+     {
+      "id": "pier-w",
+      "polygon": [
+       [51.47, -33.98],
+       [52.73, -33.98],
+       [52.73, -33.02],
+       [51.47, -33.02]
+      ]
+     },
+     {
+      "id": "pier-e",
+      "polygon": [
+       [51.47, -26.98],
+       [52.73, -26.98],
+       [52.73, -26.02],
+       [51.47, -26.02]
+      ]
+     },
+     {
+      "id": "marquee",
+      "polygon": [
+       [50.2, -33.15],
+       [52.5, -33.15],
+       [52.5, -26.85],
+       [50.2, -26.85]
+      ],
+      "z": 4.05,
+      "height": 0.57,
+      "note": "overhead, not a blocker. The play camera (yaw 30) looks at this door from behind the 38 m tower: a person on the landing is hidden above 0.7 m, at the top riser above 1.35 m, at the foot not at all. The landing reads only through the architecture fade (brief 008: this front is an eye-level part); 'Office approach' at the foot reads without it"
+     }
+    ]
+   },
+   {
+    "piece": "RecordsEntrance_Official",
+    "at": [75.5, -30],
+    "yawDeg": 90,
+    "on": [
+     "office-boarding-pavilion"
+    ],
+    "needs": "flush variant from Vela (see the report): the piece as built reuses the public stair, which would fill the 1.5 m pavement and run 1.8 m into the lay-by.",
+    "reason": "Front south, on tower-official's south face and axis. Canopy envelope = office-boarding-pavilion (x 75.5..78.5, y -33..-27, soffit 4.05, top 4.62).",
+    "solids": [
+     {
+      "id": "pier-w",
+      "polygon": [
+       [75.27, -33.98],
+       [76.53, -33.98],
+       [76.53, -33.02],
+       [75.27, -33.02]
+      ]
+     },
+     {
+      "id": "pier-e",
+      "polygon": [
+       [75.27, -26.98],
+       [76.53, -26.98],
+       [76.53, -26.02],
+       [75.27, -26.02]
+      ]
+     }
+    ]
+   }
+  ],
+  "parasols": {
+   "piece": "Parasol_Stripe",
+   "pivot": "pole at the table centre",
+   "on": [
+    {
+     "table": "cafe-table-0",
+     "at": [-7.1, -37.6]
+    },
+    {
+     "table": "cafe-table-1",
+     "at": [-7.1, -33.3]
+    },
+    {
+     "table": "cafe-table-3",
+     "at": [-7.1, -20.4]
+    },
+    {
+     "table": "cafe-table-4",
+     "at": [-14.8, -42.9]
+    },
+    {
+     "table": "cafe-table-5",
+     "at": [-19.6, -42.9]
+    },
+    {
+     "table": "cafe-table-6",
+     "at": [-14.8, -15.1]
+    }
+   ],
+   "open": [
+    {
+     "table": "cafe-table-2",
+     "reason": "'Under parasol' (-7.92, -23.88) is 1.16 m from the pole (inside the R 1.3 disc) and 0.30 m from its camera shadow."
+    },
+    {
+     "table": "cafe-table-7",
+     "reason": "The generator's mast-camera at (-18.5, -15.5) stands 1.17 m from the table centre, inside the disc."
+    }
+   ],
+   "reason": "Nearest Handover point to a placed disc: 'Between tables', 2.15 m from the poles of tables 0 and 1 (0.85 m outside each disc, 1.86 m from the shadow)."
+  },
+  "lamps": {
+   "piece": "PlazaSphereLamp_Play",
+   "pivot": "pole; arms reach local +X 0.7 m",
+   "yaw": "West lamps 240, east lamps 60: arms broadside to the play camera (yaw 30) and pointing away from the axis they flank.",
+   "at": [
+    {
+     "id": "lamp-terrace-w",
+     "at": [-3.7, -42.4],
+     "yawDeg": 240,
+     "ring": false,
+     "reason": "Outside the terrace wall's west arc (2.7 m), lights the way to 'West side'. No ring: Vela has four (16 arcs) and here one would run 0.4 m off the terrace wall and touch the corner of crew-line-getaway."
+    },
+    {
+     "id": "lamp-terrace-e",
+     "at": [-3.7, -15.6],
+     "yawDeg": 60,
+     "ring": false,
+     "reason": "Mirror of lamp-terrace-w; no ring, to match."
+    },
+    {
+     "id": "lamp-court-w",
+     "at": [14.8, -41],
+     "yawDeg": 240,
+     "ring": true,
+     "reason": "South-west of the fountain, R 13.8. Ring x 12.5..17.1, y -43.3..-38.7: 0.7 m off crew-line-getaway, 2.3 m outside the outer band. Nearest mission walk 2.63 m."
+    },
+    {
+     "id": "lamp-court-e",
+     "at": [14.8, -19],
+     "yawDeg": 60,
+     "ring": true,
+     "reason": "Mirror of lamp-court-w. Nearest mission walk 4.04 m."
+    },
+    {
+     "id": "lamp-cross-sq-w",
+     "at": [27.9, -35.2],
+     "yawDeg": 240,
+     "ring": true,
+     "reason": "Square side of the Orbit Walk crossing, 2.7 m west of its edge (y -32.5): the pair frames the way to the Records Office. Nearest mission walk 3.08 m."
+    },
+    {
+     "id": "lamp-cross-sq-e",
+     "at": [27.9, -24.8],
+     "yawDeg": 60,
+     "ring": true,
+     "reason": "Mirror; ring 1.46 m off civic-monument-east. Nearest mission walk 3.09 m."
+    },
+    {
+     "id": "lamp-fore-w",
+     "at": [46.6, -35.2],
+     "yawDeg": 240,
+     "ring": false,
+     "reason": "Office side of the crossing, 2.6 m before the stair foot. No ring: it would cross the forecourt bar (x 47.9). Nearest mission walk 1.04 m ('Service lane' to 'South walkway')."
+    },
+    {
+     "id": "lamp-fore-e",
+     "at": [46.6, -24.8],
+     "yawDeg": 60,
+     "ring": false,
+     "reason": "Mirror. Nearest mission walk 3.46 m."
+    }
+   ]
+  },
+  "bollards": {
+   "piece": "BollardSphere",
+   "pivot": "centre",
+   "at": [
+    {
+     "id": "bol-cross-1",
+     "at": [30.4, -36.1]
+    },
+    {
+     "id": "bol-cross-2",
+     "at": [30.4, -33.6]
+    },
+    {
+     "id": "bol-cross-3",
+     "at": [30.4, -26.4]
+    },
+    {
+     "id": "bol-cross-4",
+     "at": [30.4, -23.9]
+    },
+    {
+     "id": "bol-getaway-n",
+     "at": [-4.6, -49.5]
+    },
+    {
+     "id": "bol-getaway-s",
+     "at": [16.6, -49.5]
+    },
+    {
+     "id": "bol-east-n",
+     "at": [3.5, -8.5]
+    },
+    {
+     "id": "bol-east-s",
+     "at": [9.5, -8.5]
+    },
+    {
+     "id": "bol-bay-w",
+     "at": [78.5, -38.8]
+    },
+    {
+     "id": "bol-bay-e",
+     "at": [78.5, -23.2]
+    },
+    {
+     "id": "bol-terrace-w",
+     "at": [-14.4, -49.5]
+    },
+    {
+     "id": "bol-terrace-e",
+     "at": [-14.4, -8.5]
+    }
+   ],
+   "reason": "bol-cross: two pairs on the square's south kerb (plot edge x 31) either side of the crossing mouth, the inner ones 1.1 m outside its edges, so the 5 m crossing reads as the one way across. bol-getaway, bol-east, bol-terrace: the ends of the kerb planter runs, 0.9 or 1 m beyond each, marking the open kerb lengths (crew and getaway x -4.6..16.6 west; fountain axis x 3.5..9.5 east). bol-bay: on the pavement at the returns of the official lay-by, 0.6 m beyond each end. None on the office kerb (x 44.6): every position there moved a walk from 'Service lane', 'Fountain' or 'Plaza east'."
+  },
+  "planterRuns": {
+   "pieces": "PlanterRun_4_A / _B / _C (4.3 x 0.68 m, 4 m pitch, neighbours differ); pivot = footprint centre; front faces the square",
+   "runs": [
+    {
+     "id": "run-west-cafe",
+     "line": [
+      [-13.5, -49.5],
+      [-5.5, -49.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [-11.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [-7.5, -49.5]
+      }
+     ]
+    },
+    {
+     "id": "run-west-south",
+     "line": [
+      [17.5, -49.5],
+      [29.5, -49.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [19.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [23.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [27.5, -49.5]
+      }
+     ]
+    },
+    {
+     "id": "run-east-cafe",
+     "line": [
+      [-13.5, -8.5],
+      [2.5, -8.5]
+     ],
+     "yawDeg": 0,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [-11.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [-7.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [-3.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [0.5, -8.5]
+      }
+     ]
+    },
+    {
+     "id": "run-east-south",
+     "line": [
+      [10.5, -8.5],
+      [22.5, -8.5]
+     ],
+     "yawDeg": 0,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [12.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [16.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [20.5, -8.5]
+      }
+     ]
+    }
+   ],
+   "reason": "On the square's two street kerbs (plot edges y -50 and y -8), 0.16 m inside the edge: they close the square to the two streets and leave the ways in the crowd should use: on the west the café flank (north of x -14.4) and the crew and getaway kerb (x -4.6..16.6); on the east the café flank, the fountain axis (x 3.5..9.5) and the south corner (x 22.5..31). Twelve 4 m modules. None on the office plot or between the two plazas: a run on the forecourt's east side (x 44.9, y -21.5..-9.5) cut the walk from 'South walkway' to the official door, and the planter ring and the nine civic-* beds already hold the middle."
+  },
+  "bands": {
+   "source": "out/decokit-008/paving-bands.json (Vela)",
+   "changes": [
+    {
+     "id": "forecourt-bar",
+     "to": {
+      "from": [47.9, -34],
+      "to": [47.9, -26]
+     },
+     "reason": "Re-centred on the door axis y -30 (was y -34.4..-26.4, centred -30.4). 'Office approach' (48.6, -30) stands 0.1 m south of it."
+    },
+    {
+     "id": "lamp-ring-0..3",
+     "to": [
+      "lamp-court-w",
+      "lamp-court-e",
+      "lamp-cross-sq-w",
+      "lamp-cross-sq-e"
+     ],
+     "reason": "Rings follow the lamps: the four suggested centres (R 12.4 diagonals) are replaced by the four lamps with ring true. Still 16 InlayArc_R2_W06."
+    },
+    {
+     "id": "spoke-west",
+     "to": {
+      "from": [6.5, -39.2],
+      "to": [6.5, -43.2]
+     },
+     "reason": "It ran to y -44.16, 0.16 m into crew-line-getaway; two whole 2 m modules end it at -43.2."
+    },
+    {
+     "id": "spine-north",
+     "reason": "Kept as drawn: it passes under 'Courtyard' and 'Steps', which the rule above allows (the file's own note says bands never cross a point; that note should go)."
+    }
+   ]
+  }
+ }
 }

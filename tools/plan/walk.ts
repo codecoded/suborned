@@ -3,7 +3,7 @@
 // an any-angle route.
 import { type V, dist, inPoly } from './geom';
 import type { Derived, Plan } from './plan';
-import type { Civic } from './civic';
+import { type Civic, footprints } from './civic';
 
 export type Walk = { from: string; to: string; kind: string; m: number; straight: number; path: V[] };
 /** One tram stop or sky rail station and its shortest walk (m) from the nearest origin; Infinity = no walk at all. */
@@ -31,7 +31,7 @@ function run(plan: Plan, d: Derived, civ: Civic) {
   const all = [...origins.map(o => o.p), ...targets.map(t => t.p)], pad = 80;
   const x0 = Math.min(...all.map(p => p[0])) - pad, y0 = Math.min(...all.map(p => p[1])) - pad;
   const nx = Math.ceil((Math.max(...all.map(p => p[0])) + pad - x0) / cell), ny = Math.ceil((Math.max(...all.map(p => p[1])) + pad - y0) / cell);
-  const blockers: V[][] = [...d.plots.filter(p => !OPEN.has(p.use)).map(p => p.polyV), ...civ.buildings.map(b => b.poly), ...plan.water];
+  const blockers: V[][] = [...d.plots.filter(p => !OPEN.has(p.use)).map(p => p.polyV), ...footprints(civ), ...plan.water]; // buildings and entrance towers together
   const boxed = blockers.map(b => ({ b, x0: Math.min(...b.map(v => v[0])), x1: Math.max(...b.map(v => v[0])), y0: Math.min(...b.map(v => v[1])), y1: Math.max(...b.map(v => v[1])) }));
   const rounds = plan.landmarks.filter(l => l.id !== 'skyport');
   const blocked = new Uint8Array(nx * ny);

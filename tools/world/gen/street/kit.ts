@@ -15,9 +15,13 @@ const CLEAR = (a: string, b: string) => (a === 'tree' && b === 'lamp') || (a ===
 /** Kinds allowed next to a crossing (streetscape.rules SF-2): bollards and the crossing's beacons. */
 const NEAR_CROSSING = new Set(['bollard', 'beacon', 'crossing']);
 
+/** A kerb crossing landing as dressRoads placed it: `flank` = the bollards and beacons placed with it (they go with it if it is dropped). */
+export type Landing = { id: string; road: string; cls: string; flank: string[] };
+
 export class Layer {
   items: StreetItem[] = [];
-  private placed = new Grid<{ p: V; r: number; k: string }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
+  landings: Landing[] = [];
+  private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
   private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
   private boxes: Float64Array; private doorGrid = new Grid<V[]>(8, c => c[0]!);
   constructor(readonly ctx: Ctx, readonly solids: V[][], readonly decks: Rect[], readonly columns: V[], readonly keep: Rect[], readonly pylons: V[], readonly doors: V[][] = []) {
@@ -29,13 +33,21 @@ export class Layer {
   /** True if p is free of solids, deck footprints (ground-level items), columns, pylons and keep-clear rects, and r clear of other items. */
   free(p: V, r: number, ground = true, kind = ''): boolean {
     if (this.placed.near(p, 10).some(o => dist(o.p, p) < Math.max(o.r + r, CLEAR(kind, o.k)))) return false;
-    if (this.keep.some(k => inRect(p, k, r))) return false;
-    if (this.pylons.some(q => dist(q, p) < 3 + 0.8 + r)) return false;
     if (ground && (this.columns.some(c => dist(c, p) < 6) && kind === 'tree')) return false;
     if (ground && kind === 'tree' && this.decks.some(d => inRect(p, d))) return false;
+    return this.fixed(p, r);
+  }
+  /** True if p is clear of what never moves: keep-clear rects, pylons and solids. */
+  fixed(p: V, r: number): boolean {
+    if (this.keep.some(k => inRect(p, k, r))) return false;
+    if (this.pylons.some(q => dist(q, p) < 3 + 0.8 + r)) return false;
     const b = this.boxes;
     for (let i = 0; i < this.solids.length; i++) if (p[0] >= b[i * 4]! && p[0] <= b[i * 4 + 1]! && p[1] >= b[i * 4 + 2]! && p[1] <= b[i * 4 + 3]! && pointInRing(p, this.solids[i]!)) return false;
     return true;
+  }
+  /** SF-2 for a crossing placed after the furniture: nothing but bollards, beacons and tram stop kits within `gap` m of its footprint, and no other crossing within 1 m. */
+  clearOf(ring: V[], at: V, gap: number): boolean {
+    return !this.crossings.some(c => ringGap(c, ring) < 1) && !this.placed.near(at, 12).some(o => !o.exempt && ringGap(o.ring, ring) < gap);
   }
   /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
   add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string } = {}): boolean {
@@ -50,7 +62,7 @@ export class Layer {
       if (!o.force && kind !== 'lamp' && kind !== 'mooring-cleat' && quayBlock(this.ctx, samples9(ring))) return false; // the quay edge is the water's (SF-14)
     }
     if (kind === 'crossing') this.crossings.push(ring);
-    this.placed.add({ p: at, r, k: kind });
+    this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/') });
     const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
     this.items.push({
       id: o.id ?? `street/${edge}/${kind}-${this.items.length}`, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,

@@ -6,9 +6,11 @@
 // or the sky rail line its bank stands against, from the plan and the export, not from the item's own yaw.
 import type { Check } from '../../plan/checks';
 import type { V } from '../../plan/geom';
-import { TOL, type WCtx, itemRing, rule } from '../../plan/world-ctx';
+import { dist, inPoly } from '../../plan/geom';
+import { TOL, type WCtx, itemRing, lineDist, rule } from '../../plan/world-ctx';
 import { ctxOf } from '../gen/common';
 import { plotRing } from '../gen/edges';
+import { areaOf, clipConvex, stripBlock } from '../gen/street/crossings';
 import { nearestLine } from './line';
 
 const SOURCE = 'streetscape.crossings.w (4 m, near edge ≥ 3 m past the corner tangent; bollards flank at ± 2.4) · '
@@ -33,7 +35,9 @@ function wayYaw(c: WCtx, s: { edge: string; at: V }): number | null {
   return rails.length ? nearestLine(rails, s.at).yaw : null;
 }
 
-export function crossingRules(c: WCtx): Check[] {
+export const crossingRules = (c: WCtx): Check[] => [...sizeRule(c), ...(c.S.crossings.strip ? stripRule(c) : [])];
+
+function sizeRule(c: WCtx): Check[] {
   const crossings = c.w.street.filter(s => s.kind === 'crossing'), W = c.S.crossings.w as number, bad: string[] = [];
   for (const s of crossings) {
     const yaw = wayYaw(c, s);
@@ -46,4 +50,48 @@ export function crossingRules(c: WCtx): Check[] {
   }
   return [rule('SF-19', 'Streetscape', 'A crossing is crossings.w wide along the road, platform or line it crosses',
     crossings.length, bad, 'none', SOURCE)];
+}
+
+const SOURCE20 = 'streetscape.crossings.strip (stagger, refuge, control, across) · Sky\'s walk of 2026-10-14, note 1 (a crossing is kerb to kerb: '
+  + 'two landings and a strip across the carriageway between them)';
+
+/** SF-20, on a plan that carries streetscape.crossings.strip: every crossing patch belongs to one crossing; a kerb crossing is two landings on opposite
+ *  kerbs of its road and the strip between their kerb edges; the strip crosses no tram track and no bay unless the plan allows its kind; it has a refuge
+ *  where it crosses a median of refuge width, and the control the plan gives the road's class. */
+function stripRule(c: WCtx): Check[] {
+  const std = c.S.crossings.strip as { refuge: number; control?: Record<string, string>; across?: { track?: string[]; bay?: string[] } }, W = c.S.crossings.w as number;
+  const crossings = c.w.crossings ?? [], patches = c.w.street.filter(s => s.kind === 'crossing'), byId = new Map(patches.map(s => [s.id, s]));
+  const uses = new Map<string, number>(), bad: string[] = [];
+  for (const x of crossings) for (const id of x.items) uses.set(id, (uses.get(id) ?? 0) + 1);
+  for (const s of patches) {
+    const n = uses.get(s.id) ?? 0;
+    if (n !== 1) bad.push(`${s.id} is a landing with no partner (in ${n} crossings)`);
+  }
+  const envelope = c.plan.standards.tram.trackCentres / 2 + 0.5, tracks = c.w.transit.tram.map(t => t.line), bays = c.w.ground.flats.filter(f => f.surface === 'bay').map(f => f.ring);
+  const medians = c.w.ground.medians.filter(m => dist(m.ring[1]!, m.ring[2]!) >= std.refuge - TOL);
+  for (const x of crossings) {
+    const its = x.items.map(id => byId.get(id)), why = ((): string => {
+      if (its.some(s => !s)) return 'names a street item that is not a crossing patch';
+      if (x.kind === 'kerb') {
+        if (its.length !== 2) return `has ${its.length} landings, needs 2`;
+        const off = its.map((s, i) => { const r = itemRing(s!); return inPoly(x.line[i]!, r) ? 0 : lineDist(x.line[i]!, [...r, r[0]!]); }); // the strip starts on the landing
+        if (off.some(d => d > 0.02)) return `strip does not start on its landings (${off.map(d => d.toFixed(2)).join(', ')} m off)`;
+        const road = c.d.roads.find(r => r.id === x.road);
+        if (!road) return `crosses ${x.road || 'no road'}, which is not in the plan`;
+        if (Math.abs(dist(x.line[0], x.line[1]) - road.w) > 1.5) return `strip is ${dist(x.line[0], x.line[1]).toFixed(1)} m long on a ${road.w} m road`;
+        const control = std.control?.[road.class];
+        if (x.control !== control) return `control is ${x.control ?? 'none'}, the plan gives ${road.class} roads ${control ?? 'none'}`;
+      } else if (its.length !== 1) return `has ${its.length} patches, needs 1`;
+      if (Math.abs(x.width - W) > TOL) return `strip is ${x.width} m wide, needs ${W}`;
+      const block = stripBlock(x.strip, tracks, envelope, bays);
+      if (block && !(block === 'a tram track' ? std.across?.track : std.across?.bay)?.includes(x.kind)) return `strip crosses ${block} and the plan does not say a ${x.kind} crossing may`;
+      const want = x.kind === 'kerb' ? medians.map(m => clipConvex(x.strip, m.ring)).filter(r => areaOf(r) > 0.25) : [];
+      const sum = (rs: number[][][]) => rs.reduce((t, r) => t + areaOf(r as [number, number][]), 0);
+      if (want.length !== x.refuges.length || Math.abs(sum(want) - sum(x.refuges)) > 0.05) return `has ${x.refuges.length} refuges, the median it crosses needs ${want.length}`;
+      return '';
+    })();
+    if (why) bad.push(`${x.id} ${why}`);
+  }
+  return [rule('SF-20', 'Streetscape', 'A crossing is two landings and a strip between their kerbs, a refuge where it crosses a median of refuge width, '
+    + 'and no strip across a tram track or a bay the plan does not allow', patches.length + crossings.length, bad, 'none', SOURCE20)];
 }

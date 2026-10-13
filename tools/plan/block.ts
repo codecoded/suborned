@@ -1,8 +1,9 @@
-// bun run block: write contracts/world/civic-block.json (suborned.block/3), the civic block in BLOCK frame
+// bun run block: write contracts/world/civic-block.json (suborned.block/4), the civic block in BLOCK frame
 // (the Unity block at yaw 90: x runs south, y east; z up). The ONLY place that reads the old repo, and only here.
 // It reads the Oct 9 city-scale sources, applies contracts/world/civic-block.adjust.json (Vantage's explicit edits,
 // each with a reason), and records every source path + sha256 and every applied adjustment in the output.
-// usage (repo root): bun tools/plan/block.ts [--src <TheSuborned asset root>]
+// usage (repo root): bun tools/plan/block.ts [--src <TheSuborned asset root>] [--adjust <adjust file>] [--out <block file>]
+// (--adjust and --out are for tests: a scratch adjust file writes a scratch block; the defaults are the committed pair)
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -11,8 +12,9 @@ import { resolve } from 'node:path';
 const SRC_LABEL = '~/Projects/the-suborned/game/Assets/TheSuborned';
 const root = resolve(import.meta.dir, '../..'), args = process.argv.slice(2);
 const srcRoot = (args.includes('--src') ? args[args.indexOf('--src') + 1] : undefined) ?? SRC_LABEL.replace('~', homedir());
-const OUT = resolve(root, 'contracts/world/civic-block.json');
-const ADJUST = resolve(root, 'contracts/world/civic-block.adjust.json');
+const opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined);
+const OUT = resolve(root, opt('--out') ?? 'contracts/world/civic-block.json');
+const ADJUST = resolve(root, opt('--adjust') ?? 'contracts/world/civic-block.adjust.json');
 
 type P = [number, number];
 type Item = { id: string; name?: string; kind?: string; category?: string; polygon: P[]; z: number; height: number; [k: string]: unknown };
@@ -63,7 +65,7 @@ const buildings = [
     id: 'civic-office', name: 'Records Office', source: 'civic-office-site', polygon: officePoly, z: 0, height: OFFICE.wings,
     entrances: [{ id: 'office-entrance', name: 'Office entrance', ...door('Office entrance') }],
     heights: { wings: OFFICE.wings, crown: OFFICE.crown, giantOrder: OFFICE.giantOrder },
-    // entrance towers sit on the two long faces (public west, official east); the sources give no tower footprint
+    // entrance towers sit on the two long faces (public west, official east); the sources give no tower footprint: `towerFootprint` states it
     towers: [{ id: 'public', at: [r3(ox0), faceY], height: OFFICE.crown }, { id: 'official', at: [r3(ox1), faceY], height: OFFICE.crown }],
   },
 ] as any[];
@@ -80,12 +82,18 @@ const objects: Item[] = nav.solids
 
 
 // ---- adjustments ----
-type Adj = { op: 'addBay' | 'addStructure' | 'edit'; id?: string; reason: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number };
+type Adj = {
+  op: 'addBay' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing'; reason: string;
+  id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number;
+  building?: string; tower?: string; to?: P; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance
+};
 const adjFile = readFileSync(ADJUST, 'utf8');
-const adj: { schema: string; owner: string; adjustments: Adj[] } = JSON.parse(adjFile);
+const adj: { schema: string; owner: string; adjustments: Adj[]; dressing?: Record<string, unknown> } = JSON.parse(adjFile);
 if (adj.schema !== 'suborned.block-adjust/1') throw new Error('adjust file schema must be suborned.block-adjust/1');
 const bays: { id: string; polygon: P[] }[] = [];
 const all = new Map<string, Item>([...structures, ...objects].map(i => [i.id, i]));
+const building = (a: Adj) => { const b = buildings.find(x => x.id === a.building); if (!b) throw new Error(`adjustment ${a.op}: no building ${a.building}`); return b; };
+let dressing: Record<string, unknown> | undefined;
 for (const a of adj.adjustments) {
   if (!a.reason?.trim()) throw new Error(`adjustment without a reason: ${JSON.stringify(a)}`);
   if (a.op === 'addBay') bays.push({ id: a.id!, polygon: a.polygon! });
@@ -95,11 +103,31 @@ for (const a of adj.adjustments) {
     if (a.move) it.polygon = it.polygon.map(([x, y]) => [r3(x + a.move![0]), r3(y + a.move![1])] as P);
     if (a.z !== undefined) it.z = a.z;
     if (a.height !== undefined) it.height = a.height;
+  } else if (a.op === 'remove') {
+    const it = all.get(a.id!); if (!it) throw new Error(`adjustment remove ${a.id}: no such item (stale adjustment?)`);
+    all.delete(a.id!);
+    for (const list of [structures, objects]) { const i = list.indexOf(it); if (i >= 0) list.splice(i, 1); }
+  } else if (a.op === 'towerFootprint') { // the tower's plan, stated: W-4 and the walk blockers use buildings and towers together
+    const t = (building(a).towers as { id: string; polygon?: P[] }[] | undefined)?.find(x => x.id === a.tower);
+    if (!t) throw new Error(`adjustment towerFootprint: ${a.building} has no tower ${a.tower}`);
+    if (!a.polygon || a.polygon.length < 3) throw new Error(`adjustment towerFootprint ${a.tower}: needs a polygon`);
+    t.polygon = a.polygon.map(([x, y]) => [r3(x), r3(y)] as P);
+  } else if (a.op === 'moveEntrance') {
+    const e = buildings.flatMap(b => b.entrances as { id: string; at: P; z?: number }[]).find(x => x.id === a.id);
+    if (!e) throw new Error(`adjustment moveEntrance ${a.id}: no such entrance (stale adjustment?)`);
+    Object.assign(e, { at: [r3(a.to![0]), r3(a.to![1])], ...(a.z !== undefined ? { z: a.z } : {}), ...(a.on ? { on: a.on } : {}), ...(a.face ? { face: a.face } : {}) });
+  } else if (a.op === 'addEntrance') {
+    const b = building(a), e = a.item as unknown as { id: string };
+    if ((b.entrances as { id: string }[]).some(x => x.id === e.id)) throw new Error(`adjustment addEntrance: ${e.id} exists`);
+    (b.entrances as unknown[]).push(a.item);
+  } else if (a.op === 'dressing') {
+    if (!adj.dressing) throw new Error('adjustment dressing: the adjust file has no `dressing` key');
+    dressing = adj.dressing; // passed through unchanged; nothing in the world reads it yet
   } else throw new Error(`unknown adjustment op ${(a as any).op}`);
 }
 
 const out = {
-  schema: 'suborned.block/3', id: 'civic',
+  schema: 'suborned.block/4', id: 'civic',
   frame: {
     name: 'block', units: 'm', x: 'south (the Unity block at yaw 90)', y: 'east', z: 'up',
     z0: 'height above the local ground: pavement top (plan 0.18), or the lay-by surface inside a bay (plan 0)',
@@ -109,6 +137,7 @@ const out = {
   sources,
   adjustments: { file: 'contracts/world/civic-block.adjust.json', sha256: createHash('sha256').update(adjFile).digest('hex'), owner: adj.owner, applied: adj.adjustments },
   buildings, structures, objects, bays,
+  ...(dressing ? { dressing } : {}),
 };
 
 // numbers-only arrays on one line, everything else indented

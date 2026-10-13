@@ -12,6 +12,11 @@ export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`tenancies by level: ${by(w.frontages.map(f => f.level))}`);
   console.log(`connectors ${w.connectors.length}: ${by(w.connectors.map(c => c.kind))}; decks ${gen.decks.length}, columns ${gen.decks.reduce((n, x) => n + x.columns.length, 0)}`);
   console.log(`street items ${w.street.length}: ${by(w.street.map(s => s.kind))}`);
+  if (w.crossings && gen.crossingLog) {
+    const k = (kind: string) => w.crossings!.filter(c => c.kind === kind), g = gen.crossingLog;
+    console.log(`crossings ${w.crossings.length}: kerb ${k('kerb').length} (${g.landings} landings found, ${g.paired} pairs standing, ${g.added} partners added, ${g.dropped.length} landings dropped), stop ${k('stop').length}, bank ${k('bank').length}; refuges ${w.crossings.reduce((n, c) => n + c.refuges.length, 0)}; zebra ${w.crossings.filter(c => c.control === 'zebra').length}`);
+    for (const x of g.dropped) console.log(`  dropped ${x}`);
+  }
   console.log(`megastructures ${w.megastructures.map(m => `${m.id} ${m.parts.length} parts + ${m.prims.length} prims`).join('; ')}`);
   const cp = w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/glass$/.test(p.id));
   console.log(`gallery canopies ${cp.length} (glazed barrels: ${cp.map(p => `${p.id} len ${p.size[0]} span ${p.size[1]} rise ${p.size[2]} springing ${p.base}`).join('; ')}); ribs ${w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/rib-/.test(p.id)).length}, piers ${w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/pier-/.test(p.id)).length}`);

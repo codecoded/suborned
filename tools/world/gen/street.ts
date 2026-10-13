@@ -1,6 +1,6 @@
 // Street furniture, trees, lamps, tram stop kits, station entrances and watchers: per street edge from
 // standards.streetscape, with the catalogue's counts and spacings. Nothing is placed item by item.
-import type { Connector, Flag, Frontage, Mass, StreetItem } from '../../../contracts/world/world.schema';
+import type { Connector, Crossing, Flag, Frontage, Mass, StreetItem } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import type { Ctx } from './common';
 import { type Rect, bbox, growRect } from './geo';
@@ -10,12 +10,13 @@ import { type V as PV, dist, dot, norm, sub } from '../../plan/geom';
 import { flagRow } from './colour';
 import { edgeN } from './geo';
 import { streetKit } from './kitrefs';
+import { type CrossingLog, pairCrossings } from './street/crossings';
 import { Layer } from './street/kit';
 import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks } from './street/public';
 import { dressRoads } from './street/roads';
 import { dressTransit } from './street/transit';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[] } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -31,7 +32,8 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const D = new Layer(ctx, hall, [], [], keep, []);
   dressDecks(ctx, D, o.decks.filter(d => !/\/(mezzanine|bridge)/.test(d.id)));
   const flags = dressFlags(ctx, L, o.frontages); // last: flags take what the furniture leaves
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items]), flags };
+  const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
+  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items]), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

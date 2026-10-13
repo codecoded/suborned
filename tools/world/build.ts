@@ -23,7 +23,7 @@ export const PROV = {
   track: { width: 1.6, level: 0.04, depth: 0.04 }, // TODO standards.tram.track
   beam: { width: 1.5, depth: 1.6, pylon: 1.6, cap: 1 }, // beam half-width 0.75 is standards.transit's; TODO standards.skyrail.beam
   platform: { tram: { width: 3, height: 0.3 }, sky: { width: 4, length: 50 } }, // sky 4 m from standards.levels.station; TODO standards.tram.platformHeight
-  tower: 6, // civic entrance tower footprint: the block gives none; one facade bay (standards.buildings.bay)
+  tower: 6, // civic entrance tower footprint when the block states none (block/2, /3): one facade bay (standards.buildings.bay)
   gate: { size: 2.4, height: 10, off: 2 }, // TODO standards.gates
 };
 
@@ -87,9 +87,9 @@ function civicMasses(civ: Civic): Mass[] {
   const out: Mass[] = [];
   for (const b of civ.buildings) {
     out.push({ id: `civic/${b.id}`, surface: 'limestone', ring: ring(b.poly), base: base(b.z), height: b.height });
-    for (const t of (b.towers ?? []) as { id: string; at: V; height: number }[]) {
+    for (const t of b.towers ?? []) { // the block's own plan (block/4 `towerFootprint`), else the provisional 6 m square on `at`
       const h = PROV.tower / 2;
-      out.push({ id: `civic/${b.id}/tower-${t.id}`, surface: 'limestone', ring: ring(rectPoly([t.at[0] - h, t.at[0] + h, t.at[1] - h, t.at[1] + h])), base: base(b.z), height: t.height });
+      out.push({ id: `civic/${b.id}/tower-${t.id}`, surface: 'limestone', ring: ring(t.poly ?? rectPoly([t.at[0] - h, t.at[0] + h, t.at[1] - h, t.at[1] + h])), base: base(b.z), height: t.height });
     }
   }
   const sfc: Record<string, string> = { 'pavilion-support': 'column', 'service-cabinet': 'column', 'civic-monument': 'trim', 'boarding-canopy': 'enamel' };
@@ -224,14 +224,14 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street,
+    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,
     transit: t.tram.length + t.skyRail.length + t.stops.length + t.stations.length,
     buildings: w.buildings.length, roofs: w.roofs.length, skins: w.skins.length, fabric: w.fabric.awnings.length + w.fabric.banners.length + w.fabric.flags.length, facades: w.facades.length, frontages: w.frontages.length, connectors: w.connectors.length, street: w.street.length,
-    levels: w.levels.length, decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length, signatures: w.signatures.length, horizon: w.horizon.pieces.length,
+    levels: w.levels.length, ...(w.crossings ? { crossings: w.crossings.length } : {}), decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length, signatures: w.signatures.length, horizon: w.horizon.pieces.length,
   };
   return { world: { ...w, counts }, gen };
 }

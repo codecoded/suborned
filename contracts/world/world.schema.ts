@@ -1,4 +1,4 @@
-// suborned.world/2 (v2 adds roofs, frontages, connectors, street, ground.plots, deck groups and megastructure prims; plot slabs moved from buildings to ground.plots): the derived world, written by `bun run world` (tools/world/export.ts) to out/world/<plan id>.world.json.
+// suborned.world/2 (v2 adds roofs, frontages, connectors, street, ground.plots, deck groups and megastructure prims; plot slabs moved from buildings to ground.plots; optional `crossings`, present when the plan carries streetscape.crossings.strip): the derived world, written by `bun run world` (tools/world/export.ts) to out/world/<plan id>.world.json.
 // Frame: x east, y north, metres; Unity = (x, height, y). Heights are metres above the carriageway datum (0).
 // Read by unity/Assets/Suborned/Editor/World/WorldReader.cs. Example: unity/Assets/Suborned/Editor/World/Samples/sample.world.json.
 // Every element has a stable id; rings are simple polygons; nothing here is placed by hand.
@@ -26,6 +26,7 @@ export type World = {
   frontages: Frontage[]; // tenancies along building lines, megastructure facades and decks
   connectors: Connector[]; // stairs, ramps, escalators, lifts, stair towers: every deck and concourse reaches the street
   street: StreetItem[]; // trees, lamps, furniture, transit kits, station entrances, watchers
+  crossings?: Crossing[]; // kerb-to-kerb crossings (present when the plan carries streetscape.crossings.strip): each is its street items (landings) and the strip between them
   levels: Level[]; // standards.levels.list: street, deck, concourse; decks carry their columns
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size
@@ -135,6 +136,10 @@ export type Connector = {
    *  parked car and an atom-ball crown. When present draw these prims INSTEAD of the ring prism; `ring` stays the footprint every rule reads. */
   dress?: Prim[];
 };
+/** A crossing (streetscape.crossings.strip): a `kerb` crossing is two landings (street items of kind 'crossing', one on each kerb of `road`) and the `strip` across the carriageway between them,
+ *  `line` its centre line from one landing's kerb edge to the other, `width` across it; `refuges` = the rings of the median the strip crosses where the median is refuge width, where people wait;
+ *  `control` where the plan says the road class has one (zebra | signal). A `stop` or `bank` crossing is one patch (the way from a tram platform, or from a station bank, across the road): `items` has its one street item, `line` runs along its long axis. */
+export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; line: [V, V]; strip: V[]; width: number; control?: 'zebra' | 'signal'; refuges: V[][] };
 export type StreetItem = {
   id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;

@@ -53,6 +53,12 @@
     "cause": "brief 007 round 3 walk, second pass: opt-in standards.skyrail.pylonClear {landmark, span, remnant}. derive keeps a pylon's face 3 m off a landmark disc, lets a span that crosses a disc reach pylonClear.span (S-P1 reads that limit for that span only), re-sets short spans beside a forced pylon and drops a portal stand-off pylon that would leave a stub. A plan without the keys places pylons as before, so the A04 plans' pylons and every recorded rule result are unchanged",
     "rules": []
    }
+  ],
+  "6491e64a5dcba168b4e4062b64a9c31359d390651bec74884bae5290163d9c3d": [
+   {
+    "cause": "brief 008 B3: the plan checker reads a civic block's tower footprints. block/4 adds towers[].polygon, and W-4 (a walk origin stands at a wall or door) and the walk's blockers test buildings and towers together; a block without a tower polygon (block/2 and block/3, so every recorded run's pinned block) is read exactly as before, so no recorded rule result changes. The world generator's kerb-to-kerb crossings and rule SF-20 are opt-in on standards.streetscape.crossings.strip, which no recorded plan carries.",
+    "rules": []
+   }
   ]
  }
 }

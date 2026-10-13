@@ -4,7 +4,7 @@ import { type V, centroid, dist, inPoly, lineDist, nearLine, lineToPoly, segHit 
 import { type Derived, type Plan, inZone, portalsOf, spanMax } from './plan';
 import { offSheet, placements, stopsOf } from './transit';
 import { transitChecks } from './transit-checks';
-import { type Civic, blockPlanRect } from './civic';
+import { type Civic, blockPlanRect, footprints } from './civic';
 import { type Walk, walks as footWalks } from './walk';
 import { entranceChecks } from './entrances';
 import { edges } from './graph';
@@ -198,8 +198,8 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   const walks = footWalks(plan, d, civ), lim = std.walking.directness;
   const worst = walks.reduce((b, w) => (w.m / w.straight > b.m / b.straight ? w : b));
   add({ id: 'W-1', group: 'Walking', rule: 'Escape walks are direct (players cross any road; only buildings and water block)', value: walks.map(w => `${w.from} → ${w.to} ${f(w.m)} m`).join('; '), limit: `walk ÷ straight ≤ ${lim}`, ok: walks.every(w => w.m / w.straight <= lim), detail: `least direct: ${worst.from} → ${worst.to} ×${(worst.m / worst.straight).toFixed(2)}` });
-  const ring = (b: Civic['buildings'][number]) => [...b.poly, b.poly[0]], DOOR = 1; // a door stands within 1 m of its building's footprint edge
-  const stray = civ.walkFrom.filter(o => !civ.buildings.some(b => lineDist(o.p, ring(b)) <= DOOR));
+  const ring = (poly: V[]) => [...poly, poly[0]!], DOOR = 1; // a door stands within 1 m of its building's footprint edge: the wing's or a tower's
+  const stray = civ.walkFrom.filter(o => !footprints(civ).some(f => lineDist(o.p, ring(f)) <= DOOR));
   add({ id: 'W-4', group: 'Walking', rule: 'Every walk starts at a building entrance (doors are world)', value: `${civ.walkFrom.length - stray.length}/${civ.walkFrom.length}`, limit: `all, within ${DOOR} m of a building edge`, ok: !stray.length && civ.walkFrom.length > 0, detail: stray.map(o => o.name).join(', ') || undefined, source: 'plan.standards.walking · GDD §01 exteriors only: the player starts at a door' });
   C.push(...entranceChecks(plan, d, civ));
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;

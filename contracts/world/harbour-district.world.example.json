@@ -1930,6 +1930,105 @@
      1.295
     ]
    }
+  },
+  {
+   "id": "street/orbit-gardens/e0/crossing-410",
+   "kind": "crossing",
+   "at": [
+    -175,
+    -400.1
+   ],
+   "yaw": 1.5708,
+   "z": 0.18,
+   "size": [
+    1.8,
+    4,
+    0.02
+   ],
+   "surface": "trim",
+   "edge": "orbit-gardens/e0",
+   "sight": "open",
+   "source": "procedural"
+  },
+  {
+   "id": "street/starline-green/e2/crossing-1897",
+   "kind": "crossing",
+   "at": [
+    -175,
+    -419.9
+   ],
+   "yaw": 4.7124,
+   "z": 0.18,
+   "size": [
+    1.8,
+    4,
+    0.02
+   ],
+   "surface": "trim",
+   "edge": "starline-green/e2",
+   "sight": "open",
+   "source": "procedural"
+  }
+ ],
+ "crossings": [
+  {
+   "id": "crossing/market-street/0",
+   "kind": "kerb",
+   "road": "market-street",
+   "items": [
+    "street/orbit-gardens/e0/crossing-410",
+    "street/starline-green/e2/crossing-1897"
+   ],
+   "line": [
+    [
+     -175,
+     -401
+    ],
+    [
+     -175,
+     -419
+    ]
+   ],
+   "strip": [
+    [
+     -177,
+     -401
+    ],
+    [
+     -177,
+     -419
+    ],
+    [
+     -173,
+     -419
+    ],
+    [
+     -173,
+     -401
+    ]
+   ],
+   "width": 4,
+   "control": "zebra",
+   "refuges": [
+    [
+     [
+      -177,
+      -407
+     ],
+     [
+      -177,
+      -413
+     ],
+     [
+      -173,
+      -413
+     ],
+     [
+      -173,
+      -407
+     ]
+    ]
+   ]
   }
  ],
  "levels": [
@@ -2227,6 +2326,7 @@
   "connectors": 113,
   "street": 3449,
   "levels": 3,
+  "crossings": 92,
   "decks": 31,
   "megastructures": 4,
   "civic": 42,
