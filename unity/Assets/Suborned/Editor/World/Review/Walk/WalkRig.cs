@@ -34,6 +34,8 @@ namespace Suborned.World.Review
 
         /// <summary>Where each frame's input comes from: the keyboard and mouse, unless a check scripts it.</summary>
         public Func<float, WalkFrame> Read;
+        /// <summary>A standing warning shown under the readout (the scene and the export file differ); null = none.</summary>
+        public string Warning;
 
         public IWalkMode Mode => modes[current];
         public IReadOnlyList<Place> Places => places;
@@ -133,7 +135,7 @@ namespace Suborned.World.Review
         public string[] Readout()
         {
             var t = Mode.Camera.transform;
-            return new[]
+            var lines = new List<string>
             {
                 $"<b>{Mode.Name.ToUpperInvariant()}</b>  {Mode.Blurb}",
                 $"x {t.position.x:F1}  z {t.position.z:F1}  height {t.position.y:F1}   yaw {ViewAngles.Yaw(t.rotation):F0}°  pitch {ViewAngles.Pitch(t.rotation):F0}°   {Mode.Status}",
@@ -141,6 +143,8 @@ namespace Suborned.World.Review
                 lookAt is { } p ? $"<b>{(Mode.Camera.orthographic ? "cursor" : "look")}</b> x {p.x:F1}  z {p.z:F1}  h {p.y:F1}:  {look}" : "<b>look</b>  sky",
                 $"notes {notes.Count} in out/review/walk-notes.json",
             };
+            if (Warning != null) lines.Add($"<b>!</b>  {Warning}");
+            return lines.ToArray();
         }
 
         /// <summary>The current camera rendered at the Game view's size, as Shots renders a view (its shadow fit applied for the render).</summary>

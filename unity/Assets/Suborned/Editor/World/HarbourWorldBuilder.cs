@@ -8,7 +8,7 @@ namespace Suborned.World
 {
     /// <summary>Builds Assets/Scenes/HarbourDistrict.unity (generated, git-ignored) from a world export, from scratch,
     /// one marker root per layer (ground, transit, buildings, skins, fabric, facades, roofs, frontages, connectors, street, levels, decks,
-    /// megastructures, civic, gates, landmarks, signatures, horizon; the sea sectors, land and banks under `sea`) and their geometry combined under `batches` per layer, material and tile.
+    /// megastructures, civic, gates, landmarks, signatures, horizon, and crossings when the export has them; the sea sectors, land and banks under `sea`) and their geometry combined under `batches` per layer, material and tile.
     /// Menu: Suborned/World/Build Harbour District (Sample). Batchmode:
     ///   Unity -batchmode -nographics -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build
     ///         [-world &lt;path&gt;]   (relative to the repo root; default the hand-made sample under Samples/)</summary>
@@ -28,7 +28,10 @@ namespace Suborned.World
         public static string ViewsPath => Arg("-views", InUnity(Here + "/views.json"));
         public static string FacadePath => InUnity(Here + "/facade.json");
         public static string KitPath => InUnity(Here + "/kit.json");
-        public static string KitCataloguePath => Path.Combine(RepoRoot, "contracts", "world", "kit.json");
+        /// <summary>The kit catalogue. Env SUBORNED_KIT_CATALOGUE pins a build to a copy of it (the catalogue as it stood when the
+        /// build's inputs were fixed, while the contract is being edited: it may then list pieces not yet copied in); the build warns.</summary>
+        public static string KitCataloguePath => Environment.GetEnvironmentVariable(KitCatalogueEnv) is { Length: > 0 } pinned ? pinned : Path.Combine(RepoRoot, "contracts", "world", "kit.json");
+        public const string KitCatalogueEnv = "SUBORNED_KIT_CATALOGUE";
 
         public static string Arg(string name, string fallback)
         {
@@ -69,6 +72,7 @@ namespace Suborned.World
             var nodes = new Nodes(look);
             var layers = new Layers(nodes);
             var placer = new KitPlacer(KitCataloguePath);
+            if (Environment.GetEnvironmentVariable(KitCatalogueEnv) is { Length: > 0 }) Debug.LogWarning($"World: kit catalogue pinned to {KitCataloguePath} ({KitCatalogueEnv}), not contracts/world/kit.json");
             KitImport.Generated(placer);
             KitImport.Check(placer);
             KitLods.Build(placer);
@@ -84,6 +88,8 @@ namespace Suborned.World
             var megas = new MegaKit(nodes, facade, world);
             var skyline = new SkylineKit(placer, look);
             var root = Nodes.Group(null, RootName);
+            var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
+            stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
             layers.Ground(Nodes.Group(root, "ground"), world.Ground);
             layers.Transit(Nodes.Group(root, "transit"), world.Transit);
             var buildings = Nodes.Group(root, "buildings");
@@ -100,6 +106,7 @@ namespace Suborned.World
             placer.Signs(frontages, world.Frontages);
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
             city.Street(Nodes.Group(root, "street"), world.Street);
+            if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
@@ -125,7 +132,7 @@ namespace Suborned.World
             Directory.CreateDirectory(Path.GetDirectoryName(InUnity(ScenePath)));
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new IOException($"World: could not save {ScenePath}");
             Debug.Log($"World: kit facades hide procedural walls on {KitCover.Hidden} wall edges");
-            Debug.Log($"World: built {ScenePath} from {path} ({world.Schema}) in {(DateTime.UtcNow - t0).TotalSeconds:F2}s; " +
+            Debug.Log($"World: built {ScenePath} from {path} ({world.Schema}, sha256 {world.Sha256}) in {(DateTime.UtcNow - t0).TotalSeconds:F2}s; " +
                 $"{renderers} batch renderers, {verts} vertices; {Coplanar.Faces} coplanar faces inset; fingerprint {Inspect.Fingerprint(root, batches, cameras)}");
         }
     }

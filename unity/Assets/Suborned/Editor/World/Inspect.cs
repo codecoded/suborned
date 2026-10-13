@@ -25,7 +25,7 @@ namespace Suborned.World
         public static SortedDictionary<string, int> Expected(WorldDto w)
         {
             var g = w.Ground;
-            return new SortedDictionary<string, int>(System.StringComparer.Ordinal)
+            var expected = new SortedDictionary<string, int>(System.StringComparer.Ordinal)
             {
                 ["ground"] = g.Roads.Count + g.Circuses.Count + g.Water.Count + g.Quays.Count + g.Foot.Count + g.Medians.Count + g.Flats.Count + g.Plots.Count,
                 ["transit"] = w.Transit.Tram.Count + w.Transit.SkyRail.Count + w.Transit.Stops.Count + w.Transit.Stations.Count,
@@ -46,6 +46,8 @@ namespace Suborned.World
                 ["signatures"] = w.Signatures.Count,
                 ["horizon"] = w.Horizon?.Pieces.Count ?? 0,
             };
+            if (w.Crossings != null) expected["crossings"] = w.Crossings.Count; // a layer only where the export has the list
+            return expected;
         }
 
         /// <summary>Logs counts; logs an error per layer whose built objects differ from the parsed export, and per layer

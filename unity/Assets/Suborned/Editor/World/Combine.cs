@@ -10,7 +10,7 @@ namespace Suborned.World
     /// Static state, reset per build, like Poly's counters.</summary>
     public static class Combine
     {
-        sealed class Acc { public Material Mat; public MeshKit Kit = new(); }
+        sealed class Acc { public Material Mat; public MeshKit Kit = new(); public Bounds Box; }
 
         static readonly Dictionary<string, Acc> accs = new(System.StringComparer.Ordinal);
         static readonly Dictionary<Transform, Bounds> bounds = new();
@@ -30,12 +30,40 @@ namespace Suborned.World
         /// <summary>Adds an element's part to its layer's tile batch for this material.</summary>
         public static void Add(Transform el, string layer, MeshKit kit, Material mat)
         {
+            var c = kit.Bounds.center;
+            Put(el, kit, mat, $"{layer}|{mat.name}|{Mathf.FloorToInt(c.x / tile)}|{Mathf.FloorToInt(c.z / tile)}");
+        }
+
+        /// <summary>Adds el's part to the batch of this layer and material that already reaches it on plan: the one it grows least,
+        /// by no more than `reach` metres (then the tightest, then by key). Paint on a road goes into kerbs drawn there anyway:
+        /// no renderer of its own, and no batch drawn from further off than before. Returns the growth in metres; -1 when no
+        /// batch is within reach and the part took its own tile's batch, as any part does.</summary>
+        public static float Fit(Transform el, string layer, MeshKit kit, Material mat, float reach)
+        {
+            string prefix = $"{layer}|{mat.name}|", best = null; float least = 0f, room = 0f; var b = kit.Bounds;
+            foreach (var kv in accs)
+            {
+                if (!kv.Key.StartsWith(prefix, System.StringComparison.Ordinal)) continue;
+                var have = kv.Value.Box; var all = Union(have, b);
+                float grow = Mathf.Max(0f, have.min.x - b.min.x) + Mathf.Max(0f, b.max.x - have.max.x) + Mathf.Max(0f, have.min.z - b.min.z) + Mathf.Max(0f, b.max.z - have.max.z);
+                grow = Mathf.Round(grow * 1000f) / 1000f; // to the millimetre: a part on a batch's edge is inside it
+                if (grow > reach) continue;
+                float area = all.size.x * all.size.z;
+                if (best != null && (grow > least || (grow == least && (area > room || (area == room && string.CompareOrdinal(kv.Key, best) > 0))))) continue;
+                best = kv.Key; least = grow; room = area;
+            }
+            if (best == null) { Add(el, layer, kit, mat); return -1f; }
+            Put(el, kit, mat, best);
+            return least;
+        }
+
+        static void Put(Transform el, MeshKit kit, Material mat, string key)
+        {
             var b = kit.Bounds;
             bounds[el] = bounds.TryGetValue(el, out var have) ? Union(have, b) : b;
             triangles[el] = (triangles.TryGetValue(el, out var n) ? n : 0) + kit.TriangleCount;
-            int tx = Mathf.FloorToInt(b.center.x / tile), tz = Mathf.FloorToInt(b.center.z / tile);
-            var key = $"{layer}|{mat.name}|{tx}|{tz}";
-            if (!accs.TryGetValue(key, out var acc)) accs[key] = acc = new Acc { Mat = mat };
+            if (!accs.TryGetValue(key, out var acc)) accs[key] = acc = new Acc { Mat = mat, Box = b };
+            else acc.Box.Encapsulate(b);
             acc.Kit.Append(kit);
         }
 

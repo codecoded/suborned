@@ -36,6 +36,16 @@ namespace Suborned.World
             Combine.Add(el, LayerOf(el), kit, mat);
         }
 
+        /// <summary>Adds a part to element `el` in the batch of `layer` and this surface that already reaches it (Combine.Fit:
+        /// paint goes into kerbs drawn there anyway). Returns the metres that batch grew; -1 when none was within `reach` and
+        /// the part took its own tile's batch; null when the part is empty.</summary>
+        public float? PartIn(string layer, Transform el, string name, MeshKit kit, string surface, float reach)
+        {
+            if (kit.Repairs > 0) Debug.LogWarning($"World: {el.name}/{name}: {kit.Repairs} polygon repairs");
+            if (kit.Empty) return null;
+            return Combine.Fit(el, layer, kit, look.Mat(surface), reach);
+        }
+
         /// <summary>One-part element.</summary>
         public Transform Solid(Transform layer, string id, MeshKit kit, string surface)
         {

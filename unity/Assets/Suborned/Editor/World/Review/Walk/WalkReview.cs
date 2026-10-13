@@ -65,6 +65,15 @@ namespace Suborned.World.Review
             return field;
         }
 
+        /// <summary>Null when the scene was built from this export file (WorldStamp on the world root against the file's SHA-256);
+        /// else what differs, in words. The picture is the scene's; the readout's ids and the jump list are read from the file.</summary>
+        public static string Stale(WorldStamp scene, WorldDto file, string path)
+        {
+            const string so = "ids and places are read from the file and may not match what is drawn; rebuild the scene (Suborned/World/Build Harbour District (Export))";
+            if (!scene || string.IsNullOrEmpty(scene.exportSha256)) return $"the scene carries no export stamp (built before stamps), so it cannot be matched to {path}: {so}";
+            return scene.exportSha256 == file.Sha256 ? null : $"the scene was built from export sha256 {scene.exportSha256} but {path} is {file.Sha256}: {so}";
+        }
+
         static void Attach()
         {
             if (Rig != null) return;
@@ -77,16 +86,18 @@ namespace Suborned.World.Review
             var main = Views.Load(HarbourWorldBuilder.ViewsPath).Find(v => v.Main) ?? throw new InvalidDataException($"World: walk review: {HarbourWorldBuilder.ViewsPath} has no main view");
 
             var world = WorldReader.Load(RenderSession.ExportPath);
-            var built = GameObject.Find("source");
-            if (built && built.transform.childCount > 0 && built.transform.GetChild(0).name != world.Source)
-                Debug.LogWarning($"World: walk review: the scene was built from `{built.transform.GetChild(0).name}` but {RenderSession.ExportPath} is `{world.Source}`: ids in the readout may not match what is drawn; rebuild the scene");
+            var root = GameObject.Find(HarbourWorldBuilder.RootName);
+            var stamp = root ? root.GetComponent<WorldStamp>() : null;
+            string stale = Stale(stamp, world, RenderSession.ExportPath);
+            if (stale != null) Debug.LogWarning($"World: walk review: {stale}");
             var index = new WorldIndex(world);
             var plan = new PlanIndex(world, index, Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts", "world", "harbour-district.plan.json"));
             var cameras = GameObject.Find("cameras");
             var places = WalkPlaces.Load(world, index, plan, cameras ? cameras.transform : null);
 
             foreach (var old in Object.FindObjectsByType<FreeFly>()) Object.Destroy(old.gameObject); // this tool's Fly mode stands in for it: one review camera, one set of keys
-            Rig = new WalkRig(play, main.Aspect, new WalkSurface(world), plan, heights, places, new WalkNotes(HarbourWorldBuilder.RepoRoot, world.Source));
+            var notes = new WalkNotes(HarbourWorldBuilder.RepoRoot, world.Source, stamp ? stamp.exportSha256 : null, world.Sha256);
+            Rig = new WalkRig(play, main.Aspect, new WalkSurface(world), plan, heights, places, notes) { Warning = stale != null ? "scene and export differ: ids and places may not match what is drawn; rebuild the scene" : null };
             var host = new GameObject("walk-review").AddComponent<ReviewHost>();
             host.Tick = Rig.Tick; host.Gui = Rig.Gui; host.Closed = Rig.Dispose;
             Debug.Log($"World: walk review attached: {places.Count} places, notes → {Rig.Notes.NotesFile}. 1 Walk, 2 Fly, 3 Tactical, F fade, H lists the keys.");

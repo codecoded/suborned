@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 namespace Suborned.World
@@ -10,8 +12,9 @@ namespace Suborned.World
         public static WorldDto Load(string path)
         {
             if (!File.Exists(path)) throw new FileNotFoundException($"World: export not found at {path}");
-            var o = Json.Parse(File.ReadAllText(path));
-            var w = new WorldDto { Schema = J.S(o, "schema"), Source = J.S(o, "source") };
+            var bytes = File.ReadAllBytes(path); // read once: the hash is of the bytes that are parsed
+            var o = Json.Parse(new UTF8Encoding(false).GetString(bytes).TrimStart('\uFEFF'));
+            var w = new WorldDto { Schema = J.S(o, "schema"), Source = J.S(o, "source"), Sha256 = Hex(bytes) };
             if (string.IsNullOrEmpty(w.Schema)) throw new InvalidDataException("World: export has no schema");
             var v = Req(o, "view");
             w.View = new ViewDto { Yaw = J.F(v, "yaw"), Pitch = J.F(v, "pitch"), Zoom = J.F(v, "zoom"), Focus = J.P(v, "focus") };
@@ -83,6 +86,12 @@ namespace Suborned.World
                 foreach (var a in w.Fabric.Awnings) if (a.Stripes.Length != 2) throw new InvalidDataException($"World: awning {a.Id} needs two stripe surfaces");
             }
             w.Street = Each(o, "street", StreetItem);
+            if (J.Get(o, "crossings") is List<object>)
+                w.Crossings = Each(o, "crossings", c => new CrossingDto
+                {
+                    Id = Id(c), Kind = J.S(c, "kind"), Road = J.S(c, "road"), Control = J.S(c, "control"), Items = Strs(c, "items"),
+                    Line = J.Poly(c, "line"), Width = J.F(c, "width"), Refuges = Each(c, "refuges", J.Poly),
+                });
             w.Levels = Each(o, "levels", l => new LevelDto
             {
                 Id = Id(l), Name = J.S(l, "name"), Height = J.F(l, "height"),
@@ -137,6 +146,14 @@ namespace Suborned.World
                 foreach (var kv in counts) w.Counts[kv.Key] = (int)J.F(counts, kv.Key);
             }
             return w;
+        }
+
+        static string Hex(byte[] bytes)
+        {
+            using var sha = SHA256.Create();
+            var sb = new StringBuilder();
+            foreach (var b in sha.ComputeHash(bytes)) sb.Append(b.ToString("x2"));
+            return sb.ToString();
         }
 
         static WaterDto Flat(object x) => new() { Id = Id(x), Surface = J.S(x, "surface"), Ring = J.Poly(x, "ring"), Level = J.F(x, "level") };

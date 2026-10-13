@@ -28,6 +28,9 @@ namespace Suborned.World
         public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
         public FabricDto Fabric = new(); // grammar §2a colour life: balcony awnings, banners, flag masts
         public HorizonDto Horizon; // null when the export has none (the sample)
+        public List<CrossingDto> Crossings; // null when the export has none (a plan without streetscape.crossings.strip)
+        /// <summary>SHA-256 (lower-case hex) of the export file's bytes, the ones this was parsed from.</summary>
+        public string Sha256;
         /// <summary>Elements per layer as the exporter declares them (`counts`); null when the export has none (the sample).</summary>
         public Dictionary<string, int> Counts;
     }
@@ -186,6 +189,12 @@ namespace Suborned.World
 
     /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
     public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit; }
+
+    /// <summary>A crossing. Kind kerb = two landings (street items, one on each kerb of Road) and the way across the carriageway
+    /// between them; stop | bank = one patch, its one street item (the way from a tram platform, or from a station bank). Line = the
+    /// way's centre line, end to end; Width across it; Control zebra | signal, null = none; Refuges = the rings of the median the way
+    /// crosses, where people wait.</summary>
+    public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); }
 
     /// <summary>A DecoKit piece (contracts/world/kit.json id) standing in for an element. Scale = (across, up, depth) on the piece's own
     /// size = Unity local (x, y, z). Yaw (plan radians from +x toward +y) turns the piece's +X; its front (+Z) faces Yaw + 90°; NaN = the

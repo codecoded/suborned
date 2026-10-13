@@ -26,16 +26,18 @@ namespace Suborned.World.Review
     /// array is set aside, never overwritten.</summary>
     public sealed class WalkNotes
     {
-        readonly string repo, export;
+        readonly string repo, export, scene, file;
         public string NotesFile => Path.Combine(repo, "out", "review", "walk-notes.json");
         string Shots => Path.Combine(repo, "out", "shots", "walk");
         /// <summary>Notes in the file after the last Add.</summary>
         public int Count { get; private set; }
 
-        /// <summary>export: the export's source line, written into every note so a comment names the world it was made on.</summary>
-        public WalkNotes(string repo, string export)
+        /// <summary>export: the export's source line. scene: the SHA-256 of the export the scene was built from (its WorldStamp; null
+        /// = an unstamped scene), written into every note as `exportSha256`, so a comment is traced to the build it was made in.
+        /// file: the SHA-256 of the export file the ids were read from, written as `idsFromExportSha256` only where it differs.</summary>
+        public WalkNotes(string repo, string export, string scene, string file)
         {
-            this.repo = repo; this.export = export;
+            this.repo = repo; this.export = export; this.scene = scene; this.file = file;
             Count = Existing(out _);
         }
 
@@ -52,6 +54,8 @@ namespace Suborned.World.Review
             var sb = new StringBuilder("  {\n");
             sb.Append($"    \"time\": {S(now.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture))},\n");
             sb.Append($"    \"export\": {S(export)},\n");
+            sb.Append($"    \"exportSha256\": {S(scene)},\n");
+            if (file != scene) sb.Append($"    \"idsFromExportSha256\": {S(file)},\n");
             sb.Append($"    \"mode\": {S(n.Mode)},\n");
             sb.Append($"    \"position\": {V(n.Position)},\n");
             sb.Append($"    \"plan\": {{\"x\": {F(n.Position.x)}, \"y\": {F(n.Position.z)}, \"height\": {F(n.Position.y)}}},\n");
