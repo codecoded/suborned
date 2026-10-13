@@ -5,7 +5,8 @@ brass doors, cream piers, a planted terrace wall in front, and a blade sign stan
 Frame: pivot = the centre of the café's flat front on the ring line (block x -10.7, y -29), z = 0 pavement top; front -Y
 (block +x, south); the building is on +Y. Fitted to civic-block.json's café: an 11.4 m flat between two R 5.3 arcs (22 m
 wide, rule C-0 unchanged). The piece is dressing: it covers the ground storey of the front (z 0 to 4.7) plus the canopy
-(2.45 m out) and the terrace wall (about 5.9 m out); the upper storeys and the side walls are the generator's."""
+(2.45 m out) and the terrace wall (6.4 m out, brief 008 B2; its gate is 5.2 m between the run ends); the upper storeys and the
+side walls are the generator's."""
 
 import math
 
@@ -25,7 +26,8 @@ Z_SOF, Z_TOP = 4.22, 4.68      # canopy soffit, fascia top
 DOOR_X, DOOR_H = 1.3, 2.55     # half opening between the jamb piers, door leaf height
 GLASS_A = -0.14                # glass film 14 cm proud of the ring line (the generator's wall stays behind it)
 CANOPY = 2.45                  # canopy projection past the ring (Vantage: dressing, L3)
-WALL_A = -5.9                  # planter wall line (terrace edge), outward
+WALL_A = -6.4                  # planter wall line (terrace edge), outward: 0.5 m beyond the B1 line, off the Oct 9 waitress loop (Vantage, B2)
+GATE = 2.602                   # half gate: the runs end here, so the gate is 5.204 m between the end faces: at least Vantage's 5.2 m cafe-gate-spine (the tube end faces are skewed 1 mm by the arc's averaged tangent)
 
 
 def door_leaf(s, x0, x1, y):
@@ -98,6 +100,7 @@ def cafe_bay(s):
     s.rbox((3.6 - 0.2, -1.2, Z_SOF + 0.14), (3.6 + 0.2, 0.0, Z_SOF + 0.26), 0.02, pal.Chrome, seg=1)
     stacked_sign(s, "CAFE", 0.52, 3.6, -0.6, Z_SOF + 0.3, pal.Enamel_Teal, pal.Enamel_Ivory, pal.Chrome)  # Enamel_Cream is dE 20.5 from the guard colour: Ivory has 27
     # terrace wall: low limestone troughs planted with coral and cream (variant A), broken at the door axis and the arc ends
-    for k, run in enumerate(split_runs(offset(P, WALL_A), lambda x, y: abs(x) > 2.6 and y < 3.0)):
+    PW_ = front_path(6, 4, flat_x=(-HF, -GATE, 0.0, GATE, HF))  # the same outline with vertices at the gate edges and one in the gate (x 0 fails the keep test: that is the break)
+    for k, run in enumerate(split_runs(offset(PW_, WALL_A), lambda x, y: abs(x) >= GATE - 1e-6 and y < 3.0)):
         trough(s, run, z_top=0.62, w=0.6)
-        planting(s, run, "AB"[k % 2], step=0.8, blooms=1)
+        planting(s, run, "AB"[k % 2], step=0.8, blooms=1, ends=0.32)  # foliage starts 0.32 m in: nothing leans past a run end into the gate

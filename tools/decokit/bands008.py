@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Brief 008 B1: the paving band design for the civic block, as data Splice can emit from (out/decokit-008/paving-bands.json) and a
+"""Brief 008 B1 + B2: the paving band design for the civic block, as data Splice can emit from (out/decokit-008/paving-bands.json) and a
 plan drawing (paving-bands.svg). Block frame (contracts/world/civic-block.json): x south, y east, z up, metres; angles run from +x
 toward +y (the same turn as a piece's yaw about +Z). Every number below is read off civic-block.json or the parts list; nothing is
 placed on the plan. Pure Python. Run: python3 tools/decokit/bands008.py"""
@@ -11,6 +11,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 OUT = REPO / "out/decokit-008"
 BLOCK = json.loads((REPO / "contracts/world/civic-block.json").read_text())
+ADJ = json.loads((REPO / "contracts/world/civic-block.adjust.json").read_text())  # read only: Vantage's dressing (zones, lamps)
+DRESS = ADJ["dressing"]
 F = (6.5, -30.0)  # atom fountain centre
 O = {o["id"]: o["polygon"] for o in BLOCK["objects"]}
 S = {o["id"]: o["polygon"] for o in BLOCK["structures"]}
@@ -52,43 +54,88 @@ x_in0, x_in1 = F[0] - (R_OUT - 0.6), F[0] - (R_IN + 0.3)
 bands.append(line("spine-inner", "InlayBand_06_2", x_in0, -29.5, x_in1, -29.5, "0.6", "narrowing toward the pool"))
 # 3. the rings round the fountain (pool coping R 3.3 to 3.6; planter ring R 5.36 to 7.06 at the diagonals)
 bands.append(ring("ring-inner", "InlayArc_R4_W06", F, R_IN, 0.6, "between the coping (3.6) and the planters (5.36): 0.4 m of slab inside, 0.76 m outside"))
-bands.append(ring("ring-outer", "InlayArc_R9_W12", F, R_OUT, 1.2, "0.94 m of slab outside the planter ring (7.06); clear of the café terrace wall (x -4.8) and the crew line"))
-# 4. the shelter spoke: 1.2 m on the fountain's west axis (x 6.5) from the outer ring to 0.7 m short of the square shelter (roof edge y -44.86);
-#    x 6.5 falls between the two PavilionPier_Square piers (x 5.84 to 11.16 open)
-y_w0, y_w1 = F[1] - (R_OUT + 0.6), -44.86 + 0.7
+bands.append(ring("ring-outer", "InlayArc_R9_W12", F, R_OUT, 1.2, "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"))
+# 4. the shelter spoke: 1.2 m on the fountain's west axis (x 6.5) from the outer ring to y -43.2: two whole 2 m modules, 0.16 m clear of
+#    Vantage's crew-line-getaway zone (y -44) and 1.66 m short of the shelter roof edge (y -44.86); x 6.5 falls between the two
+#    PavilionPier_Square piers (x 5.84 to 11.16 open)
+y_w0, y_w1 = F[1] - (R_OUT + 0.6), -43.2
 bands.append(line("spoke-west", "InlayBand_12_2", F[0], y_w0, F[0], y_w1, "1.2", "fountain ring to the square shelter"))
-# 5. the Records forecourt bar: 1.2 m parallel to the tower face (x 52.5), 0.7 m before the stair foot (x 49.2), across the 8.2 m
-#    corridor between the civic-entrance beds (y -34.5 to -26.3)
-bands.append(line("forecourt-bar", "InlayBand_12_2", 47.9, -34.4, 47.9, -26.4, "1.2", "apron line before the entrance stairs"))
-# 6. lamp rings: one full ring (4 x InlayArc_R2_W06) per PlazaSphereLamp_Play that Vantage places on the fountain plaza;
-#    suggested lamps on the diagonals at 12.4 m from the fountain: 0.9 m of slab between the lamp ring and the outer ring
-lamps = [(F[0] + 12.4 * math.cos(math.radians(a)), F[1] + 12.4 * math.sin(math.radians(a))) for a in (45, 135, 225, 315)]
-for i, l in enumerate(lamps):
-    bands.append(ring(f"lamp-ring-{i}", "InlayArc_R2_W06", l, 2.0, 0.6, "suggested lamp position (Vantage's to move)"))
+# 5. the Records forecourt bar: 1.2 m parallel to the tower face (x 52.5), 0.7 m before the stair foot (x 49.2), centred on the door axis
+#    y -30 (B2: the beds moved 0.4 and 0.5 m, the corridor between them is y -34.1 to -25.8), y -34 to -26
+bands.append(line("forecourt-bar", "InlayBand_12_2", 47.9, -34.0, 47.9, -26.0, "1.2", "apron line before the entrance stairs, on the door axis"))
+# 6. lamp rings: one full ring (4 x InlayArc_R2_W06, R 2.3 outside) on each lamp Vantage rings (dressing.lamps.at, ring true)
+LAMPS = DRESS["lamps"]["at"]
+lamps = [(l["id"], tuple(l["at"])) for l in LAMPS if l["ring"]]
+for lid, l in lamps:
+    bands.append(ring(f"lamp-ring-{lid}", "InlayArc_R2_W06", l, 2.0, 0.6, f"centred on {lid} (ring true in the dressing)"))
 
 cnt = {}
 for p in pieces:
     cnt[p["piece"]] = cnt.get(p["piece"], 0) + 1
 rules = {
-    "schema": "suborned.paving-bands/1", "brief": "008 B1", "date": "2026-10-14",
+    "schema": "suborned.paving-bands/1", "brief": "008 B1 + B2", "date": "2026-10-14", "revision": "B2: forecourt-bar y -34..-26, spoke-west ends y -43.2, rings on the four ringed lamps, rules follow Vantage (flat inlay may pass under a Handover point)",
     "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
     "drawn_from": "gameplay-plan, mission-block and inez-cutaway paintings (26 Sep): large pale slabs, seafoam bands 0.6 to 1.2 m wide, arcs round the lamps and the fountain",
     "slabs": {"material": "DK_Pave_Civic", "tile_m": 4.0, "use": "plot surfaces of the fountain square, the café terrace and the office apron; world-space UVs"},
     "inlay": {"material": "DK_Inlay_Seafoam", "proud_mm": 4, "widths_m": [0.6, 1.2], "rules": [
-        "bands never cross a Handover point's footprint or the kerb of a bay; they may pass under furniture",
+        "bands are flat inlay (4 mm): they may pass under a Handover point, a walk or furniture (Vantage, B2); they may not enter a bay, the crew-line-getaway zone, the steps or landing, or a planting bed",
         "straight bands are 2 m modules; the last module of a run is scaled along its length (scaleX), never across",
         "arc rings are four quarter pieces at yaw 0, 90, 180, 270 about the centre",
         "a ring leaves 0.4 m or more of slab to the coping, 0.9 m to other bands, 0.5 m to planters and walls",
-        "no band in the getaway bay or the crew line (x -2 to 16, y -52 to -44)",
         "colour is the enamel seafoam #72B5A7 (the 4 mm ceramic strip); gold is never used in paving"]},
     "anchors": {"fountain_centre": list(F), "pool_coping_R": [3.3, 3.6], "planter_ring_R": [5.36, 7.06], "cafe_door": [-10.3, -29.0], "cafe_ring_line_x": -10.7,
-                "cafe_terrace_wall_x": -4.8, "tower_public_face_x": 52.5, "stair_foot_x": 49.2, "entrance_bed_gap_y": [-34.5, -26.3],
-                "square_shelter": {"x": [4.3, 12.7], "y": [-47.0, -44.86]}, "handover_points_kept_clear": {"plaza_east_west": [[6.5, -25.5], [6.5, -34.5]], "steps": [-3.6, -29.0], "crew_line": [[1.2, -49.7], [4.8, -49.7]]}},
+                "cafe_terrace_wall_x": -4.3, "cafe_gate_y": [-31.6, -26.4], "tower_public_face_x": 52.5, "stair_foot_x": 49.2, "entrance_bed_gap_y": [-34.1, -25.8],
+                "square_shelter": {"x": [4.3, 12.7], "y": [-47.0, -44.86]}, "handover_points_bands_may_cross": {"plaza_east_west": [[6.5, -25.5], [6.5, -34.5]], "steps": [-3.6, -29.0], "crew_line": [[1.2, -49.7], [4.8, -49.7]]}},
     "bands": bands,
     "pieces": pieces,
     "counts": cnt,
-    "not_designed": ["terrace edge band (the café terrace is plain slab; its wall already draws the curve)", "the link between the two plazas (x 14 to 47: the Orbit Walk crossing H6, block x 31 to 44, is not Vela's)", "the monument plaza (x 24 to 26)", "lamp positions (Vantage places them; rings follow)"],
+    "not_designed": ["terrace edge band (the café terrace is plain slab; its wall already draws the curve)", "the link between the two plazas (x 14 to 47: the Orbit Walk crossing H6, block x 31 to 44, is not Vela's)", "the monument plaza (x 24 to 26)", "lamp positions (Vantage places them; the rings follow dressing.lamps ring true)"],
 }
+
+
+def inside(poly, x, y):
+    n, c = len(poly), False
+    for i in range(n):
+        (x1, y1), (x2, y2) = poly[i], poly[(i + 1) % n]
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+            c = not c
+    return c
+
+
+def footprint(p, step=0.1):
+    """Sample points over a placed inlay piece's footprint (0.1 m grid)."""
+    pts = []
+    c, a = p["at"], math.radians(p["yawDeg"])
+    ux, uy = math.cos(a), math.sin(a)
+    if p["piece"].startswith("InlayBand"):
+        w, L = (1.2 if "12" in p["piece"] else 0.6), 2.0 * p.get("scaleX", 1.0)
+        for i in range(int(L / step) + 1):
+            for j in range(int(w / step) + 1):
+                s_, t_ = -L / 2 + i * step, -w / 2 + j * step
+                pts.append((c[0] + s_ * ux - t_ * uy, c[1] + s_ * uy + t_ * ux))
+    else:
+        R_, W_ = {"InlayArc_R2_W06": (2.0, 0.6), "InlayArc_R4_W06": (4.3, 0.6), "InlayArc_R9_W12": (8.6, 1.2)}[p["piece"]]
+        for i in range(int(W_ / step) + 1):
+            for k in range(int(math.pi / 2 * (R_ + W_ / 2) / step) + 1):
+                r_, th = R_ - W_ / 2 + i * step, a + k * step / (R_ + W_ / 2)
+                if th <= a + math.pi / 2:
+                    pts.append((c[0] + r_ * math.cos(th), c[1] + r_ * math.sin(th)))
+    return pts
+
+
+barred = {z["id"]: z["polygon"] for z in DRESS["keepClear"] if "band" in z["bars"] and "polygon" in z}
+barred.update({o["id"]: o["polygon"] for o in BLOCK["structures"] if o["id"] in ("office-public-landing", "office-public-steps")})
+barred.update({b["id"]: b["polygon"] for b in BLOCK["bays"]})
+barred.update({o["id"]: o["polygon"] for o in BLOCK["objects"] if o.get("kind") == "planter"})
+viol = {}
+for p in pieces:
+    pts = footprint(p)
+    for name, poly in barred.items():
+        n_in = sum(1 for q in pts if inside(poly, *q))
+        if n_in:
+            viol[f'{p["id"]} in {name}'] = n_in
+rules["checks"] = {"barred": sorted(barred), "sampling": "0.1 m grid over every placed piece", "violations": viol}
+print("checks:", len(barred), "barred polygons;", len(viol), "violations", viol)
 for b in rules["bands"]:
     if "from_" in b:
         b["from"] = b.pop("from_")
@@ -137,8 +184,12 @@ def svg(view, scale, title):
     for b in BLOCK["bays"]:
         poly(b["polygon"], "#cfcabd", "#8a8575", 0.55, 0.8)
     # tower
-    poly([(52.5, -33), (58.5, -33), (58.5, -27), (52.5, -27)], "#e3d7bf", "#8a806c", 1, 1)
-    poly([(49.2, -32.3), (52.5, -32.3), (52.5, -27.7), (49.2, -27.7)], "#d9ceb6", "#8a806c", 1, 0.8)
+    for tw in ((52.5, 58.5), (69.5, 75.5)):
+        poly([(tw[0], -33), (tw[1], -33), (tw[1], -27), (tw[0], -27)], "#e3d7bf", "#8a806c", 1, 1)
+    for sid in ("office-public-landing", "office-public-steps"):
+        poly(S[sid], "#d9ceb6", "#8a806c", 1, 0.8)
+    for wy0, wy1 in ((-34.7, -31.6), (-26.4, -23.3)):  # café terrace wall, flat part: the gate between is 5.2 m
+        poly([(-4.63, wy0), (-3.97, wy0), (-3.97, wy1), (-4.63, wy1)], "#cfc6b0", "#8a806c", 1, 0.8)
     # bands
     for p in pieces:
         if p["piece"].startswith("InlayBand"):
@@ -152,9 +203,10 @@ def svg(view, scale, title):
             circ(b["centre"], b["radius"], "none", "#72b5a7", b["width"] * scale)
             circ(b["centre"], b["radius"] + b["width"] / 2, "none", "#1f6c67", 0.5)
             circ(b["centre"], b["radius"] - b["width"] / 2, "none", "#1f6c67", 0.5)
-    for i, l in enumerate(lamps):
-        if x0 <= l[0] <= x1 and y0 <= l[1] <= y1:
-            circ(l, 0.28, "#8b8f94", "#3a3d40", 1)
+    for l in LAMPS:
+        lx, ly = l["at"]
+        if x0 <= lx <= x1 and y0 <= ly <= y1:
+            circ((lx, ly), 0.3, "#8b8f94" if l["ring"] else "none", "#3a3d40", 1.2)
     # handover points
     for k, (hx, hy) in {"E": (6.5, -25.5), "W": (6.5, -34.5), "steps": (-3.6, -29.0)}.items():
         if x0 <= hx <= x1 and y0 <= hy <= y1:
@@ -167,6 +219,6 @@ def svg(view, scale, title):
     return "\n".join(o)
 
 
-(OUT / "paving-bands.plaza.svg").write_text(svg((-13, 19, -52, -16), 17, "Fountain square: block x (south) to the right, y (east) up"))
+(OUT / "paving-bands.plaza.svg").write_text(svg((-13, 31, -52, -16), 15, "Fountain square: block x (south) to the right, y (east) up"))
 (OUT / "paving-bands.forecourt.svg").write_text(svg((44, 62, -42, -18), 28, "Records forecourt"))
 print("svg written")

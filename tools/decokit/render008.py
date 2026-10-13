@@ -109,6 +109,9 @@ def view(cam, lo, hi, kind, name=""):
         look(cam, c + d * 200, c)
         cam.data.clip_end = 600
         cam.data.ortho_scale = max(ext.x * 0.98 * math.cos(yaw) + ext.y * math.sin(yaw), (ext.z * math.cos(pitch) + (ext.x * math.sin(yaw) + ext.y * math.cos(yaw)) * math.sin(pitch))) * 1.18 + 0.3
+    elif kind == "gate":  # CafeBay terrace: 1.7 m on the plaza side of the wall, looking through the gate at the door
+        cam.data.lens = 24
+        look(cam, Vector((c.x + 1.5, lo.y - 5.0, 1.7)), Vector((c.x, 0.0, 1.6)))
     else:  # eye level: 1.7 m, a little left of the front axis, framing the whole piece width
         cam.data.lens = 40
         span = max(ext.x, ext.z * 1.3, 2.0)

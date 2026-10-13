@@ -5,10 +5,13 @@ finials and comet banners, and a flight of five treads with chrome rails and che
 
 Frame: pivot = the centre of the tower face at the pavement (z = 0), front -Y (block -x, north), the tower on +Y. Built for
 tower-public (6 x 6 m, face at block x 52.5, centred y -30): the door is ON the face (Vantage moves the entrance point from
-x 54.65 to the face, the landing z = 0.75), the piers stand beside the tower (x +-3.05..3.95), 7.9 m across in all, inside
-the 8.2 m corridor between the two civic-entrance beds. Steps are real geometry: 6 risers of 0.125 m (0.75 m), going 0.36 m,
-landing 1.5 m deep; the piece's footprint reaches 3.3 m out (stairs) and 2.3 m (marquee).
-RecordsEntrance_Official: the lean version for tower-official (no globe, blades or window; shorter piers)."""
+x 54.65 to the face, the landing z = 0.75), the piers stand beside the tower, plinths x +-3.02..3.98 (7.96 m across in all, the box is exactly that wide: caps, banner
+rods and knobs are inside the plinth footprint), y -1.03..+0.23 about the face. Steps are real geometry: 6 risers of 0.125 m (0.75 m), going 0.36 m,
+landing 1.5 m deep (x 51..52.5 in the block), flight 3.3 m out (foot x 49.2), cheeks to 3.4 m (x 49.1), marquee 2.3 m out.
+RecordsEntrance_Official: the lean FLUSH version for tower-official (brief 008 B2): no landing, steps, cheeks or rails; the door
+sill is at the pavement (z 0); the canopy fills the block's office-boarding-pavilion envelope (3.0 m out of the face, the tower's
+6.0 m width, soffit 4.05, top 4.62, carried on the face, no posts); the piers are 0.3 m pilasters on the face.
+Extents are checked on the built mesh by verify008.py (block frame numbers in out/decokit-008/measured.json)."""
 
 import math
 
@@ -25,6 +28,8 @@ ZL, NR, RISE, GO, LAND = 0.75, 6, 0.125, 0.36, 1.5   # landing height, risers, r
 SW = 2.3                                              # half width of the flight
 PR, SU, PS = 1.65, 2.2, 7.6                           # window half width, surround outer half width, arch spring
 ZC0, ZC1 = 4.05, 4.62                                 # marquee soffit and fascia top
+EDGE = 0.1375                                         # the fascia sections reach 0.11 and the gold bead 0.14 past the plan line: the plan is drawn that far inside the envelope
+PX, PW, PD0, PD1 = 3.5, 0.48, -1.03, 0.23             # public pier: centre, plinth half width, plinth front and back (y)
 GR = 1.2                                              # globe radius (centre 7.0 m up, 0.9 m out of the face)
 
 
@@ -34,7 +39,7 @@ def sphere(s, c, r, mat, seg=12, n=6):
         s.lathe(prof, mat, seg=seg)
 
 
-def banner(s, x0, x1, y, zt, length, tip=0.5):
+def banner(s, x0, x1, y, zt, length, tip=0.5, kr=0.055):
     """plaza_parts.banner at a quarter of its triangles: comet fabric slab, comet art both faces, gold rod, small knobs."""
     xm, zb, zv = (x0 + x1) / 2, zt - length, zt - length + tip
     zs = zt - (x1 - x0) * 1.5 * 0.7 * 1.3
@@ -49,9 +54,9 @@ def banner(s, x0, x1, y, zt, length, tip=0.5):
         for poly in ([(x0, zs), (x1, zs), (x1, zt), (x0, zt)], [(x0, zv), (xm, zb), (x1, zv), (x1, zs), (x0, zs)]):
             pts = poly if side > 0 else poly[::-1]
             uvface(s, [(x, yy, z) for x, z in pts], pal.Banner_Comet, [(u(x), v(z)) for x, z in pts])
-    s.sweep([(x0 - 0.15, y, zt + 0.05), (x1 + 0.15, y, zt + 0.05)], 0.028, pal.Accent_Gold, seg=5, caps=False)
-    for x in (x0 - 0.18, x1 + 0.18):
-        sphere(s, (x, y, zt + 0.05), 0.06, pal.Accent_Gold, seg=8, n=4)
+    s.sweep([(x0 - 0.08, y, zt + 0.05), (x1 + 0.08, y, zt + 0.05)], 0.028, pal.Accent_Gold, seg=5, caps=False)
+    for x in (x0 - 0.1, x1 + 0.1):
+        sphere(s, (x, y, zt + 0.05), kr, pal.Accent_Gold, seg=8, n=4)
 
 
 def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
@@ -125,8 +130,9 @@ def blades(s):
         s.box((x - 0.012, -0.205, z0 + 0.3 * h), (x + 0.012, -0.195, z1 - 0.1), pal.Accent_Gold)
 
 
-def doors(s, wide):
-    """Brass double doors with side lights and a transom: dark glass in gold frames, chrome pulls, kick plates."""
+def doors(s, wide, zl=ZL):
+    """Brass double doors with side lights and a transom: dark glass in gold frames, chrome pulls, kick plates. zl = sill height."""
+    ZL = zl  # noqa: N806 (local: the public front stands on its landing at 0.75, the official door is flush at 0)
     y, z1, hd = -0.12, ZC0, 2.5
     zt = ZL + hd
     s.face([(-wide, y, ZL), (wide, y, ZL), (wide, y, z1), (-wide, y, z1)], pal.GlassDark)
@@ -143,7 +149,8 @@ def doors(s, wide):
 
 
 def marquee(s, hw, d):
-    path = canopy_plan(hw, d, 3.0, 16)
+    """hw, d = the envelope (half width along the face, projection): nothing of the canopy reaches past it."""
+    path = canopy_plan(hw - EDGE, d - EDGE, 3.0, 16)
     s.extrude(path, ZC0, ZC0 + 0.1, pal.Enamel_Ivory)
     zf = ZC1 - 0.18
     tube(s, lift(path), sec(-0.07, 0.3, ZC0 + 0.02, zf, 0.0), pal.Enamel_Teal)
@@ -177,7 +184,7 @@ def stairs(s):
     posts = [(LAND - 0.25, ZL, ZL + 0.9)] + [(LAND + (k - 0.5) * GO, ZL - k * RISE, zl(LAND + (k - 0.5) * GO) + 0.9) for k in (2, 5)]
     for sx in (-1, 1):
         x = sx * 1.75
-        rail = fillet([(x, -(LAND - 0.25), ZL + 0.9), (x, -LAND, ZL + 0.9), (x, -L1, zl(L1) + 0.9), (x, -(L1 + 0.3), zl(L1) + 0.9), (x, -(L1 + 0.3), 0.0)], 0.2, n=3, closed=False)
+        rail = fillet([(x, -(LAND - 0.25), ZL + 0.9), (x, -LAND, ZL + 0.9), (x, -L1, zl(L1) + 0.9), (x, -(L1 + 0.07), zl(L1) + 0.9), (x, -(L1 + 0.07), 0.0)], 0.2, n=3, closed=False)
         s.sweep(rail, 0.03, pal.Chrome, seg=6)
         for u, z0, z1 in posts:
             s.sweep([(x, -u, z0), (x, -u, z1)], 0.02, pal.Chrome, seg=5)
@@ -186,32 +193,46 @@ def stairs(s):
 
 
 def pier(s, x, h, ball):
-    """Cream flank pier: seafoam band, teal cap, chrome ball on a stand."""
-    s.rbox((x - 0.45, -1.0, 0.0), (x + 0.45, 0.2, h), 0.04, pal.Limestone, seg=1)
-    s.box((x - 0.48, -1.03, 0.0), (x + 0.48, 0.23, 0.35), pal.Limestone)
-    s.box((x - 0.5, -1.05, h - 0.5), (x + 0.5, 0.25, h - 0.28), pal.Enamel_Seafoam)
-    s.box((x - 0.53, -1.08, h), (x + 0.53, 0.28, h + 0.28), pal.Enamel_Teal)
-    hair(s, [(x - 0.5, -1.05), (x + 0.5, -1.05)], 0.0, h + 0.03, 0.03, pal.Accent_Gold)
+    """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): seafoam band, teal cap, chrome ball on a stand."""
+    s.rbox((x - 0.41, -0.96, 0.0), (x + 0.41, 0.16, h), 0.04, pal.Limestone, seg=1)
+    s.box((x - PW, PD0, 0.0), (x + PW, PD1, 0.35), pal.Limestone)
+    s.box((x - 0.45, PD0 + 0.03, h - 0.5), (x + 0.45, PD1 - 0.03, h - 0.28), pal.Enamel_Seafoam)
+    s.box((x - PW, PD0, h), (x + PW, PD1, h + 0.28), pal.Enamel_Teal)
+    hair(s, [(x - 0.45, PD0 + 0.015), (x + 0.45, PD0 + 0.015)], 0.0, h + 0.03, 0.03, pal.Accent_Gold)
     if ball:
         with s.at((x, -0.4, h + 0.28)):
             s.lathe([(0, 0), (0.3, 0), (0.3, 0.05), (0.15, 0.13), (0.1, 0.22), (0, 0.22)], pal.Chrome, seg=14)
         sphere(s, (x, -0.4, h + 0.28 + 0.22 + 0.42), 0.42, pal.Chrome, seg=18, n=9)
 
 
+def pilaster(s, x, h):
+    """Official front: a 0.3 m pilaster on the tower face (x +-0.35, y -0.30..+0.20): plinth, shaft, seafoam band, teal cap."""
+    s.box((x - 0.35, -0.30, 0.0), (x + 0.35, 0.2, 0.3), pal.Limestone)
+    s.box((x - 0.31, -0.26, 0.3), (x + 0.31, 0.2, h), pal.Limestone)
+    s.box((x - 0.33, -0.29, h - 0.5), (x + 0.33, 0.2, h - 0.28), pal.Enamel_Seafoam)
+    s.box((x - 0.35, -0.30, h), (x + 0.35, 0.2, h + 0.25), pal.Enamel_Teal)
+    hair(s, [(x - 0.33, -0.285), (x + 0.33, -0.285)], 0.0, h + 0.03, 0.03, pal.Accent_Gold)
+
+
 def build(s, grand):
-    px = 3.5
-    ph = 7.2 if grand else 5.6
-    marquee(s, 3.15 if grand else 2.6, 2.3 if grand else 1.9)
-    doors(s, PR if grand else 1.45)
-    stairs(s)
-    for sx in (-1, 1):
-        pier(s, sx * px, ph, grand)
-        x0, x1 = sorted((sx * (px - 0.35), sx * (px + 0.35)))
-        banner(s, x0, x1, -1.09, ph - 0.7, ph - 1.4 if grand else ph - 1.2)
     if grand:
+        marquee(s, 3.15, 2.3)
+        doors(s, PR)
+        stairs(s)
+        for sx in (-1, 1):
+            pier(s, sx * PX, 7.2, True)
+            x0, x1 = sorted((sx * (PX - 0.27), sx * (PX + 0.27)))
+            banner(s, x0, x1, -1.0, 7.2 - 0.7, 7.2 - 1.4)  # on the shaft, inside the plinth footprint
         window(s, True)
         blades(s)
         globe(s, (0.0, -0.9, 7.0), GR)
+        return
+    marquee(s, 3.0, 3.0)          # = office-boarding-pavilion (x 75.5..78.5, y -33..-27, soffit 4.05, top 4.62), carried on the face
+    doors(s, 1.45, 0.0)           # flush: sill at the pavement
+    for sx in (-1, 1):
+        pilaster(s, sx * 2.35, 5.4)
+        x0, x1 = sorted((sx * 2.1, sx * 2.6))
+        banner(s, x0, x1, -0.255, 3.8, 2.8, kr=0.04)  # on the pilaster shaft: rod and knobs stay inside 0.3 m of the face
 
 
 @asset("RecordsEntrance", "Plaza", bevel=0.0)

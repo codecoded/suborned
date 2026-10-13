@@ -31,11 +31,12 @@ HF, R = 5.7, 5.3  # café front: 11.4 m flat between two R 5.3 arcs, 22 m in all
 SEAM = 0.004
 
 
-def front_path(na=8, nf=3, hf=HF, r=R):
+def front_path(na=8, nf=3, hf=HF, r=R, flat_x=None):
     """The café's ground-storey outline, left end -> right end, building on the left (+Y): arc, flat, arc.
-    Starts at (-hf-r, r), tangent to the side wall, ends at (hf+r, r)."""
+    Starts at (-hf-r, r), tangent to the side wall, ends at (hf+r, r). flat_x = explicit x of the flat's vertices (a run
+    may end exactly at a door or gate edge)."""
     left = arc(-hf, r, r, 180, 270, na)
-    flat = [(-hf + 2 * hf * i / nf, 0.0) for i in range(nf + 1)]
+    flat = [(x, 0.0) for x in flat_x] if flat_x else [(-hf + 2 * hf * i / nf, 0.0) for i in range(nf + 1)]
     right = arc(hf, r, r, 270, 360, na)
     return left[:-1] + flat + right[1:]
 

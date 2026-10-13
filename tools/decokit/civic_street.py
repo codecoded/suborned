@@ -197,3 +197,16 @@ def boarding_square_v2(s):
     for x in (-3.22, 3.22):
         with s.at((x, 0.68, 0)):
             s.lathe([(0, 0), (0.17, 0), (0.17, 0.035), (0.085, 0.07), (0.055, 0.12), (0.055, H - FH)], pal.Chrome, seg=10, cap_top=True)
+
+
+# ----------------------------------------------------------------- PottedTopiary_Play
+
+@asset("PottedTopiary_Play", "Plaza", bevel=0.0)
+def potted_topiary_play(s):
+    """Cone topiary in a cream pot, 1.9 m (gp-entrance, mission-block: pairs at the doors): a limestone pot 0.67 m across, three
+    clipped tiers of civic green with a tip. Smooth lathes in flat civic leaf colours, no textures. Pivot = pot centre."""
+    s.lathe([(0, 0), (0.19, 0), (0.21, 0.04), (0.28, 0.14), (0.30, 0.52), (0.335, 0.55), (0.335, 0.62), (0.285, 0.62), (0.285, 0.57)],
+            pal.Limestone, seg=16, cap_top=False)
+    for k, (zb, h, R_) in enumerate(((0.56, 0.62, 0.36), (0.98, 0.55, 0.27), (1.37, 0.5, 0.18))):
+        prof = [(0.0, zb), (0.72 * R_, zb), (R_, zb + 0.16 * h), (0.94 * R_, zb + 0.5 * h), (0.55 * R_, zb + 0.88 * h), (0.0, zb + h + 0.08 * (k == 2) * 2)]
+        s.lathe(prof, pal.Leaf_CivicDark if k % 2 == 0 else pal.Leaf_Civic, seg=12)
