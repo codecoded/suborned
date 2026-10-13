@@ -1,0 +1,927 @@
+{
+  "plan": "harbour-district",
+  "version": "0.3.0-r011.1",
+  "ok": true,
+  "strict": true,
+  "checks": [
+    {
+      "id": "R-C1",
+      "group": "Roads",
+      "rule": "One connected network",
+      "value": "48/48 nodes",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "R-H1",
+      "group": "Roads",
+      "rule": "No access road joins a primary",
+      "value": "0",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "id": "R-H2p",
+      "group": "Roads",
+      "rule": "Junction spacing on primary distributors",
+      "value": "280 m",
+      "limit": "≥ 250 m",
+      "ok": true,
+      "detail": "closest: Sunset Way at nw"
+    },
+    {
+      "id": "R-H2d",
+      "group": "Roads",
+      "rule": "Junction spacing on district distributors",
+      "value": "60 m",
+      "limit": "≥ 60 m",
+      "ok": true,
+      "detail": "closest: Crown Avenue at n_avenue"
+    },
+    {
+      "id": "R-E1",
+      "group": "Roads",
+      "rule": "No access route links two distributors (no rat-runs)",
+      "value": "0 of 8 networks",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "id": "R-G1",
+      "group": "Roads",
+      "rule": "Every way in is a declared gate (seal point)",
+      "value": "14 found, 14 declared",
+      "limit": "equal",
+      "ok": true
+    },
+    {
+      "id": "R-F1",
+      "group": "Roads",
+      "rule": "Every plot fronts an access road (parks: any street or walk)",
+      "value": "34/34",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "R-O1",
+      "group": "Roads",
+      "rule": "No plot overlaps a street, walk, the circus or another plot",
+      "value": "0",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "id": "R-A1",
+      "group": "Roads",
+      "rule": "Every plot sits in its environmental area",
+      "value": "34/34",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "T-R1",
+      "group": "Tram",
+      "rule": "T1 running radius",
+      "value": "straight",
+      "limit": "≥ 50 m",
+      "ok": true
+    },
+    {
+      "id": "T-R2",
+      "group": "Tram",
+      "rule": "T1 terminal loop radius",
+      "value": "R 25 m",
+      "limit": "≥ 25 m",
+      "ok": true
+    },
+    {
+      "id": "T-S1",
+      "group": "Tram",
+      "rule": "T1 stop spacing",
+      "value": "310, 308 m",
+      "limit": "300–500 m",
+      "ok": true
+    },
+    {
+      "id": "T-S2",
+      "group": "Tram",
+      "rule": "T1 platforms (30 m) on straight track",
+      "value": "3/3",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "T-L1",
+      "group": "Tram",
+      "rule": "T1 turns on a loop at every end inside the sheet (single-ended trams, no crossover)",
+      "value": "1/1 ends loop",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "T-C1",
+      "group": "Tram",
+      "rule": "T1 runs in street space or the circus island",
+      "value": "0 m off",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "id": "T-R1",
+      "group": "Tram",
+      "rule": "T2 running radius",
+      "value": "R 50 m",
+      "limit": "≥ 50 m",
+      "ok": true
+    },
+    {
+      "id": "T-R2",
+      "group": "Tram",
+      "rule": "T2 terminal loop radius",
+      "value": "straight",
+      "limit": "≥ 25 m",
+      "ok": true
+    },
+    {
+      "id": "T-S1",
+      "group": "Tram",
+      "rule": "T2 stop spacing",
+      "value": "305, 305, 491, 435, 305, 430 m",
+      "limit": "300–500 m",
+      "ok": true
+    },
+    {
+      "id": "T-S2",
+      "group": "Tram",
+      "rule": "T2 platforms (30 m) on straight track",
+      "value": "7/7",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "T-L1",
+      "group": "Tram",
+      "rule": "T2 turns on a loop at every end inside the sheet (single-ended trams, no crossover)",
+      "value": "all ends off-sheet",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "T-C1",
+      "group": "Tram",
+      "rule": "T2 runs in street space or the circus island",
+      "value": "0 m off",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "id": "S-R1",
+      "group": "Sky rail",
+      "rule": "S1 line radius",
+      "value": "straight",
+      "limit": "≥ 70 m",
+      "ok": true
+    },
+    {
+      "id": "S-R2",
+      "group": "Sky rail",
+      "rule": "S1 terminal loop radius",
+      "value": "R 40 m",
+      "limit": "≥ 40 m",
+      "ok": true
+    },
+    {
+      "id": "S-P1",
+      "group": "Sky rail",
+      "rule": "S1 pylon spans (30 / 23 / 18 m by curvature; 36 m over a landmark disc)",
+      "value": "49 pylons, longest 36.0 m",
+      "limit": "within limit",
+      "ok": true
+    },
+    {
+      "id": "S-P2",
+      "group": "Sky rail",
+      "rule": "S1 pylons stand in medians, malls, parks, quays, water or the island",
+      "value": "49/49",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "S-S1",
+      "group": "Sky rail",
+      "rule": "S1 stations on straight beam",
+      "value": "4/4",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "S-C1",
+      "group": "Sky rail",
+      "rule": "S1 passes over public space only (no plots)",
+      "value": "0 m over plots",
+      "limit": "0",
+      "ok": true
+    },
+    {
+      "group": "Transit",
+      "id": "N-O1",
+      "rule": "Each line has an order of its paths that chains end to end",
+      "value": "0 faults",
+      "limit": "0",
+      "ok": true,
+      "source": "brief 001 · a line `order` so stop spacing reads across paths"
+    },
+    {
+      "group": "Transit",
+      "id": "N-P1",
+      "rule": "Every stop and station sits on a path of its own line",
+      "value": "0 faults",
+      "limit": "0",
+      "ok": true,
+      "source": "brief 001 · stops and stations: positions on the lines"
+    },
+    {
+      "group": "Transit",
+      "id": "N-P2",
+      "rule": "No stop or station stands on a plot (entrances front public space)",
+      "value": "0",
+      "limit": "0",
+      "ok": true,
+      "source": "brief 001 · entrances fronting public space; plan.standards.roads.frontage"
+    },
+    {
+      "group": "Transit",
+      "id": "N-D1",
+      "rule": "No dead ends: every path end joins another path of its line or leaves the sheet; closed loops (longer than 4 beam centres) are fine",
+      "value": "0 dead ends",
+      "limit": "0",
+      "ok": true,
+      "source": "brief 001 · no dead ends"
+    },
+    {
+      "group": "Transit",
+      "id": "N-R1",
+      "rule": "Every area (plot centroid) is within standards.transit.reach of a tram stop or sky rail station",
+      "value": "worst crescent-north 247 m",
+      "limit": "≤ 250 m",
+      "ok": true,
+      "source": "plan.standards.transit.reach · brief 001 · every plot centroid within 250 m of a stop or station (settled)"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange T1/circus ↔ sky rail S1/circus",
+      "value": "119 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange T1/comet ↔ tram T2/comet",
+      "value": "47 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange T2/harbour ↔ sky rail S1/harbour",
+      "value": "69 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange T2/comet ↔ tram T1/comet",
+      "value": "47 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange S1/circus ↔ tram T1/circus",
+      "value": "119 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-I1",
+      "rule": "Interchange S1/harbour ↔ tram T2/harbour",
+      "value": "69 m",
+      "limit": "≤ 150 m, partner names no other stop",
+      "ok": true,
+      "source": "brief 001 · interchange pairs within plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "N-C1",
+      "rule": "The network is connected: every line reaches every other through interchanges",
+      "value": "1 network, 3 lines",
+      "limit": "1",
+      "ok": true,
+      "source": "brief 001 · network connected through interchanges; plan.standards.skyrail.interchange"
+    },
+    {
+      "group": "Transit",
+      "id": "S-S2",
+      "rule": "S1 station spacing",
+      "value": "255, 245, 205 m",
+      "limit": "200–500 m",
+      "ok": true,
+      "source": "brief 001 · sky rail station spacing 200–500 m; plan.standards.skyrail.stationSpacing"
+    },
+    {
+      "id": "C-0",
+      "group": "Civic",
+      "rule": "Civic block at its city scale (café footprint and height, office wings and crown)",
+      "value": "café 22.0 × 11.3 × 34.8 m, office 15.5 / 38 m",
+      "limit": "café 22 × 11.3 × 34.8 m, office 15.5 / 38 m",
+      "ok": true
+    },
+    {
+      "id": "C-1",
+      "group": "Civic",
+      "rule": "Records Square and Office plots = HandoverSite blocks",
+      "value": "square =, office =",
+      "limit": "equal",
+      "ok": true
+    },
+    {
+      "id": "C-2",
+      "group": "Civic",
+      "rule": "Café and office footprints inside their blocks",
+      "value": "2/2",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "W-1",
+      "group": "Walking",
+      "rule": "Escape walks are direct (players cross any road; only buildings and water block)",
+      "value": "Café entrance → tram Records 279 m; Café entrance → sky rail Sphere Gardens 234 m; Office entrance → tram Records 228 m; Office entrance → sky rail Sphere Gardens 287 m",
+      "limit": "walk ÷ straight ≤ 1.5",
+      "ok": true,
+      "detail": "least direct: Café entrance → tram Records ×1.23"
+    },
+    {
+      "id": "W-4",
+      "group": "Walking",
+      "rule": "Every walk starts at a building entrance (doors are world)",
+      "value": "2/2",
+      "limit": "all, within 1 m of a building edge",
+      "ok": true,
+      "source": "plan.standards.walking · GDD §01 exteriors only: the player starts at a door"
+    },
+    {
+      "group": "Walking",
+      "id": "W-2",
+      "rule": "Every tram stop and sky rail station can be walked to from public space (water and buildings block, roads are crossable)",
+      "value": "14/14 reached",
+      "limit": "all",
+      "ok": true,
+      "source": "plan.standards.walking (only buildings, plots and water block) · plan.standards.roads.frontage (entrances front public space) · players reach every stop on foot"
+    },
+    {
+      "group": "Walking",
+      "id": "W-3",
+      "rule": "Every entrance fronts an existing road or foot path it touches (edge within tolerance); once any stop names fronts, all must",
+      "value": "14/14 fronted",
+      "limit": "all, edge ≤ 6 m",
+      "ok": true,
+      "source": "plan.standards.walking (only buildings, plots and water block) · plan.standards.roads.frontage (entrances front public space) · entrances fronting public space"
+    },
+    {
+      "id": "B-1",
+      "group": "Buildings",
+      "rule": "Every plot resolves to a height (a band for its use, and a building, megastructure or civic block on every built plot)",
+      "value": "34/34",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.buildings.bands · brief 004 B"
+    },
+    {
+      "id": "B-2",
+      "group": "Buildings",
+      "rule": "Heights follow H(n) = plinth + ground + (n−1) × upper + crown, n inside the use band; sheds inside heightM; area caps hold",
+      "value": "320/320",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.buildings.height · bands · caps"
+    },
+    {
+      "id": "B-3",
+      "group": "Buildings",
+      "rule": "Buildings stand in their plot, on or behind the building line (plot edge set back by the street section's pavement)",
+      "value": "320/320",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.buildings.colonnade · streetscape.pavement (brief 004 decisions)"
+    },
+    {
+      "id": "B-4",
+      "group": "Buildings",
+      "rule": "No two buildings overlap; no plot building stands under a megastructure (its own gate towers excepted)",
+      "value": "320/320",
+      "limit": "none",
+      "ok": true,
+      "source": "standards.buildings (massing) · megastructures[].footprint"
+    },
+    {
+      "id": "B-5",
+      "group": "Buildings",
+      "rule": "Towers stand only at towers.sites, at their storeys, floorplate ≤ 30 × 30, ≥ 6 m back from the podium edge",
+      "value": "10/10",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.buildings.towers · setback"
+    },
+    {
+      "id": "B-6",
+      "group": "Buildings",
+      "rule": "Beam clearance: no building or megastructure part in the sky rail envelope; a deck bridge crossing the line clears the beam underside by headroom.underBeam",
+      "value": "741/741",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.skyrailEnvelope · levels.headroom.underBeam · out/datum/mega-check.ts"
+    },
+    {
+      "id": "L-1",
+      "group": "Levels",
+      "rule": "Every level reaches the street: each walkable piece has ≥ 2 ways down (one step-free on a deck) and joins street level through connectors",
+      "value": "19/19",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.levels.spacing · brief 004 (every one connects to the street)"
+    },
+    {
+      "id": "L-2",
+      "group": "Levels",
+      "rule": "Travel: no point on a deck or concourse is further than maxTravel (30 m / 45 m, walked round halls) from a way down, nor liftEvery (120 m) from a lift",
+      "value": "19/19",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.levels.spacing"
+    },
+    {
+      "id": "L-3",
+      "group": "Levels",
+      "rule": "Minimum widths: deck 6, gallery 5, aisle 8, bridge 4.5, skybridge 5, concourse 8, stair 3, ramp 2.4, cart ramp 7, platform 4",
+      "value": "152/152",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.levels.minWidth · levels.station"
+    },
+    {
+      "id": "L-4",
+      "group": "Levels",
+      "rule": "Headroom: ≥ 5.5 m under a deck or bridge over a carriageway, ≥ 4.6 m under a colonnade, ≥ 3 m on a walk",
+      "value": "35/35",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.levels.headroom · structureDepth"
+    },
+    {
+      "id": "L-5",
+      "group": "Levels",
+      "rule": "Stations: every side has a stair bank, escalator run and lift on public ground outside the beam envelope + 1 m (stair tower and lift outside the platform, ≥ platformClear); a megastructure concourse within 30 m joins by a skybridge ≥ 5 m",
+      "value": "8/8",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.levels.station · out/datum/mega-check.ts L-5"
+    },
+    {
+      "id": "L-6",
+      "group": "Levels",
+      "rule": "Ids are unique and well formed in every layer; connectors serve existing decks; levels are street 0, deck 9.43, concourse = sky rail height",
+      "value": "14514/14514",
+      "limit": "all",
+      "ok": true,
+      "source": "brief 004 (every element has a stable id) · standards.levels.list"
+    },
+    {
+      "id": "L-7",
+      "group": "Levels",
+      "rule": "Every lift is attached to a structure along its whole run: at every height of the shaft a solid stands within 0.75 m",
+      "value": "42/42",
+      "limit": "≤ 0.75 m",
+      "ok": true,
+      "source": "standards.levels.connectors.lift (attachGap [S]; the kit lift_tube stands 0.7 m off the Skyport stem on a spine) · brief 007 round 2 (Skyport lifts floated above the legs)"
+    },
+    {
+      "id": "MS-1",
+      "group": "Megastructures",
+      "rule": "2–4 named megastructures, each with footprint, levels, height, what it spans, a reason and a source; every one generated",
+      "value": "4/4",
+      "limit": "2–4, complete",
+      "ok": true,
+      "source": "brief 004 A1.4 · standards.levels"
+    },
+    {
+      "id": "MS-2",
+      "group": "Megastructures",
+      "rule": "Footprints stand on the plots, streets and zones the structure spans, and never on each other",
+      "value": "4/4",
+      "limit": "all",
+      "ok": true,
+      "source": "megastructures[].spans · supports.zones"
+    },
+    {
+      "id": "MS-3",
+      "group": "Megastructures",
+      "rule": "Bridges stay ≥ 3 m from every sky rail pylon; no pylon inside a footprint (the Skyport portal excepted)",
+      "value": "14/14",
+      "limit": "≥ 3 m",
+      "ok": true,
+      "source": "standards.levels.bridges · out/datum/mega-check.ts MS-3"
+    },
+    {
+      "id": "MS-4",
+      "group": "Megastructures",
+      "rule": "A pier tower's legs stand ≥ clearHalfWidth off the sky rail line, its station's platforms lie inside the portal, no pylon clashes with a leg",
+      "value": "1/1",
+      "limit": "all",
+      "ok": true,
+      "source": "megastructures[].supports.portal · out/datum/mega-check.ts MS-4"
+    },
+    {
+      "id": "MS-5",
+      "group": "Megastructures",
+      "rule": "Columns, colonnade columns and legs stand only in the zones the structure lists (own plots, median, quay), never in a carriageway or the tram's swept envelope",
+      "value": "193/193",
+      "limit": "all",
+      "ok": true,
+      "source": "megastructures[].supports.zones · levels.bridges"
+    },
+    {
+      "id": "F-1",
+      "group": "Frontage",
+      "rule": "Every tenancy lies on its building line, inside its facade run, at its trade's width on the 3 m snap",
+      "value": "1077/1077",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.frontage.trades[].w · placement.widthSnap · brief 004 decisions (frontage fit on the building line)"
+    },
+    {
+      "id": "F-2",
+      "group": "Frontage",
+      "rule": "Tenancies stand only on allowed street kinds (never a primary distributor) and the kinds their trade wants",
+      "value": "1077/1077",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.frontage.placement.streets · never · trades[].wants"
+    },
+    {
+      "id": "F-3",
+      "group": "Frontage",
+      "rule": "The same trade never stands side by side on one facade run",
+      "value": "282/282",
+      "limit": "none",
+      "ok": true,
+      "source": "standards.frontage.placement.repeat"
+    },
+    {
+      "id": "F-4",
+      "group": "Frontage",
+      "rule": "Service bays (4.5 × 4.6 roller) only on access roads, the quay or under a deck, and only for trades that list one",
+      "value": "32/32",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.frontage.placement.service"
+    },
+    {
+      "id": "F-5",
+      "group": "Frontage",
+      "rule": "Every building has a lobby on its quietest street; corners on two streets take an anchor trade",
+      "value": "200/200",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.frontage.placement.lobby · corner"
+    },
+    {
+      "id": "F-6",
+      "group": "Frontage",
+      "rule": "Tenancies come from the area's mix (or the megastructure level's) with the trade's hours, sign and spill; shopfront, door, canopy and sign blank present",
+      "value": "1077/1077",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.frontage.mix · trades · placement.spill · signs"
+    },
+    {
+      "id": "SF-1",
+      "group": "Streetscape",
+      "rule": "The clear walking zone is never blocked (road, mall and walk zones; a deck's clear width)",
+      "value": "3423/3423",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.sections · levels.deck/concourse · Inclusive Mobility"
+    },
+    {
+      "id": "SF-2",
+      "group": "Streetscape",
+      "rule": "Nothing but bollards, crossing beacons and tram stop kits within 2 m of a crossing or a doorway's jambs",
+      "value": "2652/2652",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.crossings · bollards"
+    },
+    {
+      "id": "SF-3",
+      "group": "Streetscape",
+      "rule": "Nothing stands on a tram reservation or within a track's swept envelope (centre ± 1.825 m) except track, lawn and the stop kit",
+      "value": "2652/2652",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.sections.primary.tram · transit.tramStop"
+    },
+    {
+      "id": "SF-4",
+      "group": "Streetscape",
+      "rule": "Trees: canopy ≥ 5 m (3D) from the sky rail beam envelope, no pit in its plan footprint",
+      "value": "951/951",
+      "limit": "≥ 5 m",
+      "ok": true,
+      "source": "streetscape.trees.keepClear.beam · skyrailEnvelope"
+    },
+    {
+      "id": "SF-5",
+      "group": "Streetscape",
+      "rule": "A kerb-zone item stands ≥ 0.45 m from the kerb face (hydrant ≥ 0.6)",
+      "value": "1574/1574",
+      "limit": "≥ 0.45 / 0.6 m",
+      "ok": true,
+      "source": "streetscape.sections · catalogue.hydrant.kerbOffset · Manual for Streets"
+    },
+    {
+      "id": "SF-6",
+      "group": "Streetscape",
+      "rule": "Skip, never squeeze: items fit their zone (offset + depth ≤ zone width); widening items only where a widening is",
+      "value": "1574/1574",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.catalogue[].zone · rule"
+    },
+    {
+      "id": "SF-7",
+      "group": "Streetscape",
+      "rule": "Counts and spacing per edge: trees 12 m, lamps by type, benches 36, hydrants 90, mailboxes 250, columns 60, food kiosks 30, flower kiosks and district newsstands 120 apart",
+      "value": "1355/1355",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.trees.spacing · lamps.types · catalogue[].count"
+    },
+    {
+      "id": "SF-8",
+      "group": "Streetscape",
+      "rule": "No sight-blocking item within 6 m of a junction corner's kerb tangent point",
+      "value": "24/24",
+      "limit": "≥ 6 m",
+      "ok": true,
+      "source": "streetscape.sight · rules SF-8"
+    },
+    {
+      "id": "SF-9",
+      "group": "Streetscape",
+      "rule": "Every station, skybridge, tram stop, gate, square and the circus has its watchers.sites set, and watchers stand nowhere else",
+      "value": "33/33",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.watchers.sites · GDD §05"
+    },
+    {
+      "id": "SF-10",
+      "group": "Streetscape",
+      "rule": "A staffed item names a trade from the frontage catalogue (or an occupation) and has hours",
+      "value": "1102/1102",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.catalogue[].staffed · GDD §09"
+    },
+    {
+      "id": "SF-11",
+      "group": "Streetscape",
+      "rule": "Trees keep clear of junction corners 6, lamps 3, hydrants 2, pylon faces 3, megastructure supports 6 and any deck or bridge above",
+      "value": "951/951",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.trees.keepClear"
+    },
+    {
+      "id": "SF-12",
+      "group": "Streetscape",
+      "rule": "Every tram stop platform and station side has its whole transit kit (shelter, benches, ticket machine, timetable column, bin, bollards, crossings, kiosks, clocks, banks)",
+      "value": "34/34",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.transit.tramStop.kit · stationEntrance.kit"
+    },
+    {
+      "id": "SF-13",
+      "group": "Streetscape",
+      "rule": "Station banks (stair tower, escalator run A, lift) stand on public ground, outside the beam envelope + 1 m (tower and lift outside the platform, ≥ platformClear), and leave every walk zone clear",
+      "value": "59/59",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.transit.stationEntrance.siting · hallLane · levels.station"
+    },
+    {
+      "id": "SF-14",
+      "group": "Streetscape",
+      "rule": "Nothing but lamps and mooring cleats within 1.5 m of a quay edge",
+      "value": "36/36",
+      "limit": "≥ 1.5 m",
+      "ok": true,
+      "source": "streetscape.sections.quay.edge"
+    },
+    {
+      "id": "SF-15",
+      "group": "Streetscape",
+      "rule": "Every roof gets a programme whose minRoof fits it; roof items keep their setback from the parapet",
+      "value": "359/359",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.buildings.roofs.kit · streetscape.rules SF-15"
+    },
+    {
+      "id": "SF-16",
+      "group": "Streetscape",
+      "rule": "Frontage spill depth ≤ the street section's frontage zone",
+      "value": "882/882",
+      "limit": "all",
+      "ok": true,
+      "source": "streetscape.sections · frontage.placement.spill"
+    },
+    {
+      "id": "SF-17",
+      "group": "Streetscape",
+      "rule": "No sign, lamp or furniture colour is a signal colour or a faction colour; coral_transit only on transit items",
+      "value": "4500/4500",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.lamps.colour · frontage.placement.signs · §15 signal_colours"
+    },
+    {
+      "id": "K-1",
+      "group": "Kit",
+      "rule": "Every kit ref is an adopted piece that fits its slot (landmark disc and top, roof rect, kerb zone, gateway feet clear of quay edge, walk, pylons and beam); regenerated tower tips <= towers.crownTip",
+      "value": "2438/2438",
+      "limit": "all fit",
+      "ok": true,
+      "source": "brief 006 B; plan landmarks, roofs.kit, streetscape, towers.crownTip"
+    },
+    {
+      "id": "SG-1",
+      "group": "Skyline",
+      "rule": "A signature structure's ground (plan signatures[].ground) holds no plot building; the signature stands on it as the regenerated variant, inside the ground, to its tip",
+      "value": "2/2",
+      "limit": "all",
+      "ok": true,
+      "source": "brief 007 A · plan signatures[] · failing example: a plot building on the SpaceHQ drum ground x 56–136, y ±40 (the Parade's west plots as first built)"
+    },
+    {
+      "id": "P-1",
+      "group": "Sky rail",
+      "rule": "Sky rail portals: nothing stands in a declared opening below its ceiling, and no pylon stands inside the portal (the building carries the beam)",
+      "value": "3/3",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.skyrail.portal · brief 007 · failing example: the Parade gate block (x 264–288, y ±20, z 9.43–34.8) built without its opening"
+    },
+    {
+      "id": "SK-1",
+      "group": "Skyline",
+      "rule": "One dominant tip (space-hq 252); every other tip ≤ rivalMax 200, and ≤ 108 within 150 m of the quay",
+      "value": "341/341",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.skyline · brief 007 · failing example: LinerDock as built (205.1 m) on the liner berth"
+    },
+    {
+      "id": "SK-2",
+      "group": "Skyline",
+      "rule": "Every tower site and signature names a crown type; within 150 m no two share one (matched pairs excepted)",
+      "value": "14/14",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.skyline.crowns · grammar §6 · failing example: avenue-gate-w and a second disc crown 90 m away that is not its pair"
+    },
+    {
+      "id": "F-7",
+      "group": "Frontage",
+      "rule": "A blade or wall sign stands clear of every canopy, sign board, shopfront, door, bay, megastructure part and building",
+      "value": "167/167",
+      "limit": "none",
+      "ok": true,
+      "source": "standards.frontage (a trade is a frontage: canopy, sign blank, door, bay) · brief 007 round 3 walk, note 2 (blade signs through canopies) · groundCeiling 4.6, canopy slab 0.25 m at groundCeiling − 0.8"
+    },
+    {
+      "id": "SF-18",
+      "group": "Sky rail",
+      "rule": "A sky rail pylon's footprint stands clear of steps, landmarks, bays and buildings, and 2 m from crossings and doorways",
+      "value": "49/49",
+      "limit": "none",
+      "ok": true,
+      "source": "standards.skyrail.pylonZones (where a pylon may stand) · brief 007 round 3 walk, note 3 (pylons on the Crown Circus monument steps) · streetscape.crossings and SF-2 (2 m from a crossing or a doorway)"
+    },
+    {
+      "id": "L-8",
+      "group": "Levels",
+      "rule": "A connector's bottom and top stand at the levels it joins, and its ends touch a surface at that level it serves",
+      "value": "113/113",
+      "limit": "none",
+      "ok": true,
+      "source": "standards.levels.list (a level is a height) · levels.connectors.stair (riser 0.16: the vertical tolerance; going 0.3: the horizontal is two goings, a joint between two decks each inset 0.3) · stationEntrance (escalator runs A and B, stair tower, mezzanine) · brief 007 round 3 walk: escalators and core landings missing their levels"
+    },
+    {
+      "id": "SF-19",
+      "group": "Streetscape",
+      "rule": "A crossing is crossings.w wide along the road, platform or line it crosses",
+      "value": "196/196",
+      "limit": "none",
+      "ok": true,
+      "source": "streetscape.crossings.w (4 m, near edge ≥ 3 m past the corner tangent; bollards flank at ± 2.4) · brief 007 round 3 walk, note 5 (street/avenue-court/e18/crossing-1076)"
+    },
+    {
+      "id": "SK-3",
+      "group": "Skyline",
+      "rule": "A station labelled in a structure stands inside that structure's declared portal on its line",
+      "value": "2/2",
+      "limit": "all",
+      "ok": true,
+      "source": "standards.skyrail.portal (a signature or megastructure declares where the beam runs through it) · brief 007 F: a station labelled in a structure it does not stand in passed every rule"
+    },
+    {
+      "id": "C-3",
+      "group": "Handover",
+      "rule": "Handover: Mission points land on a plot or a street",
+      "value": "21/21",
+      "limit": "all",
+      "ok": true
+    },
+    {
+      "id": "M-1",
+      "group": "Handover",
+      "rule": "Handover: Every mission route reaches its end",
+      "value": "getaway 667 m, official 1064 m",
+      "limit": "finite",
+      "ok": true
+    }
+  ],
+  "stations": [
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "at": [
+        -160,
+        0
+      ],
+      "chainage": 240,
+      "next": 255,
+      "length": 50
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "at": [
+        95,
+        0
+      ],
+      "chainage": 495,
+      "next": 245,
+      "length": 50
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "at": [
+        340,
+        0
+      ],
+      "chainage": 740,
+      "next": 205,
+      "length": 50
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "at": [
+        545,
+        0
+      ],
+      "chainage": 945,
+      "length": 50
+    }
+  ]
+}

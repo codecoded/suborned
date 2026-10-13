@@ -1,0 +1,15 @@
+{
+  "verdict": "pass",
+  "summary": "Checker report is clean (strict, plan and world) and no claim contradicts a passage. Last round's fault is cleared: Vantage now says banks land on public ground, and L-5 and N-P2 pass. Skyline decisions hold (SK-1, SK-2, SK-3, P-1, SG-1). Open questions, not faults: S1/gardens south bank ground (levels.station vs stationEntrance.siting); Skyport platforms x 520-570 vs footprint x 523-567; grammar §4 20 % height variety (Aster); liner-berth tip 103.7 vs 102.6 in the plan; Datum's beam top 23.0 and 50 m claim is not in my passages.",
+  "faults": [],
+  "sources": [
+    "a8aca457d390cac91c490f26",
+    "39f03ac1b47077f64cb3e308",
+    "4d21f32fa5c1e49e4208d027",
+    "44ad78feee4c9fca1cd9237b",
+    "1a35096cb74a4842de17d00b",
+    "aa0f984465bfc451c3e07a14",
+    "f65a27a9f90d3ca681251d8a",
+    "4730d5fa563439633b73c81a"
+  ]
+}

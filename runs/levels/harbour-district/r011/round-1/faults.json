@@ -1,0 +1,11 @@
+[
+  {
+    "owner": "Vantage",
+    "rule": "critic",
+    "fault": "Vantage's note says Sphere Gardens' banks use \"the two open forecourt plots beside Circus Road's 6 m median\". The station standard says banks land on public ground (pavement, median, mall, park, quay), never on a plot. The checker's L-5 and N-P2 measure all banks on public ground, so the note is either false to the candidate or describes a breach. Vantage states the note was unverified hand work.",
+    "fix": "Restate where the S1/gardens banks land, one each side of the line, as public ground (Circus Road pavement, median or park) in line with L-5. If the entrance does depend on plot land, move the banks onto public ground or hand the ground to Datum to declare as public space.",
+    "chunks": [
+      "a8aca457d390cac91c490f26"
+    ]
+  }
+]

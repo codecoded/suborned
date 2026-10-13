@@ -1,0 +1,258 @@
+{
+  "id": "03-skyline-critic",
+  "objective": "skyline-critic",
+  "role": "simulation-engineer",
+  "model": "claude-opus-5-5",
+  "modelsUsed": [
+    "claude-opus-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.296",
+  "costUsd": 0.38085199999999997,
+  "seconds": 40,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/simulation-engineer.md",
+    "sourceHash": "5a83bc81bbcea776cb5b755dafbba8aea634acbc3cd0cfb7939891bec89763bf"
+  },
+  "brief": {
+    "source": "tools/levels/objectives/skyline-critic.md",
+    "sourceHash": "86cb974e1025c72041587ae5e25a1617eabff97099eedee8b9c87db94747aa91"
+  },
+  "promptSha256": "814873e6c791e7c1eee864643fe631dc5862a061fc19fa29bacc26cceaa91675",
+  "schemaSha256": "e552551dc3d8aafcb94ad069b9b8a49d4761d46f1d45b645d15355532198539b",
+  "effort": "medium",
+  "images": [
+    {
+      "path": "briefs/007/concepts/Blocks/contact_sheet.jpg",
+      "mediaType": "image/jpeg",
+      "bytes": 727168,
+      "sha256": "ac0e7f8dca32d58dc73dbd7c31a6b53ff9e5d4e8d2a98176976d530852567b11"
+    },
+    {
+      "path": "briefs/007/concepts/AtomicAge/contact_sheet.jpg",
+      "mediaType": "image/jpeg",
+      "bytes": 1385139,
+      "sha256": "f38540aca89810b6f8f28cdcf1320b69e5bf7f68b95737a905e78e827519141b"
+    }
+  ],
+  "retrieval": {
+    "query": "skyline standards dominant rival spires rivalMax harbour icon tiers crown types tower sites signatures ‖ sky rail portal clearance running twin station soffit pylons beam through a building ‖ station inside a building reaches the street stair banks lifts levels station concourse ‖ rulebook: each event needs, changes, witnesses; unknown is rejected ‖ signature space-hq plan ‖ tower site avenue-needle plan ‖ tower site avenue-starburst plan ‖ tower site avenue-gate-w plan",
+    "queries": [
+      "skyline standards dominant rival spires rivalMax harbour icon tiers crown types tower sites signatures",
+      "sky rail portal clearance running twin station soffit pylons beam through a building",
+      "station inside a building reaches the street stair banks lifts levels station concourse",
+      "rulebook: each event needs, changes, witnesses; unknown is rejected",
+      "signature space-hq plan",
+      "tower site avenue-needle plan",
+      "tower site avenue-starburst plan",
+      "tower site avenue-gate-w plan"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "618e57073693a3d698dd6e187dec6c136ac96858d1b0edaf9ccf11dd3d102788",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.2629091739654541,
+        "key": "44ad78feee4c9fca1cd9237b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › notes › kit",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › notes › kit\n- Kit adopt / reject (brief 007 A replaces the 006 B note; 007 lifts 'the kit fits the plan, never the other way' for the skyline).\n- ADOPT SpaceHQ: signatures.space-hq, the dominant icon at Crown Circus east, 252 m; regen SpaceHQ_Portal (terminal drum r 40 to 34 with S1 and Crown Circus station inside; shaft −29 m, tip kept).\n- ADOPT Tower_Starburst: towers.sites avenue-starburst, the tallest rival, tiers cut to the 3.6 grid, tip 194.3.\n- ADOPT Tower_Needle: towers.sites avenue-needle, saucer floor to storey 30 (100.8 over the deck), tip 167.8.\n- ADOPT DiscTower ×2: towers.sites avenue-gate-w / -e, 88 m apart across Crown Avenue, shaft to the grid (111.6), tip 165.6.\n- ADOPT SkyBridge: towers.skyBridges avenue-gate, as built (70 m clear between the DiscTowers), floor 67.03.\n- ADOPT Tower_Terrace: towers.sites crescent-terrace, terraces to the grid, tip 122.7.\n- ADOPT Skylon: landmarks.skylon in Starline Green, × 0.925, top 100.\n- ADOPT LinerDock: landmarks.liner-berth, a caisson 20 m off the Market Docks crane walk; regen at × 0.5 (tip 102.6 ≤ 104) so the Skyport Tower stays the harbour's icon; caisson only until then.\n- ADOPT SkyRailStation_Twin (Vela, brief 007 C): the four S1 stations; inside SpaceHQ and the Skyport Tower as platform decks only.\n- KEEP SphereStation (landmarks.sphere × 0.425), Skyport_Tower_Portal (skyport-tower), CircusMonument, ParabolicArch (skyport-tower.gateway), SkyPad_Roof (pad, hover-pad roofs).\n- KEEP the 006 B regen sites: parade-gate-n / -s Tower_Stepped, harbour-hotel Tower_Saucer, crescent-tower Tower_Atom, lantern-beacon Tower_Lantern.\n- REJECT Tower_Setback (172 m, 30 m plan): no crown of its own, and grammar §6 already crowns every ≥ 9-storey block; a sixth rival would crowd the cluster under rivalMax.\n- REJECT SkyRailStation (single beam, rail top 22, 40 m platforms): superseded by SkyRailStation_Twin.\n- Rule changes these sites need (signature ground, portals, skyline, platform clearance) are handed to Splice: see the brief 007 A report.",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.19132904932896377,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "keyword:3",
+          "semantic:5",
+          "keyword:5",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7",
+          "semantic:8",
+          "keyword:8"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.3035140814491547,
+        "key": "1a35096cb74a4842de17d00b",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › tower sites",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › tower sites\nTower sites (standards.buildings.towers.sites): 10. Towers stand only at these sites: each closes a view (Parade axis, Market Street, Crown Avenue, the harbour). Composed, never a grid.\n- parade-gate-n: plot parade-north, x 264 to 288, y 20 to 44, 18 storeys, crown finial, tip 75 m, from Tower_Stepped\n- parade-gate-s: plot parade-south, x 264 to 288, y -44 to -20, 18 storeys, crown finial, tip as parade-gate-n, from Tower_Stepped\n- harbour-hotel: plot harbour-court, x 160 to 190, y -290 to -260, 25 storeys, crown saucer, tip 106 m, from Tower_Saucer\n- crescent-tower: plot crescent-east, x 240 to 264, y 170 to 194, 22 storeys, crown atom, tip 99.4 m, from Tower_Atom\n- lantern-beacon: plot lantern-boulevard, x -48 to -24, y -530 to -506, 16 storeys, crown antenna, tip 86.1 m, from Tower_Lantern\n- avenue-needle: plot avenue-court, x -68 to -48, y 46 to 66, 30 storeys, crown needle, tip 167.8 m, from Tower_Needle\n- avenue-starburst: plot avenue-court, x -64 to -40, y 108 to 132, 42 storeys, crown starburst, tip 194.3 m, from Tower_Starburst\n- avenue-gate-w: plot avenue-court, x -56 to -32, y 178 to 202, 33 storeys, crown disc, tip 165.6 m, from DiscTower\n- avenue-gate-e: plot crescent-court, x 32 to 56, y 178 to 202, 33 storeys, crown disc, tip as avenue-gate-w, from DiscTower\n- crescent-terrace: plot crescent-court, x 107 to 133, y 147 to 173, 29 storeys, crown finial, tip 122.7 m, from Tower_Terrace\nsky bridge avenue-gate: between avenue-gate-w and avenue-gate-e; kit SkyBridge; floor 67.03 m, span 70 m; x, centre (0, 190) over Crown Avenue\nlimits: floorplate max 30 × 30 m; storeys min 15; crown tip ≤ 200 m; podium 2 storeys",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.12138102373202993,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7",
+          "semantic:8",
+          "keyword:8"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.31381720304489136,
+        "key": "4d21f32fa5c1e49e4208d027",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › signature › space-hq",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › signature › space-hq\nSpaceHQ · Crown Terminal (space-hq): portal tower, dominant\nareas: crescent, harbour\ncentre: (96, 0); ground: x 56 to 136, y -40 to 40; height 252 m\nkit: SpaceHQ (regenerated as SpaceHQ_Portal)\ncrown: atom: brief 007 Decisions (Sky 2026-10-13): an atom over a needle mast, not a rocket (AtomicAge/exposition_palace.png). SK-2: the other atom, crescent-tower (252, 182), is 239.7 m from the drum centre (> 150)\nspans: plots parade-north, harbour-boulevard, parade-south; foot crown-parade\nportal: station; twin beams; line S1; trunk; y 0, x 56 → 136; soffit 30; clear half width 20; opening clear half width 6, z 21.5–29, x 56–136; station S1/circus\nlevel street: the Parade passes through the drum's ground hall, open 40 m wide between the legs; the station banks stand in it (stair towers and lifts outside the…\nlevel deck: a gallery ring round the hall at 9.43, joined to the Parade Galleries' deck galleries at x 136\nlevel concourse: Crown Circus station: both platforms inside the drum, a departure hall round them; the Parade Galleries' sky promenades enter at x 136 (bridges circu…\nlevel galleries z 119.4,125.4–184,188.2: the tower's two chrome-and-gold galleries: the fleet's offices behind the lower (r 30), a public observation gallery on the upper (r 23); lifts from…\nlevel crown z 190–252: the halo ring at 194 and the atom (sphere r 9, three orbits 54 m across, centre 223) on the needle mast, gold star and rose beacon at the tip 252: th…\ncores: four lift-and-stair cores in the legs (two each side) from the street to the concourse; the tower's lifts from the drum roof to the two galleries\nyaw: grand stair to the west (−x), facing Crown Circus down the Parade's axis\nwhy: Sky (2026-10-13): SpaceHQ is the dominant icon and the sky rail threads the buildings. At Crown Circus it closes Circus Road's view from the West End and the Parade's view from the harbour, stands over the circus monument from Crown Avenue and the Boulevard, and the airport line runs through its base with Crown Circus station inside it: EPCOT's hub, where the monorail ran through the transportation lobby under the central tower. Everything else composes round it: the rival spires north of the c…\nsource: brief 007 · W. Disney, EPCOT film (1966): the Cosmopolitan Hotel over the transportation lobby, monorail through the hub · LAX Theme Building (1961) · Seattle Space Needle (1962)\nconcept: ~/Projects/the-suborned-store/concepts/Streets/spaceage/spaceport_hq.png (the piece); AtomicAge/exposition_palace.png (the axis and stair); AtomicAge/monorail_terminal.png (the station hall); Blocks/…",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.12123199796583553,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.3169199228286743,
+        "key": "f65a27a9f90d3ca681251d8a",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › tower site › avenue-gate-e",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › tower site › avenue-gate-e\nTower site avenue-gate-e on plot crescent-court: x 32 to 56, y 178 to 202; 33 storeys; crown disc\nwhy: pair of avenue-gate-w across Crown Avenue (centres x ±44, 88 m apart = the kit SkyBridge's span)\nregen order: from DiscTower, the same as avenue-gate-w (a matched pair)\nregen why: matched pair, mirrored",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.11929824118181001,
+        "signals": [
+          "semantic:1",
+          "semantic:3",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7",
+          "semantic:8",
+          "keyword:8"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.29705727100372314,
+        "key": "a8aca457d390cac91c490f26",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › levels",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › standards › levels\nsource: brief 004 (levels are world) · standards.skyrail.height · standards.buildings storey arithmetic · A. & P. Smithson / Park Hill (streets in the sky) · Barbican highwalks · Gruen (pedestrian galleries)\nlist: [{\"id\":\"street\",\"z\":0,\"note\":\"carriageway 0, pavement 0.18; the simulation's level\"},{\"id\":\"deck\",\"z\":9.43,\"note\":\"pavement 0.18 + plinth 0.45 + ground storey 5.2 + one upper storey 3.6: the roof of a two-storey podium, so deck frontages open from storey 3 of the buildings they meet\"},{\"id\":\"concourse\",\"z\":24,\"from\":\"standards.skyrail.height\",\"note\":\"sky rail platform level. A building meeting it stretches storey 6 to 3.77 m so its storey-7 floor lands at 24.0 (storey arithmetic gives 23.83)\"}]\nminWidth: {\"deck\":6,\"deckAisle\":8,\"gallery\":5,\"bridge\":4.5,\"skybridge\":5,\"concourse\":8,\"stair\":3,\"ramp\":2.4,\"cartRamp\":7}\nheadroom: {\"road\":5.5,\"walk\":3,\"underBeam\":2.5,\"colonnade\":4.6}\nheadroomWhy: colonnade 4.6 [S] = buildings.groundCeiling (the café's ground ceiling): the covered walk under an overhang reads as a full ground storey, never a tunnel; above walk 3. Under a deck the clear is 9.43 − 1.2 − 0.18 = 8.05\nstructureDepth: {\"deck\":1.2,\"bridge\":1}\ncolumn: {\"size\":0.9,\"surface\":\"column\",\"why\":\"[S] deck and colonnade column, 0.9 m square chrome: with the 0.45 m kerb offset (Manual for Streets) it fits the narrowest kerb zone (primary and access, 1.5 m: 0.45 + 0.9 = 1.35)\"}\ncores: {\"tag\":\"[S]\",\"stairLift\":[7,8],\"arcade\":[7,6.2],\"every\":60,\"firstAt\":30,\"why\":\"[along the face, deep]. stairLift 7 × 8: a 3.0 dog-leg stair (minWidth.stair, 2 × 3.0 + 0.4 well + 0.6 walls = 7.0) with a lift car (connectors.lift.car 2.4) beside its landing; arcade 7 × 6.2 fits the Parade Galleries' tall strip. every 60 = 2 × spacing.deck.maxTravel 30: no point on a deck more than 30 m from a way down; firstAt 30 = half that from a deck's end\"}\nconnectors: {\"stair\":{\"riser\":0.16,\"going\":0.3,\"landingEvery\":12},\"ramp\":{\"slope\":0.083},\"cartRamp\":{\"slope\":0.1},\"lift\":{\"car\":[2.4,2.4],\"goods\":[4,8]},\"escalator\":{\"angle\":30,\"width\":1.6,\"note\":\"stations and the concourse only\"}}\nspacing: {\"deck\":{\"maxTravel\":30,\"liftEvery\":120,\"minWaysDown\":2,\"note\":\"no point on a deck more than 30 m along from a stair or ramp down; a lift within 120 m; every deck piece has ≥ 2 ways down, ≥ 1 of them step-free\"},\"concourse\":{\"maxTravel\":45,\"minWaysDown\":2,\"note\":\"every concourse piece reaches the street by its own connectors or through a station's\"}}\nstation: A sky rail station's platforms are side platforms at concourse z 24, outer edge 8 m from the line (beamCentres/2 + 0.75 beam + 4 m platform). Each station reaches the street by ≥ 2 stair-and-escalator banks (one each side of the line) and ≥ 1 lift each side; banks land on public ground (pavement, median, mall, park, quay), never on a plot. A megastructure concourse within 30 m joins the station by a skybridge ≥ 5 m wide. Tram stops stay at street level.\nbridges: A deck or bridge over a road keeps headroom.road under its structure (z − structureDepth − 0.18 ≥ 5.5); its supports stand in the zones its megastructure lists, never in a carriageway or the tram reservation. A bridge crossing the sky rail line passes ≥ 3 m clear of any pylon.",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.11708073258476484,
+        "signals": [
+          "semantic:1",
+          "semantic:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:5",
+          "semantic:6",
+          "semantic:7",
+          "semantic:8"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.16834807395935059,
+        "key": "39f03ac1b47077f64cb3e308",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › standards › skyline",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › standards › skyline\ntag: [S]\nrule: brief 007 (Sky 2026-10-13): one dominant icon, a cluster of rival spires, crowns everywhere. The plan makes sites for the signature structures (signatures[], towers.sites, landmarks); scale, levels, clearances and the checker still rule how they stand\ndominant: {\"id\":\"space-hq\",\"tip\":252,\"why\":\"SpaceHQ as built (kit 252.0 tall): the tallest thing in the district (Sky 2026-10-13); every other tip stays under rivalMax\"}\nrivalMax: 200\nrivalMaxWhy: ≤ 0.8 × dominant (201.6), rounded down: the dominant stays at least a quarter taller than its tallest rival, as SpaceHQ over the needle trio in Blocks/needle_trio.png and mixed_skyline.png. The rival cluster sits 0.45–0.8 of the dominant\nharbour: {\"icon\":\"skyport-tower\",\"tip\":108,\"within\":150,\"why\":\"the Skyport Tower stays the harbour's icon (brief 007 Fixed): nothing standing within 150 m of the quay edge (x 312) tops 108; the rival spires stand inland, north of Crown Circus\"}\ntiers: dominant 252: space-hq (signatures), rival spires 120–200: avenue-starburst 194.3, avenue-needle 167.8, avenue-gate-w / -e 165.6 (DiscTower pair + SkyBridge), crescent-terrace 122.7, harbour icon 108: skyport-tower; under it on the water liner-berth 103.7 (its terminal tower) and the ocean-liner 34.0 alongside, and the harbour front (harbour-hotel 106, crescent-tower 99.4, parade gates 75), marks 80–106: skylon 100, sphere 80, lantern-beacon 86.1, street wall 20–50: H(4)–H(12), every building ≥ 9 storeys crowned (grammar §6)\ncrowns: every tower and signature names its crown: the signature pieces keep their own (SpaceHQ atom over a needle mast; Tower_Needle needle and saucers; Tower_Starburst starburst; DiscTower disc, jib and mast; Tower_Terrace belvedere finial; Skylon spindle); tower sites take the grammar §6 catalogue (contracts/world/harbour-district.grammar.md); within 150 m no two towers share a crown type, matched pairs excepted\nsource: brief 007 · Blocks/needle_trio.png, mixed_skyline.png, saucer_spires.png, skyport_tower.png · AtomicAge/exposition_palace.png, power_spire.png · grammar §6",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.10761680906112432,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:5",
+          "keyword:5",
+          "keyword:6",
+          "keyword:7",
+          "keyword:8"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "distance": 0.2948009967803955,
+        "key": "aa0f984465bfc451c3e07a14",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › tower site › avenue-starburst",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › tower site › avenue-starburst\nTower site avenue-starburst on plot avenue-court: x -64 to -40, y 108 to 132; 42 storeys; crown starburst\nwhy: brief 007: the tallest rival, mid-avenue: the gold starburst crown answers SpaceHQ's disc across the circus and stands over the Sphere from Circus Road\nregen order: from Tower_Starburst; body 17 × 16 × 144 m; 4 tiers; tip 194.3 m\nregen crown: the kit's gold ziggurat crown with its starburst and chrome needle as built (39.8 m) on the 1.1 m terrace gap\nregen why: Tower_Starburst is 17 × 16 and needs only its tiers cut to the 3.6 m grid (kit 54 / 100 / 132 / 146 → 54 / 100.8 / 129.6 / 144, 40 floors over the 2-storey podium = storey 42); 9.43 + 144 + 1.1 + 39.8 = 194.3 ≤ rivalMax 200",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.09455446939648914,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "District plan harbour-district (suborned.plan/1, status: transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A); the plan checker owns its rules",
+        "bm25": 2.2669951915740967,
+        "key": "4730d5fa563439633b73c81a",
+        "kind": "plan",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "Harbour District › tower site › avenue-needle",
+        "source": "contracts/world/harbour-district.plan.json",
+        "sourceHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+        "text": "Harbour District plan › tower site › avenue-needle\nTower site avenue-needle on plot avenue-court: x -68 to -48, y 46 to 66; 30 storeys; crown needle\nwhy: brief 007: the first of the rival spires, the Googie needle at the Circus Road corner of the avenue: seen past the Sphere from Sphere Gardens station and up Crown Avenue from the circus, beside SpaceHQ; its podium corner stands 58 m from the circus centre, cl…\nregen order: from Tower_Needle; body 16.4 × 16.4 × 100.8 m; tip 167.8 m\nregen crown: the kit's saucer restaurant (Ø 34), upper saucer and needle as built: 57.6 m from the saucer floor\nregen why: Tower_Needle (saucer_spires) is a fluted 11 m shaft, not a stack of floors: the saucer floor moves from the kit's 118 to 28 × 3.6 = 100.8 over the podium deck (storey 30), the foot, fins and rings as built. 9.43 + 100.8 + 57.6 = 167.8, a clear step under the Starburst. The saucer (Ø 34) overhangs the 20 m site by 7 m each way at 110 m, over the podium (the floorplate is the sh…",
+        "version": "v0.2.0 2026-10-13",
+        "score": 0.09102984945461567,
+        "signals": [
+          "keyword:1",
+          "semantic:3",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

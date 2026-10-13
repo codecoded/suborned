@@ -1,0 +1,94 @@
+{
+  "stops": [
+    {
+      "line": "S1",
+      "id": "gardens",
+      "name": "Sphere Gardens",
+      "path": "trunk",
+      "at": [
+        -160,
+        0
+      ],
+      "length": 50,
+      "fronts": "circus-road",
+      "kit": "SkyRailStation_Twin",
+      "kitWhy": "brief 007 C: Vela's twin-beam station to the plan standard (platform 24.0, 50 m side platforms); open-air over Circus Road's median, on the Records Axis x -160"
+    },
+    {
+      "line": "S1",
+      "id": "circus",
+      "name": "Crown Circus",
+      "path": "trunk",
+      "at": [
+        95,
+        0
+      ],
+      "length": 50,
+      "interchange": "T1/circus",
+      "fronts": "crown-parade",
+      "in": "signatures/space-hq",
+      "kit": "SkyRailStation_Twin",
+      "kitWhy": "inside the SpaceHQ drum (station portal x 56-136, platforms x 70-120); platform decks only, the drum is the roof and its cores the lifts"
+    },
+    {
+      "line": "S1",
+      "id": "harbour",
+      "name": "Harbour",
+      "path": "trunk",
+      "at": [
+        340,
+        0
+      ],
+      "length": 50,
+      "interchange": "T2/harbour",
+      "fronts": "skyport-pier",
+      "kit": "SkyRailStation_Twin",
+      "kitWhy": "open-air over the quay and the pier causeway; platforms x 315-365 clear Harbour Road's carriageway (x 288-312)"
+    },
+    {
+      "line": "S1",
+      "id": "skyport",
+      "name": "Skyport",
+      "path": "trunk",
+      "at": [
+        545,
+        0
+      ],
+      "length": 50,
+      "fronts": "skyport-pier",
+      "in": "megastructures/skyport-tower",
+      "kit": "SkyRailStation_Twin",
+      "kitWhy": "inside the Skyport Tower's portal (supports.portal, legs at least 16 m off the line); platform decks only, the portal frame (soffit 30) is the roof"
+    }
+  ],
+  "notes": [
+    "S1 keeps Datum's four stations unchanged. Two stand inside buildings at the 24 m concourse: circus in signatures/space-hq and skyport in megastructures/skyport-tower.",
+    "Not verified: I had no plan checker in this run, so nothing below is checker output. The figures are hand arithmetic from the passages.",
+    "S-S2 spacing along the trunk: gardens to circus 255 m, circus to harbour 245 m, harbour to skyport 205 m. All sit inside the 200-500 band; skyport cannot move west without squeezing the 205.",
+    "Crown Circus banks: towers and lifts at 7.75-14.75 m off the line fit the ground hall between the 4 m hall lane and the legs at y ±20. They land on the Parade mall, not a plot.",
+    "Harbour banks land on the pier causeway quay (y ±25). Skyport banks land on the apron quay (y ±40), between the tower legs. Sphere Gardens uses the two open forecourt plots beside Circus Road's 6 m median.",
+    "No third in-building station is possible: parade-gate is a running portal (clear half-width 6), and a station needs 16. I did not ask Datum to widen it.",
+    "Interchange T2/harbour is carried from the candidate, but the passages name only tram T1 and call Crown Circus 'the one interchange'. Tram stops were not shown, so I could not check it or the 150 m limit.",
+    "N-R1 reach (250 m) also depends on the tram stops, which are outside this run. I did not judge it; no sky station was moved, so the sky rail's share is unchanged."
+  ],
+  "sources": [
+    "44ad78feee4c9fca1cd9237b",
+    "a8aca457d390cac91c490f26",
+    "5682ae025e558aae3594109e",
+    "4d21f32fa5c1e49e4208d027",
+    "7dfdfdf13043a24e8e964b0b",
+    "16827c8067f1ac9a9d18031a"
+  ],
+  "handoffs": [
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "Skyport station at x 545 with 50 m platforms spans x 520-570, but the skyport-tower footprint is x 523-567: 3 m overhang at each end. Confirm supports.portal covers the platform ends, or declare the portal's extent along the line (e.g. x 520-570). Moving the station does not help; the footprint is only 44 m long."
+    },
+    {
+      "owner": "Datum",
+      "blocking": false,
+      "ask": "S1/harbour carries interchange T2/harbour, but notes.concept names only tram T1 and calls Crown Circus the one interchange. Confirm a T2 stop 'harbour' exists within 150 m of (340, 0), or tell me to drop the interchange from the station."
+    }
+  ]
+}

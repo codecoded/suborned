@@ -1,0 +1,25 @@
+{
+  "verdict": "fail",
+  "summary": "Checker report is clean (all rules PASS), and the skyline holds Sky's decisions: SpaceHQ 252 dominant, rivals ≤ 200, harbour band ≤ 108. One fault: Vantage's note puts the Sphere Gardens banks on plots, which the station standard forbids. Open questions, not faults: liner-berth tip 102.6 (kit note) vs 103.7 (skyline tiers); SkyBridge span 70 vs 88 between plan passages; Skyport platforms x 520–570 vs footprint 523–567 (SK-3 passes; portal extent not in my passages); grammar §4 20 % height variety (not retrieved; Aster to decide).",
+  "faults": [
+    {
+      "owner": "Vantage",
+      "rule": "critic",
+      "fault": "Vantage's note says Sphere Gardens' banks use \"the two open forecourt plots beside Circus Road's 6 m median\". The station standard says banks land on public ground (pavement, median, mall, park, quay), never on a plot. The checker's L-5 and N-P2 measure all banks on public ground, so the note is either false to the candidate or describes a breach. Vantage states the note was unverified hand work.",
+      "fix": "Restate where the S1/gardens banks land, one each side of the line, as public ground (Circus Road pavement, median or park) in line with L-5. If the entrance does depend on plot land, move the banks onto public ground or hand the ground to Datum to declare as public space.",
+      "chunks": [
+        "a8aca457d390cac91c490f26"
+      ]
+    }
+  ],
+  "sources": [
+    "44ad78feee4c9fca1cd9237b",
+    "1a35096cb74a4842de17d00b",
+    "4d21f32fa5c1e49e4208d027",
+    "f65a27a9f90d3ca681251d8a",
+    "a8aca457d390cac91c490f26",
+    "39f03ac1b47077f64cb3e308",
+    "aa0f984465bfc451c3e07a14",
+    "4730d5fa563439633b73c81a"
+  ]
+}

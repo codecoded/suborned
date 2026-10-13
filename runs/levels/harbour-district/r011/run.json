@@ -1,0 +1,279 @@
+{
+  "run": "r011",
+  "plan": "harbour-district",
+  "date": "2026-10-13T22:23:03.443Z",
+  "objective": "skyline",
+  "proposals": "upserts",
+  "handoffMode": "answered",
+  "loop": 2,
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.2.0",
+    "hash": "086ff0a9089549cf1bb3d9dfc69ae42115d1c211f43638bec021f595ed149d06",
+    "rawHash": "aa5a765fb7567d2b89a044d100eb8c6799001accc31b01f405eaf1501a0a9657",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/civic-block.json",
+    "sha256": "1de11eeb575953f1a06d28e4ad6965f9764d8194e809ac9fa1830291167f7313"
+  },
+  "inputConcepts": {
+    "source": "contracts/world/skyline-concepts.json",
+    "sha256": "15db345f1fd56223e3bba6f0e0bdfc3b9fa2cd4bfce55f37f01efc298e5f8061",
+    "sheets": [
+      {
+        "id": "blocks",
+        "path": "briefs/007/concepts/Blocks/contact_sheet.jpg",
+        "sha256": "ac0e7f8dca32d58dc73dbd7c31a6b53ff9e5d4e8d2a98176976d530852567b11"
+      },
+      {
+        "id": "atomic",
+        "path": "briefs/007/concepts/AtomicAge/contact_sheet.jpg",
+        "sha256": "f38540aca89810b6f8f28cdcf1320b69e5bf7f68b95737a905e78e827519141b"
+      }
+    ]
+  },
+  "inputGrammar": {
+    "source": "contracts/world/harbour-district.grammar.md",
+    "sha256": "f0445ffd271e9ff94a4abc738124d9bf0bfb0aa712c05a73421ef6f08d6e0c59"
+  },
+  "inputMission": {
+    "source": "contracts/missions/handover/mission.json",
+    "sha256": "ce3715db7b5c0c4dfdede0c6ff939b195df8d7725ec5ff47e430e2e0da624cda"
+  },
+  "inputKit": {
+    "source": "contracts/world/kit.json",
+    "sourceSha256": "12b28905be95416e7abb16213e63e00155dd6fac4798d045961a00800edb7f56",
+    "sha256": "cdb66814e6d413f8f0124abf84e35a7a84b978fad0e461db1065a1e914d74679",
+    "assets": 241
+  },
+  "gdd": {
+    "version": "v0.18.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.18.0-2026-10-13.md",
+    "human": "GDD/the-suborned-gdd-v0.18.0-2026-10-13.html"
+  },
+  "commit": "fd5d1b8ad1eba650082be3eff0cb5095db1381d3",
+  "dirty": true,
+  "live": true,
+  "maxUsd": 10,
+  "approvedBy": "Sky, 2026-10-14: go ahead, do what ya need to - don't worry abotu costs",
+  "toolsHash": "0d76b05747210ed4741fa25b692afec6ddbb14dc83ad133df70ecadda3b9c1a2",
+  "corpusHash": "618e57073693a3d698dd6e187dec6c136ac96858d1b0edaf9ccf11dd3d102788",
+  "chunker": 3,
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "world-planner": {
+      "source": ".claude/agents/world-planner.md",
+      "sourceHash": "f728a776bfada8680c9475ec99eea217a88e9d91002cd7e9b865501df858935a"
+    },
+    "level-designer": {
+      "source": ".claude/agents/level-designer.md",
+      "sourceHash": "54b41a03ddd555a3f7f25c4fd5cce33cad3670643ec50fdbf3981f09882dc5fc"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "5a83bc81bbcea776cb5b755dafbba8aea634acbc3cd0cfb7939891bec89763bf"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.3.0-r011.1",
+      "seeded": false,
+      "ran": [
+        "datum",
+        "vantage"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [
+        {
+          "from": "Datum",
+          "owner": "Vantage",
+          "blocking": false,
+          "ask": "S1 is not realigned. Keep Crown Circus station at x 95 (platforms x 70 to 120) inside the space-hq drum and Skyport station at x 545 inside the skyport-tower portal; Sphere Gardens and Harbour stay open-air. If you want a third station inside a building, say which and I will site a portal for it."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "Skyport station at x 545 with 50 m platforms spans x 520-570, but the skyport-tower footprint is x 523-567: 3 m overhang at each end. Confirm supports.portal covers the platform ends, or declare the portal's extent along the line (e.g. x 520-570). Moving the station does not help; the footprint is only 44 m long."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1/harbour carries interchange T2/harbour, but notes.concept names only tram T1 and calls Crown Circus the one interchange. Confirm a T2 stop 'harbour' exists within 150 m of (340, 0), or tell me to drop the interchange from the station."
+        }
+      ],
+      "handoffFaults": 0,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Vantage"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.3.0-r011.2",
+      "seeded": false,
+      "ran": [
+        "vantage"
+      ],
+      "reused": [
+        "datum"
+      ],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1/gardens south bank: the 6 m median and Circus Road's south pavement cannot hold a bank, so it needs gardens-forecourt-w / -e (plots, use open). levels.station says never a plot; stationEntrance.siting allows a station forecourt. Declare the forecourts public station ground, or say where the south bank lands. Treat as blocking if L-5 fails at gardens; I could not run the checker."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1/gardens north bank: confirm the sphere-gardens park reaches Circus Road's north edge (y 9) between x -185 and -135, so the bank lands on park. Its extent was not in this run's geometry."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "Skyport station at x 545 with 50 m platforms spans x 520-570, but the skyport-tower footprint is x 523-567: 3 m overhang at each end. Confirm supports.portal covers the platform ends, or declare the portal's extent along the line (e.g. x 520-570). Moving the station does not help; the footprint is 44 m long."
+        },
+        {
+          "from": "Vantage",
+          "owner": "Datum",
+          "blocking": false,
+          "ask": "S1/harbour carries interchange T2/harbour, but notes.concept names only tram T1 and calls Crown Circus the one interchange. Confirm a T2 stop 'harbour' exists within 150 m of (340, 0), or tell me to drop the interchange from the station."
+        }
+      ],
+      "handoffFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 1.9414,
+    "calls": 5
+  },
+  "calls": [
+    {
+      "id": "01-skyline-datum",
+      "objective": "skyline-datum",
+      "role": "world-planner",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.5753079999999999,
+      "seconds": 115,
+      "tokens": {
+        "input": 43287,
+        "cacheRead": 0,
+        "output": 11451
+      },
+      "promptSha256": "91adc3931b704d503c303bdc91ccad4c95d74ffb05fcfca7e94c95c12aa2bd07",
+      "schemaSha256": "cbf0abe0c0960d6af888780ecc71cf502cf197929132341a4c19c5f4d19b49e4",
+      "briefSha256": "73359a7a0d6394e16410c07e6c96ea6e450c0ef8d81f1b4f8425c251b4134fd7",
+      "effort": "medium"
+    },
+    {
+      "id": "02-skyline-vantage",
+      "objective": "skyline-vantage",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.321248,
+      "seconds": 33,
+      "tokens": {
+        "input": 32167,
+        "cacheRead": 0,
+        "output": 3196
+      },
+      "promptSha256": "5c6949b620c77a780b553ecb74d294012aa1155b271b4d806690421739fd675a",
+      "schemaSha256": "ff6236598b5cbb390ef693e2bd8946287f9b7a11a2396fbd3abc84c704138116",
+      "briefSha256": "8eeb2c662c27bcb8eb10ed03f7171ba70694498dcfd6c3a0c88141f0a7fb6264",
+      "effort": "medium"
+    },
+    {
+      "id": "03-skyline-critic",
+      "objective": "skyline-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.38085199999999997,
+      "seconds": 40,
+      "tokens": {
+        "input": 38535,
+        "cacheRead": 0,
+        "output": 3629
+      },
+      "promptSha256": "814873e6c791e7c1eee864643fe631dc5862a061fc19fa29bacc26cceaa91675",
+      "schemaSha256": "e552551dc3d8aafcb94ad069b9b8a49d4761d46f1d45b645d15355532198539b",
+      "briefSha256": "86cb974e1025c72041587ae5e25a1617eabff97099eedee8b9c87db94747aa91",
+      "effort": "medium"
+    },
+    {
+      "id": "04-skyline-vantage",
+      "objective": "skyline-vantage",
+      "role": "level-designer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.3424742,
+      "seconds": 38,
+      "tokens": {
+        "input": 33323,
+        "cacheRead": 4191,
+        "output": 3753
+      },
+      "promptSha256": "470028b664d73862bb17ffa4d99f30b3aad8b7a22021d316ddae60a967d55311",
+      "schemaSha256": "ff6236598b5cbb390ef693e2bd8946287f9b7a11a2396fbd3abc84c704138116",
+      "briefSha256": "8eeb2c662c27bcb8eb10ed03f7171ba70694498dcfd6c3a0c88141f0a7fb6264",
+      "effort": "medium"
+    },
+    {
+      "id": "05-skyline-critic",
+      "objective": "skyline-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.32153,
+      "seconds": 20,
+      "tokens": {
+        "input": 35698,
+        "cacheRead": 3470,
+        "output": 1763
+      },
+      "promptSha256": "62db4c13ea4c0f6afea1d9b60fd198ff1b4c4d138f173ef5978787949c252c8d",
+      "schemaSha256": "e552551dc3d8aafcb94ad069b9b8a49d4761d46f1d45b645d15355532198539b",
+      "briefSha256": "86cb974e1025c72041587ae5e25a1617eabff97099eedee8b9c87db94747aa91",
+      "effort": "medium"
+    }
+  ],
+  "finalVersion": "0.3.0-r011.2"
+}

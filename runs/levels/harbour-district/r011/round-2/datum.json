@@ -1,0 +1,214 @@
+{
+  "signatures": [
+    {
+      "id": "space-hq",
+      "name": "SpaceHQ · Crown Terminal",
+      "kind": "portal tower",
+      "role": "dominant",
+      "areas": [
+        "crescent",
+        "harbour"
+      ],
+      "c": [
+        96,
+        0
+      ],
+      "ground": [
+        56,
+        136,
+        -40,
+        40
+      ],
+      "groundWhy": "The drum's own ground at Crown Circus east: x 56 to 136, y -40 to 40, across the head of Crown Parade and the ends of plots parade-north, harbour-boulevard and parade-south. No plot building stands on it: the Parade Galleries start at x 136, and the legs (y ±20 to ±40) are the only solids, so the Parade passes 40 m wide through the ground hall.",
+      "kit": "SpaceHQ",
+      "height": 252,
+      "crownType": "atom",
+      "crownWhy": "Sky 2026-10-13: an atom over a needle mast, not a rocket; the kit's rocket liner, landing pad and gantry come off. The atom is the exposition motif of atomic/exposition_palace. The other atom, crescent-tower, is 239.7 m away (over the 150 m neighbour rule).",
+      "why": "Sky 2026-10-13: SpaceHQ is the dominant icon, the tallest thing in the district at 252 m, at Crown Circus, the hub. It closes Circus Road's view from the West End and the Parade's view from the harbour. S1 runs through its drum with Crown Circus station inside at the concourse, as the monorail enters the hall in atomic/monorail_terminal and the tower in blocks/rail_through. Everything else composes round it: the rival spires (122.7 to 194.3 m) stand north of the circus along Crown Avenue and in the Crescent, all under rivalMax 200, and the Skyport Tower (108) holds the harbour end of the same axis.",
+      "portal": {
+        "kind": "station",
+        "beams": "twin",
+        "line": "S1",
+        "path": "trunk",
+        "axis": "y 0, x 56 → 136",
+        "clearHalfWidth": 20,
+        "soffit": 30,
+        "openings": {
+          "clearHalfWidth": 6,
+          "z": [
+            21.5,
+            29
+          ],
+          "at": [
+            56,
+            136
+          ]
+        },
+        "station": "S1/circus"
+      },
+      "concepts": [
+        "atomic/exposition_palace",
+        "atomic/monorail_terminal",
+        "blocks/rail_through",
+        "blocks/needle_trio"
+      ]
+    }
+  ],
+  "towerSites": [
+    {
+      "id": "avenue-needle",
+      "plot": "avenue-court",
+      "rect": [
+        -68,
+        -48,
+        46,
+        66
+      ],
+      "storeys": 30,
+      "crownType": "needle",
+      "crownWhy": "Tower_Needle keeps its own crown (grammar §6): saucer restaurant, upper saucer and needle as built. The nearest needle-type crown is none within 150 m: starburst and disc are its neighbours.",
+      "why": "The first rival, at the foot of Crown Avenue's west side beside the circus: the saucer-and-needle spire of blocks/saucer_spires standing next to the dominant, as the needles stand round the central tower in blocks/needle_trio. Saucer floor at storey 30 (100.8 over the deck), tip 167.8, under rivalMax 200 and 259 m or more inland of the harbour band.",
+      "concepts": [
+        "blocks/saucer_spires",
+        "blocks/needle_trio"
+      ]
+    },
+    {
+      "id": "avenue-starburst",
+      "plot": "avenue-court",
+      "rect": [
+        -64,
+        -40,
+        108,
+        132
+      ],
+      "storeys": 42,
+      "crownType": "starburst",
+      "crownWhy": "Tower_Starburst keeps its own gold ziggurat, starburst and chrome needle (grammar §6); the starburst on a shaft is the clock-tower crown of atomic/monorail_terminal. No other starburst tower within 150 m.",
+      "why": "The tallest rival, mid-avenue: tip 194.3, 0.77 of SpaceHQ's 252, so the dominant stays a quarter taller as in blocks/needle_trio. Its gold starburst answers SpaceHQ's atom across the circus (the earlier text said disc; the crown is now an atom) and stands over the Sphere seen from Circus Road.",
+      "concepts": [
+        "blocks/needle_trio",
+        "atomic/monorail_terminal"
+      ]
+    },
+    {
+      "id": "avenue-gate-w",
+      "plot": "avenue-court",
+      "rect": [
+        -56,
+        -32,
+        178,
+        202
+      ],
+      "storeys": 33,
+      "crownType": "disc",
+      "crownWhy": "DiscTower keeps its own observation disc, jib and mast (grammar §6); the pair with avenue-gate-e is a matched pair, excepted from the neighbour rule.",
+      "why": "West tower of the Crown Avenue gate: with avenue-gate-e it frames the avenue's north end, centres at x -44 and 44, 88 m apart, which is the SkyBridge's span as built, so the bridge between towers of blocks/mixed_skyline stands without regeneration. Tip 165.6, under rivalMax 200.",
+      "concepts": [
+        "blocks/mixed_skyline",
+        "blocks/saucer_spires"
+      ]
+    },
+    {
+      "id": "avenue-gate-e",
+      "plot": "crescent-court",
+      "rect": [
+        32,
+        56,
+        178,
+        202
+      ],
+      "storeys": 33,
+      "crownType": "disc",
+      "crownWhy": "Matched pair of avenue-gate-w, mirrored (grammar §6 neighbour rule excepts matched pairs).",
+      "why": "Pair of avenue-gate-w across Crown Avenue (centres x ±44, 88 m apart, the kit SkyBridge's span); the SkyBridge avenue-gate joins the two at floor 67.03, the bridge between towers of blocks/mixed_skyline.",
+      "concepts": [
+        "blocks/mixed_skyline",
+        "blocks/saucer_spires"
+      ]
+    },
+    {
+      "id": "crescent-terrace",
+      "plot": "crescent-court",
+      "rect": [
+        107,
+        133,
+        147,
+        173
+      ],
+      "storeys": 29,
+      "crownType": "finial",
+      "crownWhy": "Tower_Terrace keeps its own belvedere and finial (grammar §6). The nearest other finial, parade-gate-n, is about 200 m away (over 150).",
+      "why": "The lowest rival and the cluster's east end, inside the Crescent Lane court: the planted, stepping tower of blocks/hanging_terraces, its terraces cut to the 3.6 m grid. Tip 122.7 steps the skyline down from the avenue spires toward the harbour; at x 107 to 133 it stands 179 m or more from the quay edge (x 312), outside the 150 m band the Skyport Tower (108) rules.",
+      "concepts": [
+        "blocks/hanging_terraces"
+      ]
+    }
+  ],
+  "portals": [
+    {
+      "structure": "parade-galleries",
+      "id": "parade-gate",
+      "kind": "running",
+      "beams": "twin",
+      "rect": [
+        264,
+        288,
+        -20,
+        20
+      ],
+      "z": [
+        9.43,
+        34.8
+      ],
+      "axis": "S1 trunk, y 0, x 264 → 288",
+      "opening": {
+        "clearHalfWidth": 6,
+        "z": [
+          21.5,
+          29
+        ]
+      },
+      "why": "Unchanged, restated with its concept tile. The Parade stays open to the sky and S1 passes through the gate block only: storeys 3 to 8 of the ranges are carried across the mall between the gate towers' podiums, and the twin beams run through the standard running opening (12.0 × 7.5, sill at the beam underside 21.5, head 29.0), as the train enters the block in blocks/rail_through.",
+      "concepts": [
+        "blocks/rail_through"
+      ]
+    }
+  ],
+  "remove": {
+    "signatures": [],
+    "towerSites": []
+  },
+  "rail": {
+    "lines": [],
+    "remove": []
+  },
+  "pieceRequests": [],
+  "notes": [
+    "Rail: S1 is not realigned (rail.lines is empty on purpose). On y 0 it already threads three declared portals: space-hq (station, x 56–136), parade-gate (running, x 264–288), skyport-tower (station, x 523–567), with two stations inside buildings at the concourse (circus, skyport). Moving it would reopen N-R1, S-S2, interchanges and Pulse's timetable for no extra thread.",
+    "Skylon and LinerDock stay adopted as landmarks (landmarks.skylon, top 100, Starline Green; landmarks.liner-berth, tip 103.7 ≤ 108 inside the harbour band). This run's schema has no landmark upsert and their geometry was not shown, so I did not restate or move them. SkyBridge avenue-gate is kept as built between the gate towers 88 m apart.",
+    "Open conflict, not resolved here: grammar §4 asks adjacent towers to differ ≥ 20 % in height. avenue-needle 167.8 vs avenue-starburst 194.3 is 13.6 %; starburst vs the gate pair 165.6 is 14.8 %. Cutting the needle to storey 26 (153.4) and the gates to about storey 29 (about 151.2) would meet it, but standards.skyline.tiers quotes the heights and is not mine to edit in this run. Aster to decide.",
+    "No higher band is needed: rivalMax 200 lets the tallest rival (starburst 194.3) stand at 0.77 of the dominant's 252, the proportion of blocks/needle_trio and blocks/mixed_skyline. The harbour band (108 within 150 m of x 312) holds: crescent-terrace is 179 m inland, and harbour-hotel 106, crescent-tower 99.4 and the parade gates 75 are under it.",
+    "Tower_Setback: still rejected, for a new reason. On the podium it tips at 181.4 (towers.kitRule), within 8 % of both starburst 194.3 and needle 167.8, so it breaks grammar §4's 20 % height variety anywhere in the avenue cluster. Outside the cluster it would be a second pole 1.7 × the Skyport Tower, and the sheets show one cluster round one dominant (blocks/needle_trio).",
+    "SkyRailStation (single beam): still rejected, for a new reason. Its rail top 22 and 40 m platforms do not meet the plan (beam top 23.0, 50 m stations), and no station stands on the single-beam loop: all four S1 stations are on the twin trunk and take SkyRailStation_Twin.",
+    "006 B's other rejections are reversed and stay adopted: Tower_Needle, Tower_Starburst, DiscTower ×2, Tower_Terrace on their five sites (crownTip 106 → 200), SkyBridge, Skylon, LinerDock and SpaceHQ. The existing regen orders stand; I ask Vela for no new piece.",
+    "space-hq's portal is restated with the plan's values (clear ±20 ≥ the standard 16, soffit 30, openings ±6 at z 21.5–29); keep its platforms text and regen fields on merge. skyport-tower's station portal stays at supports.portal and is not duplicated in portals, to avoid a second count in P-1. avenue-starburst's why is corrected: it answers SpaceHQ's atom, not a disc."
+  ],
+  "sources": [
+    "44ad78feee4c9fca1cd9237b",
+    "4d21f32fa5c1e49e4208d027",
+    "39f03ac1b47077f64cb3e308",
+    "a8aca457d390cac91c490f26",
+    "2772cf1dba475295a64448fc",
+    "5682ae025e558aae3594109e",
+    "de79f48d0feb18b376aac988",
+    "aa0f984465bfc451c3e07a14"
+  ],
+  "handoffs": [
+    {
+      "owner": "Vantage",
+      "blocking": false,
+      "ask": "S1 is not realigned. Keep Crown Circus station at x 95 (platforms x 70 to 120) inside the space-hq drum and Skyport station at x 545 inside the skyport-tower portal; Sphere Gardens and Harbour stay open-air. If you want a third station inside a building, say which and I will site a portal for it."
+    }
+  ]
+}
