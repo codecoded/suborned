@@ -10,15 +10,16 @@ runs on seamlessly. Every slab gets its own stone crop, flip, tone, tilt and hei
 geometry in the height field, so the flat module shades like the modelled one (a 2-tri quad instead of ~440).
 """
 
+import os
 import sys
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parents[3]
-SRC = ROOT / "SourceArt/DecoKit/Textures/src"
-DER = ROOT / "SourceArt/DecoKit/Textures/derived"
+STORE_ART = Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit/Textures"
+SRC = Path(os.environ.get("DECOKIT_SWATCHES", STORE_ART / "src"))      # swatches: the store, read-only
+DER = Path(os.environ.get("DECOKIT_DER") or sys.exit("pave_sheet: set DECOKIT_DER to the output dir (the store is read-only)"))
 PPM = 1024  # texels per metre (1 mm)
 
 # courses: (height m, slab length m, offset m, swatch index, gain), bottom (road / v = 0) to top, repeating.
@@ -44,6 +45,13 @@ SHEETS = {
         courses=[(0.5, 1.0, 0.0, None, 1.0), (0.5, 1.0, 0.5, None, 1.0)],
         joint=0.007, chamfer=0.004, recess=0.004, grout="#8C8474", tone=0.02, hue=0.01, heave=0.0,
         drop=0.0003, crown=0.0, jitter=0.0, relief=0.00006, detail=0.8, rough=0.5, rough_var=0.04, cloud=0.03, seed=17),
+    # brief 008 civic paving: the 26 Sep paintings' large pale slabs, 1 x 2 m in running bond, soft joints, warm and cool slabs
+    # like travertine; read at play zoom (2.6 cm per pixel: a 14 mm joint in #7A7266 grout keeps the bond visible)
+    "pave_civic": dict(
+        size=(4.0, 4.0), swatches=("limestone_cream", "limestone_cream_b"), swatch_m=1.0,
+        courses=[(1.0, 2.0, 0.0, None, 1.0), (1.0, 2.0, 1.0, None, 1.0)],
+        joint=0.014, chamfer=0.007, recess=0.006, grout="#7A7266", tone=0.05, hue=0.018, heave=0.25,
+        drop=0.0005, crown=0.0, jitter=0.0, relief=0.00005, detail=0.8, rough=0.38, rough_var=0.05, cloud=0.025, seed=29),
     "facade_panel": dict(  # one slab per course: a second swatch would band the courses
         size=(2.0, 2.0), swatches=("limestone_cream",), swatch_m=1.0,
         courses=[(1.0, 2.0, 0.0, None, 1.0)],

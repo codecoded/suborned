@@ -2,16 +2,15 @@
 by mats.WORLD_RETUNE. Data-driven from decokit_materials.json (= mats.LIB); no bpy. Written to <out>/Materials/<name>.mat + .meta.
 
 Which: untextured enamel / metal / emit rows with no .mat in the legacy kit root (the DecoKit the catalogue reads), plus the
-retuned names. A name that already has a .meta in the Unity project keeps its guid (prefabs and importers bind by it); a new
-name gets a guid derived from the name, so the same table gives the same bytes. URP Lit, the layout of the kit's existing mats."""
+retuned names. A name the legacy kit has (the retuned ones) keeps the legacy guid (prefabs and importers bind by it), read from
+the legacy root: unity/Assets/Suborned/Kit is git-ignored and only there after `bun run kit`, so a fresh checkout gave other
+bytes. A new name gets a guid derived from the name, so the same table gives the same bytes. URP Lit, the layout of the kit's existing mats."""
 
 import hashlib
 import json
 import os
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-UNITY_MATS = REPO / "unity/Assets/Suborned/Kit/Materials"
 LIT = "2529b42165e1d45a8bcfb0013bb5aba3"       # the shader guid every kit .mat uses (Complex Lit for enamel: 206122...)
 COMPLEX = "206122040e60d470e92cddeccf1aacf6"
 SUPPORTED = ("enamel", "metal", "emit", "ceramic", "stone", "chrome", "rubber")
@@ -23,6 +22,15 @@ def legacy_roots():
     return [old / "game/Assets/TheSuborned/Art/DecoKit", store / "DecoKit"]
 
 
+def legacy_mats():
+    """The legacy kit's Materials folder: the root the catalogue reads (tools/kit/store.ts kitRoot, the first with a manifest).
+    Which .mat are written and the retuned guids come from it, so a machine without it stops here rather than write another set."""
+    root = next((r for r in legacy_roots() if (r / "decokit_manifest.json").exists()), None)
+    if root is None:
+        raise SystemExit("[DK-EXPORT] legacy DecoKit not found (set SUBORNED_OLD or SUBORNED_STORE): the .mat set and the retuned guids come from it")
+    return root / "Materials"
+
+
 def _lin(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
@@ -31,8 +39,8 @@ def _f(x):
     return f"{x:.8g}"
 
 
-def _guid(name):
-    meta = UNITY_MATS / f"{name}.mat.meta"
+def _guid(name, legacy):
+    meta = legacy / f"{name}.mat.meta"
     if meta.exists():
         for ln in meta.read_text().splitlines():
             if ln.startswith("guid: "):
@@ -82,25 +90,25 @@ def mat_text(row):
             + "    m_Colors:\n" + colors + "  m_BuildTextureStacks: []\n  m_AllowLocking: 1\n")
 
 
-def meta_text(name):
-    return ("fileFormatVersion: 2\nguid: " + _guid(name) + "\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 2100000\n  userData: \n"
+def meta_text(name, legacy):
+    return ("fileFormatVersion: 2\nguid: " + _guid(name, legacy) + "\nNativeFormatImporter:\n  externalObjects: {}\n  mainObjectFileID: 2100000\n  userData: \n"
             "  assetBundleName: \n  assetBundleVariant: \n")
 
 
 def write(table_path, dst, retuned):
     """Write the .mat for the missing and retuned materials; returns the names."""
     rows = json.loads(Path(table_path).read_text())["materials"]
-    roots = [r / "Materials" for r in legacy_roots() if (r / "decokit_manifest.json").exists()]
+    legacy = legacy_mats()
     out = []
     for row in rows:
         n = row["name"]
         if row["texture"] or row["kind"] not in SUPPORTED:
             continue
-        if n not in retuned and any((r / f"{n}.mat").exists() for r in roots):
+        if n not in retuned and (legacy / f"{n}.mat").exists():
             continue
         d = Path(dst) / "Materials"
         d.mkdir(parents=True, exist_ok=True)
         (d / f"{n}.mat").write_text(mat_text(row))
-        (d / f"{n}.mat.meta").write_text(meta_text(n))
+        (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
         out.append(n)
     return out

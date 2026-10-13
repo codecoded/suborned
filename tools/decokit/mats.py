@@ -112,7 +112,13 @@ TEXTURES = {
 }
 UV_MAPPED = ("decal", "art", "emit", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
-TEXDIRS = (SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
+EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
+TEXDIRS = (*EXTRA_TEXDIRS, SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
+
+
+def tex_path(file):
+    """First texture dir holding `file` (a normal / mask sits beside its albedo), or None."""
+    return next((d / file for d in TEXDIRS if (d / file).exists()), None)
 
 
 def cell(i, cols=4, rows=4):
@@ -220,8 +226,8 @@ def get(name):
 def _pbr_maps(nt, b, tex, file):
     """A pave_sheet.py set (<stem>_mask.png beside it) also drives normal + roughness, as Unity's Lit reads them."""
     stem = file[:-4]
-    maps = [TEXDIRS[0] / f"{stem}_{k}.png" for k in ("normal", "mask")]
-    if not all(p.exists() for p in maps):
+    maps = [tex_path(f"{stem}_{k}.png") for k in ("normal", "mask")]
+    if not all(maps):
         return
     vec = tex.inputs["Vector"].links[0].from_socket if tex.inputs["Vector"].is_linked else None
     nodes = []

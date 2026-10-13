@@ -161,12 +161,14 @@ def copy_textures():
         for d in mats.TEXDIRS:
             if (d / file).exists():
                 shutil.copy2(d / file, out / file)
-                extra = [mats.TEXDIRS[0] / file.replace(".png", f"_{k}.png") for k in ("normal", "mask")]
+                extra = [mats.tex_path(file.replace(".png", f"_{k}.png")) or mats.TEXDIRS[0] / file.replace(".png", f"_{k}.png") for k in ("normal", "mask")]
                 for f in extra:
                     if f.exists():
                         shutil.copy2(f, out / f.name)
                 rows.append((name, file, *(f.name if f.exists() else "" for f in extra)))
                 break
+        else:  # the material then exports untextured: a piece using it gets other FBX bytes than on a machine that has the file
+            print(f"[DK-EXPORT] WARNING texture {file} ({name}) not found in {', '.join(str(d) for d in mats.TEXDIRS)}")
     hdri = DST / "HDRI"
     hdri.mkdir(parents=True, exist_ok=True)
     for f in (SRC / "HDRI").glob("*"):
@@ -177,6 +179,7 @@ def copy_textures():
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     _fixed_fbx_header()
+    unity_mats.legacy_mats()  # needed for the .mat set: fail before building, not after
     reg = kit.load()
     only = [n for n in (ARGS[ARGS.index("--only") + 1].split(",") if "--only" in ARGS else []) if n]
     cats = [c for c in (ARGS[ARGS.index("--cats") + 1].split(",") if "--cats" in ARGS else []) if c]
@@ -204,6 +207,10 @@ def main():
             row["parts"] = [nm for nm, _ in full[1:]]
         if tris >= LOD_SPEC[0][3] and not NO_LODS:
             row["lods"] = make_lods(n, cat, src, srcs, tris)
+        if not NO_LODS:  # a level this piece no longer takes (slimmed under the floor) leaves no file from an earlier build
+            for tag, *_ in LOD_SPEC:
+                if f"Models/{cat}/DK_{n}_{tag}.fbx" not in [l["file"] for l in row.get("lods", [])]:
+                    (DST / f"Models/{cat}/DK_{n}_{tag}.fbx").unlink(missing_ok=True)
         for o in srcs:
             bpy.data.meshes.remove(o.data)  # also frees the object
         for nm, b in full:
