@@ -6,13 +6,17 @@ export const nodes: Record<string, [number, number]> = pl.nodes;
 export const plots: any[] = pl.plots;
 export const megas: any[] = pl.megastructures;
 const inRect = (r: number[], x: number, y: number) => x >= r[0] && x <= r[1] && y >= r[2] && y <= r[3];
+const inPoly = (q: number[][], x: number, y: number) => { let c = false; for (let i = 0, j = q.length - 1; i < q.length; j = i++) if ((q[i][1] > y) !== (q[j][1] > y) && x < (q[j][0] - q[i][0]) * (y - q[i][1]) / (q[j][1] - q[i][1]) + q[i][0]) c = !c; return c; };
+/** a plot is a rect [x0, x1, y0, y1] or a polygon `poly`; a plot with neither has no ground */
+export const inPlot = (p: any, x: number, y: number) => p.rect ? inRect(p.rect, x, y) : p.poly ? inPoly(p.poly, x, y) : false;
+export const plotArea = (p: any) => p.rect ? (p.rect[1] - p.rect[0]) * (p.rect[3] - p.rect[2]) : p.poly ? Math.abs(p.poly.reduce((s: number, a: number[], i: number) => { const b = p.poly[(i + 1) % p.poly.length]; return s + a[0] * b[1] - b[0] * a[1]; }, 0)) / 2 : 0;
 export function lookup(x: number, y: number) {
   for (const m of megas) if (m.footprint.some((f: number[]) => inRect(f, x, y))) {
     const st = m.levels.find((l: any) => l.level === 'street');
-    const plot = plots.find(p => p.rect && inRect(p.rect, x, y));
+    const plot = plots.find(p => inPlot(p, x, y));
     return { area: plot?.area ?? m.areas[0], use: plot?.use ?? 'mixed', mix: st?.mix ?? null, mega: m.id };
   }
-  const p = plots.find(p => p.rect && inRect(p.rect, x, y));
+  const p = plots.find(p => inPlot(p, x, y));
   if (!p) return null;
   return { area: p.area, use: p.use, mix: pl.standards.frontage.mix[p.area], mega: null };
 }

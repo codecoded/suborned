@@ -10,9 +10,8 @@ export type Life = {
   plan: { id: string; version: string; file: string };
   clock: {
     unit: 's'; scale: string; day: { start: string; end: string };
-    mission: { startsAt: string; windowMin: [number, number]; band: BandId }; // 1 mission s = 1 day s
+    mission: { windowMin: [number, number]; note: string }; // 1 mission s = 1 day s; a mission sets its own start (contracts/missions/<id>/), the world holds none
     bands: { id: BandId; from: number; to: number }[];
-    anchors: { at: string; mission: string; what: string; src: string }[]; // GDD §07
   };
   transit: {
     serviceHours: { from: number; to: number }; headwayMultiplierByBand: ByBand; loadByBand: ByBand; walkSpeed: number;
@@ -36,7 +35,7 @@ export type Life = {
     levels: { street: { z: number }; deck: { z: number; promenade: ByBand; tripShare: number }; concourse: { z: number; promenade: ByBand } };
   };
   residents: { tripsPerHour: ByBand; grossPerHomeM2: number; perHome: number; efficiency: number; builtShare: number; rule: string };
-  events: { list: { id: string; area: string; windowS: number; surge: number; who: string; src: string; at?: string; atHours?: number[] }[] };
+  events: { list: { id: string; area: string; windowS: number; surge: number; who: string; src: string; atHours: number[] }[] }; // the world's own recurring events; mission events live with the mission
   character: { thresholds: { lively: number; steady: number }; table: Record<string, ByBand<{ score: number; mood: 'lively' | 'steady' | 'quiet' }>>; standing: string };
   generator: {
     occupations: Record<string, { category: string; hours: Hours; meanWidth: number; depth: number; staffPerUnit: number; shifts: { lengthH: number } | string }>;

@@ -1,5 +1,5 @@
 import plan from '../../contracts/world/harbour-district.plan.json';
-import { streets, frontage, plots, megas } from './geom';
+import { streets, frontage, plots, plotArea } from './geom';
 import { BANDS, DRAW, CAT, CATEGORY, K, RES_TRIPS, PROM, inOpen, bandOf, type Band } from './rules';
 const T: Record<string, any> = (plan as any).standards.frontage.trades;
 /** per metre of frontage at hour h (day clock): street presence by term */
@@ -18,8 +18,8 @@ export function mixTerms(mix: Record<string, number>, h: number) {
 }
 const sh = (h: number) => bandOf(h);
 export function homesPop(p: any) {
-  const m = (plan as any).standards.buildings.bands[p.use]; if (!m || !p.rect || !['residential', 'mixed'].includes(p.use)) return 0;
-  const a = (p.rect[1] - p.rect[0]) * (p.rect[3] - p.rect[2]);
+  const m = (plan as any).standards.buildings.bands[p.use]; if (!m || !['residential', 'mixed'].includes(p.use)) return 0;
+  const a = plotArea(p);
   const foot = p.use === 'mixed' ? m.mode - m.podium : m.mode; // mixed: podium storeys are frontage, body above is housing
   return Math.round(a * 0.7 * foot * K.efficiency / K.homeM2 * K.perHome); // 0.7 = built share of the plot (courts, setbacks) [S]
 }
