@@ -197,9 +197,11 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     clear: (ring, at) => L.clearGround(ring, at, 0.001), pave: p => !lawn(ctx, p) && !onRoad(ctx, p),
     take: (pts, w) => { if (bands.some(b => bandGap(b, pts) < w - 0.011)) return false; bands.push(pts); return true; },
   };
+  const eyed = new Set<string>(); // landings with a signal eye over them: the eye is the signal, so their beacons go (brief 009, Aster); the bollards stay
   const dress = (x: Omit<Crossing, 'walk'>, ends: End[], level: number, refugeEdges: string[] = []) => {
     const ps = partsOf(x, look, level, ends, refugeEdges, ctx.pav, site, skipped), walk = r4(Math.atan2(x.line[1][1] - x.line[0][1], x.line[1][0] - x.line[0][0]));
     out.push({ ...x, items: ps.map(q => q.id), walk }); parts.push(...ps);
+    ends.forEach((e, i) => { if (ps.some(q => q.id === `${x.id}/signal/${'ab'[i]}`)) eyed.add(e.landing.id); }); // a signal eye stands at this kerb end
   };
   for (const p of [...ok].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
     const strip = stripRing(p.ka, p.kb, W), refuged = medians.filter(z => dist(z.poly![1]!, z.poly![2]!) >= std.refuge - 1e-9).map(z => ({ z, ring: clipConvex(strip, z.poly!) })).filter(r => areaOf(r.ring) > 0.25);
@@ -221,6 +223,8 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     gone.add(l.id); for (const f of l.flank) gone.add(f);
     noted.push(`${l.id}: ${why}`);
   }
+  const byId = new Map(L.items.map(x => [x.id, x]));
+  for (const l of L.landings) if (eyed.has(l.id)) for (const f of l.flank) if (byId.get(f)?.kind === 'beacon') gone.add(f);
   L.items = L.items.filter((x: StreetItem) => !gone.has(x.id) && x.kind !== 'crossing'); // no slab: every patch left is now some crossing's landing
   return { crossings: out, log: { landings: own.length, paired: pairs0, added, dropped: noted, skipped }, parts };
 }

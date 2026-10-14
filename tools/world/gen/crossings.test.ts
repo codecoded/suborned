@@ -49,10 +49,10 @@ test('every part is in exactly one crossing and names it; no landing slab is lef
   const owner = new Map<string, string[]>();
   for (const c of w.crossings!) for (const id of c.items) owner.set(id, [...(owner.get(id) ?? []), c.id]);
   const parts = w.street.filter(s => s.crossing);
-  expect(parts.length).toBe(1909);
+  expect(parts.length).toBe(3043); // 1909 + 1134 brass edge line modules
   expect(new Set(parts.map(s => s.kind))).toEqual(new Set([...kindsOf].filter(k => k !== 'crossing-bar'))); // dot rows, not bars, by the plan's form
   for (const s of parts) expect(owner.get(s.id), s.id).toEqual([s.crossing!]);
-  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(1909);
+  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(3043);
   expect(w.street.filter(s => s.kind === 'crossing')).toEqual([]);
   const lands = landingsOf(w);
   expect(lands.length).toBe(162); // 134 landings in 67 pairs, 20 stop patches, 8 bank patches
@@ -85,7 +85,7 @@ test('the parts, in counts: 980 dot-row modules (768 of 2 m, 212 of 1 m), 156 si
   expect(left.filter(x => /overlap another crossing's arc/.test(x)).length).toBe(30); // two crossings at one corner round it once
   expect(ofKind(w, 'crossing-arc').length + left.length).toBe(4 * kerb.length);
   for (const c of w.crossings!) expect(c.items.some(id => id.includes('/dots/')), c.id).toBe(true); // every crossing, tram stop and bank ways included, has light along it
-  for (const c of w.crossings!.filter(c => c.kind !== 'kerb')) expect(c.items.every(id => id.includes('/dots/')), c.id).toBe(true); // a stop or bank crossing has no kerb end: lights only
+  for (const c of w.crossings!.filter(c => c.kind !== 'kerb')) expect(c.items.every(id => id.includes('/dots/') || id.includes('/edge/')), c.id).toBe(true); // a stop or bank crossing has no kerb end: lights and edge lines only
 });
 
 test('a signal orb: the id is the crossing\'s, the state is walk, its pivot is the ground under its halo, it hovers 2.7 m (centre) and its halo falls straight down', () => {
@@ -116,11 +116,11 @@ test('only the orb casts a shadow; every crossing has its walk yaw', () => {
   for (const c of w.crossings!) expect(c.walk, c.id).toBeCloseTo(Math.atan2(c.line[1][1] - c.line[0][1], c.line[1][0] - c.line[0][0]), 3);
 });
 
-test('the lights are two lines of dot rows along the walk: 0.43 wide, flush at the carriageway datum, ±1.485 m off the middle, end to end, off the refuges', () => {
+test('the lights are two lines of dot rows along the walk: 0.43 wide, flush at the carriageway datum, ±1.75 m off the middle (the row outer hairline at 1.965 clears the edge line at 2.0), end to end, off the refuges', () => {
   for (const c of w.crossings!) {
     const rows = c.items.map(id => items.get(id)!).filter(s => s.kind === 'crossing-dots');
     expect(new Set(rows.map(s => Math.sign(frame(c, s.at).across))), c.id).toEqual(new Set([1, -1]));
-    for (const s of rows) expect(Math.abs(frame(c, s.at).across), s.id).toBeCloseTo(1.485, 2);
+    for (const s of rows) expect(Math.abs(frame(c, s.at).across), s.id).toBeCloseTo(1.75, 2);
     for (const s of rows) {
       expect(s.size[1], s.id).toBe(0.43); expect([1, 2], s.id).toContain(s.size[0]);
       expect(s.surface).toBe('glow');
@@ -225,7 +225,7 @@ test('every kerb crossing is a signal crossing on every road class; a stop or a 
 
 test('no street item draws the `crossing` look key: a crossing lays no slab, its parts have keys of their own, and a plan without the standard still has its slabs', () => {
   expect(w.street.filter(s => s.surface === 'crossing')).toEqual([]);
-  expect(new Set(w.street.filter(s => s.crossing).map(s => `${s.kind}:${s.surface}`))).toEqual(new Set(['crossing-dots:glow', 'crossing-stud:trim', 'crossing-arc:inlay', 'signal-orb:orb']));
+  expect(new Set(w.street.filter(s => s.crossing).map(s => `${s.kind}:${s.surface}`))).toEqual(new Set(['crossing-dots:glow', 'crossing-edge:trim', 'crossing-stud:trim', 'crossing-arc:inlay', 'signal-orb:orb']));
   expect(w.street.filter(s => !['phone-booth', 'tub-palm'].includes(s.kind) && !s.crossing).every(s => ['trim', 'park', 'enamel'].includes(s.surface))).toBe(true); // a booth and a palm tub have their own too (surfaces.test.ts)
   expect(old.street.filter(s => s.kind === 'crossing').every(s => s.surface === 'crossing')).toBe(true); // a plan without the strip standard names it
 });

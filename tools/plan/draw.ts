@@ -135,6 +135,14 @@ export function district(plan: Plan, d: Derived, R: Report) {
   return `<svg id="district" viewBox="0 0 ${n(P.w)} ${n(P.h)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(plan.name)} master plan">${body}</svg>`;
 }
 
+/** A crossing on the sheet (brief 009): the two light lines along the walk, kerb to kerb, a dotted seafoam line at 1.75 m each side of the middle of a 4 m strip, and no stripes across it. The polygon is the strip: its long side is the walk. */
+function crossingLights(P: Pen, ring: V[]): string {
+  const side = ring.map((p, i) => [p, ring[(i + 1) % ring.length]!] as [V, V]).sort((a, b) => dist(b[0], b[1]) - dist(a[0], a[1]))[0]!;
+  const len = dist(side[0], side[1]), u: V = [(side[1][0] - side[0][0]) / len, (side[1][1] - side[0][1]) / len], n: V = [-u[1], u[0]], c = centroid(ring);
+  const half = Math.max(...ring.map(p => Math.abs((p[0] - c[0]) * n[0] + (p[1] - c[1]) * n[1]))), off = Math.min(1.75, half - 0.25);
+  return [1, -1].map(sg => P.line([add(add(c, mul(u, -len / 2 + 0.5)), mul(n, sg * off)), add(add(c, mul(u, len / 2 - 0.5)), mul(n, sg * off))], 'xlight')).join('');
+}
+
 export function inset(plan: Plan, d: Derived, civ: Civic, R: Report) {
   const s = plan.sheet.inset, P = new Pen(s.x[0], s.x[1], s.y[0], s.y[1], 10);
   const within = (pts: V[]) => pts.some(p => p[0] > s.x[0] - 60 && p[0] < s.x[1] + 60 && p[1] > s.y[0] - 60 && p[1] < s.y[1] + 60);
@@ -144,7 +152,7 @@ export function inset(plan: Plan, d: Derived, civ: Civic, R: Report) {
     + civ.structures.map(x => P.poly(x.poly, 'struct')).join('')
     + civ.objects.map(o => o.kind === 'fountain' ? P.circle(centroid(o.poly), 3.3, 'fountain') : P.poly(o.poly, `obj ${o.kind}`)).join('')
     + civ.bays.map(b => P.poly(b.poly, 'bay')).join('')
-    + P.poly(civ.crossing, 'crossing')
+    + crossingLights(P, civ.crossing)
     + civ.buildings.map(b => P.text(add(centroid(b.poly), [0, -1]), b.id === 'cafe' ? 'CAFÉ' : 'RECORDS OFFICE', 'bldg-lab', [1, 0], 2.6)).join(''));
   const pts = civ.walkFrom.filter((p, i, A) => A.findIndex(q => dist(q.p, p.p) < .3) === i);
   const points = layer('points', pts.map((p, i) => P.line([add(p.p, [-1, 0]), add(p.p, [1, 0])], 'pt') + P.line([add(p.p, [0, -1]), add(p.p, [0, 1])], 'pt')

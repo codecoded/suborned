@@ -21,6 +21,7 @@ test('every street kit piece stays in its slot and its scale range', () => {
   let n = 0;
   for (const s of w.street) {
     if (!s.kit) { expect(s.source).toBe('procedural'); continue; }
+    if (s.crossing) continue; // a crossing's part is bound to its piece by its own size (street/partkit.test.ts), not by a slot
     const a = by.get(s.kit.id)!; n++;
     expect(a.status).toBe('adopted');
     const [lo, hi] = a.tags.scale, [sx, sy, sz] = s.kit.scale;

@@ -26,6 +26,12 @@
     "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
     "rules": []
    }
+  ],
+  "a1339721d7f2cce9c8d406378a5bc9b02a853cf48e43076b66cda08e5333c856": [
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   }
   ]
  }
 }

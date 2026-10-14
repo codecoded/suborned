@@ -98,7 +98,7 @@ test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
   const was: Record<string, string> = {
-    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-stud': 'trim',
+    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-edge': 'trim', 'crossing-stud': 'trim',
     hydrant: 'trim', 'kiosk-food': 'enamel', 'kiosk-tickets': 'enamel', lamp: 'trim', mailbox: 'enamel', 'mast-camera': 'trim', newsstand: 'enamel',
     'phone-booth': 'booth', planter: 'park', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
     'tram-shelter': 'enamel', tree: 'park', 'tub-palm': 'tub', 'vending-robot': 'enamel',
@@ -106,5 +106,5 @@ test('nothing else moved: every other street kind keeps the surface it drew befo
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length).toBe(5026); // 3117 without the 1,909 crossing parts; the 162 landing slabs it was 3279 with are keep-clear footprints now
+  expect(w.street.length).toBe(6074); // 3031 without the 3,043 crossing parts (1,909 + 1,134 edge line modules), the 86 beacons gone where an eye stands; the 162 landing slabs it was 3279 with are keep-clear footprints now
 });
