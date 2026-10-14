@@ -9,8 +9,10 @@ import { rng, type Rng } from '../world/gen/common';
 import { allowedTemperaments, positionsOf, type Rules } from './rules';
 import { HOME_SAMPLE, type Scope, type Unit } from './scope';
 import type { Walker } from './walk';
+import { deriveKnowledge } from './knowledge';
+import { pinnedByRole, type Casting } from './roles';
 
-export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs'] };
+export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting };
 const KEEPER = 'keeper', DAY = 1440, MEAL = 30;
 
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
@@ -106,8 +108,8 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
   const make = (id: string, row: Row, u: Unit | undefined, shift: { from: number; to: number } | undefined, position: string, post: 'door' | 'inside' | 'bay', residentOf?: { plot: string; place: string }) => {
     const r = rng(id);
     // routine variant
-    const variants = row.routines.filter(v => v.skeleton === (u ? 'worker' : 'resident'));
-    const v = variants.length ? wt(r, variants, x => x.weight) : row.routines[0]!;
+    const variants = row.routines.filter(v => v.skeleton === (u ? 'worker' : 'resident') && (!v.positions || v.positions.includes(position)));
+    const v = variants.length ? wt(r, variants, x => x.weight) : row.routines.find(x => x.skeleton === (u ? 'worker' : 'resident')) ?? row.routines[0]!;
     let home: { plot: string; place: string };
     if (residentOf) home = residentOf;
     else if (v.commute === 'tram' && scope.stops.some(s => s.mode === 'tram')) home = { plot: 'beyond', place: 'beyond' };
@@ -175,6 +177,20 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
     }
   }
   persons.sort((a, b) => (a.id < b.id ? -1 : 1));
+  // ---- mix (P3): a unit with enough staff carries at least unitMinDistinct temperaments; repaired from the row's own weights
+  const mix = rules.temperamentsBy.mix;
+  for (const u of scope.units) {
+    const here = persons.filter(p => p.work?.unit === u.id), row = rowOf(cast, u.area, u.trade);
+    if (!row || here.length < mix.whenStaffAtLeast) continue;
+    for (let i = 0; i < here.length; i++) {
+      const have = new Set(here.map(p => p.temperament));
+      if (have.size >= mix.unitMinDistinct) break;
+      const options = [...row.temperaments].sort((a, b) => b.weight - a.weight || (a.temperament < b.temperament ? -1 : 1)).filter(t => !have.has(t.temperament) && t.temperament in rules.temperaments);
+      const pick = [...here].reverse().flatMap(p => options.filter(t => (allowedTemperaments(rules, u.kind === 'civic' ? (p.work!.role ?? u.trade) : u.trade) ?? []).includes(t.temperament as never)).map(t => ({ p, t })))[0];
+      if (!pick) break;
+      pick.p.temperament = pick.t.temperament; pick.p.start = { ...rules.temperaments[pick.t.temperament as keyof Rules['temperaments']]!.start };
+    }
+  }
   const rowFor = (p: Person) => (p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, scope.homes.find(h => h.plot === p.home.plot)?.area ?? scope.areas[0]!, 'resident'));
 
   // ---- ties (before needs: some needs require a tie)
@@ -182,7 +198,7 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
   const incoming = new Map<string, number>(), count = (p: Person, k: string) => p.ties.filter(t => t.kind === k).length;
   const linked = (a: Person, b: Person, k: string) => a.ties.some(t => t.kind === k && t.with === b.id) || b.ties.some(t => t.kind === k && t.with === a.id);
   const stops = (p: Person) => p.routine.stops.filter(s => s.doing !== 'home' && s.place !== 'beyond');
-  const covers = (q: Person, place: string, s: Stop) => !!q.work && q.work.place === place && stops(q).some(x => x.doing === 'work' && x.place === place) && (inShift(q.work.shift, s.from) || inShift(q.work.shift, Math.max(s.from, s.to - 1)));
+  const covers = (q: Person, place: string, s: Stop) => !!q.work && (q.work.place === place || (q.work.unit === scope.cafeUnit && place === scope.cafe)) && stops(q).some(x => x.doing === 'work' && x.place === q.work!.place) && (inShift(q.work.shift, s.from) || inShift(q.work.shift, Math.max(s.from, s.to - 1)));
   const tryTie = (a: Person, kind: string, r: Rng): boolean => {
     const spec = T[kind as keyof typeof T]; if (!spec) return false;
     if (a.ties.length >= max || count(a, kind) >= spec.maxPerPerson) return false;
@@ -220,19 +236,18 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
       const reqOk = req === 'nothing' || (req === 'home' && a.home.plot !== 'beyond') || (req === 'work' && !!a.work) || (req === 'family-tie' && a.ties.some(t => t.kind === 'family')) || (req === 'rival-tie' && a.ties.some(t => t.kind === 'rival'));
       return reqOk && d.metBy.some(x => resp.includes(x));
     };
-    const want = (row?.needs ?? []).filter(n => meets(n.need));
+    const pos = a.work ? (a.work.position ?? a.work.role) : 'resident';
+    const want = (row?.needs ?? []).filter(n => (!n.positions || (pos !== undefined && n.positions.includes(pos))) && meets(n.need));
     a.need = want.length ? wt(r, want, x => x.weight).need : r.pick(Object.keys(rules.needs.list).filter(meets));
     a.institution = a.temperament === 'loyal' ? (a.work ? a.work.employer : 'civic') : null;
   }
   const pick = (r: Rng, xs: { name: string }[]) => r.pick(xs).name;
   const pins = rules.names.pinned;
   const pinned = new Map<string, { given?: string; family?: string }>();
-  for (const pin of pins) {
-    const cands = persons.filter(p => p.work?.employer === pin.employer && (pin.position ? p.work.position === pin.position : p.work.role === pin.role)
-      && (!pin.position || inShift(p.work.shift, c.atMin)) && !pinned.has(p.id));
-    const hit = cands[0];
-    if (hit) pinned.set(hit.id, { ...pinned.get(hit.id), [pin.part]: pin.name });
-    else gaps.push(`pinned name ${pin.name}: no ${pin.position ?? pin.role} of ${pin.employer}${pin.position ? ` on shift at ${c.atMin}` : ''}`);
+  for (const [i, hit] of pinnedByRole(persons, c.casting, rules).entries()) {
+    const pin = pins[i]!;
+    if (hit.who) pinned.set(hit.who, { ...pinned.get(hit.who), [pin.part]: pin.name });
+    else gaps.push(`pinned name ${pin.name}: the Handover casts nobody as ${pin.position ?? pin.role} of ${pin.employer} (${hit.why})`);
   }
   for (const a of persons) {
     const r = rng(`${a.id}/name`), pin = pinned.get(a.id);
@@ -244,7 +259,7 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
   const people: People = {
     schema: 'suborned.people/1', plan: { id: c.planId, version: c.planVersion }, scope: scope.id, inputs: c.hashes,
     places: scope.places, units: scope.units.map(u => ({ id: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, name: u.name, staffPerShift: u.staffPerShift, hours: u.hours, shifts: u.shifts })),
-    persons, background,
+    persons, knowledge: deriveKnowledge(rules, persons), background,
   };
   return { people, gaps };
 }

@@ -35,6 +35,11 @@ export const Person = z.object({
   ties: z.array(z.object({ kind: z.string(), with: z.string() })).describe('two-way ties stand on both people; a directed tie stands on its source'),
   look: z.object({ block: z.string().describe('job colour block key, e.g. job/food') }),
 });
+/** Rules knowledge (P5), derived from the people at the start: what a person knows besides their own day. */
+export const Knowledge = z.object({
+  cellAtStart: z.literal('nothing'), identity: z.array(z.string()).describe('how the cell is known: "face" only'),
+  needsKnown: z.array(z.object({ keeper: z.string(), knows: z.array(z.string()) })).describe('a keeper knows the need of each person listed (workmates and unit regulars)'),
+});
 export const People = z.object({
   schema: z.literal('suborned.people/1'),
   plan: z.object({ id: z.string(), version: z.string() }), scope: id,
@@ -42,8 +47,10 @@ export const People = z.object({
   places: z.array(Place),
   units: z.array(z.object({ id, plot: id, area: id, trade: id, employer: id, name: z.string(), staffPerShift: z.number().int(), hours: v2, shifts: z.array(z.object({ from: minute, to: minute })) })),
   persons: z.array(Person),
+  knowledge: Knowledge.optional().describe('derived from the rules and the ties (tools/people/knowledge.ts)'),
   background: z.array(z.object({ plot: id, area: id, residents: z.number().int(), simulated: z.number().int() })),
 });
+export type Knowledge = z.infer<typeof Knowledge>;
 export type Place = z.infer<typeof Place>;
 export type Stop = z.infer<typeof Stop>;
 export type Person = z.infer<typeof Person>;

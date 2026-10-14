@@ -31,6 +31,8 @@ export type Scope = {
   /** the walk speed (m/s) the people are timed by */
   speed: number;
   cafe: string;
+  /** the unit whose door the cafe seat stands by: someone sitting at `cafe` is at that unit's customers' side (a regular) */
+  cafeUnit: string;
 };
 
 const kebab = (s: string) => s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -128,7 +130,8 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
   }
   // the café stop of a customer is a table: the eligible seat nearest the café's door (the door itself is a keep-clear zone)
   const cafeDoor = places.find(p => p.id === (units.find(u => u.kind === 'frontage' && u.trade === 'diner') ?? units.find(u => u.kind === 'frontage')!).door)!;
+  const cafeUnit = (units.find(u => u.kind === 'frontage' && u.trade === 'diner') ?? units.find(u => u.kind === 'frontage')!).id;
   const cafe = [...seats].sort((a, b) => dist(places.find(p => p.id === a)!.at as V, cafeDoor.at as V) - dist(places.find(p => p.id === b)!.at as V, cafeDoor.at as V) || (a < b ? -1 : 1))[0] ?? cafeDoor.id;
   places.sort((a, b) => (a.id < b.id ? -1 : 1)); units.sort((a, b) => (a.id < b.id ? -1 : 1));
-  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, speed: life.pedestrians.walkSpeed, cafe }, civ, d };
+  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, speed: life.pedestrians.walkSpeed, cafe, cafeUnit }, civ, d };
 }

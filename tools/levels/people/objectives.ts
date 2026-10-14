@@ -14,10 +14,10 @@ const BLOCK = 'civic block café Records Office entrances bays keep-clear zones;
 export const objectives: Record<Agent, Member> = {
   pulse: {
     id: 'people-pulse', role: 'schedule-ai-designer', owner: 'Pulse', brief: `${dir}/people-pulse.md`, effort: 'medium',
-    query: [WHO, RULES, DAY, BLOCK, 'GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine'],
+    query: [WHO, RULES, DAY, BLOCK, 'GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine', 'people rules knowledge needs known keeper; mix cap per row and unit; ties that introduce; readBy fields'],
   },
   keel: {
     id: 'people-critic', role: 'simulation-engineer', owner: 'Keel', brief: `${dir}/people-critic.md`, effort: 'medium',
-    query: [RULES, WHO, DAY, 'rulebook: each event needs, changes, witnesses; unknown is rejected', 'GDD §09 risk sameness: history, not backstory; people are memorable via what the systems record'],
+    query: [RULES, WHO, DAY, 'rulebook: each event needs, changes, witnesses; unknown is rejected', 'GDD §09 risk sameness: history, not backstory; people are memorable via what the systems record', 'people rules knowledge needs known keeper; mix cap per row and unit; readBy fields'],
   },
 };

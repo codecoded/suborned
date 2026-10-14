@@ -44,8 +44,9 @@ export const sources = { agentGdd: () => latest('agent-gdd', '.md'), humanGdd: (
 
 /** Bump when chunking changes: runs record it, and replay labels a mismatch drift (runs without the field are v1: the whole § by paragraph).
  *  v3 (brief 007 F): the plan's signatures, megastructures and tower sites, and the DecoKit catalogue, are chunks (additive: no v2 chunk changed).
- *  v4 (brief 010 B): life.json, the civic block, the missions and the people rules are chunks (additive, appended after the kit: no v3 chunk changed). */
-export const CHUNKER = 4;
+ *  v4 (brief 010 B): life.json, the civic block, the missions and the people rules are chunks (additive, appended after the kit: no v3 chunk changed).
+ *  v5 (brief 010 follow-up): the people rules' knowledge, mix, introduces and readBy blocks are chunks of their own (additive, appended after the v4 people-rules chunks: no v4 chunk changed). */
+export const CHUNKER = 5;
 export const SPLIT_OVER = 1000, SPLIT_OVER_SUB = 2000, MERGE_UNDER = 120; // a `###` subsection is already one focused entry (a role block), so it holds together longer
 const ENTRY = /^([A-Za-z][\w ()/,+·'.–-]{0,90}?)( \[[BSL]\])?:(\s|$)/;
 

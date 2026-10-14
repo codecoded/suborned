@@ -43,8 +43,8 @@ describe('skyline and kit chunks (chunker v3)', () => {
   const plan = async () => JSON.parse(await Bun.file(join(root, 'contracts/world/harbour-district.plan.json')).text());
   const kitText = () => Bun.file(join(root, 'contracts/world/kit.json')).text();
 
-  test('the chunker version is 4 (3 + life, block, missions, people rules), and the live plan yields a chunk per signature, megastructure and tower site', async () => {
-    expect(CHUNKER).toBe(4);
+  test('the chunker version is 5 (4 + the people-rules knowledge, mix, introduces and readBy blocks), and the live plan yields a chunk per signature, megastructure and tower site', async () => {
+    expect(CHUNKER).toBe(5);
     const p = await plan(), chunks = (await loadCorpus()).filter(c => c.kind === 'plan'), sections = chunks.map(c => c.section);
     for (const s of p.signatures) expect(sections).toContain(`${p.name} › signature › ${s.id}`);
     for (const m of p.megastructures) expect(sections).toContain(`${p.name} › megastructure › ${m.id}`);

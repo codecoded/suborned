@@ -101,13 +101,10 @@ describe('handover mission file', () => {
 // cast, expanded in process, so the test does not read out/) and pins one person by id (rule M-2).
 /** The people the stand-in cast expands to, as `bun run people` writes them. */
 const people = async (): Promise<PeopleIn> => { const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block'); return expand(w.ctx(standInCast(w.scope, w.rules))).people; };
-/** Who the stand-in cast pins once the waitress has the need (see `met`): the first who fits by id. A live cast (brief 010 C)
- *  moves these; the roles stay. The guard is p-records-office-29, the one guard whose routine stops at the café pre-shift. */
-const PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-29', councillor: 'p-records-office-61' };
-/** The stand-in fails one role condition: no café server on the 17:00 shift is in debt (Motive §3: Inez came out with
- *  `advancement`). The live run must meet it; here Inez is given the need so the rest can be tested. */
-const STANDIN_FAILS = 'waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has need debt: p-cafe-11 advancement, p-cafe-12 care, p-cafe-14 papers, p-cafe-15 secret, p-cafe-16 advancement';
-/** A copy of the people with `edit` applied to the named persons (default: Inez in debt, which the roles need). */
+/** Who the stand-in cast pins: the first who fits by id. A live cast (brief 010 C) moves these; the roles stay. The stand-in
+ *  (tools/people/standin.ts) meets Motive §3: the café server row weights debt, the driver row cash, every guard's day starts at the café. */
+const PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-15', councillor: 'p-records-office-61' };
+/** A copy of the people with `edit` applied to the named persons (default: Inez in debt, which the stand-in already has). */
 const met = (p: PeopleIn, edit: Record<string, (x: PeopleIn['persons'][number]) => void> = { 'p-cafe-11': x => { x.need = 'debt'; } }): PeopleIn => {
   const c: PeopleIn = structuredClone(p);
   for (const [id, f] of Object.entries(edit)) f(c.persons.find(x => x.id === id)!);
@@ -143,10 +140,10 @@ describe('handover roles', () => {
     expect(broken(m => { m.roles[0].pin = 'Inez'; })).toBe(false); // a pin is a person id
   });
 
-  test('the stand-in cast fails M-2 on the waitress\'s need only (the live run must meet it)', async () => {
+  test('the stand-in cast meets M-2 (Motive §3: the live run must meet it too)', async () => {
     const s = await setup(), c = m2(s);
-    expect(c).toMatchObject({ ok: false, detail: STANDIN_FAILS });
-    expect(c.value).toBe('waitress -, driver p-records-office-01, guard p-records-office-29, councillor p-records-office-61');
+    expect(c.ok).toBe(true);
+    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
   });
 
   test('every role is cast, pinned by id, deterministically; the pinned names land on the pinned people', async () => {
@@ -175,18 +172,19 @@ describe('handover roles', () => {
   test('failing examples for each role condition: need, a refused approach, a regular of the café, an unsound role', async () => {
     const s = await setup(), p = met(s.p);
     const one = (m: any, q: PeopleIn = p) => m2(s, m, q).detail!.split('; ').filter(x => !/ of \d+ on shift/.test(x)); // the failing roles only
-    let m = JSON.parse(raw); m.roles[1].need = 'debt'; // the drivers on shift need cash, care, debt (p-records-office-46), cash
+    let m = JSON.parse(raw); m.roles[1].need = 'advancement'; // the drivers on shift need cash, cash, advancement (p-records-office-46), papers
     expect(m2(s, m, p)).toMatchObject({ ok: true, value: expect.stringContaining('driver p-records-office-46') });
     m.roles[1].need = 'housing';
-    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-8:00 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 care, p-records-office-46 debt, p-records-office-64 cash']);
+    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-8:00 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 cash, p-records-office-46 advancement, p-records-office-64 papers']);
     // Q4: the wrong temperament still works (a Mercenary helped), a refusal fails: an Idealist refuses Pay
     m = JSON.parse(raw); m.roles[0].approach = 'pay';
     const idealists = met(s.p, Object.fromEntries(['p-cafe-11', 'p-cafe-12', 'p-cafe-14', 'p-cafe-15', 'p-cafe-16'].map(id => [id, (x: any) => { x.need = 'debt'; x.temperament = 'idealist'; }])));
     expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
     expect(m2(s, JSON.parse(raw), idealists).ok).toBe(true); // Help is refused by no temperament
     expect(one(m, met(idealists, { 'p-cafe-11': x => { x.temperament = 'shy'; } }))[0]).toContain('p-cafe-11 shy (unknown)'); // unknown = reject
-    // §05: the guard is a regular of the café: without p-records-office-29's pre-shift stop nobody is; a regular tie restores one
-    const noStop = met(p, { 'p-records-office-29': x => { x.routine.stops = x.routine.stops.filter(t => t.doing !== 'pre-shift'); } });
+    // §05: the guard is a regular of the café: without the guards' pre-shift stops and café ties nobody is; a regular tie restores one
+    const guards = ['p-records-office-15', 'p-records-office-29', 'p-records-office-30', 'p-records-office-36', 'p-records-office-57', 'p-records-office-67'];
+    const noStop = met(p, Object.fromEntries(guards.map(id => [id, (x: any) => { x.routine.stops = x.routine.stops.filter((t: any) => t.doing !== 'pre-shift'); x.ties = (x.ties ?? []).filter((t: any) => !t.with.startsWith('p-cafe')); }])));
     expect(one(JSON.parse(raw), noStop)).toEqual(['guard: none of the 6 who fit (guard of records-office on shift 0:00-8:00 at Office entrance) has a regular of cafe (a regular tie to its staff or a pre-shift stop at it): p-records-office-15 neither, p-records-office-29 neither, p-records-office-30 neither, p-records-office-36 neither, p-records-office-57 neither, p-records-office-67 neither']);
     const tied = met(noStop, { 'p-records-office-36': x => { x.ties = [...(x.ties ?? []), { kind: 'regular', with: 'p-cafe-01' }]; } });
     expect(m2(s, JSON.parse(raw), tied)).toMatchObject({ ok: true, value: expect.stringContaining('guard p-records-office-36') });
@@ -194,7 +192,7 @@ describe('handover roles', () => {
     expect(m2(s, JSON.parse(raw), workmate).ok).toBe(false);
     // a pin that lacks a condition names it; a role the rules cannot hold fails before anyone is cast
     m = JSON.parse(raw); m.roles[0].pin = 'p-cafe-12';
-    expect(one(m)).toEqual(['waitress: pinned p-cafe-12 lacks need debt: p-cafe-12 care']);
+    expect(one(m)).toEqual(['waitress: pinned p-cafe-12 lacks need debt: p-cafe-12 secret']);
     m = JSON.parse(raw); m.roles[0].need = 'fame';
     expect(one(m)).toEqual(['waitress: need fame is not in the rules\' needs']);
     m = JSON.parse(raw); m.roles[1].approach = 'pressure'; // Pressure leans on debt, never on cash
