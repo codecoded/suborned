@@ -1,0 +1,557 @@
+{
+ "schema": "suborned.rulebook/1",
+ "author": "Keel (brief 010, 2026-10-15)",
+ "gdd": "the-suborned-agent-gdd-v0.21.0-2026-10-15.md",
+ "rule": "Every event the city simulation runs: what it needs, what it charges, what it changes and who sees it (GDD §11: events carry conditions, effects, witnesses). Anything not in this file or in people.rules.json is rejected (§01: unknown = reject). Scales, temperaments, needs, ties, the Talker test, knowledge and the reference approach prices are read from people.rules.json through p: refs and condition kinds, never restated here. Every number lives once in `values`, tagged as the GDD tags it: [B] built and proven in the top-down test, [S] starting value to tune by playtest, [L] later; a value or rule the GDD does not decide carries proposed: true and a reason, for Sky. Conditions are keyed by `k`, effects by `do`, always the first key, so the C# engine reads them as tagged unions. Outcomes are tried in order and the first whose conditions all hold applies; the last has none, so every event resolves to exactly one outcome. `also` entries apply after the outcome, in order.",
+ "reads": {
+  "people": {
+   "path": "contracts/people/people.rules.json",
+   "schema": "suborned.people.rules/1",
+   "reads": [
+    "scales: min, max and named steps; every move clamps to them",
+    "temperaments: respondsTo, refuses and reportsApproach decide an approach's fit; start values",
+    "approaches: requires, usd, timeS and trail are the base price line of each Turn event",
+    "needs.list: metBy (which approach acts on a need), requires (what a replacement need may need)",
+    "ties.kinds: introduces (K5) and between (K4)",
+    "talker: test, facts and lie",
+    "knowledge: needsKnown positions (K9), identity face only, learnedBy witnessed or told",
+    "tiers: only the simulated carry memory and can be questioned (Sky Q5)"
+   ]
+  }
+ },
+ "tags": {
+  "B": "built: proven in the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs) or stated [B] in the GDD",
+  "S": "spec: a starting value the GDD states [S], tuned by playtest",
+  "L": "later: after the capstone"
+ },
+ "units": {
+  "usd": "integer dollars",
+  "s": "integer seconds; the engine steps at 10 Hz (§11), so 1 s = 10 ticks",
+  "m": "metres, compared in 3D (§05 levels)",
+  "trail": "Trail points, integer, campaign scope",
+  "alert": "Alert level, integer 0–3, mission scope",
+  "standing": "district standing, integer: above 0 Hero, below 0 Menace",
+  "orders": "orders of the same approach to the same person",
+  "scale-steps": "steps on a people.rules.json scale",
+  "entries": "memory entries",
+  "hops": "ties crossed by one piece of news",
+  "count": "a plain count",
+  "per-mille": "integer weight scale for seeded draws"
+ },
+ "values": {
+  "watch-s": { "v": 52, "unit": "s", "tag": "B", "src": "§04 Pay requires routine known (Watch 52 s); top-down test watchCafe" },
+  "listen-s": { "v": 42, "unit": "s", "tag": "B", "src": "§04 Help requires need known (Listen 42 s); top-down test listenInez" },
+  "listen-reach-m": { "v": 3, "unit": "m", "tag": "B", "src": "top-down test listenInez reach 3" },
+  "approach-reach-m": { "v": 4, "unit": "m", "tag": "B", "src": "top-down test askInez, offerInez, turnInez, pressureInez reach 4" },
+  "refusal-usd": { "v": 10000, "unit": "usd", "tag": "B", "src": "§04 Ask cold leaves a remembered refusal: later offers +$10,000; top-down test offerInez, turnInez (+$10,000 when inezRefused)" },
+  "refusal-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "§04 remembered refusal: +1 T; top-down test offerInez, turnInez, pressureInez (+1 T when inezRefused; pressure adds no $)" },
+  "help-orders": { "v": 1, "unit": "orders", "tag": "B", "src": "§07 route A: Fixer helps Inez ($40,000), once" },
+  "worse-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): one more Help; §04 Fearful, Hero: needs Help ×2" },
+  "worse-pay-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price, Keel sets the number", "proposed": true, "reason": "Pay's step is money. $20,000 is twice the refusal surcharge, so a wrong approach costs more than a cold ask's leftover, and it keeps every §04 lesson: a Mercenary is cheapest by Pay ($70,000 < Help ×2 $80,000), a Fearful or Loyal person is cheaper by Help ($80,000 < $90,000) but slower (100 s vs 50 s), and Pay plus the driver stays over the purse." },
+  "worse-pressure-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price; Pressure's price is Trail", "proposed": true, "reason": "Pressure costs no money, so its step is +1 T (a louder threat), in one order. A second threat instead would add a second +1 resentment and make an Informer of anyone not Fearful (resentment max 2): a cliff, not a step." },
+  "loyal-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 Loyal (institution): trust over time; Hero: turns after repeated Help", "proposed": true, "reason": "'repeated' read as the smallest repeat: one Help more than anyone else, so a Loyal person turns on the second Help even though Help suits them." },
+  "mercenary-hero-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Hero: overcharges; Motive K8 (CK3 additive line items)", "proposed": true, "reason": "the same size as the wrong-approach step, so the preview's lines read in one currency of steps: a Hero district's Mercenary costs what a wrong Pay costs." },
+  "mercenary-menace-usd": { "v": -20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Menace: discount", "proposed": true, "reason": "the mirror of the Hero overcharge: one step off ($50,000 for Inez's reference Pay)." },
+  "standing-start": { "v": 0, "unit": "standing", "tag": "S", "src": "§04 standing: per district, Hero ↔ Menace; neither end loses", "proposed": true, "reason": "every district starts neutral." },
+  "standing-step": { "v": 1, "unit": "standing", "tag": "S", "src": "§04 standing: witnessed acts only; §05 witness moves standing", "proposed": true, "reason": "one step per witnessed incident, as Trail counts one point per incident: one incident counts once." },
+  "hero-at": { "v": 3, "unit": "standing", "tag": "S", "src": "§04 standing table (turning, crowds, fights, street change at each end)", "proposed": true, "reason": "the Hero and Menace columns need a threshold. Three witnessed incidents one way make a district Hero (or Menace at −3): a mission or two of deliberate play, so the player sees it coming and chooses it." },
+  "menace-at": { "v": -3, "unit": "standing", "tag": "S", "src": "§04 standing table", "proposed": true, "reason": "as hero-at, mirrored." },
+  "witness-range-m": { "v": 13, "unit": "m", "tag": "S", "src": "§05 witness [S]: clear sightline within 13 m; §05 levels: in 3D; top-down test inezWitness ≤ 13" },
+  "witness-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§05 witness [S]: +1 T per incident" },
+  "alert-inquiry": { "v": 1, "unit": "alert", "tag": "S", "src": "§05 Alert 1 inquiry [S]: witness report or found fault, once per incident" },
+  "alert-search": { "v": 2, "unit": "alert", "tag": "B", "src": "§05 Alert 2 search [B]: 2nd incident or any gunfire" },
+  "alert-lockdown": { "v": 3, "unit": "alert", "tag": "B", "src": "§05 Alert 3 lockdown [B]: violence seen by a civilian → 3 at once" },
+  "trail-open": { "v": 1, "unit": "trail", "tag": "S", "src": "§05 watchers: once a Trail is open, investigators can pull the log; §08 investigation little at T 0" },
+  "bravery-per-job": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 bravery [S]: +1 step per job completed unexposed" },
+  "resentment-per-exposure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 resentment [S]: +1 step per pressure or exposure" },
+  "resentment-per-pressure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 resentment [S]: +1 step per pressure or exposure" },
+  "fear-per-pressure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Pressure leaves fear; §05 a threat adds fear; people.rules scales.fear (one step per pressure or threat)" },
+  "loyalty-per-help": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Help leaves gratitude; people.rules scales.loyalty: only being turned raises it", "proposed": true, "reason": "gratitude made a number: each Help that lands is +1 loyalty to the cell (obliged, then trusting). It is what quiets a helped contact under questioning (Talker test) and what keeps a Fearful person from talking once helped (people.rules temperaments.fearful)." },
+  "loyalty-per-volunteer": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Idealist, Hero: volunteers free; standing table: Hero turning is loyal", "proposed": true, "reason": "an Idealist who volunteers in a Hero district starts obliged, as a helped one does." },
+  "violence-bravery": { "v": -1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable: a contact who witnesses loses bravery, gains fear and resentment", "proposed": true, "reason": "one step each way, the size of every other ladder move." },
+  "violence-fear": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable", "proposed": true, "reason": "as violence-bravery." },
+  "violence-resentment": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable", "proposed": true, "reason": "as violence-bravery." },
+  "memory-cap": { "v": 8, "unit": "entries", "tag": "S", "src": "Motive K1: capped per person [S]; DF holds 8 short-term memories (dwarf-fortress.md §3)", "proposed": true, "reason": "eight entries hold a person's whole part in a district's campaign (an approach, a job or two, what they saw, what they were told). When full the oldest goes: an old sighting is forgotten, which is the GDD's 'sightings go stale' (§05 counters) made a rule. Fixed size suits the engine's integer arrays." },
+  "word-hops": { "v": 1, "unit": "hops", "tag": "S", "src": "Motive K3: word passes along ties between missions, one hop; §04 knowledge [S] (Sky Q6): news travels along ties as facts", "proposed": true, "reason": "the GDD says news travels along ties; how far is not stated. One hop, between missions only, keeps the spread countable in the debrief." },
+  "word-quiet-loyalty": { "v": 2, "unit": "scale-steps", "tag": "S", "src": "§01 pillar subvert people: does knowing more make a person quieter?", "proposed": true, "reason": "a contact who trusts the cell (loyalty 2, trusting) keeps what they saw to themselves. Gives Help a second payoff the player can see in the debrief: word stops at the people you treated well." },
+  "introductions-per-contact": { "v": 1, "unit": "count", "tag": "S", "src": "Motive K5: one introduction per contact between missions [S]; §04 between missions: introduces a friend" },
+  "question-s": { "v": 20, "unit": "s", "tag": "S", "src": "§05 investigators [S]: on foot question ~every 20 s" },
+  "hop-min-s": { "v": 60, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
+  "hop-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
+  "need-weight-scale": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "§11 integer state; §04 needs (Sky Q2) replacement drawn from the person's own stream", "proposed": true, "reason": "the cast rows weight needs as decimals (cast.schema.ts, ≤ 100). The engine draws in integers only, so the export scales each weight by 1,000 and rounds; the same integers in C# and TS give the same draw." }
+ },
+ "standing": {
+  "start": "v:standing-start",
+  "step": "v:standing-step",
+  "hero": "v:hero-at",
+  "menace": "v:menace-at",
+  "rule": "One integer per district. Each witnessed incident of a Hero act adds one step, of a Menace act takes one (traceable[].standing). At or above `hero` the district is in the Hero band, at or below `menace` in the Menace band, otherwise neutral. Only witness.sees moves it: an unwitnessed threat changes nothing (the victim still remembers), and news along ties never does (Sky Q6). Heat (§06) = campaign Trail + max(0, −standing); its threshold is Motive's.",
+  "tag": "S",
+  "src": "§04 standing; §05 witness; §06 Heat = T + Menace standing",
+  "proposed": true,
+  "reason": "the GDD names the axis and what moves it but gives it no scale. A signed integer with two thresholds is the least that lets the temperament table's Hero and Menace columns apply."
+ },
+ "alert": {
+  "levels": ["routine", "inquiry", "search", "lockdown"],
+  "byIncident": ["v:alert-inquiry", "v:alert-search"],
+  "gunfire": "v:alert-search",
+  "violenceSeen": "v:alert-lockdown",
+  "rule": "An incident is one act at one place and time. However many people see or report it, it adds witness Trail once and raises Alert once: the nth reported incident of a mission raises Alert to at least byIncident[n−1] (the last entry beyond the list). Any gunfire raises it to at least `gunfire`; violence seen by a civilian sets `violenceSeen` at once. Alert never falls within a mission.",
+  "tag": "S",
+  "src": "§05 Alert table (1 inquiry [S], 2 search [B], 3 lockdown [B]); brief 005 / §14 Keel hold: one incident counts once toward Alert"
+ },
+ "fit": {
+  "from": { "suits": "respondsTo", "refused": "refuses", "otherwise": "worse" },
+  "approaches": {
+   "ask": { "fit": "refused", "tag": "B", "src": "§04 Ask cold: remembered refusal; top-down test askInez: 'No reason for her to trust you yet. She will refuse and remember the approach.'" }
+  },
+  "standing": [
+   { "band": "hero", "temperament": "idealist", "approaches": ["ask"], "fit": "suits", "tag": "S", "src": "§04 Idealist, Hero: volunteers free" },
+   { "band": "menace", "temperament": "idealist", "approaches": ["ask", "pay", "help", "pressure"], "fit": "refused", "tag": "S", "src": "§04 Idealist, Menace: refuses; may report" },
+   { "band": "menace", "temperament": "fearful", "approaches": ["ask"], "fit": "suits", "tag": "S", "src": "§04 Fearful, Menace: folds free" },
+   { "band": "menace", "temperament": "loyal", "approaches": ["ask", "pay", "help", "pressure"], "fit": "refused", "tag": "S", "src": "§04 Loyal, Menace: reports any approach" }
+  ],
+  "rule": "An approach's fit to a person: a standing row for the district's band, the person's temperament and the approach wins; else an approach row; else people.rules.json: an approach the temperament respondsTo suits, one it refuses is refused, any other is worse (Sky Q4: it still works one step worse). The step of a worse approach is its price lines (turn.*). A refused approach fails and leaves a remembered refusal. Hero and Neutral otherwise follow the base rule, so the Fearful's 'needs Help ×2' in a Hero district is the Q4 step itself.",
+  "tag": "S",
+  "src": "§04 temperament [S]; §04 wrong approach [S] (Sky Q4); §04 'Hero and Menace campaigns turn different halves of the city'"
+ },
+ "reports": [
+  {
+   "id": "unwanted-approach",
+   "when": [{ "k": "reports-approach" }, { "k": "fit", "is": ["worse", "refused"] }],
+   "tag": "S",
+   "src": "§04 Loyal (institution): reports any approach; people.rules temperaments.loyal.reportsApproach",
+   "proposed": true,
+   "reason": "people.rules says a Loyal person reports approaches; §04 also says they turn after repeated Help. Read together: they report every approach they do not respond to. In a Menace district nothing suits them (fit table), so they report any approach, as §04's Menace column says; elsewhere they take Help quietly."
+  },
+  {
+   "id": "idealist-in-menace",
+   "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["idealist"] }, { "k": "scale", "scale": "bravery", "op": ">", "than": { "scale": "fear" } }],
+   "tag": "S",
+   "src": "§04 Idealist, Menace: refuses; may report",
+   "proposed": true,
+   "reason": "'may' made deterministic from the person's own state: an Idealist reports while braver than afraid. They start at bravery 1, fear 0, so they report, until a threat (fear +1) makes them keep quiet. Readable on the person: 'brave enough to report'."
+  }
+ ],
+ "ladders": {
+  "rule": "The four scales move only on these moves (Motive K2): no roll, no decay. Every move clamps to the scale's people.rules.json min and max.",
+  "moves": {
+   "job-unexposed": { "add": [{ "scale": "bravery", "by": "v:bravery-per-job" }], "tag": "S", "src": "§04 bravery [S]" },
+   "job-exposed": { "add": [{ "scale": "resentment", "by": "v:resentment-per-exposure" }], "tag": "S", "src": "§04 resentment [S]" },
+   "pressure": { "add": [{ "scale": "fear", "by": "v:fear-per-pressure" }, { "scale": "resentment", "by": "v:resentment-per-pressure" }], "tag": "S", "src": "§04 Pressure: fear; resentment grows; §05 counters: threat adds fear" },
+   "help": { "add": [{ "scale": "loyalty", "by": "v:loyalty-per-help" }], "tag": "S", "src": "§04 Help: gratitude", "proposed": true, "reason": "see values.loyalty-per-help." },
+   "volunteer": { "add": [{ "scale": "loyalty", "by": "v:loyalty-per-volunteer" }], "tag": "S", "src": "§04 Idealist, Hero: volunteers free", "proposed": true, "reason": "see values.loyalty-per-volunteer." },
+   "saw-violence": { "add": [{ "scale": "bravery", "by": "v:violence-bravery" }, { "scale": "fear", "by": "v:violence-fear" }, { "scale": "resentment", "by": "v:violence-resentment" }], "tag": "S", "src": "§06 civilians targetable: a contact who witnesses loses bravery, gains fear + resentment", "proposed": true, "reason": "see values.violence-bravery." }
+  },
+  "tag": "S",
+  "src": "§04 bravery, resentment [S]; Motive K2"
+ },
+ "memory": {
+  "entry": ["act", "by", "place", "time", "witnessed"],
+  "cap": "v:memory-cap",
+  "whenFull": "drop the oldest entry: lowest time, then first written",
+  "faceFacts": { "fixer": "fixer-face" },
+  "acts": {
+   "ask": { "facts": ["place-time"] },
+   "refusal": { "facts": ["place-time"] },
+   "pay": { "facts": ["place-time"] },
+   "help": { "facts": ["place-time"] },
+   "pressure": { "facts": ["place-time"] },
+   "job": { "facts": ["place-time"] },
+   "saw-act": { "facts": ["place-time"] },
+   "rode-car": { "facts": ["cell-car", "place-time"] },
+   "told": { "facts": "as-told" }
+  },
+  "reads": { "helped": "help", "refused": "refusal" },
+  "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`.",
+  "tag": "S",
+  "src": "§04 person = routine + need + temperament + memory; §04 knowledge [S]; Motive K1; people.rules person.memoryAtStart empty"
+ },
+ "exposure": {
+  "rule": "A contact's job this mission is exposed when a non-cell person saw it within witness range with a clear sightline, a watcher logged it, or an investigator questioned the contact this mission; otherwise it is unexposed. Each completed job is one or the other, never both.",
+  "tag": "S",
+  "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per pressure or exposure",
+  "proposed": true,
+  "reason": "the GDD uses 'exposure' without defining it. These three are the ways the city can tie a contact to the act, so being exposed means the city can now find them."
+ },
+ "traceable": {
+  "payment": { "standing": "none", "tag": "S", "src": "§02 Trail: traceable acts: visible payments" },
+  "debt-cleared": { "standing": "hero", "tag": "S", "src": "§04 standing, Hero: clear debts publicly", "proposed": true, "reason": "a Help that clears a debt in sight of a witness is the public debt-clearing §04 lists as Hero. It is still a payment, so it adds witness Trail too." },
+  "threat": { "standing": "menace", "tag": "S", "src": "§02 Trail: threats; §04 standing, Menace: public threats" },
+  "gunfire": { "standing": "menace", "tag": "B", "src": "§02 Trail: gunfire; §04 Menace: shoot in crowds; §06 prototype [B]. Made by the fight events (next entries)." },
+  "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." }
+ },
+ "preview": {
+  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. A line or outcome that reads the target's temperament (a fit or temperament condition) shows '?' until the cell knows the temperament (Sky Q3): its amount shows, marked '?', so the price is always on the card and only whether it applies is unknown. Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. Any approach's outcome tells the cell the temperament.",
+  "unknown": "?",
+  "knownBy": ["scout.watch", "scout.listen"],
+  "tag": "S",
+  "src": "§02 every order shows its full price; §04 preview (Sky Q3); Motive K8"
+ },
+ "streams": {
+  "hash": "fnv1a-32",
+  "generator": "mulberry32",
+  "draw": "integer",
+  "keys": { "need-replace": "{person}/need/{mission}" },
+  "weightScale": "v:need-weight-scale",
+  "weights": "the person's cast row need weights (cast.schema.ts Row.needs, with the expander's position filter) × weightScale, rounded to integers at export",
+  "rule": "Every runtime draw takes its own stream keyed by entity and stage, and a new stage takes a new key, never draws from an old one (dwarf-fortress.md §8). hash: FNV-1a 32-bit over the key's UTF-16 code units (tools/world/gen/common.ts hash32). generator: mulberry32 seeded by the hash, 0 → 1 (common.ts rng). draw: u = the generator's next 32-bit output; x = floor(u × total ÷ 2^32) in 64-bit integers; walk the candidates in order, subtracting each weight; the first that takes x below 0 wins. {mission} is the campaign's mission number, 1-based, of the mission just played.",
+  "tag": "S",
+  "src": "§01 same orders → same result; §04 needs (Sky Q2): drawn from the person's own stream (id + mission number); tools/people/expand.ts rng(`${id}/need`)"
+ },
+ "phases": {
+  "mission-start": ["keeper.tips"],
+  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "contact.introduces"],
+  "iterate": "within a phase, events in the order listed; within an event, subjects by person id in ordinal order (C# string.CompareOrdinal, JS <)",
+  "tag": "S",
+  "src": "§04 between missions; §08 debrief [B] → next mission; §11 exact replay"
+ },
+ "debrief": {
+  "lines": {
+   "turned-how": { "fields": ["who", "approach", "price"], "src": "§08 assets: how turned, what they saw" },
+   "not-yet": { "fields": ["who", "approach", "orders-left"], "src": "§04 wrong approach (Sky Q4): one more Help" },
+   "kept": { "fields": ["who", "need", "loyalty"], "src": "§04 Help: gratitude" },
+   "refused": { "fields": ["who", "approach", "temperament"], "src": "§04 remembered refusal" },
+   "give-up": { "fields": ["who", "fact", "left", "right"], "src": "Motive K7: 'X gave up the Fixer's face because fear 2 + resentment 1 > bravery 1', each side the Talker test's scales with their step words (people.rules scales.*.steps); §08 [B]" },
+   "lie": { "fields": ["who", "gives", "bravery", "helped"], "src": "§04 brave helped contact lies; §05 Hero campaign: false leads" },
+   "ladder": { "fields": ["who", "move", "scale", "from", "to"], "src": "§08 debrief: bravery, resentment per contact [S]; Motive K2" },
+   "informer": { "fields": ["who", "resentment"], "src": "§04 resentment: Informer sells a route → ambush scheduled later" },
+   "sold": { "fields": ["who", "standing"], "src": "§04 Mercenary, Menace: sells you to highest bidder" },
+   "need-replaced": { "fields": ["who", "old", "new", "told"], "src": "§04 needs (Sky Q2)" },
+   "word": { "fields": ["who", "fact", "to", "tie"], "src": "Motive K3: listed in the debrief" },
+   "tie-lapsed": { "fields": ["who", "with", "kind", "why"], "src": "Motive K4" },
+   "introduced": { "fields": ["who", "friend", "tie"], "src": "§04 between missions: introduces a friend; Motive K5" }
+  },
+  "rule": "Every change between missions and every give-up is a debrief line with its cause (§08 [B]: the debrief reports each with cause). The fields are data; Fable writes the words, Glyph lays them out.",
+  "tag": "B",
+  "src": "§08 debrief [B]; §04 between missions: debrief reports each with cause"
+ },
+ "events": [
+  {
+   "id": "scout.watch",
+   "by": "scout",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky Q3: Watch or Listen reveals the temperament",
+   "needs": [{ "k": "tier", "is": "simulated" }],
+   "price": [{ "line": "base", "s": "v:watch-s" }],
+   "outcomes": [
+    { "id": "watched", "when": [], "changes": [{ "do": "learn", "what": ["routine", "temperament"], "of": "subject" }] }
+   ]
+  },
+  {
+   "id": "scout.listen",
+   "by": "scout",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky Q3",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "known", "what": "routine" }, { "k": "reach", "m": "v:listen-reach-m" }],
+   "price": [{ "line": "base", "s": "v:listen-s" }],
+   "outcomes": [
+    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need", "temperament"], "of": "subject" }] }
+   ]
+  },
+  {
+   "id": "turn.ask",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Ask cold, requires nothing, $0, 25 s, +1 T, leaves a remembered refusal; §04 Idealist Hero volunteers free, Fearful Menace folds free",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "requires", "approach": "ask" },
+    { "k": "memory", "act": "refusal", "has": false },
+    { "k": "reach", "m": "v:approach-reach-m" }
+   ],
+   "price": [{ "line": "base", "usd": "p:approaches.ask.usd", "s": "p:approaches.ask.timeS", "trail": "p:approaches.ask.trail" }],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "ask" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "standing", "band": ["hero"] }], "changes": [{ "do": "move", "on": "volunteer" }] },
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "standing", "band": ["menace"] }], "changes": [{ "do": "move", "on": "pressure" }] },
+    { "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }
+   ]
+  },
+  {
+   "id": "turn.pay",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Pay, routine known, $70,000, 50 s, +2 T, traceable payment; §04 Mercenary Hero overcharges, Menace discount; Sky Q4",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "requires", "approach": "pay" },
+    { "k": "reach", "m": "v:approach-reach-m" },
+    { "k": "cash-covers" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.pay.usd", "s": "p:approaches.pay.timeS", "trail": "p:approaches.pay.trail" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "usd": "v:refusal-usd", "trail": "v:refusal-trail" },
+    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }], "usd": "v:worse-pay-usd" },
+    { "line": "hero-overcharge", "when": [{ "k": "standing", "band": ["hero"] }, { "k": "temperament", "in": ["mercenary"] }], "usd": "v:mercenary-hero-usd" },
+    { "line": "menace-discount", "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["mercenary"] }], "usd": "v:mercenary-menace-usd" }
+   ],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "pay" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "need-met-by", "approach": "pay" }], "changes": [{ "do": "need-met" }] },
+    { "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }
+   ],
+   "witnesses": [{ "when": [{ "k": "outcome", "is": ["turned"] }], "act": "payment" }]
+  },
+  {
+   "id": "turn.help",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Help, need known, $40,000, 50 s, +1 T, gratitude; §04 wrong approach (Sky Q4): one more Help; Loyal turns after repeated Help; §07 route A, route B",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "requires", "approach": "help" },
+    { "k": "need-met-by", "approach": "help" },
+    { "k": "reach", "m": "v:approach-reach-m" },
+    { "k": "cash-covers" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.help.usd", "s": "p:approaches.help.timeS", "trail": "p:approaches.help.trail", "orders": "v:help-orders" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "usd": "v:refusal-usd", "trail": "v:refusal-trail" },
+    { "line": "one-more-help", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["worse"] }], "orders": "v:worse-help-orders" },
+    { "line": "trust-over-time", "when": [{ "k": "turned", "is": false }, { "k": "temperament", "in": ["loyal"] }, { "k": "fit", "is": ["suits"] }], "orders": "v:loyal-help-orders" }
+   ],
+   "outcomes": [
+    { "id": "kept", "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "kept" }] },
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [{ "k": "orders-reached", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "turn" }, { "do": "remember", "act": "help" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] },
+    { "id": "not-yet", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "remember", "act": "help" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "not-yet" }] }
+   ],
+   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
+   "witnesses": [
+    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["debt"] }], "act": "debt-cleared" },
+    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["cash"] }], "act": "payment" }
+   ]
+  },
+  {
+   "id": "turn.pressure",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Pressure, need known, $0, 35 s, +3 T, fear, resentment grows, can identify Fixer; Sky Q4 one step worse",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "requires", "approach": "pressure" },
+    { "k": "need-met-by", "approach": "pressure" },
+    { "k": "reach", "m": "v:approach-reach-m" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.pressure.usd", "s": "p:approaches.pressure.timeS", "trail": "p:approaches.pressure.trail" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "trail": "v:refusal-trail" },
+    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }], "trail": "v:worse-pressure-trail" }
+   ],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "pressure" }, { "do": "turn" }, { "do": "remember", "act": "pressure" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
+   "witnesses": [{ "act": "threat" }]
+  },
+  {
+   "id": "contact.job",
+   "by": "contact",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Fixer calls contacts in on cue; §07 route A: Fixer calls Inez (the coffee spill); top-down test spill",
+   "needs": [{ "k": "turned", "is": true }, { "k": "called", "is": true }],
+   "outcomes": [
+    { "id": "done", "when": [], "changes": [{ "do": "remember", "act": "job" }] }
+   ]
+  },
+  {
+   "id": "witness.sees",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "§05 witness [S]: clear sightline within 13 m of a traceable act → +1 T per incident, moves standing; §05 levels: 3D; Sky Q5: background witnesses add T, A and standing but carry no state; §06 a contact who witnesses violence",
+   "needs": [
+    { "k": "act", "in": ["payment", "debt-cleared", "threat", "gunfire", "violence"] },
+    { "k": "within", "m": "v:witness-range-m", "sightline": "3d" },
+    { "k": "cell", "is": false }
+   ],
+   "outcomes": [
+    { "id": "seen", "when": [], "changes": [{ "do": "trail", "add": "v:witness-trail", "per": "incident" }, { "do": "standing", "step": "v:standing-step", "per": "incident" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "tier", "is": "simulated" }], "changes": [{ "do": "remember", "act": "saw-act" }] },
+    { "when": [{ "k": "act", "in": ["violence"] }], "changes": [{ "do": "alert", "atLeast": "v:alert-lockdown", "per": "incident" }] },
+    { "when": [{ "k": "act", "in": ["violence"] }, { "k": "turned", "is": true }], "changes": [{ "do": "move", "on": "saw-violence" }] }
+   ]
+  },
+  {
+   "id": "investigator.question",
+   "by": "investigator",
+   "phase": "mission",
+   "tag": "S",
+   "src": "§05 investigators [S][L]; §04 talker [S]; Sky Q5: simulated people only; Motive K6: a person holding no fact gives nothing and the hop is still spent; §02 the city investigates backward, link by link",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "trail", "atLeast": "v:trail-open" }],
+   "price": [{ "line": "base", "s": "v:question-s" }],
+   "outcomes": [
+    { "id": "holds-nothing", "when": [{ "k": "holds-fact", "is": false }], "changes": [{ "do": "spend-hop" }] },
+    { "id": "gives", "when": [{ "k": "talker", "is": true }], "changes": [{ "do": "lead", "from": "facts" }, { "do": "debrief", "line": "give-up" }] },
+    { "id": "lies", "when": [{ "k": "lies", "is": true }], "changes": [{ "do": "lead", "from": "lie" }, { "do": "debrief", "line": "lie" }] },
+    { "id": "nothing", "when": [], "changes": [{ "do": "spend-hop" }] }
+   ],
+   "also": [{ "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "expose" }] }],
+   "how": [
+    "picks: the unit questions simulated people near the lead it follows: first those who had a clear sightline to the lead's place at the lead's time within witness range, then by distance, then by person id (§05: by sightline + distance, not luck)",
+    "gives: every fact the person holds becomes a lead (place + time); facts point to where others saw the next link, so one answer is one step up the chain",
+    "lies: people.rules talker.lie.gives by the district's band (hero: a false lead, otherwise nothing). A false lead points at the place of the liar's own routine farthest from the true fact's place, at the fact's time; ties by place id (proposed: a lie the liar could tell, never a random place)",
+    "follows: after an answer the unit follows the newest lead it holds (latest time, then people.rules talker.facts order); a lead followed is spent, so a place nobody saw anything newer at ends the trail (§05 counters: keep moving, sightings go stale)"
+   ],
+   "band": { "what": "one hop (travel + question) at the civic block, checked by the mission checker, not a parameter", "s": ["v:hop-min-s", "v:hop-max-s"] }
+  },
+  {
+   "id": "keeper.tips",
+   "by": "contact",
+   "phase": "mission-start",
+   "tag": "S",
+   "src": "§08 economy [S]: café owner tips needs before Scout listens; people.rules knowledge.needsKnown; Motive K9",
+   "needs": [{ "k": "turned", "is": true }, { "k": "keeper-position" }],
+   "outcomes": [
+    { "id": "tips", "when": [], "changes": [{ "do": "learn", "what": ["need"], "of": "needs-known" }] }
+   ],
+   "how": ["the people tipped are the people export's knowledge.needsKnown[keeper].knows. Only the need is learned: the temperament stays unknown, so the preview shows '?' for them until Watch or Listen (Sky Q3)"]
+  },
+  {
+   "id": "ladder.job",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per exposure; Motive K2",
+   "needs": [{ "k": "turned", "is": true }, { "k": "memory", "act": "job", "has": true, "this": "mission" }],
+   "outcomes": [
+    { "id": "exposed", "when": [{ "k": "exposed", "is": true }], "changes": [{ "do": "move", "on": "job-exposed" }, { "do": "debrief", "line": "ladder" }] },
+    { "id": "unexposed", "when": [], "changes": [{ "do": "move", "on": "job-unexposed" }, { "do": "debrief", "line": "ladder" }] }
+   ],
+   "how": ["once per job done this mission, in the order the jobs were done"]
+  },
+  {
+   "id": "contact.informs",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 resentment [S]: Informer sells a route → ambush scheduled later; §06 frequency",
+   "needs": [{ "k": "turned", "is": true }, { "k": "scale", "scale": "resentment", "op": ">=", "than": "p:scales.resentment.max" }],
+   "outcomes": [
+    { "id": "informs", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "informer" }] }
+   ]
+  },
+  {
+   "id": "mercenary.sells",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 Mercenary, Menace: sells you to highest bidder; §05 rivals: same target, own schedule",
+   "needs": [
+    { "k": "turned", "is": true },
+    { "k": "temperament", "in": ["mercenary"] },
+    { "k": "standing", "band": ["menace"] },
+    { "k": "scale", "scale": "loyalty", "op": "<=", "than": "p:scales.loyalty.min" },
+    { "k": "scale", "scale": "resentment", "op": "<", "than": "p:scales.resentment.max" }
+   ],
+   "outcomes": [
+    { "id": "sells", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "sold" }] }
+   ],
+   "proposed": true,
+   "reason": "'sells you' made deterministic: a Mercenary contact in a Menace district who owes the cell nothing (loyalty none) sells a route to the rivals, with the Informer's effect. One Help (loyalty obliged) buys them off. The resentment condition keeps one contact from scheduling two ambushes."
+  },
+  {
+   "id": "need.replaced",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 needs [S] (Sky Q2): a met need is replaced between missions, drawn from the person's own stream (id + mission number); a turned contact tells it free in the debrief, anyone else needs Listen again",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "need-met", "is": true }],
+   "outcomes": [
+    { "id": "replaced", "when": [], "changes": [{ "do": "replace-need", "stream": "need-replace" }, { "do": "debrief", "line": "need-replaced" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "learn", "what": ["need"], "of": "subject" }] },
+    { "when": [{ "k": "turned", "is": false }], "changes": [{ "do": "forget", "what": ["need"] }] }
+   ],
+   "how": ["candidates: people.rules needs.list in its order, each whose `requires` the person meets and whose metBy shares an approach with the temperament's respondsTo (the expander's own rule, tools/people/expand.ts), never the need just met; weights from streams.weights"]
+  },
+  {
+   "id": "word.passes",
+   "by": "person",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 knowledge [S] (Sky Q6): news travels along ties as facts, never opinion; standing stays witnessed acts only; §01 information moves through people; Motive K3",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "holds-fact", "is": true, "how": "witnessed" },
+    { "k": "scale", "scale": "loyalty", "op": "<", "than": "v:word-quiet-loyalty" }
+   ],
+   "outcomes": [
+    { "id": "told", "when": [], "changes": [{ "do": "tell", "along": ["family", "workmate"], "hops": "v:word-hops" }, { "do": "debrief", "line": "word" }] }
+   ],
+   "how": ["each fact the person holds from an entry that is not `told` goes to each partner on a family or workmate tie who does not hold it, as a `told` entry with the fact's place and time. Facts only: no scale, standing or memory of the act itself moves (Sky Q6)"],
+   "proposed": true,
+   "reason": "Motive's K3 sets family and workmate ties and one hop; the quiet rule (a trusting contact passes nothing) is new, see values.word-quiet-loyalty."
+  },
+  {
+   "id": "tie.lapses",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "Motive K4: a regular tie lapses when the routine stops visiting; family and rival ties never decay; people.rules ties.kinds.*.between",
+   "needs": [{ "k": "tie", "kinds": ["regular", "workmate"] }, { "k": "tie-between-holds", "is": false }],
+   "outcomes": [
+    { "id": "lapsed", "when": [], "changes": [{ "do": "lapse-tie" }, { "do": "debrief", "line": "tie-lapsed" }] }
+   ],
+   "how": ["a tie of a listed kind whose people.rules `between` no longer holds (a promotion or arrest moved the routine or the employer) lapses. Family and rival ties are never listed: they never lapse"],
+   "proposed": true,
+   "reason": "Motive K4 names regular ties; workmate ties rest on the same kind of fact (the same employer), so they lapse the same way."
+  },
+  {
+   "id": "debtor.lapses",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "people.rules ties.kinds.debtor (who owes whom); §04 Help (clear debt)",
+   "needs": [{ "k": "tie", "kinds": ["debtor"] }, { "k": "need-is", "in": ["debt"] }, { "k": "need-met", "is": true }],
+   "outcomes": [
+    { "id": "lapsed", "when": [], "changes": [{ "do": "lapse-tie" }, { "do": "debrief", "line": "tie-lapsed" }] }
+   ],
+   "how": ["runs before need.replaced (phases), so it reads the debt that was met this mission, not its replacement"],
+   "proposed": true,
+   "reason": "a cleared debt ends the tie that carried it; otherwise the creditor keeps leverage over someone who owes nothing."
+  },
+  {
+   "id": "contact.introduces",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 between missions: introduces a friend (new contact); §08 Inez introduces café contacts; people.rules ties.kinds.*.introduces; Motive K5",
+   "needs": [
+    { "k": "turned", "is": true },
+    { "k": "scale", "scale": "resentment", "op": "<", "than": "p:scales.resentment.max" },
+    { "k": "introduces-along" },
+    { "k": "turned", "is": false, "of": "friend" },
+    { "k": "memory", "act": "refusal", "has": false, "of": "friend" },
+    { "k": "count", "event": "contact.introduces", "below": "v:introductions-per-contact" }
+   ],
+   "outcomes": [
+    { "id": "introduced", "when": [], "changes": [{ "do": "learn", "what": ["routine", "need", "temperament"], "of": "friend" }, { "do": "debrief", "line": "introduced" }] }
+   ],
+   "order": "the player picks the friend in the debrief, from the contact's ties whose kind introduces; no pick, no introduction. The pick is an order, so a replay holds it",
+   "proposed": true,
+   "reason": "the GDD says a friend is introduced but not what that gives. Here an introduction makes the friend known (routine, need and temperament: a Watch and a Listen saved, 94 s on the Handover's numbers), and turning them is still the player's order at the full price. Turning them for free would skip the price §04 is built on."
+  }
+ ]
+}
