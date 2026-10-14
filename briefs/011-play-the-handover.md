@@ -1,6 +1,6 @@
 # 011 · Play the Handover: one engine, played by the machine and by people
 
-**Status (2026-10-15): briefed.**
+**Status (2026-10-15): briefed; work on branch `play/handover`.** E's test plan is done (056bf76). The rulebook is started (c5dfb2d).
 - Done: the .NET SDK 10.0.401 is installed on the Studio (Homebrew `dotnet`).
 - Running: Keel's rulebook (`contracts/rules/`), started under brief 010.
 - Next: A (Keel) once the rulebook lands; C (Glyph) and the test plan in E start now.
@@ -20,6 +20,13 @@ Goal (Sky, 2026-10-15): "now we have the NPC basic structure, we need to think a
 - **One engine:** Keel's C# library (brief 005 A). Unity runs it live; `dotnet` runs it headless in tests and in the mission checker. It ticks at 10 Hz with integer state; a replay = start-state hashes + orders + checkpoint hashes; Unity re-simulates and never plays a recorded stream. It targets netstandard2.1 so Unity loads the same DLL, and its tests run on .NET 10.
 - **The Handover only.** Generated missions (brief 003) stay on hold until it plays well.
 - **Rules come only from the rulebook** (`contracts/rules/`, Keel) and the people rules (`contracts/people/people.rules.json`, Motive): unknown = reject. People come from `contracts/people/` and the accepted cast; the Handover's roles are pinned by id.
+
+## Decisions (Sky, 2026-10-15, after Suture's QA and Keel's rulebook)
+- **The Handover starts at 17:24:30 city time:** the 5:30 chime is the Office's real 17:30 shift end. Roles must be in place when the mission needs them (Waymark, 52f2a2d).
+- **Inez is an Idealist, and Pay is the lesson.** Paying her blind fails and is remembered; once Listen has revealed her temperament and debt, Help ($40,000) fits the purse with the driver ($80,000), and Pressure is cheap but costs +3 T. §04's training table row "Pay $70,000" becomes a refusal for this cast: owed in the next GDD version. The 28 scenarios that pay Inez now expect the refusal.
+- **Keel's 15 proposed rulebook values go ahead as [S] starting values,** reviewed by Motive; Sky can strike any.
+- **Redline's review** (`briefs/010/review/redline-2026-10-15.html`) is assigned: the people file and determinism to Splice, the district sampling to Pulse, Unity perf honesty to Latch.
+- **Glint's ruling:** Editor shots clip at ARGB32 and the player is the true look. Latch makes previews honest before Glint retunes the light, and Sky sees the palette again on honest frames.
 
 ## A · Keel · the engine, headless
 objective: `sim/` (C#), a Unity-free class library plus a test project.
