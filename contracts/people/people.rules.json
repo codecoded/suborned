@@ -1,7 +1,7 @@
 {
   "schema": "suborned.people.rules/1",
   "author": "Motive (brief 010 A, 2026-10-15)",
-  "gdd": "the-suborned-agent-gdd-v0.20.1-2026-10-14.md",
+  "gdd": "the-suborned-agent-gdd-v0.21.0-2026-10-15.md",
   "rule": "The rules a generated person must obey. Anything not in this file is rejected (GDD §01 house rules: unknown = reject). Every entry cites its GDD § in `src`; an entry the GDD does not state is marked `proposed: true` with a `reason`, for Sky to accept or strike. Tags in src: [B] built, [S] starting value to tune by playtest.",
   "person": {
     "is": ["routine", "need", "temperament", "memory"],
