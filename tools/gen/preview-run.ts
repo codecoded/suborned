@@ -17,7 +17,7 @@ export const PREVIEW_DIR = 'out/preview';
  * points it elsewhere).
  */
 export async function runPreview<S>(
-  p: Plugin<S>, o: Pick<Opts, 'input' | 'retriever' | 'retrieval'>, where = PREVIEW_DIR,
+  p: Plugin<S>, o: Pick<Opts, 'input' | 'scope' | 'retriever' | 'retrieval'>, where = PREVIEW_DIR,
 ): Promise<string> {
   const dir = resolve(root, where), before = { runs: process.env.LEVELS_RUNS, out: process.env.LEVELS_OUT };
   await rm(dir, { recursive: true, force: true });

@@ -1,0 +1,29 @@
+// A hash of the code a people verdict rests on (recorded in run.json, so replay can tell "the checker changed" from "the record
+// changed"): the expander and checker (tools/people), the people contracts, the plan checker's walk and geometry (tools/plan),
+// the seeded random source, this objective's own steps, and the corpus code the pinned texts are cut by. Tests are not code a
+// verdict rests on.
+import { readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { root } from '../../rag/config';
+import { hash } from '../../rag/corpus';
+
+const ts = (base: string, dir: string, deep = true): string[] =>
+  readdirSync(resolve(base, dir), { recursive: deep, encoding: 'utf8' })
+  .filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts') && !f.startsWith('test/'))
+  .sort()
+  .map(f => `${dir}/${f}`);
+
+export const VERDICT_FILES = [
+  'tools/world/gen/common.ts', 'tools/gen/sha.ts', 'tools/levels/pins.ts', 'tools/levels/rerun.ts',
+  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
+  'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
+  'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts',
+];
+export const peopleFiles = (base: string = root): string[] => [
+  ...ts(base, 'tools/people'), ...ts(base, 'tools/plan'), ...ts(base, 'contracts/people'), ...VERDICT_FILES,
+];
+
+export async function peopleHash(base: string = root): Promise<string> {
+  const text = async (f: string) => `${f}\n${await Bun.file(resolve(base, f)).text()}`;
+  return hash((await Promise.all(peopleFiles(base).map(text))).join('\n--\n'));
+}

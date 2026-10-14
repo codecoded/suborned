@@ -16,7 +16,7 @@ export type Verdict = { verdict: 'pass' | 'fail'; summary: string; faults: Fault
 export type Built = { out?: { sources?: string[] }; call?: { retrieval?: { hits?: { key: string; section?: string; text?: string }[] } } };
 /** `continue`: the id of a REJECTED run of the same subject to start from (continue.ts). `loop`: the rule version to run under, the current one unless a test needs the old (rules.ts). */
 export type Opts = {
-  input: string; seed?: string; rounds?: number; retriever: typeof retrieve; retrieval?: string; continue?: string; loop?: number;
+  input: string; scope?: string; seed?: string; rounds?: number; retriever: typeof retrieve; retrieval?: string; continue?: string; loop?: number;
   preview?: boolean; // no model call: each member answers with the objective's stand-in, so the prompts a real run would send can be read (preview.ts)
   // stop before a call whose estimate would take the run past this much; the run ends INCOMPLETE (ceiling.ts)
   maxUsd?: number;
@@ -82,7 +82,8 @@ export type Plugin<S = any> = {
   builders: Member[]; critic: Member;                       // builders run in this order; the critic is Keel
   header: Record<string, unknown>;                          // run.json fields replay needs to read this objective's runs (after `objective`)
   code: Code;
-  open(input: string): Promise<Subject<S>>;
+  scopes?: readonly string[];                               // the part of the world a run may be limited to (`--scope`); the first is the default
+  open(input: string, scope?: string): Promise<Subject<S>>;
   task(s: S, r: Round, key: string): Promise<string>;       // a builder's task text (the engine adds hand-offs, its previous proposal and the critic's faults)
   skip?(s: S, r: Round, key: string): boolean;              // a builder that cannot run this round
   assess(s: S, r: Round): Promise<Assessment>;              // apply the proposals, run the checks

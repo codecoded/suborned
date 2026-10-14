@@ -1,4 +1,4 @@
-// The retrieval corpus: agent GDD (by § section, then paragraph), human GDD (by heading), the district plan (by part, with its skyline) and the DecoKit catalogue.
+// The retrieval corpus: agent GDD (by § section, then paragraph), human GDD (by heading), the district plan (by part, with its skyline), the DecoKit catalogue, and (v4) life.json, the civic block, the missions and the people rules.
 // A source change changes chunk keys and the corpus hash, so retrieval refuses a stale index until re-ingest.
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync } from 'node:fs';
@@ -7,6 +7,7 @@ import { root } from './config';
 import { chunkHtml } from './corpus-html';
 import { KIT_FILE, kitChunks } from './kit-corpus';
 import { planChunks } from './plan-corpus';
+import { blockChunks, lifeChunks, missionChunks, peopleRulesChunks } from './people-corpus';
 
 export const hash = (text: string) => createHash('sha256').update(text).digest('hex');
 export type Chunk = { key: string; source: string; sourceHash: string; section: string; lineStart: number; lineEnd: number; text: string; authority: string; version: string; kind?: string };
@@ -35,11 +36,16 @@ export function chunkDocument(source: string, text: string, meta: Meta = { autho
 const latest = (part: string, ext: string) => `GDD/${readdirSync(resolve(root, 'GDD')).filter(f => f.includes(part) && f.endsWith(ext)).sort().at(-1)}`;
 const versionOf = (file: string) => file.match(/v\d+\.\d+\.\d+/)?.[0] ?? 'unversioned';
 export const sources = { agentGdd: () => latest('agent-gdd', '.md'), humanGdd: () => latest('-gdd-v', '.html'), plans: () => { const dir = process.env.SUBORNED_PLANS ?? 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.plan.json')).sort().map(f => `${dir}/${f}`); },
+  life: () => { const dir = 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.life.json')).sort().map(f => `${dir}/${f}`); },
+  block: () => { const f = 'contracts/world/civic-block.json'; return existsSync(resolve(root, f)) ? [f] : []; },
+  missions: () => { const dir = 'contracts/missions'; return readdirSync(resolve(root, dir), { withFileTypes: true }).filter(d => d.isDirectory() && existsSync(resolve(root, dir, d.name, 'mission.json'))).map(d => `${dir}/${d.name}/mission.json`).sort(); },
+  peopleRules: () => { const f = 'contracts/people/people.rules.json'; return existsSync(resolve(root, f)) ? [f] : []; },
   kit: () => { const f = process.env.SUBORNED_KIT ?? KIT_FILE; return existsSync(resolve(root, f)) ? f : undefined; } }; // SUBORNED_KIT: tests point it at a scratch kit
 
 /** Bump when chunking changes: runs record it, and replay labels a mismatch drift (runs without the field are v1: the whole § by paragraph).
- *  v3 (brief 007 F): the plan's signatures, megastructures and tower sites, and the DecoKit catalogue, are chunks (additive: no v2 chunk changed). */
-export const CHUNKER = 3;
+ *  v3 (brief 007 F): the plan's signatures, megastructures and tower sites, and the DecoKit catalogue, are chunks (additive: no v2 chunk changed).
+ *  v4 (brief 010 B): life.json, the civic block, the missions and the people rules are chunks (additive, appended after the kit: no v3 chunk changed). */
+export const CHUNKER = 4;
 export const SPLIT_OVER = 1000, SPLIT_OVER_SUB = 2000, MERGE_UNDER = 120; // a `###` subsection is already one focused entry (a role block), so it holds together longer
 const ENTRY = /^([A-Za-z][\w ()/,+·'.–-]{0,90}?)( \[[BSL]\])?:(\s|$)/;
 
@@ -92,5 +98,9 @@ export async function loadCorpus(override: Record<string, string> = {}): Promise
   for (const p of sources.plans()) chunks.push(...planChunks(p, await read(p)));
   const kit = sources.kit();
   if (kit) chunks.push(...kitChunks(kit, await read(kit))); // a run pins the kit digest, so a later adoption does not change its corpus
+  for (const f of sources.life()) chunks.push(...lifeChunks(f, await read(f)));
+  for (const f of sources.block()) chunks.push(...blockChunks(f, await read(f)));
+  for (const f of sources.missions()) chunks.push(...missionChunks(f, await read(f)));
+  for (const f of sources.peopleRules()) chunks.push(...peopleRulesChunks(f, await read(f)));
   return chunks;
 }

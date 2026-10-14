@@ -1,6 +1,6 @@
 // The command line of `bun run levels <objective> ...`: the words it knows. Anything else is an error, because a
 // misspelt flag (--previw, --rounds=1) would otherwise start a live three-round run.
-const VALUES = ['--plan', '--seed', '--rounds', '--continue', '--max-usd', '--approved-by'] as const;
+const VALUES = ['--plan', '--scope', '--seed', '--rounds', '--continue', '--max-usd', '--approved-by'] as const;
 const FLAGS = ['--preview'] as const;
 
 export type Args = { objective?: string; values: Map<string, string>; flags: Set<string> };

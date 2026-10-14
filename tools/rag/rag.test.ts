@@ -19,11 +19,18 @@ describe('corpus', () => {
   });
   test('the live corpus covers every agent GDD section, the human GDD and the plan', async () => {
     const chunks = await loadCorpus(), kinds = new Set(chunks.map(c => c.kind));
-    expect([...kinds].sort()).toEqual(['gdd-agent', 'gdd-human', 'kit', 'plan']);
+    expect([...kinds].sort()).toEqual(['block', 'gdd-agent', 'gdd-human', 'kit', 'life', 'mission', 'people-rules', 'plan']);
     const sections = new Set(chunks.filter(c => c.kind === 'gdd-agent').map(c => c.section.slice(0, 3)));
     for (let n = 1; n <= 15; n++) expect(sections.has(`§${String(n).padStart(2, '0')}`)).toBe(true);
     expect(chunks.some(c => c.kind === 'plan' && c.text.includes('stopSpacing'))).toBe(true);
     expect(new Set(chunks.map(c => c.key)).size).toBe(chunks.length);
+  });
+  test('a cast-table query finds the café: its trade, hours and staff, its entrance and its employer', async () => {
+    const chunks = await loadCorpus(), text = (kind: string, part: string) => chunks.find(c => c.kind === kind && c.section.includes(part))?.text ?? '';
+    expect(text('life', 'trade diner')).toMatch(/open 6:00 to 24:00.*8 staff on shift per unit/);
+    expect(text('block', 'building cafe')).toContain('cafe-entrance');
+    expect(text('people-rules', 'roles and employers')).toContain('"trade":"diner"');
+    expect(text('life', 'area records staffing')).toContain('rocket-west');
   });
   test('agent GDD chunks point at their true file lines', async () => {
     const chunk = (await loadCorpus()).find(c => c.kind === 'gdd-agent' && c.text.includes('### Datum'))!;
@@ -36,8 +43,8 @@ describe('skyline and kit chunks (chunker v3)', () => {
   const plan = async () => JSON.parse(await Bun.file(join(root, 'contracts/world/harbour-district.plan.json')).text());
   const kitText = () => Bun.file(join(root, 'contracts/world/kit.json')).text();
 
-  test('the chunker version is 3, and the live plan yields a chunk per signature, megastructure and tower site', async () => {
-    expect(CHUNKER).toBe(3);
+  test('the chunker version is 4 (3 + life, block, missions, people rules), and the live plan yields a chunk per signature, megastructure and tower site', async () => {
+    expect(CHUNKER).toBe(4);
     const p = await plan(), chunks = (await loadCorpus()).filter(c => c.kind === 'plan'), sections = chunks.map(c => c.section);
     for (const s of p.signatures) expect(sections).toContain(`${p.name} › signature › ${s.id}`);
     for (const m of p.megastructures) expect(sections).toContain(`${p.name} › megastructure › ${m.id}`);
