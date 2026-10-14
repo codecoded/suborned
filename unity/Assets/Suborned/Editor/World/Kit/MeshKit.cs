@@ -14,6 +14,7 @@ namespace Suborned.World
         readonly List<int> t = new();
         List<Vector2> uv; // optional (atlas swatch per vertex, Vela's facade kit); padded with zeros where unset
         List<Color32> col; // optional (Vela's procedural facade: R = ambient occlusion, A = surface class); padded with white
+        List<Vector3> nrm; // optional (a baked model's own normals); zero where Build computes them
 
         static Vector3 W(Vector2 p, float h) => new(p.x, h, p.y);
 
@@ -26,13 +27,48 @@ namespace Suborned.World
         public Vector3 At(int i) => v[i];
 
         void PadUv() { uv ??= new List<Vector2>(); while (uv.Count < v.Count) uv.Add(default); }
+        void PadNormals() { nrm ??= new List<Vector3>(); while (nrm.Count < v.Count) nrm.Add(default); }
 
         /// <summary>Sets every vertex's UV to its place on plan, one repeat per `tile` metres (a paving texture laid in world space,
         /// so it runs unbroken across plots and batches).</summary>
-        public MeshKit PlanarUv(float tile)
+        /// A side face (a plot's kerb-height edge) samples `inset` metres inside its edge, as the paving just above it: on its own
+        /// plan line it would repeat one row of texels down its height, a joint lying along the edge as a dark dashed line.
+        public MeshKit PlanarUv(float tile, float inset)
         {
             PadUv();
             for (int i = 0; i < v.Count; i++) uv[i] = new Vector2(v[i].x, v[i].z) / tile;
+            for (int i = 0; i < t.Count; i += 3)
+            {
+                var n = Vector3.Cross(v[t[i + 1]] - v[t[i]], v[t[i + 2]] - v[t[i]]);
+                if (n.sqrMagnitude < 1e-12f || Mathf.Abs(n.y) > 0.5f * n.magnitude) continue; // a top or bottom face
+                var into = -new Vector2(n.x, n.z).normalized * inset;
+                for (int k = 0; k < 3; k++) { var p = v[t[i + k]]; uv[t[i + k]] = (new Vector2(p.x, p.z) + into) / tile; }
+            }
+            return this;
+        }
+
+        /// <summary>Appends submesh `sub` of a model mesh moved by `m` (a kit piece baked into a batch): the vertices it uses, their
+        /// UVs and colours, its triangles. Normals are recalculated at Build.</summary>
+        public MeshKit Mesh(Mesh mesh, int sub, Matrix4x4 m)
+        {
+            var mv = mesh.vertices; var muv = mesh.uv; var mc = mesh.colors32; var mn = mesh.normals; var tri = mesh.GetTriangles(sub);
+            var map = new Dictionary<int, int>(); bool flip = m.determinant < 0f; var normal = m.inverse.transpose;
+            if (mn.Length == mv.Length) PadNormals();
+            if (muv.Length == mv.Length) PadUv();
+            if (mc.Length == mv.Length) { col ??= new List<Color32>(); while (col.Count < v.Count) col.Add(new Color32(255, 255, 255, 255)); }
+            for (int i = 0; i + 2 < tri.Length; i += 3)
+                for (int k = 0; k < 3; k++)
+                {
+                    int src = tri[i + (flip ? 2 - k : k)];
+                    if (!map.TryGetValue(src, out int dst))
+                    {
+                        map[src] = dst = v.Count; v.Add(m.MultiplyPoint3x4(mv[src]));
+                        if (nrm != null) nrm.Add(mn.Length == mv.Length ? normal.MultiplyVector(mn[src]).normalized : default);
+                        if (uv != null) uv.Add(muv.Length == mv.Length ? muv[src] : default);
+                        if (col != null) col.Add(mc.Length == mv.Length ? mc[src] : new Color32(255, 255, 255, 255));
+                    }
+                    t.Add(dst);
+                }
             return this;
         }
 
@@ -70,6 +106,11 @@ namespace Suborned.World
                 col ??= new List<Color32>();
                 while (col.Count < v.Count) col.Add(new Color32(255, 255, 255, 255));
                 for (int i = 0; i < k.v.Count; i++) col.Add(k.col != null && i < k.col.Count ? k.col[i] : new Color32(255, 255, 255, 255));
+            }
+            if (nrm != null || k.nrm != null)
+            {
+                PadNormals();
+                for (int i = 0; i < k.v.Count; i++) nrm.Add(k.nrm != null && i < k.nrm.Count ? k.nrm[i] : default);
             }
             v.AddRange(k.v);
             foreach (var i in k.t) t.Add(b + i);
@@ -236,6 +277,12 @@ namespace Suborned.World
             if (uv != null) { PadUv(); m.SetUVs(0, uv); }
             if (col != null) { while (col.Count < v.Count) col.Add(new Color32(255, 255, 255, 255)); m.SetColors(col); }
             m.RecalculateNormals();
+            if (nrm != null)
+            {
+                PadNormals(); var n = m.normals;
+                for (int i = 0; i < n.Length; i++) if (nrm[i] != default) n[i] = nrm[i];
+                m.SetNormals(n);
+            }
             m.RecalculateBounds();
             return m;
         }

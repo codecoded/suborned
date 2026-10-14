@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -193,6 +194,7 @@ namespace Suborned.World
         {
             Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
             Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string,
+            Materials = J.Get(m, "materials") is Dictionary<string, object> slots ? slots.ToDictionary(kv => kv.Key, kv => (string)kv.Value) : null,
         };
 
         static Vector3 V3(object o, string key) { var a = J.A(o, key); return new Vector3((float)(double)a[0], (float)(double)a[1], (float)(double)a[2]); }

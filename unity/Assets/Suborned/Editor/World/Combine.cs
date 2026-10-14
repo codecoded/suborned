@@ -34,6 +34,13 @@ namespace Suborned.World
             Put(el, kit, mat, $"{layer}|{mat.name}|{Mathf.FloorToInt(c.x / tile)}|{Mathf.FloorToInt(c.z / tile)}");
         }
 
+        /// <summary>Adds a kit piece's geometry, baked, to its layer's tile batch for this material: counted as kit, not procedural.</summary>
+        public static void Baked(Transform el, string layer, MeshKit kit, Material mat)
+        {
+            Add(el, layer, kit, mat);
+            kitTris[el] = (kitTris.TryGetValue(el, out var k) ? k : 0) + kit.TriangleCount;
+        }
+
         /// <summary>Adds el's part to the batch of this layer and material that already reaches it on plan: the one it grows least,
         /// by no more than `reach` metres (then the tightest, then by key). Paint on a road goes into kerbs drawn there anyway:
         /// no renderer of its own, and no batch drawn from further off than before. Returns the growth in metres; -1 when no

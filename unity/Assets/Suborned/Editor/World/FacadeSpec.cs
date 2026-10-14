@@ -12,6 +12,10 @@ namespace Suborned.World
         public readonly Dictionary<string, string[]> Families = new();
         public readonly Dictionary<string, (string[] Names, int[] Weights)> AreaFamilies = new();
         public readonly Dictionary<string, string[]> AreaEnamel = new();
+        /// <summary>An area's window-frame swatch where it is not white (`areas.<area>.trim`: the civic block's brass hairline).</summary>
+        public readonly Dictionary<string, string> AreaTrim = new();
+        /// <summary>Hosts that take an area whatever their frontages say (facade.json `hostAreas`: a host id, and the masses under it, → area).</summary>
+        public readonly Dictionary<string, string> HostAreas = new();
         public readonly Dictionary<string, string[]> Trades = new();
         public readonly Dictionary<string, string> RoofItems = new();
         public readonly Dictionary<string, string> Icons = new();
@@ -51,7 +55,10 @@ namespace Suborned.World
                 foreach (var f in fam) { names.Add(f.Key); w.Add((int)(double)f.Value); }
                 AreaFamilies[kv.Key] = (names.ToArray(), w.ToArray());
                 AreaEnamel[kv.Key] = Strs(J.Get(kv.Value, "enamel"));
+                if (J.Get(kv.Value, "trim") is string trim) AreaTrim[kv.Key] = trim;
             }
+            if (J.Get(o, "hostAreas") is Dictionary<string, object> ha)
+                foreach (var kv in ha) HostAreas[kv.Key] = AreaFamilies.ContainsKey((string)kv.Value) ? (string)kv.Value : throw new InvalidDataException($"World: facade.json hostAreas: `{kv.Value}` is not an area");
             foreach (var kv in J.O(J.Get(o, "trades"))) Trades[kv.Key] = Strs(kv.Value);
             foreach (var kv in J.O(J.Get(o, "roofItems"))) RoofItems[kv.Key] = (string)kv.Value;
             foreach (var kv in J.O(J.Get(o, "icons"))) Icons[kv.Key] = (string)kv.Value;

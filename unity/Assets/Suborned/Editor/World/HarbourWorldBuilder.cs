@@ -59,7 +59,20 @@ namespace Suborned.World
             }
         }
 
+        /// <summary>Builds and saves the scene. A build that fails leaves an empty scene, not its half-built one open and unsaved:
+        /// the next build would stop on Unity's "Scene(s) Have Been Modified" dialog, which nothing driving the Editor from outside
+        /// can answer (the main thread waits in it).</summary>
         public static void BuildFrom(string path)
+        {
+            try { Construct(path); }
+            catch
+            {
+                if (!Application.isBatchMode) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                throw;
+            }
+        }
+
+        static void Construct(string path)
         {
             var t0 = DateTime.UtcNow;
             var world = WorldReader.Load(path);

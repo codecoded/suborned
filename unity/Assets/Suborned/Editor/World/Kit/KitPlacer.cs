@@ -154,6 +154,29 @@ namespace Suborned.World
             return t;
         }
 
+        /// <summary>The piece r baked into `layer`'s tile batches by material instead of standing as an instance (its LOD0, placed as
+        /// Place places it): many small pieces that never fade (bed tufts, paving bands, bollards) then draw as a few batches.
+        /// slots: this piece's material slots drawn in another kit material (KitSlots).</summary>
+        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots)
+        {
+            var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
+            var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? 0f : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
+            foreach (var mr in KitLods.Lod0(root.gameObject))
+            {
+                var mesh = mr.GetComponent<MeshFilter>().sharedMesh; var mats = mr.sharedMaterials;
+                for (int s = 0; s < mesh.subMeshCount; s++)
+                {
+                    var kit = new MeshKit().Mesh(mesh, s, trs * mr.transform.localToWorldMatrix);
+                    if (kit.Empty) continue;
+                    Combine.Baked(el, layer, kit, KitSlots.For(mats[Mathf.Min(s, mats.Length - 1)], slots, used)); n += kit.TriangleCount;
+                }
+            }
+            if (n == 0) throw new InvalidDataException($"World: kit `{r.Id}` has no meshes");
+            KitSlots.AllUsed(id, slots, used);
+            placed[layer] = Placed(layer) + 1;
+            tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + n;
+        }
+
         /// <summary>Blade and wall signs (`signKit`) on the frontage markers ShopKit built: the piece at its At, lowest point at its Base.</summary>
         public void Signs(Transform layer, List<FrontageDto> frontages)
         {

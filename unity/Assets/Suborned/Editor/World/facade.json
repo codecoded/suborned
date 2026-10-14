@@ -19,24 +19,26 @@
     "t_couture": "#d78fc4", "t_market": "#b8d84a", "t_grocer": "#7fcf5a", "t_robot": "#1cb9c6", "t_radio": "#5f8fd0", "t_launder": "#9fd1c9",
     "t_hotel": "#d0c848", "t_pawn": "#7a7e83", "t_barber": "#f3eadb", "t_civic": "#b7c4c9", "t_garage": "#8fa5c8", "t_cinema": "#d8b4e0",
     "t_dark": "#344148", "t_chandler": "#5a8fa8", "t_hall": "#a9b0b4",
-    "e_coral": "#fc9c84", "e_apricot": "#fcc4ac", "e_rose": "#e88a96", "e_cobalt": "#3b8fc8", "e_sun": "#d0c848", "e_teal": "#36b0a8", "e_seafoam": "#72b5a7", "e_deepteal": "#1f6c67", "e_mint": "#7fd0b8", "e_lilac": "#b4a3d6", "e_sky": "#5bb0e0", "e_green": "#5cbf86",
+    "e_coral": "#fc9c84", "e_apricot": "#fcc4ac", "e_rose": "#e88a96", "e_cobalt": "#3b8fc8", "e_sun": "#d0c848", "e_teal": "#36b0a8", "e_seafoam": "#72b5a7", "e_seafoam_pale": "#9bcfc2", "civic_w": "#eee9da", "civic_trim": "#99784d", "e_mint": "#7fd0b8", "e_lilac": "#b4a3d6", "e_sky": "#5bb0e0", "e_green": "#5cbf86",
     "roof_a": "#faf6ea", "roof_b": "#e6f5ee", "roof_c": "#fbe9dc", "roof_d": "#e8f2f8", "roof_e": "#f2ead6",
     "leaf_a": "#8ed17e", "leaf_b": "#a6e29c", "leaf_c": "#6cc481", "pool": "#3fc8e0"
   },
   "families": {
     "cream": ["cream_w", "cream_p", "cream_r"], "peach": ["peach_w", "peach_p", "peach_r"], "mint": ["mint_w", "mint_p", "mint_r"],
-    "sky": ["sky_w", "sky_p", "sky_r"], "sand": ["sand_w", "sand_p", "sand_r"], "ivory": ["ivory_w", "ivory_p", "ivory_r"]
+    "sky": ["sky_w", "sky_p", "sky_r"], "sand": ["sand_w", "sand_p", "sand_r"], "ivory": ["ivory_w", "ivory_p", "ivory_r"], "civic": ["civic_w", "e_seafoam", "roof_e"]
   },
   "areas": {
     "lantern":   { "families": { "peach": 4, "cream": 4, "sand": 3 },            "enamel": ["e_coral", "e_teal", "gold", "e_rose", "e_apricot"] },
     "docks":     { "families": { "sky": 2, "cream": 4, "mint": 2, "sand": 3 },    "enamel": ["e_teal", "e_sun", "e_cobalt", "e_coral"] },
     "crescent":  { "families": { "mint": 2, "sky": 2, "peach": 3, "cream": 4 },   "enamel": ["e_mint", "e_teal", "e_rose", "e_sun", "e_lilac"] },
-    "records":   { "families": { "ivory": 7, "cream": 3 },                         "enamel": ["e_seafoam", "e_deepteal", "e_seafoam", "e_apricot"] },
+    "records":   { "families": { "ivory": 7, "cream": 3 },                         "enamel": ["gold", "e_teal", "navy", "e_coral"] },
+    "civic":     { "families": { "civic": 1 },                                    "enamel": ["e_seafoam", "e_seafoam_pale"], "trim": "civic_trim" },
     "harbour":   { "families": { "cream": 4, "sky": 2, "mint": 2, "peach": 2, "sand": 2 }, "enamel": ["e_teal", "e_coral", "e_sun", "e_mint", "e_cobalt"] },
     "lamplight": { "families": { "cream": 4, "peach": 3, "sand": 2, "mint": 1 },  "enamel": ["e_coral", "e_teal", "e_sun", "e_rose", "e_apricot"] },
     "gardens":   { "families": { "mint": 3, "cream": 4, "sky": 2 },               "enamel": ["e_mint", "e_teal", "e_green", "e_coral", "e_sun"] }
   },
-  "paletteOverride": { "gold_trim": "#d0c848" },
+  "paletteOverride": { "gold_trim": "#c9c08e" },
+  "hostAreas": { "civic/cafe": "civic", "civic/civic-office": "civic" },
   "glass": ["glass_clear"],
   "roofs": ["roof_a", "roof_b", "roof_c", "roof_d", "roof_e"],
   "roofItems": { "trim": "@A", "column": "chrome", "park": "@leaf", "sign": "@B", "roof": "paper", "deck": "paper", "water": "pool", "awning": "@B", "landmark": "cobalt" },

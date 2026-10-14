@@ -25,10 +25,12 @@ namespace Suborned.World
             return t;
         }
 
+        const float UvInset = 0.1f; // metres: wider than a paving joint
+
         /// <summary>Adds a part to element `el` in surface's material; warns on polygon repairs.</summary>
         public void Part(Transform el, string name, MeshKit kit, string surface)
         {
-            if (look.Tile(surface) is > 0f and var tile) kit.PlanarUv(tile);
+            if (look.Tile(surface) is > 0f and var tile) kit.PlanarUv(tile, UvInset);
             Part(el, name, kit, look.Mat(surface));
         }
 

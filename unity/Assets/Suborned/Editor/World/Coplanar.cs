@@ -63,7 +63,7 @@ namespace Suborned.World
         public static List<MassDto> Masses(List<MassDto> masses)
         {
             var res = new List<MassDto>(masses.Count);
-            foreach (var m in masses) res.Add(new MassDto { Id = m.Id, Surface = m.Surface, Ring = Poly.Clean(m.Ring), Base = m.Base, Height = m.Height, Kit = m.Kit });
+            foreach (var m in masses) res.Add(m.With(Poly.Clean(m.Ring))); // every field: a copy that named them dropped groundBy and fade
             for (int i = 0; i < res.Count; i++)
                 for (int j = i + 1; j < res.Count; j++)
                 {

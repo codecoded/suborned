@@ -7,7 +7,7 @@ namespace Suborned.World
     /// <summary>Per-building colours and style, decided once per host (a building: its podium and body share them), seeded by id.</summary>
     public sealed class Host
     {
-        public string Id, Area, Style, Wall, Plinth, Roof, A, B;
+        public string Id, Area, Style, Wall, Plinth, Roof, A, B, Trim;
         public Vector2[] BodyRing;
         public readonly List<FrontageDto> Fronts = new();
     }
@@ -57,11 +57,13 @@ namespace Suborned.World
 
         void Fill(Host h, string area)
         {
+            foreach (var kv in spec.HostAreas) if (h.Id == kv.Key || h.Id.StartsWith(kv.Key + "/")) area = kv.Value; // the civic block's own palette
             h.Area = spec.AreaFamilies.ContainsKey(area) ? area : "harbour";
             var d = new Dice(h.Id);
             var (names, w) = spec.AreaFamilies[h.Area]; int total = w.Sum(), r = d.Int(total), k = 0;
             while (r >= w[k]) { r -= w[k]; k++; }
             var fam = spec.Families[names[k]];
+            h.Trim = spec.AreaTrim.TryGetValue(h.Area, out var trim) ? trim : "white";
             h.Wall = fam[0]; h.Plinth = fam[1]; h.Roof = d.Int(3) == 0 ? spec.Roofs[d.Int(spec.Roofs.Length)] : fam[2];
             var en = spec.AreaEnamel[h.Area]; int ia = d.Int(en.Length);
             h.A = en[ia]; h.B = en[(ia + 1 + d.Int(en.Length - 1)) % en.Length];
@@ -114,7 +116,10 @@ namespace Suborned.World
                 if (m.Kit != null)
                 {
                     var el = Nodes.Element(layer, m.Id);
-                    placer.Place(el, layer.name, m.Kit, m.Kit.At, placer.PivotForLowest(m.Kit, m.Kit.Base), 0f);
+                    float z = placer.PivotForLowest(m.Kit, m.Kit.Base);
+                    // what the play camera may ghost stays a piece of its own (FadeTags tags renderers); the rest joins the block's batches
+                    if (m.Fade) KitSlots.Swap(placer.Place(el, layer.name, m.Kit, m.Kit.At, z, 0f), m.Id, m.Materials);
+                    else placer.Bake(el, layer.name, m.Id, m.Kit, m.Kit.At, z, m.Materials);
                     // tools/world/build.ts `plinth` mode: a monument piece shorter than its mass stands on a plinth of the mass ring up to
                     // kit.base (the steward robot). A canopy piece (boarding pavilions) also starts above its mass base but hangs at the
                     // top, its piers separate: no plinth when the gap is most of the mass (the export has no flag for it yet).
@@ -261,7 +266,7 @@ namespace Suborned.World
 
         void Window(MeshKit M, MeshKit G, in WallFrame w, Ctx c, float s0, float s1, float z0, float z1)
         {
-            sf.Rect(M, "white", w, s0 - 0.1f, s1 + 0.1f, z0 - 0.1f, z1 + 0.1f, 0.04f);
+            sf.Rect(M, c.H.Trim, w, s0 - 0.1f, s1 + 0.1f, z0 - 0.1f, z1 + 0.1f, 0.04f);
             sf.Rect(G, c.Glass[c.Dice.Int(c.Glass.Length)], w, s0, s1, z0, z1, 0.08f);
         }
 

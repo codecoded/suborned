@@ -48,6 +48,18 @@
       "value": 1,
       "smoothness": 0.1
     },
+    "bed-kerb": {
+      "palette": "harbour.civic",
+      "value": 1,
+      "smoothness": 0.2,
+      "material": "DK_Limestone"
+    },
+    "bed-hedge": {
+      "palette": "harbour.park",
+      "value": 1,
+      "smoothness": 0.1,
+      "material": "DK_Leaf_CivicDark"
+    },
     "median": {
       "palette": "harbour.median",
       "value": 1,

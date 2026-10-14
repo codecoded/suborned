@@ -128,7 +128,7 @@ namespace Suborned.World
             m.SetColor("_Haze", haze);
         }
 
-        const string KitMaterials = "Assets/Suborned/Kit/Materials";
+        public const string KitMaterials = "Assets/Suborned/Kit/Materials";
 
         /// <summary>Metres per repeat of a surface's texture laid on plan (look.json `tile`, with `material`); 0 = the surface has none.</summary>
         public float Tile(string surface) => J.Get(Surface(surface), "tile") is double t ? (float)t : 0f;
