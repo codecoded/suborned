@@ -2,9 +2,9 @@
   "schema": "suborned.plan/1",
   "id": "harbour-district",
   "name": "Harbour District",
-  "version": "0.2.0",
-  "date": "2026-10-13",
-  "status": "transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A",
+  "version": "0.3.0",
+  "date": "2026-10-14",
+  "status": "transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted",
   "frame": { "units": "m", "x": "east", "y": "north", "origin": "Crown Circus centre", "unity": "(x, height, y)" },
   "sheet": {
     "drawing": "SBN-PLN-001",
@@ -230,7 +230,7 @@
             "plot": "avenue-court",
             "rect": [-68, -48, 46, 66],
             "storeys": 30,
-            "why": "brief 007: the first of the rival spires, the Googie needle at the Circus Road corner of the avenue: seen past the Sphere from Sphere Gardens station and up Crown Avenue from the circus, beside SpaceHQ; its podium corner stands 58 m from the circus centre, clear of the plot's circus notch (r 51)",
+            "why": "The first rival, at the foot of Crown Avenue's west side beside the circus: the saucer-and-needle spire of blocks/saucer_spires standing next to the dominant, as the needles stand round the central tower in blocks/needle_trio. Saucer floor at storey 30 (100.8 over the deck), tip 167.8, under rivalMax 200 and 259 m or more inland of the harbour band.",
             "regen": {
               "from": "Tower_Needle",
               "body": [16.4, 16.4, 100.8],
@@ -239,14 +239,16 @@
               "why": "Tower_Needle (saucer_spires) is a fluted 11 m shaft, not a stack of floors: the saucer floor moves from the kit's 118 to 28 × 3.6 = 100.8 over the podium deck (storey 30), the foot, fins and rings as built. 9.43 + 100.8 + 57.6 = 167.8, a clear step under the Starburst. The saucer (Ø 34) overhangs the 20 m site by 7 m each way at 110 m, over the podium (the floorplate is the shaft, Ø 16.4 at the foot)"
             },
             "crownType": "needle",
-            "concept": "~/Projects/the-suborned-store/concepts/Blocks/saucer_spires.png"
+            "crownWhy": "Tower_Needle keeps its own crown (grammar §6): saucer restaurant, upper saucer and needle as built. The nearest needle-type crown is none within 150 m: starburst and disc are its neighbours.",
+            "concept": "~/Projects/the-suborned-store/concepts/Blocks/saucer_spires.png",
+            "conceptTiles": ["blocks/saucer_spires", "blocks/needle_trio"]
           },
           {
             "id": "avenue-starburst",
             "plot": "avenue-court",
             "rect": [-64, -40, 108, 132],
             "storeys": 42,
-            "why": "brief 007: the tallest rival, mid-avenue: the gold starburst crown answers SpaceHQ's disc across the circus and stands over the Sphere from Circus Road",
+            "why": "The tallest rival, mid-avenue: tip 194.3, 0.77 of SpaceHQ's 252, so the dominant stays a quarter taller as in blocks/needle_trio. Its gold starburst answers SpaceHQ's atom across the circus (the earlier text said disc; the crown is now an atom) and stands over the Sphere seen from Circus Road.",
             "regen": {
               "from": "Tower_Starburst",
               "body": [17, 16, 144],
@@ -256,14 +258,16 @@
               "why": "Tower_Starburst is 17 × 16 and needs only its tiers cut to the 3.6 m grid (kit 54 / 100 / 132 / 146 → 54 / 100.8 / 129.6 / 144, 40 floors over the 2-storey podium = storey 42); 9.43 + 144 + 1.1 + 39.8 = 194.3 ≤ rivalMax 200"
             },
             "crownType": "starburst",
-            "concept": "~/Projects/the-suborned-store/concepts/Blocks/needle_trio.png"
+            "crownWhy": "Tower_Starburst keeps its own gold ziggurat, starburst and chrome needle (grammar §6); the starburst on a shaft is the clock-tower crown of atomic/monorail_terminal. No other starburst tower within 150 m.",
+            "concept": "~/Projects/the-suborned-store/concepts/Blocks/needle_trio.png",
+            "conceptTiles": ["blocks/needle_trio", "atomic/monorail_terminal"]
           },
           {
             "id": "avenue-gate-w",
             "plot": "avenue-court",
             "rect": [-56, -32, 178, 202],
             "storeys": 33,
-            "why": "brief 007: with avenue-gate-e, the gate at the north end of Crown Avenue: two DiscTowers 88 m apart carry the SkyBridge over the avenue (towers.skyBridges avenue-gate), framing the view from the circus north to Crown Road",
+            "why": "West tower of the Crown Avenue gate: with avenue-gate-e it frames the avenue's north end, centres at x -44 and 44, 88 m apart, which is the SkyBridge's span as built, so the bridge between towers of blocks/mixed_skyline stands without regeneration. Tip 165.6, under rivalMax 200.",
             "regen": {
               "from": "DiscTower",
               "body": [22, 22, 111.6],
@@ -272,24 +276,28 @@
               "why": "DiscTower (sky_bridges) is a fluted round shaft (foot r 11, shaft r 9); its shaft top moves 0.4 m from 112 to 31 × 3.6 = 111.6 so the disc sits on the storey grid; on the podium deck 9.43 + 111.6 + 44.6 = 165.6. The disc overhangs the 24 m site at 121 m, over the podium"
             },
             "crownType": "disc",
-            "concept": "~/Projects/the-suborned-store/concepts/Blocks/mixed_skyline.png"
+            "crownWhy": "DiscTower keeps its own observation disc, jib and mast (grammar §6); the pair with avenue-gate-e is a matched pair, excepted from the neighbour rule.",
+            "concept": "~/Projects/the-suborned-store/concepts/Blocks/mixed_skyline.png",
+            "conceptTiles": ["blocks/mixed_skyline", "blocks/saucer_spires"]
           },
           {
             "id": "avenue-gate-e",
             "plot": "crescent-court",
             "rect": [32, 56, 178, 202],
             "storeys": 33,
-            "why": "pair of avenue-gate-w across Crown Avenue (centres x ±44, 88 m apart = the kit SkyBridge's span)",
+            "why": "Pair of avenue-gate-w across Crown Avenue (centres x ±44, 88 m apart, the kit SkyBridge's span); the SkyBridge avenue-gate joins the two at floor 67.03, the bridge between towers of blocks/mixed_skyline.",
             "regen": { "from": "DiscTower", "same": "avenue-gate-w", "why": "matched pair, mirrored" },
             "crownType": "disc",
-            "concept": "~/Projects/the-suborned-store/concepts/Blocks/mixed_skyline.png"
+            "crownWhy": "Matched pair of avenue-gate-w, mirrored (grammar §6 neighbour rule excepts matched pairs).",
+            "concept": "~/Projects/the-suborned-store/concepts/Blocks/mixed_skyline.png",
+            "conceptTiles": ["blocks/mixed_skyline", "blocks/saucer_spires"]
           },
           {
             "id": "crescent-terrace",
             "plot": "crescent-court",
             "rect": [107, 133, 147, 173],
             "storeys": 29,
-            "why": "brief 007: the hanging-gardens tower of the Crescent's housing court, stepping down to the court as Crown Terraces steps to the Sphere: the cluster's low rival, between the Avenue Gate and the crescent-tower atom",
+            "why": "The lowest rival and the cluster's east end, inside the Crescent Lane court: the planted, stepping tower of blocks/hanging_terraces, its terraces cut to the 3.6 m grid. Tip 122.7 steps the skyline down from the avenue spires toward the harbour; at x 107 to 133 it stands 179 m or more from the quay edge (x 312), outside the 150 m band the Skyport Tower (108) rules.",
             "regen": {
               "from": "Tower_Terrace",
               "body": [24, 22, 97.2],
@@ -299,7 +307,9 @@
               "why": "Tower_Terrace (hanging_terraces) is 24 × 22: its terraces move from 14 / 28 / 42 / 56 / 96 to the 3.6 m grid (4 floors a terrace, the shaft to 27 floors = storey 29); 9.43 + 97.2 + 16.1 = 122.7. Greenery spills over each parapet (hanging())"
             },
             "crownType": "finial",
-            "concept": "~/Projects/the-suborned-store/concepts/Blocks/hanging_terraces.png"
+            "crownWhy": "Tower_Terrace keeps its own belvedere and finial (grammar §6). The nearest other finial, parade-gate-n, is about 200 m away (over 150).",
+            "concept": "~/Projects/the-suborned-store/concepts/Blocks/hanging_terraces.png",
+            "conceptTiles": ["blocks/hanging_terraces"]
           }
         ]
       },
@@ -412,7 +422,7 @@
           "note": "every concourse piece reaches the street by its own connectors or through a station's"
         }
       },
-      "station": "A sky rail station's platforms are side platforms at concourse z 24, outer edge 8 m from the line (beamCentres/2 + 0.75 beam + 4 m platform). Each station reaches the street by ≥ 2 stair-and-escalator banks (one each side of the line) and ≥ 1 lift each side; banks land on public ground (pavement, median, mall, park, quay), never on a plot. A megastructure concourse within 30 m joins the station by a skybridge ≥ 5 m wide. Tram stops stay at street level.",
+      "station": "A sky rail station's platforms are side platforms at concourse z 24, outer edge 8 m from the line (beamCentres/2 + 0.75 beam + 4 m platform). Each station reaches the street by ≥ 2 stair-and-escalator banks (one each side of the line) and ≥ 1 lift each side; banks land on public ground (pavement, median ≥ 8 m, mall, park, square, quay, or a station forecourt: an open plot kept for the bank), never on a built plot (use residential, mixed, commercial, industrial, port or civic), as transit.stationEntrance.siting says. The checker reads it so: L-5 and SF-13 fail a bank's stair tower, escalator run A or lift whose centre stands on a built plot; N-P2 fails a stop or station whose own point (at) stands on any plot, open or built. S1/gardens complies: its point (−160, 0) is on Circus Road's median, its north bank stands on the sphere-gardens park (y ≥ 9), its south bank on gardens-forecourt-w / -e (open, kept for it). A megastructure concourse within 30 m joins the station by a skybridge ≥ 5 m wide. Tram stops stay at street level.",
       "bridges": "A deck or bridge over a road keeps headroom.road under its structure (z − structureDepth − 0.18 ≥ 5.5); its supports stand in the zones its megastructure lists, never in a carriageway or the tram reservation. A bridge crossing the sky rail line passes ≥ 3 m clear of any pylon."
     },
     "frontage": {
@@ -1054,7 +1064,7 @@
           "why": "the timetable column makes the next tram a window the player can see coming (§01 orchestrate the city)"
         },
         "stationEntrance": {
-          "source": "standards.levels.station (L-5: ≥ 1 stair-and-escalator bank and ≥ 1 lift each side, landing on public ground, never a plot) · levels.connectors · levels.minWidth · EN 115-1 · Fruin 1971",
+          "source": "standards.levels.station (L-5: ≥ 1 stair-and-escalator bank and ≥ 1 lift each side, landing on public ground, never a built plot; a station forecourt is an open plot kept for the bank) · levels.connectors · levels.minWidth · EN 115-1 · Fruin 1971",
           "rise": "pavement 0.18 → concourse 24.0 = 23.82; via a deck mezzanine at 9.43 (levels.list.deck)",
           "stairTower": { "size": [7.0, 9.6, 27.6], "flights": 13, "risers": 149, "riser": 0.1599, "flightW": 3.0, "landing": 3.0, "why": "dog-leg: 2 × 3.0 flights (minWidth.stair) + 0.4 well + 2 × 0.3 walls = 7.0; 11 goings × 0.3 + 2 × 3.0 landings + 0.3 = 9.6; landing every 12 risers (connectors.stair); top = 24 + headroom.walk 3.0 + 0.6 roof", "time": { "up": 130, "down": 100, "tag": "[S]", "from": "Fruin: up ≈ 0.5 m/s, down ≈ 0.65 m/s along the going, + 13 landings" } },
           "escalators": { "runA": { "from": "street", "to": "deck", "rise": 9.25, "size": [21.0, 4.0], "why": "9.25 / tan 30° = 16.0 + 2 × 2.5 flat landings (EN 115-1)" }, "runB": { "from": "deck", "to": "concourse", "rise": 14.57, "size": [30.2, 4.0], "why": "14.57 / tan 30° = 25.2 + 2 × 2.5" }, "pairW": "2 × 1.6 (connectors.escalator.width) + 0.8 balustrades = 4.0", "mezzanine": [8.0, 6.0], "mezzanineWhy": "minWidth.deckAisle 8 × deck 6; joins any megastructure deck within 30 m", "time": { "total": 105, "tag": "[S]", "from": "0.5 m/s (EN 115-1 typical): run A 18.5 m incline 37 s + run B 29.1 m 58 s + mezzanine 10 s" } },
@@ -1062,7 +1072,7 @@
           "platformClear": 7.75,
           "platformClearWhy": "brief 007 (flyby 2026-10-13: stair towers stood on 6 of the 8 platforms, e.g. bank/S1/circus/l/tower y 4.75–11.75 through the platform y 3.75–7.75, because this siting said 'outside the beam envelope + 1 … under its platform'): skyrailEnvelope.half 3.75 + platform 4 (levels.station) = 7.75, the platform's outer edge. The stair tower (top 27.6 = 24 + 3.6) and the lift shaft (27.6) cannot stand under a deck at 24",
           "hallLane": { "half": 4.0, "z": "street", "along": "the line, through the signature's ground (SpaceHQ x 56–136)", "status": "Datum 2026-10-13: Splice's blanket exemption (banks inside a signature ground skip SF-13's walk-zone test) is not confirmed; the hall gets its own lane instead", "rule": "a station bank (tower, run A, lift) and any street item inside a signature's ground hall leaves the hall lane clear: |offset from the line| < half, at street level, the whole length of the ground. Inside the ground the mall's bands (walk 12–16) do not apply to banks; this lane does", "why": "inside the drum the Parade is a station hall, not the mall section: the legs (y ±20–40) close it, the banks pair either side of the line (towers and lifts ≥ platformClear 7.75 out), so the mall's walk bands at 12–16 fall between the banks and the legs, where a 7 m tower at 7.75 must enter them. The way through the hall is under the platforms instead: 2 × sections.mall.walk 4 = 8 m clear centred on the line, the two walks the mall carries outside, kept whole (the world as generated holds 12.5 m: newsstands at y ±6.25–7.75, banks ≥ 7.75)" },
-          "siting": "each bank stands outside the beam envelope (≥ skyrailEnvelope.half + 1 from the line), and its stair tower and lift shaft, which rise 3.6 m over the concourse, stand clear of the platform: ≥ platformClear from the line (outside the platform's outer edge, never under it), their concourse doors on that edge; escalator run A and the mezzanine (tops ≤ deck 9.43) may stand under the platform, and run B lands on it. It leaves every walk zone it touches at its minimum (SF-13). It may take a mall centre band, tree band, park, square, quay, a station forecourt (an open plot kept for it) or a median ≥ 8 m; on a pavement only where kerb + bank + walk fit. Where a carriageway lies under the platform, the bank stands on the nearest of these and its stair tower and run B meet the platform's outer edge by a bridge at concourse level (≥ minWidth.bridge 4.5) over the kerb and walk.",
+          "siting": "each bank stands outside the beam envelope (≥ skyrailEnvelope.half + 1 from the line), and its stair tower and lift shaft, which rise 3.6 m over the concourse, stand clear of the platform: ≥ platformClear from the line (outside the platform's outer edge, never under it), their concourse doors on that edge; escalator run A and the mezzanine (tops ≤ deck 9.43) may stand under the platform, and run B lands on it. It leaves every walk zone it touches at its minimum (SF-13). It may take a mall centre band, tree band, park, square, quay, a station forecourt (an open plot kept for it) or a median ≥ 8 m; on a pavement only where kerb + bank + walk fit; never a built plot (levels.station; L-5 and SF-13 read it). Where a carriageway lies under the platform, the bank stands on the nearest of these and its stair tower and run B meet the platform's outer edge by a bridge at concourse level (≥ minWidth.bridge 4.5) over the kerb and walk.",
           "kit": { "per side": ["stairTower 1", "escalator runs A + B", "lift 1", "station-entrance canopy over the bank foot", "newsstand 1", "phone-booth 2", "crossing at the bank foot"], "per station": ["kiosk-tickets 1", "public-clock 1", "vending-robot 2 on the concourse", "civic-robot-dock 1 at the main bank"] }
         }
       },
@@ -1103,7 +1113,7 @@
         { "id": "SF-10", "if": "a staffed item lacks a trade or occupation and hours", "why": "§09 generates its people from them" },
         { "id": "SF-11", "if": "a tree breaks trees.keepClear (junction 6, lamp 3, hydrant 2, pylon face 3, megastructure support 6, under a deck or bridge)", "why": "trees, lamps and structure don't fight" },
         { "id": "SF-12", "if": "a tram stop platform or a station side lacks any item of its transit kit", "why": "every stop and station reads complete (L-5 for stations)" },
-        { "id": "SF-13", "if": "a station bank (stairTower, escalator run A, lift kiosk) lands on a plot, inside the beam envelope + 1 m, or leaves a walk zone below its minimum", "why": "L-5 public ground, and the walk stays clear" },
+        { "id": "SF-13", "if": "a station bank (stairTower, escalator run A, lift kiosk) lands on a built plot (an open station forecourt is public ground), inside the beam envelope + 1 m, or leaves a walk zone below its minimum", "why": "L-5 public ground, and the walk stays clear" },
         { "id": "SF-14", "if": "an item other than a lamp or mooring cleat stands within 1.5 m of a quay edge", "why": "the quay edge is the water's" },
         { "id": "SF-15", "if": "a roof programme is picked whose minRoof does not fit the roof, or a roof item is < its setback from the parapet", "why": "every roof is buildable, then programmed (§15)" },
         { "id": "SF-16", "if": "frontage spill depth > its section's frontage zone", "why": "spill stays out of the walk" },
@@ -1381,7 +1391,7 @@
     { "id": "skyport", "name": "Skyport pad", "c": [650, 0], "r": 24, "kit": "SkyPad_Roof", "top": 12.2, "caisson": { "r": 24, "deck": 1.2, "how": "procedural: the kit's caisson drum language (skyport.py caisson(): concrete with a tidal band, rubber fenders, iron rubbing band, bollards, limestone deck) at r 24, deck 1.2 over the water; no apron, no pier (the loop has no passengers)" }, "pads": [{ "c": [662, 0], "yaw": 0 }, { "c": [644, 10.392], "yaw": 120 }, { "c": [644, -10.392], "yaw": 240 }], "kitFit": "Aster review 2026-10-12: the kit Skyport_Tower moved to the Skyport Tower megastructure (one tower, as the Blocks concept skyport_tower.png); the pad in the S1 loop is the low aircar apron it serves. Three SkyPad_Roof × 1.0 on the caisson deck, centres at r 12 from c (yaw = azimuth, so each ship stair on +X runs out toward the rim): disc R 7 deck 8.4, windsock tip 12.2; bbox half-diagonal 11.7 → outer reach 23.7 ≤ r 24; centres 20.8 apart > 2 × R 7. Top 12.2 sits under the beam (24) that passes ≥ 39.6 m from c; the only tall thing east of Harbour Road is the Skyport Tower" },
     { "id": "monument", "name": "Crown monument", "c": [0, 0], "r": 14, "kit": "CircusMonument", "top": 30, "kitFit": "brief 006 B: the orrery on a fluted column in a basin, 27.8 × 28.7 m: fits the circus garden (r 24) at × 1.0; r 6 → 14 = the basin, so walkers go round it in the garden ring; top 30 = the monument's height in the world build, under the Records crown 38" },
     { "id": "skylon", "name": "The Skylon", "c": [-123, -506], "r": 34.5, "kit": "Skylon", "top": 100, "crownType": "spindle", "kitFit": "brief 007 (the 006 B rejection lifted): the 90 m silver spindle floating 18 m up on cables from four lattice pylons, 68.1 × 28.5 × 108.1 m as built, long axis on x across Starline Green (park x −180 to −66, y −594 to −419). Scaled uniformly × 0.925 (top 100 / 108.1 binds; inside the kit's 0.9–1.1): 63 × 26.4 m, inside the disc Ø 69. Top 100 stays under the Skyport Tower (108) and over the Lantern beacon (86.1), 87 m east: the Lantern Quarter's day mark beside its night mark. A machine with no storeys or doors, so uniform scale is honest (the Sphere's precedent). The disc blocks walking (landmarks), the park's walks go round it", "concept": "~/Projects/the-suborned-store/concepts/Streets/spaceage/skylon_avenue.png" },
-    { "id": "liner-berth", "name": "Liner berth", "c": [372, -506], "r": 22, "kit": "LinerDock@liner-berth", "top": 104, "caisson": { "r": 22, "deck": 1.2, "how": "procedural: a berth caisson in the skyport pad's language (concrete with a tidal band, fenders, limestone deck) 20 m off the Market Docks crane walk (quay edge x 330 → caisson x 350–394), opposite the deck's cross-aisle; no walk to it (tenders and the crane walk's view, as the skyport pad)" }, "crownType": "starburst", "crownWhy": "brief 007 round 2 (Sky: “LinerDock reads as a lattice rocket gantry, not a liner berth”; rockets stay at the horizon pads): the terminal tower's needle mast with a gold starburst finial and a rose beacon, as Vela built LinerDock@liner-berth. SK-2: the other starburst, avenue-starburst (−52, 120), stands inland 756 m away (> 150)", "kitFit": "brief 007 round 2 (Vela, tools/decokit/liner.py): LinerDock@liner-berth, the deco liner terminal on the caisson, 38.6 × 39.1 × 102.5 m as built: a two-storey streamline terminal hall, a fluted harbour tower with an observation gallery, a glazed lantern and the starburst mast; on the water side (plan +x) two lattice boarding gantries with enclosed gangways, heads at plan x ≈ 392.6, 10 m and 17 m above the water (the liner's promenade and upper decks). Pivot = caisson centre on its deck: inside the disc Ø 44 at × 1.0, tip 1.2 + 102.5 = 103.7 ≤ top 104, so the Skyport Tower (108) stays the harbour's icon. Its ship is signatures.ocean-liner, moored alongside to the east. The kit's first LinerDock (the rocket on its fins in a gantry, 205.1 m) is retired from this site", "concept": "~/Projects/the-suborned-store/concepts/Horizon/pano/pano_harbour.png" }
+    { "id": "liner-berth", "name": "Liner berth", "c": [372, -506], "r": 22, "kit": "LinerDock@liner-berth", "top": 104, "caisson": { "r": 22, "deck": 1.2, "how": "procedural: a berth caisson in the skyport pad's language (concrete with a tidal band, fenders, limestone deck) 20 m off the Market Docks crane walk (quay edge x 330 → caisson x 350–394), opposite the deck's cross-aisle; no walk to it (tenders and the crane walk's view, as the skyport pad)" }, "crownType": "starburst", "crownWhy": "brief 007 round 2 (Sky: “LinerDock reads as a lattice rocket gantry, not a liner berth”; rockets stay at the horizon pads): the terminal tower's needle mast with a gold starburst finial and a rose beacon, as Vela built LinerDock@liner-berth. SK-2: the other starburst, avenue-starburst (−52, 120), stands inland 756 m away (> 150)", "kitFit": "brief 007 round 2 (Vela, tools/decokit/liner.py): LinerDock@liner-berth, the deco liner terminal on the caisson, 42.8 × 39.1 × 102.49 m as built (kit.json): a two-storey streamline terminal hall, a fluted harbour tower with an observation gallery, a glazed lantern and the starburst mast; on the water side (plan +x) two lattice boarding gantries with enclosed gangways, heads at plan x ≈ 392.6, 10 m and 17 m above the water (the liner's promenade and upper decks). Pivot = caisson centre on its deck: inside the disc Ø 44 (42.8 ≤ 44), tip 1.2 + 102.49 = 103.7 at × 1.0 ≤ top 104, so the Skyport Tower (108) stays the harbour's icon. The generator fits a landmark piece to its disc and top (tools/kit/fit.ts: × min(44 / 42.8, (104 − 1.2) / 102.49) = × 1.003), so today's export stands it at 104.0, 0.3 m over the as-built tip; top 103.7 would build it at × 1.0 (asked, not changed in 0.3.0). Its ship is signatures.ocean-liner, moored alongside to the east. The kit's first LinerDock (the rocket on its fins in a gantry, 205.1 m) is retired from this site", "concept": "~/Projects/the-suborned-store/concepts/Horizon/pano/pano_harbour.png" }
   ],
 
   "megastructures": [
@@ -1479,8 +1489,9 @@
           "opening": { "clearHalfWidth": 6.0, "z": [21.5, 29.0], "head": "arched, radius 6 (grammar §8)" },
           "storeys": "storeys 3–8 of the ranges (deck 9.43 to the roof 34.8) carried across the mall between the gate towers' podiums",
           "under": "the mall walks under it (clear 8.05 = deck 9.43 − structureDepth 1.2 − 0.18); the harbour-road concourse bridge (y 8–20) is its concourse floor where the two meet (x 272–288)",
-          "why": "brief 007: the Parade ends in a gate block between the twin gate towers; the train leaves the open Parade through it and crosses Harbour Road to the Harbour station, as Blocks/rail_through.png (the beam entering a tower block's mid-storeys). standards.skyrail.portal.running twin",
-          "concept": "~/Projects/the-suborned-store/concepts/Blocks/rail_through.png"
+          "why": "Unchanged, restated with its concept tile. The Parade stays open to the sky and S1 passes through the gate block only: storeys 3 to 8 of the ranges are carried across the mall between the gate towers' podiums, and the twin beams run through the standard running opening (12.0 × 7.5, sill at the beam underside 21.5, head 29.0), as the train enters the block in blocks/rail_through.",
+          "concept": "~/Projects/the-suborned-store/concepts/Blocks/rail_through.png",
+          "conceptTiles": ["blocks/rail_through"]
         }
       ],
       "supports": { "zones": ["own plots", "median"], "never": "the mall under the beam (the sky rail's pylon zone)" },
@@ -1549,7 +1560,7 @@
         "plots": [],
         "zones": ["quay"],
         "foot": ["skyport-pier"],
-        "skyrail": "S1/skyport: the beam and both platforms pass through the portal between the legs"
+        "skyrail": "S1/skyport: the beam and both platforms pass through the portal between the legs (x 523–567, supports.portal.along); the platform ends (x 520–523, 567–570) stand outside it, open"
       },
       "height": 108,
       "saucer": [89.6, 101.6],
@@ -1604,7 +1615,8 @@
         "zones": ["quay"],
         "portal": {
           "clearHalfWidth": 16,
-          "note": "legs stand ≥ 16 m off the line; nothing between them below 30 m but the beam, platforms and lounge"
+          "note": "legs stand ≥ 16 m off the line; nothing between them below 30 m but the beam, platforms and lounge",
+          "along": "x 523–567 along the line, leg to leg: the footprint, which is the corridor P-1 reads (no solid within 16 m of the line below 30, no pylon: the frame carries the beam). S1/skyport's 50 m platforms (x 520–570, levels.station) run 3 m past it at each end, open to the sky over the apron quay. That is right, not a fault: the platforms stand at |y| 3.75–8 and the legs at |y| 17–23, so no platform end meets a leg at any x; the beam carries the ends (the span from the pylon at x 508 into the frame at 523, the pylons at 570 and 575 at the east end); the frame roofs the lounge, it does not enclose the station. A frame x 520–570 would move the legs and regenerate Skyport_Tower_Portal; 44 m platforms would break the 50 m standard"
         }
       },
       "why": "The harbour's icon (brief 007: SpaceHQ is the district's dominant, standards.skyline) and the end of the airport line: the Skyport's control tower stands astride its station, so every ride on S1 ends by passing through it and every view down the Parade ends on it.",
@@ -1696,7 +1708,7 @@
       "c": [96, 0],
       "yaw": "grand stair to the west (−x), facing Crown Circus down the Parade's axis",
       "ground": [56, 136, -40, 40],
-      "groundWhy": "the drum (r 40) bounded: x 56–136 on the Parade mall (y ±20) and the Parade's west ends of parade-north (y 20–40), harbour-boulevard (x 56–114, y −40 to −20) and parade-south (x 114–136); the Parade Galleries now start at x 136. The grand stair runs on west to x 51.6 over the mall forecourt, 0.6 m clear of the circus pavement (r 51)",
+      "groundWhy": "The drum's own ground at Crown Circus east: x 56 to 136, y -40 to 40, across the head of Crown Parade and the ends of plots parade-north, harbour-boulevard and parade-south. No plot building stands on it: the Parade Galleries start at x 136, and the legs (y ±20 to ±40) are the only solids, so the Parade passes 40 m wide through the ground hall.",
       "spans": { "plots": ["parade-north", "harbour-boulevard", "parade-south"], "foot": ["crown-parade"] },
       "kit": "SpaceHQ",
       "regen": {
@@ -1721,11 +1733,12 @@
       ],
       "cores": { "where": "four lift-and-stair cores in the legs (two each side) from the street to the concourse; the tower's lifts from the drum roof to the two galleries", "size": "standards.levels.cores.stairLift" },
       "crownType": "atom",
-      "crownWhy": "brief 007 Decisions (Sky 2026-10-13): an atom over a needle mast, not a rocket (AtomicAge/exposition_palace.png). SK-2: the other atom, crescent-tower (252, 182), is 239.7 m from the drum centre (> 150)",
+      "crownWhy": "Sky 2026-10-13: an atom over a needle mast, not a rocket; the kit's rocket liner, landing pad and gantry come off. The atom is the exposition motif of atomic/exposition_palace. The other atom, crescent-tower, is 239.7 m away (over the 150 m neighbour rule).",
       "watchers": "the station's own (watchers.sites: station); the drum adds none",
-      "why": "Sky (2026-10-13): SpaceHQ is the dominant icon and the sky rail threads the buildings. At Crown Circus it closes Circus Road's view from the West End and the Parade's view from the harbour, stands over the circus monument from Crown Avenue and the Boulevard, and the airport line runs through its base with Crown Circus station inside it: EPCOT's hub, where the monorail ran through the transportation lobby under the central tower. Everything else composes round it: the rival spires north of the circus, the Skyport Tower at the Parade's far end",
+      "why": "Sky 2026-10-13: SpaceHQ is the dominant icon, the tallest thing in the district at 252 m, at Crown Circus, the hub. It closes Circus Road's view from the West End and the Parade's view from the harbour. S1 runs through its drum with Crown Circus station inside at the concourse, as the monorail enters the hall in atomic/monorail_terminal and the tower in blocks/rail_through. Everything else composes round it: the rival spires (122.7 to 194.3 m) stand north of the circus along Crown Avenue and in the Crescent, all under rivalMax 200, and the Skyport Tower (108) holds the harbour end of the same axis.",
       "source": "brief 007 · W. Disney, EPCOT film (1966): the Cosmopolitan Hotel over the transportation lobby, monorail through the hub · LAX Theme Building (1961) · Seattle Space Needle (1962)",
-      "concept": "~/Projects/the-suborned-store/concepts/Streets/spaceage/spaceport_hq.png (the piece); AtomicAge/exposition_palace.png (the axis and stair); AtomicAge/monorail_terminal.png (the station hall); Blocks/rail_through.png (the beam through the base)"
+      "concept": "~/Projects/the-suborned-store/concepts/Streets/spaceage/spaceport_hq.png (the piece); AtomicAge/exposition_palace.png (the axis and stair); AtomicAge/monorail_terminal.png (the station hall); Blocks/rail_through.png (the beam through the base)",
+      "conceptTiles": ["atomic/exposition_palace", "atomic/monorail_terminal", "blocks/rail_through", "blocks/needle_trio"]
     },
     {
       "id": "ocean-liner",
@@ -1811,10 +1824,10 @@
       ],
       "order": ["trunk", "loop"],
       "stations": [
-        { "id": "gardens", "name": "Sphere Gardens", "path": "trunk", "at": [-160, 0], "length": 50, "fronts": "circus-road", "kit": "SkyRailStation_Twin", "kitWhy": "brief 007 C: Vela's twin-beam station to the plan standard (platform 24.0, beam top 23.0, beams ±3, 50 m side platforms); open-air over Circus Road's median" },
-        { "id": "circus", "name": "Crown Circus", "path": "trunk", "at": [95, 0], "length": 50, "interchange": "T1/circus", "fronts": "crown-parade", "in": "signatures/space-hq", "kit": "SkyRailStation_Twin", "kitWhy": "brief 007: inside the SpaceHQ drum (portal.station); the piece's platform decks only, the drum is the roof and its cores the lifts" },
-        { "id": "harbour", "name": "Harbour", "path": "trunk", "at": [340, 0], "length": 50, "interchange": "T2/harbour", "fronts": "skyport-pier", "kit": "SkyRailStation_Twin", "kitWhy": "open-air over the quay and the pier" },
-        { "id": "skyport", "name": "Skyport", "path": "trunk", "at": [545, 0], "length": 50, "fronts": "skyport-pier", "in": "megastructures/skyport-tower", "kit": "SkyRailStation_Twin", "kitWhy": "inside the Skyport Tower's portal (supports.portal); platform decks only, the portal frame is the roof" }
+        { "id": "gardens", "name": "Sphere Gardens", "path": "trunk", "at": [-160, 0], "length": 50, "fronts": "circus-road", "kit": "SkyRailStation_Twin", "kitWhy": "brief 007 C: Vela's twin-beam station to the plan standard (platform 24.0, 50 m side platforms); open-air over Circus Road's median, on the Records Axis x -160" },
+        { "id": "circus", "name": "Crown Circus", "path": "trunk", "at": [95, 0], "length": 50, "interchange": "T1/circus", "fronts": "crown-parade", "in": "signatures/space-hq", "kit": "SkyRailStation_Twin", "kitWhy": "inside the SpaceHQ drum (station portal x 56-136, platforms x 70-120); platform decks only, the drum is the roof and its cores the lifts" },
+        { "id": "harbour", "name": "Harbour", "path": "trunk", "at": [340, 0], "length": 50, "interchange": "T2/harbour", "fronts": "skyport-pier", "kit": "SkyRailStation_Twin", "kitWhy": "open-air over the quay and the pier causeway; platforms x 315-365 clear Harbour Road's carriageway (x 288-312)" },
+        { "id": "skyport", "name": "Skyport", "path": "trunk", "at": [545, 0], "length": 50, "fronts": "skyport-pier", "in": "megastructures/skyport-tower", "kit": "SkyRailStation_Twin", "kitWhy": "inside the Skyport Tower's portal (supports.portal, legs at least 16 m off the line); platform decks only, the portal frame (soffit 30) roofs the middle 44 m (x 523–567); the 3 m platform ends stand open past the frame (supports.portal.along)" }
       ]
     }
   ],
@@ -1843,7 +1856,7 @@
       "ADOPT SkyBridge: towers.skyBridges avenue-gate, as built (70 m clear between the DiscTowers), floor 67.03.",
       "ADOPT Tower_Terrace: towers.sites crescent-terrace, terraces to the grid, tip 122.7.",
       "ADOPT Skylon: landmarks.skylon in Starline Green, × 0.925, top 100.",
-      "ADOPT LinerDock: landmarks.liner-berth, a caisson 20 m off the Market Docks crane walk; regen at × 0.5 (tip 102.6 ≤ 104) so the Skyport Tower stays the harbour's icon; caisson only until then.",
+      "ADOPT LinerDock@liner-berth (Vela's deco terminal, brief 007 round 2): landmarks.liner-berth, on a caisson 20 m off the Market Docks crane walk; 102.49 m as built on the caisson deck 1.2, tip 103.7 ≤ top 104, so the Skyport Tower (108) stays the harbour's icon. The first LinerDock (the 205.1 m rocket in its gantry) is retired from the site.",
       "ADOPT SkyRailStation_Twin (Vela, brief 007 C): the four S1 stations; inside SpaceHQ and the Skyport Tower as platform decks only.",
       "KEEP SphereStation (landmarks.sphere × 0.425), Skyport_Tower_Portal (skyport-tower), CircusMonument, ParabolicArch (skyport-tower.gateway), SkyPad_Roof (pad, hover-pad roofs).",
       "KEEP the 006 B regen sites: parade-gate-n / -s Tower_Stepped, harbour-hotel Tower_Saucer, crescent-tower Tower_Atom, lantern-beacon Tower_Lantern.",
@@ -1861,9 +1874,9 @@
       "Buchanan's hierarchy: a primary ring (Sunset Way, Crown Road, Harbour Road, Comet Row) carries through traffic round the district; district distributors (the Boulevard, Market Street, Circus Road, Crown Avenue) feed it; access roads serve seven environmental areas and never link two distributors.",
       "Every way a car can enter an environmental area is a gate. For a mission, the gates are the seal points; the Records Precinct has two.",
       "Crown Circus is the hub (EPCOT 1966: a radial centre with transit through it). Four arms: the Boulevard south, Crown Avenue north, Circus Road west, Crown Parade (a pedestrian mall) east to the harbour.",
-      "Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside.",
+      "Tram T1 runs in the Boulevard's central reservation with stops about 300 m apart. It turns on a balloon loop round the circus island (R 28), so single-ended trams need no crossover. South of Comet Row it runs on to Southside. Tram T2, the Harbour Line (A04 run r008), runs the ring: in from the north down Harbour Road (Harbour Gate, Harbour Court, Docks), west along Comet Row (Comet Row), north up Sunset Way (Lantern, Rocket, Crown Terraces) and off west along Crown Road, through-running at both ends.",
       "Sky rail S1 is the airport line (Tokyo 1964). One straight trunk: Skyport, Harbour, Crown Circus, Sphere Gardens, then the West End. It runs over public space: Circus Road's median, the circus island, the Parade and the Skyport Pier, and since brief 007 it threads the buildings over them: through the SpaceHQ drum (Crown Circus station inside), over the open Parade (the Galleries' side galleries under glazed barrel canopies, the Parade itself open to the sky; the beam on its mall pylons), through the Parade Gate block and the Skyport Tower's portal (Skyport station inside). Trains turn on a loop over the water round the skyport pad; the Skyport station stands on the pier's apron, the landside end.",
-      "The two systems cross at right angles at Crown Circus, the one interchange (sky station to tram stop ≈ 120 m).",
+      "Three interchanges join the network, each within standards.skyrail.interchange 150 m (S-I1): sky rail and tram cross at right angles at Crown Circus (S1/circus to T1/circus 119 m); S1/harbour meets T2 at Harbour Gate (T2/harbour at (306, 60) on Harbour Road, 69 m from the station at (340, 0)); T1 and T2 meet at Comet Row (47 m).",
       "The Records Axis: the Sphere Gardens sky station, Garden Walk, the café, the fountain, the raised table on Orbit Walk and the office door all sit on x = −160.",
       "Players cross any road anywhere. Kerbs, medians, the tram reservation and the circus are walkable ground (no guard rails); crossings and raised tables only calm traffic. Walking distances on this sheet are measured that way: round buildings and water, straight over streets."
     ],
@@ -1877,6 +1890,7 @@
       "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
     ],
     "history": [
+      "2026-10-14 (Datum, promotion approved by Sky 2026-10-14, \"fine, do that promote it\"): the skyline text from run r011 (runs/levels/harbour-district/r011/round-2/plan.json, 0.3.0-r011.2, ACCEPTED), applied onto the live plan, not copied over it: the plan had moved on since the run's input (standards.streetscape.crossings.strip and two history entries, brief 008 B3), and those stay. r011 changes no geometry: 25 text edits, why restated on the five rival tower sites (avenue-needle, avenue-starburst, avenue-gate-w / -e, crescent-terrace), the parade-gate portal and space-hq; new crownWhy and conceptTiles on the five sites, conceptTiles on parade-gate and space-hq; space-hq groundWhy and crownWhy; kitWhy on the four S1 stations. Version 0.2.0 → 0.3.0. Same version, the four contradictions the run turned up (round-2 keel.json, vantage.json handoffs): (a) levels.station said a bank never lands on a plot, transit.stationEntrance.siting let it take a station forecourt: both now say never a built plot, and an open plot kept for the bank is public ground, which is how L-5 and SF-13 read it (N-P2 tests the station's own point against every plot); S1/gardens complies (north bank on the sphere-gardens park, south bank on gardens-forecourt-w / -e). (b) skyport-tower.supports.portal.along: the portal runs x 523–567 along the line, leg to leg (the footprint, P-1's corridor); S1/skyport's 50 m platforms (x 520–570) run 3 m past it at each end, open, by design. (c) liner-berth tip 103.7, from the kit as built (LinerDock@liner-berth 102.49 on the caisson deck 1.2); notes.kit's 102.6 (the retired rocket LinerDock at × 0.5) is gone. The export still scales the piece × 1.003 to top 104 (104.0): top 103.7 would end that, asked, not changed. (d) T2/harbour (Harbour Gate, (306, 60)) is 69 m from S1/harbour (340, 0): the interchange stays; notes.concept names T2 and the three interchanges (Crown Circus 119 m, Harbour 69 m, Comet Row 47 m). No geometry moved. Open: grammar §4 height variety (avenue-needle 13.6 % under avenue-starburst, the gate pair 14.8 %); Sky sees the scratch variant out/plan/variants/heights-cut.plan.json before deciding.",
       "2026-10-14 (Splice, on the lead's call, brief 008 B3, input edit, version kept at 0.2.0): standards.streetscape.crossings.strip.control {primary, district, access: zebra}: every kerb-to-kerb crossing is a zebra on every road class (Latch's rebuild: the 37 access crossings exported no control and drew two thin edge lines that barely read). Stop and bank crossings keep the line pair. SF-20 holds it. Same call, same edit: SF-20 also holds that a crossing patch lies at the level of the surface under it (a tram stop's patches lay at the pavement top, 0.18, over the carriageway: now 0) and that a landing never stands on a lawn (the Sphere Gardens left bank's patch lay on the grass 20 m from any street: it moves to the street pavement beside the foot of the tower). Both only on a plan with crossings.strip.",
       "2026-10-14 (Splice, on Aster's call, brief 008 B3, input edit, version kept at 0.2.0): standards.streetscape.crossings.strip {stagger 3.5, refuge 2.0, control {district: zebra}, across {track: [stop], bay: []}} (opt-in; absent, a crossing is the single landing patch it was and the export carries no crossings[]). Sky's walk note 1: a crossing is kerb to kerb. The generator pairs the 168 kerb landings (43 pairs stood already; 20 partners added on the opposite pavement where the spot was free), draws the strip between them, and drops what cannot be paired (29 landings with no pavement opposite, 27 with the spot opposite taken by the palm rhythm, 14 whose strip would cross a tram track); 59 kerb crossings, 22 with a refuge in a 6 m median, plus the 20 tram stop and 8 bank patches as strip-only crossings. New rule SF-20 holds it; SF-19 keeps the sizes.",
       "2026-10-14 (Splice, on Aster's call, brief 007 round 3 walk, input edit, version kept at 0.2.0): standards.skyrail.pylonClear {landmark 3.8, span 36, remnant 0.5} (opt-in; absent, derive() places pylons as before). Sky's walk note 3, \"pillar in middle of steps\": S1/trunk's pylon at 6.5, 0 stood in the Crown monument's basin. The first fix (landmark 0.8, Aster's decision) left the pylon face 0.2 m off the rim and spans of 8.5 and 8 m (Latch's rebuild). Now: the face stands 3 m off the disc (pylons at −18 and 18), the beam crosses it in one 36 m span, no span next to a forced pylon is under 15 m. S1/trunk pylons moved: −53.5, −23.5 → −61.5, −45.5; −15, 15, 45 → −18, 18, 48; 53, 261 and 520 (stand-off pylons 3 m outside the Space HQ, Parade gate and Skyport portals) dropped. Rules: S-P1 reads span (the label says so), SF-18 passes (52 → 49 pylons).",
