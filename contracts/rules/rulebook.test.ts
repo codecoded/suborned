@@ -157,7 +157,7 @@ describe('Sky Q4: the wrong approach works one step worse; a refused one fails',
     expect([folded.fear, folded.resentment]).toEqual([2, 1]); // folding is pressure by reputation
   });
 
-  test('reports: a Loyal person reports what they do not respond to; an Idealist in a Menace district reports while braver than afraid', () => {
+  test('reports: a Loyal person reports what they do not respond to; an Idealist in a Menace district reports while they owe the cell nothing', () => {
     const reported = (a: string, s: R.Subject, band: R.Band) => act(a, s, band).changes.some((c) => c.do === 'report');
     expect(reported('pay', person('loyal'), 'neutral')).toBe(true);
     expect(reported('ask', person('loyal'), 'neutral')).toBe(true);
@@ -165,7 +165,8 @@ describe('Sky Q4: the wrong approach works one step worse; a refused one fails',
     expect(reported('pay', person('loyal'), 'menace')).toBe(true);
     expect(reported('help', person('loyal'), 'menace')).toBe(true);
     expect(reported('ask', person('idealist'), 'menace')).toBe(true); // bravery 1 > fear 0
-    expect(reported('ask', person('idealist', 'debt', { scales: { bravery: 1, resentment: 0, fear: 1, loyalty: 0 } }), 'menace')).toBe(false);
+    expect(reported('ask', person('idealist', 'debt', { scales: { bravery: 1, resentment: 0, fear: 1, loyalty: 0 } }), 'menace')).toBe(true); // owes nothing: reports
+    expect(reported('help', person('idealist', 'debt', { turned: true, scales: { bravery: 3, resentment: 0, fear: 0, loyalty: 1 } }), 'menace')).toBe(false); // a Fighter who owes the cell keeps quiet (Motive #6)
     expect(reported('pay', person('mercenary'), 'neutral')).toBe(false);
   });
 });
@@ -176,6 +177,18 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
     expect(q.outcome).toBe('?');
     expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['trust-over-time', '?']]);
     expect(q.worst.usd).toBe(40000);
+  });
+
+  test('after Watch alone, Pay on Inez shows "?" and fails when tried (Sky 2026-10-15)', () => {
+    const q = card('pay', person('idealist'), 'neutral', new Set<R.Know>(['routine']));
+    expect([q.outcome, q.worst.usd]).toEqual(['?', 90000]);
+    expect(act('pay', person('idealist')).outcome).toBe('refused');
+  });
+
+  test('"?" only where the temperaments in the band answer differently: Ask in a neutral district reads refused', () => {
+    expect(card('ask', person('mercenary'), 'neutral', new Set<R.Know>()).outcome).toBe('refused');
+    expect(card('ask', person('mercenary'), 'hero', new Set<R.Know>()).outcome).toBe('?'); // an Idealist volunteers there
+    expect(card('help', person('idealist'), 'neutral', new Set<R.Know>(['need'])).lines[0]!.holds).toBe(true);
   });
 
   test('Pay blind asks cash for the worst case; only the lines that hold are charged', () => {
@@ -192,7 +205,8 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
       const learned = act(a, person('mercenary')).changes.filter((c) => c.do === 'learn').flatMap((c) => (c.do === 'learn' ? c.what : []));
       expect(learned, a).toContain('temperament');
     }
-    expect(rb.preview.knownBy).toEqual(['scout.watch', 'scout.listen']);
+    expect(rb.preview.knownBy).toEqual(['scout.listen']); // Sky 2026-10-15: Listen reveals the temperament, Watch only the routine
+    expect(R.event(rb, 'scout.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
   });
 });
 
@@ -231,6 +245,12 @@ describe('K1 memory, K2 ladders', () => {
     for (let t = 1; t <= 9; t++) s = R.apply(rb, people, s, [{ do: 'remember', act: 'saw-act' }], { by: 'scout', place: 'p', time: t * 10, witnessed: true });
     expect(s.memory.length).toBe(num(rb, people, rb.memory.cap));
     expect(s.memory[0]!.time).toBe(20);
+    // Motive #9: people forget what they saw before what was done to them: a refusal survives eight sightings
+    let r = act('ask', person('idealist'), 'neutral', 5).after;
+    for (let t = 1; t <= 8; t++) r = R.apply(rb, people, r, [{ do: 'remember', act: 'saw-act' }], { by: 'scout', place: 'p', time: 10 + t, witnessed: true });
+    expect(r.memory.length).toBe(8);
+    expect(r.memory.map((m) => m.act)).toContain('refusal');
+    expect(card('help', r).perOrder.usd).toBe(50000);
     const bg = R.apply(rb, people, person('mercenary', 'debt', { tier: 'background' }), [{ do: 'remember', act: 'saw-act' }], { by: 'fixer', place: 'p', time: 1, witnessed: true });
     expect(bg.memory).toEqual([]);
   });
@@ -253,6 +273,7 @@ describe('K3–K5, K9 and Sky Q6 between missions', () => {
     expect(changes.find((c) => c.do === 'tell')).toEqual({ do: 'tell', along: ['family', 'workmate'], hops: 'v:word-hops' });
     expect(changes.some((c) => c.do === 'move' || c.do === 'standing')).toBe(false);
     expect(num(rb, people, 'v:word-hops')).toBe(1);
+    expect(num(rb, people, 'v:word-quiet-loyalty')).toBe(1); // Motive #10: an obliged contact keeps quiet
   });
 
   test('ties: family and rival never lapse; introductions only along ties people.rules says introduce; a turned keeper tips needs', () => {
@@ -296,7 +317,7 @@ describe('§05 witnesses and Alert: one incident counts once', () => {
 
   test('Alert: 1st reported incident → inquiry, 2nd → search, violence seen → lockdown; standing bands at ±3', () => {
     expect(rb.alert.byIncident.map((r) => num(rb, people, r))).toEqual([1, 2]);
-    expect([num(rb, people, rb.alert.gunfire), num(rb, people, rb.alert.violenceSeen)]).toEqual([2, 3]);
+    expect([num(rb, people, rb.alert.perShot), num(rb, people, rb.alert.violenceSeen)]).toEqual([1, 3]); // §06 [B] +1 A a shot
     expect([R.bandOf(rb, people, 0), R.bandOf(rb, people, 3), R.bandOf(rb, people, -3), R.bandOf(rb, people, 2)]).toEqual(['neutral', 'hero', 'menace', 'neutral']);
   });
 });

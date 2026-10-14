@@ -38,3 +38,7 @@ unity/Assets/Scenes/HarbourDistrict-probe-*
 
 # Machine-local endpoints and secrets (.env.example)
 .env
+
+# C# engine build output (brief 011 A)
+sim/**/bin/
+sim/**/obj/
