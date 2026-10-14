@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. Last round's fault is fixed: both whys now say guards stop at the café and hold regular ties; one note says 8 of 11 met. Report clean P-0..P-12; Handover lines met; fit, whys and names hold. Open: kiosk why says 8 h shifts, scope lists 6 h 40 m (Splice/Datum); casting shows 0:00-8:00, measured, not faulted; note 4 (no temperament refuses debt/cash) unverified; Pulse's need-scoping question to Motive stands.",
+  "faults": [],
+  "sources": [
+    "409364487039824661a2c22a",
+    "549c8d6a16f8427fc8b18c58",
+    "db59b7c04cfebaa32e41a5bc",
+    "b6b4241403570d5adfb9b83f",
+    "4a67b1589cfa065e189f98ae",
+    "e32f3b650d2131d749f9a84f"
+  ]
+}

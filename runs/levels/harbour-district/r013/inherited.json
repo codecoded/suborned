@@ -1,0 +1,1685 @@
+{
+  "parent": {
+    "plan": "harbour-district",
+    "run": "r012",
+    "outcome": "REJECTED",
+    "round": 3,
+    "version": "0.4.0-r012.3",
+    "runSha256": "7188840bc9a093d9976777ec8c29063e07b35d791d356c00588903667215856b",
+    "gdd": "v0.20.1",
+    "chunker": 5
+  },
+  "proposals": {
+    "pulse": {
+      "cast": {
+        "schema": "suborned.cast/1",
+        "scope": "civic-block",
+        "rows": [
+          {
+            "area": "records",
+            "occupation": "diner",
+            "why": "Corner cafe, open 6:00-24:00, 8 staff a shift in three shifts. Servers work the door and all carry debt; cooks work inside. Office guards and clerks pass through, so regulars and workmates tie to the keeper.",
+            "positions": [
+              {
+                "position": "server",
+                "weight": 60,
+                "post": "door"
+              },
+              {
+                "position": "cook",
+                "weight": 40,
+                "post": "inside"
+              }
+            ],
+            "temperaments": [
+              {
+                "temperament": "idealist",
+                "weight": 35
+              },
+              {
+                "temperament": "loyal",
+                "weight": 25
+              },
+              {
+                "temperament": "fearful",
+                "weight": 20
+              },
+              {
+                "temperament": "mercenary",
+                "weight": 20
+              }
+            ],
+            "needs": [
+              {
+                "need": "debt",
+                "weight": 100,
+                "positions": [
+                  "server"
+                ]
+              },
+              {
+                "need": "cash",
+                "weight": 30,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "papers",
+                "weight": 15,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "advancement",
+                "weight": 20,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "secret",
+                "weight": 15,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "care",
+                "weight": 10,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "kin",
+                "weight": 10,
+                "positions": [
+                  "cook",
+                  "keeper"
+                ]
+              }
+            ],
+            "ties": [
+              {
+                "kind": "workmate",
+                "share": 0.6
+              },
+              {
+                "kind": "regular",
+                "share": 0.4
+              },
+              {
+                "kind": "family",
+                "share": 0.25
+              },
+              {
+                "kind": "debtor",
+                "share": 0.1
+              }
+            ],
+            "routines": [
+              {
+                "id": "cafe-walk-home",
+                "skeleton": "worker",
+                "weight": 40,
+                "leaveBeforeMin": [
+                  15,
+                  45
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              },
+              {
+                "id": "cafe-walk-square",
+                "skeleton": "worker",
+                "weight": 25,
+                "leaveBeforeMin": [
+                  10,
+                  40
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "square"
+              },
+              {
+                "id": "cafe-tram-home",
+                "skeleton": "worker",
+                "weight": 35,
+                "leaveBeforeMin": [
+                  30,
+                  80
+                ],
+                "commute": "tram",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              }
+            ]
+          },
+          {
+            "area": "records",
+            "occupation": "records-office",
+            "why": "Civic office, one shift 9:30-17:30, 72 staff. Mostly clerks inside; guards at the door who start their day at the cafe and hold regular ties into it; official drivers at the bay on cash; councillors inside.",
+            "positions": [
+              {
+                "position": "clerk",
+                "weight": 62,
+                "post": "inside"
+              },
+              {
+                "position": "guard",
+                "weight": 15,
+                "post": "door"
+              },
+              {
+                "position": "official-driver",
+                "weight": 8,
+                "post": "bay"
+              },
+              {
+                "position": "councillor",
+                "weight": 15,
+                "post": "inside"
+              }
+            ],
+            "temperaments": [
+              {
+                "temperament": "loyal",
+                "weight": 35
+              },
+              {
+                "temperament": "mercenary",
+                "weight": 30
+              },
+              {
+                "temperament": "fearful",
+                "weight": 20
+              },
+              {
+                "temperament": "idealist",
+                "weight": 15
+              }
+            ],
+            "needs": [
+              {
+                "need": "cash",
+                "weight": 100,
+                "positions": [
+                  "official-driver"
+                ]
+              },
+              {
+                "need": "advancement",
+                "weight": 25,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "papers",
+                "weight": 20,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "secret",
+                "weight": 15,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "debt",
+                "weight": 15,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "housing",
+                "weight": 10,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "kin",
+                "weight": 10,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              },
+              {
+                "need": "care",
+                "weight": 5,
+                "positions": [
+                  "clerk",
+                  "guard",
+                  "councillor",
+                  "keeper"
+                ]
+              }
+            ],
+            "ties": [
+              {
+                "kind": "workmate",
+                "share": 0.7
+              },
+              {
+                "kind": "regular",
+                "share": 0.7
+              },
+              {
+                "kind": "family",
+                "share": 0.3
+              },
+              {
+                "kind": "rival",
+                "share": 0.1
+              },
+              {
+                "kind": "debtor",
+                "share": 0.1
+              }
+            ],
+            "routines": [
+              {
+                "id": "guard-walk-cafe",
+                "skeleton": "worker",
+                "weight": 55,
+                "leaveBeforeMin": [
+                  25,
+                  45
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "cafe",
+                "evening": "home",
+                "positions": [
+                  "guard"
+                ]
+              },
+              {
+                "id": "guard-tram-cafe",
+                "skeleton": "worker",
+                "weight": 45,
+                "leaveBeforeMin": [
+                  40,
+                  75
+                ],
+                "commute": "tram",
+                "meal": "on-site",
+                "preShift": "cafe",
+                "evening": "square",
+                "positions": [
+                  "guard"
+                ]
+              },
+              {
+                "id": "staff-walk",
+                "skeleton": "worker",
+                "weight": 50,
+                "leaveBeforeMin": [
+                  10,
+                  40
+                ],
+                "commute": "walk",
+                "meal": "square",
+                "preShift": "none",
+                "evening": "home",
+                "positions": [
+                  "clerk",
+                  "official-driver",
+                  "councillor"
+                ]
+              },
+              {
+                "id": "staff-tram",
+                "skeleton": "worker",
+                "weight": 50,
+                "leaveBeforeMin": [
+                  30,
+                  80
+                ],
+                "commute": "tram",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "square",
+                "positions": [
+                  "clerk",
+                  "official-driver",
+                  "councillor"
+                ]
+              }
+            ]
+          },
+          {
+            "area": "records",
+            "occupation": "skyrail-kiosk",
+            "why": "Sphere Gardens sky rail kiosk, service 5:00-1:00, one attendant per 8 h shift at the stop; regulars are riders who pass at the same hour.",
+            "positions": [
+              {
+                "position": "attendant",
+                "weight": 100,
+                "post": "door"
+              }
+            ],
+            "temperaments": [
+              {
+                "temperament": "loyal",
+                "weight": 30
+              },
+              {
+                "temperament": "idealist",
+                "weight": 25
+              },
+              {
+                "temperament": "mercenary",
+                "weight": 25
+              },
+              {
+                "temperament": "fearful",
+                "weight": 20
+              }
+            ],
+            "needs": [
+              {
+                "need": "cash",
+                "weight": 25
+              },
+              {
+                "need": "debt",
+                "weight": 20
+              },
+              {
+                "need": "papers",
+                "weight": 15
+              },
+              {
+                "need": "advancement",
+                "weight": 15
+              },
+              {
+                "need": "secret",
+                "weight": 10
+              },
+              {
+                "need": "care",
+                "weight": 8
+              }
+            ],
+            "ties": [
+              {
+                "kind": "regular",
+                "share": 0.5
+              },
+              {
+                "kind": "workmate",
+                "share": 0.2
+              },
+              {
+                "kind": "family",
+                "share": 0.25
+              }
+            ],
+            "routines": [
+              {
+                "id": "skyrail-walk",
+                "skeleton": "worker",
+                "weight": 55,
+                "leaveBeforeMin": [
+                  10,
+                  30
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              },
+              {
+                "id": "skyrail-tram",
+                "skeleton": "worker",
+                "weight": 45,
+                "leaveBeforeMin": [
+                  25,
+                  60
+                ],
+                "commute": "tram",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              }
+            ]
+          },
+          {
+            "area": "records",
+            "occupation": "tram-kiosk",
+            "why": "Records tram kiosk, service 5:00-1:00, one attendant per 8 h shift; commuters buy at the same hour, so regulars form at the window.",
+            "positions": [
+              {
+                "position": "attendant",
+                "weight": 100,
+                "post": "door"
+              }
+            ],
+            "temperaments": [
+              {
+                "temperament": "mercenary",
+                "weight": 30
+              },
+              {
+                "temperament": "loyal",
+                "weight": 25
+              },
+              {
+                "temperament": "idealist",
+                "weight": 25
+              },
+              {
+                "temperament": "fearful",
+                "weight": 20
+              }
+            ],
+            "needs": [
+              {
+                "need": "cash",
+                "weight": 25
+              },
+              {
+                "need": "debt",
+                "weight": 20
+              },
+              {
+                "need": "papers",
+                "weight": 15
+              },
+              {
+                "need": "advancement",
+                "weight": 15
+              },
+              {
+                "need": "secret",
+                "weight": 10
+              },
+              {
+                "need": "care",
+                "weight": 8
+              }
+            ],
+            "ties": [
+              {
+                "kind": "regular",
+                "share": 0.5
+              },
+              {
+                "kind": "workmate",
+                "share": 0.2
+              },
+              {
+                "kind": "family",
+                "share": 0.25
+              }
+            ],
+            "routines": [
+              {
+                "id": "tramkiosk-walk",
+                "skeleton": "worker",
+                "weight": 60,
+                "leaveBeforeMin": [
+                  10,
+                  30
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "square"
+              },
+              {
+                "id": "tramkiosk-tram",
+                "skeleton": "worker",
+                "weight": 40,
+                "leaveBeforeMin": [
+                  25,
+                  60
+                ],
+                "commute": "tram",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              }
+            ]
+          },
+          {
+            "area": "records",
+            "occupation": "resident",
+            "why": "Residents of the garden, pylon and rocket blocks around the civic block; the marked block makes housing a common need; many work elsewhere, some on the sheet.",
+            "positions": [
+              {
+                "position": "resident",
+                "weight": 100,
+                "post": "inside"
+              }
+            ],
+            "temperaments": [
+              {
+                "temperament": "loyal",
+                "weight": 30
+              },
+              {
+                "temperament": "idealist",
+                "weight": 25
+              },
+              {
+                "temperament": "fearful",
+                "weight": 25
+              },
+              {
+                "temperament": "mercenary",
+                "weight": 20
+              }
+            ],
+            "needs": [
+              {
+                "need": "housing",
+                "weight": 25
+              },
+              {
+                "need": "debt",
+                "weight": 15
+              },
+              {
+                "need": "cash",
+                "weight": 15
+              },
+              {
+                "need": "papers",
+                "weight": 12
+              },
+              {
+                "need": "kin",
+                "weight": 10
+              },
+              {
+                "need": "care",
+                "weight": 8
+              },
+              {
+                "need": "secret",
+                "weight": 8
+              },
+              {
+                "need": "protection",
+                "weight": 5
+              }
+            ],
+            "ties": [
+              {
+                "kind": "family",
+                "share": 0.55
+              },
+              {
+                "kind": "regular",
+                "share": 0.3
+              },
+              {
+                "kind": "debtor",
+                "share": 0.1
+              },
+              {
+                "kind": "rival",
+                "share": 0.05
+              }
+            ],
+            "routines": [
+              {
+                "id": "resident-square",
+                "skeleton": "resident",
+                "weight": 40,
+                "leaveBeforeMin": [
+                  0,
+                  30
+                ],
+                "commute": "walk",
+                "meal": "square",
+                "preShift": "none",
+                "evening": "square"
+              },
+              {
+                "id": "resident-home",
+                "skeleton": "resident",
+                "weight": 40,
+                "leaveBeforeMin": [
+                  0,
+                  30
+                ],
+                "commute": "walk",
+                "meal": "none",
+                "preShift": "none",
+                "evening": "home"
+              },
+              {
+                "id": "resident-onsite",
+                "skeleton": "resident",
+                "weight": 20,
+                "leaveBeforeMin": [
+                  0,
+                  45
+                ],
+                "commute": "walk",
+                "meal": "on-site",
+                "preShift": "none",
+                "evening": "home"
+              }
+            ]
+          }
+        ],
+        "names": {
+          "given": [
+            {
+              "name": "Alma",
+              "origin": "anglo"
+            },
+            {
+              "name": "Clive",
+              "origin": "anglo"
+            },
+            {
+              "name": "Edith",
+              "origin": "anglo"
+            },
+            {
+              "name": "Felix",
+              "origin": "anglo"
+            },
+            {
+              "name": "Nora",
+              "origin": "anglo"
+            },
+            {
+              "name": "Wendell",
+              "origin": "anglo"
+            },
+            {
+              "name": "Branwen",
+              "origin": "celtic"
+            },
+            {
+              "name": "Cormac",
+              "origin": "celtic"
+            },
+            {
+              "name": "Deirdre",
+              "origin": "celtic"
+            },
+            {
+              "name": "Fergus",
+              "origin": "celtic"
+            },
+            {
+              "name": "Niamh",
+              "origin": "celtic"
+            },
+            {
+              "name": "Rhys",
+              "origin": "celtic"
+            },
+            {
+              "name": "Amelie",
+              "origin": "french"
+            },
+            {
+              "name": "Basile",
+              "origin": "french"
+            },
+            {
+              "name": "Colette",
+              "origin": "french"
+            },
+            {
+              "name": "Luc",
+              "origin": "french"
+            },
+            {
+              "name": "Odile",
+              "origin": "french"
+            },
+            {
+              "name": "Remy",
+              "origin": "french"
+            },
+            {
+              "name": "Alba",
+              "origin": "iberian"
+            },
+            {
+              "name": "Benito",
+              "origin": "iberian"
+            },
+            {
+              "name": "Carmela",
+              "origin": "iberian"
+            },
+            {
+              "name": "Mateo",
+              "origin": "iberian"
+            },
+            {
+              "name": "Pilar",
+              "origin": "iberian"
+            },
+            {
+              "name": "Teodoro",
+              "origin": "iberian"
+            },
+            {
+              "name": "Aurelio",
+              "origin": "italian"
+            },
+            {
+              "name": "Bianca",
+              "origin": "italian"
+            },
+            {
+              "name": "Dario",
+              "origin": "italian"
+            },
+            {
+              "name": "Lucia",
+              "origin": "italian"
+            },
+            {
+              "name": "Marco",
+              "origin": "italian"
+            },
+            {
+              "name": "Serena",
+              "origin": "italian"
+            },
+            {
+              "name": "Anselm",
+              "origin": "germanic"
+            },
+            {
+              "name": "Greta",
+              "origin": "germanic"
+            },
+            {
+              "name": "Hanne",
+              "origin": "germanic"
+            },
+            {
+              "name": "Konrad",
+              "origin": "germanic"
+            },
+            {
+              "name": "Lotte",
+              "origin": "germanic"
+            },
+            {
+              "name": "Ulrich",
+              "origin": "germanic"
+            },
+            {
+              "name": "Astrid",
+              "origin": "nordic"
+            },
+            {
+              "name": "Bjorn",
+              "origin": "nordic"
+            },
+            {
+              "name": "Freya",
+              "origin": "nordic"
+            },
+            {
+              "name": "Leif",
+              "origin": "nordic"
+            },
+            {
+              "name": "Sigrid",
+              "origin": "nordic"
+            },
+            {
+              "name": "Tove",
+              "origin": "nordic"
+            },
+            {
+              "name": "Bogdan",
+              "origin": "slavic"
+            },
+            {
+              "name": "Dragan",
+              "origin": "slavic"
+            },
+            {
+              "name": "Irina",
+              "origin": "slavic"
+            },
+            {
+              "name": "Milena",
+              "origin": "slavic"
+            },
+            {
+              "name": "Oksana",
+              "origin": "slavic"
+            },
+            {
+              "name": "Radek",
+              "origin": "slavic"
+            },
+            {
+              "name": "Alexios",
+              "origin": "greek"
+            },
+            {
+              "name": "Calla",
+              "origin": "greek"
+            },
+            {
+              "name": "Dimitra",
+              "origin": "greek"
+            },
+            {
+              "name": "Nikos",
+              "origin": "greek"
+            },
+            {
+              "name": "Thea",
+              "origin": "greek"
+            },
+            {
+              "name": "Yannis",
+              "origin": "greek"
+            },
+            {
+              "name": "Farah",
+              "origin": "levantine"
+            },
+            {
+              "name": "Hadi",
+              "origin": "levantine"
+            },
+            {
+              "name": "Layla",
+              "origin": "levantine"
+            },
+            {
+              "name": "Nabil",
+              "origin": "levantine"
+            },
+            {
+              "name": "Rima",
+              "origin": "levantine"
+            },
+            {
+              "name": "Samir",
+              "origin": "levantine"
+            },
+            {
+              "name": "Adaeze",
+              "origin": "west-african"
+            },
+            {
+              "name": "Kofi",
+              "origin": "west-african"
+            },
+            {
+              "name": "Folake",
+              "origin": "west-african"
+            },
+            {
+              "name": "Kwame",
+              "origin": "west-african"
+            },
+            {
+              "name": "Ngozi",
+              "origin": "west-african"
+            },
+            {
+              "name": "Tunde",
+              "origin": "west-african"
+            },
+            {
+              "name": "Anika",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Devraj",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Isha",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Kavya",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Rohan",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Sunita",
+              "origin": "south-asian"
+            }
+          ],
+          "family": [
+            {
+              "name": "Ashworth",
+              "origin": "anglo"
+            },
+            {
+              "name": "Barlow",
+              "origin": "anglo"
+            },
+            {
+              "name": "Calloway",
+              "origin": "anglo"
+            },
+            {
+              "name": "Dunmore",
+              "origin": "anglo"
+            },
+            {
+              "name": "Fenwick",
+              "origin": "anglo"
+            },
+            {
+              "name": "Harlow",
+              "origin": "anglo"
+            },
+            {
+              "name": "Merrick",
+              "origin": "anglo"
+            },
+            {
+              "name": "Thorne",
+              "origin": "anglo"
+            },
+            {
+              "name": "Brennan",
+              "origin": "celtic"
+            },
+            {
+              "name": "Callahan",
+              "origin": "celtic"
+            },
+            {
+              "name": "Docherty",
+              "origin": "celtic"
+            },
+            {
+              "name": "Gallagher",
+              "origin": "celtic"
+            },
+            {
+              "name": "Kinsella",
+              "origin": "celtic"
+            },
+            {
+              "name": "MacRae",
+              "origin": "celtic"
+            },
+            {
+              "name": "Quinlan",
+              "origin": "celtic"
+            },
+            {
+              "name": "Tierney",
+              "origin": "celtic"
+            },
+            {
+              "name": "Archambeau",
+              "origin": "french"
+            },
+            {
+              "name": "Beaumont",
+              "origin": "french"
+            },
+            {
+              "name": "Delacroix",
+              "origin": "french"
+            },
+            {
+              "name": "Fontaine",
+              "origin": "french"
+            },
+            {
+              "name": "Girard",
+              "origin": "french"
+            },
+            {
+              "name": "Lemaire",
+              "origin": "french"
+            },
+            {
+              "name": "Moreau",
+              "origin": "french"
+            },
+            {
+              "name": "Vasseur",
+              "origin": "french"
+            },
+            {
+              "name": "Alvarado",
+              "origin": "iberian"
+            },
+            {
+              "name": "Bermudez",
+              "origin": "iberian"
+            },
+            {
+              "name": "Cordero",
+              "origin": "iberian"
+            },
+            {
+              "name": "Escobar",
+              "origin": "iberian"
+            },
+            {
+              "name": "Ferrer",
+              "origin": "iberian"
+            },
+            {
+              "name": "Montoya",
+              "origin": "iberian"
+            },
+            {
+              "name": "Navarro",
+              "origin": "iberian"
+            },
+            {
+              "name": "Zamora",
+              "origin": "iberian"
+            },
+            {
+              "name": "Benedetti",
+              "origin": "italian"
+            },
+            {
+              "name": "Castellano",
+              "origin": "italian"
+            },
+            {
+              "name": "Defalco",
+              "origin": "italian"
+            },
+            {
+              "name": "Fabbri",
+              "origin": "italian"
+            },
+            {
+              "name": "Greco",
+              "origin": "italian"
+            },
+            {
+              "name": "Marchetti",
+              "origin": "italian"
+            },
+            {
+              "name": "Rinaldi",
+              "origin": "italian"
+            },
+            {
+              "name": "Sartori",
+              "origin": "italian"
+            },
+            {
+              "name": "Brandt",
+              "origin": "germanic"
+            },
+            {
+              "name": "Eisner",
+              "origin": "germanic"
+            },
+            {
+              "name": "Hartmann",
+              "origin": "germanic"
+            },
+            {
+              "name": "Kessler",
+              "origin": "germanic"
+            },
+            {
+              "name": "Lindner",
+              "origin": "germanic"
+            },
+            {
+              "name": "Reinhardt",
+              "origin": "germanic"
+            },
+            {
+              "name": "Sauer",
+              "origin": "germanic"
+            },
+            {
+              "name": "Vogel",
+              "origin": "germanic"
+            },
+            {
+              "name": "Aaberg",
+              "origin": "nordic"
+            },
+            {
+              "name": "Dahlgren",
+              "origin": "nordic"
+            },
+            {
+              "name": "Ekstrom",
+              "origin": "nordic"
+            },
+            {
+              "name": "Halvorsen",
+              "origin": "nordic"
+            },
+            {
+              "name": "Lindqvist",
+              "origin": "nordic"
+            },
+            {
+              "name": "Nygaard",
+              "origin": "nordic"
+            },
+            {
+              "name": "Sandvik",
+              "origin": "nordic"
+            },
+            {
+              "name": "Torvald",
+              "origin": "nordic"
+            },
+            {
+              "name": "Dvorak",
+              "origin": "slavic"
+            },
+            {
+              "name": "Horvat",
+              "origin": "slavic"
+            },
+            {
+              "name": "Kowalczyk",
+              "origin": "slavic"
+            },
+            {
+              "name": "Novak",
+              "origin": "slavic"
+            },
+            {
+              "name": "Petrov",
+              "origin": "slavic"
+            },
+            {
+              "name": "Sokolov",
+              "origin": "slavic"
+            },
+            {
+              "name": "Voronin",
+              "origin": "slavic"
+            },
+            {
+              "name": "Zielinski",
+              "origin": "slavic"
+            },
+            {
+              "name": "Andreou",
+              "origin": "greek"
+            },
+            {
+              "name": "Karras",
+              "origin": "greek"
+            },
+            {
+              "name": "Lambros",
+              "origin": "greek"
+            },
+            {
+              "name": "Mavros",
+              "origin": "greek"
+            },
+            {
+              "name": "Pappas",
+              "origin": "greek"
+            },
+            {
+              "name": "Stavros",
+              "origin": "greek"
+            },
+            {
+              "name": "Theodoru",
+              "origin": "greek"
+            },
+            {
+              "name": "Vlahos",
+              "origin": "greek"
+            },
+            {
+              "name": "Haddad",
+              "origin": "levantine"
+            },
+            {
+              "name": "Khoury",
+              "origin": "levantine"
+            },
+            {
+              "name": "Nassar",
+              "origin": "levantine"
+            },
+            {
+              "name": "Sabbagh",
+              "origin": "levantine"
+            },
+            {
+              "name": "Tannous",
+              "origin": "levantine"
+            },
+            {
+              "name": "Zogby",
+              "origin": "levantine"
+            },
+            {
+              "name": "Bitar",
+              "origin": "levantine"
+            },
+            {
+              "name": "Saliba",
+              "origin": "levantine"
+            },
+            {
+              "name": "Adeyemi",
+              "origin": "west-african"
+            },
+            {
+              "name": "Boateng",
+              "origin": "west-african"
+            },
+            {
+              "name": "Mensah",
+              "origin": "west-african"
+            },
+            {
+              "name": "Okafor",
+              "origin": "west-african"
+            },
+            {
+              "name": "Nwosu",
+              "origin": "west-african"
+            },
+            {
+              "name": "Owusu",
+              "origin": "west-african"
+            },
+            {
+              "name": "Oyelaran",
+              "origin": "west-african"
+            },
+            {
+              "name": "Danso",
+              "origin": "west-african"
+            },
+            {
+              "name": "Banerjee",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Chaudhry",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Iyer",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Kapoor",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Menon",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Nair",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Rajan",
+              "origin": "south-asian"
+            },
+            {
+              "name": "Verma",
+              "origin": "south-asian"
+            }
+          ]
+        }
+      },
+      "notes": [
+        "Fix: Office regular share raised 0.35 to 0.7, so most of its people, guards included, carry a regular tie. A tie has no position filter, so I cannot aim it at guards alone.",
+        "Question for Keel/Splice: does the expander aim a regular tie at the person's preShift unit (the café)? If not, guards' café stop won't become a tie and the keeper learns no guard's need. Needs an expander rule, not a table change.",
+        "Question for Motive: does a need entry with 'positions' leave other positions undrawn by it? I assumed yes, and listed keeper on the other entries.",
+        "Café servers draw debt (100, server only); official drivers draw cash (100, driver only). All four temperaments meet those needs.",
+        "Official-driver 8, guard 15, councillor 15, clerk 62: each gets at least one person from 72 staff.",
+        "Guards carry preShift cafe (walk and tram); clerks do not.",
+        "Starting values [S]: all weights, shares and leave-before ranges are mine, to tune by playtest.",
+        "Names: 72 given, 96 family, 12 origins, none over 9% of a pool."
+      ],
+      "sources": [
+        "4a67b1589cfa065e189f98ae",
+        "409364487039824661a2c22a",
+        "e32f3b650d2131d749f9a84f",
+        "549c8d6a16f8427fc8b18c58",
+        "4a6665ac94c66d1a2c1977ab",
+        "24f4e0bf2338a2a6ca0eab99",
+        "db59b7c04cfebaa32e41a5bc",
+        "9f8dc5fc8b8ba774b93afa9e"
+      ]
+    }
+  },
+  "calls": {
+    "pulse": {
+      "id": "04-people-pulse",
+      "objective": "people-pulse",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "tools": [
+        "StructuredOutput"
+      ],
+      "cliVersion": "2.1.299",
+      "costUsd": 0.1365729,
+      "seconds": 36,
+      "attempts": 1,
+      "card": {
+        "source": ".claude/agents/schedule-ai-designer.md",
+        "sourceHash": "9abe58822a2c34dfbd50b041c71a3c7e157b658d6e687e543dbb5d7caf188d76"
+      },
+      "brief": {
+        "source": "tools/levels/objectives/people-pulse.md",
+        "sourceHash": "5886bd0fcbe44ab5b6a55045db84104ac8aefe042ad803277ba23ce907c50db2"
+      },
+      "promptSha256": "78880359e5927304a2fe7377163dfeb8ba4095c764509290f7f84fdc8b12d645",
+      "schemaSha256": "a18e8d780b834f87310bd30f85f2ab6fbbf2a481bdf6c0d7b9b2dc9e3edb448b",
+      "effort": "medium",
+      "retrieval": {
+        "query": "cast table for the corner café and the Records Office: trade, opening hours, staff per shift and positions ‖ people rules: temperaments, needs and the approaches that meet them, tie kinds and limits, positions, names ‖ life.json routine skeletons worker resident, day bands, civic employers, tiers, walk speed ‖ civic block café Records Office entrances bays keep-clear zones; the Handover timeline destinations ‖ GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine ‖ people rules knowledge needs known keeper; mix cap per row and unit; ties that introduce; readBy fields ‖ The guard role has regularOf café. Its routines carry preShift cafe (guard-walk-cafe, guard-tram-cafe), but the requirement report shows 0 of 11 guards hold a regular tie into the café. The note says the Office's 0.35 regular share feeds the café keeper's knowledge, and the report contradicts that f",
+        "queries": [
+          "cast table for the corner café and the Records Office: trade, opening hours, staff per shift and positions",
+          "people rules: temperaments, needs and the approaches that meet them, tie kinds and limits, positions, names",
+          "life.json routine skeletons worker resident, day bands, civic employers, tiers, walk speed",
+          "civic block café Records Office entrances bays keep-clear zones; the Handover timeline destinations",
+          "GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine",
+          "people rules knowledge needs known keeper; mix cap per row and unit; ties that introduce; readBy fields",
+          "The guard role has regularOf café. Its routines carry preShift cafe (guard-walk-cafe, guard-tram-cafe), but the requirement report shows 0 of 11 guards hold a regular tie into the café. The note says the Office's 0.35 regular share feeds the café keeper's knowledge, and the report contradicts that f"
+        ],
+        "pinned": [
+          "409364487039824661a2c22a",
+          "db59b7c04cfebaa32e41a5bc"
+        ],
+        "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+        "corpusHash": "628c7eec90dd208a48f43279c8bf06796644ed013552b7a1634dfa9f1fbc1033",
+        "embeddingModel": "BAAI/bge-small-en-v1.5",
+        "hits": [
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.25747737199337817,
+            "key": "4a67b1589cfa065e189f98ae",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › person and tiers",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › person and tiers\n{\"is\":[\"routine\",\"need\",\"temperament\",\"memory\"],\"needsPerPerson\":1,\"memoryAtStart\":\"empty\",\"src\":\"§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory\",\"reason\":\"memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.\",\"readBy\":{\"fields\":{\"name\":\"§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\",\"temperament\":\"§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\",\"need\":\"§04 Help and Pressure require the need known (Listen); needs.list.metBy\",\"ties\":\"§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\",\"scales\":\"§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\",\"memory\":\"§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\",\"routine\":\"§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\"},\"src\":\"GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\",\"proposed\":true,\"reason\":\"Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.\"}}\ntiers: {\"simulated\":{\"carries\":[\"name\",\"temperament\",\"need\",\"ties\",\"scales\",\"memory\",\"routine\"],\"src\":\"§09; life.json generator.tiers [G]\"},\"background\":{\"carries\":[\"routine\"],\"src\":\"life.json generator.tiers: walk, run and cheer only\",\"proposed\":true,\"reason\":\"background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to.\"}}",
+            "version": "suborned.people.rules/1",
+            "score": 0.15239113596309084,
+            "signals": [
+              "semantic:2",
+              "keyword:2",
+              "semantic:3",
+              "keyword:3",
+              "semantic:5",
+              "keyword:5",
+              "semantic:6",
+              "keyword:6",
+              "semantic:7",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.3156082034110974,
+            "key": "e32f3b650d2131d749f9a84f",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › readBy",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+            "version": "suborned.people.rules/1",
+            "score": 0.13305313607603889,
+            "signals": [
+              "semantic:2",
+              "keyword:2",
+              "keyword:3",
+              "semantic:5",
+              "keyword:5",
+              "semantic:6",
+              "keyword:6",
+              "semantic:7",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "City-life rules harbour-district (suborned.life/1); the life tool owns them",
+            "distance": 0.3629078269004822,
+            "key": "409364487039824661a2c22a",
+            "kind": "life",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "harbour-district life › civic employers, station workers, tiers",
+            "source": "contracts/world/harbour-district.life.json",
+            "sourceHash": "6f674b120a186d217da28be6ab310335c0b9383527eb9d647feeb309926fc6f9",
+            "text": "harbour-district life › civic employers, station workers, tiers\ncivic employers: [{\"plot\":\"records-office\",\"area\":\"records\",\"src\":\"plan civic block\",\"staff\":\"Splice sets from the civic block\",\"guard\":\"door routine, café stop pre-shift (GDD §05)\"}]\nstation workers: {\"src\":\"plan frontage.mixNote\",\"rule\":\"one kiosk worker per stop and per station, service hours 5:00-1:00, shift 8 h\"}\ntiers: {\"simulated\":\"persons the generator makes (routine + need + temperament + memory): the set near the player plus every person a plan or mission touches\",\"background\":\"walk, run and cheer only; tops the street up to the density target\",\"maxCombatants\":30,\"src\":\"GDD §06, §09; split and budget are Keel (brief 005 A)\"}\ncommuters: alighting per service per station x loadByBand; origin = beyond the sheet (plan gates); walk to home or work via the station banks",
+            "version": "plan 0.3.0",
+            "score": 0.12192010584890432,
+            "signals": [
+              "semantic:1",
+              "keyword:1",
+              "semantic:3",
+              "keyword:3",
+              "semantic:4",
+              "keyword:4",
+              "keyword:5",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.3650963088812633,
+            "key": "549c8d6a16f8427fc8b18c58",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › roles and employers",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › roles and employers\na person's temperament must be one its occupation (trade) or role allows. Every trade and role allows at least two, so no job reads as one kind of person (§09 risk: sameness).\nroles: resident (none) allows idealist, mercenary, fearful, loyal; visitor (none) allows idealist, mercenary, fearful, loyal; docker (hiring-hall) allows idealist, mercenary, fearful, loyal; clerk (records-office) allows idealist, mercenary, fearful, loyal; guard (records-office) allows loyal, mercenary; official-driver (records-office) allows idealist, mercenary, fearful, loyal; councillor (records-office) allows loyal, mercenary, fearful; watcher (civic) allows loyal, mercenary, fearful; patrol-officer (civic) allows loyal, mercenary; investigator (civic) allows loyal, mercenary\nemployers: {\"records-office\":{\"plot\":\"records-office\",\"block\":\"civic-office\",\"kind\":\"civic\",\"src\":\"life.json generator.civicEmployers; civic-block.json civic-office\"},\"cafe\":{\"block\":\"cafe\",\"kind\":\"trade\",\"trade\":\"diner\",\"src\":\"civic-block.json cafe (Corner café); plan standards.frontage.placement.corner: corners on two streets take an anchor trade (w ≥ 18), else a diner; the records mix lists diner\",\"proposed\":true,\"reason\":\"the café is none of the 39 trades by name. A 22 m corner unit takes a diner (the plan's corner rule; diner is an anchor in the records mix and opens 6–24, covering the 17:00 Handover). Datum or Vantage may name it otherwise.\"},\"civic\":{\"kind\":\"civic\",\"src\":\"§05 security, watchers, investigators\",\"proposed\":true,\"reason\":\"the city's own security, which the plan does not site. Its people are loyal to the civic order (institution kind civic).\"}}",
+            "version": "suborned.people.rules/1",
+            "score": 0.12090156068946328,
+            "signals": [
+              "semantic:1",
+              "keyword:1",
+              "semantic:2",
+              "keyword:3",
+              "keyword:4",
+              "semantic:5",
+              "semantic:7",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.3564191460609436,
+            "key": "24f4e0bf2338a2a6ca0eab99",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › positions",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › positions\nevery work unit has exactly one keeper; the rest of its staff take the other positions of its category. A mission casts by position and place (a server on shift at the café), never by name.\nfood: keeper, server, cook\nnightlife: keeper, server, door, entertainer\nretail: keeper, assistant\ntrade: keeper, hand\nservice: keeper, operator\nkiosk: keeper, attendant\ncinema: keeper, usher, projectionist\nlobby: keeper, porter\nmarket: keeper",
+            "version": "suborned.people.rules/1",
+            "score": 0.09117281036006503,
+            "signals": [
+              "semantic:1",
+              "keyword:1",
+              "keyword:2",
+              "keyword:6",
+              "semantic:7",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.2807116769895939,
+            "key": "9f8dc5fc8b8ba774b93afa9e",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › introduces",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › introduces\ntie kinds that introduce (a turned contact can introduce the people the tie joins them to): family, workmate, regular; not: debtor, rival",
+            "version": "suborned.people.rules/1",
+            "score": 0.07662906106752448,
+            "signals": [
+              "semantic:2",
+              "keyword:2",
+              "semantic:6",
+              "keyword:6",
+              "keyword:7"
+            ]
+          },
+          {
+            "authority": "Agent GDD (the human GDD wins on conflict)",
+            "distance": 0.285089143796715,
+            "key": "e18074c78e63a43edddc756a",
+            "kind": "gdd-agent",
+            "lineEnd": 57,
+            "lineStart": 57,
+            "section": "§04 PEOPLE",
+            "source": "GDD/the-suborned-agent-gdd-v0.20.1-2026-10-14.md",
+            "sourceHash": "0da35e191c629c99d380803cc881787e6c1403a35eed656e7f276e68af2595ff",
+            "text": "§04 PEOPLE\nperson = routine + need + temperament + memory. Knowledge lowers price; standing decides who listens.",
+            "version": "v0.20.1",
+            "score": 0.07463075963635891,
+            "signals": [
+              "semantic:2",
+              "semantic:5",
+              "keyword:5",
+              "semantic:6",
+              "keyword:6"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "bm25": 1.1796462535858154,
+            "key": "4a6665ac94c66d1a2c1977ab",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › needs",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › needs\nexactly one need per simulated person, from this closed list. `metBy` = the approaches that act on the need (Help meets it, Pressure leans on it, Pay meets it only where money is the need). Pay as a plain bribe and Ask stay open to anyone; they need no need known.\ndebt: met by help, pressure, pay; help is cash; requires nothing; §04 Help (clear debt); §07 Inez, café waitress, in debt\ncash: met by help, pay; help is cash; requires nothing; §07 official driver (needs cash), turned for $40,000\nhousing: met by help, pressure; help is favour; requires home; §07 brief: Vale signed the clearance order for the marked block\npapers: met by help, pressure; help is favour; requires nothing; §01 world: records are physical (microfilm, punch cards, stamped forms)\nkin: met by help, pressure; help is favour; requires family-tie; §04 between missions: arrested (lost unless freed); standing: Hero frees arrested locals\ncare: met by help; help is favour; requires nothing; §08 wounds: a turned doctor heals fast and quietly\nprotection: met by help, pressure; help is favour; requires rival-tie; §05 rivals; §06 citizens and fights\nadvancement: met by help, pay; help is favour; requires work; §04 between missions: promoted (new access)\nsecret: met by help, pressure; help is favour; requires nothing; §04 Pressure (need known; leaves fear)",
+            "version": "suborned.people.rules/1",
+            "score": 0.07087635933677433,
+            "signals": [
+              "keyword:2",
+              "semantic:5",
+              "keyword:5",
+              "semantic:6",
+              "keyword:6"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "key": "db59b7c04cfebaa32e41a5bc",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › knowledge",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821",
+            "text": "people rules › knowledge\na person knows a fact only if they witnessed it (§05: a clear sightline within 13 m) or were told it along a tie. At the start nobody knows anything about the cell (person.memoryAtStart). The one thing a person starts knowing about others is listed in needsKnown. The cell is known by face only: a witness remembers the Fixer's face (§03), never a name.\nidentity in play: face; learned by: witnessed, told; the cell at the start: nothing\nneeds known at the start: a keeper knows the needs of workmate and unit-regular (§08 economy: café owner tips needs before Scout listens)\nFrom DF's rumour rule (a fact exists only for those who saw it or were told) and Adams 2017 (identity stored per observer as alias, name or face). Only face is in play: the Talker's facts are a face, a car and a place-time, and §05 investigators hop by place and time, not by name. needsKnown makes §08's tip rule checkable from the cast: a keeper knows the need of each workmate and of each person with a regular tie into their unit, so a turned keeper saves the Listen (42 s) on each. How a fact spreads at runtime (told, along which ties, how fast) is Keel's rule, not this file's.",
+            "version": "suborned.people.rules/1",
+            "score": 0,
+            "signals": [
+              "critic-cited"
+            ]
+          }
+        ]
+      },
+      "pinning": {
+        "cited": 2,
+        "pinned": 2,
+        "truncated": false,
+        "dropped": []
+      }
+    }
+  },
+  "faults": [
+    {
+      "owner": "Pulse",
+      "rule": "P-6",
+      "fault": "The guard role has regularOf café. Both guard routines stop at the café before the shift, but the requirement line reads NOT MET: 0 of 11 guards hold a regular tie into the café. So the café keeper knows no guard's need, and the Scout gets no tip on the guard. Raising the Office's regular share from 0.35 to 0.7 did not aim any guard's tie at the café.",
+      "fix": "Don't change the table again. Hand this to Keel/Splice (inputs: the guard routines with the café stop; done-check: a share of guards hold a regular tie into the café). The expander should aim a regular tie at the unit of the café stop. Resubmit once the requirement line reads met.",
+      "chunks": [
+        "409364487039824661a2c22a",
+        "db59b7c04cfebaa32e41a5bc"
+      ]
+    },
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "The Office row's `why` says the guards 'start their day at the cafe and hold regular ties into it'. The first note says raising the share means guards carry a regular tie. The report contradicts both: 0 of 11 guards hold a regular tie into the café. The café row's `why` also counts clerks as café regulars, but no clerk routine stops at the café.",
+      "fix": "Correct both `why` texts and the first note to match the expansion. Say plainly that guards' café ties wait on the expander rule, and drop the claim that clerks pass through unless a clerk routine stops at the café.",
+      "chunks": [
+        "409364487039824661a2c22a",
+        "9f8dc5fc8b8ba774b93afa9e"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "All checker rules P-0 to P-12 pass, and every Handover requirement line reads met. The guard requirement now reads 8 of 11 guards (73%) with a regular tie into the café, so last round's P-6 fault is closed. The tables have no other faults. Servers weight debt and drivers weight cash. The Office row leans loyal and mercenary, and the checker keeps idealists off the guard post. The names are mixed and carry no era. One fault remains: the text is out of date. Both `why` texts and notes 2–3 still say the guards' café ties are not made (0 of 11). The report shows they are made.",
+  "faults": [
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "Both `why` texts and notes 2–3 contradict the report. The diner `why` says the guards' café ties 'wait on the expander rule', and the Office `why` says the same. Note 2 says 'the expansion reports 0 of 11 guards with a regular tie into the café'. Note 3 asks for a resubmit once the line reads met. The requirement line now reads met: 8 of 11 guards (73%) hold a regular tie into the café. The tables now claim the reverse of what the expansion made.",
+      "fix": "Leave the weights as they are. Rewrite both `why` texts to say the guards stop at the café before their shift and hold regular ties into it, as the expander aims them. Delete notes 2 and 3, or replace them with one note saying the café-tie handoff is closed (8 of 11 met).",
+      "chunks": [
+        "409364487039824661a2c22a",
+        "db59b7c04cfebaa32e41a5bc"
+      ]
+    }
+  ],
+  "sources": [
+    "409364487039824661a2c22a",
+    "db59b7c04cfebaa32e41a5bc",
+    "549c8d6a16f8427fc8b18c58",
+    "b6b4241403570d5adfb9b83f",
+    "4a67b1589cfa065e189f98ae",
+    "e32f3b650d2131d749f9a84f"
+  ]
+}
