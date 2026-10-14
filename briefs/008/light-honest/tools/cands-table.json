@@ -1,0 +1,202 @@
+[
+ {
+  "name": "before",
+  "desc": "light.json at 8235449, honest frame",
+  "sunpave": [
+   237,
+   206,
+   174
+  ],
+  "shadepave": [
+   183,
+   167,
+   150
+  ],
+  "sun": 5.9,
+  "shade": 4.7,
+  "road": 11.1,
+  "ratio": 0.62,
+  "clip": 9.1,
+  "minsig": 16.7
+ },
+ {
+  "name": "A2",
+  "desc": "highlights tint neutral only",
+  "sunpave": [
+   236,
+   213,
+   189
+  ],
+  "shadepave": [
+   183,
+   167,
+   150
+  ],
+  "sun": 2.4,
+  "shade": 4.7,
+  "road": 11.1,
+  "ratio": 0.6,
+  "clip": 3.5,
+  "minsig": 21.1
+ },
+ {
+  "name": "A1",
+  "desc": "highlights + shadows tints neutral",
+  "sunpave": [
+   236,
+   213,
+   189
+  ],
+  "shadepave": [
+   183,
+   167,
+   150
+  ],
+  "sun": 2.4,
+  "shade": 4.7,
+  "road": 14.3,
+  "ratio": 0.6,
+  "clip": 3.5,
+  "minsig": 21.1
+ },
+ {
+  "name": "B_a85_i165_c",
+  "desc": "A1 but shadows tint #c7d1eb; ambient x0.85, sun 1.65",
+  "sunpave": [
+   236,
+   212,
+   186
+  ],
+  "shadepave": [
+   162,
+   147,
+   132
+  ],
+  "sun": 3.0,
+  "shade": 5.5,
+  "road": 3.5,
+  "ratio": 0.45,
+  "clip": 3.7,
+  "minsig": 20.4
+ },
+ {
+  "name": "E_ffffbf4_sffe0d0",
+  "desc": "chosen minus neutral filter (filter kept #fffbf4); ambient x0.9, sun 1.6",
+  "sunpave": [
+   237,
+   213,
+   188
+  ],
+  "shadepave": [
+   169,
+   154,
+   138
+  ],
+  "sun": 2.7,
+  "shade": 4.3,
+  "road": 5.9,
+  "ratio": 0.5,
+  "clip": 8.1,
+  "minsig": 20.8
+ },
+ {
+  "name": "F_ffe0d0_i160",
+  "desc": "CHOSEN: tints neutral/mild, filter neutral, ambient x0.9, sun 1.6",
+  "sunpave": [
+   237,
+   217,
+   198
+  ],
+  "shadepave": [
+   169,
+   156,
+   145
+  ],
+  "sun": 2.3,
+  "shade": 2.4,
+  "road": 5.9,
+  "ratio": 0.49,
+  "clip": 4.4,
+  "minsig": 22.5
+ },
+ {
+  "name": "F_ffe0d0_i170",
+  "desc": "chosen with sun 1.7",
+  "sunpave": [
+   239,
+   219,
+   200
+  ],
+  "shadepave": [
+   169,
+   156,
+   145
+  ],
+  "sun": 2.1,
+  "shade": 2.4,
+  "road": 5.9,
+  "ratio": 0.48,
+  "clip": 11.1,
+  "minsig": 22.7
+ },
+ {
+  "name": "F_ffe0d0_i180",
+  "desc": "chosen with sun 1.8",
+  "sunpave": [
+   241,
+   222,
+   202
+  ],
+  "shadepave": [
+   169,
+   156,
+   145
+  ],
+  "sun": 2.1,
+  "shade": 2.4,
+  "road": 5.9,
+  "ratio": 0.47,
+  "clip": 15.5,
+  "minsig": 22.9
+ },
+ {
+  "name": "F_ffe4d8_i160",
+  "desc": "chosen with sun colour #ffe4d8",
+  "sunpave": [
+   237,
+   218,
+   201
+  ],
+  "shadepave": [
+   169,
+   156,
+   145
+  ],
+  "sun": 2.6,
+  "shade": 2.4,
+  "road": 5.9,
+  "ratio": 0.49,
+  "clip": 4.2,
+  "minsig": 23.1
+ },
+ {
+  "name": "B_a72_i150_c",
+  "desc": "ambient x0.72, sun 1.5 (too dark)",
+  "sunpave": [
+   227,
+   201,
+   175
+  ],
+  "shadepave": [
+   135,
+   123,
+   113
+  ],
+  "sun": 5.3,
+  "shade": 12.8,
+  "road": 6.6,
+  "ratio": 0.35,
+  "clip": 0.6,
+  "minsig": 19.3
+ }
+]
