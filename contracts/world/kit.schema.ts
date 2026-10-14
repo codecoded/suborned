@@ -7,7 +7,9 @@ export type KitFile = { root?: 'generated'; role: 'fbx' | 'lod' | 'fbx-meta' | '
 /** Generator tags. `scale` = allowed uniform scale on height; `squash` = the smallest allowed ratio of the width scale to the height scale (1 = uniform only). */
 /** reach: the side the piece's working end extends to from the pivot (`axis` in kit axes, `m` metres), e.g. a streetlamp's head over the road. */
 export type KitReach = { axis: '+x' | '-x' | '+z' | '-z'; m: number };
-export type KitTags = { use: string[]; reach?: KitReach; trade?: string[]; storeys?: [number, number]; form?: 'bay' | 'corner' | 'end'; scale: [number, number]; squash: number; wave: 1 | 2 | 3 };
+/** What the play camera sees through a piece (brief 008 B1, Vela): `open` = low or slender, a person behind it stays seen; `glazed` = a frontage with glass the view passes through but a wall of it, so people behind read only through the architecture fade. Absent = not stated (every piece adopted before brief 008). */
+export type KitSight = 'open' | 'glazed';
+export type KitTags = { use: string[]; reach?: KitReach; trade?: string[]; storeys?: [number, number]; form?: 'bay' | 'corner' | 'end'; scale: [number, number]; squash: number; wave: 1 | 2 | 3; sight?: KitSight };
 /** A distance version: `file` relative to the same root as the piece's files (role 'lod'), `tris`, `screen` = Unity LOD transition (fraction of screen height at lodBias 1):
  *  the piece's `lodCategory` switch point (LOD1 at `l1`, LOD2 at `l2`). LOD0 = the fbx; up to LOD2 (about 25% then 6% of the triangles); absent for light pieces. */
 export type KitLod = { file: string; tris: number; screen: number };
@@ -20,6 +22,8 @@ export type KitAsset = {
   id: string; category: string; size: [number, number, number]; pivot: 'footprint-centre-ground' | 'origin-ground'; pivotOffset?: [number, number]; front: '+Z';
   tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; files: KitFile[]; tags: KitTags; status: KitStatus;
   source?: 'generated'; order?: KitOrder; built?: KitBuilt;
+  /** The tools/decokit script that built a piece made without a plan order (brief 008 civic pieces). */
+  sourceScript?: string;
 };
 /** A piece the Blender generator built to a plan order (tools/decokit): `order.hash` = the order's hash (stale when the plan's order changes), `built` = extents [xmin, xmax, ymin, ymax] about the pivot below / above the first setback (or the frame) / of the crown, and the tip (pivot-relative `tip`, plan height `tipPlan`). */
 export type KitBuilt = { split: number; roof: number | null; lower: [number, number, number, number] | null; upper: [number, number, number, number] | null; crown: [number, number, number, number] | null; tip: number; tipPlan: number };

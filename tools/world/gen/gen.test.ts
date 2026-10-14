@@ -69,11 +69,12 @@ test('deck columns stand clear of carriageways', () => {
 
 test('café and Records Office keep their size', () => {
   const { cafe, 'civic-office': office } = plan.civic.scale as { cafe: { width: number; depth: number; height: number }; 'civic-office': { crown: number } };
-  const m = w.civic.find(x => x.id === 'civic/cafe')!, b = bbox(m.ring), dims = [b[1] - b[0], b[3] - b[2]].sort((p, q) => p - q);
-  expect(dims[0]).toBeCloseTo(cafe.depth, 1); expect(dims[1]).toBeCloseTo(cafe.width, 1); expect(m.height).toBeCloseTo(cafe.height, 2);
+  // with the dressing the café's ground storey is CafeBay (civic/cafe/ground, 4.88 m) and civic/cafe is the mass above it: the two make the block's height
+  const m = w.civic.find(x => x.id === 'civic/cafe')!, below = w.civic.find(x => x.id === m.groundBy), b = bbox(m.ring), dims = [b[1] - b[0], b[3] - b[2]].sort((p, q) => p - q);
+  expect(dims[0]).toBeCloseTo(cafe.depth, 1); expect(dims[1]).toBeCloseTo(cafe.width, 1); expect(m.height + (below ? m.base - below.base : 0)).toBeCloseTo(cafe.height, 2);
   const tall = Math.max(...w.civic.filter(x => x.id.startsWith('civic/civic-office')).map(x => x.height));
   expect(tall).toBeCloseTo(office.crown, 1);
-  for (const cb of civ.buildings) expect(w.civic.find(x => x.id === `civic/${cb.id}`)!.height).toBe(cb.height);
+  for (const cb of civ.buildings) { const m = w.civic.find(x => x.id === `civic/${cb.id}`)!, below = w.civic.find(x => x.id === m.groundBy); expect(m.height + (below ? m.base - below.base : 0)).toBeCloseTo(cb.height, 3); }
 });
 
 test('heights follow H(n) and the area caps; every roof has a programme that fits', () => {

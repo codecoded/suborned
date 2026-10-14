@@ -145,7 +145,21 @@ describe('extra world rules', () => {
       const none = failing(w => { kerb(w, c => c.refuges.length > 0).refuges = []; });
       expect(none['SF-20']).toMatch(/crossing\/.* has 0 refuges, the median it crosses needs 1/);
       const loose = failing(w => { delete kerb(w, c => c.control === 'zebra').control; });
-      expect(loose['SF-20']).toMatch(/control is none, the plan gives district roads zebra/);
+      expect(loose['SF-20']).toMatch(/control is none, the plan gives (district|access) roads zebra/);
+      const access = failing(w => { delete kerb(w, c => c.control === 'zebra' && /^crossing\/orbit-walk\//.test(c.id)).control; }); // an access road's crossing is a zebra too
+      expect(access['SF-20']).toMatch(/crossing\/orbit-walk\/\d+ control is none, the plan gives access roads zebra/);
+    });
+
+    test('a patch lies at the level of the surface under it: a tram stop patch floating over the carriageway at the pavement top fails', () => {
+      const f = failing(w => { first(w.street, s => s.kind === 'crossing' && s.edge.startsWith('stop/')).z = 0.18; });
+      expect(f['SF-20']).toMatch(/1 fail: street\/stop\/.*\/crossing-\d+ is at z 0\.18 over a surface at 0/);
+      expect(ids(f)).toEqual(['SF-20']);
+    });
+
+    test('a landing never stands on a lawn: the Sphere Gardens bank patch out on the grass fails', () => {
+      const f = failing(w => { first(w.street, s => s.id === 'street/bank/S1/gardens/l/crossing-213').at = [-155.2, 29.5]; });
+      expect(f['SF-20']).toMatch(/1 fail: street\/bank\/S1\/gardens\/l\/crossing-213 stands on the lawn at \(-15\d\.\d, 2\d\.\d\): a landing stands on pavement, a path or a platform/);
+      expect(ids(f)).toEqual(['SF-20']);
     });
 
     test('opt-in: a plan without streetscape.crossings.strip is not held to it', () => {

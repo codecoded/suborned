@@ -10,7 +10,7 @@ import { type V as PV, dist, dot, norm, sub } from '../../plan/geom';
 import { flagRow } from './colour';
 import { edgeN } from './geo';
 import { streetKit } from './kitrefs';
-import { type CrossingLog, pairCrossings } from './street/crossings';
+import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
 import { Layer } from './street/kit';
 import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks } from './street/public';
 import { dressRoads } from './street/roads';
@@ -32,7 +32,9 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const D = new Layer(ctx, hall, [], [], keep, []);
   dressDecks(ctx, D, o.decks.filter(d => !/\/(mezzanine|bridge)/.test(d.id)));
   const flags = dressFlags(ctx, L, o.frontages); // last: flags take what the furniture leaves
-  const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
+  if (ctx.S.crossings.strip) bankFeet(ctx, L, o.connectors.filter(k => k.kind === 'stairTower'));
+  const civicIds = ctx.S.crossings.strip ? civicLandings(ctx, L) : [];
+  const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L, civicIds) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
   return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items]), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}) };
 }
 

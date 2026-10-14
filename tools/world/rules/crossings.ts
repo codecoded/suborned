@@ -7,10 +7,12 @@
 import type { Check } from '../../plan/checks';
 import type { V } from '../../plan/geom';
 import { dist, inPoly } from '../../plan/geom';
+import { samples9 } from '../../plan/street-zones';
 import { TOL, type WCtx, itemRing, lineDist, rule } from '../../plan/world-ctx';
 import { ctxOf } from '../gen/common';
 import { plotRing } from '../gen/edges';
 import { areaOf, clipConvex, stripBlock } from '../gen/street/crossings';
+import { lawn, levelAt } from '../gen/street/ground';
 import { nearestLine } from './line';
 
 const SOURCE = 'streetscape.crossings.w (4 m, near edge ≥ 3 m past the corner tangent; bollards flank at ± 2.4) · '
@@ -67,6 +69,13 @@ function stripRule(c: WCtx): Check[] {
     const n = uses.get(s.id) ?? 0;
     if (n !== 1) bad.push(`${s.id} is a landing with no partner (in ${n} crossings)`);
   }
+  const gc = ctxOf(c.plan, c.d, c.civ);
+  for (const s of patches) { // a patch lies at the level of the surface under it and never on a lawn (Latch's rebuild, notes 2 and 3)
+    const level = levelAt(gc, s.at);
+    if (Math.abs(s.z - level) > TOL) bad.push(`${s.id} is at z ${s.z} over a surface at ${level}`);
+    const on = samples9(itemRing(s)).find(p => lawn(gc, p));
+    if (on) bad.push(`${s.id} stands on the lawn at (${on[0].toFixed(1)}, ${on[1].toFixed(1)}): a landing stands on pavement, a path or a platform`);
+  }
   const envelope = c.plan.standards.tram.trackCentres / 2 + 0.5, tracks = c.w.transit.tram.map(t => t.line), bays = c.w.ground.flats.filter(f => f.surface === 'bay').map(f => f.ring);
   const medians = c.w.ground.medians.filter(m => dist(m.ring[1]!, m.ring[2]!) >= std.refuge - TOL);
   for (const x of crossings) {
@@ -93,5 +102,5 @@ function stripRule(c: WCtx): Check[] {
     if (why) bad.push(`${x.id} ${why}`);
   }
   return [rule('SF-20', 'Streetscape', 'A crossing is two landings and a strip between their kerbs, a refuge where it crosses a median of refuge width, '
-    + 'and no strip across a tram track or a bay the plan does not allow', patches.length + crossings.length, bad, 'none', SOURCE20)];
+    + 'a patch at the level of the surface it lies on and never on a lawn, and no strip across a tram track or a bay the plan does not allow', patches.length + crossings.length, bad, 'none', SOURCE20)];
 }

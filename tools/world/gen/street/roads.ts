@@ -8,14 +8,14 @@ import type { Layer } from './kit';
 
 const ROADS = ['primary', 'district', 'access'];
 
-/** A crossing landing at `s` along a plot edge (`at(s, d)`: s along the edge, d in from the kerb line), flanked by bollards, and by beacons on a district road.
+/** A crossing landing at `s` along a plot edge (`at(s, d)`: s along the edge, d in from the kerb line), flanked by bollards, and by beacons on a district road (`flank` false: the patch alone, on a civic kerb).
  *  Recorded in L.landings with the ids it was placed with. */
-export function landing(ctx: Ctx, L: Layer, at: (s: number, d: number) => V, s: number, yaw: number, edge: string, cls: string, road: string, force = true): boolean {
+export function landing(ctx: Ctx, L: Layer, at: (s: number, d: number) => V, s: number, yaw: number, edge: string, cls: string, road: string, force = true, flank = true, fixedId?: string): boolean {
   const S = ctx.S, sec = S.sections[cls], n0 = L.items.length;
-  if (!L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, ctx.pav, edge, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force })) return false;
+  if (!L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, ctx.pav, edge, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force, ...(fixedId ? { id: fixedId, uncounted: true } : {}) })) return false;
   const id = L.items[L.items.length - 1]!.id;
-  for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, ctx.pav, edge, { size: S.bollards.size, r: 0.2 });
-  if (cls === 'district') for (const o of [-2.6, 2.6]) L.add('beacon', at(s + o, 0.7), yaw, ctx.pav, edge, { size: [0.4, 0.4, S.crossings.beacons.h], r: 0.3 });
+  if (flank) for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, ctx.pav, edge, { size: S.bollards.size, r: 0.2 });
+  if (flank && cls === 'district') for (const o of [-2.6, 2.6]) L.add('beacon', at(s + o, 0.7), yaw, ctx.pav, edge, { size: [0.4, 0.4, S.crossings.beacons.h], r: 0.3 });
   L.landings.push({ id, road, cls, flank: L.items.slice(n0 + 1).map(x => x.id) });
   return true;
 }

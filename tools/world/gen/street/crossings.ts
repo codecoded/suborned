@@ -5,14 +5,17 @@
 // landing gets its partner on the opposite pavement where the spot is free (SF-2 keeps its 2 m, the solids and keep-clears
 // hold) and is dropped, with its bollards and beacons, where it cannot. A pair whose strip would cross a tram track or a bay
 // the plan does not allow is dropped. Tram stop and station bank patches are strip-only crossings: the way to the platform.
-import type { Crossing, StreetItem } from '../../../../contracts/world/world.schema';
+import type { Connector, Crossing, StreetItem } from '../../../../contracts/world/world.schema';
 import { type V, add, dist, dot, inPoly, mul, polyline, segDist, segHit, sub } from '../../../plan/geom';
-import { boxRing, quayBlock, roadAt, samples9 } from '../../../plan/street-zones';
+import { boxRing, quayBlock, ringGap, roadAt, samples9 } from '../../../plan/street-zones';
 import { type Ctx, r3, rv } from '../common';
 import { idOf, kindOf, plotRing } from '../edges';
-import { edgeN } from '../geo';
+import { bbox, edgeN } from '../geo';
 import type { Landing, Layer } from './kit';
+import { lawn, levelAt } from './ground';
 import { landing } from './roads';
+import { toPlanFn } from '../../../plan/civic';
+import type { Dressing } from '../../civic/dress';
 
 type Edge = { key: string; a: V; u: V; len: number; n: V; road: string; cls: string; civic: boolean };
 type Pair = { a: Landing; b: Landing; ka: V; kb: V };
@@ -80,7 +83,41 @@ export const stripRing = (ka: V, kb: V, width: number): V[] => boxRing([(ka[0] +
 /** What pairCrossings did, for the export's log: kerb landings found, pairs standing already, partners added, and each landing dropped with the reason. */
 export type CrossingLog = { landings: number; paired: number; added: number; dropped: string[] };
 
-export function pairCrossings(ctx: Ctx, L: Layer): { crossings: Crossing[]; log: CrossingLog } {
+/** The landings the civic block names (`dressing.crossings.at`, block/4), on its own kerb: the patch alone, no bollards or beacons (the block states none). They are placed after
+ *  every district item so no id or seeded choice moves, and pair with the district landing the generator dropped for lack of a partner (pairCrossings, step 1). */
+export function civicLandings(ctx: Ctx, L: Layer): string[] {
+  const at = (ctx.civ.dressing as Dressing | undefined)?.crossings.at ?? [], toPlan = toPlanFn(ctx.plan.civic), edges = [...edgesOf(ctx).values()], placed: string[] = [];
+  for (const c of at) {
+    const k = toPlan(c.at), e = edges.find(x => x.key.startsWith(`${c.plot}/e`) && x.road === c.road && segDist(k, x.a, add(x.a, mul(x.u, x.len))) < 0.05);
+    if (!e) throw new Error(`civic crossing ${c.id}: no edge of ${c.plot} on ${c.road} through ${c.at.join(', ')}`);
+    const inward = sub(toPlan([c.at[0] + c.inward[0], c.at[1] + c.inward[1]]), k);
+    if (dot(inward, e.n) > -0.9) throw new Error(`civic crossing ${c.id}: inward does not run from the kerb into the plot`);
+    const s = dot(sub(k, e.a), e.u), pt = (q: number, d: number): V => [e.a[0] + e.u[0] * q - e.n[0] * d, e.a[1] + e.u[1] * q - e.n[1] * d];
+    if (landing(ctx, L, pt, s, Math.atan2(e.u[1], e.u[0]), e.key, e.cls, e.road, true, false, `street/${e.key}/crossing-${c.id}`)) placed.push(L.items[L.items.length - 1]!.id);
+  }
+  return placed;
+}
+
+/** A station bank whose patch lies on lawn (Sphere Gardens, left bank: 11.5 m out from the tower, 20 m from any street): a landing stands on pavement, a path or a platform, so the
+ *  patch moves to the nearest such spot at the foot of the tower that the furniture left free (1 m off the tower, 2 m clear of the rest, off the quay). It keeps its id and
+ *  its place in the list, so nothing placed with it moves. None free: it stays, and SF-20 names it. */
+export function bankFeet(ctx: Ctx, L: Layer, towers: Connector[]): void {
+  const W = ctx.S.crossings.w as number;
+  for (const t of towers) {
+    const i = L.items.findIndex(x => x.kind === 'crossing' && x.edge === t.host), it = L.items[i];
+    if (!it || !samples9(boxRing(it.at, it.size[0], it.size[1], it.yaw)).some(p => lawn(ctx, p))) continue;
+    const bb = bbox(t.ring), c: V = [(bb[0] + bb[1]) / 2, (bb[2] + bb[3]) / 2], found: { p: V; gap: number; dk: number }[] = [];
+    for (let dx = -14; dx <= 14; dx += 0.5) for (let dy = -14; dy <= 14; dy += 0.5) {
+      const p: V = [c[0] + dx, c[1] + dy], ring = boxRing(p, it.size[0], W, it.yaw), gap = ringGap(ring, t.ring);
+      if (gap < 1 || samples9(ring).some(q => lawn(ctx, q)) || quayBlock(ctx, samples9(ring)) || !L.fixed(p, 2) || !L.clearOf(ring, p, 2)) continue;
+      found.push({ p, gap, dk: roadAt(ctx, p, t.host)?.dk ?? 99 });
+    }
+    const best = found.sort((a, b) => a.gap - b.gap || a.dk - b.dk || a.p[0] - b.p[0] || a.p[1] - b.p[1])[0];
+    if (best) L.items[i] = { ...it, at: rv(best.p), z: r3(levelAt(ctx, best.p)) };
+  }
+}
+
+export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { crossings: Crossing[]; log: CrossingLog } {
   const std = ctx.S.crossings.strip as { stagger: number; refuge: number; control?: Record<string, 'zebra' | 'signal'>; across?: { track?: string[]; bay?: string[] } }, W = ctx.S.crossings.w as number;
   const edges = edgesOf(ctx), roads = new Map(ctx.d.roads.map(r => [r.id, r])), items = new Map(L.items.map(x => [x.id, x]));
   const info = (l: Landing) => { // the landing's edge, and its place on the kerb line
@@ -146,7 +183,8 @@ export function pairCrossings(ctx: Ctx, L: Layer): { crossings: Crossing[]; log:
   const out: Crossing[] = [], n = new Map<string, number>(), medians = ctx.d.zones.filter(z => z.kind === 'median' && z.poly);
   const nextId = (road: string) => { const k = n.get(road) ?? 0; n.set(road, k + 1); return `crossing/${road}/${k}`; };
   const order = new Map(L.landings.map((l, i) => [l.id, i]));
-  for (const p of [...ok].sort((x, y) => order.get(x.a.id)! - order.get(y.a.id)!)) {
+  const civicOnes = new Set(civicIds), isCivic = (p: Pair) => civicOnes.has(p.a.id) || civicOnes.has(p.b.id); // civic pairs number after the district's, so no district crossing id moves
+  for (const p of [...ok].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
     const strip = stripRing(p.ka, p.kb, W), refuges = medians
       .filter(z => dist(z.poly![1]!, z.poly![2]!) >= std.refuge - 1e-9).map(z => clipConvex(strip, z.poly!)).filter(r => areaOf(r) > 0.25).map(r => r.map(rv));
     const control = std.control?.[p.a.cls];

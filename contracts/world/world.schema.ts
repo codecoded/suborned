@@ -42,7 +42,13 @@ export type Road = { id: string; surface: string; kerbSurface: string; line: V[]
 export type Circus = { id: string; surface: string; islandSurface: string; centre: V; radius: number; islandRadius: number; level: number; islandHeight: number };
 export type Flat = { id: string; surface: string; ring: V[]; level: number };
 /** Extruded footprint from base to base + height. */
-export type Mass = { id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number } }; // civic objects (grammar §11): `kit` stands in for the extrusion (the ring stays the footprint)
+export type Mass = {
+  id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number };
+  /** Civic only (brief 008 B3): the play camera's architecture fade may thin this mass (a parasol, a frontage, a shelter: it stands between the camera and a person). */
+  fade?: true;
+  /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
+  groundBy?: string;
+}; // civic objects (grammar §11): `kit` stands in for the extrusion (the ring stays the footprint)
 /** spacing > 0: a double track, two ribbons spacing apart either side of `line`. */
 export type Track = { id: string; surface: string; line: V[]; width: number; level: number; depth: number; spacing: number };
 /** Beam(s) with the top at `height`; pylons from `ground` to the beam soffit; a double line's pylon carries a cross-head capDepth deep. */

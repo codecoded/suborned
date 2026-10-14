@@ -6,6 +6,7 @@ import { type V, dist, lineDist, norm, sub } from '../../../plan/geom';
 import { boxRing, quayBlock, samples9 } from '../../../plan/street-zones';
 import type { Ctx } from '../common';
 import { kindOf, plotRing } from '../edges';
+import { levelAt } from './ground';
 import { axisClears } from '../connectors';
 import { type Rect, bbox, edgeN, inRect } from '../geo';
 import type { DeckRec } from '../types';
@@ -51,7 +52,8 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     L.add('pole-camera', at(-len / 2 + 0.6, w / 2 - 0.2), yaw, top, id, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera', force: true });
     if (!done.has(`${line}/${stop}`)) { // once per stop: crossings at both platform ends, kiosks and phone booths on the pavement facing it
       done.add(`${line}/${stop}`);
-      for (const s of [-(len / 2 + 5), len / 2 + 5]) L.add('crossing', at(s, 0), yaw + Math.PI / 2, z, id, { size: [8, S.crossings.w, 0.02], r: 2, force: true });
+      // a patch lies at the level of the surface under it (a plan with crossings.strip: the carriageway, not the pavement top above it)
+      for (const s of [-(len / 2 + 5), len / 2 + 5]) L.add('crossing', at(s, 0), yaw + Math.PI / 2, S.crossings.strip ? levelAt(ctx, at(s, 0)) : z, id, { size: [8, S.crossings.w, 0.02], r: 2, force: true });
       const k = kerbNear(segs, c, 40);
       if (k && k.kind !== 'primary') {
         const off = (s: number): V => [k.q[0] + Math.cos(k.yaw) * s, k.q[1] + Math.sin(k.yaw) * s];

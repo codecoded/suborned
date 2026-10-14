@@ -2,5 +2,12 @@
  "recorded": {
   "0d76b05747210ed4": "skyline run r011 (fd5d1b8, dirty)"
  },
- "declared": {}
+ "declared": {
+  "0f4bf4e14d33bca31d9f3127f72b54ff71cea400c111235b1d870e8321de7f1d": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   }
+  ]
+ }
 }

@@ -212,7 +212,7 @@ describe('the kit digest is pinned into every run', () => {
   test('replay rebuilds the corpus from the pinned digest, so a later adoption in kit.json does not break an earlier run', async () => {
     const kit = join(scratch, 'kit.json'), real = await Bun.file(join(root, 'contracts/world/kit.json')).text(); await Bun.write(kit, real);
     const t = await run('kit-pin', { 'toy-a.1.json': { n: 1, sources: [] }, 'toy-b.1.json': { n: 2, sources: [] }, 'toy-critic.1.json': pass }, { env: { SUBORNED_KIT: kit } });
-    expect(t.runJson.inputKit).toMatchObject({ source: kit, sha256: expect.stringMatching(/^[0-9a-f]{64}$/), assets: 241 });
+    expect(t.runJson.inputKit).toMatchObject({ source: kit, sha256: expect.stringMatching(/^[0-9a-f]{64}$/), assets: JSON.parse(real).assets.length });
     const digest = await Bun.file(join(t.r.rdir, 'input.kit.digest.json')).text(); expect(digest.length).toBeLessThan(real.length / 10);
     const ok = await withRuns({ ...t.env, SUBORNED_KIT: kit }, () => t.replay()); expect(fails(ok)).toEqual([]); expect(ok.lines.join('\n')).toContain('kit digest');
     const edited = JSON.parse(real); edited.assets.find((a: any) => a.status === 'candidate').status = 'adopted'; await Bun.write(kit, JSON.stringify(edited)); // Vela adopts a piece

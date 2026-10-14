@@ -59,6 +59,12 @@
     "cause": "brief 008 B3: the plan checker reads a civic block's tower footprints. block/4 adds towers[].polygon, and W-4 (a walk origin stands at a wall or door) and the walk's blockers test buildings and towers together; a block without a tower polygon (block/2 and block/3, so every recorded run's pinned block) is read exactly as before, so no recorded rule result changes. The world generator's kerb-to-kerb crossings and rule SF-20 are opt-in on standards.streetscape.crossings.strip, which no recorded plan carries.",
     "rules": []
    }
+  ],
+  "b5c487912552a18dc42a51eed7a0832bd58118952c8ebaeed6c50bc23fd0cbdc": [
+   {
+    "cause": "brief 008 B3 second half: the plan checker's walk reads a civic block's ground solids. civic() adds `solids` only for a block/4 that carries a `dressing`, walk.ts blocks a step by those solids' own edges (walk-solids.ts) and seeds a walk from its origin point, walk-fine.ts measures one pair on a 0.1 m grid, and worldKey also hashes civic-look.json. A block without a dressing (block/2 and block/3, so every recorded run's pinned block) has no solids and walks bit-identically, so no recorded rule result changes.",
+    "rules": []
+   }
   ]
  }
 }

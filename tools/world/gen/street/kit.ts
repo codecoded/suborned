@@ -20,6 +20,7 @@ export type Landing = { id: string; road: string; cls: string; flank: string[] }
 
 export class Layer {
   items: StreetItem[] = [];
+  private uncounted = 0; // items placed under an explicit id that take no number from the ids minted after them (the civic landings)
   landings: Landing[] = [];
   private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
   private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
@@ -50,7 +51,7 @@ export class Layer {
     return !this.crossings.some(c => ringGap(c, ring) < 1) && !this.placed.near(at, 12).some(o => !o.exempt && ringGap(o.ring, ring) < gap);
   }
   /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
-  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string } = {}): boolean {
+  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
     if (!o.force && !this.free(at, r, o.ground ?? true, kind)) return false;
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
@@ -64,8 +65,9 @@ export class Layer {
     if (kind === 'crossing') this.crossings.push(ring);
     this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/') });
     const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
+    if (o.uncounted) this.uncounted++;
     this.items.push({
-      id: o.id ?? `street/${edge}/${kind}-${this.items.length}`, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
+      id: o.id ?? `street/${edge}/${kind}-${this.items.length - this.uncounted}`, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
       sight: c ? sightOf(c.sight) : kind === 'tree' ? 'open' : 'open', ...(staffed ? { staffed } : {}), ...(o.variant ? { variant: o.variant } : {}),
     });
     return true;

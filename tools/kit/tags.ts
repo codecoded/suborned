@@ -16,7 +16,7 @@ const TRADE: Record<string, string[]> = {
 };
 // [min, max] uniform scale on height; palms may be squeezed to `squash` of their height scale (tall slim crowns: Washingtonia).
 const SCALE: Record<string, [number, number]> = {
-  AtomFountain: [0.9, 1.1], BoardingPavilion_Office: [0.9, 1.1], BoardingPavilion_Square: [0.9, 1.1], PavilionPier_Office: [0.9, 1.1], PavilionPier_Square: [0.9, 1.1], // civic square (grammar §11): built to the block's footprints
+  AtomFountain: [0.9, 1.1], BoardingPavilion_Office: [0.9, 1.1], BoardingPavilion_Square: [0.9, 1.1], PavilionPier_Office: [0.9, 1.1], PavilionPier_Square: [0.9, 1.2], // civic square (grammar §11): built to the block's footprints; 1.2 under BoardingPavilion_Square_v2 (2.226 m, brief 008 B3)
   LinerDock: [0.4, 1.1], 'LinerDock@liner-berth': [0.4, 1.1], OceanLiner: [0.4, 1.1], SkyRailStation_Twin: [1, 1], SkyRailStation_Decks: [1, 1], ParadeGate_Block: [1, 1], // landmarks built to their plan sites (the liner at x 0.5)
   PlanterArc: [1, 1], // the four fountain-garden beds (Vela, brief 007 round 3): built to the bed's band about the fountain (r 5.36-7.06), placed at scale 1
   CafeSet_Tulip: [0.5, 1.2], PottedPalm_Small: [0.5, 1.4], UtilityCabinet: [0.6, 1.4],

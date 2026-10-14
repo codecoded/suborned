@@ -21,6 +21,8 @@ const walk = (dir: string): string[] => readdirSync(dir).flatMap(f => { const p 
 export function worldKey(plan: Plan, civ: Civic): string {
   const h = createHash('sha1');
   h.update(JSON.stringify(plan)); h.update(JSON.stringify(civ)); h.update(readFileSync(resolve(root, 'contracts/world/kit.json'))); // the adopted pieces decide kit refs
+  const look = resolve(root, 'contracts/world/civic-look.json');
+  if (existsSync(look)) h.update(readFileSync(look)); // so does the civic look (swaps, bands, scales) where it exists
   const src = [...walk(resolve(root, 'tools/world')), ...['geom', 'plan', 'civic', 'transit', 'block', 'graph', 'street-zones'].map(n => resolve(root, `tools/plan/${n}.ts`))].sort();
   for (const f of src) { h.update(f); h.update(readFileSync(f)); }
   return h.digest('hex').slice(0, 16);

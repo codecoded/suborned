@@ -16,9 +16,13 @@ export type Civic = {
   walkFrom: { name: string; p: V }[];
   blocks: { id: string; outer: V[]; core: V[] }[];
   crossing: V[];
-  /** The block's `dressing` key (block/4), unchanged and in block frame: keep-clear zones, lamps, bollards, planters, parasols, piece pivots. Nothing reads it yet. */
+  /** The block's `dressing` key (block/4), unchanged and in block frame: keep-clear zones, lamps, bollards, planters, parasols, piece pivots. The world generator places it (tools/world/civic/dress.ts); rules CD-1..4 hold it. */
   dressing?: Record<string, unknown>;
+  /** From block/4 with a `dressing`: the ground solids a walker cannot cross, plan frame: the pieces' wall, cheeks and pilasters (not the overhead marquee), the objects (beds, tables, fountain) and the pillars, cabinets and monument. Absent on a block without one, so recorded walks read what they always did. */
+  solids?: V[][];
 };
+
+const SOLID_STRUCTURES = new Set(['pavilion-support', 'service-cabinet', 'civic-monument']); // the steps, landings and canopies of the others are walked on or under
 
 export function toPlanFn(spec: any) {
   const o: V = spec.blockToPlan.origin, ax: V = spec.blockToPlan.x, ay: V = spec.blockToPlan.y;
@@ -41,7 +45,14 @@ export function civic(spec: any, block: any): Civic {
     walkFrom: entrances.map((e: any) => ({ name: e.name, p: e.p })),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),
     crossing: blockRect(spec.crossing),
-    ...(block.dressing ? { dressing: block.dressing } : {}),
+    ...(block.dressing ? {
+      dressing: block.dressing,
+      solids: [
+        ...(block.dressing.pieces ?? []).flatMap((p: any) => (p.solids ?? []).filter((x: any) => x.z === undefined).map((x: any) => x.polygon.map(toPlan))),
+        ...block.objects.map((o: any) => o.polygon.map(toPlan)),
+        ...block.structures.filter((x: any) => SOLID_STRUCTURES.has(x.category)).map((x: any) => x.polygon.map(toPlan)),
+      ] as V[][],
+    } : {}),
   };
 }
 

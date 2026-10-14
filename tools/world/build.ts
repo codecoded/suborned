@@ -3,7 +3,7 @@
 // with the standard it is waiting for.
 import { type V, centroid, dist, norm, polyline, rectPoly, segDist, sub } from '../plan/geom';
 import type { Derived, Plan } from '../plan/plan';
-import type { Civic } from '../plan/civic';
+import { type Civic, toPlanFn } from '../plan/civic';
 import { placements, modeOf } from '../plan/transit';
 import type { Circus, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World } from '../../contracts/world/world.schema';
 import { ctxOf } from './gen/common';
@@ -12,6 +12,8 @@ import type { DeckRec } from './gen/types';
 import { adoptedBy, landmarkKit } from './gen/kitrefs';
 import { horizonOf } from './gen/horizon';
 import { WATER_LEVEL } from './gen/signatures';
+import { dressCivic, dressingOf, footOf } from './civic/dress';
+import { look } from './civic/look';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
@@ -82,7 +84,7 @@ function levelsOf(plan: Plan, decks: DeckRec[]): Level[] {
   }));
 }
 
-function civicMasses(civ: Civic): Mass[] {
+function civicMasses(civ: Civic, toPlan: (p: V) => V): Mass[] {
   const base = (z: number) => r3(PROV.pavement + z);
   const out: Mass[] = [];
   for (const b of civ.buildings) {
@@ -97,8 +99,9 @@ function civicMasses(civ: Civic): Mass[] {
   const ofk: Record<string, string> = { fountain: 'enamel', planter: 'park', table: 'trim' };
   for (const o of civ.objects) out.push({ id: `civic/${o.id}`, surface: ofk[o.kind] ?? 'limestone', ring: ring(o.poly), base: base(o.z), height: o.height });
   const fountain = out.find(m => /\/atom-fountain$/.test(m.id)), fc = fountain ? boxOf(fountain.ring).c : undefined;
-  const kitted = out.map(m => civicKit(m, fc));
-  return clearWalls(kitted, new Set(civ.buildings.map(b => `civic/${b.id}`)));
+  const dress = dressingOf(civ) ? look : undefined; // the block's dressing (brief 008): the pieces it swaps in, grounds and scales
+  const kitted = out.map(m => civicKit(m, fc, dress));
+  return dressCivic(civ, toPlan, clearWalls(kitted, new Set(civ.buildings.map(b => `civic/${b.id}`))), PROV.pavement);
 }
 
 /** Grammar §11: civic objects and structures a kit piece stands for. The extrusion stays for ids and footprint.
@@ -117,8 +120,8 @@ const FILL = 0.85;
  *  Vela's block-frame yaws (Blender rotation about z in the block frame, x south, y east) map to these by plan yaw = block yaw + 90 deg. */
 export const ARC = { r: 6.12 };
 const boxOf = (ring: V[]) => { const xs = ring.map(p => p[0]), ys = ring.map(p => p[1]); return { w: Math.max(...xs) - Math.min(...xs), d: Math.max(...ys) - Math.min(...ys), c: [(Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2] as V }; };
-export function civicKit(m: Mass, fountain?: V): Mass {
-  const row = CIVIC_KIT.find(([re]) => re.test(m.id)), id = row?.[1], a = adoptedBy(id); if (!row || !id || !a) return m;
+export function civicKit(m: Mass, fountain?: V, dress?: Pick<typeof look, 'swaps' | 'grounded' | 'scales'>): Mass {
+  const row = CIVIC_KIT.find(([re]) => re.test(m.id)), id = row ? (dress?.swaps[row[1]] ?? row[1]) : undefined, a = adoptedBy(id); if (!row || !id || !a) return m;
   const mode = row[2], { w: bw, d: bd, c } = boxOf(m.ring);
   if (mode === 'arc') {
     if (!fountain) return { ...m, source: 'procedural' };
@@ -130,8 +133,9 @@ export function civicKit(m: Mass, fountain?: V): Mass {
   let s = r3(box);
   if (mode !== 'fit') s = 1;
   else if (s > hi + 1e-6 && (hi * Math.max(pw, pd)) / Math.max(bw, bd) >= FILL) s = hi;
+  if (dress?.scales[id]) s = dress.scales[id]!; // the block states this piece's scale (the piers under the v2 shelter)
   if (s < lo - 1e-6 || s > hi + 1e-6) return { ...m, source: 'procedural' };
-  const canopy = /boarding-pavilion$/.test(m.id), top = m.base + m.height; // a canopy-only piece hangs at the top of its mass
+  const canopy = /boarding-pavilion$/.test(m.id) && !dress?.grounded.includes(id), top = m.base + m.height; // a canopy-only piece hangs at the top of its mass
   const yaw = turn ? Math.PI / 2 : 0, seeded = /cafe-(table|palm)/.test(m.id) ? r3(((hashY(m.id) % 628) / 100)) : yaw;
   const base = canopy ? top - a.size[1] * s : mode === 'plinth' ? Math.max(m.base, top - a.size[1] * s) : m.base;
   return { ...m, source: 'kit', kit: { id, scale: [s, s, s], yaw: seeded, at: rv(c), base: r3(base) } };
@@ -139,11 +143,8 @@ export function civicKit(m: Mass, fountain?: V): Mass {
 
 /** A kit piece's footprint at its scale (turned by its yaw, about its footprint centre): kit x -> plan along yaw, kit z -> plan across (front = yaw + 90°);
  *  the footprint centre sits at the pivot + pivotOffset. */
-function kitFoot(m: Mass): V[] {
-  const a = adoptedBy(m.kit!.id)!, s = m.kit!.scale[0], y = m.kit!.yaw ?? 0, cs = Math.cos(y), sn = Math.sin(y), off = a.pivotOffset ?? [0, 0], hw = (a.size[0] * s) / 2, hd = (a.size[2] * s) / 2;
-  return ([[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]] as V[]).map(([x, z]) => [m.kit!.at[0] + (x + off[0] * s) * cs - (z + off[1] * s) * sn, m.kit!.at[1] + (x + off[0] * s) * sn + (z + off[1] * s) * cs] as V);
-}
-const PERSON = new Set(CIVIC_KIT.filter(r => r[2] === 'person').map(r => r[1]));
+const kitFoot = (m: Mass): V[] => footOf(adoptedBy(m.kit!.id)!, m.kit!);
+const PERSON = new Set(CIVIC_KIT.filter(r => r[2] === 'person').flatMap(r => [r[1], look.swaps[r[1]] ?? r[1]]));
 /** Person-scale pieces whose footprint reaches a building wall (the café palms' fronds, brief 007 round 3): the piece and its mass slide straight out from the
  *  nearest wall edge in `step` m steps until the footprint is `clear` m off the wall, at most `max` m; the move is kept only if the footprint then overlaps no other
  *  civic mass or person-scale piece (civicClearance), so it stays in the terrace between the wall and the table row. Deterministic: same block, same result. */
@@ -177,6 +178,7 @@ export function civicClearance(civic: Mass[]): string[] {
     const f = foot(m);
     for (const o of civic) {
       if (o === m || o.base > m.base + 1.2 || o.base + o.height < m.base + 0.05) continue; // only what stands in the same body of air
+      if (o.kit && look.overhead.includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
       const ring = o.kit && person.has(o.kit.id) ? foot(o) : o.ring;
       if (pieces.indexOf(o) >= 0 && pieces.indexOf(o) < pieces.indexOf(m)) continue; // each pair once
       if (overlap(f, ring)) out.push(`${m.id} (${m.kit!.id} x1) overlaps ${o.id}`);
@@ -225,7 +227,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
     ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}),
-    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
+    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ, toPlanFn(plan.civic)), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,

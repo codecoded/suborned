@@ -20,21 +20,21 @@ const old = worldOf(bare, derive(bare), civ).world;
 const items = new Map(w.street.map(s => [s.id, s]));
 const kerb = (w.crossings ?? []).filter(c => c.kind === 'kerb');
 
-test('the live plan has crossings: 59 kerb pairs, 20 tram stop and 8 station bank patches, 22 refuges', () => {
-  expect(w.crossings!.length).toBe(87);
-  expect(kerb.length).toBe(59);
+test('the live plan has crossings: 67 kerb pairs, 20 tram stop and 8 station bank patches, 22 refuges', () => {
+  expect(w.crossings!.length).toBe(95);
+  expect(kerb.length).toBe(67);
   expect(w.crossings!.filter(c => c.kind === 'stop').length).toBe(20);
   expect(w.crossings!.filter(c => c.kind === 'bank').length).toBe(8);
   expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(22);
-  expect(w.counts.crossings).toBe(87);
-  expect(gen.crossingLog!.landings).toBe(168);
+  expect(w.counts.crossings).toBe(95);
+  expect(gen.crossingLog!.landings).toBe(177); // 168 plot-edge landings and the civic block's 9
 });
 
 test('every crossing patch is in exactly one crossing, and a kerb crossing is two landings on opposite kerbs', () => {
   const uses = new Map<string, number>();
   for (const c of w.crossings!) for (const id of c.items) uses.set(id, (uses.get(id) ?? 0) + 1);
   const patches = w.street.filter(s => s.kind === 'crossing');
-  expect(patches.length).toBe(146); // 118 landings in 59 pairs, 20 stop patches, 8 bank patches
+  expect(patches.length).toBe(162); // 134 landings in 67 pairs, 20 stop patches, 8 bank patches
   for (const s of patches) expect(uses.get(s.id), s.id).toBe(1);
   const rings = patches.map(s => ({ s, ring: boxRing(s.at, s.size[0], s.size[1], s.yaw) }));
   for (const [i, a] of rings.entries()) for (const b of rings.slice(i + 1)) if (dist(a.s.at, b.s.at) < 12) expect(ringGap(a.ring, b.ring), `${a.s.id} ~ ${b.s.id}`).toBeGreaterThanOrEqual(1); // no two patches run into each other
@@ -68,9 +68,25 @@ test('opt-in: a plan without strip exports no crossings and all 196 single patch
 
 test('with the standard on, nothing but crossings and the bollards and beacons that flank them changes', () => {
   const was = new Map(old.street.map(s => [s.id, s])), moves = new Set(['crossing', 'bollard', 'beacon']);
-  for (const s of w.street) { const o = was.get(s.id); if (o) expect(JSON.stringify(s), s.id).toBe(JSON.stringify(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
+  // a tram stop's patch lies on the carriageway (z 0, not the pavement top above it); the Sphere Gardens bank's moves in off the lawn: the same patches, nothing else of them
+  const lies = (s: typeof w.street[number], o: typeof s) => (s.kind === 'crossing' && s.edge.startsWith('stop/') ? { ...s, z: o.z } : s.id === 'street/bank/S1/gardens/l/crossing-213' ? { ...s, at: o.at } : s);
+  for (const s of w.street) { const o = was.get(s.id); if (o) expect(JSON.stringify(lies(s, o)), s.id).toBe(JSON.stringify(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
   for (const o of old.street) if (!items.has(o.id)) expect(moves.has(o.kind), o.id).toBe(true);
   const keep = (x: { street: { kind: string }[] }) => x.street.filter(s => !moves.has(s.kind)).length;
   expect(keep(w)).toBe(keep(old));
   for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts')) expect(JSON.stringify((w as any)[k]), k).toBe(JSON.stringify((old as any)[k])); // every other layer is the same
+});
+
+test('every kerb crossing is a zebra on every road class; a stop or a bank crossing keeps the line pair', () => {
+  expect(plan.standards.streetscape.crossings.strip.control).toEqual({ primary: 'zebra', district: 'zebra', access: 'zebra' });
+  for (const c of w.crossings!) expect(c.control, c.id).toBe(c.kind === 'kerb' ? 'zebra' : undefined);
+  const byRoad = new Set(kerb.map(c => d.roads.find(r => r.id === c.road)!.class));
+  expect([...byRoad].sort()).toEqual(['access', 'district']); // the live plan has no primary kerb crossing
+});
+
+test('a patch lies at the level of the surface under it: a stop patch on the carriageway at 0, the rest on the pavement top; none on a lawn', () => {
+  for (const s of w.street.filter(s => s.kind === 'crossing')) expect(s.z, s.id).toBe(s.edge.startsWith('stop/') ? 0 : 0.18); // 0.18 = the pavement top
+  const gardens = items.get('street/bank/S1/gardens/l/crossing-213')!;
+  expect(gardens.at).toEqual([-163.2, 15]); // it stood on the lawn 11.5 m out, at (-155.2, 29.5); now it is in the street pavement beside the foot of the tower (x -160)
+  expect(old.street.find(s => s.id === gardens.id)!.at).toEqual([-155.2, 29.5]); // a plan without crossings.strip keeps it there
 });
