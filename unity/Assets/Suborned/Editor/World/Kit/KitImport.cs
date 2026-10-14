@@ -39,6 +39,22 @@ namespace Suborned.World
             mi.materialLocation = ModelImporterMaterialLocation.InPrefab;
         }
 
+        /// <summary>Unity's own materials for DecoKit kind `glow` (brief 009: the generator writes no .mat for a translucent light volume,
+        /// Unity draws it; Shaders/CrossGlow.shader). Committed, not copied by `bun run kit`; a kit library material of the same name wins.</summary>
+        public const string Glow = "Assets/Suborned/Materials/Glow/";
+
+        /// <summary>The library material of a slot name: Kit/Materials (the copied library), else Unity's glow materials; null if neither.</summary>
+        public static Material Library(string name)
+        {
+            var lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + name + ".mat");
+            if (!lib && File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", Materials + name + ".mat")))
+            {   // copied by `bun run kit` while the Editor was not refreshing (the 007 D rebuild failed here): import it now
+                AssetDatabase.ImportAsset(Materials + name + ".mat", ImportAssetOptions.ForceSynchronousImport);
+                lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + name + ".mat");
+            }
+            return lib ? lib : AssetDatabase.LoadAssetAtPath<Material>(Glow + name + ".mat");
+        }
+
         /// <summary>Remap each embedded material to the library material of the same name (once the model has imported, so its
         /// material names are known). Returns the number of slots that found no library material.</summary>
         static int Remap(ModelImporter mi, string path)
@@ -46,13 +62,8 @@ namespace Suborned.World
             int missing = 0; bool changed = false;
             foreach (var m in AssetDatabase.LoadAllAssetsAtPath(path).OfType<Material>())
             {
-                var lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + m.name + ".mat");
-                if (!lib && File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", Materials + m.name + ".mat")))
-                {   // copied by `bun run kit` while the Editor was not refreshing (the 007 D rebuild failed here): import it now
-                    AssetDatabase.ImportAsset(Materials + m.name + ".mat", ImportAssetOptions.ForceSynchronousImport);
-                    lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + m.name + ".mat");
-                }
-                if (!lib) { missing++; Debug.LogError($"World: kit {path}: material `{m.name}` not in {Materials}"); continue; }
+                var lib = Library(m.name);
+                if (!lib) { missing++; Debug.LogError($"World: kit {path}: material `{m.name}` not in {Materials} nor {Glow}"); continue; }
                 var id = new AssetImporter.SourceAssetIdentifier(typeof(Material), m.name);
                 if (mi.GetExternalObjectMap().TryGetValue(id, out var have) && have == lib) continue;
                 mi.AddRemap(id, lib); changed = true;

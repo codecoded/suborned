@@ -12,7 +12,8 @@ namespace Suborned.World
     /// one LODGroup: LOD0 = the source's renderers, LOD1 and LOD2 = children `__LOD1`, `__LOD2` carrying the catalogue's `lods[i].file`
     /// meshes, switching at `lods[i].screen` (else the piece's `lodCategory` switch point), the last level never culled. Every LOD
     /// material is the library material of its slot's name (Kit/Materials); an unmapped slot = reject, and a LOD slot the LOD0 does not
-    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted.</summary>
+    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalEye)
+    /// puts each level's parts under one `__LOD<i>` child, each named as the LOD0 part it stands for.</summary>
     public static class KitLods
     {
         const string Prefix = "__LOD";
@@ -103,12 +104,11 @@ namespace Suborned.World
             if (lods.Count == 0) return;
             var r0 = Lod0(go).ToArray();
             if (r0.Length == 0) throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0");
-            if (r0.Length != 1) throw new InvalidDataException($"World: kit `{id}` LOD0 has {r0.Length} renderers; KitLods maps single-mesh pieces");
-            var src = r0[0];
-            var srcMesh = src.GetComponent<MeshFilter>().sharedMesh;
-            var srcNames = new HashSet<string>(src.sharedMaterials.Where(m => m).Select(m => m.name), System.StringComparer.Ordinal);
-            // the LOD child sits where the LOD0 mesh node sits relative to the root
-            var rel = go.transform.worldToLocalMatrix * src.transform.localToWorldMatrix;
+            // a multi-part piece (brief 009: the SignalEye's body, Walk, Stop, Beam and Halo are sibling objects Unity switches and
+            // lights apart) matches each LOD file renderer to its LOD0 part by name (its `_L1` tag and Blender's `.001` suffix dropped)
+            bool parts = r0.Length > 1;
+            var byPart = new Dictionary<string, MeshRenderer>(System.StringComparer.Ordinal);
+            foreach (var r in r0) if (!byPart.TryAdd(Part(r.name), r)) throw new InvalidDataException($"World: kit `{id}` has two LOD0 parts named {Part(r.name)}");
             var levels = new List<LOD>();
             Renderer[] previous = r0; float prevScreen = 1f;
             for (int i = 0; i < lods.Count; i++)
@@ -122,39 +122,18 @@ namespace Suborned.World
                     asset = AssetDatabase.LoadAssetAtPath<GameObject>(file) ?? throw new FileNotFoundException($"World: kit `{id}` LOD{i + 1} missing at {file} (run `bun run kit`)");
                 }
                 var lr = asset.GetComponentsInChildren<MeshRenderer>(true);
-                if (lr.Length != 1) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has {lr.Length} renderers, expected 1");
-                var mesh = lr[0].GetComponent<MeshFilter>().sharedMesh ?? throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has no mesh");
-                var mats = new Material[lr[0].sharedMaterials.Length];
-                for (int k = 0; k < mats.Length; k++)
+                if (lr.Length != r0.Length) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has {lr.Length} renderers, LOD0 {r0.Length}");
+                Transform holder = go.transform;
+                if (parts) { holder = new GameObject(Prefix + (i + 1)).transform; holder.SetParent(go.transform, false); }
+                var level = new List<Renderer>();
+                foreach (var l in lr)
                 {
-                    var name = lr[0].sharedMaterials[k] ? lr[0].sharedMaterials[k].name : null;
-                    var lib = name != null ? AssetDatabase.LoadAssetAtPath<Material>(KitPlacer.KitRoot + "Materials/" + name + ".mat") : null;
-                    if (!lib) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} slot {k} material `{name}` not in {KitPlacer.KitRoot}Materials (unmapped)");
-                    if (!lib.shader || lib.shader.name == "Hidden/InternalErrorShader") throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} material {name} has a broken shader");
-                    if (!srcNames.Contains(name)) { ExtraSlots++; if (!ExtraSlotPieces.Contains(id)) ExtraSlotPieces.Add(id); }
-                    mats[k] = lib;
+                    var src = parts ? (byPart.TryGetValue(Part(l.name), out var s0) ? s0 : throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} part {l.name} has no LOD0 part"))
+                                    : r0[0];
+                    level.Add(Level(id, i, file, go, holder, parts ? Part(l.name) : Prefix + (i + 1), src, l));
                 }
-                if (mesh.subMeshCount != mats.Length) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} has {mesh.subMeshCount} submeshes and {mats.Length} materials");
-                // a LOD must stand where LOD0 stands (same frame, same export)
-                var d0 = srcMesh.bounds; var d1 = mesh.bounds;
-                float tol = Mathf.Max(0.05f, d0.size.magnitude * 0.08f);
-                if ((d0.center - d1.center).magnitude > tol || (d0.size - d1.size).magnitude > tol * 2f)
-                    Debug.LogWarning($"World: kit `{id}` LOD{i + 1} bounds {d1.center}/{d1.size} differ from LOD0 {d0.center}/{d0.size}");
-                var child = new GameObject(Prefix + (i + 1));
-                child.transform.SetParent(go.transform, false);
-                child.transform.localPosition = rel.GetColumn(3);
-                child.transform.localRotation = rel.rotation;
-                child.transform.localScale = rel.lossyScale;
-                GameObjectUtility.SetStaticEditorFlags(child, GameObjectUtility.GetStaticEditorFlags(src.gameObject));
-                child.layer = src.gameObject.layer;
-                child.AddComponent<MeshFilter>().sharedMesh = mesh;
-                var mr = child.AddComponent<MeshRenderer>();
-                mr.sharedMaterials = mats;
-                mr.shadowCastingMode = src.shadowCastingMode; mr.receiveShadows = src.receiveShadows;
-                mr.lightProbeUsage = src.lightProbeUsage; mr.reflectionProbeUsage = src.reflectionProbeUsage;
-                mr.motionVectorGenerationMode = src.motionVectorGenerationMode; mr.allowOcclusionWhenDynamic = src.allowOcclusionWhenDynamic;
                 levels.Add(new LOD(screen, previous));
-                previous = new Renderer[] { mr }; prevScreen = screen;
+                previous = level.ToArray(); prevScreen = screen;
                 Levels++;
             }
             levels.Add(new LOD(0f, previous)); // the last level is never culled
@@ -163,6 +142,49 @@ namespace Suborned.World
             lg.SetLODs(levels.ToArray());
             lg.RecalculateBounds();
             Groups++;
+        }
+
+        /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalEye_L1_Beam`, `DK_SignalEye_Beam.001` → `DK_SignalEye_Beam`).</summary>
+        public static string Part(string name) => System.Text.RegularExpressions.Regex.Replace(System.Text.RegularExpressions.Regex.Replace(name, @"\.\d{3}$", ""), @"_L\d+(?=_|$)", "");
+
+        /// <summary>One LOD renderer: the LOD file's mesh `l` standing where its LOD0 part `src` stands, with `src`'s render settings.</summary>
+        static MeshRenderer Level(string id, int i, string file, GameObject go, Transform holder, string name, MeshRenderer src, MeshRenderer l)
+        {
+            var srcMesh = src.GetComponent<MeshFilter>().sharedMesh;
+            var srcNames = new HashSet<string>(src.sharedMaterials.Where(m => m).Select(m => m.name), System.StringComparer.Ordinal);
+            var mesh = l.GetComponent<MeshFilter>().sharedMesh ?? throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has no mesh");
+            var mats = new Material[l.sharedMaterials.Length];
+            for (int k = 0; k < mats.Length; k++)
+            {
+                var mn = l.sharedMaterials[k] ? l.sharedMaterials[k].name : null;
+                var lib = mn != null ? KitImport.Library(mn) : null;
+                if (!lib) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} slot {k} material `{mn}` not in {KitPlacer.KitRoot}Materials (unmapped)");
+                if (!lib.shader || lib.shader.name == "Hidden/InternalErrorShader") throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} material {mn} has a broken shader");
+                if (!srcNames.Contains(mn)) { ExtraSlots++; if (!ExtraSlotPieces.Contains(id)) ExtraSlotPieces.Add(id); }
+                mats[k] = lib;
+            }
+            if (mesh.subMeshCount != mats.Length) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} has {mesh.subMeshCount} submeshes and {mats.Length} materials");
+            // a LOD must stand where LOD0 stands (same frame, same export)
+            var d0 = srcMesh.bounds; var d1 = mesh.bounds;
+            float tol = Mathf.Max(0.05f, d0.size.magnitude * 0.08f);
+            if ((d0.center - d1.center).magnitude > tol || (d0.size - d1.size).magnitude > tol * 2f)
+                Debug.LogWarning($"World: kit `{id}` LOD{i + 1} bounds {d1.center}/{d1.size} differ from LOD0 {d0.center}/{d0.size}");
+            // the LOD child sits where the LOD0 mesh node sits relative to the root
+            var rel = holder.worldToLocalMatrix * src.transform.localToWorldMatrix;
+            var child = new GameObject(name);
+            child.transform.SetParent(holder, false);
+            child.transform.localPosition = rel.GetColumn(3);
+            child.transform.localRotation = rel.rotation;
+            child.transform.localScale = rel.lossyScale;
+            GameObjectUtility.SetStaticEditorFlags(child, GameObjectUtility.GetStaticEditorFlags(src.gameObject));
+            child.layer = src.gameObject.layer;
+            child.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mr = child.AddComponent<MeshRenderer>();
+            mr.sharedMaterials = mats;
+            mr.shadowCastingMode = src.shadowCastingMode; mr.receiveShadows = src.receiveShadows;
+            mr.lightProbeUsage = src.lightProbeUsage; mr.reflectionProbeUsage = src.reflectionProbeUsage;
+            mr.motionVectorGenerationMode = src.motionVectorGenerationMode; mr.allowOcclusionWhenDynamic = src.allowOcclusionWhenDynamic;
+            return mr;
         }
 
         static void Folder(string path)

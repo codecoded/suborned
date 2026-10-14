@@ -233,6 +233,7 @@ namespace Suborned.World
                 Id = Id(s), Kind = J.S(s, "kind"), Surface = J.S(s, "surface"), Edge = J.S(s, "edge"), Sight = J.S(s, "sight"), Variant = J.S(s, "variant"), At = J.P(s, "at"), Z = J.F(s, "z"), Yaw = J.F(s, "yaw"), Size = V3(s, "size"),
                 Staffed = st != null, Trade = st != null ? J.S(st, "trade") : null, Occupation = st != null ? J.S(st, "occupation") : null, HoursService = h is string, HoursFrom = hl != null ? (float)(double)hl[0] : 0, HoursTo = hl != null ? (float)(double)hl[1] : 0,
                 Source = J.S(s, "source"), Kit = Kit(J.Get(s, "kit")),
+                Crossing = J.S(s, "crossing"), CastShadows = J.B(s, "castShadows"), Signal = J.Get(s, "signal") is { } sg ? J.S(sg, "state") ?? throw new InvalidDataException($"World: {Id(s)}: signal without a state") : null,
             };
         }
 

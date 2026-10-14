@@ -115,8 +115,9 @@ namespace Suborned.World
             shops.Frontages(frontages, world.Frontages);
             placer.Signs(frontages, world.Frontages);
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
-            city.Street(Nodes.Group(root, "street"), world.Street);
-            if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), world);
+            var street = Nodes.Group(root, "street");
+            city.Street(street, world.Street);
+            if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), street, world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);

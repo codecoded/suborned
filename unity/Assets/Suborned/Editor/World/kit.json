@@ -4,8 +4,8 @@
   "fadeCell": 16,
   "shadowProxies": false,
   "crossings": {
-    "note": "How the export's crossings[] are drawn (metres). A zebra (control zebra) is bars `bar` deep with `gap` between, each the crossing's width long, centred on every span of the way that is off a refuge; any other crossing is the pair of lines `line` wide along its two edges (where traffic stops). Paint stands `paint` proud of what it is on (the carriageway for a kerb crossing, the top of its patch for a stop or bank one), as solid geometry, never a decal. A refuge is its ring grown by `lip` and raised `lip` above its median. Paint and refuges take their road's kerb surface (`surface` when the export names no road) and go into the ground batch of that surface that already reaches them: the one they grow least on plan, by no more than `reach`; one further than that from any kerb (a station bank's, off the roads) takes its own tile's batch rather than stretch a kerb batch over it. Never a signal colour (GDD 15).",
-    "paint": 0.02, "bar": 0.5, "gap": 0.5, "line": 0.3, "lip": 0.02, "reach": 4, "surface": "kerb"
+    "note": "How the export's crossings[] are drawn (metres; brief 009). A crossing's light rows, brass edge lines, kerb studs, inlay arcs and signal eyes are street items with kit refs, placed with the street and dressed by CrossingKit (casters, the eye's state, its displays turned to the play camera); nothing of it is paint. What is drawn here is its refuges: a refuge is its ring grown by `lip` and raised `lip` above its median, in its road's kerb surface (`surface` when the export names no road), in the ground batch of that surface that already reaches it: the one it grows least on plan, by no more than `reach`. Never a signal colour (GDD 15).",
+    "lip": 0.02, "reach": 4, "surface": "kerb"
   },
   "connectors": {
     "slab": 0.5,
