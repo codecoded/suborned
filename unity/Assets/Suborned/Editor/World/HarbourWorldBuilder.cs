@@ -128,7 +128,8 @@ namespace Suborned.World
             long verts = Combine.Flush(batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
             var cameras = Nodes.Group(null, "cameras");
-            Rig.Build(cameras, Nodes.Group(null, "lighting"), root, world, Views.Load(ViewsPath), look);
+            var lighting = Nodes.Group(null, "lighting");
+            Rig.Build(cameras, lighting, root, world, Views.Load(ViewsPath), look);
             skyline.Horizon(Nodes.Group(root, "horizon"), Nodes.Group(null, "sea"), world.Horizon, world.Ground); // after Rig: views frame the district, not the 16 km band
             ReflectionCube.Build(look);
             var flagged = FadeTags.Elements(root.Find("civic"), world.Civic.Where(m => m.Fade).Select(m => m.Id));
@@ -141,6 +142,7 @@ namespace Suborned.World
             // Verify before saving: a scene that disagrees with the export is never written.
             Debug.Log(placer.Summary());
             if (Inspect.Verify(root, world) + Inspect.VerifyKit(root, world, placer, standIns) > 0) throw new InvalidDataException("World: layer counts differ from the export");
+            Debug.Log($"World: reflection probes baked {Probes.Build(lighting, look)} (light.json probes; <scene>-probe-<name>.exr)");
             Directory.CreateDirectory(Path.GetDirectoryName(InUnity(ScenePath)));
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new IOException($"World: could not save {ScenePath}");
             Debug.Log($"World: kit facades hide procedural walls on {KitCover.Hidden} wall edges");

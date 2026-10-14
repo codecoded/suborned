@@ -6,8 +6,9 @@
 // the disc); in "column" mode also when anything below it on its vertical does (the crown goes with the slice, nothing floats
 // solid over a ghost). What stands more than `back` metres beyond the focus along the view stays whole: it hides only ground
 // further back, and its near face is what the player reads (doors, shopfronts, signs).
-// With shadows on, the ghost casts a ghost shadow (the same cut in the shadow map), so a cut shell's inside and the
-// street behind a tower light up instead of reading as a dark pit under a roof that is no longer there.
+// With shadows on, the ghost casts a ghost shadow (the same cut in the shadow map, keeping `ghost shadow` rather than `ghost`:
+// Glint, 008 B5, 0.4 against the ghost's 0.2), so a cut shell's inside and the street behind a tower light up instead of
+// reading as a dark pit under a roof that is no longer there, yet a faded tower still casts a lighter shadow.
 // Ported from the-suborned (brief 006 C; DKCutaway there); the `back` limit, the controller and _DK_CUT are brief 008 B4.
 // _DK_CUT (a multi_compile in each pass) is the variant that cuts. Without it the passes are URP Lit's own with no discard in
 // them: a shader that may discard loses the GPU's hidden-surface removal on every pixel it covers, cut or not, so only what the
@@ -23,7 +24,7 @@
 float4 _DKCutFocus;  // xyz the focus on the ground (world); w the disc's radius (m), 0 = off
 float4 _DKCutView;   // xyz the camera's forward (world, unit); w the floor (m): nothing lower is cut
 float4 _DKCutShape;  // x feather (m); y ghost (what stays inside the disc: 0 = clean away); z column mode (0 / 1); w shadows cut too (0 / 1)
-float4 _DKCutBack;   // x how far beyond the focus along the view the cut reaches (m); y its feather (m)
+float4 _DKCutBack;   // x how far beyond the focus along the view the cut reaches (m); y its feather (m); z ghost shadow (what stays in the shadow map)
 
 float DKBayer4(float2 px)
 {
@@ -39,8 +40,8 @@ float DKSegmentDistance(float2 c, float2 a, float2 b)
     return length(a + ab * t - c);
 }
 
-// How much of the fragment at world position p stays (1 = all of it).
-float DKCutKeep(float3 p)
+// How much of the fragment at world position p stays (1 = all of it) when the faded part keeps `ghost`.
+float DKCutKeepAt(float3 p, float ghost)
 {
     if (p.y <= _DKCutView.w) return 1.0;
     float2 k = _DKCutView.xz / max(-_DKCutView.y, 1e-3);  // ground run of the view ray per metre it drops
@@ -51,8 +52,10 @@ float DKCutKeep(float3 p)
     float outside = saturate((d - (_DKCutFocus.w - feather)) / feather);
     float2 ahead = _DKCutView.xz / max(length(_DKCutView.xz), 1e-3);  // the view on the ground
     float beyond = saturate((dot(p.xz - _DKCutFocus.xz, ahead) - _DKCutBack.x) / max(_DKCutBack.y, 1e-3) + 1.0);
-    return lerp(_DKCutShape.y, 1.0, max(outside, beyond));
+    return lerp(ghost, 1.0, max(outside, beyond));
 }
+
+float DKCutKeep(float3 p) { return DKCutKeepAt(p, _DKCutShape.y); }
 
 bool DKCutOn() { return _DKCutFocus.w > 0.0 && (GetMeshRenderingLayer() & DK_CUT_LAYER) != 0u; }
 
@@ -140,7 +143,7 @@ half4 DKShadowPassFragment(DKShadowVaryings input) : SV_TARGET
 {
     UNITY_SETUP_INSTANCE_ID(input);
 #if defined(_DK_CUT)
-    if (_DKCutShape.w > .5 && DKCutOn()) clip(DKCutKeep(input.positionWS) - DKBayer4(input.positionCS.xy));
+    if (_DKCutShape.w > .5 && DKCutOn()) clip(DKCutKeepAt(input.positionWS, _DKCutBack.z) - DKBayer4(input.positionCS.xy));
 #endif
     Varyings v = (Varyings)0;
     UNITY_TRANSFER_INSTANCE_ID(input, v);

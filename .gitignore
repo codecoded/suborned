@@ -32,3 +32,4 @@ unity/*.slnx
 # generated beside the scene by the world builder (brief 007)
 unity/Assets/Scenes/HarbourDistrict-grade.asset
 unity/Assets/Scenes/HarbourDistrict-grade.asset.meta
+unity/Assets/Scenes/HarbourDistrict-probe-*

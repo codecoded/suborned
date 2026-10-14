@@ -8,7 +8,8 @@ namespace Suborned
     /// camera and a disc round the focus, and covers that disc as the camera sees it, thins to a screen-door ghost; with
     /// `column` everything above a thinned part goes with it, so no solid crown floats over a ghost. What stands beyond the
     /// focus (the fronts that face the camera: doors, shopfronts, signs) stays solid: it hides only ground further back. The
-    /// ghost casts a ghost shadow, so the street behind a tower is lit, not a dark pit under a roof that is no longer drawn.
+    /// ghost casts a lighter ghost shadow (`ghostShadow`), so the street behind a tower is lit, not a dark pit under a roof that
+    /// is no longer drawn, yet the tower still marks the ground.
     ///
     /// Cost: four vectors per camera render, and in Play Mode a pass over the tagged renderers' bounds when the cut moves.
     /// The fade is done per pixel in the shaders the architecture already uses (DK_Cutaway.hlsl in Suborned/FacadeLit and the
@@ -48,6 +49,8 @@ namespace Suborned
         public bool column = true;
         [Tooltip("The ghost casts a ghost shadow (the same fade in the shadow map).")]
         public bool shadows = true;
+        [Tooltip("What stays of faded architecture in the sun's shadow map (1 = its full shadow, 0 = none). Above `ghost`, so a faded tower still casts a lighter shadow (light.json `fade.ghostShadow`; Glint, 008 B5: 0.4).")]
+        [Range(0f, 1f)] public float ghostShadow = 0.4f;
         [Tooltip("Seconds to ease in or out when `fade` changes (unscaled time: it runs during a tactical pause).")]
         public float fadeTime = 0.25f;
 
@@ -109,7 +112,7 @@ namespace Suborned
             Shader.SetGlobalVector(FocusId, new Vector4(cut.Focus.x, cut.Focus.y, cut.Focus.z, cut.Radius));
             Shader.SetGlobalVector(ViewId, new Vector4(fwd.x, fwd.y, fwd.z, cut.FloorY));
             Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, ghost, level), column ? 1f : 0f, shadows ? 1f : 0f));
-            Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, 0f, 0f));
+            Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), 0f));
             if (reach == null) Shader.EnableKeyword(FadeReach.Keyword); // no reach: every tagged shader takes its cutting variant for this render
         }
 

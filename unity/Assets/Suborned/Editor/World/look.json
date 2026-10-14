@@ -143,6 +143,12 @@
       "smoothness": 0.5,
       "metallic": 0.7
     },
+    "crossing": {
+      "palette": "harbour.crossing",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
     "residential": {
       "palette": "harbour.residential",
       "value": 1,
@@ -353,6 +359,9 @@
       "hex": "#fbe8b8"
     },
     "harbour.trim": {
+      "hex": "#99784d"
+    },
+    "harbour.crossing": {
       "hex": "#d0c848"
     },
     "harbour.residential": {
@@ -458,7 +467,7 @@
       "hex": "#e8609a"
     },
     "harbour.accent_gold": {
-      "hex": "#d0c848"
+      "hex": "#99784d"
     },
     "harbour.accent_mint": {
       "hex": "#7fd0b8"

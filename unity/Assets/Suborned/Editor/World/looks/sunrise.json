@@ -130,6 +130,12 @@
       "smoothness": 0.5,
       "metallic": 0.7
     },
+    "crossing": {
+      "palette": "sunrise.crossing",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
     "landmark": {
       "palette": "sunrise.landmark",
       "value": 1,
@@ -514,6 +520,9 @@
       "hex": "#fdeb8c"
     },
     "sunrise.trim": {
+      "hex": "#eadba6"
+    },
+    "sunrise.crossing": {
       "hex": "#eadba6"
     },
     "sunrise.landmark": {

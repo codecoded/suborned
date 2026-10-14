@@ -130,6 +130,12 @@
       "smoothness": 0.5,
       "metallic": 0.7
     },
+    "crossing": {
+      "palette": "lagoon.crossing",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
     "landmark": {
       "palette": "lagoon.landmark",
       "value": 1,
@@ -514,6 +520,9 @@
       "hex": "#14b8b0"
     },
     "lagoon.trim": {
+      "hex": "#eadba6"
+    },
+    "lagoon.crossing": {
       "hex": "#eadba6"
     },
     "lagoon.landmark": {
