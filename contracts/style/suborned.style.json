@@ -108,7 +108,7 @@
     "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Brass, not gold, at street level and on facades; skyline crowns keep gold; gold or brass only as hairline, frame, bead and small metal, never a large surface. Every world colour at least deltaE2000 20 from each signal colour, measured on the unlit palette.",
     "source": {
       "path": "unity/Assets/Suborned/Editor/World/looks/harbour.json",
-      "sha256": "19d610982ae2d5ebdcc53b63f68873969cb323ec1494716c7ecb90c084a25af2",
+      "sha256": "2317230a2a3307376c8335766a8da756b8bbe9c6425f943f2b17b2ac826e0494",
       "review": "out/review/palette.html (roles and signal deltaE table)",
       "keys": "harbour.<role> in the look file"
     },

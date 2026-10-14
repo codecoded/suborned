@@ -136,6 +136,48 @@
       "smoothness": 0.5,
       "metallic": 0.7
     },
+    "canopy": {
+      "palette": "fair.column",
+      "value": 1,
+      "smoothness": 0.4,
+      "metallic": 0.5
+    },
+    "plate": {
+      "palette": "fair.pylon",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.6
+    },
+    "hoop": {
+      "palette": "fair.pylon",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.6
+    },
+    "booth": {
+      "palette": "fair.trim",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
+    "tub": {
+      "palette": "fair.civic",
+      "value": 1,
+      "smoothness": 0.2,
+      "metallic": 0
+    },
+    "crane": {
+      "palette": "fair.trim",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.7
+    },
+    "girder": {
+      "palette": "fair.column",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
     "landmark": {
       "palette": "fair.landmark",
       "value": 1,

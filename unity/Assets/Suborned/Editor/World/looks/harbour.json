@@ -111,6 +111,48 @@
       "smoothness": 0.5,
       "metallic": 0.7
     },
+    "canopy": {
+      "palette": "harbour.column",
+      "value": 1,
+      "smoothness": 0.4,
+      "metallic": 0.5
+    },
+    "plate": {
+      "palette": "harbour.pylon",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.6
+    },
+    "hoop": {
+      "palette": "harbour.pylon",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0.6
+    },
+    "booth": {
+      "palette": "harbour.accent_flamingo",
+      "value": 1,
+      "smoothness": 0.6,
+      "metallic": 0
+    },
+    "tub": {
+      "palette": "harbour.civic",
+      "value": 1,
+      "smoothness": 0.2,
+      "metallic": 0
+    },
+    "crane": {
+      "palette": "harbour.accent_coral",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0
+    },
+    "girder": {
+      "palette": "harbour.column",
+      "value": 1,
+      "smoothness": 0.5,
+      "metallic": 0.6
+    },
     "residential": {
       "palette": "harbour.residential",
       "value": 1,
