@@ -9,6 +9,11 @@ Rulings (Aster) on B: the beacons that flank a landing go wherever a signal eye 
 
 Goal (Sky, 2026-10-14): the crossings "should be more future sci… currently look standard zebra crossing". The world is an alternate history, not a forecast: "a 1950s world that discovered atomic power centuries ago" (brief 008, Era), so street technology is far ahead while its style stays 1950s: "Traffic lights would be something else, maybe floating, and same for road markings."
 
+## Decisions (Sky, 2026-10-15, on Vela's options sheet `briefs/009/options/009-crossing-options.png`)
+- **Presence: (d1) the lit strip.** A soft seafoam field across the strip with today's dots on top as rungs: 18× the light at play zoom for about the same triangles (82k over 95 crossings). It is light between the edge lines, not paving: no surface and soft edges, so the "no landing slab" ruling stands. Owners: Splice adopts `LightField_2/_1` and places them from the plan; Latch adds the glow-shader fade across the quad (|v|); Glint sets the strength.
+- **Brass: keep #99784D with a satin finish** (metallic 0.3, smoothness 0.5) on street-level brass: studs, edge lines and frames. Skyline crowns keep their gold and their metal. Vela changes the shading row in `mats.py`; Splice re-adopts; Latch or Glint confirms it in Unity.
+- **Towers: fix to match the plan.** The upper tiers of crescent-tower, crescent-terrace and lantern-beacon build about 6.7 m narrower than the plan orders. Vela re-masses them and the fit check gains "no narrower than"; then a skyline shot for Sky.
+
 ## Decisions (Sky, 2026-10-14)
 - **The concepts in `briefs/009/concepts/` are the reference** (six frames from an open brief: the model designed the crossing, its signals and markings; prompts and hashes in `PROVENANCE.json`). Three earlier rounds were rejected: palette options for the landing slab, Qwen frames near-copying the Records Office painting, and a "1950s imagining 2000" round that came out as a styled zebra.
 - **The floating signal "eyes"** ("I do like those eyes"): chrome orbs or small saucers hovering over the kerb at each end of a crossing, a round display on each face showing a walking figure, a thin light beam down to a glowing disc on the paving where people wait (`crossing-future-eye-2.jpg`, `crossing-future-play.jpg`, `crossing-future-play-2.jpg`).
