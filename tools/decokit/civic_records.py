@@ -44,7 +44,7 @@ def banner(s, x0, x1, y, zt, length, tip=0.5, kr=0.055):
     xm, zb, zv = (x0 + x1) / 2, zt - length, zt - length + tip
     zs = zt - (x1 - x0) * 1.5 * 0.7 * 1.3
     with s.at((0, y, 0), (90, 0, 0)):
-        s.extrude([(x0, zv), (xm, zb), (x1, zv), (x1, zt), (x0, zt)], -0.012, 0.012, pal.Fabric_Banner)
+        s.extrude([(x0, zv), (xm, zb), (x1, zv), (x1, zt), (x0, zt)], -0.012, 0.012, pal.Cloth_Seafoam)
 
     def v(z):
         return 0.3 + 0.7 * (z - zs) / (zt - zs) if z >= zs else 0.04 + 0.26 * (z - zb) / (zs - zb)
@@ -53,10 +53,10 @@ def banner(s, x0, x1, y, zt, length, tip=0.5, kr=0.055):
             return (x - x0) / (x1 - x0) if side > 0 else (x1 - x) / (x1 - x0)
         for poly in ([(x0, zs), (x1, zs), (x1, zt), (x0, zt)], [(x0, zv), (xm, zb), (x1, zv), (x1, zs), (x0, zs)]):
             pts = poly if side > 0 else poly[::-1]
-            uvface(s, [(x, yy, z) for x, z in pts], pal.Banner_Comet, [(u(x), v(z)) for x, z in pts])
-    s.sweep([(x0 - 0.08, y, zt + 0.05), (x1 + 0.08, y, zt + 0.05)], 0.028, pal.Accent_Gold, seg=5, caps=False)
+            uvface(s, [(x, yy, z) for x, z in pts], pal.Banner_Comet_Seafoam, [(u(x), v(z)) for x, z in pts])
+    s.sweep([(x0 - 0.08, y, zt + 0.05), (x1 + 0.08, y, zt + 0.05)], 0.028, pal.Brass_Civic, seg=5, caps=False)
     for x in (x0 - 0.1, x1 + 0.1):
-        sphere(s, (x, y, zt + 0.05), kr, pal.Accent_Gold, seg=8, n=4)
+        sphere(s, (x, y, zt + 0.05), kr, pal.Brass_Civic, seg=8, n=4)
 
 
 def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
@@ -106,18 +106,19 @@ def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
 
 
 def window(s, grand):
-    """Tall arched window on the face above the marquee: teal and seafoam surround, dark glass, gold grid."""
+    """Tall arched window on the face above the marquee: seafoam and mint surround with an 8 cm deep-teal reveal, dark glass, brass grid."""
     with s.at((0, 0, 0), FRONT):
-        soft_extrude(s, arch_band(PR, PR + 0.32, PS, ZC0, n=14), 0.0, 0.16, pal.Enamel_Teal, 0.05)
-        soft_extrude(s, arch_band(PR + 0.32, SU, PS, ZC0, n=14), 0.0, 0.07, pal.Enamel_Seafoam, 0.03)
+        soft_extrude(s, arch_band(PR, PR + 0.08, PS, ZC0, n=14), 0.0, 0.18, pal.Enamel_Teal, 0.02)       # deep teal: an 8 cm reveal line, no more
+        soft_extrude(s, arch_band(PR + 0.08, PR + 0.32, PS, ZC0, n=14), 0.0, 0.16, pal.Enamel_Seafoam, 0.05)
+        soft_extrude(s, arch_band(PR + 0.32, SU, PS, ZC0, n=14), 0.0, 0.07, pal.Enamel_Mint, 0.03)
     head = arch(2 * PR, PS, ZC0, n=14)
     s.face([(x, -0.03, z) for x, z in head], pal.Enamel_Charcoal)
     s.face([(x, -0.07, z) for x, z in head], pal.GlassDark)
-    s.sweep(xz(arc(0, PS, PR - 0.04, 0, 180, 14), -0.1), 0.035, pal.Accent_Gold, seg=4)
+    s.sweep(xz(arc(0, PS, PR - 0.04, 0, 180, 14), -0.1), 0.035, pal.Brass_Civic, seg=4)
     for x in (-0.6, 0.6):
-        s.box((x - 0.04, -0.14, ZC1 + 0.2), (x + 0.04, -0.07, PS + math.sqrt(PR * PR - x * x) - 0.05), pal.Accent_Gold)
+        s.box((x - 0.04, -0.14, ZC1 + 0.2), (x + 0.04, -0.07, PS + math.sqrt(PR * PR - x * x) - 0.05), pal.Brass_Civic)
     for z in (ZC1 + 0.2, PS):
-        s.box((-PR, -0.14, z - 0.035), (PR, -0.07, z + 0.035), pal.Accent_Gold)
+        s.box((-PR, -0.14, z - 0.035), (PR, -0.07, z + 0.035), pal.Brass_Civic)
 
 
 def blades(s):
@@ -127,7 +128,7 @@ def blades(s):
         lens = [(0, z0), (w, z0 + 0.25 * h), (w * 0.75, z0 + 0.75 * h), (0, z1), (-w * 0.75, z0 + 0.75 * h), (-w, z0 + 0.25 * h)]
         with s.at((x, 0, 0), FRONT):
             s.extrude(lens, 0.04, 0.2, pal.Steel)  # brushed steel: a mirror chrome slab vanishes against the cream tower face and the sky
-        s.box((x - 0.012, -0.205, z0 + 0.3 * h), (x + 0.012, -0.195, z1 - 0.1), pal.Accent_Gold)
+        s.box((x - 0.012, -0.205, z0 + 0.3 * h), (x + 0.012, -0.195, z1 - 0.1), pal.Brass_Civic)
 
 
 def doors(s, wide, zl=ZL):
@@ -138,10 +139,10 @@ def doors(s, wide, zl=ZL):
     s.face([(-wide, y, ZL), (wide, y, ZL), (wide, y, z1), (-wide, y, z1)], pal.GlassDark)
     s.face([(-wide, y + 0.09, ZL), (wide, y + 0.09, ZL), (wide, y + 0.09, z1), (-wide, y + 0.09, z1)], pal.Enamel_Charcoal)
     for x in (-wide, -1.1, 0.0, 1.1, wide):
-        s.box((x - 0.045, y - 0.06, ZL), (x + 0.045, y + 0.03, z1), pal.Accent_Gold)
+        s.box((x - 0.045, y - 0.06, ZL), (x + 0.045, y + 0.03, z1), pal.Brass_Civic)
     for z in (ZL, zt - 0.04, z1 - 0.06):
-        s.box((-wide, y - 0.06, z), (wide, y + 0.03, z + 0.07), pal.Accent_Gold)
-    s.box((-1.05, y - 0.07, ZL + 0.02), (1.05, y + 0.03, ZL + 0.3), pal.Accent_Gold)  # kick plates
+        s.box((-wide, y - 0.06, z), (wide, y + 0.03, z + 0.07), pal.Brass_Civic)
+    s.box((-1.05, y - 0.07, ZL + 0.02), (1.05, y + 0.03, ZL + 0.3), pal.Brass_Civic)  # kick plates
     for x in (-0.16, 0.16):
         s.sweep([(x, y - 0.14, ZL + 1.0), (x, y - 0.14, ZL + 1.55)], 0.02, pal.Chrome, seg=5)
         for z in (ZL + 1.0, ZL + 1.55):
@@ -153,11 +154,11 @@ def marquee(s, hw, d):
     path = canopy_plan(hw - EDGE, d - EDGE, 3.0, 16)
     s.extrude(path, ZC0, ZC0 + 0.1, pal.Enamel_Ivory)
     zf = ZC1 - 0.18
-    tube(s, lift(path), sec(-0.07, 0.3, ZC0 + 0.02, zf, 0.0), pal.Enamel_Teal)
+    tube(s, lift(path), sec(-0.07, 0.3, ZC0 + 0.02, zf, 0.0), pal.Enamel_Seafoam)  # fascia band: seafoam (deep teal read as a dark marquee in Unity)
     tube(s, lift(path), sec(-0.11, 0.36, zf, ZC1, 0.0), pal.Enamel_Mint)
     s.extrude(path, zf - 0.07, ZC1 - 0.03, pal.Enamel_Seafoam)
-    hair(s, path, -0.1, ZC0 + 0.05, 0.035, pal.Accent_Gold)
-    hair(s, path, -0.12, zf, 0.035, pal.Accent_Gold)
+    hair(s, path, -0.1, ZC0 + 0.05, 0.035, pal.Brass_Civic)
+    hair(s, path, -0.12, zf, 0.035, pal.Brass_Civic)
     for x in (-hw * 0.5, hw * 0.5):
         with s.at((x, -d * 0.62, ZC0)):
             bulb = [(0.17 * math.cos(t), -0.03 - 0.12 * math.sin(t)) for t in (math.pi / 2 * k / 4 for k in range(1, 5))]
@@ -193,12 +194,12 @@ def stairs(s):
 
 
 def pier(s, x, h, ball):
-    """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): seafoam band, teal cap, chrome ball on a stand."""
+    """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): mint band, seafoam cap, chrome ball on a stand."""
     s.rbox((x - 0.41, -0.96, 0.0), (x + 0.41, 0.16, h), 0.04, pal.Limestone, seg=1)
     s.box((x - PW, PD0, 0.0), (x + PW, PD1, 0.35), pal.Limestone)
-    s.box((x - 0.45, PD0 + 0.03, h - 0.5), (x + 0.45, PD1 - 0.03, h - 0.28), pal.Enamel_Seafoam)
-    s.box((x - PW, PD0, h), (x + PW, PD1, h + 0.28), pal.Enamel_Teal)
-    hair(s, [(x - 0.45, PD0 + 0.015), (x + 0.45, PD0 + 0.015)], 0.0, h + 0.03, 0.03, pal.Accent_Gold)
+    s.box((x - 0.45, PD0 + 0.03, h - 0.5), (x + 0.45, PD1 - 0.03, h - 0.28), pal.Enamel_Mint)
+    s.box((x - PW, PD0, h), (x + PW, PD1, h + 0.28), pal.Enamel_Seafoam)
+    hair(s, [(x - 0.45, PD0 + 0.015), (x + 0.45, PD0 + 0.015)], 0.0, h + 0.03, 0.03, pal.Brass_Civic)
     if ball:
         with s.at((x, -0.4, h + 0.28)):
             s.lathe([(0, 0), (0.3, 0), (0.3, 0.05), (0.15, 0.13), (0.1, 0.22), (0, 0.22)], pal.Chrome, seg=14)
@@ -206,12 +207,12 @@ def pier(s, x, h, ball):
 
 
 def pilaster(s, x, h):
-    """Official front: a 0.3 m pilaster on the tower face (x +-0.35, y -0.30..+0.20): plinth, shaft, seafoam band, teal cap."""
+    """Official front: a 0.3 m pilaster on the tower face (x +-0.35, y -0.30..+0.20): plinth, shaft, mint band, seafoam cap."""
     s.box((x - 0.35, -0.30, 0.0), (x + 0.35, 0.2, 0.3), pal.Limestone)
     s.box((x - 0.31, -0.26, 0.3), (x + 0.31, 0.2, h), pal.Limestone)
-    s.box((x - 0.33, -0.29, h - 0.5), (x + 0.33, 0.2, h - 0.28), pal.Enamel_Seafoam)
-    s.box((x - 0.35, -0.30, h), (x + 0.35, 0.2, h + 0.25), pal.Enamel_Teal)
-    hair(s, [(x - 0.33, -0.285), (x + 0.33, -0.285)], 0.0, h + 0.03, 0.03, pal.Accent_Gold)
+    s.box((x - 0.33, -0.29, h - 0.5), (x + 0.33, 0.2, h - 0.28), pal.Enamel_Mint)
+    s.box((x - 0.35, -0.30, h), (x + 0.35, 0.2, h + 0.25), pal.Enamel_Seafoam)
+    hair(s, [(x - 0.33, -0.285), (x + 0.33, -0.285)], 0.0, h + 0.03, 0.03, pal.Brass_Civic)
 
 
 def build(s, grand):

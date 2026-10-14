@@ -158,6 +158,61 @@ def shelter_sample():
     return s.build(bevel=0.0)
 
 
+BED_RING_IDS = ("civic/civic-entrance-west", "civic/civic-office-north", "civic/civic-facade-southwest", "civic/civic-dropoff-west")
+
+
+def bed_sample():
+    """Render-only: the civic bed recipe (civic-beds.json) applied to four of the block's real bed rings (read from the world export):
+    kerb = the ring prism in limestone to the bed height; hedge = the ring inset 0.22 m, 0.22 m over the kerb top, DK_Leaf_CivicDark;
+    BedTuft_A/B/C every 0.55 m along the ring inset 0.50 m, a second row (0.62 m, inset 1.05 m) only where the ring is 0.9 m or more away."""
+    import json
+    import random
+    from geo import Shape
+    from mats import pal
+    from plaza_parts import offset
+    from structures import ccw
+    w = json.loads((REPO / "out/world/harbour-district.world.json").read_text())
+    rings = {m["id"]: m["ring"] for m in w["civic"] if m["id"] in BED_RING_IDS}
+
+    def stations(path, step):
+        L = sum(math.dist(a, b) for a, b in zip(path, path[1:]))
+        k = max(4, round(L / step))
+        out = []
+        for i in range(k):
+            d, acc = L * i / k, 0.0
+            for a, b in zip(path, path[1:]):
+                seg = math.dist(a, b)
+                if acc + seg >= d:
+                    f = (d - acc) / max(seg, 1e-9)
+                    out.append((a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f))
+                    break
+                acc += seg
+        return out
+
+    def dist_ring(p, ring):
+        best = 1e9
+        for a, b in zip(ring, ring[1:] + ring[:1]):
+            ab = (b[0] - a[0], b[1] - a[1])
+            t = max(0.0, min(1.0, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / max(ab[0] ** 2 + ab[1] ** 2, 1e-9)))
+            best = min(best, math.dist(p, (a[0] + ab[0] * t, a[1] + ab[1] * t)))
+        return best
+    s = Shape("DK_BedSample")
+    for n, rid in enumerate(BED_RING_IDS):
+        ring = ccw([tuple(p) for p in rings[rid]])
+        xs, ys = [p[0] for p in ring], [p[1] for p in ring]
+        cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+        ring = [(x - cx, y - cy) for x, y in ring]
+        rng = random.Random(7 + n)
+        with s.at(((-4.6, 4.2, -4.6, 4.2)[n], (-3.4, -3.4, 3.4, 3.4)[n], 0)):
+            s.extrude(ring, 0.0, 0.52, pal.Limestone)
+            s.extrude(offset(ring + ring[:1], 0.22)[:-1], 0.52, 0.74, pal.Leaf_CivicDark)
+            pts = stations(offset(ring + ring[:1], 0.50), 0.55) + [q for q in stations(offset(ring + ring[:1], 1.05), 0.62) if dist_ring(q, ring) >= 0.9]
+            for i, p in enumerate(pts):
+                with s.at((p[0], p[1], 0.70), (0, 0, rng.uniform(0, 360))):
+                    reg["BedTuft_" + "ABC"[(i + n) % 3]]["fn"](s)
+    return s.build(bevel=0.0)
+
+
 def main():
     global reg
     reg = kit.load()
@@ -167,7 +222,9 @@ def main():
     kinds = [k for k in arg("--views", "thumb,play,eye").split(",") if k]
     cam, ground = studio(arg("--px", 560), arg("--samples", 40))
     for n in ids:
-        obj = paving_sample() if n == "PavingSample" else shelter_sample() if n == "ShelterSample" else kit.build(n)
+        obj = paving_sample() if n == "PavingSample" else shelter_sample() if n == "ShelterSample" else bed_sample() if n == "BedSample" else kit.build("CafeBay" if n == "CafeFront" else n)
+        if n == "CafeFront":  # the bay and its terrace wall together (same pivot), as the block places them
+            kit.build("CafeTerrace").parent = obj
         lo, hi = bounds(obj)
         ground.location.z = lo.z - 0.04 if n == "PavingSample" else 0.0  # the sample's slab top is z = 0: keep the studio ground below it
         for k in kinds:

@@ -1,12 +1,12 @@
 """CafeBay (brief 008 B1): the corner café's ground storey as in the 26 Sep paintings (gameplay-plan, inez-cutaway): a curved
 dark-teal glazed bay in thin brass frames, a banded canopy wrapping the curve (seafoam fascia, gold line, cream soffit),
-brass doors, cream piers, a planted terrace wall in front, and a blade sign standing above the canopy.
+brass doors, cream piers and a blade sign standing above the canopy. The planted terrace wall in front is its own piece, CafeTerrace.
 
 Frame: pivot = the centre of the café's flat front on the ring line (block x -10.7, y -29), z = 0 pavement top; front -Y
 (block +x, south); the building is on +Y. Fitted to civic-block.json's café: an 11.4 m flat between two R 5.3 arcs (22 m
 wide, rule C-0 unchanged). The piece is dressing: it covers the ground storey of the front (z 0 to 4.7) plus the canopy
-(2.45 m out) and the terrace wall (6.4 m out, brief 008 B2; its gate is 5.2 m between the run ends); the upper storeys and the
-side walls are the generator's."""
+(2.45 m out); CafeTerrace (same pivot) adds the terrace wall (6.4 m out, brief 008 B2; its gate is 5.2 m between the run ends). The
+upper storeys and the side walls are the generator's."""
 
 import math
 
@@ -34,10 +34,10 @@ def door_leaf(s, x0, x1, y):
     w = x1 - x0
     s.face([(x0 + 0.05, y, 0.3), (x1 - 0.05, y, 0.3), (x1 - 0.05, y, DOOR_H - 0.05), (x0 + 0.05, y, DOOR_H - 0.05)], pal.GlassDark)
     for xa, xb in ((x0, x0 + 0.06), (x1 - 0.06, x1)):
-        s.box((xa, y - 0.05, 0.0), (xb, y + 0.03, DOOR_H), pal.Accent_Gold)
+        s.box((xa, y - 0.05, 0.0), (xb, y + 0.03, DOOR_H), pal.Brass_Civic)
     for za, zb in ((DOOR_H - 0.06, DOOR_H), (0.28, 0.34)):
-        s.box((x0, y - 0.05, za), (x1, y + 0.03, zb), pal.Accent_Gold)
-    s.box((x0 + 0.06, y - 0.055, 0.0), (x1 - 0.06, y + 0.03, 0.28), pal.Accent_Gold)  # kick plate
+        s.box((x0, y - 0.05, za), (x1, y + 0.03, zb), pal.Brass_Civic)
+    s.box((x0 + 0.06, y - 0.055, 0.0), (x1 - 0.06, y + 0.03, 0.28), pal.Brass_Civic)  # kick plate
     hx = x1 - 0.15 if x0 < 0 else x0 + 0.15
     s.sweep([(hx, y - 0.1, 0.95), (hx, y - 0.1, 1.5)], 0.02, pal.Chrome, seg=5)
     for z in (0.95, 1.5):
@@ -65,24 +65,24 @@ def stacked_sign(s, word, h_letter, x, ymid, z0, body, ink, edge):
 def cafe_bay(s):
     P = front_path(6, 4)
     out_canopy = offset(P, -CANOPY)
-    # base: deep teal faience band with a limestone coping, broken at the doors
+    # base: seafoam faience band with a limestone coping, broken at the doors
     for run in split_runs(P, lambda x, y: abs(x) > DOOR_X - 0.05):
-        band(s, run, -0.3, 0.15, 0.0, 0.45, pal.Enamel_Teal)
+        band(s, run, -0.3, 0.15, 0.0, 0.45, pal.Enamel_Seafoam)
         band(s, run, -0.34, 0.15, 0.4, 0.46, pal.Limestone)
     # glazing: dark glass film over a dark back sheet, thin brass mullions every 1.45 m, brass sill / transom / head
     ribbon(s, offset(P, GLASS_A), Z_G0, Z_G1, pal.GlassDark)
     ribbon(s, offset(P, GLASS_A + 0.04), Z_G0, Z_G1, pal.Enamel_Charcoal)
     for p, t in along(P, 1.45):
         with s.at((p.x, p.y, 0), (0, 0, math.degrees(math.atan2(t.y, t.x)))):
-            s.box((-0.035, GLASS_A - 0.09, Z_G0), (0.035, GLASS_A + 0.02, Z_G1), pal.Accent_Gold)
+            s.box((-0.035, GLASS_A - 0.09, Z_G0), (0.035, GLASS_A + 0.02, Z_G1), pal.Brass_Civic)
     for z in (2.55, Z_G1 - 0.03):
-        hair(s, P, GLASS_A - 0.06, z, 0.05, pal.Accent_Gold)
+        hair(s, P, GLASS_A - 0.06, z, 0.05, pal.Brass_Civic)
     for run in split_runs(P, lambda x, y: abs(x) > DOOR_X - 0.05):
-        hair(s, run, GLASS_A - 0.06, Z_G0 + 0.03, 0.05, pal.Accent_Gold)
+        hair(s, run, GLASS_A - 0.06, Z_G0 + 0.03, 0.05, pal.Brass_Civic)
     # cream piers: where the flat meets each arc and at the door jambs
     for x in (-HF, HF, -DOOR_X - 0.3, DOOR_X + 0.3):
         s.rbox((x - 0.28, -0.4, 0.0), (x + 0.28, 0.16, Z_G1 + 0.2), 0.04, pal.Limestone)
-        s.box((x - 0.04, -0.43, 0.46), (x + 0.04, -0.4, Z_G1), pal.Accent_Gold)
+        s.box((x - 0.04, -0.43, 0.46), (x + 0.04, -0.4, Z_G1), pal.Brass_Civic)
     # doors: two brass-framed leaves in the opening, flush entrance (no steps: the walk height is unchanged)
     s.box((-DOOR_X, GLASS_A - 0.1, DOOR_H), (DOOR_X, GLASS_A + 0.04, Z_G1), pal.Enamel_Charcoal)  # transom back
     door_leaf(s, -DOOR_X, 0.0, GLASS_A - 0.02)
@@ -91,15 +91,22 @@ def cafe_bay(s):
     poly = out_canopy + P[::-1]
     s.extrude(poly, Z_SOF, Z_SOF + 0.14, pal.Enamel_Ivory)
     tube(s, lift(out_canopy), sec(-0.06, 0.1, Z_SOF - 0.02, Z_TOP), pal.Enamel_Seafoam)
-    hair(s, out_canopy, -0.08, Z_SOF + 0.03, 0.035, pal.Accent_Gold)
-    hair(s, out_canopy, -0.08, Z_TOP - 0.06, 0.035, pal.Accent_Gold)
+    hair(s, out_canopy, -0.08, Z_SOF + 0.03, 0.035, pal.Brass_Civic)
+    hair(s, out_canopy, -0.08, Z_TOP - 0.06, 0.035, pal.Brass_Civic)
     for p, _t in along(offset(P, -1.3), 2.4):
         with s.at((p.x, p.y, Z_SOF)):
             s.lathe([(0.0, -0.025), (0.11, -0.012), (0.11, 0.0)], pal.Lamp_Deco, seg=8, cap_top=False)
     # sign above the canopy: a blade on the wall at x = 3.6 standing on the canopy slab (clear of it, not through it), 1.15 m out
     s.rbox((3.6 - 0.2, -1.2, Z_SOF + 0.14), (3.6 + 0.2, 0.0, Z_SOF + 0.26), 0.02, pal.Chrome, seg=1)
     stacked_sign(s, "CAFE", 0.52, 3.6, -0.6, Z_SOF + 0.3, pal.Enamel_Teal, pal.Enamel_Ivory, pal.Chrome)  # Enamel_Cream is dE 20.5 from the guard colour: Ivory has 27
-    # terrace wall: low limestone troughs planted with coral and cream (variant A), broken at the door axis and the arc ends
+
+
+@asset("CafeTerrace", "Plaza", bevel=0.0)
+def cafe_terrace(s):
+    """The café terrace wall on its own (split from CafeBay, 14 Oct): the same pivot (block -10.7, -29, yaw 90), so it drops onto the bay.
+    A separate piece because the architecture fade works per piece: a 1.1 m hedge wall is not an occluder and ghosted with the bay.
+    Low limestone troughs planted with coral and cream (variant A) and flamingo and peach (B), 6.4 m out, broken at the door axis (the
+    gate) and at the arc ends."""
     PW_ = front_path(6, 4, flat_x=(-HF, -GATE, 0.0, GATE, HF))  # the same outline with vertices at the gate edges and one in the gate (x 0 fails the keep test: that is the break)
     for k, run in enumerate(split_runs(offset(PW_, WALL_A), lambda x, y: abs(x) >= GATE - 1e-6 and y < 3.0)):
         trough(s, run, z_top=0.62, w=0.6)

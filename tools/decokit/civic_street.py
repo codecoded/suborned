@@ -17,7 +17,7 @@ from furnish_parts import parasol
 from kit import asset
 from mats import pal
 from plants import Cards, Z, frame, lerp, rot
-from civic_common import bloom, dome_lobe, hair, planting, trough
+from civic_common import VARIANTS, bloom, dome_lobe, hair, planting, trough
 from structures import sec, superell, tube
 from plaza_parts import lift
 
@@ -191,8 +191,8 @@ def boarding_square_v2(s):
     scaled = lambda k: [(x * k, y * (1 - (1 - k) * 0.45)) for x, y in pts]  # noqa: E731
     s.loft([(scaled(1.0), H - FH), (scaled(1.0), H - 0.14), (scaled(0.95), H - 0.07), (scaled(0.82), H - 0.02), (scaled(0.64), H)], pal.Enamel_Ivory)
     tube(s, lift(pts), sec(-0.03, 0.0, H - FH - 0.01, H - 0.1), pal.Enamel_Seafoam, closed=True)
-    hair(s, pts, -0.03, H - FH - 0.01, 0.035, pal.Accent_Gold, closed=True)
-    hair(s, pts, -0.03, H - 0.1, 0.03, pal.Accent_Gold, closed=True)
+    hair(s, pts, -0.03, H - FH - 0.01, 0.035, pal.Brass_Civic, closed=True)
+    hair(s, pts, -0.03, H - 0.1, 0.03, pal.Brass_Civic, closed=True)
     s.box((-3.0, -0.12, H - FH - 0.012), (3.0, 0.12, H - FH), pal.Lamp_Deco)
     for x in (-3.22, 3.22):
         with s.at((x, 0.68, 0)):
@@ -210,3 +210,25 @@ def potted_topiary_play(s):
     for k, (zb, h, R_) in enumerate(((0.56, 0.62, 0.36), (0.98, 0.55, 0.27), (1.37, 0.5, 0.18))):
         prof = [(0.0, zb), (0.72 * R_, zb), (R_, zb + 0.16 * h), (0.94 * R_, zb + 0.5 * h), (0.55 * R_, zb + 0.88 * h), (0.0, zb + h + 0.08 * (k == 2) * 2)]
         s.lathe(prof, pal.Leaf_CivicDark if k % 2 == 0 else pal.Leaf_Civic, seg=12)
+
+
+# ----------------------------------------------------------------- BedTuft (civic planting beds, 14 Oct)
+
+def _tuft(variant):
+    """One clipped-hedge cushion with a few blooms, 0.62 m across: the unit the civic beds are planted with, instanced along any
+    ring (spacing 0.55 m: neighbours overlap into a scalloped hedge). Pivot = the base centre, which stands on the bed fill. A, B, C
+    are the planter runs' three plantings (coral + cream, flamingo + peach, cream + peach), so beds and troughs match."""
+    def build(s):
+        v = VARIANTS[variant]
+        rng = random.Random(v["seed"] * 7 + 3)
+        leaf = getattr(pal, v["leaf"][0])
+        dome_lobe(s, (0, 0, 0), 0.31, v["h"] * 1.15, leaf, seg=10, n=3)
+        for k in range({"A": 3, "B": 3, "C": 2}[variant]):
+            a = rng.uniform(0, 2 * math.pi) + k * 2.1
+            r = rng.uniform(0.05, 0.17)
+            bloom(s, (r * math.cos(a), r * math.sin(a), v["h"] * rng.uniform(0.88, 1.0)), rng.uniform(0.10, 0.13), getattr(pal, v["bloom"][k % 2]), seg=5)
+    return build
+
+
+for _v in "ABC":
+    asset(f"BedTuft_{_v}", "Plaza", bevel=0.0)(_tuft(_v))

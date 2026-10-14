@@ -33,7 +33,11 @@ sha = lambda b: hashlib.sha256(b).hexdigest()  # noqa: E731
 # per piece: tags.use, scale range, sight class, source script, budget (parts list, LOD0), painting
 MEAS = json.loads((OUT / "measured.json").read_text())  # verify008.py: extents read off the built meshes
 SPEC = {
-    "CafeBay": dict(use=["frontage:cafe-bay"], scale=[1, 1], sight="glazed", src="civic_cafe.py", budget=8000, note=lambda M: f"Ground storey of the café front: pivot = centre of the flat on the ring line (block x -10.7, y -29), yaw 90, front -Y = block +x. Canopy reaches x {M['CafeBay']['canopy']['reach_block_x']} (soffit {M['CafeBay']['canopy']['soffit']}, top {M['CafeBay']['canopy']['top']}); terrace wall coping x {M['CafeBay']['coping']['block_x'][0]} to {M['CafeBay']['coping']['block_x'][1]} (centreline x -4.3, 6.4 m out), planting top z {M['CafeBay']['wall_all']['top_z']}; gate {M['CafeBay']['gate_clear_all_materials']['width']} m clear of stone and foliage between the run ends (block y {M['CafeBay']['gate_clear_all_materials']['block_y'][0]} to {M['CafeBay']['gate_clear_all_materials']['block_y'][1]}); wall ends at block ({M['CafeBay']['wall_stone_ends_block'][0][0]}, {M['CafeBay']['wall_stone_ends_block'][0][1]}) and ({M['CafeBay']['wall_stone_ends_block'][1][0]}, {M['CafeBay']['wall_stone_ends_block'][1][1]}). Blade sign above the canopy, flush door (no steps). The generator's upper mass starts at z 4.7."),
+    "CafeBay": dict(use=["frontage:cafe-bay"], scale=[1, 1], sight="glazed", src="civic_cafe.py", budget=8000, note=lambda M: f"Ground storey of the café front (the terrace wall is the separate piece CafeTerrace, same pivot): pivot = centre of the flat on the ring line (block x -10.7, y -29), yaw 90, front -Y = block +x. Canopy reaches x {M['CafeBay']['canopy']['reach_block_x']} (soffit {M['CafeBay']['canopy']['soffit']}, top {M['CafeBay']['canopy']['top']}). Blade sign above the canopy, flush door (no steps). The generator's upper mass starts at z 4.7."),
+    "CafeTerrace": dict(use=["frontage:cafe-terrace"], scale=[1, 1], sight="open", src="civic_cafe.py", budget=4500, note=lambda M: f"The café terrace wall, split from CafeBay (14 Oct) so the architecture fade does not ghost it: same pivot (block -10.7, -29), yaw 90, drops onto the bay. Limestone troughs planted with coral and cream (A) and flamingo and peach (B): coping x {M['CafeTerrace']['coping']['block_x'][0]} to {M['CafeTerrace']['coping']['block_x'][1]} (centreline x -4.3, 6.4 m out), planting top z {M['CafeTerrace']['wall_all']['top_z']}; gate {M['CafeTerrace']['gate_clear_all_materials']['width']} m clear of stone and foliage (block y {M['CafeTerrace']['gate_clear_all_materials']['block_y'][0]} to {M['CafeTerrace']['gate_clear_all_materials']['block_y'][1]}); stone ends at block ({M['CafeTerrace']['wall_stone_ends_block'][0][0]}, {M['CafeTerrace']['wall_stone_ends_block'][0][1]}) and ({M['CafeTerrace']['wall_stone_ends_block'][1][0]}, {M['CafeTerrace']['wall_stone_ends_block'][1][1]})."),
+    "BedTuft_A": dict(use=["bed:tuft"], scale=[1, 1], sight="open", src="civic_street.py", budget=200, note="Civic bed planting unit, variant A (coral + cream): a clipped hedge cushion 0.62 m across with three blooms, base at z 0. Instanced along a bed's inset ring every 0.55 m (see civic-beds.json); matches PlanterRun_*_A."),
+    "BedTuft_B": dict(use=["bed:tuft"], scale=[1, 1], sight="open", src="civic_street.py", budget=200, note="Civic bed planting unit, variant B (flamingo + peach), see BedTuft_A. Matches PlanterRun_*_B."),
+    "BedTuft_C": dict(use=["bed:tuft"], scale=[1, 1], sight="open", src="civic_street.py", budget=200, note="Civic bed planting unit, variant C (cream + peach, taller, fewer blooms), see BedTuft_A. Matches PlanterRun_*_C."),
     "RecordsEntrance": dict(use=["entrance:records-public"], scale=[1, 1], sight="glazed", src="civic_records.py", budget=14000, note=lambda M: f"Tower-public north face: pivot = face centre at the pavement (block 52.5, -30), yaw -90, front -Y = block -x. Measured in the block frame: landing x {M['RecordsEntrance']['landing']['xy'][0]} to {M['RecordsEntrance']['landing']['xy'][1]}, y {M['RecordsEntrance']['landing']['xy'][2]} to {M['RecordsEntrance']['landing']['xy'][3]}, top {M['RecordsEntrance']['landing']['top_z']}; steps x {M['RecordsEntrance']['steps']['xy'][0]} to {M['RecordsEntrance']['steps']['xy'][1]}, {M['RecordsEntrance']['steps']['treads']} treads of {M['RecordsEntrance']['steps']['going'][0]}, {M['RecordsEntrance']['steps']['risers']} risers of {M['RecordsEntrance']['steps']['rise']}; cheeks y +-2.56 to x {M['RecordsEntrance']['cheeks']['xy'][0]}; pier plinths x {M['RecordsEntrance']['pier_plinths']['xy'][0]} to {M['RecordsEntrance']['pier_plinths']['xy'][1]}, y {M['RecordsEntrance']['pier_plinths']['xy'][2]} to -33.02 and -26.98 to {M['RecordsEntrance']['pier_plinths']['xy'][3]}; true width {M['RecordsEntrance']['piece']['width']} m (nothing past the plinths), {-M['RecordsEntrance']['piece']['front']} m out, {M['RecordsEntrance']['piece']['height']} m tall with the blades; marquee x {M['RecordsEntrance']['marquee']['xy'][0]} to {M['RecordsEntrance']['marquee']['xy'][1]}, y {M['RecordsEntrance']['marquee']['xy'][2]} to {M['RecordsEntrance']['marquee']['xy'][3]}, z {M['RecordsEntrance']['marquee']['z'][0]} to {M['RecordsEntrance']['marquee']['z'][1]}."),
     "RecordsEntrance_Official": dict(use=["entrance:records-official"], scale=[1, 1], sight="glazed", src="civic_records.py", budget=6000, note=lambda M: f"Flush lean version for tower-official (face x 75.5, door axis y -30): pivot = face centre at the pavement (block 75.5, -30), yaw 90, front -Y = block +x. No landing, steps, cheeks or rails; sill z {M['RecordsEntrance_Official']['door']['sill_z']}, door plane {M['RecordsEntrance_Official']['door']['plane_off_face']} m off the face; canopy = the block's office-boarding-pavilion: x 75.5 (the face; embedded {M['RecordsEntrance_Official']['canopy']['embedded_behind_face']} m behind it) to {M['RecordsEntrance_Official']['piece']['xy'][1]}, y {M['RecordsEntrance_Official']['piece']['xy'][2]} to {M['RecordsEntrance_Official']['piece']['xy'][3]}, soffit {M['RecordsEntrance_Official']['canopy']['z'][0]}, top {M['RecordsEntrance_Official']['canopy']['z'][1]}, on the face, no posts; pilasters {M['RecordsEntrance_Official']['pilasters']['projection']} m proud (x 75.5 to {round(75.5 + M['RecordsEntrance_Official']['pilasters']['projection'], 2)}, embedded {M['RecordsEntrance_Official']['pilasters']['embedded_behind_face']} m; y {M['RecordsEntrance_Official']['pilasters']['y_runs'][0][0]} to {M['RecordsEntrance_Official']['pilasters']['y_runs'][0][1]} and {M['RecordsEntrance_Official']['pilasters']['y_runs'][1][0]} to {M['RecordsEntrance_Official']['pilasters']['y_runs'][1][1]}); nothing under the canopy projects more than {M['RecordsEntrance_Official']['max_projection_under_canopy']} m; width {M['RecordsEntrance_Official']['piece']['width']} m."),
     "Parasol_Stripe": dict(use=["parasol"], scale=[0.9, 1.1], sight="open", src="civic_street.py", budget=850, note="Pole stands from the ground through the table: pivot = pole = table centre of CafeSet_Tulip_Play. 2.6 m across, 2.07 m clear."),
@@ -117,6 +121,22 @@ def mk_pave_unity():
     (OUT / "Materials/DK_Pave_Civic.mat.meta").write_text(re.sub(r"guid: [0-9a-f]{32}", f"guid: {g}", mmeta.read_text()))
 
 
+def mk_banner_unity():
+    """DK_Banner_Comet_Seafoam.mat + the texture .meta, from the legacy DK_Banner_Comet set with new deterministic GUIDs (the generator writes no .mat for textured materials)."""
+    mat, mmeta = legacy_file("Materials/DK_Banner_Comet.mat"), legacy_file("Materials/DK_Banner_Comet.mat.meta")
+    tmeta = legacy_file("Textures/banner_comet_teal_v1.png.meta")
+    text, meta = mat.read_text(), tmeta.read_text()
+    og = re.search(r"guid: ([0-9a-f]{32})", meta).group(1)
+    ng = hashlib.md5(b"suborned.decokit.tex/banner_comet_seafoam_v1.png").hexdigest()
+    (OUT / "Textures").mkdir(parents=True, exist_ok=True)
+    (OUT / "Textures/banner_comet_seafoam_v1.png.meta").write_text(meta.replace(og, ng))
+    text = text.replace(og, ng).replace("m_Name: DK_Banner_Comet", "m_Name: DK_Banner_Comet_Seafoam")
+    (OUT / "Materials").mkdir(parents=True, exist_ok=True)
+    (OUT / "Materials/DK_Banner_Comet_Seafoam.mat").write_text(text)
+    g = hashlib.md5(b"suborned.decokit.mat/DK_Banner_Comet_Seafoam").hexdigest()
+    (OUT / "Materials/DK_Banner_Comet_Seafoam.mat.meta").write_text(re.sub(r"guid: [0-9a-f]{32}", f"guid: {g}", mmeta.read_text()))
+
+
 def asset_row(a, mats_by):
     spec = SPEC[a["name"]]
     note = spec["note"](MEAS) if callable(spec["note"]) else spec["note"]
@@ -163,11 +183,15 @@ def main():
     table = json.loads((OUT / "decokit_materials.json").read_text())["materials"]
     mats_by = {m["name"]: m for m in table}
     mk_pave_unity()
+    mk_banner_unity()
     rows = [asset_row(a, mats_by) for a in man if a["name"] in SPEC]
     (OUT / "catalogue.proposal.json").write_text(json.dumps(dict(
         schema="suborned.kit/1 (proposal: KitAsset rows, status candidate)", brief="008 B1", generator="tools/decokit (Blender 5.2.2), --out out/decokit-008",
         roots={"generated": "out/decokit-008 (this proposal's generator output; adopting = same relative paths under out/decokit)", "(omitted)": "the DecoKit root (tools/kit/store.ts KIT_ROOTS)"},
         note="Rows follow contracts/world/kit.schema.ts (KitAsset) plus sight (open | glazed), sourceScript, budget. tools/kit reads one generated root (out/decokit): adopting these needs either the FBX, LOD, material and texture files copied into that root or a second generated root (B3, Splice). kit.json is not touched.",
+        extraMaterials=[dict(name="DK_Pool_Civic", kind="enamel", hex="#3A9AA6", appliesTo="civic/atom-fountain: map AtomFountain's DK_Water slot to this (the pool reads white otherwise)",
+                             files=[{"root": "generated", "role": role, "path": f"Materials/DK_Pool_Civic.mat{sfx}", "sha256": sha((OUT / f"Materials/DK_Pool_Civic.mat{sfx}").read_bytes()), "bytes": (OUT / f"Materials/DK_Pool_Civic.mat{sfx}").stat().st_size}
+                                    for role, sfx in (("material", ""), ("material-meta", ".meta"))])],
         assets=rows), indent=1) + "\n")
     print(f"catalogue.proposal.json: {len(rows)} assets, {sum(1 for r in rows if not r['budget']['ok'])} over budget")
     roles_and_bands(man, rows, mats_by)
@@ -176,7 +200,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------- roles + bands
 
 def roles_and_bands(man, rows, mats_by):
-    used = sorted({m for r in rows for m in r["materials"]} | {"DK_Pave_Civic"})  # the slab has no piece of its own: it is a plot surface
+    used = sorted({m for r in rows for m in r["materials"]} | {"DK_Pave_Civic", "DK_Pool_Civic"})  # the slab and the pool water have no piece of their own: a plot surface and a material slot swap
     table = []
     for m in used:
         r = mats_by[m]
@@ -186,44 +210,71 @@ def roles_and_bands(man, rows, mats_by):
             table.append(dict(material=m, kind=r["kind"], textured=r["texture"], unlit_mean=h, dE=deltas(h), min=min(deltas(h).values()), texelsUnder20pct=near, used_by=[x["id"] for x in rows if m in x["materials"]] or ["plot surfaces (paving)"]))
         else:
             d = deltas(base)
-            table.append(dict(material=m, kind=r["kind"], textured=None, unlit=base, dE=d, min=min(d.values()), emission=r["emission"] or None, used_by=[x["id"] for x in rows if m in x["materials"]]))
+            table.append(dict(material=m, kind=r["kind"], textured=None, unlit=base, dE=d, min=min(d.values()), emission=r["emission"] or None, used_by=[x["id"] for x in rows if m in x["materials"]] or ["civic/atom-fountain (water slot, mapped from DK_Water)"]))
     per_piece = {x["id"]: sorted({(t["material"], t["min"]) for t in table if t["material"] in x["materials"]}, key=lambda q: q[1])[:3] for x in rows}
+    def dE(h):
+        return deltas(h)
     roles = {
-        "schema": "suborned.civic-colour-roles/1", "brief": "008 B1", "date": "2026-10-14",
-        "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off.",
+        "schema": "suborned.civic-colour-roles/1", "brief": "008 B1, corrected 14 Oct (first Unity build)", "date": "2026-10-14",
+        "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity).",
         "roles": {
-            "stone": dict(materials=["DK_Limestone", "DK_Enamel_Ivory", "DK_Pave_Civic (slabs)"], hex=["#E7DECA", "#EFE8D6", "#E4DACA mean"], use="walls, piers, planters, steps, paving, soffits"),
-            "band": dict(materials=["DK_Enamel_Seafoam"], hex=["#72B5A7"], use="canopy and marquee fascias, bands, shelter fascia, bollard band, banners (cloth), paving inlay (DK_Inlay_Seafoam, same hex)"),
-            "deep": dict(materials=["DK_Enamel_Teal"], hex=["#1F6C67"], use="base courses, caps, sign body, cushions, lamp sleeve, window surround"),
-            "metal": dict(materials=["DK_Chrome", "DK_Steel"], use="posts, balls, rails, globe, handles, blades"),
-            "hairline": dict(materials=["DK_Accent_Gold"], hex=["#D0C848"], rule="only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin or fascia; at most 6% of any elevation's area", use="glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"),
-            "banner": dict(materials=["DK_Cloth_Seafoam", "DK_Cloth_CoralSoft", "DK_Cloth_FlamingoSoft", "DK_Cloth_PeachSoft"], hex=["#72B5A7", "#FC9C84", "#E8609A", "#FCC4AC"], rule="never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents below are 21.7 or more"),
-            "flowers": dict(materials=["DK_Bloom_Coral", "DK_Bloom_Flamingo", "DK_Bloom_Peach", "DK_Bloom_Cream"], hex=["#FC9C84", "#E8609A", "#FCC4AC", "#F6EBCB"], rule="planting variants A coral+cream, B flamingo+peach, C cream+peach; neighbours differ"),
-            "leaf": dict(materials=["DK_Leaf_Civic", "DK_Leaf_CivicDark"], hex=["#6A9B5C", "#46794C"]),
-            "glass": dict(materials=["DK_GlassDark"], hex=["#35585A"], rule="clear dark teal, no blue curtain wall (facade.json glass_clear)"),
+            "stone": dict(materials=["DK_Limestone", "DK_Enamel_Ivory", "DK_Pave_Civic (slabs)"], hex=["#E7DECA", "#EFE8D6", "#E4DACA mean"], facade_swatch={"civic_w": "#EEE9DA"}, role="walls, piers, planters, kerbs, steps, paving, soffits, the facade fields of the café and the Office",
+                         painting="records-office and inez-cutaway: ivory stone fields (shade reads tan in the paintings too: #AE9881 on gp-entrance's door pier); gp-entrance kerb face #E3CEB1 in sun", use="walls, piers, planters, steps, paving, soffits"),
+            "band": dict(materials=["DK_Enamel_Seafoam", "DK_Enamel_Mint"], hex=["#72B5A7", "#A8D3BE"], facade_swatch={"e_seafoam": "#72B5A7", "e_seafoam_pale": "#9BCFC2"},
+                         role="canopy and marquee fascias, window surround, pier and pilaster caps, bands and fins on the facades, plinth bands, banner cloth, paving inlay (DK_Inlay_Seafoam, same hex)",
+                         painting="records-office: the seafoam bands and fins of the tower; inez-cutaway: the café canopy fascia and the wrap-round band; gp-entrance: marquee top #A4B3A1 and fascia #778D84 in sun and shade", use="canopy and marquee fascias, bands, shelter fascia, bollard band, banners (cloth), paving inlay (DK_Inlay_Seafoam, same hex)"),
+            "deep": dict(materials=["DK_Enamel_Teal"], hex=["#1F6C67"], rule="an accent of 0.3 m or less: the café blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+                         painting="the paintings use it only as thin edge lines and the sign blades", use="sign body, cushions, lamp sleeve, window reveal"),
+            "metal": dict(materials=["DK_Chrome", "DK_Steel"], role="posts, balls, rails, globe, handles, blades", painting="all three paintings: chrome balls, rails and the globe", use="posts, balls, rails, globe, handles, blades"),
+            "hairline": dict(materials=["DK_Brass_Civic"], hex=["#99784D"], facade_swatch={"gold": "#99784D", "paletteOverride.gold_trim": "#99784D"}, old={"material": "DK_Accent_Gold", "hex": "#D0C848"},
+                             rule="only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin, fascia or band; at most 6% of any elevation's area. #99784D is dE2000 21.3 from the guard colour: a gold of this hue that is any lighter than L 52 falls inside the gate, so this dark brass is the gold",
+                             painting="gp-entrance: the door posts, #99784D in the shade of the marquee (lit brass is lighter; the unlit palette gate reads this value)", use="glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"),
+            "banner": dict(materials=["DK_Banner_Comet_Seafoam", "DK_Cloth_Seafoam", "DK_Cloth_CoralSoft", "DK_Cloth_FlamingoSoft", "DK_Cloth_PeachSoft"], hex=["#72B5A7", "#72B5A7", "#FC9C84", "#E8609A", "#FCC4AC"],
+                           old={"material": "DK_Banner_Comet + DK_Fabric_Banner", "hex": "#048A7C (texture field)"},
+                           rule="entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents are 21.7 or more",
+                           painting="gp-entrance: the pier banners, ivory comet on a teal field (#406464 as painted; seafoam here because the shaded Unity faces multiply it by about 0.18 in linear light)"),
+            "flowers": dict(materials=["DK_Bloom_Coral", "DK_Bloom_Flamingo", "DK_Bloom_Peach", "DK_Bloom_Cream"], hex=["#FC9C84", "#E8609A", "#FCC4AC", "#F6EBCB"],
+                            rule="planting variants A coral+cream, B flamingo+peach, C cream+peach; neighbours differ; the beds use the same three (BedTuft_A/B/C)",
+                            painting="gp-entrance and mission-block: coral, flamingo and peach flowers in the beds"),
+            "leaf": dict(materials=["DK_Leaf_Civic", "DK_Leaf_CivicDark"], hex=["#6A9B5C", "#46794C"], role="cushions, tufts, hedge fill of the beds", painting="gp-entrance: clipped hedges and conifers"),
+            "bed": dict(materials=["DK_Limestone", "DK_Leaf_CivicDark", "DK_Leaf_Civic"], hex=["#E7DECA", "#46794C", "#6A9B5C"], rule="recipe in civic-beds.json: a limestone kerb, a clipped hedge fill, BedTuft_A/B/C on top; replaces the plain `park` colour (#A6E29C) on these masses",
+                        painting="gp-entrance: low cream kerb, clipped hedge, flowers"),
+            "pool": dict(materials=["DK_Pool_Civic"], hex=["#3A9AA6"], rule="opaque enamel water (smoothness 0.8, no alpha) so the sky cannot wash it white; Latch maps AtomFountain's DK_Water slot to it for civic/atom-fountain only",
+                         painting="gameplay-plan: the pool is a saturated turquoise under the spray (lit median #4C6C7C with sky and palm reflections)", dE=dE("#3A9AA6")),
+            "glass": dict(materials=["DK_GlassDark"], hex=["#35585A"], rule="clear dark teal, no blue curtain wall (facade.json glass_clear)", painting="records-office: dark glazing", use="glass"),
             "lamp": dict(materials=["DK_Lamp_Deco"], hex=["#FFF1C4"], rule="DK_Lamp #FFE2A6 is dE 19.3 from the guard colour: the civic pieces use Lamp_Deco (24.6)"),
         },
         "parts": {
-            "CafeBay": dict(stone="piers, coping", band="canopy fascia", deep="base course, sign body", hairline="mullions, transom, sill, head, door frames, fascia lines", glass="film over a charcoal sheet", lamp="soffit downlights", flowers="terrace wall troughs: variants A, B"),
-            "RecordsEntrance": dict(stone="piers, steps, cheeks, globe plinth", band="window surround (outer), marquee top, pier band", deep="window surround (inner), marquee fascia, pier caps, banner field (comet texture)", hairline="door frames, window grid, marquee lines, banner rods", metal="globe, stand, rails, blades, finials", lamp="marquee lanterns"),
-            "BoardingPavilion_Square_v2": dict(stone="roof (Enamel_Ivory)", band="fascia", hairline="fascia bead", metal="posts", lamp="underside strip"),
+            "CafeBay": dict(stone="piers, coping", band="canopy fascia, base course (seafoam, was deep teal)", deep="blade-sign body", hairline="mullions, transom, sill, head, door frames, fascia lines (brass)", glass="film over a charcoal sheet", lamp="soffit downlights"),
+            "CafeTerrace": dict(stone="trough (DK_Limestone)", leaf="cushions and hedge band", flowers="variants A, B"),
+            "RecordsEntrance": dict(stone="piers, steps, cheeks, globe plinth", band="marquee fascia and top, window surround, pier cap (seafoam), pier band and marquee rim (mint), banner cloth", deep="an 8 cm reveal round the window", hairline="door frames, window grid, marquee lines, banner rods (brass)", metal="globe, stand, rails, blades, finials", lamp="marquee lanterns"),
+            "RecordsEntrance_Official": dict(stone="pilasters, canopy soffit", band="canopy fascia and top, pilaster cap, banner cloth", hairline="door frames, canopy lines, banner rods (brass)", lamp="canopy lanterns"),
+            "BoardingPavilion_Square_v2": dict(stone="roof (Enamel_Ivory)", band="fascia", hairline="fascia bead (brass)", metal="posts", lamp="underside strip"),
             "PlazaSphereLamp_Play": dict(deep="sleeve", metal="plinth, pole, sphere, arms", banner="seafoam pennant + contract-coral pennant"),
             "Parasol_Stripe": dict(band="alternate panels", stone="alternate panels (DK_Cloth_Cream #EFE8D6)", metal="pole, ribs, finial"),
             "BollardSphere": dict(metal="post, sphere", band="band"),
             "PlanterRun_*": dict(stone="trough (DK_Limestone)", leaf="cushions and hedge band", flowers="by variant"),
+            "BedTuft_*": dict(leaf="hedge cushion", flowers="by variant"),
             "Inlay*": dict(band="DK_Inlay_Seafoam (glazed tile, #72B5A7), 4 mm proud"),
             "paving": dict(stone="DK_Pave_Civic slabs on the plot surfaces of the square, the café terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"),
         },
         "pool_water": {
-            "surface": "#3A9AA6", "depth": "#1F6C67", "alpha": 0.62, "smoothness": 0.95, "coping": "DK_Limestone with DK_Enamel_Seafoam lip",
-            "dE": deltas("#3A9AA6"), "basis": "infer: harbour.water #3d8d93 (lagoon) pushed toward accent_turquoise #1cb9c6; the 26 Sep paintings' pool is a saturated turquoise, but its lit median reads #648094 with sky and palm reflections, which is not a palette value",
-            "apply": "AtomFountain's DK_Water glass #6FB7C4 (pale, reads white in the play shot) -> this tint on the basin water at alpha 0.62 over a DK_Enamel_Teal floor; Glint adds the reflection (B5).",
+            "material": "DK_Pool_Civic", "surface": "#3A9AA6", "alpha": 1.0, "smoothness": 0.8, "kind": "opaque enamel", "coping": "DK_Limestone with DK_Enamel_Seafoam lip",
+            "dE": deltas("#3A9AA6"), "basis": "infer: harbour.water #3d8d93 (lagoon) pushed toward accent_turquoise #1cb9c6; the 26 Sep paintings' pool is a saturated turquoise, but its lit median reads #4C6C7C with sky and palm reflections, which is not a palette value",
+            "apply": "AtomFountain's water is one flat disc (R 3.0, z 0.34) in DK_Water, a glass of alpha 0.3 over the pale basin, which the sky turns white. Map that material slot to the kit material DK_Pool_Civic (out/decokit-008/Materials/DK_Pool_Civic.mat) on civic/atom-fountain only; the fountain's own files are unchanged (DK_Water stays for the other three pieces that use it). Not a facade key.",
         },
         "facade_patch": {
-            "file": "unity/Assets/Suborned/Editor/World/facade.json (Latch / Splice apply in B3; not touched here)",
-            "swatches_add": {"e_seafoam": "#72B5A7", "e_deepteal": "#1F6C67"},
-            "areas.records.enamel": {"now": ["gold", "e_teal", "navy", "e_coral"], "to": ["e_seafoam", "e_deepteal", "e_seafoam", "e_apricot"], "why": "gold fins and aqua bands come off the Records palette; apricot (#fcc4ac) replaces coral for any small accent"},
-            "paletteOverride.gold_trim": {"now": "#c9c08e", "to": "#d0c848 hairlines only"},
+            "file": "unity/Assets/Suborned/Editor/World/facade.json (Latch applies; not touched here). Replaces the 14 Oct patch.",
+            "why": "First Unity build: the civic masses took the `records` area (ivory 7 / cream 3 families, a seafoam / deep teal / apricot enamel pair) and the ivory family's plinth swatch ivory_p = #D0C848. That gave salmon fins (apricot A), deep-teal bands and fins (deep teal), thick yellow-green base bands (ivory_p) and tan walls (cream_w). The civic masses now get their own area.",
+            "swatches_add": {"civic_w": "#EEE9DA", "e_seafoam_pale": "#9BCFC2"},
+            "swatches_change": {"ivory_p": {"now": "#d0c848", "to": "#72b5a7"}, "gold": {"now": "#d0c848", "to": "#99784d"}},
+            "families_add": {"civic": ["civic_w", "e_seafoam", "roof_e"]},
+            "areas_add": {"civic": {"families": {"civic": 1}, "enamel": ["e_seafoam", "e_seafoam_pale"]}},
+            "areas.records.enamel": {"now": ["e_seafoam", "e_deepteal", "e_seafoam", "e_apricot"], "to": ["e_seafoam", "e_seafoam_pale"], "why": "the Records district around the block: no deep-teal fins or bands, no apricot (coral, flamingo and peach are for banners and flowers)"},
+            "paletteOverride.gold_trim": {"now": "#d0c848", "to": "#99784d", "district_wide": "75 sign boards use the gold_trim palette key"},
+            "optional_district_wide": {"e_sun": {"now": "#d0c848", "to": "#f4e27a", "why": "e_sun is the sunshine enamel, not gold; the same hex as the old gold gave gold-looking roof spheres and boxes (roof trim takes the host's enamel pair, `roofItems.trim`: @A / @B) and yellow-green fins; #F4E27A is dE 21.1 from the guard"},
+                                     "sand_p": {"now": "#d0c848", "to": "#f4e27a"}, "t_hotel": {"now": "#d0c848", "to": "#f4e27a"}},
+            "gate": "every swatch above is at least dE2000 20 from cones #E03A2F, guard #F0A020 and rivals #8A4FD0 (facade_check in out/decokit-008/facade-patch.check.txt)",
         },
         "dE2000_unlit": {"signals": SIGNALS, "rule": ">= 20 from every signal colour, on unlit palette values; textured materials are measured as the linear-light mean of their opaque texels times the base colour (C5)", "materials": table,
                          "below_20": [t["material"] for t in table if t["min"] < 20], "lowest_three_per_piece": {k: v for k, v in per_piece.items()}},

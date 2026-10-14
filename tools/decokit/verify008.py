@@ -16,7 +16,7 @@ os.environ.setdefault("DECOKIT_TEXDIRS_EXTRA", str(REPO / "out/decokit-008-src/T
 sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
 
-PLACE = {"CafeBay": ((-10.7, -29.0), 90), "RecordsEntrance": ((52.5, -30.0), -90), "RecordsEntrance_Official": ((75.5, -30.0), 90)}
+PLACE = {"CafeBay": ((-10.7, -29.0), 90), "CafeTerrace": ((-10.7, -29.0), 90), "RecordsEntrance": ((52.5, -30.0), -90), "RecordsEntrance_Official": ((75.5, -30.0), 90)}
 r3 = lambda v: round(v + 0.0, 3)  # noqa: E731
 
 
@@ -107,7 +107,18 @@ def official(rows):
 
 
 def cafe(rows):
+    """CafeBay (ground storey, canopy, sign) alone: the terrace wall is its own piece since 14 Oct."""
     n = "CafeBay"
+    out = {}
+    can = pick(rows, lambda x, y, z, m: m in ("Enamel_Ivory", "Enamel_Seafoam") and 4.1 < z < 4.7 and y < -0.5 and abs(x) < 6)
+    out["canopy"] = dict(reach_block_x=r3(-10.7 - min(r[1] for r in can)), soffit=r3(min(r[2] for r in can)), top=r3(max(r[2] for r in can)))
+    out["piece"] = dict(width=r3(max(r[0] for r in rows) - min(r[0] for r in rows)), front=r3(min(r[1] for r in rows)), height=r3(max(r[2] for r in rows)))
+    out["wall_stone_in_bay"] = len(pick(rows, lambda x, y, z, m: m == "Limestone" and 0.55 < z < 0.7 and y < -1.0))
+    return out
+
+
+def terrace(rows):
+    n = "CafeTerrace"
     out = {}
     wall = pick(rows, lambda x, y, z, m: m == "Limestone" and 0.55 < z < 0.7)  # nothing else in the piece is limestone at that height
     flat = [r for r in wall if -6.9 < r[1] < -5.9 and abs(r[0]) < 5.8]
@@ -127,8 +138,6 @@ def cafe(rows):
     lo = min(lim, key=lambda r: r[0])
     hi = max(lim, key=lambda r: r[0])
     out["wall_arc_ends_local"] = dict(left=[r3(lo[0]), r3(lo[1])], right=[r3(hi[0]), r3(hi[1])])
-    can = pick(rows, lambda x, y, z, m: m in ("Enamel_Ivory", "Enamel_Seafoam") and 4.1 < z < 4.7 and y < -0.5 and abs(x) < 6)
-    out["canopy"] = dict(reach_block_x=r3(-10.7 - min(r[1] for r in can)), soffit=r3(min(r[2] for r in can)), top=r3(max(r[2] for r in can)))
     out["piece"] = dict(width=r3(max(r[0] for r in rows) - min(r[0] for r in rows)), front=r3(min(r[1] for r in rows)), height=r3(max(r[2] for r in rows)))
     return out
 
@@ -144,6 +153,7 @@ def main():
     res["RecordsEntrance"] = public(verts("RecordsEntrance"))
     res["RecordsEntrance_Official"] = official(verts("RecordsEntrance_Official"))
     res["CafeBay"] = cafe(verts("CafeBay"))
+    res["CafeTerrace"] = terrace(verts("CafeTerrace"))
     res["CafeSet_Tulip_Play"] = dict(zip(("max_radius", "x_max", "x_min", "y_max", "y_min"), radius("CafeSet_Tulip_Play")))
     res["Parasol_Stripe"] = dict(zip(("max_radius", "x_max", "x_min", "y_max", "y_min"), radius("Parasol_Stripe")))
     tp = verts("PottedTopiary_Play")
