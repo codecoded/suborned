@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check": "bun run typecheck && bun test && bun run plan",
+    "people": "bun tools/people/cli.ts",
     "levels": "bun tools/levels/cli.ts",
     "levels:replay": "bun tools/levels/replay.ts",
     "levels:sheets": "bun tools/levels/sheets.ts",

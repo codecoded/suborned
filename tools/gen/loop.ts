@@ -27,7 +27,7 @@ const j = (x: unknown) => JSON.stringify(x);
 export async function generate<S>(p: Plugin<S>, o: Opts) {
   // first, before the run folder (untracked, so `dirty`) or any pin is written: r011 recorded dirty from a clean tree because this was read after
   const git = (o.git ?? gitState)();
-  const subject = await p.open(o.input), id = subject.id, loop = o.loop ?? LOOP;
+  const subject = await p.open(o.input, o.scope), id = subject.id, loop = o.loop ?? LOOP;
   if (o.continue && o.seed) {
     throw new ContinueRefused('a seeded run starts from the base plan; --seed and --continue cannot be combined');
   }

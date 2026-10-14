@@ -2,6 +2,7 @@
 //   bun run levels transit [--plan <plan.json>] [--seed station-on-plot|fare-claim|fare-claim-uncited] [--rounds 3]
 //                          [--continue <run>]
 //   bun run levels skyline [--plan <plan.json>] [--rounds 3] [--continue <run>] [--preview]
+//   bun run levels people [--plan <plan.json>] [--scope civic-block] [--rounds 3] [--continue <run>] [--preview]
 //   a live run also needs: --approved-by "<who approved it>"   [--max-usd 10]
 // --continue <run>: start from that REJECTED, ERROR or INCOMPLETE run's last completed round, with its open faults,
 //   instead of the base plan (a new run, with its own 3 rounds).
@@ -30,11 +31,14 @@ if (!plugin) {
   for (const p of Object.values(plugins)) {
     const seeds = p.seeds ? ` [--seed ${p.seeds.names.join('|')}]` : '';
     const more = '[--rounds 3] [--continue <run>] [--preview]';
-    console.error(`usage: bun run levels ${p.id} [--plan <plan.json>]${seeds} ${more}`);
+    console.error(`usage: bun run levels ${p.id} [--plan <plan.json>]${p.scopes ? ` [--scope ${p.scopes.join('|')}]` : ''}${seeds} ${more}`);
   }
   process.exit(2);
 }
-const seed = opt('--seed'), continued = opt('--continue'), preview = args.flags.has('--preview');
+const scope = opt('--scope'), seed = opt('--seed'), continued = opt('--continue'), preview = args.flags.has('--preview');
+if (scope && !plugin.scopes?.includes(scope)) {
+  refuse(plugin.scopes ? `unknown scope ${scope}; known: ${plugin.scopes.join(', ')}` : `${plugin.id} has no scopes`);
+}
 if (seed && !plugin.seeds?.names.includes(seed)) {
   refuse(`unknown seed ${seed}; known: ${plugin.seeds?.names.join(', ')}`);
 }
@@ -56,7 +60,7 @@ const input = opt('--plan') ?? plugin.defaultInput, retrieval = offline ? 'lexic
 
 if (preview) {
   try {
-    console.log(await runPreview(plugin, { input, retriever, retrieval }));
+    console.log(await runPreview(plugin, { input, scope, retriever, retrieval }));
     process.exit(0);
   } catch (e) {
     if (!(e instanceof RunRefused)) throw e;
@@ -68,7 +72,7 @@ if (refused) refuse(refused);
 const approvedBy = opt('--approved-by')?.trim();
 if (live && !approvedBy) refuse('a live run needs --approved-by "<who approved it>"; it is recorded in run.json');
 try {
-  const o = { input, seed, rounds, retriever, retrieval, continue: continued, loop, maxUsd, approvedBy, live };
+  const o = { input, scope, seed, rounds, retriever, retrieval, continue: continued, loop, maxUsd, approvedBy, live };
   const r = await generate(plugin, o);
   process.exit(r.outcome === 'ACCEPTED' ? 0 : 1);
 } catch (e) {
