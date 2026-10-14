@@ -136,7 +136,30 @@ function signatures(P: Pen, plan: Plan, size = 6) {
   return { under: layer('signatures', under), over: layer('signatures', over) };
 }
 
-export function district(plan: Plan, d: Derived, R: Report) {
+/** What the crossing proposal layer draws besides the plan: the world's crossings as generated (kept unless the plan's coverage removes them) and the desire lines behind it. */
+export type ProposalIn = { crossings: { id: string; line: V[] }[]; walks?: { path: V[]; hot?: boolean }[] };
+type Coverage = { add?: { id: string; lines?: V[][] }[]; remove?: { id: string; ids?: string[] }[]; callouts?: { at: V; r: number; text: string | string[]; label?: V }[] };
+
+/** Brief 009 crossing proposal (plan standards.streetscape.crossings.coverage, which the generator does not read): the desire lines faint underneath (`hot`: a walk the proposal serves), the crossings
+ *  kept, the ones proposed (labelled by proposal), the ones dropped struck through, and the plan's callouts. Empty without a coverage block with lines. */
+function proposal(P: Pen, plan: Plan, x: ProposalIn | undefined, size = 6) {
+  const cov = plan.standards?.streetscape?.crossings?.coverage as Coverage | undefined;
+  if (!x || !cov?.add?.some(a => a.lines?.length)) return '';
+  const gone = new Map((cov.remove ?? []).flatMap(r => (r.ids ?? []).map(id => [id, r.id] as const)));
+  const mid = (l: V[]): V => mul(add(l[0]!, l[l.length - 1]!), 0.5), side = (l: V[]): V => left(norm(sub(l[l.length - 1]!, l[0]!)));
+  let out = (x.walks ?? []).filter(w => !w.hot).map(w => P.line(w.path, 'pr-walk')).join('') + (x.walks ?? []).filter(w => w.hot).map(w => P.line(w.path, 'pr-walk hot')).join(''); // the walks a proposal serves drawn stronger
+  out += x.crossings.filter(c => !gone.has(c.id)).map(c => P.line(c.line, 'pr-kept')).join('');
+  for (const c of x.crossings.filter(c => gone.has(c.id))) {
+    const m = mid(c.line), u = norm(sub(c.line[1]!, c.line[0]!)), v = left(u), k = 4;
+    out += P.line(c.line, 'pr-gone') + P.line([add(m, add(mul(u, -k), mul(v, -k))), add(m, add(mul(u, k), mul(v, k)))], 'pr-strike') + P.line([add(m, add(mul(u, -k), mul(v, k))), add(m, add(mul(u, k), mul(v, -k)))], 'pr-strike')
+      + P.text(add(m, mul(side(c.line), size * 1.3)), gone.get(c.id)!, 'lab pr-lab gone', [1, 0], size);
+  }
+  for (const a of cov.add ?? []) for (const l of a.lines ?? []) out += P.line(l, 'pr-add') + P.text(add(mid(l), mul(side(l), size * 1.3)), a.id, 'lab pr-lab', [1, 0], size);
+  for (const c of cov.callouts ?? []) { const at = c.label ?? add(c.at, [-c.r, c.r + size * 2]); out += P.circle(c.at, c.r, 'pr-call') + [c.text].flat().map((t, i) => P.text(add(at, [0, -i * size * 1.5]), t, 'lab pr-call-lab', [1, 0], size * 1.1)).join(''); }
+  return layer('proposal', out);
+}
+
+export function district(plan: Plan, d: Derived, R: Report, prop?: ProposalIn) {
   const s = plan.sheet, P = new Pen(s.x[0], s.x[1], s.y[0], s.y[1], 34);
   const base = layer('base', plan.water.map(w => P.poly(w, 'water')).join('') + plan.quay.map(q => P.poly(q, 'quay')).join('') + plan.beyond.map(b => P.poly(b, 'beyond')).join(''));
   const plots = layer('plots', d.plots.map(p => P.poly(p.polyV, `plot ${p.use}`, ` data-id="${p.id}"`)).join(''));
@@ -155,7 +178,7 @@ export function district(plan: Plan, d: Derived, R: Report) {
   const civic = layer('civic', d.plots.filter(p => p.civic).map(p => P.poly(p.polyV, 'civic-hi')).join(''));
   const sig = signatures(P, plan);
   const walks = layer('walks', R.walks.map(w => P.line(w.path, 'walk-route') + P.text(w.path[w.path.length - 1], `${Math.round(w.m)} m`, 'lab walk-lab', [1, 0], 5)).join(''));
-  const body = P.clip('district', base + plots + areas + roads(P, plan, d) + civic + sig.under + rail(P, d, plan, 'tram', R) + rail(P, d, plan, 'sky', R) + sig.over + walks + gates(P, plan, 5, false) + marks + names)
+  const body = P.clip('district', base + plots + areas + roads(P, plan, d) + civic + sig.under + rail(P, d, plan, 'tram', R) + rail(P, d, plan, 'sky', R) + sig.over + walks + proposal(P, plan, prop) + gates(P, plan, 5, false) + marks + names)
     + frame(P, s.grid, true) + northScale(P, [700, 240], [0, 50, 100, 200], 10);
   return `<svg id="district" viewBox="0 0 ${n(P.w)} ${n(P.h)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(plan.name)} master plan">${body}</svg>`;
 }
