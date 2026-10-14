@@ -18,6 +18,8 @@ export const VERDICT_FILES = [
   'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
   'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
   'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts', 'tools/missions/handover/cast.ts',
+  'tools/levels/people/hash.ts', // the list above is part of what a hash means (and `bun run people` records the hash in the file it writes)
+  'tools/world/civic/cafe.ts', // where the world draws the café sets: seats.ts places the chairs from it
 ];
 export const peopleFiles = (base: string = root): string[] => [
   ...ts(base, 'tools/people'), ...ts(base, 'tools/plan'), ...ts(base, 'contracts/people'), ...VERDICT_FILES,

@@ -1,8 +1,9 @@
-// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker. Exit 0 only if all hold.
+// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast held to its run. Exit 0 only if all hold.
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inProcess } from './levels/checker';
 import { runDirs, runsRoot } from './gen/paths';
+import { checkPromotion } from './people/promoted';
 import { root } from './rag/config';
 
 const PLAN = 'harbour-district', SUBMITTED = 'r008', bad: string[] = [];
@@ -69,6 +70,10 @@ const plan = JSON.parse(await Bun.file(resolve(root, `contracts/world/${PLAN}.pl
 line('contracts plan (non-strict)', await inProcess(plan, false));
 const rd = resolve(runsRoot(), PLAN, SUBMITTED), rounds = readdirSync(rd).filter(d => /^round-\d+$/.test(d)).sort(), last = rounds.at(-1)!;
 line(`${SUBMITTED} ${last} plan (strict, pinned block)`, await inProcess(await Bun.file(`${rd}/${last}/plan.json`).json(), true, await Bun.file(`${rd}/input.block.json`).json()));
+
+const promo = checkPromotion(PLAN); // the promoted cast is its accepted run's output byte for byte (contracts/people/<plan>.cast.promotion.json)
+console.log(`promoted cast: ${promo.ok ? 'matches its run' : 'DRIFTED'}  ${promo.label}`);
+if (!promo.ok) { bad.push('promoted cast'); for (const p of promo.problems) console.log('      ' + p.slice(0, 200)); }
 
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);

@@ -9,9 +9,12 @@ import type { Scope } from './scope';
 export type Casting = { scope: Scope; mission: MissionIn; plan: { civic: unknown } };
 export type Pinned = { index: number; role?: string; who?: string; why: string };
 
-/** The cast under the rules; a role the rules cannot cast (no one meets its need) falls back to place alone, so a name still
- *  lands on someone and P-6 (rules) reports the failure. */
+/** The cast the names follow: M-2's own, with the roles' playability conditions (`{ play: true }`), once the people meet them, so Inez and Vale sit on the people M-2 pins. Until
+ *  they do (the cast does not yet play the mission: guards, driver and councillor fail it), the cast under the rules; and a role the rules cannot cast (no one meets its need)
+ *  falls back to place alone, so a name still lands on someone and P-6 (rules) reports the failure. */
 export function castForNames(persons: Person[], c: Casting, rules: Rules): Cast[] {
+  const play = castHandover(persons, c.scope, c.mission, c.plan, rules, { play: true });
+  if (play.every(x => x.ok)) return play;
   const strict = castHandover(persons, c.scope, c.mission, c.plan, rules);
   if (strict.every(x => x.ok)) return strict;
   const place = castHandover(persons, c.scope, c.mission, c.plan);

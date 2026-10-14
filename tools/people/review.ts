@@ -48,7 +48,12 @@ export function requirements(c: Ctx, people: People): Req[] {
   const mix = rules.temperamentsBy.mix;
   for (const r of cast.rows) {
     const tot = r.temperaments.reduce((n, t) => n + t.weight, 0), top = Math.max(...r.temperaments.map(t => t.weight)) / tot;
-    out.push({ id: `mix-${r.area}-${r.occupation}`, need: `${r.area}/${r.occupation}: no temperament over ${Math.round(mix.rowMaxShare * 100)}%`, ok: top <= mix.rowMaxShare + 1e-9, detail: `largest ${Math.round(top * 100)}%` });
+    // the cap is the row's weights (people.rules.json temperamentsBy.mix: "the culture baseline is the cast row"); the people it makes are reported beside it, not held to it:
+    // on a unit of a few people a share cap would ask for more kinds than the rules' own unit rule (two kinds from three staff), so the people's rule is P-10's unit minimum
+    const ps = P.filter(p => (p.work ? `${p.work.area}/${p.work.trade}` : `${scope.homes.find(h => h.plot === p.home.plot)?.area ?? '?'}/resident`) === `${r.area}/${r.occupation}`);
+    const by = new Map<string, number>(); for (const p of ps) by.set(p.temperament, (by.get(p.temperament) ?? 0) + 1);
+    const [big, n] = [...by].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0] ?? ['none', 0];
+    out.push({ id: `mix-${r.area}-${r.occupation}`, need: `${r.area}/${r.occupation}: no temperament over ${Math.round(mix.rowMaxShare * 100)}% of the row's weights`, ok: top <= mix.rowMaxShare + 1e-9, detail: `largest ${Math.round(top * 100)}% of the weights; of the ${ps.length} people ${ps.length ? Math.round((100 * n) / ps.length) : 0}% ${big} (counted, not held: the cap is on the row's weights)` });
   }
   return out;
 }
@@ -58,7 +63,7 @@ const who = (p: Person | undefined, by: Map<string, Person>) => p ? `${esc(p.nam
 export function reviewHtml(c: Ctx, people: People, checks: Check[], label: string): string {
   const { rules, scope } = c, P = people.persons, by = new Map(P.map(p => [p.id, p])), intro = new Set(introducing(rules));
   const rowKey = (p: Person) => (p.work ? `${p.work.area}/${p.work.trade}` : `${scope.homes.find(h => h.plot === p.home.plot)?.area ?? '?'}/resident`);
-  const rows = [...new Set(P.map(rowKey))].sort(), tems = Object.keys(rules.temperaments);
+  const rows = [...new Set(P.map(rowKey))].sort(), tems = Object.keys(rules.temperaments), mixRules = rules.temperamentsBy.mix;
   const mix = rows.map(r => { const ps = P.filter(p => rowKey(p) === r); return `<tr><th>${esc(r)}</th><td>${ps.length}</td>${tems.map(t => { const n = ps.filter(p => p.temperament === t).length; return `<td>${n}${n ? ` <small>${Math.round((100 * n) / ps.length)}%</small>` : ''}</td>`; }).join('')}</tr>`; }).join('');
   const handover = c.casting ? castForNames(P, c.casting, rules) : [];
   const roleOf = new Map(handover.filter(h => h.pinned).map(h => [h.pinned!, h.role]));
@@ -82,7 +87,7 @@ body{font:15px/1.45 system-ui,sans-serif;max-width:1000px;margin:2em auto;paddin
 <h1>010 · the cast: ${esc(scope.id)}</h1><p>${esc(label)} · ${P.length} simulated people · plan ${esc(people.plan.id)} ${esc(people.plan.version)} · cast ${esc(people.inputs.cast.slice(0, 12))}</p>
 <h2>Checker</h2><table>${checks.map(k => `<tr><td class="${k.ok ? 'ok' : 'no'}">${k.ok ? 'ok' : 'FAIL'}</td><td>${esc(k.id)}</td><td>${esc(k.rule)}</td><td>${esc(k.value)}</td></tr>`).join('')}</table>
 <h2>Cast requirements (Motive §3)</h2><table>${reqs.map(r => `<tr><td class="${r.ok ? 'ok' : 'no'}">${r.ok ? 'met' : 'NOT MET'}</td><td>${esc(r.need)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</table>
-<h2>The cast by occupation and temperament</h2><table><tr><th>row</th><th>people</th>${tems.map(t => `<th>${esc(t)}</th>`).join('')}</tr>${mix}</table>
+<h2>The cast by occupation and temperament</h2><p><small>The cap (no temperament over ${Math.round(mixRules.rowMaxShare * 100)}%) is the row's weights, the culture baseline (people.rules.json temperamentsBy.mix); the people are counted here, and a unit of ${mixRules.whenStaffAtLeast} or more must carry ${mixRules.unitMinDistinct} kinds (P-10).</small></p><table><tr><th>row</th><th>people</th>${tems.map(t => `<th>${esc(t)}</th>`).join('')}</tr>${mix}</table>
 <h2>Who the Handover casts</h2><table>${handover.map(h => `<tr><td>${esc(h.role)}</td><td class="${h.ok ? 'ok' : 'no'}">${h.ok ? who(by.get(h.pinned!), by) : 'NOT CAST'}</td><td>${esc(h.why)}</td></tr>`).join('')}</table>
 <h2>Five people and their day</h2>${sample.map(card).join('')}
 <h2>Knowledge at the start</h2><p>The cell is known by ${esc((people.knowledge?.identity ?? []).join('/'))} only; nobody knows anything else about it. Keepers know the needs of:</p><ul>${(people.knowledge?.needsKnown ?? []).map(k => `<li>${who(by.get(k.keeper), by)}: ${k.knows.length} people</li>`).join('')}</ul></html>

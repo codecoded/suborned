@@ -1,5 +1,6 @@
 // A valid cast for a scope, made by code: what a preview answers for Pulse (no model call), and the fixture the tests expand.
-// It is not a good cast (the weights are flat); it is a cast the checker accepts, so a run end to end can be tried offline.
+// It is not a good cast (the weights are flat); it is a cast the checker accepts, so a run end to end can be tried offline. `bun run people` no longer uses it: with no --cast
+// it expands the promoted cast (contracts/people/<plan id>.cast.json, tools/people/promoted.ts). It stays a test and preview fixture only.
 import type { Cast, Row } from '../../contracts/people/cast.schema';
 import type { Rules } from './rules';
 import { positionsOf } from './rules';

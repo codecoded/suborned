@@ -13,6 +13,7 @@ import { adoptedBy, landmarkKit } from './gen/kitrefs';
 import { horizonOf } from './gen/horizon';
 import { WATER_LEVEL } from './gen/signatures';
 import { dressCivic, dressingOf, footOf } from './civic/dress';
+import { seededYaw } from './civic/cafe';
 import { look } from './civic/look';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
@@ -84,7 +85,9 @@ function levelsOf(plan: Plan, decks: DeckRec[]): Level[] {
   }));
 }
 
-function civicMasses(civ: Civic, toPlan: (p: V) => V): Mass[] {
+/** The civic block as export masses: buildings, structures and objects, with their kit pieces (grammar §11) and the block's dressing. The export's `civic`, and what
+ *  the people tools read the café sets from (tools/people/seats.ts), so a seat stands where the world draws a chair. */
+export function civicMasses(civ: Civic, toPlan: (p: V) => V): Mass[] {
   const base = (z: number) => r3(PROV.pavement + z);
   const out: Mass[] = [];
   for (const b of civ.buildings) {
@@ -136,7 +139,7 @@ export function civicKit(m: Mass, fountain?: V, dress?: Pick<typeof look, 'swaps
   if (dress?.scales[id]) s = dress.scales[id]!; // the block states this piece's scale (the piers under the v2 shelter)
   if (s < lo - 1e-6 || s > hi + 1e-6) return { ...m, source: 'procedural' };
   const canopy = /boarding-pavilion$/.test(m.id) && !dress?.grounded.includes(id), top = m.base + m.height; // a canopy-only piece hangs at the top of its mass
-  const yaw = turn ? Math.PI / 2 : 0, seeded = /cafe-(table|palm)/.test(m.id) ? r3(((hashY(m.id) % 628) / 100)) : yaw;
+  const yaw = turn ? Math.PI / 2 : 0, seeded = /cafe-(table|palm)/.test(m.id) ? seededYaw(m.id) : yaw;
   const base = canopy ? top - a.size[1] * s : mode === 'plinth' ? Math.max(m.base, top - a.size[1] * s) : m.base;
   return { ...m, source: 'kit', kit: { id, scale: [s, s, s], yaw: seeded, at: rv(c), base: r3(base) } };
 }
@@ -198,7 +201,6 @@ function overlap(a: V[], b: V[]): boolean {
   }
   return inside(a[0]!, b) || inside(b[0]!, a);
 }
-const hashY = (s: string) => [...s].reduce((h, ch) => (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0, 7);
 
 function landmarks(plan: Plan): Landmark[] {
   return plan.landmarks.map((l): Landmark => {
