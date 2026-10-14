@@ -12,7 +12,7 @@ const ts = (base: string, dir: string): string[] =>
 
 /** The files of the hash, under `base` (the repo root; a test points it at a copy). */
 export const transitFiles = (base: string = root): string[] => [
-  ...ts(base, 'tools/plan'), 'tools/levels/apply.ts', 'tools/levels/checker.ts', 'tools/kit/fit.ts', 'tools/missions/handover/overlay.ts', 'tools/rag/config.ts',
+  ...ts(base, 'tools/plan'), 'tools/levels/apply.ts', 'tools/levels/checker.ts', 'tools/kit/fit.ts', 'tools/missions/handover/overlay.ts', 'tools/missions/handover/cast.ts', 'tools/rag/config.ts',
   ...ts(base, 'tools/world'),
 ];
 

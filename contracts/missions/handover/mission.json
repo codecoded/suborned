@@ -1,7 +1,7 @@
 {
- "schema": "suborned.mission/2",
+ "schema": "suborned.mission/3",
  "id": "handover",
- "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
  "status": {
   "state": "preserved",
   "adjustable": ["timings", "placements"],
@@ -100,6 +100,48 @@
    "where": "Records Office north",
    "src": "GDD §07",
    "note": "Removed life.traffic.rules[3]: 'Vale official car per GDD §07 stands at the Records Office north'. §07 names the official car, 'Vale exits north' and 'Vale at car' (6:10); it gives no stand and no arrival time. As sited, the official bay (destination Official drop-off) is on the Records Office's south kerb, Apron Road: see timeline 5:50."
+  }
+ ],
+ "roles": [
+  {
+   "id": "waitress",
+   "what": "Inez: a café server on the 17:00 shift, at the café door",
+   "employer": "cafe",
+   "position": "server",
+   "at": "Café door",
+   "near": 4,
+   "shift": { "from": "0:00", "to": "8:00" },
+   "src": "GDD §07 cast: Inez (café waitress, in debt); brief 010 D",
+   "note": "Cast from the café's servers whose shift covers the whole mission and who stand at the café entrance at 0:00. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+  },
+  {
+   "id": "driver",
+   "what": "the councillor's official driver at the official bay",
+   "employer": "records-office",
+   "role": "official-driver",
+   "at": "Meet driver",
+   "shift": { "from": "0:00", "to": "8:00" },
+   "src": "GDD §07 cast: the driver (pickup); brief 010 D",
+   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`."
+  },
+  {
+   "id": "guard",
+   "what": "a Records Office guard at the public door",
+   "employer": "records-office",
+   "role": "guard",
+   "at": "Office entrance",
+   "near": 4,
+   "shift": { "from": "0:00", "to": "8:00" },
+   "src": "GDD §07 front door; §05 guard on door routine; brief 010 D"
+  },
+  {
+   "id": "councillor",
+   "what": "Councillor Vale: a councillor of the Records Office on shift",
+   "employer": "records-office",
+   "role": "councillor",
+   "shift": { "from": "0:00", "to": "8:00" },
+   "src": "GDD §07 cast: Councillor Vale; brief 010 D",
+   "note": "No mission point: Vale is inside until 5:50 (timeline). Vale is a pinned name part (people.rules.json names.pinned)."
   }
  ],
  "destinations": [

@@ -17,7 +17,7 @@ export const VERDICT_FILES = [
   'tools/world/gen/common.ts', 'tools/gen/sha.ts', 'tools/levels/pins.ts', 'tools/levels/rerun.ts',
   'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
   'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
-  'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts',
+  'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts', 'tools/missions/handover/cast.ts',
 ];
 export const peopleFiles = (base: string = root): string[] => [
   ...ts(base, 'tools/people'), ...ts(base, 'tools/plan'), ...ts(base, 'contracts/people'), ...VERDICT_FILES,
