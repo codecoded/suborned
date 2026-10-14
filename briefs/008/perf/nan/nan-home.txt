@@ -1,0 +1,26 @@
+stop home focus (-159.00, 0.00, -232.50) standOff 77.80939; Apple M4
+baseline (post off): NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom)
+stopNaN on (post off): NaN 27390 Inf 0
+visible renderers 152
+culprit HarbourDistrict/civic/civic/cafe/ground/DK_CafeBay drop 27321 mesh DK_CafeBay v4437 lod yes static False
+  submesh 0: DK_Enamel_Seafoam | DecoKit/Complex Lit Cutaway | q2000 | _CLEARCOAT
+  submesh 1: DK_Limestone | DecoKit/Lit Cutaway | q2000 | 
+  submesh 2: DK_GlassDark | DecoKit/Lit Cutaway | q3000 | _ALPHAPREMULTIPLY_ON _SURFACE_TYPE_TRANSPARENT
+  submesh 3: DK_Enamel_Charcoal | DecoKit/Complex Lit Cutaway | q2000 | _CLEARCOAT
+  submesh 4: DK_Brass_Civic | DecoKit/Lit Cutaway | q2000 | 
+  submesh 5: DK_Chrome | DecoKit/Lit Cutaway | q2000 | 
+  submesh 6: DK_Enamel_Ivory | DecoKit/Complex Lit Cutaway | q2000 | _CLEARCOAT
+  submesh 7: DK_Lamp_Deco | DecoKit/Lit Cutaway | q2000 | _EMISSION
+  submesh 8: DK_Enamel_Teal | DecoKit/Complex Lit Cutaway | q2000 | _CLEARCOAT
+  submesh 0 swapped -> NaN 27390 Inf 0
+  submesh 1 swapped -> NaN 30766 Inf 0
+  submesh 2 swapped -> NaN 28707 Inf 0
+  submesh 3 swapped -> NaN 302 Inf 0
+  submesh 4 swapped -> NaN 27390 Inf 0
+  submesh 5 swapped -> NaN 27507 Inf 0
+  submesh 6 swapped -> NaN 27157 Inf 0
+  submesh 7 swapped -> NaN 27390 Inf 0
+  submesh 8 swapped -> NaN 27390 Inf 0
+culprit batches/civic/DK_Bakelite@-3,-4 drop 27088 mesh civic/DK_Bakelite@-3,-4 v2434 lod no static False
+  submesh 0: DK_Bakelite | DecoKit/Complex Lit Cutaway | q2000 | _CLEARCOAT
+explained 54409 of 27390

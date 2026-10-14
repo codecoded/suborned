@@ -4,38 +4,45 @@ using UnityEngine;
 
 namespace Suborned.Perf
 {
-    /// <summary>Per-frame samples for one stop, into buffers allocated once (nothing is allocated while recording, so the GC counter
-    /// reads the world, not the harness). Frame timings come from FrameTimingManager (always on in a development player; the GPU
-    /// time lags the frame by a few frames, so a timing already seen is not counted twice), render and memory counters from
-    /// ProfilerRecorder (the previous frame's value). On Metal the GPU time is the span of the frame's command buffers, which overlap
-    /// on a tile GPU, so it can exceed the wall frame time (frameMs): read it as an upper bound; frameMs is what the player shows.</summary>
+    /// <summary>Per-frame rows for one recording, into buffers allocated once (nothing is allocated while recording, so the GC counter
+    /// reads the world, not the harness). Two tables (Redline M4): frame rows, one per Update (wall frame time, the render counters of
+    /// the previous profiler frame), and timing rows, one per frame FrameTimingManager reports (CPU, render thread, GPU and present
+    /// wait for that frame, keyed by its frameStartTimestamp; they arrive a few frames late, so every new one is taken, none twice).
+    /// The first `Skip` rows of each table are the harness's own frame and are dropped (M7). On Metal the GPU time is the span of
+    /// the frame's command buffers, which overlap on a tile GPU, so it can exceed the wall frame time: an upper bound; frameMs is
+    /// what the player shows: the wall-clock interval between Updates, not Time.unscaledDeltaTime, which under vSync reports the
+    /// refresh interval (16.667 ms) even when frames take 17-50 ms (seen in an occluded window).</summary>
     public sealed class PerfRecorder : IDisposable
     {
-        public static readonly string[] Names =
-        {
-            "frameMs", "cpuFrameMs", "cpuMainMs", "cpuRenderMs", "gpuMs", "presentWaitMs",
-            "drawCalls", "setPassCalls", "batches", "triangles", "vertices", "gcAllocBytes",
-        };
-        const int Timed = 6; // Names[1..5] come from FrameTimingManager; Names[Timed..] from the counters
+        public const int Skip = 3;
+        public static readonly string[] FrameNames = { "tMs", "frameMs", "setPassCalls", "triangles", "vertices", "shadowCasters", "gcAllocBytes" };
+        public static readonly string[] TimingNames = { "startMs", "cpuFrameMs", "cpuMainMs", "cpuRenderMs", "gpuMs", "presentWaitMs" };
         static readonly (ProfilerCategory cat, string name)[] Counters =
         {
-            (ProfilerCategory.Render, "Draw Calls Count"), (ProfilerCategory.Render, "SetPass Calls Count"),
-            (ProfilerCategory.Render, "Batches Count"), (ProfilerCategory.Render, "Triangles Count"),
-            (ProfilerCategory.Render, "Vertices Count"), (ProfilerCategory.Memory, "GC Allocated In Frame"),
+            (ProfilerCategory.Render, "SetPass Calls Count"), (ProfilerCategory.Render, "Triangles Count"),
+            (ProfilerCategory.Render, "Vertices Count"), (ProfilerCategory.Render, "Shadow Casters Count"),
+            (ProfilerCategory.Memory, "GC Allocated In Frame"),
         };
 
         readonly ProfilerRecorder[] recorders = new ProfilerRecorder[Counters.Length];
-        readonly double[][] data;
-        readonly FrameTiming[] timing = new FrameTiming[1];
-        ulong lastFrame;
+        readonly double[][] frames, timings;
+        readonly FrameTiming[] latest = new FrameTiming[8];
+        readonly double tickMs = 1000.0 / FrameTimingManager.GetCpuTimerFrequency();
+        ulong lastStart, firstStart;
+        double begun, last;
+        int seen, timed;
 
-        public int Count { get; private set; }
-        public double[] Column(int i) => data[i];
+        public int Frames { get; private set; }
+        public int Timings { get; private set; }
+        public double[] Frame(int column) => frames[column];
+        public double[] Timing(int column) => timings[column];
 
         public PerfRecorder(int capacity)
         {
-            data = new double[Names.Length][];
-            for (int i = 0; i < data.Length; i++) data[i] = new double[capacity];
+            frames = new double[FrameNames.Length][];
+            timings = new double[TimingNames.Length][];
+            for (int i = 0; i < frames.Length; i++) frames[i] = new double[capacity];
+            for (int i = 0; i < timings.Length; i++) timings[i] = new double[capacity];
             for (int i = 0; i < Counters.Length; i++) recorders[i] = ProfilerRecorder.StartNew(Counters[i].cat, Counters[i].name);
         }
 
@@ -47,28 +54,51 @@ namespace Suborned.Perf
             return s;
         }
 
-        public void Begin() => Count = 0;
+        public void Begin()
+        {
+            Frames = Timings = seen = timed = 0; firstStart = 0;
+            begun = last = Time.realtimeSinceStartupAsDouble;
+            Tick(); // timings from before the recording are not its own
+        }
 
         /// <summary>Once per frame, from Update, while the stop records.</summary>
         public void Sample()
         {
+            double now = Time.realtimeSinceStartupAsDouble, interval = (now - last) * 1000.0;
+            last = now;
+            if (seen++ >= Skip && Frames < frames[0].Length)
+            {
+                int n = Frames++;
+                frames[0][n] = (now - begun) * 1000.0;
+                frames[1][n] = interval;
+                for (int i = 0; i < recorders.Length; i++) frames[2 + i][n] = recorders[i].Valid ? recorders[i].LastValue : double.NaN;
+            }
             FrameTimingManager.CaptureFrameTimings();
-            if (Count >= data[0].Length) return;
-            int n = Count++;
-            data[0][n] = Time.unscaledDeltaTime * 1000.0;
-            bool fresh = FrameTimingManager.GetLatestTimings(1, timing) > 0 && timing[0].frameStartTimestamp != lastFrame;
-            if (fresh) lastFrame = timing[0].frameStartTimestamp;
-            var t = timing[0];
-            data[1][n] = fresh ? t.cpuFrameTime : double.NaN;
-            data[2][n] = fresh ? t.cpuMainThreadFrameTime : double.NaN;
-            data[3][n] = fresh ? t.cpuRenderThreadFrameTime : double.NaN;
-            data[4][n] = fresh ? t.gpuFrameTime : double.NaN;
-            data[5][n] = fresh ? t.cpuMainThreadPresentWaitTime : double.NaN;
-            for (int i = 0; i < recorders.Length; i++) data[Timed + i][n] = recorders[i].Valid ? recorders[i].LastValue : double.NaN;
+            uint got = FrameTimingManager.GetLatestTimings((uint)latest.Length, latest);
+            while (true) // every new timing, oldest first (whatever order the manager returns them in)
+            {
+                int k = -1;
+                for (int j = 0; j < got; j++)
+                    if (latest[j].frameStartTimestamp > lastStart && (k < 0 || latest[j].frameStartTimestamp < latest[k].frameStartTimestamp)) k = j;
+                if (k < 0) break;
+                var t = latest[k];
+                lastStart = t.frameStartTimestamp;
+                if (timed++ < Skip || Timings >= timings[0].Length) continue;
+                if (firstStart == 0) firstStart = t.frameStartTimestamp;
+                int n = Timings++;
+                timings[0][n] = (t.frameStartTimestamp - firstStart) * tickMs;
+                timings[1][n] = t.cpuFrameTime; timings[2][n] = t.cpuMainThreadFrameTime; timings[3][n] = t.cpuRenderThreadFrameTime;
+                timings[4][n] = t.gpuFrameTime; timings[5][n] = t.cpuMainThreadPresentWaitTime;
+            }
         }
 
-        /// <summary>Keeps FrameTimingManager's history moving between recordings (settle, warm-up).</summary>
-        public static void Tick() => FrameTimingManager.CaptureFrameTimings();
+        /// <summary>Keeps FrameTimingManager's history moving between recordings (settle, warm-up), and marks what it has seen.</summary>
+        public void Tick()
+        {
+            FrameTimingManager.CaptureFrameTimings();
+            uint got = FrameTimingManager.GetLatestTimings((uint)latest.Length, latest);
+            for (int j = 0; j < got; j++) if (latest[j].frameStartTimestamp > lastStart) lastStart = latest[j].frameStartTimestamp;
+        }
 
         public void Dispose() { foreach (var r in recorders) r.Dispose(); }
     }
