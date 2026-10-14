@@ -30,7 +30,7 @@ Material:
     - _Inner: 0.15
     - _Mode: 1
     - _Radius: 0.47
-    - _Strength: 2
+    - _Strength: 6
     m_Colors:
     - _BaseColor: {r: 0.44705883, g: 0.70980394, b: 0.654902, a: 1}
   m_BuildTextureStacks: []
