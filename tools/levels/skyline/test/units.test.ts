@@ -1,8 +1,7 @@
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
-import { existsSync } from 'node:fs';
 import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join, relative, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import type { Round } from '../../../gen/plugin';
 import type { Plan } from '../../../plan/plan';
 import { imagePath, sha256 } from '../../../rag/images';
@@ -15,6 +14,7 @@ import { GRAMMAR_FILE, sectionsOf } from '../grammar';
 import { skylineFiles, skylineHash } from '../hash';
 import { skyline } from '../plugin';
 import { NO_SKYLINE } from '../schemas';
+import { reached } from '../../test/imports';
 import { KIT, datum, loadPlan, signature, site, stations, vantage } from './edits';
 
 setDefaultTimeout(120000);
@@ -85,22 +85,8 @@ describe('skyline grammar and code hash', () => {
   });
 
   test('every file the verdict code imports, however far, is in the hash', async () => {
-    const hashed = new Set(skylineFiles()), seen = new Set<string>();
-    const todo = ['candidate', 'known', 'concepts'].map(f => `tools/levels/skyline/${f}.ts`);
-    // value imports only: `import type` is erased at run time, so it is no code a verdict rests on
-    const rel = `['"](\\.{1,2}\\/[^'"]+)['"]`;
-    const edges = new RegExp(`^(?:import|export)\\s(?!type\\s)[^;]*?from\\s*${rel}|import\\(\\s*${rel}`, 'gms');
-    while (todo.length) {
-      const file = todo.pop()!;
-      if (seen.has(file)) continue;
-      seen.add(file);
-      const text = await Bun.file(resolve(root, file)).text();
-      for (const m of text.matchAll(edges)) {
-        const base = resolve(root, dirname(file), m[1] ?? m[2]!);
-        const next = [`${base}.ts`, `${base}/index.ts`, base].find(f => f.endsWith('.ts') && existsSync(f));
-        if (next) todo.push(relative(root, next));
-      }
-    }
+    const hashed = new Set(skylineFiles());
+    const seen = await reached(['candidate', 'known', 'concepts'].map(f => `tools/levels/skyline/${f}.ts`));
     const covered = (f: string) => hashed.has(f) || f.startsWith('tools/plan/') || f.startsWith('tools/world/');
     const missing = [...seen].filter(f => !covered(f));
     expect(missing).toEqual([]);
@@ -111,7 +97,7 @@ describe('skyline grammar and code hash', () => {
 describe('skyline checks', () => {
   test('a candidate the generator cannot build is a failed rule with the reason, owned by Datum', async () => {
     const broken = { ...plan, plots: null } as unknown as Plan;
-    const c = await checkCandidate(broken, block, KIT);
+    const c = await checkCandidate(broken, block, { kit: KIT });
     expect(c.ok).toBe(false); expect(c.checks.map(x => x.id)).toEqual([BUILD_RULE]); expect(c.error).toBeTruthy();
     expect(ownersOf(BUILD_RULE)).toEqual(['Datum']);
     expect(reportText(c, ['x'])).toContain('could not be built');
@@ -124,7 +110,7 @@ describe('skyline checks', () => {
   });
 
   test('the critic reads failed rules and the skyline groups in full, other passes by id', async () => {
-    const c = await checkCandidate(plan, block, KIT), text = reportText(c, []);
+    const c = await checkCandidate(plan, block, { kit: KIT }), text = reportText(c, []);
     expect(c.ok).toBe(true);
     expect(text).toContain('PASS SK-1 '); expect(text).toContain('PASS P-1 ');
     expect(text).toMatch(/PASS \d+ more rules: .*\bB-1\b/);
@@ -165,7 +151,7 @@ describe('a station label (SK-3, brief 007 F)', () => {
   const check = async (stops: ReturnType<typeof stations>) => {
     const a = applySkyline(plan, { datum: datum({}), vantage: vantage({ stops }) }, '0.3.0-test.1', known);
     expect(a.problems).toEqual([]);
-    return checkCandidate(a.plan, block, KIT);
+    return checkCandidate(a.plan, block, { kit: KIT });
   };
 
   test('Gardens labelled "inside SpaceHQ" fails SK-3, and nothing else', async () => {
@@ -179,7 +165,7 @@ describe('a station label (SK-3, brief 007 F)', () => {
   test('Harbour labelled "inside the Skyport tower" fails SK-3; the plan\'s own labels pass', async () => {
     const c = await check(labelled('harbour', 'megastructures/skyport-tower'));
     expect(c.checks.find(x => x.id === 'SK-3')!.detail).toContain('S1/harbour at 340, 0 is labelled in megastructures/skyport-tower');
-    const own = (await checkCandidate(plan, block, KIT)).checks.find(x => x.id === 'SK-3')!;
+    const own = (await checkCandidate(plan, block, { kit: KIT })).checks.find(x => x.id === 'SK-3')!;
     expect([own.ok, own.value]).toEqual([true, '2/2']);
   });
 

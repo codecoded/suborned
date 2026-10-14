@@ -3,6 +3,7 @@
 import type { Check } from '../../plan/checks';
 import { type Plan, type Stop, portalsOf } from '../../plan/plan';
 import { rule } from '../../plan/world-ctx';
+import type { Pinned } from '../../plan/world-rules';
 import { inProcess, ownerOf } from '../checker';
 import type { Owner } from './apply';
 
@@ -54,9 +55,9 @@ export function stationPortalCheck(plan: Plan): Check {
  * Runs every rule on the candidate. A candidate the generator cannot build (a site the world cannot make) is not a
  * crash of the run: it is a failed rule with the reason, back to its owner.
  */
-export async function checkCandidate(plan: Plan, block: unknown, kit?: string): Promise<Checked> {
+export async function checkCandidate(plan: Plan, block: unknown, pin: Pinned = {}): Promise<Checked> {
   try {
-    const R = await inProcess(plan, true, block, { world: true, kit });
+    const R = await inProcess(plan, true, block, { world: true, ...pin });
     R.checks.push(stationPortalCheck(plan));
     return { ok: R.checks.every(c => c.ok), strict: true, checks: R.checks, stations: R.stations };
   } catch (e) {

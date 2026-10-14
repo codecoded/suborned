@@ -11,6 +11,7 @@ import type { Checked } from './check';
 import { checkConcepts, type ConceptIndex } from './concepts';
 import { checkGrammar } from './grammar';
 import { knownFor, pinnedKit } from './known';
+import { pinnedWorld } from '../pinned';
 import { checkMission, type Mission } from './mission';
 import { agents, type Agent } from './schemas';
 
@@ -80,7 +81,7 @@ async function candidate(c: Check, r: Skyline, version: string, p: Pins): Promis
     warn(`${n}: checker rerun skipped (no valid pinned block or mission)`);
     return undefined;
   }
-  const now = await checkAll(plan, p.block, mission, pinnedKit(c.dir));
+  const now = await checkAll(plan, p.block, mission, pinnedWorld(c.dir));
   if (now.error !== rec.error) {
     const was = 'builds now, it did not when recorded';
     const what = now.error ? `cannot be built now (${now.error.slice(0, 100)})` : was;

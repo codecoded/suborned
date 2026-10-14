@@ -118,7 +118,7 @@ describe('levels skyline, stubbed', () => {
       expect(shown.map(i => i.sha256)).toEqual(index.sheets.map(s => s.sha256));
     }
     const pinned = [
-      'input.concepts.json', 'input.grammar.md', 'input.kit.digest.json', 'input.plan.raw.json', 'input.block.json',
+      'input.civic-look.json', 'input.concepts.json', 'input.grammar.md', 'input.kit.digest.json', 'input.plan.raw.json', 'input.block.json',
     ];
     for (const f of pinned) expect(await exists('r001', f), f).toBe(true);
     expect(await Bun.file(where('r001', 'input.concepts.json')).text()).toBe(await Bun.file(conceptsFile).text());

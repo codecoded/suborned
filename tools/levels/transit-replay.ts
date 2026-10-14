@@ -1,10 +1,10 @@
 // Replay hooks of the transit objective: what the engine's replay (tools/gen/replay.ts) cannot know. Rebuilds the
 // candidate plan from the recorded proposals, reruns the plan checker on it, and recomputes what a seed changed.
 import type { Check, Pins, Rerun, Replay } from '../gen/plugin';
-import { pinnedKit } from '../gen/pin-kit';
 import { apply } from './apply';
 import { checkBlock, checkInputPlan, checkRawPlan } from './pins';
 import { inProcess } from './checker';
+import { pinnedWorld } from './pinned';
 import { compareChecks } from './rerun';
 import { schemaFor, type Agent } from './schemas';
 import { fareClaimText, isFareSeed, seedFareClaim } from './seed';
@@ -95,8 +95,8 @@ async function candidate(c: Check, r: any, version: string, p: Pins): Promise<Re
     }
   }
   if (!block) return undefined;
-  // the rules the run recorded: the world rules too, on the kit it pinned, where its plan carries the world standards (the A04 plans do not, and rerun as before)
-  const R = await inProcess(plan, rec.strict !== false, block, { world: true, kit: pinnedKit(c.dir) });
+  // the rules the run recorded: the world rules too, on the kit and civic look it pinned, where its plan carries the world standards (the A04 plans do not, and rerun as before)
+  const R = await inProcess(plan, rec.strict !== false, block, { world: true, ...pinnedWorld(c.dir) });
   const faults = recomputed === undefined ? {} : { assessFaults: recomputed };
   return { ...compareChecks(c, n, r, R.checks, rec), ...faults };
 }

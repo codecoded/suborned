@@ -6,9 +6,9 @@ import { writeJson } from '../rag/config';
 import { apply, seedStationOnPlot } from './apply';
 import { inProcess, ownersOf, viaCli } from './checker';
 import { geometry, plots, transit as lines } from './digest';
-import { pinnedKit } from '../gen/pin-kit';
-import { driftLedger } from './drift';
+import { driftLedger, recordTransit } from './drift';
 import { objectives } from './objectives';
+import { pinnedWorld } from './pinned';
 import { pinPlan, readPlan } from './pins';
 import { transitReplay } from './transit-replay';
 import { agents, type Timetable } from './schemas';
@@ -31,7 +31,7 @@ export const transit: Plugin<State> = {
   builders: BUILD.map(key => ({ key, owner: objectives[key].owner, objective: objectives[key], schema: agents[key] })),
   critic: { key: 'keel', owner: 'Keel', objective: objectives.keel, schema: agents.keel },
   header: { timetable: 'derived' },
-  code: { label: 'tools/plan, tools/levels/apply.ts', hash: toolsHash, ledger: driftLedger, ledgerFile: 'tools/levels/drift.json', declare: 'bun tools/levels/drift.ts declare' },
+  code: { label: 'tools/plan, tools/world, tools/levels (apply, checker), tools/kit/fit.ts', hash: toolsHash, ledger: driftLedger, ledgerFile: 'tools/levels/drift.json', declare: 'bun tools/levels/drift.ts declare', moves: true, record: recordTransit },
   async open(path) {
     const plan = await readPlan(path);
     return { id: plan.id, version: plan.version, async pin(rdir) {
@@ -52,7 +52,7 @@ export const transit: Plugin<State> = {
     let exit = -1, report: Report = { ok: false, checks: [], stops: [], stations: [] };
     if (!skipped.includes('checker')) {
       await writeJson(planFile, plan);
-      exit = await viaCli(planFile, `${odir}/sheets/${s.planId}-v${version}.html`, checksFile, `${od}/checker.txt`, s.blockFile, pinnedKit(s.rdir)); // the world rules run on the kit the run pinned (loop.ts pins it right after pin())
+      exit = await viaCli(planFile, `${odir}/sheets/${s.planId}-v${version}.html`, checksFile, `${od}/checker.txt`, s.blockFile, pinnedWorld(s.rdir)); // the world rules run on the kit and the civic look the run pinned (loop.ts pins them right after pin())
       report = await Bun.file(checksFile).json();
     }
     const checkerOk = !skipped.length && exit === 0 && report.ok && !problems.length, failed = report.checks.filter(c => !c.ok);

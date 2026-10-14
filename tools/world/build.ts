@@ -144,16 +144,17 @@ export function civicKit(m: Mass, fountain?: V, dress?: Pick<typeof look, 'swaps
 /** A kit piece's footprint at its scale (turned by its yaw, about its footprint centre): kit x -> plan along yaw, kit z -> plan across (front = yaw + 90°);
  *  the footprint centre sits at the pivot + pivotOffset. */
 const kitFoot = (m: Mass): V[] => footOf(adoptedBy(m.kit!.id)!, m.kit!);
-const PERSON = new Set(CIVIC_KIT.filter(r => r[2] === 'person').flatMap(r => [r[1], look.swaps[r[1]] ?? r[1]]));
+/** The person-scale pieces, with the swap the look names for each. Read from `look` at the call: a run's pinned look (withLook) swaps it. */
+export const personPieces = () => new Set(CIVIC_KIT.filter(r => r[2] === 'person').flatMap(r => [r[1], look.swaps[r[1]] ?? r[1]]));
 /** Person-scale pieces whose footprint reaches a building wall (the café palms' fronds, brief 007 round 3): the piece and its mass slide straight out from the
  *  nearest wall edge in `step` m steps until the footprint is `clear` m off the wall, at most `max` m; the move is kept only if the footprint then overlaps no other
  *  civic mass or person-scale piece (civicClearance), so it stays in the terrace between the wall and the table row. Deterministic: same block, same result. */
 export const NUDGE = { step: 0.05, clear: 0.1, max: 0.6 };
 function clearWalls(civic: Mass[], walls: Set<string>): Mass[] {
-  const bld = civic.filter(m => walls.has(m.id)), out = civic.slice();
+  const bld = civic.filter(m => walls.has(m.id)), out = civic.slice(), person = personPieces();
   const near = (f: V[], r: V[]) => overlap(f, r) || f.some(p => r.some((q, i) => segDist(p, q, r[(i + 1) % r.length]!) < NUDGE.clear)) || r.some(p => f.some((q, i) => segDist(p, q, f[(i + 1) % f.length]!) < NUDGE.clear));
   out.forEach((m, k) => {
-    if (!m.kit || !PERSON.has(m.kit.id)) return;
+    if (!m.kit || !person.has(m.kit.id)) return;
     const w = bld.find(b => b.base <= m.base + 1.2 && near(kitFoot(m), b.ring)); if (!w) return;
     let bi = 0, bd = Infinity; w.ring.forEach((q, i) => { const d = segDist(m.kit!.at, q, w.ring[(i + 1) % w.ring.length]!); if (d < bd) { bd = d; bi = i; } });
     const e0 = w.ring[bi]!, e1 = w.ring[(bi + 1) % w.ring.length]!, t = norm(sub(e1, e0)), mid: V = [(e0[0] + e1[0]) / 2, (e0[1] + e1[1]) / 2];
@@ -172,7 +173,7 @@ function clearWalls(civic: Mass[], walls: Set<string>): Mass[] {
 
 /** Person-scale civic pieces whose footprint at scale 1 (turned by its yaw, about its footprint centre) overlaps another civic mass or person-scale piece. */
 export function civicClearance(civic: Mass[]): string[] {
-  const person = PERSON, out: string[] = [], foot = kitFoot;
+  const person = personPieces(), out: string[] = [], foot = kitFoot;
   const pieces = civic.filter(m => m.kit && person.has(m.kit.id));
   for (const m of pieces) {
     const f = foot(m);

@@ -16,6 +16,7 @@ import { currentGdd } from './gdd';
 import { gitState } from './gitstate';
 import { candidateVersion, nextRun, outRoot, pad, runsRoot } from './paths';
 import { pinKit } from './pin-kit';
+import { pinLook } from './pin-look';
 import type { Fault, Member, Opts, Plugin, Round, Verdict } from './plugin';
 import { PASS, previewInvoke } from './preview';
 import { criticRuns, LOOP, silentFaults } from './rules';
@@ -38,7 +39,7 @@ export async function generate<S>(p: Plugin<S>, o: Opts) {
   const max = Number.isFinite(o.rounds) ? Math.min(3, Math.max(1, Math.trunc(o.rounds!))) : 3;
   await mkdir(rdir, { recursive: true }); await mkdir(odir, { recursive: true });
   const { state: s, record } = await subject.pin(rdir);
-  const kit = await pinKit(rdir);
+  const kit = await pinKit(rdir), look = await pinLook(rdir);
   const continues = parent && await pinInherited(parent.inherited, parent.parentRun, rdir, record);
   const { builders, critic } = p, crew = crewOf(builders), owners = new Set(builders.map(b => b.owner));
   let corpusHash = '', keys = new Set<string>();
@@ -58,7 +59,7 @@ export async function generate<S>(p: Plugin<S>, o: Opts) {
   };
   const summary = (outcome: string, extra: object = {}) => ({
     run: runId, plan: id, date: new Date().toISOString(), objective: p.id, ...p.header, handoffMode: 'answered', loop,
-    outcome, seeded: o.seed ?? false, ...record, ...kit, ...(continues ? { continues } : {}), gdd,
+    outcome, seeded: o.seed ?? false, ...record, ...kit, ...look, ...(continues ? { continues } : {}), gdd,
     commit: git.commit, dirty: git.dirty, live: o.live ?? false, maxUsd,
     ...(o.approvedBy ? { approvedBy: o.approvedBy } : {}),
     toolsHash: code, corpusHash, chunker: CHUNKER, embeddingModel: 'BAAI/bge-small-en-v1.5',

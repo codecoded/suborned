@@ -18,6 +18,7 @@ import { recordSkyline, skylineLedger, skylineLedgerFile } from './drift';
 import { pinGrammar, sectionsOf } from './grammar';
 import { skylineHash } from './hash';
 import { knownFor, pinnedKit } from './known';
+import { pinnedWorld } from '../pinned';
 import { baselineFailures, brokenBy, failedMission, missionChecks, pinMission, type Mission } from './mission';
 import { objectives } from './objectives';
 import { skylineReplay } from './replay';
@@ -123,7 +124,7 @@ export const skyline: Plugin<State> = {
   async assess(s, r) {
     const outs = { datum: r.outs.datum, vantage: r.outs.vantage };
     const { plan, problems } = await candidatePlan(s.input, outs, r.version, await knownOf(s), s.block);
-    const checked = await checkAll(plan, s.block, s.mission, pinnedKit(s.rdir));
+    const checked = await checkAll(plan, s.block, s.mission, pinnedWorld(s.rdir));
     const text = problems.map(x => x.text), failed = [...new Set(checked.checks.filter(c => !c.ok).map(c => c.id))];
     const broke = await handoverOwners(s, r, failedMission(checked.checks));
     await writeJson(`${r.rd}/plan.json`, plan);

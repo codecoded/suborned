@@ -45,3 +45,16 @@ export type Look = {
 
 export const LOOK_FILE = resolve(import.meta.dir, '../../../contracts/world/civic-look.json');
 export const look: Look = JSON.parse(readFileSync(LOOK_FILE, 'utf8'));
+
+const swap = (to: Look) => { for (const k of Object.keys(look)) delete (look as Record<string, unknown>)[k]; Object.assign(look, to); };
+/**
+ * Runs `fn` (synchronous, like withKit) with `file` as the civic look: the copy of civic-look.json a run pinned. The modules read `look` as one
+ * shared object, so its contents are swapped in place and put back when `fn` ends. A run is replayed against the look it ran with, not whatever
+ * Vela has changed since. No file: the look on disk.
+ */
+export function withLook<T>(file: string | undefined, fn: () => T): T {
+  if (!file) return fn();
+  const saved = { ...look } as Look;
+  swap(JSON.parse(readFileSync(file, 'utf8')) as Look);
+  try { return fn(); } finally { swap(saved); }
+}

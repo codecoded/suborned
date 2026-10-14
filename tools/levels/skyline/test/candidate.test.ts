@@ -74,7 +74,7 @@ describe('the Handover mission is part of the verdict (M4)', () => {
 
   test('checkAll lists the Handover rules in the report and fails a candidate that breaks one', async () => {
     const { off } = await lost();
-    const good = await checkAll(plan, block, mission, KIT), bad = await checkAll(plan, block, off, KIT);
+    const good = await checkAll(plan, block, mission, { kit: KIT }), bad = await checkAll(plan, block, off, { kit: KIT });
     const handover = (c: typeof good) => c.checks.filter(x => x.group === 'Handover');
     expect(handover(good).length).toBeGreaterThan(0); expect(handover(good).every(x => x.ok)).toBe(true);
     expect(good.ok).toBe(!good.checks.some(x => !x.ok));

@@ -71,6 +71,12 @@
     "cause": "brief 007 F review M1 + Datum's height cut: world rule K-2 added (a regenerated tower's built tip within 0.5 m of its order's regen.tip); the plan checker CLI takes --kit and a transit candidate now runs the world rules on the kit digest the run pinned, which transit-replay reruns the same way; world-rules.ts worldChecksUnder. Every one of these acts only on a plan that carries the world standards (buildings, levels, frontage, streetscape), which no recorded transit plan does, so no recorded rule result changes",
     "rules": []
    }
+  ],
+  "e0358558e6a15ed41b3e4bc5edf1bf6ab76a1fb1756c647808912da461734637": [
+   {
+    "cause": "Splice, rulings of 2026-10-14: transit's code hash now covers tools/world, tools/kit/fit.ts, the checker plumbing and the Handover overlay, and the transit code moves like skyline's (labelled drift for a matching rerun, a declared cause for a changed result; each run records its code state); runs pin contracts/world/civic-look.json (input.civic-look.json, inputLook.sha256) and the world rules read the pinned copy (plan checker --look, withLook); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; with 8df5287 (SF-17 accepts the crossing surface). A recorded transit plan carries no world standards, so every recorded rule result is unchanged",
+    "rules": []
+   }
   ]
  }
 }

@@ -6,7 +6,9 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, join, resolve } from 'node:path';
 import type { StreetItem, World } from '../../contracts/world/world.schema';
 import { worldOf } from '../world/build';
+import { look } from '../world/civic/look';
 import type { Generated } from '../world/gen';
+import { adopted } from '../world/gen/kitrefs';
 import type { Check } from './checks';
 import type { Civic } from './civic';
 import { type V, lineDist, nearLine } from './geom';
@@ -17,14 +19,24 @@ const root = resolve(import.meta.dir, '../..');
 export type WCtx = { plan: Plan; d: Derived; civ: Civic; w: World; gen: Generated; S: any; B: any; L: any; F: any };
 
 const walk = (dir: string): string[] => readdirSync(dir).flatMap(f => { const p = join(dir, f); return statSync(p).isDirectory() ? walk(p) : /\.ts$/.test(f) && !/\.test\.ts$/.test(f) ? [p] : []; });
-/** Hash of everything the generated world is a function of: the plan, the civic block, the generator and the plan geometry it imports. */
+/**
+ * The generator's source, hashed once as this process loaded it (here, after the modules above are evaluated): the code in memory is what generates, so an edit made
+ * since is not what a world made now was made with.
+ */
+const SOURCE = (() => {
+  const h = createHash('sha1'), src = [...walk(resolve(root, 'tools/world')), ...['geom', 'plan', 'civic', 'transit', 'block', 'graph', 'street-zones'].map(n => resolve(root, `tools/plan/${n}.ts`))].sort();
+  for (const f of src) { h.update(f); h.update(readFileSync(f)); }
+  return h.digest('hex');
+})();
+/**
+ * Hash of everything the generated world is a function of, as this process has it: the plan, the civic block, the adopted kit catalogue and the civic look as the
+ * generator loaded them, and the generator and the plan geometry it imports as loaded. Never the bytes on disk now: a process that loaded the look before an edit
+ * generates from the old values, and a key made from the new file would file that world under the new inputs (out/cache, 2026-10-14). `adopted()` and `look` are
+ * what the generator reads, so they follow `withKit` and `withLook` too.
+ */
 export function worldKey(plan: Plan, civ: Civic): string {
   const h = createHash('sha1');
-  h.update(JSON.stringify(plan)); h.update(JSON.stringify(civ)); h.update(readFileSync(resolve(root, 'contracts/world/kit.json'))); // the adopted pieces decide kit refs
-  const look = resolve(root, 'contracts/world/civic-look.json');
-  if (existsSync(look)) h.update(readFileSync(look)); // so does the civic look (swaps, bands, scales) where it exists
-  const src = [...walk(resolve(root, 'tools/world')), ...['geom', 'plan', 'civic', 'transit', 'block', 'graph', 'street-zones'].map(n => resolve(root, `tools/plan/${n}.ts`))].sort();
-  for (const f of src) { h.update(f); h.update(readFileSync(f)); }
+  h.update(JSON.stringify(plan)); h.update(JSON.stringify(civ)); h.update(JSON.stringify(adopted())); h.update(JSON.stringify(look)); h.update(SOURCE);
   return h.digest('hex').slice(0, 16);
 }
 
@@ -60,7 +72,7 @@ export const f1 = (x: number) => x.toFixed(1);
 export const TOL = 0.011; // metres: the export rounds to 1 mm
 /**
  * Metres a regenerated tower's built tip may differ from the tip its order states (K-2). The plan has no tip tolerance in its standards;
- * this is the 0.5 that SK-1 and SG-1 already allow on a tip. Orders state a tip to 0.1 m and the pieces are built to them within 0.05 m
+ * this is the 0.5 that SK-1 and SG-1 allowed on a tip before K-2, and they now read it from here. Orders state a tip to 0.1 m and the pieces are built to them within 0.05 m
  * (tools/decokit/fit.ts), but two live orders state a ceiling the piece sits under by 0.10 and 0.17 m (lantern-beacon, crescent-tower).
  * A wrong storey is 3.6 m, seven times this, so a height cut that leaves the piece behind always fails.
  */

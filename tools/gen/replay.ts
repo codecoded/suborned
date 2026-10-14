@@ -11,6 +11,7 @@ import { checkImages } from './images-replay';
 import { currentGdd, inferGdd } from './gdd';
 import { candidateVersion, runsRoot } from './paths';
 import { checkKit } from './pin-kit';
+import { checkLook } from './pin-look';
 import type { Check, Pins, Plugin } from './plugin';
 import { checkCallRecord } from './replay-call';
 import { codeLine } from './replay-code';
@@ -65,6 +66,7 @@ export async function replayRun(
   const chunker = Number(run.chunker ?? 1), loop = loopOf(run);
   // the kit digest the run pinned, so a later adoption in kit.json does not change its corpus
   pins = { ...pins, overlay: { ...pins.overlay, ...await checkKit(c, chunker) } };
+  await checkLook(c); // the civic look the world rules read, pinned like the block (a run before the pin has none)
   // only the engine that has the loop rule pins a kit: a pinned kit with no loop field is a record with a field taken out
   if (run.inputKit && run.loop === undefined) fail('run.json pins a kit digest but has no loop field');
   // a run without the field (the A04 runs) is loop 1: nothing is added to its replay

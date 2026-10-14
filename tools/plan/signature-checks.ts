@@ -5,7 +5,7 @@ import type { Check } from './checks';
 import { type V, dist } from './geom';
 import { areaOf, clipHalf } from '../world/gen/geo';
 import { adoptedBy } from '../world/gen/kitrefs';
-import { type R4, type WCtx, TOL, f1, rule } from './world-ctx';
+import { type R4, type WCtx, TIP_TOL, TOL, f1, rule } from './world-ctx';
 
 const G = 'Skyline';
 type Rect = R4;
@@ -37,7 +37,7 @@ export function signatureChecks(c: WCtx): Check[] {
         const [sx, , sz] = o.kit?.scale ?? [1, 1, 1], gw = s.ground[1] - s.ground[0], gd = s.ground[3] - s.ground[2];
         if (o.kit?.id !== variant.id) bad.push(`${s.id}: ${o.kit?.id ?? 'no piece'}, the adopted variant is ${variant.id}`);
         if (variant.size[0] * sx > gw + TOL || variant.size[2] * sz > gd + TOL) bad.push(`${s.id}: ${variant.id} ${f1(variant.size[0] * sx)} × ${f1(variant.size[2] * sz)} m outside its ground ${f1(gw)} × ${f1(gd)} m`);
-        if (s.height && Math.abs(o.tip - 0.18 - s.height) > 0.5) bad.push(`${s.id}: tip ${f1(o.tip)} vs the plan's ${s.height}`);
+        if (s.height && Math.abs(o.tip - 0.18 - s.height) > TIP_TOL) bad.push(`${s.id}: tip ${f1(o.tip)} vs the plan's ${s.height}`);
       }
     }
     out.push(rule('SG-1', G, 'A signature structure\'s ground (plan signatures[].ground) holds no plot building; the signature stands on it as the regenerated variant, inside the ground, to its tip', Math.max(sigs.length, bad.length), bad, 'all', 'brief 007 A · plan signatures[] · failing example: a plot building on the SpaceHQ drum ground x 56–136, y ±40 (the Parade\'s west plots as first built)'));
@@ -70,11 +70,11 @@ export function signatureChecks(c: WCtx): Check[] {
     const dom = tips.find(t => t.id === `signature/${sk.dominant.id}`);
     if (!dom) bad.push(`dominant ${sk.dominant.id} is not in the world`);
     else {
-      if (Math.abs(dom.tip - 0.18 - sk.dominant.tip) > 0.5) bad.push(`${sk.dominant.id} tip ${f1(dom.tip - 0.18)} vs ${sk.dominant.tip}`);
+      if (Math.abs(dom.tip - 0.18 - sk.dominant.tip) > TIP_TOL) bad.push(`${sk.dominant.id} tip ${f1(dom.tip - 0.18)} vs ${sk.dominant.tip}`);
       for (const t of tips) {
         if (t === dom) continue;
-        if (t.tip > sk.rivalMax + 0.5) bad.push(`${t.id} tip ${f1(t.tip)} over rivalMax ${sk.rivalMax}`);
-        if (t.at[0] >= quayX - sk.harbour.within && t.tip > sk.harbour.tip + 0.5) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${sk.harbour.tip}`);
+        if (t.tip > sk.rivalMax + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} over rivalMax ${sk.rivalMax}`);
+        if (t.at[0] >= quayX - sk.harbour.within && t.tip > sk.harbour.tip + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${sk.harbour.tip}`);
       }
     }
     out.push(rule('SK-1', G, `One dominant tip (${sk.dominant.id} ${sk.dominant.tip}); every other tip ≤ rivalMax ${sk.rivalMax}, and ≤ ${sk.harbour.tip} within ${sk.harbour.within} m of the quay`, tips.length, bad, 'all', 'standards.skyline · brief 007 · failing example: LinerDock as built (205.1 m) on the liner berth'));

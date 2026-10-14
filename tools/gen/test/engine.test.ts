@@ -224,6 +224,29 @@ describe('the kit digest is pinned into every run', () => {
   });
 });
 
+describe('the civic look is pinned into every run', () => {
+  const sha = (t: string) => new Bun.CryptoHasher('sha256').update(t).digest('hex');
+  test('the run folder holds the look and run.json its hash; replay checks the copy, whatever the file on disk says now', async () => {
+    const look = join(scratch, 'civic-look.json'), real = await Bun.file(join(root, 'contracts/world/civic-look.json')).text(); await Bun.write(look, real);
+    const t = await run('look-pin', { 'toy-a.1.json': { n: 1, sources: [] }, 'toy-b.1.json': { n: 2, sources: [] }, 'toy-critic.1.json': pass }, { env: { SUBORNED_LOOK: look } });
+    expect(t.runJson.inputLook).toEqual({ source: look, sha256: sha(real) });
+    expect(await Bun.file(join(t.r.rdir, 'input.civic-look.json')).text()).toBe(real);
+    await Bun.write(look, '{"Vela":"changed it since"}'); // the file on disk moves on
+    const ok = await withRuns(t.env, () => t.replay()); expect(fails(ok)).toEqual([]); expect(ok.lines.join('\n')).toContain('civic look');
+    const pin = join(t.r.rdir, 'input.civic-look.json');
+    await Bun.write(pin, real.replace('{', '{ ')); // a tampered pin
+    expect((await withRuns(t.env, () => t.replay())).lines).toContain('FAIL  input.civic-look.json does not match the recorded sha256');
+    await Bun.write(pin, real);
+    await Bun.$`rm ${pin}`;
+    expect((await withRuns(t.env, () => t.replay())).lines).toContain('FAIL  input.civic-look.json is missing');
+    await Bun.write(pin, real); // a copy with the record's field taken out
+    const f = join(t.r.rdir, 'run.json'), j = await Bun.file(f).json(); delete j.inputLook; await Bun.write(f, JSON.stringify(j));
+    expect((await withRuns(t.env, () => t.replay())).lines).toContain('FAIL  input.civic-look.json is in the run folder, but run.json has no inputLook');
+    await Bun.$`rm ${pin}`; // a run made before the pin: neither the copy nor the field
+    const old = await withRuns(t.env, () => t.replay()); expect(fails(old)).toEqual([]); expect(old.ok).toBe(true);
+  });
+});
+
 describe('a call that is shown pictures', () => {
   const imgs = join(scratch, 'images'), a = join(imgs, 'a.png'), b = join(imgs, 'b.jpg'), bytesA = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 7, 7]), bytesB = new Uint8Array([0xff, 0xd8, 1, 2, 3]);
   const withImages: Plugin<null> = { ...toy, builders: [{ ...toy.builders[0]!, objective: { ...toy.builders[0]!.objective, images: [a, b] } }, toy.builders[1]!] };

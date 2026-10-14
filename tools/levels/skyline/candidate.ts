@@ -4,6 +4,7 @@
 // candidate is.
 import type { Plan } from '../../plan/plan';
 import type { Check } from '../../plan/checks';
+import type { Pinned } from '../../plan/world-rules';
 import { applySkyline, type Applied, type Known, type Owner } from './apply';
 import { checkCandidate, type Checked } from './check';
 import { MISSION_GROUP, missionChecks, type Mission } from './mission';
@@ -29,8 +30,8 @@ export async function candidatePlan(
  * Every rule on the plan: the plan and world rules, then the Handover's. A candidate that cannot be built has no rules
  * to run.
  */
-export async function checkAll(plan: Plan, block: unknown, mission: Mission, kit?: string): Promise<Checked> {
-  const checked = await checkCandidate(plan, block, kit);
+export async function checkAll(plan: Plan, block: unknown, mission: Mission, pin: Pinned = {}): Promise<Checked> {
+  const checked = await checkCandidate(plan, block, pin);
   if (checked.error) return checked;
   let extra: Check[];
   try { extra = missionChecks(plan, block, mission); } catch (e) {

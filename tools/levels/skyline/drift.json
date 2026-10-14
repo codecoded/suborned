@@ -14,6 +14,12 @@
     "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
     "rules": []
    }
+  ],
+  "75f729cc48bb4341b2dc17edefe4cbd0e461ec7513c0ff2753b890338b41f548": [
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   }
   ]
  }
 }

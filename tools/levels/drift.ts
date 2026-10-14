@@ -66,5 +66,7 @@ export async function ledgerCli(args: string[], file: string, now: string) {
 
 const file = () => ledgerPath('tools/levels/drift.json', 'transit');
 export const driftLedger = (): Ledger => readLedger(file());
+/** At the end of a run: the code state it was made under, so a later replay knows it (the engine calls this when `code.record` is set). */
+export const recordTransit = (hash: string, label: string): void => recordState(file(), hash, label);
 
 if (import.meta.main) await ledgerCli(process.argv.slice(2), file(), await toolsHash());

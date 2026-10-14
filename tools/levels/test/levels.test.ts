@@ -27,13 +27,14 @@ const { collectHandoffs, handoffFaults, pendingFor, citeFaults, citedBlock } = c
 setDefaultTimeout(180000);
 const here = import.meta.dir, scratch = await mkdtemp(join(tmpdir(), 'levels-'));
 const runs = join(scratch, 'runs'), out = join(scratch, 'out'), state = join(scratch, 'state'), planFile = join(scratch, 'plan.json');
-await Bun.$`mkdir -p ${state}`;
+await Bun.$`mkdir -p ${state} ${join(scratch, 'ledgers')}`;
 // pinned: r008's input plan and block (the live plan moves with the world); the plan's own block path is repointed at the pinned copy
 const base = await Bun.file(resolve(root, 'tools/levels/fixtures/harbour-district.plan.json')).json();
 base.civic.block = 'tools/levels/fixtures/handover-block.json';
 base.standards.transit.reach = 300; // so the fixtures' unchanged network is a valid one; the draft's own waivers are stripped by the run
 await Bun.write(planFile, JSON.stringify(base));
-const env = { ...process.env, LEVELS_RUNS: runs, LEVELS_OUT: out, LEVELS_TEST_RETRIEVER: 'lexical', CLAUDE_BIN: join(here, 'claude-stub.ts') };
+const ledgers = join(scratch, 'ledgers'); // a stubbed run records its code state when it ends (transit's code moves): into the scratch, never the committed ledger
+const env = { ...process.env, LEVELS_RUNS: runs, LEVELS_OUT: out, LEVELS_LEDGER: ledgers, LEVELS_TEST_RETRIEVER: 'lexical', CLAUDE_BIN: join(here, 'claude-stub.ts') };
 /** Keel's verdict on a candidate, as the first stub fixture had it before loop 2: a fault on the station spacing, owner Vantage. */
 const V1_FAIL = () => ({ verdict: 'fail', summary: 'Sky rail station spacing breaks the standard.', faults: [{ owner: 'Vantage', rule: 'S-S2', fault: 'Harbour to Skyport is 190 m, under the 200 m minimum.', fix: 'Move Skyport east so the gap is at least 200 m.', chunks: ['__CHUNK__'] }], sources: ['__CHUNK__'] });
 const levelsWith = async (extra: Record<string, string>, plan: string, ...args: string[]) => {
@@ -67,6 +68,7 @@ describe('levels transit, stubbed', () => {
     expect(run.rounds.map((x: any) => [x.criticRan, x.keelVerdict, x.assessFaults])).toEqual([[false, null, 0], [true, 'pass', 0]]);
     expect(await Bun.file(join(dir, 'round-1', 'keel.json')).exists()).toBe(false); expect(await Bun.file(join(dir, 'round-2', 'keel.json')).exists()).toBe(true);
     expect(run.inputKit).toMatchObject({ source: 'contracts/world/kit.json', assets: expect.any(Number) }); expect(await Bun.file(join(dir, 'input.kit.digest.json')).exists()).toBe(true);
+    expect(run.inputLook).toMatchObject({ source: 'contracts/world/civic-look.json', sha256: expect.stringMatching(/^[0-9a-f]{64}$/) }); expect(await Bun.file(join(dir, 'input.civic-look.json')).exists()).toBe(true);
     expect(run.rounds[1].ran).toEqual(['vantage', 'pulse']); expect(run.rounds[1].reused).toEqual(['datum']);
     const sheets = await readdir(join(out, 'harbour-district', 'r001', 'sheets')); expect(sheets).toContain('harbour-district-v0.2.0-r001.2.html'); expect(sheets).toContain('harbour-district-v0.2.0-r001.1.html');
     expect(await Bun.file(join(dir, 'round-1', 'plan.json')).json()).toMatchObject({ version: '0.2.0-r001.1' });
@@ -161,7 +163,7 @@ describe('levels transit, stubbed', () => {
 });
 
 describe('levels, hardening', () => {
-  test('replay uses the recorded raw input plan: editing the plan after the run does not break it, a changed checker does', async () => {
+  test('replay uses the recorded raw input plan: editing the plan after the run does not break it; a changed checker is drift to label, and a changed result under it fails', async () => {
     const plans = join(scratch, 'plans'), rr = join(scratch, 'runs-raw'), file = join(plans, 'harbour-district.plan.json');
     await mkdir(plans, { recursive: true }); await Bun.write(file, JSON.stringify(base, null, 1));
     const r = await levelsWith({ SUBORNED_PLANS: plans, LEVELS_RUNS: rr }, file);
@@ -176,6 +178,11 @@ describe('levels, hardening', () => {
       const copy = join(scratch, 'runs-hash'); await cp(rr, copy, { recursive: true });
       const f = join(copy, 'harbour-district', 'r001', 'run.json'), j = await Bun.file(f).json(); j.toolsHash = 'f'.repeat(64); await Bun.write(f, JSON.stringify(j));
       process.env.LEVELS_RUNS = copy;
+      // transit's code moves (the world generator is in its hash): the code differs and every rule the run recorded reruns identically, so it is labelled, not failed
+      const moved = await replay('harbour-district', 'r001'); expect(moved.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(moved.ok).toBe(true);
+      expect(moved.lines.join('\n')).toContain('CHECKER CODE changed'); expect(moved.lines.join('\n')).toContain('every rule the run recorded reruns identically');
+      // a rule whose result differs under a code state the ledger does not know is a failure, unless drift is allowed
+      const c1 = join(copy, 'harbour-district', 'r001', 'round-1', 'checks.json'), cj = await Bun.file(c1).json(); cj.checks[0].value = 'recorded differently'; await Bun.write(c1, JSON.stringify(cj));
       const bad = await replay('harbour-district', 'r001'); expect(bad.ok).toBe(false); expect(bad.lines.join('\n')).toContain('CHECKER CODE changed');
       expect((await replay('harbour-district', 'r001', true)).ok).toBe(true);
     } finally { delete process.env.SUBORNED_PLANS; delete process.env.LEVELS_RUNS; }
