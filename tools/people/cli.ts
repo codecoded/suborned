@@ -7,6 +7,9 @@ import { mkdir } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
 import { Cast } from '../../contracts/people/cast.schema';
 import { peopleHash } from '../levels/people/hash';
+import { overlay } from '../missions/handover/overlay';
+import { civic } from '../plan/civic';
+import { derive } from '../plan/plan';
 import { root } from '../rag/config';
 import { checkPeople } from './check';
 import { expand } from './expand';
@@ -19,7 +22,7 @@ const argv = process.argv.slice(2), opt = (k: string) => { const i = argv.indexO
 const KNOWN = ['--scope', '--cast', '--plan', '--rules', '--out', '--review'];
 for (const a of argv.filter(x => x.startsWith('--'))) if (!KNOWN.includes(a)) { console.error(`unknown option ${a}; known: ${KNOWN.join(' ')}`); process.exit(2); }
 const planFile = opt('--plan') ?? 'contracts/world/harbour-district.plan.json';
-const w = world(await readTexts(planFile, { rules: opt('--rules') }), opt('--scope') ?? 'civic-block');
+const texts = await readTexts(planFile, { rules: opt('--rules') }), w = world(texts, opt('--scope') ?? 'civic-block');
 let castFile = opt('--cast'), label: string;
 if (castFile) label = `cast ${castFile}`;
 else {
@@ -39,6 +42,12 @@ await mkdir(dirname(out), { recursive: true });
 const written = { ...gen.people, inputs: { ...gen.people.inputs, tools: await peopleHash() } };
 await Bun.write(out, JSON.stringify(written, null, 1) + '\n');
 for (const c of checked.checks) console.log(`${c.ok ? 'ok  ' : 'FAIL'} ${c.id}  ${c.rule}: ${c.value}${c.ok ? '' : `\n       ${c.detail}`}`);
+// M-2 on these people: the casting rule the plan checker's overlay runs (the Handover's roles, there when needed, one pinned each, and the cast can play them: alone, tied,
+// leaving, waiting; Waymark's castRoles with `play`), here on the expansion just made, so a candidate cast is held to it before it is promoted. The overlay itself expands the
+// promoted cast, so for that cast this line only repeats what `bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts` says, and it is not enforced here (r013 does not
+// play the Handover; a cast that does is a live run away); for any other cast (`--cast`) it is.
+const block = JSON.parse(texts.block), m2 = overlay(w.plan, block, gen.people as never, JSON.parse(texts.mission)).civic!({ d: derive(w.plan), civ: civic(w.plan.civic, block) } as never).find(c => c.id === 'M-2')!;
+console.log(`${m2.ok ? 'ok  ' : 'FAIL'} M-2  ${m2.rule}: ${m2.value}${m2.ok ? '' : `\n       ${(m2.detail ?? '').split('; ').join('\n       ')}`}${opt('--cast') || m2.ok ? '' : '\n       (the promoted cast: shown, not enforced here)'}`);
 console.log(`${checked.counts.persons} people, ${checked.counts.units} units → ${out} (${label})`);
 const ri = argv.indexOf('--review');
 if (ri >= 0) {
@@ -47,4 +56,4 @@ if (ri >= 0) {
   await Bun.write(file, reviewHtml(ctx, gen.people, checked.checks, label));
   console.log(`review page → ${file}`);
 }
-process.exit(checked.ok ? 0 : 1);
+process.exit(checked.ok && (m2.ok || !opt('--cast')) ? 0 : 1);

@@ -6,10 +6,13 @@
  },
  "scope": "civic-block",
  "inputs": {
-  "cast": "72ed05ce9d4828680027ed011658507d4843c4cf42db377812f2bf7b9fc5f360",
+  "cast": "e43e28f92cfc7fe5af5747c8a363699b2bfe75426345eb2521ae00d88ad9baa2",
   "life": "6f674b120a186d217da28be6ab310335c0b9383527eb9d647feeb309926fc6f9",
   "block": "6c309320c948b8960f60dd37a3fa0cc6236c6ea24ed4dab97b55d402dcfe6041",
-  "rules": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821"
+  "rules": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372",
+  "mission": "84fc36bfa3d98f8ae7f3c202dba94ed3dac40b48d539ec5ad36f682f8bb34957",
+  "plan": "7b13da818917cc47ca5610f3fa894d331a5cbfce609cbfdf8b4cbdbd697c16e7",
+  "tools": "3e6d4136cac6ff3244fdca771076e72a8994a4c41a04b2b71343cb4c6b7d8830"
  },
  "places": [
   {
@@ -843,6 +846,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -924,6 +936,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1011,6 +1027,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "keeper",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1088,6 +1113,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1181,6 +1210,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1270,6 +1303,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1347,6 +1389,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1440,6 +1486,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1535,6 +1590,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1622,6 +1686,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1709,6 +1782,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1792,6 +1869,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -1881,6 +1962,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -1974,6 +2064,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2051,6 +2145,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2128,6 +2226,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2205,6 +2307,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -2280,6 +2391,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -2363,6 +2483,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2442,6 +2566,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2527,6 +2655,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2604,6 +2736,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2679,6 +2815,15 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "cook",
+   "needWeights": {
+    "cash": 300,
+    "papers": 150,
+    "advancement": 200,
+    "secret": 150,
+    "care": 100,
+    "kin": 100
    }
   },
   {
@@ -2766,6 +2911,10 @@
    ],
    "look": {
     "block": "job/food"
+   },
+   "position": "server",
+   "needWeights": {
+    "debt": 1000
    }
   },
   {
@@ -2830,6 +2979,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -2876,12 +3036,23 @@
    "memory": [],
    "ties": [
     {
-     "kind": "family",
-     "with": "p-garden-row-east-08"
+     "kind": "regular",
+     "with": "p-t1-records-kiosk-01"
     }
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -2946,6 +3117,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -2998,6 +3180,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3050,6 +3243,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3118,6 +3322,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3186,6 +3401,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3234,14 +3460,21 @@
     {
      "kind": "regular",
      "with": "p-t1-records-kiosk-01"
-    },
-    {
-     "kind": "family",
-     "with": "p-garden-row-east-02"
     }
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3298,6 +3531,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3358,6 +3602,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3414,6 +3669,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3466,6 +3732,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3518,6 +3795,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3570,6 +3858,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3634,6 +3933,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3690,6 +4000,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -3785,6 +4106,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -3884,6 +4215,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -3965,6 +4306,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4042,6 +4393,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4141,6 +4502,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4218,6 +4589,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4306,7 +4687,7 @@
     },
     {
      "kind": "regular",
-     "with": "p-cafe-15"
+     "with": "p-cafe-16"
     },
     {
      "kind": "workmate",
@@ -4323,6 +4704,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4418,6 +4809,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4513,6 +4914,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4612,6 +5023,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4700,7 +5121,7 @@
     },
     {
      "kind": "regular",
-     "with": "p-cafe-15"
+     "with": "p-cafe-11"
     },
     {
      "kind": "workmate",
@@ -4713,6 +5134,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4812,6 +5243,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4907,6 +5348,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -4988,6 +5439,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5065,6 +5526,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5150,6 +5621,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5249,6 +5730,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5330,6 +5821,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5425,6 +5926,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5528,6 +6039,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5623,6 +6144,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5718,6 +6249,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5799,6 +6340,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5876,6 +6427,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -5957,6 +6518,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6060,6 +6631,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6157,6 +6738,10 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "official-driver",
+   "needWeights": {
+    "cash": 1000
    }
   },
   {
@@ -6242,6 +6827,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6341,6 +6936,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6422,6 +7027,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6510,7 +7125,7 @@
     },
     {
      "kind": "regular",
-     "with": "p-cafe-11"
+     "with": "p-cafe-12"
     },
     {
      "kind": "family",
@@ -6519,6 +7134,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6604,6 +7229,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6685,6 +7320,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6766,6 +7411,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6860,7 +7515,7 @@
     },
     {
      "kind": "regular",
-     "with": "p-t1-records-kiosk-01"
+     "with": "p-t1-records-kiosk-03"
     },
     {
      "kind": "workmate",
@@ -6869,6 +7524,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -6954,6 +7619,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7031,6 +7706,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7119,7 +7804,7 @@
     },
     {
      "kind": "regular",
-     "with": "p-cafe-15"
+     "with": "p-cafe-14"
     },
     {
      "kind": "workmate",
@@ -7132,6 +7817,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7235,6 +7930,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7330,6 +8035,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7415,6 +8130,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7514,6 +8239,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7591,14 +8326,20 @@
     {
      "kind": "workmate",
      "with": "p-records-office-17"
-    },
-    {
-     "kind": "family",
-     "with": "p-rocket-west-07"
     }
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7702,6 +8443,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7779,6 +8530,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7856,6 +8617,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -7937,6 +8708,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8018,6 +8799,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8115,6 +8906,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "councillor",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8196,6 +8997,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8295,6 +9106,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8372,6 +9193,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8471,6 +9302,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8570,6 +9411,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8647,6 +9498,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8724,6 +9585,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8813,6 +9684,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8902,6 +9783,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -8997,6 +9888,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9078,6 +9979,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9172,11 +10083,21 @@
     },
     {
      "kind": "regular",
-     "with": "p-t1-records-kiosk-01"
+     "with": "p-t1-records-kiosk-03"
     }
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9258,6 +10179,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9335,6 +10266,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9430,6 +10371,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9529,6 +10480,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9628,6 +10589,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9705,6 +10676,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9812,6 +10793,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -9907,6 +10898,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10010,6 +11011,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10095,6 +11106,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10176,6 +11197,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "clerk",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10263,16 +11294,22 @@
      "with": "p-cafe-11"
     },
     {
-     "kind": "regular",
-     "with": "p-cafe-12"
-    },
-    {
      "kind": "workmate",
      "with": "p-records-office-32"
     }
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10360,10 +11397,6 @@
      "with": "p-cafe-14"
     },
     {
-     "kind": "regular",
-     "with": "p-cafe-15"
-    },
-    {
      "kind": "family",
      "with": "p-records-office-50"
     },
@@ -10374,6 +11407,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10455,16 +11498,22 @@
      "with": "p-cafe-07"
     },
     {
-     "kind": "regular",
-     "with": "p-cafe-05"
-    },
-    {
      "kind": "workmate",
      "with": "p-records-office-74"
     }
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10546,10 +11595,6 @@
      "with": "p-cafe-05"
     },
     {
-     "kind": "regular",
-     "with": "p-cafe-04"
-    },
-    {
      "kind": "workmate",
      "with": "p-records-office-05"
     },
@@ -10564,6 +11609,16 @@
    ],
    "look": {
     "block": "job/civic"
+   },
+   "position": "guard",
+   "needWeights": {
+    "advancement": 250,
+    "papers": 200,
+    "secret": 150,
+    "debt": 150,
+    "housing": 100,
+    "kin": 100,
+    "care": 50
    }
   },
   {
@@ -10620,6 +11675,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10684,6 +11750,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10736,6 +11813,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10792,6 +11880,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10860,6 +11959,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10924,6 +12034,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -10970,12 +12091,23 @@
    "memory": [],
    "ties": [
     {
-     "kind": "family",
-     "with": "p-records-office-43"
+     "kind": "regular",
+     "with": "p-t1-records-kiosk-01"
     }
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -11040,6 +12172,17 @@
    ],
    "look": {
     "block": "job/resident"
+   },
+   "position": "resident",
+   "needWeights": {
+    "housing": 255,
+    "debt": 153,
+    "cash": 153,
+    "papers": 122,
+    "kin": 102,
+    "care": 82,
+    "secret": 82,
+    "protection": 51
    }
   },
   {
@@ -11125,6 +12268,15 @@
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "keeper",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   },
   {
@@ -11202,6 +12354,15 @@
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "attendant",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   },
   {
@@ -11279,6 +12440,15 @@
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "attendant",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   },
   {
@@ -11356,16 +12526,21 @@
    "memory": [],
    "ties": [
     {
-     "kind": "regular",
-     "with": "p-cafe-02"
-    },
-    {
      "kind": "workmate",
      "with": "p-t1-records-kiosk-02"
     }
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "keeper",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   },
   {
@@ -11459,6 +12634,15 @@
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "attendant",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   },
   {
@@ -11542,6 +12726,15 @@
    ],
    "look": {
     "block": "job/kiosk"
+   },
+   "position": "attendant",
+   "needWeights": {
+    "cash": 269,
+    "debt": 215,
+    "papers": 161,
+    "advancement": 161,
+    "secret": 108,
+    "care": 86
    }
   }
  ],
@@ -11563,8 +12756,7 @@
      "p-records-office-73",
      "p-records-office-74",
      "p-records-office-75",
-     "p-records-office-76",
-     "p-t1-records-kiosk-01"
+     "p-records-office-76"
     ]
    },
    {
@@ -11579,6 +12771,7 @@
     "knows": [
      "p-cafe-05",
      "p-cafe-13",
+     "p-garden-row-east-02",
      "p-garden-row-east-07",
      "p-garden-row-east-08",
      "p-pylon-row-east-04",
@@ -11590,6 +12783,7 @@
      "p-records-office-68",
      "p-rocket-west-01",
      "p-rocket-west-05",
+     "p-rocket-west-07",
      "p-t1-records-kiosk-02"
     ]
    }

@@ -156,27 +156,45 @@
   {
    "area": "records",
    "occupation": "records-office",
-   "why": "Civic office, one day shift 9:30-17:30, 72 staff. Mostly clerks inside; one guard at the door, who calls at the cafe before the shift and after it; one councillor; one official driver at the bay, on cash.",
+   "why": "Civic office, one shift 9:30-17:30, 72 staff: 66 clerks; one councillor and his driver, by official car to the bay; four guards (door, service door, two on rounds) and a 24 h watch of two. Guards call at the cafe before and after.",
    "positions": [
     {
      "position": "clerk",
-     "weight": 100,
+     "weight": 62,
      "post": "inside"
     },
     {
      "position": "guard",
-     "weight": 0.1,
-     "post": "door"
+     "weight": 5,
+     "post": "inside",
+     "side": "official",
+     "count": 4,
+     "posts": [
+      {
+       "post": "door",
+       "count": 1
+      },
+      {
+       "post": "official",
+       "count": 1
+      }
+     ],
+     "watch": {
+      "count": 2
+     }
     },
     {
      "position": "official-driver",
-     "weight": 0.1,
-     "post": "bay"
+     "weight": 1,
+     "post": "bay",
+     "count": 1
     },
     {
      "position": "councillor",
-     "weight": 0.1,
-     "post": "inside"
+     "weight": 1,
+     "post": "inside",
+     "side": "official",
+     "count": 1
     }
    ],
    "temperaments": [
@@ -283,15 +301,40 @@
     },
     {
      "kind": "regular",
-     "share": 0.7
+     "share": 0.3,
+     "positions": [
+      "clerk"
+     ]
+    },
+    {
+     "kind": "regular",
+     "share": 1,
+     "positions": [
+      "guard"
+     ],
+     "with": "server",
+     "at": "pre-shift"
+    },
+    {
+     "kind": "regular",
+     "share": 1,
+     "positions": [
+      "guard"
+     ],
+     "with": "server",
+     "at": "evening"
+    },
+    {
+     "kind": "workmate",
+     "share": 1,
+     "positions": [
+      "official-driver"
+     ],
+     "with": "councillor"
     },
     {
      "kind": "family",
      "share": 0.3
-    },
-    {
-     "kind": "rival",
-     "share": 0.1
     }
    ],
    "routines": [
@@ -324,9 +367,7 @@
      "preShift": "none",
      "evening": "home",
      "positions": [
-      "clerk",
-      "official-driver",
-      "councillor"
+      "clerk"
      ]
     },
     {
@@ -342,7 +383,22 @@
      "preShift": "none",
      "evening": "square",
      "positions": [
-      "clerk",
+      "clerk"
+     ]
+    },
+    {
+     "id": "official-car",
+     "skeleton": "worker",
+     "weight": 1,
+     "leaveBeforeMin": [
+      0,
+      0
+     ],
+     "commute": "car",
+     "meal": "on-site",
+     "preShift": "none",
+     "evening": "home",
+     "positions": [
       "official-driver",
       "councillor"
      ]

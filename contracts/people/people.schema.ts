@@ -20,7 +20,7 @@ export const Work = z.object({
   unit: id, plot: id, area: id, trade: id, employer: id,
   position: id.optional().describe('the unit category\'s position (keeper, server, ...); exactly one of position and role'),
   role: id.optional().describe('a role of the civic employer (guard, official-driver, ...)'),
-  post: z.enum(['door', 'inside', 'bay']), place: id.describe('the place the person stands at work'),
+  post: z.enum(['door', 'inside', 'bay', 'official']), place: id.describe('the place the person stands at work'),
   shift: z.object({ from: minute, to: minute }).describe('to < from: the shift runs past midnight'),
 });
 export const Person = z.object({

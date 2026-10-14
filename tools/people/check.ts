@@ -5,6 +5,7 @@ import { Cast as CastSchema } from '../../contracts/people/cast.schema';
 import { People as PeopleSchema, Person as PersonSchema, type Person } from '../../contracts/people/people.schema';
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
+import { stepMin } from './day';
 import { expand, inShift, needsOf, needWeightsOf, rowOf, type Ctx } from './expand';
 import { castHandover, type MissionIn } from './handover';
 import { deriveKnowledge } from './knowledge';
@@ -76,7 +77,7 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       for (let i = 0; i < st.length; i++) {
         const a = st[i]!, b = st[(i + 1) % st.length]!, gap = (b.from - a.to + 1440) % 1440 || (st.length === 1 ? 0 : 0);
         if (a.place === b.place || a.place === 'beyond' || b.place === 'beyond' || !pl.has(a.place) || !pl.has(b.place)) continue;
-        const need = c.walk.min(pl.get(a.place)!, pl.get(b.place)!);
+        const need = stepMin(c.walk, pl.get(a.place)!, pl.get(b.place)!);
         if (need === Infinity) bad.push(`${p.id}: no walk ${a.place} → ${b.place}`);
         else if (gap < need) bad.push(`${p.id}: ${a.place} (to ${a.to}) → ${b.place} (from ${b.from}) leaves ${gap} min, the walk needs ${need}`);
       }
@@ -169,7 +170,10 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
         const n = here.filter(p => p.work!.shift.from === s.from && p.work!.shift.to === s.to).length;
         if (n !== u.staffPerShift) bad.push(`${u.id} shift ${i} (${s.from}-${s.to}): ${n} staff, life.json says ${u.staffPerShift}`);
       });
-      if (here.length !== u.staffPerShift * u.shifts.length) bad.push(`${u.id}: ${here.length} staff in all, expected ${u.staffPerShift * u.shifts.length}`);
+      // a civic employer's watch: the positions that name one put `count` people on each shift outside office hours, on top of the office staff
+      const rowU = rowOf(cast, u.area, u.trade), watchEach = u.kind === 'civic' ? (rowU?.positions ?? []).reduce((k, p) => k + (p.watch?.count ?? 0), 0) : 0, watchN = watchEach * (u.watch?.length ?? 0);
+      if (watchEach) for (const [i, s] of (u.watch ?? []).entries()) { const n = here.filter(p => p.work!.shift.from === s.from && p.work!.shift.to === s.to).length; if (n !== watchEach) bad.push(`${u.id} watch ${i} (${s.from}-${s.to}): ${n} on watch, the row asks ${watchEach}`); }
+      if (here.length !== u.staffPerShift * u.shifts.length + watchN) bad.push(`${u.id}: ${here.length} staff in all, expected ${u.staffPerShift * u.shifts.length + watchN}`);
       const covered = (t: number) => u.shifts.some(s => inShift(s, t)), o = Math.round(u.hours[0] * 60), cl = Math.round(u.hours[1] * 60);
       for (let t = 0; t < 1440; t += 15) { const open = o < cl ? t >= o && t < cl : t >= o || t < cl; if (open && !covered(t)) bad.push(`${u.id}: no shift at ${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')} though it is open`); }
       if (u.kind !== 'civic' && positionsOf(rules, u.category).includes('keeper')) {
@@ -185,7 +189,8 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
   {
     const bad: string[] = [], pl = new Map(scope.places.map(p => [p.id, p]));
     for (const p of P) for (const s of p.routine.stops) {
-      const onShift = !!p.work && (s.doing === 'work' || (s.doing === 'meal' && s.place === p.work.place));
+      // a person in the official car at its bay (a 'commute' stop at a bay) is in a vehicle, not standing in the zone that keeps the bay clear of people
+      const onShift = !!p.work && (s.doing === 'work' || (s.doing === 'meal' && s.place === p.work.place) || (s.doing === 'commute' && pl.get(s.place)?.kind === 'bay'));
       const here = pl.get(s.place), z = here ? scope.zones.find(x => x.test(here.at as V) && (here.kind !== 'seat' || x.bars.includes('table'))) : undefined;
       if (z && !onShift) bad.push(`${p.id}: ${s.doing} at ${s.place} stands in ${z.id}`);
     }
@@ -217,7 +222,7 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
         if (spec.between === 'same-employer' && !(w(p, q) && p.work!.employer === q.work!.employer)) bad.push(`${p.id}: workmate ${q.id} has another employer`);
         if (spec.between === 'same-trade-or-employer' && !(w(p, q) && (p.work!.trade === q.work!.trade || p.work!.employer === q.work!.employer))) bad.push(`${p.id}: rival ${q.id} shares no trade or employer`);
         if (spec.between === 'routine-stop' && p.work && q.work && p.work.employer === q.work.employer) bad.push(`${p.id}: regular of ${q.id}, who works for the same employer (${p.work.employer}): a regular is a customer of another unit, those are workmates`);
-        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && atCafeSide(scope, s.place, s.doing))) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
+        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && atCafeSide(scope, s.place, s.doing, ['pre-shift', 'evening']))) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
       }
       for (const k of Object.keys(T)) if (p.ties.filter(t => t.kind === k).length > T[k as keyof typeof T].maxPerPerson) bad.push(`${p.id}: more than ${T[k as keyof typeof T].maxPerPerson} ${k} ties`);
     }

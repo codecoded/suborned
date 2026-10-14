@@ -1,0 +1,18 @@
+$ bun tools/people/cli.ts --cast tools/people/test/handover-fix.cast.json --out "briefs/010/pulse/handover-fix.people.json" --review "briefs/010/pulse/handover-fix.review.html"
+ok   P-0  The cast tables cover the scope's units and homes, and the expansion has no gaps: 5 rows
+ok   P-1  Everyone reaches each routine stop on the walk graph in time: 130 people
+ok   P-2  Every person has exactly one need, in the rules, that an approach they answer to can meet: 130 people
+ok   P-3  Only the temperaments, needs, ties and positions the rules allow, in the tables and in the people: 5 rows, 130 people
+ok   P-4  Staff counts match life.json per unit and shift; one keeper per unit: 4 units
+ok   P-5  No one stands in a CD-1 keep-clear zone off-shift: 12 zones
+ok   P-6  The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf: 4/4 roles
+ok   P-7  Ties are of the kinds, limits, directions and pairs the rules allow: 254 ties
+ok   P-8  Names come from one district pool of mixed origins, with no era, unique, and the pinned names present once: 130 names
+ok   P-9  The expansion is valid, empty of memory, and byte-identical twice: 130 people
+ok   P-10  No temperament over the row cap; a unit of 3+ staff carries 2 or more temperaments: 5 rows, 4 units
+ok   P-11  A keeper's known needs derive from ties; the cell is known by face only and nothing else at the start: 3 keepers know 28 needs
+ok   P-12  Every field a person carries names the rule that reads it: 15 fields
+ok   P-13  No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear: 98 stops at 39 seats and standing points
+ok   M-2  Every role the mission names is cast from the city's people, there when needed, one pinned by id, and the cast can play it: waitress p-cafe-11, driver p-records-office-27, guard p-records-office-07, councillor p-records-office-49
+130 people, 4 units → /Users/sky/Projects/suborned/briefs/010/pulse/handover-fix.people.json (cast tools/people/test/handover-fix.cast.json)
+review page → /Users/sky/Projects/suborned/briefs/010/pulse/handover-fix.review.html
