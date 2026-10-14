@@ -17,6 +17,8 @@ import { district, inset } from './draw';
 import { sheet } from './sheet';
 import { legacyOverlay } from '../missions/handover/overlay';
 import { worldChecks, worldChecksUnder } from './world-rules';
+import { generated } from './world-ctx';
+import { existsSync } from 'node:fs';
 
 const root = resolve(import.meta.dir, '../..');
 const args = process.argv.slice(2), opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined);
@@ -37,7 +39,10 @@ console.log(`pylons ${d.pylons.length}, tram crossings ${R.crossings.map(c => c.
 const out = resolve(root, opt('--out') ?? `out/plan/${plan.id}-v${plan.version}.html`);
 const { svg, legend } = inset(plan, d, civ, R);
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, sheet(plan, R, { district: district(plan, d, R), inset: svg, legend }, src));
+// the crossing proposal layer (plan crossings.coverage, brief 009): the crossings as generated and the desire lines behind it; off with --no-world, --kit or --look
+const cov = plan.standards?.streetscape?.crossings?.coverage, walksFile = cov?.walks && resolve(root, cov.walks);
+const prop = cov && !args.includes('--no-world') && !opt('--kit') && !opt('--look') ? { crossings: (generated(plan, d, civ).w.crossings ?? []).map(c => ({ id: c.id, line: c.line as [number, number][] })), walks: walksFile && existsSync(walksFile) ? (JSON.parse(readFileSync(walksFile, 'utf8')).walks as { path: [number, number][]; hot?: boolean }[]).map(w => ({ path: w.path, hot: w.hot })) : undefined } : undefined;
+writeFileSync(out, sheet(plan, R, { district: district(plan, d, R, prop), inset: svg, legend }, src));
 console.log(`sheet → ${out}`);
 if (opt('--json')) writeFileSync(resolve(root, opt('--json')!), JSON.stringify({ plan: plan.id, version: plan.version, strict: args.includes('--strict'), ok: R.checks.every(c => c.ok), checks: R.checks, routes: R.routes, stops: R.stops, stations: R.stations, pylons: d.pylons.length }, null, 1));
 process.exit(R.checks.every(c => c.ok) ? 0 : 1);

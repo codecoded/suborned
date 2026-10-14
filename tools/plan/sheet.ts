@@ -9,15 +9,16 @@ const table = (head: string[], rows: (string | number)[][], cls = '') =>
   `<table class="${cls}"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 
 const LAYERS = [['base', 'Water + quay'], ['plots', 'Plots'], ['areas', 'Environmental areas'], ['roads', 'Streets'], ['centrelines', 'Centrelines'], ['tram', 'Tram T1'],
-  ['sky', 'Sky rail S1'], ['walks', 'Walks'], ['gates', 'Gates'], ['landmarks', 'Landmarks'], ['signatures', 'Signatures'], ['civic', 'Civic block'], ['labels', 'Labels'], ['grid', 'Grid']];
+  ['sky', 'Sky rail S1'], ['walks', 'Walks'], ['gates', 'Gates'], ['landmarks', 'Landmarks'], ['signatures', 'Signatures'], ['civic', 'Civic block'], ['labels', 'Labels'], ['grid', 'Grid'], ['proposal', 'Crossing proposal (009)', 'off']];
 const LEGEND: [string, string][] = [
   ['sw-primary', 'Primary distributor'], ['sw-district', 'District distributor'], ['sw-access', 'Access road'], ['sw-mall', 'Mall / walk'],
   ['sw-tram', 'Tram track · ◆ stop'], ['sw-sky', 'Sky rail beams · pylon'], ['sw-station', 'Sky rail station ▲'], ['sw-gate', 'Gate (seal point)'],
-  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-sig', 'Signature: ground ┄, footprint, front →'], ['sw-civic', 'Civic block'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
+  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-sig', 'Signature: ground ┄, footprint, front →'], ['sw-pr-kept', 'Proposal layer: crossing kept'], ['sw-pr-add', 'proposed (X1–X4)'], ['sw-pr-gone', 'dropped (R1–R2)'], ['sw-civic', 'Civic block'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
   ['sw-port', 'Port / industrial'], ['sw-water', 'Water'], ['sw-beyond', 'Beyond the plan'],
 ];
 
-const CSS = `
+/** The sheet's styles; also embedded in the stand-alone SVGs rendered to PNG (briefs/009/crossings-proposal/make.ts). */
+export const CSS = `
 :root{color-scheme:light;--paper:#f4ecda;--sheet:#f8f2e4;--ink:#2b2723;--ink2:#6e655a;--line:#cfc3a8;--tram:#dd5b42;--sky:#13838a;--gate:#d0391c;--ok:#2f7d4f;--bad:#c0392b}
 *{box-sizing:border-box}html,body{margin:0;background:#e9e1cd;color:var(--ink);font:14px/1.5 ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif}
 .wrap{max-width:1500px;margin:0 auto;padding:20px 16px 60px}
@@ -64,9 +65,14 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 .gate{fill:#f6c9bc;stroke:var(--gate);stroke-width:1.2;vector-effect:non-scaling-stroke}.gate.seal{fill:var(--gate)}
 .sig{fill:#efe2c4cc;stroke:#7a5c2e;stroke-width:1.4;vector-effect:non-scaling-stroke}.sig-ground{fill:none;stroke:#7a5c2e;stroke-width:1;stroke-dasharray:6 3;vector-effect:non-scaling-stroke}
 .sig-leg{fill:#7a5c2e40;stroke:#7a5c2e;stroke-width:.8;vector-effect:non-scaling-stroke}.sig-front{fill:none;stroke:#7a5c2e;stroke-width:1.6;vector-effect:non-scaling-stroke}.sig-head{fill:#7a5c2e}.sig-lab{fill:#7a5c2e;font-weight:700}
+.pr-walk.hot{stroke-opacity:.32;stroke-width:1.6}.pr-walk{fill:none;stroke:#4a3d78;stroke-opacity:.12;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.pr-kept{fill:none;stroke:#1f7a6a;stroke-width:4;vector-effect:non-scaling-stroke}.pr-add{fill:none;stroke:#c0157a;stroke-width:6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.pr-gone{fill:none;stroke:#a39a90;stroke-width:4;vector-effect:non-scaling-stroke}.pr-strike{fill:none;stroke:#c0392b;stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.pr-call{fill:none;stroke:#c0157a;stroke-width:2;stroke-dasharray:8 4;vector-effect:non-scaling-stroke}
 .mark{fill:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}.mark.monument{fill:var(--ink);stroke-dasharray:none}.mark.skyport{fill:#f5f0e4;stroke-dasharray:none}
 .lab{fill:var(--ink);font-family:ui-monospace,"SF Mono",Menlo,monospace;text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:2.5px;stroke-linejoin:round}
 .road-lab{dominant-baseline:central;font-weight:600;letter-spacing:.06em}.road-lab.access{font-weight:500}
+.pr-lab{fill:#c0157a;font-weight:700}.pr-lab.gone{fill:#c0392b}.pr-call-lab{fill:#c0157a;font-weight:700;text-anchor:start}
 .tram-lab{fill:var(--tram);font-weight:700;text-anchor:end}.sky-lab{fill:var(--sky);font-weight:700}.gate-lab{fill:var(--gate);font-weight:700;text-anchor:start}
 .mark-lab,.plot-lab{fill:#4d463d;font-style:italic}.circus-lab{font-weight:700;letter-spacing:.2em}.link-lab{fill:#7d5a2c;font-weight:700;text-anchor:start}.foot-lab{letter-spacing:.2em}
 .grid{fill:none;stroke:#2b272314;stroke-width:1;vector-effect:non-scaling-stroke}.gref{fill:var(--ink2);font:600 11px ui-monospace,Menlo,monospace;text-anchor:middle}
@@ -84,14 +90,14 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 #inset .lab{stroke-width:.8px}#inset .area-lab{stroke-width:1px}#inset .gref{display:none}#inset .grid{stroke:#2b27230c}
 .sw-primary{background:#d0bc92}.sw-district{background:#dfcfaa}.sw-access{background:#efe6cd}.sw-mall{background:#f5eedd}
 .sw-tram{background:linear-gradient(#0000 40%,var(--tram) 40% 60%,#0000 60%);border:0!important}.sw-sky{background:linear-gradient(#0000 40%,var(--sky) 40% 60%,#0000 60%);border:0!important}
-.sw-sig{background:#efe2c4;border:1.5px dashed #7a5c2e!important}.sw-walk{background:linear-gradient(90deg,#1d4fb8 50%,#0000 50%) 0 50%/6px 2px repeat-x;border:0!important}.sw-station{background:#d6efee;border-color:var(--sky)!important}.sw-gate{background:var(--gate);transform:rotate(45deg) scale(.6)}.sw-civic{background:#e9a68b}.sw-park{background:#c2d39c}
+.sw-sig{background:#efe2c4;border:1.5px dashed #7a5c2e!important}.sw-pr-kept{background:#1f7a6a}.sw-pr-add{background:#c0157a}.sw-pr-gone{background:linear-gradient(45deg,#a39a90 42%,#c0392b 42% 58%,#a39a90 58%)}.sw-walk{background:linear-gradient(90deg,#1d4fb8 50%,#0000 50%) 0 50%/6px 2px repeat-x;border:0!important}.sw-station{background:#d6efee;border-color:var(--sky)!important}.sw-gate{background:var(--gate);transform:rotate(45deg) scale(.6)}.sw-civic{background:#e9a68b}.sw-park{background:#c2d39c}
 .sw-res{background:#e3dfc6}.sw-mixed{background:#e7dbc0}.sw-com{background:#ead1ab}.sw-port{background:#c9d6d3}.sw-water{background:#a9cfd0}
 .sw-beyond{background:repeating-linear-gradient(45deg,#0000 0 3px,#2b272355 3px 4px)}
 `;
 
 const JS = `
-for(const cb of document.querySelectorAll('[data-toggle]'))cb.addEventListener('change',()=>{
-  for(const g of document.querySelectorAll('#district [data-layer="'+cb.dataset.toggle+'"]'))g.style.display=cb.checked?'':'none'});
+for(const cb of document.querySelectorAll('[data-toggle]')){const show=()=>{
+  for(const g of document.querySelectorAll('#district [data-layer="'+cb.dataset.toggle+'"]'))g.style.display=cb.checked?'':'none'};cb.addEventListener('change',show);show()}
 for(const view of document.querySelectorAll('.view')){
   const svg=view.querySelector('svg'),[x0,y0,w0,h0]=svg.getAttribute('viewBox').split(' ').map(Number);let vb=[x0,y0,w0,h0],drag=null;
   const set=()=>svg.setAttribute('viewBox',vb.map(v=>v.toFixed(2)).join(' '));
@@ -135,7 +141,7 @@ export function sheet(plan: Plan, R: Report, svgs: { district: string; inset: st
     ...(std.walking.body ? [['Walking', 'Body · clear width (W-5)', `a walker keeps ${std.walking.body.r} m from a ground solid (${+(2 * std.walking.body.r).toFixed(2)} m wide) · walks keep ${std.walking.body.clearWidth} m clear (${std.walking.body.constrained.w} m for ≤ ${std.walking.body.constrained.run} m; seating aisles ${std.walking.body.aisle} m)`]] : []),
     ['Roads', 'Widths kerb to kerb', 'primary 24 (median 4) · Boulevard 28 (tram 10) · district 18 (median 6) · access 12–13 · Parade 40'],
   ]);
-  const toggles = LAYERS.map(([id, label]) => `<label><input type="checkbox" data-toggle="${id}" checked> ${label}</label>`).join('') + '<span class="hint">scroll to zoom · drag to pan · double-click to reset</span>';
+  const toggles = LAYERS.map(([id, label, off]) => `<label><input type="checkbox" data-toggle="${id}"${off ? '' : ' checked'}> ${label}</label>`).join('') + '<span class="hint">scroll to zoom · drag to pan · double-click to reset</span>';
   const legend = LEGEND.map(([c, t]) => `<span><i class="${c}"></i>${t}</span>`).join('');
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
