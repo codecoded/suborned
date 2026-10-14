@@ -111,7 +111,9 @@
    "at": "Café door",
    "near": 4,
    "shift": { "from": "0:00", "to": "8:00" },
-   "src": "GDD §07 cast: Inez (café waitress, in debt); brief 010 D",
+   "need": "debt",
+   "approach": "help",
+   "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Fixer helps Inez ($40,000); brief 010 D; Motive §3, Sky Q4",
    "note": "Cast from the café's servers whose shift covers the whole mission and who stand at the café entrance at 0:00. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
@@ -121,7 +123,9 @@
    "role": "official-driver",
    "at": "Meet driver",
    "shift": { "from": "0:00", "to": "8:00" },
-   "src": "GDD §07 cast: the driver (pickup); brief 010 D",
+   "need": "cash",
+   "approach": "help",
+   "src": "GDD §07 cast: the driver (pickup, needs cash), route B: Fixer turns driver ($40,000; Help, the purse $80,000 = Inez + driver); brief 010 D; Motive §3, Sky Q4",
    "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`."
   },
   {
@@ -132,7 +136,8 @@
    "at": "Office entrance",
    "near": 4,
    "shift": { "from": "0:00", "to": "8:00" },
-   "src": "GDD §07 front door; §05 guard on door routine; brief 010 D"
+   "regularOf": "cafe",
+   "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3"
   },
   {
    "id": "councillor",
