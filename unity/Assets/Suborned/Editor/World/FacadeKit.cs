@@ -109,6 +109,8 @@ namespace Suborned.World
         {
             foreach (var m in masses)
             {
+                if (m.GroundBy != null && !masses.Exists(g => g.Id == m.GroundBy && g.Kit != null))
+                    throw new System.IO.InvalidDataException($"World: {m.Id}: groundBy `{m.GroundBy}` is not a kit mass of the civic layer");
                 if (m.Kit != null)
                 {
                     var el = Nodes.Element(layer, m.Id);
@@ -127,7 +129,7 @@ namespace Suborned.World
         sealed class Ctx
         {
             public Host H; public string Style, Wall, Plinth, Roof, A, B, Fin; public string[] Glass;
-            public float Base, Top, GroundTop; public bool Podium; public List<(float z0, float h)> Floors = new(); public Dice Dice;
+            public float Base, Top, GroundTop; public bool Podium, NoGround; public List<(float z0, float h)> Floors = new(); public Dice Dice;
             public Vector2[] Sibling;
         }
 
@@ -143,7 +145,7 @@ namespace Suborned.World
         /// and as high, this mass draws nothing there (the peer's facade covers it; two would z-fight).</summary>
         public void Facade(Transform el, MassDto m, Vector2[] ring, Host h, string style, string wall, IReadOnlyList<Peer> peers)
         {
-            var c = new Ctx { H = h, Style = style, Base = m.Base, Top = m.Base + m.Height, Podium = m.Id.EndsWith("/podium"), Dice = new Dice(m.Id, 3), Glass = spec.Glass };
+            var c = new Ctx { H = h, Style = style, Base = m.Base, Top = m.Base + m.Height, Podium = m.Id.EndsWith("/podium"), NoGround = m.GroundBy != null, Dice = new Dice(m.Id, 3), Glass = spec.Glass };
             bool tower = m.Surface == "tower";
             c.Wall = wall ?? (tower ? h.A : h.Wall); c.Plinth = h.Plinth; c.Roof = h.Roof; c.A = h.A; c.B = h.B;
             if (tower) c.Fin = "chrome";
@@ -192,6 +194,7 @@ namespace Suborned.World
         /// <summary>Ground zone top and upper storeys (from the mass's own height: storey 3.6 m, a cap zone for cornice and parapet).</summary>
         void Ground(Ctx c)
         {
+            if (c.NoGround) { c.GroundTop = c.Base; return; } // a kit piece is the ground storey (MassDto.GroundBy)
             c.GroundTop = c.Base < 1f ? c.Base + spec.Ground : c.Base;
             if (c.H.Fronts.Any(f => f.Z >= c.Base - 0.3f && f.Z < c.Top)) c.GroundTop = Mathf.Max(c.GroundTop, c.Base + spec.GroundUpper);
             c.GroundTop = Mathf.Min(c.GroundTop, c.Top - 1f);

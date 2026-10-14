@@ -26,7 +26,11 @@ namespace Suborned.World
         }
 
         /// <summary>Adds a part to element `el` in surface's material; warns on polygon repairs.</summary>
-        public void Part(Transform el, string name, MeshKit kit, string surface) => Part(el, name, kit, look.Mat(surface));
+        public void Part(Transform el, string name, MeshKit kit, string surface)
+        {
+            if (look.Tile(surface) is > 0f and var tile) kit.PlanarUv(tile);
+            Part(el, name, kit, look.Mat(surface));
+        }
 
         public void Part(Transform el, string name, MeshKit kit, Material mat)
         {

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -28,10 +29,7 @@ namespace Suborned.World
         public static string ViewsPath => Arg("-views", InUnity(Here + "/views.json"));
         public static string FacadePath => InUnity(Here + "/facade.json");
         public static string KitPath => InUnity(Here + "/kit.json");
-        /// <summary>The kit catalogue. Env SUBORNED_KIT_CATALOGUE pins a build to a copy of it (the catalogue as it stood when the
-        /// build's inputs were fixed, while the contract is being edited: it may then list pieces not yet copied in); the build warns.</summary>
-        public static string KitCataloguePath => Environment.GetEnvironmentVariable(KitCatalogueEnv) is { Length: > 0 } pinned ? pinned : Path.Combine(RepoRoot, "contracts", "world", "kit.json");
-        public const string KitCatalogueEnv = "SUBORNED_KIT_CATALOGUE";
+        public static string KitCataloguePath => Path.Combine(RepoRoot, "contracts", "world", "kit.json");
 
         public static string Arg(string name, string fallback)
         {
@@ -72,7 +70,6 @@ namespace Suborned.World
             var nodes = new Nodes(look);
             var layers = new Layers(nodes);
             var placer = new KitPlacer(KitCataloguePath);
-            if (Environment.GetEnvironmentVariable(KitCatalogueEnv) is { Length: > 0 }) Debug.LogWarning($"World: kit catalogue pinned to {KitCataloguePath} ({KitCatalogueEnv}), not contracts/world/kit.json");
             KitImport.Generated(placer);
             KitImport.Check(placer);
             KitLods.Build(placer);
@@ -121,8 +118,10 @@ namespace Suborned.World
             Rig.Build(cameras, Nodes.Group(null, "lighting"), root, world, Views.Load(ViewsPath), look);
             skyline.Horizon(Nodes.Group(root, "horizon"), Nodes.Group(null, "sea"), world.Horizon, world.Ground); // after Rig: views frame the district, not the 16 km band
             ReflectionCube.Build(look);
-            var (fadeKit, fadeBatches) = FadeTags.Apply(root, batches, facade.Spec.Atlas);
-            Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer})");
+            var flagged = FadeTags.Elements(root.Find("civic"), world.Civic.Where(m => m.Fade).Select(m => m.Id));
+            var (fadeKit, fadeBatches, fadeFlagged) = FadeTags.Apply(root, batches, facade.Spec.Atlas, flagged);
+            Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer}); " +
+                $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
 

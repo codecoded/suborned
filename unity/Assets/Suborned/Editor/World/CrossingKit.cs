@@ -6,7 +6,8 @@ namespace Suborned.World
 {
     /// <summary>The export's crossings: one marker per crossing under `crossings` (named by id), drawn on the ground it crosses.
     /// A zebra is bars across the way; any other crossing the pair of lines along its two edges (where traffic stops); a refuge
-    /// is its median ring raised as an island. Paint is solid geometry a little proud of what it lies on, never a decal, so
+    /// is its median ring raised as an island. Paint is solid geometry a little proud of what it lies on and of any tram track
+    /// it crosses, never a decal, so
     /// nothing is coplanar. Paint and islands take their road's kerb surface and go into the ground layer's kerb batch that
     /// already reaches them (Combine.Fit), so a crossing on a road costs no renderer and no material of its own and brings
     /// no batch into a view it was not in; one off the roads (a station bank's) takes its own tile's batch. Sizes: kit.json
@@ -30,13 +31,14 @@ namespace Suborned.World
                 roads.TryGetValue("road/" + c.Road, out var road);
                 float on = On(c, road, patches);
                 Vector2 a = c.Line[0]; float len = (c.Line[1] - a).magnitude; var u = (c.Line[1] - a) / len;
+                float top = Mathf.Max(on, Tracks(w.Transit.Tram, a + u * (len * 0.5f), len)) + spec.Paint;
 
                 var paint = new MeshKit();
                 foreach (var (s0, s1) in Free(c, a, u, len))
                     switch (c.Control)
                     {
-                        case "zebra": bars += Bars(paint, a, u, s0, s1, c.Width, on); break;
-                        case null: case "signal": Edges(paint, a, u, s0, s1, c.Width, on); break;
+                        case "zebra": bars += Bars(paint, a, u, s0, s1, c.Width, on, top); break;
+                        case null: case "signal": Edges(paint, a, u, s0, s1, c.Width, on, top); break;
                         default: throw new InvalidDataException($"World: {c.Id}: control `{c.Control}` is not drawn (zebra | signal)");
                     }
                 if (c.Control == "zebra") zebras++; else pairs++;
@@ -73,6 +75,19 @@ namespace Suborned.World
             return patch.Z + patch.Size.z;
         }
 
+        /// <summary>The top of the highest tram track the way crosses (a track bed stands above the carriageway and a stop's patch;
+        /// paint level with it would be coplanar with its top); 0 when it crosses none.</summary>
+        static float Tracks(List<TrackDto> tram, Vector2 mid, float len)
+        {
+            float level = 0f;
+            foreach (var t in tram)
+            {
+                Poly.NearestTangent(t.Line, mid, out float d);
+                if (d < (len + t.Width + t.Spacing) * 0.5f) level = Mathf.Max(level, t.Level); // Spacing: its two ribbons
+            }
+            return level;
+        }
+
         /// <summary>The spans of the way (metres from its start) that are off its refuges.</summary>
         static List<(float from, float to)> Free(CrossingDto c, Vector2 a, Vector2 u, float len)
         {
@@ -95,21 +110,21 @@ namespace Suborned.World
         }
 
         /// <summary>As many bars as fit the span with a gap between, centred on it. Returns how many.</summary>
-        int Bars(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on)
+        int Bars(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on, float top)
         {
             float span = s1 - s0, step = spec.Bar + spec.Gap;
             int n = Mathf.FloorToInt((span + spec.Gap) / step + 1e-4f);
             float at = s0 + (span - (n * spec.Bar + (n - 1) * spec.Gap)) * 0.5f;
-            for (int i = 0; i < n; i++, at += step) k.Prism(Poly.Rect(a + u * (at + spec.Bar * 0.5f), u, spec.Bar, width), on, on + spec.Paint);
+            for (int i = 0; i < n; i++, at += step) k.Prism(Poly.Rect(a + u * (at + spec.Bar * 0.5f), u, spec.Bar, width), on, top);
             return Mathf.Max(n, 0);
         }
 
         /// <summary>The two lines along the span's edges, inside the crossing's width.</summary>
-        void Edges(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on)
+        void Edges(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on, float top)
         {
             var mid = a + u * ((s0 + s1) * 0.5f); var v = new Vector2(-u.y, u.x) * ((width - spec.Line) * 0.5f);
-            k.Prism(Poly.Rect(mid + v, u, s1 - s0, spec.Line), on, on + spec.Paint);
-            k.Prism(Poly.Rect(mid - v, u, s1 - s0, spec.Line), on, on + spec.Paint);
+            k.Prism(Poly.Rect(mid + v, u, s1 - s0, spec.Line), on, top);
+            k.Prism(Poly.Rect(mid - v, u, s1 - s0, spec.Line), on, top);
         }
 
         static Vector2 Centre(Vector2[] ring)

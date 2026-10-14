@@ -34,7 +34,9 @@
     "square": {
       "palette": "harbour.square",
       "value": 1,
-      "smoothness": 0.1
+      "smoothness": 0.1,
+      "material": "DK_Pave_Civic",
+      "tile": 4
     },
     "circus/island": {
       "palette": "harbour.circus/island",
@@ -112,7 +114,9 @@
     "civic": {
       "palette": "harbour.civic",
       "value": 1,
-      "smoothness": 0.2
+      "smoothness": 0.2,
+      "material": "DK_Pave_Civic",
+      "tile": 4
     },
     "glass": {
       "palette": "harbour.sky",

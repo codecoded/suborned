@@ -27,6 +27,15 @@ namespace Suborned.World
 
         void PadUv() { uv ??= new List<Vector2>(); while (uv.Count < v.Count) uv.Add(default); }
 
+        /// <summary>Sets every vertex's UV to its place on plan, one repeat per `tile` metres (a paving texture laid in world space,
+        /// so it runs unbroken across plots and batches).</summary>
+        public MeshKit PlanarUv(float tile)
+        {
+            PadUv();
+            for (int i = 0; i < v.Count; i++) uv[i] = new Vector2(v[i].x, v[i].z) / tile;
+            return this;
+        }
+
         /// <summary>Sets the UV of every vertex from index `from` on (all of them share one atlas swatch centre).</summary>
         public MeshKit Paint(int from, Vector2 c)
         {

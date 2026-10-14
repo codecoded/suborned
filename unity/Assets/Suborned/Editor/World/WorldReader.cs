@@ -192,6 +192,7 @@ namespace Suborned.World
         static MassDto Mass(object m) => new()
         {
             Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
+            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string,
         };
 
         static Vector3 V3(object o, string key) { var a = J.A(o, key); return new Vector3((float)(double)a[0], (float)(double)a[1], (float)(double)a[2]); }

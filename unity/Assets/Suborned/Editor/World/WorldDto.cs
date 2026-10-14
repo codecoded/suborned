@@ -60,7 +60,10 @@ namespace Suborned.World
     public sealed class WaterDto { public string Id, Surface; public Vector2[] Ring; public float Level; }
 
     /// <summary>Extruded footprint from Base to Base + Height (buildings, civic, quays, megastructure parts).</summary>
-    public sealed class MassDto { public string Id, Surface; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; } // Kit (civic objects): the piece standing in for the extrusion at its At, on its Base
+    /// <summary>Kit (civic objects): the piece standing in for the extrusion at its At, on its Base. Fade (civic kit masses): the
+    /// play camera's architecture fade may ghost the piece (a parasol over a table someone stands at). GroundBy: the id of the
+    /// kit mass that is this building's ground storey (the café's bay), so the facade draws none.</summary>
+    public sealed class MassDto { public string Id, Surface, GroundBy; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; }
 
     /// <summary>A kit facade piece (bay, end or corner) on a generated building's street face A→B; Kit.At = the piece's footprint centre, Base = pavement top.</summary>
     public sealed class FacadeDto { public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B; }

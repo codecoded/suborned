@@ -128,12 +128,20 @@ namespace Suborned.World
             m.SetColor("_Haze", haze);
         }
 
+        const string KitMaterials = "Assets/Suborned/Kit/Materials";
+
+        /// <summary>Metres per repeat of a surface's texture laid on plan (look.json `tile`, with `material`); 0 = the surface has none.</summary>
+        public float Tile(string surface) => J.Get(Surface(surface), "tile") is double t ? (float)t : 0f;
+
         public Material Mat(string surface)
         {
             if (surface == null) throw new InvalidDataException("World: element has no surface");
             if (cache.TryGetValue(surface, out var m)) return m;
             var e = Surface(surface);
             if (surface == "water") return cache[surface] = Water(e);
+            if (J.Get(e, "material") is string piece) // a kit material as it is (textured paving); surfaces naming one share its batches
+                return cache[surface] = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>($"{KitMaterials}/{piece}.mat")
+                    ?? throw new InvalidDataException($"World: surface `{surface}`: kit material {piece} missing in {KitMaterials} (run `bun run kit`)");
             m = new Material(lit) { name = surface, enableInstancing = true };
             m.SetColor("_BaseColor", Colour(e));
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0f);
