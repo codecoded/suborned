@@ -1,0 +1,26 @@
+{
+  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30).",
+  "content": "world only: buildings, structures, street furniture and bays; no people, vehicles or sim (not built yet)",
+  "width": 1920,
+  "height": 1080,
+  "warmupSeconds": 300,
+  "dwellSeconds": 10,
+  "settleSeconds": 2,
+  "recordSeconds": 30,
+  "stops": [
+    { "name": "home", "why": "civic block home frame: Records Square centre (plan records-square rect -180..-138, -261..-204), the play camera's built focus", "focus": [-159, 0, -232.5], "zoom": 0 },
+    { "name": "cafe-square", "why": "the Corner café terrace on Records Square at play zoom (civic/cafe/terrace)", "focus": [-159, 0, -221.5], "zoom": 0 },
+    { "name": "parade", "why": "Crown Parade under the Parade Galleries (plan parade-galleries x 136..288, mall at y 0; perf-007's Parade focus, then the heaviest of four)", "focus": [212, 0, 0], "zoom": 0 },
+    { "name": "crown-circus", "why": "Crown Circus gyratory and its monument (plan crown-circus arc 0,0)", "focus": [0, 0, 0], "zoom": 0 },
+    { "name": "harbour-quay", "why": "the crane walk on the harbour quay at deck level (plan market-deck quayWalk x 312..330, y -594..-419)", "focus": [321, 9.43, -506.5], "zoom": 0 },
+    { "name": "heaviest", "why": "the most triangles of the 2026-10-14 sweep (648 street foci on a 40 m grid, export 9b2b451d, fingerprint 80fdd304): 2.59 M triangles p50 at play zoom, the records area 104 m east-north-east of home (out/perf/b6-sweep-2026-10-14-fbf540e.json); perf-007's heaviest, the Parade, is a stop already", "focus": [-60, 0, -200], "zoom": 0 }
+  ],
+  "sweep": {
+    "note": "Grid of street foci, each framed 0.4 s with no warm-up, to find the heaviest frame (triangles p50) for the sixth stop.",
+    "step": 40,
+    "x": [-380, 570],
+    "z": [-760, 300],
+    "settleSeconds": 0.15,
+    "recordSeconds": 0.25
+  }
+}
