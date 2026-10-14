@@ -14,8 +14,11 @@ export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`street items ${w.street.length}: ${by(w.street.map(s => s.kind))}`);
   if (w.crossings && gen.crossingLog) {
     const k = (kind: string) => w.crossings!.filter(c => c.kind === kind), g = gen.crossingLog;
-    console.log(`crossings ${w.crossings.length}: kerb ${k('kerb').length} (${g.landings} landings found, ${g.paired} pairs standing, ${g.added} partners added, ${g.dropped.length} landings dropped), stop ${k('stop').length}, bank ${k('bank').length}; refuges ${w.crossings.reduce((n, c) => n + c.refuges.length, 0)}; zebra ${w.crossings.filter(c => c.control === 'zebra').length}`);
+    console.log(`crossings ${w.crossings.length}: kerb ${k('kerb').length} (${g.landings} landings found, ${g.paired} pairs standing, ${g.added} partners added, ${g.dropped.length} landings dropped), stop ${k('stop').length}, bank ${k('bank').length}; refuges ${w.crossings.reduce((n, c) => n + c.refuges.length, 0)}; signal crossings ${w.crossings.filter(c => c.control === 'signal').length}`);
+    const part = (kind: string) => w.street.filter(s => s.kind === kind).length;
+    console.log(`crossing parts ${w.street.filter(s => s.crossing).length}: light bars ${part('crossing-bar')} (LightBar_4), dot rows ${part('crossing-dots')} (LightDotRow_2 ${w.street.filter(s => s.kind === 'crossing-dots' && s.size[0] === 2).length} and _1 ${w.street.filter(s => s.kind === 'crossing-dots' && s.size[0] === 1).length}, in two lines per crossing), signal orbs ${part('signal-orb')} (${w.street.filter(s => s.kind === 'signal-orb' && /\/signal\/r\d+$/.test(s.id)).length} on refuges), studs ${part('crossing-stud')}, arcs ${part('crossing-arc')}; landings ${w.crossings.reduce((n, c) => n + c.landings.length, 0)} (keep-clear, not drawn); slabs left ${part('crossing')}`);
     for (const x of g.dropped) console.log(`  dropped ${x}`);
+    if (g.skipped.length) console.log(`  parts left out ${g.skipped.length}: ${by(g.skipped.map(x => x.replace(/^.*?: /, '')))}`);
   }
   console.log(`megastructures ${w.megastructures.map(m => `${m.id} ${m.parts.length} parts + ${m.prims.length} prims`).join('; ')}`);
   const cp = w.megastructures.flatMap(m => m.prims).filter(p => /\/gallery-canopy\/glass$/.test(p.id));

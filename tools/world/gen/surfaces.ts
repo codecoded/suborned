@@ -16,6 +16,12 @@ export const CRANE = 'crane';
 export const GIRDER = 'girder';
 /** A hoop round a lift's glass tube (dress.ts, "the kit's lift_tube: hoops every 5 m", "chrome hoops"): 2.6 / 3.2 m across, 0.4 m high, as wide as a lift dome, so only its key tells it from a cap. */
 export const HOOP = 'hoop';
+/** A crossing's light (brief 009): the flush light dot rows (or bars) along the walk, kerb to kerb, and the halo disc under a signal orb. Emissive seafoam in a brass frame line: the glow is its key, the frame is a hairline of the piece. */
+export const GLOW = 'glow';
+/** A crossing's seafoam inlay arc in the paving where it lands (brief 009): a band 0.8 m wide, so a colour of its own, not brass. */
+export const INLAY = 'inlay';
+/** A signal orb's body (brief 009): chrome, 0.84 m across. Its displays are the piece's emissive materials (walk and stop pictograms); this key is the stand-in's body. */
+export const ORB = 'orb';
 
 /** Every key above: the surfaces the export carries that are not in look.json until Latch adds them. */
-export const OWN_KEYS = [CANOPY, PLATE, BOOTH, TUB, CRANE, GIRDER, HOOP] as const;
+export const OWN_KEYS = [CANOPY, PLATE, BOOTH, TUB, CRANE, GIRDER, HOOP, GLOW, INLAY, ORB] as const;

@@ -11,6 +11,7 @@ import { civicClearance } from '../build';
 import { type Dressing, dressingOf, footOf, placementKinds } from '../civic/dress';
 import { look } from '../civic/look';
 import { adoptedBy } from '../gen/kitrefs';
+import { landingsOf } from '../gen/street/crossings';
 import { adoptedRule, budgetRule, civicDressRules, civicTris, drawnApart, handoverPoints, namedPieces, overrideProblems, paletteRule } from './civic-dress';
 
 setDefaultTimeout(120000);
@@ -68,11 +69,12 @@ describe('civic dressing: what is placed', () => {
     expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(7);
   });
   test('crossings: nine civic landings are built, each paired across the carriageway; x-apron-w and the two left out stay dropped', () => {
-    const lands = dr.crossings.at.map(c => base.w.street.find(s => s.id.endsWith(`/crossing-${c.id}`)));
+    const lands = dr.crossings.at.map(c => landingsOf(base.w).find(s => s.id.endsWith(`/crossing-${c.id}`)));
     expect(lands.every(Boolean)).toBe(true);
     expect(dr.crossings.at.map(c => c.id)).not.toContain('x-apron-w');
-    expect(base.w.street.some(s => s.id.endsWith('x-apron-w'))).toBe(false);
-    for (const l of lands) expect(base.w.crossings!.some(c => c.items.includes(l!.id) && c.items.length === 2)).toBe(true);
+    expect(landingsOf(base.w).some(s => s.id.endsWith('x-apron-w'))).toBe(false);
+    expect(base.w.street.some(s => s.kind === 'crossing')).toBe(false); // a crossing lays no slab: its landings are keep-clear footprints, not street items
+    for (const l of lands) expect(base.w.crossings!.some(c => c.landings.some(q => q.id === l!.id) && c.landings.length === 2)).toBe(true);
     const bollards = base.w.street.filter(s => s.kind === 'bollard' && /^street\/records-(square|office)\//.test(s.edge));
     expect(bollards).toEqual([]); // the generator places nothing else on a civic kerb
   });
@@ -168,6 +170,21 @@ describe('CD-1 keep-clear and Handover points', () => {
     expect(rules(w => moveTo(civicMass(w, 'civic/cafe-table-0/parasol'), [-5, -29]))['CD-1']!.detail).toContain('cafe-gate-spine');
     expect(rules(w => moveTo(civicMass(w, 'civic/band/forecourt-bar.0'), [50.1, -30]))['CD-1']!.detail).toContain('office-public-steps');
     expect(rules(w => moveTo(civicMass(w, 'civic/band/spine-inner.0'), [2.1, -25.6]))['CD-1']!.detail).toContain('fountain-garden');
+  });
+  test('crossings (brief 009): a stud or a signal halo on a Handover point fails; the orb overhead, the dot rows and the arcs flush with the paving pass', () => {
+    const at = (kind: string) => base.w.street.find(s => s.kind === kind)!;
+    const near = (p: V) => handoverPoints(toPlan).sort((a, b) => Math.hypot(a.p[0] - p[0], a.p[1] - p[1]) - Math.hypot(b.p[0] - p[0], b.p[1] - p[1]))[0]!;
+    const onPoint = (w: World, id: string) => { const s = w.street.find(q => q.id === id)!, h = near(s.at); s.at = h.p; if (s.signal) s.signal.halo.at = h.p; return h.name; };
+    const stud = at('crossing-stud'), orb = at('signal-orb'), bar = at('crossing-dots'), arc = at('crossing-arc');
+    let name = '';
+    const a = rules(w => { name = onPoint(w, stud.id); });
+    expect(a['CD-1']!.ok).toBe(false); expect(a['CD-1']!.detail).toContain(`${stud.id} (crossing stud) is 0.00 m from '${name}'`);
+    const b = rules(w => { name = onPoint(w, orb.id); });
+    expect(b['CD-1']!.ok).toBe(false); expect(b['CD-1']!.detail).toContain(`${orb.id} (signal halo) is 0.00 m from '${name}'`);
+    const c = rules(w => { for (const id of [bar.id, arc.id]) { const s = w.street.find(q => q.id === id)!; s.at = near(s.at).p; } }); // flat lights and inlay: exempt, as flat inlay is
+    expect(c['CD-1']!.ok).toBe(true);
+    const d = rules(w => { const s = w.street.find(q => q.id === orb.id)!; s.at = near(s.at).p; }); // the orb hovers overhead: only its halo (left where it was) counts
+    expect(d['CD-1']!.ok).toBe(true);
   });
   test('passes: flat inlay under a Handover point (spine-north under "Courtyard")', () => {
     const band = base.w.civic.find(m => /^civic\/band\/spine-north/.test(m.id) && inPoly(toPlan([-6.8, -29]), m.ring));

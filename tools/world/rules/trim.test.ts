@@ -6,7 +6,7 @@ import type { World } from '../../../contracts/world/world.schema';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { ctxOf, generated } from '../../plan/world-ctx';
-import { CANOPY, BOOTH, CRANE, GIRDER, HOOP, OWN_KEYS, PLATE, TUB } from '../gen/surfaces';
+import { CANOPY, BOOTH, CRANE, GIRDER, GLOW, HOOP, INLAY, ORB, OWN_KEYS, PLATE, TUB } from '../gen/surfaces';
 import { broad, broadParts, brassParts, faceOf, trimRules } from './trim';
 
 setDefaultTimeout(120000);
@@ -20,7 +20,8 @@ const sf21 = (mutate: (w: World) => void = () => {}) => {
   return { w, check: trimRules(ctxOf(plan, d, civ, { w, gen: base.gen }))[0]! };
 };
 /** Every prim and street item the generator moved off `trim`, wherever it is in the export, with the key it draws. */
-const owned = (w: World) => [...w.street, ...w.megastructures.flatMap(m => m.prims), ...w.connectors.flatMap(k => k.dress ?? [])].filter(x => (OWN_KEYS as readonly string[]).includes(x.surface));
+const owned = (w: World, keys: readonly string[] = OWN_KEYS) => [...w.street, ...w.megastructures.flatMap(m => m.prims), ...w.connectors.flatMap(k => k.dress ?? [])].filter(x => keys.includes(x.surface));
+const LARGE = [CANOPY, PLATE, BOOTH, TUB, CRANE, GIRDER, HOOP]; // the seven keys the large parts took on 14 Oct (482 parts); a crossing's glow, inlay and orb keys came with brief 009
 
 describe('SF-21 the measure', () => {
   test('a face is broad when its shorter side is wider than 0.6 m and it is at least 1 m²; 0.6 m exactly is thin', () => {
@@ -60,10 +61,18 @@ describe('SF-21 on the live world', () => {
       expect(check.detail, key).toContain(`${n} fail: `);
     }
     expect(per.reduce((t, [, n]) => t + n, 0)).toBe(482);
-    const all = sf21(w => { for (const x of owned(w)) x.surface = 'trim'; });
+    const all = sf21(w => { for (const x of owned(w, LARGE)) x.surface = 'trim'; });
     expect(broadParts(all.w).length).toBe(482);
     expect(broadParts(all.w)).toContain('mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)');
     expect(all.check.detail).toContain('482 fail: street/stop/T1/comet/l/phone-booth-13 (phone-booth box 1 x 1 x 2.5 m, face 1 x 2.5 m)'); // the first six are named, the rest counted
+  });
+
+  test('brief 009: a crossing\'s arcs (237) and eyes (156) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
+    for (const [key, n] of [[GLOW, 0], [INLAY, 237], [ORB, 156]] as const) {
+      const { w, check } = sf21(w => { for (const x of owned(w, [key])) x.surface = 'trim'; });
+      expect(broadParts(w).length, key).toBe(n);
+      expect(check.ok, key).toBe(n === 0);
+    }
   });
 
   test('a new broad part in trim fails; the same part in a key of its own, or as a bead, passes', () => {

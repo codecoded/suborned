@@ -10,6 +10,7 @@ import { type V as PV, dist, dot, norm, sub } from '../../plan/geom';
 import { flagRow } from './colour';
 import { edgeN } from './geo';
 import { streetKit } from './kitrefs';
+import { bindPart } from './street/partkit';
 import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
 import { Layer } from './street/kit';
 import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks } from './street/public';
@@ -35,7 +36,7 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   if (ctx.S.crossings.strip) bankFeet(ctx, L, o.connectors.filter(k => k.kind === 'stairTower'));
   const civicIds = ctx.S.crossings.strip ? civicLandings(ctx, L) : [];
   const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L, civicIds) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items]), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}) };
+  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

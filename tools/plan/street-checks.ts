@@ -3,6 +3,8 @@
 // plan's sections, so a generator that breaks the standard fails here whatever it meant to do.
 import { ctxOf as genCtx } from '../world/gen/common';
 import { kindOf, plotRing } from '../world/gen/edges';
+import { landingsOf } from '../world/gen/street/crossings';
+import { PART_KINDS } from '../world/gen/street/parts';
 import type { Check } from './checks';
 import type { V } from './geom';
 import { FLAT, Grid, type Spot, WATCHERS, indexes, roadAt, spotsOf, tramBlock, walkBlock } from './street-geo';
@@ -30,9 +32,10 @@ export function streetChecks(c: WCtx): Check[] {
   }
   out.push(rule('SF-1', G, 'The clear walking zone is never blocked (road, mall and walk zones; a deck\'s clear width)', spots.length, bad1, 'none', 'streetscape.sections · levels.deck/concourse · Inclusive Mobility'));
 
-  // SF-2 nothing but bollards, crossing beacons and tram stop kits within 2 m of a crossing or a doorway jamb
+  // SF-2 nothing but bollards, crossing beacons, a crossing's own parts and tram stop kits within 2 m of a crossing (its landing: the footprint where people step on or off, drawn or not) or a doorway jamb
   type Door = { c: V; ring: V[]; f: (typeof w.frontages)[number] };
-  const bad2: string[] = [], cross = gnd.filter(x => x.s.kind === 'crossing'), doors = new Grid<Door>(10, f => f.c), exempt = (s: Spot) => ['bollard', 'beacon', 'crossing'].includes(s.s.kind) || s.kit;
+  const bad2: string[] = [], cross = landingsOf(w).map(l => ({ s: l, ring: boxRing(l.at, l.size[0], l.size[1], l.yaw) })), doors = new Grid<Door>(10, f => f.c), own = PART_KINDS as readonly string[];
+  const exempt = (s: Spot) => ['bollard', 'beacon', 'crossing'].includes(s.s.kind) || own.includes(s.s.kind) || s.kit;
   for (const f of w.frontages.filter(q => q.level === 'street')) doors.add({ c: f.entrance.c as V, ring: boxRing(f.entrance.c as V, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw), f });
   for (const sp of gnd) {
     if (exempt(sp)) continue;

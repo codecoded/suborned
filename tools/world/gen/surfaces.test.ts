@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { worldOf } from '../build';
-import { BOOTH, CANOPY, CRANE, GIRDER, HOOP, OWN_KEYS, PLATE, TUB } from './surfaces';
+import { BOOTH, CANOPY, CRANE, GIRDER, GLOW, HOOP, INLAY, ORB, OWN_KEYS, PLATE, TUB } from './surfaces';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -77,21 +77,34 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
   expect(roofTubs.length).toBe(418 * 2); for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
 });
 
-test('the canopy, plate, hoop, booth, tub, crane and girder keys are the whole of OWN_KEYS, and the export carries 482 parts in them', () => {
-  const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB];
+test('a crossing\'s lights draw `glow`, its arcs `inlay`, its orbs `orb`; its studs stay `trim` (brass, a frame line); no slab is left to draw `crossing`', () => {
+  const part = (kind: string) => w.street.filter(s => s.kind === kind);
+  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(980); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
+  expect(part('crossing-arc').length).toBe(237); for (const s of part('crossing-arc')) expect(s.surface, s.id).toBe(INLAY);
+  expect(part('signal-orb').length).toBe(156); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
+  expect(part('crossing-stud').length).toBe(536); for (const s of part('crossing-stud')) expect(s.surface, s.id).toBe('trim');
+  expect(part('crossing')).toEqual([]);
+  expect(withKey(GLOW).length).toBe(980); expect(withKey(INLAY).length).toBe(237); expect(withKey(ORB).length).toBe(156);
+});
+
+test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 482 + 1,373 parts in them', () => {
+  const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB, GLOW, INLAY, ORB];
   expect(keys.sort()).toEqual(named.sort());
-  expect(OWN_KEYS.reduce((n, k) => n + withKey(k).length, 0)).toBe(482);
+  const count = (ks: string[]) => ks.reduce((n, k) => n + withKey(k).length, 0);
+  expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(482);
+  expect(count([GLOW, INLAY, ORB])).toBe(1373);
+  expect(count(OWN_KEYS as unknown as string[])).toBe(1855);
 });
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
   const was: Record<string, string> = {
-    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', crossing: 'crossing',
+    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-stud': 'trim',
     hydrant: 'trim', 'kiosk-food': 'enamel', 'kiosk-tickets': 'enamel', lamp: 'trim', mailbox: 'enamel', 'mast-camera': 'trim', newsstand: 'enamel',
-    'phone-booth': 'booth', planter: 'park', 'pole-camera': 'trim', 'public-clock': 'trim', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
+    'phone-booth': 'booth', planter: 'park', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
     'tram-shelter': 'enamel', tree: 'park', 'tub-palm': 'tub', 'vending-robot': 'enamel',
   };
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length).toBe(3279);
+  expect(w.street.length).toBe(5026); // 3117 without the 1,909 crossing parts; the 162 landing slabs it was 3279 with are keep-clear footprints now
 });

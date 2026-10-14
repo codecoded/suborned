@@ -2,10 +2,11 @@
 // the quay edge, roofs, spill and colours. SF-1 … SF-9 are in street-checks.ts.
 import { ctxOf as genCtx } from '../world/gen/common';
 import { kindOf, plotRing } from '../world/gen/edges';
+import { landingsOf } from '../world/gen/street/crossings';
 import type { Check } from './checks';
 import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
-import { quayBlock } from './street-zones';
+import { FLAT, quayBlock } from './street-zones';
 import { type WCtx, TOL, bb, f1, ringGap, rule } from './world-ctx';
 
 const G = 'Streetscape';
@@ -54,7 +55,7 @@ export function streetRules(c: WCtx): Check[] {
   out.push(rule('SF-11', G, 'Trees keep clear of junction corners 6, lamps 3, hydrants 2, pylon faces 3, megastructure supports 6 and any deck or bridge above', trees.length, bad11, 'all', 'streetscape.trees.keepClear'));
 
   // SF-12 every tram stop platform and every station side has its whole transit kit
-  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => spots.filter(x => x.s.kind === kind && test(x.s.edge)).length;
+  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => (kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)) : spots.filter(x => x.s.kind === kind && test(x.s.edge))).length; // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
   const need = (label: string, kind: string, test: (e: string) => boolean, n: number) => { const got = by(kind, test); if (got < n) bad12.push(`${label}: ${got} ${kind} (needs ${n})`); };
   const stops = w.transit.stops;
   for (const m of stops) for (const [kind, n] of [['tram-shelter', 1], ['bench', 2], ['ticket-machine', 1], ['timetable-column', 1], ['bin', 1], ['bollard', 2], ['pole-camera', 1]] as const) need(m.id, kind, e => e === m.id, n);
@@ -104,7 +105,7 @@ export function streetRules(c: WCtx): Check[] {
 
   // SF-14 nothing but lamps and mooring cleats within 1.5 m of a quay edge (the edge that faces water)
   const bad14: string[] = [];
-  const q14 = gnd.filter(x => !['lamp', 'mooring-cleat'].includes(x.s.kind) && plan.quay.some(q => inRing(x.s.at, q)));
+  const q14 = gnd.filter(x => !['lamp', 'mooring-cleat'].includes(x.s.kind) && (x.s.kind === 'crossing' || !FLAT.has(x.s.kind)) && plan.quay.some(q => inRing(x.s.at, q))); // a crossing's studs, arcs, lights and orbs are paving and light, not furniture; the landing slab of a plan without crossings.strip is still judged, as it always was
   for (const sp of q14) if (quayBlock(gc, sp.pts)) bad14.push(`${tag(sp)} within 1.5 m of the quay edge`);
   out.push(rule('SF-14', G, 'Nothing but lamps and mooring cleats within 1.5 m of a quay edge', q14.length, bad14, '≥ 1.5 m', 'streetscape.sections.quay.edge'));
 
@@ -143,7 +144,7 @@ export function streetRules(c: WCtx): Check[] {
     else if (p === 'coral_transit' && !/-kiosk$/.test(f.trade)) bad17.push(`${f.id}: coral_transit on ${f.trade}`);
     else if (p !== 'coral_transit' && !PALETTE.includes(p)) bad17.push(`${f.id}: sign colour ${p} is not in the city palette`);
   }
-  const coralOk = new Set(['kiosk-tickets', 'station-entrance', 'timetable-column']), surfaces = new Set(['enamel', 'trim', 'park', 'crossing', 'booth', 'tub']); // crossing, booth, tub: the landing slab's, the phone booth body's and the palm tub base's own look keys (so the trim colour does not decide them)
+  const coralOk = new Set(['kiosk-tickets', 'station-entrance', 'timetable-column']), surfaces = new Set(['enamel', 'trim', 'park', 'crossing', 'booth', 'tub', 'glow', 'inlay', 'orb']); // crossing, booth, tub, glow, inlay, orb: the landing slab's (a plan without crossings.strip), the phone booth body's, the palm tub base's and a crossing's light, arc and orb's own look keys (so the trim colour does not decide them)
   for (const sp of spots) { if (!surfaces.has(sp.s.surface)) bad17.push(`${tag(sp)}: surface ${sp.s.surface}`); if (sp.s.variant === 'coral-dial' && !coralOk.has(sp.s.kind)) bad17.push(`${tag(sp)}: coral off a transit item`); if (SIGNAL.some(x => `${sp.s.variant ?? ''}${sp.s.surface}`.includes(x))) bad17.push(`${tag(sp)}: signal colour`); }
   out.push(rule('SF-17', G, 'No sign, lamp or furniture colour is a signal colour or a faction colour; coral_transit only on transit items', w.frontages.length + spots.length, bad17, 'none', 'streetscape.lamps.colour · frontage.placement.signs · §15 signal_colours'));
   return out;

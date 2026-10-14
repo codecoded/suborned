@@ -7,6 +7,7 @@ import type { KitRef } from '../../contracts/world/world.schema';
 import { scaled } from '../kit/fit';
 import { ctxOf as genCtx } from '../world/gen/common';
 import { adopted, slotOf } from '../world/gen/kitrefs';
+import { PART_USE, fitsPart } from '../world/gen/street/partkit';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist } from './geom';
 import { quayBlock } from './street-zones';
@@ -49,6 +50,10 @@ export function kitFitChecks(c: WCtx): Check[] {
   const g = genCtx(plan, d, c.civ);
   for (const s of w.street) if (s.kit) {
     const k = piece(s.id, s.kit), slot = slotOf(g, s); if (!k) continue;
+    if (PART_USE[s.kind]) { // a crossing's part: its slot is its own size, and the piece is the one of its use, unscaled
+      if (!k.a.tags.use.includes(PART_USE[s.kind]!) || s.kit.scale.some(v => v !== 1) || !fitsPart(k.a.size, s)) bad.push(`${s.id}: ${k.a.id} ${k.a.size.map(f1).join('×')} m is not the ${PART_USE[s.kind]} piece of the part's ${s.size.map(f1).join('×')} m`);
+      continue;
+    }
     if (!slot) { bad.push(`${s.id}: a ${s.kind} has no slot`); continue; }
     if ((slot.along !== undefined && k.s[0] > slot.along + TOL) || (slot.depth !== undefined && k.s[2] > slot.depth + TOL) || (slot.maxH !== undefined && k.s[1] > slot.maxH + TOL)) bad.push(`${s.id}: ${k.a.id} ${k.s.map(f1).join('×')} m over slot ${slot.along ?? '-'}×${slot.depth ?? '-'}×${slot.maxH ?? '-'}`);
   }

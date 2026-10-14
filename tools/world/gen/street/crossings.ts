@@ -5,14 +5,17 @@
 // landing gets its partner on the opposite pavement where the spot is free (SF-2 keeps its 2 m, the solids and keep-clears
 // hold) and is dropped, with its bollards and beacons, where it cannot. A pair whose strip would cross a tram track or a bay
 // the plan does not allow is dropped. Tram stop and station bank patches are strip-only crossings: the way to the platform.
-import type { Connector, Crossing, StreetItem } from '../../../../contracts/world/world.schema';
-import { type V, add, dist, dot, inPoly, mul, polyline, segDist, segHit, sub } from '../../../plan/geom';
+// Brief 009: a crossing lays no slab. The patches the pairing works with (a landing's footprint, SF-2's keep-clear) leave the street layer and become the crossing's `landings`; what is drawn is its parts
+// (parts.ts: light bars or dots, signal orbs, kerb studs, inlay arcs), placed from the plan's standard.
+import type { Connector, Crossing, Landing as Foot, StreetItem, World } from '../../../../contracts/world/world.schema';
+import { type V, add, dist, dot, inPoly, mul, norm, polyline, segDist, segHit, sub } from '../../../plan/geom';
 import { boxRing, quayBlock, ringGap, roadAt, samples9 } from '../../../plan/street-zones';
-import { type Ctx, r3, rv } from '../common';
+import { type Ctx, r3, r4, rv } from '../common';
 import { idOf, kindOf, plotRing } from '../edges';
 import { bbox, edgeN } from '../geo';
 import type { Landing, Layer } from './kit';
-import { lawn, levelAt } from './ground';
+import { ROAD_Z, lawn, levelAt, onRoad } from './ground';
+import { type End, type Site, bandGap, lookOf, partsOf } from './parts';
 import { landing } from './roads';
 import { toPlanFn } from '../../../plan/civic';
 import type { Dressing } from '../../civic/dress';
@@ -51,6 +54,9 @@ export function clipConvex(subject: V[], clip: V[]): V[] {
 }
 export const areaOf = (p: V[]) => Math.abs(p.reduce((t, a, i) => t + a[0] * p[(i + 1) % p.length]![1] - p[(i + 1) % p.length]![0] * a[1], 0)) / 2;
 
+/** The landings of a world: a kerb crossing's two ends and a stop or bank crossing's one patch (its keep-clear footprints, not drawn), or, in a plan without streetscape.crossings.strip, the landing slabs that are street items. */
+export const landingsOf = (w: Pick<World, 'crossings' | 'street'>): Foot[] => w.crossings ? w.crossings.flatMap(c => c.landings) : w.street.filter(s => s.kind === 'crossing');
+
 /** True if two rings overlap (a vertex inside the other, or an edge crossing an edge). */
 export function overlaps(a: V[], b: V[]): boolean {
   const ins = (p: V, r: V[]) => { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) if ((r[i]![1] > p[1]) !== (r[j]![1] > p[1]) && p[0] < ((r[j]![0] - r[i]![0]) * (p[1] - r[i]![1])) / (r[j]![1] - r[i]![1]) + r[i]![0]) c = !c; return c; };
@@ -80,8 +86,8 @@ export function stripBlock(strip: V[], tracks: V[][], envelope: number, bays: V[
 /** The strip between two kerb points: `width` wide, from kerb to kerb. */
 export const stripRing = (ka: V, kb: V, width: number): V[] => boxRing([(ka[0] + kb[0]) / 2, (ka[1] + kb[1]) / 2], dist(ka, kb), width, Math.atan2(kb[1] - ka[1], kb[0] - ka[0])).map(rv);
 
-/** What pairCrossings did, for the export's log: kerb landings found, pairs standing already, partners added, and each landing dropped with the reason. */
-export type CrossingLog = { landings: number; paired: number; added: number; dropped: string[] };
+/** What pairCrossings did, for the export's log: kerb landings found, pairs standing already, partners added, each landing dropped with the reason, and each signal orb left out for want of clear ground under its halo. */
+export type CrossingLog = { landings: number; paired: number; added: number; dropped: string[]; skipped: string[] };
 
 /** The landings the civic block names (`dressing.crossings.at`, block/4), on its own kerb: the patch alone, no bollards or beacons (the block states none). They are placed after
  *  every district item so no id or seeded choice moves, and pair with the district landing the generator dropped for lack of a partner (pairCrossings, step 1). */
@@ -117,8 +123,11 @@ export function bankFeet(ctx: Ctx, L: Layer, towers: Connector[]): void {
   }
 }
 
-export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { crossings: Crossing[]; log: CrossingLog } {
-  const std = ctx.S.crossings.strip as { stagger: number; refuge: number; control?: Record<string, 'zebra' | 'signal'>; across?: { track?: string[]; bay?: string[] } }, W = ctx.S.crossings.w as number;
+/** A street item as the landing it was: the footprint alone (its look is gone with the slab). */
+const landingOf = (it: StreetItem): Foot => ({ id: it.id, edge: it.edge, at: it.at, yaw: it.yaw, z: it.z, size: it.size });
+
+export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { crossings: Crossing[]; log: CrossingLog; parts: StreetItem[] } {
+  const std = ctx.S.crossings.strip as { stagger: number; refuge: number; control?: Record<string, 'signal'>; across?: { track?: string[]; bay?: string[] } }, W = ctx.S.crossings.w as number, look = lookOf(ctx.S.crossings.strip);
   const edges = edgesOf(ctx), roads = new Map(ctx.d.roads.map(r => [r.id, r])), items = new Map(L.items.map(x => [x.id, x]));
   const info = (l: Landing) => { // the landing's edge, and its place on the kerb line
     const it = items.get(l.id)!, e = edges.get(it.edge)!;
@@ -179,22 +188,30 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     if (why) { for (const l of [p.a, p.b]) drop.set(l.id, why); } else ok.push(p);
   }
 
-  // 4. the crossings: kerb pairs in landing order, then the stop and bank patches
-  const out: Crossing[] = [], n = new Map<string, number>(), medians = ctx.d.zones.filter(z => z.kind === 'median' && z.poly);
+  // 4. the crossings: kerb pairs in landing order, then the stop and bank patches; each with the parts the plan's standard gives it
+  const out: Crossing[] = [], parts: StreetItem[] = [], skipped: string[] = [], n = new Map<string, number>(), zones = ctx.d.zones.filter(z => z.kind === 'median'), medians = zones.filter(z => z.poly);
   const nextId = (road: string) => { const k = n.get(road) ?? 0; n.set(road, k + 1); return `crossing/${road}/${k}`; };
-  const order = new Map(L.landings.map((l, i) => [l.id, i]));
+  const order = new Map(L.landings.map((l, i) => [l.id, i])), placed = new Map(L.items.map(x => [x.id, x])); // placed: with the partners step 2 added
   const civicOnes = new Set(civicIds), isCivic = (p: Pair) => civicOnes.has(p.a.id) || civicOnes.has(p.b.id); // civic pairs number after the district's, so no district crossing id moves
+  const bands: V[][] = [], site: Site = { // the arcs placed so far claim their ground: a later crossing's arc whose band would overlap one is left out (its corner is already rounded)
+    clear: (ring, at) => L.clearGround(ring, at, 0.001), pave: p => !lawn(ctx, p) && !onRoad(ctx, p),
+    take: (pts, w) => { if (bands.some(b => bandGap(b, pts) < w - 0.011)) return false; bands.push(pts); return true; },
+  };
+  const dress = (x: Omit<Crossing, 'walk'>, ends: End[], level: number, refugeEdges: string[] = []) => {
+    const ps = partsOf(x, look, level, ends, refugeEdges, ctx.pav, site, skipped), walk = r4(Math.atan2(x.line[1][1] - x.line[0][1], x.line[1][0] - x.line[0][0]));
+    out.push({ ...x, items: ps.map(q => q.id), walk }); parts.push(...ps);
+  };
   for (const p of [...ok].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
-    const strip = stripRing(p.ka, p.kb, W), refuges = medians
-      .filter(z => dist(z.poly![1]!, z.poly![2]!) >= std.refuge - 1e-9).map(z => clipConvex(strip, z.poly!)).filter(r => areaOf(r) > 0.25).map(r => r.map(rv));
-    const control = std.control?.[p.a.cls];
-    out.push({ id: nextId(p.a.road), kind: 'kerb', road: p.a.road, items: [p.a.id, p.b.id], line: [rv(p.ka), rv(p.kb)], strip, width: W, ...(control ? { control } : {}), refuges });
+    const strip = stripRing(p.ka, p.kb, W), refuged = medians.filter(z => dist(z.poly![1]!, z.poly![2]!) >= std.refuge - 1e-9).map(z => ({ z, ring: clipConvex(strip, z.poly!) })).filter(r => areaOf(r.ring) > 0.25);
+    const control = std.control?.[p.a.cls], its = [placed.get(p.a.id)!, placed.get(p.b.id)!], ks = [p.ka, p.kb];
+    const ends: End[] = its.map((it, i) => ({ landing: landingOf(it), k: rv(ks[i]!), inward: norm(sub(it.at, ks[i]!)) }));
+    dress({ id: nextId(p.a.road), kind: 'kerb', road: p.a.road, items: [], landings: ends.map(e => e.landing), line: [rv(p.ka), rv(p.kb)], strip, width: W, ...(control ? { control } : {}), refuges: refuged.map(r => r.ring.map(rv)) }, ends, ROAD_Z, refuged.map(r => `median/${zones.indexOf(r.z)}`));
   }
   const landed = new Set(L.landings.map(l => l.id));
   for (const it of L.items.filter(x => x.kind === 'crossing' && !landed.has(x.id))) {
     const u: V = [Math.cos(it.yaw), Math.sin(it.yaw)], h = it.size[0] / 2, road = roadAt(ctx, it.at, it.edge)?.road ?? '';
     const kind = it.edge.startsWith('stop/') ? 'stop' : 'bank';
-    out.push({ id: nextId(it.edge), kind, road, items: [it.id], line: [rv(sub(it.at, mul(u, h))), rv(add(it.at, mul(u, h)))], strip: boxRing(it.at, it.size[0], it.size[1], it.yaw).map(rv), width: r3(it.size[1]), refuges: [] });
+    dress({ id: nextId(it.edge), kind, road, items: [], landings: [landingOf(it)], line: [rv(sub(it.at, mul(u, h))), rv(add(it.at, mul(u, h)))], strip: boxRing(it.at, it.size[0], it.size[1], it.yaw).map(rv), width: r3(it.size[1]), refuges: [] }, [], it.z);
   }
 
   // 5. what could not be paired goes, with the bollards and beacons that flanked it
@@ -204,6 +221,6 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     gone.add(l.id); for (const f of l.flank) gone.add(f);
     noted.push(`${l.id}: ${why}`);
   }
-  L.items = L.items.filter((x: StreetItem) => !gone.has(x.id));
-  return { crossings: out, log: { landings: own.length, paired: pairs0, added, dropped: noted } };
+  L.items = L.items.filter((x: StreetItem) => !gone.has(x.id) && x.kind !== 'crossing'); // no slab: every patch left is now some crossing's landing
+  return { crossings: out, log: { landings: own.length, paired: pairs0, added, dropped: noted, skipped }, parts };
 }

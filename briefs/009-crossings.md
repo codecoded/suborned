@@ -1,6 +1,6 @@
 # 009 · Crossings as this world builds them
 
-**Status (2026-10-14):** concepts chosen; A and B starting; C waits for Latch's B6 runs (brief 008).
+**Status (2026-10-14):** concepts chosen. **A done** (d3bade9): six candidates in `out/decokit-009/`, sheet `out/review/009-crossing-pieces.html`; sphere orb Ø0.84 m hovering at 2.70 m, 698 triangles. Only the orb body casts a shadow; Latch turns its displays to the play camera. B running; C waits for Latch's B6 runs (brief 008).
 
 Goal (Sky, 2026-10-14): the crossings "should be more future sci… currently look standard zebra crossing". The world is an alternate history, not a forecast: "a 1950s world that discovered atomic power centuries ago" (brief 008, Era), so street technology is far ahead while its style stays 1950s: "Traffic lights would be something else, maybe floating, and same for road markings."
 
@@ -9,6 +9,7 @@ Goal (Sky, 2026-10-14): the crossings "should be more future sci… currently lo
 - **The floating signal "eyes"** ("I do like those eyes"): chrome orbs or small saucers hovering over the kerb at each end of a crossing, a round display on each face showing a walking figure, a thin light beam down to a glowing disc on the paving where people wait (`crossing-future-eye-2.jpg`, `crossing-future-play.jpg`, `crossing-future-play-2.jpg`).
 - **Red is allowed on electronic displays** ("red is definitely ok for electronics displays"): the signal's stop pictogram may be red. An exception to the ΔE ≥ 20 signal-colour rule for small emissive display pictograms only, never a surface; the cones keep their own shape and motion cue. Owed: the next GDD version (§10, §15).
 - **No zebra, no paint, no landing slab.** The crossing is light set flush in the road: glowing seafoam bars or rows of light dots in brass frames (`crossing-future-eye.jpg`, `crossing-future-eye-cafe.jpg`, `crossing-future-play-2.jpg`); brass dome studs along the kerb edge; seafoam inlay arcs in the paving where the crossing lands. Brass stays a frame line (SF-21).
+- Ruling (Aster, after Vela's test scene): **the light runs along the walk**, kerb to kerb, near the strip's two edges (dot rows in `crossing-future-play-2.jpg`, edge rails in `crossing-future-eye.jpg`), never side by side across the road; laid parallel to traffic, the bars read as a zebra in light. Dots by default.
 
 ## A · Vela · pieces
 objective: the crossing's kit pieces in DecoKit, lean, at play-zoom budgets: the signal orb (chrome body, round display both faces with walk and stop pictograms as swappable emissive materials, hover height and the beam and halo disc as separate parts so Unity can light them), the kerb stud, the flush light-bar strip and a light-dot row in brass frames, the kerb inlay arc. Read the six concepts and pick one orb shape (sphere or saucer) with a reason; name the colours from the palette (seafoam glow, brass frame, chrome; red only on the stop pictogram).

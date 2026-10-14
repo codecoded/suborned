@@ -7,7 +7,7 @@ import { BOOTH, TUB } from '../surfaces';
 import { Grid } from '../../../plan/street-geo';
 import { FLAT, beamBlock, footprintOf, quayBlock, ringGap, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
 
-/** The look surface a kind draws in (default `trim`). A crossing landing, a phone booth and a palm tub have their own, so the trim colour (brass, 14 Oct) does not decide them: each colour is one look.json value. */
+/** The look surface a kind draws in (default `trim`). A crossing landing slab (only a plan without streetscape.crossings.strip has them now), a phone booth and a palm tub have their own, so the trim colour (brass, 14 Oct) does not decide them: each colour is one look.json value. */
 const SURF: Record<string, string> = { tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel', crossing: 'crossing', 'phone-booth': BOOTH, 'tub-palm': TUB };
 const sightOf = (s: unknown): StreetItem['sight'] => (String(s).startsWith('blocks') ? 'blocks' : String(s).startsWith('glazed') ? 'glazed' : 'open');
 
@@ -51,6 +51,10 @@ export class Layer {
   /** SF-2 for a crossing placed after the furniture: nothing but bollards, beacons and tram stop kits within `gap` m of its footprint, and no other crossing within 1 m. */
   clearOf(ring: V[], at: V, gap: number): boolean {
     return !this.crossings.some(c => ringGap(c, ring) < 1) && !this.placed.near(at, 12).some(o => !o.exempt && ringGap(o.ring, ring) < gap);
+  }
+  /** True if a flat ring (a signal's halo disc) stands `gap` m clear of everything placed on the ground but bollards, beacons and crossing patches: the ground an orb lights must be free. */
+  clearGround(ring: V[], at: V, gap: number): boolean {
+    return !this.placed.near(at, 12).some(o => !o.exempt && ringGap(o.ring, ring) < gap);
   }
   /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
   add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {

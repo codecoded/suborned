@@ -1,18 +1,19 @@
 // CD-1..CD-4: the civic block's dressing (civic-block.json `dressing`, brief 008 B3). Each reads the export's civic masses, so what Unity draws is what is checked.
-// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted);
+// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted; a crossing's signal orb is a canopy, its halo and studs are ground);
 // CD-2 every piece the block names is adopted in the kit, and a material a mass draws in place of its piece's own replaces a slot the piece has; CD-3 the pieces brief 008 added (the bed tufts and the terrace among them)
 // stay within their LOD0 triangle budget; CD-4 every colour they draw (pieces, bed kerb and hedge, replaced slots, the whole look palette) is >= 20 dE2000 from the signal colours.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { Mass } from '../../../contracts/world/world.schema';
+import type { Mass, World } from '../../../contracts/world/world.schema';
 import type { Check } from '../../plan/checks';
 import { toPlanFn } from '../../plan/civic';
 import { type V, dist, inPoly, segDist } from '../../plan/geom';
 import { type WCtx, itemRing, rule, stat } from '../../plan/world-ctx';
 import { type Dressing, dressingOf, placementKinds } from '../civic/dress';
 import { look } from '../civic/look';
+import { discRing } from '../gen/box';
 import { adoptedBy } from '../gen/kitrefs';
-import { overlaps } from '../gen/street/crossings';
+import { landingsOf, overlaps } from '../gen/street/crossings';
 import { deltaE2000 } from './deltae';
 
 const MISSION = resolve(import.meta.dir, '../../../contracts/missions/handover/mission.json');
@@ -39,7 +40,7 @@ function zonesOf(c: WCtx, dr: Dressing, toPlan: (p: V) => V): Zone[] {
     ? { id: z.id, bars: z.bars, hits: (r: V[]) => overlaps(r, z.polygon.map(toPlan)) }
     : { id: z.id, bars: z.bars, hits: (r: V[]) => meetsAnnulus(r, toPlan(z.ring.centre), z.ring.r0, z.ring.r1) });
   for (const l of dr.crossings.at) {
-    const it = c.w.street.find(s => s.kind === 'crossing' && s.id.endsWith(`/crossing-${l.id}`));
+    const it = landingsOf(c.w).find(s => s.id.endsWith(`/crossing-${l.id}`));
     if (it) { const ring = itemRing(it); zones.push({ id: `landing ${l.id}`, bars: ['planter', 'lamp', 'bollard', 'tree'], hits: (r: V[]) => overlaps(r, ring) }); }
   }
   // flat inlay may not enter a bay, the entrance steps or landing, or a planting bed (dressing.rules)
@@ -48,16 +49,24 @@ function zonesOf(c: WCtx, dr: Dressing, toPlan: (p: V) => V): Zone[] {
   return zones;
 }
 
-/** CD-1 on the placements `masses` (kind by kit id), against `zones` and the Handover `points`. */
-export function clearRule(masses: Mass[], kinds: Map<string, string>, zones: Zone[], points: { name: string; p: V }[]): Check {
+/** What the crossings put on the ground (brief 009): each kerb stud and each signal orb's halo disc, on the ground within reach of a Handover point like any piece of the dressing. The orb itself hovers overhead (canopy class, exempt), and the light bars, dots and
+ *  inlay arcs are flush with the paving (flat inlay, exempt); the halo is a glowing disc and the studs are domes, so they count. */
+export function crossingGround(w: Pick<World, 'street'>): Ground[] {
+  return w.street.flatMap(s => s.kind === 'crossing-stud' ? [{ id: s.id, what: 'crossing stud', ring: itemRing(s) }] : s.signal ? [{ id: s.id, what: 'signal halo', ring: discRing(s.signal.halo.at, s.signal.halo.r) }] : []);
+}
+type Ground = { id: string; what: string; ring: V[] };
+
+/** CD-1 on the placements `masses` (kind by kit id), against `zones` and the Handover `points`; `ground` = what the crossings stand on the ground (crossingGround), against the points only. */
+export function clearRule(masses: Mass[], kinds: Map<string, string>, zones: Zone[], points: { name: string; p: V }[], ground: Ground[] = []): Check {
   const bad: string[] = [];
+  for (const g of ground) for (const h of points) if (toRing(h.p, g.ring) < HANDOVER_CLEAR - 0.011) bad.push(`${g.id} (${g.what}) is ${toRing(h.p, g.ring).toFixed(2)} m from '${h.name}'`);
   const placed = masses.filter(m => m.kit && kinds.has(m.kit.id));
   for (const m of placed) {
     const kind = kinds.get(m.kit!.id)!;
     for (const z of zones) if (z.bars.includes(kind) && z.hits(m.ring)) bad.push(`${m.id} (${kind}) stands in ${z.id}`);
     if (kind !== 'parasol' && kind !== 'band') for (const h of points) if (toRing(h.p, m.ring) < HANDOVER_CLEAR - 0.011) bad.push(`${m.id} (${kind}) is ${toRing(h.p, m.ring).toFixed(2)} m from '${h.name}'`);
   }
-  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may)`, placed.length, bad, 'none', SOURCE);
+  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may); a crossing's studs and signal halos are on the ground, its orb is a canopy`, placed.length + ground.length, bad, 'none', SOURCE);
 }
 
 /** Every piece id the block's dressing and civic-look.json name. */
@@ -106,5 +115,5 @@ export function civicDressRules(c: WCtx): Check[] {
   const dr = dressingOf(c.civ);
   if (!dr) return []; // a block without dressing (every recorded run's) has nothing to check
   const toPlan = toPlanFn(c.plan.civic);
-  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan)), adoptedRule(namedPieces(dr), undefined, overrideProblems(c.w.civic)), budgetRule(c.w.civic), paletteRule(look.pieces, undefined, undefined, drawnApart(c.w.civic))];
+  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan), crossingGround(c.w)), adoptedRule(namedPieces(dr), undefined, overrideProblems(c.w.civic)), budgetRule(c.w.civic), paletteRule(look.pieces, undefined, undefined, drawnApart(c.w.civic))];
 }

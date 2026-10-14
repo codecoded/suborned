@@ -9,6 +9,7 @@ import type { V } from '../../plan/geom';
 import { boxRing, ringGap } from '../../plan/street-zones';
 import { TOL, type WCtx, itemRing, rule } from '../../plan/world-ctx';
 import { discRing, primBox } from '../gen/box';
+import { landingsOf } from '../gen/street/crossings';
 import { nearestLine } from './line';
 
 const SOURCE = 'standards.skyrail.pylonZones (where a pylon may stand) · brief 007 round 3 walk, note 3 (pylons on '
@@ -28,7 +29,7 @@ function groundThings(w: World): Thing[] {
     ...w.connectors.filter(k => STEPS.has(k.kind) && onGround(k.bottom))
       .map(k => keep(`the ${k.kind} ${k.id}`, k.ring)),
     ...w.landmarks.map(l => keep(`the landmark ${l.id} (and its steps)`, discRing(l.centre, l.radius))),
-    ...w.street.filter(s => s.kind === 'crossing').map(s => keep(`the crossing ${s.id}`, itemRing(s), DOORWAY_CLEAR)),
+    ...landingsOf(w).map(s => keep(`the crossing ${s.id}`, boxRing(s.at, s.size[0], s.size[1], s.yaw), DOORWAY_CLEAR)),
     ...w.street.filter(s => s.kind === 'station-entrance')
       .map(s => keep(`the entrance ${s.id}`, itemRing(s), DOORWAY_CLEAR)),
     ...w.ground.flats.filter(f => f.surface === 'bay').map(f => keep(`the bay ${f.id}`, f.ring)),

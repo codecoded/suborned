@@ -87,4 +87,4 @@ export const rectRing = (r: R4): V[] => [[r[0], r[2]], [r[1], r[2]], [r[1], r[3]
 export { boxRing, samples9 } from './street-zones';
 export { ringGap } from './street-zones';
 export { nearLine, lineDist };
-export const itemRing = (s: StreetItem): V[] => boxRing(s.at, s.size[0], s.size[1], s.yaw);
+export const itemRing = (s: Pick<StreetItem, 'at' | 'size' | 'yaw'>): V[] => boxRing(s.at, s.size[0], s.size[1], s.yaw);
