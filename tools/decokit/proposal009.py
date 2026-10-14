@@ -67,6 +67,10 @@ SPEC = {
                           note="2 m row of four seafoam dots (0.22 m) at a 0.5 m pitch, each in a 4 cm brass ring, between two 3 cm brass hairlines 0.4 m apart; long axis X, centred. Open ends: modules butt end to end with no seam. 4 mm / 6 mm proud."),
     "LightDotRow_1": dict(use=["crossing:dots"], budget=50, sight="open", src="crossing_flat.py", order=6,
                           note="1 m end module of LightDotRow_2 (two dots, same pitch and hairlines): a row of any whole metre is 2 m modules plus at most one of these."),
+    "CrossEdgeLine_2": dict(use=["crossing:edge"], budget=10, sight="open", src="crossing_flat.py", order=8,
+                            note="Brass frame line for one long edge of the crossing strip: 2.00 x 0.04 m, one quad, 6 mm proud, faces up, nothing below the pivot plane; long axis X, centred, yaw to the walking direction; ends butt with no seam. Place at y = +-2.0 (the strip's edge line) and move the dot rows in to y = +-1.75 so their outer hairline (1.965) clears it. Separate from the dot row on purpose: it serves the bar variant too, runs the strip's whole length whatever the row layout, and is a quad per 2 m."),
+    "CrossEdgeLine_1": dict(use=["crossing:edge"], budget=10, sight="open", src="crossing_flat.py", order=9,
+                            note="1 m end module of CrossEdgeLine_2 (1.00 x 0.04 m): a line of any whole metre is 2 m modules plus at most one of these."),
     "CrossInlayArc_R24_W08": dict(use=["inlay:crossing-arc"], budget=70, sight="open", src="crossing_flat.py", order=7,
                                   note="Quarter ring of seafoam faience, centreline R 2.4 m, band 0.8 m (R 2.0 to 2.8) between 3 cm brass hairlines (outer edge R 2.83); pivot = arc centre, sweeps +X to +Y, 4 mm / 6 mm proud. Placed so the outer edge is tangent to the kerb line and to the strip's edge line: centre = mouth corner + (2.83, 2.83) into the pavement, quarter-turn yaw (180 NE, 90 SE, 270 NW, 0 SW in the render009 frame); a pair rounds both corners of a crossing's mouth."),
 }
