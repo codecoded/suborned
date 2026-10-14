@@ -8,8 +8,12 @@
 // Migration /2 → /3: set `schema` to 'suborned.mission/3' and add `roles` (may be empty) between `stands` and `destinations`
 // (the Handover's places lock hashes the file from "destinations" on); no /2 key changes. `pin` stays unset until a cast is
 // accepted (brief 010 C); a set pin must still fit its role or M-2 fails. Later on /3 (2026-10-15, brief 010 follow-up; Motive §3,
-// Sky Q4), optional and additive: a role's `need`, `approach` and `regularOf`, which M-2 checks against people.rules.json. A recorded run's pinned block carries its own /1 layer
-// and is not read through this schema.
+// Sky Q4), optional and additive: a role's `need`, `approach` and `regularOf`, which M-2 checks against people.rules.json. Later
+// still (2026-10-15, Sky's clock ruling and Suture's review of r013), optional and additive: `clock.ruling` (the start is settled;
+// `contradiction` is then gone), a role's window `shift` read as "there when the mission needs them" (in place at its point, or on
+// shift without one), the playability conditions M-2 reads (`tiedTo`, `leavesTo`, `waitsFor`, `alone`; tools/missions/handover/
+// cast.ts) and `windows` (a route's timed window restated against the world, with the GDD's figure and the reason).
+// A recorded run's pinned block carries its own /1 layer and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
 // `note` records where the entry differs from the data it came from. Zod, because the file is written by hand and by
@@ -33,14 +37,34 @@ const role = z.strictObject({
   id, what: z.string().min(1), employer: id, position: id.optional(), role: id.optional(),
   at: z.string().min(1).optional().describe('the destination the person stands at, at their work place, at shift.from; absent = anywhere at work'),
   near: z.number().positive().optional().describe('m from `at` a door place may stand (a bay place holds `at` in its polygon); default 4 [S]'),
-  shift: z.strictObject({ from: at, to: at }).describe('on shift for this mission-clock window'),
+  shift: z.strictObject({ from: at, to: at }).describe('the mission-clock window the mission needs them: in place at `at` throughout, or on shift without `at`'),
   pin: personId.optional().describe('the person cast, once a cast is accepted; unset = first who fits by id'),
   need: id.optional().describe('the one need the person must have (people.rules.json needs.list; unknown fails M-2)'),
   approach: z.enum(APPROACHES).optional().describe('the planned approach: the person\'s temperament must not refuse it, and it must act on `need`'),
-  regularOf: id.optional().describe('an employer the person is a regular of: a regular tie to its staff, or a pre-shift stop at it'),
+  regularOf: id.optional().describe('an employer the person is a regular of: a regular tie to its staff'),
+  tiedTo: z.array(z.strictObject({ kind: id, role: id, cast: z.boolean().optional() })).optional()
+    .describe('M-2 play: the person holds a tie of `kind` to someone who fits `role` in this role\'s window, or (`cast`) to the one cast in it'),
+  leavesTo: z.strictObject({ at: z.string().min(1), by: at }).optional()
+    .describe('M-2 play: after the window, the routine\'s next stop off the work place stands at destination `at`, begun by `by`'),
+  waitsFor: id.optional().describe('M-2 play: a role with `leavesTo`; this person is still in place when its person arrives'),
+  alone: z.boolean().optional().describe('M-2 play: at most one person of this employer and position or role in place at `at` at any moment of the window'),
   src, note,
 }).refine(r => (r.position === undefined) !== (r.role === undefined), { error: 'exactly one of position and role' })
-  .refine(r => offsetS(r.shift.from) <= offsetS(r.shift.to), { path: ['shift'], error: 'shift.from is not after shift.to' });
+  .refine(r => offsetS(r.shift.from) <= offsetS(r.shift.to), { path: ['shift'], error: 'shift.from is not after shift.to' })
+  .refine(r => !r.waitsFor || !!r.at, { path: ['waitsFor'], error: 'a role that waits stands at a point' })
+  .refine(r => !r.alone || !!r.at, { path: ['alone'], error: 'a role alone at a point names the point' });
+
+/** A route's timed window, restated against the world: the GDD's figure, the measured walk, and the result. */
+const window = z.strictObject({
+  id, route: z.string().min(1), what: z.string().min(1),
+  role: id.describe('the role the window moves (its `shift` is the entry window)'),
+  walk: z.strictObject({ from: z.string().min(1), to: z.string().min(1), m: z.number().positive(), speed: z.number().positive(), s: z.number().int().positive() })
+    .describe('the walk on the people walk graph between two destinations, m at life.json walkSpeed m/s, s rounded'),
+  stayS: z.number().int().nonnegative(), windowS: z.number().int().positive().describe('walk out + stay + walk back'),
+  gdd: z.string().min(1).describe('the GDD\'s figure, verbatim'),
+  src, note: z.string().min(1).describe('why the window moved'),
+}).refine(w => w.walk.s === Math.round(w.walk.m / w.walk.speed), { path: ['walk', 's'], error: 'walk.s is walk.m / walk.speed, rounded' })
+  .refine(w => w.windowS === 2 * w.walk.s + w.stayS, { path: ['windowS'], error: 'windowS is the walk out, the stay and the walk back' });
 
 const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1) });
 
@@ -56,6 +80,8 @@ export const Mission = z.strictObject({
     band: z.enum(['night', 'early', 'morning', 'afternoon', 'peak', 'evening', 'late']), // life.clock.bands
     src,
     transit: z.string().min(1).optional(), // what the start time does to the timetable
+    /** The start, once ruled: who ruled, when, and what it rests on. */
+    ruling: z.strictObject({ by: z.string().min(1), on: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), what: z.string().min(1), was: dayTime }).optional(),
     /** Sources that disagree on a day time: each reading with the fields it rests on, and who decides. */
     contradiction: z.strictObject({
       what: z.string().min(1), decides: z.string().min(1),
@@ -70,6 +96,8 @@ export const Mission = z.strictObject({
   stands: z.array(z.strictObject({ what: z.string().min(1), where: z.string().min(1), src, note })),
   /** The people the mission needs, by role (/3). */
   roles: z.array(role),
+  /** Route windows restated against the world (/3, later). */
+  windows: z.array(window).optional(),
   destinations: z.array(point).min(1),
   crew: z.array(point),
   /** Road routes over the plan graph: from a node to the nearest of `to`. */
@@ -79,5 +107,10 @@ export const Mission = z.strictObject({
   .refine(m => m.events.every(e => m.timeline.some(t => t.at === e.at)), { path: ['events'], error: 'every event starts on a timeline entry' })
   .refine(m => m.roles.every(r => !r.at || m.destinations.some(d => d.name === r.at)), { path: ['roles'], error: 'a role stands at a destination the mission names' })
   .refine(m => new Set(m.roles.map(r => r.id)).size === m.roles.length, { path: ['roles'], error: 'role ids are unique' })
-  .refine(m => { const p = m.roles.flatMap(r => r.pin ?? []); return new Set(p).size === p.length; }, { path: ['roles'], error: 'one person fills one role' });
+  .refine(m => { const p = m.roles.flatMap(r => r.pin ?? []); return new Set(p).size === p.length; }, { path: ['roles'], error: 'one person fills one role' })
+  .refine(m => m.roles.every(r => (r.tiedTo ?? []).every(t => t.role !== r.id && m.roles.some(x => x.id === t.role))), { path: ['roles'], error: 'a tie names another role of the mission' })
+  .refine(m => m.roles.every(r => !r.waitsFor || !!m.roles.find(x => x.id === r.waitsFor)?.leavesTo), { path: ['roles'], error: 'waitsFor names a role with leavesTo' })
+  .refine(m => m.roles.every(r => !r.leavesTo || m.destinations.some(d => d.name === r.leavesTo!.at)), { path: ['roles'], error: 'leavesTo names a destination' })
+  .refine(m => (m.windows ?? []).every(w => m.roles.some(r => r.id === w.role) && [w.walk.from, w.walk.to].every(n => m.destinations.some(d => d.name === n))), { path: ['windows'], error: 'a window names a role and two destinations of the mission' })
+  .refine(m => !m.clock.ruling || (!m.clock.provisional && !m.clock.contradiction), { path: ['clock'], error: 'a ruled start is not provisional and holds no contradiction' });
 export type Mission = z.infer<typeof Mission>;

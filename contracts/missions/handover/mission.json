@@ -10,35 +10,16 @@
  "clock": {
   "unit": "m:ss",
   "scale": "1 mission s = 1 day s (life.clock.scale): day time = startsAt + offset. This is the only day time in the file.",
-  "startsAt": "17:00",
-  "provisional": true,
+  "startsAt": "17:24:30",
+  "provisional": false,
   "band": "peak",
-  "src": "removed life.clock.mission (startsAt 17:00, band peak). GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
-  "transit": "removed from life.transit.schedule: '(17:00 = 61200 s is a multiple of 120, 180 and 240)'. With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line has a forward departure from its first stop at mission 0:00 when the start is 17:00; any other start moves every service against the timeline.",
-  "contradiction": {
-   "what": "The removed data gave the shift chime (offset 5:30) two day times. Not resolved here: startsAt holds the start the removed data stored, as found.",
-   "readings": [
-    {
-     "startsAt": "17:00",
-     "chime": "17:05:30",
-     "from": [
-      "life.clock.mission.startsAt '17:00'",
-      "life.clock.anchors[2] at '17:05:30', mission '5:30'",
-      "life.events.list[0].at '17:05:30 mission clock'"
-     ]
-    },
-    {
-     "startsAt": "17:24:30",
-     "chime": "17:30",
-     "from": [
-      "life.clock.mission.note 'Handover starts 17:00 so the 5:30 chime lands at 17:30 [S]'",
-      "life.events.list[0].at '(17:30 day)'",
-      "life.generator.civicEmployers[0].shiftEnd '17:30' (src 'GDD §07; plan civic block')",
-      "startsAt 17:24:30 is arithmetic (17:30 less 5:30); no removed field stored it"
-     ]
-    }
-   ],
-   "decides": "Sky, after the world review"
+  "src": "Sky's ruling 2026-10-15 (clock.ruling): the 5:30 handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less 5:30. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
+  "transit": "17:24:30 = 62670 s, 30 s past a multiple of 120, 180 and 240 (62640 s). With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line left its first stop 30 s before mission 0:00; the next forward departures are 1:30 (S1), 2:30 (T1) and 3:30 (T2). Under the old 17:00 start every line left at 0:00 (removed life.transit.schedule: '17:00 = 61200 s is a multiple of 120, 180 and 240').",
+  "ruling": {
+   "by": "Sky",
+   "on": "2026-10-15",
+   "what": "The 5:30 chime is the Office's real 17:30 shift end, so the mission starts at 17:24:30 city time (relayed by Aster after Suture's review of r013, briefs/010/review/suture-2026-10-15.md). It settles the contradiction the removed data left: 17:00 (chime 17:05:30, from life.clock.mission.startsAt and life.clock.anchors[2]) against 17:24:30 (chime 17:30, from life.events.list[0] '(17:30 day)' and life.generator.civicEmployers[0].shiftEnd).",
+   "was": "17:00"
   }
  },
  "timeline": [
@@ -57,7 +38,7 @@
    "at": "5:30",
    "what": "handover chime",
    "src": "GDD §07",
-   "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
+   "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. Since Sky's ruling (clock.ruling) the chime is the Office's 17:30 shift end. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
   },
   {
    "at": "5:40",
@@ -105,7 +86,7 @@
  "roles": [
   {
    "id": "waitress",
-   "what": "Inez: a café server on the 17:00 shift, at the café door",
+   "what": "Inez: a café server at the café door for the whole mission",
    "employer": "cafe",
    "position": "server",
    "at": "Café door",
@@ -113,40 +94,60 @@
    "shift": { "from": "0:00", "to": "8:00" },
    "need": "debt",
    "approach": "help",
-   "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Fixer helps Inez ($40,000); brief 010 D; Motive §3, Sky Q4",
-   "note": "Cast from the café's servers whose shift covers the whole mission and who stand at the café entrance at 0:00. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+   "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
+   "note": "In place at the café entrance from 0:00 to 8:00 (17:24:30-17:32:30): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
    "id": "driver",
-   "what": "the councillor's official driver at the official bay",
+   "what": "the councillor's official driver, at the official bay until the councillor reaches it",
    "employer": "records-office",
    "role": "official-driver",
    "at": "Meet driver",
-   "shift": { "from": "0:00", "to": "8:00" },
+   "shift": { "from": "0:00", "to": "5:30" },
    "need": "cash",
    "approach": "help",
-   "src": "GDD §07 cast: the driver (pickup, needs cash), route B: Fixer turns driver ($40,000; Help, the purse $80,000 = Inez + driver); brief 010 D; Motive §3, Sky Q4",
-   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`."
+   "tiedTo": [{ "kind": "workmate", "role": "councillor", "cast": true }],
+   "waitsFor": "councillor",
+   "src": "GDD §07 cast: the driver (pickup, needs cash), route B: Scout watches car (48 s), Fixer turns driver before 5:40 ($40,000; Help, the purse $80,000 = Inez + driver), fail 'Vale leaves in official car'; brief 010 D; Motive §3, Sky Q4; Suture 2026-10-15 §3",
+   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`. The window is the driver's shift at the bay to the chime (5:30 = 17:30); waitsFor holds the driver there past it until the cast councillor's leavesTo stop begins, which covers 5:40, the last chance to turn. tiedTo: the driver is the councillor's own (a workmate tie to the councillor cast); people.rules.json has no 'drives for' tie, and workmate (both ways, same employer) is the closest it offers."
   },
   {
    "id": "guard",
-   "what": "a Records Office guard at the public door",
+   "what": "the outgoing Records Office guard, alone on the public door in route A's entry window",
    "employer": "records-office",
    "role": "guard",
    "at": "Office entrance",
    "near": 4,
-   "shift": { "from": "0:00", "to": "8:00" },
+   "shift": { "from": "2:24", "to": "5:30" },
    "regularOf": "cafe",
-   "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3"
+   "tiedTo": [{ "kind": "regular", "role": "waitress" }],
+   "alone": true,
+   "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; fail 'entry seen by guard'; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3; Suture 2026-10-15 §3",
+   "note": "The entry window (windows front-door): from 2:24, the earliest call (§07 Scout listens to Inez 1:34, then Help, people.rules.json approaches.help.timeS 50 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
   },
   {
    "id": "councillor",
-   "what": "Councillor Vale: a councillor of the Records Office on shift",
+   "what": "Councillor Vale: a councillor inside the Records Office until the chime, who then leaves for the official bay",
    "employer": "records-office",
    "role": "councillor",
-   "shift": { "from": "0:00", "to": "8:00" },
-   "src": "GDD §07 cast: Councillor Vale; brief 010 D",
-   "note": "No mission point: Vale is inside until 5:50 (timeline). Vale is a pinned name part (people.rules.json names.pinned)."
+   "shift": { "from": "0:00", "to": "5:30" },
+   "leavesTo": { "at": "Meet driver", "by": "6:10" },
+   "src": "GDD §07 cast: Councillor Vale; schedule 0:00 Vale inside, 5:50 Vale exits north (service lane if driver turned), 6:10 Vale at car; brief 010 D; Suture 2026-10-15 §3",
+   "note": "On shift, inside, to the chime (5:30 = 17:30, his shift end). leavesTo: his routine's next stop is the official bay, begun by 6:10 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
+  }
+ ],
+ "windows": [
+  {
+   "id": "front-door",
+   "route": "A",
+   "what": "Fixer calls Inez: the door guard walks to the café, stays, and walks back; the Enforcer enters while he is away",
+   "role": "guard",
+   "walk": { "from": "Office entrance", "to": "Café door", "m": 62.4, "speed": 1.4, "s": 45 },
+   "stayS": 60,
+   "windowS": 150,
+   "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
+   "src": "GDD §07 route A; walk: tools/people/walk.ts on the plan between the two destinations (Suture 2026-10-15 §3: 62.4 m); speed life.json pedestrians.walkSpeed 1.4 m/s",
+   "note": "Restated 2026-10-15 (Waymark): the café door is now 62.4 m from the Office entrance on the walk graph, 45 s at walking pace, not §07's 30 s (30 s would need 2.08 m/s). The stay is §07's 60 s, so the window is 2:30, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
   }
  ],
  "destinations": [
