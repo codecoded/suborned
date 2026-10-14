@@ -15,7 +15,8 @@ namespace Suborned.World
     ///   displays: the orb body and its figures turn together about the vertical axis (they share the piece origin; the beam and halo
     ///     are round) so a display faces the play camera (the export view's yaw): a display along the walk is edge-on to a camera
     ///     looking along the crossing (Vela, 009 A open issue 1). Both faces show the same aspect, so the nearer one is turned.
-    /// The beam and halo are DecoKit kind `glow` (Materials/Glow, Shaders/CrossGlow: additive, double-sided, unlit); the lights and
+    /// The beam and halo, and the lit strip's pool (crossing-field: Sky's pick d1, 15 Oct; DK_Cross_Pool, CrossGlow mode Field, strength
+    /// provisional until Glint sets it), are DecoKit kind `glow` (Materials/Glow, Shaders/CrossGlow: additive, double-sided, unlit); the lights and
     /// figures are the kit's emissive materials, the seafoam light (Light) redrawn as emission only. A refuge is drawn here: its median ring raised as an island, in its road's kerb
     /// surface, in the ground layer's kerb batch that already reaches it (Combine.Fit), so it costs no renderer of its own.</summary>
     public sealed class CrossingKit
@@ -28,7 +29,7 @@ namespace Suborned.World
         /// linear: green 0.92, under the bloom threshold, reads (154, 219, 198) in the same shot; 2.5 and 3 already pale toward white.</summary>
         public const string Light = "DK_Cross_Light"; const float LightGlow = 2.0f;
         public const string Body = "DK_SignalEye", Walk = "DK_SignalEye_Walk", Stop = "DK_SignalEye_Stop", Beam = "DK_SignalEye_Beam", Halo = "DK_SignalEye_Halo";
-        static readonly HashSet<string> Kinds = new() { "crossing-dots", "crossing-bar", "crossing-edge", "crossing-stud", "crossing-arc", "signal-orb" };
+        static readonly HashSet<string> Kinds = new() { "crossing-dots", "crossing-bar", "crossing-edge", "crossing-stud", "crossing-arc", "crossing-field", "signal-orb" };
 
         readonly Nodes nodes; readonly Catalogue.CrossingSpec spec;
         public CrossingKit(Nodes nodes, Catalogue kit) { this.nodes = nodes; spec = kit.Crossings; }
@@ -107,7 +108,8 @@ namespace Suborned.World
                 foreach (var r in piece.GetComponentsInChildren<MeshRenderer>(true))
                 {
                     var part = KitLods.Part(r.name);
-                    bool body = eye && part == Body, glow = eye && (part == Beam || part == Halo);
+                    // glow: the eye's beam and halo, and the lit strip's pool (crossing-field, LightField_1/2, DK_Cross_Pool; brief 009 d1)
+                    bool body = eye && part == Body, glow = (eye && (part == Beam || part == Halo)) || s.Kind == "crossing-field";
                     seenBody |= body; seenWalk |= part == Walk; seenStop |= part == Stop;
                     r.shadowCastingMode = body && s.CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                     if (r.shadowCastingMode == ShadowCastingMode.On) casters++; else quiet++;

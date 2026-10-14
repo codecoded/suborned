@@ -10,5 +10,8 @@ namespace Suborned
         public string source;
         /// <summary>Lower-case hex.</summary>
         public string exportSha256;
+        /// <summary>The export file the scene was built from, relative to the repo root (2026-10-15): the people layer and the plates read
+        /// their ground from it, so a build from a pinned copy stays readable while out/world/ is being regenerated.</summary>
+        public string exportPath;
     }
 }
