@@ -25,7 +25,9 @@ const roles: Role[] = section('§14').split(/^### /m).slice(1).map(block => {
 
 // Claude only for now: GDD Opus 5.5 → opus, GDD GPT 6.1 Sol → sonnet (target model kept in the card).
 const MODEL: Record<string, string> = { 'Opus 5.5': 'opus', 'GPT 6.1 Sol': 'sonnet' };
-const WORK = ['Read', 'Edit', 'Write', 'Bash', 'Glob', 'Grep', 'StructuredOutput'], REVIEW = ['Read', 'Bash', 'Glob', 'Grep', 'StructuredOutput'], UNITY = ['mcp__unity'];
+// Web search and fetch for every role (Sky, 2026-10-15: the GDD doesn't cover a project this complex). runAgent pipeline calls stay tool-less.
+const WEB = ['WebSearch', 'WebFetch'];
+const WORK = ['Read', 'Edit', 'Write', 'Bash', 'Glob', 'Grep', 'StructuredOutput', ...WEB], REVIEW = ['Read', 'Bash', 'Glob', 'Grep', 'StructuredOutput', ...WEB], UNITY = ['mcp__unity'];
 const TOOLS: Record<string, string[]> = {
   Aster: [...WORK, 'Agent'], Latch: [...WORK, ...UNITY], Splice: [...WORK, ...UNITY], Glint: [...WORK, ...UNITY],
   Suture: [...REVIEW, 'Write', ...UNITY], Redline: [...REVIEW, 'Write'],
@@ -38,7 +40,8 @@ const field = (r: Role, k: string) => r.fields.find(f => f[0] === k)?.[1] ?? '';
 const index = sections.map(s => `${s.id} ${s.title.slice(4).toLowerCase()} (line ${s.line})`).join(' · ');
 const repo = `- Repo: \`GDD/\` design source (the human GDD html wins on conflict; ~2 MB, never load it whole) · \`contracts/\` source-of-truth data (the plan is \`contracts/world/<district>.plan.json\`) · \`tools/\` bun TypeScript (\`tools/plan\` = plan checker + CAD sheet) · \`unity/\` the Unity project (only Latch edits scenes) · \`out/\` generated, never edit by hand.
 - Commands: \`bun tools/plan/cli.ts\` (plan checker; exit 1 on any failed rule; writes the sheet to out/plan/) · \`bun run typecheck\` · \`bun run crew\` (regenerates these cards from the agent GDD).`;
-const rules = `- Never commit, push or deploy. Never use the browser pane or any browser tool. Never spend paid credits without Aster's go-ahead.
+const rules = `- Never commit, push or deploy. Never use the browser pane or any browser tool (WebSearch and WebFetch are fine). Never spend paid credits without Aster's go-ahead.
+- Research on the web freely. When it shapes a decision, save what you used with its source URLs in \`briefs/<n>/research/\`; the GDD and briefs stay the source, never a web page.
 - Done means evidence: the command you ran and its result (checker output, typecheck, Unity compile/console). A build passing is not verification of behaviour.
 - Stay inside your role's \`owns\`. Anything outside it goes back to Aster as a handoff, not a silent edit.
 - Report back in this order: what changed (paths) · evidence · open issues · next owner (handoff = inputs · done-check · next owner).`;
