@@ -15,7 +15,8 @@ namespace Suborned.World.Perf
     /// they are; for the build alone the project carries a renderer copy that keeps the A/B switches' shader variants
     /// (PerfVariantsRenderer), taken out after. The shadow proxies are the scene's own (ShadowProxies, built with the world). The player runs any plan (PerfHarness, `-perf`). Menu: Suborned/Perf/* (a Write rewrites a plan alone: the player
     /// reads it at start, so a stop change needs no rebuild), with the scene open and saved. CLI (Editor closed):
-    /// Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Perf.PerfBuild.Cli [-perfSweep | -perfRefine]</summary>
+    /// Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Perf.PerfBuild.Cli [-perfSweep | -perfRefine | -perfPeople].
+    /// The scene's people layer is stripped from the player unless -perfPeople (menu: Build Perf Player (with people)): PerfStrip.</summary>
     public static class PerfBuild
     {
         const string Menu = "Suborned/Perf/";
@@ -29,14 +30,24 @@ namespace Suborned.World.Perf
         [MenuItem(Menu + "Build Perf Player")]
         static void BuildMenu() => Later(() => Build());
 
+        [MenuItem(Menu + "Build Perf Player (with people)")]
+        static void BuildPeopleMenu() => Later(() => Build(people: true));
+
         [MenuItem(Menu + "Write Plan")]
-        static void PlanMenu() => Later(() => Write(PlanPath, PerfPlanner.Stops()));
+        static void PlanMenu() => Later(() => Write(PlanPath, Without(PerfPlanner.Stops)));
 
         [MenuItem(Menu + "Write Sweep Plan")]
-        static void SweepMenu() => Later(() => Write(SweepPath, PerfPlanner.Sweep()));
+        static void SweepMenu() => Later(() => Write(SweepPath, Without(PerfPlanner.Sweep)));
 
         [MenuItem(Menu + "Write Refine Plan (from sweep.result.json)")]
-        static void RefineMenu() => Later(() => Write(RefinePath, PerfPlanner.Refine(SweepResultPath)));
+        static void RefineMenu() => Later(() => Write(RefinePath, Without(() => PerfPlanner.Refine(SweepResultPath))));
+
+        /// <summary>A plan for the default perf player (people stripped): the plan must describe the player it is run in.</summary>
+        static PerfPlan Without(Func<PerfPlan> make)
+        {
+            PerfStrip.Active = true;
+            try { return make(); } finally { PerfStrip.Active = false; }
+        }
 
         public static void Cli()
         {
@@ -45,9 +56,9 @@ namespace Suborned.World.Perf
             {
                 if (EditorSceneManager.GetActiveScene().path != HarbourWorldBuilder.ScenePath) EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
                 var args = Environment.GetCommandLineArgs();
-                if (Array.IndexOf(args, "-perfSweep") >= 0) { Write(SweepPath, PerfPlanner.Sweep()); code = 0; }
-                else if (Array.IndexOf(args, "-perfRefine") >= 0) { Write(RefinePath, PerfPlanner.Refine(SweepResultPath)); code = 0; }
-                else code = Build().summary.result == BuildResult.Succeeded ? 0 : 1;
+                if (Array.IndexOf(args, "-perfSweep") >= 0) { Write(SweepPath, Without(PerfPlanner.Sweep)); code = 0; }
+                else if (Array.IndexOf(args, "-perfRefine") >= 0) { Write(RefinePath, Without(() => PerfPlanner.Refine(SweepResultPath))); code = 0; }
+                else code = Build(Array.IndexOf(args, "-perfPeople") >= 0).summary.result == BuildResult.Succeeded ? 0 : 1;
             }
             catch (Exception e) { Debug.LogException(e); }
             EditorApplication.Exit(code);
@@ -66,7 +77,16 @@ namespace Suborned.World.Perf
             EditorApplication.update += once;
         }
 
-        public static BuildReport Build()
+        /// <summary>people: false (the default) strips the scene's people layer from the player (PerfStrip, Redline M3), true builds
+        /// it in; either way the plan records the roots built, the roots stripped and the people count, and the player checks them.</summary>
+        public static BuildReport Build(bool people = false)
+        {
+            PerfStrip.Active = !people;
+            try { return BuildPlayer(); }
+            finally { PerfStrip.Active = false; }
+        }
+
+        static BuildReport BuildPlayer()
         {
             var plan = PerfPlanner.Stops();
             Write(PlanPath, plan);
@@ -92,7 +112,7 @@ namespace Suborned.World.Perf
             AssetDatabase.SaveAssets();
             var s = report.summary;
             var line = $"Perf: player {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; " +
-                $"plan {PlanPath} ({plan.stops.Length} stops, fingerprint {plan.fingerprint}, export {plan.exportSha256}); {proxies} shadow proxies in the scene; variants kept by {variants}";
+                $"plan {PlanPath} ({plan.stops.Length} stops, fingerprint {plan.fingerprint}, scene {plan.sceneFingerprint}, export {plan.exportSha256}); people built {plan.people}, stripped [{string.Join("; ", plan.stripped)}]; {proxies} shadow proxies in the scene; variants kept by {variants}";
             File.WriteAllText(Path.Combine(Dir, "build.txt"), line + "\n");
             if (s.result == BuildResult.Succeeded) Debug.Log(line); else Debug.LogError(line);
             return report;

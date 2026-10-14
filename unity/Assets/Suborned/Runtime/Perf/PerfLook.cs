@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -10,10 +11,13 @@ namespace Suborned.Perf
     /// the player reads warmer than the Editor): the volume stack the camera's volume layer and position blend to (tonemapping,
     /// colour adjustments, white balance, colour curves and lift/gamma/gain, split toning, shadows/midtones/highlights, bloom),
     /// the camera's post and HDR flags, the colour space, and the ambient light. The same code runs in the Editor
-    /// (Suborned.World.Perf.WarmthProbe) and the player, so the two lists compare line for line.</summary>
+    /// (Suborned.World.Perf.WarmthProbe) and the player, so the two lists compare line for line. Since Glint's ruling (2026-10-15)
+    /// also the HDR display output state and the camera's intermediate colour format: URP takes it from an RT target's format
+    /// (`target`, the Editor capture), else from the asset's HDR precision (the screen), so the two files show what grades.</summary>
     public static class PerfLook
     {
-        public static string[] Read(Camera cam)
+        /// <summary>target: the render texture the camera rendered into for this read (null = the screen).</summary>
+        public static string[] Read(Camera cam, RenderTexture target = null)
         {
             var lines = new List<string>();
             var ci = CultureInfo.InvariantCulture;
@@ -25,6 +29,9 @@ namespace Suborned.Perf
             var urp = UniversalRenderPipeline.asset;
             if (urp) lines.Add($"urp hdr = {urp.supportsHDR}, colorGradingMode {urp.colorGradingMode}, lutSize {urp.colorGradingLutSize}, renderScale {F(urp.renderScale)}");
             var data = cam.GetUniversalAdditionalCameraData();
+            var hdrOut = HDROutputSettings.main;
+            lines.Add($"hdr display output: available {hdrOut.available}, active {hdrOut.active}");
+            lines.Add(Intermediate(cam, urp, target));
             lines.Add($"camera {cam.name}: allowHDR {cam.allowHDR}, renderPostProcessing {data.renderPostProcessing}, antialiasing {data.antialiasing}, volumeLayerMask {data.volumeLayerMask.value}, volumeTrigger {(data.volumeTrigger ? data.volumeTrigger.name : "camera")}, stopNaN {data.stopNaN}, dithering {data.dithering}");
             foreach (var v in Object.FindObjectsByType<Volume>(FindObjectsInactive.Include))
                 lines.Add($"volume {v.name}: enabled {v.isActiveAndEnabled}, global {v.isGlobal}, weight {F(v.weight)}, priority {F(v.priority)}, profile {(v.sharedProfile ? v.sharedProfile.name : "none")}, layer {v.gameObject.layer}");
@@ -64,6 +71,21 @@ namespace Suborned.Perf
                 if (l.type == LightType.Directional) lines.Add($"directional {l.name}{(l == sun ? " (sun)" : "")}: color {C(l.color)}, intensity {F(l.intensity)}, useColorTemperature {l.useColorTemperature} {F(l.colorTemperature)} K, euler {l.transform.eulerAngles}");
             lines.Add($"lightsUseLinearIntensity {GraphicsSettings.lightsUseLinearIntensity}, lightsUseColorTemperature {GraphicsSettings.lightsUseColorTemperature}");
             return lines.ToArray();
+        }
+
+        /// <summary>The camera's intermediate colour buffer as URP picks it (UniversalRenderPipeline.MakeRenderTextureGraphicsFormat and
+        /// CreateBackbufferInfo): an RT target's own format, else HDR B10G11R11 (32-bit precision, no framebuffer alpha, when it blends), else
+        /// R16G16B16A16, else the LDR default. Derived from the same inputs URP reads, not read back from the renderer.</summary>
+        static string Intermediate(Camera cam, UniversalRenderPipelineAsset urp, RenderTexture target)
+        {
+            if (target) return $"intermediate colour = {target.graphicsFormat} (an RT target: URP inherits its format), msaa {target.antiAliasing}";
+            bool hdr = cam.allowHDR && urp && urp.supportsHDR;
+            GraphicsFormat f;
+            if (!hdr) f = SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);
+            else if (!Graphics.preserveFramebufferAlpha && urp.hdrColorBufferPrecision != HDRColorBufferPrecision._64Bits && SystemInfo.IsFormatSupported(GraphicsFormat.B10G11R11_UFloatPack32, GraphicsFormatUsage.Blend)) f = GraphicsFormat.B10G11R11_UFloatPack32;
+            else if (SystemInfo.IsFormatSupported(GraphicsFormat.R16G16B16A16_SFloat, GraphicsFormatUsage.Blend)) f = GraphicsFormat.R16G16B16A16_SFloat;
+            else f = SystemInfo.GetGraphicsFormat(DefaultFormat.HDR);
+            return $"intermediate colour = {f} (the screen: {(hdr ? $"HDR, hdrColorBufferPrecision {urp.hdrColorBufferPrecision}" : "LDR")}), msaa {(urp ? urp.msaaSampleCount : 1)}";
         }
     }
 }

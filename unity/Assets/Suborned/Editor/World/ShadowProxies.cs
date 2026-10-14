@@ -13,10 +13,14 @@ namespace Suborned.World
     {
         public const string Name = "__ShadowProxy";
 
-        /// <summary>Adds the proxies under `world`, on or off as built (kit.json `shadowProxies`); returns their count and LOD1 triangles.</summary>
+        /// <summary>Adds the proxies under `world`, on or off as built (kit.json `shadowProxies`); returns their count and LOD1 triangles.
+        /// Idempotent (Redline 2026-10-15 L8): a piece whose renderers an existing proxy already casts for is skipped, so a second
+        /// run neither doubles a proxy nor records the first run's Off as the pieces' own casting.</summary>
         public static (int count, long triangles) Build(Transform world, bool on)
         {
             int count = 0; long tris = 0;
+            var proxied = new HashSet<Renderer>();
+            foreach (var sp0 in world.GetComponentsInChildren<ShadowProxy>(true)) if (sp0.casters != null) foreach (var r in sp0.casters) if (r) proxied.Add(r);
             foreach (var g in world.GetComponentsInChildren<LODGroup>(true))
             {
                 if (!Wanted(g.transform, world)) continue;
@@ -25,7 +29,7 @@ namespace Suborned.World
                 Renderer src = null; Mesh mesh = null;
                 foreach (var r in lods[1].renderers)
                     if (r && r.TryGetComponent<MeshFilter>(out var f) && f.sharedMesh) { src = r; mesh = f.sharedMesh; break; }
-                if (!src) continue;
+                if (!src || proxied.Contains(src)) continue;
                 var casters = new List<Renderer>(); var was = new List<ShadowCastingMode>();
                 foreach (var lod in lods) foreach (var r in lod.renderers) if (r && !casters.Contains(r)) { casters.Add(r); was.Add(r.shadowCastingMode); }
                 var go = new GameObject(Name);

@@ -18,8 +18,7 @@ namespace Suborned.World.Review
         readonly bool asyncCompilation;
         readonly IDisposable cascades;
         readonly TacticalShadows play;
-        RenderTexture rt;
-        Texture2D tex;
+        readonly Capture capture = new();
 
         public RenderSession()
         {
@@ -44,35 +43,16 @@ namespace Suborned.World.Review
 
         public float ShadowDistance { set => urp.shadowDistance = value > 0 ? value : shadowDistance; }
 
-        /// <summary>Renders cam at w x h (4x MSAA) and returns a readable texture owned by the session (valid until the next call).</summary>
-        public Texture2D Grab(Camera cam, int w, int h)
-        {
-            if (rt == null || rt.width != w || rt.height != h)
-            {
-                if (rt != null) { rt.Release(); UnityEngine.Object.DestroyImmediate(rt); }
-                if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
-                rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
-                tex = new Texture2D(w, h, TextureFormat.RGB24, false);
-            }
-            var previous = RenderTexture.active; var target = cam.targetTexture;
-            cam.targetTexture = rt;
-            cam.ResetAspect();
-            cam.Render();
-            RenderTexture.active = rt;
-            tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
-            tex.Apply();
-            cam.targetTexture = target;
-            RenderTexture.active = previous;
-            return tex;
-        }
+        /// <summary>Renders cam at w x h through Capture (Glint's honest path: an HDR target with the asset's MSAA, then the sRGB
+        /// encode) and returns a readable texture owned by the session (valid until the next call).</summary>
+        public Texture2D Grab(Camera cam, int w, int h) => capture.Grab(cam, w, h);
 
         public void Dispose()
         {
             cascades.Dispose();
             urp.gpuResidentDrawerMode = drawer; urp.shadowDistance = shadowDistance;
             ShaderUtil.allowAsyncCompilation = asyncCompilation;
-            if (rt != null) { rt.Release(); UnityEngine.Object.DestroyImmediate(rt); }
-            if (tex != null) UnityEngine.Object.DestroyImmediate(tex);
+            capture.Dispose();
         }
 
         /// <summary>A throwaway camera (not saved with the scene) with the play camera's clear colour.</summary>

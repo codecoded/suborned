@@ -1,6 +1,6 @@
 {
-  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30). Redline review 008 B6 (out/review/008-b6-perf.html): passes, variants (A/B switches), warm-up to a plateau, rotated repeats, per-frame CSV; the sweep after a warm-up, by frame time, with the decks. B6 second pass (Latch): fixes 1 and 3 ship (SSAO from depth after opaques, 2 cascades); fix 2 (LOD1 shadow proxies) is built but held off; the fade's discard reaches only 16 m fade cells (kit.json fadeCell). Variants name every switch, so `as-was` is the build before B6 in any player. Air run (Aster, 2026-10-14): as-was, 1+3, +proxies, +fade in reach, +fade off, +SSAO off, +SSAO off and fade in reach.",
-  "content": "world only: buildings, structures, street furniture and bays; no people, vehicles or sim (not built yet)",
+  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30). Redline review 008 B6 (out/review/008-b6-perf.html): passes, variants (A/B switches), warm-up to a plateau, rotated repeats, per-frame CSV; the sweep after a warm-up, by frame time, with the decks. B6 second pass (Latch): fixes 1 and 3 ship (SSAO from depth after opaques, 2 cascades); fix 2 (LOD1 shadow proxies) is built but held off; the fade's discard reaches only 16 m fade cells (kit.json fadeCell). PerfPlanner appends to `content` the roots built and the people, read from the scene: the people layer is stripped unless the build asks for it (PerfStrip; Redline 2026-10-15 M3). Variants name every switch, so `as-was` sets the switches of the build before B6 in any player; it runs on the scene the player was built with (B6 geometry: Redline 2026-10-15 M4). Air run (Aster, 2026-10-14): as-was, 1+3, +proxies, +fade in reach, +fade off, +SSAO off, +SSAO off and fade in reach.",
+  "content": "world: buildings, structures, street furniture and bays; no vehicles or sim (not built yet)",
   "width": 1920,
   "height": 1080,
   "warmup": {
@@ -12,7 +12,7 @@
   "variants": [
     {
       "name": "as-was",
-      "why": "the build before B6 (ab-1's base): SSAO from the depth-normals prepass, 4 cascades, every LOD casts, the fade's discard on whole 64 m tiles",
+      "why": "as-was (emulated on B6 geometry): the switches of the build before B6 (ab-1's base: SSAO from the depth-normals prepass, 4 cascades, every LOD casts, the fade's discard on whole 64 m tiles) on the B6 scene, which keeps its 16 m fade cells, uncompressed vertices (VertexChannelCompressionMask 0) and the crossing light's emission copy. Not the pre-B6 player: a headline B6 gain needs a paired Air run with the player built from the parent of 0f4d4d6 (Redline 2026-10-15 M4)",
       "ssao": "normals",
       "cascades": 4,
       "proxies": "off",
@@ -74,7 +74,7 @@
   "passes": [
     {
       "name": "ab",
-      "why": "headroom and A/B (Redline M1, item 0): uncapped, the switches Aster set for the Air run (2026-10-14) back to back at every stop, 3 rotated repeats, the first segment again at the end; as-was first, so every delta is against the build before B6",
+      "why": "headroom and A/B (Redline M1, item 0): uncapped, the switches Aster set for the Air run (2026-10-14) back to back at every stop, 3 rotated repeats, the first segment again at the end; as-was first, so every delta is against the switches before B6 on B6 geometry (the cell split's own cost is in no delta)",
       "vSync": 0,
       "window": "FullScreenWindow",
       "settleSeconds": 2,

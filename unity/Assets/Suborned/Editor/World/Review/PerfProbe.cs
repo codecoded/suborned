@@ -49,8 +49,9 @@ namespace Suborned.World.Review
 
         static IEnumerator<object> Body()
         {
-            var rt = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
-            var tex = new Texture2D(1, 1, TextureFormat.RGB24, false);
+            var capture = new Capture(); // Glint's ruling: the HDR target and MSAA the screen path uses, not ARGB32 with 4x
+            var rt = capture.Target(1920, 1080);
+            var tex = new Texture2D(1, 1, TextureFormat.RGBAHalf, false); // read back from the half target: waits for the GPU
             var cam = Camera.main ?? throw new InvalidOperationException("World: perf probe: no main camera");
             var urp = UniversalRenderPipeline.asset;
             cam.targetTexture = rt; cam.ResetAspect();
@@ -65,7 +66,7 @@ namespace Suborned.World.Review
                 ("the Parade", Of("megastructures","mega/parade-galleries").center),
             };
             var json = new StringBuilder("{\n");
-            json.Append($"  \"resolution\": \"1920x1080, 4x MSAA, manual Camera.Render of the play camera\", \"gpu\": \"{SystemInfo.graphicsDeviceName}\", \"drawer\": \"{urp.gpuResidentDrawerMode}\", \"lodBias\": {QualitySettings.lodBias}, \"quality\": \"{QualitySettings.names[QualitySettings.GetQualityLevel()]}\",\n  \"samples\": [\n");
+            json.Append($"  \"resolution\": \"1920x1080, ARGBHalf, MSAA {Capture.Msaa} (the asset's), manual Camera.Render of the play camera\", \"gpu\": \"{SystemInfo.graphicsDeviceName}\", \"drawer\": \"{urp.gpuResidentDrawerMode}\", \"lodBias\": {QualitySettings.lodBias}, \"quality\": \"{QualitySettings.names[QualitySettings.GetQualityLevel()]}\",\n  \"samples\": [\n");
             bool first = true;
             foreach (var (name, at) in foci)
             {
@@ -86,7 +87,7 @@ namespace Suborned.World.Review
                         yield return null; repaint.Invoke(view, null);
                         calls += UnityStats.drawCalls; setpass += UnityStats.setPassCalls; verts += UnityStats.vertices; tris += UnityStats.triangles; n++;
                     }
-                    // frame time: the same camera rendered by hand at 1080p, 4x MSAA, waiting for the GPU after each render
+                    // frame time: the same camera rendered by hand at 1080p into the HDR capture target, waiting for the GPU after each render
                     cam.targetTexture = rt; cam.ResetAspect();
                     double submit = 0, wall = 0;
                     for (int i = 0; i < Warm; i++) { yield return null; cam.Render(); }
@@ -105,7 +106,7 @@ namespace Suborned.World.Review
             }
             json.Append("\n  ]\n}\n");
             QualitySettings.lodBias = 1f;
-            cam.transform.position = home; cam.targetTexture = null; rt.Release();
+            cam.transform.position = home; cam.targetTexture = null; capture.Dispose();
             var path = Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "review", "perf-007.json");
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, json.ToString());

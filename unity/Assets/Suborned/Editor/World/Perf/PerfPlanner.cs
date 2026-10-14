@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using Suborned.Perf;
 using UnityEditor;
@@ -95,10 +96,14 @@ namespace Suborned.World.Perf
             if (Mathf.Abs(home - ts.focusDepth) > 0.01f)
                 throw new InvalidOperationException($"Perf: Rig.StandOff at the play focus is {home:F3} m, the built play camera stands {ts.focusDepth:F3} m back: the stops would not use the real rig");
             var stamp = Stamp();
+            var (kept, stripped, people) = Roots();
             var plan = new PerfPlan
             {
                 fingerprint = Inspect.Fingerprint(root, GameObject.Find("batches").transform, GameObject.Find("cameras").transform),
-                exportSha256 = stamp.exportSha256, source = stamp.source, scene = HarbourWorldBuilder.ScenePath, content = spec.content,
+                sceneFingerprint = Inspect.Fingerprint(kept), roots = kept.Select(t => t.name).ToArray(), stripped = stripped, people = people,
+                exportSha256 = stamp.exportSha256, source = stamp.source, scene = HarbourWorldBuilder.ScenePath,
+                content = $"{spec.content}; roots built: {string.Join(", ", kept.Select(t => t.name))}; people: " +
+                    (people > 0 ? $"{people} capsules built in ({Picker(kept)})" : stripped.Length > 0 ? $"none built (stripped root {string.Join("; ", stripped)})" : "none in the scene"),
                 pitch = rot.eulerAngles.x, yaw = rot.eulerAngles.y, aspect = aspect, farMargin = cam.farClipPlane - ts.focusDepth,
                 width = spec.width, height = spec.height, warmup = warmup ?? new PerfWarmup(), passes = passes, variants = variants,
                 stops = new PerfStop[stops.Count],
@@ -138,6 +143,20 @@ namespace Suborned.World.Perf
             }
             return list.ToArray();
         }
+
+        /// <summary>Redline M3: every root of the scene the player is built with (sorted by name), the roots the perf build strips
+        /// (PerfStrip) with what they held, and the person capsules built in. Derived from the scene, never from the spec.</summary>
+        static (Transform[] kept, string[] stripped, int people) Roots()
+        {
+            var all = EditorSceneManager.GetActiveScene().GetRootGameObjects().OrderBy(g => g.name, StringComparer.Ordinal).ToArray();
+            var kept = all.Where(g => !PerfStrip.Strips(g.name)).Select(g => g.transform).ToArray();
+            var stripped = all.Where(g => PerfStrip.Strips(g.name)).Select(g => $"{g.name} ({g.GetComponentsInChildren<Suborned.People.PersonRecord>(true).Length} people, {Picker(new[] { g.transform })})").ToArray();
+            int people = kept.Sum(t => t.GetComponentsInChildren<Suborned.People.PersonRecord>(true).Length);
+            return (kept, stripped, people);
+        }
+
+        static string Picker(Transform[] roots) =>
+            roots.SelectMany(t => t.GetComponentsInChildren<Suborned.People.PeoplePicker>(true)).FirstOrDefault() is { } p ? $"snapshot {p.clock} of {p.source?.Split(',')[0]}" : "no people picker";
 
         /// <summary>The built scene, open and saved (a build reads the file; the plan must describe the same scene).</summary>
         static (Transform root, Camera play) Scene()

@@ -145,6 +145,8 @@ namespace Suborned.World
             m.SetColor("_EmissionColor", new Color(c.r, c.g, c.b, 1f)); m.EnableKeyword("_EMISSION");
             m.SetFloat("_Smoothness", 0f); m.SetFloat("_SpecularHighlights", 0f); m.SetFloat("_EnvironmentReflections", 0f);
             m.EnableKeyword("_SPECULARHIGHLIGHTS_OFF"); m.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            // Redline 2026-10-15 L7: on a black base the main-light shadow lookups multiply to nothing; emission is not shadowed
+            m.SetFloat("_ReceiveShadows", 0f); m.EnableKeyword("_RECEIVE_SHADOWS_OFF");
             var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-crosslight.mat";
             AssetDatabase.DeleteAsset(path);
             AssetDatabase.CreateAsset(m, path);

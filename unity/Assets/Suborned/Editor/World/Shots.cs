@@ -83,24 +83,13 @@ namespace Suborned.World
             ProcKit.Perf(cam);
         }
 
+        /// <summary>One view through Capture (Glint's honest path: an HDR target as the player's, then the sRGB encode).</summary>
         static void Shot(Camera cam, int w, int h, string file)
         {
-            var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
-            var previous = RenderTexture.active;
-            cam.targetTexture = rt;
-            cam.ResetAspect();
-            cam.Render();
-            RenderTexture.active = rt;
-            var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
-            tex.Apply();
-            if (file != null) File.WriteAllBytes(file, tex.EncodeToPNG());
-            cam.targetTexture = null;
-            RenderTexture.active = previous;
-            Object.DestroyImmediate(tex);
-            rt.Release();
-            Object.DestroyImmediate(rt);
-            if (file != null) Debug.Log($"World: shot {file} ({w}x{h}, {cam.name})");
+            var png = Capture.Png(cam, w, h);
+            if (file == null) return;
+            File.WriteAllBytes(file, png);
+            Debug.Log($"World: shot {file} ({w}x{h}, {cam.name}; {Capture.Describe})");
         }
     }
 }

@@ -1,0 +1,26 @@
+Editor render of cameras/play at its built focus (home), 1920x1080, Camera.Render into ARGBHalf (MSAA 1, the URP asset's), Graphics.Blit into ARGB32 sRGB, ReadPixels (Capture: Glint's honest path), GPU Resident Drawer off for the render, people layer hidden (the perf player strips it)
+context = editor, Metal
+colorSpace = Linear
+pipeline = PC_RPAsset, quality PC
+urp hdr = True, colorGradingMode LowDynamicRange, lutSize 32, renderScale 1
+hdr display output: available False, active False
+intermediate colour = R16G16B16A16_SFloat (an RT target: URP inherits its format), msaa 1
+camera play: allowHDR True, renderPostProcessing True, antialiasing None, volumeLayerMask 1, volumeTrigger camera, stopNaN False, dithering False
+volume grade: enabled True, global True, weight 1, priority 0, profile HarbourDistrict-grade, layer 0
+tonemapping = Neutral (override True, active True)
+colorAdjustments: postExposure 0.12, contrast 14, colorFilter (1, 0.984, 0.957, 1), hueShift 0, saturation 14 (active True)
+whiteBalance: temperature 0, tint 0 (active False)
+liftGammaGain: lift (1.00, 1.00, 1.00, 0.00), gamma (1.00, 1.00, 1.00, 0.00), gain (1.00, 1.00, 1.00, 0.00) (active False)
+shadowsMidtonesHighlights: shadows (0.60, 0.66, 0.85, 0.00), midtones (1.00, 1.00, 1.00, 0.00), highlights (1.00, 0.85, 0.66, 0.00) (active True)
+splitToning: shadows (0.5, 0.5, 0.5, 1), highlights (0.5, 0.5, 0.5, 1), balance 0 (active False)
+channelMixer: active False
+colorCurves: active True
+colorLookup: active False, contribution 0
+bloom: intensity 0.18, threshold 1.1, tint (1, 0.941, 0.839, 1), scatter 0.6 (active True)
+vignette: intensity 0.1, color (0.953, 0.933, 0.894, 1) (active True)
+ambient: mode Trilight, intensity 1, sky (0.74, 0.733, 0.747, 1), equator (0.882, 0.826, 0.776, 1), ground (0.487, 0.425, 0.354, 1), flat (0.74, 0.733, 0.747, 1)
+ambient probe L0 rgb = (0.62, 0.54, 0.48)
+reflection: mode Custom, intensity 1, custom HarbourDistrict-reflection
+fog: True, color (0.953, 0.933, 0.894, 1)
+directional sun (sun): color (1, 0.878, 0.816, 1), intensity 1.35, useColorTemperature False 6570 K, euler (38.00, 330.00, 0.00)
+lightsUseLinearIntensity True, lightsUseColorTemperature True
