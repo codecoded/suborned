@@ -1,0 +1,23 @@
+{
+  "verdict": "fail",
+  "summary": "Last round's P-6 fault is fixed. Every café server now draws debt and every official driver draws cash, the checker's P-0 to P-12 all pass, and the waitress and driver requirements are met. One Handover requirement is still unmet: every guard variant has the pre-shift café stop, but 0 of 11 guards hold a regular tie into the café. That also makes the note claiming the Office's 0.35 regular share feeds the café keeper untrue for guards. Mix, names, kiosk and resident rows found no other fault. Unverified open question: the note's mapping of temperaments to approaches has no supporting passage.",
+  "faults": [
+    {
+      "owner": "Pulse",
+      "rule": "P-6",
+      "fault": "The guard role has regularOf café. Its routines carry preShift cafe (guard-walk-cafe, guard-tram-cafe), but the requirement report shows 0 of 11 guards hold a regular tie into the café. The note says the Office's 0.35 regular share feeds the café keeper's knowledge, and the report contradicts that for guards: the keeper learns no guard's need, so the Scout gets no tip on the guard.",
+      "fix": "Make sure a share of guards carry a regular tie whose target is the café. For example, raise the Office row's regular share so the guards' café stop turns into a tie. If the expander can't aim a guard's regular tie at its preShift unit, take that to Keel or Splice as a handoff, and correct the note.",
+      "chunks": [
+        "409364487039824661a2c22a",
+        "db59b7c04cfebaa32e41a5bc"
+      ]
+    }
+  ],
+  "sources": [
+    "409364487039824661a2c22a",
+    "db59b7c04cfebaa32e41a5bc",
+    "549c8d6a16f8427fc8b18c58",
+    "b6b4241403570d5adfb9b83f",
+    "4a67b1589cfa065e189f98ae"
+  ]
+}

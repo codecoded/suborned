@@ -1,0 +1,22 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "P-6",
+    "fault": "The guard role has regularOf café. Both guard routines stop at the café before the shift, but the requirement line reads NOT MET: 0 of 11 guards hold a regular tie into the café. So the café keeper knows no guard's need, and the Scout gets no tip on the guard. Raising the Office's regular share from 0.35 to 0.7 did not aim any guard's tie at the café.",
+    "fix": "Don't change the table again. Hand this to Keel/Splice (inputs: the guard routines with the café stop; done-check: a share of guards hold a regular tie into the café). The expander should aim a regular tie at the unit of the café stop. Resubmit once the requirement line reads met.",
+    "chunks": [
+      "409364487039824661a2c22a",
+      "db59b7c04cfebaa32e41a5bc"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The Office row's `why` says the guards 'start their day at the cafe and hold regular ties into it'. The first note says raising the share means guards carry a regular tie. The report contradicts both: 0 of 11 guards hold a regular tie into the café. The café row's `why` also counts clerks as café regulars, but no clerk routine stops at the café.",
+    "fix": "Correct both `why` texts and the first note to match the expansion. Say plainly that guards' café ties wait on the expander rule, and drop the claim that clerks pass through unless a clerk routine stops at the café.",
+    "chunks": [
+      "409364487039824661a2c22a",
+      "9f8dc5fc8b8ba774b93afa9e"
+    ]
+  }
+]
