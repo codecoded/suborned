@@ -11,7 +11,13 @@ const weight = z.number().positive().max(100);
 export const Position = z.object({
   position: word.describe('a position of the unit\'s category (server, cook, keeper, attendant, ...) or, for a civic employer, a role of people.rules.json (clerk, guard, official-driver, councillor); "resident" for residents'),
   weight: weight.describe('share of the staff on shift; every position with a weight gets at least one person per shift when the staff allow. The keeper is made by the expander, one per unit'),
-  post: z.enum(['door', 'inside', 'bay']).describe('where the position works: at the unit\'s door, inside (off-screen), or at the nearest bay'),
+  post: z.enum(['door', 'inside', 'bay', 'official']).describe('where the position works: at the unit\'s door, inside (off-screen), at the nearest bay, or at its official (service) entrance'),
+  // The staffing vocabulary (Pulse, brief 010, Handover fix): every field is optional and absent means what the schema meant before.
+  count: z.number().int().min(1).max(40).optional().describe('exactly this many of the position on every shift (the rest of the staff share out by weight): the one councillor and his driver'),
+  posts: z.array(z.object({ post: z.enum(['door', 'inside', 'bay', 'official']), count: z.number().int().min(1).max(4) })).max(3).optional()
+    .describe('of the position\'s people on a shift, the first `count` of each entry stand that post, the rest stand `post`: the one door guard, the service door, the rounds inside'),
+  side: z.enum(['public', 'official']).optional().describe('the entrance an inside person of this position is counted at (default public): the guards\' and the councillor\'s indoor posts are at the official side, so the public door holds only whoever stands it'),
+  watch: z.object({ count: z.number().int().min(1).max(4) }).optional().describe('a civic employer\'s watch: this position also works the 8 h shifts outside office hours, `count` on each; the office shift\'s own count is unchanged'),
 });
 
 export const Routine = z.object({
@@ -19,7 +25,7 @@ export const Routine = z.object({
   skeleton: z.enum(['worker', 'resident']).describe('a skeleton of life.generator.routines'),
   weight,
   leaveBeforeMin: z.array(z.number().int().min(0).max(240)).length(2).describe('[min, max] minutes between leaving home and the shift start, beyond the walk'),
-  commute: z.enum(['walk', 'tram']).describe('walk: lives on the sheet and walks from a home plot; tram: lives beyond the sheet and arrives at the nearest tram stop'),
+  commute: z.enum(['walk', 'tram', 'car']).describe('walk: lives on the sheet and walks from a home plot; tram: lives beyond the sheet and arrives at the nearest tram stop; car: lives beyond the sheet and is driven to and from the unit\'s bay (the councillor and his driver)'),
   meal: z.enum(['none', 'on-site', 'square']).describe('where the mid-shift meal is: at work, at a seat in the square, or none'),
   preShift: z.enum(['none', 'cafe']).describe('a stop at the café before the shift (the guard\'s, GDD §05)'),
   evening: z.enum(['home', 'square']).describe('after the shift: straight home, or an hour in the square'),
@@ -29,6 +35,9 @@ export const Routine = z.object({
 export const Tie = z.object({
   kind: word.describe('a tie kind of people.rules.json'),
   share: z.number().min(0).max(1).describe('share of the unit\'s people who carry one tie of this kind'),
+  positions: z.array(word).max(8).optional().describe('only these positions of the row carry this pattern (the guard\'s regulars, the driver\'s councillor); absent: every position'),
+  with: word.optional().describe('the tie is made with a person of this position (a server, a councillor); absent: anyone the kind allows'),
+  at: z.enum(['pre-shift', 'evening']).optional().describe('a regular tie only: the stop of the carrier\'s day it is aimed at, by the staff on shift when they arrive; absent: the pre-shift stop first, then any other, as before'),
 });
 
 export const Row = z.object({
@@ -37,7 +46,7 @@ export const Row = z.object({
   positions: z.array(Position).min(1).max(8),
   temperaments: z.array(z.object({ temperament: word, weight })).min(1).max(4),
   needs: z.array(z.object({ need: word, weight, positions: z.array(word).max(8).optional().describe('only these positions of the row are drawn this weight (the café server weights debt, the driver cash); absent: every position') })).min(1).max(12),
-  ties: z.array(Tie).max(5),
+  ties: z.array(Tie).max(8),
   routines: z.array(Routine).min(1).max(4),
 });
 

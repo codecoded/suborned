@@ -12,6 +12,7 @@ export function scopeView(w: World): string {
   const units = s.units.map(u => ({
     row: `${u.area}/${u.trade}`, unit: u.id, name: u.name, kind: u.kind, category: u.category, employer: u.employer,
     staffPerShift: u.staffPerShift, shifts: u.shifts.map(x => `${hm(x.from)}-${hm(x.to)}`), door: u.door, bay: u.bay ?? null,
+    ...(u.official ? { officialEntrance: u.official } : {}), ...(u.watch?.length ? { watchShifts: u.watch.map(x => `${hm(x.from)}-${hm(x.to)}`) } : {}),
     positions: u.kind === 'civic'
       ? Object.entries(w.rules.temperamentsBy.roles).filter(([, r]) => r.employer === u.employer).map(([k]) => k)
       : positionsOf(w.rules, u.category),
@@ -19,7 +20,7 @@ export function scopeView(w: World): string {
   const homes = s.homes.map(h => ({ row: `${h.area}/resident`, plot: h.plot, residents: h.residents }));
   return `Scope ${s.id}: areas ${s.areas.join(', ')}; plots ${s.plots.map(p => `${p.id} (${p.use})`).join(', ')}; stops ${s.stops.map(x => `${x.name} (${x.mode})`).join(', ')}.\n`
     + `Rows to write, one per area × occupation (JSON): ${j(units)}\nResidents, a sample of ${8} per plot is simulated (JSON): ${j(homes)}\n`
-    + `The Handover (starts ${w.mission.clock.startsAt}) needs: a server on shift at the café door, the official driver at the office bay, a guard at the Office door, a councillor in the Office.`;
+    + `The Handover starts ${w.mission.clock.startsAt}; its roles, read from the mission (JSON; each is cast from the people your rows make, and must be playable): ${j(w.mission.roles.map(r => ({ id: r.id, employer: r.employer, ...(r.position ? { position: r.position } : { role: r.role }), at: r.at, window: `${r.shift.from}-${r.shift.to}`, need: r.need, approach: r.approach, regularOf: r.regularOf, tiedTo: r.tiedTo, leavesTo: r.leavesTo, waitsFor: r.waitsFor, alone: r.alone })))}`;
 }
 
 export function rulesView(w: World): string {

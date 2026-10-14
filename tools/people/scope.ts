@@ -19,6 +19,10 @@ export type Unit = {
   id: string; plot: string; area: string; trade: string; employer: string; category: string; name: string; kind: 'frontage' | 'civic' | 'kiosk';
   staffPerShift: number; hours: [number, number]; shifts: { from: number; to: number }[];
   door: string; bay?: string; building?: string;
+  /** a civic employer's second entrance, the one nearest its bay: the service door the official car stands at (Pulse, Handover fix) */
+  official?: string;
+  /** a civic employer's watch: the 8 h shifts that tile the hours the office is shut; a cast row's `watch` positions work them */
+  watch?: { from: number; to: number }[];
 };
 export type Home = { plot: string; area: string; residents: number; place: string };
 export type Scope = {
@@ -45,9 +49,10 @@ export type Scope = {
 };
 
 /** A stop at the café unit's customers' side, for a regular tie: before the shift, at one of its chairs or standing points (§05 the guard's café stop; §08 the café keeper tips on the
- *  guard). A meal or an evening at a café chair is a customer's, and counts for no tie: it is where the rules' regular ("a customer who comes back") was never asked for. One definition
- *  for the expander, P-7 and the review. */
-export const atCafeSide = (scope: Pick<Scope, 'cafeSide'>, place: string, doing: string) => doing === 'pre-shift' && scope.cafeSide.includes(place);
+ *  guard). A meal or an evening at a café chair is a customer's, and counts for no tie unless the cast row aims a regular tie at it (`Tie.at: 'evening'`, Pulse 2026-10-15: the
+ *  day door guard who stops at the café after his shift is a regular of the afternoon's server, who is on at 17:32); `visits` says which stops count. One definition for the
+ *  expander, P-7 and the review. */
+export const atCafeSide = (scope: Pick<Scope, 'cafeSide'>, place: string, doing: string, visits: readonly string[] = ['pre-shift']) => visits.includes(doing) && scope.cafeSide.includes(place);
 
 const kebab = (s: string) => s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const rectDist = (p: V, r: [number, number, number, number]) => Math.hypot(Math.max(r[0] - p[0], 0, p[0] - r[1]), Math.max(r[2] - p[1], 0, p[1] - r[3]));
@@ -88,7 +93,10 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
       const m2 = area(b.poly) * floors(b.height) + (b.towers ?? []).reduce((n, t) => n + (t.poly ? area(t.poly) * floors(t.height) : 0), 0);
       const emp = employerOfBlock(rules, b.id)?.[0] ?? Object.entries(rules.temperamentsBy.employers).find(([, e]) => e.plot === plot.id)?.[0];
       if (!emp) throw new Error(`the rules name no employer for ${b.name} (${b.id}, plot ${plot.id})`);
-      units.push({ id: emp, plot: plot.id, area: plot.area, trade: emp, employer: emp, category: 'civic', name: b.name, kind: 'civic', staffPerShift: Math.round(m2 / staffM2), hours: OFFICE_HOURS, shifts: shiftsOf(OFFICE_HOURS, 8), door: entrances[0]!.id, ...(bay ? { bay } : {}), building: b.id });
+      // the service door: the entrance other than the public one that is nearest the bay (the councillor's official car stands there)
+      const bayAt = bay ? (places.find(p => p.id === bay)!.at as V) : (centroid(b.poly) as V);
+      const official = entrances.slice(1).sort((p, q) => dist(p.p, bayAt) - dist(q.p, bayAt) || (p.id < q.id ? -1 : 1))[0]?.id;
+      units.push({ id: emp, plot: plot.id, area: plot.area, trade: emp, employer: emp, category: 'civic', name: b.name, kind: 'civic', staffPerShift: Math.round(m2 / staffM2), hours: OFFICE_HOURS, shifts: shiftsOf(OFFICE_HOURS, 8), door: entrances[0]!.id, ...(official ? { official } : {}), watch: shiftsOf([OFFICE_HOURS[1], OFFICE_HOURS[0]], 8), ...(bay ? { bay } : {}), building: b.id });
       continue;
     }
     // the rules map a block building to its employer and trade (the corner café is the diner); a building they do not name is rejected
