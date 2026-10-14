@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redline review, session 2026-10-15 (083c648..59447c2)</title>
+<style>
+  :root { --ink:#1f2328; --ink2:#57606a; --rule:#d0d7de; --bg:#fbfaf7; --hi:#8a3b12; --md:#7a5a00; --lo:#2f5f8a; --info:#57606a; --ok:#1f6f4a; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  main { max-width:1080px; margin:0 auto; padding:32px 28px 64px; }
+  h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:20px; margin:36px 0 10px; border-bottom:1px solid var(--rule); padding-bottom:4px; }
+  h3 { font-size:16px; margin:26px 0 6px; }
+  .meta { color:var(--ink2); font-size:13px; }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; margin:8px 0 16px; }
+  th, td { border:1px solid var(--rule); padding:5px 8px; vertical-align:top; text-align:left; }
+  th { background:#f0eee8; }
+  code, pre { font:12.5px/1.45 ui-monospace, Menlo, monospace; }
+  pre { background:#f3f1ec; border:1px solid var(--rule); padding:10px 12px; overflow:auto; white-space:pre-wrap; }
+  .sev { display:inline-block; min-width:92px; font-weight:700; font-size:12px; padding:1px 6px; border-radius:3px; color:#fff; text-align:center; }
+  .High { background:var(--hi); } .Medium { background:var(--md); } .MedLow { background:#6b6b2a; } .Low { background:var(--lo); } .Info { background:var(--info); }
+  .f { border:1px solid var(--rule); background:#fff; padding:10px 14px; margin:12px 0; border-radius:4px; }
+  .f h3 { margin-top:2px; }
+  .f dl { display:grid; grid-template-columns:120px 1fr; gap:4px 12px; margin:6px 0 0; }
+  .f dt { color:var(--ink2); font-weight:600; } .f dd { margin:0; }
+  .ok { color:var(--ok); font-weight:600; }
+  details summary { cursor:pointer; color:var(--ink2); }
+</style>
+</head>
+<body>
+<main>
+<h1>Redline review: session 2026-10-15</h1>
+<div class="meta">Code and performance review, read-only. Range <code>083c648..59447c2</code> on <code>world/space-age</code> (25 commits; tools, contracts, unity/Assets/Suborned, plus the render settings those commits touched). Reviewed on a snapshot of HEAD (<code>git archive 59447c2</code> into <code>out/review/head</code>) because Splice is editing <code>tools/people</code> and <code>contracts/people</code> in the working tree. Reviewer: Redline (code-performance-reviewer). For Aster.</div>
+
+<h2>Summary</h2>
+<p>The people pipeline is deterministic where it counts: every draw comes from <code>rng(id)</code> (FNV-1a seeded mulberry32), persons, places and units are sorted before output, and no Map, Set or object-key order reaches the people file unsorted. r013 replays OK at HEAD and the people tools hash at HEAD equals r013's. The problems are around the checks, not the draws. M-2 and the Unity layer read whatever <code>out/people</code> file was written last and check only the plan id and version. P-9's "byte-identical twice" compares a file with itself on every real path. Replay compares check rows, which can't see changed people. The Handover's roles are checked only in the first minute of their window. For the whole-district run, the expander has no simulated tier for workers: about 10.7k people would be simulated against a budget of 600, and the name pool runs out (P-8 fails with 3,772 faults). On the Unity side, the A/B harness is sound in its mechanics but two things weaken what the numbers claim: the people layer and its per-frame IMGUI panel can enter the perf scene unrecorded, and the "as-was" baseline runs on the B6 geometry.</p>
+
+<table>
+<tr><th>#</th><th>Severity</th><th>Finding</th><th>Owner</th></tr>
+<tr><td>H1</td><td><span class="sev High">High</span></td><td>M-2 and the Unity people layer trust whatever <code>out/people</code> file was written last; the stand-in, stale and edited files all pass</td><td>Splice, Waymark, Latch; Sky (promotion)</td></tr>
+<tr><td>H2</td><td><span class="sev High">High (district)</span></td><td>No simulated tier for workers, and civic-block assumptions: a whole-district run makes ~10.7k simulated people, exhausts the name pool, and no rule enforces the budget</td><td>Splice; Motive and Keel (budget rule)</td></tr>
+<tr><td>M1</td><td><span class="sev Medium">Medium</span></td><td>"Same tables, same people" is not checked on any real path (P-9 compares a file with itself; replay compares check rows only)</td><td>Splice</td></tr>
+<tr><td>M2</td><td><span class="sev Medium">Medium</span></td><td>A cast role is checked only at the first minute of its window; Inez can leave the door mid-window and every rule passes</td><td>Splice, Waymark</td></tr>
+<tr><td>M3</td><td><span class="sev Medium">Medium</span></td><td>Perf honesty: the people layer and its IMGUI picker can be in the perf scene while the plan, fingerprint and report say "no people"</td><td>Latch</td></tr>
+<tr><td>M4</td><td><span class="sev Medium">Medium</span></td><td>Perf honesty: "as-was" is emulated on B6 geometry; the reach gain leaves out the cost of the 16 m fade cells</td><td>Latch; Aster (wording)</td></tr>
+<tr><td>M5</td><td><span class="sev Medium">Medium (verify)</span></td><td>FadeReach re-tests every tagged renderer each frame the focus moves, and allocates on first reach during recordings</td><td>Latch</td></tr>
+<tr><td>M6</td><td><span class="sev Medium">Medium (district)</span></td><td>Walk grids: one full Float64Array per source, never freed: about 2 GB at district scale</td><td>Splice</td></tr>
+<tr><td>ML1</td><td><span class="sev MedLow">Medium-Low</span></td><td>Silent fallbacks give people needs and temperaments from outside their cast row</td><td>Splice; Motive</td></tr>
+<tr><td>ML2</td><td><span class="sev MedLow">Medium-Low</span></td><td>Pinned names (Inez, Vale) can land on other people; P-8 passes</td><td>Splice; Motive</td></tr>
+<tr><td>L1</td><td><span class="sev Low">Low-Medium</span></td><td>Person ids are positional, so "pinned by id" doesn't survive a cast edit</td><td>Splice; Waymark</td></tr>
+<tr><td>L2</td><td><span class="sev Low">Low-Medium</span></td><td>VertexChannelCompressionMask 0 project-wide (a NaN workaround) costs bandwidth on every mesh</td><td>Latch</td></tr>
+<tr><td>L3</td><td><span class="sev Low">Low</span></td><td>PerfDrawer can leave the profiler and drawer stats on through recordings</td><td>Latch</td></tr>
+<tr><td>L4</td><td><span class="sev Low">Low</span></td><td>OFFICE_HOURS hard-coded; Sky's open startsAt ruling would break M-2</td><td>Splice; Waymark</td></tr>
+<tr><td>L5</td><td><span class="sev Low">Low</span></td><td>People tools hash misses part of the verdict path (plugin, replay, schemas, tools/gen)</td><td>Splice</td></tr>
+<tr><td>L6</td><td><span class="sev Low">Low</span></td><td>Incoming ties don't count toward "nobody a hub" (a kiosk keeper holds 15)</td><td>Motive; Splice</td></tr>
+<tr><td>L7</td><td><span class="sev Low">Low</span></td><td>The emission-only crossing light still runs full Lit (shadows, SSAO, lighting on a black base)</td><td>Latch; Glint</td></tr>
+<tr><td>L8</td><td><span class="sev Low">Low</span></td><td>Shadow proxies (held off): LOD1 hull shadows on LOD0, and building them twice isn't idempotent</td><td>Latch; Glint</td></tr>
+<tr><td>L9</td><td><span class="sev Low">Low</span></td><td>People capsules are Unity primitives that cast shadows: fine at 40 drawn, not at hundreds</td><td>Latch; Forma</td></tr>
+<tr><td>L10</td><td><span class="sev Low">Low</span></td><td>PerfNaN holds 66 MB of float targets for the whole run</td><td>Latch</td></tr>
+<tr><td>L11</td><td><span class="sev Low">Low (verify)</span></td><td>A recording can begin in the frame a screenshot is taken</td><td>Latch</td></tr>
+<tr><td>I1-I5</td><td><span class="sev Info">Info</span></td><td>Kiosk plot, a stale comment, CrossGlow and the GPU Resident Drawer, civic cells, duplicate positions</td><td>Splice, Latch</td></tr>
+</table>
+
+<h2>Findings</h2>
+
+<div class="f"><h3><span class="sev High">High</span> H1. M-2 and the Unity people layer trust whatever <code>out/people</code> file was written last</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/missions/handover/overlay.ts:26, 39-42</code> (reads <code>out/people/&lt;plan&gt;.people.json</code>; checks <code>plan.id</code> and <code>plan.version</code> only) · <code>tools/people/cli.ts:20-26</code> (no <code>--cast</code> = the stand-in, written to the same default path) · <code>tools/people/inputs.ts:30</code> and <code>contracts/people/people.schema.ts:46</code> (<code>inputs</code> = cast, life, block, rules; no mission, no plan text, no tools hash; nothing reads <code>inputs</code>) · <code>unity/Assets/Suborned/Editor/World/People/PeopleLayer.cs:32, 68-71</code> (same default path; only the schema string is checked).</dd>
+<dt>Failure</dt><dd>(a) Anyone runs <code>bun run people</code> without <code>--cast</code>: the stand-in ("a valid cast, not a good one") overwrites the file M-2 and Unity read, and the plan checker's M-2 passes on it. (b) <code>mission.json</code> pins another waitress after the file was made: M-2 passes the stale file while "Inez" is still on the old server (probe 5: mission pins <code>p-cafe-12</code>, Inez is <code>p-cafe-11</code>, M-2 ok). (c) An edited file that is not the expansion of its cast passes M-2, and passes every P-rule when handed to the checker (probe 1). The pinned name moves with the mission (<code>roles.ts</code>), but the mission is not in <code>inputs</code>, so a stale file can't be detected even in principle.</dd>
+<dt>Fix</dt><dd>Promote the accepted cast (r013, with Sky's yes) to <code>contracts/people/civic-block.cast.json</code>, and make <code>bun run people</code> default to it. Write the stand-in to a different path (for example <code>&lt;plan&gt;.standin.people.json</code>). Add mission, plan-text and tools hashes to <code>inputs</code>. M-2 should then either re-expand from the promoted cast (0.1 s at civic-block scale) or fail when <code>inputs</code> differ from the current files, and it should check that each pinned name part sits on the role's pinned id. PeopleLayer refuses a file whose <code>inputs.cast</code> isn't the promoted cast.</dd>
+<dt>Owner</dt><dd>Splice (tools/people, M-2 code) · Waymark (M-2 rule text) · Latch (PeopleLayer check) · Sky (promotion yes, via Aster).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev High">High (district)</span> H2. No simulated tier for workers, and civic-block assumptions: the whole-district run doesn't fit</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/expand.ts:133-161</code> (every staff slot of every unit becomes a <code>tier: 'simulated'</code> person; <code>HOME_SAMPLE</code>, <code>scope.ts:12</code>, samples only residents) · <code>scope.ts:132-134</code> (one café per scope: the first diner) · <code>expand.ts:52, 90</code> (the first tram stop for everyone) · <code>scope.ts:110-115</code> (seats = the civic block's tables) · <code>contracts/people/cast.schema.ts:46</code> (pool at most 90 × 110 = 9,900 full names) · <code>people.rules.json:425</code> (assumes 60 × 80 = 4,800 covers a district).</dd>
+<dt>Failure</dt><dd>The world export has 1,077 frontage units; life.json's staffing puts their staff at about 10,468, plus civic and 144 sampled residents. Probe (copies of the café unit through the real expander and checker): 1,326 simulated gives 0 faults; 4,926 gives 0 faults (no rule notices the 600 budget is passed eight times over); 10,686 takes 23-39 s to expand (the ties are O(N²): a <code>persons.filter</code> per tie attempt, <code>expand.ts:202-231</code>), and P-8 fails with 3,772 faults because r013's pool holds 6,912 full names. Every pre-shift café stop in the district would aim at the one civic-block café.</dd>
+<dt>Fix</dt><dd>Select simulated people per scope: the staff of units a mission or the plan touches, plus a sample per unit like <code>HOME_SAMPLE</code>. The rest become background counts per unit, as residents already are. Add a rule (P-13, "simulated people ≤ budget") that reads the number from life.json <code>tiers</code>; Keel and Motive set the number, and Aster quotes ≤ 600. Give each person the nearest diner, stop and seat to their work. Then size the pool rule against the budget (Motive).</dd>
+<dt>Owner</dt><dd>Splice (expander, scope) · Motive and Keel (budget number, pool rule).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> M1. "Same tables, same people" is not checked on any real path</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/check.ts:259</code> (<code>again = given ? people : expand(c).people</code>) · <code>tools/people/cli.ts:23</code> and <code>tools/levels/people/cast.ts:8-9</code> (both pass <code>given</code>, so P-9 compares the people with themselves) · <code>tools/levels/rerun.ts:18-28</code> (replay compares check rows) · <code>tools/levels/people/plugin.ts:66</code> (people.json goes to <code>out/</code>; no sha is recorded in checks.json or run.json).</dd>
+<dt>Failure</dt><dd>A nondeterministic change (an iteration order, a floating-point tie in the walk) would pass P-9 in the CLI, in the levels run and in replay. Check rows hold counts ("126 people", "269 ties"). Probe 6 rotates every unpinned name by one: the people differ, and the check rows are byte-identical, so replay would report "matches". Only one unit test on the stand-in (<code>tools/people/test/people.test.ts:48</code>) expands twice.</dd>
+<dt>Fix</dt><dd>P-9 always re-expands (0.1 s) and compares bytes. Record sha256 of the people file in checks.json and run.json, and have replay compare it, drift-labelled when the tools hash moved.</dd>
+<dt>Owner</dt><dd>Splice.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> M2. A cast role is only checked at the first minute of its window</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/missions/handover/cast.ts:95-104</code> (<code>fits</code>: the shift holds t0 and t1, and the stop at t0 is work at the place) · <code>tools/people/check.ts:84-87</code> (P-1: at work at the shift start only).</dd>
+<dt>Failure</dt><dd>Probe 2: the waitress <code>p-cafe-11</code> sits at <code>cafe-table-0</code> from 17:04 to 17:24, inside the 17:00-17:08 role window. P-0 through P-12 pass, and P-6 and M-2 still cast her. Today's meal falls at 14:40-15:20, so nothing fails now. A routine variant or a re-timed shift that puts a meal or seat stop in the window would take Inez off the door while every check says the Handover casts.</dd>
+<dt>Fix</dt><dd><code>fits</code> requires a <code>work</code> stop at <code>w.place</code> covering every minute of [t0, t1], wrapping past midnight. P-1 checks that every on-shift minute is work, or a meal inside the shift.</dd>
+<dt>Owner</dt><dd>Splice (code) · Waymark (M-2 text).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> M3. Perf honesty: the people layer can enter the perf scene unrecorded</h3>
+<dl>
+<dt>Where</dt><dd><code>Editor/World/People/PeopleShots.cs:11, 54</code> and <code>PeopleLayer.cs:43-50</code> (save <code>HarbourDistrict.unity</code> with the <code>people</code> root) · <code>Editor/World/Perf/PerfPlanner.cs:100</code> (fingerprint = world, batches and cameras only) · <code>perf-stops.json:3</code> (<code>content</code> is hand-written: "no people") · <code>Runtime/People/PeoplePicker.cs:44-57, 71-111</code> (OnGUI builds the hint string, a GUIContent per inside counter, and, when someone is selected, every panel line, on each IMGUI pass: two or more a frame).</dd>
+<dt>Failure</dt><dd>Latch runs "Shots (010)" and then "Build Perf Player". The Air run then records about 40 capsules (two renderers and a collider each, shadows on) and the picker's per-frame GC and IMGUI time. The report still says "world only", and the fingerprint matches the people-free plan. <code>gcAllocP50</code> stops reading 0, and the cause isn't in the world (PerfRecorder.cs:7 promises the GC counter "reads the world").</dd>
+<dt>Fix</dt><dd>Fingerprint every scene root, or add <code>people</code> and record the people sha and drawn count. Derive <code>content</code> from the scene, not the spec. In perf builds, strip <code>PeoplePicker</code>, or have the harness disable it. Cache the picker's strings and rebuild them only when the selection changes.</dd>
+<dt>Owner</dt><dd>Latch.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> M4. Perf honesty: "as-was" runs on B6 geometry</h3>
+<dl>
+<dt>Where</dt><dd><code>perf-stops.json:77</code> ("as-was first, so every delta is against the build before B6") · <code>Runtime/FadeReach.cs:85-93</code> (<code>wholeTiles</code> regroups the 16 m cells by tile) · <code>Editor/World/Combine.cs:36-39</code> (cells) · <code>ProjectSettings.asset:198</code>.</dd>
+<dt>Failure</dt><dd>The as-was variant switches SSAO, cascades, proxies and the reach back, but it keeps the B6 scene: the 16 m fade cells, uncompressed vertices and the emission copy. Pass 2 (64 m tiles), home, as-was: 170 camera + 393 shadow GRD draw commands = 563. Pass 3 (16 m cells), home, as-was: <code>draws</code> 1,033 (Latch to confirm it is the same unit). "fixes-13" (tile) and "fixes-13-reach" both run on the cell geometry, so the split's own cost is in neither delta. The reach gain is the discard saving alone, not the net of item 9.</dd>
+<dt>Fix</dt><dd>Label the variant "as-was (emulated on B6 geometry)". For the headline number, run one paired Air pass with the pre-B6 player (built from the parent of <code>0f4d4d6</code>). Report renderer and draw counts next to each delta.</dd>
+<dt>Owner</dt><dd>Latch · Aster (wording of the B6 claim).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium (verify)</span> M5. FadeReach re-tests every renderer each frame the focus moves</h3>
+<dl>
+<dt>Where</dt><dd><code>Runtime/FadeReach.cs:85-90</code> (an O(N) loop over every tagged renderer, skipped only when <code>Same()</code>, an exact float compare, holds) · <code>:134</code> (<code>cutting[i] ??= Twins(...)</code> allocates arrays, and twin Materials, the first time a renderer is reached) · <code>Runtime/ArchitectureFade.cs:98-105</code> (runs every LateUpdate).</dd>
+<dt>Failure</dt><dd>In play the focus follows the selected person, so <code>Same</code> never holds and the loop runs every frame over thousands of renderers (1,923 proxy LOD groups alone, plus LOD renderers and the 16 m cells, plus the disabled proxy renderers, which are tagged too). During a pan, first reaches allocate inside the recording, which shows in the pan pass's <code>gcAlloc</code>.</dd>
+<dt>Fix</dt><dd>At construction, bucket the renderers on the 16 m cell grid, and per frame test only the buckets within reach of the focus plus the currently reached set. Build the twin arrays at construction: there are few twin materials. Compare the pan pass's <code>cpuMainMs</code> p95 before and after.</dd>
+<dt>Owner</dt><dd>Latch.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium (district)</span> M6. Walk grids cost about 2 GB at district scale</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/walk.ts:52-71</code> (a memo holding one full <code>Float64Array</code> per source, never freed) · <code>:24-25</code> (the grid is the bounding box of all places plus 60 m) · <code>:57-59</code> (heap of tuple arrays).</dd>
+<dt>Failure</dt><dd>Probe on the district extent (plots span 616 × 976 m): the grid builds in 31-59 ms, and Dijkstra takes 45-69 ms per source. At 201,664 cells × 8 B = 1.6 MB per source, about 1,150 sources (1,077 work doors, homes, seats, stops) need about 1.9 GB resident and about a minute of Dijkstra. That memory is a problem on a 16 GB Air with Unity open. Time is fine.</dd>
+<dt>Fix</dt><dd>Use Float32Array. Stop Dijkstra once every target place is settled, or past the longest walk a routine allows. Keep a place × place minutes table and drop the grids. Put the blockers in a bin grid (<code>inBlocker</code> scans every box).</dd>
+<dt>Owner</dt><dd>Splice.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev MedLow">Medium-Low</span> ML1. Silent fallbacks take people outside their cast row</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/expand.ts:248</code> (when no row need can be drawn, the need comes from any need in the rules) · <code>:128</code> (when the row allows no temperament for the position, it is drawn uniformly from the allowed ones).</dd>
+<dt>Failure</dt><dd>Probe 3: a resident row that weights only <code>kin</code> leaves 8 of 24 residents with housing, debt, cash or care, and P-0 through P-12 pass. Guards (Loyal or Mercenary only) can't take the row's weights when the row leans Idealist or Fearful. Either way, the table the model wrote isn't the mix the people carry, and no report shows it.</dd>
+<dt>Fix</dt><dd>Push a gap instead of falling back (P-0 fails), or have P-3 check that each person's need and temperament can be drawn from their row and position. Per-position temperament weights are a schema question for Motive.</dd>
+<dt>Owner</dt><dd>Splice · Motive.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev MedLow">Medium-Low</span> ML2. Pinned names can land on other people</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/check.ts:235-236</code> (pinned names are added to the accepted pools) · <code>:247-249</code> (counts only people in the pinned role) · <code>expand.ts:262</code>.</dd>
+<dt>Failure</dt><dd>Probe 4b: with "Inez" in the given pool, the café has Inez Bermudez (server, the Handover's) and the Office has Inez Barlow (clerk), and P-8 passes. A second Vale is caught only when they too are a councillor (probe 4). Two Inezes, or a Vale who isn't the target, confuse the player in the exact mission that teaches them.</dd>
+<dt>Fix</dt><dd>P-8 rejects pool entries equal to a pinned name part, and the expander never draws a pinned part for anyone else.</dd>
+<dt>Owner</dt><dd>Splice · Motive (rule text).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low-Medium</span> L1. Person ids are positional</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/expand.ts:140-151</code> (<code>p-&lt;unit&gt;-NN</code>, numbered over the shuffled slots of all shifts).</dd>
+<dt>Failure</dt><dd>Any change to a row's positions, weights, staff or shift count renumbers every staff id in the unit. GDD §07/§09 pins mission people by id, and M-2 re-checks fit, not identity: probe 5 shows M-2 passing a different person on the pin.</dd>
+<dt>Fix</dt><dd>Build ids from (unit, shift, position, ordinal) so unrelated edits don't renumber. A pin carries id and name, and M-2 checks both.</dd>
+<dt>Owner</dt><dd>Splice · Waymark.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low-Medium</span> L2. VertexChannelCompressionMask 0 project-wide</h3>
+<dl>
+<dt>Where</dt><dd><code>unity/ProjectSettings/ProjectSettings.asset:198</code> (b922fec: 4054 to 0, to clear NaN normals from mixed 32-byte vertex layouts in one batch).</dd>
+<dt>Failure</dt><dd>The workaround stores normals, tangents, UVs and colours at full precision on every mesh. That traffic lands in the Air's shared memory bandwidth, mostly in the shadow passes. Every variant pays it, so the A/B can't see it.</dd>
+<dt>Fix</dt><dd>Have Combine and MeshKit emit one vertex layout per batch (same channels, same formats), then restore 4054. A/B it on the Air and keep the NaN probe.</dd>
+<dt>Owner</dt><dd>Latch.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L3. PerfDrawer can leave the profiler on through recordings</h3>
+<dl>
+<dt>Where</dt><dd><code>Runtime/Perf/PerfHarness.cs:147-153</code> (settle ends at MaxSettle whether or not the probes are done) · <code>:205-209</code> · <code>PerfDrawer.cs:53-55, 80</code>.</dd>
+<dt>Failure</dt><dd>If hitches over 100 ms keep coming less than 0.7 s apart after <code>Begin</code>, <code>Read</code> never runs. At 30 s the segment records with <code>Profiler.enabled</code> and the batcher stats still on. The next <code>Begin</code> saves <code>true</code> as the state to restore, so they stay on for the rest of the run, and the report doesn't say so.</dd>
+<dt>Fix</dt><dd>When leaving settle with <code>drawerOn</code> set and no stats read, restore both (a Cancel). Record the profiler state per segment.</dd>
+<dt>Owner</dt><dd>Latch.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L4. OFFICE_HOURS hard-coded; the open startsAt ruling breaks M-2</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/scope.ts:14, 77</code> · <code>tools/missions/handover/cast.ts:55</code> · <code>contracts/missions/handover/mission.json</code> <code>clock.contradiction</code>.</dd>
+<dt>Failure</dt><dd>If Sky chooses startsAt 17:24:30 (chime at 17:30), every Records Office role window ends at 17:32:30, past the 17:30 end of the office shift. The guard, the driver and the councillor then can't be cast.</dd>
+<dt>Fix</dt><dd>Read the civic shift from life.json <code>civicEmployers</code> (<code>shiftEnd</code>), and settle how the office shift relates to the chime when Sky rules.</dd>
+<dt>Owner</dt><dd>Splice · Waymark.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L5. People tools hash misses part of the verdict path</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/levels/people/hash.ts:16-24</code>.</dd>
+<dt>Failure</dt><dd>The hash leaves out <code>plugin.ts</code> (assess and its records), <code>replay.ts</code> (what replay checks), <code>schemas.ts</code> (how the recorded cast parses) and <code>tools/gen/**</code>, so any of them can change without a drift to declare. The test filter also excludes only top-level <code>test/</code> folders.</dd>
+<dt>Fix</dt><dd>Hash <code>tools/levels/people/**</code> and <code>tools/gen/**</code>, with tests excluded at any depth.</dd>
+<dt>Owner</dt><dd>Splice.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L6. Incoming ties don't count toward "nobody a hub"</h3>
+<dl>
+<dt>Where</dt><dd><code>tools/people/check.ts:195</code> · <code>expand.ts:220-221</code>.</dd>
+<dt>Failure</dt><dd>In r013, <code>p-t1-records-kiosk-01</code> holds 15 ties: its own plus incoming regular and debtor ties. GDD §04 says "1-8 per person ... nobody a hub" and also allows 12 incoming regulars. Which reading is meant is a rules question.</dd>
+<dt>Fix</dt><dd>Motive rules whether the 1-8 counts incoming ties. If it does, P-7 counts both directions.</dd>
+<dt>Owner</dt><dd>Motive · Splice.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L7. The emission-only crossing light still runs full Lit</h3>
+<dl>
+<dt>Where</dt><dd><code>Editor/World/CrossingKit.cs:140-152</code> (<code>Lens</code>: a copy of DK_Cross_Light with a black base, emission ×2, specular and reflections off).</dd>
+<dt>Failure</dt><dd>Main-light shadows, SSAO and the lighting loop are still evaluated for every dot pixel, and with a black base they all multiply to nothing. The cost is small on screen, but it's wasted.</dd>
+<dt>Fix</dt><dd>Set <code>_ReceiveShadows</code> to 0 (keyword <code>_RECEIVE_SHADOWS_OFF</code>) on the copy, or use an unlit emissive material, checking the colour against Glint's 009 C reading.</dd>
+<dt>Owner</dt><dd>Latch · Glint.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L8. Shadow proxies (held off)</h3>
+<dl>
+<dt>Where</dt><dd><code>Editor/World/ShadowProxies.cs:29-45</code> · <code>Runtime/ShadowProxy.cs:19-24</code>.</dd>
+<dt>Failure</dt><dd>If the proxies are adopted, LOD0 detail outside the LOD1 hull loses its self-shadow, and you get acne where the hull pokes through. A proxy keeps casting when its LODGroup culls the piece. Running Build twice on one world records <code>was</code> = Off. The runtime switch works under the GPU Resident Drawer: pass 2 shows home shadow triangles of 868,848 without proxies and 602,787 with them.</dd>
+<dt>Fix</dt><dd>Glint checks contact shadows on facades before adoption. Build skips pieces that already have a <code>__ShadowProxy</code>.</dd>
+<dt>Owner</dt><dd>Latch · Glint.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L9. People capsules are Unity primitives that cast shadows</h3>
+<dl>
+<dt>Where</dt><dd><code>Editor/World/People/PeopleLayer.cs:185-195, 210-217</code>.</dd>
+<dt>Failure</dt><dd>Each person costs about 1,500 triangles (the capsule and sphere primitives), two renderers and a collider, and casts into both cascades. That's fine at 40 drawn, but not when people enter the perf content at hundreds.</dd>
+<dt>Fix</dt><dd>Use a low-poly body on one renderer, with shadows off or a blob shadow, before people count toward the 60 fps bar.</dd>
+<dt>Owner</dt><dd>Latch · Forma.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> L10. PerfNaN holds 66 MB of float targets for the whole run</h3>
+<dl><dt>Where</dt><dd><code>Runtime/Perf/PerfNaN.cs:21-22</code> (an ARGBFloat RenderTexture and an RGBAFloat Texture2D at 1920 × 1080, allocated for the whole run).</dd>
+<dt>Fix</dt><dd>Allocate them per probe and release them after the count.</dd><dt>Owner</dt><dd>Latch.</dd></dl></div>
+
+<div class="f"><h3><span class="sev Low">Low (verify)</span> L11. A recording can begin in the frame a screenshot is taken</h3>
+<dl><dt>Where</dt><dd><code>Runtime/Perf/PerfHarness.cs:149-153, 212, 216-217</code>. <code>ProbesDone</code> turns true once <code>shot</code> is set, and the capture runs at the end of that same frame. <code>PerfRecorder.Skip</code> = 3 probably absorbs it.</dd>
+<dt>Fix</dt><dd>Check the first rows of shot segments in a frames CSV. If they show the capture, wait one quiet second after the shot.</dd><dt>Owner</dt><dd>Latch.</dd></dl></div>
+
+<div class="f"><h3><span class="sev Info">Info</span> I1-I5</h3>
+<ul>
+<li>I1 <code>tools/people/scope.ts:102</code>: kiosk units take <code>plots[0]</code> and <code>areas[0]</code>, not the plot of their stop, so kiosk staff carry a wrong <code>work.plot</code>.</li>
+<li>I2 <code>tools/missions/handover/cast.ts:11-12</code>: the header says P-6 casts without rules. It uses them (<code>check.ts:187</code>).</li>
+<li>I3 <code>Shaders/CrossGlow.shader:32</code>: no DOTS instancing, so the beams and halos fall back from the GPU Resident Drawer. There are few of them.</li>
+<li>I4 <code>Combine.cs:38</code> with <code>FadeTags.Layer</code>: every civic batch is cut into 16 m cells, though only the facade-atlas batches fade, which adds renderers for nothing.</li>
+<li>I5 <code>contracts/people/cast.schema.ts:37</code>: duplicate positions in a row are allowed and double the slots. P-4 catches it, but the schema could reject it.</li>
+</ul></div>
+
+<h2>What is solid</h2>
+<ul>
+<li>Seeded throughout: <code>rng(id)</code>, never <code>Math.random</code>. Shuffles and picks run on ordered arrays, and the output is sorted by id. <code>quota</code> builds slots from the row array, not the Map. Knowledge sets are sorted. The review page is byte-stable (tested).</li>
+<li>Replay of r013 at HEAD: <span class="ok">REPLAY OK</span>. The people tools hash at HEAD (<code>59aa3d61…</code>) equals r013's <code>toolsHash</code>. Each pinned input (life, rules, mission, block, plan) is sha-checked before the rerun.</li>
+<li>The civic-block scope is cheap: 126 people expand in about 0.1 s, and the checker runs in about 10 ms.</li>
+<li>Perf harness mechanics: buffers allocated once, wall-clock frame times, rotated variant order with A...A repeats, a busy-machine preflight, the renderer copy under try/finally, and every A/B switch reapplied in full on each Apply. The proxy and SSAO switches demonstrably change the counts.</li>
+</ul>
+
+<h2>Evidence</h2>
+<p>All runs below are on the HEAD snapshot <code>out/review/head</code> (<code>git archive 59447c2</code>). The probes live in <code>out/review/probes/</code>, and their full source is at the end of this page.</p>
+<table>
+<tr><th>Command</th><th>Result</th></tr>
+<tr><td><code>bun test tools/people tools/missions contracts/people tools/levels/people</code></td><td>58 pass, 0 fail, 271 expect() calls</td></tr>
+<tr><td><code>bun run typecheck</code></td><td>exit 0</td></tr>
+<tr><td><code>bun tools/people/cli.ts --cast out/r013.cast.json --out out/people-r013.json</code></td><td>P-0..P-12 ok; 126 people, 4 units, 269 ties; records-office 72 staff per shift</td></tr>
+<tr><td><code>bun tools/levels/replay.ts r013</code></td><td>REPLAY OK harbour-district/r013 (with warnings for the GDD v0.21.0 card and corpus drift)</td></tr>
+<tr><td><code>peopleHash()</code> vs r013 run.json <code>toolsHash</code></td><td>both <code>59aa3d617b9088dea88a9cb633deef3380da58bf95758d22f07718abed91fdb0</code></td></tr>
+<tr><td>World export (<code>out/world/harbour-district.world.json</code>) × life.json occupations</td><td>1,077 frontage units, about 10,468 staff implied; homes: 18 plots, 30,410 residents</td></tr>
+</table>
+<h3>Probe outputs: checker holes (<code>probes/holes.ts</code>, r013 cast)</h3>
+<pre>1 edited file (p-cafe-01 and p-cafe-04 swap temperament and name): differs from expand(cast) true; failing: none (P-9 'byte-identical twice' passes: given = people)
+2 waitress p-cafe-11 at cafe-table-0 17:04-17:24 (role window 17:00-17:08, shift 12:00-18:00): failing: none; P-6 cast p-cafe-11
+3 resident row needs [kin]: 8/24 residents carry another need (housing, debt, cash, care); failing: none
+4 pool carries Inez and Vale: 2 people named Inez, 2 named Vale; failing: P-8
+5 mission now pins p-cafe-12; people file unchanged (Inez on p-cafe-11): M-2 ok true (waitress p-cafe-12, driver p-records-office-13, guard p-records-office-02, councillor p-records-office-01)
+6 every unpinned name rotated by one: people differ true; check rows identical true
+4b pool carries Inez: p-cafe-11 Inez Bermudez (server); p-records-office-14 Inez Barlow (clerk); failing: none</pre>
+<h3>Probe outputs: scale (<code>probes/scale.ts</code>, café unit copies through the real expander and checker)</h3>
+<pre>units 4: 126 simulated; expand 158 ms, check 11 ms; faults 0; failing none
+units 14: 366 simulated; expand 41 ms, check 10 ms; faults 0; failing none
+units 29: 726 simulated; expand 113 ms, check 14 ms; faults 0; failing none
+units 54: 1326 simulated; expand 350 ms, check 41 ms; faults 0; failing none
+units 204: 4926 simulated; expand 5684 ms, check 129 ms; faults 0; failing none
+units 444: 10686 simulated; expand 39118 ms, check 333 ms; faults 3772; failing P-8</pre>
+<p>Timings vary with machine load (other agents were running): a second run gave 23.3 s for 10,686 people.</p>
+<h3>Probe outputs: walk grid at district extent (<code>probes/walkbench.ts</code>)</h3>
+<pre>grid build ms 59
+dijkstra per source ms 69 reached 6 /6 heap MB 13 rss MB 54</pre>
+<p>A first run gave 31 ms for the grid and 45 ms per Dijkstra. The grid is 201,664 cells at 2 m: 1.6 MB per source as Float64Array.</p>
+<h3>Perf counts used in M4 and L8</h3>
+<pre>pass 2 (64 m tiles), counts-run.json, home: as-was camDraws 170 + shDraws 393; base 170 + 277; shadow tris as-was 868,848, proxies 602,787
+pass 3 (16 m cells), counts-cells.json, home: as-was draws 1,033 setPass 91; base draws 706 setPass 64</pre>
+
+<details><summary>Probe source: holes.ts</summary><pre>// Redline probes: can a bad cast or a bad people file pass P-0..P-12 and M-2? Each prints the failing rule ids (none = it passes).
+const base = process.argv[2]!;
+const { readTexts, world } = await import(`${base}/tools/people/inputs`);
+const { expand } = await import(`${base}/tools/people/expand`);
+const { checkPeople } = await import(`${base}/tools/people/check`);
+const { castHandover } = await import(`${base}/tools/people/handover`);
+const { overlay } = await import(`${base}/tools/missions/handover/overlay`);
+const { civic } = await import(`${base}/tools/plan/civic`);
+const { derive } = await import(`${base}/tools/plan/plan`);
+const { Cast } = await import(`${base}/contracts/people/cast.schema`);
+const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block');
+const cast = Cast.parse(JSON.parse(await Bun.file(`${base}/out/r013.cast.json`).text()));
+const ctx = w.ctx(cast), gen = expand(ctx);
+const clone = &lt;T,&gt;(x: T): T =&gt; JSON.parse(JSON.stringify(x));
+const fails = (people: any, c = ctx, m = w.mission) =&gt; checkPeople(c, m, w.plan, { people, gaps: [] }).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.id).join(',') || 'none';
+const hm = (t: number) =&gt; `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+
+// 1. a people file that is not the expansion of its cast (two staff swap temperaments; one need changed): P-9 says byte-identical
+{
+  let shown = false;
+  const staff = gen.people.persons.filter((q: any) =&gt; q.work?.unit === 'cafe');
+  for (const a0 of staff) for (const b0 of staff) {
+    if (shown || a0.temperament === b0.temperament || a0.id === b0.id || a0.name.startsWith('Inez ') || b0.name.startsWith('Inez ')) continue;
+    const p = clone(gen.people), a = p.persons.find((q: any) =&gt; q.id === a0.id), b = p.persons.find((q: any) =&gt; q.id === b0.id);
+    [a.temperament, b.temperament] = [b.temperament, a.temperament]; [a.start, b.start] = [b.start, a.start]; [a.institution, b.institution] = [b.institution, a.institution]; [a.name, b.name] = [b.name, a.name];
+    const f = fails(p); if (f !== 'none') continue;
+    shown = true;
+    console.log(`1 edited file (${a.id} and ${b.id} swap temperament and name): differs from expand(cast) ${JSON.stringify(p) !== JSON.stringify(expand(ctx).people)}; failing: ${f} (P-9 'byte-identical twice' passes: given = people)`);
+  }
+  if (!shown) console.log('1 no swap passed');
+}
+// 2. the Handover waitress leaves the door 2 minutes into the 8-minute role window, for a seat in the square
+{
+  const p = clone(gen.people), c = castHandover(p.persons, w.scope, w.mission, w.plan, w.rules), id = c[0].pinned, x = p.persons.find((q: any) =&gt; q.id === id);
+  const i = x.routine.stops.findIndex((s: any) =&gt; s.doing === 'work' &amp;&amp; 17 * 60 &gt;= s.from &amp;&amp; 17 * 60 &lt; s.to), s = x.routine.stops[i];
+  const seat = w.scope.seats[0], t = ctx.walk.min(w.scope.places.find((q: any) =&gt; q.id === s.place).at, w.scope.places.find((q: any) =&gt; q.id === seat).at);
+  const back = 17 * 60 + 2 + t + 20 + t;
+  x.routine.stops.splice(i, 1, { ...s, to: 17 * 60 + 2 }, { place: seat, doing: "evening", from: 17 * 60 + 2 + t, to: 17 * 60 + 2 + t + 20 }, { ...s, from: back });
+  console.log(checkPeople(ctx, w.mission, w.plan, { people: p, gaps: [] }).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.detail).join(' | '));
+  console.log(`2 waitress ${id} at ${seat} ${hm(17 * 60 + 2 + t)}-${hm(17 * 60 + 2 + t + 20)} (role window 17:00-17:08, shift ${hm(x.work.shift.from)}-${hm(x.work.shift.to)}): failing: ${fails(p)}; P-6 cast ${castHandover(p.persons, w.scope, w.mission, w.plan, w.rules)[0].pinned}`);
+}
+// 3. a resident row that weights only `kin` (needs a family tie): who lacks one gets a need from outside the row, silently
+{
+  const c2 = clone(cast); c2.rows.find((r: any) =&gt; r.occupation === 'resident').needs = [{ need: 'kin', weight: 1 }];
+  const ctx2 = w.ctx(c2), g = expand(ctx2), res = g.people.persons.filter((q: any) =&gt; !q.work), off = res.filter((q: any) =&gt; q.need !== 'kin');
+  console.log(`3 resident row needs [kin]: ${off.length}/${res.length} residents carry another need (${[...new Set(off.map((q: any) =&gt; q.need))].join(', ')}); failing: ${checkPeople(ctx2, w.mission, w.plan, g).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.id).join(',') || 'none'}`);
+}
+// 4. the pinned names in the model's pool: other people can be Inez or Vale too
+{
+  const c2 = clone(cast); c2.names.given[0] = { name: 'Inez', origin: c2.names.given[0].origin }; c2.names.family[0] = { name: 'Vale', origin: c2.names.family[0].origin };
+
+  const ctx2 = w.ctx(c2), g = expand(ctx2);
+  const inez = g.people.persons.filter((q: any) =&gt; q.name.startsWith('Inez ')).length, vale = g.people.persons.filter((q: any) =&gt; q.name.endsWith(' Vale')).length;
+  console.log(g.people.persons.filter((q: any) =&gt; q.name.startsWith('Inez ') || q.name.endsWith(' Vale')).map((q: any) =&gt; `${q.id} ${q.name} ${q.work ? (q.work.position ?? q.work.role) : 'resident'}`).join('; '));
+  console.log(checkPeople(ctx2, w.mission, w.plan, g).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.detail).join(' | '));
+  console.log(`4 pool carries Inez and Vale: ${inez} people named Inez, ${vale} named Vale; failing: ${checkPeople(ctx2, w.mission, w.plan, g).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.id).join(',') || 'none'}`);
+}
+// 5. M-2 on a stale people file: the mission pins another server after the file was made; Inez stays on the old one
+{
+  const block = JSON.parse((await readTexts('contracts/world/harbour-district.plan.json')).block), d = derive(w.plan), civ = civic(w.plan.civic, block);
+  const m = clone(JSON.parse((await readTexts('contracts/world/harbour-district.plan.json')).mission));
+  const c = castHandover(gen.people.persons, w.scope, w.mission, w.plan, w.rules), other = c[0].who.find((id: string) =&gt; id !== c[0].pinned);
+  m.roles.find((r: any) =&gt; r.id === 'waitress').pin = other;
+  const m2 = overlay(w.plan, block, gen.people, m).civic({ plan: w.plan, d, civ } as never).find((x: any) =&gt; x.id === 'M-2');
+  const inezOn = gen.people.persons.find((q: any) =&gt; q.name.startsWith('Inez ')).id;
+  console.log(`5 mission now pins ${other}; people file unchanged (Inez on ${inezOn}): M-2 ok ${m2.ok} (${m2.value})`);
+  // and a people file made with the stand-in cast passes M-2 just the same: M-2 reads only plan id and version
+  console.log(`  people.inputs (what M-2 could compare and does not): ${JSON.stringify(Object.keys(gen.people.inputs))}; no mission hash, no plan sha, no tools hash`);
+}
+// 6. replay compares check rows only: are the rows of an edited people set byte-identical to the accepted set's?
+{
+  const rows = (people: any) =&gt; JSON.stringify(checkPeople(ctx, w.mission, w.plan, { people, gaps: [] }).checks);
+  const p = clone(gen.people), xs = p.persons.filter((q: any) =&gt; !q.name.startsWith('Inez ') &amp;&amp; !q.name.endsWith(' Vale'));
+  const names = xs.map((q: any) =&gt; q.name); names.push(names.shift()); xs.forEach((q: any, i: number) =&gt; (q.name = names[i]));
+  console.log(`6 every unpinned name rotated by one: people differ ${JSON.stringify(p) !== JSON.stringify(gen.people)}; check rows identical ${rows(p) === rows(gen.people)}`);
+}
+// 4b. only Inez in the pool
+{
+  const c2 = clone(cast); c2.names.given[0] = { name: 'Inez', origin: c2.names.given[0].origin };
+  const ctx2 = w.ctx(c2), g = expand(ctx2);
+  const who = g.people.persons.filter((q: any) =&gt; q.name.startsWith('Inez ')).map((q: any) =&gt; `${q.id} ${q.name} (${q.work ? (q.work.position ?? q.work.role) : 'resident'})`);
+  console.log(`4b pool carries Inez: ${who.join('; ')}; failing: ${checkPeople(ctx2, w.mission, w.plan, g).checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.id).join(',') || 'none'}`);
+}</pre></details>
+<details><summary>Probe source: scale.ts</summary><pre>// Redline probe: expander cost as the simulated count grows (copies of the café unit; same places, so walks are memoised).
+const base = process.argv[2]!;
+const { readTexts, world } = await import(`${base}/tools/people/inputs`);
+const { expand } = await import(`${base}/tools/people/expand`);
+const { checkPeople } = await import(`${base}/tools/people/check`);
+const { Cast } = await import(`${base}/contracts/people/cast.schema`);
+const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block');
+const cast = Cast.parse(JSON.parse(await Bun.file(`${base}/out/r013.cast.json`).text()));
+for (const copies of [0, 10, 25, 50, 200, 440]) {
+  const cafe = w.scope.units.find((u: any) =&gt; u.id === 'cafe');
+  const scope = { ...w.scope, units: [...w.scope.units, ...Array.from({ length: copies }, (_, i) =&gt; ({ ...cafe, id: `cafe${i}` }))] };
+  const ctx = { ...w.ctx(cast), scope };
+  let t = performance.now(); const g = expand(ctx); const te = performance.now() - t;
+  t = performance.now(); const c = checkPeople(ctx, w.mission, w.plan, g); const tc = performance.now() - t;
+  console.log(`units ${scope.units.length}: ${g.people.persons.length} simulated; expand ${Math.round(te)} ms, check ${Math.round(tc)} ms; faults ${c.counts.faults}; failing ${c.checks.filter((x: any) =&gt; !x.ok).map((x: any) =&gt; x.id).join(',') || 'none'}`);
+}</pre></details>
+<details><summary>Probe source: walkbench.ts</summary><pre>const base = process.argv[2]!;
+const { derive } = await import(`${base}/tools/plan/plan`);
+const { civic } = await import(`${base}/tools/plan/civic`);
+const { walker } = await import(`${base}/tools/people/walk`);
+const plan = JSON.parse(await Bun.file(`${base}/contracts/world/harbour-district.plan.json`).text());
+const block = JSON.parse(await Bun.file(`${base}/${plan.civic.block}`).text());
+const d = derive(plan), civ = civic(plan.civic, block);
+let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9; for (const p of d.plots) for (const v of p.polyV) { x0=Math.min(x0,v[0]);x1=Math.max(x1,v[0]);y0=Math.min(y0,v[1]);y1=Math.max(y1,v[1]); }
+let t = performance.now();
+const w = walker(plan, d, civ, [[x0,y0],[x1,y1]], 1.3);
+console.log('grid build ms', Math.round(performance.now()-t));
+// sample free points
+const pts: [number,number][] = [];
+for (let i=0;i&lt;40 &amp;&amp; pts.length&lt;12;i++){ const p:[number,number]=[x0+ (x1-x0)*((i*0.618)%1), y0+(y1-y0)*((i*0.381)%1)]; if (w.free(p)) pts.push(p); }
+t = performance.now(); let m=0;
+for (const a of pts.slice(0,6)) { m += w.m(a, pts[pts.length-1]!) === Infinity ? 0 : 1; }
+const per = (performance.now()-t)/6;
+console.log('dijkstra per source ms', Math.round(per), 'reached', m, '/6', 'heap MB', Math.round(process.memoryUsage().heapUsed/1e6), 'rss MB', Math.round(process.memoryUsage().rss/1e6));</pre></details>
+
+<p class="meta">Handoff: inputs = this page · done-check = each finding closed with its command or Air run output · next owner = Aster to assign (Splice: H1, H2, M1, M2, M6, ML1, ML2, L1, L4, L5; Latch: M3, M4, M5, L2, L3, L7-L11; Motive and Keel: the budget, pool and hub rules; Waymark: M-2 text and pins).</p>
+</main>
+</body>
+</html>
