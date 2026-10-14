@@ -33,3 +33,6 @@ unity/*.slnx
 unity/Assets/Scenes/HarbourDistrict-grade.asset
 unity/Assets/Scenes/HarbourDistrict-grade.asset.meta
 unity/Assets/Scenes/HarbourDistrict-probe-*
+
+# Machine-local endpoints and secrets (.env.example)
+.env

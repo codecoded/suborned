@@ -1,11 +1,13 @@
-# Local retrieval stack for build-time generation: SurrealDB (HNSW + BM25) and a BGE embedding service.
+# Retrieval stack for build-time generation: SurrealDB (HNSW + BM25) and a BGE embedding service.
+# Local by default. To serve other machines (the Mac Studio for the Air), set SUBORNED_BIND in .env to this machine's
+# Tailscale address, and SURREAL_PASS to a real password; clients point SURREAL_URL / EMBEDDING_URL at it (.env.example).
 name: suborned
 services:
   surrealdb:
     image: surrealdb/surrealdb:v3.3.0
     user: root
     command: start --log warn --user ${SURREAL_USER:-suborned} --pass ${SURREAL_PASS:-local-suborned-password} surrealkv:/data/suborned.db
-    ports: ["127.0.0.1:18504:8000"]
+    ports: ["${SUBORNED_BIND:-127.0.0.1}:18504:8000"]
     volumes: ["surreal-data:/data"]
     cpus: 0.5
     mem_limit: 512m
@@ -16,7 +18,7 @@ services:
       retries: 20
   embeddings:
     build: ./services/embeddings
-    ports: ["127.0.0.1:18505:8080"]
+    ports: ["${SUBORNED_BIND:-127.0.0.1}:18505:8080"]
     volumes: ["embedding-cache:/models"]
     environment:
       EMBEDDING_MODEL: BAAI/bge-small-en-v1.5

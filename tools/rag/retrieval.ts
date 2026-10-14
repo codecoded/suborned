@@ -3,7 +3,7 @@
 // usage: bun run retrieve "<query>"
 import { embeddingModel } from './config';
 import { hash, loadCorpus, type Chunk } from './corpus';
-import { sql, literal } from './database';
+import { corpusDb, sql, literal } from './database';
 import { embed } from './embeddings';
 
 export type Hit = Chunk & { score: number; signals: string[] };
@@ -22,41 +22,38 @@ const STOP = new Set(['the', 'and', 'for', 'with', 'that', 'this', 'from', 'not'
 export const terms = (q: string) => [...new Set(q.toLowerCase().match(/[a-z0-9§]+(?:-[a-z0-9]+)*/g) ?? [])].filter(t => t.length > 2 && !STOP.has(t)).slice(0, 24);
 
 /** BM25 OR semantics: SurrealDB's @@ needs every term, so per-term scores are summed in one batched request. */
-async function keyword(q: string): Promise<Chunk[]> {
+async function keyword(q: string, db: string): Promise<Chunk[]> {
   const ts = terms(q);
   if (!ts.length) return [];
-  const results = await sql<(Chunk & { bm25: number })[]>(ts.map(t => `SELECT ${FIELDS}, search::score(1) AS bm25 FROM chunk WHERE text @1@ ${literal(t)};`).join('\n'));
+  const results = await sql<(Chunk & { bm25: number })[]>(ts.map(t => `SELECT ${FIELDS}, search::score(1) AS bm25 FROM chunk WHERE text @1@ ${literal(t)};`).join('\n'), db);
   const score = new Map<string, { row: Chunk; s: number }>();
   for (const rows of results) for (const row of rows ?? []) { const e = score.get(row.key) ?? { row, s: 0 }; e.s += row.bm25; score.set(row.key, e); }
   return [...score.values()].sort((a, b) => b.s - a.s || a.row.key.localeCompare(b.row.key)).slice(0, 16).map(e => e.row);
 }
 
 /**
- * `expect`: the corpus hash a run checked once, at its first call. Later calls of the run compare the index with that hash
+ * `expect`: the corpus hash a run checked once, at its first call. Later calls of the run read that corpus's database
  * and do not read the corpus files again, so an edit to the GDD, a plan or the kit in the middle of a run (the working
- * tree is shared) cannot abort it. Without `expect` the files are checked against the index, as every standalone
- * retrieval does.
+ * tree is shared) cannot abort it, nor can another tree's ingest. Without `expect` the files are hashed and their own
+ * database read, as every standalone retrieval does.
  */
 export async function retrieve(query: string | string[], limit = 8, pinned: string[] = [], expect?: string) {
   const queries = (Array.isArray(query) ? query : [query]).map(q => q.trim()).filter(Boolean);
   if (!queries.length || !Number.isInteger(limit) || limit < 1 || limit > 12) throw new Error('Use a nonempty query and limit 1-12');
-  const manifest = (await sql<{ corpusHash: string; embeddingModel: string }[]>('SELECT * FROM corpus:current;'))[0]?.[0];
-  if (!manifest) throw new Error('No corpus indexed. Run bun run ingest first.');
-  if (expect !== undefined) {
-    if (manifest.corpusHash !== expect) throw new Error('The index was re-ingested during the run; its passages are no longer the ones the run started with.');
-  } else if (manifest.embeddingModel !== embeddingModel || manifest.corpusHash !== hash(JSON.stringify(await loadCorpus()))) {
-    throw new Error('GDD, plan or embedding model changed since the last ingest. Run bun run ingest.');
-  }
+  const corpusHash = expect ?? hash(JSON.stringify(await loadCorpus())), db = corpusDb(corpusHash);
+  const manifest = (await sql<{ corpusHash: string; embeddingModel: string }[]>('SELECT * FROM corpus:current;', db).catch(() => [[]]))[0]?.[0]; // a corpus never ingested has no database yet
+  if (manifest?.corpusHash !== corpusHash) throw new Error(expect !== undefined ? `The run's corpus ${corpusHash.slice(0, 12)} is no longer indexed.` : `This tree's GDD, plan and kit (corpus ${corpusHash.slice(0, 12)}) are not indexed. Run bun run ingest.`);
+  if (manifest.embeddingModel !== embeddingModel) throw new Error('The embedding model changed since the last ingest. Run bun run ingest.');
   const vectors = await embed(queries, 'query'), lists: { signal: string; rows: Chunk[] }[] = [];
   for (const [i, q] of queries.entries()) {
     const tag = queries.length > 1 ? `:${i + 1}` : '';
-    const [semantic] = await sql<Chunk[]>(`SELECT ${FIELDS}, vector::distance::knn() AS distance FROM chunk WHERE embedding <|16,120|> ${literal(vectors[i])} ORDER BY distance;`);
-    lists.push({ signal: 'semantic' + tag, rows: semantic ?? [] }, { signal: 'keyword' + tag, rows: await keyword(q) });
+    const [semantic] = await sql<Chunk[]>(`SELECT ${FIELDS}, vector::distance::knn() AS distance FROM chunk WHERE embedding <|16,120|> ${literal(vectors[i])} ORDER BY distance;`, db);
+    lists.push({ signal: 'semantic' + tag, rows: semantic ?? [] }, { signal: 'keyword' + tag, rows: await keyword(q, db) });
   }
   const hits = fuse(lists, limit);
   const wanted = [...new Set(pinned)].filter(k => !hits.some(h => h.key === k));
   if (wanted.length) {
-    const [rows] = await sql<Chunk[]>(`SELECT ${FIELDS} FROM chunk WHERE key IN ${literal(wanted)};`);
+    const [rows] = await sql<Chunk[]>(`SELECT ${FIELDS} FROM chunk WHERE key IN ${literal(wanted)};`, db);
     for (const row of rows ?? []) hits.push({ ...row, score: 0, signals: ['critic-cited'] });
   }
   return { query: queries.join(' ‖ '), queries, pinned: [...new Set(pinned)], method: 'HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned', corpusHash: manifest.corpusHash, embeddingModel, hits };
