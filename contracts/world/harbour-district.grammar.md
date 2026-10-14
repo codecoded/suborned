@@ -57,6 +57,7 @@ Applies to tower sites (floorplate <= 30 x 30) and signature landmarks. cite `AA
 - No speed bands above the podium. Vertical fin pairs at each tier corner, 1.2 wide x 0.6 proud, running the full tier and **rising 2 storeys above the roof as a parapet fin** (cite `AA/exposition_palace.png`); glazing = 2.4 m recessed strips between fins, chrome edged.
 - Enamel on towers: turquoise fin inlays (the plan's tower role), 1 gold or chrome vertical stripe per face on the tallest tier.
 - Height variety: adjacent towers differ >= 20% in height.
+  - Exception (Sky, 2026-10-14, after `out/shots/skyline-heights/compare-*.png`: "I don't notice any differences - so yeah, keep it"): Crown Avenue keeps avenue-needle 167.8 m and the avenue gates 165.6 m, 13.6 % and 14.8 % under avenue-starburst 194.3 m. Cutting them to 20 % (153.4, 154.8) was not visible from the play or skyline views and needed shorter pieces. Owed (Vela): define "adjacent" for this rule, or restate it as a view test, so the next plan is judged on what is seen.
 
 ## 5. Stepped setbacks and terraces (mid blocks)
 - Any block >= 7 storeys on a street corner steps back one bay (6) at storey n-2, the step is a planted terrace with a chrome rail 1.1 high (`BL/hanging_terraces.png`, `BL/mixed_skyline.png`). Blocks 4-6 storeys step 3 at the top storey on 1 in 2.
