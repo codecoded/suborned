@@ -15,6 +15,8 @@ export const SCALES = ['bravery', 'resentment', 'fear', 'loyalty'] as const;
 export const NEED_REQUIRES = ['nothing', 'home', 'work', 'family-tie', 'rival-tie'] as const;
 export const TIE_BETWEEN = ['any', 'same-employer', 'routine-stop', 'same-trade-or-employer'] as const;
 export const FACTS = ['fixer-face', 'cell-car', 'place-time'] as const;
+export const IDENTITY_STATES = ['face', 'alias', 'name'] as const; // DF's three (Adams 2017); the file says which are in play
+export const KNOWN_VIA = ['workmate', 'unit-regular'] as const;
 
 const temperament = z.enum(TEMPERAMENTS);
 const approach = z.enum(APPROACHES);
@@ -67,6 +69,7 @@ const Tie = ground({
   maxPerPerson: z.number().int().positive(),
   maxIncoming: z.number().int().positive().optional(), // directed ties: the cap on the receiving end
   between: z.enum(TIE_BETWEEN),
+  introduces: z.boolean(), // §04 introduces a friend: a turned contact can introduce the people this tie joins them to
 }).refine((t) => (t.direction === 'both') === (t.maxIncoming === undefined), { message: 'a directed tie sets maxIncoming; a two-way tie does not' });
 
 const Trade = maybeProposed({ category: id, allow: z.array(temperament).min(2) });
@@ -87,6 +90,7 @@ export const PeopleRules = z.strictObject({
     needsPerPerson: z.literal(1),
     memoryAtStart: z.literal('empty'),
     src: text, reason: text,
+    readBy: ground({ fields: z.record(id, text) }), // Legion lesson: every field a person carries names the rule that reads it
   }),
   tiers: z.strictObject({
     simulated: ground({ carries: z.array(id).min(1) }),
@@ -107,6 +111,13 @@ export const PeopleRules = z.strictObject({
     perPerson: z.strictObject({ min: z.number().int().nonnegative(), max: z.number().int().positive() }),
     noSelf: z.literal(true), onePerKindPerPair: z.literal(true), simulatedOnly: z.literal(true),
   }),
+  knowledge: ground({
+    rule: text,
+    identity: z.array(z.enum(IDENTITY_STATES)).min(1),
+    learnedBy: z.array(z.enum(['witnessed', 'told'])).min(1),
+    cellAtStart: z.literal('nothing'),
+    needsKnown: z.array(z.strictObject({ position: id, of: z.array(z.enum(KNOWN_VIA)).min(1), src: text })),
+  }),
   talker: z.strictObject({
     when: z.literal('questioned'),
     test: z.strictObject({ left: z.array(scale).min(1), op: z.literal('>'), right: z.array(scale).min(1) }),
@@ -126,6 +137,12 @@ export const PeopleRules = z.strictObject({
     tradesSrc: text,
     roles: z.record(id, Role),
     employers: z.record(id, Employer),
+    mix: ground({
+      rule: text,
+      rowMaxShare: z.number().gt(0).lte(1),
+      unitMinDistinct: z.number().int().min(1),
+      whenStaffAtLeast: z.number().int().min(1),
+    }),
   }),
   names: ground({
     scope: z.literal('district'), pool: text,
@@ -160,6 +177,20 @@ export const PeopleRules = z.strictObject({
   if (new Set(sides).size !== sides.length) bad(['talker', 'test'], 'a scale appears twice in the Talker test');
   if (r.talker.lie.when.braveryAtLeast > r.scales.bravery.max) bad(['talker', 'lie', 'when'], 'braveryAtLeast is off the bravery scale');
   if (r.ties.perPerson.min > r.ties.perPerson.max) bad(['ties', 'perPerson'], 'min > max');
+  // Every field a simulated person carries has a reader, and nothing is read that is not carried.
+  const carried = r.tiers.simulated.carries, readers = Object.keys(r.person.readBy.fields);
+  for (const f of carried) if (!readers.includes(f)) bad(['person', 'readBy', 'fields'], `${f} is carried but no rule reads it`);
+  for (const f of readers) if (!carried.includes(f)) bad(['person', 'readBy', 'fields', f], `${f} is read but not carried`);
+  // Introductions (§04) need at least one tie kind that carries them.
+  if (!Object.values(r.ties.kinds).some((t) => t.introduces)) bad(['ties', 'kinds'], 'no tie kind introduces');
+  // Knowledge: a need is known only through a known position; the cell is unknown at the start (memory empty).
+  const allPositions = new Set(Object.values(r.positions.byCategory).flat());
+  for (const [i, k] of r.knowledge.needsKnown.entries()) if (!allPositions.has(k.position)) bad(['knowledge', 'needsKnown', i], `position ${k.position} is unknown`);
+  // Mix: a share cap no row can meet, or more distinct temperaments than exist, is an error.
+  const mix = r.temperamentsBy.mix, nT = Object.keys(r.temperaments).length;
+  if (mix.rowMaxShare * nT < 1) bad(['temperamentsBy', 'mix', 'rowMaxShare'], 'rowMaxShare × temperaments < 1: no row can satisfy it');
+  if (mix.unitMinDistinct > nT) bad(['temperamentsBy', 'mix', 'unitMinDistinct'], 'more distinct temperaments required than exist');
+  if (mix.unitMinDistinct > mix.whenStaffAtLeast) bad(['temperamentsBy', 'mix'], 'unitMinDistinct > whenStaffAtLeast: a unit that small cannot carry that many');
   // Positions: every category has exactly one keeper, first.
   for (const [c, ps] of Object.entries(r.positions.byCategory)) {
     if (ps[0] !== 'keeper' || ps.filter((p) => p === 'keeper').length !== 1) bad(['positions', 'byCategory', c], 'a category leads with exactly one keeper');

@@ -19,6 +19,11 @@ File: `contracts/people/people.rules.json` (`suborned.people.rules/1`). Schema: 
 | café = diner | | The 22 m corner café matches none of the 39 trades by name. The plan's corner rule assigns an anchor trade or a diner, and diner is open 6–24. | plan frontage.placement.corner |
 | names | one pool per district · given + family, pattern `^\p{Lu}[\p{L}'-]{1,15}$` (no digits, suffixes or titles) · ≥ 60 given, ≥ 80 family · ≥ 6 origins from a closed list of 21, none over 25 % · full names unique · background people unnamed · avoid list of 1950s-Americana names | Makes §15's "no era date, mixed cast" checkable. | §15 people |
 | pinned names | Inez (given, café server), Vale (family, councillor) | The GDD names them. The person cast in that role takes the name part. No other name is authored. | §07 |
+| fear / loyalty steps (P1) | calm·uneasy·afraid·terrified / none·obliged·trusting·sworn | every number reads as a word (DF bands) | §04 |
+| readBy (P2) | each carried field names the rule that reads it; a field with no reader is rejected | Legion's bios did nothing | §09 risk |
+| mix (P3) | no temperament > 60 % of a cast row; units of ≥ 3 staff carry ≥ 2 temperaments [S] | culture baseline without sameness; two ways in per workplace | §09, §04 |
+| introduces (P4) | family, workmate, regular introduce; debtor, rival do not | introductions come off a visible tie | §04, §08 |
+| knowledge (P5) | face only; witnessed or told; cell unknown at start; a keeper knows workmates' and unit regulars' needs | DF witness rule; §08 tips checkable | §03, §05, §08 |
 | background tier | carries only a routine | Background people walk, run and cheer only, so they have no state to approach or question. | life.json tiers, §06 |
 
 ## Grounded (GDD states it)
