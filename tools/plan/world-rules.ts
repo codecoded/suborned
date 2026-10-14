@@ -1,5 +1,5 @@
 // The world rules, registered: B (buildings), L (levels), MS (megastructures), F (frontage), SF (streetscape), K (kit fit), SG / P / SK (signatures, portals, skyline) rules and
-// F-7, SF-18, L-8, SF-19 (tools/world/rules), run on the generator's output for a plan. `bun tools/plan/cli.ts` runs them after the plan rules; `bun run world` refuses to export
+// F-7, SF-18, L-8, SF-19, SF-20, SF-21, CD-1..4 (tools/world/rules), run on the generator's output for a plan. `bun tools/plan/cli.ts` runs them after the plan rules; `bun run world` refuses to export
 // a world that fails them. They need the generated world, which takes seconds: it is cached by content hash (world-ctx.ts), so a
 // repeat run costs the rules alone. A plan without the world standards (a recorded run's plan) has nothing to check here.
 import type { World } from '../../contracts/world/world.schema';

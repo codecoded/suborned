@@ -149,7 +149,7 @@ export type Connector = {
  *  `control` where the plan says the road class has one (zebra | signal). A `stop` or `bank` crossing is one patch (the way from a tram platform, or from a station bank, across the road): `items` has its one street item, `line` runs along its long axis. */
 export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; line: [V, V]; strip: V[]; width: number; control?: 'zebra' | 'signal'; refuges: V[][] };
 export type StreetItem = {
-  id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id; surface = a look key (not enumerated here): `trim` by default, `park`, `enamel`, and `crossing` for every landing patch
+  id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id; surface = a look key (not enumerated here): `trim` by default, `park`, `enamel`, `crossing` for every landing patch, `booth` for a phone booth, `tub` for a palm tub
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached
 };

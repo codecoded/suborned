@@ -11,6 +11,7 @@ import { type Rect, rectPts } from '../geo';
 import { type MegaOut } from '../types';
 import type { V } from '../../../plan/geom';
 import { adoptedBy } from '../kitrefs';
+import { GIRDER } from '../surfaces';
 import { box, deckRec, host, prim, rectMass, zOf } from './kit';
 
 /** The kit's stem lift tubes (tools/decokit skyport.py LIFT_R 9.2, lift_tube r 1.5, one per disc at its azimuth, kit +X = plan +x at yaw 0). TODO numeric field on
@@ -32,18 +33,18 @@ export function pier(ctx: Ctx, mm: Megastructure): MegaOut {
   out.decks.push(deckRec(ctx, id, `${id}/lounge-n`, 'concourse', [fp[0], fp[1], 8, fp[3]], [], td), deckRec(ctx, id, `${id}/lounge-s`, 'concourse', [fp[0], fp[1], fp[2], -8], [], td));
   // portal frame f0..f1 on all four sides leg to leg, and the cross-girder carrying the stem
   out.prims.push(box(`${id}/frame-n`, 'mega', [cx, fp[3] - q / 2], [w, q, ft], f0), box(`${id}/frame-s`, 'mega', [cx, fp[2] + q / 2], [w, q, ft], f0),
-    box(`${id}/frame-e`, 'mega', [fp[1] - q / 2, cy], [q, d, ft], f0), box(`${id}/frame-w`, 'mega', [fp[0] + q / 2, cy], [q, d, ft], f0), box(`${id}/girder`, 'trim', [(g[0] + g[1]) / 2, (g[2] + g[3]) / 2], [g[1] - g[0], g[3] - g[2], ft], f0));
+    box(`${id}/frame-e`, 'mega', [fp[1] - q / 2, cy], [q, d, ft], f0), box(`${id}/frame-w`, 'mega', [fp[0] + q / 2, cy], [q, d, ft], f0), box(`${id}/girder`, GIRDER, [(g[0] + g[1]) / 2, (g[2] + g[3]) / 2], [g[1] - g[0], g[3] - g[2], ft], f0));
   // the stem on its platform from the frame to the shaft top; each disc on a cantilever from the stem, its deck top at disc.top
   out.prims.push(prim(`${id}/stem-platform`, 'cyl', 'mega', [cx, cy], [2 * st.platform.r, 2 * st.platform.r, st.platform.z[1] - st.platform.z[0]], st.platform.z[0]),
     prim(`${id}/stem`, 'cyl', 'limestone', [cx, cy], [2 * st.r, 2 * st.r, st.to - st.from], st.from));
   m.discs.forEach((dk, i) => {
     const dx = dk.c[0] - cx, dy = dk.c[1] - cy, len = Math.hypot(dx, dy), yaw = Math.atan2(dy, dx);
     out.prims.push(prim(`${id}/disc-${i}`, 'cyl', 'landmark', dk.c, [2 * dk.r, 2 * dk.r, dk.thick], dk.soffit),
-      box(`${id}/arm-${i}`, 'trim', [cx + dx / 2, cy + dy / 2], [len, 3, dk.thick], dk.soffit, yaw));
+      box(`${id}/arm-${i}`, GIRDER, [cx + dx / 2, cy + dy / 2], [len, 3, dk.thick], dk.soffit, yaw));
   });
   // gallery collar (lens r rIn -> r), cupola, lattice mast and needle to the tip (the kit's crown(), not a 40 m saucer)
   out.prims.push(prim(`${id}/gallery`, 'saucer', 'landmark', [cx, cy], [2 * gal.r, 2 * gal.r, gal.top - gal.z], gal.z), prim(`${id}/cupola`, 'cyl', 'glass', [cx, cy], [2 * cr.cupola.r, 2 * cr.cupola.r, cr.cupola.z[1] - cr.cupola.z[0]], cr.cupola.z[0]),
-    box(`${id}/mast`, 'trim', [cx, cy], [cr.mast.w, cr.mast.w, cr.mast.z[1] - cr.mast.z[0]], cr.mast.z[0]), prim(`${id}/needle`, 'cyl', 'trim', [cx, cy], [2 * cr.needle.r, 2 * cr.needle.r, cr.needle.z[1] - cr.needle.z[0]], cr.needle.z[0]));
+    box(`${id}/mast`, GIRDER, [cx, cy], [cr.mast.w, cr.mast.w, cr.mast.z[1] - cr.mast.z[0]], cr.mast.z[0]), prim(`${id}/needle`, 'cyl', 'trim', [cx, cy], [2 * cr.needle.r, 2 * cr.needle.r, cr.needle.z[1] - cr.needle.z[0]], cr.needle.z[0]));
   // lifts: a car in each named leg from the apron to the frame top (it stops at the concourse lounge), then a glazed tube on the stem platform from the frame
   // top to each disc's deck (the last, the highest disc's, runs on to the gallery): the tube hugs the stem (gap LIFT_TUBE.r - radius - stem.r, bridged by a spine)
   const car = ctx.L.connectors.lift.car as [number, number], top = Math.max(...m.discs.map(x => x.top));
@@ -54,7 +55,7 @@ export function pier(ctx: Ctx, mm: Megastructure): MegaOut {
   m.discs.forEach((dk, i) => {
     const a = (dk.az * Math.PI) / 180, c: V = [cx + LIFT_TUBE.r * Math.cos(a), cy + LIFT_TUBE.r * Math.sin(a)], last = dk.top === top;
     const sr = (st.r + LIFT_TUBE.r - LIFT_TUBE.radius) / 2, sl = LIFT_TUBE.r - LIFT_TUBE.radius - st.r + 0.3; // a chrome spine ties the tube to the stem (the kit's), its whole run
-    out.prims.push(box(`${id}/tube-${i}-spine`, 'trim', [cx + sr * Math.cos(a), cy + sr * Math.sin(a)], [sl, 0.7, (last ? gal.z : dk.top) - f1], f1, a));
+    out.prims.push(box(`${id}/tube-${i}-spine`, GIRDER, [cx + sr * Math.cos(a), cy + sr * Math.sin(a)], [sl, 0.7, (last ? gal.z : dk.top) - f1], f1, a));
     out.connectors.push({ id: `${id}/tube-${i}`, kind: 'lift', host: id, serves: [], from: 'frame', to: last ? 'saucer' : 'discs', foot: rv(c), head: rv(c), bottom: r3(f1), top: r3(last ? gal.z : dk.top), width: r3(2 * LIFT_TUBE.radius), stepFree: true, ring: circleRing(c, LIFT_TUBE.radius), yaw: r4(a) });
   });
   const mixOf = (lv: string) => m.levels.find(l => l.level === lv)?.mix;

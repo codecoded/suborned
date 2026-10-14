@@ -8,6 +8,7 @@ import { lineDist } from '../../../plan/geom';
 import type { Ctx } from '../common';
 import { type Rect, bbox, growRect, rectPts, rectsTouch, subtractRect } from '../geo';
 import type { Site } from '../masses';
+import { CANOPY } from '../surfaces';
 import { fillTravel } from '../travel';
 import type { Core, Host, MegaOut } from '../types';
 import { columnsOf, lifted, stripsOf } from './colonnade';
@@ -16,6 +17,8 @@ import { INSET, box, prim, deckRec, faceOf, faceSide, host, rectMass, servedBy, 
 type Cores = { at: number[]; every: number; from: string; to: string };
 type Canopy = { depth: number; surface: string; edges: { footprint: number; edge: 'x0' | 'x1' | 'y0' | 'y1' }[] };
 type GalleryCanopies = { edges: { footprint: number; edge: string }[]; x: [number, number]; span: number; spring: number; rise: number; ribs: number; surface?: string; supports: { every: number; pier: [number, number] } };
+/** The plan names the mall canopy's surface `trim` (the chrome role). The slab is 121 x 2.5 m, so it draws its own look key (surfaces.ts); any other surface the plan names is kept. */
+const CANOPY_OWN: Record<string, string> = { trim: CANOPY };
 type Range = { n: string; r0: Rect; axis: 0 | 1; dir: 1 | -1; lo: number; hi: number };
 
 export function arcade(ctx: Ctx, m: Megastructure, sites: Site[]): MegaOut {
@@ -52,7 +55,7 @@ export function arcade(ctx: Ctx, m: Megastructure, sites: Site[]): MegaOut {
       deckH.edges.push(sideEdge(B, fs, 'deck', 'gallery')); concH.edges.push(sideEdge(C, fs, 'concourse', 'promenade'));
       if (ce) { // the continuous chrome canopy over the face's frontage zone (outside the walk)
         const len = axis === 1 ? r0[1] - r0[0] : r0[3] - r0[2], c: V = axis === 1 ? [(r0[0] + r0[1]) / 2, dir > 0 ? r0[2] - canopy.depth / 2 : r0[3] + canopy.depth / 2] : [dir > 0 ? r0[0] - canopy.depth / 2 : r0[1] + canopy.depth / 2, (r0[2] + r0[3]) / 2];
-        out.prims.push(box(`${n}/canopy`, canopy.surface, c, axis === 1 ? [len, canopy.depth, 0.3] : [canopy.depth, len, 0.3], ctx.B.groundCeiling, 0));
+        out.prims.push(box(`${n}/canopy`, CANOPY_OWN[canopy.surface] ?? canopy.surface, c, axis === 1 ? [len, canopy.depth, 0.3] : [canopy.depth, len, 0.3], ctx.B.groundCeiling, 0));
       }
       const gcn = (m as unknown as { galleryCanopies?: GalleryCanopies }).galleryCanopies, gce = gcn?.edges.find(e => e.footprint === i && e.edge === ce?.edge);
       if (gcn && gce && axis === 1) { // glazed barrel over the deck gallery strip (open Parade, brief 007): barrel + chrome ribs + piers on the Parade-face line, all at the planned springing height

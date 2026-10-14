@@ -20,6 +20,12 @@
     "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
     "rules": []
    }
+  ],
+  "bc71738edcd953e32ef48b0f8be9b755d6c376b242a7a7d04fefc670f96c0cef": [
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   }
   ]
  }
 }

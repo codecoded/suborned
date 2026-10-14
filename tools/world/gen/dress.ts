@@ -7,6 +7,7 @@
 import type { Connector, Prim } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import { r3, r4 } from './common';
+import { HOOP, PLATE } from './surfaces';
 
 export const DRESS = {
   plinth: 0.45, // buildings.plinth
@@ -40,7 +41,7 @@ function bands(id: string, accent: string, f: ReturnType<typeof frameOf>, z0: nu
   const out: Prim[] = [], D = DRESS;
   for (let z = D.bandFrom, k = 0; z + 2 * D.bandH + D.bandGap <= z1 - 0.3; z += D.bandPitch, k++) {
     if (z < z0 + 0.3) continue;
-    out.push(...stadium(`${id}/band-${k}/chrome`, 'trim', f.c, f.yaw, f.L, f.W, z, D.bandH, D.bandOut), ...stadium(`${id}/band-${k}/accent`, accent, f.c, f.yaw, f.L, f.W, z + D.bandH + D.bandGap, D.bandH, D.bandOut));
+    out.push(...stadium(`${id}/band-${k}/chrome`, PLATE, f.c, f.yaw, f.L, f.W, z, D.bandH, D.bandOut), ...stadium(`${id}/band-${k}/accent`, accent, f.c, f.yaw, f.L, f.W, z + D.bandH + D.bandGap, D.bandH, D.bandOut));
   }
   return out;
 }
@@ -54,8 +55,8 @@ export function dressStairTower(k: Connector, accent: string): Prim[] {
     prim(`${id}/spine`, 'box', 'limestone', f.c, [Math.max(1, f.L - f.W), 1.2, T - D.capH - b], b, f.yaw),
     prim(`${id}/fin`, 'box', 'trim', [f.c[0] + u[0] * (f.L / 2 - 0.05), f.c[1] + u[1] * (f.L / 2 - 0.05)], [0.3, 0.6, T + 2.4 - b - D.plinth], b + D.plinth, f.yaw), // a chrome fin up the nose, rising 2.4 over the cap (§4)
     ...bands(id, accent, f, b + D.plinth, T - D.capH),
-    ...stadium(`${id}/cap`, 'trim', f.c, f.yaw, f.L, f.W, T - D.capH, D.capH / 2, D.capOut),
-    ...stadium(`${id}/coping`, 'trim', f.c, f.yaw, f.L, f.W, T - D.capH / 2, D.capH / 2, -0.4),
+    ...stadium(`${id}/cap`, PLATE, f.c, f.yaw, f.L, f.W, T - D.capH, D.capH / 2, D.capOut),
+    ...stadium(`${id}/coping`, PLATE, f.c, f.yaw, f.L, f.W, T - D.capH / 2, D.capH / 2, -0.4),
   ];
 }
 
@@ -64,10 +65,10 @@ export function dressLift(k: Connector, accent: string): Prim[] {
   const f = frameOf(k.ring as V[]), D = DRESS, b = k.bottom, T = k.top, id = `${k.id}/dress`, d = f.W, top = T - 0.9, out: Prim[] = [];
   out.push(prim(`${id}/plinth`, 'cyl', 'limestone', f.c, [d, d, D.plinth], b), prim(`${id}/glass`, 'cyl', 'glass', f.c, [d - 2 * D.glassInset, d - 2 * D.glassInset, top - b - D.plinth], b + D.plinth));
   const n = Math.max(1, Math.round((top - b - D.plinth) / D.hoopEvery));
-  for (let i = 0; i <= n; i++) out.push(prim(`${id}/hoop-${i}`, 'cyl', 'trim', f.c, [d + 0.2, d + 0.2, D.hoopH], b + D.plinth + ((top - b - D.plinth - D.hoopH) * i) / n));
+  for (let i = 0; i <= n; i++) out.push(prim(`${id}/hoop-${i}`, 'cyl', HOOP, f.c, [d + 0.2, d + 0.2, D.hoopH], b + D.plinth + ((top - b - D.plinth - D.hoopH) * i) / n));
   for (let i = 0; i < 4; i++) { const a = Math.PI / 4 + (i * Math.PI) / 2; out.push(prim(`${id}/mullion-${i}`, 'box', 'trim', [f.c[0] + Math.cos(a) * (d / 2), f.c[1] + Math.sin(a) * (d / 2)], [D.mullion, D.mullion, top - b - D.plinth], b + D.plinth)); }
   out.push(prim(`${id}/car`, 'cyl', 'sign', f.c, [d - 0.5, d - 0.5, 2.9], b + D.plinth + 0.05), prim(`${id}/car-band`, 'cyl', accent, f.c, [d - 0.46, d - 0.46, 0.8], b + D.plinth + 1.25));
-  out.push(prim(`${id}/cap`, 'cyl', 'trim', f.c, [d + 0.4, d + 0.4, 0.6], top), prim(`${id}/dome`, 'saucer', 'trim', f.c, [d + 0.4, d + 0.4, 0.3], top + 0.6), prim(`${id}/atom`, 'sphere', accent, f.c, [0.6, 0.6, 0.6], top + 0.9));
+  out.push(prim(`${id}/cap`, 'cyl', PLATE, f.c, [d + 0.4, d + 0.4, 0.6], top), prim(`${id}/dome`, 'saucer', PLATE, f.c, [d + 0.4, d + 0.4, 0.3], top + 0.6), prim(`${id}/atom`, 'sphere', accent, f.c, [0.6, 0.6, 0.6], top + 0.9));
   return out;
 }
 

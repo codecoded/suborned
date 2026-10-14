@@ -89,7 +89,7 @@ test('every crossing landing patch draws the look key `crossing` and nothing els
   expect(patches.length).toBe(162);
   for (const s of patches) expect(s.surface, s.id).toBe('crossing');
   expect(w.street.filter(s => s.surface === 'crossing').length).toBe(162); // the civic block's nine are among them
-  expect(w.street.filter(s => s.kind !== 'crossing').every(s => ['trim', 'park', 'enamel'].includes(s.surface))).toBe(true);
+  expect(w.street.filter(s => !['crossing', 'phone-booth', 'tub-palm'].includes(s.kind)).every(s => ['trim', 'park', 'enamel'].includes(s.surface))).toBe(true); // a booth and a palm tub have their own too (surfaces.test.ts)
   expect(old.street.filter(s => s.kind === 'crossing').every(s => s.surface === 'crossing')).toBe(true); // a plan without the strip standard names it too
 });
 

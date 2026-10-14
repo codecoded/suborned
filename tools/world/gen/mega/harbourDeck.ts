@@ -8,6 +8,7 @@ import type { Connector } from '../../../../contracts/world/world.schema';
 import { type Ctx, rng, rv } from '../common';
 import { pavementOf, plotRing } from '../edges';
 import { type Rect, bbox, growRect, inRect, pointInRing, rectCentre, rectPts, rectsTouch } from '../geo';
+import { CRANE } from '../surfaces';
 import { fillTravel, reach } from '../travel';
 import type { Core, Host, MegaOut } from '../types';
 import { columnsOf, stripsOf } from './colonnade';
@@ -188,7 +189,7 @@ export function harbourDeck(ctx: Ctx, m: Megastructure): MegaOut {
   // 7. gantry cranes on the crane walk
   cranesAt.forEach(([px, py], k) => {
     const n = `${id}/crane-${k}`;
-    out.prims.push(box(`${n}/mast`, 'trim', [px, py], [2.4, 2.4, x.craneMasts - zd], zd), box(`${n}/boom`, 'trim', [px + 10, py], [40, 1.6, 1.6], x.craneMasts - 2), box(`${n}/cab`, 'enamel', [px, py], [4, 3, 3], x.craneMasts - 4.5));
+    out.prims.push(box(`${n}/mast`, CRANE, [px, py], [2.4, 2.4, x.craneMasts - zd], zd), box(`${n}/boom`, CRANE, [px + 10, py], [40, 1.6, 1.6], x.craneMasts - 2), box(`${n}/cab`, 'enamel', [px, py], [4, 3, 3], x.craneMasts - 4.5));
   });
   out.prims.push(...cols.prims); out.columns = cols.pts;
   out.hosts.push(streetH, deckH);
