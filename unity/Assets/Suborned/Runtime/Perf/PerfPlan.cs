@@ -11,6 +11,13 @@ namespace Suborned.Perf
     public sealed class PerfPlan
     {
         public string fingerprint, exportSha256, source, scene, content;
+        /// <summary>Perf honesty (Redline 2026-10-15 M3): `fingerprint` is the world's (root, batches, cameras: the builder's log);
+        /// sceneFingerprint covers every scene root the player is built with, sorted by name (`roots`); `stripped` names the roots
+        /// the perf build left out (PerfStrip), with what they held; `people` is the person capsules built into the player, which
+        /// the harness checks against the scene it runs.</summary>
+        public string sceneFingerprint;
+        public string[] roots = Array.Empty<string>(), stripped = Array.Empty<string>();
+        public int people;
         /// <summary>The play camera as built: pitch and yaw (deg), view aspect, far plane beyond the stand-off.</summary>
         public float pitch, yaw, aspect, farMargin;
         public int width, height;
@@ -46,7 +53,8 @@ namespace Suborned.Perf
     /// cascades: the play camera's shadow cascades (TacticalShadows; 2 as built since B6, 4 before). proxies: "on" = kit facades and
     /// street trees cast from their LOD1 shadow proxy (ShadowProxy) and no LOD casts its own (as built since B6), "off" = every LOD
     /// casts as before. fade: "tile" = the cut's discarding variant takes whole 64 m batch tiles (as built before B6), "reach" =
-    /// only the fade cells it reaches (as built since B6), "off" = no fade (as fadeOff). A variant that names every switch measures the same scene in any build: `as-was` is the build before B6.</summary>
+    /// only the fade cells it reaches (as built since B6), "off" = no fade (as fadeOff). A variant that names every switch measures the same switches in any build: `as-was` sets the switches of the build before B6,
+    /// on the geometry of the player it runs in (since B6: 16 m fade cells, uncompressed vertices), so it is "as-was (emulated on B6 geometry)", not the pre-B6 player (Redline 2026-10-15 M4).</summary>
     [Serializable]
     public sealed class PerfVariant
     {

@@ -16,6 +16,11 @@ namespace Suborned.Perf
         public string fullScreenMode, device, gpu, graphicsApi, cpu, os, missingCounters;
         public bool frameTimingEnabled;
         public string fingerprint, exportSha256, sceneExportSha256, source;
+        /// <summary>From the plan: every root built into the player and the roots stripped (Redline M3).</summary>
+        public string sceneFingerprint;
+        public string[] roots = Array.Empty<string>(), stripped = Array.Empty<string>();
+        /// <summary>Person capsules (PersonRecord) and people pickers found in the player's scene: read from the scene, checked against the plan.</summary>
+        public int people, peoplePickers;
         public float pitch, yaw;
         public PerfMachine machineStart, machineEnd;
         public WarmupResult warmup = new();
@@ -77,6 +82,8 @@ namespace Suborned.Perf
         /// <summary>How long the segment settled (until QuietSeconds without a hitch and its probes were in), its hitches and the worst.</summary>
         public double settleSeconds, settleWorstMs;
         public int settleHitches;
+        /// <summary>Profiler.enabled while the segment recorded (Redline 2026-10-15 L3: the drawer's stats must be off by then).</summary>
+        public bool profilerOn;
     }
 
     /// <summary>The GPU Resident Drawer's own culling counters for one frame (camera view, and the shadow splits), read in the

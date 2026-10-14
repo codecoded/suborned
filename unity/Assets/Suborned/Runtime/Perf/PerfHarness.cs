@@ -48,7 +48,7 @@ namespace Suborned.Perf
         Phase phase = Phase.Done;
         int seg, warmStop, unfocused, thermal, nanPixels, drawerFrame, hitches;
         float runStart, phaseStart, lastHitch, worstHitch, settled, lastUpdate;
-        bool probe, drawerOn, drawerRetried, shot, thermalRead;
+        bool probe, drawerOn, drawerRetried, shot, thermalRead, profilerOn;
         DrawerStats drawerStats;
         double[] scratch;
 
@@ -81,6 +81,11 @@ namespace Suborned.Perf
                 report.pitch = plan.pitch; report.yaw = plan.yaw;
                 if (!stamp || stamp.exportSha256 != plan.exportSha256)
                     throw new InvalidDataException($"Perf: plan resolved on export {plan.exportSha256}, this player's scene is {report.sceneExportSha256}");
+                report.sceneFingerprint = plan.sceneFingerprint; report.roots = plan.roots; report.stripped = plan.stripped;
+                report.people = FindObjectsByType<Suborned.People.PersonRecord>(FindObjectsInactive.Include).Length;
+                report.peoplePickers = FindObjectsByType<Suborned.People.PeoplePicker>(FindObjectsInactive.Include).Length;
+                if (report.people != plan.people || (plan.people == 0 && report.peoplePickers > 0)) // Redline M3: what is measured is what the plan says
+                    throw new InvalidDataException($"Perf: the plan built {plan.people} people into this player, its scene holds {report.people} and {report.peoplePickers} people pickers");
                 if (CliVariant(args) is { } cli) { plan.variants = new[] { cli }; foreach (var p in plan.passes) p.variants = Array.Empty<string>(); }
                 if (plan.variants.Length == 0) plan.variants = new[] { new PerfVariant { name = "as built" } };
                 schedule = PerfSchedule.Build(plan, Arg(args, "-perfPass"));
@@ -149,8 +154,9 @@ namespace Suborned.Perf
                         bool quiet = e >= plan.passes[schedule[seg].pass].settleSeconds && now - lastHitch >= QuietSeconds && ProbesDone;
                         if (!quiet && e < MaxSettle) break;
                         if (report.screenWidth == 0) Describe();
+                        if (drawerOn && drawerStats == null) drawer.Cancel(); // settle ran out before the read: the stats must not record (L3)
                         settled = e;
-                        recorder.Begin(); unfocused = 0; phase = Phase.Record; phaseStart = now;
+                        recorder.Begin(); unfocused = 0; phase = Phase.Record; phaseStart = now; profilerOn = UnityEngine.Profiling.Profiler.enabled;
                         break;
                     case Phase.Record:
                         recorder.Sample();
@@ -294,7 +300,7 @@ namespace Suborned.Perf
                 focus = stop.IsPath ? stop.path[0].focus : stop.focus, standOff = stop.IsPath ? stop.path[0].standOff : stop.standOff,
                 seconds = seconds, frames = n, fps = Metric.Round(n / Math.Max(seconds, 1e-3)), unfocusedFrames = unfocused, thermal = thermal, nanPixels = nanPixels,
                 shot = shot ? ShotName(s) : null, drawer = drawerStats,
-                settleSeconds = Metric.Round(settled), settleHitches = hitches, settleWorstMs = Metric.Round(worstHitch),
+                settleSeconds = Metric.Round(settled), settleHitches = hitches, settleWorstMs = Metric.Round(worstHitch), profilerOn = profilerOn,
                 frameMs = Metric.Of(frame, n, scratch), missedShare = Metric.Round(n > 0 ? (double)missed / n : double.NaN), longestStallMs = Metric.Round(longest),
                 cpuFrameMs = T(1), cpuMainMs = T(2), cpuRenderMs = T(3), gpuMs = T(4), presentWaitMs = T(5),
                 setPassP50 = P50(2), trianglesP50 = P50(3), verticesP50 = P50(4), shadowCastersP50 = P50(5), gcAllocP50 = P50(6),

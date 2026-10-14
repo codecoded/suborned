@@ -147,36 +147,21 @@ namespace Suborned.World.Review
             return lines.ToArray();
         }
 
-        /// <summary>The current camera rendered at the Game view's size, as Shots renders a view (its shadow fit applied for the render).</summary>
+        /// <summary>The current camera rendered at the Game view's size, as Shots renders a view (its shadow fit applied for the
+        /// render), through Capture: Glint's honest path (an HDR target as the player's, then the sRGB encode).</summary>
         byte[] Shot()
         {
             var cam = Mode.Camera;
             int w = Mathf.Max(cam.pixelWidth, 320), h = Mathf.Max(cam.pixelHeight, 180);
-            var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
-            var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
-            var previous = RenderTexture.active;
             var urp = UniversalRenderPipeline.asset;
-            try
+            using var capture = new Capture();
+            Texture2D tex;
+            using (cam.TryGetComponent<TacticalShadows>(out var fit) ? fit.Use() : TacticalShadows.Save(urp))
             {
-                cam.targetTexture = rt;
-                using (cam.TryGetComponent<TacticalShadows>(out var fit) ? fit.Use() : TacticalShadows.Save(urp))
-                {
-                    if (!fit) urp.shadowDistance = Mode.ShadowDistance;
-                    cam.Render();
-                }
-                RenderTexture.active = rt;
-                tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
-                tex.Apply();
-                return tex.EncodeToPNG();
+                if (!fit) urp.shadowDistance = Mode.ShadowDistance;
+                tex = capture.Grab(cam, w, h);
             }
-            finally
-            {
-                cam.targetTexture = null;
-                RenderTexture.active = previous;
-                UnityEngine.Object.Destroy(tex);
-                rt.Release();
-                UnityEngine.Object.Destroy(rt);
-            }
+            return tex.EncodeToPNG();
         }
 
         public void Dispose() { input.Dispose(); eye.Dispose(); RenderSettings.fog = sceneFog; }

@@ -17,7 +17,7 @@ namespace Suborned.Perf
         PropertyInfo display;
         MethodInfo flush;
         FieldInfo list;
-        bool profiler, shown;
+        bool profiler, shown, begun;
         string unavailable = "not resolved yet";
 
         /// <summary>Finds the running drawer (it starts with the first render, after the harness): until then, unavailable.</summary>
@@ -50,9 +50,18 @@ namespace Suborned.Perf
         {
             Resolve();
             if (!Available) return;
-            profiler = Profiler.enabled; shown = (bool)display.GetValue(dbg);
+            if (!begun) { profiler = Profiler.enabled; shown = (bool)display.GetValue(dbg); } // a Begin without a Read keeps the state from before the first
+            begun = true;
             Profiler.enabled = true; display.SetValue(dbg, true);
             flush.Invoke(culler, null);
+        }
+
+        /// <summary>Begun and never read (settle ran out): puts the profiler and the batcher stats back as they were (Redline L3).</summary>
+        public void Cancel()
+        {
+            if (!begun) return;
+            begun = false;
+            display.SetValue(dbg, shown); Profiler.enabled = profiler; flush.Invoke(culler, null);
         }
 
         public DrawerStats Read()
@@ -77,7 +86,7 @@ namespace Suborned.Perf
                 r.splits = per.ToString().Trim();
             }
             catch (Exception e) { r.error = "unreadable: " + e.Message; }
-            finally { display.SetValue(dbg, shown); Profiler.enabled = profiler; flush.Invoke(culler, null); }
+            finally { begun = false; display.SetValue(dbg, shown); Profiler.enabled = profiler; flush.Invoke(culler, null); }
             return r;
         }
     }

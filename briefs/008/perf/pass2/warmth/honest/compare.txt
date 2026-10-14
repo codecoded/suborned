@@ -1,0 +1,14 @@
+region (x0,y0)-(x1,y1) | old Editor mean RGB | new Editor mean RGB | player mean RGB | new - player | R-B old / new / player
+sun: square paving (500,560)-(800,700) | [205.2, 197.8, 166.9] | [210.3, 196.9, 164.9] | [209.9, 196.8, 164.5] | [0.3, 0.1, 0.4] ok | 38.3 / 45.4 / 45.5
+sun: cafe front (300,150)-(700,330) | [169.5, 163.5, 140.0] | [172.8, 162.4, 137.9] | [172.4, 162.1, 137.2] | [0.4, 0.3, 0.6] ok | 29.4 / 35.0 / 35.2
+shade: east block shadow on paving (1500,60)-(1750,260) | [158.0, 146.7, 136.6] | [158.4, 146.7, 136.3] | [157.9, 146.6, 135.7] | [0.4, 0.1, 0.6] ok | 21.4 / 22.1 / 22.3
+shade: east block face (1800,500)-(1900,1000) | [108.0, 130.4, 123.3] | [107.7, 130.4, 123.0] | [106.9, 129.6, 121.5] | [0.8, 0.8, 1.5] ok | -15.3 / -15.4 / -14.6
+whole frame (0,0)-(1920,1080) | [196.4, 187.2, 159.7] | [201.4, 186.4, 157.1] | [201.0, 186.2, 156.7] | [0.4, 0.2, 0.5] ok | 36.7 / 44.3 / 44.4
+sun paving = the old Editor's R 228-230 plateau, 50.6 % of the frame
+sun paving R median: old 229, new 238, player 238 -> ok (>= 235)
+sun paving R-B: old 54.9, new 69.3, player 69.1 -> new - player +0.2 ok
+per-pixel mean |new - player| (R, G, B): [0.5, 0.3, 0.7]; |old - player|: [6.0, 1.5, 3.4]
+old: R >= 240 0.0 %, R >= 246 0.0 %, max R 235
+new: R >= 240 21.9 %, R >= 246 9.1 %, max R 254
+player: R >= 240 20.8 %, R >= 246 8.6 %, max R 255
+PASS
