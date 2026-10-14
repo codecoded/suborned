@@ -1,0 +1,10 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "P-6",
+    "fault": "The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf: 2/4 roles (limit all roles); waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has need debt: p-cafe-11 care, p-cafe-12 cash, p-cafe-14 cash, p-cafe-15 advancement, p-cafe-16 cash; driver: none of the 4 who fit (official-driver of records-office on shift 0:00-8:00 at Meet driver) has need cash: p-records-office-29 advancement, p-records-office-30 debt, p-records-office-36 papers, p-records-office-57 advancement [source: GDD §07 the Handover: its roles, with their need, approach and regularOf, are cast from the city's people by the same casting as M-2 (brief 010 D; Motive §3)]",
+    "fix": "bring the cast tables inside the rule",
+    "chunks": [],
+    "synthesized": true
+  }
+]
