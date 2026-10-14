@@ -3,6 +3,7 @@ piece's front, as the Handover camera sees a south-facing front) and an eye-leve
 ground, the DecoKit studio HDRI. Blender -b -P render008.py -- --ids A,B --dir out/review/008-renders [--px 560] [--samples 40]
 Builds through kit.build (the exporter's own path, bevel and all), so what is rendered is what is exported (before LODs)."""
 
+import json
 import math
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ REPO = Path(__file__).resolve().parents[2]
 os.environ.setdefault("DECOKIT_TEXDIRS_EXTRA", str(REPO / "out/decokit-008-src/Textures/derived"))  # candidate textures (paving)
 sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
+import mats  # noqa: E402
 
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 
@@ -213,6 +215,33 @@ def bed_sample():
     return s.build(bevel=0.0)
 
 
+OVERRIDES = json.loads(Path(arg("--override", "")).read_text()) if arg("--override", "") else None  # out/decokit-008/civic-overrides.json
+TAG = arg("--tag", "")  # file suffix: <piece>.<view><TAG>.png
+FOUNTAIN_ARCS = ["civic/fountain-garden-north-east", "civic/fountain-garden-north-west", "civic/fountain-garden-south-west", "civic/fountain-garden-south-east"]
+
+
+def apply_override(obj, mass_id):
+    """The block's `materials` for one mass: every slot of the piece (and its children) named in the table takes the target material."""
+    table = (OVERRIDES or {}).get("materials", {}).get(mass_id, {})
+    for o in [obj, *obj.children_recursive]:
+        for sl in o.material_slots:
+            if sl.material and sl.material.name in table:
+                sl.material = mats.get(table[sl.material.name])
+
+
+def fountain_garden(over):
+    """AtomFountain at the origin and the four PlanterArc turned 0/90/180/270 about it (each arc's local +Y looks at the fountain, 6.12 m away), as the block places them."""
+    root = bpy.data.objects.new("FountainGarden", None)
+    bpy.context.scene.collection.objects.link(root)
+    pieces = [("AtomFountain", "civic/atom-fountain", 0.0, (0, 0))] + [("PlanterArc", FOUNTAIN_ARCS[k], 90.0 * k, (6.12 * math.sin(math.radians(90.0 * k)), -6.12 * math.cos(math.radians(90.0 * k)))) for k in range(4)]
+    for name, mass, yaw, (x, y) in pieces:
+        o = kit.build(name)
+        o.parent, o.location, o.rotation_euler = root, (x, y, 0.0), (0.0, 0.0, math.radians(yaw))
+        if over:
+            apply_override(o, mass)
+    return root
+
+
 def main():
     global reg
     reg = kit.load()
@@ -222,14 +251,18 @@ def main():
     kinds = [k for k in arg("--views", "thumb,play,eye").split(",") if k]
     cam, ground = studio(arg("--px", 560), arg("--samples", 40))
     for n in ids:
-        obj = paving_sample() if n == "PavingSample" else shelter_sample() if n == "ShelterSample" else bed_sample() if n == "BedSample" else kit.build("CafeBay" if n == "CafeFront" else n)
+        obj = paving_sample() if n == "PavingSample" else shelter_sample() if n == "ShelterSample" else bed_sample() if n == "BedSample" else fountain_garden(bool(OVERRIDES)) if n == "FountainGarden" else kit.build("CafeBay" if n == "CafeFront" else n)
+        if OVERRIDES and n != "FountainGarden":  # the first mass of the piece in the table stands for it
+            first = next((mid for mid, m in OVERRIDES["masses_of"].items() if m == n), None)
+            if first:
+                apply_override(obj, first)
         if n == "CafeFront":  # the bay and its terrace wall together (same pivot), as the block places them
             kit.build("CafeTerrace").parent = obj
         lo, hi = bounds(obj)
         ground.location.z = lo.z - 0.04 if n == "PavingSample" else 0.0  # the sample's slab top is z = 0: keep the studio ground below it
         for k in kinds:
             view(cam, lo, hi, k, n)
-            bpy.context.scene.render.filepath = str(out / f"{n}.{k}.png")
+            bpy.context.scene.render.filepath = str(out / f"{n}.{k}{TAG}.png")
             bpy.ops.render.render(write_still=True)
         for o in [obj, *obj.children_recursive]:
             bpy.data.objects.remove(o, do_unlink=True)

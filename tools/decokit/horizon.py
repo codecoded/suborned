@@ -24,7 +24,7 @@ for n, h in (("Planet_1", "#E9D9B4"), ("Planet_2", "#E6D3B0"), ("Planet_3", "#EB
              ("Planet_Ring", "#F4E7C8"), ("Moon_1", "#EFE6D2"), ("Moon_2", "#DCD3C3"),
              # round 3 (Sky: ring A read as "stacked grey boxes"): cream a step warmer than the haze #f3eee4, fins in a
              # deeper stone so the vertical rhythm survives the fog, teal faience bands, coral fins, gold crowns.
-             # dE2000 to the nearest signal: Stone 23.6, Band 42.1, Shade 22.0, Coral 22.7, Gold 20.9.
+             # dE2000 to the nearest signal: Stone 23.6, Band 42.1, Shade 22.0, Coral 22.7, Gold 20.9 (the skyline crowns keep their gold, Sky 14 Oct: decided later from a far shot).
              ("Far_Stone", "#F2E3C6"), ("Far_Band", "#5CC0B5"), ("Far_Shade", "#E2CDAA"),
              ("Far_Coral", "#F4A08E"), ("Far_Gold", "#D0C848")):
     register("DK_" + n, "enamel", h)

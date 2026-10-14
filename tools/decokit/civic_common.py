@@ -31,6 +31,11 @@ register("DK_Brass_Civic", "metal", "#99784D")      # hairline gold: the brass o
 register("DK_Banner_Comet_Seafoam", "fabric", "#FFFFFF")  # banner_comet_seafoam_v1.png: derive008.py recolours the kit comet banner to the seafoam field
 mats.TEXTURES.setdefault("DK_Banner_Comet_Seafoam", ("banner_comet_seafoam_v1.png", 1.0))
 register("DK_Pool_Civic", "enamel", "#3A9AA6")      # fountain pool water, opaque: AtomFountain's DK_Water (alpha 0.3 glass, #6FB7C4) reads white under the sky
+# civic flower cards: the district's DK_Flower_Coral card with its red-orange blooms moved to the civic coral / flamingo (derive008.py). Override targets only
+# (civic-look.json `materials` on the PlanterArc masses): no civic piece draws them, so the exporter copies nothing; overrides008.py writes their .mat.
+for _n, _f in (("DK_Flower_CoralSoft", "flower_cluster_coralsoft_v1_alpha.png"), ("DK_Flower_Flamingo", "flower_cluster_flamingo_v1_alpha.png")):
+    register(_n, "cutout", "#FFFFFF")
+    mats.TEXTURES.setdefault(_n, (_f, 1.0))
 from mats import pal  # noqa: E402
 
 HF, R = 5.7, 5.3  # café front: 11.4 m flat between two R 5.3 arcs, 22 m in all (civic-block.json, rule C-0)

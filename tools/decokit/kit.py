@@ -5,6 +5,7 @@ Conventions: metres, Z up, pivot = footprint centre at z = 0, front faces -Y (Bl
 
 import importlib
 
+import crown
 from geo import Shape
 
 REGISTRY = {}
@@ -48,7 +49,7 @@ def build(name, col=None):
     obj["dk_cat"] = spec["cat"]
     if spec.get("cap"):
         _cap(obj, spec["cap"])
-    return obj
+    return crown.swap(obj, name, spec["cat"])
 
 
 def _cap(obj, cap):
@@ -72,4 +73,4 @@ def build_far(name, col=None):
     spec = REGISTRY[name]
     s = Shape(f"DK_{name}_L2")
     spec["far"](s)
-    return s.build(col, bevel=0.0)
+    return crown.swap(s.build(col, bevel=0.0), name, spec["cat"])

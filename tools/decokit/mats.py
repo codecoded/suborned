@@ -15,6 +15,13 @@ from pathlib import Path
 
 import bpy
 
+# Sky, 14 Oct 2026 ("I prefer brass to gold"; narrowed the same day: brass at street level and on facades, the skyline crowns keep their gold until a far shot
+# decides). BRASS is the painted brass of gp-entrance's door posts (DK_Brass_Civic since the colour round), 21.3 dE2000 from the guard colour. BRASS_LIGHT is the
+# lightest brass the gate lets through: a lighter, yellower brass drifts onto the guard amber (L 73, C 68), so the highlight brass leans rose (#AD866F, 21.3).
+# DK_Gold, DK_Gold17 and DK_Accent_Gold are brass; the crown pieces (crown.py) draw DK_Crown_Gold / DK_Crown_Gold17 at the old values, so the shared names can turn.
+# Gold stays hairline, frame, bead and the small metal of a piece, never a fat panel.
+BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#99784D", "#AD866F", "#E3D681", "#C9C08E"
+
 LIB = {
     # enamel
     "DK_Enamel_Ivory": ("enamel", "#EFE8D6"), "DK_Enamel_Cream": ("enamel", "#F3DDB0"),
@@ -31,7 +38,7 @@ LIB = {
     "DK_Soil": ("stone", "#3B2C22"),
     # metal
     "DK_Chrome": ("chrome", "#EDEDED"), "DK_Steel": ("metal", "#A9ABAE"),
-    "DK_Gold": ("metal", "#E3D681"), "DK_Iron": ("metal", "#3A3C3E"),
+    "DK_Gold": ("metal", BRASS), "DK_Iron": ("metal", "#3A3C3E"),
     # misc
     "DK_Rubber": ("rubber", "#1B1C1E"), "DK_Glass": ("glass", "#CFEDE6"),
     "DK_GlassDark": ("glass", "#35585A"),
@@ -56,7 +63,7 @@ STYLE = json.loads((Path(__file__).resolve().parents[2] / "contracts/style/subor
 _ROLES = STYLE["palette_world"]["roles"]
 ACCENT = {r["accent"]: r["hex"].upper() for r in _ROLES.values() if "accent" in r}
 ACCENT["coral"] = _ROLES["beam"]["hex"].upper()                                   # coral transit
-GOLD_TRIM = STYLE["palette_world"]["surface_overrides"]["gold_trim"]["hex"].upper()  # world gold, clear of guard amber
+GOLD_TRIM = STYLE["palette_world"]["surface_overrides"]["gold_trim"]["hex"].upper()  # the contract's sign-board gold #C9C08E; no kit material reads it since 14 Oct (DK_Gold17 is BRASS_LIGHT)
 SIGNALS = {k: v.upper() for k, v in STYLE["signal_colours"].items() if k != "rule"}
 
 
@@ -75,7 +82,9 @@ def look_hex(role):
 
 for _r in ("teal", "coral", "turquoise", "mint", "flamingo", "peach"):
     LIB.setdefault("DK_Accent_" + _r.capitalize(), ("enamel", look_hex("accent_" + _r)))
-LIB.setdefault("DK_Accent_Gold", ("metal", look_hex("accent_gold")))       # brass gold, dE2000 20.9 from guard
+LIB.setdefault("DK_Accent_Gold", ("metal", BRASS))   # was look.json accent_gold #D0C848 (20.9 from guard); brass since 14 Oct: look.json and the style contract still say #D0C848 (Aster / Latch)
+LIB.setdefault("DK_Crown_Gold", ("metal", CROWN_GOLD))        # what DK_Gold was (20.6 from guard): tower crowns, spires and skyline pieces, seen against the sky
+LIB.setdefault("DK_Crown_Gold17", ("metal", CROWN_GOLD17))    # what DK_Gold17 was (20.3): the three crown pieces
 LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal faience bands (planters, piers)
 
 
@@ -84,6 +93,7 @@ LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal
 # old -> new, dE2000 min over the three signals: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
 # Gold #D6AE62 10.1 -> #E3D681 20.6 (pale atompunk gold); Enamel_Red #C42A1F 7.2 -> #820606 21.5 (oxblood);
 # Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
+# 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
 WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
 LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
@@ -284,7 +294,7 @@ def signal_gate(rows=None):
     """dE2000 >= 20 of every untextured, non-glass material's UNLIT base colour from cones / guard / rivals (brief 007).
     Returns (failures, report): gated = the retuned and v0.17 accent materials (must pass); the rest are reported as a to-do."""
     from deltae import min_signal
-    gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
+    gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Crown_Gold", "DK_Crown_Gold17", "DK_Far_Gold", "DK_Brass_Civic", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
     gated |= {n for n in LIB if n.startswith(("DK_Liner_", "DK_Accent_", "DK_Faience_"))}  # brief 007 round 3: liner, look.json accents
     fails, report = [], []
     for name, (kind, hexstr, *_) in LIB.items():
