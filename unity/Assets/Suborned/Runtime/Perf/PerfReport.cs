@@ -29,6 +29,8 @@ namespace Suborned.Perf
         public string framesCsv, timingsCsv;
         /// <summary>Every render counter the player offers, at the first recorded frame (PerfCounters).</summary>
         public string[] renderCounters = Array.Empty<string>();
+        /// <summary>The grade, ambient and sun the play camera renders with in this player (PerfLook), read at the first shot.</summary>
+        public string[] look = Array.Empty<string>();
     }
 
     /// <summary>The machine's load and power at one end of the run (Redline M2). busy = any warning; with `-perfStrict` a busy

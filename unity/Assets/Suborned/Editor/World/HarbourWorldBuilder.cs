@@ -88,7 +88,7 @@ namespace Suborned.World
             KitLods.Build(placer);
             KitCover.Init(world, placer);
             var city = new CityLayers(nodes, kit, placer);
-            Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile);
+            Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile, kit.FadeCell, FadeTags.Layer);
 
             var facade = new FacadeKit(nodes, new FacadeSpec(FacadePath, look, world), world); // after NewScene: it would destroy the atlas materials
             ProcKit.Init(world, facade);
@@ -136,8 +136,8 @@ namespace Suborned.World
             var (fadeKit, fadeBatches, fadeFlagged) = FadeTags.Apply(root, batches, facade.Spec.Atlas, flagged);
             Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer}); " +
                 $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
-            var (proxies, proxyTris) = ShadowProxies.Build(root); // after FadeTags: proxies take their LOD1's fade bit
-            Debug.Log($"World: shadow proxies {proxies} (kit facades and street trees cast from LOD1, {proxyTris} triangles; no LOD of theirs casts)");
+            var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
+            Debug.Log($"World: shadow proxies {proxies} ({proxyTris} LOD1 triangles), {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
 

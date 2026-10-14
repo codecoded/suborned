@@ -17,11 +17,13 @@ namespace Suborned.World
         static readonly Dictionary<Transform, int> triangles = new(), kitTris = new();
         static readonly List<Transform> elements = new();
         static readonly HashSet<Transform> covered = new();
-        static float tile = 64f;
+        static float tile = 64f, cell;
+        static System.Func<string, bool> celled = _ => false;
 
-        public static void Reset(float tileSize)
+        public static void Reset(float tileSize, float cellSize = 0f, System.Func<string, bool> cellLayers = null)
         {
             accs.Clear(); bounds.Clear(); triangles.Clear(); kitTris.Clear(); elements.Clear(); covered.Clear(); tile = tileSize;
+            cell = cellSize; celled = cellLayers ?? (_ => false);
         }
 
         /// <summary>Registers an element marker (it must end up with geometry; Verify reports any that do not).</summary>
@@ -31,7 +33,10 @@ namespace Suborned.World
         public static void Add(Transform el, string layer, MeshKit kit, Material mat)
         {
             var c = kit.Bounds.center;
-            Put(el, kit, mat, $"{layer}|{mat.name}|{Mathf.FloorToInt(c.x / tile)}|{Mathf.FloorToInt(c.z / tile)}");
+            var key = $"{layer}|{mat.name}|{Mathf.FloorToInt(c.x / tile)}|{Mathf.FloorToInt(c.z / tile)}";
+            // a layer the architecture fade may thin: cells inside the tile, so its discarding variant reaches only what is near the cut
+            if (cell > 0f && cell < tile && celled(layer)) key += $"|{Mathf.FloorToInt(c.x / cell)}|{Mathf.FloorToInt(c.z / cell)}";
+            Put(el, kit, mat, key);
         }
 
         /// <summary>Adds a kit piece's geometry, baked, to its layer's tile batch for this material: counted as kit, not procedural.</summary>
@@ -113,7 +118,7 @@ namespace Suborned.World
         public static int Covered(Transform layer) => covered.Count(e => e.IsChildOf(layer));
 
         /// <summary>Places markers at their geometry centre (parents first) and writes the batch renderers under
-        /// batches/&lt;layer&gt;/&lt;material&gt;@&lt;tx&gt;,&lt;tz&gt;, in key order. Returns the total vertex count.</summary>
+        /// batches/&lt;layer&gt;/&lt;material&gt;@&lt;tx&gt;,&lt;tz&gt; (with #&lt;cx&gt;,&lt;cz&gt; for a fade cell inside the tile; FadeReach groups cells by tile), in key order. Returns the total vertex count.</summary>
         public static long Flush(Transform root)
         {
             // Markers move to their geometry centre; their children (kit pieces, nested markers) keep their world place.
@@ -131,7 +136,7 @@ namespace Suborned.World
             {
                 var acc = accs[key]; var p = key.Split('|');
                 if (!layers.TryGetValue(p[0], out var layer)) layers[p[0]] = layer = Nodes.Group(root, p[0]);
-                var go = new GameObject($"{p[1]}@{p[2]},{p[3]}") { isStatic = true };
+                var go = new GameObject(p.Length > 5 ? $"{p[1]}@{p[2]},{p[3]}#{p[4]},{p[5]}" : $"{p[1]}@{p[2]},{p[3]}") { isStatic = true };
                 go.transform.SetParent(layer, false);
                 go.AddComponent<MeshFilter>().sharedMesh = acc.Kit.Build($"{p[0]}/{go.name}");
                 var mr = go.AddComponent<MeshRenderer>();

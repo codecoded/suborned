@@ -12,7 +12,9 @@ namespace Suborned.World
 
         readonly Dictionary<string, List<Part>> street = new();
         readonly Dictionary<string, string> connectorSurfaces = new();
-        public readonly float BatchTile, Slab;
+        public readonly float BatchTile, FadeCell, Slab;
+        /// <summary>Whether the shadow proxies (ShadowProxies) are on as built (kit.json `shadowProxies`).</summary>
+        public readonly bool ShadowProxies;
         /// <summary>How a crossing is drawn (kit.json `crossings`): Paint = how far paint stands off the surface it is on, Bar and Gap =
         /// a zebra's bar and the space between two, Line = an edge line's width, Lip = how far a refuge stands proud of its median, Reach =
         /// the most a kerb batch may grow to take a crossing in, Surface = the paint of a crossing whose road the export does not name.</summary>
@@ -23,6 +25,8 @@ namespace Suborned.World
         {
             var o = Json.Parse(File.ReadAllText(path));
             BatchTile = J.F(o, "batchTile");
+            FadeCell = J.F(o, "fadeCell");
+            ShadowProxies = J.B(o, "shadowProxies");
             var con = J.Get(o, "connectors");
             Slab = J.F(con, "slab");
             foreach (var kv in J.O(J.Get(con, "surfaces"))) connectorSurfaces[kv.Key] = (string)kv.Value;

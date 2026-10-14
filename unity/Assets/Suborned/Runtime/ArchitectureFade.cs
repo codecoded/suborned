@@ -51,6 +51,8 @@ namespace Suborned
         public bool shadows = true;
         [Tooltip("What stays of faded architecture in the sun's shadow map (1 = its full shadow, 0 = none). Above `ghost`, so a faded tower still casts a lighter shadow (light.json `fade.ghostShadow`; Glint, 008 B5: 0.4).")]
         [Range(0f, 1f)] public float ghostShadow = 0.4f;
+        [Tooltip("Off (as built since 008 B6): only the fade cells the cut reaches draw with the discarding variant. On: a reached cell takes its whole 64 m batch tile with it, as before B6 (the perf harness's as-was reach).")]
+        public bool wholeTiles;
         [Tooltip("Seconds to ease in or out when `fade` changes (unscaled time: it runs during a tactical pause).")]
         public float fadeTime = 0.25f;
 
@@ -99,7 +101,7 @@ namespace Suborned
             if (!holder && cam.enabled) holder = this;
             if (holder != this) return;
             reach ??= new FadeReach();
-            if (cam.enabled && Cuts(out var cut)) reach.Set(cut); else reach.Clear();
+            if (cam.enabled && Cuts(out var cut)) reach.Set(cut, wholeTiles); else reach.Clear();
         }
 
         void Begin(ScriptableRenderContext _, Camera c)

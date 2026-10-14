@@ -45,17 +45,18 @@ namespace Suborned.Perf
     /// prepass; as built since B6), "normals" = before opaques from the depth-normals prepass (as built before B6), "off".
     /// cascades: the play camera's shadow cascades (TacticalShadows; 2 as built since B6, 4 before). proxies: "on" = kit facades and
     /// street trees cast from their LOD1 shadow proxy (ShadowProxy) and no LOD casts its own (as built since B6), "off" = every LOD
-    /// casts as before. A variant that names every switch measures the same scene in any build: `as-was` is the build before B6.</summary>
+    /// casts as before. fade: "tile" = the cut's discarding variant takes whole 64 m batch tiles (as built before B6), "reach" =
+    /// only the fade cells it reaches (as built since B6), "off" = no fade (as fadeOff). A variant that names every switch measures the same scene in any build: `as-was` is the build before B6.</summary>
     [Serializable]
     public sealed class PerfVariant
     {
-        public string name, why, ssao = "", proxies = "";
+        public string name, why, ssao = "", proxies = "", fade = "";
         public int cascades;
         public bool shadowsOff, fadeOff;
 
         public bool UsesProxies => proxies == "on" || proxies == "off";
 
-        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : "on")}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}";
+        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}";
     }
 
     [Serializable]

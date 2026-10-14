@@ -1,0 +1,8 @@
+Shots, counts pass (Studio player 5977be1e), 1920x1080 scaled: the fade in reach against the fade as before B6 (whole tiles), and the fade off
+home          reach vs tile: mean|d| 0.024, px>8 0.000%   fade off vs tile: mean|d| 0.02, px>8 0.0%
+cafe-square   reach vs tile: mean|d| 0.018, px>8 0.000%   fade off vs tile: mean|d| 2.65, px>8 9.4%
+parade        reach vs tile: mean|d| 0.009, px>8 0.000%   fade off vs tile: mean|d| 4.57, px>8 13.7%
+crown-circus  reach vs tile: mean|d| 0.017, px>8 0.000%   fade off vs tile: mean|d| 4.13, px>8 15.7%
+harbour-quay  reach vs tile: mean|d| 0.014, px>8 0.000%   fade off vs tile: mean|d| 0.21, px>8 0.5%
+heaviest      reach vs tile: mean|d| 0.095, px>8 0.000%   fade off vs tile: mean|d| 11.74, px>8 24.1%
+north-edge    reach vs tile: mean|d| 0.229, px>8 0.000%   fade off vs tile: mean|d| 13.21, px>8 30.8%
