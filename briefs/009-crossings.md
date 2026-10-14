@@ -1,6 +1,11 @@
 # 009 · Crossings as this world builds them
 
-**Status (2026-10-14):** concepts chosen. **A done** (d3bade9): six candidates in `out/decokit-009/`, sheet `out/review/009-crossing-pieces.html`; sphere orb Ø0.84 m hovering at 2.70 m, 698 triangles. Only the orb body casts a shadow; Latch turns its displays to the play camera. B running; C waits for Latch's B6 runs (brief 008).
+**Status (2026-10-14):** concepts chosen. **A done** (d3bade9): six candidates in `out/decokit-009/`, sheet `out/review/009-crossing-pieces.html`; sphere orb Ø0.84 m hovering at 2.70 m, 698 triangles. Only the orb body casts a shadow; Latch turns its displays to the play camera. **B done** (3039f53), live export not yet regenerated: in the variant export there are 95 crossings (67 kerb, 20 stop, 8 bank), 980 light-row modules, 156 eyes (134 at kerb ends, 22 on refuges), 536 studs, and 237 arcs on 268 corners (30 shared corners, 1 over lawn); 0 landing slabs. SF-20 fails any light piece within 30° of the carriageway.
+Rulings (Aster) on B: the beacons that flank a landing go wherever a signal eye stands (the eye is the signal); bollards stay. The CAD sheet draws a crossing as its two light lines along the walk, not a zebra hatch.
+**Next, once Latch's B6 perf pass ends (no heavy work alongside it):**
+- Splice: adopt the six pieces, with roots under `out/decokit-009` (`DECOKIT_OUT`); remove the beacons; redraw the sheet's crossings; run `bun run world`; declare drift.
+- Vela: the brass frame line on the strip's long edges (`crossing-future-play-2.jpg`); thin, per SF-21.
+- Latch: C, confirming the arc yaw (`ARC_BULGE` in `partkit.ts`) in a shot.
 
 Goal (Sky, 2026-10-14): the crossings "should be more future sci… currently look standard zebra crossing". The world is an alternate history, not a forecast: "a 1950s world that discovered atomic power centuries ago" (brief 008, Era), so street technology is far ahead while its style stays 1950s: "Traffic lights would be something else, maybe floating, and same for road markings."
 
