@@ -1,0 +1,217 @@
+{
+  "run": "r013",
+  "plan": "harbour-district",
+  "date": "2026-10-14T18:52:13.652Z",
+  "objective": "people",
+  "proposals": "cast tables",
+  "handoffMode": "answered",
+  "loop": 2,
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.3.0",
+    "hash": "133291d2dff9e4cc100694d96da906a5c35267a37e57ac5eef417bdcdd8d5672",
+    "rawHash": "286b5008b5c801f6b7795a51afd00fd0994b60dd42be26e1ca8acaeddba99587",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/civic-block.json",
+    "sha256": "6c309320c948b8960f60dd37a3fa0cc6236c6ea24ed4dab97b55d402dcfe6041"
+  },
+  "inputLife": {
+    "source": "contracts/world/harbour-district.life.json",
+    "sha256": "6f674b120a186d217da28be6ab310335c0b9383527eb9d647feeb309926fc6f9"
+  },
+  "inputRules": {
+    "source": "contracts/people/people.rules.json",
+    "sha256": "62ede119fb2a2e9ace9fb1721d5f4ac29817ffc7eb247c46bf91e1b61a98f821"
+  },
+  "inputMission": {
+    "source": "contracts/missions/handover/mission.json",
+    "sha256": "1452255e5b20a10dbedaae87a24b73720335ff35a6122baf7f087911bc6731ae"
+  },
+  "scope": "civic-block",
+  "inputKit": {
+    "source": "contracts/world/kit.json",
+    "sourceSha256": "51d1e352974e2bcdf639eb8080e7f97c8dbb575b619da0a01eedd84bf775eccd",
+    "sha256": "f8ae284be1faaef045cf75c92316ed12edbffc975eb1febbc5f86d790721f6af",
+    "assets": 280
+  },
+  "inputLook": {
+    "source": "contracts/world/civic-look.json",
+    "sha256": "d5fe22dc4150a8ce0bcc926925e2e074b9ada177742bbefa976e47630b4f4fc8"
+  },
+  "continues": {
+    "plan": "harbour-district",
+    "run": "r012",
+    "outcome": "REJECTED",
+    "round": 3,
+    "version": "0.4.0-r012.3",
+    "runSha256": "7188840bc9a093d9976777ec8c29063e07b35d791d356c00588903667215856b",
+    "gdd": "v0.20.1",
+    "chunker": 5,
+    "file": "inherited.json",
+    "sha256": "ea3b5cee1cfb8dcd0e71d2edfc17ccec55d9f708342855b293d69cd3360e7162",
+    "sameInputs": true
+  },
+  "gdd": {
+    "version": "v0.20.1",
+    "agent": "GDD/the-suborned-agent-gdd-v0.20.1-2026-10-14.md",
+    "human": "GDD/the-suborned-gdd-v0.20.1-2026-10-14.html"
+  },
+  "commit": "593fd0e7fe90e036097c08ee840d7445505024c6",
+  "dirty": false,
+  "live": true,
+  "maxUsd": 1.95,
+  "approvedBy": "Sky, 2026-10-15, civic-block people run, $3 ceiling",
+  "toolsHash": "59aa3d617b9088dea88a9cb633deef3380da58bf95758d22f07718abed91fdb0",
+  "corpusHash": "628c7eec90dd208a48f43279c8bf06796644ed013552b7a1634dfa9f1fbc1033",
+  "chunker": 5,
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "9abe58822a2c34dfbd50b041c71a3c7e157b658d6e687e543dbb5d7caf188d76"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "8dc76dbf76e4d229512dae46d8514d8e6f01b7a479488c316706521a916ce4b7"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.4.0-r013.1",
+      "seeded": false,
+      "ran": [
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "persons": 126,
+      "verdict": "fail",
+      "keelVerdict": "fail",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [],
+      "handoffFaults": 0,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Pulse"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.4.0-r013.2",
+      "seeded": false,
+      "ran": [
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "persons": 126,
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [],
+      "handoffFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 0.7891,
+    "calls": 4
+  },
+  "calls": [
+    {
+      "id": "01-people-pulse",
+      "objective": "people-pulse",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1403405,
+      "seconds": 37,
+      "tokens": {
+        "input": 15491,
+        "cacheRead": 6139,
+        "output": 7615
+      },
+      "promptSha256": "8e3f2932a739f273e59a9f84f2e7119847e69bb1e855591c926140d1f34a75bc",
+      "schemaSha256": "a18e8d780b834f87310bd30f85f2ab6fbbf2a481bdf6c0d7b9b2dc9e3edb448b",
+      "briefSha256": "e40840725ad2d79806ca5d73e926760e74a4c9fc280c460362930d2190c5ca36",
+      "effort": "medium"
+    },
+    {
+      "id": "02-people-critic",
+      "objective": "people-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.2041171,
+      "seconds": 20,
+      "tokens": {
+        "input": 20421,
+        "cacheRead": 4228,
+        "output": 1890
+      },
+      "promptSha256": "e96accb508dc8cd51e43496cdb93628229fa1c106679befe917a5bd133dbbafe",
+      "schemaSha256": "0ac49a09acce455ad1a0cf43fc9c8e0179045fc2fb1022828bb0124bb0ba890e",
+      "briefSha256": "2382a91e813df174f8b59c9cd3b4395a2b89f478969d48ab290729e552ffdff4",
+      "effort": "medium"
+    },
+    {
+      "id": "03-people-pulse",
+      "objective": "people-pulse",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.21321630000000003,
+      "seconds": 65,
+      "tokens": {
+        "input": 17099,
+        "cacheRead": 27792,
+        "output": 14043
+      },
+      "promptSha256": "d46ade264c2514b09c88f18f4ae5536b32bc65ace70735b279f37a0ed27829d2",
+      "schemaSha256": "a18e8d780b834f87310bd30f85f2ab6fbbf2a481bdf6c0d7b9b2dc9e3edb448b",
+      "briefSha256": "e40840725ad2d79806ca5d73e926760e74a4c9fc280c460362930d2190c5ca36",
+      "effort": "medium"
+    },
+    {
+      "id": "04-people-critic",
+      "objective": "people-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.23139600000000002,
+      "seconds": 33,
+      "tokens": {
+        "input": 22103,
+        "cacheRead": 28545,
+        "output": 2340
+      },
+      "promptSha256": "e52bc8cdc10d194757be7582fa4964f080fe1f182fa315af12670f745d664cfc",
+      "schemaSha256": "0ac49a09acce455ad1a0cf43fc9c8e0179045fc2fb1022828bb0124bb0ba890e",
+      "briefSha256": "2382a91e813df174f8b59c9cd3b4395a2b89f478969d48ab290729e552ffdff4",
+      "effort": "medium"
+    }
+  ],
+  "finalVersion": "0.4.0-r013.2"
+}
