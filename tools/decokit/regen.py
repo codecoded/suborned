@@ -34,6 +34,17 @@ def _stad(w, d, n=12):
         out.pop()
     return out
 
+RMIN = 0.1   # a corner round stays this far under half the narrower side (see _round)
+
+
+def _round(w, d, r):
+    """Corner radius of a plate w x d, clamped under half its narrower side. The inset (`_excess`) can leave a plate narrower than twice the kit's
+    radius (crescent-tower tier 3: 5.3 m plate, r 3.0; crescent-terrace tiers 4 and 5: 2.84 and 3.84 m, r 2.0). Geo.rrect already takes r down to
+    half, but then the arcs of neighbouring corners meet in one point: repeated points, zero-length edges, and the terrace's coping and roof caps
+    (extrudes of that outline) come out with degenerate faces. Held RMIN under half, every edge of the outline has length."""
+    return max(0.0, min(r, min(w, d) / 2 - RMIN))
+
+
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 ORDERS = {}
 GRID = {}
@@ -203,7 +214,7 @@ def saucer(s, o, ex, canopy):
 def atom(s, o, ex, canopy):
     from highrise import atom_crown, stack
     t = _tiers(o)
-    tiers = [((w - 2 * e, w - 2 * e, 0.25 * w, 0.0), z0, z1) for (w, z0, z1), e in zip(t, ex)]
+    tiers = [((w - 2 * e, w - 2 * e, _round(w - 2 * e, w - 2 * e, 0.25 * w), 0.0), z0, z1) for (w, z0, z1), e in zip(t, ex)]
     stack(s, tiers, canopy)
     top = t[-1][2]
     avail = _tip_top(o) - top - 1.1
@@ -213,7 +224,7 @@ def atom(s, o, ex, canopy):
 def lantern(s, o, ex, canopy):
     from highrise import band, lantern_crown, stack
     t = _tiers(o)
-    tiers = [((w - 2 * e, w - 2 * e, 0.28 * w, 0.0), z0, z1) for (w, z0, z1), e in zip(t, ex)]
+    tiers = [((w - 2 * e, w - 2 * e, _round(w - 2 * e, w - 2 * e, 0.28 * w), 0.0), z0, z1) for (w, z0, z1), e in zip(t, ex)]
     stack(s, tiers, canopy)
     for plan, z0, z1 in tiers[:-1]:                      # coral banding mid-tier
         z = round((z0 + z1) / 2 / GRID["storey"]) * GRID["storey"]
@@ -233,7 +244,7 @@ def terrace_tower(s, o, ex, canopy):
     from highrise import TERRACE_PLANS, terrace_tower as build
     t = _tiers(o)
     zs = [0.0] + [z1 for _, _, z1 in t]
-    plans = [(w - 2 * e, d - 2 * e, rr, cy) for (w, _, _), (_, d, rr, cy), e in zip(t, TERRACE_PLANS, ex)]
+    plans = [(w - 2 * e, d - 2 * e, _round(w - 2 * e, d - 2 * e, rr), cy) for (w, _, _), (_, d, rr, cy), e in zip(t, TERRACE_PLANS, ex)]
     build(s, zs, plans, canopy)
 
 

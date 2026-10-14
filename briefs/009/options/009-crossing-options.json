@@ -1,0 +1,326 @@
+{
+ "schema": "suborned.crossing-options/1",
+ "brief": "009",
+ "date": "2026-10-15",
+ "camera": "orthographic 28 m tall (zoom 14), pitch 38, yaw 30, 1920x1080, 38.6 px/m",
+ "road": "12 m, lights 0.5 m off each kerb (11 m lines)",
+ "per_crossing": {
+  "a": {
+   "modules": 12,
+   "tris": 1016,
+   "line_modules": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ]
+  },
+  "b2": {
+   "modules": 12,
+   "tris": 1984,
+   "line_modules": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ]
+  },
+  "b3": {
+   "modules": 12,
+   "tris": 2952,
+   "line_modules": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ]
+  },
+  "c": {
+   "modules": 8,
+   "tris": 272,
+   "line_modules": [
+    4,
+    4,
+    2,
+    1
+   ]
+  },
+  "d1": {
+   "modules": 18,
+   "tris": 1028,
+   "line_modules": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ]
+  },
+  "d2": {
+   "modules": 24,
+   "tris": 1040,
+   "line_modules": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1
+   ]
+  }
+ },
+ "district": {
+  "a": {
+   "modules": 980,
+   "tris": 80832
+  },
+  "b2": {
+   "modules": 980,
+   "tris": 157744
+  },
+  "b3": {
+   "modules": 980,
+   "tris": 234656
+  },
+  "c": {
+   "modules": 706,
+   "tris": 24004
+  },
+  "d1": {
+   "modules": 1470,
+   "tris": 81812
+  },
+  "d2": {
+   "modules": 1960,
+   "tris": 82792
+  },
+  "_crossings": 95,
+  "_line_spans": 334,
+  "_line_metres": 1748.0
+ },
+ "lit_px": {
+  "a": {
+   "lit_px": 1362,
+   "strip_px": 44310,
+   "mean_lift": -0.39
+  },
+  "b2": {
+   "lit_px": 2701,
+   "strip_px": 44310,
+   "mean_lift": -0.08
+  },
+  "b3": {
+   "lit_px": 3951,
+   "strip_px": 44310,
+   "mean_lift": 0.25
+  },
+  "c": {
+   "lit_px": 6335,
+   "strip_px": 44310,
+   "mean_lift": 3.0
+  },
+  "d1": {
+   "lit_px": 24503,
+   "strip_px": 44310,
+   "mean_lift": 6.75
+  },
+  "d2": {
+   "lit_px": 10559,
+   "strip_px": 44310,
+   "mean_lift": 3.36
+  }
+ },
+ "brass": [
+  {
+   "hex": "#99784D",
+   "why": "the palette's brass (DK_Brass_Civic, BRASS)",
+   "LCh": [
+    52.7,
+    29.3,
+    75.7
+   ],
+   "dE": {
+    "cones": 25.9,
+    "guard": 21.3,
+    "rivals": 47.8
+   },
+   "min": 21.3,
+   "gate": "pass",
+   "dE_asphalt": 17.1,
+   "dE_pavement": 22.0,
+   "dL_asphalt": -1.8,
+   "dL_pavement": -25.4
+  },
+  {
+   "hex": "#AD866F",
+   "why": "the GDD's light brass (BRASS_LIGHT)",
+   "LCh": [
+    59.1,
+    21.5,
+    57.2
+   ],
+   "dE": {
+    "cones": 21.5,
+    "guard": 21.3,
+    "rivals": 39.9
+   },
+   "min": 21.3,
+   "gate": "pass",
+   "dE_asphalt": 13.1,
+   "dE_pavement": 18.1,
+   "dL_asphalt": 4.6,
+   "dL_pavement": -19.0
+  },
+  {
+   "hex": "#BF917C",
+   "why": "one lighter step: the lightest at this hue that holds 20 (rose, not brass)",
+   "LCh": [
+    64.0,
+    23.0,
+    51.0
+   ],
+   "dE": {
+    "cones": 21.9,
+    "guard": 20.6,
+    "rivals": 40.1
+   },
+   "min": 20.6,
+   "gate": "pass",
+   "dE_asphalt": 15.5,
+   "dE_pavement": 16.5,
+   "dL_asphalt": 9.5,
+   "dL_pavement": -14.1
+  }
+ ],
+ "signals": {
+  "cones": "#E03A2F",
+  "guard": "#F0A020",
+  "rivals": "#8A4FD0"
+ },
+ "pieces": {
+  "LightBar_1": {
+   "tris": 34,
+   "l1": 10,
+   "size": [
+    1.0,
+    0.002,
+    0.44
+   ]
+  },
+  "LightBar_2": {
+   "tris": 34,
+   "l1": 10,
+   "size": [
+    2.0,
+    0.002,
+    0.44
+   ]
+  },
+  "LightBar_4": {
+   "tris": 34,
+   "l1": 10,
+   "size": [
+    4.0,
+    0.002,
+    0.44
+   ]
+  },
+  "LightDotBand2_1": {
+   "tris": 92,
+   "l1": 12,
+   "size": [
+    1.0,
+    0.002,
+    0.93
+   ]
+  },
+  "LightDotBand2_2": {
+   "tris": 180,
+   "l1": 20,
+   "size": [
+    2.0,
+    0.002,
+    0.93
+   ]
+  },
+  "LightDotBand3_1": {
+   "tris": 136,
+   "l1": 16,
+   "size": [
+    1.0,
+    0.002,
+    1.43
+   ]
+  },
+  "LightDotBand3_2": {
+   "tris": 268,
+   "l1": 28,
+   "size": [
+    2.0,
+    0.002,
+    1.43
+   ]
+  },
+  "LightDotRow_1": {
+   "tris": 48,
+   "l1": 8,
+   "size": [
+    1.0,
+    0.002,
+    0.43
+   ]
+  },
+  "LightDotRow_2": {
+   "tris": 92,
+   "l1": 12,
+   "size": [
+    2.0,
+    0.002,
+    0.43
+   ]
+  },
+  "LightField_1": {
+   "tris": 2,
+   "l1": 2,
+   "size": [
+    1.0,
+    0.0,
+    3.9
+   ]
+  },
+  "LightField_2": {
+   "tris": 2,
+   "l1": 2,
+   "size": [
+    2.0,
+    0.0,
+    3.9
+   ]
+  },
+  "LightPool_1": {
+   "tris": 2,
+   "l1": 2,
+   "size": [
+    1.0,
+    0.0,
+    1.3
+   ]
+  },
+  "LightPool_2": {
+   "tris": 2,
+   "l1": 2,
+   "size": [
+    2.0,
+    0.0,
+    1.3
+   ]
+  }
+ }
+}

@@ -4,3 +4,4 @@ Entry module: importing it registers every piece of the brief."""
 
 import crossing_eye  # noqa: F401
 import crossing_flat  # noqa: F401
+import crossing_opts  # noqa: F401  (15 Oct: the look-options candidates; out/decokit-009, never adopted)
