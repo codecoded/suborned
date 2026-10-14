@@ -9,11 +9,11 @@ const table = (head: string[], rows: (string | number)[][], cls = '') =>
   `<table class="${cls}"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 
 const LAYERS = [['base', 'Water + quay'], ['plots', 'Plots'], ['areas', 'Environmental areas'], ['roads', 'Streets'], ['centrelines', 'Centrelines'], ['tram', 'Tram T1'],
-  ['sky', 'Sky rail S1'], ['walks', 'Walks'], ['gates', 'Gates'], ['landmarks', 'Landmarks'], ['civic', 'Civic block'], ['labels', 'Labels'], ['grid', 'Grid']];
+  ['sky', 'Sky rail S1'], ['walks', 'Walks'], ['gates', 'Gates'], ['landmarks', 'Landmarks'], ['signatures', 'Signatures'], ['civic', 'Civic block'], ['labels', 'Labels'], ['grid', 'Grid']];
 const LEGEND: [string, string][] = [
   ['sw-primary', 'Primary distributor'], ['sw-district', 'District distributor'], ['sw-access', 'Access road'], ['sw-mall', 'Mall / walk'],
   ['sw-tram', 'Tram track · ◆ stop'], ['sw-sky', 'Sky rail beams · pylon'], ['sw-station', 'Sky rail station ▲'], ['sw-gate', 'Gate (seal point)'],
-  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-civic', 'Civic block'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
+  ['sw-walk', 'Walk on foot (crosses anywhere)'], ['sw-sig', 'Signature: ground ┄, footprint, front →'], ['sw-civic', 'Civic block'], ['sw-park', 'Park / green'], ['sw-res', 'Residential'], ['sw-mixed', 'Mixed use'], ['sw-com', 'Commercial'],
   ['sw-port', 'Port / industrial'], ['sw-water', 'Water'], ['sw-beyond', 'Beyond the plan'],
 ];
 
@@ -62,6 +62,8 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 .sky{fill:none;stroke:var(--sky);stroke-width:1.5;stroke-linecap:round}.pylon{fill:#fff;stroke:var(--sky);stroke-width:1;vector-effect:non-scaling-stroke}
 .station{fill:#d6efeecc;stroke:var(--sky);stroke-width:1.4;vector-effect:non-scaling-stroke}
 .gate{fill:#f6c9bc;stroke:var(--gate);stroke-width:1.2;vector-effect:non-scaling-stroke}.gate.seal{fill:var(--gate)}
+.sig{fill:#efe2c4cc;stroke:#7a5c2e;stroke-width:1.4;vector-effect:non-scaling-stroke}.sig-ground{fill:none;stroke:#7a5c2e;stroke-width:1;stroke-dasharray:6 3;vector-effect:non-scaling-stroke}
+.sig-leg{fill:#7a5c2e40;stroke:#7a5c2e;stroke-width:.8;vector-effect:non-scaling-stroke}.sig-front{fill:none;stroke:#7a5c2e;stroke-width:1.6;vector-effect:non-scaling-stroke}.sig-head{fill:#7a5c2e}.sig-lab{fill:#7a5c2e;font-weight:700}
 .mark{fill:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}.mark.monument{fill:var(--ink);stroke-dasharray:none}.mark.skyport{fill:#f5f0e4;stroke-dasharray:none}
 .lab{fill:var(--ink);font-family:ui-monospace,"SF Mono",Menlo,monospace;text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:2.5px;stroke-linejoin:round}
 .road-lab{dominant-baseline:central;font-weight:600;letter-spacing:.06em}.road-lab.access{font-weight:500}
@@ -82,7 +84,7 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 #inset .lab{stroke-width:.8px}#inset .area-lab{stroke-width:1px}#inset .gref{display:none}#inset .grid{stroke:#2b27230c}
 .sw-primary{background:#d0bc92}.sw-district{background:#dfcfaa}.sw-access{background:#efe6cd}.sw-mall{background:#f5eedd}
 .sw-tram{background:linear-gradient(#0000 40%,var(--tram) 40% 60%,#0000 60%);border:0!important}.sw-sky{background:linear-gradient(#0000 40%,var(--sky) 40% 60%,#0000 60%);border:0!important}
-.sw-walk{background:linear-gradient(90deg,#1d4fb8 50%,#0000 50%) 0 50%/6px 2px repeat-x;border:0!important}.sw-station{background:#d6efee;border-color:var(--sky)!important}.sw-gate{background:var(--gate);transform:rotate(45deg) scale(.6)}.sw-civic{background:#e9a68b}.sw-park{background:#c2d39c}
+.sw-sig{background:#efe2c4;border:1.5px dashed #7a5c2e!important}.sw-walk{background:linear-gradient(90deg,#1d4fb8 50%,#0000 50%) 0 50%/6px 2px repeat-x;border:0!important}.sw-station{background:#d6efee;border-color:var(--sky)!important}.sw-gate{background:var(--gate);transform:rotate(45deg) scale(.6)}.sw-civic{background:#e9a68b}.sw-park{background:#c2d39c}
 .sw-res{background:#e3dfc6}.sw-mixed{background:#e7dbc0}.sw-com{background:#ead1ab}.sw-port{background:#c9d6d3}.sw-water{background:#a9cfd0}
 .sw-beyond{background:repeating-linear-gradient(45deg,#0000 0 3px,#2b272355 3px 4px)}
 `;
@@ -130,6 +132,7 @@ export function sheet(plan: Plan, R: Report, svgs: { district: string; inset: st
     ['Roads', 'Junction spacing, primary / district', `≥ ${std.roads.junctionSpacing.primary} m / ≥ ${std.roads.junctionSpacing.district} m (plan rule at game scale)`],
     ['Walking', 'Crossing roads', 'anywhere: kerbs, medians, tram reservation and circus are walkable; buildings, built plots, landmarks and water block'],
     ['Walking', 'Escape walk directness', `walk ÷ straight line ≤ ${std.walking.directness}`],
+    ...(std.walking.body ? [['Walking', 'Body · clear width (W-5)', `a walker keeps ${std.walking.body.r} m from a ground solid (${+(2 * std.walking.body.r).toFixed(2)} m wide) · walks keep ${std.walking.body.clearWidth} m clear (${std.walking.body.constrained.w} m for ≤ ${std.walking.body.constrained.run} m; seating aisles ${std.walking.body.aisle} m)`]] : []),
     ['Roads', 'Widths kerb to kerb', 'primary 24 (median 4) · Boulevard 28 (tram 10) · district 18 (median 6) · access 12–13 · Parade 40'],
   ]);
   const toggles = LAYERS.map(([id, label]) => `<label><input type="checkbox" data-toggle="${id}" checked> ${label}</label>`).join('') + '<span class="hint">scroll to zoom · drag to pan · double-click to reset</span>';

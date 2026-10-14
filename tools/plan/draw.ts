@@ -1,7 +1,7 @@
 // SVG drawings of the plan: the district sheet (1:2500) and the Records Precinct inset (1:500). One SVG unit = 1 m;
 // layers are <g data-layer> groups the sheet's toggles show and hide. Colours live in the sheet's CSS classes.
-import { type V, add, centroid, mul, norm, sub, left, dist } from './geom';
-import type { Derived, Plan, PathGeo } from './plan';
+import { type V, add, centroid, mul, norm, sub, left, dist, rectPoly } from './geom';
+import type { Derived, Plan, PathGeo, Signature } from './plan';
 import type { Civic } from './civic';
 import type { Report } from './checks';
 
@@ -112,6 +112,30 @@ function northScale(P: Pen, c: V, bar: number[], size: number) {
   return layer('frame', arrow + s);
 }
 
+/** The plan's signatures (brief 007): the ground no plot building stands on (dashed), the footprint (a drum of regen.drum.r and its legs; a moored ship's hull, the ground pointed at the bow),
+ *  an arrow the way the piece's front faces (yawDeg + 90, as the export's kit yaw: SpaceHQ's grand stair, the liner's bow) and the name with the tip. A signature without a numeric yawDeg has no arrow.
+ *  Two groups of one layer: the footprints under the rails (S1 runs through the SpaceHQ drum), the arrows and names over them. */
+function signatures(P: Pen, plan: Plan, size = 6) {
+  let under = '', over = '';
+  for (const s of plan.signatures ?? []) {
+    const [x0, x1, y0, y1] = s.ground, drum = (s.regen as { drum?: { r?: number } } | undefined)?.drum?.r, legs = ((s as { legs?: [number, number, number, number][] }).legs ?? []);
+    const yaw = (s as { yawDeg?: unknown }).yawDeg, a = typeof yaw === 'number' ? ((yaw + 90) * Math.PI) / 180 : undefined, u: V | undefined = a === undefined ? undefined : [Math.cos(a), Math.sin(a)];
+    under += P.poly(rectPoly([x0, x1, y0, y1]), 'sig-ground') + legs.map(r => P.poly(rectPoly(r), 'sig-leg')).join('');
+    let reach = Math.max(x1 - x0, y1 - y0) / 2;
+    if (drum) { under += P.circle(s.c, drum, 'sig'); reach = drum; }
+    else if (u) { // a hull: the ground rect with its front end drawn to a point (the bow), a beam long
+      const along = Math.abs(u[0]) > Math.abs(u[1]) ? 0 : 1, half = along ? (y1 - y0) / 2 : (x1 - x0) / 2, beam = along ? (x1 - x0) / 2 : (y1 - y0) / 2, n: V = [-u[1], u[0]];
+      const at = (f: number, g: number): V => add(s.c, add(mul(u, f), mul(n, g)));
+      under += P.poly([at(-half, -beam), at(half - 2 * beam, -beam), at(half, 0), at(half - 2 * beam, beam), at(-half, beam)], 'sig');
+      reach = half;
+    } else under += P.poly(rectPoly([x0, x1, y0, y1]), 'sig');
+    if (u) { const p0 = add(s.c, mul(u, reach * 0.55)), p1 = add(s.c, mul(u, reach + 14)), l: V = [-u[1], u[0]]; over += P.line([p0, p1], 'sig-front') + P.poly([p1, add(sub(p1, mul(u, 6)), mul(l, 3)), add(sub(p1, mul(u, 6)), mul(l, -3))], 'sig-head'); }
+    const tip = s.regen?.tip ?? s.height, up = !u || u[1] < 0.7; // the name above the ground, or below it when the front points up the sheet
+    over += P.text([s.c[0], up ? y1 + size * 1.4 : y0 - size * 2], `${s.name}${tip ? ` · ${tip} m` : ''}`, 'lab sig-lab', [1, 0], size);
+  }
+  return { under: layer('signatures', under), over: layer('signatures', over) };
+}
+
 export function district(plan: Plan, d: Derived, R: Report) {
   const s = plan.sheet, P = new Pen(s.x[0], s.x[1], s.y[0], s.y[1], 34);
   const base = layer('base', plan.water.map(w => P.poly(w, 'water')).join('') + plan.quay.map(q => P.poly(q, 'quay')).join('') + plan.beyond.map(b => P.poly(b, 'beyond')).join(''));
@@ -129,8 +153,9 @@ export function district(plan: Plan, d: Derived, R: Report) {
     + d.plots.filter(p => p.name && !p.civic && !d.areas.some(a => a.name === p.name)).map(p => P.text(centroid(p.polyV), p.name!, 'lab plot-lab', [1, 0], 6)).join('')
     + plan.links.map(l => P.text(add(plan.nodes[l.node], l.node === 'off_west' || l.node === 'off_circus_west' ? [24, 14] : l.node === 'off_seagates' ? [0, -16] : [22, 22]), `→ ${l.to}`, 'lab link-lab', [1, 0], 7)).join(''));
   const civic = layer('civic', d.plots.filter(p => p.civic).map(p => P.poly(p.polyV, 'civic-hi')).join(''));
+  const sig = signatures(P, plan);
   const walks = layer('walks', R.walks.map(w => P.line(w.path, 'walk-route') + P.text(w.path[w.path.length - 1], `${Math.round(w.m)} m`, 'lab walk-lab', [1, 0], 5)).join(''));
-  const body = P.clip('district', base + plots + areas + roads(P, plan, d) + civic + rail(P, d, plan, 'tram', R) + rail(P, d, plan, 'sky', R) + walks + gates(P, plan, 5, false) + marks + names)
+  const body = P.clip('district', base + plots + areas + roads(P, plan, d) + civic + sig.under + rail(P, d, plan, 'tram', R) + rail(P, d, plan, 'sky', R) + sig.over + walks + gates(P, plan, 5, false) + marks + names)
     + frame(P, s.grid, true) + northScale(P, [700, 240], [0, 50, 100, 200], 10);
   return `<svg id="district" viewBox="0 0 ${n(P.w)} ${n(P.h)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(plan.name)} master plan">${body}</svg>`;
 }
