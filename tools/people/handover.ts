@@ -11,8 +11,9 @@ export type { Cast };
 export type MissionIn = CastMission & { destinations: { name: string; at: [number, number]; surface: string }[] };
 export const startMin = (m: { clock: { startsAt: string } }) => { const [h, mi] = m.clock.startsAt.split(':').map(Number); return h! * 60 + mi!; };
 
-/** Who the Handover casts for each role the mission names, and the person pinned per role. */
+/** Who the Handover can place in each role the mission names (P-6: employer, position, shift, place). The role's need, approach
+ *  and regularOf are M-2's (the overlay passes the rules); here they are not read, so a stand-in cast still passes P-6. */
 export function castHandover(persons: Person[], scope: Scope, mission: MissionIn, plan: { civic: unknown }): Cast[] {
-  const at = new Map(scope.places.map(p => [p.id, p.at as V]));
-  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id] });
+  const at = new Map(scope.places.map(p => [p.id, p.at as V])), plot = new Map(scope.places.map(p => [p.id, p.plot]));
+  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id], plotOf: id => plot.get(id) });
 }

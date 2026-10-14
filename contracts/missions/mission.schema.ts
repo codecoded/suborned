@@ -7,13 +7,15 @@
 // role from the generated people (rule M-2, tools/missions/handover/cast.ts) and the people checker reads the same list (P-6).
 // Migration /2 → /3: set `schema` to 'suborned.mission/3' and add `roles` (may be empty) between `stands` and `destinations`
 // (the Handover's places lock hashes the file from "destinations" on); no /2 key changes. `pin` stays unset until a cast is
-// accepted (brief 010 C); a set pin must still fit its role or M-2 fails. A recorded run's pinned block carries its own /1 layer
+// accepted (brief 010 C); a set pin must still fit its role or M-2 fails. Later on /3 (2026-10-15, brief 010 follow-up; Motive §3,
+// Sky Q4), optional and additive: a role's `need`, `approach` and `regularOf`, which M-2 checks against people.rules.json. A recorded run's pinned block carries its own /1 layer
 // and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
 // `note` records where the entry differs from the data it came from. Zod, because the file is written by hand and by
 // generators and must fail loudly: Mission.parse(json). Test: tools/missions/handover/mission.test.ts.
 import { z } from 'zod';
+import { APPROACHES } from '../people/people.rules.schema';
 
 /** Seconds of a mission-clock offset: "5:30" → 330. */
 export const offsetS = (at: string) => { const [m, s] = at.split(':').map(Number); return m! * 60 + s!; };
@@ -33,6 +35,9 @@ const role = z.strictObject({
   near: z.number().positive().optional().describe('m from `at` a door place may stand (a bay place holds `at` in its polygon); default 4 [S]'),
   shift: z.strictObject({ from: at, to: at }).describe('on shift for this mission-clock window'),
   pin: personId.optional().describe('the person cast, once a cast is accepted; unset = first who fits by id'),
+  need: id.optional().describe('the one need the person must have (people.rules.json needs.list; unknown fails M-2)'),
+  approach: z.enum(APPROACHES).optional().describe('the planned approach: the person\'s temperament must not refuse it, and it must act on `need`'),
+  regularOf: id.optional().describe('an employer the person is a regular of: a regular tie to its staff, or a pre-shift stop at it'),
   src, note,
 }).refine(r => (r.position === undefined) !== (r.role === undefined), { error: 'exactly one of position and role' })
   .refine(r => offsetS(r.shift.from) <= offsetS(r.shift.to), { path: ['shift'], error: 'shift.from is not after shift.to' });
