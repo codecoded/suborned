@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redline review: the C# engine (5448655)</title>
+<style>
+  :root { --ink:#1f2328; --ink2:#57606a; --rule:#d0d7de; --bg:#fbfaf7; --hi:#8a3b12; --md:#7a5a00; --lo:#2f5f8a; --info:#57606a; --ok:#1f6f4a; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  main { max-width:1080px; margin:0 auto; padding:32px 28px 64px; }
+  h1 { font-size:26px; margin:0 0 4px; } h2 { font-size:20px; margin:36px 0 10px; border-bottom:1px solid var(--rule); padding-bottom:4px; }
+  h3 { font-size:16px; margin:24px 0 6px; }
+  .meta { color:var(--ink2); font-size:13px; }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; margin:8px 0 16px; }
+  th, td { border:1px solid var(--rule); padding:5px 8px; vertical-align:top; text-align:left; }
+  th { background:#f0eee8; }
+  code, pre { font:12.5px/1.45 ui-monospace, Menlo, monospace; }
+  pre { background:#f3f1ec; border:1px solid var(--rule); padding:10px 12px; overflow:auto; white-space:pre-wrap; }
+  .sev { display:inline-block; min-width:92px; font-weight:700; font-size:12px; padding:1px 6px; border-radius:3px; color:#fff; text-align:center; }
+  .High { background:var(--hi); } .Medium { background:var(--md); } .MedLow { background:#6b6b2a; } .Low { background:var(--lo); } .Info { background:var(--info); }
+  .f { border:1px solid var(--rule); background:#fff; padding:10px 14px; margin:12px 0; border-radius:4px; }
+  .f h3 { margin-top:2px; }
+  .f dl { display:grid; grid-template-columns:120px 1fr; gap:4px 12px; margin:6px 0 0; }
+  .f dt { color:var(--ink2); font-weight:600; } .f dd { margin:0; }
+  .ok { color:var(--ok); font-weight:600; }
+  details summary { cursor:pointer; color:var(--ink2); }
+</style>
+</head>
+<body>
+<main>
+<h1>Redline review: the C# engine</h1>
+<div class="meta">Commit <code>5448655</code> ("Engine: the C# sim, headless, 28 scenarios pass", brief 011 A, Keel). Scope: <code>sim/</code>, <code>tools/sim/</code>, <code>contracts/rules/</code>, <code>briefs/011/keel-engine.md</code>. Read-only. Reviewed on a snapshot of the commit (<code>git archive 5448655</code> into <code>out/review/engine</code>), because the working tree is shared and other agents are editing it. The adversarial probes are a separate console project (<code>out/review/engine-probes</code>) that references the engine and deliberately does not run with invariant culture. Reviewer: Redline. For Aster.</div>
+
+<h2>Summary</h2>
+<p><b>Determinism holds for state.</b> The library has no float, double, decimal, DateTime, Random, reflection, threads or unsafe code (grep). Geometry is exact integer arithmetic. The A* heap breaks ties by cell index. Every string comparison is ordinal, and the only sorts use total orders. Under adversarial conditions the checkpoint hashes stay identical across seven cultures and across separate processes (where string hashing is randomised), and all 33 scenarios replay through the serialised order format with identical hashes and logs.</p>
+<p><b>The weak spots are the edges.</b> (1) The loader's "unknown = reject" covers events, conditions, effects, orders and scripts, but nothing else. Any other unknown key is ignored, and typos in lazily read sections surface mid-mission as exceptions thrown out of <code>Step()</code>, or as a stack overflow that kills the process. Bun's schema catches all of these for committed files, but Unity's <code>FromTexts</code> path bypasses bun. (2) A refused approach refunds the price recomputed when it lands, not the price it took, so money is not conserved. (3) A 0-second action never lands. (4) The replay record can't verify itself, the start hash is computed over raw bytes, and the checkpoint hash leaves out the debrief's inputs.</p>
+<p><b>Perf.</b> The 50,000 sim-s per wall-s claim reproduces: 52-84k here. Stepping 600 people along baked paths stays cheap. Routing them at runtime, or calling <code>Preview</code> every frame, does not.</p>
+
+<table>
+<tr><th>#</th><th>Severity</th><th>Finding</th><th>Owner</th></tr>
+<tr><td>E1</td><td><span class="sev High">High</span></td><td>"Unknown = reject" stops at the event schema: other unknown keys pass, and typos surface mid-mission as exceptions out of <code>Step()</code> or a process-killing stack overflow</td><td>Keel; Latch (Unity load path)</td></tr>
+<tr><td>E2</td><td><span class="sev High">High</span></td><td>Money isn't conserved: a refused approach refunds the price recomputed at landing (probe: 90,000 taken, 70,000 returned)</td><td>Keel</td></tr>
+<tr><td>E3</td><td><span class="sev Medium">Medium</span></td><td>An action of 0 s (or a negative one) never lands, and the operative stays busy for the rest of the mission</td><td>Keel; Motive (rule bounds)</td></tr>
+<tr><td>E4</td><td><span class="sev Medium">Medium</span></td><td>Replay: the order log can't verify itself; the start hash is over raw bytes (CRLF, BOM); the checkpoint hash leaves out what the debrief reads</td><td>Keel; Suture</td></tr>
+<tr><td>E5</td><td><span class="sev Medium">Medium (district)</span></td><td><code>G.InCone</code> squares a long that overflows: a watcher with 30 m reach "sees" 655 m away</td><td>Keel</td></tr>
+<tr><td>E6</td><td><span class="sev Medium">Medium (N12)</span></td><td>Per-call costs that N12 multiplies: <code>Preview</code> 150 µs and 0.5 MB a call; <code>Route</code> allocates the whole grid; rules looked up by path at run time</td><td>Keel; Latch, Glyph (Preview use)</td></tr>
+<tr><td>E7</td><td><span class="sev MedLow">Medium-Low</span></td><td>Culture leaks into text: <code>Pt.ToString</code> uses the current culture (sv-SE, ar-SA and fa-IR logs differ); the tests run invariant, so they can't see it</td><td>Keel; Suture</td></tr>
+<tr><td>E8</td><td><span class="sev MedLow">Medium-Low</span></td><td>The 8:00 horizon isn't closed while Vale is with the Enforcer: a probe ran to 33:20 with no outcome</td><td>Keel; Waymark, Motive (the ruling)</td></tr>
+<tr><td>E9</td><td><span class="sev Low">Low</span></td><td>Unchecked long-to-int narrowing of rulebook values; no checked-arithmetic build</td><td>Keel</td></tr>
+<tr><td>E10</td><td><span class="sev Low">Low</span></td><td>Unity: netstandard2.1 is clean, but Mono and IL2CPP hash equality is unproven; static <code>Engine.Load</code> cache; the PDB path makes the DLL non-reproducible across machines</td><td>Latch; Keel</td></tr>
+<tr><td>E11</td><td><span class="sev Low">Low</span></td><td>JSON reader: a BOM is rejected; leading zeros and raw control characters are accepted; a truncated <code>\u</code> throws the wrong exception type</td><td>Keel</td></tr>
+<tr><td>I1-I3</td><td><span class="sev Info">Info</span></td><td>An order rejected by a rules error can leave partial state; a script runs past <code>until</code>; <code>PatrolPose</code> is hashed without a presence flag</td><td>Keel</td></tr>
+</table>
+
+<h2>Findings</h2>
+
+<div class="f"><h3><span class="sev High">High</span> E1. "Unknown = reject" stops at the event schema</h3>
+<dl>
+<dt>Where</dt><dd><code>sim/Suborned.Sim/Rules.cs:129-149</code>: <code>Only()</code> guards only events, lines, outcomes, also, witnesses, conditions and effects. The root, <code>values</code>, <code>cell</code>, <code>security</code>, <code>perception</code>, <code>fit</code>, <code>ladders</code>, <code>memory</code>, <code>traceable</code> and <code>preview</code> are read by path with no key check, as are people.rules and the site (<code>Site.cs:28-53</code>). Lazy reads: <code>Rules.cs:194-202</code> (<code>ParseFit</code>), <code>:205-212</code>, <code>GameOrders.cs:280</code> (the <code>reports</code> conditions are built and checked only when evaluated), <code>:186-193</code> (ladder scales). Recursion: <code>GameOrders.cs:274</code> (<code>cash-covers</code> calls <code>Quote</code>, and <code>Quote</code> calls <code>FirstOutcome</code>).</dd>
+<dt>Failure</dt><dd>Probe 1 (15 mutations loaded through <code>Engine.FromTexts</code>): 13 are ACCEPTED at load. Unknown keys at the rulebook root, in a value entry, in <code>cell</code>, in people.rules and in the site are silently ignored. Typos in the <code>fit</code> table and the <code>reports</code> conditions load fine, then throw <code>FormatException</code> out of <code>Step()</code> during a scenario (4 scenarios threw), after the order's cash was taken and the operative's busy flag cleared. A ladder scale typo and a <code>knownBy</code> typo load and stay latent. An outcome conditioned on <code>cash-covers</code> loads, then recurses until the stack overflows: exit 134, SIGABRT. In Unity that kills the Editor or the player. The bun side rejects 12 of these 13 (<code>Rulebook</code> strict schema plus <code>checkRulebook</code>). The one it misses is <code>loop-s</code> = 0 (E3). So committed files are safe only as long as every load goes through bun first, and <code>FromTexts</code> (brief 011 D: Unity TextAssets or StreamingAssets) doesn't.</dd>
+<dt>Fix</dt><dd>Compile the rules at load. Add <code>Only()</code> on every object the engine reads, and resolve every number, fit, scale, band and event id into typed fields. Validate where each condition kind may appear: no <code>cash-covers</code> in outcomes or price lines. Make <code>Step()</code> unable to throw on rule content. Until then, Unity loads only texts whose sha256 matches what <code>bun test contracts/rules</code> passed.</dd>
+<dt>Owner</dt><dd>Keel (loader) · Latch (Unity load path).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev High">High</span> E2. Money isn't conserved when a refused approach is refunded</h3>
+<dl>
+<dt>Where</dt><dd><code>GameOrders.cs:105-107</code> (<code>Cash -= q.Usd</code> when the order is given) · <code>:117</code> (<code>LandPersonEvent(..., Quote(ev, p).Usd)</code>: the refund is re-quoted at landing) · <code>:155</code> (<code>if (paid &gt; 0 &amp;&amp; !charged) Cash += paid</code>).</dd>
+<dt>Failure</dt><dd>Probe 8: Pay to a Loyal guard (routine known) at Neutral. The card quotes 90,000: base 70,000 plus 20,000 for the wrong approach. 90,000 is taken. During the 50 s, standing reaches Menace; probe 8 sets <code>Standing</code> directly to stand in for three witnessed menace incidents. The approach lands as <code>turn.pay.refused</code>, because Menace refuses a Loyal's Pay, and the re-quote no longer holds the wrong-approach line. Cash goes 100,000 → 80,000, so the cell is 20,000 short for an approach that did nothing. The opposite drift (a Mercenary's Hero overcharge) creates money. §04's purse lesson (Pay versus Help) rides on these numbers.</dd>
+<dt>Fix</dt><dd>Record the amount taken on the order (<code>op.BusyPaid</code>), refund exactly that, and hash it. Separately, decide whether the outcome should use issue-time or land-time standing. The rulebook should say which.</dd>
+<dt>Owner</dt><dd>Keel (Motive for the timing rule).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> E3. A 0 s action never lands</h3>
+<dl>
+<dt>Where</dt><dd><code>GameOrders.cs:48-52</code> (<code>BusyEnd = Tick + T(seconds)</code>) · <code>Game.cs:163-170</code> (<code>Step</code> increments <code>Tick</code>, then tests <code>BusyEnd == Tick</code>).</dd>
+<dt>Failure</dt><dd>Probe 2, with <code>values.loop-s</code> set to 0: in S10 the Tech stays busy from tick 283 to the end, the loop never comes on, and the run fails <code>entry-seen-camera</code>. Nothing reports why. A negative duration, or one that overflows (E9), locks the same way. Bun's schema accepts 0.</dd>
+<dt>Fix</dt><dd>Land on <code>BusyEnd &lt;= Tick</code>, or land a 0 s action at once. Bound every duration to 1 s or more at load, in both the C# loader and the zod schema.</dd>
+<dt>Owner</dt><dd>Keel · Motive (rule bounds).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium</span> E4. Replay: start hash, order log and checkpoints</h3>
+<dl>
+<dt>Where</dt><dd><code>Debrief.cs:89, 115</code> (inputs hash = H(rulebook) ^ 3·H(people) ^ 7·H(site) over raw text, folded into <code>StartHash</code>, which is folded into every checkpoint) · <code>Script.cs:22-27</code> (a script holds the start, the orders and <code>until</code>; no inputs hash, engine version or expected checkpoints) · <code>cli/Program.cs:52-53</code> (<code>replayIdentical</code> re-plays in the same process) · <code>Hash.cs:23-51</code> (what is hashed).</dd>
+<dt>Failure</dt><dd>Probe 7: the same S10 on CRLF inputs plays identically (Success at tick 3,097), but the start hash and the final hash both differ. So a Windows checkout of the PC check can't confirm a Mac replay. A BOM-prefixed rulebook fails to load. Probe 6: flipping <code>GuardReachedCafe</code> leaves the hash unchanged, yet it changes the debrief (the investigation becomes "staged-distraction"). A forged ledger row, a forged debrief line and a rewritten log line also leave it unchanged. The hash covers only the counts of the log, chain and actions, and none of <code>incidents</code>, <code>Ledger</code>, <code>DebriefLines</code>, or the orders and their rejection reasons. The tests compare checkpoints and <code>Result</code> only. What holds: all 33 scenarios round-trip through <code>Script.Write</code> → <code>Parse</code> → <code>Play</code> with identical checkpoints and identical logs (probe 5). The engine's own test does S10 only.</dd>
+<dt>Fix</dt><dd>Hash canonical content, not bytes: normalise CRLF to LF and strip the BOM, or hash the parsed tree. Write a run record holding the inputs hash, the engine version (a hash of the engine source or the assembly MVID), the start hash and the checkpoint list, and make <code>play</code> verify a stored record. Add <code>GuardReachedCafe</code>, <code>incidents</code>, <code>Ledger</code>, <code>DebriefLines</code> and the contents of the chain and actions to <code>Hash.State</code>. Make the replay test compare the full <code>--json</code> report.</dd>
+<dt>Owner</dt><dd>Keel · Suture (baselines on the full report).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium (district)</span> E5. <code>G.InCone</code> overflows</h3>
+<dl>
+<dt>Where</dt><dd><code>Geo.cs:94-98</code>: <code>dot * dot</code> in a long. Facings are raw vectors: <code>Path.Heading</code> (<code>Grid.cs:166-171</code>), <code>Enforcer.Pos - chasePos</code> (<code>Game.cs:345</code>), <code>Back()</code>.</dd>
+<dt>Failure</dt><dd>Probe 3: a watcher at 0,0 with 30 m reach, facing (65536, 0), "sees" a point 655 m away, and facing (46341, 0) it sees one 926 m away. When |r|·|f| reaches 2^32, dot² wraps to near 0. On the civic block, segments and distances keep dot² below about 10^16. On a district, path segments of hundreds of metres reach the wrap.</dd>
+<dt>Fix</dt><dd>Normalise a facing to a fixed length (1,024) when it is set, or compare with <code>dot &gt; reach * |f|</code> using <code>Isqrt</code>. Add a checked-arithmetic test build (E9).</dd>
+<dt>Owner</dt><dd>Keel.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Medium">Medium (N12)</span> E6. The perf claim, and what N12 multiplies</h3>
+<dl>
+<dt>Claim</dt><dd>"~50,000 sim-s per wall-s": it <span class="ok">reproduces</span>. <code>perf 50</code> gave 54,149, 51,904 and 55,220 on this M5 Max (load average 8.6), and the warmed probe gave 83,572. That's 1.2-1.9 µs a tick, about 1,940 bytes allocated a tick in S10 including run setup, and 0.08 µs and 156 bytes a tick when idle. It measures 4 simulated people, 9 occluders and the 0.5 m civic grid, on .NET 10 RyuJIT with tiered PGO. Unity runs Mono (Editor) or IL2CPP (player), typically 1.5-4× slower on code like this, on the Air.</dd>
+<dt>Where</dt><dd><code>Grid.cs:65-108</code> (<code>Route</code> allocates the full grid arrays every call, then string-pulls in O(points² · length/10)) · <code>GameOrders.cs:344-352</code> (<code>Preview</code> routes on every call) · <code>Rules.cs:170-180</code> and <code>Game.cs:384</code> (<code>R.RefI</code> and <code>M()</code> walk JSON nodes and allocate a params array and a substring every call, in per-tick paths) · <code>Hash.cs:32-38</code> (hashes each person's role, temperament and need strings at every checkpoint).</dd>
+<dt>Measured</dt><dd><code>Preview</code>: 150 µs and about 500 KB a call (one A* each). <code>Route</code>: 0.08 ms and 474 KB on the block; 61 ms and 20.8 MB on a district-sized open grid. <code>Sees()</code>: 135 ns with 9 occluders, 396 ns over 1,000 (no index). <code>RefI</code>: 64 ns and 72 B; a <code>p:</code> ref: 120 ns and 224 B.</dd>
+<dt>N12 extrapolation</dt><dd>
+<ul>
+<li><b>Baked paths:</b> stepping 600 people along precomputed paths with a 13 m witness prefilter cost 4 µs a tick in the sketch. With everyone near an operative it's at most about 0.35 ms (600 × 4 × <code>Sees</code>). That's roughly 2-10k sim-s per wall-s headless, and under 1 ms of a 100 ms tick in Unity, so it's fine.</li>
+<li><b>Runtime routing:</b> 600 routes cost 48 ms and 284 MB of garbage on the block, and 37 s and 12 GB on a district grid.</li>
+<li><b>Preview:</b> one call per frame is 30 MB/s of garbage at 60 fps.</li>
+</ul></dd>
+<dt>Fix</dt><dd>Before N12:
+<ul>
+<li>bake routine paths at build time (tools/people already has the walks) and step them;</li>
+<li>pool the A* buffers with a generation counter;</li>
+<li>cache <code>Preview</code>'s walk per (operative cell, target cell);</li>
+<li>compile the rules into fields;</li>
+<li>bin people and occluders on a coarse grid;</li>
+<li>intern the hashed strings.</li>
+</ul>
+The HUD calls <code>Preview</code> on change, not every frame.</dd>
+<dt>Owner</dt><dd>Keel · Latch and Glyph (how the HUD calls Preview).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev MedLow">Medium-Low</span> E7. Culture leaks into text</h3>
+<dl>
+<dt>Where</dt><dd><code>Geo.cs:19</code> (<code>$"({X},{Y})"</code> in the current culture), used by <code>GameOrders.cs:65</code> (<code>order.move</code> log text) and the scenario check texts. The tests and CLI set <code>InvariantGlobalization</code> (<code>Suborned.Sim.Tests.csproj</code>, <code>cli.csproj</code>).</dd>
+<dt>Failure</dt><dd>Probe 4: the full <code>--json</code> reports of all scenarios are identical under tr-TR, hi-IN and de-CH, and differ under sv-SE (U+2212 minus), ar-SA and fa-IR (bidi marks). The checkpoint hashes match in every culture, so state is safe. But Unity runs in the OS culture, so a Swedish Mac's event log won't match Suture's <code>play --json</code> baselines.</dd>
+<dt>Fix</dt><dd>Format everything invariant (<code>FormattableString.Invariant</code>, <code>ToString(CultureInfo.InvariantCulture)</code>). Turn on CA1305 as an error. Add a test run with sv-SE and invariant globalisation off.</dd>
+<dt>Owner</dt><dd>Keel · Suture.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev MedLow">Medium-Low</span> E8. The 8:00 horizon isn't closed while Vale is with the Enforcer</h3>
+<dl>
+<dt>Where</dt><dd><code>Game.cs:186-190</code>: the 8:00 fail skips <code>ValeAt.WithEnforcer</code>.</dd>
+<dt>Failure</dt><dd>S20's own script, without its <code>extract</code> order and with <code>until</code> 20000: outcome <code>none</code> at tick 20,000 (33:20). The last event is the Enforcer heading for the getaway bay at 6:48. §07 says the mission is over at 8:00. A script with a large <code>until</code> runs on, and <code>Engine.Play</code> also runs past <code>until</code> when an order is later (I2).</dd>
+<dt>Fix</dt><dd>Close the mission at 8:00 in every state. What happens with Vale in hand at 8:00 is a ruling.</dd>
+<dt>Owner</dt><dd>Keel · Waymark and Motive (the ruling).</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> E9. Unchecked narrowing, no checked build</h3>
+<dl>
+<dt>Where</dt><dd><code>Rules.cs:146, 168, 180</code> (<code>(int)</code> casts of longs) · <code>GameOrders.cs:90, 107, 172</code> (<code>(int)q.S</code>, <code>(int)q.Trail</code>) · <code>Game.cs:49</code> (<code>T(s) = s * 10</code>).</dd>
+<dt>Failure</dt><dd>At the 8:00 horizon every tick product is safe: ticks stay at or below 4,800, and every mm × tick product is a long. But a value over 2^31 / 10 wraps silently into a negative duration (E3) or a negative price. Nothing at load bounds them.</dd>
+<dt>Fix</dt><dd>Check ranges at load (durations 1-3,600 s, money ≤ 10^9). Build the tests with <code>CheckForOverflowUnderflow</code>.</dd>
+<dt>Owner</dt><dd>Keel.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> E10. Unity: netstandard2.1, Mono, IL2CPP, stripping</h3>
+<dl>
+<dt>Checked</dt><dd>The Release DLL (146 KB) targets <code>.NETStandard,Version=v2.1</code> and references only <code>netstandard</code>. The library uses no reflection, dynamic, unsafe code, stackalloc, Span, threads or tasks, and it compiles against netstandard2.1 reference assemblies, so every API it calls exists in Unity's profile. Unity 6 loads .NET Standard 2.1 plug-ins under both API compatibility levels. Managed stripping has nothing reflective to break. A <code>link.xml</code> preserving <code>Suborned.Sim</code> is cheap insurance at High stripping.</dd>
+<dt>Risks</dt><dd>
+<ul>
+<li>(a) Equality of hashes across runtimes (.NET 10 versus Mono versus IL2CPP) is expected, since the arithmetic is all integers and the comparers ordinal, but it is unproven.</li>
+<li>(b) <code>Run.Eq&lt;T&gt;</code> uses <code>EqualityComparer&lt;T&gt;.Default</code> for enums and <code>Pt?</code>. Modern IL2CPP generates these, but only an IL2CPP player run proves it.</li>
+<li>(c) <code>Engine.Load</code> keeps a static cache keyed by root (<code>Debrief.cs:91-99</code>). With domain reload off, edits to the rulebook aren't picked up, so use <code>FromTexts</code>.</li>
+<li>(d) The build embeds the absolute PDB path, so the Studio and the Air produce different DLL bytes. That matters if the DLL hash becomes part of replay identity (E4).</li>
+<li>(e) Any stack overflow (E1) kills Unity.</li>
+</ul></dd>
+<dt>Fix</dt><dd>Latch's done-check for 011 D: run <code>Scenarios.All</code> in the Mono Editor and in an IL2CPP macOS player, and compare every final hash with <code>play --json</code> from the CLI. Add <code>ContinuousIntegrationBuild</code> (or <code>PathMap</code>) to the csproj.</dd>
+<dt>Owner</dt><dd>Latch · Keel.</dd>
+</dl></div>
+
+<div class="f"><h3><span class="sev Low">Low</span> E11. JSON reader edges</h3>
+<dl><dt>Where</dt><dd><code>Json.cs:70</code> (a BOM is not whitespace: probe 7 fails to load), <code>:108-112</code> (number tokens accept leading zeros), <code>:116-136</code> (raw control characters are accepted in strings; a <code>\u</code> at the end of input throws <code>ArgumentOutOfRangeException</code>, not <code>FormatException</code>).</dd>
+<dt>Fix</dt><dd>Strip a leading BOM, reject leading zeros and control characters, and bounds-check <code>\u</code>.</dd><dt>Owner</dt><dd>Keel.</dd></dl></div>
+
+<div class="f"><h3><span class="sev Info">Info</span> I1-I3</h3>
+<ul>
+<li>I1 <code>GameOrders.cs:448-450</code>: <code>Enter</code> sets <code>Inside</code>, <code>EntryInProgress</code> and the chain before <code>Engage</code> reads <code>cell.enter.s</code>. Under a bad rulebook that read throws, <code>Issue</code> reports "rejected", and the state is half-changed, contrary to "a rejected order changes nothing".</li>
+<li>I2 <code>Debrief.cs:118-130</code>: <code>Engine.Play</code> runs to each order's tick even when it is past <code>until</code>.</li>
+<li>I3 <code>Hash.cs:44</code>: <code>PatrolPose</code> is hashed without its presence flag, unlike the other poses.</li>
+</ul></div>
+
+<h2>What is solid</h2>
+<ul>
+<li>D4 holds: no floats anywhere in the library. <code>Isqrt</code> is exact, polygon and segment tests are integer, the heap breaks ties by cell index, and number parsing is invariant.</li>
+<li>State determinism under adversarial runs: the hashes are identical under tr-TR, sv-SE, ar-SA, fa-IR, hi-IN and de-CH, and across two processes (fingerprint <code>e99ec11b5fd3afdf</code> both times).</li>
+<li>Replay: all 33 scenarios are identical after a round trip through the serialised order format, logs included. The scenarios never write state directly; everything goes through orders or the hashed start.</li>
+<li>Orders and scripts reject unknown keys and verbs. Rule refs (<code>v:</code>, <code>p:</code>) are all resolved at load. Events, conditions and effects are strict.</li>
+<li>The tests pass: 113/113 on the snapshot.</li>
+</ul>
+
+<h2>Evidence</h2>
+<p>The probe sources and outputs are in <code>out/review/engine-probes/</code> (<code>Program.cs</code> and <code>ts/schema-probe.ts</code>). All runs are on the snapshot of <code>5448655</code> on an Apple M5 Max.</p>
+<h3>Tests, CLI perf, the 8:00 probe</h3><pre>$ dotnet test sim/Suborned.Sim.Tests            (snapshot of 5448655)
+Passed!  - Failed: 0, Passed: 113, Skipped: 0, Total: 113, Duration: 1 s - Suborned.Sim.Tests.dll (net10.0)
+$ dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll perf 50    (x3, Apple M5 Max, load average 8.6)
+route A (S10) x50: 15485 sim-s in 0.286 wall-s = 54149 sim-s per wall-s (5.7 ms a run)
+route A (S10) x50: 15485 sim-s in 0.298 wall-s = 51904 sim-s per wall-s (6.0 ms a run)
+route A (S10) x50: 15485 sim-s in 0.280 wall-s = 55220 sim-s per wall-s (5.6 ms a run)
+$ suborned-sim play s20-no-extract.json --json   (S20's own script without its extract order, until 20000)
+outcome none, fail "", tick 20000, 200 checkpoints; last log 6:48.0 order.move "enforcer heads for d:Getaway bay."</pre>
+<h3>Probes 1-9 (<code>dotnet run -c Release -- all</code>)</h3><pre>== 1. unknown = reject at load?
+  ACCEPTED at load   rulebook: unknown top-level key: scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: unknown key in a value entry (values.watch-s.vv): scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: unknown key in the cell section (cell.sped): scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: fit value typo (fit.approaches.ask.fit = refusedd): scenarios 31 pass, 2 fail; thrown: 1x FormatException: fit 'refusedd'
+  ACCEPTED at load   rulebook: unknown condition kind in the reports section (k: mood): scenarios 22 pass, 11 fail; thrown: 3x FormatException: rulebook.reports[0].when[0]: condition kind 'mood' is unknown (unknown = reject)
+  ACCEPTED at load   rulebook: ladder move on an unknown scale (bravry): scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: condition value typo (temperament in [loyall]): scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: traceable standing typo (debt-cleared: heroo): scenarios 33 pass, 0 fail
+  ACCEPTED at load   rulebook: preview.knownBy names no event (scout.lisen): scenarios 32 pass, 1 fail
+  ACCEPTED at load   people rules: unknown top-level key: scenarios 33 pass, 0 fail
+  ACCEPTED at load   people rules: unknown key in a temperament (respondsToo): scenarios 33 pass, 0 fail
+  ACCEPTED at load   site: unknown top-level key: scenarios 33 pass, 0 fail
+  ACCEPTED at load   site: unknown key in a place (stnd): scenarios 33 pass, 0 fail
+  ACCEPTED at load   site: purse as a float (100000.5): scenarios 0 pass, 33 fail; thrown: 33x FormatException: site.purse is 100000.5, not an integer (integer state only)
+  rejected at load   control: condition kind 'mood' in an event (the engine's own test): FormatException: rulebook.events[0].needs[0]: condition kind 'mood' is unknown (unknown = reject)
+== 2. an action of 0 s (values.loop-s = 0)
+  S10 with loop 0 s: Failure (entry-seen-camera) at tick 2329; LoopOn False; Tech busy True with BusyEnd 283; later orders to the Tech rejected: 0
+== 3. G.InCone overflow (facing = a raw segment vector, as Path.Heading returns)
+  watcher at 0,0 facing (6000,0), reach 30 m, half 15 m: sees (65536,0) (655 m away)? False
+  watcher at 0,0 facing (65536,0), reach 30 m, half 15 m: sees (65536,0) (655 m away)? True
+  watcher at 0,0 facing (46341,0), reach 30 m, half 15 m: sees (92682,0) (926 m away)? True
+== 4. determinism across cultures (full --json reports of all scenarios, logs and debriefs included)
+  invariant baseline: e99ec11b5fd3afdf (99908 chars)
+  tr-TR : identical e99ec11b5fd3afdf
+  sv-SE : DIFFERS ce905666e2efbadb
+  ar-SA : DIFFERS 40b4a5ff43e842cf
+  fa-IR : DIFFERS a437e3408991c1cf
+  hi-IN : identical e99ec11b5fd3afdf
+  de-CH : identical e99ec11b5fd3afdf
+  this process: string hash randomised per process; fingerprint for cross-process comparison: e99ec11b5fd3afdf
+== 5. every scenario replayed through Script.Write -&gt; Script.Parse -&gt; Engine.Play
+  33/33 identical
+== 6. state the checkpoint hash does not cover
+  S10, GuardReachedCafe flipped: hash UNCHANGED; debrief DIFFERS (423 vs 424 chars)
+  S10, a ledger row and a debrief line added and log line 0 rewritten: hash UNCHANGED
+== 7. start hash over raw text (CRLF, BOM)
+  S10 LF vs CRLF inputs: result Success/Success, tick 3097/3097, start hash differs, final hash differs
+  BOM-prefixed rulebook: FormatException: JSON at 0: unexpected '﻿'
+== 8. refund at landing vs price at issue (Pay to a Loyal guard; standing reaches Menace during the 50 s)
+  card 90000 (lines: base 70000); order taken; taken 90000; landed: turn.pay.refused; cash before 100000, after 80000: the cell is 20000 short for a refused approach
+== 9. cost: route A per tick, allocations, and the pieces N12 multiplies
+  S10 x50: 83572 sim-s per wall-s, 1.20 µs a tick, 1940 bytes allocated a tick (run setup included)
+  idle mission 0:01-6:40: 0.08 µs and 156 bytes a tick
+  Sees(): 135 ns with the block's 9 occluders; 396 ns over 1,000 district occluders (no index)
+  Grid.Route on the block: 0.08 ms and 474 KB a route
+  Grid.Route on a district-sized grid (616 x 976 m at 0.5 m, open ground, corner to corner): 61 ms, 20.8 MB, 2 points
+  N12 sketch, 600 people x (step a path + 13 m witness check on 4 operatives) on the block: 4 µs a tick (0)</pre>
+<h3>Culture: where the text differs (sv-SE)</h3><pre>S02 under sv-SE: checkpoints same; first difference at 1835:
+   invariant: ...eaving)"},{"ok":true,"what":"Vale comes out of the official entrance (got (7625,-3000), want (7625,-3000))"},{"ok":true,"what":"the unturned
+   sv-SE:    ...eaving)"},{"ok":true,"what":"Vale comes out of the official entrance (got (7625,−3000), want (7625,−3000))"},{"ok":true,"what":"the unturned
+S03 under sv-SE: checkpoints same; first difference at 500:
+   invariant: ...h":"f7b422ba3b0a9696"}],"checks":[{"ok":true,"what":"enforcer can walk to (4600,-2600)"},{"ok":true,"what":"fixer call waitress taken at 0:3
+   sv-SE:    ...h":"f7b422ba3b0a9696"}],"checks":[{"ok":true,"what":"enforcer can walk to (4600,−2600)"},{"ok":true,"what":"fixer call waitress taken at 0:3
+S05 under sv-SE: checkpoints same; first difference at 2111:
+   invariant: ...turn waitress help taken at 2:03.3"},{"ok":true,"what":"scout can walk to (8250,-3100)"},{"ok":true,"what":"tech reroute patrol taken at 2:0
+   sv-SE:    ...turn waitress help taken at 2:03.3"},{"ok":true,"what":"scout can walk to (8250,−3100)"},{"ok":true,"what":"tech reroute patrol taken at 2:0
+S10 under sv-SE: checkpoints same; first difference at 1994:
+   invariant: ...:"fixer can walk to d:Courtyard"},{"ok":true,"what":"enforcer can walk to (4900,-1700)"},{"ok":true,"what":"fixer turn waitress help taken a
+   sv-SE:    ...:"fixer can walk to d:Courtyard"},{"ok":true,"what":"enforcer can walk to (4900,−1700)"},{"ok":true,"what":"fixer turn waitress help taken a
+scenarios whose checkpoint hashes differ under sv-SE: 0</pre>
+<h3>Preview, rule lookups, cross-process fingerprint</h3><pre>Preview(help, waitress), temperament unknown, 4 people: 150.4 µs and 504530 bytes a call
+Preview(help, waitress), temperament known: 150.2 µs and 497944 bytes a call
+Rules.RefI(security, aim): 64 ns and 72 bytes a call (0)
+Rules.Num(p:approaches.help.usd): 120 ns and 224 bytes a call
+fingerprint, process 1: e99ec11b5fd3afdf
+fingerprint, process 2: e99ec11b5fd3afdf</pre>
+<h3>The cash-covers recursion (<code>-- recursion</code>, run alone)</h3><pre>loaded: an outcome conditioned on cash-covers is accepted; playing S10 (Quote -&gt; FirstOutcome -&gt; cash-covers -&gt; Quote ...)
+Stack overflow.
+   at System.String.MakeSeparatorListAny(System.ReadOnlySpan`1&lt;Char&gt;, System.ReadOnlySpan`1&lt;Char&gt;, System.Collections.Generic.ValueListBuilder`1&lt;Int32&gt; ByRef)
+   at System.String.SplitInternal(System.ReadOnlySpan`1&lt;Char&gt;, Int32, System.StringSplitOptions)
+   at System.String.Split(Char, System.StringSplitOptions)
+   at Suborned.Sim.Rules.Num(System.String)
+   at Suborned.Sim.Game.Quote(Suborned.Sim.Event, Suborned.Sim.Person)
+   at Suborned.Sim.Game.Holds(Suborned.Sim.Cond, PCtx)
+   at Suborned.Sim.Game.AllHold(System.Collections.Generic.List`1&lt;Suborned.S... (exit code 134, SIGABRT; 21121 engine frames in the trace)</pre>
+<h3>What the TypeScript side catches (<code>bun ts/schema-probe.ts</code>)</h3><pre>  REJECTED by the schema       rulebook: unknown top-level key
+  REJECTED by the schema       rulebook: unknown key in values.watch-s
+  REJECTED by the schema       rulebook: unknown key in cell
+  REJECTED by the schema       rulebook: fit typo refusedd
+  REJECTED by the schema       rulebook: reports condition kind mood
+  REJECTED by checkRulebook    rulebook: ladder scale bravry
+  REJECTED by checkRulebook    rulebook: temperament in [loyall]
+  REJECTED by the schema       rulebook: traceable standing heroo
+  REJECTED by the schema       rulebook: knownBy scout.lisen
+  passes                       rulebook: loop-s 0
+  REJECTED by the schema       rulebook: cash-covers in an outcome
+  REJECTED by the schema       people rules: unknown top-level key
+  REJECTED by the schema       people rules: temperament key respondsToo</pre>
+<details><summary>Probe source: Program.cs</summary><pre>// Redline's adversarial probes on the engine at 5448655 (read-only review; brief 011). Run from out/review/engine-probes:
+//   dotnet run -c Release -- all          every probe below except the crashing one
+//   dotnet run -c Release -- recursion    cash-covers in an outcome's `when`: expected to overflow the stack (run alone)
+// Culture is not invariant in this project on purpose (the engine's own tests and CLI set InvariantGlobalization).
+using System.Diagnostics;
+using System.Globalization;
+using Suborned.Sim;
+
+static class P
+{
+    static readonly string Root = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppContext.BaseDirectory, "../../../../engine"));
+    static string Rd(string f) =&gt; File.ReadAllText(System.IO.Path.Combine(Root, f));
+    static readonly string Book = Rd("contracts/rules/rulebook.json"), People = Rd("contracts/people/people.rules.json"), SiteT = Rd("sim/data/handover.site.json");
+
+    static string Rep(string t, string a, string b) { int i = t.IndexOf(a, StringComparison.Ordinal); if (i &lt; 0) throw new Exception("marker not found: " + a); return t.Substring(0, i) + b + t.Substring(i + a.Length); }
+    static string Ins(string t, string after, string add) =&gt; Rep(t, after, after + add);
+
+    static int Main(string[] args)
+    {
+        var mode = args.Length &gt; 0 ? args[0] : "all";
+        if (mode == "recursion") { Recursion(); return 0; }
+        if (mode == "culture-diff") { CultureDiff(args.Length &gt; 1 ? args[1] : "sv-SE"); return 0; }
+        if (mode == "preview") { PreviewCost(); return 0; }
+        if (mode == "ref")
+        {
+            var i = Engine.FromTexts(Book, People, SiteT); int n = 1_000_000; long acc = 0;
+            for (int k = 0; k &lt; 10000; k++) acc += i.Rules.RefI("security", "aim");
+            long a0 = GC.GetAllocatedBytesForCurrentThread(); var sw = Stopwatch.StartNew();
+            for (int k = 0; k &lt; n; k++) acc += i.Rules.RefI("security", "aim");
+            sw.Stop(); long a1 = GC.GetAllocatedBytesForCurrentThread();
+            Console.WriteLine($"Rules.RefI(security, aim): {sw.Elapsed.TotalMilliseconds * 1e6 / n:0} ns and {(a1 - a0) / n} bytes a call ({acc &amp; 1})");
+            a0 = GC.GetAllocatedBytesForCurrentThread(); sw.Restart();
+            for (int k = 0; k &lt; n; k++) acc += i.Rules.Num("p:approaches.help.usd");
+            sw.Stop(); a1 = GC.GetAllocatedBytesForCurrentThread();
+            Console.WriteLine($"Rules.Num(p:approaches.help.usd): {sw.Elapsed.TotalMilliseconds * 1e6 / n:0} ns and {(a1 - a0) / n} bytes a call");
+            return 0;
+        }
+        if (mode == "fp") { Console.WriteLine(Hash.Hex(Hash.Of(Fingerprint(Engine.FromTexts(Book, People, SiteT))))); return 0; }
+        UnknownKeys(); ZeroSecondAction(); ConeOverflow(); CultureAndProcess(); ScriptRoundTripAll(); HashCoverage(); CrlfStartHash(); RefundDrift(); Perf();
+        return 0;
+    }
+
+    static (int pass, int fail, string errors) RunAll(Engine.Inputs i)
+    {
+        int pass = 0, fail = 0; var errs = new SortedDictionary&lt;string, int&gt;(StringComparer.Ordinal);
+        foreach (var s in Scenarios.All)
+        {
+            try { var r = Scenarios.Run(i, s); if (r.Checks.TrueForAll(c =&gt; c.ok)) pass++; else fail++; }
+            catch (Exception e) { fail++; var k = e.GetType().Name + ": " + e.Message; errs[k] = errs.TryGetValue(k, out var n) ? n + 1 : 1; }
+        }
+        return (pass, fail, string.Join(" | ", errs.Select(kv =&gt; $"{kv.Value}x {kv.Key}")));
+    }
+
+    // 1. What the loader rejects, and what it accepts and fails on (or silently ignores) later
+    static void UnknownKeys()
+    {
+        Console.WriteLine("== 1. unknown = reject at load?");
+        var cases = new (string what, Func&lt;(string b, string p, string s)&gt; make)[]
+        {
+            ("rulebook: unknown top-level key", () =&gt; (Ins(Book, "{\n", " \"zzz-unknown\": 1,\n"), People, SiteT)),
+            ("rulebook: unknown key in a value entry (values.watch-s.vv)", () =&gt; (Ins(Book, "\"watch-s\": { ", "\"vv\": 1, "), People, SiteT)),
+            ("rulebook: unknown key in the cell section (cell.sped)", () =&gt; (Ins(Book, "\"cell\": {", " \"sped\": \"v:op-speed-cm-s\","), People, SiteT)),
+            ("rulebook: fit value typo (fit.approaches.ask.fit = refusedd)", () =&gt; (Rep(Book, "\"ask\": { \"fit\": \"refused\"", "\"ask\": { \"fit\": \"refusedd\""), People, SiteT)),
+            ("rulebook: unknown condition kind in the reports section (k: mood)", () =&gt; (Rep(Book, "\"when\": [{ \"k\": \"reports-approach\" }", "\"when\": [{ \"k\": \"mood\" }"), People, SiteT)),
+            ("rulebook: ladder move on an unknown scale (bravry)", () =&gt; (Rep(Book, "\"job-unexposed\": { \"add\": [{ \"scale\": \"bravery\"", "\"job-unexposed\": { \"add\": [{ \"scale\": \"bravry\""), People, SiteT)),
+            ("rulebook: condition value typo (temperament in [loyall])", () =&gt; (Rep(Book, "{ \"k\": \"temperament\", \"in\": [\"loyal\"] }", "{ \"k\": \"temperament\", \"in\": [\"loyall\"] }"), People, SiteT)),
+            ("rulebook: traceable standing typo (debt-cleared: heroo)", () =&gt; (Rep(Book, "\"debt-cleared\": { \"standing\": \"hero\"", "\"debt-cleared\": { \"standing\": \"heroo\""), People, SiteT)),
+            ("rulebook: preview.knownBy names no event (scout.lisen)", () =&gt; (Rep(Book, "\"knownBy\": [\"scout.listen\"]", "\"knownBy\": [\"scout.lisen\"]"), People, SiteT)),
+            ("people rules: unknown top-level key", () =&gt; (Book, Ins(People, "{\n", "  \"zzz-unknown\": 1,\n"), SiteT)),
+            ("people rules: unknown key in a temperament (respondsToo)", () =&gt; (Book, Ins(People, "\"idealist\": {", " \"respondsToo\": [],"), SiteT)),
+            ("site: unknown top-level key", () =&gt; (Book, People, Ins(SiteT, "{\n", " \"zzz-unknown\": 1,\n"))),
+            ("site: unknown key in a place (stnd)", () =&gt; (Book, People, Ins(SiteT, "\"d:Courtyard\": {", "\"stnd\": [0, 0],"))),
+            ("site: purse as a float (100000.5)", () =&gt; (Book, People, Rep(SiteT, "\"purse\": 100000", "\"purse\": 100000.5"))),
+            ("control: condition kind 'mood' in an event (the engine's own test)", () =&gt; (Rep(Book, "{ \"k\": \"tier\", \"is\": \"simulated\" }", "{ \"k\": \"mood\", \"is\": \"simulated\" }"), People, SiteT)),
+        };
+        foreach (var (what, make) in cases)
+        {
+            var (b, p, s) = make();
+            Engine.Inputs i;
+            try { i = Engine.FromTexts(b, p, s); }
+            catch (Exception e) { Console.WriteLine($"  rejected at load   {what}: {e.GetType().Name}: {e.Message}"); continue; }
+            var (pass, fail, errors) = RunAll(i);
+            Console.WriteLine($"  ACCEPTED at load   {what}: scenarios {pass} pass, {fail} fail{(errors.Length &gt; 0 ? "; thrown: " + errors : "")}");
+        }
+    }
+
+    // 2. An action of 0 s never lands: Engage sets BusyEnd = Tick, Step increments Tick before testing BusyEnd == Tick
+    static void ZeroSecondAction()
+    {
+        Console.WriteLine("== 2. an action of 0 s (values.loop-s = 0)");
+        var i = Engine.FromTexts(Rep(Book, "\"loop-s\": {\"v\": 62", "\"loop-s\": {\"v\": 0"), People, SiteT);
+        var r = Scenarios.Run(i, Scenarios.Find("S10")!); var tech = r.G.OpOf(OpId.Tech);
+        Console.WriteLine($"  S10 with loop 0 s: {r.G.Result} ({r.G.FailCode}) at tick {r.G.Tick}; LoopOn {r.G.LoopOn}; Tech busy {(tech.Busy != null)} with BusyEnd {tech.BusyEnd}; later orders to the Tech rejected: {r.G.Orders.Count(o =&gt; o.order.Op == "tech" &amp;&amp; !o.ok)}");
+    }
+
+    // 3. InCone squares the dot product in a long: |r|·|f| ≥ 2^31.5 overflows
+    static void ConeOverflow()
+    {
+        Console.WriteLine("== 3. G.InCone overflow (facing = a raw segment vector, as Path.Heading returns)");
+        var o = new Pt(0, 0);
+        foreach (var (f, p) in new[] { (new Pt(6000, 0), new Pt(65536, 0)), (new Pt(65536, 0), new Pt(65536, 0)), (new Pt(46341, 0), new Pt(92682, 0)) })
+            Console.WriteLine($"  watcher at 0,0 facing {f}, reach 30 m, half 15 m: sees {p} ({p.X / 100} m away)? {G.InCone(o, f, 3000, 1500, 0, p)}");
+    }
+
+    // 4. Same orders, same hashes, under hostile cultures and across processes
+    static string Fingerprint(Engine.Inputs i)
+    {
+        var sb = new System.Text.StringBuilder();
+        foreach (var s in Scenarios.All)
+        {
+            var r = Scenarios.Run(i, s);
+            sb.Append(s.Id).Append(' ').Append(Report.Json(s.Id, r.G, r.Checks, true)).Append('\n');
+        }
+        return sb.ToString();
+    }
+    static void CultureAndProcess()
+    {
+        Console.WriteLine("== 4. determinism across cultures (full --json reports of all scenarios, logs and debriefs included)");
+        var baseline = Fingerprint(Engine.FromTexts(Book, People, SiteT));
+        Console.WriteLine($"  invariant baseline: {Hash.Hex(Hash.Of(baseline))} ({baseline.Length} chars)");
+        foreach (var c in new[] { "tr-TR", "sv-SE", "ar-SA", "fa-IR", "hi-IN", "de-CH" })
+        {
+            var was = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo(c);
+            var f = Fingerprint(Engine.FromTexts(Book, People, SiteT));
+            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = was;
+            Console.WriteLine($"  {c,-6}: {(f == baseline ? "identical" : "DIFFERS")} {Hash.Hex(Hash.Of(f))}");
+        }
+        Console.WriteLine($"  this process: string hash randomised per process; fingerprint for cross-process comparison: {Hash.Hex(Hash.Of(baseline))}");
+    }
+
+    // 5. Every scenario through the serialised order format (the engine's test does S10 only)
+    static void ScriptRoundTripAll()
+    {
+        Console.WriteLine("== 5. every scenario replayed through Script.Write -&gt; Script.Parse -&gt; Engine.Play");
+        var i = Engine.FromTexts(Book, People, SiteT); var bad = new List&lt;string&gt;();
+        foreach (var s in Scenarios.All)
+        {
+            var g = Scenarios.Run(i, s).G;
+            var sc = Script.Parse(Script.Write(g));
+            var rp = Engine.Play(i, sc.Start, sc.Orders, sc.Until);
+            bool same = g.Checkpoints.SequenceEqual(rp.Checkpoints) &amp;&amp; g.Result == rp.Result &amp;&amp; g.Log.Count == rp.Log.Count;
+            bool logSame = same &amp;&amp; g.Log.Select(l =&gt; l.Tick + l.Code + l.Text).SequenceEqual(rp.Log.Select(l =&gt; l.Tick + l.Code + l.Text));
+            if (!same || !logSame) bad.Add($"{s.Id} (hashes {(g.Checkpoints.SequenceEqual(rp.Checkpoints) ? "same" : "differ")}, log {(logSame ? "same" : "differs")})");
+        }
+        Console.WriteLine($"  {Scenarios.All.Count - bad.Count}/{Scenarios.All.Count} identical{(bad.Count &gt; 0 ? "; not: " + string.Join(", ", bad) : "")}");
+    }
+
+    // 6. What the checkpoint hash does not cover
+    static void HashCoverage()
+    {
+        Console.WriteLine("== 6. state the checkpoint hash does not cover");
+        var i = Engine.FromTexts(Book, People, SiteT);
+        var g = Scenarios.Run(i, Scenarios.Find("S10")!).G;
+        ulong h0 = Hash.State(g); string d0 = W(g);
+        g.GuardReachedCafe = !g.GuardReachedCafe;
+        ulong h1 = Hash.State(g); string d1 = W(g);
+        Console.WriteLine($"  S10, GuardReachedCafe flipped: hash {(h0 == h1 ? "UNCHANGED" : "changed")}; debrief {(d0 == d1 ? "same" : "DIFFERS")} ({d0.Length} vs {d1.Length} chars)");
+        g.GuardReachedCafe = !g.GuardReachedCafe;
+        g.Ledger.Add((g.Tick, "trail", 5, g.Trail + 5, "forged")); g.DebriefLines.Add((g.Tick, "forged", "waitress", ""));
+        var l = g.Log[0]; g.Log[0] = new LogLine { Tick = l.Tick + 7, Code = "forged", Text = "forged" };
+        Console.WriteLine($"  S10, a ledger row and a debrief line added and log line 0 rewritten: hash {(Hash.State(g) == h0 ? "UNCHANGED" : "changed")}");
+        static string W(Game g) { var w = new JWriter(); Debrief.Of(g).Write(w); return w.ToString(); }
+    }
+
+    // 7. The start hash folds in the raw input bytes: a CRLF checkout changes every checkpoint, behaviour unchanged
+    static void CrlfStartHash()
+    {
+        Console.WriteLine("== 7. start hash over raw text (CRLF, BOM)");
+        var lf = Engine.FromTexts(Book, People, SiteT); var crlf = Engine.FromTexts(Book.Replace("\n", "\r\n"), People.Replace("\n", "\r\n"), SiteT.Replace("\n", "\r\n"));
+        var a = Scenarios.Run(lf, Scenarios.Find("S10")!).G; var b = Scenarios.Run(crlf, Scenarios.Find("S10")!).G;
+        Console.WriteLine($"  S10 LF vs CRLF inputs: result {a.Result}/{b.Result}, tick {a.Tick}/{b.Tick}, start hash {(a.StartHash == b.StartHash ? "same" : "differs")}, final hash {(a.Checkpoints[^1].hash == b.Checkpoints[^1].hash ? "same" : "differs")}");
+        try { Engine.FromTexts("﻿" + Book, People, SiteT); Console.WriteLine("  BOM-prefixed rulebook: loads"); }
+        catch (Exception e) { Console.WriteLine($"  BOM-prefixed rulebook: {e.GetType().Name}: {e.Message}"); }
+    }
+
+    // 8. A refused approach refunds the price recomputed when it lands, not the price taken when it was given
+    static void RefundDrift()
+    {
+        Console.WriteLine("== 8. refund at landing vs price at issue (Pay to a Loyal guard; standing reaches Menace during the 50 s)");
+        var i = Engine.FromTexts(Book, People, SiteT);
+        var st = new Start(); st.Temperament["guard"] = "loyal"; st.Known["guard"] = new List&lt;string&gt; { "routine" };
+        var g = Engine.New(i, st);
+        var guard = g.GuardPose()!.Value.pos; var fixer = g.OpOf(OpId.Fixer);
+        var route = i.SiteData.Grid.Route(fixer.Pos, i.SiteData.Grid.NearestFree(guard)!.Value)!;
+        g.Issue(new Order { Tick = 0, Op = "fixer", Do = "move", Point = route[^1] });
+        while (fixer.Walk != null) g.Step();
+        long before = g.Cash; var q = g.Preview("pay", "guard");
+        var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "turn", Approach = "pay", Target = "guard" });
+        long taken = before - g.Cash;
+        g.Standing = (int)i.Rules.Ref("standing", "menace"); // stands in for three witnessed menace incidents during the action
+        g.RunTo(fixer.BusyEnd);
+        Console.WriteLine($"  card {q.Usd} (lines: {string.Join(", ", q.Lines.Where(x =&gt; x.Holds == "yes").Select(x =&gt; x.Line + " " + x.Usd))}); order {(ok ? "taken" : "rejected: " + why)}; taken {taken}; landed: {g.Log.Last(x =&gt; x.Code.StartsWith("turn.pay", StringComparison.Ordinal)).Code}; cash before {before}, after {g.Cash}: the cell is {before - g.Cash} short for a refused approach");
+    }
+
+    // 9. Per-tick cost and allocation now, and the pieces N12 will multiply
+    static void Perf()
+    {
+        Console.WriteLine("== 9. cost: route A per tick, allocations, and the pieces N12 multiplies");
+        var i = Engine.FromTexts(Book, People, SiteT); var s10 = Scenarios.Find("S10")!;
+        for (int k = 0; k &lt; 5; k++) Scenarios.Run(i, s10);
+        long a0 = GC.GetAllocatedBytesForCurrentThread(); var sw = Stopwatch.StartNew(); long ticks = 0; int runs = 50;
+        for (int k = 0; k &lt; runs; k++) ticks += Scenarios.Run(i, s10).G.Tick;
+        sw.Stop(); long a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"  S10 x{runs}: {ticks / 10.0 / sw.Elapsed.TotalSeconds:0} sim-s per wall-s, {sw.Elapsed.TotalMilliseconds * 1000 / ticks:0.00} µs a tick, {(a1 - a0) / (double)ticks:0} bytes allocated a tick (run setup included)");
+        // a bare tick, no orders: the timelines, shooters and patrol only
+        var g = Engine.New(i); g.RunTo(10); a0 = GC.GetAllocatedBytesForCurrentThread(); sw.Restart(); g.RunTo(4000); sw.Stop(); a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"  idle mission 0:01-6:40: {sw.Elapsed.TotalMilliseconds * 1000 / 3990:0.00} µs and {(a1 - a0) / 3990.0:0} bytes a tick");
+        // sight: one Sees() across the block (9 occluders), and with 1,000 occluders (a district without a spatial index)
+        var site = i.SiteData; var from = site.Stand("d:Courtyard"); var to = site.Stand("d:Office entrance");
+        int n = 200_000; sw.Restart(); int seen = 0; for (int k = 0; k &lt; n; k++) if (site.Sight(from, new Pt(to.X + (k &amp; 63), to.Y), 160)) seen++; sw.Stop();
+        double sightNs = sw.Elapsed.TotalMilliseconds * 1e6 / n;
+        var occ = new List&lt;Occluder&gt;(); var rnd = new Random(1);
+        for (int k = 0; k &lt; 1000; k++) { int x = rnd.Next(-60000, 60000), y = rnd.Next(-60000, 60000); occ.Add(new Occluder("o" + k, 0, 3000, new[] { new Pt(x, y), new Pt(x + 1500, y), new Pt(x + 1500, y + 1500), new Pt(x, y + 1500) })); }
+        sw.Restart(); for (int k = 0; k &lt; n / 10; k++) { var a = new Pt(-50000 + k % 1000, 0); var b = new Pt(50000, k % 997); foreach (var o in occ) if (o.Blocks(a, b, 160)) break; } sw.Stop();
+        double sight1000Ns = sw.Elapsed.TotalMilliseconds * 1e6 / (n / 10);
+        Console.WriteLine($"  Sees(): {sightNs:0} ns with the block's 9 occluders; {sight1000Ns:0} ns over 1,000 district occluders (no index)");
+        // routes: the block's 0.5 m grid (53,792 cells) and a district-sized one
+        sw.Restart(); a0 = GC.GetAllocatedBytesForCurrentThread(); int rn = 50;
+        for (int k = 0; k &lt; rn; k++) site.Grid.Route(site.Stand("crew:scout"), site.Stand("d:Getaway bay"));
+        sw.Stop(); a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"  Grid.Route on the block: {sw.Elapsed.TotalMilliseconds / rn:0.00} ms and {(a1 - a0) / rn / 1024.0:0} KB a route");
+        int nx = 1232, ny = 1952; var rows = new System.Text.StringBuilder();
+        rows.Append("{\"x0\":0,\"y0\":0,\"cell\":50,\"nx\":").Append(nx).Append(",\"ny\":").Append(ny).Append(",\"rows\":[");
+        string row = new string('.', ny); for (int k = 0; k &lt; nx; k++) { if (k &gt; 0) rows.Append(','); rows.Append('"').Append(row).Append('"'); }
+        rows.Append("]}");
+        var big = new Grid(JNode.Parse(rows.ToString()));
+        sw.Restart(); a0 = GC.GetAllocatedBytesForCurrentThread();
+        var rt = big.Route(new Pt(100, 100), new Pt(61000, 97000)); sw.Stop(); a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"  Grid.Route on a district-sized grid (616 x 976 m at 0.5 m, open ground, corner to corner): {sw.Elapsed.TotalMilliseconds:0} ms, {(a1 - a0) / 1048576.0:0.0} MB, {rt?.Length} points");
+        // N12 extrapolation: 600 people stepping a path and checking sight to 4 operatives every tick
+        var paths = new List&lt;Suborned.Sim.Path&gt;(); for (int k = 0; k &lt; 600; k++) paths.Add(new Suborned.Sim.Path(new[] { new Pt(k * 10, 0), new Pt(k * 10 + 2000, 3000), new Pt(k * 10 + 4000, 0), new Pt(k * 10 + 6000, 3000) }));
+        var ops = new[] { site.Stand("crew:scout"), site.Stand("crew:fixer"), site.Stand("crew:tech"), site.Stand("crew:enforcer") };
+        int tk = 600; sw.Restart(); long acc = 0;
+        for (int t = 0; t &lt; tk; t++) for (int k = 0; k &lt; 600; k++)
+        {
+            var p = paths[k].At((long)t * 140); acc += p.X;
+            foreach (var op in ops) if (G.Within(p, op, 1300) &amp;&amp; site.Sight(p, op, 160)) acc++;
+        }
+        sw.Stop();
+        Console.WriteLine($"  N12 sketch, 600 people x (step a path + 13 m witness check on 4 operatives) on the block: {sw.Elapsed.TotalMilliseconds * 1000 / tk:0} µs a tick ({acc &amp; 1})");
+    }
+
+    static void CultureDiff(string c)
+    {
+        var i = Engine.FromTexts(Book, People, SiteT); int shown = 0, hashDiff = 0;
+        foreach (var s in Scenarios.All)
+        {
+            var a = Scenarios.Run(i, s);
+            var was = CultureInfo.CurrentCulture; CultureInfo.CurrentCulture = new CultureInfo(c);
+            var b = Scenarios.Run(Engine.FromTexts(Book, People, SiteT), s);
+            var ja = Report.Json(s.Id, a.G, a.Checks, true); var jb = Report.Json(s.Id, b.G, b.Checks, true);
+            CultureInfo.CurrentCulture = was;
+            if (!a.G.Checkpoints.SequenceEqual(b.G.Checkpoints)) hashDiff++;
+            if (ja == jb || shown &gt;= 4) continue;
+            int k = 0; while (k &lt; ja.Length &amp;&amp; k &lt; jb.Length &amp;&amp; ja[k] == jb[k]) k++;
+            Console.WriteLine($"{s.Id} under {c}: checkpoints {(a.G.Checkpoints.SequenceEqual(b.G.Checkpoints) ? "same" : "DIFFER")}; first difference at {k}:");
+            Console.WriteLine("   invariant: ..." + ja.Substring(Math.Max(0, k - 80), Math.Min(140, ja.Length - Math.Max(0, k - 80))));
+            Console.WriteLine("   " + c + ":    ..." + jb.Substring(Math.Max(0, k - 80), Math.Min(140, jb.Length - Math.Max(0, k - 80))));
+            shown++;
+        }
+        Console.WriteLine($"scenarios whose checkpoint hashes differ under {c}: {hashDiff}");
+    }
+
+    static void PreviewCost()
+    {
+        var i = Engine.FromTexts(Book, People, SiteT); var g = Engine.New(i); g.RunTo(100);
+        for (int k = 0; k &lt; 1000; k++) g.Preview("help", "waitress");
+        int n = 20000; long a0 = GC.GetAllocatedBytesForCurrentThread(); var sw = Stopwatch.StartNew();
+        for (int k = 0; k &lt; n; k++) g.Preview("help", "waitress");
+        sw.Stop(); long a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"Preview(help, waitress), temperament unknown, 4 people: {sw.Elapsed.TotalMilliseconds * 1000 / n:0.0} µs and {(a1 - a0) / n} bytes a call");
+        var st = new Start(); st.Known["waitress"] = new List&lt;string&gt; { "routine", "need", "temperament" };
+        var g2 = Engine.New(i, st); g2.RunTo(100); a0 = GC.GetAllocatedBytesForCurrentThread(); sw.Restart();
+        for (int k = 0; k &lt; n; k++) g2.Preview("help", "waitress");
+        sw.Stop(); a1 = GC.GetAllocatedBytesForCurrentThread();
+        Console.WriteLine($"Preview(help, waitress), temperament known: {sw.Elapsed.TotalMilliseconds * 1000 / n:0.0} µs and {(a1 - a0) / n} bytes a call");
+    }
+
+    static void Recursion()
+    {
+        var bad = Rep(Book, "{ \"id\": \"kept\", \"when\": [{ \"k\": \"turned\", \"is\": true }]", "{ \"id\": \"cash-guard\", \"when\": [{ \"k\": \"cash-covers\" }, { \"k\": \"turned\", \"is\": true }], \"changes\": [] },\n    { \"id\": \"kept\", \"when\": [{ \"k\": \"turned\", \"is\": true }]");
+        var i = Engine.FromTexts(bad, People, SiteT);
+        Console.WriteLine("loaded: an outcome conditioned on cash-covers is accepted; playing S10 (Quote -&gt; FirstOutcome -&gt; cash-covers -&gt; Quote ...)");
+        Console.Out.Flush();
+        var r = Scenarios.Run(i, Scenarios.Find("S10")!);
+        Console.WriteLine($"survived: {r.G.Result}");
+    }
+}</pre></details>
+<details><summary>Probe source: ts/schema-probe.ts</summary><pre>// Redline: which of the engine-probe mutations does the TypeScript side (bun test contracts/rules, people) catch?
+const base = process.argv[2]!;
+const { Rulebook, checkRulebook } = await import(`${base}/contracts/rules/rulebook.schema.ts`);
+const { PeopleRules } = await import(`${base}/contracts/people/people.rules.schema.ts`);
+const book = await Bun.file(`${base}/contracts/rules/rulebook.json`).text(), people = await Bun.file(`${base}/contracts/people/people.rules.json`).text();
+const rep = (t: string, a: string, b: string) =&gt; { if (!t.includes(a)) throw new Error('marker ' + a); return t.replace(a, b); };
+const ins = (t: string, a: string, add: string) =&gt; rep(t, a, a + add);
+const cases: [string, string, 'book' | 'people'][] = [
+  ['rulebook: unknown top-level key', ins(book, '{\n', ' "zzz-unknown": 1,\n'), 'book'],
+  ['rulebook: unknown key in values.watch-s', ins(book, '"watch-s": { ', '"vv": 1, '), 'book'],
+  ['rulebook: unknown key in cell', ins(book, '"cell": {', ' "sped": "v:op-speed-cm-s",'), 'book'],
+  ['rulebook: fit typo refusedd', rep(book, '"ask": { "fit": "refused"', '"ask": { "fit": "refusedd"'), 'book'],
+  ['rulebook: reports condition kind mood', rep(book, '"when": [{ "k": "reports-approach" }', '"when": [{ "k": "mood" }'), 'book'],
+  ['rulebook: ladder scale bravry', rep(book, '"job-unexposed": { "add": [{ "scale": "bravery"', '"job-unexposed": { "add": [{ "scale": "bravry"'), 'book'],
+  ['rulebook: temperament in [loyall]', rep(book, '{ "k": "temperament", "in": ["loyal"] }', '{ "k": "temperament", "in": ["loyall"] }'), 'book'],
+  ['rulebook: traceable standing heroo', rep(book, '"debt-cleared": { "standing": "hero"', '"debt-cleared": { "standing": "heroo"'), 'book'],
+  ['rulebook: knownBy scout.lisen', rep(book, '"knownBy": ["scout.listen"]', '"knownBy": ["scout.lisen"]'), 'book'],
+  ['rulebook: loop-s 0', rep(book, '"loop-s": {"v": 62', '"loop-s": {"v": 0'), 'book'],
+  ['rulebook: cash-covers in an outcome', rep(book, '{ "id": "kept", "when": [{ "k": "turned", "is": true }]', '{ "id": "cash-guard", "when": [{ "k": "cash-covers" }, { "k": "turned", "is": true }], "changes": [] },\n    { "id": "kept", "when": [{ "k": "turned", "is": true }]'), 'book'],
+  ['people rules: unknown top-level key', ins(people, '{\n', '  "zzz-unknown": 1,\n'), 'people'],
+  ['people rules: temperament key respondsToo', ins(people, '"idealist": {', ' "respondsToo": [],'), 'people'],
+];
+for (const [what, text, kind] of cases) {
+  let verdict = 'passes';
+  try {
+    const j = JSON.parse(text);
+    if (kind === 'book') { const r = Rulebook.safeParse(j); if (!r.success) verdict = 'REJECTED by the schema'; else { try { const bad = checkRulebook(r.data, PeopleRules.parse(JSON.parse(people))); if (Array.isArray(bad) &amp;&amp; bad.length) verdict = 'REJECTED by checkRulebook'; } catch (e) { verdict = 'REJECTED by checkRulebook (threw)'; } } }
+    else { const r = PeopleRules.safeParse(j); if (!r.success) verdict = 'REJECTED by the schema'; }
+  } catch (e) { verdict = 'error ' + (e as Error).message; }
+  console.log(`  ${verdict.padEnd(28)} ${what}`);
+}</pre></details>
+
+<p class="meta">Handoff: inputs = this page · done-check = each finding closed with a probe rerun, or an Air/IL2CPP run where named · next owner = Aster to assign (Keel: E1-E9, E11, I1-I3; Latch: E10, the Unity side of E1 and E6; Motive and Waymark: the E2 timing rule, E3 bounds and the E8 ruling; Suture: E4 and E7 baselines).</p>
+</main>
+</body>
+</html>
