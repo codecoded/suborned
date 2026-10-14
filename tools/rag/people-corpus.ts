@@ -69,5 +69,11 @@ export function peopleRulesChunks(source: string, text: string): Chunk[] {
   for (const [t, v] of Object.entries(tb.trades as Record<string, any>)) groups.set(`${v.category} allows ${v.allow.join(', ')}`, [...(groups.get(`${v.category} allows ${v.allow.join(', ')}`) ?? []), t]);
   parts.push(['trades and temperaments', [...groups].map(([k, v]) => `${k}: ${v.join(', ')}`).join('\n')]);
   parts.push(['names', `${r.names.pool}\nminimums: ${r.names.minGiven} given, ${r.names.minFamily} family, ${r.names.minOrigins} origins, none over ${r.names.maxOriginShare * 100}%; ${r.names.noEraDate}\norigins: ${r.names.origins.join(', ')}\navoid: ${r.names.avoid.join(', ')}\npinned: ${show(r.names.pinned)}`]);
+  // chunker v5 (brief 010 follow-up): the P1-P5 blocks as chunks of their own, appended after every v4 chunk
+  const k = r.knowledge, m = tb.mix;
+  if (k) parts.push(['knowledge', `${k.rule}\nidentity in play: ${k.identity.join(', ')}; learned by: ${k.learnedBy.join(', ')}; the cell at the start: ${k.cellAtStart}\nneeds known at the start: ${(k.needsKnown as any[]).map(n => `a ${n.position} knows the needs of ${n.of.join(' and ')} (${n.src})`).join('; ')}${k.reason ? `\n${k.reason}` : ''}`]);
+  if (m) parts.push(['mix', `${m.rule}\nrow cap ${m.rowMaxShare * 100}% of a row's weight; a unit of ${m.whenStaffAtLeast}+ staff carries at least ${m.unitMinDistinct} temperaments\n${m.src}${m.reason ? `\n${m.reason}` : ''}`]);
+  parts.push(['introduces', `tie kinds that introduce (a turned contact can introduce the people the tie joins them to): ${Object.entries(r.ties.kinds as Record<string, any>).filter(([, t]) => t.introduces).map(([k2]) => k2).join(', ')}; not: ${Object.entries(r.ties.kinds as Record<string, any>).filter(([, t]) => !t.introduces).map(([k2]) => k2).join(', ')}`]);
+  if (r.person?.readBy) parts.push(['readBy', `every field a simulated person carries names the rule that reads it:\n${Object.entries(r.person.readBy.fields as Record<string, string>).map(([f, v]) => `${f}: ${v}`).join('\n')}\n${r.person.readBy.src}${r.person.readBy.reason ? `\n${r.person.readBy.reason}` : ''}`]);
   return make(source, text, 'people-rules', `People rules (${r.schema}); Motive owns them, the checker enforces them`, r.schema, parts, 'people rules');
 }

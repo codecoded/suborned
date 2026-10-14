@@ -33,12 +33,14 @@ const POSTS: Record<string, Record<string, ['door' | 'inside' | 'bay', number]>>
   trade: { hand: ['inside', 4] }, nightlife: { server: ['door', 4], door: ['door', 1], entertainer: ['inside', 2] }, cinema: { usher: ['door', 3], projectionist: ['inside', 1] },
   lobby: { porter: ['door', 3] }, market: {},
 };
+/** Civic positions that are not the guard: the guard's day starts at the café (GDD §05). */
+const DESK = ['clerk', 'official-driver', 'councillor'];
 const CIVIC: Record<string, ['door' | 'inside' | 'bay', number]> = { clerk: ['inside', 17], guard: ['door', 1.5], 'official-driver': ['bay', 1], councillor: ['inside', 0.5] };
 
 export function standInCast(scope: Scope, rules: Rules): Cast {
   const needs = Object.keys(rules.needs.list).map(need => ({ need, weight: 1 })), tm = Object.keys(rules.temperaments);
   const ties = [{ kind: 'workmate', share: 0.6 }, { kind: 'regular', share: 0.3 }, { kind: 'family', share: 0.2 }, { kind: 'debtor', share: 0.1 }, { kind: 'rival', share: 0.1 }];
-  const worker = (id: string, commute: 'walk' | 'tram', meal: 'on-site' | 'square' | 'none', preShift: 'none' | 'cafe', weight: number) => ({ id, skeleton: 'worker' as const, weight, leaveBeforeMin: [5, 25], commute, meal, preShift, evening: 'home' as const });
+  const worker = (id: string, commute: 'walk' | 'tram', meal: 'on-site' | 'square' | 'none', preShift: 'none' | 'cafe', weight: number, positions?: string[]) => ({ id, skeleton: 'worker' as const, weight, leaveBeforeMin: [5, 25], commute, meal, preShift, evening: 'home' as const, ...(positions ? { positions } : {}) });
   const rows: Row[] = [];
   const seen = new Set<string>();
   for (const u of scope.units as Unit[]) {
@@ -47,9 +49,13 @@ export function standInCast(scope: Scope, rules: Rules): Cast {
       ? Object.entries(CIVIC).filter(([r]) => rules.temperamentsBy.roles[r]?.employer === u.employer).map(([position, [post, weight]]) => ({ position, weight, post }))
       : [...Object.entries(POSTS[u.category] ?? {}).filter(([p]) => positionsOf(rules, u.category).includes(p)).map(([position, [post, weight]]) => ({ position, weight, post })), ...(positionsOf(rules, u.category).includes('keeper') ? [{ position: 'keeper', weight: 1, post: 'door' as const }] : [])];
     const routines = u.kind === 'civic'
-      ? [worker('office-hours', 'walk', 'on-site', 'none', 5), worker('door-guard', 'walk', 'on-site', 'cafe', 2), worker('from-the-tram', 'tram', 'square', 'none', 3)]
+      ? [worker('office-hours', 'walk', 'on-site', 'none', 5, DESK), worker('door-guard', 'walk', 'on-site', 'cafe', 1, ['guard']), worker('from-the-tram', 'tram', 'square', 'none', 3, DESK), worker('guard-from-the-tram', 'tram', 'on-site', 'cafe', 1, ['guard'])]
       : [worker('local', 'walk', 'on-site', 'none', 4), worker('from-the-tram', 'tram', 'square', 'none', 2)];
-    rows.push({ area: u.area, occupation: u.trade, why: `${u.name}: ${u.staffPerShift} staff per shift over ${u.shifts.length} shift(s) (life.json)`, positions, temperaments: tm.map(temperament => ({ temperament, weight: 1 })), needs, ties, routines });
+    // Motive §3 (brief 010): the café server weights debt, the official driver cash; the guards' regular ties run into the café.
+    const lean = (position: string, need: string) => positions.some(p => p.position === position) && needs.some(n => n.need === need) ? [{ need, weight: 6, positions: [position] }] : [];
+    const rowNeeds = [...needs, ...lean('server', 'debt'), ...lean('official-driver', 'cash')];
+    const rowTies = u.kind === 'civic' ? ties.map(t => (t.kind === 'regular' ? { ...t, share: 0.9 } : t)) : ties;
+    rows.push({ area: u.area, occupation: u.trade, why: `${u.name}: ${u.staffPerShift} staff per shift over ${u.shifts.length} shift(s) (life.json)`, positions, temperaments: tm.map(temperament => ({ temperament, weight: 1 })), needs: rowNeeds, ties: rowTies, routines });
   }
   for (const a of [...new Set(scope.homes.map(h => h.area))]) {
     rows.push({ area: a, occupation: 'resident', why: 'residents of the home plots near the block', positions: [{ position: 'resident', weight: 1, post: 'door' }], temperaments: tm.map(temperament => ({ temperament, weight: 1 })), needs, ties: [{ kind: 'family', share: 0.5 }, { kind: 'regular', share: 0.4 }, { kind: 'debtor', share: 0.1 }], routines: [{ id: 'errand-and-evening', skeleton: 'resident', weight: 3, leaveBeforeMin: [0, 0], commute: 'walk', meal: 'none', preShift: 'none', evening: 'square' }, { id: 'errand', skeleton: 'resident', weight: 2, leaveBeforeMin: [0, 0], commute: 'walk', meal: 'none', preShift: 'none', evening: 'home' }] });

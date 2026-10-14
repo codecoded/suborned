@@ -2,16 +2,25 @@
 // source (GDD § or people.rules.json entry) and a failing example in tools/people/test/check.test.ts. The checker holds the
 // cast tables to the same rules as the people (a temperament the occupation does not allow fails the table, not only the person).
 import { Cast as CastSchema } from '../../contracts/people/cast.schema';
-import { People as PeopleSchema, type Person } from '../../contracts/people/people.schema';
+import { People as PeopleSchema, Person as PersonSchema, type Person } from '../../contracts/people/people.schema';
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
 import { expand, inShift, rowOf, type Ctx } from './expand';
 import { castHandover, type MissionIn } from './handover';
+import { deriveKnowledge } from './knowledge';
+import { pinnedByRole } from './roles';
 import { positionsOf } from './rules';
 import type { Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
 
 export const GROUP = 'People';
+const PersonShape = PersonSchema.shape as Record<string, unknown>;
+/** The rule (a key of people.rules.json person.readBy.fields) that reads each field a person carries. A "~" names a field that no
+ *  rule reads but the tools do (an id, a look key): it is not a fact about the person. */
+export const FIELD_READER: Record<string, string> = {
+  id: '~key: the person\'s key; no rule reads it', tier: '~tiers: rules tiers.simulated (background people are counts, not persons)', name: 'name', temperament: 'temperament', need: 'need',
+  institution: 'temperament', start: 'scales', memory: 'memory', ties: 'ties', routine: 'routine', home: 'routine', work: 'routine', look: '~look: the graybox job colour (brief 010 E), no rule reads it',
+};
 export const RULES_SRC: Record<string, string> = {
   'P-0': 'GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope\'s area × occupation pairs, and only those',
   'P-1': 'GDD §09 people checked by: reach their places; plan standards.walking (walk graph)',
@@ -19,10 +28,13 @@ export const RULES_SRC: Record<string, string> = {
   'P-3': 'people.rules.json temperaments, needs, ties, positions, temperamentsBy: anything not in the file is rejected',
   'P-4': 'life.json generator.occupations staffPerUnit, shifts; rules positions (one keeper per unit)',
   'P-5': 'brief 008 rule CD-1 (keep-clear zones of the civic block dressing)',
-  'P-6': 'GDD §07 the Handover: its roles are cast from the city\'s people (brief 010 D)',
+  'P-6': 'GDD §07 the Handover: its roles, with their need, approach and regularOf, are cast from the city\'s people by the same casting as M-2 (brief 010 D; Motive §3)',
   'P-7': 'people.rules.json ties (kinds, limits, direction, between)',
   'P-8': 'people.rules.json names (pool, pattern, origins, avoid, unique, pinned); GDD §15 no era date',
   'P-9': 'GDD §01/§09 same orders → same result; rules person.memoryAtStart, tiers',
+  'P-10': 'people.rules.json temperamentsBy.mix (P3): no temperament over rowMaxShare of a cast row; a unit of whenStaffAtLeast staff or more carries unitMinDistinct temperaments; GDD §09 risk: sameness',
+  'P-11': 'people.rules.json knowledge (P5): a keeper\'s needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08',
+  'P-12': 'people.rules.json person.readBy (P2): every field a person carries names the rule that reads it; GDD §09 risk: sameness (Legion\'s bios did nothing)',
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
 const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.value ?? (r.bad.length ? `${r.bad.length} fault(s)` : 'ok'), limit: r.limit ?? '0 faults', ok: !r.bad.length, ...(r.bad.length ? { detail: r.bad.slice(0, 12).join('; ') + (r.bad.length > 12 ? `; +${r.bad.length - 12} more` : '') } : {}), source: RULES_SRC[r.id] });
@@ -108,7 +120,11 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
           else if (!al.some(a => a!.includes(t.temperament as never))) bad.push(`${key}: no position of the row may be ${t.temperament}`);
         }
       }
-      for (const n of r.needs) if (!needs.includes(n.need)) bad.push(`${key}: need ${n.need} is not in the rules`);
+      for (const n of r.needs) {
+        if (!needs.includes(n.need)) bad.push(`${key}: need ${n.need} is not in the rules`);
+        for (const x of n.positions ?? []) if (!r.positions.some(p => p.position === x) && x !== 'keeper') bad.push(`${key}: need ${n.need} names position ${x}, which the row does not have`);
+      }
+      for (const v of r.routines) for (const x of v.positions ?? []) if (!r.positions.some(p => p.position === x) && x !== 'keeper') bad.push(`${key}: routine ${v.id} names position ${x}, which the row does not have`);
       for (const t of r.ties) if (!kinds.includes(t.kind)) bad.push(`${key}: tie kind ${t.kind} is not in the rules`);
       for (const p of r.positions) {
         const okPos = u ? (u.kind === 'civic' ? rules.temperamentsBy.roles[p.position]?.employer === u.employer : positionsOf(rules, u.category).includes(p.position)) : p.position === 'resident';
@@ -168,8 +184,8 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
   }
 
   // P-6 the Handover casts its roles
-  const handover = mission ? castHandover(P, scope, mission, plan) : [];
-  out.push({ id: 'P-6', rule: 'The Handover can cast every role it names (waitress, driver, guard, Vale\'s office)', bad: mission ? handover.filter(h => !h.ok).map(h => `${h.role}: ${h.why}`) : ['no mission to cast'], value: `${handover.filter(h => h.ok).length}/${handover.length} roles`, limit: 'all roles' });
+  const handover = mission ? castHandover(P, scope, mission, plan, rules) : [];
+  out.push({ id: 'P-6', rule: 'The Handover can cast every role it names (waitress, driver, guard, Vale\'s office), each with its need, approach and regularOf', bad: mission ? handover.filter(h => !h.ok).map(h => `${h.role}: ${h.why}`) : ['no mission to cast'], value: `${handover.filter(h => h.ok).length}/${handover.length} roles`, limit: 'all roles' });
 
   // P-7 ties
   {
@@ -191,7 +207,7 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
         const w = (a: Person, b: Person) => a.work && b.work;
         if (spec.between === 'same-employer' && !(w(p, q) && p.work!.employer === q.work!.employer)) bad.push(`${p.id}: workmate ${q.id} has another employer`);
         if (spec.between === 'same-trade-or-employer' && !(w(p, q) && (p.work!.trade === q.work!.trade || p.work!.employer === q.work!.employer))) bad.push(`${p.id}: rival ${q.id} shares no trade or employer`);
-        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => s.place === q.work!.place && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
+        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && s.place === scope.cafe)) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
       }
       for (const k of Object.keys(T)) if (p.ties.filter(t => t.kind === k).length > T[k as keyof typeof T].maxPerPerson) bad.push(`${p.id}: more than ${T[k as keyof typeof T].maxPerPerson} ${k} ties`);
     }
@@ -227,9 +243,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       if (ids.has(p.id)) bad.push(`${p.id}: id used twice`);
       ids.add(p.id);
     }
-    for (const pin of n.pinned) {
+    const byRole = pinnedByRole(P, mission ? { scope, mission, plan } : undefined, rules);
+    for (const [i, pin] of n.pinned.entries()) {
       const hit = P.filter(p => p.work?.employer === pin.employer && (pin.position ? p.work.position === pin.position : p.work.role === pin.role) && p.name.split(' ')[pin.part === 'given' ? 0 : 1] === pin.name);
       if (hit.length !== 1) bad.push(`pinned ${pin.part} name ${pin.name}: ${hit.length} people carry it as ${pin.position ?? pin.role} of ${pin.employer}, expected 1`);
+      const r = byRole[i]!;
+      if (!r.who) bad.push(`pinned ${pin.part} name ${pin.name}: the Handover casts nobody in the role (${r.why})`);
+      else if (hit.length === 1 && hit[0]!.id !== r.who) bad.push(`pinned ${pin.part} name ${pin.name} sits on ${hit[0]!.id}, but the Handover casts ${r.who} as ${r.role}`);
     }
     out.push({ id: 'P-8', rule: 'Names come from one district pool of mixed origins, with no era, unique, and the pinned names present once', bad: [...new Set(bad)], value: `${P.length} names`, limit: 'rules names' });
   }
@@ -243,6 +263,56 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     for (const p of P) if (p.memory.length) bad.push(`${p.id}: memory is not empty at the start`);
     for (const b of people.background) if (b.simulated > b.residents) bad.push(`${b.plot}: more simulated people than residents`);
     out.push({ id: 'P-9', rule: 'The expansion is valid, empty of memory, and byte-identical twice', bad, value: `${P.length} people`, limit: 'deterministic' });
+  }
+
+  // P-10 mix (P3)
+  {
+    const bad: string[] = [], mix = rules.temperamentsBy.mix;
+    for (const r of cast.rows) {
+      const total = r.temperaments.reduce((n, t) => n + t.weight, 0), by = new Map<string, number>();
+      for (const t of r.temperaments) by.set(t.temperament, (by.get(t.temperament) ?? 0) + t.weight);
+      for (const [t, w] of by) if (total > 0 && w / total > mix.rowMaxShare + 1e-9) bad.push(`${r.area}/${r.occupation}: ${t} is ${Math.round((100 * w) / total)}% of the row, limit ${Math.round(mix.rowMaxShare * 100)}%`);
+    }
+    let units = 0;
+    for (const u of scope.units) {
+      const here = P.filter(p => p.work?.unit === u.id);
+      if (here.length < mix.whenStaffAtLeast) continue;
+      units++;
+      const kinds = new Set(here.map(p => p.temperament));
+      if (kinds.size < mix.unitMinDistinct) bad.push(`${u.id}: ${here.length} staff but ${kinds.size} temperament(s) (${[...kinds].join(', ')}), rules ${mix.unitMinDistinct}`);
+    }
+    out.push({ id: 'P-10', rule: 'No temperament over the row cap; a unit of 3+ staff carries 2 or more temperaments', bad, value: `${cast.rows.length} rows, ${units} units`, limit: `row ≤ ${Math.round(mix.rowMaxShare * 100)}%, unit ≥ ${mix.unitMinDistinct} kinds` });
+  }
+
+  // P-11 knowledge at the start (P5)
+  {
+    const bad: string[] = [], k = rules.knowledge, kn = people.knowledge, want = deriveKnowledge(rules, P), byId = new Map(P.map(p => [p.id, p]));
+    if (!kn) bad.push('the people carry no knowledge block');
+    else {
+      if (JSON.stringify(kn) !== JSON.stringify(want)) bad.push('the knowledge block is not the one derived from the rules and the ties');
+      if (kn.cellAtStart !== k.cellAtStart || JSON.stringify(kn.identity) !== JSON.stringify(k.identity)) bad.push(`the cell must be known as ${k.identity.join('/')} and ${k.cellAtStart} else at the start`);
+    }
+    if (k.identity.length !== 1 || k.identity[0] !== 'face') bad.push(`the rules put ${k.identity.join('/')} in play, the cell is known by face only (Sky Q1)`);
+    for (const e of want.needsKnown) for (const id of e.knows) if (!byId.has(id)) bad.push(`${e.keeper} would know the need of ${id}, who is not in the cast`);
+    for (const p of P) if (p.memory.length) bad.push(`${p.id}: knows something at the start`);
+    out.push({ id: 'P-11', rule: 'A keeper\'s known needs derive from ties; the cell is known by face only and nothing else at the start', bad, value: `${want.needsKnown.length} keepers know ${want.needsKnown.reduce((n, e) => n + e.knows.length, 0)} needs`, limit: 'derived; cell: face only' });
+  }
+
+  // P-12 every field a person carries names the rule that reads it (P2)
+  {
+    const bad: string[] = [], readers = Object.keys(rules.person.readBy.fields), carries = rules.tiers.simulated.carries;
+    for (const f of carries) if (!readers.includes(f)) bad.push(`${f} is carried but no rule reads it`);
+    for (const f of readers) if (!carries.includes(f)) bad.push(`${f} is read but not carried`);
+    const shape = Object.keys(PersonShape), seen = new Set<string>();
+    for (const f of shape) {
+      const to = FIELD_READER[f];
+      if (!to) bad.push(`field ${f} of a person has no named reader (add it to FIELD_READER with the rule that reads it)`);
+      else if (!to.startsWith('~') && !readers.includes(to)) bad.push(`field ${f} is read by ${to}, which people.rules.json person.readBy does not list`);
+    }
+    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f)) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
+    for (const p of P) for (const f of Object.keys(p)) if (!shape.includes(f) && !seen.has(f)) { seen.add(f); bad.push(`${p.id} carries ${f}, which the schema does not list`); }
+    for (const b of people.background as Record<string, unknown>[]) for (const f of ['name', 'temperament', 'need', 'ties']) if (f in b) bad.push(`background ${b.plot} carries ${f}`);
+    out.push({ id: 'P-12', rule: 'Every field a person carries names the rule that reads it', bad: [...new Set(bad)], value: `${shape.length} fields`, limit: 'each read by a rule' });
   }
   const checks = out.map(row);
   void rowOf; void (null as unknown as Unit);

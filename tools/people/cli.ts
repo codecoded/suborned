@@ -1,4 +1,4 @@
-// usage: bun run people [--scope civic-block] [--cast <cast.json>] [--plan <plan.json>] [--rules <file>] [--out <file>]
+// usage: bun run people [--scope civic-block] [--cast <cast.json>] [--plan <plan.json>] [--rules <file>] [--out <file>] [--review [<file>]]
 // Cast tables + plan + civic block + life.json + people rules → out/people/<plan id>.people.json, then the checker (P-rules); exit 1 on any fault.
 // Without --cast the cast tables are the stand-in's (tools/people/standin.ts): a valid cast, not a good one. Same inputs, same bytes.
 import { mkdir } from 'node:fs/promises';
@@ -9,9 +9,13 @@ import { checkPeople } from './check';
 import { expand } from './expand';
 import { readTexts, world } from './inputs';
 import { standInCast } from './standin';
+import { reviewHtml } from './review';
 
 const argv = process.argv.slice(2), opt = (k: string) => { const i = argv.indexOf(k); return i < 0 ? undefined : argv[i + 1]; };
-const KNOWN = ['--scope', '--cast', '--plan', '--rules', '--out'];
+// --review [<file>]: also write the review page (default out/review/010-cast.html)
+const KNOWN = ['--scope', '--cast', '--plan', '--rules', '--out', '--review'];
+const FLAGS = ['--review']; // takes no value
+void FLAGS;
 for (const a of argv.filter(x => x.startsWith('--'))) if (!KNOWN.includes(a)) { console.error(`unknown option ${a}; known: ${KNOWN.join(' ')}`); process.exit(2); }
 const planFile = opt('--plan') ?? 'contracts/world/harbour-district.plan.json';
 const w = world(await readTexts(planFile, { rules: opt('--rules') }), opt('--scope') ?? 'civic-block');
@@ -22,4 +26,11 @@ await mkdir(dirname(out), { recursive: true });
 await Bun.write(out, JSON.stringify(gen.people, null, 1) + '\n');
 for (const c of checked.checks) console.log(`${c.ok ? 'ok  ' : 'FAIL'} ${c.id}  ${c.rule}: ${c.value}${c.ok ? '' : `\n       ${c.detail}`}`);
 console.log(`${checked.counts.persons} people, ${checked.counts.units} units → ${out}${castFile ? '' : ' (stand-in cast)'}`);
+const ri = argv.indexOf('--review');
+if (ri >= 0) {
+  const next = argv[ri + 1], file = resolve(root, next && !next.startsWith('--') ? next : 'out/review/010-cast.html');
+  await mkdir(dirname(file), { recursive: true });
+  await Bun.write(file, reviewHtml(ctx, gen.people, checked.checks, castFile ? `cast ${castFile}` : 'stand-in cast'));
+  console.log(`review page → ${file}`);
+}
 process.exit(checked.ok ? 0 : 1);

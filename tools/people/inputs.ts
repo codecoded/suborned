@@ -28,5 +28,5 @@ export function world(t: Texts, scopeName: string): World {
   const d = derive(plan), { scope, civ } = buildScope(plan, block, life, rules, scopeName, d);
   const walk = walker(plan, d, civ, scope.places.map(p => p.at as V), scope.speed);
   const hashes = (cast: string) => ({ cast, life: sha256(t.life), block: sha256(t.block), rules: sha256(t.rules) });
-  return { plan, scope, rules, mission, hashes, ctx: cast => ({ scope, rules, cast, walk, planId: plan.id, planVersion: plan.version, atMin: startMin(mission), hashes: hashes(sha256(JSON.stringify(cast))) }) };
+  return { plan, scope, rules, mission, hashes, ctx: cast => ({ scope, rules, cast, walk, planId: plan.id, planVersion: plan.version, atMin: startMin(mission), hashes: hashes(sha256(JSON.stringify(cast))), casting: { scope, mission, plan } }) };
 }

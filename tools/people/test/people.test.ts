@@ -9,6 +9,9 @@ import { readTexts, world, type World } from '../inputs';
 import { castHandover } from '../handover';
 import { standInCast } from '../standin';
 import { buildScope, shiftsOf } from '../scope';
+import { deriveKnowledge } from '../knowledge';
+import { pinnedByRole } from '../roles';
+import { requirements, reviewHtml, stepWord } from '../review';
 
 let w: World, ctx: Ctx, gen: ReturnType<typeof expand>;
 const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x));
@@ -106,9 +109,84 @@ describe('checker', () => {
   });
 });
 
+describe('mix, knowledge and fields read (P3, P5, P2)', () => {
+  test('P-10: a row with one temperament over 60% fails, and so does a unit of 3+ staff of one kind', () => {
+    const cast = clone(ctx.cast), row = cast.rows.find(r => r.occupation === 'diner')!;
+    row.temperaments = [{ temperament: 'idealist', weight: 9 }, { temperament: 'mercenary', weight: 1 }];
+    const bad = checkPeople({ ...ctx, cast }, w.mission, w.plan).checks.find(x => x.id === 'P-10')!;
+    expect(bad.ok).toBe(false); expect(bad.detail).toContain('records/diner: idealist is 90% of the row');
+    const p = clone(gen.people); for (const q of p.persons.filter(q => q.work?.unit === 'cafe')) q.temperament = 'mercenary';
+    expect(failed(p)).toContain('P-10');
+  });
+  test('P-10: the expander repairs a unit that the draw left with one kind', () => {
+    const cast = clone(ctx.cast), row = cast.rows.find(r => r.occupation === 'diner')!;
+    row.temperaments = [{ temperament: 'mercenary', weight: 99 }, { temperament: 'idealist', weight: 1 }]; // far over the cap: the draw alone gives one kind
+    const g = expand({ ...ctx, cast }), cafe = g.people.persons.filter(q => q.work?.unit === 'cafe');
+    expect(new Set(cafe.map(q => q.temperament)).size).toBeGreaterThanOrEqual(2);
+  });
+  test('P-11: the keeper\'s known needs derive from workmate and regular ties; the cell is face only', () => {
+    expect(gen.people.knowledge).toEqual(deriveKnowledge(w.rules, gen.people.persons));
+    const cafe = gen.people.knowledge!.needsKnown.find(k => gen.people.persons.find(q => q.id === k.keeper)!.work!.unit === 'cafe')!;
+    expect(cafe.knows.length).toBeGreaterThan(0);
+    expect(gen.people.knowledge).toMatchObject({ cellAtStart: 'nothing', identity: ['face'] });
+    const p = clone(gen.people); p.knowledge!.needsKnown[0]!.knows.push('p-cafe-01');
+    expect(failed(p)).toContain('P-11');
+    const q = clone(gen.people); delete q.knowledge;
+    expect(failed(q)).toContain('P-11');
+  });
+  test('P-12: a field no rule reads fails', () => {
+    const p = clone(gen.people); (p.persons[0] as Record<string, unknown>).bio = 'grew up by the docks';
+    expect(failed(p)).toContain('P-12');
+  });
+});
+
+describe('names are given by role, not by luck', () => {
+  test('Inez and Vale are the people the Handover casts in those roles', () => {
+    const by = pinnedByRole(gen.people.persons, ctx.casting, w.rules), names = w.rules.names.pinned;
+    expect(by.every(x => x.who)).toBe(true);
+    for (const [i, x] of by.entries()) expect(gen.people.persons.find(q => q.id === x.who)!.name.split(' ')[names[i]!.part === 'given' ? 0 : 1]).toBe(names[i]!.name);
+    expect(by.map(x => x.role)).toEqual(['waitress', 'councillor']);
+  });
+  test('a mission that pins another waitress moves the name to her (it breaks if the expander goes back to choosing by order)', () => {
+    const cast = castHandover(gen.people.persons, w.scope, w.mission, w.plan, w.rules), other = cast[0]!.who.find(id => id !== cast[0]!.pinned)!;
+    expect(other).toBeTruthy();
+    const mission = clone(w.mission); mission.roles.find(r => r.id === 'waitress')!.pin = other;
+    const c = { ...ctx, casting: { ...ctx.casting!, mission } }, g = expand(c);
+    expect(g.people.persons.find(q => q.name.startsWith('Inez '))!.id).toBe(other);
+    expect(g.people.persons.filter(q => q.name.startsWith('Inez '))).toHaveLength(1);
+    expect(g.gaps).toEqual([]);
+    expect(checkPeople(c, mission, w.plan, g).ok).toBe(true);
+  });
+  test('P-8: a pinned name on someone the Handover does not cast fails', () => {
+    const p = clone(gen.people), a = p.persons.find(q => q.name.startsWith('Inez '))!, b = p.persons.find(q => q.work?.position === 'server' && q.id !== a.id)!;
+    const t = a.name; a.name = b.name; b.name = t;
+    expect(failed(p)).toContain('P-8');
+  });
+});
+
+describe('cast requirements and the review page', () => {
+  test('the stand-in meets the Handover\'s cast requirements, read from the mission', () => {
+    const r = requirements(ctx, gen.people);
+    expect(r.filter(x => !x.ok)).toEqual([]);
+    expect(r.map(x => x.id)).toEqual(expect.arrayContaining(['waitress-weights-debt', 'driver-weights-cash', 'guard-regular-of-cafe', 'keeper-cafe']));
+  });
+  test('a cast that weights nothing for the role\'s need does not', () => {
+    const cast = clone(ctx.cast);
+    for (const r of cast.rows) r.needs = r.needs.filter(n => n.need !== 'debt');
+    const g = expand({ ...ctx, cast }), r = requirements({ ...ctx, cast }, g.people);
+    expect(r.find(x => x.id === 'waitress-weights-debt')!.ok).toBe(false);
+  });
+  test('the page shows step words, can introduce and knows the needs of, byte-identically', () => {
+    const checks = checkPeople(ctx, w.mission, w.plan, gen).checks, html = reviewHtml(ctx, gen.people, checks, 'test');
+    expect(html).toBe(reviewHtml(ctx, gen.people, checks, 'test'));
+    for (const m of ['Can introduce:', 'Knows the needs of:', 'informant', stepWord(w.rules, 'fear', 0), 'Inez ', 'Cast requirements']) expect(html).toContain(m);
+    expect(html).not.toContain('NOT MET'); expect(html).not.toContain('FAIL');
+  });
+});
+
 describe('the Handover', () => {
   test('casts a waitress at the café at the mission start, the driver at the bay, the guard at the Office door, and Vale\'s office', () => {
-    const c = castHandover(gen.people.persons, w.scope, w.mission, w.plan);
+    const c = castHandover(gen.people.persons, w.scope, w.mission, w.plan, w.rules);
     expect(c.map(x => `${x.role}:${x.ok}`)).toEqual(['waitress:true', 'driver:true', 'guard:true', 'councillor:true']);
     const inez = gen.people.persons.filter(p => p.name.startsWith('Inez '));
     expect(inez).toHaveLength(1);

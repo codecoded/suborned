@@ -4,16 +4,20 @@
 import type { V } from '../plan/geom';
 import { toPlanFn } from '../plan/civic';
 import type { Person } from '../../contracts/people/people.schema';
-import { castRoles, type Cast, type CastMission } from '../missions/handover/cast';
+import { castRoles, type Cast, type CastMission, type CastRules } from '../missions/handover/cast';
 import type { Scope } from './scope';
 
 export type { Cast };
 export type MissionIn = CastMission & { destinations: { name: string; at: [number, number]; surface: string }[] };
 export const startMin = (m: { clock: { startsAt: string } }) => { const [h, mi] = m.clock.startsAt.split(':').map(Number); return h! * 60 + mi!; };
 
-/** Who the Handover can place in each role the mission names (P-6: employer, position, shift, place). The role's need, approach
- *  and regularOf are M-2's (the overlay passes the rules); here they are not read, so a stand-in cast still passes P-6. */
-export function castHandover(persons: Person[], scope: Scope, mission: MissionIn, plan: { civic: unknown }): Cast[] {
+/** What the roles read of the people rules (temperament refusals, each need's approaches). */
+export const castRulesOf = (r: { temperaments: Record<string, { refuses: readonly string[] }>; needs: { list: Record<string, { metBy: readonly string[] }> } }): CastRules => ({ temperaments: r.temperaments, needs: r.needs.list });
+
+/** Who the Handover casts for each role the mission names (P-6, the same casting as M-2): employer, position, shift and place, and
+ *  the role's need, approach and regularOf under `rules`. Without `rules` only the place counts (a fallback for naming a
+ *  cast that cannot meet the conditions; the checker never uses it). */
+export function castHandover(persons: Person[], scope: Scope, mission: MissionIn, plan: { civic: unknown }, rules?: Parameters<typeof castRulesOf>[0]): Cast[] {
   const at = new Map(scope.places.map(p => [p.id, p.at as V])), plot = new Map(scope.places.map(p => [p.id, p.plot]));
-  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id], plotOf: id => plot.get(id) });
+  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id], plotOf: id => plot.get(id) }, rules && castRulesOf(rules));
 }

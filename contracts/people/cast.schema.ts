@@ -23,6 +23,7 @@ export const Routine = z.object({
   meal: z.enum(['none', 'on-site', 'square']).describe('where the mid-shift meal is: at work, at a seat in the square, or none'),
   preShift: z.enum(['none', 'cafe']).describe('a stop at the café before the shift (the guard\'s, GDD §05)'),
   evening: z.enum(['home', 'square']).describe('after the shift: straight home, or an hour in the square'),
+  positions: z.array(word).max(8).optional().describe('only these positions of the row take this variant (the guard\'s café stop is the guard\'s, not the clerk\'s); absent: every position'),
 });
 
 export const Tie = z.object({
@@ -35,7 +36,7 @@ export const Row = z.object({
   why: prose(300).describe('what the row rests on in the unit\'s trade, hours and staff'),
   positions: z.array(Position).min(1).max(8),
   temperaments: z.array(z.object({ temperament: word, weight })).min(1).max(4),
-  needs: z.array(z.object({ need: word, weight })).min(1).max(9),
+  needs: z.array(z.object({ need: word, weight, positions: z.array(word).max(8).optional().describe('only these positions of the row are drawn this weight (the café server weights debt, the driver cash); absent: every position') })).min(1).max(12),
   ties: z.array(Tie).max(5),
   routines: z.array(Routine).min(1).max(4),
 });

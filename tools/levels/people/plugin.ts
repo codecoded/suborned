@@ -1,6 +1,6 @@
 // The people objective (brief 010 B), a plug-in of the generation engine (tools/gen), copied from the skyline template:
 // Pulse proposes the cast tables for a scope of the city, tools/people expands them into individuals and the people checker
-// (P-0..P-9) holds both to the people rules, Keel critiques a cast that passed, faults go back to Pulse. The model writes
+// (P-0..P-12) holds both to the people rules, Keel critiques a cast that passed, faults go back to Pulse. The model writes
 // mixes; code makes the people. No model call is needed to run it end to end (--preview answers with a stand-in cast).
 import { z } from 'zod';
 import type { Fault, Plugin } from '../../gen/plugin';
@@ -8,6 +8,7 @@ import { writeJson } from '../../rag/config';
 import { expand } from '../../people/expand';
 import { readTexts, world, type Texts, type World } from '../../people/inputs';
 import { standInCast } from '../../people/standin';
+import { requirements } from '../../people/review';
 import { SCOPES } from '../../people/scope';
 import { pinPlan, readPlan } from '../pins';
 import { recordPeople, peopleLedger, peopleLedgerFile } from './drift';
@@ -73,7 +74,7 @@ export const peoplePlugin: Plugin<State> = {
         return `Task: judge the cast tables.\nObjective under test: ${OBJECTIVE}\n\n`
           + `Output schema (JSON): ${j(z.toJSONSchema(agents.pulse))}\n\n`
           + `${scopeView(s.w)}\n\nPeople checker report on the cast and the people it expands to:\n${checked.checks.map(c => `${c.ok ? 'ok  ' : 'FAIL'} ${c.id} ${c.rule}: ${c.value}${c.ok ? '' : ` | ${c.detail}`}`).join('\n')}\n\n`
-          + `Who the expansion made (temperaments per row):\n${castSummary(s.w, people)}\n\nHandover casting: ${checked.handover.map(h => `${h.role} ${h.ok ? 'ok' : 'NOT CAST'} (${h.why})`).join('; ')}\n\n`
+          + `Who the expansion made (temperaments per row):\n${castSummary(s.w, people)}\n\nHandover cast requirements (Motive §3):\n${requirements(s.w.ctx(out.cast), people).map(q => `${q.ok ? 'met    ' : 'NOT MET'} ${q.need}: ${q.detail}`).join('\n')}\n\nHandover casting: ${checked.handover.map(h => `${h.role} ${h.ok ? 'ok' : 'NOT CAST'} (${h.why})`).join('; ')}\n\n`
           + `Candidate cast tables (JSON): ${j(out)}\n\n`
           + `What the builder retrieved and cites. Code has already checked that every cited id was retrieved by its own call: raise no fault for citation membership. Judge whether the claims are true to the cited text:\n${cited}${revision}`;
       },
