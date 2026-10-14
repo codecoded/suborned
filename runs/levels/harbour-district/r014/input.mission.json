@@ -1,0 +1,305 @@
+{
+ "schema": "suborned.mission/3",
+ "id": "handover",
+ "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "status": {
+  "state": "preserved",
+  "adjustable": ["timings", "placements"],
+  "note": "Sky 2026-10-14: the Handover mission is kept; its timings and placements can be adjusted now the world is regenerated (plan v0.2.0). Until Sky has walked the world and set them, the offsets are GDD §07's and the destinations, crew and routes are the ones moved out of the world but for the four door points re-sited to the Records Office tower faces and one rename (2026-10-14, see note; the lock in mission.test.ts declares each), checked only by the overlay (C-3, M-1, W-1, W-4). Brief 003 stays on hold for that."
+ },
+ "clock": {
+  "unit": "m:ss",
+  "scale": "1 mission s = 1 day s (life.clock.scale): day time = startsAt + offset. This is the only day time in the file.",
+  "startsAt": "17:24:30",
+  "provisional": false,
+  "band": "peak",
+  "src": "Sky's ruling 2026-10-15 (clock.ruling): the 5:30 handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less 5:30. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
+  "transit": "17:24:30 = 62670 s, 30 s past a multiple of 120, 180 and 240 (62640 s). With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line left its first stop 30 s before mission 0:00; the next forward departures are 1:30 (S1), 2:30 (T1) and 3:30 (T2). Under the old 17:00 start every line left at 0:00 (removed life.transit.schedule: '17:00 = 61200 s is a multiple of 120, 180 and 240').",
+  "ruling": {
+   "by": "Sky",
+   "on": "2026-10-15",
+   "what": "The 5:30 chime is the Office's real 17:30 shift end, so the mission starts at 17:24:30 city time (relayed by Aster after Suture's review of r013, briefs/010/review/suture-2026-10-15.md). It settles the contradiction the removed data left: 17:00 (chime 17:05:30, from life.clock.mission.startsAt and life.clock.anchors[2]) against 17:24:30 (chime 17:30, from life.events.list[0] '(17:30 day)' and life.generator.civicEmployers[0].shiftEnd).",
+   "was": "17:00"
+  }
+ },
+ "timeline": [
+  {
+   "at": "0:00",
+   "what": "Vale inside; routines run; cell at getaway car",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'Vale inside; routines run'. 'cell at getaway car' is §07's and was missing from the anchors."
+  },
+  {
+   "at": "3:10",
+   "what": "rival car parks near pickup",
+   "src": "GDD §07"
+  },
+  {
+   "at": "5:30",
+   "what": "handover chime",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. Since Sky's ruling (clock.ruling) the chime is the Office's 17:30 shift end. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
+  },
+  {
+   "at": "5:40",
+   "what": "last chance to turn driver",
+   "src": "GDD §07"
+  },
+  {
+   "at": "5:50",
+   "what": "Vale exits north (service lane if driver turned)",
+   "src": "GDD §07",
+   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faces north to the square. Not re-sited here."
+  },
+  {
+   "at": "6:10",
+   "what": "Vale at car",
+   "src": "GDD §07",
+   "note": "Not in the removed anchors (Pulse, life.json v0.2.0 review, flag F10); added from §07."
+  },
+  {
+   "at": "8:00",
+   "what": "rivals take Vale or car leaves = over",
+   "src": "GDD §07"
+  }
+ ],
+ "events": [
+  {
+   "id": "records-handover",
+   "area": "records",
+   "at": "5:30",
+   "windowS": 300,
+   "surge": 1.8,
+   "who": "Records Office staff leave by the front and service doors toward T1/records and the Circus",
+   "src": "GDD §07 (chime at 5:30); surge [S]; window and who have no source",
+   "note": "Removed life.events.list[0], src 'GDD §07', at '17:05:30 mission clock (17:30 day)'. §07 gives only the chime time. The removed events.src tags the surge '[S] surge numbers'; windowS and who are not in §07 and carried no source of their own. The 300 s window runs to 10:30, past the 8:00 close."
+  }
+ ],
+ "stands": [
+  {
+   "what": "Vale official car",
+   "where": "Records Office north",
+   "src": "GDD §07",
+   "note": "Removed life.traffic.rules[3]: 'Vale official car per GDD §07 stands at the Records Office north'. §07 names the official car, 'Vale exits north' and 'Vale at car' (6:10); it gives no stand and no arrival time. As sited, the official bay (destination Official drop-off) is on the Records Office's south kerb, Apron Road: see timeline 5:50."
+  }
+ ],
+ "roles": [
+  {
+   "id": "waitress",
+   "what": "Inez: a café server at the café door for the whole mission",
+   "employer": "cafe",
+   "position": "server",
+   "at": "Café door",
+   "near": 4,
+   "shift": { "from": "0:00", "to": "8:00" },
+   "need": "debt",
+   "approach": "help",
+   "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
+   "note": "In place at the café entrance from 0:00 to 8:00 (17:24:30-17:32:30): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+  },
+  {
+   "id": "driver",
+   "what": "the councillor's official driver, at the official bay until the councillor reaches it",
+   "employer": "records-office",
+   "role": "official-driver",
+   "at": "Meet driver",
+   "shift": { "from": "0:00", "to": "5:30" },
+   "need": "cash",
+   "approach": "help",
+   "tiedTo": [{ "kind": "workmate", "role": "councillor", "cast": true }],
+   "waitsFor": "councillor",
+   "src": "GDD §07 cast: the driver (pickup, needs cash), route B: Scout watches car (48 s), Fixer turns driver before 5:40 ($40,000; Help, the purse $80,000 = Inez + driver), fail 'Vale leaves in official car'; brief 010 D; Motive §3, Sky Q4; Suture 2026-10-15 §3",
+   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`. The window is the driver's shift at the bay to the chime (5:30 = 17:30); waitsFor holds the driver there past it until the cast councillor's leavesTo stop begins, which covers 5:40, the last chance to turn. tiedTo: the driver is the councillor's own (a workmate tie to the councillor cast); people.rules.json has no 'drives for' tie, and workmate (both ways, same employer) is the closest it offers."
+  },
+  {
+   "id": "guard",
+   "what": "the outgoing Records Office guard, alone on the public door in route A's entry window",
+   "employer": "records-office",
+   "role": "guard",
+   "at": "Office entrance",
+   "near": 4,
+   "shift": { "from": "2:24", "to": "5:30" },
+   "regularOf": "cafe",
+   "tiedTo": [{ "kind": "regular", "role": "waitress" }],
+   "alone": true,
+   "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; fail 'entry seen by guard'; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3; Suture 2026-10-15 §3",
+   "note": "The entry window (windows front-door): from 2:24, the earliest call (§07 Scout listens to Inez 1:34, then Help, people.rules.json approaches.help.timeS 50 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
+  },
+  {
+   "id": "councillor",
+   "what": "Councillor Vale: a councillor inside the Records Office until the chime, who then leaves for the official bay",
+   "employer": "records-office",
+   "role": "councillor",
+   "shift": { "from": "0:00", "to": "5:30" },
+   "leavesTo": { "at": "Meet driver", "by": "6:10" },
+   "src": "GDD §07 cast: Councillor Vale; schedule 0:00 Vale inside, 5:50 Vale exits north (service lane if driver turned), 6:10 Vale at car; brief 010 D; Suture 2026-10-15 §3",
+   "note": "On shift, inside, to the chime (5:30 = 17:30, his shift end). leavesTo: his routine's next stop is the official bay, begun by 6:10 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
+  }
+ ],
+ "windows": [
+  {
+   "id": "front-door",
+   "route": "A",
+   "what": "Fixer calls Inez: the door guard walks to the café, stays, and walks back; the Enforcer enters while he is away",
+   "role": "guard",
+   "walk": { "from": "Office entrance", "to": "Café door", "m": 62.4, "speed": 1.4, "s": 45 },
+   "stayS": 60,
+   "windowS": 150,
+   "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
+   "src": "GDD §07 route A; walk: tools/people/walk.ts on the plan between the two destinations (Suture 2026-10-15 §3: 62.4 m); speed life.json pedestrians.walkSpeed 1.4 m/s",
+   "note": "Restated 2026-10-15 (Waymark): the café door is now 62.4 m from the Office entrance on the walk graph, 45 s at walking pace, not §07's 30 s (30 s would need 2.08 m/s). The stay is §07's 60 s, so the window is 2:30, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
+  }
+ ],
+ "destinations": [
+  {
+   "name": "Courtyard",
+   "at": [-6.8, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Café door",
+   "at": [-10.3, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Behind café",
+   "at": [-23.4, -35],
+   "surface": "ground"
+  },
+  {
+   "name": "West side",
+   "at": [-11.4, -43],
+   "surface": "ground"
+  },
+  {
+   "name": "East side",
+   "at": [-11.4, -15],
+   "surface": "ground"
+  },
+  {
+   "name": "Terrace gate",
+   "at": [-3.6, -29],
+   "surface": "ground"
+  },
+  {
+   "name": "Between tables",
+   "at": [-7.1, -35.45],
+   "surface": "ground"
+  },
+  {
+   "name": "Under parasol",
+   "at": [-7.92, -23.88],
+   "surface": "ground"
+  },
+  {
+   "name": "Fountain",
+   "at": [11, -30],
+   "surface": "ground"
+  },
+  {
+   "name": "Plaza east",
+   "at": [6.5, -25.5],
+   "surface": "ground"
+  },
+  {
+   "name": "Plaza west",
+   "at": [6.5, -34.5],
+   "surface": "ground"
+  },
+  {
+   "name": "Getaway bay",
+   "at": [8.5, -48.2],
+   "surface": "ground"
+  },
+  {
+   "name": "Official drop-off",
+   "at": [78.2, -31],
+   "surface": "ground"
+  },
+  {
+   "name": "Service lane",
+   "at": [62.5, -43.2],
+   "surface": "ground"
+  },
+  {
+   "name": "South walkway",
+   "at": [26.6, -17],
+   "surface": "ground"
+  },
+  {
+   "name": "Office approach",
+   "at": [48.6, -30],
+   "surface": "ground"
+  },
+  {
+   "name": "Boarding pavilion",
+   "at": [78.3, -31],
+   "surface": "ground"
+  },
+  {
+   "name": "Office entrance",
+   "at": [51.75, -30],
+   "surface": "office-public"
+  },
+  {
+   "name": "Official entrance",
+   "at": [76.25, -30],
+   "surface": "office-official"
+  },
+  {
+   "name": "Meet Vale",
+   "at": [76.25, -30],
+   "surface": "office-official"
+  },
+  {
+   "name": "Meet driver",
+   "at": [78.1, -33.7],
+   "surface": "ground"
+  }
+ ],
+ "crew": [
+  {
+   "name": "Fixer",
+   "at": [1.168, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Tech",
+   "at": [2.368, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Scout",
+   "at": [3.568, -49.666],
+   "surface": "ground"
+  },
+  {
+   "name": "Enforcer",
+   "at": [4.768, -49.666],
+   "surface": "ground"
+  }
+ ],
+ "routes": [
+  {
+   "id": "getaway",
+   "name": "Getaway: crew car from Rocket Lane",
+   "from": "r_orbit_w",
+   "to": [
+    "off_southside",
+    "off_boulevard_south",
+    "off_west",
+    "off_circus_west",
+    "off_seagates"
+   ]
+  },
+  {
+   "id": "official",
+   "name": "Official arrival: Vale's car from the West End to Apron Road",
+   "from": "off_west",
+   "to": [
+    "r_pylon_s"
+   ],
+   "toName": "the official bay"
+  }
+ ]
+}

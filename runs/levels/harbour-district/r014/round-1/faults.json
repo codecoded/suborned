@@ -1,0 +1,21 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The guards have one routine, guard-cafe-square (preShift cafe), and the note says it covers the watch too. The watch works 17:30-01:30 and 01:30-09:30. A guard on the 01:30 shift would stop at the café at about 01:20, but the diner is open 6–24, so that stop cannot happen in the unit's hours. No server is on shift then, so the pre-shift regular tie has no one to be aimed at.",
+    "fix": "Add a second guard variant for the 01:30 watch with preShift none and positions guard, or limit the café variant to the office and 17:30 shifts. Keep at least half of all guards on a preShift: cafe variant with regular ties to the café staff.",
+    "chunks": [
+      "549c8d6a16f8427fc8b18c58",
+      "409364487039824661a2c22a"
+    ]
+  },
+  {
+    "owner": "Pulse",
+    "rule": "critic",
+    "fault": "The variants skyrail-tram (35%) and tramkiosk-tram (35%) put kiosk attendants on the tram. Stations run 5:00-1:00 and the first kiosk shift starts at 05:00, so a tram commuter on that shift would arrive before the first service. Those routines cannot happen in the station's hours.",
+    "fix": "Make the 05:00 kiosk shift walk-only: restrict the tram variant so it does not cover that shift, or give the kiosk rows walk commutes only.",
+    "chunks": [
+      "409364487039824661a2c22a"
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "P-0",
+    "fault": "The cast tables cover the scope's units and homes, and the expansion has no gaps: 5 rows (limit 5 rows); p-records-office-72: no free seat or standing point for the stop at 13:41 [source: GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope's area × occupation pairs, and only those]",
+    "fix": "bring the cast tables inside the rule",
+    "chunks": [],
+    "synthesized": true
+  },
+  {
+    "owner": "Pulse",
+    "rule": "P-13",
+    "fault": "No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear: 101 stops at 48 seats and standing points (limit one holder at a time, every seat on a chair); p-records-office-17 and p-records-office-72 both hold cafe-table-4-seat-0 (13:51-14:21, 13:41-14:11); p-records-office-35 and p-records-office-72 both hold cafe-table-4-seat-0 (13:21-13:51, 13:41-14:11) [source: GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear]",
+    "fix": "bring the cast tables inside the rule",
+    "chunks": [],
+    "synthesized": true
+  }
+]
