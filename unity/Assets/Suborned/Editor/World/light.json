@@ -3,10 +3,10 @@
   "sun": {
     "palette": "light.sun",
     "value": 1,
-    "intensity": 2.5,
+    "intensity": 1.35,
     "pitch": 38,
-    "yaw": 52,
-    "note": "clear warm-white sun; strong enough over a lower ambient that shadows read crisp (concept: shadows read, not smeared)"
+    "yaw": 330,
+    "note": "Glint, 008 B5. Low warm sun from the south-east (yaw 330, was 52 from the south-west): the civic square, the cafe terrace and the cafe front are lit in the home frame (yaw 52 left the west half of the square under the tall block west of it), shadows fall north-west out of the frame. The Records Office public face points north and is in soft shade under any southern sun. Intensity 1.35 (was 2.5): at 2.5 the lit stone and paving clipped in the Neutral tonemap (no form on lit surfaces) while the shade read dark; the lift now comes from the ambient. Sun colour pinker (#ffe0d0) so lit ivory reads peach-cream, not mustard."
   },
   "shadows": {
     "note": "Latch, brief 007 round 3 (Glint to tune). The sun's shadows for the orthographic tactical camera (views.json export views; the game's play camera). The camera stands back only as far as the geometry in its frame column needs (about 85 m at the civic square, 420 m under SpaceHQ); TacticalShadows sets the URP shadow distance to that depth + farBand (fading out over the last `fade` m: URP fades by distance from the camera, so a share-of-distance border faded the street itself at 400 m) and puts the last cascade on the street band [depth - nearBand, depth + farBand] while the camera renders, then restores the asset. At zoom 14 the band's cascade is ~5 cm per shadow texel (4096 atlas, 2048 per cascade): about 2 px at 1080p. Soft shadows (URP high-quality PCF) stay on. Other cameras keep the URP asset's own distance (views.json / flyby.json shadowDistance).",
@@ -25,17 +25,17 @@
     "mode": "trilight",
     "sky": {
       "palette": "light.ambientSky",
-      "value": 0.7
+      "value": 0.85
     },
     "equator": {
       "palette": "light.ambientEquator",
-      "value": 0.62
+      "value": 0.9
     },
     "ground": {
       "palette": "light.ambientGround",
-      "value": 0.46
+      "value": 0.55
     },
-    "note": "cool sky fill, warm bounce; lower than round 1 so the shade side reads against the sunlit side (crisp, never black)"
+    "note": "Glint, 008 B5. Shade carries the stone: a neutral-warm equator (#faeadc x 0.9, was #f8e6cc x 0.62) so shaded ivory stays ivory, a near-neutral sky fill (#dedce0 x 0.85, was #b2cbe6 x 0.7: a blue fill greyed cream paving and streets in shade), a warm ground bounce. Same wall in sun and shade (stone / seafoam / paving, displayed Y): was 0.25 / 0.12 / 0.42, now 0.64 / 0.48 / 0.69."
   },
   "fog": {
     "palette": "light.haze",
@@ -59,7 +59,15 @@
     "disc": 0.0
   },
   "reflection": {
-    "ground": "light.reflectGround"
+    "ground": "light.reflectGround",
+    "note": "Glint, 008 B5. The default cube is what chrome and glass mirror where no probe reaches. Ground is a dark warm brown (was a pale tan) so the lower half of a sphere is dark, the horizon bright and the top blue: a chrome gradient, not a pale plastic one."
+  },
+  "probes": {
+    "note": "Glint, 008 B5. ASK FOR LATCH: not read by the builder yet. Two baked-only reflection probes (Custom mode, baked in the Editor to Assets/Scenes/HarbourDistrict-probe-*.exr beside the scene; no realtime probe, no refresh at runtime), box projection on, HDR, 128 px, so chrome (entrance globe, sphere lamps, bollards, the orrery) mirrors the square and the Office front. Positions are world metres (x, y height, z); box is the size of the influence volume centred on the probe. Bake after the world is built, with the sun as light.json sets it.",
+    "list": [
+      { "name": "civic-square", "position": [-160, 2.4, -250], "size": [56, 40, 70], "resolution": 128, "importance": 1, "blendDistance": 6 },
+      { "name": "office-front", "position": [-160, 2.6, -272], "size": [26, 22, 24], "resolution": 128, "importance": 2, "blendDistance": 4 }
+    ]
   },
   "post": {
     "tonemapping": "Neutral",
@@ -70,8 +78,8 @@
       "tint": "light.bloomTint"
     },
     "colour": {
-      "postExposure": 0.05,
-      "contrast": 16,
+      "postExposure": 0.12,
+      "contrast": 14,
       "saturation": 14,
       "filter": "light.filter"
     },
@@ -89,14 +97,14 @@
       "colour": "light.haze"
     },
     "whiteBalance": {
-      "temperature": 3,
+      "temperature": 0,
       "tint": 0,
-      "note": "pulls the cream off yellow-beige toward bright warm white; the warmth comes from the sun, not the grade"
+      "note": "neutral (was +3): the warmth comes from the sun, not the grade; +3 pushed lit ivory to mustard"
     }
   },
   "palette": {
     "light.sun": {
-      "hex": "#ffe9c9"
+      "hex": "#ffe0d0"
     },
     "light.sunGlow": {
       "hex": "#ffe0b0"
@@ -111,16 +119,16 @@
       "hex": "#3f86de"
     },
     "light.ambientSky": {
-      "hex": "#b2cbe6"
+      "hex": "#dedce0"
     },
     "light.ambientEquator": {
-      "hex": "#f8e6cc"
+      "hex": "#faeadc"
     },
     "light.ambientGround": {
-      "hex": "#dcb994"
+      "hex": "#e2c5a4"
     },
     "light.reflectGround": {
-      "hex": "#c9ae8e"
+      "hex": "#6b5d50"
     },
     "light.bloomTint": {
       "hex": "#fff0d6"
