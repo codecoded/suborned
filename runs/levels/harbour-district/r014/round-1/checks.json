@@ -1,0 +1,182 @@
+{
+  "plan": "harbour-district",
+  "version": "0.4.0-r014.1",
+  "scope": "civic-block",
+  "ok": true,
+  "counts": {
+    "persons": 130,
+    "units": 4,
+    "faults": 0
+  },
+  "checks": [
+    {
+      "id": "P-0",
+      "group": "People",
+      "rule": "The cast tables cover the scope's units and homes, and the expansion has no gaps",
+      "value": "5 rows",
+      "limit": "5 rows",
+      "ok": true,
+      "source": "GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope's area × occupation pairs, and only those"
+    },
+    {
+      "id": "P-1",
+      "group": "People",
+      "rule": "Everyone reaches each routine stop on the walk graph in time",
+      "value": "130 people",
+      "limit": "all stops reached",
+      "ok": true,
+      "source": "GDD §09 people checked by: reach their places; plan standards.walking (walk graph)"
+    },
+    {
+      "id": "P-2",
+      "group": "People",
+      "rule": "Every person has exactly one need, in the rules, that an approach they answer to can meet",
+      "value": "130 people",
+      "limit": "one clear need each",
+      "ok": true,
+      "source": "GDD §04 person = routine + need + temperament + memory; §09 one clear need; people.rules.json needs"
+    },
+    {
+      "id": "P-3",
+      "group": "People",
+      "rule": "Only the temperaments, needs, ties and positions the rules allow, in the tables and in the people",
+      "value": "5 rows, 130 people",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "people.rules.json temperaments, needs, ties, positions, temperamentsBy: anything not in the file is rejected"
+    },
+    {
+      "id": "P-4",
+      "group": "People",
+      "rule": "Staff counts match life.json per unit and shift; one keeper per unit",
+      "value": "4 units",
+      "limit": "life.json staffPerUnit",
+      "ok": true,
+      "source": "life.json generator.occupations staffPerUnit, shifts; rules positions (one keeper per unit)"
+    },
+    {
+      "id": "P-5",
+      "group": "People",
+      "rule": "No one stands in a CD-1 keep-clear zone off-shift",
+      "value": "12 zones",
+      "limit": "0 off-shift stops inside",
+      "ok": true,
+      "source": "brief 008 rule CD-1 (keep-clear zones of the civic block dressing)"
+    },
+    {
+      "id": "P-6",
+      "group": "People",
+      "rule": "The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf",
+      "value": "4/4 roles",
+      "limit": "all roles",
+      "ok": true,
+      "source": "GDD §07 the Handover: its roles, with their need, approach and regularOf, are cast from the city's people by the same casting as M-2 (brief 010 D; Motive §3)"
+    },
+    {
+      "id": "P-7",
+      "group": "People",
+      "rule": "Ties are of the kinds, limits, directions and pairs the rules allow",
+      "value": "261 ties",
+      "limit": "rules ties",
+      "ok": true,
+      "source": "people.rules.json ties (kinds, limits, direction, between)"
+    },
+    {
+      "id": "P-8",
+      "group": "People",
+      "rule": "Names come from one district pool of mixed origins, with no era, unique, and the pinned names present once",
+      "value": "130 names",
+      "limit": "rules names",
+      "ok": true,
+      "source": "people.rules.json names (pool, pattern, origins, avoid, unique, pinned); GDD §15 no era date"
+    },
+    {
+      "id": "P-9",
+      "group": "People",
+      "rule": "The expansion is valid, empty of memory, and byte-identical twice",
+      "value": "130 people",
+      "limit": "deterministic",
+      "ok": true,
+      "source": "GDD §01/§09 same orders → same result; rules person.memoryAtStart, tiers"
+    },
+    {
+      "id": "P-10",
+      "group": "People",
+      "rule": "No temperament over the row cap; a unit of 3+ staff carries 2 or more temperaments",
+      "value": "5 rows, 4 units",
+      "limit": "row ≤ 60%, unit ≥ 2 kinds",
+      "ok": true,
+      "source": "people.rules.json temperamentsBy.mix (P3): no temperament over rowMaxShare of a cast row; a unit of whenStaffAtLeast staff or more carries unitMinDistinct temperaments; GDD §09 risk: sameness"
+    },
+    {
+      "id": "P-11",
+      "group": "People",
+      "rule": "A keeper's known needs derive from ties; the cell is known by face only and nothing else at the start",
+      "value": "3 keepers know 33 needs",
+      "limit": "derived; cell: face only",
+      "ok": true,
+      "source": "people.rules.json knowledge (P5): a keeper's needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08"
+    },
+    {
+      "id": "P-12",
+      "group": "People",
+      "rule": "Every field a person carries names the rule that reads it",
+      "value": "15 fields",
+      "limit": "each read by a rule",
+      "ok": true,
+      "source": "people.rules.json person.readBy (P2): every field a person carries names the rule that reads it; GDD §09 risk: sameness (Legion's bios did nothing)"
+    },
+    {
+      "id": "P-13",
+      "group": "People",
+      "rule": "No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear",
+      "value": "84 stops at 31 seats and standing points",
+      "limit": "one holder at a time, every seat on a chair",
+      "ok": true,
+      "source": "GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear"
+    }
+  ],
+  "handover": [
+    {
+      "role": "waitress",
+      "ok": true,
+      "who": [
+        "p-cafe-12",
+        "p-cafe-14"
+      ],
+      "pinned": "p-cafe-12",
+      "name": "Inez Lacroix",
+      "why": "p-cafe-12 of 2 on shift 0:00-8:00 at Café door, need debt, help not refused (first by id)"
+    },
+    {
+      "role": "driver",
+      "ok": true,
+      "who": [
+        "p-records-office-31"
+      ],
+      "pinned": "p-records-office-31",
+      "name": "Katya Jankovic",
+      "why": "p-records-office-31 of 1 on shift 0:00-5:30 at Meet driver, need cash, help not refused (first by id)"
+    },
+    {
+      "role": "guard",
+      "ok": true,
+      "who": [
+        "p-records-office-01"
+      ],
+      "pinned": "p-records-office-01",
+      "name": "Hanna Kessler",
+      "why": "p-records-office-01 of 1 on shift 2:24-5:30 at Office entrance, regular of cafe (first by id)"
+    },
+    {
+      "role": "councillor",
+      "ok": true,
+      "who": [
+        "p-records-office-07"
+      ],
+      "pinned": "p-records-office-07",
+      "name": "Liesel Vale",
+      "why": "p-records-office-07 of 1 on shift 0:00-5:30 (first by id)"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "P-6",
+    "fault": "The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf: 3/4 roles (limit all roles); guard: none of the 1 who fit (guard of records-office on shift 2:24-5:30 at Office entrance) has a regular tie to the staff of cafe: p-records-office-01 none [source: GDD §07 the Handover: its roles, with their need, approach and regularOf, are cast from the city's people by the same casting as M-2 (brief 010 D; Motive §3)]",
+    "fix": "bring the cast tables inside the rule",
+    "chunks": [],
+    "synthesized": true
+  }
+]
