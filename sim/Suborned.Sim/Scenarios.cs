@@ -18,7 +18,8 @@ namespace Suborned.Sim
         public readonly Game G; public readonly List<(bool ok, string what)> Checks = new List<(bool, string)>();
         public Run(Game g) { G = g; }
         public bool Is(bool ok, string what) { Checks.Add((ok, what)); return ok; }
-        public void Eq<T>(T a, T b, string what) => Is(EqualityComparer<T>.Default.Equals(a, b), $"{what} (got {a}, want {b})");
+        public void Eq<T>(T a, T b, string what) => Is(EqualityComparer<T>.Default.Equals(a, b), what + " (got " + Inv(a) + ", want " + Inv(b) + ")");
+        static string Inv(object? v) => v is IFormattable f ? f.ToString(null, System.Globalization.CultureInfo.InvariantCulture) : v?.ToString() ?? "";
         /// <summary>Give an order now and check it was taken.</summary>
         public bool Do(string op, string verb, string target = "", string approach = "")
         {
@@ -48,13 +49,36 @@ namespace Suborned.Sim
         public int Arrival(string op)
         {
             var o = G.OpOf(Sim.Op.Parse(op)); if (o.Walk == null) return G.Tick;
-            int speed = G.R.RefI("cell", "speed"); long left = o.Walk.Length - o.WalkMm;
+            int speed = G.R.CellSpeed; long left = o.Walk.Length - o.WalkMm;
             return G.Tick + (int)((left + speed - 1) / speed);
         }
         public void To(int tick) => G.RunTo(tick);
         public void Wait(int ticks) => G.Advance(ticks);
         /// <summary>Run until the operative's action in progress lands.</summary>
         public void Done(string op) { var o = G.OpOf(Sim.Op.Parse(op)); if (o.Busy != null) G.RunTo(o.BusyEnd); }
+        /// <summary>The Enforcer fights it out as a player would: fire when the shot is ready and a hostile is in reach, else close on the
+        /// nearest one still up; then to the car. Orders only, so the run replays from its log. Returns when the car is free or the run ends.</summary>
+        public void FightItOut(int limitS = 120)
+        {
+            int end = G.Tick + Game.T(limitS), reach = G.R.FireReachCm;
+            while (!G.Over && G.Tick < end && G.CarHeld())
+            {
+                var e = Op("enforcer");
+                Hostile? near = null; long bd = long.MaxValue;
+                foreach (var h in G.Hostiles) { if (h.Down || !h.Present) continue; long d = G.D2(e.Pos, h.Pos(G.Tick)); if (d < bd) { bd = d; near = h; } }
+                if (near == null) { if (e.Walk == null) SendTo("enforcer", G.S.Stand(G.S.GetawayCar)); G.Step(); continue; }
+                if (G.Tick >= G.EnforcerNextShot && e.Busy == null && G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "fire", Target = "hostiles" }).ok) { G.Step(); continue; }
+                if (bd > (long)(reach - 200) * (reach - 200) && (e.Walk == null || e.Walk.End != G.S.Grid.NearestFree(near.Pos(G.Tick))))
+                {
+                    var to = G.S.Grid.NearestFree(near.Pos(G.Tick));
+                    if (to.HasValue) G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "move", Point = to.Value });
+                }
+                G.Step();
+            }
+            if (G.Over) return;
+            var car = G.S.At(G.S.GetawayCar);
+            if (!G.Within(Op("enforcer").Pos, car, G.R.ActReachCm)) To(SendTo("enforcer", G.S.Stand(G.S.GetawayCar)));
+        }
         public Pt At(string place) => G.S.At(place);
         public Pt Stand(string place) => G.S.Stand(place);
         public Op Op(string op) => G.OpOf(Sim.Op.Parse(op));
@@ -75,6 +99,8 @@ namespace Suborned.Sim
         static Scenario Add(string id, string proto, string intent, Action<Run> body, Start? start = null)
         {
             var s = new Scenario { Id = id, Proto = proto, Intent = intent, Body = body, Start = start ?? new Start() };
+            // The 28 are the top-down test's: it had no final fight and no crowd. N10, N11 and N12 test those; the 28 keep their own world.
+            if (id.StartsWith("S", StringComparison.Ordinal)) { s.Start.FinalFight = false; s.Start.Crowd = false; }
             all!.Add(s); return s;
         }
         static int T(int s) => Game.T(s);

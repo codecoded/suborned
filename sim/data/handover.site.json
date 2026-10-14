@@ -560,6 +560,56 @@
    "at": [7570,-3640],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
    "reason": "on the sightline from the pickup camera to the official car, 40% of the way from the camera, on the pavement between the Office and the bay."
+  },
+  "ambush-1": {
+   "at": [2000,-5600],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "five spots 12–16 m round the getaway car on the open square, each with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe)."
+  },
+  "ambush-2": {
+   "at": [-400,-5800],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1."
+  },
+  "ambush-3": {
+   "at": [2200,-4200],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1."
+  },
+  "ambush-4": {
+   "at": [-600,-4400],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1."
+  },
+  "ambush-5": {
+   "at": [1400,-3600],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1."
+  },
+  "police-1": {
+   "at": [-400,-5000],
+   "src": "GDD §07 loud: police from west street, 2–4 officers",
+   "reason": "four stops between the north street (the response unit's entry) and the getaway car, 13–19 m short of it; the officers take the first n (fight.loud)."
+  },
+  "police-2": {
+   "at": [-800,-5600],
+   "src": "GDD §07 loud: police from west street, 2–4 officers",
+   "reason": "as police-1."
+  },
+  "police-3": {
+   "at": [-200,-4200],
+   "src": "GDD §07 loud: police from west street, 2–4 officers",
+   "reason": "as police-1."
+  },
+  "police-4": {
+   "at": [-1000,-4600],
+   "src": "GDD §07 loud: police from west street, 2–4 officers",
+   "reason": "as police-1."
+  },
+  "guard-ally": {
+   "at": [1800,-4600],
+   "src": "GDD §07 safe: the guard (never saw you) fights them",
+   "reason": "on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots."
   }
  },
  "cameras": [
@@ -626,6 +676,24 @@
   "car": "d:Getaway bay",
   "src": "GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay"
  },
+ "fight": {
+  "ambush": [
+   "ambush-1",
+   "ambush-2",
+   "ambush-3",
+   "ambush-4",
+   "ambush-5"
+  ],
+  "police": [
+   "police-1",
+   "police-2",
+   "police-3",
+   "police-4"
+  ],
+  "entry": "security-entry",
+  "guard": "guard-ally",
+  "src": "GDD §07 final fight [S]; rulebook fight"
+ },
  "schedule": {
   "rivalsArrive": 190,
   "chime": 330,
@@ -649,23 +717,27 @@
    "need": "debt"
   },
   "driver": {
-   "id": "p-records-office-13",
-   "name": "Alba Ferrer",
-   "temperament": "idealist",
+   "id": "p-records-office-27",
+   "name": "Sigrid Lambros",
+   "temperament": "mercenary",
    "need": "cash"
   },
   "guard": {
-   "id": "p-records-office-02",
-   "name": "Ulrich Sandvik",
-   "temperament": "mercenary",
+   "id": "p-records-office-07",
+   "name": "Leif Nair",
+   "temperament": "loyal",
    "need": "debt"
   },
   "councillor": {
-   "id": "p-records-office-01",
-   "name": "Bogdan Vale",
-   "temperament": "mercenary",
-   "need": "advancement"
+   "id": "p-records-office-49",
+   "name": "Nikos Vale",
+   "temperament": "loyal",
+   "need": "secret"
   },
-  "src": "people run r013 (accepted, brief 010), as M-2 cast it at the 17:00 start (Keel, 2026-10-15). Sky 2026-10-15: Inez is an Idealist and Pay is the lesson. mission.json has no pins yet; when Waymark pins, the site takes them."
+  "from": "sim/data/fixtures/harbour-district.handover-fix.people.json",
+  "sha256": "77eba841828119bf033ce44f47fd7624deef1a33781546891b7d699ebe043c21",
+  "startsAt": "17:24:30",
+  "fixture": "Pulse's Handover fix cast (out/people/harbour-district.handover-fix.cast.people.json, 2026-10-15 03:06, sha256 77eba841…), the one people file M-2 casts at 17:24:30 until Pulse's corrected cast is promoted (Aster, 2026-10-15)",
+  "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  }
 }

@@ -10,6 +10,7 @@ namespace Suborned.Sim
     {
         public string PublicSecurity = "", InvestigationState = "", InvestigationCause = "";
         public int Contacts; public bool Loud;
+        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits; public readonly List<string> FightWhy = new List<string>();
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
 
         public static Debrief Of(Game g)
@@ -31,6 +32,7 @@ namespace Suborned.Sim
                 d.Assets.Add(g.InezWitnessedShooting ? "waitress-witnessed-shooting" : g.InezMethod == "pressure" ? "waitress-may-identify-fixer" : inezExposed ? "waitress-may-be-questioned" : "waitress-introduces-cafe");
             if (g.Driver.Turned && !g.Driver.Down) d.Assets.Add("driver-alters-pickups");
             d.Chain.AddRange(g.Chain);
+            d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightHits = g.FightHits; d.FightWhy.AddRange(g.FightWhy);
 
             var relevant = new HashSet<string>(StringComparer.Ordinal);
             if (g.RouteKind == "front")
@@ -74,6 +76,11 @@ namespace Suborned.Sim
             w.OpenArr("route"); foreach (var a in Route) w.Str(a); w.EndArr();
             w.OpenArr("extraInterventions"); foreach (var a in Extra) w.Str(a); w.EndArr();
             w.OpenArr("chain"); foreach (var a in Chain) w.Str(a); w.EndArr();
+            if (FightBranch.Length > 0)
+            {
+                w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("hitsTaken", FightHits);
+                w.OpenArr("why"); foreach (var a in FightWhy) w.Str(a); w.EndArr(); w.EndObj();
+            }
             w.EndObj();
         }
     }
@@ -81,27 +88,37 @@ namespace Suborned.Sim
     /// <summary>Loading and playing: the engine's inputs from the repo, a script played to its end, a replay from its orders.</summary>
     public static class Engine
     {
-        public const string RulebookFile = "contracts/rules/rulebook.json", PeopleRulesFile = "contracts/people/people.rules.json", SiteFile = "sim/data/handover.site.json";
+        public const string RulebookFile = "contracts/rules/rulebook.json", PeopleRulesFile = "contracts/people/people.rules.json", SiteFile = "sim/data/handover.site.json", PeopleFile = "sim/data/handover.people.json";
 
         public sealed class Inputs
         {
-            public string Rulebook = "", PeopleRules = "", Site = ""; public Rules Rules = null!; public Site SiteData = null!;
-            public ulong Hash => Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7);
+            public string Rulebook = "", PeopleRules = "", Site = "", People = ""; public Rules Rules = null!; public Site SiteData = null!; public Crowd? Crowd;
+            /// <summary>The inputs' hash over their canonical text (no BOM, LF line ends: Redline E4), so a Windows checkout replays a Mac record.</summary>
+            public ulong Hash { get { unchecked { return Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7) ^ (Sim.Hash.Of(People) * 11); } } }
         }
         static Inputs? cache; static string? cacheRoot;
         public static Inputs Load(string root)
         {
             if (cache != null && cacheRoot == root) return cache;
             string rd(string f) => System.IO.File.ReadAllText(System.IO.Path.Combine(root, f));
-            var i = new Inputs { Rulebook = rd(RulebookFile), PeopleRules = rd(PeopleRulesFile), Site = rd(SiteFile) };
-            i.Rules = new Rules(i.Rulebook, i.PeopleRules); i.SiteData = new Site(i.Site);
+            var i = FromTexts(rd(RulebookFile), rd(PeopleRulesFile), rd(SiteFile), rd(PeopleFile));
             cache = i; cacheRoot = root; return i;
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
-        public static Inputs FromTexts(string rulebook, string peopleRules, string site)
+        /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
+        public const string Version = "suborned.sim/0.3.0";
+        public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
+
+        public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null)
         {
-            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site };
+            rulebook = JNode.Canon(rulebook); peopleRules = JNode.Canon(peopleRules); site = JNode.Canon(site); people = people == null ? null : JNode.Canon(people);
+            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site, People = people ?? "" };
             i.Rules = new Rules(rulebook, peopleRules); i.SiteData = new Site(site);
+            if (people != null)
+            {
+                var cast = new List<string>(); foreach (var c in i.SiteData.Cast) cast.Add(c.Id);
+                i.Crowd = new Crowd(people, i.Rules, cast);
+            }
             return i;
         }
         /// <summary>The repository root: the nearest directory above `from` holding contracts/rules/rulebook.json.</summary>
@@ -112,7 +129,7 @@ namespace Suborned.Sim
             throw new System.IO.FileNotFoundException($"no {RulebookFile} above {from}");
         }
 
-        public static Game New(Inputs i, Start? start = null) => new Game(i.Rules, i.SiteData, start, i.Hash.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        public static Game New(Inputs i, Start? start = null) => new Game(i.Rules, i.SiteData, start, i.Hash.ToString(System.Globalization.CultureInfo.InvariantCulture), i.Crowd);
 
         /// <summary>Play a start state and its orders (sorted by tick, stable) to `until` or the outcome.</summary>
         public static Game Play(Inputs i, Start start, IReadOnlyList<Order> orders, int until)
@@ -122,6 +139,7 @@ namespace Suborned.Sim
             list.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.idx.CompareTo(b.idx));
             foreach (var (_, o) in list)
             {
+                if (o.Tick > until) break; // orders past `until` are not played (Redline I2)
                 g.RunTo(o.Tick); if (g.Over) break;
                 if (g.Tick == o.Tick) g.Issue(o);
                 if (g.Over) break;

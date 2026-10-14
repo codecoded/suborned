@@ -27,10 +27,10 @@ static class Program
                 case "script":
                     {
                         var sc = Scenarios.Find(args.Length > 1 ? args[1] : "") ?? throw new ArgumentException("script which scenario?");
-                        Console.WriteLine(Script.Write(Scenarios.Run(inputs, sc).G)); return 0;
+                        Console.WriteLine(Script.Write(Scenarios.Run(inputs, sc).G, inputs.Hash)); return 0;
                     }
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
-                case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20);
+                case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
@@ -40,7 +40,7 @@ static class Program
 
     static int Play(Engine.Inputs inputs, string root, string what, bool json)
     {
-        Game g; List<(bool ok, string what)> checks = new List<(bool, string)>(); string id;
+        Game g; List<(bool ok, string what)> checks = new List<(bool, string)>(); string id; string record = "";
         var sc = Scenarios.Find(what);
         if (sc != null) { var run = Scenarios.Run(inputs, sc); g = run.G; checks = run.Checks; id = sc.Id; }
         else
@@ -48,6 +48,7 @@ static class Program
             var path = File.Exists(what) ? what : System.IO.Path.Combine(root, what);
             var script = Script.Parse(File.ReadAllText(path));
             g = Engine.Play(inputs, script.Start, script.Orders, script.Until); id = System.IO.Path.GetFileName(path);
+            if (script.Expect != null) { record = script.Verify(g, inputs.Hash); checks.Add((record.Length == 0, record.Length == 0 ? "the replay matches its record (inputs, engine, start, every checkpoint, outcome)" : "record: " + record)); }
         }
         var replay = Engine.Replay(inputs, g);
         bool same = Same(g, replay);
@@ -71,15 +72,15 @@ static class Program
         return true;
     }
 
-    static int Perf(Engine.Inputs inputs, int runs)
+    static int Perf(Engine.Inputs inputs, int runs, string id)
     {
-        var sc = Scenarios.Find("S10")!;
+        var sc = Scenarios.Find(id) ?? throw new ArgumentException($"no scenario {id}");
         Scenarios.Run(inputs, sc); // warm
         var sw = Stopwatch.StartNew(); long ticks = 0;
         for (int i = 0; i < runs; i++) ticks += Scenarios.Run(inputs, sc).G.Tick;
         sw.Stop();
         double simS = ticks / 10.0, wallS = sw.Elapsed.TotalSeconds;
-        Console.WriteLine($"route A (S10) x{runs}: {simS:0} sim-s in {wallS:0.000} wall-s = {simS / wallS:0} sim-s per wall-s ({wallS * 1000 / runs:0.0} ms a run)");
+        Console.WriteLine(FormattableString.Invariant($"{sc.Id} x{runs}: {simS:0} sim-s in {wallS:0.000} wall-s = {simS / wallS:0} sim-s per wall-s ({wallS * 1000 / runs:0.0} ms a run)"));
         return 0;
     }
 }

@@ -26,7 +26,9 @@ namespace Suborned.Sim
             if (o != null) { index = new Dictionary<string, JNode>(StringComparer.Ordinal); foreach (var kv in o) index[kv.Key] = kv.Value; }
         }
 
-        public static JNode Parse(string s, string name = "$") { var p = new Parser(s, name); var n = p.Value(name); p.End(); return n; }
+        public static JNode Parse(string s, string name = "$") { var p = new Parser(Canon(s), name); var n = p.Value(name); p.End(); return n; }
+        /// <summary>The text as the engine reads and hashes it: a leading BOM dropped, CRLF and CR made LF (Redline E4, E11).</summary>
+        public static string Canon(string s) { if (s.Length > 0 && s[0] == '\uFEFF') s = s.Substring(1); return s.IndexOf('\r') < 0 ? s : s.Replace("\r\n", "\n").Replace('\r', '\n'); }
 
         public bool Has(string key) => Kind == JKind.Obj && index!.ContainsKey(key);
         public JNode this[string key]
@@ -108,7 +110,9 @@ namespace Suborned.Sim
                 if (c == '-' || (c >= '0' && c <= '9'))
                 {
                     int st = i; if (s[i] == '-') i++;
-                    while (i < s.Length && (char.IsDigit(s[i]) || s[i] == '.' || s[i] == 'e' || s[i] == 'E' || s[i] == '+' || s[i] == '-')) i++;
+                    if (i < s.Length && s[i] == '0' && i + 1 < s.Length && s[i + 1] >= '0' && s[i + 1] <= '9') throw Err("a number with a leading zero");
+                    if (i >= s.Length || s[i] < '0' || s[i] > '9') throw Err("a digit expected");
+                    while (i < s.Length && ((s[i] >= '0' && s[i] <= '9') || s[i] == '.' || s[i] == 'e' || s[i] == 'E' || s[i] == '+' || s[i] == '-')) i++;
                     return new JNode(JKind.Num, path, t: s.Substring(st, i - st));
                 }
                 throw Err($"unexpected '{c}'");
@@ -122,14 +126,18 @@ namespace Suborned.Sim
                     if (i >= s.Length) throw Err("unterminated string");
                     char c = s[i++];
                     if (c == '"') return b.ToString();
+                    if (c < 0x20) throw Err("a raw control character in a string");
                     if (c != '\\') { b.Append(c); continue; }
+                    if (i >= s.Length) throw Err("unterminated escape");
                     char e = s[i++];
                     switch (e)
                     {
                         case '"': b.Append('"'); break; case '\\': b.Append('\\'); break; case '/': b.Append('/'); break;
                         case 'b': b.Append('\b'); break; case 'f': b.Append('\f'); break; case 'n': b.Append('\n'); break;
                         case 'r': b.Append('\r'); break; case 't': b.Append('\t'); break;
-                        case 'u': b.Append((char)int.Parse(s.Substring(i, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture)); i += 4; break;
+                        case 'u':
+                            if (i + 4 > s.Length || !int.TryParse(s.Substring(i, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var u)) throw Err("a bad \\u escape");
+                            b.Append((char)u); i += 4; break;
                         default: throw Err($"bad escape \\{e}");
                     }
                 }

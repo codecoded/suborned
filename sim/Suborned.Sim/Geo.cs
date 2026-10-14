@@ -16,7 +16,7 @@ namespace Suborned.Sim
         public override int GetHashCode() => unchecked(X * 73856093 ^ Y * 19349663);
         public static bool operator ==(Pt a, Pt b) => a.Equals(b);
         public static bool operator !=(Pt a, Pt b) => !a.Equals(b);
-        public override string ToString() => $"({X},{Y})";
+        public override string ToString() => "(" + X.ToString(System.Globalization.CultureInfo.InvariantCulture) + "," + Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")";
         public static Pt Of(JNode n) { var a = n.Ints(); if (a.Length != 2) throw new FormatException($"{n.Path} is not a point"); return new Pt(a[0], a[1]); }
     }
 
@@ -90,7 +90,9 @@ namespace Suborned.Sim
         public static bool InCone(Pt o, Pt f, int reach, int half, int near, Pt p)
         {
             if (Within(o, p, near)) return true;
-            long rx = p.X - o.X, ry = p.Y - o.Y, fx = f.X, fy = f.Y;
+            long rx = p.X - o.X, ry = p.Y - o.Y;
+            long flen = Isqrt((long)f.X * f.X + (long)f.Y * f.Y); if (flen == 0) return false;
+            long fx = (long)f.X * 1024 / flen, fy = (long)f.Y * 1024 / flen; // a facing of length 1,024: products stay far inside a long (Redline E5)
             long dot = rx * fx + ry * fy;
             if (dot < 0) return false;
             long ff = fx * fx + fy * fy; if (ff == 0) return false;

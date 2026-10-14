@@ -49,6 +49,8 @@ describe('rulebook.json: shape and the people rules it reads', () => {
     expect(Rulebook.safeParse(unread).success).toBe(false); // a value no rule reads is trivia (Legion lesson)
     const dangling = structuredClone(raw); dangling.events[0].price[0].s = 'v:no-such-value';
     expect(Rulebook.safeParse(dangling).success).toBe(false);
+    const zero = structuredClone(raw); zero.values['loop-s'].v = 0;
+    expect(Rulebook.safeParse(zero).success).toBe(false); // a 0 s action never lands (Redline E3)
   });
 
   test('the base price of every Turn event is people.rules approaches, read by ref, never copied (§04 [B])', () => {
@@ -200,11 +202,15 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
     expect(R.needsHold(rb, people, pay, ctx(90000))).toBe(true);
   });
 
-  test('any approach tells the cell the temperament', () => {
+  test('no approach tells the cell the temperament; a refusal tells it only that this approach is refused (Sky, Aster 2026-10-15)', () => {
     for (const a of ['ask', 'pay', 'help', 'pressure']) {
-      const learned = act(a, person('mercenary')).changes.filter((c) => c.do === 'learn').flatMap((c) => (c.do === 'learn' ? c.what : []));
-      expect(learned, a).toContain('temperament');
+      const learned = act(a, person('idealist')).changes.filter((c) => c.do === 'learn').flatMap((c) => (c.do === 'learn' ? c.what : []));
+      expect(learned, a).not.toContain('temperament');
     }
+    expect(act('pay', person('idealist')).changes).toContainEqual({ do: 'learn', what: ['refused'], of: 'subject' });
+    const after = R.quote(rb, people, turn('pay'), { subject: person('idealist'), band: 'neutral', knows: new Set<R.Know>(['routine']), refusedKnown: new Set(['pay']) });
+    expect(after.outcome).toBe('refused'); // Pay shows ✗ on Inez
+    expect(R.quote(rb, people, turn('help'), { subject: person('idealist'), band: 'neutral', knows: new Set<R.Know>(['routine', 'need']), refusedKnown: new Set(['pay']) }).outcome).toBe('?'); // her temperament is still unknown
     expect(rb.preview.knownBy).toEqual(['scout.listen']); // Sky 2026-10-15: Listen reveals the temperament, Watch only the routine
     expect(R.event(rb, 'scout.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
   });

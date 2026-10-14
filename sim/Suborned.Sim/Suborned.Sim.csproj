@@ -10,5 +10,8 @@
     <Deterministic>true</Deterministic>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Redline E9: overflow throws in Debug (the tests); wrap-around code says unchecked. E10: the same source gives the same DLL bytes on every machine. -->
+    <CheckForOverflowUnderflow Condition="'$(Configuration)' == 'Debug'">true</CheckForOverflowUnderflow>
+    <PathMap>$(MSBuildProjectDirectory)=/_/Suborned.Sim/</PathMap>
   </PropertyGroup>
 </Project>

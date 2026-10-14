@@ -13,9 +13,17 @@ import { civic, toPlanFn } from '../plan/civic';
 import { blockersOf } from '../plan/walk';
 import { Solids } from '../plan/walk-solids';
 import { type V, dist, inPoly } from '../plan/geom';
+import { castRoles } from '../missions/handover/cast';
+import { castRules } from '../missions/handover/overlay';
+import { createHash } from 'node:crypto';
+import { buildPeople, PEOPLE_OUT } from './people';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
+/** The people the Handover is cast from: the people file `bun run people` writes from the promoted cast. */
+export const PROMOTED_PEOPLE = 'out/people/harbour-district.people.json';
+/** Where the cast comes from. A fixture is labelled, in the site and the people extract alike. */
+export type Source = { people: string; fixture?: string };
 const PLAN = 'contracts/world/harbour-district.plan.json';
 const MISSION = 'contracts/missions/handover/mission.json';
 const CELL = 0.5; // m
@@ -26,7 +34,7 @@ const P = (p: V) => [cm(p[0]), cm(p[1])];
 
 type Place = { at: number[]; src: string; reason?: string };
 
-export function buildSite(): { json: string; site: unknown } {
+export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: string; site: unknown } {
   const read = (f: string) => readFileSync(join(root, f), 'utf8');
   const planText = read(PLAN), plan = JSON.parse(planText);
   const blockText = read(plan.civic.block), block = JSON.parse(blockText);
@@ -91,25 +99,27 @@ export function buildSite(): { json: string; site: unknown } {
   const put = (id: string, at: V, src: string, reason?: string) => { places[id] = { at: P(at), src, ...(reason ? { reason } : {}) }; };
   for (const d of mission.destinations) put(`d:${d.name}`, d.at, `mission.json destinations "${d.name}"`);
   for (const c of mission.crew) put(`crew:${c.name.toLowerCase()}`, c.at, `mission.json crew ${c.name}: §07 cell at getaway car`);
-  const cab = block.structures.find((s: { id: string }) => s.id === 'civic-control-cabinet');
-  const cabC: V = [cab.polygon.reduce((a: number, p: V) => a + p[0], 0) / cab.polygon.length, cab.polygon.reduce((a: number, p: V) => a + p[1], 0) / cab.polygon.length];
-  put('cabinet', cabC, 'civic-block.json structures civic-control-cabinet (centre)', 'the Tech\'s cabinet (§03 Loop, Reroute): the block\'s one control cabinet, in the square 28 m from the public door and outside every cone, as the top-down test\'s cabinet stood about 31 units from the door.');
-  put('beside-inez', [-8.2, -29.0], 'Keel', 'Listen needs the Scout within 3 m of Inez (rulebook listen-reach-m [B]); the Courtyard point is 3.5 m from the café door, so this stands 2.1 m from her, between the café palms.');
-  put('rival-park', [84.0, -31.0], 'GDD §07: 3:10 rival car parks near pickup', 'on Apron Road, 5.8 m south of the official car in the official bay.');
-  put('rival-entry', [36.0, 10.0], 'GDD §05 rivals: own schedule; the top-down test: the rivals enter from the east street', 'the middle east street (block x 30–42 open to the east), the nearest street mouth to the Office on the east side.');
-  put('security-entry', [-46.0, -32.0], 'GDD §07 final fight, loud: police from west street', '§07\'s "west street" is the top-down test\'s compass. The real block is built on its west side (y < −62); its one street on the café and getaway side is the north street (block x < −38, y −36 to −28), so the response unit enters there.');
-  put('patrol-a', [40.75, -34.0], 'the top-down test: the patrol sweeps 11 units in front of the public door, from 4 to one side of it to 16 to the other', 'the same offsets from the real public door (51.75, −30): 11 m north of it, 4 m west to 16 m east.');
-  put('patrol-b', [40.75, -14.0], 'as patrol-a', 'the far end of the sweep.');
-  put('patrol-reroute', [20.0, -58.0], 'the top-down test: a rerouted patrol waits at the far corner from the door', 'the square\'s west edge, 33 m from the public door and out of its sightlines.');
-  const blockSpot: V = [75.7, -36.4];
-  put('block-spot', blockSpot, 'GDD §07 route B: driver blocks pickup camera 2:30', 'on the sightline from the pickup camera to the official car, 40% of the way from the camera, on the pavement between the Office and the bay.');
+  // the mission's own points (mission.json `points`, Waymark adopted them from here, brief 011 B, Suture O-6), in their order
+  const centreOf = (sid: string): V => {
+    const st = block.structures.find((s: { id: string }) => s.id === sid);
+    if (!st) throw new Error(`mission.json points: civic-block.json has no structure ${sid}`);
+    return [st.polygon.reduce((a: number, p: V) => a + p[0], 0) / st.polygon.length, st.polygon.reduce((a: number, p: V) => a + p[1], 0) / st.polygon.length];
+  };
+  for (const pt of mission.points as { id: string; at?: V; structure?: string; src: string; reason: string }[]) put(pt.id, pt.at ?? centreOf(pt.structure!), pt.src, pt.reason);
+  // the final fight (§07 [S]): where the rivals lie in wait round the getaway car, where the police stop, where the guard fights from
+  const ambush: V[] = [[20, -56], [-4, -58], [22, -42], [-6, -44], [14, -36]];
+  ambush.forEach((a, i) => put(`ambush-${i + 1}`, a, 'GDD §07 safe: rivals ambush extraction', i === 0 ? 'five spots 12–16 m round the getaway car on the open square, each with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe).' : 'as ambush-1.'));
+  const police: V[] = [[-4, -50], [-8, -56], [-2, -42], [-10, -46]];
+  police.forEach((a, i) => put(`police-${i + 1}`, a, 'GDD §07 loud: police from west street, 2–4 officers', i === 0 ? 'four stops between the north street (the response unit\'s entry) and the getaway car, 13–19 m short of it; the officers take the first n (fight.loud).' : 'as police-1.'));
+  put('guard-ally', [18, -46], 'GDD §07 safe: the guard (never saw you) fights them', 'on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots.');
   for (const [id, p] of Object.entries(places)) if (!free([p.at[0]! / 100, p.at[1]! / 100])) (p as Place & { stand?: number[] }).stand = P(nearestFree([p.at[0]! / 100, p.at[1]! / 100]));
 
   // ---- cameras (O-6): mount, facing, reach and half-width, all cm; a point is watched inside the cone on a clear sightline
-  const cameras = [
-    { id: 'entrance', at: P([49.5, -41.5]), facing: P([51.75 - 49.5, -30 - -41.5]), reach: cm(22), half: cm(9), src: 'GDD §05 cameras: fixed visible cones; §07 route A: Tech loops the entrance camera', reason: 'a pole at the forecourt\'s west corner, looking at the public door across the foot of its steps: the door, the steps and the Office approach in the cone, the tower beside the door clear of the sightline.' },
-    { id: 'pickup', at: P([74.0, -40.0]), facing: P([78.2 - 74.0, -31 - -40.0]), reach: cm(18), half: cm(9), src: 'GDD §07 route B: the pickup camera', reason: 'a pole at the Office\'s south-west corner looking at the official car in the bay; the Office and its official tower stand outside the sightline.' },
-  ];
+  // mission.json `cameras`: each faces the destination it looks at
+  const cameras = (mission.cameras as { id: string; at: V; looksAt: string; reachM: number; halfM: number; src: string; reason: string }[]).map((c) => {
+    const to = dest(c.looksAt);
+    return { id: c.id, at: P(c.at), facing: P([to[0] - c.at[0], to[1] - c.at[1]]), reach: cm(c.reachM), half: cm(c.halfM), src: c.src, reason: c.reason };
+  });
 
   // ---- the mission's schedule, read from mission.json by time and checked by its words
   const at = (t: string, word: RegExp) => {
@@ -125,14 +135,25 @@ export function buildSite(): { json: string; site: unknown } {
     src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: §07 8:00 (the top-down test ran to 9:50; Suture M-1, the rulebook takes §07)',
   };
 
-  // ---- the cast the 28 scenarios play: the r013 people M-2 pinned at the 17:00 start; mission.json carries no pins yet (Waymark)
-  const cast = {
-    waitress: { id: 'p-cafe-11', name: 'Inez Bermudez', temperament: 'idealist', need: 'debt' },
-    driver: { id: 'p-records-office-13', name: 'Alba Ferrer', temperament: 'idealist', need: 'cash' },
-    guard: { id: 'p-records-office-02', name: 'Ulrich Sandvik', temperament: 'mercenary', need: 'debt' },
-    councillor: { id: 'p-records-office-01', name: 'Bogdan Vale', temperament: 'mercenary', need: 'advancement' },
-    src: 'people run r013 (accepted, brief 010), as M-2 cast it at the 17:00 start (Keel, 2026-10-15). Sky 2026-10-15: Inez is an Idealist and Pay is the lesson. mission.json has no pins yet; when Waymark pins, the site takes them.',
-  };
+  // ---- the cast: M-2's own casting (tools/missions/handover/cast.ts castRoles, { play: true }) on the people file, at the mission's
+  // startsAt. If M-2 can't cast a role this fails, naming why; it never falls back to a person written here.
+  const peopleText = readFileSync(join(root, src.people), 'utf8'), peopleIn = JSON.parse(peopleText);
+  const placeOf = new Map<string, { at: V; kind: string; name: string; plot?: string }>(peopleIn.places.map((p: { id: string; at: V; kind: string; name: string; plot?: string }) => [p.id, p]));
+  const casting = castRoles(peopleIn.persons, mission, {
+    toPlan, placeAt: (id) => placeOf.get(id)?.at,
+    polyOf: (id) => { const p = placeOf.get(id); return p?.kind === 'bay' ? civ.bays.find((b: { id: string }) => b.id === p.name)?.poly : undefined; },
+    plotOf: (id) => placeOf.get(id)?.plot,
+  }, castRules(), { play: true });
+  const failed = casting.filter((c) => !c.ok);
+  if (failed.length) throw new Error(`M-2 can't cast the Handover from ${src.people} at ${mission.clock.startsAt}: ${failed.map((c) => `${c.role}: ${c.why}`).join('; ')}`);
+  const byId = new Map<string, { id: string; name: string; temperament: string; need: string }>(peopleIn.persons.map((p: { id: string; name: string; temperament: string; need: string }) => [p.id, p]));
+  const cast: Record<string, unknown> = {};
+  for (const c of casting) { const p = byId.get(c.pinned!)!; cast[c.role] = { id: p.id, name: p.name, temperament: p.temperament, need: p.need }; }
+  cast.from = src.people;
+  cast.sha256 = createHash('sha256').update(peopleText).digest('hex');
+  cast.startsAt = mission.clock.startsAt;
+  if (src.fixture) cast.fixture = src.fixture;
+  cast.src = 'tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks';
 
   const site = {
     schema: 'suborned.sim.site/1',
@@ -150,6 +171,7 @@ export function buildSite(): { json: string; site: unknown } {
     rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
     getaway: { car: 'd:Getaway bay', src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
+    fight: { ambush: ambush.map((_, i) => `ambush-${i + 1}`), police: police.map((_, i) => `police-${i + 1}`), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },
     schedule,
     purse: 100000,
     purseSrc: 'GDD §07: Purse $100,000',
@@ -173,8 +195,20 @@ function pretty(v: unknown, ind = ''): string {
   return JSON.stringify(v);
 }
 
+/** The source the committed site was built from (its cast.from and cast.fixture), so a check rebuilds it from the same people. */
+export const sourceOfSite = (): Source => {
+  const c = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).cast;
+  return { people: c.from, ...(c.fixture ? { fixture: c.fixture } : {}) };
+};
+
 if (import.meta.main) {
-  const { json } = buildSite();
+  // bun run sim:site [--people FILE --fixture "why this file and not the promoted cast"]: writes the site and the people extract, from one people file
+  const a = process.argv.slice(2), at = (k: string) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : undefined; };
+  const src: Source = { people: at('--people') ?? PROMOTED_PEOPLE, ...(at('--fixture') ? { fixture: at('--fixture')! } : {}) };
+  if (src.people !== PROMOTED_PEOPLE && !src.fixture) throw new Error('a people file other than the promoted one is a fixture: say why with --fixture');
+  const { json } = buildSite(src);
   writeFileSync(join(root, SITE_FILE), json);
-  console.log(`wrote ${SITE_FILE} (${json.length} bytes)`);
+  const people = buildPeople(src);
+  writeFileSync(join(root, PEOPLE_OUT), people);
+  console.log(`wrote ${SITE_FILE} (${json.length} bytes) and ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''}`);
 }

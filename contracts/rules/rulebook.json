@@ -133,6 +133,15 @@
   "patrol-depth-m": {"v": 24, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the sweeping patrol sees 24 deep"},
   "patrol-half-base-cm": {"v": 200, "unit": "cm", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth"},
   "patrol-half-per-mille": {"v": 650, "unit": "per-mille", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth"},
+  "fight-safe-hostiles": {"v": 5, "unit": "count", "tag": "S", "src": "§07 final fight [S]: 3–5 hostiles; safe: rivals ambush extraction, turned driver −1, earlier false tip −1", "proposed": true, "reason": "the base that §07's two −1s bring down to exactly its range: 5 unprepared, 3 with the driver turned and the rivals tipped off."},
+  "fight-loud-officers": {"v": 2, "unit": "count", "tag": "S", "src": "§07 final fight, loud: police from west street, 2–4 officers", "proposed": true, "reason": "§07 gives the range; the low end is the base, and only violence raises it (fight-loud-alert, fight-loud-civilian), so the count says how loud the run was."},
+  "fight-loud-alert": {"v": 1, "unit": "count", "tag": "S", "src": "§07 loud: 2–4 officers", "proposed": true, "reason": "+1 officer when Alert reached 3 (lockdown): the city sends more to a run a civilian saw."},
+  "fight-loud-civilian": {"v": 1, "unit": "count", "tag": "S", "src": "§07 loud: 2–4 officers; §06 civilians targetable", "proposed": true, "reason": "+1 officer when a civilian was shot: the fourth officer is the price of the ugliest run."},
+  "fight-modifier": {"v": 1, "unit": "count", "tag": "S", "src": "§07 safe: turned driver blocks rival car (−1 rival); earlier false tip (−1 rival)"},
+  "fight-warn-s": {"v": 10, "unit": "s", "tag": "S", "src": "§07 safe: helped Inez warns 10 s early"},
+  "fight-volley-s": {"v": 20, "unit": "s", "tag": "S", "src": "§07 final fight [S]: 30–60 s; §06 fights measure preparation", "proposed": true, "reason": "the hostiles fire one volley at the Enforcer every 20 s while any of them sees him. The Enforcer drops one every 12 s (2 hits, a shot every 6 s), so 3 hostiles last 36 s and 5 last 60 s, §07's span; 3 health takes 2 volleys and a third kills. Preparation decides it: 3 hostiles (driver, false tip) are beaten before the third volley, 5 are not without the guard or the 10 s warning."},
+  "fight-ambush-m": {"v": 20, "unit": "m", "tag": "S", "src": "§07 safe: rivals ambush extraction", "proposed": true, "reason": "the ambush springs when the Enforcer brings Vale within 20 m of the getaway car: close enough that the car is the bait, far enough that the Enforcer can't just step in."},
+  "fight-hold-m": {"v": 25, "unit": "m", "tag": "S", "src": "§07 final fight [S]: always; win: Vale alive at getaway car", "proposed": true, "reason": "the car can't leave while a hostile still stands within 25 m of it: the fight is always fought, as §07 says, and its length is the preparation's measure."},
   "eye-cm": {"v": 160, "unit": "cm", "tag": "S", "src": "§05 levels: sightlines run in 3D", "proposed": true, "reason": "one eye height for everyone, so an occluder blocks a sightline when it spans that height; the top-down test had no heights."}
  },
  "standing": {
@@ -275,8 +284,17 @@
   "tag": "B",
   "src": "§05 cameras, watchers, levels; the top-down test's cones"
  },
+ "fight": {
+  "safe": {"hostiles": "v:fight-safe-hostiles", "minus": "v:fight-modifier", "warn": "v:fight-warn-s", "ambush": "v:fight-ambush-m"},
+  "loud": {"officers": "v:fight-loud-officers", "alert": "v:fight-loud-alert", "civilian": "v:fight-loud-civilian"},
+  "volley": "v:fight-volley-s", "hold": "v:fight-hold-m",
+  "traced": true,
+  "tracedReason": "Motive decides (proposed: true): the final fight is always fought (§07), so if its shots add Trail and Alert as every shot does (§06 [B] +2 T, +1 A), every Handover ends Raised or High with about +10 T, and a quiet route's debrief is never Calm. false: the fight's shots are the consequence, not a new act, and leave no Trail or Alert (the fight still draws the patrol, which answers gunfire). Today true: the rules as written.",
+  "rule": "The final fight (§07 [S]: always; 30–60 s; 3–5 hostiles) starts when the Enforcer has Vale. Loud (any shot or Alert ≥ 2): police officers run in from the response unit's entry, base `loud.officers`, +`loud.alert` if Alert reached 3, +`loud.civilian` if a civilian was shot; the seal clock runs; no allies. Safe (no shots, Alert ≤ 1): the rival crew ambushes the extraction when the Enforcer brings Vale within `safe.ambush` of the getaway car: `safe.hostiles`, −`safe.minus` if the driver is turned (he blocks the rival car), −`safe.minus` if the rivals were tipped off earlier; a helped Inez warns `safe.warn` early (the first volley comes that much later); the guard, if he never saw the cell and was never shot, runs in and fights them (he fires as a guard does). Every hostile drops at `cell.fire.hits` hits. While any sees the Enforcer the hostiles fire one volley every `volley`; the car can't leave while one stands within `hold` of it.",
+  "tag": "S", "src": "§06 fights; §07 final fight [S], loud and safe"
+ },
  "preview": {
-  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. While the cell does not know the target's temperament (Sky Q3), a line or outcome whose answer differs between the temperaments in the district's band shows '?' (its amount still shows, so the price is always on the card); one that every temperament answers alike shows its answer (Ask in a neutral district reads 'refused', not '?': Motive's review, other findings 3). Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. Any approach's outcome tells the cell the temperament.",
+  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. While the cell does not know the target's temperament (Sky Q3), a line or outcome whose answer differs between the temperaments in the district's band shows '?' (its amount still shows, so the price is always on the card); one that every temperament answers alike shows its answer (Ask in a neutral district reads 'refused', not '?': Motive's review, other findings 3). Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. No approach tells the cell the temperament (Sky: only Listen does); a refusal tells it only that this approach is refused by this person, so that card shows refused (✗) from then on (Aster's reading, 2026-10-15).",
   "unknown": "?",
   "knownBy": ["scout.listen"],
   "knownByRule": "The one switch for what reveals a temperament: completing an event listed in knownBy teaches the cell the subject's temperament. Sky, 2026-10-15 (Motive's fork, option A): Listen reveals need and temperament, Watch reveals routine only. Eyes give where and when, ears give who they are: after Watch alone, Pay shows '?' and an Idealist refuses it and remembers. GDD §04's preview line ('until Watch or Listen reveals the temperament') changes at the next version.",
@@ -361,8 +379,8 @@
    ],
    "price": [{ "line": "base", "usd": "p:approaches.ask.usd", "s": "p:approaches.ask.timeS", "trail": "p:approaches.ask.trail" }],
    "outcomes": [
-    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
-    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "ask" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "ask" }, { "do": "debrief", "line": "turned-how" }] }
    ],
    "also": [
     { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "standing", "band": ["hero"] }], "changes": [{ "do": "move", "on": "volunteer" }] },
@@ -391,8 +409,8 @@
     { "line": "menace-discount", "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["mercenary"] }], "usd": "v:mercenary-menace-usd" }
    ],
    "outcomes": [
-    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
-    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "pay" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "pay" }, { "do": "debrief", "line": "turned-how" }] }
    ],
    "also": [
     { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "need-met-by", "approach": "pay" }], "changes": [{ "do": "need-met" }] },
@@ -422,9 +440,9 @@
    ],
    "outcomes": [
     { "id": "kept", "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "kept" }] },
-    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
-    { "id": "turned", "when": [{ "k": "orders-reached", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "turn" }, { "do": "remember", "act": "help" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] },
-    { "id": "not-yet", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "remember", "act": "help" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "not-yet" }] }
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [{ "k": "orders-reached", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "turn" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "turned-how" }] },
+    { "id": "not-yet", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "not-yet" }] }
    ],
    "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
    "witnesses": [
@@ -451,8 +469,8 @@
     { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }], "trail": "v:worse-pressure-trail" }
    ],
    "outcomes": [
-    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
-    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "pressure" }, { "do": "turn" }, { "do": "remember", "act": "pressure" }, { "do": "learn", "what": ["temperament"], "of": "subject" }, { "do": "debrief", "line": "turned-how" }] }
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "pressure" }, { "do": "turn" }, { "do": "remember", "act": "pressure" }, { "do": "debrief", "line": "turned-how" }] }
    ],
    "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
    "witnesses": [{ "act": "threat" }]
