@@ -106,3 +106,63 @@ Places are the civic block's. The Scout listens from `beside-inez`, because the 
 - **Latch (D):** load `sim/Suborned.Sim` (netstandard2.1) with `Engine.FromTexts`, feed it orders, and run `Scenarios.All` in Unity.
 - **Redline:** review D4 (no floats in state) and P1.
 - **Suture:** re-baseline the 28 against `play --json`.
+
+## Round 2 (2026-10-15): the final fight, the city's people, Aster's two fixes, Redline's review
+
+**The final fight (§07 [S]; N10, N11).** It starts when the Enforcer has Vale. The branch follows §07's rule: loud if any shot was fired or Alert ≥ 2, otherwise safe. The numbers are in the rulebook's `fight` section, tagged and proposed.
+- **Loud:** 2 officers, +1 if Alert reached 3, +1 if a civilian was shot. They run in from the north street, the seal clock runs, and there are no allies.
+- **Safe:** the rival crew ambushes when the Enforcer brings Vale within 20 m of the car. They are 5, minus 1 if the driver is turned and minus 1 if the rivals were tipped off earlier: exactly §07's 3–5.
+  - A helped Inez's warning holds back their first volley by 10 s.
+  - A guard who never saw the cell and was never shot runs in and fights them.
+- **The volleys:** the hostiles fire one volley every 20 s while any of them sees the Enforcer.
+- **The car:** it can't leave while a hostile stands within 25 m of it.
+- **Results:**
+  - N10 (loud) wins through 2 officers in 18 s.
+  - N11 (route A, 5 rivals, warned, guard ally) wins in 41 s, 2 hits taken.
+  - N11b (route B, 3 rivals) wins in 32 s.
+- **For Motive:** `fight.traced` is a switch, today `true`. With it on, the fight's shots add Trail and Alert like every shot, so every Handover ends Raised or High with about +10 T, and a quiet route is never Calm.
+- **The 28 keep their world.** S01–S28 run with `finalFight: false` and `crowd: false`, as the top-down test had neither.
+
+**People step their routines (N12, N12b).**
+- `tools/sim/people.ts` reads the people file and writes `sim/data/handover.people.json`: block cm, mission seconds, out on the street or not, job, home and work flags, ties.
+- In the engine, each of the 122 people who aren't cast stands at the stop their routine gives, or walks between two stops, or is off the street.
+- Everyone on the street witnesses (`Start.crowd`, Suture's T4 switch). Security staff are not "civilians" for §05's violence rule.
+- N12b: four café customers see the Fixer clear Inez's debt. The witnessed act adds +1 T once, standing moves +1, and they remember the Fixer's face.
+
+**Aster's fixes.**
+1. **The cast now comes from M-2.** `sim:site` casts with `castRoles(..., { play: true })` from a people file, at `startsAt` 17:24:30, and fails loudly if a role can't be cast. Today the promoted file fails M-2 on the driver, guard and councillor.
+   - The site and the crowd therefore come from a labelled fixture, `sim/data/fixtures/harbour-district.handover-fix.people.json` (Pulse's fix cast, sha256 77eba841…).
+   - The fixture's driver is a Mercenary, so one Help no longer turns him and **§04's $80,000 purse no longer holds for this cast**. That is for Pulse and Motive.
+   - S20 and N11b now turn the driver the way the card says works in one order (Pay). N09 states an Idealist driver, since it tests the purse rule itself.
+2. **A refusal teaches the cell only that this approach is refused** (the card's ✗), never the temperament. No approach learns the temperament; only Listen does. S24 checks it.
+
+**Redline's review: what changed for each finding.**
+
+| finding | fix |
+|---|---|
+| E1, unknown = reject | The rules and the site are compiled at load into typed fields.<br>Every object the engine reads is key-checked. Every condition and effect value is checked.<br>Where a kind may stand is checked: cash-covers only in needs; nothing that prices in a price line; fit and orders-reached only in a Turn; no recursion.<br>Every value is bounded by its unit. Durations are at least 1 s, in C# and in zod.<br>All 15 of Redline's mutations are now rejected at load, and a test holds them.<br>`Step()` can't throw: an engine fault ends the run as `engine-error`, with the reason logged. |
+| E2, money | The card's price is locked when the order is given. The cash taken is kept on the operative, and a refusal refunds exactly that. A test moves standing mid-order: 90,000 taken, 90,000 back. |
+| E3, 0 s actions | Actions land on `BusyEnd <= Tick`, and 0 s values are rejected at load. |
+| E4, replay records | Inputs are hashed after dropping a BOM and making CRLF into LF; Windows and Mac replay the same.<br>`script <id>` writes a record: inputs hash, `Engine.Version` with the MVID, start hash, every checkpoint and the outcome. `play` verifies a stored record and names the first difference.<br>The checkpoint hash now covers GuardReachedCafe, incidents, the ledger, debrief lines, the chain, actions, orders with their answers, log codes, the money held on orders, and the patrol's presence. |
+| E5, cones | Facings are normalised to 1,024 inside `InCone`. A test checks 655 m and 926 m. |
+| E6, perf | A*'s buffers are pooled per thread with a generation stamp. S10 runs at about 60,000 sim-s/s; with 120 people and the fight, 11,000–15,000 (31 ms a run). |
+| E7, culture | Point and check text is invariant. A test compares every scenario's full `--json` report under sv-SE, ar-SA, fa-IR and tr-TR. |
+| E8, the 8:00 horizon | At 8:00, if the Enforcer holds Vale, the run logs `horizon.open` and goes on. That ruling is for Waymark and Motive. |
+| E9, overflow | Checked arithmetic in Debug, which the tests use. It found one cast, now explicit. |
+| E10, reproducible builds | `PathMap` is set, so the same source gives the same DLL bytes on any machine. |
+| E11, JSON | A leading BOM is dropped. Leading zeros, raw control characters and a bad `\u` are rejected. |
+| I1–I3 | Fixed:<br>I1: an order can no longer half-apply on a rules error, since nothing reads rules by path in play.<br>I2: `Play` stops at `until`.<br>I3: the patrol's presence is hashed. |
+
+**For Latch and Glyph:**
+- `Preview` builds a card: one A* plus four temperament evaluations. Call it when the selection or target changes, not every frame.
+- Use `Engine.FromTexts`, not `Engine.Load`, in Unity. `Load` caches statically.
+- Add a `link.xml` that preserves `Suborned.Sim` for High stripping.
+
+**Evidence**
+- `dotnet test sim/Suborned.Sim.Tests`: 139 passed, 0 failed. That covers 39 scenarios × 3 (pass, twice identical, replay), Redline's probes, cultures and rules.
+- `bun test tools/sim contracts`: 49 pass, 0 fail.
+- `bun run typecheck`: exits 0.
+- `perf` (Release): S10 at 49,900–67,000 sim-s/s, N11 at 11,000, N12 at 15,600.
+- `play out/sim/s20.record.json` matches its record. A tampered checkpoint fails with "checkpoint 5 differs at tick 600".
+
+**Next (Aster's 3):** investigators and watcher logs, then between-missions events, as far as the Handover's debrief needs.

@@ -53,10 +53,12 @@ public class ScenarioTests
     public void AScriptRoundTripsThroughTheOrderFormat()
     {
         var played = Scenarios.Run(Repo.Inputs, Scenarios.Find("S10")!).G;
-        var script = Script.Parse(Script.Write(played));
+        var script = Script.Parse(Script.Write(played, Repo.Inputs.Hash));
         var replay = Engine.Play(Repo.Inputs, script.Start, script.Orders, script.Until);
         Assert.Equal(Outcome.Success, replay.Result);
         Assert.Equal(played.Checkpoints, replay.Checkpoints);
+        Assert.Equal("", script.Verify(replay, Repo.Inputs.Hash));
+        Assert.NotEqual("", script.Verify(replay, Repo.Inputs.Hash ^ 1)); // other inputs: the record says so
     }
 }
 

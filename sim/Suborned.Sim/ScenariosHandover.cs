@@ -18,6 +18,34 @@ namespace Suborned.Sim
         static Start Turned(params string[] roles) { var s = new Start(); s.Turned.AddRange(roles); return s; }
         static int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }
 
+        /// <summary>Turn the driver as a player reads the card after Listen: the approach that turns him in one order, else Help again
+        /// until he turns. (The cast decides: the fixture's driver is a Mercenary, so Pay; an Idealist would take one Help.)</summary>
+        static void TurnDriver(Run r)
+        {
+            var g = r.G;
+            string a = g.Preview("help", Driver).Outcome == "turned" ? "help" : g.Preview("pay", Driver).Outcome == "turned" ? "pay" : "help";
+            r.Do(Fixer, "turn", Driver, a); r.Done(Fixer);
+            while (!g.Driver.Turned && !g.Over && a == "help") { r.Do(Fixer, "turn", Driver, a); r.Done(Fixer); }
+        }
+
+        /// <summary>Route A as S10 plays it, to the moment the Enforcer comes out with Vale.</summary>
+        static void RouteA(Run r, bool reroute = false)
+        {
+            var g = r.G;
+            r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
+            r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
+            r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
+            r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
+            r.Done(Scout); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+            while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+            r.Do(Fixer, "call", Inez);
+            r.To(r.Send(Enf, "d:Office entrance"));
+            while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+            r.Do(Enf, "enter");
+            if (reroute) r.Do(Tech, "reroute", "patrol");
+            r.Done(Enf);
+        }
+
         static void Handover()
         {
             Add("S01", "13", "The pickup camera covers the car, the entrance camera the door; neither sees through the Office; a loop blinds the entrance camera.", r =>
@@ -103,7 +131,7 @@ namespace Suborned.Sim
                 r.To(r.Send(Enf, "d:Office entrance"));
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.Send(Enf, "d:Getaway bay");
-                var car = r.At("d:Getaway bay"); int reach = g.R.RefI("cell", "reach") * 100;
+                var car = r.At("d:Getaway bay"); int reach = g.R.ActReachCm;
                 while (!g.Over && !G.Within(r.Op(Enf).Pos, car, reach)) g.Step();
                 r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "a witnessed shooting leaves a narrow escape window");
@@ -355,7 +383,7 @@ namespace Suborned.Sim
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
                 r.Do(Scout, "watch", Driver); r.Done(Scout);
                 r.Do(Scout, "listen", Driver); r.Done(Scout); // Sky 2026-10-15: Listen, not Watch, gives the need (the prototype's watch did)
-                r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);
+                TurnDriver(r);
                 r.Is(g.Driver.Turned, "the driver is turned");
                 r.To(r.SendTo(Scout, new Pt(8250, -3100)));
                 r.To(T(320));
@@ -460,7 +488,8 @@ namespace Suborned.Sim
                 r.Is(!g.Inez.Turned, "an Idealist refuses the fee");
                 r.Eq(g.Cash, 100000L, "the fee stays with the cell");
                 r.Eq(g.Trail, 2, "the offer still leaves its trail");
-                r.Is(g.Inez.Has("refusal") && g.Inez.KTemperament, "she remembers it, and the cell now knows her temperament");
+                r.Is(g.Inez.Has("refusal"), "she remembers the refusal");
+                r.Is(!g.Inez.KTemperament && g.Preview("pay", Inez).Outcome == "refused", "the cell learns only that she refuses a fee (✗), not her temperament");
             });
 
             Add("S25", "434", "Pressure: $0, +4 T (one step worse on an Idealist), and she can be called.", r =>
@@ -503,7 +532,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Scout, "d:Café door");
-                while (!G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.RefI("cell", "reach") * 100)) g.Step();
+                while (!G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ActReachCm)) g.Step();
                 r.Is(r.Op(Scout).Walk != null, "the Scout is still approaching");
                 r.Do(Scout, "watch", Inez);
                 r.Is(r.Op(Scout).Walk == null, "engaging nearby stops movement");
@@ -523,7 +552,119 @@ namespace Suborned.Sim
                 r.Eq(g.FailCode, "", "no fail cause");
             });
 
+            Add("N10", "—", "Final fight, loud (§07): after shots the police come from the north street, 2–4 officers, the seal clock running, no allies; the Enforcer fights them off at the car.", r =>
+            {
+                var g = r.G;
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Enf, "fire", GuardR); r.To(g.EnforcerNextShot); r.Do(Enf, "fire", GuardR);
+                r.Is(g.GuardDown, "the guard is down: a loud run");
+                r.To(r.Send(Enf, "d:Office entrance"));
+                r.Do(Enf, "enter"); r.Done(Enf);
+                r.Eq(g.FightBranch, "loud", "any shot makes the final fight loud");
+                r.Is(g.Hostiles.Count >= 2 && g.Hostiles.Count <= 4, $"2–4 officers ({g.Hostiles.Count})");
+                r.Is(g.Lockdown != int.MaxValue / 4, "the seal clock is running");
+                r.Is(!g.GuardAlly, "no allies");
+                r.Send(Enf, "d:Getaway bay");
+                var car = r.At("d:Getaway bay");
+                while (!g.Over && !g.Within(r.Op(Enf).Pos, car, 2500)) g.Step();
+                r.FightItOut();
+                r.Do(Enf, "extract");
+                r.Eq(g.Result, Outcome.Success, "the loud route wins through the fight");
+                var d = Debrief.Of(g);
+                r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
+                r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
+            });
+
+            Add("N11", "—", "Final fight, safe (§07): route A, quiet, then the rival crew ambushes the extraction; the helped Inez warns 10 s early and the guard, who never saw the cell, fights them.", r =>
+            {
+                var g = r.G;
+                RouteA(r, reroute: true); // the Tech diverts the patrol while the Enforcer is inside: the fight's gunfire would draw it (§05 [B] 30 m)
+                r.Eq(g.FightBranch, "safe", "no shots, Alert ≤ 1: the final fight is safe");
+                r.Eq(g.Hostiles.Count, 5, "five rivals: no driver turned, no false tip");
+                r.Is(g.FightWarned, "the helped Inez warns");
+                r.Is(g.GuardAlly, "the guard never saw the cell, so he fights them");
+                r.Send(Enf, "d:Getaway bay");
+                while (!g.Over && g.FightSprung == int.MaxValue / 4) g.Step();
+                r.Eq(g.NextVolley, g.FightSprung + T(3 + 10), "the first volley comes 10 s later for the warning");
+                r.FightItOut();
+                r.Do(Enf, "extract");
+                r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
+                r.Is(g.DownedByGuard > 0, "the guard dropped at least one of them");
+                var dd = Debrief.Of(g);
+                r.Is(dd.FightWhy.Contains("waitress-warns") && dd.FightWhy.Contains("guard-fights-them"), "the debrief says why: Inez's warning, the guard");
+            });
+
+            Add("N11b", "—", "Final fight, safe, prepared (§07): route B with the driver turned (he blocks the rival car, −1) and the rivals tipped off earlier (−1): three rivals.", r =>
+            {
+                var g = r.G;
+                r.Send(Enf, "d:Service lane");
+                r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
+                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                TurnDriver(r);
+                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.Eq(g.FightBranch, "safe", "a quiet route B: the final fight is safe");
+                r.Eq(g.Hostiles.Count, 3, "three rivals: the turned driver and the earlier false tip take one each");
+                r.To(r.Send(Enf, "d:Getaway bay"));
+                r.FightItOut();
+                r.Do(Enf, "extract");
+                r.Eq(g.Result, Outcome.Success, "the prepared route wins");
+            });
+
+            Add("N12", "—", "People step their routines (§04, brief 010): at each tick everyone stands at the stop the people file gives, or walks between two stops, or is off the street.", r =>
+            {
+                var g = r.G;
+                r.Is(g.Walkers.Count > 100, $"the civic block's people are in ({g.Walkers.Count})");
+                bool atStops = true; int walking = 0, onStreet0 = 0;
+                Walker? mover = null;
+                for (int t = 0; t <= T(480); t += T(30))
+                {
+                    r.To(t);
+                    foreach (var w in g.Walkers)
+                    {
+                        var at = g.CrowdPos(w);
+                        int i = Array.FindIndex(w.From, f => f <= t);
+                        bool inStop = false;
+                        for (int k = 0; k < w.Place.Length; k++)
+                            if (t >= w.From[k] && t < w.To[k]) { inStop = true; if (w.Out[k] ? at != g.People2!.Places[w.Place[k]] : at != null) atStops = false; }
+                        if (!inStop && at.HasValue) { walking++; mover ??= w; }
+                        if (t == 0 && at.HasValue) onStreet0++;
+                    }
+                }
+                r.Is(atStops, "everyone at a stop stands at its place, or is off the street (at home, inside, beyond)");
+                r.Is(onStreet0 > 10, $"people are out on the street at 0:00 ({onStreet0})");
+                r.Is(walking > 0 && mover != null, $"someone walks between stops during the mission ({mover?.P.Id})");
+                if (mover != null)
+                {
+                    int k = 0; while (k + 1 < mover.Place.Length && !(mover.To[k] <= g.Tick && g.Tick < mover.From[k + 1])) k++;
+                    var seen = new List<Pt>();
+                    for (int t = 0; t <= T(480); t += Game.Hz) { var p = g.CrowdPos(mover, t); if (p.HasValue && !seen.Contains(p.Value)) seen.Add(p.Value); }
+                    r.Is(seen.Count > 5, $"{mover.P.Name} moves in live time ({seen.Count} positions)");
+                }
+            });
+
+            Add("N12b", "—", "The crowd witnesses (§05): the Fixer helps Inez with people at the café; a witness adds Trail once, moves standing toward Hero (§04 clear debts publicly) and remembers the Fixer's face.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Fixer, "d:Courtyard"));
+                int nearby = 0; var door = r.At("d:Café door");
+                foreach (var w in g.Walkers) { var p = g.CrowdPos(w); if (p.HasValue && G.Within(p.Value, door, 1300)) nearby++; }
+                r.Is(nearby > 0, $"people stand near the café door ({nearby})");
+                int trail = g.Trail;
+                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                r.Is(g.Inez.Turned, "Inez is turned");
+                r.Eq(g.Trail - trail, 2, "+1 T for the Help, +1 T for the witnessed debt-clearing (once, however many saw it)");
+                r.Eq(g.Standing, 1, "a public debt-clearing moves standing toward Hero");
+                r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness remembers the Fixer's face");
+                r.Is(g.Ledger.Exists(l => l.cause == "witnessed:debt-cleared:waitress"), "the ledger names the witnessed act");
+            });
+
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Known[Driver] = new List<string> { "routine", "need", "temperament" };
+            var purse = new Start(); purse.Known[Inez] = known.Known[Inez]; purse.Known[Driver] = known.Known[Driver];
+            purse.Temperament[Driver] = "idealist"; // §04's purse is for a driver one Help turns (Motive §3); the fixture cast's driver is a Mercenary
             Add("N09", "—", "The purse (§04): Help Inez + Help the driver = $80,000 fits $100,000.", r =>
             {
                 var g = r.G;
@@ -531,7 +672,7 @@ namespace Suborned.Sim
                 r.To(r.Send(Fixer, "d:Boarding pavilion")); r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);
                 r.Is(g.Inez.Turned && g.Driver.Turned, "both turned");
                 r.Eq(g.Cash, 20000L, "$80,000 spent of $100,000");
-            }, known);
+            }, purse);
 
             var merc = new Start(); merc.Temperament[Inez] = "mercenary"; merc.Known[Inez] = new List<string> { "routine", "need", "temperament" }; merc.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver ($40,000): the order can't be given.", r =>

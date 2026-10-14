@@ -9,7 +9,7 @@ static class Probe
         var g = Engine.New(i); var s = i.SiteData;
         string[] from = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
         string[] to = { "d:Courtyard", "beside-inez", "cabinet", "d:Office approach", "d:Office entrance", "d:Meet driver", "d:Service lane", "rival-park", "d:Getaway bay", "d:Café door" };
-        int speed = i.Rules.RefI("cell", "speed");
+        int speed = i.Rules.CellSpeed;
         foreach (var f in from) foreach (var t in to)
         {
             var r = s.Grid.Route(s.Stand(f), s.Stand(t));

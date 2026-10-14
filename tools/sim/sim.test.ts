@@ -4,7 +4,8 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { buildSite, SITE_FILE } from './site';
+import { buildSite, SITE_FILE, sourceOfSite } from './site';
+import { buildPeople, PEOPLE_OUT } from './people';
 
 const root = join(import.meta.dir, '..', '..');
 const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
@@ -15,8 +16,18 @@ const sim = (...args: string[]) => {
 };
 
 describe('sim/data/handover.site.json', () => {
-  test('is what tools/sim/site.ts makes from the plan, the civic block and mission.json today (bun run sim:site)', () => {
-    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(buildSite().json);
+  const src = sourceOfSite();
+  const present = existsSync(join(root, src.people));
+  test.skipIf(!present)(`is what tools/sim/site.ts makes from the plan, the civic block, mission.json and ${src.people} today (bun run sim:site)`, () => {
+    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(buildSite(src).json);
+  });
+  test.skipIf(!present)('sim/data/handover.people.json comes from the same people file', () => {
+    expect(readFileSync(join(root, PEOPLE_OUT), 'utf8')).toBe(buildPeople(src));
+  });
+  test('the cast is M-2\'s, and a fixture says it is one', () => {
+    const c = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).cast;
+    expect(Object.keys(c)).toEqual(expect.arrayContaining(['waitress', 'driver', 'guard', 'councillor', 'from', 'sha256', 'startsAt']));
+    if (c.from !== 'out/people/harbour-district.people.json') expect(typeof c.fixture).toBe('string');
   });
 });
 

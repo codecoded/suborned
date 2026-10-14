@@ -7,7 +7,7 @@ import { num, type Cond, type Eff, type Event, type Rulebook } from './rulebook.
 
 export type Band = 'hero' | 'neutral' | 'menace';
 export type Fit = 'suits' | 'worse' | 'refused';
-export type Know = 'routine' | 'need' | 'temperament';
+export type Know = 'routine' | 'need' | 'temperament' | 'refused';
 export type Mem = { act: string; by: string; place: string; time: number; witnessed: boolean; told?: string[] };
 export type Subject = {
   id: string; tier: 'simulated' | 'background'; temperament: string; need: string;
@@ -17,6 +17,7 @@ export type Ctx = {
   subject: Subject;
   band: Band;
   knows: ReadonlySet<Know>; // what the cell knows of the subject
+  refusedKnown?: ReadonlySet<string>; // approaches the cell has seen this person refuse (a refusal teaches only that: Aster, 2026-10-15)
   cash?: number;
   trail?: number;
   outcome?: string; // set while `also` and `witnesses` are read
@@ -130,7 +131,8 @@ export type Quote = {
  */
 export function quote(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Quote {
   const p = priceLines(rb, people, ev, x);
-  const outcome = shownFor(people, x, (y) => resolve(rb, people, ev, { ...y, cash: undefined }).outcome);
+  const a = approachOf(ev);
+  const outcome = a && x.refusedKnown?.has(a) ? 'refused' : shownFor(people, x, (y) => resolve(rb, people, ev, { ...y, cash: undefined }).outcome);
   return { ...p, outcome };
 }
 

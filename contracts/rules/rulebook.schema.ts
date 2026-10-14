@@ -15,7 +15,7 @@ export const Ref = z.string().regex(/^(v:[a-z][a-z0-9-]*|p:[a-zA-Z][a-zA-Z0-9.-]
 export const TAGS = ['B', 'S', 'L'] as const;
 export const BANDS = ['hero', 'neutral', 'menace'] as const;
 export const FITS = ['suits', 'worse', 'refused'] as const;
-export const KNOWS = ['routine', 'need', 'temperament'] as const;
+export const KNOWS = ['routine', 'need', 'temperament', 'refused'] as const; // refused: the cell knows this event's approach is refused by this person
 export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
 export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'contact', 'person', 'investigator', 'city'] as const;
 
@@ -88,10 +88,15 @@ export const Eff = z.discriminatedUnion('do', [
 ]);
 export type Eff = z.infer<typeof Eff>;
 
+/** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
+export const UNIT_BOUNDS = {
+  s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [0, 100], alert: [0, 3], standing: [-1000, 1000],
+  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000],
+} as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
-  unit: z.enum(['usd', 's', 'm', 'cm', 'cm-per-s', 'trail', 'alert', 'standing', 'orders', 'scale-steps', 'entries', 'hops', 'count', 'per-mille']),
-});
+  unit: z.enum(Object.keys(UNIT_BOUNDS) as [keyof typeof UNIT_BOUNDS, ...(keyof typeof UNIT_BOUNDS)[]]),
+}).refine((x) => { const [lo, hi] = UNIT_BOUNDS[x.unit]; return x.v >= lo && x.v <= hi; }, { message: 'a value is outside its unit\'s bounds (a duration is at least 1 s)' });
 export const Line = z.strictObject({
   line: id, // the preview label key (K8)
   when: z.array(Cond).optional(),
@@ -191,6 +196,11 @@ export const Rulebook = z.strictObject({
     rivals: z.strictObject({ reach: Ref, half: Ref }),
     patrol: z.strictObject({ depth: Ref, halfBase: Ref, halfPerMille: Ref }),
     rule: text,
+  }),
+  fight: ground({
+    safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
+    loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
+    volley: Ref, hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
   }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   streams: ground({

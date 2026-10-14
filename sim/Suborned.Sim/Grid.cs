@@ -62,18 +62,30 @@ namespace Suborned.Sim
         static readonly int[] DJ = { 0, 0, 1, -1, 1, -1, 1, -1 };
 
         /// <summary>The shortest walk from a to b as an any-angle polyline (cm), or null if b is not reachable. b must stand on free ground.</summary>
+        /// <summary>A*'s buffers, kept between calls (Redline E6), one set per thread, since one grid serves every game that loads it
+        /// (the tests run games in parallel; Unity runs one thread). A cell's entries count only when its stamp is this call's generation,
+        /// so reuse can't change a route.</summary>
+        sealed class Pool
+        {
+            public int[] GScore = Array.Empty<int>(), Prev = Array.Empty<int>(), Stamp = Array.Empty<int>(); public bool[] Closed = Array.Empty<bool>(); public int Gen; public readonly Heap Heap = new Heap();
+            public void Fit(int n) { if (GScore.Length != n) { GScore = new int[n]; Prev = new int[n]; Stamp = new int[n]; Closed = new bool[n]; Gen = 0; } if (++Gen == int.MaxValue) { Array.Clear(Stamp, 0, n); Gen = 1; } Heap.Clear(); }
+            public int G(int k) => Stamp[k] == Gen ? GScore[k] : int.MaxValue;
+            public void Set(int k, int g, int p) { if (Stamp[k] != Gen) { Stamp[k] = Gen; Closed[k] = false; } GScore[k] = g; Prev[k] = p; }
+            public bool IsClosed(int k) => Stamp[k] == Gen && Closed[k];
+        }
+        [ThreadStatic] static Pool? pool;
+
         public Pt[]? Route(Pt a, Pt b)
         {
             Pt? s0 = NearestFree(a); if (!s0.HasValue || !Free(b)) return null;
             int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), ti = CI(b.X), tj = CJ(b.Y);
             int n = Nx * Ny, s = si * Ny + sj, t = ti * Ny + tj;
-            var gScore = new int[n]; var prev = new int[n]; var closed = new bool[n];
-            for (int k = 0; k < n; k++) { gScore[k] = int.MaxValue; prev[k] = -1; }
-            var heap = new Heap(); gScore[s] = 0; heap.Push(H(si, sj, ti, tj), s);
+            var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;
+            P.Set(s, 0, -1); heap.Push(H(si, sj, ti, tj), s);
             int orth = Cell, diag = Cell * 1414 / 1000;
             while (heap.Count > 0)
             {
-                int k = heap.Pop(); if (closed[k]) continue; closed[k] = true;
+                int k = heap.Pop(); if (P.IsClosed(k)) continue; P.Closed[k] = true;
                 if (k == t) break;
                 int i = k / Ny, j = k % Ny;
                 for (int d = 0; d < 8; d++)
@@ -81,14 +93,14 @@ namespace Suborned.Sim
                     int ni = i + DI[d], nj = j + DJ[d];
                     if (!FreeCell(ni, nj)) continue;
                     if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue; // no corner cutting
-                    int nk = ni * Ny + nj; if (closed[nk]) continue;
-                    int ng = gScore[k] + (d < 4 ? orth : diag);
-                    if (ng < gScore[nk]) { gScore[nk] = ng; prev[nk] = k; heap.Push(ng + H(ni, nj, ti, tj), nk); }
+                    int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
+                    int ng = P.G(k) + (d < 4 ? orth : diag);
+                    if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng + H(ni, nj, ti, tj), nk); }
                 }
             }
-            if (gScore[t] == int.MaxValue) return null;
+            if (P.G(t) == int.MaxValue) return null;
             var cells = new List<Pt>();
-            for (int k = t; k != s; k = prev[k]) cells.Add(Centre(k / Ny, k % Ny));
+            for (int k = t; k != s; k = P.Prev[k]) cells.Add(Centre(k / Ny, k % Ny));
             cells.Reverse();
             // the raw walk: from the start point, through the cell centres, to the exact end point
             var raw = new List<Pt> { a };
@@ -118,6 +130,7 @@ namespace Suborned.Sim
         {
             readonly List<long> a = new List<long>();
             public int Count => a.Count;
+            public void Clear() => a.Clear();
             public void Push(int pri, int cell)
             {
                 a.Add(((long)pri << 32) | (uint)cell);

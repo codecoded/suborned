@@ -14,14 +14,17 @@ namespace Suborned.Sim
     /// <summary>A simulated person (people.rules tiers.simulated): routine, need, temperament, memory, and what the cell knows of them.</summary>
     public sealed class Person
     {
-        public string Role = "", Id = "", Name = "", Temperament = "", Need = "";
+        public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Job = "";
+        /// <summary>The city's own security (§05: guards, patrol officers, investigators, watchers) are no civilians: violence they see is not §05's "seen by a civilian".</summary>
+        public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard";
         public readonly int[] Sc = new int[4];
         public readonly List<Mem> Memory = new List<Mem>();
         public bool Turned, NeedMet, Down;
         public bool KRoutine, KNeed, KTemperament; // the cell's knowledge of this person
+        public readonly SortedSet<string> KnownRefused = new SortedSet<string>(StringComparer.Ordinal); // approaches the cell saw this person refuse: the card's ✗
         public string Suspected = "";              // a need the briefing names (§07 cast: Inez in debt, the driver needs cash): shown as suspected, unlocks nothing
         public string Place = ""; // the place they stand at for the mission (memory's place)
-        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : throw new FormatException($"knowledge '{what}'");
+        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : what == "refused" ? KnownRefused.Count > 0 : throw new FormatException($"knowledge '{what}'");
         public void Learn(string what) { if (what == "routine") KRoutine = true; else if (what == "need") KNeed = true; else if (what == "temperament") KTemperament = true; else throw new FormatException($"knowledge '{what}'"); }
         public void Forget(string what) { if (what == "routine") KRoutine = false; else if (what == "need") KNeed = false; else if (what == "temperament") KTemperament = false; }
         public int Count(string act) { int n = 0; foreach (var m in Memory) if (m.Act == act) n++; return n; }
@@ -35,6 +38,7 @@ namespace Suborned.Sim
         public OpId Id; public Pt Pos;
         public Path? Walk; public long WalkMm;           // a move in progress
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
+        public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
         public static OpId Parse(string s) => s == "scout" ? OpId.Scout : s == "fixer" ? OpId.Fixer : s == "tech" ? OpId.Tech : s == "enforcer" ? OpId.Enforcer : throw new FormatException($"operative '{s}' is unknown (scout, fixer, tech, enforcer)");
