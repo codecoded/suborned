@@ -2,6 +2,9 @@
 // additive, double-sided, unlit, never casting or receiving a shadow. Colour = the kit row's colour x strength x alpha.
 //   _Mode 0 (beam): an open cone, UV v = 0 at the ground to 1 at the nozzle; brightest at the nozzle, _Floor of it at the ground.
 //   _Mode 1 (halo): a flat disc, UV = x, y in metres from the beam centre; full inside _Inner, falling to _Floor at _Radius.
+//   _Mode 2 (field): the lit strip's glow (DK_Cross_Pool on LightField_1/2, brief 009 option d1, Sky's pick 15 Oct): UV = metres from
+//   the quad's centre, v across the line; (1 - |v| / _Radius)^1.5, _Radius the half-width (1.95 m), as Vela's d1 render drew it
+//   (tools/decokit/render009opts.py additive_glow: peak 0.30 x the lit dot colour). Glint sets the strength.
 // Fog fades it to nothing (additive: fog colour black), so far eyes do not glow through the haze.
 Shader "Suborned/Cross Glow"
 {
@@ -10,7 +13,7 @@ Shader "Suborned/Cross Glow"
         _BaseColor("Colour", Color) = (0.608, 0.812, 0.761, 1)
         _Strength("Strength", Float) = 2.0
         _Alpha("Alpha", Range(0, 1)) = 0.28
-        [Enum(Beam,0,Halo,1)] _Mode("Mode", Float) = 0
+        [Enum(Beam,0,Halo,1,Field,2)] _Mode("Mode", Float) = 0
         _Floor("Floor", Range(0, 1)) = 0.25
         _Inner("Inner radius (m)", Float) = 0.15
         _Radius("Radius (m)", Float) = 0.47
@@ -50,9 +53,9 @@ Shader "Suborned/Cross Glow"
 
             half4 frag(V i) : SV_Target
             {
-                half k = _Mode < 0.5
-                    ? lerp(_Floor, 1.0h, saturate(i.uv.y))
-                    : lerp(1.0h, _Floor, smoothstep(_Inner, _Radius, length(i.uv)));
+                half k = _Mode < 0.5 ? lerp(_Floor, 1.0h, saturate(i.uv.y))
+                    : _Mode < 1.5 ? lerp(1.0h, _Floor, smoothstep(_Inner, _Radius, length(i.uv)))
+                    : pow(saturate(1.0h - abs(i.uv.y) / _Radius), 1.5h);
                 half3 c = _BaseColor.rgb * (_Strength * _Alpha * k);
                 c = MixFogColor(c, half3(0, 0, 0), i.fog);
                 return half4(c, 0);

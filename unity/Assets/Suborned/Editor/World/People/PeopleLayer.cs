@@ -16,7 +16,10 @@ namespace Suborned.World.People
     /// at one clock time, built into the generated scene as the root `people`, one child per simulated person named by id. No
     /// simulation (Keel's C# sim steps routines later): each person stands at the routine stop whose [from, to) holds the clock, or,
     /// in the gap between two stops, on the straight line between them at the fraction of the gap (the walk graph the checker uses,
-    /// tools/people/walk.ts, is not exported; a straight line is the snapshot's stand-in). A stop off the sheet ("beyond") is not drawn.
+    /// tools/people/walk.ts, is not exported; a straight line is the snapshot's stand-in). The line runs from the spot the person stood
+    /// on when the stop ended to the spot they will stand on (the place's own point for someone who was or will be inside), so no one
+    /// jumps to a place's centre when a stop ends (2026-10-15, brief 011 C plates: at 17:30:00 the seven drivers stood on one point).
+    /// The clock may carry seconds (17:24:30, mission 0:00). A stop off the sheet ("beyond") is not drawn.
     /// Exteriors only (Sky, 2026-10-15): people inside (behind the door at work, or at home) are not drawn; each place with anyone
     /// inside gets an `inside: N` counter (InsideCount) the record panel tags at its door. People outdoors at one place stand on a
     /// sunflower spiral round it, every spot clear of the export's building, civic and landmark footprints. Background
@@ -43,26 +46,40 @@ namespace Suborned.World.People
         public static void Build() => HarbourWorldBuilder.Batch(() =>
         {
             var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, "-clock");
-            int clock = i >= 0 && i + 1 < args.Length ? Minutes(args[i + 1]) : 17 * 60;
+            float clock = i >= 0 && i + 1 < args.Length ? Minutes(args[i + 1]) : 17 * 60;
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             Snapshot(clock);
             if (!EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene())) throw new IOException("People: could not save the scene");
         });
 
-        public static int Minutes(string hhmm)
+        /// <summary>HH:MM or HH:MM:SS as minutes of the day (17:24:30 = 1044.5).</summary>
+        public static float Minutes(string hhmm)
         {
-            var p = hhmm.Split(':');
-            if (p.Length != 2 || !int.TryParse(p[0], out var h) || !int.TryParse(p[1], out var m) || h < 0 || h > 24 || m < 0 || m > 59) throw new ArgumentException($"People: clock `{hhmm}` is not HH:MM");
-            return h * 60 + m;
+            var p = hhmm.Split(':'); int s = 0;
+            if (p.Length is < 2 or > 3 || !int.TryParse(p[0], out var h) || !int.TryParse(p[1], out var m) || (p.Length == 3 && !int.TryParse(p[2], out s))
+                || h < 0 || h > 24 || m < 0 || m > 59 || s < 0 || s > 59) throw new ArgumentException($"People: clock `{hhmm}` is not HH:MM or HH:MM:SS");
+            return h * 60 + m + s / 60f;
         }
 
+        /// <summary>The export the scene was built from (its stamp's exportPath), else the default export (out/world/, or -world).</summary>
+        public static string ExportOf(WorldStamp stamp) =>
+            stamp && !string.IsNullOrEmpty(stamp.exportPath) ? Path.GetFullPath(Path.Combine(HarbourWorldBuilder.RepoRoot, stamp.exportPath)) : Review.RenderSession.ExportPath;
+
         public static string Clock(int min) => $"{min / 60 % 24:00}:{min % 60:00}";
+
+        /// <summary>HH:MM on a whole minute, else HH:MM:SS.</summary>
+        public static string Clock(float min)
+        {
+            int sec = Mathf.RoundToInt(min * 60f);
+            return sec % 60 == 0 ? Clock(sec / 60) : $"{sec / 3600 % 24:00}:{sec / 60 % 60:00}:{sec % 60:00}";
+        }
 
         /// <summary>What the layer was built from and what it drew.</summary>
         public sealed class Result { public int Drawn, Walking, Inside, Beyond, Background; public string Sha; }
 
-        /// <summary>Replaces the `people` root of the open scene with a snapshot at `clock` minutes. Throws on anything the spec does not know.</summary>
-        public static Result Snapshot(int clock)
+        /// <summary>Replaces the `people` root of the open scene with a snapshot at `clock` minutes of the day (fractions are seconds:
+        /// 1044.5 = 17:24:30). Throws on anything the spec does not know.</summary>
+        public static Result Snapshot(float clock)
         {
             var path = PeoplePath;
             if (!File.Exists(path)) throw new FileNotFoundException($"People: {path} missing; run `bun run people`");
@@ -73,8 +90,8 @@ namespace Suborned.World.People
             var palette = J.A(J.Get(Json.Parse(File.ReadAllText(CivicLookPath)), "palette"), "materials").ToDictionary(m => J.S(m, "material"), m => J.S(m, "unlit"));
             var civicLook = Json.Parse(File.ReadAllText(CivicLookPath));
             var passable = new HashSet<string>(J.A(civicLook, "overhead").Concat(J.A(civicLook, "frame")).Cast<string>());
-            var world = WorldReader.Load(Review.RenderSession.ExportPath);
             var stamp = UnityEngine.Object.FindAnyObjectByType<WorldStamp>();
+            var world = WorldReader.Load(ExportOf(stamp));
             if (stamp && stamp.exportSha256 != world.Sha256) throw new InvalidDataException($"People: the scene was built from export {stamp.exportSha256[..12]}, the export on disk is {world.Sha256[..12]}; rebuild the world first");
 
             Color Hex(string material)
@@ -117,37 +134,77 @@ namespace Suborned.World.People
             var capsuleMesh = Prim(PrimitiveType.Capsule);
             var sphereMesh = Prim(PrimitiveType.Sphere);
 
-            // where each person is at `clock`
-            var standing = new List<(object p, string place, bool indoors, int stop)>();
-            var walking = new List<(object p, Vector2 at, string text)>();
-            foreach (var p in persons)
+            // where a person is at clock c: at stop `stop` (indoors or out), between stops `gap` and gap + 1, or off the sheet
+            (int stop, int gap, bool indoors, bool beyond) Locate(object p, float c)
             {
                 var stops = J.A(J.Get(p, "routine"), "stops");
                 var post = J.Get(p, "work") is { } w ? J.S(w, "post") : null;
                 var workPlace = J.Get(p, "work") is { } w2 ? J.S(w2, "place") : null;
-                int at = stops.FindIndex(s => In(clock, (int)J.F(s, "from"), (int)J.F(s, "to")));
+                int at = stops.FindIndex(s => In(c, (int)J.F(s, "from"), (int)J.F(s, "to")));
                 if (at >= 0)
                 {
                     var s = stops[at]; var place = J.S(s, "place"); var doing = J.S(s, "doing");
-                    if (place == "beyond") { res.Beyond++; continue; }
+                    if (place == "beyond") return (at, -1, false, true);
                     if (!places.ContainsKey(place)) throw new InvalidDataException($"People: {J.S(p, "id")} stops at unknown place {place}");
-                    bool indoors = doing == "home" || (place == workPlace && post == "inside" && doing is "work" or "meal" or "pre-shift");
-                    standing.Add((p, place, indoors, at));
-                    continue;
+                    return (at, -1, doing == "home" || (place == workPlace && post == "inside" && doing is "work" or "meal" or "pre-shift"), false);
                 }
-                int gap = -1;
                 for (int k = 0; k < stops.Count; k++)
                 {
                     int a = (int)J.F(stops[k], "to"), b = (int)J.F(stops[(k + 1) % stops.Count], "from");
-                    if (In(clock, a, b)) { gap = k; break; }
+                    if (!In(c, a, b)) continue;
+                    // off the sheet for part of the walk: no straight line on it
+                    bool off = J.S(stops[k], "place") == "beyond" || J.S(stops[(k + 1) % stops.Count], "place") == "beyond";
+                    return (-1, k, false, off);
                 }
-                if (gap < 0) throw new InvalidDataException($"People: {J.S(p, "id")} is neither at a stop nor between two at {Clock(clock)}");
-                var s0 = stops[gap]; var s1 = stops[(gap + 1) % stops.Count];
-                string p0 = J.S(s0, "place"), p1 = J.S(s1, "place");
-                if (p0 == "beyond" || p1 == "beyond") { res.Beyond++; continue; } // off the sheet for part of the walk: no straight line on it
+                throw new InvalidDataException($"People: {J.S(p, "id")} is neither at a stop nor between two at {Clock(c)}");
+            }
+
+            // the spot each person standing outdoors holds at clock c: a sunflower spiral round their place, by id, clear of footprints
+            var spotsAt = new Dictionary<float, Dictionary<string, Vector2>>();
+            Dictionary<string, Vector2> Spots(float c)
+            {
+                if (spotsAt.TryGetValue(c, out var hit)) return hit;
+                var spots = new Dictionary<string, Vector2>();
+                var outside = persons.Select(p => (p, l: Locate(p, c))).Where(x => x.l.stop >= 0 && !x.l.beyond && !x.l.indoors)
+                    .Select(x => (id: J.S(x.p, "id"), place: J.S(J.A(J.Get(x.p, "routine"), "stops")[x.l.stop], "place")));
+                foreach (var g in outside.GroupBy(x => x.place).OrderBy(g => g.Key, StringComparer.Ordinal))
+                {
+                    var centre = places[g.Key].at; int k = 0;
+                    foreach (var (id, _) in g.OrderBy(x => x.id, StringComparer.Ordinal))
+                    {
+                        Vector2 spot;
+                        for (; ; k++)
+                        {
+                            if (k > 4000) throw new InvalidDataException($"People: no free ground round {g.Key}");
+                            float r = spacing * Mathf.Sqrt(k), th = k * 2.399963f;
+                            spot = centre + new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * r;
+                            if (!ground.Blocked(spot)) { k++; break; }
+                        }
+                        spots[id] = spot;
+                    }
+                }
+                return spotsAt[c] = spots;
+            }
+
+            // where each person is at `clock`
+            var here = Spots(clock);
+            var standing = new List<(object p, string place, bool indoors, int stop)>();
+            var walking = new List<(object p, Vector2 at, string text)>();
+            foreach (var p in persons)
+            {
+                var l = Locate(p, clock);
+                if (l.beyond) { res.Beyond++; continue; }
+                var stops = J.A(J.Get(p, "routine"), "stops");
+                if (l.stop >= 0) { standing.Add((p, J.S(stops[l.stop], "place"), l.indoors, l.stop)); continue; }
+                var s0 = stops[l.gap]; var s1 = stops[(l.gap + 1) % stops.Count];
+                string p0 = J.S(s0, "place"), p1 = J.S(s1, "place"), id = J.S(p, "id");
                 int t0 = (int)J.F(s0, "to"), t1 = (int)J.F(s1, "from");
                 float f = Mathf.Clamp01(Span(t0, clock) / Mathf.Max(1f, Span(t0, t1)));
-                walking.Add((p, Vector2.Lerp(places[p0].at, places[p1].at, f), $"walking {places[p0].name} → {places[p1].name} ({f:P0}; straight line, the walk graph is not exported)"));
+                // from the spot they stood on (half a second before they left) to the one they will stand on, or the place's point
+                // when they were (or will be) inside: no one jumps to the place's centre when a stop ends
+                var a = Spots(Wrap(t0 - 1f / 120f)).TryGetValue(id, out var sa) ? sa : places[p0].at;
+                var b = Spots(t1).TryGetValue(id, out var sb) ? sb : places[p1].at;
+                walking.Add((p, Vector2.Lerp(a, b, f), $"walking {places[p0].name} → {places[p1].name} ({f:P0}; straight line, the walk graph is not exported)"));
             }
 
             var counters = new GameObject("inside"); counters.transform.SetParent(root.transform, false);
@@ -159,22 +216,10 @@ namespace Suborned.World.People
                 var ic = c.AddComponent<InsideCount>(); ic.place = places[g.Key].name; ic.count = g.Count();
                 res.Inside += ic.count;
             }
-            foreach (var g in standing.Where(x => !x.indoors).GroupBy(x => x.place).OrderBy(g => g.Key, StringComparer.Ordinal))
+            foreach (var (p, place, _, stop) in standing.Where(x => !x.indoors).OrderBy(x => x.place, StringComparer.Ordinal).ThenBy(x => J.S(x.p, "id"), StringComparer.Ordinal))
             {
-                var centre = places[g.Key].at; int k = 0;
-                foreach (var (p, place, _, stop) in g.OrderBy(x => J.S(x.p, "id"), StringComparer.Ordinal))
-                {
-                    Vector2 spot;
-                    for (; ; k++)
-                    {
-                        if (k > 4000) throw new InvalidDataException($"People: no free ground round {g.Key}");
-                        float r = spacing * Mathf.Sqrt(k), th = k * 2.399963f;
-                        spot = centre + new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * r;
-                        if (!ground.Blocked(spot)) { k++; break; }
-                    }
-                    var s = J.A(J.Get(p, "routine"), "stops")[stop];
-                    Person(p, spot, stop, $"{J.S(s, "doing")} at {places[place].name}");
-                }
+                var s = J.A(J.Get(p, "routine"), "stops")[stop];
+                Person(p, here[J.S(p, "id")], stop, $"{J.S(s, "doing")} at {places[place].name}");
             }
             foreach (var (p, at, text) in walking) { Person(p, at, -1, text); res.Walking++; }
             picker.source += $", {res.Inside} inside (not drawn)";
@@ -224,8 +269,9 @@ namespace Suborned.World.People
         }
 
         /// <summary>clock in [from, to), with to &lt; from running past midnight.</summary>
-        static bool In(int clock, int from, int to) => from <= to ? clock >= from && clock < to : clock >= from || clock < to;
-        static float Span(int a, int b) => ((b - a) % 1440 + 1440) % 1440;
+        static bool In(float clock, int from, int to) => from <= to ? clock >= from && clock < to : clock >= from || clock < to;
+        static float Span(float a, float b) => ((b - a) % 1440f + 1440f) % 1440f;
+        static float Wrap(float min) => (min % 1440f + 1440f) % 1440f;
         static string Sha(byte[] b) { using var h = SHA256.Create(); return string.Concat(h.ComputeHash(b).Select(x => x.ToString("x2"))); }
 
         /// <summary>Plan ground from the world export: the pavement height (plot slabs) and the footprints a person cannot stand in

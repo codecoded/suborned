@@ -100,6 +100,7 @@ namespace Suborned.World
             var root = Nodes.Group(null, RootName);
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
+            stamp.exportPath = Path.GetRelativePath(RepoRoot, Path.GetFullPath(path)).Replace('\\', '/');
             layers.Ground(Nodes.Group(root, "ground"), world.Ground);
             layers.Transit(Nodes.Group(root, "transit"), world.Transit);
             var buildings = Nodes.Group(root, "buildings");
