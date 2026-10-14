@@ -1,5 +1,6 @@
 // The kit digest a run's corpus was made from (chunker v3). The engine pins it for every run, whatever the objective: kit.json changes whenever
 // Vela adopts a piece, and without the pin that edit would change the corpus hash of every earlier run. Replay rebuilds the corpus from the pin.
+import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { root } from '../rag/config';
 import { sources } from '../rag/corpus';
@@ -8,6 +9,9 @@ import type { Check } from './plugin';
 import { sha256 as sha } from './sha';
 
 export const KIT_PIN = 'input.kit.digest.json';
+
+/** The pinned kit digest in a run folder, if the run has one (a repo without a kit pins none, nor does a run made before the pin). */
+export const pinnedKit = (dir: string): string | undefined => (existsSync(`${dir}/${KIT_PIN}`) ? `${dir}/${KIT_PIN}` : undefined);
 
 /** At run start: writes the digest into the run folder; returns the fields run.json records (none when the repo has no kit). */
 export async function pinKit(rdir: string): Promise<{ inputKit?: { source: string; sourceSha256: string; sha256: string; assets: number } }> {

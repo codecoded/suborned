@@ -6,6 +6,7 @@ import { writeJson } from '../rag/config';
 import { apply, seedStationOnPlot } from './apply';
 import { inProcess, ownersOf, viaCli } from './checker';
 import { geometry, plots, transit as lines } from './digest';
+import { pinnedKit } from '../gen/pin-kit';
 import { driftLedger } from './drift';
 import { objectives } from './objectives';
 import { pinPlan, readPlan } from './pins';
@@ -15,7 +16,7 @@ import { isFareSeed, seedFareClaim, SEEDED_AGENT, SEEDS } from './seed';
 import { applyDerived } from './timetable';
 import { toolsHash } from './toolhash';
 
-type State = { input: any; block: unknown; blockFile: string; planId: string; std: string };
+type State = { input: any; block: unknown; blockFile: string; planId: string; std: string; rdir: string };
 type Report = { ok: boolean; checks: any[]; stops: any[]; stations: any[] };
 const BUILD = ['datum', 'vantage', 'pulse'] as const;
 const j = (x: unknown) => JSON.stringify(x), isLine = (p: string) => p.startsWith('line'), isRule = (r: string) => /^[A-Z]+-[A-Z]\d+$/.test(r);
@@ -35,7 +36,7 @@ export const transit: Plugin<State> = {
     const plan = await readPlan(path);
     return { id: plan.id, version: plan.version, async pin(rdir) {
       const { block, blockFile, record } = await pinPlan(plan, rdir), std = (() => { const x = structuredClone(plan.input.standards); delete x.transit?.waived; return j(x); })();
-      return { state: { input: plan.input, block, blockFile, planId: plan.id, std }, record };
+      return { state: { input: plan.input, block, blockFile, planId: plan.id, std, rdir }, record };
     } };
   },
   skip: (s, r, key) => key === 'pulse' && pre(s, r).problems.some(isLine), // a line that cannot be built: no timetable on it
@@ -51,7 +52,7 @@ export const transit: Plugin<State> = {
     let exit = -1, report: Report = { ok: false, checks: [], stops: [], stations: [] };
     if (!skipped.includes('checker')) {
       await writeJson(planFile, plan);
-      exit = await viaCli(planFile, `${odir}/sheets/${s.planId}-v${version}.html`, checksFile, `${od}/checker.txt`, s.blockFile);
+      exit = await viaCli(planFile, `${odir}/sheets/${s.planId}-v${version}.html`, checksFile, `${od}/checker.txt`, s.blockFile, pinnedKit(s.rdir)); // the world rules run on the kit the run pinned (loop.ts pins it right after pin())
       report = await Bun.file(checksFile).json();
     }
     const checkerOk = !skipped.length && exit === 0 && report.ok && !problems.length, failed = report.checks.filter(c => !c.ok);

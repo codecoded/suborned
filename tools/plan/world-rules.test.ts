@@ -49,6 +49,7 @@ describe('world rules', () => {
     ['SG-1', 'a plot building standing on the SpaceHQ ground', (w) => { const g = plan.signatures![0]!.ground; w.buildings.push({ id: 'bld/parade-north/99/body', surface: 'commercial', ring: [[g[0] + 5, g[2] + 5], [g[0] + 25, g[2] + 5], [g[0] + 25, g[2] + 25], [g[0] + 5, g[2] + 25]], base: 0.18, height: 20 }); }],
     ['P-1', 'a part standing in the Parade gate opening (the gate block without its opening)', (w) => { w.megastructures[0].parts.push({ id: 'mega/parade-galleries/gate-block', surface: 'limestone', ring: [[264, -20], [288, -20], [288, 20], [264, 20]], base: 9.43, height: 25.37 }); }],
     ['SK-1', 'LinerDock as built, 205.1 m, on the liner berth', (w) => { const s = w.signatures.find((x: W) => x.id === 'tower/avenue-needle'); s.tip = 205.1; }],
+    ['K-2', 'a height cut the placed tower piece was not regenerated for (avenue-needle, tip -14.4 m)', (_w, _g, p) => { p.standards.buildings.towers.sites.find((x: W) => x.id === 'avenue-needle').regen.tip -= 14.4; }],
     ['SK-2', 'two crowns of one type 90 m apart that are not a pair', (_w, _g, p) => { const s = p.standards.buildings.towers.sites; s.find((x: W) => x.id === 'avenue-needle').crownType = 'disc'; }],
     ['MS-1', 'a megastructure with no reason', (_w, _g, p) => { p.megastructures[0].why = ''; }],
     ['MS-2', 'a footprint off the land it spans', (_w, _g, p) => { p.megastructures[0].footprint = [[900, 1000, 900, 1000]]; }],

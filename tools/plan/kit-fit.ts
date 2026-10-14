@@ -1,7 +1,8 @@
 // K-1: every kit ref in the generated world fits the slot the plan gives it. Landmarks: scaled piece inside the plan disc (r) and under
 // `top`; the skyport's pads inside its caisson. Roofs: the kit piece inside the usable roof rect. Street: inside the item's slot (kerb zone,
 // size catalogue). Gateways: the feet inside the piece and clear of the quay edge, the pier walk, the pylons and the beam. Regenerated towers:
-// tip <= towers.crownTip. Reads the world in process; the kit's sizes come from contracts/world/kit.json.
+// tip <= towers.crownTip. K-2: a regenerated tower stands to the tip its order states. Reads the world in process; the kit's sizes come from
+// contracts/world/kit.json.
 import type { KitRef } from '../../contracts/world/world.schema';
 import { scaled } from '../kit/fit';
 import { ctxOf as genCtx } from '../world/gen/common';
@@ -9,7 +10,7 @@ import { adopted, slotOf } from '../world/gen/kitrefs';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist } from './geom';
 import { quayBlock } from './street-zones';
-import { type R4, type WCtx, TOL, f1, rule } from './world-ctx';
+import { type R4, type WCtx, TIP_TOL, TOL, f1, rule } from './world-ctx';
 
 const rectPts = (r: R4, step = 0.5): V[] => {
   const o: V[] = [];
@@ -69,9 +70,24 @@ export function kitFitChecks(c: WCtx): Check[] {
     });
   }
   // regenerated towers: the tip stays under the crown ceiling (the Skyport Tower, the district's tallest mark, is not a tower site)
-  const T = plan.standards.buildings.towers, sites = (T.sites ?? []) as { id: string; regen?: { tip?: number } }[];
+  const T = plan.standards.buildings.towers, sites = (T.sites ?? []) as { id: string; regen?: { tip?: number; same?: string } }[];
   for (const s of sites) if (s.regen?.tip !== undefined) { total++; if (s.regen.tip > T.crownTip + TOL) bad.push(`tower ${s.id}: tip ${s.regen.tip} > crownTip ${T.crownTip}`); }
-  return [rule('K-1', G, 'Every kit ref is an adopted piece that fits its slot (landmark disc and top, roof rect, kerb zone, gateway feet clear of quay edge, walk, pylons and beam); regenerated tower tips <= towers.crownTip', total, bad, 'all fit', 'brief 006 B; plan landmarks, roofs.kit, streetscape, towers.crownTip')];
+
+  // K-2: a regenerated piece is fixed-size (regenerate, never stretch), so the plan's stated tip and the placed piece can part. The built tip is
+  // the world's own placement of the site's piece: its base (the podium deck) + the piece's height x its scale. A matched pair (regen.same) takes its partner's tip.
+  const bad2: string[] = [];
+  let total2 = 0;
+  for (const s of sites) {
+    const stated = s.regen?.tip ?? sites.find(o => o.id === s.regen?.same)?.regen?.tip, placed = w.signatures.find(x => x.id === `tower/${s.id}`), a = placed?.kit && by.get(placed.kit.id);
+    if (stated === undefined || !placed?.kit || !a) continue; // no tip stated, or the piece is not adopted yet (pending: the procedural tower stands): nothing built to hold against it
+    total2++;
+    const built = placed.base + scaled(a, placed.kit.scale)[1], off = built - stated;
+    if (Math.abs(off) > TIP_TOL) bad2.push(`${s.id}: ${placed.kit.id} built to ${f1(built)} m, ${s.regen?.tip === undefined ? `its pair ${s.regen!.same}'s ` : ''}regen.tip ${stated} (${off > 0 ? '+' : ''}${f1(off)} m)`);
+  }
+  return [
+    rule('K-1', G, 'Every kit ref is an adopted piece that fits its slot (landmark disc and top, roof rect, kerb zone, gateway feet clear of quay edge, walk, pylons and beam); regenerated tower tips <= towers.crownTip', total, bad, 'all fit', 'brief 006 B; plan landmarks, roofs.kit, streetscape, towers.crownTip'),
+    rule('K-2', G, `A regenerated tower stands to the tip its order states: the placed piece's top (podium deck + height x scale) is within ${TIP_TOL} m of regen.tip (a pair takes its partner's); a site whose piece is not adopted yet is not judged`, total2, bad2, `±${TIP_TOL} m`, 'standards.buildings.towers.sites[].regen.tip · tools/decokit (a piece is built to its order and never stretched; a height change is regenerated) · failing example: out/plan/variants/heights-cut.plan.json, avenue-needle cut to 26 storeys (regen.tip 153.4) with the 158.4 m Tower_Needle still placed (+14.4 m), and the avenue gates cut to 30 (154.8) with the DiscTowers (+10.8 m)'),
+  ];
 }
 
 const pointInQuad = (p: V, q: V[], m: number): boolean => { // convex quad, any winding: no edge has p more than m outside

@@ -58,6 +58,13 @@ export const stat = (id: string, group: string, name: string, value: string, lim
 
 export const f1 = (x: number) => x.toFixed(1);
 export const TOL = 0.011; // metres: the export rounds to 1 mm
+/**
+ * Metres a regenerated tower's built tip may differ from the tip its order states (K-2). The plan has no tip tolerance in its standards;
+ * this is the 0.5 that SK-1 and SG-1 already allow on a tip. Orders state a tip to 0.1 m and the pieces are built to them within 0.05 m
+ * (tools/decokit/fit.ts), but two live orders state a ceiling the piece sits under by 0.10 and 0.17 m (lantern-beacon, crescent-tower).
+ * A wrong storey is 3.6 m, seven times this, so a height cut that leaves the piece behind always fails.
+ */
+export const TIP_TOL = 0.5;
 
 export type R4 = [number, number, number, number];
 /** Distance from p to rect r (0 inside). */
