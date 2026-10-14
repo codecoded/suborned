@@ -23,7 +23,7 @@ Goal (Sky, 2026-10-15): "now we have the NPC basic structure, we need to think a
 
 ## Decisions (Sky, 2026-10-15, after Suture's QA and Keel's rulebook)
 - **The Handover starts at 17:24:30 city time:** the 5:30 chime is the Office's real 17:30 shift end. Roles must be in place when the mission needs them (Waymark, 52f2a2d).
-- **Inez is an Idealist, and Pay is the lesson.** Paying her blind fails and is remembered; once Listen has revealed her temperament and debt, Help ($40,000) fits the purse with the driver ($80,000), and Pressure is cheap but costs +3 T. §04's training table row "Pay $70,000" becomes a refusal for this cast: owed in the next GDD version. The 28 scenarios that pay Inez now expect the refusal.
+- **Inez is an Idealist, and Pay is the lesson.** Paying her blind fails and is remembered; once Listen has revealed her temperament and debt, Help ($40,000) fits the purse with the driver ($80,000), and Pressure is cheap but costs +4 T (one step worse on an Idealist). §04's training table row "Pay $70,000" becomes a refusal for this cast: owed in the next GDD version. The 28 scenarios that pay Inez now expect the refusal.
 - **Keel's 15 proposed rulebook values go ahead as [S] starting values,** reviewed by Motive; Sky can strike any.
 - **Redline's review** (`briefs/010/review/redline-2026-10-15.html`) is assigned: the people file and determinism to Splice, the district sampling to Pulse, Unity perf honesty to Latch.
 - **Glint's ruling:** Editor shots clip at ARGB32 and the player is the true look. Latch makes previews honest before Glint retunes the light, and Sky sees the palette again on honest frames.
