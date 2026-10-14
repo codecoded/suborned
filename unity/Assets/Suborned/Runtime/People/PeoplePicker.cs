@@ -5,13 +5,15 @@ using UnityEngine.InputSystem;
 namespace Suborned.People
 {
     /// <summary>Graybox record panel (brief 010 E; Glyph does the real HUD later): in Play Mode a left click on a person's capsule
-    /// opens their record (top right, with a tag over the person), a click on empty ground or Esc closes it. Plain IMGUI, scaled to the screen height (laid out at 1080p).</summary>
+    /// opens their record (top right, with a tag over the person), a click on empty ground or Esc closes it. Places with people
+    /// inside (not drawn: exteriors only) carry a small `inside: N` tag at their door. Plain IMGUI, scaled to the screen height (laid out at 1080p).</summary>
     public sealed class PeoplePicker : MonoBehaviour
     {
         /// <summary>The snapshot the layer stands at, and where its people came from (set by the layer builder).</summary>
         public string clock, source;
         public PersonRecord selected;
 
+        [System.NonSerialized] InsideCount[] inside;
         [System.NonSerialized] GUIStyle box, title, body, dim, bold; // never carried over a domain reload: built on the first OnGUI
         const float W = 700f, Pad = 18f;
 
@@ -75,6 +77,20 @@ namespace Suborned.People
             var hs = body.CalcSize(new GUIContent(hint));
             GUI.Box(new Rect(16 * s, Screen.height - 46 * s, hs.x + 16 * s, 34 * s), GUIContent.none, box);
             GUI.Label(new Rect(24 * s, Screen.height - 42 * s, hs.x + 8 * s, 30 * s), hint, body);
+            if (Camera.main is { } c0)
+            {
+                inside ??= GetComponentsInChildren<InsideCount>();
+                foreach (var ic in inside)
+                {
+                    var sp = c0.WorldToScreenPoint(ic.transform.position);
+                    if (sp.z <= 0f || sp.x < 0 || sp.x > Screen.width || sp.y < 0 || sp.y > Screen.height) continue;
+                    var t = $"inside: {ic.count}";
+                    var size = dim.CalcSize(new GUIContent(t)) + new Vector2(12 * s, 4 * s);
+                    var r0 = new Rect(sp.x - size.x / 2, Screen.height - sp.y - size.y, size.x, size.y);
+                    GUI.Box(r0, GUIContent.none, box);
+                    GUI.Label(new Rect(r0.x + 6 * s, r0.y + 2 * s, size.x, size.y), t, dim);
+                }
+            }
             if (!selected) return;
             if (Camera.main is { } cam) // a tag over the selected person, so the panel and the capsule read as one
             {

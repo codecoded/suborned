@@ -17,10 +17,11 @@ namespace Suborned.World.People
     /// simulation (Keel's C# sim steps routines later): each person stands at the routine stop whose [from, to) holds the clock, or,
     /// in the gap between two stops, on the straight line between them at the fraction of the gap (the walk graph the checker uses,
     /// tools/people/walk.ts, is not exported; a straight line is the snapshot's stand-in). A stop off the sheet ("beyond") is not drawn.
-    /// People at one place stand on a sunflower spiral round it, the ones outdoors nearest, the ones indoors (behind the door at work,
-    /// or at home) further out and tinted, every spot clear of the export's building, civic and landmark footprints. Background
+    /// Exteriors only (Sky, 2026-10-15): people inside (behind the door at work, or at home) are not drawn; each place with anyone
+    /// inside gets an `inside: N` counter (InsideCount) the record panel tags at its door. People outdoors at one place stand on a
+    /// sunflower spiral round it, every spot clear of the export's building, civic and landmark footprints. Background
     /// people are counts per plot in the file, not persons: none are drawn. Colours: people.json (civic look palette materials).
-    /// Menu: Suborned/World/People/Snapshot 08:00 | 13:00 | 17:00. Batchmode: -executeMethod Suborned.World.People.PeopleLayer.Build
+    /// Menu: Suborned/World/People/Snapshot 08:00 | 09:00 | 13:00 | 17:00. Batchmode: -executeMethod Suborned.World.People.PeopleLayer.Build
     /// [-people &lt;path&gt;] [-clock HH:MM] (saves the scene).</summary>
     public static class PeopleLayer
     {
@@ -31,6 +32,7 @@ namespace Suborned.World.People
         public static string PeoplePath => HarbourWorldBuilder.Arg("-people", Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "people", "harbour-district.people.json"));
 
         [MenuItem("Suborned/World/People/Snapshot 08:00")] static void At08() => Menu(8 * 60);
+        [MenuItem("Suborned/World/People/Snapshot 09:00")] static void At09() => Menu(9 * 60);
         [MenuItem("Suborned/World/People/Snapshot 13:00")] static void At13() => Menu(13 * 60);
         [MenuItem("Suborned/World/People/Snapshot 17:00")] static void At17() => Menu(17 * 60);
         [MenuItem("Suborned/World/People/Remove")] static void RemoveMenu() { if (GameObject.Find(RootName) is { } g) Undo.DestroyObjectImmediate(g); }
@@ -57,7 +59,7 @@ namespace Suborned.World.People
         public static string Clock(int min) => $"{min / 60 % 24:00}:{min % 60:00}";
 
         /// <summary>What the layer was built from and what it drew.</summary>
-        public sealed class Result { public int Drawn, Walking, Indoors, Beyond, Background; public string Sha; }
+        public sealed class Result { public int Drawn, Walking, Inside, Beyond, Background; public string Sha; }
 
         /// <summary>Replaces the `people` root of the open scene with a snapshot at `clock` minutes. Throws on anything the spec does not know.</summary>
         public static Result Snapshot(int clock)
@@ -80,7 +82,7 @@ namespace Suborned.World.People
                 if (!palette.TryGetValue(material, out var hex)) throw new InvalidDataException($"People: material {material} is not in the civic look palette (CD-4 gates only that palette)");
                 return ColorUtility.TryParseHtmlString(hex, out var c) ? c : throw new InvalidDataException($"People: bad hex {hex}");
             }
-            float height = J.F(spec, "height"), radius = J.F(spec, "radius"), headD = J.F(spec, "head"), spacing = J.F(spec, "spacing"), clear = J.F(spec, "clearance"), tint = J.F(spec, "indoors");
+            float height = J.F(spec, "height"), radius = J.F(spec, "radius"), headD = J.F(spec, "head"), spacing = J.F(spec, "spacing"), clear = J.F(spec, "clearance");
             var headColour = Hex(J.S(spec, "headMaterial"));
             var blocks = J.O(J.Get(spec, "blocks")).ToDictionary(kv => kv.Key, kv => Hex((string)kv.Value));
 
@@ -88,6 +90,8 @@ namespace Suborned.World.People
             var units = J.A(o, "units").ToDictionary(u => J.S(u, "id"), u => J.S(u, "name"));
             var persons = J.A(o, "persons");
             var names = persons.ToDictionary(p => J.S(p, "id"), p => J.S(p, "name"));
+            string WorkOf(object p) => J.Get(p, "work") is { } w ? $"{J.S(w, "position") ?? J.S(w, "role")}, {(units.TryGetValue(J.S(w, "employer"), out var en) ? en : J.S(w, "employer"))}" : "lives here";
+            var jobs = persons.ToDictionary(p => J.S(p, "id"), WorkOf);
             var ground = new Ground(world, passable, clear);
 
             if (GameObject.Find(RootName) is { } old) UnityEngine.Object.DestroyImmediate(old);
@@ -97,16 +101,16 @@ namespace Suborned.World.People
             var res = new Result { Sha = Sha(bytes), Background = J.A(o, "background").Sum(b => (int)J.F(b, "residents") - (int)J.F(b, "simulated")) };
             picker.source = $"{Path.GetFileName(path)} {res.Sha[..12]}, {persons.Count} simulated, {res.Background} background (counts only, not drawn)";
 
-            var mats = new Dictionary<(string, bool), Material>();
+            var mats = new Dictionary<string, Material>();
             var lit = Shader.Find("Universal Render Pipeline/Lit") ?? throw new InvalidDataException("People: URP Lit shader not found");
-            Material Mat(string block, bool indoors)
+            Material Mat(string block)
             {
-                if (mats.TryGetValue((block, indoors), out var m)) return m;
+                if (mats.TryGetValue(block, out var m)) return m;
                 if (!blocks.TryGetValue(block, out var c)) throw new InvalidDataException($"People: look block `{block}` is not in people.json (unknown = reject)");
-                m = new Material(lit) { name = $"people/{block}{(indoors ? "/indoors" : "")}", enableInstancing = true };
-                m.SetColor("_BaseColor", indoors ? Color.Lerp(c, headColour, tint) : c);
+                m = new Material(lit) { name = $"people/{block}", enableInstancing = true };
+                m.SetColor("_BaseColor", c);
                 m.SetFloat("_Smoothness", 0.35f);
-                return mats[(block, indoors)] = m;
+                return mats[block] = m;
             }
             var headMat = new Material(lit) { name = "people/head", enableInstancing = true };
             headMat.SetColor("_BaseColor", headColour); headMat.SetFloat("_Smoothness", 0.35f);
@@ -146,11 +150,19 @@ namespace Suborned.World.People
                 walking.Add((p, Vector2.Lerp(places[p0].at, places[p1].at, f), $"walking {places[p0].name} → {places[p1].name} ({f:P0}; straight line, the walk graph is not exported)"));
             }
 
-            var taken = new List<Vector2>();
-            foreach (var g in standing.GroupBy(x => x.place).OrderBy(g => g.Key, StringComparer.Ordinal))
+            var counters = new GameObject("inside"); counters.transform.SetParent(root.transform, false);
+            foreach (var g in standing.Where(x => x.indoors).GroupBy(x => x.place).OrderBy(g => g.Key, StringComparer.Ordinal))
+            {
+                var at = places[g.Key].at; var c = new GameObject(g.Key);
+                c.transform.SetParent(counters.transform, false);
+                c.transform.localPosition = new Vector3(at.x, ground.Height(at), at.y);
+                var ic = c.AddComponent<InsideCount>(); ic.place = places[g.Key].name; ic.count = g.Count();
+                res.Inside += ic.count;
+            }
+            foreach (var g in standing.Where(x => !x.indoors).GroupBy(x => x.place).OrderBy(g => g.Key, StringComparer.Ordinal))
             {
                 var centre = places[g.Key].at; int k = 0;
-                foreach (var (p, place, indoors, stop) in g.OrderBy(x => x.indoors).ThenBy(x => J.S(x.p, "id"), StringComparer.Ordinal))
+                foreach (var (p, place, _, stop) in g.OrderBy(x => J.S(x.p, "id"), StringComparer.Ordinal))
                 {
                     Vector2 spot;
                     for (; ; k++)
@@ -161,17 +173,16 @@ namespace Suborned.World.People
                         if (!ground.Blocked(spot)) { k++; break; }
                     }
                     var s = J.A(J.Get(p, "routine"), "stops")[stop];
-                    var where = $"{J.S(s, "doing")} at {places[place].name}{(indoors ? " (indoors; drawn at the door)" : "")}";
-                    Person(p, spot, indoors, stop, where);
-                    if (indoors) res.Indoors++;
+                    Person(p, spot, stop, $"{J.S(s, "doing")} at {places[place].name}");
                 }
             }
-            foreach (var (p, at, text) in walking) { Person(p, at, false, -1, text); res.Walking++; }
-            Debug.Log($"People: snapshot {Clock(clock)} from {path} (sha256 {res.Sha[..12]}): {res.Drawn} drawn ({res.Indoors} indoors at their door, {res.Walking} walking), {res.Beyond} off the sheet, {res.Background} background people (counts only)");
+            foreach (var (p, at, text) in walking) { Person(p, at, -1, text); res.Walking++; }
+            picker.source += $", {res.Inside} inside (not drawn)";
+            Debug.Log($"People: snapshot {Clock(clock)} from {path} (sha256 {res.Sha[..12]}): {res.Drawn} drawn ({res.Walking} walking), {res.Inside} inside at {counters.transform.childCount} places (not drawn), {res.Beyond} off the sheet, {res.Background} background people (counts only)");
             EditorSceneManager.MarkSceneDirty(root.scene);
             return res;
 
-            void Person(object p, Vector2 at, bool indoors, int stop, string where)
+            void Person(object p, Vector2 at, int stop, string where)
             {
                 var id = J.S(p, "id");
                 var go = new GameObject(id);
@@ -180,17 +191,17 @@ namespace Suborned.World.People
                 var col = go.AddComponent<CapsuleCollider>();
                 col.height = height; col.radius = radius + 0.07f; col.center = new Vector3(0, height / 2, 0); // a little fatter than drawn: easier to click
                 float bodyH = height - headD - 0.03f;
-                Part(go.transform, "body", capsuleMesh, Mat(J.S(J.Get(p, "look"), "block"), indoors), new Vector3(0, bodyH / 2, 0), new Vector3(radius * 2, bodyH / 2, radius * 2));
+                Part(go.transform, "body", capsuleMesh, Mat(J.S(J.Get(p, "look"), "block")), new Vector3(0, bodyH / 2, 0), new Vector3(radius * 2, bodyH / 2, radius * 2));
                 Part(go.transform, "head", sphereMesh, headMat, new Vector3(0, height - headD / 2, 0), Vector3.one * headD);
                 var rec = go.AddComponent<PersonRecord>();
-                rec.id = id; rec.personName = J.S(p, "name"); rec.indoors = indoors; rec.where = where; rec.now = stop;
+                rec.id = id; rec.personName = J.S(p, "name"); rec.where = where; rec.now = stop;
                 var w = J.Get(p, "work");
                 rec.job = w == null ? "no work (lives here)" : $"{J.S(w, "position") ?? J.S(w, "role")}, {(units.TryGetValue(J.S(w, "employer"), out var en) ? en : J.S(w, "employer"))} ({J.S(w, "post")}, shift {Clock((int)J.F(J.Get(w, "shift"), "from"))}–{Clock((int)J.F(J.Get(w, "shift"), "to"))})";
                 var inst = J.S(p, "institution");
                 var st = J.Get(p, "start");
                 rec.temperament = $"{J.S(p, "temperament")}{(inst != null ? $" (to {inst})" : "")} · bravery {J.F(st, "bravery"):0.#}, resentment {J.F(st, "resentment"):0.#}, fear {J.F(st, "fear"):0.#}, loyalty {J.F(st, "loyalty"):0.#}";
                 rec.need = J.S(p, "need");
-                rec.ties = J.A(p, "ties").Select(t => $"{J.S(t, "kind")} · {(names.TryGetValue(J.S(t, "with"), out var n) ? n : J.S(t, "with"))}").ToArray();
+                rec.ties = J.A(p, "ties").Select(t => $"{J.S(t, "kind")} · {(names.TryGetValue(J.S(t, "with"), out var n) ? $"{n} ({jobs[J.S(t, "with")]})" : J.S(t, "with"))}").ToArray();
                 rec.routine = J.A(J.Get(p, "routine"), "stops").Select(s => $"{Clock((int)J.F(s, "from"))}–{Clock((int)J.F(s, "to"))}  {J.S(s, "doing")}, {(J.S(s, "place") == "beyond" ? "off the sheet" : places[J.S(s, "place")].name)}").ToArray();
                 res.Drawn++;
             }

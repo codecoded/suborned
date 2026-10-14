@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Suborned.World.People
 {
-    /// <summary>Brief 010 E evidence: the people layer at 08:00, 13:00 and 17:00 from the play camera (zoom 14, pitch 38, yaw 30,
+    /// <summary>Brief 010 E evidence: the people layer at 08:00, 09:00 (the guards walking to the café before their shift), 13:00 and 17:00 from the play camera (zoom 14, pitch 38, yaw 30,
     /// 1920x1080) over the café square (the export's play focus) and over the Records Office front (the same camera moved to the
     /// Office door), to &lt;repo&gt;/briefs/010/shots/people-&lt;HHMM&gt;-&lt;frame&gt;.png. Leaves the layer at 17:00 and saves the scene.
     /// Menu: Suborned/World/People/Shots (010). Batchmode (needs a GPU): -executeMethod Suborned.World.People.PeopleShots.Render</summary>
     public static class PeopleShots
     {
-        static readonly int[] Clocks = { 8 * 60, 13 * 60, 17 * 60 };
+        static readonly int[] Clocks = { 8 * 60, 9 * 60, 13 * 60, 17 * 60 };
         /// <summary>Plan point the second frame centres on: the Records Office public entrance (-160, -281.75) and the square in front.</summary>
         static readonly Vector2 Office = new(-160f, -284f);
 
