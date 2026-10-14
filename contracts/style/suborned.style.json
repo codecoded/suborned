@@ -2,8 +2,8 @@
   "$schema": "../hml-style.v2.schema.json",
   "contract": "hml.style/2",
   "id": "suborned",
-  "version": "0.18.0",
-  "date": "2026-10-13",
+  "version": "0.19.0",
+  "date": "2026-10-14",
   "status": "simple style: look and framing in the prompt; brief guidance in guide, read by Enhance and Explore",
   "notes": [
     "Optimistic surface, coercive underneath (design intent, not a prompt line).",
@@ -38,7 +38,8 @@
     "v0.11.2 (2026-10-07): Sky: every version kept the full-length coat although a shorter jacket had been asked for. The Versions type now lets the brief give a change for all figures (it replaces what the reference shows), not only per figure; the Explore agent restates standing changes in every brief.",
     "v0.11.3 (2026-10-07): Sky: Seedream 5.0 Pro dropped the chest plate and back harness when finishing a model sheet from a sketch; GPT Image 2 kept them. The Model sheet type now finishes with GPT Image 2.",
     "v0.17.0 (2026-10-12): Sky: presentation is 3D (the world is built from the plan, DecoKit plus procedural; painted plates at most an optional extra) and the world palette is a mix: pastel cream and peach base with saturated enamel accents, lagoon water, coral transit. palette_world records it from unity/Assets/Suborned/Editor/World/looks/harbour.json (sha256 in palette_world.source), current and tuneable. palette (the 6-colour mood set the concept tools compose from) is unchanged and still serves concept sheets for people and props. GDD v0.17.0 §15 is the art bible; the v0.15.0 html bible is history.",
-    "v0.18.0 (2026-10-13): Sky (brief 007): signals render unlit and emissive, each with its shape or motion cue, and the deltaE2000 >= 20 gate applies to the unlit palette against the signal colours. palette_world re-recorded from looks/harbour.json (sha256 refreshed): water #2fc1de -> #3d8d93, trim #eadba6 -> #d0c848 (gold), new roles canvas #f7f4ec, accent_teal, accent_coral, accent_gold, accent_mint, accent_peach, accent_turquoise, accent_flamingo (the facade accent roles; no `accent` field, so tools/decokit mats.py ACCENT is unchanged) and beyond_ground, beyond_green, beyond_hill (horizon land). surface_overrides.gold_trim keeps #c9c08e only because the kit material DK_Gold17 reads it."
+    "v0.18.0 (2026-10-13): Sky (brief 007): signals render unlit and emissive, each with its shape or motion cue, and the deltaE2000 >= 20 gate applies to the unlit palette against the signal colours. palette_world re-recorded from looks/harbour.json (sha256 refreshed): water #2fc1de -> #3d8d93, trim #eadba6 -> #d0c848 (gold), new roles canvas #f7f4ec, accent_teal, accent_coral, accent_gold, accent_mint, accent_peach, accent_turquoise, accent_flamingo (the facade accent roles; no `accent` field, so tools/decokit mats.py ACCENT is unchanged) and beyond_ground, beyond_green, beyond_hill (horizon land). surface_overrides.gold_trim keeps #c9c08e only because the kit material DK_Gold17 reads it.",
+    "v0.19.0 (2026-10-14): Sky (brief 008): the eight concept paintings of 2026-09-26 (briefs/008/concepts/, hashes in PROVENANCE.json) are the reference for the civic block and the district's street level; the skyline keeps the AtomicAge and Blocks sheets; the 30 Sep capstone concept is not the reference. Brass, not gold, at street level and on facades ('I prefer brass to gold'): roles.trim and roles.accent_gold #d0c848 -> #99784d (brass, deltaE2000 21.3 from guard); surface_overrides.gold_trim #c9c08e -> #99784d (no kit material reads it now: DK_Gold17 is light brass #ad866f, 21.3); new role crossing #d0c848 (the crossing landings' own surface, colour Sky's open pick, accent_mint #7fd0b8 recommended). Skyline crowns keep gold #e3d681 and #c9c08e as kit materials DK_Crown_Gold and DK_Crown_Gold17 (tools/decokit/mats.py; 20.6, 20.3), not palette roles. Civic block (facade.json civic swatches and kit enamels, not roles here): seafoam #72b5a7, deep teal #1f6c67, civic_w #eee9da, pale seafoam #9bcfc2, civic_trim #99784d. Aster ruling (008 B5): signals also draw outside the post grade (the grade shifts them deltaE 4-10); a signal never depends on the light. palette_world.source sha256 refreshed from looks/harbour.json."
   ],
   "era": "Bright retro-future: a space age imagined as the present, built as high art, optimistic and immaculate.",
   "rules": {
@@ -103,18 +104,18 @@
     }
   },
   "palette_world": {
-    "status": "current, tuneable: Sky reviews it in the world (2026-10-13)",
-    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Every world colour at least deltaE2000 20 from each signal colour, measured on the unlit palette.",
+    "status": "current, tuneable: Sky reviews it in the world (2026-10-14)",
+    "rule": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings; lagoon water; coral transit. Brass, not gold, at street level and on facades; skyline crowns keep gold; gold or brass only as hairline, frame, bead and small metal, never a large surface. Every world colour at least deltaE2000 20 from each signal colour, measured on the unlit palette.",
     "source": {
       "path": "unity/Assets/Suborned/Editor/World/looks/harbour.json",
-      "sha256": "765c8f6b5fdb23d5895f0e793dd72d1be4acf2c800ec1004af86207f6d36cc7b",
+      "sha256": "19d610982ae2d5ebdcc53b63f68873969cb323ec1494716c7ecb90c084a25af2",
       "review": "out/review/palette.html (roles and signal deltaE table)",
       "keys": "harbour.<role> in the look file"
     },
     "surface_overrides": {
       "gold_trim": {
-        "hex": "#c9c08e",
-        "why": "gold_trim #c9a24f is deltaE2000 10.2 from guard #f0a020. Since v0.18.0 the world gold is roles.accent_gold and roles.trim #d0c848 (deltaE2000 20.9 from guard); this #c9c08e is still read by tools/decokit mats.py GOLD_TRIM for the kit material DK_Gold17, so changing it regenerates kit pieces (Vela, Splice)"
+        "hex": "#99784d",
+        "why": "gold_trim #c9a24f is deltaE2000 10.2 from guard #f0a020. Since v0.19.0 (Sky: brass, not gold, at street level and on facades) world surfaces use brass #99784d (21.3 from guard), the same as roles.trim, roles.accent_gold and facade.json paletteOverride.gold_trim (the sign boards). No kit material reads it now: tools/decokit mats.py GOLD_TRIM is unused, DK_Gold17 is light brass #ad866f (21.3) and the crowns' gold is DK_Crown_Gold17 #c9c08e"
       }
     },
     "roles": {
@@ -195,6 +196,10 @@
         "group": "base"
       },
       "trim": {
+        "hex": "#99784d",
+        "group": "base"
+      },
+      "crossing": {
         "hex": "#d0c848",
         "group": "base"
       },
@@ -317,7 +322,7 @@
         "group": "accent"
       },
       "accent_gold": {
-        "hex": "#d0c848",
+        "hex": "#99784d",
         "group": "accent"
       },
       "accent_mint": {
@@ -335,7 +340,7 @@
     }
   },
   "signal_colours": {
-    "rule": "No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue. Signals render unlit and emissive, so lighting never shifts them; the deltaE2000 >= 20 gate applies to the unlit palette against the signal colours.",
+    "rule": "No environment surface uses a signal colour at full strength; each signal also has a shape or motion cue. Signals render unlit and emissive and outside the post grade (the grade shifts them deltaE 4-10), so neither light nor grade shifts them: a signal never depends on the light; the deltaE2000 >= 20 gate applies to the unlit palette against the signal colours.",
     "cones": "#e03a2f",
     "guard": "#f0a020",
     "rivals": "#8a4fd0"
@@ -348,7 +353,7 @@
     "chrome and brushed silver",
     "white vinyl and lame",
     "clear acrylic",
-    "warm brass and gold trim",
+    "warm brass trim at street level and on facades, gold on skyline crowns",
     "pale asphalt"
   ],
   "types": {
