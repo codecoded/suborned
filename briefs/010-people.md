@@ -1,6 +1,6 @@
 # 010 · People: the city's cast, generated from its places and routines
 
-**Status (2026-10-15): briefed.** A (Motive) and B (Splice) start together; C (Pulse) and the first live run follow. No model call until Sky approves a run and its ceiling.
+**Status (2026-10-15):** A done (dceefb7, e2906ea, with the Dwarf Fortress pass). B done (9e5dff3). D done (9f05ba9). E done on the stand-in cast (f4fbca3, `briefs/010/shots/`). Sky's rulings Q1–Q7 are recorded below. Next: Splice adds P3/P5 checks, the corpus chunks and names given by role; Waymark makes M-2 require the needs; then C, the live run (Sky approves the ceiling). No model call until then.
 
 Goal (Sky, 2026-10-15): "NPC generation, using SurrealDB for RAG to create them based on their placements and routines." Brief 005's life.json gives counts and slots (39 occupations, ≈5,100 staff, ≈30,400 residents, five routine skeletons), not people. Nobody has a name, temperament, need or tie yet. This brief makes them.
 
@@ -15,6 +15,16 @@ Goal (Sky, 2026-10-15): "NPC generation, using SurrealDB for RAG to create them 
   - build time only, byte-identical output, exact replay;
   - unknown = reject.
 - **Through the pipeline:** a `people` plug-in on `tools/gen` + `tools/levels` + `tools/rag`, copied from the skyline plug-in (`tools/levels/skyline/`). Runs are recorded in `runs/levels/` and replay offline. A live run needs `SUBORNED_LIVE=1`, `--approved-by` and `--max-usd`; Sky approves each.
+
+## Decisions (Sky, 2026-10-15, on Motive's Dwarf Fortress pass, `briefs/010/research/df-for-the-suborned.md`)
+- **Q4, the wrong approach for a temperament still works, one step worse:** one more Help, or a higher price; Keel sets the numbers. An approach the temperament refuses outright fails and leaves a remembered refusal.
+- **Q3, the preview shows the price always, and the outcome as "?"** until Watch or Listen reveals the temperament.
+- **Q2, a met need is replaced between missions,** drawn from the person's own stream (id + mission number). A turned contact tells it free in the debrief; anyone else needs Listen again.
+- **Q1: no alias for now;** the cell is known by face only.
+- **Q5: investigators question simulated people only;** background crowds add T, Alert and standing.
+- **Q6: news travels along ties as facts, never opinion;** standing stays witnessed acts only.
+- **Q7: P1–P5 go into GDD §04 and §09** at the next version, together with Q2–Q4.
+- Live run C waits until Splice's P3/P5 checks, Waymark's M-2 needs and the cast requirements in Motive's §3 are in.
 
 ## A · Motive · the people rules
 objective: the rules a generated person must obey, as a contract the checker reads. Write `contracts/people/people.rules.json` with a zod schema `people.rules.schema.ts`. It covers:
