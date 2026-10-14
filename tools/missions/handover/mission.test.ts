@@ -18,7 +18,11 @@ import { Mission } from '../../../contracts/missions/mission.schema';
 import { check } from '../../plan/checks';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
-import { overlay } from './overlay';
+import { readTexts, world } from '../../people/inputs';
+import { expand } from '../../people/expand';
+import { standInCast } from '../../people/standin';
+import { castRoles } from './cast';
+import { overlay, type PeopleIn } from './overlay';
 
 setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../../..'), FILE = 'contracts/missions/handover/mission.json';
@@ -45,9 +49,9 @@ const broken = (edit: (m: any) => void) => { const m = JSON.parse(raw); edit(m);
 
 describe('handover mission file', () => {
   test('parses as suborned.mission/2, and the schema rejects what it must', () => {
-    expect(mission.schema).toBe('suborned.mission/2');
+    expect(mission.schema).toBe('suborned.mission/3');
     expect(broken(() => {})).toBe(true);
-    expect(broken(m => { m.schema = 'suborned.mission/1'; })).toBe(false);
+    expect(broken(m => { m.schema = 'suborned.mission/2'; })).toBe(false); // /2 has no roles: migrate (mission.schema.ts)
     expect(broken(m => { delete m.timeline; })).toBe(false);
     expect(broken(m => { m.timeline[2].at = '17:05:30'; })).toBe(false); // a day time where an offset belongs
     expect(broken(m => { m.timeline.reverse(); })).toBe(false);
@@ -81,13 +85,78 @@ describe('handover mission file', () => {
 
   test('the overlay still passes on the world, and every event names a plan area', async () => {
     const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
-    const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block)), by = (id: string) => R.checks.find(c => c.id === id)!;
+    const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block, await people())), by = (id: string) => R.checks.find(c => c.id === id)!;
     expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual([]);
     expect(by('C-3').value).toBe(`${mission.destinations.length}/${mission.destinations.length}`);
     expect(by('W-4').value).toBe('2/2'); // the overlay's walk origins (standards.walking.from): Café door, Office entrance
     expect(by('M-1').ok).toBe(true);
+    expect(by('M-2').value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
     expect(R.routes.map(r => r.id)).toEqual(mission.routes.map(r => r.id));
     expect(R.routes.every(r => r.length < Infinity)).toBe(true);
     expect(mission.events.filter(e => !plan.areas.some(a => a.id === e.area)).map(e => e.id)).toEqual([]);
   }, 120000); // the whole plan check (walks included): 14-24 s on a busy machine
+});
+
+// Brief 010 D: the mission names roles, never people; the overlay casts each role from the generated people (here the stand-in
+// cast, expanded in process, so the test does not read out/) and pins one person by id (rule M-2).
+/** The people the stand-in cast expands to, as `bun run people` writes them. */
+const people = async (): Promise<PeopleIn> => { const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block'); return expand(w.ctx(standInCast(w.scope, w.rules))).people; };
+/** Who the stand-in cast pins: the first who fits by id. A live cast (brief 010 C) moves these; the roles stay. */
+const PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-15', councillor: 'p-records-office-61' };
+
+describe('handover roles', () => {
+  const setup = async () => {
+    const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
+    return { plan, block, civ: civic(plan.civic, block), d: derive(plan), p: await people() };
+  };
+  /** M-2 alone: the overlay's civic rules on the world, for a mission and people. */
+  const m2 = (s: Awaited<ReturnType<typeof setup>>, m: any = mission, p: PeopleIn = s.p) =>
+    overlay(s.plan, s.block, p, m).civic({ plan: s.plan, d: s.d, civ: s.civ } as never).find(c => c.id === 'M-2')!;
+
+  test('the mission names four roles, by employer and position or role, and no person', () => {
+    expect(mission.roles.map(r => [r.id, r.employer, r.position ?? r.role, r.at ?? null])).toEqual([
+      ['waitress', 'cafe', 'server', 'Café door'], ['driver', 'records-office', 'official-driver', 'Meet driver'],
+      ['guard', 'records-office', 'guard', 'Office entrance'], ['councillor', 'records-office', 'councillor', null],
+    ]);
+    expect(mission.roles.every(r => r.shift.from === '0:00' && r.shift.to === '8:00' && !r.pin)).toBe(true); // the whole mission; nothing pinned until a cast is accepted
+    expect(raw).not.toMatch(/"p-[a-z]/); // no person id written in the mission
+    expect(broken(m => { m.roles[0].role = 'guard'; })).toBe(false); // both position and role
+    expect(broken(m => { delete m.roles[0].position; })).toBe(false); // neither
+    expect(broken(m => { m.roles[0].at = 'Nowhere'; })).toBe(false); // a point the mission does not name
+    expect(broken(m => { m.roles[1].id = 'waitress'; })).toBe(false); // duplicate role id
+    expect(broken(m => { m.roles[0].pin = 'p-cafe-11'; m.roles[3].pin = 'p-cafe-11'; })).toBe(false); // one person, two roles
+    expect(broken(m => { m.roles[0].pin = 'Inez'; })).toBe(false); // a pin is a person id
+  });
+
+  test('every role is cast, pinned by id, deterministically; the pinned names land on the pinned people', async () => {
+    const s = await setup(), c = m2(s);
+    expect(c.ok).toBe(true);
+    const a = castRoles(s.p.persons, mission, { toPlan: (q) => q, placeAt: () => undefined, polyOf: () => undefined }); // no place resolves: only the councillor (no point) casts
+    expect(a.map(x => x.ok)).toEqual([false, false, false, true]);
+    const shuffled = { ...s.p, persons: [...s.p.persons].reverse() }; // the tie-break is the id, not the file's order
+    expect(m2(s, mission, shuffled).value).toBe(c.value);
+    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
+    const name = (id: string) => s.p.persons.find(p => p.id === id)!.name;
+    expect(name(PINS.waitress!)).toStartWith('Inez '); // people.rules.json names.pinned: Inez is the waitress the mission casts
+    expect(name(PINS.councillor!)).toEndWith(' Vale');
+  });
+
+  test('failing example: a role nobody can fill fails M-2, naming the role', async () => {
+    const s = await setup(), m = JSON.parse(raw);
+    m.roles.push({ id: 'official-door-guard', what: 'a guard at the official door', employer: 'records-office', role: 'guard', at: 'Official entrance', near: 2, shift: { from: '0:00', to: '8:00' }, src: 'test' });
+    expect(Mission.safeParse(m).success).toBe(true); // a valid mission: the role is well formed, nobody stands there
+    const c = m2(s, m);
+    expect(c.ok).toBe(false);
+    expect(c.detail).toBe('official-door-guard: nobody is a guard of records-office on shift 0:00-8:00 at Official entrance');
+  });
+
+  test('a pin that no longer fits fails, and so does a missing people file', async () => {
+    const s = await setup(), m = JSON.parse(raw);
+    m.roles[0].pin = 'p-cafe-02'; // a server on the morning shift, gone by 17:00
+    expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-8:00 at Café door');
+    m.roles[0].pin = 'p-cafe-14';
+    expect(m2(s, m)).toMatchObject({ ok: true, value: expect.stringContaining('waitress p-cafe-14') }); // a pin that fits wins over the tie-break
+    const other = { ...s.plan, version: '0.0.0-test' };
+    expect(overlay(other, s.block, s.p).civic({ plan: other, d: s.d, civ: s.civ } as never).find(c => c.id === 'M-2')!.ok).toBe(false); // the people are of another plan version
+  });
 });
