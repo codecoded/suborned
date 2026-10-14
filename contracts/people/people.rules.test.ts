@@ -50,6 +50,20 @@ describe('people.rules.json', () => {
     expect(isTalker(rules, { fear: 2, resentment: 1, bravery: 2, loyalty: 0 })).toBe(true);
   });
 
+  test('df-for-the-suborned: every carried field has a reader; bands are words; knowledge and mix resolve', () => {
+    const raw = read('contracts/people/people.rules.json');
+    expect(Object.keys(rules.person.readBy.fields).sort()).toEqual([...rules.tiers.simulated.carries].sort());
+    const unread = structuredClone(raw); delete unread.person.readBy.fields.ties;
+    expect(PeopleRules.safeParse(unread).success).toBe(false); // a carried field no rule reads is rejected (Legion's bios)
+    for (const s of Object.values(rules.scales)) expect(s.steps?.length).toBe(s.max + 1); // every scale value reads as a word
+    expect(rules.knowledge.identity).toEqual(['face']);
+    const badPos = structuredClone(raw); badPos.knowledge.needsKnown[0].position = 'no-such-post';
+    expect(PeopleRules.safeParse(badPos).success).toBe(false);
+    const impossible = structuredClone(raw); impossible.temperamentsBy.mix.rowMaxShare = 0.2;
+    expect(PeopleRules.safeParse(impossible).success).toBe(false); // 0.2 × 4 temperaments < 1
+    expect(Object.entries(rules.ties.kinds).filter(([, t]) => t.introduces).map(([k]) => k).sort()).toEqual(['family', 'regular', 'workmate']);
+  });
+
   test('every proposed rule carries a reason; unknown keys are rejected', () => {
     const walk = (v: unknown, path: string): void => {
       if (!v || typeof v !== 'object') return;

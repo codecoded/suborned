@@ -8,7 +8,21 @@
     "needsPerPerson": 1,
     "memoryAtStart": "empty",
     "src": "§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory",
-    "reason": "memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with."
+    "reason": "memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.",
+    "readBy": {
+      "fields": {
+        "name": "§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale",
+        "temperament": "§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price",
+        "need": "§04 Help and Pressure require the need known (Listen); needs.list.metBy",
+        "ties": "§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie",
+        "scales": "§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)",
+        "memory": "§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief",
+        "routine": "§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it"
+      },
+      "src": "GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md",
+      "proposed": true,
+      "reason": "Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia."
+    }
   },
   "tiers": {
     "simulated": { "carries": ["name", "temperament", "need", "ties", "scales", "memory", "routine"], "src": "§09; life.json generator.tiers [G]" },
@@ -32,16 +46,18 @@
     },
     "fear": {
       "min": 0, "max": 3, "integer": true,
+      "steps": ["calm", "uneasy", "afraid", "terrified"],
       "src": "§04 talker test names fear; §04 Pressure leaves fear; §05 a threat adds fear",
       "proposed": true,
-      "reason": "the GDD names fear but gives it no scale. 0–3 integers, one step per pressure or threat, so it weighs against bravery's four steps in the Talker test."
+      "reason": "the GDD names fear but gives it no scale. 0–3 integers, one step per pressure or threat, so it weighs against bravery's four steps in the Talker test. Named steps (DF bands, not sliders): every number on a person reads as a word, as bravery and resentment already do."
     },
     "loyalty": {
       "min": 0, "max": 3, "integer": true,
       "to": "cell",
+      "steps": ["none", "obliged", "trusting", "sworn"],
       "src": "§04 talker test names loyalty; §04 standing: Hero turning is slower, dearer, loyal",
       "proposed": true,
-      "reason": "the GDD does not say loyal to whom. In the Talker test it must be loyalty to the cell: read as loyalty to an institution, the Office's loyal guard would shield the cell from investigators. Institution loyalty is the Loyal temperament's `institution`, not this number. Every person starts at 0; only being turned raises it."
+      "reason": "the GDD does not say loyal to whom. In the Talker test it must be loyalty to the cell: read as loyalty to an institution, the Office's loyal guard would shield the cell from investigators. Institution loyalty is the Loyal temperament's `institution`, not this number. Every person starts at 0; only being turned raises it. Named steps, as fear."
     }
   },
   "temperaments": {
@@ -166,31 +182,31 @@
   "ties": {
     "kinds": {
       "family": {
-        "direction": "both", "maxPerPerson": 4, "between": "any",
+        "direction": "both", "maxPerPerson": 4, "between": "any", "introduces": true,
         "src": "§04 between missions: introduces a friend (new contact); arrested (lost unless freed)",
         "proposed": true,
         "reason": "limit 4 [S]. Family may live apart and need not share a family name (a mixed cast, §15)."
       },
       "workmate": {
-        "direction": "both", "maxPerPerson": 3, "between": "same-employer",
+        "direction": "both", "maxPerPerson": 3, "between": "same-employer", "introduces": true,
         "src": "§08 assets: Inez introduces café contacts; Act II takes a workplace",
         "proposed": true,
         "reason": "limit 3 [S]. Both work the same unit or the same civic employer, so a workplace can be turned link by link (§08)."
       },
       "regular": {
-        "direction": "from-customer", "maxPerPerson": 3, "maxIncoming": 12, "between": "routine-stop",
+        "direction": "from-customer", "maxPerPerson": 3, "maxIncoming": 12, "between": "routine-stop", "introduces": true,
         "src": "§08 economy: café owner tips needs before Scout listens; §05 counters: reach witness first",
         "proposed": true,
         "reason": "a customer who comes back. The customer's routine stops at the other person's work unit, so the tie is checkable on the routine. 3 out, 12 in [S]: staff know many regulars."
       },
       "debtor": {
-        "direction": "from-debtor", "maxPerPerson": 2, "maxIncoming": 6, "between": "any",
+        "direction": "from-debtor", "maxPerPerson": 2, "maxIncoming": 6, "between": "any", "introduces": false,
         "src": "§04 Help (clear debt); §07 Inez in debt",
         "proposed": true,
         "reason": "who owes whom. 2 owed, 6 owing in [S]. A debt need may be owed to a bureau or pawnbroker as a trade, so a debt need does not require a debtor tie."
       },
       "rival": {
-        "direction": "both", "maxPerPerson": 1, "between": "same-trade-or-employer",
+        "direction": "both", "maxPerPerson": 1, "between": "same-trade-or-employer", "introduces": false,
         "src": "§04 Mercenary sells you to highest bidder; §05 rivals",
         "proposed": true,
         "reason": "one rival at most [S], in the same trade in the district or at the same employer: a grudge with a place."
@@ -208,7 +224,19 @@
     "simulatedOnly": true,
     "src": "§09 people: occupation × temperament × need × relationships × routine",
     "proposed": true,
-    "reason": "1–8 ties per simulated person [S]: nobody stands alone (introductions, §04, need someone to introduce), nobody is a hub. Ties join simulated people only; background people have none."
+    "reason": "1–8 ties per simulated person [S]: nobody stands alone (introductions, §04, need someone to introduce), nobody is a hub. Ties join simulated people only; background people have none. `introduces` (new, from DF: corruption spreads along ties; Legion: uprezzing pulls in friends and family): a turned contact introduces only along family, workmate and regular ties (§08 Inez introduces café contacts). Debtor and rival ties carry leverage, not introductions. So the next contact is someone the player can already see on the tie list, not a name pulled from nowhere."
+  },
+  "knowledge": {
+    "rule": "a person knows a fact only if they witnessed it (§05: a clear sightline within 13 m) or were told it along a tie. At the start nobody knows anything about the cell (person.memoryAtStart). The one thing a person starts knowing about others is listed in needsKnown. The cell is known by face only: a witness remembers the Fixer's face (§03), never a name.",
+    "identity": ["face"],
+    "learnedBy": ["witnessed", "told"],
+    "cellAtStart": "nothing",
+    "needsKnown": [
+      { "position": "keeper", "of": ["workmate", "unit-regular"], "src": "§08 economy: café owner tips needs before Scout listens" }
+    ],
+    "src": "§01 world: information moves through people and paper; §03 Fixer is the face witnesses remember; §04 Talker facts (saw Fixer's face); §05 witness 13 m; §08 café owner tips needs",
+    "proposed": true,
+    "reason": "From DF's rumour rule (a fact exists only for those who saw it or were told) and Adams 2017 (identity stored per observer as alias, name or face). Only face is in play: the Talker's facts are a face, a car and a place-time, and §05 investigators hop by place and time, not by name. needsKnown makes §08's tip rule checkable from the cast: a keeper knows the need of each workmate and of each person with a regular tie into their unit, so a turned keeper saves the Listen (42 s) on each. How a fact spreads at runtime (told, along which ties, how fast) is Keel's rule, not this file's."
   },
   "talker": {
     "when": "questioned",
@@ -350,6 +378,15 @@
         "proposed": true,
         "reason": "as guard: Loyal or Mercenary. An investigator who could be helped across would undo §05's pressure."
       }
+    },
+    "mix": {
+      "rule": "the culture baseline is the cast row: an area × occupation's temperament weights. No temperament may hold more than rowMaxShare of a row's weight, and a unit with whenStaffAtLeast staff or more carries at least unitMinDistinct temperaments.",
+      "rowMaxShare": 0.6,
+      "unitMinDistinct": 2,
+      "whenStaffAtLeast": 3,
+      "src": "§09 risk: sameness (Watch Dogs: Legion); §04 Hero and Menace turn different halves of the city",
+      "proposed": true,
+      "reason": "DF draws each person from a culture baseline, then lets them deviate. Our baseline is the cast row, and this cap keeps every person from being the baseline. At any workplace of three or more there are two kinds of person, so there are two ways in at two prices, which serves the pillar orchestrate the city. 0.6 and 3 are [S]."
     },
     "employers": {
       "records-office": { "plot": "records-office", "block": "civic-office", "kind": "civic", "src": "life.json generator.civicEmployers; civic-block.json civic-office" },
