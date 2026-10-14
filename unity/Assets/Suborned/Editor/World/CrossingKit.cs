@@ -16,11 +16,17 @@ namespace Suborned.World
     ///     are round) so a display faces the play camera (the export view's yaw): a display along the walk is edge-on to a camera
     ///     looking along the crossing (Vela, 009 A open issue 1). Both faces show the same aspect, so the nearer one is turned.
     /// The beam and halo are DecoKit kind `glow` (Materials/Glow, Shaders/CrossGlow: additive, double-sided, unlit); the lights and
-    /// figures are the kit's emissive materials. A refuge is drawn here: its median ring raised as an island, in its road's kerb
+    /// figures are the kit's emissive materials, the seafoam light (Light) redrawn as emission only. A refuge is drawn here: its median ring raised as an island, in its road's kerb
     /// surface, in the ground layer's kerb batch that already reaches it (Combine.Fit), so it costs no renderer of its own.</summary>
     public sealed class CrossingKit
     {
         const string Ground = "ground"; // the batch layer refuges go into, with the kerbs
+        /// <summary>The kit's seafoam light (dots, bars, the eye's lens and halo ring) and the factor its linear base colour is emitted at.
+        /// The kit row (DK_Cross_Light) is lit seafoam plus a pale HDR emission (r/g 0.63 against the colour's 0.36): in sun the two sum
+        /// past the Neutral tonemap's shoulder, the channels flatten and the warm grade filter leaves the dots cream-white (009 C:
+        /// (224, 211, 191) at the kerb shot). Drawn instead as emission only (base black, no specular or reflections), seafoam x 2.0
+        /// linear: green 0.92, under the bloom threshold, reads (154, 219, 198) in the same shot; 2.5 and 3 already pale toward white.</summary>
+        public const string Light = "DK_Cross_Light"; const float LightGlow = 2.0f;
         public const string Body = "DK_SignalEye", Walk = "DK_SignalEye_Walk", Stop = "DK_SignalEye_Stop", Beam = "DK_SignalEye_Beam", Halo = "DK_SignalEye_Halo";
         static readonly HashSet<string> Kinds = new() { "crossing-dots", "crossing-bar", "crossing-edge", "crossing-stud", "crossing-arc", "signal-orb" };
 
@@ -73,7 +79,9 @@ namespace Suborned.World
             // the play camera's heading (Unity: Euler(pitch, yaw, 0) looks along (sin yaw, 0, cos yaw)); a display faces back up it
             float yaw = w.View.Yaw * Mathf.Deg2Rad;
             var toCamera = -new Vector3(Mathf.Sin(yaw), 0f, Mathf.Cos(yaw));
-            int parts = 0, eyes = 0, walk = 0, casters = 0, quiet = 0; float turned = 0f;
+            int parts = 0, eyes = 0, walk = 0, casters = 0, quiet = 0, lit = 0; float turned = 0f;
+            var kitLight = KitImport.Library(Light) ?? throw new InvalidDataException($"World: kit material {Light} missing (run `bun run kit`)");
+            var light = Lens(kitLight);
             var byKind = new SortedDictionary<string, int>(System.StringComparer.Ordinal);
             foreach (var s in w.Street)
             {
@@ -104,6 +112,9 @@ namespace Suborned.World
                     r.shadowCastingMode = body && s.CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
                     if (r.shadowCastingMode == ShadowCastingMode.On) casters++; else quiet++;
                     if (glow) { r.receiveShadows = false; r.lightProbeUsage = LightProbeUsage.Off; r.reflectionProbeUsage = ReflectionProbeUsage.Off; }
+                    var ms = r.sharedMaterials; bool swap = false;
+                    for (int i = 0; i < ms.Length; i++) if (ms[i] == kitLight) { ms[i] = light; swap = true; }
+                    if (swap) { r.sharedMaterials = ms; lit++; }
                     PrefabUtility.RecordPrefabInstancePropertyModifications(r);
                     if (!eye) continue;
                     if (part == Walk || part == Stop)
@@ -122,7 +133,22 @@ namespace Suborned.World
             }
             var kinds = new List<string>(); foreach (var kv in byKind) kinds.Add($"{kv.Value} {kv.Key}");
             Debug.Log($"World: crossing parts {parts} ({string.Join(", ", kinds)}); eyes {eyes} ({walk} walk, {eyes - walk} stop), displays turned to the play camera (yaw {w.View.Yaw}°) by at most {turned:F0}°; " +
-                $"renderers casting {casters} (orb bodies, every LOD), not casting {quiet}");
+                $"renderers casting {casters} (orb bodies, every LOD), not casting {quiet}; seafoam light on {lit} renderers (emission only, x{LightGlow})");
+        }
+
+        /// <summary>The seafoam light drawn as emission only, from the kit row (its colour, shader and fade); saved beside the scene.</summary>
+        static Material Lens(Material kit)
+        {
+            var m = new Material(kit) { name = Light + "_Glow" };
+            var c = kit.GetColor("_BaseColor").linear * LightGlow;
+            m.SetColor("_BaseColor", Color.black);
+            m.SetColor("_EmissionColor", new Color(c.r, c.g, c.b, 1f)); m.EnableKeyword("_EMISSION");
+            m.SetFloat("_Smoothness", 0f); m.SetFloat("_SpecularHighlights", 0f); m.SetFloat("_EnvironmentReflections", 0f);
+            m.EnableKeyword("_SPECULARHIGHLIGHTS_OFF"); m.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-crosslight.mat";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CreateAsset(m, path);
+            return m;
         }
 
         static Vector2 Centre(Vector2[] ring)

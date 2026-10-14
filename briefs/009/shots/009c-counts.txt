@@ -5,3 +5,10 @@ stop       draws        camera draws  triangles               shadow casters  Se
 home       706 -> 716   271 -> 281    715,565 -> 718,187 (+2.6k)  405 -> 405      64 -> 66
 heaviest   682 -> 682   228 -> 228    1,515,810 -> 1,513,790      384 -> 384      74 -> 74
 Scene: 3,043 crossing parts placed (980 dot rows, 1,134 edge lines, 536 studs, 237 arcs, 156 eyes); 312 casting renderers (orb bodies, LOD0+LOD1), 7,022 not casting.
+
+Glow fix (Latch, Studio Mac17,14, same pass `counts`, -perfNoWarm, variant `base`): export 952370ef (arc yaw), dots/bars/lens drawn from the scene's seafoam emission-only material (HarbourDistrict-crosslight.mat), halo strength 6. out/perf/009-counts-glow/run.json
+stop         draws        camera draws  triangles               shadow casters  SetPass
+home         716 -> 716   281 -> 281    718,187 -> 718,007        405 -> 405      66 -> 67
+cafe-square  667 -> 667   262 -> 262    693,698 -> 693,758        376 -> 376      62 -> 63
+heaviest     682 -> 682   228 -> 228    1,513,790 -> 1,513,790    384 -> 384      74 -> 74
+Seafoam light on 2,428 renderers (one shared material in place of the kit's DK_Cross_Light: +1 SetPass where crossings are in view).
