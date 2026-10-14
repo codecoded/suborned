@@ -36,6 +36,8 @@
   "entries": "memory entries",
   "hops": "ties crossed by one piece of news",
   "count": "a plain count",
+  "cm": "centimetres",
+  "cm-per-s": "centimetres a second",
   "per-mille": "integer weight scale for seeded draws"
  },
  "values": {
@@ -73,12 +75,65 @@
   "violence-resentment": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable", "proposed": true, "reason": "as violence-bravery." },
   "memory-cap": { "v": 8, "unit": "entries", "tag": "S", "src": "Motive K1: capped per person [S]; DF holds 8 short-term memories (dwarf-fortress.md §3)", "proposed": true, "reason": "eight entries hold a person's whole part in a district's campaign (an approach, a job or two, what they saw, what they were told). When full the oldest goes: an old sighting is forgotten, which is the GDD's 'sightings go stale' (§05 counters) made a rule. Fixed size suits the engine's integer arrays." },
   "word-hops": { "v": 1, "unit": "hops", "tag": "S", "src": "Motive K3: word passes along ties between missions, one hop; §04 knowledge [S] (Sky Q6): news travels along ties as facts", "proposed": true, "reason": "the GDD says news travels along ties; how far is not stated. One hop, between missions only, keeps the spread countable in the debrief." },
-  "word-quiet-loyalty": { "v": 2, "unit": "scale-steps", "tag": "S", "src": "§01 pillar subvert people: does knowing more make a person quieter?", "proposed": true, "reason": "a contact who trusts the cell (loyalty 2, trusting) keeps what they saw to themselves. Gives Help a second payoff the player can see in the debrief: word stops at the people you treated well." },
+  "word-quiet-loyalty": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§01 pillar subvert people: does knowing more make a person quieter?; Motive's review #10 (briefs/010/motive-rulebook-review.md)", "proposed": true, "reason": "a person who owes the cell (obliged or more) keeps what they saw to themselves; one Help, which needs a Listen, is enough; at 2 a helped Inez would lie to investigators and still tell her family the Fixer's face. Obliged is also the line for reporting and selling." },
   "introductions-per-contact": { "v": 1, "unit": "count", "tag": "S", "src": "Motive K5: one introduction per contact between missions [S]; §04 between missions: introduces a friend" },
   "question-s": { "v": 20, "unit": "s", "tag": "S", "src": "§05 investigators [S]: on foot question ~every 20 s" },
   "hop-min-s": { "v": 60, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
   "hop-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
-  "need-weight-scale": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "§11 integer state; §04 needs (Sky Q2) replacement drawn from the person's own stream", "proposed": true, "reason": "the cast rows weight needs as decimals (cast.schema.ts, ≤ 100). The engine draws in integers only, so the export scales each weight by 1,000 and rounds; the same integers in C# and TS give the same draw." }
+  "need-weight-scale": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "§11 integer state; §04 needs (Sky Q2) replacement drawn from the person's own stream", "proposed": true, "reason": "the cast rows weight needs as decimals (cast.schema.ts, ≤ 100). The engine draws in integers only, so the export scales each weight by 1,000 and rounds; the same integers in C# and TS give the same draw." },
+  "op-speed-cm-s": {"v": 140, "unit": "cm-per-s", "tag": "S", "src": "life.json pedestrians.walkSpeed 1.4 m/s [S]", "proposed": true, "reason": "the operatives walk at the world's one walking pace. The top-down test moved them 1.1 units/s on an unscaled map; the real civic block is in metres, and a second pace would make the cell read as faster than the city."},
+  "act-reach-m": {"v": 6, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): an action's default reach (nearby: reach || 6)"},
+  "loop-s": {"v": 62, "unit": "s", "tag": "B", "src": "§07 route A: Tech loops entrance camera (1:02, tethered); top-down test loopCamera"},
+  "tether-m": {"v": 8, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the Robot (Tech) more than 8 from the cabinet ends the loop; §03 Tech tethered while holding"},
+  "reroute-s": {"v": 45, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot 45 s"},
+  "reroute-away-s": {"v": 115, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot: the patrol is away 115 s"},
+  "mislead-s": {"v": 44, "unit": "s", "tag": "B", "src": "§07 route B: Scout false tip on rivals (44 s)"},
+  "false-tip-s": {"v": 230, "unit": "s", "tag": "B", "src": "§05 rivals [B]: false tip: away 3:50"},
+  "enter-s": {"v": 38, "unit": "s", "tag": "B", "src": "§07 route A: Enforcer enters (38 s), exits service door with Vale"},
+  "take-s": {"v": 38, "unit": "s", "tag": "B", "src": "§07 route B: Enforcer intercepts (38 s)"},
+  "mislead-trail": {"v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) delayRival +1 T"},
+  "loop-trail": {"v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) loopCamera +1 T"},
+  "reroute-trail": {"v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot +1 T"},
+  "call-trail": {"v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) spill, blockCamera +1 T"},
+  "take-trail-unturned": {"v": 2, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) intercept: +2 T unless the driver is a contact"},
+  "shot-every-s": {"v": 6, "unit": "s", "tag": "B", "src": "§06 prototype [B]: Enforcer shot 6 s"},
+  "fire-reach-m": {"v": 14, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): shoot reach 14, clear line"},
+  "fire-rivals-reach-m": {"v": 16, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): shootRival reach 16"},
+  "shot-trail": {"v": 2, "unit": "trail", "tag": "B", "src": "§06 prototype [B]: each shot +2 T"},
+  "shot-alert": {"v": 1, "unit": "alert", "tag": "B", "src": "§06 prototype [B]: each shot +1 A; the top-down test registerGunfire; Motive's review, other findings 4: the per-shot +1 A stays"},
+  "hits-to-drop": {"v": 2, "unit": "count", "tag": "B", "src": "§06 prototype [B]: 2 hits drop a person or patrol unit; top-down test guard, patrol, response unit and rivals health 2"},
+  "enforcer-health": {"v": 3, "unit": "count", "tag": "B", "src": "§06 prototype [B]: Enforcer takes 3 (the §06 health table, Enforcer 6, is [S][L], after the capstone)"},
+  "response-witness-s": {"v": 12, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a civilian witness reports gunfire, response +12 s"},
+  "response-seen-s": {"v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the guard, a camera or the patrol reports gunfire, response +18 s"},
+  "response-unseen-s": {"v": 45, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): unseen gunfire, response +45 s"},
+  "response-civilian-s": {"v": 8, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a civilian shot (Inez, the driver), response +8 s"},
+  "response-check-in-s": {"v": 20, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the empty post reported, response +20 s"},
+  "response-rivals-unseen-s": {"v": 35, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a firefight with the rivals out of the pickup camera, response +35 s"},
+  "check-in-s": {"v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a downed guard misses his check-in 18 s later"},
+  "seal-s": {"v": 145, "unit": "s", "tag": "B", "src": "§05 security [B]: district seals 2:25 after the response unit arrives"},
+  "security-speed-cm-s": {"v": 220, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the response unit runs 55 units in 25 s"},
+  "rivals-speed-cm-s": {"v": 160, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the rivals cover about 51 units in 32 s"},
+  "rivals-drawn-s": {"v": 16, "unit": "s", "tag": "B", "src": "§05 rivals [B]: gunfire: arrive within 16 s"},
+  "rivals-retreat-s": {"v": 175, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): two hits drive the rivals back 175 s"},
+  "patrol-break-m": {"v": 30, "unit": "m", "tag": "B", "src": "§05 security [B]: patrol sweep, breaks to gunfire within 30 m"},
+  "patrol-period-s": {"v": 100, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the patrol sweep there and back in 100 s"},
+  "patrol-chase-cm-s": {"v": 85, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the chasing patrol moves 0.85 a second"},
+  "aim-s": {"v": 3, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): guard, patrol, response unit and rivals fire 3 s after they first see the Enforcer"},
+  "guard-fire-every-s": {"v": 5, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) guard"},
+  "patrol-fire-every-s": {"v": 10, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) patrol"},
+  "security-fire-every-s": {"v": 7, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) response unit"},
+  "rivals-fire-every-s": {"v": 9, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rivals"},
+  "near-m": {"v": 3, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): insideFacingCone: anyone within 3 is seen whatever the facing"},
+  "door-reach-m": {"v": 26, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the guard at the door sees 26 deep"},
+  "door-half-m": {"v": 19, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): and 19 either side at that depth"},
+  "facing-reach-m": {"v": 18, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a walking guard or chasing patrol sees 18 ahead (facingCone 18, 9)"},
+  "facing-half-m": {"v": 9, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): 9 either side at that reach"},
+  "security-reach-m": {"v": 19, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the response unit sees 19 ahead"},
+  "rivals-half-m": {"v": 8, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the rivals see 18 ahead, 8 either side"},
+  "patrol-depth-m": {"v": 24, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the sweeping patrol sees 24 deep"},
+  "patrol-half-base-cm": {"v": 200, "unit": "cm", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth"},
+  "patrol-half-per-mille": {"v": 650, "unit": "per-mille", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth"},
+  "eye-cm": {"v": 160, "unit": "cm", "tag": "S", "src": "§05 levels: sightlines run in 3D", "proposed": true, "reason": "one eye height for everyone, so an occluder blocks a sightline when it spans that height; the top-down test had no heights."}
  },
  "standing": {
   "start": "v:standing-start",
@@ -94,9 +149,9 @@
  "alert": {
   "levels": ["routine", "inquiry", "search", "lockdown"],
   "byIncident": ["v:alert-inquiry", "v:alert-search"],
-  "gunfire": "v:alert-search",
+  "perShot": "v:shot-alert",
   "violenceSeen": "v:alert-lockdown",
-  "rule": "An incident is one act at one place and time. However many people see or report it, it adds witness Trail once and raises Alert once: the nth reported incident of a mission raises Alert to at least byIncident[n−1] (the last entry beyond the list). Any gunfire raises it to at least `gunfire`; violence seen by a civilian sets `violenceSeen` at once. Alert never falls within a mission.",
+  "rule": "An incident is one act at one place and time; every shot of one fight with one target is one incident (a shoot-out at one place: Motive's review, other findings 4). However many people see or report it, an incident adds witness Trail once, moves standing once, applies the violence move once and raises Alert once: the nth reported incident of a mission raises Alert to at least byIncident[n−1] (the last entry beyond the list). Each shot still adds perShot Alert and the shot Trail (§06 prototype [B]); gunfire calls the response unit (§05 search: response unit to reported route). Violence seen by a civilian sets violenceSeen at once. Alert never falls within a mission. §05 reads 'any gunfire → 2' and §06 'each shot +1 A'; the engine follows §06's [B] number, which the top-down test proved",
   "tag": "S",
   "src": "§05 Alert table (1 inquiry [S], 2 search [B], 3 lockdown [B]); brief 005 / §14 Keel hold: one incident counts once toward Alert"
  },
@@ -126,11 +181,11 @@
   },
   {
    "id": "idealist-in-menace",
-   "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["idealist"] }, { "k": "scale", "scale": "bravery", "op": ">", "than": { "scale": "fear" } }],
+   "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["idealist"] }, { "k": "scale", "scale": "loyalty", "op": "<=", "than": "p:scales.loyalty.min" }],
    "tag": "S",
    "src": "§04 Idealist, Menace: refuses; may report",
    "proposed": true,
-   "reason": "'may' made deterministic from the person's own state: an Idealist reports while braver than afraid. They start at bravery 1, fear 0, so they report, until a threat (fear +1) makes them keep quiet. Readable on the person: 'brave enough to report'."
+   "reason": "'may' made deterministic from the person's own state: an Idealist in a Menace district reports while they owe the cell nothing (loyalty none). An unturned Idealist's fear never moves (a refused threat moves no scale), so bravery against fear could not change; and a turned Idealist Fighter would have reported every Help. 'Owes you nothing' is the same line as mercenary.sells, so the player learns one threshold (Motive's review #6)."
   }
  ],
  "ladders": {
@@ -149,7 +204,7 @@
  "memory": {
   "entry": ["act", "by", "place", "time", "witnessed"],
   "cap": "v:memory-cap",
-  "whenFull": "drop the oldest entry: lowest time, then first written",
+  "whenFull": "drop the oldest saw-act or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9)",
   "faceFacts": { "fixer": "fixer-face" },
   "acts": {
    "ask": { "facts": ["place-time"] },
@@ -168,11 +223,11 @@
   "src": "§04 person = routine + need + temperament + memory; §04 knowledge [S]; Motive K1; people.rules person.memoryAtStart empty"
  },
  "exposure": {
-  "rule": "A contact's job this mission is exposed when a non-cell person saw it within witness range with a clear sightline, a watcher logged it, or an investigator questioned the contact this mission; otherwise it is unexposed. Each completed job is one or the other, never both.",
+  "rule": "A contact's job this mission is exposed when the city tied the contact to the cell this mission: an investigator questioned the contact, or a watcher logged a cell operative within approach reach (values.approach-reach-m) of the contact. Being seen doing the job is not exposure: a job is an ordinary act and no traceable act (§02). Each completed job is exposed or unexposed, never both.",
   "tag": "S",
-  "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per pressure or exposure",
+  "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per pressure or exposure; Motive's review #12",
   "proposed": true,
-  "reason": "the GDD uses 'exposure' without defining it. These three are the ways the city can tie a contact to the act, so being exposed means the city can now find them."
+  "reason": "the GDD uses 'exposure' without defining it. Seen doing the job would break route A: the guard sees Inez spill the coffee by design, so every route A would expose her and the bravery ladder would never climb. Both ways that remain are on screen (watcher cones and loops, the questioning icon), so the player can play against them."
  },
  "traceable": {
   "payment": { "standing": "none", "tag": "S", "src": "§02 Trail: traceable acts: visible payments" },
@@ -181,12 +236,52 @@
   "gunfire": { "standing": "menace", "tag": "B", "src": "§02 Trail: gunfire; §04 Menace: shoot in crowds; §06 prototype [B]. Made by the fight events (next entries)." },
   "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." }
  },
+ "cell": {
+  "speed": "v:op-speed-cm-s",
+  "reach": "v:act-reach-m",
+  "loop": {"s": "v:loop-s", "trail": "v:loop-trail", "tether": "v:tether-m"},
+  "reroute": {"s": "v:reroute-s", "trail": "v:reroute-trail", "away": "v:reroute-away-s"},
+  "mislead": {"s": "v:mislead-s", "trail": "v:mislead-trail", "away": "v:false-tip-s"},
+  "call": {"trail": "v:call-trail"},
+  "enter": {"s": "v:enter-s"},
+  "take": {"s": "v:take-s", "trailUnturned": "v:take-trail-unturned"},
+  "fire": {"every": "v:shot-every-s", "reach": "v:fire-reach-m", "reachRivals": "v:fire-rivals-reach-m", "trail": "v:shot-trail", "hits": "v:hits-to-drop", "enforcerHealth": "v:enforcer-health"},
+  "rule": "The cell's verbs other than Turn, Watch and Listen (§03): how long each takes, how near the operative must stand, the Trail it leaves. An order takes its time and lands at its end; a Call lands at once (the top-down test's spill: the guard walks from the call). Gunfire is §06's prototype [B]: each shot +2 T, an incident for Alert (alert table), 2 hits drop anyone but the Enforcer.",
+  "tag": "B",
+  "src": "§03 cell; §06 prototype [B]; §07 route timings; the top-down test"
+ },
+ "security": {
+  "response": {"witness": "v:response-witness-s", "seen": "v:response-seen-s", "unseen": "v:response-unseen-s", "civilian": "v:response-civilian-s", "checkIn": "v:response-check-in-s", "rivalsUnseen": "v:response-rivals-unseen-s"},
+  "checkIn": "v:check-in-s",
+  "seal": "v:seal-s",
+  "speed": "v:security-speed-cm-s",
+  "rivals": {"speed": "v:rivals-speed-cm-s", "drawn": "v:rivals-drawn-s", "retreat": "v:rivals-retreat-s"},
+  "patrol": {"breakTo": "v:patrol-break-m", "period": "v:patrol-period-s", "chase": "v:patrol-chase-cm-s"},
+  "aim": "v:aim-s",
+  "fireEvery": {"guard": "v:guard-fire-every-s", "patrol": "v:patrol-fire-every-s", "security": "v:security-fire-every-s", "rivals": "v:rivals-fire-every-s"},
+  "rule": "Who answers gunfire and how fast. A report calls the response unit; the earliest arrival wins and the district seals `seal` after it arrives. The delay is by who reported: a civilian witness, a guard, camera or patrol that saw it, nobody (unseen), a civilian shot, the guard's missed check-in. Gunfire draws the rivals within `rivals.drawn` and the patrol within `patrol.breakTo`. Anyone who sees the Enforcer takes `aim` before the first shot, then fires every `fireEvery`.",
+  "tag": "B",
+  "src": "§05 security [B], rivals [B]; §06 prototype [B]; the top-down test (Suture M-3: the rulebook carries them, src the prototype)"
+ },
+ "perception": {
+  "near": "v:near-m",
+  "eye": "v:eye-cm",
+  "door": {"reach": "v:door-reach-m", "half": "v:door-half-m"},
+  "facing": {"reach": "v:facing-reach-m", "half": "v:facing-half-m"},
+  "security": {"reach": "v:security-reach-m", "half": "v:facing-half-m"},
+  "rivals": {"reach": "v:facing-reach-m", "half": "v:rivals-half-m"},
+  "patrol": {"depth": "v:patrol-depth-m", "halfBase": "v:patrol-half-base-cm", "halfPerMille": "v:patrol-half-per-mille"},
+  "rule": "A watcher sees a point inside its cone (ahead within reach, and to the side within half × ahead ÷ reach) or within `near` whatever its facing, along a sightline no occluder crosses at eye height (§05 levels: 3D). A camera's cone is its site's; a guard at his door, a walking guard, a chasing patrol, the response unit and the rivals use these. The sweeping patrol's cone widens with depth.",
+  "tag": "B",
+  "src": "§05 cameras, watchers, levels; the top-down test's cones"
+ },
  "preview": {
-  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. A line or outcome that reads the target's temperament (a fit or temperament condition) shows '?' until the cell knows the temperament (Sky Q3): its amount shows, marked '?', so the price is always on the card and only whether it applies is unknown. Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. Any approach's outcome tells the cell the temperament.",
+  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. While the cell does not know the target's temperament (Sky Q3), a line or outcome whose answer differs between the temperaments in the district's band shows '?' (its amount still shows, so the price is always on the card); one that every temperament answers alike shows its answer (Ask in a neutral district reads 'refused', not '?': Motive's review, other findings 3). Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. Any approach's outcome tells the cell the temperament.",
   "unknown": "?",
-  "knownBy": ["scout.watch", "scout.listen"],
+  "knownBy": ["scout.listen"],
+  "knownByRule": "The one switch for what reveals a temperament: completing an event listed in knownBy teaches the cell the subject's temperament. Sky, 2026-10-15 (Motive's fork, option A): Listen reveals need and temperament, Watch reveals routine only. Eyes give where and when, ears give who they are: after Watch alone, Pay shows '?' and an Idealist refuses it and remembers. GDD §04's preview line ('until Watch or Listen reveals the temperament') changes at the next version.",
   "tag": "S",
-  "src": "§02 every order shows its full price; §04 preview (Sky Q3); Motive K8"
+  "src": "§02 every order shows its full price; §04 preview (Sky Q3); Motive K8; Sky 2026-10-15: Listen alone reveals the temperament"
  },
  "streams": {
   "hash": "fnv1a-32",
@@ -232,11 +327,11 @@
    "by": "scout",
    "phase": "mission",
    "tag": "B",
-   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky Q3: Watch or Listen reveals the temperament",
+   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky 2026-10-15: Watch reveals routine only (preview.knownBy)",
    "needs": [{ "k": "tier", "is": "simulated" }],
    "price": [{ "line": "base", "s": "v:watch-s" }],
    "outcomes": [
-    { "id": "watched", "when": [], "changes": [{ "do": "learn", "what": ["routine", "temperament"], "of": "subject" }] }
+    { "id": "watched", "when": [], "changes": [{ "do": "learn", "what": ["routine"], "of": "subject" }] }
    ]
   },
   {
@@ -244,11 +339,11 @@
    "by": "scout",
    "phase": "mission",
    "tag": "B",
-   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky Q3",
+   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky 2026-10-15: Listen reveals need and temperament (preview.knownBy)",
    "needs": [{ "k": "tier", "is": "simulated" }, { "k": "known", "what": "routine" }, { "k": "reach", "m": "v:listen-reach-m" }],
    "price": [{ "line": "base", "s": "v:listen-s" }],
    "outcomes": [
-    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need", "temperament"], "of": "subject" }] }
+    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need"], "of": "subject" }] }
    ]
   },
   {
@@ -315,6 +410,7 @@
     { "k": "tier", "is": "simulated" },
     { "k": "requires", "approach": "help" },
     { "k": "need-met-by", "approach": "help" },
+    { "k": "need-met", "is": false },
     { "k": "reach", "m": "v:approach-reach-m" },
     { "k": "cash-covers" }
    ],
@@ -425,7 +521,7 @@
    "outcomes": [
     { "id": "tips", "when": [], "changes": [{ "do": "learn", "what": ["need"], "of": "needs-known" }] }
    ],
-   "how": ["the people tipped are the people export's knowledge.needsKnown[keeper].knows. Only the need is learned: the temperament stays unknown, so the preview shows '?' for them until Watch or Listen (Sky Q3)"]
+   "how": ["the people tipped are the people export's knowledge.needsKnown[keeper].knows. Only the need is learned: the temperament stays unknown, so the preview shows '?' for them until Listen (Sky Q3; preview.knownBy)"]
   },
   {
    "id": "ladder.job",
@@ -449,7 +545,8 @@
    "needs": [{ "k": "turned", "is": true }, { "k": "scale", "scale": "resentment", "op": ">=", "than": "p:scales.resentment.max" }],
    "outcomes": [
     { "id": "informs", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "informer" }] }
-   ]
+   ],
+   "how": ["one ambush per next mission however many contacts sell or inform; each one is a debrief line (Motive's review #4)"]
   },
   {
    "id": "mercenary.sells",
@@ -467,6 +564,7 @@
    "outcomes": [
     { "id": "sells", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "sold" }] }
    ],
+   "how": ["one ambush per next mission however many contacts sell or inform; each one is a debrief line (Motive's review #4)"],
    "proposed": true,
    "reason": "'sells you' made deterministic: a Mercenary contact in a Menace district who owes the cell nothing (loyalty none) sells a route to the rivals, with the Informer's effect. One Help (loyalty obliged) buys them off. The resentment condition keeps one contact from scheduling two ambushes."
   },
@@ -484,7 +582,7 @@
     { "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "learn", "what": ["need"], "of": "subject" }] },
     { "when": [{ "k": "turned", "is": false }], "changes": [{ "do": "forget", "what": ["need"] }] }
    ],
-   "how": ["candidates: people.rules needs.list in its order, each whose `requires` the person meets and whose metBy shares an approach with the temperament's respondsTo (the expander's own rule, tools/people/expand.ts), never the need just met; weights from streams.weights"]
+   "how": ["candidates: people.rules needs.list in its order, each whose `requires` the person meets and whose metBy shares an approach with the temperament's respondsTo (the expander's own rule, tools/people/expand.ts), never the need just met; weights from streams.weights", "the new need is unmet: replace-need clears the need-met flag, so turn.help's need-met guard opens again (Motive's review, other findings 5)"]
   },
   {
    "id": "word.passes",
@@ -502,7 +600,7 @@
    ],
    "how": ["each fact the person holds from an entry that is not `told` goes to each partner on a family or workmate tie who does not hold it, as a `told` entry with the fact's place and time. Facts only: no scale, standing or memory of the act itself moves (Sky Q6)"],
    "proposed": true,
-   "reason": "Motive's K3 sets family and workmate ties and one hop; the quiet rule (a trusting contact passes nothing) is new, see values.word-quiet-loyalty."
+   "reason": "Motive's K3 sets family and workmate ties and one hop; the quiet rule (an obliged contact passes nothing) is new, see values.word-quiet-loyalty."
   },
   {
    "id": "tie.lapses",

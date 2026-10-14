@@ -130,16 +130,25 @@ export type Quote = {
  */
 export function quote(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Quote {
   const p = priceLines(rb, people, ev, x);
-  const outcome = x.knows.has('temperament') ? resolve(rb, people, ev, { ...x, cash: undefined }).outcome : '?';
+  const outcome = shownFor(people, x, (y) => resolve(rb, people, ev, { ...y, cash: undefined }).outcome);
   return { ...p, outcome };
 }
 
+/** Every temperament people.rules knows: what the card weighs an unknown temperament against. */
+const temperaments = (people: PeopleRules) => Object.keys(people.temperaments);
+/** The card's answer for a value that may read the temperament: the truth if the cell knows it, else the answer every temperament
+ *  in this band gives alike, else '?' (Motive's review, other findings 3: Ask in a neutral district reads 'refused', not '?'). */
+function shownFor<T>(people: PeopleRules, x: Ctx, f: (y: Ctx) => T): T | '?' {
+  if (x.knows.has('temperament')) return f(x);
+  const answers = temperaments(people).map((t) => f({ ...x, subject: { ...x.subject, temperament: t } }));
+  return answers.every((a) => a === answers[0]) ? answers[0]! : '?';
+}
+
 function priceLines(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Omit<Quote, 'outcome'> {
-  const know = x.knows.has('temperament');
   const lines: QuoteLine[] = (ev.price ?? []).map((l, i) => {
     const conds = l.when ?? [];
     const truth = conds.every((c) => holds(rb, people, c, x, ev));
-    const shown: Tri = !know && conds.some(readsTemperament) ? '?' : truth;
+    const shown: Tri = conds.some(readsTemperament) ? shownFor(people, x, (y) => conds.every((c) => holds(rb, people, c, y, ev))) : truth;
     const n = (r?: string) => (r ? num(rb, people, r) : 0);
     return { line: l.line, usd: n(l.usd), s: n(l.s), trail: n(l.trail), orders: l.orders ? n(l.orders) : i === 0 ? 1 : 0, holds: shown };
   });
@@ -177,14 +186,22 @@ export function apply(rb: Rulebook, people: PeopleRules, s: Subject, changes: Ef
     }
     if (c.do === 'remember' && out.tier === 'simulated') {
       out.memory.push({ act: c.act, ...at });
-      if (out.memory.length > cap) { // drop the oldest: lowest time, then first written
-        let i = 0;
-        for (let j = 1; j < out.memory.length; j++) if (out.memory[j]!.time < out.memory[i]!.time) i = j;
-        out.memory.splice(i, 1);
-      }
+      if (out.memory.length > cap) out.memory.splice(forgetIndex(out.memory), 1);
     }
   }
   return out;
+}
+
+/** rulebook memory.whenFull: the oldest saw-act or told entry (lowest time, then first written); only when none is held, the oldest
+ *  entry. People forget what they saw before what was done to them (Motive's review #9). */
+export function forgetIndex(memory: readonly Mem[]): number {
+  const pick = (ok: (m: Mem) => boolean) => {
+    let i = -1;
+    for (let j = 0; j < memory.length; j++) if (ok(memory[j]!) && (i < 0 || memory[j]!.time < memory[i]!.time)) i = j;
+    return i;
+  };
+  const seen = pick((m) => m.act === 'saw-act' || m.act === 'told');
+  return seen >= 0 ? seen : pick(() => true);
 }
 
 /** What an investigator gets from this person (investigator.question's outcome), read from the rulebook and people.rules. */

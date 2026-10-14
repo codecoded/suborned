@@ -90,7 +90,7 @@ export type Eff = z.infer<typeof Eff>;
 
 const Value = ground({
   v: z.number().int(), // integer state (§11)
-  unit: z.enum(['usd', 's', 'm', 'trail', 'alert', 'standing', 'orders', 'scale-steps', 'entries', 'hops', 'count', 'per-mille']),
+  unit: z.enum(['usd', 's', 'm', 'cm', 'cm-per-s', 'trail', 'alert', 'standing', 'orders', 'scale-steps', 'entries', 'hops', 'count', 'per-mille']),
 });
 export const Line = z.strictObject({
   line: id, // the preview label key (K8)
@@ -142,7 +142,7 @@ export const Rulebook = z.strictObject({
   standing: ground({ start: Ref, step: Ref, hero: Ref, menace: Ref, rule: text }),
   alert: ground({
     levels: z.tuple([z.literal('routine'), z.literal('inquiry'), z.literal('search'), z.literal('lockdown')]),
-    byIncident: z.array(Ref).min(1), gunfire: Ref, violenceSeen: Ref, rule: text,
+    byIncident: z.array(Ref).min(1), perShot: Ref, violenceSeen: Ref, rule: text,
   }),
   fit: ground({
     from: z.strictObject({ suits: z.literal('respondsTo'), refused: z.literal('refuses'), otherwise: z.literal('worse') }),
@@ -162,7 +162,37 @@ export const Rulebook = z.strictObject({
   }),
   exposure: ground({ rule: text }),
   traceable: z.record(id, Traceable),
-  preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1) }),
+  // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref.
+  cell: ground({
+    speed: Ref, reach: Ref,
+    loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref }),
+    reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
+    mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
+    call: z.strictObject({ trail: Ref }),
+    enter: z.strictObject({ s: Ref }),
+    take: z.strictObject({ s: Ref, trailUnturned: Ref }),
+    fire: z.strictObject({ every: Ref, reach: Ref, reachRivals: Ref, trail: Ref, hits: Ref, enforcerHealth: Ref }),
+    rule: text,
+  }),
+  security: ground({
+    response: z.strictObject({ witness: Ref, seen: Ref, unseen: Ref, civilian: Ref, checkIn: Ref, rivalsUnseen: Ref }),
+    checkIn: Ref, seal: Ref, speed: Ref,
+    rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }),
+    patrol: z.strictObject({ breakTo: Ref, period: Ref, chase: Ref }),
+    aim: Ref,
+    fireEvery: z.strictObject({ guard: Ref, patrol: Ref, security: Ref, rivals: Ref }),
+    rule: text,
+  }),
+  perception: ground({
+    near: Ref, eye: Ref,
+    door: z.strictObject({ reach: Ref, half: Ref }),
+    facing: z.strictObject({ reach: Ref, half: Ref }),
+    security: z.strictObject({ reach: Ref, half: Ref }),
+    rivals: z.strictObject({ reach: Ref, half: Ref }),
+    patrol: z.strictObject({ depth: Ref, halfBase: Ref, halfPerMille: Ref }),
+    rule: text,
+  }),
+  preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   streams: ground({
     hash: z.literal('fnv1a-32'), generator: z.literal('mulberry32'), draw: z.literal('integer'),
     keys: z.record(id, z.string().regex(/^[a-z{}/-]+$/)), weightScale: Ref, weights: text, rule: text,

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The Suborned's one simulation engine (GDD §11, brief 011 A, Keel): a Unity-free class library. netstandard2.1 so Unity loads
+       the same DLL; no package references, so nothing but this code decides a run. Integer state, 10 Hz, replay = orders + checksums. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Suborned.Sim</RootNamespace>
+    <AssemblyName>Suborned.Sim</AssemblyName>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

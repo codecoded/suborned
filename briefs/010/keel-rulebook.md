@@ -70,7 +70,7 @@
 - `people.rules.json` still cites GDD v0.20.1 (Motive's file).
 - The top-down test allows Ask only before Watch. The rulebook allows Ask any time there is no refusal, because the Hero and Menace "volunteers / folds free" cases need it.
 
-## Proposed, for Sky (each one is `proposed: true` with its reason in the file)
+## Proposed values (each `proposed: true` with its reason in the file; Motive's review `briefs/010/motive-rulebook-review.md` accepted 11 as [S] and changed 4, applied 2026-10-15; Sky ruled Listen alone reveals the temperament)
 | # | Rule | Value |
 |---|---|---|
 | 1 | Q4 steps | worse Pay +$20,000; worse Pressure +1 T, one order; worse Help one more order (the GDD's own "Help ×2") |
@@ -78,13 +78,13 @@
 | 3 | Mercenary prices | Hero +$20,000 (overcharges); Menace −$20,000 (discount) |
 | 4 | Mercenary betrayal | a Mercenary contact in a Menace district at loyalty 0 sells a route, as an Informer does |
 | 5 | Standing scale | signed integer from 0, ±1 per witnessed Hero or Menace incident; Hero band at +3 and above, Menace at −3 and below |
-| 6 | Reporting | a Loyal person reports each approach they don't respond to; an Idealist in a Menace district reports while bravery > fear |
+| 6 | Reporting | a Loyal person reports each approach they don't respond to; an Idealist in a Menace district reports while their loyalty is none (Motive's change) |
 | 7 | Loyalty gains | Help +1 per order (gratitude); a volunteer +1; folding = Pressure's moves |
 | 8 | Witnessing violence | a contact who witnesses it: bravery −1, fear +1, resentment +1 |
-| 9 | Memory | 8 entries; the oldest is dropped, which is how "sightings go stale" happens |
-| 10 | Word (K3) | passes along family and workmate ties, one hop, between missions; a contact at loyalty 2 (trusting) passes nothing |
+| 9 | Memory | 8 entries; when full, the oldest sighting or told fact goes first, then the oldest entry (Motive's change) |
+| 10 | Word (K3) | passes along family and workmate ties, one hop, between missions; a contact at loyalty 1 (obliged) passes nothing (Motive's change) |
 | 11 | Introductions | the friend becomes known (Watch and Listen saved, 94 s), not turned; one per contact per break |
-| 12 | Exposure | the job was seen, logged by a watcher, or the contact was questioned |
+| 12 | Exposure | the contact was questioned, or a watcher logged an operative within approach reach of them; being seen doing the job is not exposure (Motive's change) |
 | 13 | Public Help | a witnessed Help on a debt is the Hero act "clear debts publicly"; on cash it is a payment |
 | 14 | False lead | points to the liar's own routine place farthest from the true fact's place |
 | 15 | Ties lapsing | workmate ties lapse as regular ties do; a debtor tie lapses when the debt is met |

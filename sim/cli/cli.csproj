@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The engine headless (brief 011 A): play a scenario or an order script; prints outcome, event log and checksums, for bun and people. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AssemblyName>suborned-sim</AssemblyName>
+    <RootNamespace>Suborned.Sim.Cli</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../Suborned.Sim/Suborned.Sim.csproj" /></ItemGroup>
+</Project>
