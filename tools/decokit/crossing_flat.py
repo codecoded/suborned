@@ -65,3 +65,26 @@ def inlay(s, lod):
 def cross_inlay_arc(s):
     """Quarter ring of seafoam faience, centreline R 2.4 m, 0.8 m wide (R 2.0 to 2.8), a 3 cm brass hairline on each edge; pivot = arc centre, +X to +Y."""
     inlay(s, 0)
+
+
+EW = 0.04   # edge line width
+
+
+def edge(s):
+    flat(s, [(-1.0, -EW / 2), (1.0, -EW / 2), (1.0, EW / 2), (-1.0, EW / 2)], BRASS, pal.Brass_Civic)
+
+
+def edge1(s):
+    flat(s, [(-0.5, -EW / 2), (0.5, -EW / 2), (0.5, EW / 2), (-0.5, EW / 2)], BRASS, pal.Brass_Civic)
+
+
+@asset("CrossEdgeLine_2", "Ground", bevel=0.0, near=edge)
+def cross_edge_line_2(s):
+    """Brass edge line, 2.00 x 0.04 m, 6 mm proud, one quad: the frame line on each long edge of the crossing strip (crossing-future-play-2). Long axis X, centred; ends butt, no seam."""
+    edge(s)
+
+
+@asset("CrossEdgeLine_1", "Ground", bevel=0.0, near=edge1)
+def cross_edge_line_1(s):
+    """1 m end module of CrossEdgeLine_2 (1.00 x 0.04 m): a line of any whole metre is 2 m modules plus at most one of these."""
+    edge1(s)

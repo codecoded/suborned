@@ -99,6 +99,14 @@ def main():
              + "</div><div class='row4'>" + "".join(img(R / f, 330, caption=c) for f, c in (("KerbStud.L1.thumb.png", "KerbStud L1"), ("LightBar_4.L1.thumb.png", "LightBar_4 L1"), ("LightDotRow_2.L1.thumb.png", "LightDotRow_2 L1"), ("CrossInlayArc_R24_W08.L1.thumb.png", "Arc L1")))
              + "</div><p><small>Studio thumbnails: the DecoKit studio HDRI, whose zenith is dark, so flat brass mirrors black here; in the courtyard-lit scene above it reads as dark brass. That is the brass of the palette (#99784D, 21.3 from the guard colour): it is dark by rule.</small></p>"
              + table(["piece", "measured size", "tris L0 / L1", "pivot", "materials", "what it is"], rows))
+    ed = {k: MEAS[k]["levels"]["L0"]["objects"][f"DK_{k}"] for k in ("CrossEdgeLine_2", "CrossEdgeLine_1")}
+    s.append("<h2>3b. The edge frame line (Aster's follow-up)</h2><p><b>CrossEdgeLine_2</b> (and its 1 m end module <b>CrossEdgeLine_1</b>): a brass line 2.00 x 0.04 m, 6 mm proud, one quad (2 triangles; L1 the same), on each long edge of the strip as in crossing-future-play-2. "
+             f"Measured: {ed['CrossEdgeLine_2']['size']} m and {ed['CrossEdgeLine_1']['size']} m. SF-21: area 0.08 m2 per module (limit 1 m2) and 0.04 m wide (limit 0.6 m); a whole 8 m crossing carries 2 x 8 m x 0.04 m = 0.64 m2 of it in two separate lines. Colour DK_Brass_Civic #99784D, 21.3 from the guard colour (cones 25.9, rivals 47.8): passes the 20 gate.</p>"
+             "<p><b>Separate tiling piece, not part of the dot row.</b> (1) The bar variant needs it too and has no dot row to carry it. (2) It runs the strip's full length at the strip's edge line, whatever the row layout; a dot module is 2 m with hairlines 0.4 m apart around its own dots, so the edge line cannot ride on it without doubling the hairline. "
+             "(3) One quad per 2 m: a 12 m strip is 12 triangles for both edges. Place at y = +-2.0; move the dot rows in to y = +-1.75, because the row's outer hairline would otherwise sit on the line at the same height (z-fight).</p><div class='row2'>"
+             + img(sc["dots.camera.play"], crop=(560, 330, 1360, 780), lit=True, caption="candidates: dot rows with the edge line, play zoom, crop 1:1")
+             + img(CON / "crossing-future-play-2.jpg", 700, caption="concept: crossing-future-play-2")
+             + img(R / "CrossEdgeLine_2.thumb.png", 330, caption="CrossEdgeLine_2 (studio)") + "</div>")
     # ---- budgets and shadows
     prow = []
     for a in CAT:
@@ -133,7 +141,7 @@ def main():
              ", ".join(e(p["object"].replace("DK_", "")) for p in a.get("parts", [])) or "one object", f"{a['tris']} / {a['lods'][0]['tris']}", e(", ".join(a["tags"]["use"]))] for a in CAT]
     s.append("<h2>6. Catalogue proposal for Splice</h2>" + table(["id", "size x y z (m)", "pivot", "separate objects (FBX siblings)", "tris L0 / L1", "tags.use"], crow)
              + "<p>Full KitAsset rows (files with sha256, LODs, parts with castShadows and default visibility, notes with placement conventions): <code>out/decokit-009/catalogue.proposal.json</code>; colours: <code>crossing-colours.json</code>; measured per object: <code>measured.json</code>. "
-               "To adopt: <code>bun tools/decokit/run.ts --out out/decokit-009 --only SignalEye,KerbStud,LightBar_4,LightDotRow_2,LightDotRow_1,CrossInlayArc_R24_W08</code> reproduces the files byte for byte.</p>"
+               "To adopt: <code>bun tools/decokit/run.ts --out out/decokit-009 --only SignalEye,KerbStud,LightBar_4,LightDotRow_2,LightDotRow_1,CrossInlayArc_R24_W08,CrossEdgeLine_2,CrossEdgeLine_1</code> reproduces the files byte for byte.</p>"
                "<h3>Generator changes (tools/decokit; the old pieces are byte-identical, checked on OceanLiner and BollardSphere against HEAD)</h3><ul>"
                "<li><code>kit.py</code>: <code>asset(near=)</code>, a hand-built L1; <code>build_lod(name, tag)</code> (<code>build_far</code> kept); family <code>crossing009</code> registered.</li>"
                "<li><code>export_kit.py</code>: a hand-built L1 is exported whatever the piece's weight, instead of the 25% collapse and the 400-triangle floor.</li>"

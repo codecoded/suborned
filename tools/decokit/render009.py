@@ -64,9 +64,12 @@ def crossing(kind, face):
         for k in range(8):
             objs.append(place("LightBar_4", (-3.5 + k, 0, 0), 90))
     else:
-        for y in (-1.8, 0.0, 1.8):
+        for y in (-1.75, 0.0, 1.75):
             for k in range(4):
                 objs.append(place("LightDotRow_2", (-3.0 + 2 * k, y, 0)))
+    for y in (-STRIP, STRIP):   # the brass frame line on each long edge of the strip (CrossEdgeLine_2, four modules end to end)
+        for k in range(4):
+            objs.append(place("CrossEdgeLine_2", (-3.0 + 2 * k, y, 0)))
     for sx in (-1, 1):
         for sy in (-1, 1):
             objs.append(place("SignalEye", (sx * 5.0, sy * 2.6, 0), -30 if face == "camera" else (90 if sx < 0 else -90)))
@@ -106,7 +109,7 @@ def piece_views(cam, out, px):
     sc.render.resolution_x, sc.render.resolution_y = px, int(px * 0.72)
     cases = [("SignalEye", "walk", False), ("SignalEye", "stop", False), ("SignalEye", "walk.L1", True), ("KerbStud", "", False), ("LightBar_4", "", False),
              ("LightDotRow_2", "", False), ("LightDotRow_1", "", False), ("CrossInlayArc_R24_W08", "", False), ("KerbStud", "L1", True), ("LightBar_4", "L1", True),
-             ("LightDotRow_2", "L1", True), ("CrossInlayArc_R24_W08", "L1", True)]
+             ("LightDotRow_2", "L1", True), ("CrossInlayArc_R24_W08", "L1", True), ("CrossEdgeLine_2", "", False)]
     for name, tag, lod in cases:
         o = place(name, (0, 0, 0), 0, lod, "stop" if tag.startswith("stop") else "walk")
         lo, hi = r8.bounds(o)
