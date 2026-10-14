@@ -12,7 +12,10 @@
 // still (2026-10-15, Sky's clock ruling and Suture's review of r013), optional and additive: `clock.ruling` (the start is settled;
 // `contradiction` is then gone), a role's window `shift` read as "there when the mission needs them" (in place at its point, or on
 // shift without one), the playability conditions M-2 reads (`tiedTo`, `leavesTo`, `waitsFor`, `alone`; tools/missions/handover/
-// cast.ts) and `windows` (a route's timed window restated against the world, with the GDD's figure and the reason).
+// cast.ts) and `windows` (a route's timed window restated against the world, with the GDD's figure and the reason). Later still
+// (2026-10-15, brief 011 B; Suture O-6): `points` and `cameras`, the mission's own places the engine plays on (the Tech's cabinet,
+// the Listen spot, the rivals' and the response unit's ways in, the patrol's sweep, the pickup camera's blocking spot, the two
+// cameras), each with its reason; tools/sim/site.ts reads them into sim/data/handover.site.json.
 // A recorded run's pinned block carries its own /1 layer and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
@@ -53,6 +56,14 @@ const role = z.strictObject({
   .refine(r => offsetS(r.shift.from) <= offsetS(r.shift.to), { path: ['shift'], error: 'shift.from is not after shift.to' })
   .refine(r => !r.waitsFor || !!r.at, { path: ['waitsFor'], error: 'a role that waits stands at a point' })
   .refine(r => !r.alone || !!r.at, { path: ['alone'], error: 'a role alone at a point names the point' });
+
+/** A place the engine plays on that the mission owns (block frame, m): at a point, or at the centre of a civic-block structure. */
+const sitePoint = z.strictObject({
+  id, at: z.tuple([z.number(), z.number()]).optional(), structure: id.optional().describe('civic-block.json structures id: the point is its centre'),
+  src, reason: z.string().min(1),
+}).refine(p => (p.at === undefined) !== (p.structure === undefined), { error: 'exactly one of at and structure' });
+/** A camera (§05 fixed visible cones): mount, the destination it looks at, reach and cone half-width at the reach, m. */
+const camera = z.strictObject({ id, at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1) });
 
 /** A route's timed window, restated against the world: the GDD's figure, the measured walk, and the result. */
 const window = z.strictObject({
@@ -98,6 +109,9 @@ export const Mission = z.strictObject({
   roles: z.array(role),
   /** Route windows restated against the world (/3, later). */
   windows: z.array(window).optional(),
+  /** The engine's places and cameras that are mission content (/3, later; Suture O-6). */
+  points: z.array(sitePoint).optional(),
+  cameras: z.array(camera).optional(),
   destinations: z.array(point).min(1),
   crew: z.array(point),
   /** Road routes over the plan graph: from a node to the nearest of `to`. */
@@ -112,5 +126,7 @@ export const Mission = z.strictObject({
   .refine(m => m.roles.every(r => !r.waitsFor || !!m.roles.find(x => x.id === r.waitsFor)?.leavesTo), { path: ['roles'], error: 'waitsFor names a role with leavesTo' })
   .refine(m => m.roles.every(r => !r.leavesTo || m.destinations.some(d => d.name === r.leavesTo!.at)), { path: ['roles'], error: 'leavesTo names a destination' })
   .refine(m => (m.windows ?? []).every(w => m.roles.some(r => r.id === w.role) && [w.walk.from, w.walk.to].every(n => m.destinations.some(d => d.name === n))), { path: ['windows'], error: 'a window names a role and two destinations of the mission' })
-  .refine(m => !m.clock.ruling || (!m.clock.provisional && !m.clock.contradiction), { path: ['clock'], error: 'a ruled start is not provisional and holds no contradiction' });
+  .refine(m => !m.clock.ruling || (!m.clock.provisional && !m.clock.contradiction), { path: ['clock'], error: 'a ruled start is not provisional and holds no contradiction' })
+  .refine(m => { const ids = [...(m.points ?? []), ...(m.cameras ?? [])].map(p => p.id); return new Set(ids).size === ids.length; }, { path: ['points'], error: 'point and camera ids are unique' })
+  .refine(m => (m.cameras ?? []).every(c => m.destinations.some(d => d.name === c.looksAt)), { path: ['cameras'], error: 'a camera looks at a destination' });
 export type Mission = z.infer<typeof Mission>;

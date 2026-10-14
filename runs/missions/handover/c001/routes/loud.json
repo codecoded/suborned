@@ -1,0 +1,18 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "The loud front (GDD §07 loud; Keel S11): Tech loops the camera and reroutes the patrol, the Enforcer shoots the guard (2 shots), enters and takes Vale out to the getaway car. No contact.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Office approach"},
+  {"tick": 354, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 974, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1424, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1484, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1484, "op": "enforcer", "do": "enter"},
+  {"tick": 1864, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 2252, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 4800
+}

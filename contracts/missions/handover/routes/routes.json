@@ -1,0 +1,289 @@
+{
+ "schema": "suborned.mission.routes/1",
+ "mission": "handover",
+ "note": "The Handover's route scripts (brief 011 B, Waymark), played headless by the mission checker (bun run missions:check handover). Written against Keel's engine (5448655) on the r013 cast it plays (sim/data/handover.site.json cast; mission.json has no pins yet). The scripts start from Keel's scenarios where one exists (S05, S09, S10, S11, S20, S21, S25, N08), without their fixtures; every fixture a script would need became orders. Keel's readings are kept: the response unit enters from the north street (§07 'west street'), one door guard stays the whole mission, and Vale follows the mission's timeline, not his routine. Closing events (Suture's question; Aster 2026-10-15): route A's is Vale's exit at 5:50 (§07 route A, before 5:50), secured when the Enforcer is inside; route B's is the mission's close at 8:00 (rivals take Vale or the car leaves), secured when Vale is with the Enforcer. The walk to the getaway car after that is bounded by the seal and, once it lands, the final fight, not by the closing event: the engine ends the mission at 8:00 only if Vale is not yet with the Enforcer.",
+ "closing": {
+  "at": "8:00",
+  "what": "rivals take Vale or car leaves = over",
+  "src": "mission.json timeline: the last entry closes the mission (GDD §07 schedule 8:00)"
+ },
+ "informedSpareS": 60,
+ "contacts": [
+  {
+   "role": "waitress",
+   "who": "Inez (route A: she calls the guard away)"
+  },
+  {
+   "role": "driver",
+   "who": "the official driver (route B: he moves the pickup to the service lane)"
+  }
+ ],
+ "fails": [
+  {
+   "id": "vale-killed",
+   "gdd": "Vale killed",
+   "codes": [
+    "vale-dead"
+   ]
+  },
+  {
+   "id": "vale-leaves",
+   "gdd": "Vale leaves in official car",
+   "codes": [
+    "vale-leaves"
+   ]
+  },
+  {
+   "id": "rivals-reach-vale",
+   "gdd": "rivals reach Vale",
+   "codes": [
+    "rivals-reach-vale"
+   ]
+  },
+  {
+   "id": "district-seals",
+   "gdd": "district seals",
+   "codes": [
+    "sealed"
+   ]
+  },
+  {
+   "id": "enforcer-down",
+   "gdd": "Enforcer down",
+   "codes": [
+    "enforcer-down"
+   ]
+  },
+  {
+   "id": "entry-seen-guard",
+   "gdd": "entry seen by guard",
+   "codes": [
+    "entry-seen-guard"
+   ]
+  },
+  {
+   "id": "entry-seen-camera",
+   "gdd": "entry seen by live camera",
+   "codes": [
+    "entry-seen-camera",
+    "abduction-seen-camera"
+   ]
+  },
+  {
+   "id": "entry-seen-patrol",
+   "gdd": "entry seen by patrol",
+   "codes": [
+    "entry-seen-patrol"
+   ]
+  }
+ ],
+ "scripts": [
+  {
+   "id": "route-a",
+   "file": "route-a.json",
+   "kind": "quiet",
+   "route": "A",
+   "primary": true,
+   "closes": {
+    "at": "5:50",
+    "what": "Vale exits (GDD §07 route A: before 5:50); after it he is no longer inside",
+    "secured": "enter.in"
+   },
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route A; Keel S10"
+  },
+  {
+   "id": "route-a-pressure",
+   "file": "route-a-pressure.json",
+   "kind": "quiet",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "Keel S25; Sky Q4",
+   "note": "Pressure on an Idealist: one step worse (+4 T), and it ties the loud route's Trail."
+  },
+  {
+   "id": "route-b",
+   "file": "route-b.json",
+   "kind": "quiet",
+   "route": "B",
+   "primary": true,
+   "closes": {
+    "at": "8:00",
+    "what": "rivals take Vale or the car leaves = over (GDD §07 schedule)",
+    "secured": "take.done"
+   },
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route B; Keel S20"
+  },
+  {
+   "id": "route-b-block",
+   "file": "route-b-block.json",
+   "kind": "quiet",
+   "route": "B",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route B (driver blocks pickup camera 2:30); Keel S21",
+   "note": "The engine moves a turned driver's pickup to the service lane, so §07's 'or driver blocks pickup camera' is not yet a separate pickup at the bay (to Keel)."
+  },
+  {
+   "id": "loud",
+   "file": "loud.json",
+   "kind": "loud",
+   "route": "A",
+   "primary": true,
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 loud; Keel S11"
+  },
+  {
+   "id": "loud-witnessed",
+   "file": "loud-witnessed.json",
+   "kind": "loud",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "Keel S05"
+  },
+  {
+   "id": "fail-vale-dead",
+   "file": "fail-vale-dead.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "vale-dead"
+   },
+   "reaches": "vale-killed",
+   "src": "GDD §07 fail; Keel S09"
+  },
+  {
+   "id": "fail-vale-leaves",
+   "file": "fail-vale-leaves.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "vale-leaves"
+   },
+   "reaches": "vale-leaves",
+   "src": "GDD §07 fail; Suture N1"
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "file": "fail-rivals-reach-vale.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "reaches": "rivals-reach-vale",
+   "src": "GDD §07 fail; Suture N2"
+  },
+  {
+   "id": "fail-district-seals",
+   "file": "fail-district-seals.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "sealed"
+   },
+   "reaches": "district-seals",
+   "src": "GDD §07 fail; §05 district seals 2:25 after the response unit arrives; Suture N3"
+  },
+  {
+   "id": "fail-enforcer-down",
+   "file": "fail-enforcer-down.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "reaches": "enforcer-down",
+   "src": "GDD §07 fail; Suture N4"
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "file": "fail-entry-seen-guard.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard"
+   },
+   "reaches": "entry-seen-guard",
+   "src": "GDD §07 fail; Suture N5"
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "file": "fail-entry-seen-camera.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera"
+   },
+   "reaches": "entry-seen-camera",
+   "src": "GDD §07 fail; Suture N6"
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "file": "fail-entry-seen-patrol.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol"
+   },
+   "reaches": "entry-seen-patrol",
+   "src": "GDD §07 fail; Suture N7"
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "file": "fail-take-seen-camera.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera"
+   },
+   "reaches": "entry-seen-camera",
+   "src": "GDD §07 fail (live camera), at the pickup; Keel's abduction-seen-camera"
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "file": "loud.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "reaches": "enforcer-down",
+   "pending": "the final fight, loud branch (Suture N10: police from the north street, 2–4 officers, seal clock running) is not in the engine yet; this plays the loud route into the fight and stays in it until the Enforcer is down",
+   "src": "GDD §07 final fight [S], loud; Suture N10"
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "file": "route-b.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "reaches": "rivals-reach-vale",
+   "pending": "the final fight, safe branch (Suture N11: rivals ambush the extraction; the guard fights them; Inez warns 10 s early; the driver −1 rival; an earlier false tip −1 rival) is not in the engine yet; this plays route B into the ambush without answering it",
+   "src": "GDD §07 final fight [S], safe; Suture N11"
+  },
+  {
+   "id": "withdraw",
+   "file": "withdraw.json",
+   "kind": "outcome",
+   "expects": {
+    "outcome": "withdrawn"
+   },
+   "src": "GDD §07 Withdraw ends the attempt; Keel N08"
+  }
+ ]
+}
