@@ -84,6 +84,15 @@ test('every kerb crossing is a zebra on every road class; a stop or a bank cross
   expect([...byRoad].sort()).toEqual(['access', 'district']); // the live plan has no primary kerb crossing
 });
 
+test('every crossing landing patch draws the look key `crossing` and nothing else does: the trim colour (brass) does not decide the landings', () => {
+  const patches = w.street.filter(s => s.kind === 'crossing');
+  expect(patches.length).toBe(162);
+  for (const s of patches) expect(s.surface, s.id).toBe('crossing');
+  expect(w.street.filter(s => s.surface === 'crossing').length).toBe(162); // the civic block's nine are among them
+  expect(w.street.filter(s => s.kind !== 'crossing').every(s => ['trim', 'park', 'enamel'].includes(s.surface))).toBe(true);
+  expect(old.street.filter(s => s.kind === 'crossing').every(s => s.surface === 'crossing')).toBe(true); // a plan without the strip standard names it too
+});
+
 test('a patch lies at the level of the surface under it: a stop patch on the carriageway at 0, the rest on the pavement top; none on a lawn', () => {
   for (const s of w.street.filter(s => s.kind === 'crossing')) expect(s.z, s.id).toBe(s.edge.startsWith('stop/') ? 0 : 0.18); // 0.18 = the pavement top
   const gardens = items.get('street/bank/S1/gardens/l/crossing-213')!;

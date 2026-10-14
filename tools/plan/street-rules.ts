@@ -143,7 +143,7 @@ export function streetRules(c: WCtx): Check[] {
     else if (p === 'coral_transit' && !/-kiosk$/.test(f.trade)) bad17.push(`${f.id}: coral_transit on ${f.trade}`);
     else if (p !== 'coral_transit' && !PALETTE.includes(p)) bad17.push(`${f.id}: sign colour ${p} is not in the city palette`);
   }
-  const coralOk = new Set(['kiosk-tickets', 'station-entrance', 'timetable-column']), surfaces = new Set(['enamel', 'trim', 'park']);
+  const coralOk = new Set(['kiosk-tickets', 'station-entrance', 'timetable-column']), surfaces = new Set(['enamel', 'trim', 'park', 'crossing']); // crossing: the landing slab's own look key (so the trim colour does not decide it)
   for (const sp of spots) { if (!surfaces.has(sp.s.surface)) bad17.push(`${tag(sp)}: surface ${sp.s.surface}`); if (sp.s.variant === 'coral-dial' && !coralOk.has(sp.s.kind)) bad17.push(`${tag(sp)}: coral off a transit item`); if (SIGNAL.some(x => `${sp.s.variant ?? ''}${sp.s.surface}`.includes(x))) bad17.push(`${tag(sp)}: signal colour`); }
   out.push(rule('SF-17', G, 'No sign, lamp or furniture colour is a signal colour or a faction colour; coral_transit only on transit items', w.frontages.length + spots.length, bad17, 'none', 'streetscape.lamps.colour · frontage.placement.signs · §15 signal_colours'));
   return out;

@@ -6,7 +6,8 @@ import { type Rect, inRect, pointInRing } from '../geo';
 import { Grid } from '../../../plan/street-geo';
 import { FLAT, beamBlock, footprintOf, quayBlock, ringGap, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
 
-const SURF: Record<string, string> = { tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel' };
+/** The look surface a kind draws in (default `trim`). A crossing landing has its own, so the trim colour (brass, 14 Oct) does not decide it: its colour is one look.json value. */
+const SURF: Record<string, string> = { tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel', crossing: 'crossing' };
 const sightOf = (s: unknown): StreetItem['sight'] => (String(s).startsWith('blocks') ? 'blocks' : String(s).startsWith('glazed') ? 'glazed' : 'open');
 
 /** Tree keep-clear (streetscape.trees.keepClear): a tree stays 3 m from a lamp and 2 m from a hydrant, centre to centre. */
