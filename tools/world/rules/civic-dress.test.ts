@@ -124,10 +124,13 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     const again = generated(plan, d, civ).w.civic.filter(m => /\/tuft-\d+$/.test(m.id));
     expect(again.map(t => t.kit!.yaw)).toEqual(tufts.map(t => t.kit!.yaw));
   });
-  test('the pool draws its water in DK_Pool_Civic; no other civic mass replaces a material', () => {
+  test('the pool draws its water in DK_Pool_Civic and the fountain planters brass; no other civic mass replaces a material', () => {
     expect(civicMass(base.w, 'civic/atom-fountain').materials).toEqual({ DK_Water: 'DK_Pool_Civic' });
-    expect(base.w.civic.filter(m => m.materials).map(m => m.id)).toEqual(['civic/atom-fountain']);
+    const planters = ['north-east', 'north-west', 'south-west', 'south-east'].map(c => `civic/fountain-garden-${c}`);
+    for (const id of planters) expect(civicMass(base.w, id).materials).toEqual({ DK_Accent_Gold: 'DK_Brass_Civic' });
+    expect(base.w.civic.filter(m => m.materials).map(m => m.id).sort()).toEqual(['civic/atom-fountain', ...planters].sort());
     expect(adoptedBy('AtomFountain')!.materials).toContain('DK_Water');
+    expect(adoptedBy('PlanterArc')!.materials).toContain('DK_Accent_Gold');
   });
 });
 
