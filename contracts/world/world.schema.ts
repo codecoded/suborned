@@ -168,7 +168,7 @@ export type Signal = { state: SignalState; hover: number; size: number; faces: [
 export type StreetItem = {
   id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id; surface = a look key (not enumerated here): `trim` by default, `park`, `enamel`, `crossing` for the landing patches of a plan without streetscape.crossings.strip, `glow` (light bars and dots), `inlay` (arcs), `orb` (signal orbs), `booth` for a phone booth, `tub` for a palm tub
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;
-  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `crossing-stud`, `crossing-arc`, `signal-orb`): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
+  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `crossing-edge`, `crossing-stud`, `crossing-arc`, `signal-orb`): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
    *  the heading display A looks along (orbs); `z` the surface it lies on (an orb: the ground under its halo). */
   crossing?: string;
   /** `signal-orb` only. */

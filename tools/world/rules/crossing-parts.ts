@@ -74,6 +74,30 @@ export function partProblem(c: WCtx, gc: Ctx, look: Look, x: Crossing, byId: Map
     if (wantMods !== have) return `has a light line of [${have}] m, the strip and the plan's modules call for [${wantMods}] (as many whole modules as fit between the kerbs and refuges)`;
   }
 
+  // the brass edge line: two lines, one on each long edge of the strip, centred on it, along the walk, the strip's whole length in whole modules end to end, thin, trim
+  const edges = of('crossing-edge'), ed = look.edge, elo = ed.end, wantEdge = (len - 2 * elo > 0 ? modulesIn(len - 2 * elo, ed.modules) : []).sort().join();
+  if (!edges.length && wantEdge) return 'has no brass edge line along its long edges';
+  for (const s of edges) {
+    const lat = across(s.at), s0 = along(s.at) - s.size[0] / 2, s1 = along(s.at) + s.size[0] / 2, why = ((): string => {
+      if (axisGap(s.yaw, Math.atan2(u[1], u[0])) > 0.01) return 'does not lie along the walk';
+      if (!near(s.z, level)) return `is at z ${s.z} over a surface at ${level}`;
+      if (s.surface !== 'trim') return `draws ${s.surface}, not trim`;
+      if (!ed.modules.some(m => near(s.size[0], m)) || !near(s.size[1], ed.width) || !near(s.size[2], thick)) return `is ${s.size[0]} × ${s.size[1]} m, the plan's edge line modules are ${ed.modules.join(' or ')} × ${ed.width}`;
+      if (Math.abs(Math.abs(lat) - W / 2) > TOL) return `lies ${lat.toFixed(2)} m off the middle of the strip, the plan's edge lines are at ±${(W / 2).toFixed(2)}`;
+      if (s0 < elo - TOL || s1 > len - elo + TOL) return 'runs past a kerb';
+      return '';
+    })();
+    if (why) return `${s.id} ${why}`;
+  }
+  for (const sg of lights.length || edges.length ? [1, -1] : []) {
+    const l = edges.filter(s => Math.sign(across(s.at)) === sg).sort((p, q) => along(p.at) - along(q.at));
+    for (let i = 1; i < l.length; i++) if (along(l[i]!.at) - l[i]!.size[0] / 2 < along(l[i - 1]!.at) + l[i - 1]!.size[0] / 2 - TOL) return `${l[i]!.id} overlaps ${l[i - 1]!.id}`;
+    const have = l.map(s => s.size[0]).sort().join();
+    if (wantEdge !== have) return `has an edge line of [${have}] m on one side, the strip and the plan's modules call for [${wantEdge}]`;
+  }
+  // the light lines clear the edge line: the row's outer edge stays inside the line's inner edge (Vela: hairline 1.965, line 1.98)
+  for (const s of lights) if (Math.abs(across(s.at)) + s.size[1] / 2 > W / 2 - ed.width / 2 + TOL) return `${s.id} reaches the brass edge line`;
+
   // the orbs: one over each kerb end and each refuge where the plan gives the road a signal, none where it does not
   const orbs = of('signal-orb'), want = x.control === 'signal' ? [...ends.map((_, i) => 'ab'[i]!), ...x.refuges.map((_, i) => `r${i}`)] : [], have = orbs.map(s => s.id.slice(`${x.id}/signal/`.length));
   if ([...have].sort().join() !== [...want].sort().join()) return `has signal orbs [${have}], its kerb ends and refuges call for [${want}]`;

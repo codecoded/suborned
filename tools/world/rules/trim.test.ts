@@ -69,7 +69,7 @@ describe('SF-21 on the live world', () => {
 
   test('brief 009: a crossing\'s arcs (237) and eyes (156) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
     for (const [key, n] of [[GLOW, 0], [INLAY, 237], [ORB, 156]] as const) {
-      const { w, check } = sf21(w => { for (const x of owned(w, [key])) x.surface = 'trim'; });
+      const { w, check } = sf21(w => { for (const x of owned(w, [key])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
       expect(broadParts(w).length, key).toBe(n);
       expect(check.ok, key).toBe(n === 0);
     }

@@ -1,4 +1,4 @@
-// A crossing's parts take Vela's pieces (brief 009 A, catalogue.proposal.json) once they are adopted, unscaled and by exact size; until then they stay procedural. The catalogue here is the proposal's six rows
+// A crossing's parts take Vela's pieces (brief 009 A, catalogue.proposal.json) once they are adopted (brief 009 B, Splice: all eight are in contracts/world/kit.json), unscaled and by exact size. The catalogue here is the proposal's eight rows
 // (id, use tag, size) set to adopted and written to a temp file, pinned with withKit, so nothing depends on out/ or on kit.json being changed.
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -17,30 +17,34 @@ setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), civ = civic(plan.civic, read(plan.civic.block));
 const d = derive(plan), { world: w, gen } = worldOf(plan, d, civ);
-const parts = w.street.filter(s => s.crossing);
+const parts = w.street.filter(s => s.crossing).map(({ kit, ...s }) => ({ ...s, source: 'procedural' as const })); // the world binds them from the live kit: unbound here, so each test binds from its own catalogue
 
-/** Vela's six rows: id, use tag, size in kit axes (x, up, z). */
+/** Vela's eight rows: id, use tag, size in kit axes (x, up, z). */
 const PIECES: [string, string, [number, number, number]][] = [
   ['SignalEye', 'signal:eye', [1.12, 3.23, 1.12]], ['KerbStud', 'stud:kerb', [0.4, 0.084, 0.3804]], ['LightBar_4', 'crossing:bar', [4, 0.006, 0.44]],
   ['LightDotRow_2', 'crossing:dots', [2, 0.006, 0.43]], ['LightDotRow_1', 'crossing:dots', [1, 0.006, 0.43]], ['CrossInlayArc_R24_W08', 'inlay:crossing-arc', [2.83, 0.006, 2.83]],
+  ['CrossEdgeLine_2', 'crossing:edge', [2, 0.006, 0.04]], ['CrossEdgeLine_1', 'crossing:edge', [1, 0.006, 0.04]],
 ];
 const catalogue = (mutate: (rows: any[]) => void = () => {}) => {
   const kit = read('contracts/world/kit.json'), rows = PIECES.map(([id, use, size]) => ({ id, category: 'Street', size: [...size], pivot: 'footprint-centre-ground', front: '+Z', tris: 10, materials: [], tags: { use: [use], scale: [1, 1], squash: 1, wave: 2, sight: 'open' }, status: 'adopted', source: 'generated', files: [] }));
   mutate(rows);
   const file = join(mkdtempSync(join(tmpdir(), 'kit009-')), 'kit.json');
-  writeFileSync(file, JSON.stringify({ ...kit, assets: [...kit.assets, ...rows] }));
+  writeFileSync(file, JSON.stringify({ ...kit, assets: [...kit.assets.filter((a: any) => !rows.some(x => x.id === a.id)), ...rows] }));
   return file;
 };
 const bound = (file?: string) => withKit(file, () => parts.map(bindPart));
 const wrap = (t: number) => Math.atan2(Math.sin(t), Math.cos(t));
 
-test('none of Vela\'s pieces adopted yet: every part stays procedural', () => {
-  expect(bound().every(s => s.source === 'procedural' && !s.kit)).toBe(true);
+test('the pieces are adopted in the live kit: every part is bound to one, none scaled; with them not adopted every part stays procedural', () => {
+  expect(bound().every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
+  const gone = catalogue(rows => { for (const r of rows) r.status = 'candidate'; });
+  expect(bound(gone).every(s => s.source === 'procedural' && !s.kit)).toBe(true);
 });
 
-test('adopted, each part takes its piece by use and size: 768 + 212 dot rows, 536 studs, 237 arcs, 156 eyes; none scaled', () => {
+test('adopted, each part takes its piece by use and size: 768 + 212 dot rows, 1134 edge lines, 536 studs, 237 arcs, 156 eyes; none scaled', () => {
   const out = bound(catalogue()), by = (id: string) => out.filter(s => s.kit?.id === id).length;
   expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([768, 212, 536, 237, 156, 0]);
+  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1134);
   expect(out.every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
 });
 

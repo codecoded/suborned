@@ -182,9 +182,9 @@ describe('extra world rules', () => {
       });
       test('lights: two lines along the walk, one near each edge; a piece off the strip, over a refuge, near the kerb, the wrong size, level, look or count; bars where the plan says dots', () => {
         fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c); s.at = [s.at[0] + n[0] * 1.2, s.at[1] + n[1] * 1.2]; }), /\/dots\/l0 (reaches off the strip|lies [\d.]+ m off the middle of the strip)/);
-        fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c); s.at = [s.at[0] + n[0] * 0.3, s.at[1] + n[1] * 0.3]; }), /\/dots\/l0 lies 1\.\d+ m off the middle of the strip, the plan's lines are at ±1\.4[89]/);
+        fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c); s.at = [s.at[0] - n[0] * 0.3, s.at[1] - n[1] * 0.3]; }), /\/dots\/l0 lies 1\.\d+ m off the middle of the strip, the plan's lines are at ±1\.75/);
         fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c), u: V = [n[1], -n[0]], start = (s.at[0] - c.line[0][0]) * u[0] + (s.at[1] - c.line[0][1]) * u[1] - s.size[0] / 2; s.at = [s.at[0] - u[0] * (start - 0.2), s.at[1] - u[1] * (start - 0.2)]; }), /\/dots\/l0 is within 0\.5 m of a kerb or a refuge/); // its end 0.2 m from the kerb
-        fails(parts((w, c) => { const r = c.refuges[0]!, m = centre(r), n = nrm(c), s = part(w, c, 'crossing-dots'); s.at = [m[0] + n[0] * 1.485, m[1] + n[1] * 1.485]; }, true), /\/dots\/\w+ (lies over a refuge|is within 0\.5 m of a kerb or a refuge)/);
+        fails(parts((w, c) => { const r = c.refuges[0]!, m = centre(r), n = nrm(c), s = part(w, c, 'crossing-dots'); s.at = [m[0] + n[0] * 1.75, m[1] + n[1] * 1.75]; }, true), /\/dots\/\w+ (lies over a refuge|is within 0\.5 m of a kerb or a refuge)/);
         fails(parts((w, c) => { part(w, c, 'crossing-dots').size = [3, 0.43, 0.006]; }), /\/dots\/l0 is 3 × 0\.43 m, the plan's dot row modules are 2 or 1 × 0\.43/);
         fails(parts((w, c) => { part(w, c, 'crossing-dots').z = 0.18; }), /\/dots\/l0 is at z 0\.18 over a surface at 0/);
         fails(parts((w, c) => { part(w, c, 'crossing-dots').surface = 'trim'; }), /\/dots\/l0 draws trim, not glow/);
@@ -193,6 +193,14 @@ describe('extra world rules', () => {
         fails(parts((w, c) => { drop(w, c, id => id.includes('/dots/')); }), /has no dot row along it/);
         fails(parts((w, c) => { drop(w, c, id => id.endsWith('/dots/l1')); }), /has a light line of \[[\d,]+\] m, the strip and the plan's modules call for \[[\d,]+\]/);
         fails(parts((w, c) => { const b = part(w, c, 'crossing-dots'); w.street.push({ ...b, id: `${c.id}/bar/l0`, kind: 'crossing-bar', size: [4, 0.44, 0.006], dots: undefined }); c.items.push(`${c.id}/bar/l0`); }), /has 1 light bars, the plan's lights form is dots/);
+      });
+      test('the brass edge line: one on each long edge at the strip\'s edge, whole modules kerb to kerb, thin trim; a missing, misplaced, wrong or short one fails', () => {
+        fails(parts((w, c) => { drop(w, c, id => id.includes('/edge/')); }), /has no brass edge line along its long edges/);
+        fails(parts((w, c) => { drop(w, c, id => id.includes('/edge/r')); }), /has an edge line of \[\]? ?[\d,]* ?\]? ?m on one side|has an edge line of \[[\d,]*\] m on one side/);
+        fails(parts((w, c) => { const s = part(w, c, 'crossing-edge'), n = nrm(c); s.at = [s.at[0] - n[0] * 0.2, s.at[1] - n[1] * 0.2]; }), /\/edge\/l0 lies 1\.8\d m off the middle of the strip, the plan's edge lines are at ±2\.00/);
+        fails(parts((w, c) => { part(w, c, 'crossing-edge').surface = 'glow'; }), /\/edge\/l0 draws glow, not trim/);
+        fails(parts((w, c) => { part(w, c, 'crossing-edge').size = [2, 0.3, 0.006]; }), /\/edge\/l0 is 2 × 0\.3 m, the plan's edge line modules are 2 or 1 × 0\.04/);
+        fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c); s.at = [s.at[0] + n[0] * 0.04, s.at[1] + n[1] * 0.04]; }), /\/dots\/l0 lies 1\.79 m off the middle of the strip, the plan's lines are at ±1\.75/);
       });
       test('no light piece lies across the walk: turned a quarter it runs along the carriageway, within 30 degrees of its axis; turned 60 degrees it is off the walk, not the road', () => {
         fails(parts((w, c) => { part(w, c, 'crossing-dots').yaw += Math.PI / 2; }), /\/dots\/l0 lies 0 degrees from the carriageway's axis: a light piece runs along the walk, 30 degrees or more off the road/);

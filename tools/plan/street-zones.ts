@@ -9,7 +9,7 @@ export type Sec = { cls: 'primary' | 'district' | 'access'; kerb: number; walk: 
 export const TOL = 0.011;
 /** Kinds lying flush in the carriageway or the paving, or hanging overhead: they never count as standing in a zone. `crossing` is the landing slab of a plan without streetscape.crossings.strip; the rest are a crossing's light bars, dot rows, kerb studs, inlay arcs and signal orbs
  *  (brief 009; every gen/street/parts.ts PART_KINDS, which crossings.test.ts holds). An orb's pivot is on the ground, but its body hangs 2.3 m up on a beam of light: only its halo is on the ground, and SF-20 holds that clear of furniture. */
-export const FLAT = new Set(['crossing', 'crossing-bar', 'crossing-dots', 'crossing-stud', 'crossing-arc', 'signal-orb']);
+export const FLAT = new Set(['crossing', 'crossing-bar', 'crossing-dots', 'crossing-edge', 'crossing-stud', 'crossing-arc', 'signal-orb']);
 
 export function boxRing(c: V, a: number, b: number, yaw: number): V[] {
   const cs = Math.cos(yaw), sn = Math.sin(yaw);

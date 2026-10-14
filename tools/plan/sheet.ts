@@ -75,7 +75,7 @@ footer{margin-top:30px;font:12px ui-monospace,Menlo,monospace;color:var(--ink2)}
 .bldg{fill:#3a332c;stroke:var(--ink)}.bldg.cafe{fill:#c4553e}.bldg-lab{fill:#fff;font:700 3px ui-monospace,Menlo,monospace;text-anchor:middle}
 .struct{fill:#8a9aa0;stroke:var(--ink);stroke-width:.6;vector-effect:non-scaling-stroke}.fountain{fill:#a9cfd0;stroke:var(--ink);stroke-width:.8;vector-effect:non-scaling-stroke}
 .obj{fill:#b3c98a;stroke:var(--ink);stroke-width:.4;vector-effect:non-scaling-stroke}.obj.table{fill:#fff}
-.bay{fill:none;stroke:var(--gate);stroke-width:1.2;stroke-dasharray:4 2;vector-effect:non-scaling-stroke}.crossing{fill:url(#zebra);stroke:var(--ink);stroke-width:.6;vector-effect:non-scaling-stroke}
+.bay{fill:none;stroke:var(--gate);stroke-width:1.2;stroke-dasharray:4 2;vector-effect:non-scaling-stroke}.xlight{fill:none;stroke:#2f9e8f;stroke-width:1.1;stroke-dasharray:1 3;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .walk-route{fill:none;stroke:#1d4fb8;stroke-width:1.6;stroke-dasharray:4 3;stroke-linecap:round;vector-effect:non-scaling-stroke}.walk-lab{fill:#1d4fb8;font-weight:700}
 .pt{stroke:#1d4fb8;stroke-width:1.4;vector-effect:non-scaling-stroke}.pt-lab{fill:#1d4fb8;font:700 2px ui-monospace,Menlo,monospace;text-anchor:start;paint-order:stroke;stroke:#fff;stroke-width:.5px}
 .dim{fill:none;stroke:#4b6a8a;stroke-width:.8;vector-effect:non-scaling-stroke}.dimt{fill:#4b6a8a;font-family:ui-monospace,Menlo,monospace;text-anchor:middle}
@@ -107,8 +107,7 @@ export function sheet(plan: Plan, R: Report, svgs: { district: string; inset: st
   const tb = (drawing: string, title: string, scale: string) => `<div class="tb"><div><b>PROJECT</b>THE SUBORNED · ${esc(plan.name.toUpperCase())}</div><div><b>DRAWING</b>${esc(title)}</div>
     <div><b>NO.</b>${drawing}</div><div><b>SCALE</b>${scale}</div><div><b>DATE</b>${plan.date}</div><div><b>REV</b>v${plan.version}</div><div><b>CHECKED</b>${pass}/${all} rules · ${esc(plan.status)}</div></div>`;
   const defs = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#ebe3cf"/><line x1="0" y1="0" x2="0" y2="8" stroke="#2b272340" stroke-width="1.2"/></pattern>
-    <pattern id="zebra" width="1.2" height="1.2" patternUnits="userSpaceOnUse"><rect width="1.2" height="1.2" fill="#f7f3ea"/><rect width=".6" height="1.2" fill="#2b2723"/></pattern></defs></svg>`;
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#ebe3cf"/><line x1="0" y1="0" x2="0" y2="8" stroke="#2b272340" stroke-width="1.2"/></pattern></defs></svg>`;
   const stops = table(['Stop', 'Chainage', 'To next'], R.stops.map(x => [`◆ ${esc(x.name)}`, m(x.chainage), x.next ? m(x.next) : '—']));
   const stations = table(['Station', 'Chainage', 'To next'], R.stations.map(x => [`▲ ${esc(x.name)}`, m(x.chainage), x.next ? m(x.next) : '—']));
   const byArea = plan.areas.map(a => [esc(a.name), plan.gates.filter(g => g.area === a.id).map(g => esc(g.name)).join(', ')]);
