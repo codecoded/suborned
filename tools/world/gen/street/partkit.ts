@@ -9,9 +9,9 @@ import { forUse, reachYaw } from '../kitrefs';
 export const PART_USE: Record<string, string> = { 'crossing-bar': 'crossing:bar', 'crossing-dots': 'crossing:dots', 'crossing-edge': 'crossing:edge', 'crossing-stud': 'stud:kerb', 'crossing-arc': 'inlay:crossing-arc', 'signal-orb': 'signal:eye' };
 /** Metres a piece's size may differ from the part's (KerbStud is 0.38 deep, the plan's stud 0.4 across). */
 const FIT = 0.05;
-/** The heading (plan frame) the inlay arc piece bulges toward at kit yaw 0. The piece (measured.json: min 0, 0, max 2.83, 2.83 about its pivot) lies in Blender's +X +Y quadrant, which is its +X and -Z in kit axes (the piece's front +Z is Blender -Y),
- *  so in the plan (kit +Z along plan +y) it bulges toward heading -45 degrees; its kit yaw is the part's heading less that. Latch confirms it on a shot. */
-const ARC_BULGE = -Math.PI / 4;
+/** The heading (plan frame) the inlay arc piece bulges toward at kit yaw 0: from its pivot (the circle's centre) to its footprint centre, kit pivotOffset [-1.415, -1.415], which is -X and -Z in kit axes. Kit +X runs along the yaw and +Z is
+ *  yaw + 90 degrees, so the quarter lies toward heading -135 degrees (not -45: Latch measured it on the 009 C shots, 2026-10-14); its kit yaw is the part's heading less that. partkit.test.ts measures it from kit.json's pivotOffset, not from this constant. */
+const ARC_BULGE = -3 * Math.PI / 4;
 
 /** The kit yaw that puts the piece as the part's own yaw says: lights and studs along it, an arc's quarter toward the corner it rounds, an eye's display A (its +Z front) along the walk. */
 export function kitYaw(it: Pick<StreetItem, 'kind' | 'yaw'>): number {

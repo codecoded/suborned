@@ -51,7 +51,7 @@ test('adopted, each part takes its piece by use and size: 768 + 212 dot rows, 11
 test('the kit yaw: lights and studs along the part\'s yaw, the eye\'s front (+Z) along the walk, the arc\'s quarter toward the corner it rounds', () => {
   const out = bound(catalogue());
   for (const s of out) {
-    const want = s.kind === 'signal-orb' ? s.yaw - Math.PI / 2 : s.kind === 'crossing-arc' ? s.yaw + Math.PI / 4 : s.yaw;
+    const want = s.kind === 'signal-orb' ? s.yaw - Math.PI / 2 : s.kind === 'crossing-arc' ? s.yaw + (3 * Math.PI) / 4 : s.yaw;
     expect(wrap(s.kit!.yaw! - want), s.id).toBeCloseTo(0, 3);
   }
   expect(kitYaw({ kind: 'signal-orb', yaw: 0 })).toBeCloseTo(-Math.PI / 2, 3);
@@ -79,4 +79,16 @@ test('K-1 holds a bound part to its own size: the bound world passes, a 2 m row 
   expect(k1(st => { row(st, 2).kit!.id = 'LightDotRow_1'; }).detail).toContain('LightDotRow_1 1.0×0.0×0.4 m is not the crossing:dots piece of the part\'s 2.0×0.4×0.0 m');
   expect(k1(st => { st.find(s => s.kind === 'signal-orb')!.kit!.id = 'KerbStud'; }).detail).toContain('KerbStud');
   expect(k1(st => { row(st, 2).kit!.scale = [1.2, 1.2, 1.2]; }).detail).toContain('is not the crossing:dots piece');
+});
+
+test('each arc\'s quarter lies into the corner it rounds: measured from the live kit\'s pivotOffset (not from ARC_BULGE), the piece\'s footprint centre, turned by the kit yaw, lies along the arc\'s own heading from its pivot', () => {
+  const asset = read('contracts/world/kit.json').assets.find((a: any) => a.id === 'CrossInlayArc_R24_W08');
+  const [ox, oz] = asset.pivotOffset as [number, number]; // footprint centre from the pivot, kit axes: +X along the yaw, +Z at yaw + 90 degrees (box.ts signBox)
+  expect(asset.pivot).toBe('origin-ground');
+  const arcs = bound(catalogue()).filter(s => s.kind === 'crossing-arc' && s.kit?.id === 'CrossInlayArc_R24_W08');
+  expect(arcs.length).toBeGreaterThan(0);
+  for (const s of arcs) {
+    const k = s.kit!.yaw!, cx = ox * Math.cos(k) - oz * Math.sin(k), cy = ox * Math.sin(k) + oz * Math.cos(k); // plan offset of the footprint centre from the pivot
+    expect(wrap(Math.atan2(cy, cx) - s.yaw), s.id).toBeCloseTo(0, 2); // the arc item's yaw is the heading of the middle of its sweep from its centre
+  }
 });
