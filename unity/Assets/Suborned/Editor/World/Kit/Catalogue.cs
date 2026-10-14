@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Suborned.World
 {
-    /// <summary>kit.json: street-item shapes (parts in fractions of the item size), connector surfaces, crossing paint, batch tile size.
+    /// <summary>kit.json: street-item shapes (parts in fractions of the item size), connector surfaces, crossing refuges, batch tile size.
     /// Unknown kind = reject.</summary>
     public sealed class Catalogue
     {
@@ -15,10 +15,10 @@ namespace Suborned.World
         public readonly float BatchTile, FadeCell, Slab;
         /// <summary>Whether the shadow proxies (ShadowProxies) are on as built (kit.json `shadowProxies`).</summary>
         public readonly bool ShadowProxies;
-        /// <summary>How a crossing is drawn (kit.json `crossings`): Paint = how far paint stands off the surface it is on, Bar and Gap =
-        /// a zebra's bar and the space between two, Line = an edge line's width, Lip = how far a refuge stands proud of its median, Reach =
-        /// the most a kerb batch may grow to take a crossing in, Surface = the paint of a crossing whose road the export does not name.</summary>
-        public sealed class CrossingSpec { public float Paint, Bar, Gap, Line, Lip, Reach; public string Surface; }
+        /// <summary>How a crossing's refuges are drawn (kit.json `crossings`; its lights, edge lines, studs, arcs and eyes are kit pieces the
+        /// export places, brief 009): Lip = how far a refuge stands proud of its median, Reach = the most a kerb batch may grow to take a
+        /// refuge in, Surface = the refuge's surface when the export names no road.</summary>
+        public sealed class CrossingSpec { public float Lip, Reach; public string Surface; }
         public readonly CrossingSpec Crossings;
 
         public Catalogue(string path)
@@ -31,7 +31,7 @@ namespace Suborned.World
             Slab = J.F(con, "slab");
             foreach (var kv in J.O(J.Get(con, "surfaces"))) connectorSurfaces[kv.Key] = (string)kv.Value;
             var x = J.Get(o, "crossings") ?? throw new InvalidDataException("World: kit.json has no `crossings`");
-            Crossings = new CrossingSpec { Paint = J.F(x, "paint"), Bar = J.F(x, "bar"), Gap = J.F(x, "gap"), Line = J.F(x, "line"), Lip = J.F(x, "lip"), Reach = J.F(x, "reach"), Surface = J.S(x, "surface") };
+            Crossings = new CrossingSpec { Lip = J.F(x, "lip"), Reach = J.F(x, "reach"), Surface = J.S(x, "surface") };
             foreach (var kv in J.O(J.Get(o, "street")))
             {
                 var parts = new List<Part>();

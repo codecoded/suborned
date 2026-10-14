@@ -198,11 +198,13 @@ namespace Suborned.World
     public sealed class ConnectorDto { public string Id, Kind, Host, From, To; public string[] Serves; public Vector2 Foot, Head; public Vector2[] Ring; public float Bottom, Top, Width, Yaw; public bool StepFree; public List<PrimDto> Dress = new(); } // Dress: the dressed form, drawn instead of the ring prism
 
     /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
-    public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit; }
+    public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit;
+        /// <summary>A crossing's part (brief 009): the crossing it belongs to; whether it casts (the signal orb's body only); a signal orb's state (walk | stop).</summary>
+        public string Crossing, Signal; public bool CastShadows; }
 
     /// <summary>A crossing. Kind kerb = two landings (street items, one on each kerb of Road) and the way across the carriageway
     /// between them; stop | bank = one patch, its one street item (the way from a tram platform, or from a station bank). Line = the
-    /// way's centre line, end to end; Width across it; Control zebra | signal, null = none; Refuges = the rings of the median the way
+    /// way's centre line, end to end; Width across it; Control signal (it carries signal orbs), null = none (a zebra no longer exists, brief 009); Refuges = the rings of the median the way
     /// crosses, where people wait.</summary>
     public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); }
 

@@ -1,47 +1,46 @@
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Suborned.World
 {
-    /// <summary>The export's crossings: one marker per crossing under `crossings` (named by id), drawn on the ground it crosses.
-    /// A zebra is bars across the way; any other crossing the pair of lines along its two edges (where traffic stops); a refuge
-    /// is its median ring raised as an island. Paint is solid geometry a little proud of what it lies on and of any tram track
-    /// it crosses, never a decal, so
-    /// nothing is coplanar. Paint and islands take their road's kerb surface and go into the ground layer's kerb batch that
-    /// already reaches them (Combine.Fit), so a crossing on a road costs no renderer and no material of its own and brings
-    /// no batch into a view it was not in; one off the roads (a station bank's) takes its own tile's batch. Sizes: kit.json
-    /// `crossings`. No colour here (§15: a surface never carries a signal colour; the kerb surface is a palette colour).</summary>
+    /// <summary>The export's crossings (brief 009: no zebra, no paint, no landing slab). One marker per crossing under `crossings`
+    /// (named by id). A crossing's parts are street items with kit refs (light-dot rows and brass edge lines flush in the road along
+    /// the walk, kerb studs, inlay arcs, signal eyes), placed with the street (CityLayers.Street); Dress then sets what the export
+    /// says of them and the piece leaves to Unity:
+    ///   shadows: only an eye's orb body casts (the item's `castShadows`); its beam, halo and displays, and every flush part, never do;
+    ///   state: an eye shows its crossing's state (`walk` at build): the Walk figure on, the Stop figure off (or the other way);
+    ///   displays: the orb body and its figures turn together about the vertical axis (they share the piece origin; the beam and halo
+    ///     are round) so a display faces the play camera (the export view's yaw): a display along the walk is edge-on to a camera
+    ///     looking along the crossing (Vela, 009 A open issue 1). Both faces show the same aspect, so the nearer one is turned.
+    /// The beam and halo are DecoKit kind `glow` (Materials/Glow, Shaders/CrossGlow: additive, double-sided, unlit); the lights and
+    /// figures are the kit's emissive materials. A refuge is drawn here: its median ring raised as an island, in its road's kerb
+    /// surface, in the ground layer's kerb batch that already reaches it (Combine.Fit), so it costs no renderer of its own.</summary>
     public sealed class CrossingKit
     {
-        const string Ground = "ground"; // the batch layer paint lies in, with the kerbs
+        const string Ground = "ground"; // the batch layer refuges go into, with the kerbs
+        public const string Body = "DK_SignalEye", Walk = "DK_SignalEye_Walk", Stop = "DK_SignalEye_Stop", Beam = "DK_SignalEye_Beam", Halo = "DK_SignalEye_Halo";
+        static readonly HashSet<string> Kinds = new() { "crossing-dots", "crossing-bar", "crossing-edge", "crossing-stud", "crossing-arc", "signal-orb" };
 
         readonly Nodes nodes; readonly Catalogue.CrossingSpec spec;
         public CrossingKit(Nodes nodes, Catalogue kit) { this.nodes = nodes; spec = kit.Crossings; }
 
-        /// <summary>After the ground layer: its kerb batches are what paint goes into.</summary>
-        public void Build(Transform layer, WorldDto w)
+        /// <summary>After the ground layer (its kerb batches take the refuges) and the street layer (its pieces are the parts).</summary>
+        public void Build(Transform layer, Transform street, WorldDto w)
         {
             var roads = new Dictionary<string, RoadDto>(); foreach (var r in w.Ground.Roads) roads[r.Id] = r;
-            var patches = new Dictionary<string, StreetItemDto>(); foreach (var s in w.Street) patches[s.Id] = s;
-            int zebras = 0, bars = 0, pairs = 0, refuges = 0, inside = 0, grew = 0, alone = 0; float most = 0f;
+            var items = new Dictionary<string, StreetItemDto>(System.StringComparer.Ordinal); foreach (var s in w.Street) items[s.Id] = s;
+            int refuges = 0, inside = 0, grew = 0, alone = 0; float most = 0f;
             foreach (var c in w.Crossings)
             {
                 if (c.Line.Length != 2 || (c.Line[1] - c.Line[0]).sqrMagnitude < 1e-6f) throw new InvalidDataException($"World: {c.Id}: `line` is not two points apart");
+                if (c.Control is not (null or "signal")) throw new InvalidDataException($"World: {c.Id}: control `{c.Control}` is not drawn (signal | none; a zebra no longer exists)");
+                if (c.Items.Length == 0) throw new InvalidDataException($"World: {c.Id}: a crossing with no parts");
+                foreach (var id in c.Items)
+                    if (!items.TryGetValue(id, out var part) || part.Crossing != c.Id) throw new InvalidDataException($"World: {c.Id}: part `{id}` is not a street item naming it back");
                 roads.TryGetValue("road/" + c.Road, out var road);
-                float on = On(c, road, patches);
-                Vector2 a = c.Line[0]; float len = (c.Line[1] - a).magnitude; var u = (c.Line[1] - a) / len;
-                float top = Mathf.Max(on, Tracks(w.Transit.Tram, a + u * (len * 0.5f), len)) + spec.Paint;
-
-                var paint = new MeshKit();
-                foreach (var (s0, s1) in Free(c, a, u, len))
-                    switch (c.Control)
-                    {
-                        case "zebra": bars += Bars(paint, a, u, s0, s1, c.Width, on, top); break;
-                        case null: case "signal": Edges(paint, a, u, s0, s1, c.Width, on, top); break;
-                        default: throw new InvalidDataException($"World: {c.Id}: control `{c.Control}` is not drawn (zebra | signal)");
-                    }
-                if (c.Control == "zebra") zebras++; else pairs++;
 
                 var islands = new MeshKit();
                 foreach (var ring in c.Refuges)
@@ -51,80 +50,79 @@ namespace Suborned.World
                     islands.Prism(grown, median.Base, median.Base + median.Height + spec.Lip);
                     refuges++;
                 }
+                // a crossing's own geometry is its refuges; one without is a marker only (its parts are the street layer's pieces)
+                var el = c.Refuges.Count > 0 ? Nodes.Element(layer, c.Id) : Nodes.Group(layer, c.Id);
+                switch (nodes.PartIn(Ground, el, "refuges", islands, road?.KerbSurface ?? spec.Surface, spec.Reach))
+                {
+                    case null: break;
+                    case < 0f: alone++; break;
+                    case 0f: inside++; break;
+                    case float g: grew++; most = Mathf.Max(most, g); break;
+                }
+            }
+            Debug.Log($"World: crossings {w.Crossings.Count} ({w.Crossings.FindAll(c => c.Control == "signal").Count} signalled): {refuges} refuges ({inside} inside a kerb batch, " +
+                $"{grew} grew one by at most {most:F2} m of {spec.Reach} m, {alone} in a ground tile of their own)");
+            Dress(street, w);
+        }
 
-                var el = Nodes.Element(layer, c.Id);
-                string surface = road?.KerbSurface ?? spec.Surface;
-                foreach (var (name, part) in new[] { ("paint", paint), ("refuges", islands) })
-                    switch (nodes.PartIn(Ground, el, name, part, surface, spec.Reach))
+        /// <summary>Casters, the eye's state and its displays turned to the play camera, on the pieces the street layer placed.</summary>
+        void Dress(Transform street, WorldDto w)
+        {
+            var els = new Dictionary<string, Transform>(System.StringComparer.Ordinal);
+            foreach (Transform t in street) els[t.name] = t;
+            // the play camera's heading (Unity: Euler(pitch, yaw, 0) looks along (sin yaw, 0, cos yaw)); a display faces back up it
+            float yaw = w.View.Yaw * Mathf.Deg2Rad;
+            var toCamera = -new Vector3(Mathf.Sin(yaw), 0f, Mathf.Cos(yaw));
+            int parts = 0, eyes = 0, walk = 0, casters = 0, quiet = 0; float turned = 0f;
+            var byKind = new SortedDictionary<string, int>(System.StringComparer.Ordinal);
+            foreach (var s in w.Street)
+            {
+                if (s.Crossing == null) continue;
+                if (!Kinds.Contains(s.Kind)) throw new InvalidDataException($"World: {s.Id}: crossing part kind `{s.Kind}` is not drawn");
+                if (s.Kit == null) throw new InvalidDataException($"World: {s.Id}: a crossing part without its kit piece (no adopted piece of its size)");
+                if (!els.TryGetValue(s.Id, out var el) || el.childCount != 1) throw new InvalidDataException($"World: {s.Id}: crossing part not placed on the street layer");
+                var piece = el.GetChild(0);
+                parts++; byKind[s.Kind] = (byKind.TryGetValue(s.Kind, out var n) ? n : 0) + 1;
+                bool eye = s.Kind == "signal-orb";
+                if (eye && s.Signal is not ("walk" or "stop")) throw new InvalidDataException($"World: {s.Id}: signal state `{s.Signal}` (walk | stop)");
+                if (!eye && s.CastShadows) throw new InvalidDataException($"World: {s.Id}: a flush crossing part that casts");
+                float turn = 0f;
+                if (eye)
+                {
+                    eyes++; if (s.Signal == "walk") walk++;
+                    var a = piece.rotation * Vector3.forward; a.y = 0f; // display A: the piece's front (+Z)
+                    turn = Vector3.SignedAngle(a, toCamera, Vector3.up);
+                    if (turn > 90f) turn -= 180f; else if (turn < -90f) turn += 180f; // the nearer face: both show the same
+                    turned = Mathf.Max(turned, Mathf.Abs(turn));
+                }
+                bool seenBody = false, seenWalk = false, seenStop = false;
+                foreach (var r in piece.GetComponentsInChildren<MeshRenderer>(true))
+                {
+                    var part = KitLods.Part(r.name);
+                    bool body = eye && part == Body, glow = eye && (part == Beam || part == Halo);
+                    seenBody |= body; seenWalk |= part == Walk; seenStop |= part == Stop;
+                    r.shadowCastingMode = body && s.CastShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+                    if (r.shadowCastingMode == ShadowCastingMode.On) casters++; else quiet++;
+                    if (glow) { r.receiveShadows = false; r.lightProbeUsage = LightProbeUsage.Off; r.reflectionProbeUsage = ReflectionProbeUsage.Off; }
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(r);
+                    if (!eye) continue;
+                    if (part == Walk || part == Stop)
                     {
-                        case null: break; // nothing to draw (a crossing without refuges)
-                        case < 0f: alone++; break;
-                        case 0f: inside++; break;
-                        case float g: grew++; most = Mathf.Max(most, g); break;
+                        r.gameObject.SetActive(part == (s.Signal == "walk" ? Walk : Stop));
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(r.gameObject);
                     }
+                    if (body || part == Walk || part == Stop)
+                    {   // about the piece's vertical axis through its origin (the parts share it)
+                        var t = r.transform; var q = Quaternion.AngleAxis(turn, Vector3.up);
+                        t.SetPositionAndRotation(piece.position + q * (t.position - piece.position), q * t.rotation);
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(t);
+                    }
+                }
+                if (eye && !(seenBody && seenWalk && seenStop)) throw new InvalidDataException($"World: {s.Id}: the SignalEye piece lacks its body, Walk or Stop part");
             }
-            Debug.Log($"World: crossings {w.Crossings.Count}: {zebras} zebras ({bars} bars), {pairs} line pairs, {refuges} refuges; parts: {inside} inside a kerb batch, " +
-                $"{grew} grew one (by at most {most:F2} m of {spec.Reach} m), {alone} off the roads in a ground tile of their own");
-        }
-
-        /// <summary>The height paint lies on: the carriageway for a kerb crossing, the top of its patch for a stop or bank one.</summary>
-        static float On(CrossingDto c, RoadDto road, Dictionary<string, StreetItemDto> patches)
-        {
-            if (c.Kind == "kerb") return road?.Level ?? throw new InvalidDataException($"World: {c.Id}: road `{c.Road}` is not in the export");
-            if (c.Items.Length != 1 || !patches.TryGetValue(c.Items[0], out var patch)) throw new InvalidDataException($"World: {c.Id}: a {c.Kind} crossing is one street item, in the export");
-            return patch.Z + patch.Size.z;
-        }
-
-        /// <summary>The top of the highest tram track the way crosses (a track bed stands above the carriageway and a stop's patch;
-        /// paint level with it would be coplanar with its top); 0 when it crosses none.</summary>
-        static float Tracks(List<TrackDto> tram, Vector2 mid, float len)
-        {
-            float level = 0f;
-            foreach (var t in tram)
-            {
-                Poly.NearestTangent(t.Line, mid, out float d);
-                if (d < (len + t.Width + t.Spacing) * 0.5f) level = Mathf.Max(level, t.Level); // Spacing: its two ribbons
-            }
-            return level;
-        }
-
-        /// <summary>The spans of the way (metres from its start) that are off its refuges.</summary>
-        static List<(float from, float to)> Free(CrossingDto c, Vector2 a, Vector2 u, float len)
-        {
-            var taken = new List<(float from, float to)>();
-            foreach (var ring in c.Refuges)
-            {
-                float lo = float.MaxValue, hi = float.MinValue;
-                foreach (var p in ring) { float s = Vector2.Dot(p - a, u); lo = Mathf.Min(lo, s); hi = Mathf.Max(hi, s); }
-                taken.Add((lo, hi));
-            }
-            taken.Sort((x, y) => x.from.CompareTo(y.from));
-            var free = new List<(float, float)>(); float at = 0f;
-            foreach (var (lo, hi) in taken)
-            {
-                if (lo > at) free.Add((at, Mathf.Min(lo, len)));
-                at = Mathf.Max(at, hi);
-            }
-            if (at < len) free.Add((at, len));
-            return free;
-        }
-
-        /// <summary>As many bars as fit the span with a gap between, centred on it. Returns how many.</summary>
-        int Bars(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on, float top)
-        {
-            float span = s1 - s0, step = spec.Bar + spec.Gap;
-            int n = Mathf.FloorToInt((span + spec.Gap) / step + 1e-4f);
-            float at = s0 + (span - (n * spec.Bar + (n - 1) * spec.Gap)) * 0.5f;
-            for (int i = 0; i < n; i++, at += step) k.Prism(Poly.Rect(a + u * (at + spec.Bar * 0.5f), u, spec.Bar, width), on, top);
-            return Mathf.Max(n, 0);
-        }
-
-        /// <summary>The two lines along the span's edges, inside the crossing's width.</summary>
-        void Edges(MeshKit k, Vector2 a, Vector2 u, float s0, float s1, float width, float on, float top)
-        {
-            var mid = a + u * ((s0 + s1) * 0.5f); var v = new Vector2(-u.y, u.x) * ((width - spec.Line) * 0.5f);
-            k.Prism(Poly.Rect(mid + v, u, s1 - s0, spec.Line), on, top);
-            k.Prism(Poly.Rect(mid - v, u, s1 - s0, spec.Line), on, top);
+            var kinds = new List<string>(); foreach (var kv in byKind) kinds.Add($"{kv.Value} {kv.Key}");
+            Debug.Log($"World: crossing parts {parts} ({string.Join(", ", kinds)}); eyes {eyes} ({walk} walk, {eyes - walk} stop), displays turned to the play camera (yaw {w.View.Yaw}°) by at most {turned:F0}°; " +
+                $"renderers casting {casters} (orb bodies, every LOD), not casting {quiet}");
         }
 
         static Vector2 Centre(Vector2[] ring)

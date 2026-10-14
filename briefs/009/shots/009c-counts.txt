@@ -1,0 +1,7 @@
+Brief 009 C counts (Latch, Studio Mac17,14, perf player pass `counts`, -perfNoWarm, variant `base`; no timed pass: frame cost is owed on the Air).
+before: export 9b2b451d (zebra), out/perf/009-counts-before/run.json · after: export 80c3c0db (crossing pieces), out/perf/009-counts-after/run.json
+draws = GPU Resident Drawer camera draws + shadow draws; triangles, casters, SetPass = profiler counters (p50).
+stop       draws        camera draws  triangles               shadow casters  SetPass
+home       706 -> 716   271 -> 281    715,565 -> 718,187 (+2.6k)  405 -> 405      64 -> 66
+heaviest   682 -> 682   228 -> 228    1,515,810 -> 1,513,790      384 -> 384      74 -> 74
+Scene: 3,043 crossing parts placed (980 dot rows, 1,134 edge lines, 536 studs, 237 arcs, 156 eyes); 312 casting renderers (orb bodies, LOD0+LOD1), 7,022 not casting.
