@@ -40,6 +40,11 @@ namespace Suborned
         readonly Bounds[] bounds;
         readonly Material[][] plain, cutting;
         readonly bool[] reached;
+        /// <summary>Per renderer, its batch tile's group (fade cells `mat@tx,tz#cx,cz` of one tile share it; others stand alone).</summary>
+        readonly int[] group;
+        readonly bool[] groupHit;
+        readonly Bounds[] groupBounds;
+        bool lastWhole;
         readonly Dictionary<Material, Material> twins = new();
         FadeCut last;
         bool any;
@@ -57,15 +62,34 @@ namespace Suborned
             renderers = tagged.ToArray();
             bounds = new Bounds[renderers.Length]; plain = new Material[renderers.Length][]; cutting = new Material[renderers.Length][]; reached = new bool[renderers.Length];
             for (int i = 0; i < renderers.Length; i++) { bounds[i] = renderers[i].bounds; plain[i] = renderers[i].sharedMaterials; }
+            group = new int[renderers.Length];
+            var groups = new Dictionary<string, int>(System.StringComparer.Ordinal);
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                var r = renderers[i]; int hash = r.name.IndexOf('#');
+                if (hash < 0) { group[i] = groups.Count; groups[$"\u0001{i}"] = group[i]; continue; }
+                var key = (r.transform.parent ? r.transform.parent.name : "") + "/" + r.name[..hash];
+                if (!groups.TryGetValue(key, out group[i])) groups[key] = group[i] = groups.Count;
+            }
+            groupHit = new bool[groups.Count]; groupBounds = new Bounds[groups.Count];
+            var seen = new bool[groups.Count];
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                int g = group[i];
+                if (!seen[g]) { groupBounds[g] = bounds[i]; seen[g] = true; } else groupBounds[g].Encapsulate(bounds[i]);
+            }
         }
 
-        /// <summary>Gives the cutting variant to what the cut can reach and takes it back from what it no longer can.</summary>
-        public void Set(in FadeCut cut)
+        /// <summary>Gives the cutting variant to what the cut can reach and takes it back from what it no longer can. wholeTiles:
+        /// a reached fade cell takes every cell of its batch tile with it (the reach before 008 B6, for the perf harness).</summary>
+        public void Set(in FadeCut cut, bool wholeTiles = false)
         {
-            if (any && cut.Same(last)) return;
-            last = cut; any = true;
+            if (any && cut.Same(last) && wholeTiles == lastWhole) return;
+            last = cut; any = true; lastWhole = wholeTiles;
             float r = cut.Radius + Margin;
-            for (int i = 0; i < renderers.Length; i++) Mark(i, Reaches(bounds[i], cut, r));
+            if (!wholeTiles) { for (int i = 0; i < renderers.Length; i++) Mark(i, Reaches(bounds[i], cut, r)); return; }
+            for (int g = 0; g < groupHit.Length; g++) groupHit[g] = Reaches(groupBounds[g], cut, r); // the tile's bounds, as its one renderer had
+            for (int i = 0; i < renderers.Length; i++) Mark(i, groupHit[group[i]]);
         }
 
         /// <summary>Nothing fades: every renderer back to its plain material.</summary>

@@ -21,6 +21,9 @@ namespace Suborned.World
         /// <summary>Layers that hold buildings and furniture: only their facade-atlas batches fade.</summary>
         static readonly HashSet<string> BuildingsOnly = new(System.StringComparer.Ordinal) { "civic" };
 
+        /// <summary>Whether batches of this layer may carry the fade (all of it, or for civic its facade-atlas batches).</summary>
+        public static bool Layer(string layer) => Whole.Contains(layer) || BuildingsOnly.Contains(layer);
+
         const string Cutaway = "DecoKit/Lit Cutaway", Lit = "Universal Render Pipeline/Lit";
 
         /// <summary>The markers under `layer` of the elements the export flags (MassDto.Fade), by id. An id with no marker is rejected.</summary>

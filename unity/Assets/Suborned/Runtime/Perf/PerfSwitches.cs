@@ -21,7 +21,7 @@ namespace Suborned.Perf
         readonly object ssaoSettings;
         readonly FieldInfo afterOpaque, source;
         readonly object builtSource, depthSource, normalsSource;
-        readonly bool builtAfterOpaque, builtActive, builtFade;
+        readonly bool builtAfterOpaque, builtActive, builtFade, builtWhole;
         readonly int builtCascades;
 
         /// <summary>What the player's SSAO is as built ("on, after opaque True, source Depth"), or why it cannot be switched.</summary>
@@ -31,7 +31,7 @@ namespace Suborned.Perf
         {
             this.shadows = shadows; this.fade = fade; this.proxies = proxies;
             data = cam.GetUniversalAdditionalCameraData();
-            builtCascades = shadows.cascades; builtFade = fade.fade;
+            builtCascades = shadows.cascades; builtFade = fade.fade; builtWhole = fade.wholeTiles;
             try
             {
                 var urp = (UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
@@ -61,7 +61,10 @@ namespace Suborned.Perf
             }
             shadows.cascades = v.cascades > 0 ? v.cascades : builtCascades;
             data.renderShadows = !v.shadowsOff;
-            fade.fade = builtFade && !v.fadeOff;
+            string f = string.IsNullOrEmpty(v.fade) ? "on" : v.fade;
+            if (f != "on" && f != "tile" && f != "reach" && f != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` fade `{f}`: on, tile, reach or off");
+            fade.fade = builtFade && !v.fadeOff && f != "off";
+            fade.wholeTiles = f switch { "tile" => true, "reach" => false, _ => builtWhole };
             if (v.UsesProxies && proxies is not { Count: > 0 }) throw new InvalidOperationException($"Perf: variant `{v.name}` switches shadow proxies, but this scene has none");
             if (proxies != null) proxies.Set(v.proxies == "on" || (v.proxies != "off" && proxies.BuiltOn));
         }

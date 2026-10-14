@@ -1,5 +1,5 @@
 {
-  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30). Redline review 008 B6 (out/review/008-b6-perf.html): passes, variants (A/B switches), warm-up to a plateau, rotated repeats, per-frame CSV; the sweep after a warm-up, by frame time, with the decks. B6 second pass (Latch): fixes 1-3 ship (SSAO from depth after opaques, 2 cascades, LOD1 shadow proxies built with the world); variants name every switch, so `as-was` is the build before B6 in any player.",
+  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30). Redline review 008 B6 (out/review/008-b6-perf.html): passes, variants (A/B switches), warm-up to a plateau, rotated repeats, per-frame CSV; the sweep after a warm-up, by frame time, with the decks. B6 second pass (Latch): fixes 1 and 3 ship (SSAO from depth after opaques, 2 cascades); fix 2 (LOD1 shadow proxies) is built but held off; the fade's discard reaches only 16 m fade cells (kit.json fadeCell). Variants name every switch, so `as-was` is the build before B6 in any player. Air run (Aster, 2026-10-14): as-was, 1+3, +proxies, +fade in reach, +fade off, +SSAO off, +SSAO off and fade in reach.",
   "content": "world only: buildings, structures, street furniture and bays; no people, vehicles or sim (not built yet)",
   "width": 1920,
   "height": 1080,
@@ -12,78 +12,69 @@
   "variants": [
     {
       "name": "as-was",
-      "why": "the build before B6 (ab-1's base): SSAO from the depth-normals prepass, 4 cascades, every LOD casts",
+      "why": "the build before B6 (ab-1's base): SSAO from the depth-normals prepass, 4 cascades, every LOD casts, the fade's discard on whole 64 m tiles",
       "ssao": "normals",
       "cascades": 4,
-      "proxies": "off"
+      "proxies": "off",
+      "fade": "tile"
     },
     {
       "name": "base",
-      "why": "as built (since B6: SSAO from depth after opaques, 2 cascades, LOD1 shadow proxies)"
-    },
-    {
-      "name": "ssao-depth",
-      "why": "Redline fix 1 alone on as-was: SSAO after opaques from the depth texture, no depth-normals prepass",
-      "ssao": "depth",
-      "cascades": 4,
-      "proxies": "off"
-    },
-    {
-      "name": "proxies",
-      "why": "Redline fix 2 alone on as-was: kit facades and street trees cast from their LOD1 proxy, no LOD casts its own",
-      "ssao": "normals",
-      "cascades": 4,
-      "proxies": "on"
-    },
-    {
-      "name": "cascades-2",
-      "why": "Redline fix 3 alone on as-was: one air cascade and the street band",
-      "ssao": "normals",
-      "cascades": 2,
-      "proxies": "off"
+      "why": "as built (since B6: SSAO from depth after opaques, 2 cascades, proxies built but off, the fade's discard only on the cells it reaches)"
     },
     {
       "name": "fixes-13",
-      "why": "fixes 1 and 3 without the proxies: what the proxies add on top of them",
+      "why": "fixes 1 and 3 (SSAO from depth, 2 cascades), the fade as before B6 (whole tiles), no proxies",
       "ssao": "depth",
       "cascades": 2,
-      "proxies": "off"
+      "proxies": "off",
+      "fade": "tile"
     },
     {
-      "name": "fixes-123",
-      "why": "fixes 1-3 named switch by switch (equals base since B6; the guard that base is what ships)",
+      "name": "fixes-13-proxies",
+      "why": "1+3 and fix 2: kit facades and street trees cast from their LOD1 proxy (held: the Air decides)",
       "ssao": "depth",
       "cascades": 2,
-      "proxies": "on"
+      "proxies": "on",
+      "fade": "tile"
     },
     {
-      "name": "ssao-off",
-      "why": "as-was without SSAO: what SSAO costs at all",
+      "name": "fixes-13-reach",
+      "why": "1+3 and the fade in reach (Redline item 9): the discarding variant only on the fade cells the cut reaches; equals base",
+      "ssao": "depth",
+      "cascades": 2,
+      "proxies": "off",
+      "fade": "reach"
+    },
+    {
+      "name": "fixes-13-fadeoff",
+      "why": "1+3 without the fade: the bound for item 9",
+      "ssao": "depth",
+      "cascades": 2,
+      "proxies": "off",
+      "fade": "off"
+    },
+    {
+      "name": "fixes-13-ssaooff",
+      "why": "1+3 and SSAO off (Glint's proposal, 2026-10-14)",
       "ssao": "off",
-      "cascades": 4,
-      "proxies": "off"
+      "cascades": 2,
+      "proxies": "off",
+      "fade": "tile"
     },
     {
-      "name": "fade-off",
-      "why": "Redline item 9 on as-was: what the fade's discard variant costs",
-      "fadeOff": true,
-      "ssao": "normals",
-      "cascades": 4,
-      "proxies": "off"
-    },
-    {
-      "name": "shadows-off",
-      "why": "bound on as-was: what the play camera's shadows cost at all",
-      "shadowsOff": true,
-      "ssao": "normals",
-      "cascades": 4,
-      "proxies": "off"
+      "name": "fixes-13-ssaooff-reach",
+      "why": "1+3, SSAO off and the fade in reach: Glint's proposal with the best fade case",
+      "ssao": "off",
+      "cascades": 2,
+      "proxies": "off",
+      "fade": "reach"
     }
   ],
   "passes": [
     {
       "name": "ab",
-      "why": "headroom and A/B (Redline M1, item 0): uncapped, every variant back to back at every stop, 3 rotated repeats, the first segment again at the end; as-was first, so every delta is against the build before B6",
+      "why": "headroom and A/B (Redline M1, item 0): uncapped, the switches Aster set for the Air run (2026-10-14) back to back at every stop, 3 rotated repeats, the first segment again at the end; as-was first, so every delta is against the build before B6",
       "vSync": 0,
       "window": "FullScreenWindow",
       "settleSeconds": 2,
@@ -101,15 +92,12 @@
       ],
       "variants": [
         "as-was",
-        "base",
-        "ssao-depth",
-        "proxies",
-        "cascades-2",
         "fixes-13",
-        "fixes-123",
-        "ssao-off",
-        "fade-off",
-        "shadows-off"
+        "fixes-13-proxies",
+        "fixes-13-reach",
+        "fixes-13-fadeoff",
+        "fixes-13-ssaooff",
+        "fixes-13-ssaooff-reach"
       ],
       "repeatFirst": true,
       "shots": true
@@ -134,7 +122,8 @@
       ],
       "variants": [
         "as-was",
-        "base"
+        "base",
+        "fixes-13-ssaooff-reach"
       ],
       "repeatFirst": true,
       "shots": false
@@ -180,14 +169,30 @@
       "variants": [
         "as-was",
         "base",
-        "ssao-depth",
-        "proxies",
-        "cascades-2",
         "fixes-13",
-        "fixes-123",
-        "ssao-off",
-        "fade-off",
-        "shadows-off"
+        "fixes-13-proxies",
+        "fixes-13-reach",
+        "fixes-13-fadeoff",
+        "fixes-13-ssaooff",
+        "fixes-13-ssaooff-reach"
+      ],
+      "repeatFirst": false,
+      "shots": true
+    },
+    {
+      "name": "look",
+      "why": "Glint's warmth question (2026-10-14): the home frame as built, in a 1920x1080 window, one shot, and the grade, ambient and sun the player resolves (report `look`); timing not read",
+      "vSync": 0,
+      "window": "Windowed",
+      "settleSeconds": 2,
+      "recordSeconds": 1,
+      "missMs": 17.5,
+      "repeats": 1,
+      "stops": [
+        "home"
+      ],
+      "variants": [
+        "base"
       ],
       "repeatFirst": false,
       "shots": true

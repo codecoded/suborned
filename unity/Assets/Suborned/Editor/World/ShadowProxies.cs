@@ -13,8 +13,8 @@ namespace Suborned.World
     {
         public const string Name = "__ShadowProxy";
 
-        /// <summary>Adds the proxies under `world`; returns their count and LOD1 triangles.</summary>
-        public static (int count, long triangles) Build(Transform world)
+        /// <summary>Adds the proxies under `world`, on or off as built (kit.json `shadowProxies`); returns their count and LOD1 triangles.</summary>
+        public static (int count, long triangles) Build(Transform world, bool on)
         {
             int count = 0; long tris = 0;
             foreach (var g in world.GetComponentsInChildren<LODGroup>(true))
@@ -42,7 +42,7 @@ namespace Suborned.World
                 p.renderingLayerMask = src.renderingLayerMask;
                 var sp = go.AddComponent<ShadowProxy>();
                 sp.proxy = p; sp.casters = casters.ToArray(); sp.was = was.ToArray();
-                sp.Use(true);
+                sp.Use(on);
                 count++;
                 for (int s = 0; s < mesh.subMeshCount; s++) tris += mesh.GetIndexCount(s) / 3;
             }

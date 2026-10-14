@@ -7,7 +7,7 @@ namespace Suborned.Perf
 {
     /// <summary>Frame-time harness (brief 008 B6; Redline's review out/review/008-b6-perf.html, M1-M8 and item 0). In a development
     /// player started with `-perf plan.json [-perfOut result.json] [-perfShots dir] [-perfPass name] [-perfStrict]` and, to pin one
-    /// variant for the whole run, `[-perfSsao on|depth|normals|off] [-perfCascades n] [-perfShadows on|off] [-perfFade on|off]
+    /// variant for the whole run, `[-perfSsao on|depth|normals|off] [-perfCascades n] [-perfShadows on|off] [-perfFade on|off|tile|reach]
     /// [-perfProxies on|off]` (`-perfNoWarm` skips the warm-up, for a counts-only pass), it drives the scene's play camera (the real rig: rotation, orthographic zoom, TacticalShadows fitted
     /// to the stand-off, ArchitectureFade about the focus). Preflight: the machine's load and power go into the report and a busy
     /// machine is flagged (refused with -perfStrict). Warm-up cycles the stops unrecorded until the frame time plateaus (PerfWarm).
@@ -126,7 +126,7 @@ namespace Suborned.Perf
         {
             string ssao = Arg(args, "-perfSsao"), casc = Arg(args, "-perfCascades"), sh = Arg(args, "-perfShadows"), fd = Arg(args, "-perfFade"), px = Arg(args, "-perfProxies");
             if (ssao == null && casc == null && sh == null && fd == null && px == null) return null;
-            var v = new PerfVariant { ssao = ssao ?? "", cascades = casc != null ? int.Parse(casc) : 0, shadowsOff = sh == "off", fadeOff = fd == "off", proxies = px ?? "" };
+            var v = new PerfVariant { ssao = ssao ?? "", cascades = casc != null ? int.Parse(casc) : 0, shadowsOff = sh == "off", fadeOff = fd == "off", fade = fd is "tile" or "reach" ? fd : "", proxies = px ?? "" };
             v.name = "cli: " + v.Describe(); v.why = "pinned by the command line";
             return v;
         }
@@ -223,6 +223,7 @@ namespace Suborned.Perf
             shot = true;
             Directory.CreateDirectory(shots);
             var s = schedule[seg];
+            if (report.look.Length == 0) report.look = PerfLook.Read(cam);
             ScreenCapture.CaptureScreenshot(Path.Combine(shots, ShotName(s)));
         }
 
