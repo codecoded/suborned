@@ -80,6 +80,20 @@ test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and Pla
   for (const a of kit.assets.filter(x => x.status === 'adopted' && x.files.some(f => f.role === 'fbx' && f.root === 'generated') && !x.files.some(f => f.role === 'fbx-meta')))
     for (const f of a.files.filter(x => x.role === 'lod' && x.root === 'generated')) {
       const names = new Set([...readFileSync(join(GEN_ROOT, f.path)).toString('latin1').matchAll(/DK_[A-Za-z0-9_]+/g)].map(m => m[0]).filter(n => kit.assets.every(x => !n.startsWith(`DK_${x.id.split('@')[0]}`))));
-      for (const n of names) if (/^DK_(Accent|Liner|Enamel|Window|Faience|Limestone|Gold|Chrome|Leaf|Flower|GroundCover|Beacon|Terrazzo|Bronze|Hull|Steel|Lamp)/.test(n)) expect(a.materials, `${a.id} ${f.path} uses ${n}`).toContain(n);
+      for (const n of names) if (/^DK_(Accent|Liner|Enamel|Window|Faience|Limestone|Gold|Crown|Chrome|Leaf|Flower|GroundCover|Beacon|Terrazzo|Bronze|Hull|Steel|Lamp)/.test(n)) expect(a.materials, `${a.id} ${f.path} uses ${n}`).toContain(n);
     }
+});
+
+test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25 crown and skyline pieces keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
+  const adopted = kit.assets.filter(a => a.status === 'adopted');
+  const crown = adopted.filter(a => a.materials.some(m => /^DK_Crown_Gold/.test(m)));
+  expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'LinerDock@liner-berth', 'ParabolicArch', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9',
+    'StreamEnd_6', 'StreamEnd_9', 'StreamEnd_9W', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle', 'Tower_Needle@avenue-needle', 'Tower_Saucer@harbour-hotel', 'Tower_Starburst', 'Tower_Starburst@avenue-starburst', 'Tower_Terrace', 'Tower_Terrace@crescent-terrace'].sort());
+  for (const a of crown) expect(a.materials.filter(m => /^DK_(Gold|Gold17|Accent_Gold)$/.test(m)), `${a.id} draws a brass beside its crown gold`).toEqual([]); // the swap is whole: one gold per piece
+  const palette = new Map((JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/civic-look.json'), 'utf8')) as { palette: { materials: { material: string; unlit: string }[] } }).palette.materials.map(m => [m.material, m.unlit]));
+  // the dE gate reads the palette rows; the .mat the generator wrote is what Unity draws: they must say the same colour
+  const hexOf = (name: string) => { const c = /_BaseColor: \{r: ([\d.e-]+), g: ([\d.e-]+), b: ([\d.e-]+)/.exec(readFileSync(join(GEN_ROOT, `Materials/${name}.mat`), 'utf8'))!; return '#' + [c[1]!, c[2]!, c[3]!].map(x => Math.round(+x * 255).toString(16).padStart(2, '0')).join('').toUpperCase(); };
+  const want = { DK_Gold: '#99784D', DK_Accent_Gold: '#99784D', DK_Brass_Civic: '#99784D', DK_Gold17: '#AD866F', DK_Crown_Gold: '#E3D681', DK_Crown_Gold17: '#C9C08E' };
+  for (const [m, hex] of Object.entries(want)) { expect(hexOf(m), `${m}.mat`).toBe(hex); expect(palette.get(m), `${m} palette row`).toBe(hex); }
+  for (const m of Object.keys(want)) expect(new Set(adopted.flatMap(a => a.files.filter(f => f.path === `Materials/${m}.mat`).map(f => f.sha256))).size, `${m}: one file in the catalogue`).toBe(1);
 });

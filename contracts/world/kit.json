@@ -2353,8 +2353,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -3576,8 +3576,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -3731,8 +3731,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -5667,8 +5667,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -5772,8 +5772,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -5877,8 +5877,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -6933,8 +6933,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -7178,8 +7178,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -7442,8 +7442,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -7884,8 +7884,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -10812,7 +10812,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Terrazzo_Ivory",
     "DK_Lobby",
@@ -10837,10 +10837,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamBay_6.fbx",
-     "sha256": "f23e0ecd5212d5dfb9bdfdc08d9e9a3f0a314835b33bee8dea15ce99ed9e1735",
-     "bytes": 63980
+     "sha256": "c8e2502f6cae21cfd636433c8f4c490a9583f9f13a1d86e6e3237e4f1ef407ba",
+     "bytes": 64540
     },
     {
      "role": "fbx-meta",
@@ -10887,15 +10888,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -11058,14 +11059,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_6_L1.fbx",
-     "sha256": "76bdd544688f6e9eac23d05de5ff611a9a4a0a7baba009fbc76ae8d2b4045487",
-     "bytes": 42268
+     "sha256": "1bfa8861acaabca97126dee1f1031e51538ad1e22f47d68e067db8c3b5c2ab42",
+     "bytes": 42284
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_6_L2.fbx",
-     "sha256": "b2ffff7398f9cd2f97bfaccdf295c613294c0cf4b961d9699114ad5fad1bfdde",
+     "sha256": "79f22a807626e1b7b87baf136ffef2b894781b6cc1b538b5277f59d5aa139e6f",
      "bytes": 37260
     }
    ],
@@ -11101,7 +11102,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Terrazzo_Ivory",
     "DK_Lobby",
@@ -11126,10 +11127,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamBay_9.fbx",
-     "sha256": "2e961b230233b556fa0f950bf2076f4923e0e40bd967629d318e7fb1e1f63234",
-     "bytes": 74380
+     "sha256": "e65b144e4758325d089108bf42507729746a38b09c4b02f96859bfb03230f555",
+     "bytes": 74956
     },
     {
      "role": "fbx-meta",
@@ -11176,15 +11178,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -11347,14 +11349,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_9_L1.fbx",
-     "sha256": "a8e01d4f80201b0ad3eb462f5bd0ece680134bbd3184368064259315be33a869",
+     "sha256": "1ca91741a8c309a808ce702b98b4f0f2ce0c37afe91fc86ca491afc47b6486d0",
      "bytes": 45804
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_9_L2.fbx",
-     "sha256": "ef37cb6ca29abc8ac81d50ad3ba374719bd26e98efe3f35758ef7fa66505c2c6",
+     "sha256": "2857214d2672f00157665454493b5b218da24cc444c3f3cd83eee0ac5ebae208",
      "bytes": 39116
     }
    ],
@@ -11390,7 +11392,7 @@
    "materials": [
     "DK_Render_White",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Terrazzo_Ivory",
     "DK_Lobby",
@@ -11415,10 +11417,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamBay_9W.fbx",
-     "sha256": "ce8d4678a803113bfccb49ec1bd2ad65fc4d2b093ed671d65698738987b6cb8f",
-     "bytes": 73148
+     "sha256": "208b90e30d40efaa07c1158ffc4f7ff247c63dd826ce23230ea69eb889fe30f2",
+     "bytes": 72956
     },
     {
      "role": "fbx-meta",
@@ -11465,15 +11468,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -11600,14 +11603,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_9W_L1.fbx",
-     "sha256": "de474868aeac64103ec1d6786f6ec8cad6c4697b97e25acfdc9396f4742bd9fe",
+     "sha256": "760a4eeb016bfdace192340862c1d67d90b992fdd0c6845dc1415bffbb429544",
      "bytes": 43804
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamBay_9W_L2.fbx",
-     "sha256": "f81b3f1bfe6b9562147412e261569566e295b590060dc0a3f5b322b1125f72dd",
+     "sha256": "72346403534b5c0541a7ff7c46c7ea78eac15a94c782431d6e845eb01a0289c4",
      "bytes": 37116
     }
    ],
@@ -11643,7 +11646,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Terrazzo_Ivory",
     "DK_Lobby",
@@ -11663,10 +11666,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_DecoBay_10.fbx",
-     "sha256": "47b43ddf74d3f03fbc05e89c02850de57753b29e7d7ea0af5312acb62ef22347",
-     "bytes": 44188
+     "sha256": "776d6de8565767807bb98e40c6c9bb2dffae0f7c7dc207530dcb541f53620236",
+     "bytes": 44764
     },
     {
      "role": "fbx-meta",
@@ -11713,15 +11717,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -11884,8 +11888,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_DecoBay_10_L1.fbx",
-     "sha256": "0ef1f107b410bba3bba8c84a88e1c5d4771485ce6195abc70091e58930d4edae",
-     "bytes": 35676
+     "sha256": "b696e91e9eac72797544740304e490b34f7e8361a1aae1dbf17d6aa244a5b50f",
+     "bytes": 35692
     }
    ],
    "tags": {
@@ -11920,7 +11924,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Lobby",
     "DK_Terrazzo_Ivory",
@@ -11945,10 +11949,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamCorner_9.fbx",
-     "sha256": "50faea6a34085e1c73da089da11522a4cf42d59dabc8419944eb4bebe24ffe92",
-     "bytes": 660716
+     "sha256": "08854b6472aa3d03c4e6ef510fcd1c88e419719ba04ea6f2ac32134ce742f437",
+     "bytes": 661292
     },
     {
      "role": "fbx-meta",
@@ -11995,15 +12000,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -12166,15 +12171,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamCorner_9_L1.fbx",
-     "sha256": "9cda8aa636303787962d1d12cad34677b95a9ef439f0976bc30b1694402ff8fc",
-     "bytes": 260540
+     "sha256": "48860c2c433129d62532ee1511baf7e16d848cf34822ac35cda2aefb1c7df2a7",
+     "bytes": 260556
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamCorner_9_L2.fbx",
-     "sha256": "0c1115c38f6a1771fa0e9183d633fd87ed66c1e3fd7d33d0948faf1788b727c6",
-     "bytes": 94012
+     "sha256": "cc759da6393b419cda039010d7664f433dd10fdeaf2893dea4a200df71f8d7ba",
+     "bytes": 94028
     }
    ],
    "tags": {
@@ -12275,8 +12280,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -12623,8 +12628,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -12751,8 +12756,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -14423,7 +14428,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Lobby",
     "DK_Terrazzo_Ivory",
@@ -14448,10 +14453,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamEnd_6.fbx",
-     "sha256": "ff6bfdacbd93cdfd702e9f06c0dbda38862d00ed83ceeae502dd70902070f606",
-     "bytes": 344764
+     "sha256": "cf64c525539817ec5e05d6409b967b94ecde917d019d0d6269f47679b605b739",
+     "bytes": 345324
     },
     {
      "role": "fbx-meta",
@@ -14498,15 +14504,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -14669,15 +14675,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_6_L1.fbx",
-     "sha256": "552f3735d9241c87a8ba37bb0dc18b18051bed6c0de87d8f1dc8309bfe6d526b",
-     "bytes": 138892
+     "sha256": "a68df2bc2ab00795d7a8554b9e0c753d7e12db8aca824a387edf0b2361d88b72",
+     "bytes": 138908
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_6_L2.fbx",
-     "sha256": "f67aceafa79121cf60e08dc714736a38d9c9f8a033d79504b55b5a0fc9df942d",
-     "bytes": 62348
+     "sha256": "82568f919a4c8fd591e578f1bcff6206ef82f2a3bf55e9c39adb956fa332a376",
+     "bytes": 62364
     }
    ],
    "tags": {
@@ -14712,7 +14718,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Lobby",
     "DK_Terrazzo_Ivory",
@@ -14737,10 +14743,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamEnd_9.fbx",
-     "sha256": "26fa5fda76fdd7972032251ff969020c8186774068c3a79ae2bff9098dd31d5a",
-     "bytes": 434476
+     "sha256": "fc8a7ad9b84e8f6fb4cad8463c24adcdfc13ae92f261006e2e98760a8aeaf6df",
+     "bytes": 435036
     },
     {
      "role": "fbx-meta",
@@ -14787,15 +14794,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -14958,14 +14965,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_9_L1.fbx",
-     "sha256": "8ba5311e5a449eaeb7f4b8dc598aeebfa29c4f4a035fe4b161efd612e4ec8479",
-     "bytes": 169916
+     "sha256": "e2bad56e4d0a4d350ea33365ea1a3789a70bfd42f508690a8a70c87a57f135db",
+     "bytes": 169932
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_9_L2.fbx",
-     "sha256": "47396282c4a40312f5770d17cd3db07a448d06b4886dfa4df46622d47440f28b",
+     "sha256": "15c7e17520b6f9d654ff28b3fb296af4e5617ca6b741aa8289ae80f355958a79",
      "bytes": 70988
     }
    ],
@@ -15001,7 +15008,7 @@
    "materials": [
     "DK_Render_White",
     "DK_GlassDark",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Chrome",
     "DK_Lobby",
     "DK_Terrazzo_Ivory",
@@ -15026,10 +15033,11 @@
    "lodCategory": "facades",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_StreamEnd_9W.fbx",
-     "sha256": "1c8dd3f94ae70668521042f4cb39f49711e75fad15d5da35b50275b8c5023af3",
-     "bytes": 433244
+     "sha256": "fe1a460fd6c25c6907bbe6c062d9d4d4727ea9f2fb39a481edf5105e500d26b3",
+     "bytes": 433036
     },
     {
      "role": "fbx-meta",
@@ -15076,15 +15084,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -15211,14 +15219,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_9W_L1.fbx",
-     "sha256": "84ba17862c860ac34632772d76f6c34bcf5795b8b59ce9657d0969463092e184",
-     "bytes": 167916
+     "sha256": "c04e14b5fe2ba9e39a141ca9504b94aa9560180ebd60ed728f6c5f41bbddb002",
+     "bytes": 167932
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_StreamEnd_9W_L2.fbx",
-     "sha256": "7795f0952479b226f42b211ba564947e1b0c2c355e0c6aa6131146fb618324d6",
+     "sha256": "3c0bf4143e94bfd68e081ab207b2f36beaf7bd634fd992f9fb0da76a963efb66",
      "bytes": 68988
     }
    ],
@@ -15250,7 +15258,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_Enamel_Teal",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Bronze",
     "DK_Chrome"
    ],
@@ -15269,10 +15277,11 @@
    "lodCategory": "signatures",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_ParabolicArch.fbx",
-     "sha256": "6276b66e6bfacff80c2e251398d298a5561a20e5a7783cf48150eb30870884f6",
-     "bytes": 215020
+     "sha256": "f93ed930e25602edba22ce46e946f64bd333a734d6436909c509d623c76f43bc",
+     "bytes": 215788
     },
     {
      "role": "fbx-meta",
@@ -15319,15 +15328,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -15394,14 +15403,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_ParabolicArch_L1.fbx",
-     "sha256": "8bdc782698921560db1524a2e60631e4d4fc3ef85d98c9fb8e03c36fead4100a",
-     "bytes": 81916
+     "sha256": "c62b31c101a901c475cb12ffce2149ebb762daa9cf170f705bbeaf8233c44727",
+     "bytes": 81932
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_ParabolicArch_L2.fbx",
-     "sha256": "543f50689b375f6bef09d322a225f8b4e35249a31f306c4abb209b9142801e15",
+     "sha256": "d1e8d5f02eb5dc19d23146e8f12cce57613879954957bbb6d1f8ceb3f1f0762b",
      "bytes": 39980
     }
    ],
@@ -17970,8 +17979,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -18678,8 +18687,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -18838,8 +18847,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -19007,8 +19016,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -19214,8 +19223,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -19373,8 +19382,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -19701,8 +19710,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -19874,8 +19883,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -20316,8 +20325,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -20660,8 +20669,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -20964,8 +20973,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -21233,8 +21242,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -21563,8 +21572,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -21874,8 +21883,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -23012,8 +23021,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -23915,8 +23924,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -24242,8 +24251,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -24583,8 +24592,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -24937,8 +24946,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -25224,8 +25233,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -25948,8 +25957,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -27025,8 +27034,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -27136,8 +27145,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -27510,8 +27519,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -27671,8 +27680,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -27991,8 +28000,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -28223,8 +28232,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -28383,8 +28392,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -28605,8 +28614,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -28741,8 +28750,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -28974,8 +28983,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -29084,14 +29093,14 @@
     "DK_Enamel_Ivory",
     "DK_Window_Tower",
     "DK_Enamel_Coral",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Hull_Ivory",
     "DK_Steel_Ivory",
     "DK_Glass",
     "DK_Enamel_Mustard",
     "DK_Tile_Teal",
     "DK_Signal_Amber",
-    "DK_Signal_Red"
+    "DK_Beacon_Rose"
    ],
    "lods": [
     {
@@ -29108,10 +29117,11 @@
    "lodCategory": "signatures",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Skyport/DK_Skyport_Tower.fbx",
-     "sha256": "2b009eb0128016c7dedb6484d8b277d8357536cd94bc504828ce5e935e4ce4b2",
-     "bytes": 831020
+     "sha256": "28da2c1aa6aaf6b02563aa7e4072cbe7ca7836c4ae5229618c97190331a1097f",
+     "bytes": 831612
     },
     {
      "role": "fbx-meta",
@@ -29254,15 +29264,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -29342,15 +29352,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Signal_Red.mat",
-     "sha256": "2ae898b62b0426a50a6a930bfe654b1c83876de08af58d5d94007992cccd3cbc",
-     "bytes": 3946
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Signal_Red.mat.meta",
-     "sha256": "fd6388893e0ded49c829db67d88226e839f93935e7f4804924ef659320ce33a0",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
      "bytes": 188
     },
     {
@@ -29429,14 +29439,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_Skyport_Tower_L1.fbx",
-     "sha256": "4b69423c58cb807c94441f776f06fda8aded9647c1314d64b2611ca11c5e46d3",
-     "bytes": 356524
+     "sha256": "248c7bd13b2598f17c3ff98c35d7c395a2a04c69345a303155cf8fd04d569bb1",
+     "bytes": 357228
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_Skyport_Tower_L2.fbx",
-     "sha256": "f1a5f2d4a34f4791302a38b644a2c5a4a1f64833dff898ff1903042ef1c91000",
+     "sha256": "f92aa86cb1312ac06350f54ac37d7aac915816bfdb85fabd22660ef2dd9a9283",
      "bytes": 154268
     }
    ],
@@ -29621,8 +29631,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -29894,8 +29904,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -30171,8 +30181,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -30620,8 +30630,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -30829,8 +30839,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -31175,8 +31185,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -31361,8 +31371,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -32149,8 +32159,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -32426,8 +32436,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -32703,8 +32713,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -32949,8 +32959,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -33238,8 +33248,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -33527,8 +33537,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -33782,8 +33792,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -34099,8 +34109,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -34415,8 +34425,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -34684,8 +34694,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -35102,8 +35112,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -35194,7 +35204,11 @@
     186.9,
     19.3307
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -0.365
+   ],
    "front": "+Z",
    "tris": 18520,
    "materials": [
@@ -35209,15 +35223,28 @@
     "DK_Terrazzo_Ivory",
     "DK_Tile_Teal",
     "DK_Pool_Water",
-    "DK_Gold"
+    "DK_Crown_Gold"
+   ],
+   "lods": [
+    {
+     "file": "Models/Highrise/DK_Tower_Starburst_L1.fbx",
+     "tris": 4448,
+     "screen": 0.3
+    },
+    {
+     "file": "Models/Highrise/DK_Tower_Starburst_L2.fbx",
+     "tris": 1867,
+     "screen": 0.1
+    }
    ],
    "lodCategory": "towers",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Starburst.fbx",
-     "sha256": "84181345195c2718ad2b4984bf68533ad7fa8d649c7513eb80a4ca0aa7bb976f",
-     "bytes": 376492
+     "sha256": "78113ec0df6cdf43b69dc7b17801bb5e0f23b8eccc8a380efa98e091276891a0",
+     "bytes": 377052
     },
     {
      "role": "fbx-meta",
@@ -35372,15 +35399,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -35442,6 +35469,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Starburst_L1.fbx",
+     "sha256": "124ec74db57f6a47c9efde22fa2952752e294ae921f67d37fe6bc5b9f803859b",
+     "bytes": 170140
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Starburst_L2.fbx",
+     "sha256": "f740a3c0d1c847cc1b3f5255983bc0013978f4b266ad454b556c157c188f329c",
+     "bytes": 92668
     }
    ],
    "tags": {
@@ -35644,8 +35685,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -35992,8 +36033,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -36135,8 +36176,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -36705,8 +36746,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -36994,8 +37035,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -37285,8 +37326,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -37525,15 +37566,28 @@
     "DK_Window_Tower",
     "DK_Enamel_Coral",
     "DK_Hull_Ivory",
-    "DK_Gold"
+    "DK_Crown_Gold"
+   ],
+   "lods": [
+    {
+     "file": "Models/Highrise/DK_Tower_Needle_L1.fbx",
+     "tris": 1718,
+     "screen": 0.3
+    },
+    {
+     "file": "Models/Highrise/DK_Tower_Needle_L2.fbx",
+     "tris": 421,
+     "screen": 0.1
+    }
    ],
    "lodCategory": "towers",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Needle.fbx",
-     "sha256": "d26f836a3737f1c245552c3264208147a7dcf2ccff11417be3ae628c3da099eb",
-     "bytes": 170108
+     "sha256": "8f0e18ef6b8a82bcedf547f2bb53957c19657ddbae47bc2d3893fedbca8a0eef",
+     "bytes": 170668
     },
     {
      "role": "fbx-meta",
@@ -37640,15 +37694,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -37722,6 +37776,20 @@
      "path": "Textures/hull_panels_v1_normal.png.meta",
      "sha256": "d5593dd03e1ac3ca4ebb7f44c4b2d9d1e9c6492a2a0d608793651e2f386ac183",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Needle_L1.fbx",
+     "sha256": "6a312795410225b041016f61da42f66218b2d350913352e0dee9555fdd390594",
+     "bytes": 88924
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Needle_L2.fbx",
+     "sha256": "21de3579bda13e8bb196895aed65d804511f136d570ac529b426df7a9dfd10d2",
+     "bytes": 46828
     }
    ],
    "tags": {
@@ -37760,15 +37828,28 @@
     "DK_Terrazzo_Ivory",
     "DK_Soil",
     "DK_Foliage",
-    "DK_Gold"
+    "DK_Crown_Gold"
+   ],
+   "lods": [
+    {
+     "file": "Models/Highrise/DK_Tower_Terrace_L1.fbx",
+     "tris": 6702,
+     "screen": 0.3
+    },
+    {
+     "file": "Models/Highrise/DK_Tower_Terrace_L2.fbx",
+     "tris": 1926,
+     "screen": 0.1
+    }
    ],
    "lodCategory": "towers",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Terrace.fbx",
-     "sha256": "907ed5e49f258cd6b359ec890854f7f441ecddf006000f809cf7135efc621d67",
-     "bytes": 572220
+     "sha256": "e8c0165aa8d10ec43f67d982c20245bf180962b725ea957998badd56ef813c15",
+     "bytes": 572780
     },
     {
      "role": "fbx-meta",
@@ -37923,15 +38004,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -37993,6 +38074,20 @@
      "path": "Textures/terrazzo_ivory_v1_normal.png.meta",
      "sha256": "ff0de3975ba3825e73a98f0dd2b38cf8a10956f958e325d1af5bad102d3776e2",
      "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Terrace_L1.fbx",
+     "sha256": "e8aa502a9226f721a8059a1b95ba321389fb9f0379f71d29db36e1ffd0402b57",
+     "bytes": 272348
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Highrise/DK_Tower_Terrace_L2.fbx",
+     "sha256": "30d91771fe84f8b50f9a12df524f678a935e90a48a8be5c85a41b52b27515038",
+     "bytes": 105852
     }
    ],
    "tags": {
@@ -38103,8 +38198,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -38372,8 +38467,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "sha256": "e41c3bdeef4df4142e13cbfe921d8d499561991210815ad6e489bae37f4e070c",
+     "bytes": 3892
     },
     {
      "root": "generated",
@@ -38996,8 +39091,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "sha256": "b1f4a6062b2ad196cf03c752763db10c40b7d22a313d3ed102f0caee70bbb6e4",
+     "bytes": 3906
     },
     {
      "root": "generated",
@@ -40450,7 +40545,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Turquoise",
     "DK_Chrome",
-    "DK_Gold17"
+    "DK_Crown_Gold17"
    ],
    "lods": [
     {
@@ -40470,7 +40565,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Crowns/DK_Crown_Atom.fbx",
-     "sha256": "ee15c0d0d690f3701ccf460a1944c4904f7fcd40df9d9018373a8f50a0911941",
+     "sha256": "18fbe41e90ddae34084b23c8716a8a7b8dc2520211115f91148f3dafa047f171",
      "bytes": 92988
     },
     {
@@ -40514,30 +40609,30 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "path": "Materials/DK_Crown_Gold17.mat",
+     "sha256": "2e242ded625022085277408a036a51966d9e50808766ca79c40ab764f103a3af",
+     "bytes": 3914
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold17.mat.meta",
-     "sha256": "11faebd0ae5d96cb334da6795dc1ec01778642c2978ce082bca83c2e1a8e160f",
+     "path": "Materials/DK_Crown_Gold17.mat.meta",
+     "sha256": "d604483cf6d18dc2b40b16666cb678af1678e0cbc1bdc581392c6d09edb6e14b",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Crowns/DK_Crown_Atom_L1.fbx",
-     "sha256": "5b110e658e02b1a0a38920cfc943d75cc90cd50be1c7d97e23a8f028abeebeca",
-     "bytes": 45596
+     "sha256": "53c7939cb6a56da98b5494da37c4e31ecd9499cd44220409b8020bd944e75bd6",
+     "bytes": 45612
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Crowns/DK_Crown_Atom_L2.fbx",
-     "sha256": "6e732c2b27289befcc6d16f76c67d7448c0d4f63cf49caefe2a17cd506d5248e",
-     "bytes": 26700
+     "sha256": "fc85d05faf8c183e3f196c261fe6e52f85748e24b20a1ed788f71dc4b4a4e968",
+     "bytes": 26716
     }
    ],
    "tags": {
@@ -40680,7 +40775,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Turquoise",
     "DK_Chrome",
-    "DK_Gold17"
+    "DK_Crown_Gold17"
    ],
    "lods": [
     {
@@ -40695,8 +40790,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Crowns/DK_Crown_Finial.fbx",
-     "sha256": "00c58f95d9376e894f27b2480d07a29fc54141d2edb1d0aa7cdd88d08202d949",
-     "bytes": 42028
+     "sha256": "06e40fbbf8e2f3f3f4ca1bf32621d43dd3b8657b5a9927c03e9195271a560836",
+     "bytes": 42044
     },
     {
      "role": "material",
@@ -40739,23 +40834,23 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "path": "Materials/DK_Crown_Gold17.mat",
+     "sha256": "2e242ded625022085277408a036a51966d9e50808766ca79c40ab764f103a3af",
+     "bytes": 3914
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold17.mat.meta",
-     "sha256": "11faebd0ae5d96cb334da6795dc1ec01778642c2978ce082bca83c2e1a8e160f",
+     "path": "Materials/DK_Crown_Gold17.mat.meta",
+     "sha256": "d604483cf6d18dc2b40b16666cb678af1678e0cbc1bdc581392c6d09edb6e14b",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Crowns/DK_Crown_Finial_L1.fbx",
-     "sha256": "f0c8a6602fc45a209da135ef7acb431409d3d147c96c1d692073850421ac4bd3",
-     "bytes": 28572
+     "sha256": "f8451bb53ac11ef6bd6e526fd4559a2f28b6333766432cc4b59b0155ef4f7dc0",
+     "bytes": 28604
     }
    ],
    "tags": {
@@ -41038,7 +41133,7 @@
     "DK_Enamel_Ivory",
     "DK_Enamel_Turquoise",
     "DK_Chrome",
-    "DK_Gold17"
+    "DK_Crown_Gold17"
    ],
    "lods": [
     {
@@ -41053,7 +41148,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Crowns/DK_Crown_Starburst.fbx",
-     "sha256": "7fd236b57947536d33b0525ecac19ec85a3749dcc95464a4fd35a018e1bc674c",
+     "sha256": "73181ff0ed993fa53a74e586ef524d10985fb9ba7c2992e20496e322b50bafa7",
      "bytes": 35020
     },
     {
@@ -41097,23 +41192,23 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "path": "Materials/DK_Crown_Gold17.mat",
+     "sha256": "2e242ded625022085277408a036a51966d9e50808766ca79c40ab764f103a3af",
+     "bytes": 3914
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold17.mat.meta",
-     "sha256": "11faebd0ae5d96cb334da6795dc1ec01778642c2978ce082bca83c2e1a8e160f",
+     "path": "Materials/DK_Crown_Gold17.mat.meta",
+     "sha256": "d604483cf6d18dc2b40b16666cb678af1678e0cbc1bdc581392c6d09edb6e14b",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Crowns/DK_Crown_Starburst_L1.fbx",
-     "sha256": "ebb3788a602ebea6b2c9b286c2111b1c9e2d825a137459c0b505775ed2c15655",
-     "bytes": 25708
+     "sha256": "7a4ad915815b4ed23214f4a8047c008018c0798c31603a6c6145ac648391878a",
+     "bytes": 25772
     }
    ],
    "tags": {
@@ -43327,6 +43422,74 @@
      "path": "Materials/DK_Pool_Civic.mat.meta",
      "sha256": "daf118782700f84895207235927534692349e83c061e97c17ad50837a67a9786",
      "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Flower_CoralSoft.mat",
+     "sha256": "f5359879015e2579f226e10f00eeb26624a3fd99eaf2db4cadc8081da04fa13d",
+     "bytes": 4083
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Flower_CoralSoft.mat.meta",
+     "sha256": "6ad9b0b2c99e0097d6e4de4225ce2cf220f165c83e4ae32b5cfa3d8ce73440d7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/flower_cluster_coralsoft_v1_alpha.png",
+     "sha256": "e69b17be2a191cb741919b7f66ee8fdf72018754c75262ba9a32bef1933c1a56",
+     "bytes": 1488586
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/flower_cluster_coralsoft_v1_alpha.png.meta",
+     "sha256": "368e176928c66eb97d978cb60d03cb65b70c0c80ecdde34718dadeaef3e898fb",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Flower_Flamingo.mat",
+     "sha256": "ac4032081e3437baa513c5513052cb012f444adcf192c87d1590899521f54095",
+     "bytes": 4082
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Flower_Flamingo.mat.meta",
+     "sha256": "9b440072ee176e7d2bb32c8925efc207d0fb20058b6f1c79e2bd1ee5b0984a39",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/flower_cluster_flamingo_v1_alpha.png",
+     "sha256": "3521ad88d854364094042ede3291fe397a76627345cc80b40fb01abd72e984a2",
+     "bytes": 1477935
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/flower_cluster_flamingo_v1_alpha.png.meta",
+     "sha256": "3dd3cac92faf55999b95cd215bac091d4c82646da6218045b39397cba1dbba09",
+     "bytes": 2714
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Face_Teal.mat",
+     "sha256": "ba00c589282fcda4ba6492a32321ee4e3c9a2df8c170ad690bc6ada973e2072d",
+     "bytes": 850
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Face_Teal.mat.meta",
+     "sha256": "33008a68ed1e8a70595e241ccd3816a07345298c36c06e3de47c7d5613023e13",
+     "bytes": 188
     }
    ],
    "tags": {
@@ -43366,7 +43529,7 @@
     "DK_Enamel_Turquoise",
     "DK_Terrazzo_Ivory",
     "DK_Enamel_Coral17",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Enamel_Sunshine",
     "DK_Window_Tower",
     "DK_Hull_Ivory",
@@ -43394,7 +43557,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth.fbx",
-     "sha256": "7aa2d66d9d38036905107d3ad6925d444cbbbb15e77765b881031478e8d70146",
+     "sha256": "424aa1d62b7227de75c14d86c639190c6acd4c93f2539af97d2d71e99e2675a7",
      "bytes": 345612
     },
     {
@@ -43476,15 +43639,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -43689,15 +43852,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth_L1.fbx",
-     "sha256": "5305392bd889297cb00b2158dbf20eb639a1ce43b100d371ed647788d83ccbe9",
+     "sha256": "5dbf41034af6bc2dacd6b3d92cda7240da25d1355a852ed905d04247306dbbb6",
      "bytes": 169196
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_LinerDock@liner-berth_L2.fbx",
-     "sha256": "259f4708c7ce1a48f22b0bfd483529e14942fb7280db94d86bd790d1e946e748",
-     "bytes": 84236
+     "sha256": "b4b80fd862fbe20effacb23a0db6879639a3e2028ca3551060b9228c612a3401",
+     "bytes": 84252
     }
    ],
    "tags": {
@@ -43796,8 +43959,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Accent_Gold.mat",
-     "sha256": "5c1d67d78cd8d1e803d5b41a0dc43fe6077fc46759aa5f2ca04de673d276f4f6",
-     "bytes": 3913
+     "sha256": "916fc712a3eadd53375e83eea583e8fbf6fb4795ae7fa50bf2dae40a75fb30f7",
+     "bytes": 3899
     },
     {
      "root": "generated",
@@ -44019,8 +44182,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "sha256": "b1f4a6062b2ad196cf03c752763db10c40b7d22a313d3ed102f0caee70bbb6e4",
+     "bytes": 3906
     },
     {
      "root": "generated",
@@ -44702,8 +44865,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Accent_Gold.mat",
-     "sha256": "5c1d67d78cd8d1e803d5b41a0dc43fe6077fc46759aa5f2ca04de673d276f4f6",
-     "bytes": 3913
+     "sha256": "916fc712a3eadd53375e83eea583e8fbf6fb4795ae7fa50bf2dae40a75fb30f7",
+     "bytes": 3899
     },
     {
      "root": "generated",
@@ -47104,7 +47267,7 @@
    "materials": [
     "DK_Limestone_Tex",
     "DK_Enamel_Teal",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Window_Tower",
     "DK_Enamel_Ivory",
     "DK_Chrome",
@@ -47137,8 +47300,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Skyport/DK_Skyport_Tower_Portal.fbx",
-     "sha256": "6b56306f16893c230ae4977bd85e4b38d2cb5394047ec7e6cfea048306bc066b",
-     "bytes": 694844
+     "sha256": "c902443d3d8d1e802f846306f9491d4dd1aa87699dc1121ab69a8349904588c1",
+     "bytes": 694860
     },
     {
      "role": "material",
@@ -47167,15 +47330,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -47414,15 +47577,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_Skyport_Tower_Portal_L1.fbx",
-     "sha256": "9b0cffcb96e1bdda80608f54222268d6616eba0df6d2a1e3c16fb1bb418f3f5d",
-     "bytes": 296140
+     "sha256": "aec876dba8a64081f78bb298462d8ac1ea5b052e8fab4ae09e9a9bfd5d298d41",
+     "bytes": 296812
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyport/DK_Skyport_Tower_Portal_L2.fbx",
-     "sha256": "2e73f1a50274c4f2f646d53ec6cd014dae54d34366325bed27dce50fad856fd5",
-     "bytes": 143276
+     "sha256": "a333600d0ad699485b591de986f7b58c3ec5668f96b06ebf62b8b48a32214d89",
+     "bytes": 143292
     }
    ],
    "tags": {
@@ -47854,8 +48017,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Gold17.mat",
-     "sha256": "7d44037c0cfb3a739751f0426191343eaa226dc96d71432980d76268d76196c3",
-     "bytes": 3908
+     "sha256": "b1f4a6062b2ad196cf03c752763db10c40b7d22a313d3ed102f0caee70bbb6e4",
+     "bytes": 3906
     },
     {
      "root": "generated",
@@ -48040,7 +48203,7 @@
    "tris": 68580,
    "materials": [
     "DK_Limestone_Tex",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Enamel_Turquoise",
     "DK_Terrazzo_Ivory",
     "DK_Enamel_Ivory",
@@ -48073,8 +48236,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_SpaceHQ_Portal.fbx",
-     "sha256": "42501657a536073e49d22bb3d63b9b0585d993c9eb3aa481feaa7ffe004bd0b1",
-     "bytes": 1400764
+     "sha256": "ab9818ff547e18721c1b52bec719e7816ca80daee563358ece50e5cfeb9fc43b",
+     "bytes": 1400780
     },
     {
      "role": "material",
@@ -48091,15 +48254,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -48334,15 +48497,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_SpaceHQ_Portal_L1.fbx",
-     "sha256": "84f0714473ba64e3466bd65339e993a1ba61de56ac84b6995aa0a0092725a9aa",
-     "bytes": 629324
+     "sha256": "bea630971cdee671e25cca8071aa6351fd04d310f1934e0c5235b45c93b18fda",
+     "bytes": 638908
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_SpaceHQ_Portal_L2.fbx",
-     "sha256": "4c96369f3971df6e20ddd83f21c4c16e02672bf1545c5a155c2d17eec1a316ae",
-     "bytes": 205212
+     "sha256": "98679e22af0f1646b382f4d0d8e33c26046bd5c824990828717d0eb1c741d204",
+     "bytes": 206972
     }
    ],
    "tags": {
@@ -48407,7 +48570,7 @@
     "DK_Pool_Water",
     "DK_Soil",
     "DK_Foliage",
-    "DK_Gold"
+    "DK_Crown_Gold"
    ],
    "lods": [
     {
@@ -48427,7 +48590,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Atom@crescent-tower.fbx",
-     "sha256": "758ee176267ba2f09e7e176be65052f8d3f248220eff81c8fa15be9b24c87411",
+     "sha256": "fcc02e45e28aff2875d3038450d9c0081470201ee875b365652a363a36044703",
      "bytes": 407804
     },
     {
@@ -48589,15 +48752,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -48664,15 +48827,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Atom@crescent-tower_L1.fbx",
-     "sha256": "cf0a865f6e380e5614042b3874c550a712661b8f95cfbfe03a6c49dd0740a318",
-     "bytes": 178444
+     "sha256": "df40dab97340c3a4fa1dcddfae39ad67efa1c8b3a48c081cf718c824b9eca1c8",
+     "bytes": 180076
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Atom@crescent-tower_L2.fbx",
-     "sha256": "6f98e8520a22c90c6d5bc42f972bf677bc865e4432fcee68040cc07723135607",
-     "bytes": 84188
+     "sha256": "d7452a93b4bfe2e14ca6651ea48eab1d0f93172de766c059ed619474610855f9",
+     "bytes": 85164
     }
    ],
    "tags": {
@@ -48741,7 +48904,7 @@
     "DK_Terrazzo_Ivory",
     "DK_Soil",
     "DK_Foliage",
-    "DK_Gold"
+    "DK_Crown_Gold"
    ],
    "lods": [
     {
@@ -48761,7 +48924,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Lantern@lantern-beacon.fbx",
-     "sha256": "9c234614c9613fc4b3553c88edfd5ba33e9178945f980e8cd06d91dd2e579847",
+     "sha256": "9c76e52a2d9ebf234b2e05c5f68c85d9be0dd78190fa1393dae149993b72f4b9",
      "bytes": 270476
     },
     {
@@ -48899,15 +49062,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -48974,14 +49137,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L1.fbx",
-     "sha256": "6e64318d0eccee8797ef631e3f0ea6198d25865f2eee9eb8cf810394d88c55d5",
-     "bytes": 122844
+     "sha256": "3bbd7019332594a841040bcd55d50fdee52e4bf1d840472787502f0a53731135",
+     "bytes": 123964
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L2.fbx",
-     "sha256": "8bc95963f2959cb85c58ac88f13007c1859b00f1707436c3740bded2fe518035",
+     "sha256": "c1c6f1bbbb972d009e162d1764b971d0429c2ecdde9e2e41c52ab05ace45bc51",
      "bytes": 63228
     }
    ],
@@ -49047,7 +49210,7 @@
     "DK_Window_Tower",
     "DK_Enamel_Coral",
     "DK_Hull_Ivory",
-    "DK_Gold"
+    "DK_Crown_Gold"
    ],
    "lods": [
     {
@@ -49067,7 +49230,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Needle@avenue-needle.fbx",
-     "sha256": "eca53f01c19948c02f2ca38e6fea3e874444d80a21b5d04f5fcbaa5768c35e65",
+     "sha256": "2d23aaf517e572275afaf5ec6a68fcba748e623b47ab38a2f8104293011807d7",
      "bytes": 157308
     },
     {
@@ -49157,15 +49320,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -49244,15 +49407,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Needle@avenue-needle_L1.fbx",
-     "sha256": "bb6e0f735153692f0a01842290392bb1337cb94b9ed7b51cc21792d2f27a456b",
+     "sha256": "647780d0df141589c7fac7d49832cc170288a108d09dfe62237d1260f23f5f52",
      "bytes": 83132
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Needle@avenue-needle_L2.fbx",
-     "sha256": "f2c642d35adcc90d3dabe71a3d2ee5e20e63eed1def4276dc4effcd65311a607",
-     "bytes": 45852
+     "sha256": "65b40f8d8feeda101aa17548f8ee81675371653ea07a1fbddae98472ef65ed85",
+     "bytes": 45868
     }
    ],
    "tags": {
@@ -49308,7 +49471,7 @@
     "DK_Render_Cream",
     "DK_Window_Teal",
     "DK_Enamel_Turquoise",
-    "DK_Gold",
+    "DK_Crown_Gold",
     "DK_Enamel_Coral17",
     "DK_Enamel_Ivory",
     "DK_Chrome"
@@ -49331,7 +49494,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel.fbx",
-     "sha256": "b8590b50169dcb46a7d6bef3dda7c9076273e852fb7109faf4ebed4d45c793cb",
+     "sha256": "b2e30e046c8a2341604d3e78d983a7ca7fbf5ca048298e7911b3c07f7ed385a3",
      "bytes": 130476
     },
     {
@@ -49377,15 +49540,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -49430,14 +49593,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L1.fbx",
-     "sha256": "ad447dbddff2f81ba317cd045b0759b60d7f7166cd8d429e25d81ce74f201877",
-     "bytes": 67052
+     "sha256": "4a1f78f370455676fa6546190e6ba89d56e68300d6c29eb2d0e980f23709b316",
+     "bytes": 67068
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L2.fbx",
-     "sha256": "0c95e535d121882047e1cda92e2ab1040602ecf0a4e50367189b1677dca53109",
+     "sha256": "dc77f5aab09300ccc8ed1cb56c1e0108d4f91e280ffcf7f26f09b64a9f37f4d5",
      "bytes": 35020
     }
    ],
@@ -49511,7 +49674,7 @@
     "DK_Terrazzo_Ivory",
     "DK_Tile_Teal",
     "DK_Pool_Water",
-    "DK_Gold"
+    "DK_Crown_Gold"
    ],
    "lods": [
     {
@@ -49531,7 +49694,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Starburst@avenue-starburst.fbx",
-     "sha256": "809ae0f4d2610d2d950c163d81bb244846dd9ef0818b9efac85dbd986683d8b5",
+     "sha256": "95e9ca923e5ec486d9dc87654c3ace00f9e2705e3a4185a64d45ff7c6f3a6aa6",
      "bytes": 375484
     },
     {
@@ -49669,15 +49832,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -49744,14 +49907,14 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L1.fbx",
-     "sha256": "1e3e6ec321734e4358ed809ae5a069a4314992b0bf87af5c0787384cbb2cd995",
-     "bytes": 168220
+     "sha256": "c5ab2b51e4bb8af22866e06b94ef94e5456e3aa24c9176b3e59b002b517731e1",
+     "bytes": 169932
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L2.fbx",
-     "sha256": "d787d65d0787319504fce46efabdb7bf8c9d4a968b4ee172875a720c33f91bf6",
+     "sha256": "f5e9f6221fc8cdb62cbf762959f9a050516df40a7c110d4d976be48713087dd4",
      "bytes": 92492
     }
    ],
@@ -50181,7 +50344,7 @@
     "DK_Terrazzo_Ivory",
     "DK_Soil",
     "DK_Foliage",
-    "DK_Gold"
+    "DK_Crown_Gold"
    ],
    "lods": [
     {
@@ -50201,7 +50364,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Highrise/DK_Tower_Terrace@crescent-terrace.fbx",
-     "sha256": "c39e24270442e69a190b372dc552f262039ce06b0bc4f532e24add9859cd82ce",
+     "sha256": "2f27e0b95c5d60de30c4d0bc2f8e613bdd7335f777f33a9e2c04a884a936cbac",
      "bytes": 427228
     },
     {
@@ -50339,15 +50502,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Gold.mat",
-     "sha256": "89007bbcbf1f301d4f7461ca417fb3184c40ee0f897f1f1c5997055c65930e1b",
-     "bytes": 3906
+     "path": "Materials/DK_Crown_Gold.mat",
+     "sha256": "d5ca2aad5b4ceb9acdc25379c19e7ed83ea18ab7284d2c12b5c942f0a77bb042",
+     "bytes": 3912
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Gold.mat.meta",
-     "sha256": "37b495884bcdf20273ddc0bd8a24391478df009364b6ead9845267bb58b06498",
+     "path": "Materials/DK_Crown_Gold.mat.meta",
+     "sha256": "7586674edc1dc2ed3bce532fa7ec61ebe7c5247d9142b3ea7e3e0348ce5d7e27",
      "bytes": 188
     },
     {
@@ -50414,15 +50577,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L1.fbx",
-     "sha256": "78349f7c3a01318d7cc7b385aec37b4adb63cbdc6e63b0c42f601cfcb2dfe5f1",
-     "bytes": 203580
+     "sha256": "271c68f01d899699dd8fded23a28c08545ff4aa768b165898a2acd213c651760",
+     "bytes": 204812
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L2.fbx",
-     "sha256": "f9fc69f1188afd47da4bd27b73e46a7ffa78542c88c7b1e80098f066e3d97c9c",
-     "bytes": 88300
+     "sha256": "05f061e7776d0069ae6fd0cfc7f30ed288be054562174893a0ec6989fc4cb4cf",
+     "bytes": 89164
     }
    ],
    "tags": {

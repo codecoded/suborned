@@ -124,13 +124,23 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     const again = generated(plan, d, civ).w.civic.filter(m => /\/tuft-\d+$/.test(m.id));
     expect(again.map(t => t.kit!.yaw)).toEqual(tufts.map(t => t.kit!.yaw));
   });
-  test('the pool draws its water in DK_Pool_Civic and the fountain planters brass; no other civic mass replaces a material', () => {
-    expect(civicMass(base.w, 'civic/atom-fountain').materials).toEqual({ DK_Water: 'DK_Pool_Civic' });
+  test('the civic masses draw the override table of civic-look.json and no other mass replaces a material; the pool its own water, the planters the brass bead', () => {
+    const drawn = Object.fromEntries(base.w.civic.filter(m => m.materials).map(m => [m.id, m.materials]));
+    expect(drawn).toEqual(look.materials);
+    expect(civicMass(base.w, 'civic/atom-fountain').materials).toEqual({ DK_Enamel_Turquoise: 'DK_Enamel_Seafoam', DK_Lamp: 'DK_Lamp_Deco', DK_Water: 'DK_Pool_Civic' });
     const planters = ['north-east', 'north-west', 'south-west', 'south-east'].map(c => `civic/fountain-garden-${c}`);
-    for (const id of planters) expect(civicMass(base.w, id).materials).toEqual({ DK_Accent_Gold: 'DK_Brass_Civic' });
-    expect(base.w.civic.filter(m => m.materials).map(m => m.id).sort()).toEqual(['civic/atom-fountain', ...planters].sort());
+    // DK_Accent_Gold is brass #99784D in the kit now, the same colour as DK_Brass_Civic: the slot swap is kept (it is in the export, and Latch builds from it), not needed for the colour
+    for (const id of planters) expect(civicMass(base.w, id).materials).toMatchObject({ DK_Accent_Gold: 'DK_Brass_Civic', DK_Faience_Teal: 'DK_Enamel_Seafoam', DK_Leaf_CoreShrub: 'DK_Leaf_CivicDark' });
+    expect(planters.map(id => civicMass(base.w, id).materials!.DK_Flower_Coral)).toEqual(['DK_Flower_CoralSoft', 'DK_Flower_Flamingo', 'DK_Flower_CoralSoft', 'DK_Flower_Flamingo']);
+    expect(civicMass(base.w, 'civic/foreground-civic-robot').materials).toEqual({ DK_Signal_Amber: 'DK_Glow_Seafoam', DK_Face_Amber: 'DK_Face_Teal', DK_Enamel_Coral: 'DK_Enamel_Coral17' });
     expect(adoptedBy('AtomFountain')!.materials).toContain('DK_Water');
     expect(adoptedBy('PlanterArc')!.materials).toContain('DK_Accent_Gold');
+  });
+  test('every material a civic mass takes is held by the palette and carried by the kit (a swap target with no file would import pink)', () => {
+    const kit = JSON.parse(readFileSync(resolve(root, 'contracts/world/kit.json'), 'utf8')) as { assets: { status: string; files: { path: string }[] }[] };
+    const carried = new Set(kit.assets.filter(a => a.status === 'adopted').flatMap(a => a.files.map(f => f.path)));
+    const held = new Set(look.palette.materials.map(m => m.material));
+    for (const to of new Set(Object.values(look.materials).flatMap(m => Object.values(m)))) { expect(held.has(to), `${to} in the palette`).toBe(true); expect(carried.has(`Materials/${to}.mat`), `${to} in the kit`).toBe(true); }
   });
 });
 

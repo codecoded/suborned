@@ -6,7 +6,9 @@
   "out/decokit-008/paving-bands.json": "3e92f39cc96ea19019be86fc02f98dbc69cd3f6da5156e3b0aa1e121c4c68a94",
   "out/decokit-008/civic-colour-roles.json": "e78acb22272edfd74ca51d6a130cefcc2d6eb2913b935dcad62a4e84a0b1b96d",
   "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
-  "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6"
+  "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6",
+  "out/decokit-008/civic-overrides.json": "7f906f363782813ac1723a536af0317593efc1d86b97e9ff6f556f0034bb477f",
+  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1"
  },
  "pieces": [
   "BollardSphere",
@@ -97,12 +99,78 @@
  },
  "materials": {
   "civic/atom-fountain": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam",
+   "DK_Lamp": "DK_Lamp_Deco",
    "DK_Water": "DK_Pool_Civic"
   },
-  "civic/fountain-garden-north-east": { "DK_Accent_Gold": "DK_Brass_Civic" },
-  "civic/fountain-garden-north-west": { "DK_Accent_Gold": "DK_Brass_Civic" },
-  "civic/fountain-garden-south-west": { "DK_Accent_Gold": "DK_Brass_Civic" },
-  "civic/fountain-garden-south-east": { "DK_Accent_Gold": "DK_Brass_Civic" }
+  "civic/cafe-palm-0": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-1": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-2": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-3": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-4": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-5": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/civic-control-cabinet": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/civic-service-cabinet-0": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/civic-service-cabinet-1": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/foreground-civic-robot": {
+   "DK_Signal_Amber": "DK_Glow_Seafoam",
+   "DK_Face_Amber": "DK_Face_Teal",
+   "DK_Enamel_Coral": "DK_Enamel_Coral17"
+  },
+  "civic/fountain-garden-north-east": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_CoralSoft",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-north-west": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_Flamingo",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-south-east": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_Flamingo",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-south-west": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_CoralSoft",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/square-pavilion-support-0": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
+  },
+  "civic/square-pavilion-support-1": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
+  }
  },
  "beds": {
   "kerb": {
@@ -549,7 +617,7 @@
   "materials": [
    {
     "material": "DK_Accent_Gold",
-    "unlit": "#D0C848",
+    "unlit": "#99784D",
     "used_by": [
      "OceanLiner",
      "PlanterArc"
@@ -682,6 +750,43 @@
     ]
    },
    {
+    "material": "DK_Crown_Gold",
+    "unlit": "#E3D681",
+    "used_by": [
+     "DecoBay_10",
+     "LinerDock@liner-berth",
+     "ParabolicArch",
+     "Skyport_Tower",
+     "Skyport_Tower_Portal",
+     "SpaceHQ_Portal",
+     "StreamBay_6",
+     "StreamBay_9",
+     "StreamBay_9W",
+     "StreamCorner_9",
+     "StreamEnd_6",
+     "StreamEnd_9",
+     "StreamEnd_9W",
+     "Tower_Atom@crescent-tower",
+     "Tower_Lantern@lantern-beacon",
+     "Tower_Needle",
+     "Tower_Needle@avenue-needle",
+     "Tower_Saucer@harbour-hotel",
+     "Tower_Starburst",
+     "Tower_Starburst@avenue-starburst",
+     "Tower_Terrace",
+     "Tower_Terrace@crescent-terrace"
+    ]
+   },
+   {
+    "material": "DK_Crown_Gold17",
+    "unlit": "#C9C08E",
+    "used_by": [
+     "Crown_Atom",
+     "Crown_Finial",
+     "Crown_Starburst"
+    ]
+   },
+   {
     "material": "DK_Enamel_Charcoal",
     "unlit": "#2B2F33",
     "used_by": [
@@ -739,12 +844,86 @@
     ]
    },
    {
+    "material": "DK_Face_Teal",
+    "unlit": "#3FC9A0",
+    "used_by": [
+     "RobotButler"
+    ]
+   },
+   {
+    "material": "DK_Flower_CoralSoft",
+    "unlit": "#97704E",
+    "used_by": [
+     "PlanterArc"
+    ]
+   },
+   {
+    "material": "DK_Flower_Flamingo",
+    "unlit": "#976470",
+    "used_by": [
+     "PlanterArc"
+    ]
+   },
+   {
     "material": "DK_GlassDark",
     "unlit": "#35585A",
     "used_by": [
      "CafeBay",
      "RecordsEntrance",
      "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Glow_Seafoam",
+    "unlit": "#3FC9A0",
+    "used_by": [
+     "RobotButler"
+    ]
+   },
+   {
+    "material": "DK_Gold",
+    "unlit": "#99784D",
+    "used_by": [
+     "AdColumn",
+     "ArcadeBay_3",
+     "BalconyBay_3",
+     "BalconyBay_4",
+     "BalconyBay_8",
+     "BladeSign_Cafe",
+     "BladeSign_Cinema",
+     "BladeSign_Hotel",
+     "CircusMonument",
+     "DecoCorner_10",
+     "DecoEnd_10",
+     "NeonStar_Wall",
+     "PortholeBay_3",
+     "PortholeBay_4",
+     "PortholeBay_7",
+     "PottedPalm_Small",
+     "RobotButler",
+     "SkyPad_Roof",
+     "StreamBay_2",
+     "StreamBay_3",
+     "StreamBay_3W",
+     "StreamBay_4",
+     "StreamCorner_2",
+     "StreamCorner_3",
+     "StreamCorner_4",
+     "StreamCorner_6",
+     "StreamEnd_2",
+     "StreamEnd_3",
+     "StreamEnd_3W",
+     "StreamEnd_4",
+     "TicketMachine"
+    ]
+   },
+   {
+    "material": "DK_Gold17",
+    "unlit": "#AD866F",
+    "used_by": [
+     "AtomFountain",
+     "ParadeGate_Block",
+     "SkyRailStation_Twin"
     ]
    },
    {
@@ -1125,7 +1304,7 @@
   "pool_water": {
    "material": "DK_Pool_Civic",
    "surface": "#3A9AA6",
-   "alpha": 1.0,
+   "alpha": 1,
    "smoothness": 0.8,
    "kind": "opaque enamel",
    "coping": "DK_Limestone with DK_Enamel_Seafoam lip",
