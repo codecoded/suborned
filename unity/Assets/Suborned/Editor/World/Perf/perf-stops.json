@@ -1,26 +1,71 @@
 {
-  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30).",
+  "note": "Brief 008 B6 frame-time stops (Latch, 2026-10-14). GDD §11: 60 fps at 1080p on the MacBook Air M4, measured warm, in a development build. Foci are world points (Unity x, y, z = plan x, level, plan y); y is the level (0 street, 9.43 deck). zoom 0 = the play camera's own (14). PerfBuild resolves stand-offs with Rig.StandOff and the play camera's rotation (pitch 38, yaw 30). Redline review 008 B6 (out/review/008-b6-perf.html): passes, variants (A/B switches), warm-up to a plateau, rotated repeats, per-frame CSV; the sweep after a warm-up, by frame time, with the decks.",
   "content": "world only: buildings, structures, street furniture and bays; no people, vehicles or sim (not built yet)",
   "width": 1920,
   "height": 1080,
-  "warmupSeconds": 300,
-  "dwellSeconds": 10,
-  "settleSeconds": 2,
-  "recordSeconds": 30,
+  "warmup": {
+    "minSeconds": 180,
+    "maxSeconds": 900,
+    "dwellSeconds": 10,
+    "plateau": 0.02
+  },
+  "variants": [
+    {"name": "base", "why": "as built"},
+    {"name": "ssao-depth", "why": "Redline fix 1: SSAO after opaques from the depth texture, so no depth-normals prepass", "ssao": "depth"},
+    {"name": "ssao-off", "why": "Redline fix 1, the other way: no SSAO", "ssao": "off"},
+    {"name": "proxies", "why": "Redline fix 2: kit facades and street trees cast from their LOD1 mesh, no LOD casts its own", "proxies": true},
+    {"name": "cascades-2", "why": "Redline fix 3: one air cascade and the street band", "cascades": 2},
+    {"name": "fixes-123", "why": "fixes 1-3 together", "ssao": "depth", "proxies": true, "cascades": 2},
+    {"name": "fixes-13", "why": "fixes 1 and 3 without the proxies: what the proxies add on top of them", "ssao": "depth", "cascades": 2},
+    {"name": "fade-off", "why": "Redline item 9: what the fade's discard variant costs", "fadeOff": true},
+    {"name": "shadows-off", "why": "bound: what the play camera's shadows cost at all", "shadowsOff": true}
+  ],
+  "passes": [
+    {"name": "ab", "why": "headroom and A/B (Redline M1, item 0): uncapped, every variant back to back at every stop, 3 rotated repeats, the first segment again at the end", "vSync": 0, "window": "FullScreenWindow", "settleSeconds": 2, "recordSeconds": 10, "missMs": 17.5, "repeats": 3, "stops": ["home", "cafe-square", "parade", "crown-circus", "harbour-quay", "heaviest", "north-edge"], "variants": ["base", "ssao-depth", "ssao-off", "proxies", "cascades-2", "fixes-123", "fixes-13", "fade-off", "shadows-off"], "repeatFirst": true, "shots": true},
+    {"name": "capped", "why": "reference (Redline M1): vSync on at the display, fullscreen window, 60 s a stop; a frame past 25 ms (1.5 refresh intervals at 60 Hz) missed its vblank. vSync on macOS paces frames 15.7-17.7 ms round 16.67 without missing one: the first run counted that jitter at 17.5 ms", "vSync": 1, "window": "FullScreenWindow", "settleSeconds": 2, "recordSeconds": 60, "missMs": 25, "repeats": 1, "stops": ["home", "cafe-square", "parade", "crown-circus", "harbour-quay", "heaviest", "north-edge"], "variants": ["base", "fixes-123"], "repeatFirst": true, "shots": false},
+    {"name": "pan", "why": "a moving camera and a level change (Redline section 6), uncapped", "vSync": 0, "window": "FullScreenWindow", "settleSeconds": 2, "recordSeconds": 0, "missMs": 17.5, "repeats": 1, "stops": ["pan-civic", "pan-quay-deck"], "variants": ["base", "fixes-123"], "repeatFirst": false, "shots": false}
+  ],
   "stops": [
-    { "name": "home", "why": "civic block home frame: Records Square centre (plan records-square rect -180..-138, -261..-204), the play camera's built focus", "focus": [-159, 0, -232.5], "zoom": 0 },
-    { "name": "cafe-square", "why": "the Corner café terrace on Records Square at play zoom (civic/cafe/terrace)", "focus": [-159, 0, -221.5], "zoom": 0 },
-    { "name": "parade", "why": "Crown Parade under the Parade Galleries (plan parade-galleries x 136..288, mall at y 0; perf-007's Parade focus, then the heaviest of four)", "focus": [212, 0, 0], "zoom": 0 },
-    { "name": "crown-circus", "why": "Crown Circus gyratory and its monument (plan crown-circus arc 0,0)", "focus": [0, 0, 0], "zoom": 0 },
-    { "name": "harbour-quay", "why": "the crane walk on the harbour quay at deck level (plan market-deck quayWalk x 312..330, y -594..-419)", "focus": [321, 9.43, -506.5], "zoom": 0 },
-    { "name": "heaviest", "why": "the most triangles of the 2026-10-14 sweep (648 street foci on a 40 m grid, export 9b2b451d, fingerprint 80fdd304): 2.59 M triangles p50 at play zoom, the records area 104 m east-north-east of home (out/perf/b6-sweep-2026-10-14-fbf540e.json); perf-007's heaviest, the Parade, is a stop already", "focus": [-60, 0, -200], "zoom": 0 }
+    {"name": "home", "why": "civic block home frame: Records Square centre (plan records-square rect -180..-138, -261..-204), the play camera's built focus", "focus": [-159, 0, -232.5], "zoom": 0},
+    {"name": "cafe-square", "why": "the Corner café terrace on Records Square at play zoom (civic/cafe/terrace)", "focus": [-159, 0, -221.5], "zoom": 0},
+    {"name": "parade", "why": "Crown Parade under the Parade Galleries (plan parade-galleries x 136..288, mall at y 0; perf-007's Parade focus, then the heaviest of four)", "focus": [212, 0, 0], "zoom": 0},
+    {"name": "crown-circus", "why": "Crown Circus gyratory and its monument (plan crown-circus arc 0,0)", "focus": [0, 0, 0], "zoom": 0},
+    {"name": "harbour-quay", "why": "the crane walk on the harbour quay at deck level (plan market-deck quayWalk x 312..330, y -594..-419)", "focus": [321, 9.43, -506.5], "zoom": 0},
+    {"name": "heaviest", "why": "the most triangles of the 2026-10-14 sweep (648 street foci on a 40 m grid, export 9b2b451d, fingerprint 80fdd304): 2.59 M triangles p50 at play zoom, the records area 104 m east-north-east of home (out/perf/b6-sweep-2026-10-14-fbf540e.json); perf-007's heaviest, the Parade, is a stop already", "focus": [-60, 0, -200], "zoom": 0},
+    {"name": "north-edge", "why": "fill-bound: the 2026-10-14 sweep's (-220, 280) framed in 13.4 ms p50 at only 0.76 M triangles, as slow as the heaviest (Redline M8)", "focus": [-220, 0, 280], "zoom": 0},
+    {"name": "pan-civic", "why": "a moving camera (Redline section 6): home to the café to the records area at 8 m/s; the fade's reach swaps materials as it goes", "zoom": 0, "speed": 8, "path": [{"at": [-159, 0, -232.5]}, {"at": [-159, 0, -221.5]}, {"at": [-60, 0, -200]}]},
+    {"name": "pan-quay-deck", "why": "a level change (Redline section 6): the focus rises from the street to the deck at the harbour quay, then runs along the crane walk", "zoom": 0, "speed": 8, "path": [{"at": [321, 0, -506.5]}, {"at": [321, 9.43, -506.5]}, {"at": [321, 9.43, -560]}]}
   ],
   "sweep": {
-    "note": "Grid of street foci, each framed 0.4 s with no warm-up, to find the heaviest frame (triangles p50) for the sixth stop.",
+    "note": "Redline M8: after a warm-up, 1 s a point, ranked by frame p50; the street grid plus a grid inside every deck of the raised levels (levelStep); then Write Refine Plan frames a 10 m grid within 20 m of the five heaviest.",
     "step": 40,
+    "levelStep": 20,
     "x": [-380, 570],
     "z": [-760, 300],
-    "settleSeconds": 0.15,
-    "recordSeconds": 0.25
+    "warmup": {
+      "minSeconds": 120,
+      "maxSeconds": 600,
+      "dwellSeconds": 10,
+      "plateau": 0.02
+    },
+    "pass": {
+      "name": "sweep",
+      "why": "grid, uncapped",
+      "vSync": 0,
+      "window": "FullScreenWindow",
+      "settleSeconds": 0.3,
+      "recordSeconds": 1.0,
+      "missMs": 17.5,
+      "repeats": 1,
+      "stops": [],
+      "variants": [],
+      "repeatFirst": false,
+      "shots": false
+    },
+    "refine": {
+      "top": 5,
+      "step": 10,
+      "reach": 20
+    }
   }
 }

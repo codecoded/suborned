@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>008 B6: glow fix, A/B harness and the A/B runs on the Air (Latch)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1180px;margin:2em auto;padding:0 1.2em;color:#1d2327;background:#fbfaf7}
+h1{font-size:1.5em;margin-bottom:.2em}h2{margin-top:2em;border-bottom:2px solid #2e6d70;padding-bottom:.2em}h3{margin-top:1.4em}
+table{border-collapse:collapse;width:100%;margin:.6em 0 1em;font-size:13.5px}th,td{border:1px solid #d5d2c8;padding:4px 7px;vertical-align:top;text-align:left}
+th{background:#eceae2}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+code{background:#eceae2;padding:0 3px;border-radius:3px;font-size:12.5px}pre{background:#f0eee7;padding:.8em;overflow:auto;font-size:12px}
+.c,.x,.v{font-size:11px;font-weight:600;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.c{background:#fbecd2;color:#7c4a03}.x{background:#f6dcdc;color:#7f1d1d}.v{background:#d6eedc;color:#14532d}
+.box{background:#fff;border:1px solid #d5d2c8;border-left:4px solid #2e6d70;padding:.6em 1em;margin:1em 0}
+.warn{border-left-color:#9b1c1c}
+small{color:#5b6166}img{max-width:100%;border:1px solid #d5d2c8}
+</style>
+</head>
+<body>
+<h1>008 B6: the glow fix, the A/B harness and two A/B runs on the Air</h1>
+<p><small>Latch, 2026-10-14. MacBook Air 15-inch M4 (Mac16,13), Unity 6000.6.2f1, development player, 1920 &times; 1080 fullscreen window, world only
+(no people, vehicles or sim). Export <code>9b2b451d</code>, scene fingerprint <code>80fdd304</code>, held fixed for every run. Answers Redline's
+<code>out/review/008-b6-perf.html</code> (item 0, M1&ndash;M8, fixes 1&ndash;3). Labels: <span class="v">valid</span> <span class="c">contaminated, usable as a ratio</span>
+<span class="x">invalid</span>.</small></p>
+
+<div class="box"><b>In short.</b> The player-only glow with black pixels is fixed at its cause: the player's vertex compression gave kit meshes and
+procedural batch meshes the same 32-byte stride with different layouts; on Metal, drawn in one SRP batch in the depth-normals prepass, that gave NaN
+normals, which SSAO and bloom spread. <code>VertexChannelCompressionMask</code> 4054 &rarr; 0: NaN pixels at home 27,390 &rarr; 0, and 0 at every stop
+of every run since. No Stop NaNs; the harness counts NaN pixels at every stop as the guard.
+<br>No A/B number here is clean. The best run (<b>ab-1</b>) overlapped Splice's test suite (one core of ten) and is usable as within-run ratios only;
+the second run (<b>r2</b>) lost focus throughout, ran half its segments beside other heavy processes and had its capped window throttled: invalid.
+The clean reference run, the capped pass and the fixes 1+3 comparison are still owed (section 6).</div>
+
+<h2>1. The glow and black pixels</h2>
+<p>The NaN probe renders the play camera without post-processing into a float target and counts non-finite pixels. At home, as built: 27,390. Switches
+that removed them: SSAO off, SRP Batcher off, environment reflections off, specular off; the procedural bakelite batch off left 302. Shadows, the fade,
+probes, point lights, the clear coat and the opaque and depth textures changed nothing. A diagnosis player per compression mask (<code>nan/vc*.txt</code>):</p>
+<table>
+<tr><th>mask</th><th>kit mesh layout in the player (non-readable)</th><th class="n">stride</th><th class="n">NaN pixels, home</th></tr>
+<tr><td>4054 (as committed)</td><td>P32&times;3, N16&times;4, T16&times;4, UV16&times;2</td><td class="n">32</td><td class="n">27,390</td></tr>
+<tr><td>4052</td><td>P32&times;3, N32&times;3, T16&times;4, UV16&times;2</td><td class="n">36</td><td class="n">0</td></tr>
+<tr><td>4050</td><td>P32&times;3, N16&times;4, T32&times;4, UV16&times;2</td><td class="n">40</td><td class="n">0</td></tr>
+<tr><td>4038</td><td>P32&times;3, N16&times;4, T16&times;4, UV32&times;2</td><td class="n">36</td><td class="n">0</td></tr>
+<tr><td>0 (the fix)</td><td>full precision, as in the Editor</td><td class="n">&ndash;</td><td class="n">0</td></tr>
+</table>
+<p>The procedural batch meshes are readable, so never compressed: P32&times;3, N32&times;3, UV32&times;2, also 32 bytes. Every mask that moves the kit
+stride off 32 clears the NaNs, so the cause is two layouts behind one stride in the same batch, a Unity/Metal player bug (candidate for a Unity report;
+the Editor never compresses). With mask 0 the player's layouts equal the Editor's. The fix is <code>unity/ProjectSettings/ProjectSettings.asset</code>,
+one line. Cost: kit vertex buffers stay full precision (memory, not frame time, at this scale).</p>
+
+<h2>2. What changed in the harness</h2>
+<table>
+<tr><th>Redline</th><th>Now</th></tr>
+<tr><td>item 0, A/B switches</td><td>Variants in the plan, or one from the command line (<code>-perfSsao on|depth|off -perfCascades n -perfShadows on|off -perfFade on|off -perfProxies on|off</code>).
+SSAO <code>depth</code> = after opaque from the depth texture (no depth-normals prepass); proxies = kit facades and street trees cast from their LOD1 mesh, no LOD casts its own (1,923 proxies, 3.12M triangles).
+The perf build keeps the shader variants the switches need (<code>PerfVariantsRenderer</code>): URP's prefiltering had stripped SSAO's depth-source and AO-off variants, so the first build's SSAO switches ran fallback variants. Numbers before that rebuild are void.</td></tr>
+<tr><td>M1 capped + uncapped</td><td>Passes: <code>ab</code> uncapped, <code>capped</code> vSync 1, <code>pan</code>. Frame time is now the wall-clock interval between updates: Unity's vSync <code>deltaTime</code> reported 16.667 ms while real intervals were 17&ndash;50 ms. A missed vblank is a frame past 25 ms (vSync on macOS jitters 15.7&ndash;17.7 ms without missing).</td></tr>
+<tr><td>M2 preflight</td><td>Machine load, thermal, power, Low Power Mode, Editor/VM/computer-use, top processes, into <code>machineStart</code>/<code>machineEnd</code>; warns, <code>-perfStrict</code> refuses.</td></tr>
+<tr><td>M3 warm-up, thermal, A&hellip;A</td><td>Warm-up cycles the stops to a frame-time plateau (2%, 180&ndash;900 s), recorded; thermal state per segment; each pass's first segment again at the end.</td></tr>
+<tr><td>M4 rows, repeats</td><td>Per-frame and per-timing CSV rows; 3 rotated repeats, variants interleaved.</td></tr>
+<tr><td>M5 counters</td><td>Profiler counters as p50; the GPU Resident Drawer's per-view culling (camera, each shadow split) read by reflection.</td></tr>
+<tr><td>M6 ranking</td><td>By frame time. GPU ms from FrameTimingManager on Metal spans overlapping command buffers and exceeds the frame time: upper bound only.</td></tr>
+<tr><td>M7 probes</td><td>Thermal, drawer, NaN count and shot run in the settle; the settle lasts until 1 s passes without a frame over 100 ms and the probes are in (first use of a variant compiles pipeline states).</td></tr>
+<tr><td>focus</td><td>Unfocused frames counted per segment; the summary leaves out repeats unfocused for over 1% of frames when focused ones exist.</td></tr>
+</table>
+
+<h2>3. The runs and how far to trust them</h2>
+<table>
+<tr><th>run</th><th>when (UTC)</th><th>conditions</th><th>verdict</th></tr>
+<tr><td><b>ab-1</b><br><code>ab-1/</code></td><td>11:30&ndash;12:24</td><td>AC power. Splice's full test suite (bun, ~100% = one core of ten) throughout; Editor open (autotick 1 s), VM idle. Focused for segments 0&ndash;110 (repeats 0 and 1 of <code>ab</code>); repeat 2, the capped and pan passes ran unfocused. Warm-up 181 s, settled (last change 1%); thermal state 1 (fair) for 170 of 188 segments; A&hellip;A at home +0.8%.</td>
+<td><span class="c">ab, repeats 0&ndash;1: ratios</span><br><span class="x">capped: invalid</span> (frame time from vSync deltaTime, unfocused)<br><span class="c">pan</span></td></tr>
+<tr><td><b>r2</b><br><code>r2/</code></td><td>12:35&ndash;13:38</td><td>Battery, then AC at the end. Unfocused for all 209 segments; another process at &ge; 50% CPU in 106 of 209 (Chrome, Codex, T3 Code, dotnet, dart, node, Screen Sharing: <code>r2/load.txt</code>); capped window throttled to ~20 fps (frames 47&ndash;80 ms); settle hitches up to 838 ms.</td>
+<td><span class="x">invalid</span> (kept as the record of what the method catches)</td></tr>
+</table>
+
+<h2>4. A/B: run ab-1, repeats 0&ndash;1 (focused) <span class="c">contaminated</span></h2>
+<p>Frame p50 in ms (median of the focused repeats), and against base at the same stop. Uncapped, so headroom, not fps.</p>
+<table>
+<tr><th>stop</th><th class="n">base</th><th class="n">ssao-depth<br><small>fix 1</small></th><th class="n">ssao-off</th><th class="n">proxies<br><small>fix 2</small></th><th class="n">cascades-2<br><small>fix 3</small></th><th class="n">fixes 1&ndash;3</th><th class="n">fade-off<br><small>item 9</small></th><th class="n">shadows-off</th></tr>
+<tr><td>home</td><td class="n">6.29</td><td class="n">6.31 +0%</td><td class="n">4.45 &minus;29%</td><td class="n">6.05 &minus;4%</td><td class="n">6.14 &minus;2%</td><td class="n">5.79 &minus;8%</td><td class="n">6.30 +0%</td><td class="n">4.60 &minus;27%</td></tr>
+<tr><td>cafe-square</td><td class="n">6.61</td><td class="n">6.62 +0%</td><td class="n">4.76 &minus;28%</td><td class="n">6.48 &minus;2%</td><td class="n">6.42 &minus;3%</td><td class="n">6.23 &minus;6%</td><td class="n">5.88 &minus;11%</td><td class="n">4.87 &minus;26%</td></tr>
+<tr><td>parade</td><td class="n">7.37</td><td class="n">6.81 &minus;8%</td><td class="n">5.63 &minus;24%</td><td class="n">7.39 +0%</td><td class="n">6.88 &minus;7%</td><td class="n">6.23 &minus;16%</td><td class="n">5.07 &minus;31%</td><td class="n">4.78 &minus;35%</td></tr>
+<tr><td>crown-circus</td><td class="n">5.65</td><td class="n">5.68 +1%</td><td class="n">3.90 &minus;31%</td><td class="n">5.52 &minus;2%</td><td class="n">5.22 &minus;8%</td><td class="n">5.24 &minus;7%</td><td class="n">5.00 &minus;12%</td><td class="n">3.96 &minus;30%</td></tr>
+<tr><td>harbour-quay</td><td class="n">4.45</td><td class="n">4.60 +3%</td><td class="n">2.90 &minus;35%</td><td class="n">4.42 &minus;1%</td><td class="n">4.27 &minus;4%</td><td class="n">4.40 &minus;1%</td><td class="n">4.31 &minus;3%</td><td class="n">3.37 &minus;24%</td></tr>
+<tr><td><b>heaviest</b> (-60, 0, -200)</td><td class="n"><b>13.09</b></td><td class="n">11.50 &minus;12%</td><td class="n">9.92 &minus;24%</td><td class="n">12.17 &minus;7%</td><td class="n">11.33 &minus;13%</td><td class="n">10.08 &minus;23%</td><td class="n">6.60 &minus;50%</td><td class="n">8.29 &minus;37%</td></tr>
+<tr><td>north-edge (-220, 0, 280)</td><td class="n">9.83</td><td class="n">9.20 &minus;6%</td><td class="n">7.40 &minus;25%</td><td class="n">9.78 &minus;1%</td><td class="n">8.21 &minus;17%</td><td class="n">7.58 &minus;23%</td><td class="n">5.17 &minus;47%</td><td class="n">5.87 &minus;40%</td></tr>
+</table>
+<p>Heaviest stop, base: frame p50 13.09 ms, p95 15.0 ms; FrameTimingManager GPU p50 23.8 ms (upper bound: overlapping command buffers, above the frame time). Ranking by frame p50: heaviest 13.1, north-edge 9.8, parade 7.5, caf&eacute; 6.7, home 6.4, crown-circus 5.7, quay 4.4. NaN pixels: 0 at every probed stop and variant. The first B6 run's heaviest p95 of 27.3 ms is not reproduced (15.0 here); the cause of the difference is not isolated.</p>
+<h3>Drawer, per frame (camera triangles | shadow triangles over all splits)</h3>
+<table>
+<tr><th>stop</th><th class="n">base (4 splits)</th><th class="n">proxies</th><th class="n">cascades-2</th><th class="n">fixes 1&ndash;3</th></tr>
+<tr><td>home</td><td class="n">298k | 868k</td><td class="n">602k</td><td class="n">623k</td><td class="n">400k</td></tr>
+<tr><td>parade</td><td class="n">349k | 804k</td><td class="n">722k</td><td class="n">633k</td><td class="n">551k</td></tr>
+<tr><td>heaviest</td><td class="n">570k | 1,468k</td><td class="n">525k</td><td class="n">1,043k</td><td class="n">370k</td></tr>
+<tr><td>north-edge</td><td class="n">150k | 457k</td><td class="n">427k</td><td class="n">303k</td><td class="n">273k</td></tr>
+</table>
+<p>Proxies cut heaviest's shadow triangles by 64% but its frame by 7%: shadow geometry is not where the frame goes.</p>
+
+<h2>5. Which fixes to keep (proposals; nothing is applied to the game)</h2>
+<table>
+<tr><th>fix</th><th>measured (ab-1)</th><th>look (crops)</th><th>proposal</th></tr>
+<tr><td>1 SSAO from depth, after opaque</td><td>&minus;6 to &minus;12% at the three heaviest stops; 0 to +3% at the light ones</td><td>near identical; small edge differences (<code>crops/crops-ssao-depth.jpg</code>)</td><td>keep, Glint to sign off</td></tr>
+<tr><td>3 cascades 4 &rarr; 2</td><td>&minus;2 to &minus;17% (north-edge &minus;17%, heaviest &minus;13%)</td><td>shadow edges shift slightly (parade's tree shadows) (<code>crops/crops-cascades-2.jpg</code>)</td><td>keep, Glint to sign off</td></tr>
+<tr><td>2 shadow proxies (LOD1)</td><td>&minus;1 to &minus;7% alone; what it adds on top of 1+3 is unmeasured (r2 invalid)</td><td>coarser tree self-shadow, thin facade shadow detail lost (<code>crops/crops-proxies.jpg</code>)</td><td>hold: needs the clean <code>fixes-13</code> vs <code>fixes-123</code> comparison, then Vela and Glint</td></tr>
+<tr><td>SSAO off</td><td>&minus;24 to &minus;35% at every stop: the largest cost the fixes can reach</td><td>contact darkening along walls and kerbs goes (<code>crops/crops-ssao-off.jpg</code>)</td><td>Glint's call: at this camera the AO is subtle for ~2&ndash;3 ms</td></tr>
+</table>
+<div class="box warn"><b>Bigger than fixes 1&ndash;3: the fade.</b> Fade off halves the heaviest stop (13.1 &rarr; 6.6 ms) and north-edge (9.8 &rarr; 5.2), &minus;31% at the parade.
+The fade is gameplay (the cutaway), so it stays, but its cost is likely the discard variant on every architecture material: on Apple's tile GPUs a shader
+that can discard loses hidden-surface removal, so the whole screen pays overdraw, not only the faded zone. Next step (Latch, Redline item 9): measure a fade whose discard variant is set only on renderers inside the fade reach.</div>
+
+<h2>6. Owed</h2>
+<ul>
+<li><b>Clean reference run</b> (Aster with Sky): AC power, Editor, VM and other heavy apps closed, player focused, <code>-perfStrict</code>; all three passes. Every number above is replaced by it.</li>
+<li><b>Capped pass</b>: no valid run yet (ab-1 measured vSync deltaTime and lost focus; r2's window was throttled).</li>
+<li><b>fixes-13</b> (SSAO from depth + 2 cascades, no proxies), already in the plan: decides fix 2.</li>
+<li><b>Sweep</b> (M8) with the new method: the north-edge stop came from the old sweep.</li>
+<li>Sign-offs: Glint (fixes 1, 3, SSAO off), Vela and Glint (proxies).</li>
+</ul>
+
+<h2>7. Files</h2>
+<p><code>ab-1/</code> and <code>r2/</code>: run JSON (segments, summary, drawer, machine before/after), <code>before.txt</code>/<code>after.txt</code>, <code>table.txt</code>
+(the tables above, from <code>out/unity/b6/analyse.py</code>; r2 adds <code>load.txt</code>, a ps sample a minute). Per-frame CSVs stay in <code>out/perf/</code> (14 MB each).
+<code>shots/</code>: base and fade-off at each stop. <code>crops/</code>: per fix, base | fix | |diff| &times;8 at the window each fix changes most. <code>nan/</code>: the glow diagnosis. <code>scripts/</code>: <code>run.sh</code> (one run with before/after and a load sample a minute, then the table), <code>analyse.py</code> (tables; leaves out unfocused or busy repeats), <code>crops.py</code> (the crop sheets).
+<code>plan.json</code>, <code>build.txt</code>: the plan and player r2 used and the next run uses (ab-1 ran the same stops without <code>fixes-13</code> and with the old 17.5 ms capped threshold; its JSON carries its own passes and variants).</p>
+<p><img src="shots/heaviest-base.jpg" alt="heaviest stop, base"></p>
+</body>
+</html>

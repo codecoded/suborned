@@ -1,0 +1,101 @@
+device Mac16,13 Apple M4 unity 6000.6.2f1 development window 1920 x 1080 FullScreenWindow
+fingerprint 80fdd304 export 9b2b451d ssao as built: on, after opaque False, source DepthNormals | proxies 1923 renderers 3120866 triangles
+machineStart start busy True thermal 1 lowPower False AC True
+   ! busy: bun at 98.1% CPU
+   ! busy: claude at 14.8% CPU
+   ! the Unity Editor is open (Unity, 8.5% CPU)
+   ! a computer-use service is running (SkyComputerUseService, 7.2% CPU)
+   ! a virtual machine is running (com.apple.Virtualization.VirtualMachine, 1.3% CPU)
+   ! thermal state 1 (not nominal)
+machineEnd end busy True thermal 0 lowPower False AC True
+   ! busy: Slack Helper (Renderer) at 24.6% CPU
+   ! busy: MenuBarAgent at 12.3% CPU
+   ! busy: Discord Helper (Renderer) at 11.7% CPU
+   ! busy: BiomeAgent at 11.7% CPU
+   ! busy: Slack Helper at 10.5% CPU
+   ! a virtual machine is running (com.apple.Virtualization.VirtualMachine, 5.4% CPU)
+   ! a computer-use service is running (SkyComputerUseService, 4.7% CPU)
+   ! the Unity Editor is open (Unity, 0.5% CPU)
+warm-up 181 s, cycles 2 settled True last change 0.01
+
+== ab (vSync 0, 3 repeats, 57 unfocused or busy repeats left out): frame p50 ms (vs base), median of repeats [p95]
+stop                            base            ssao-depth              ssao-off               proxies            cascades-2             fixes-123              fade-off           shadows-off
+home                      6.29 [7.2]      6.31 (+0%) [7.1]     4.45 (-29%) [5.4]      6.05 (-4%) [6.9]      6.14 (-2%) [7.0]      5.79 (-8%) [6.5]      6.30 (+0%) [7.2]     4.60 (-27%) [5.7]
+cafe-square               6.61 [7.5]      6.62 (+0%) [7.4]     4.76 (-28%) [5.6]      6.48 (-2%) [7.3]      6.42 (-3%) [7.7]      6.23 (-6%) [6.9]     5.88 (-11%) [6.8]     4.87 (-26%) [5.5]
+parade                    7.37 [8.5]      6.81 (-8%) [7.6]     5.63 (-24%) [6.6]      7.39 (+0%) [8.3]      6.88 (-7%) [7.7]     6.23 (-16%) [6.9]     5.07 (-31%) [6.0]     4.78 (-35%) [5.6]
+crown-circus              5.65 [6.4]      5.68 (+1%) [6.4]     3.90 (-31%) [4.5]      5.52 (-2%) [6.2]      5.22 (-8%) [5.9]      5.24 (-7%) [6.0]     5.00 (-12%) [5.6]     3.96 (-30%) [4.6]
+harbour-quay              4.45 [4.8]      4.60 (+3%) [5.1]     2.90 (-35%) [3.3]      4.42 (-1%) [4.8]      4.27 (-4%) [4.7]      4.40 (-1%) [5.0]      4.31 (-3%) [4.7]     3.37 (-24%) [4.0]
+heaviest                13.09 [15.0]   11.50 (-12%) [13.2]    9.92 (-24%) [11.7]    12.17 (-7%) [13.2]   11.33 (-13%) [12.5]   10.08 (-23%) [11.0]     6.60 (-50%) [8.1]     8.29 (-37%) [8.9]
+north-edge               9.83 [11.3]     9.20 (-6%) [10.0]     7.40 (-25%) [7.9]     9.78 (-1%) [10.4]     8.21 (-17%) [8.7]     7.58 (-23%) [8.5]     5.17 (-47%) [6.1]     5.87 (-40%) [6.7]
+
+== capped (vSync 1, 1 repeats, 0 unfocused or busy repeats left out): frame p50 ms (vs base), median of repeats [p95]
+stop                            base             fixes-123
+home                    16.67 [17.6]    16.67 (+0%) [17.6]
+cafe-square             16.67 [17.6]    16.67 (+0%) [17.6]
+parade                  16.67 [17.7]    16.67 (-0%) [17.6]
+crown-circus            16.66 [17.5]    16.67 (+0%) [17.5]
+harbour-quay            16.67 [17.5]    16.67 (+0%) [17.5]
+heaviest                16.67 [16.8]    16.67 (+0%) [17.5]
+north-edge              16.67 [17.5]    16.67 (+0%) [16.7]
+  home          base        frames  3598 in 60s  p50 16.67 p95 17.61 p99 17.84  past 17.5 ms 9.60%  longest 18.0  unfocused 3601
+  home          fixes-123   frames  3598 in 60s  p50 16.67 p95 17.64 p99 17.81  past 17.5 ms 11.30%  longest 17.9  unfocused 3601
+  cafe-square   fixes-123   frames  3598 in 60s  p50 16.67 p95 17.63 p99 17.80  past 17.5 ms 10.90%  longest 18.5  unfocused 3601
+  cafe-square   base        frames  3597 in 60s  p50 16.67 p95 17.63 p99 17.84  past 17.5 ms 10.60%  longest 18.0  unfocused 3600
+  parade        base        frames  3597 in 60s  p50 16.67 p95 17.65 p99 17.75  past 17.5 ms 12.60%  longest 17.9  unfocused 3600
+  parade        fixes-123   frames  3597 in 60s  p50 16.67 p95 17.65 p99 17.77  past 17.5 ms 10.40%  longest 18.0  unfocused 3600
+  crown-circus  fixes-123   frames  3598 in 60s  p50 16.67 p95 17.48 p99 17.66  past 17.5 ms 4.50%  longest 17.9  unfocused 3601
+  crown-circus  base        frames  3597 in 60s  p50 16.66 p95 17.49 p99 17.68  past 17.5 ms 4.70%  longest 17.9  unfocused 3600
+  harbour-quay  base        frames  3598 in 60s  p50 16.67 p95 17.48 p99 17.68  past 17.5 ms 4.50%  longest 17.9  unfocused 3601
+  harbour-quay  fixes-123   frames  3597 in 60s  p50 16.67 p95 17.50 p99 17.70  past 17.5 ms 5.10%  longest 18.0  unfocused 3600
+  heaviest      fixes-123   frames  3597 in 60s  p50 16.67 p95 17.46 p99 17.64  past 17.5 ms 4.10%  longest 20.0  unfocused 3600
+  heaviest      base        frames  3597 in 60s  p50 16.67 p95 16.80 p99 17.53  past 17.5 ms 1.10%  longest 17.7  unfocused 3600
+  north-edge    base        frames  3546 in 60s  p50 16.67 p95 17.45 p99 17.67  past 17.5 ms 4.30%  longest 437.9  unfocused 2854
+  north-edge    fixes-123   frames  1858 in 60s  p50 16.67 p95 16.67 p99 16.67  past 17.5 ms 0.00%  longest 16.7  unfocused 1861
+
+== pan (vSync 0, 1 repeats, 0 unfocused or busy repeats left out): frame p50 ms (vs base), median of repeats [p95]
+stop                            base             fixes-123
+pan-civic                5.17 [11.2]      4.93 (-5%) [9.5]
+pan-quay-deck             3.23 [4.0]      3.18 (-2%) [5.1]
+  pan-civic     base        frames  2071 in 14s  p50 5.17 p95 11.18 p99 28.78  past 17.5 ms 2.30%  longest 46.2  unfocused 2074
+  pan-civic     fixes-123   frames  2356 in 14s  p50 4.93 p95 9.50 p99 21.79  past 17.5 ms 1.60%  longest 50.5  unfocused 2359
+  pan-quay-deck fixes-123   frames  2304 in 8s  p50 3.18 p95 5.12 p99 8.09  past 17.5 ms 0.10%  longest 23.1  unfocused 2307
+  pan-quay-deck base        frames  2335 in 8s  p50 3.23 p95 4.01 p99 7.44  past 17.5 ms 0.10%  longest 22.6  unfocused 2338
+
+== drawer, per frame: camera triangles | shadow triangles (all splits)
+  ab    home          base        298k | 868k in 4 splits
+  ab    home          proxies     298k | 602k in 4 splits
+  ab    home          cascades-2  298k | 623k in 2 splits
+  ab    home          fixes-123   298k | 400k in 2 splits
+  ab    cafe-square   proxies     287k | 579k in 4 splits
+  ab    cafe-square   cascades-2  287k | 635k in 2 splits
+  ab    cafe-square   fixes-123   287k | 391k in 2 splits
+  ab    cafe-square   base        287k | 855k in 4 splits
+  ab    parade        proxies     349k | 722k in 4 splits
+  ab    parade        cascades-2  349k | 633k in 2 splits
+  ab    parade        fixes-123   349k | 551k in 2 splits
+  ab    parade        base        349k | 804k in 4 splits
+  ab    crown-circus  proxies     116k | 539k in 4 splits
+  ab    crown-circus  cascades-2  116k | 360k in 2 splits
+  ab    crown-circus  fixes-123   116k | 311k in 2 splits
+  ab    crown-circus  base        116k | 601k in 4 splits
+  ab    harbour-quay  cascades-2  173k | 178k in 2 splits
+  ab    harbour-quay  fixes-123   173k | 163k in 2 splits
+  ab    harbour-quay  base        173k | 241k in 4 splits
+  ab    harbour-quay  proxies     173k | 226k in 4 splits
+  ab    heaviest      fixes-123   570k | 370k in 2 splits
+  ab    heaviest      base        570k | 1468k in 4 splits
+  ab    heaviest      proxies     570k | 525k in 4 splits
+  ab    heaviest      cascades-2  570k | 1043k in 2 splits
+  ab    north-edge    base        150k | 457k in 4 splits
+  ab    north-edge    proxies     150k | 427k in 4 splits
+  ab    north-edge    cascades-2  150k | 303k in 2 splits
+  ab    north-edge    fixes-123   150k | 273k in 2 splits
+  pan   pan-civic     base        298k | 868k in 4 splits
+  pan   pan-civic     fixes-123   298k | 400k in 2 splits
+  pan   pan-quay-deck fixes-123   163k | 194k in 2 splits
+  pan   pan-quay-deck base        163k | 258k in 4 splits
+
+ranking ['heaviest: frame p50 13.086 ms, p95 15.143 ms (ab, base)', 'north-edge: frame p50 9.848 ms, p95 12.315 ms (ab, base)', 'parade: frame p50 7.527 ms, p95 8.86 ms (ab, base)', 'cafe-square: frame p50 6.727 ms, p95 7.627 ms (ab, base)', 'home: frame p50 6.429 ms, p95 7.278 ms (ab, base)', 'crown-circus: frame p50 5.672 ms, p95 6.43 ms (ab, base)', 'harbour-quay: frame p50 4.436 ms, p95 4.854 ms (ab, base)']
+A..A [('ab', 'home', 'base', 6.44, 6.49, '+0.8%'), ('capped', 'home', 'base', 16.667, 16.667, '+0.0%')]
+thermal per segment {1: 170, 0: 18} | NaN pixels > 0 in [] | unfocused segments 77 of 188
+settle: hitches 74 worst 70474.867 ms

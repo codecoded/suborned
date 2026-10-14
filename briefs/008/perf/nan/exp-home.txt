@@ -1,0 +1,17 @@
+stop home focus (-159.00, 0.00, -232.50) standOff 77.80939; Apple M4
+baseline (post off): NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom)
+stopNaN on (post off): NaN 27390 Inf 0
+clear-coat materials 54: DK_Lobby, DK_Enamel_Charcoal, DK_Enamel_Teal, DK_Enamel_Ivory, DK_Enamel_Seafoam, DK_Enamel_Cream, DK_Enamel_Mint, DK_Enamel_Red, DK_Enamel_Mustard, DK_Decal_Transit, DK_Far_Stone/haze0.40, DK_Far_Band/haze0.40, DK_Far_Shade/haze0.40, DK_Far_Gold/haze0.40, DK_Enamel_Coral, DK_Enamel_Royal, DK_Far_Shade/haze0.70, DK_Far_Band/haze0.70, DK_Far_Stone/haze0.70, DK_Far_Gold/haze0.70, DK_Far_Coral/haze0.70, DK_Far_Stone/haze0.15, DK_Far_Band/haze0.15, DK_Far_Shade/haze0.15, DK_Far_Gold/haze0.15, DK_Far_Coral/haze0.15, DK_Far_Shade/haze0.85, DK_Far_Band/haze0.85, DK_Far_Stone/haze0.85, DK_Enamel_Turquoise, DK_Far_Coral/haze0.40, DK_Steel_Ivory, DK_Far_Gold/haze0.85, DK_Far_Coral/haze0.85, DK_Enamel_Sunshine, DK_Window_Tower, DK_Hull_Ivory, DK_Enamel_Flamingo, DK_Window_Teal, DK_Pool_Water, DK_Enamel_Coral17, DK_Enamel_Flamingo/haze0.70, DK_Enamel_Ivory/haze0.70, DK_Billboard_Ads, DK_Accent_Coral, DK_Liner_White, DK_Liner_Dome, DK_Accent_Teal, DK_Liner_Pool, DK_Enamel_Ivory, DK_Enamel_Seafoam, DK_Enamel_Powder, DK_Bakelite, DK_Pool_Civic
+ssao off: NaN 0 Inf 0 box none mask exp-home.txt.01.png | restored NaN 27390 Inf 0
+srp batcher off: NaN 0 Inf 0 box none mask exp-home.txt.02.png | restored NaN 27390 Inf 0
+cut off: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+shadows off: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+point lights off (0): NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+probes off (2): NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+opaque+depth tex off: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+bakelite batch off: NaN 302 Inf 0 box x 554..1780 y 6..1060 (from bottom) mask exp-home.txt.03.png | restored NaN 27390 Inf 0
+coat mask 0: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+coat smooth 0.9: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+coat keyword off: NaN 27390 Inf 0 box x 233..1780 y 6..1060 (from bottom) mask - | restored NaN 27390 Inf 0
+env refl off: NaN 0 Inf 0 box none mask exp-home.txt.04.png | restored NaN 27390 Inf 0
+spec highlights off: NaN 0 Inf 0 box none mask exp-home.txt.05.png | restored NaN 27390 Inf 0

@@ -1,0 +1,5 @@
+stop home focus (-159.00, 0.00, -232.50) standOff 77.80939; Apple M4
+mesh DK_CafeBay readable False: Position:Float32x3@0 Normal:Float16x4@0 Tangent:Float16x4@0 TexCoord0:Float32x2@0
+mesh civic/DK_Bakelite@-3,-4 readable True: Position:Float32x3@0 Normal:Float32x3@0 TexCoord0:Float32x2@0
+baseline (post off): NaN 0 Inf 0 box none
+stopNaN on (post off): NaN 0 Inf 0

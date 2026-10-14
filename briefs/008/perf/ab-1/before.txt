@@ -1,0 +1,14 @@
+Wed Oct 14 11:30:31 UTC 2026
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=24117347)	99%; finishing charge; 0:14 remaining present: true
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+ %CPU COMM
+100.4 bun
+ 39.5 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+ 20.4 /Applications/Slack.app/Contents/Frameworks/Slack Helper (Renderer).app/Contents/MacOS/Slack Helper (Renderer)
+ 15.3 /Applications/Slack.app/Contents/Frameworks/Slack Helper.app/Contents/MacOS/Slack Helper
+  3.7 /Users/sky/.codex-account2/computer-use/Codex Computer Use.app/Contents/MacOS/SkyComputerUseService
+  2.9 /Applications/T3 Code (Alpha).app/Contents/Frameworks/T3 Code (Alpha) Helper (Renderer).app/Contents/MacOS/T3 Code (Alpha) Helper (Renderer)
+  2.8 /usr/sbin/coreaudiod

@@ -1,0 +1,14 @@
+Wed Oct 14 12:35:41 UTC 2026
+Now drawing from 'Battery Power'
+ -InternalBattery-0 (id=24117347)	100%; discharging; 2:58 remaining present: true
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+ %CPU COMM
+ 40.8 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+ 40.5 /System/Library/PrivateFrameworks/ModelCatalogRuntime.framework/Versions/A/modelcatalogd
+ 37.2 /System/Library/ExtensionKit/Extensions/TGOnDeviceInferenceProviderService.appex/Contents/MacOS/TGOnDeviceInferenceProviderService
+ 33.6 /System/Library/CoreServices/Finder.app/Contents/MacOS/Finder
+ 18.3 /Users/sky/Library/Application Support/Claude/claude-code/2.1.295/9d6405864fdc/claude.app/Contents/MacOS/claude
+ 18.3 /Applications/Claude.app/Contents/Frameworks/Claude Helper (Renderer).app/Contents/MacOS/Claude Helper (Renderer)
+ 14.6 /Applications/T3 Code (Alpha).app/Contents/Frameworks/T3 Code (Alpha) Helper.app/Contents/MacOS/T3 Code (Alpha) Helper
