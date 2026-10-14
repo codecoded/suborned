@@ -9,18 +9,20 @@ import crown
 from geo import Shape
 
 REGISTRY = {}
-FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008")
+FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008", "crossing009")
 
 
-def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None):
+def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None, near=None):
     """lod = triangle target of a decimated distance version (LOD1) exported beside the asset; 0 = none.
     lean = segment scale for lathes, sweeps and rounded boxes (1 = as written): small street props seen at 15-120 px
     at play zoom take lean < 1 and bevel 0 to meet the per-category triangle caps (out/review/lod-thresholds.html).
     cap = L0 triangle cap: a collapse decimate (ratio cap / built triangles) on the piece itself, after lean; 0 = none.
     far = a hand-built L2 (fn(shape), same pivot and axes): exported as the L2 instead of the 6% decimation, for signatures whose
-    silhouette the collapse destroys (OceanLiner, brief 007 round 3)."""
+    silhouette the collapse destroys (OceanLiner, brief 007 round 3).
+    near = a hand-built L1 (fn(shape), same pivot and axes, parts included): exported as the L1 instead of the 25% decimation, and for
+    pieces under the 400-triangle LOD floor too (brief 009: flat and tiny crossing pieces, where a collapse would wreck the shape)."""
     def deco(fn):
-        REGISTRY[name] = dict(cat=cat, fn=fn, bevel=bevel, lod=lod, lean=lean, cap=cap, far=far)
+        REGISTRY[name] = dict(cat=cat, fn=fn, bevel=bevel, lod=lod, lean=lean, cap=cap, far=far, near=near)
         return fn
     return deco
 
@@ -68,9 +70,13 @@ def _cap(obj, cap):
             m.ratio = round(cap / tris, 4)
 
 
-def build_far(name, col=None):
-    """The hand-built L2 of an asset with far=, named DK_<name>_L2 (no bevel: it is seen at a few dozen pixels)."""
+def build_lod(name, tag, col=None):
+    """The hand-built L1 (kit.asset near=) or L2 (far=) of an asset, named DK_<name>_<tag> (no bevel: it is seen at a few dozen pixels)."""
     spec = REGISTRY[name]
-    s = Shape(f"DK_{name}_L2")
-    spec["far"](s)
+    s = Shape(f"DK_{name}_{tag}")
+    spec["near" if tag == "L1" else "far"](s)
     return crown.swap(s.build(col, bevel=0.0), name, spec["cat"])
+
+
+def build_far(name, col=None):
+    return build_lod(name, "L2", col)

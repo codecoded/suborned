@@ -158,6 +158,7 @@ KIND = {
     "satin": (0.5, 1.0, 0.0, 0.0, 1.0),  # brushed/cast metal that must not mirror the studio black (ground.py)
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here
+    "glow": (1.0, 0.0, 0.0, 0.0, 1.0),  # light volume (crossing beam, halo disc; brief 009): register(name, "glow", hex, strength, alpha); no .mat is written, Latch draws it additive, double-sided
 }
 
 
@@ -200,9 +201,12 @@ def get(name):
     if kind == "face":
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = alpha
-    if kind == "emit":
+    if kind in ("emit", "glow"):
         b.inputs["Emission Color"].default_value = col
         b.inputs["Emission Strength"].default_value = extra[0]
+    if kind == "glow":
+        m.surface_render_method = "BLENDED"
+        b.inputs["Alpha"].default_value = extra[1]
     img, scale = _texture(name)
     if img is not None:
         nt = m.node_tree
@@ -280,6 +284,7 @@ def export_json(path):
     rows = []
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
+        alpha = extra[1] if kind == "glow" else alpha
         tex = TEXTURES.get(name)
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
@@ -289,18 +294,23 @@ def export_json(path):
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
 
 
+# Sky, 14 Oct 2026 ("red is definitely ok for electronics displays"): the stop pictogram of a crossing signal may be a signal red. Display pictograms only (small, emissive,
+# on a dark plate), never a surface; the cones keep their own shape and motion cue. Owed: GDD s10 / s15 and the style contract. Reported, not failed.
+SIGNAL_EXEMPT = {"DK_Cross_Stop"}
+
+
 def signal_gate(rows=None):
     """dE2000 >= 20 of every untextured, non-glass material's UNLIT base colour from cones / guard / rivals (brief 007).
     Returns (failures, report): gated = the retuned and v0.17 accent materials (must pass); the rest are reported as a to-do."""
     from deltae import min_signal
     gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Crown_Gold", "DK_Crown_Gold17", "DK_Far_Gold", "DK_Brass_Civic", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
-    gated |= {n for n in LIB if n.startswith(("DK_Liner_", "DK_Accent_", "DK_Faience_"))}  # brief 007 round 3: liner, look.json accents
+    gated |= {n for n in LIB if n.startswith(("DK_Liner_", "DK_Accent_", "DK_Faience_", "DK_Cross_"))} - SIGNAL_EXEMPT  # brief 007 round 3: liner, look.json accents; brief 009: the crossing pieces
     fails, report = [], []
     for name, (kind, hexstr, *_) in LIB.items():
         if name in TEXTURES or kind == "glass" or hexstr.upper() == "#FFFFFF":
             continue
         d, sig = min_signal(hexstr, SIGNALS)
         row = (name, kind, hexstr.upper(), round(d, 1), sig)
-        if d < 20:
+        if d < 20 and name not in SIGNAL_EXEMPT:
             (fails if name in gated else report).append(row)
     return fails, report

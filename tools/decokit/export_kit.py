@@ -59,11 +59,11 @@ def make_lods(n, cat, src, srcs, tris):
     An asset with a hand-built far version (kit.asset far=) exports that as its L2 instead."""
     out = []
     for tag, ratio, screen, floor in LOD_SPEC:
-        if tris < floor:
+        hand = kit.REGISTRY[n].get({"L1": "near", "L2": "far"}[tag])  # a hand-built level (kit.asset near= / far=) replaces the collapse
+        if tris < floor and not (tag == "L1" and hand):  # a hand-built L1 is made whatever the piece's weight (brief 009)
             continue
-        hand = tag == "L2" and kit.REGISTRY[n].get("far")  # a hand-built far version (kit.asset far=) replaces the 6% collapse
         if hand:
-            fobj = kit.build_far(n)
+            fobj = kit.build_lod(n, tag)
             far = baked_tree(fobj, lambda nm: nm)
             for o in [fobj, *fobj.children_recursive]:
                 bpy.data.meshes.remove(o.data)
@@ -205,7 +205,7 @@ def main():
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
         if len(objs) > 1:
             row["parts"] = [nm for nm, _ in full[1:]]
-        if tris >= LOD_SPEC[0][3] and not NO_LODS:
+        if (tris >= LOD_SPEC[0][3] or kit.REGISTRY[n].get("near")) and not NO_LODS:
             row["lods"] = make_lods(n, cat, src, srcs, tris)
         if not NO_LODS:  # a level this piece no longer takes (slimmed under the floor) leaves no file from an earlier build
             for tag, *_ in LOD_SPEC:
