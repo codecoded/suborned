@@ -27,6 +27,7 @@ next owner: Sky reads it and picks the cut; then B.
 - **The entrance points move to the tower faces** (parts list L1, option B). The towers are not carved.
 - **Palette on this block:** seafoam and deep teal are the kit enamels (`DK_Enamel_Seafoam` #72B5A7, `DK_Enamel_Teal` #1F6C67). Banners, flowers and any tram use the contract's coral, flamingo or peach, never the paintings' red-orange (ΔE 8.8 from the cones signal). Gold is hairline, frame and bead only; the full-height gold fins come off.
 - Canopies, the marquee, planter shelves and parasols that stand outside a building's ring are dressing, not a change to the locked geometry (L3).
+- **Brass, not gold, across the district** (Sky, 2026-10-14: "I prefer brass to gold", after `out/shots/008/brass-vs-gold.png`). The contract gold #D0C848 reads green-yellow in Unity; hairlines, frames, beads and signs take brass (#99784D family). Gold stays hairline, frame and bead only; a large gold surface does not become a large brass one without a reason. Owed: the style contract and GDD §15 in the next version.
 - Steps are real geometry. Vantage sets rise and landing so the entrance points stand on the landing; how the sim takes the height is Keel's, later (H4).
 
 ## B · build
