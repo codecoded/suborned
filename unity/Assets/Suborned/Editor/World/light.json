@@ -3,9 +3,10 @@
   "sun": {
     "palette": "light.sun",
     "value": 1,
-    "intensity": 1.35,
+    "intensity": 1.6,
     "pitch": 38,
     "yaw": 330,
+    "honest": "Glint, 008 light-honest (2026-10-15). Retuned on honest frames (Capture: ARGBHalf, the player's HDR chain). Honest frames showed B5's orange came from the grade, not the sun: the highlights tint (1, 0.85, 0.66) is a full-strength multiplier above luma 0.55 and the colour filter warmed everything. Both are neutral now, the sun keeps the warmth (colour unchanged, #ffe0d0), and the intensity rises 1.35 -> 1.6 to pay back what the tint took (1.7 puts 11 percent of the home frame at R 246 or more, 1.6 puts 4 percent), with the ambient down 10 percent so shade stays shade. Sun paving (238, 206, 169) -> about (237, 217, 198), the paintings' lit paving (mean of four: 240, 220, 201). Evidence: briefs/008/light-honest/.",
     "note": "Glint, 008 B5. Low warm sun from the south-east (yaw 330, was 52 from the south-west): the civic square, the cafe terrace and the cafe front are lit in the home frame (yaw 52 left the west half of the square under the tall block west of it), shadows fall north-west out of the frame. The Records Office public face points north and is in soft shade under any southern sun. Intensity 1.35 (was 2.5): at 2.5 the lit stone and paving clipped in the Neutral tonemap (no form on lit surfaces) while the shade read dark; the lift now comes from the ambient. Sun colour pinker (#ffe0d0) so lit ivory reads peach-cream, not mustard."
   },
   "shadows": {
@@ -29,16 +30,17 @@
     "mode": "trilight",
     "sky": {
       "palette": "light.ambientSky",
-      "value": 0.85
+      "value": 0.77
     },
     "equator": {
       "palette": "light.ambientEquator",
-      "value": 0.9
+      "value": 0.81
     },
     "ground": {
       "palette": "light.ambientGround",
-      "value": 0.55
+      "value": 0.5
     },
+    "honest": "Glint, 008 light-honest: values x 0.9 (was 0.85 / 0.9 / 0.55) with the sun at 1.6. Shade on paving over sun on paving, linear Y: 0.60 -> 0.50 (the paintings 0.40 to 0.63, the play-angle painting 0.48); shaded paving (183, 167, 150) -> about (169, 156, 145), the paintings' shaded stone and paving (161-197, 148-185, 137-173). Hues unchanged, so shaded ivory stays ivory (R-B 24).",
     "note": "Glint, 008 B5. Shade carries the stone: a neutral-warm equator (#faeadc x 0.9, was #f8e6cc x 0.62) so shaded ivory stays ivory, a near-neutral sky fill (#dedce0 x 0.85, was #b2cbe6 x 0.7: a blue fill greyed cream paving and streets in shade), a warm ground bounce. Same wall in sun and shade (stone / seafoam / paving, displayed Y): was 0.25 / 0.12 / 0.42, now 0.64 / 0.48 / 0.69."
   },
   "fog": {
@@ -85,7 +87,8 @@
       "postExposure": 0.12,
       "contrast": 14,
       "saturation": 14,
-      "filter": "light.filter"
+      "filter": "light.filter",
+      "honest": "Glint, 008 light-honest. The colour filter is neutral (was #fffbf4): it warmed shade as well as sun (shaded paving R-B 31 against the paintings' 17-24). Post-exposure, contrast and saturation are unchanged (saturation keeps the enamel accents saturated)."
     },
     "shadowsMidtonesHighlights": {
       "shadows": "light.gradeShadows",
@@ -93,7 +96,8 @@
       "midtones": "light.gradeMid",
       "midtonesWeight": 0.0,
       "highlights": "light.gradeHighlights",
-      "highlightsWeight": 0.0
+      "highlightsWeight": 0.0,
+      "honest": "Glint, 008 light-honest. Weight 0 is NOT off: URP treats the colour as a full-strength multiplier (sRGB to linear, by luma: shadows below 0.3, highlights above 0.55), so the old highlights (1, 0.85, 0.66) took G to 0.69 and B to 0.39 of itself on every lit surface (honest sun paving R-B 69), and the old shadows (0.6, 0.66, 0.85) turned dark roads mauve. Highlights are neutral white now (the warmth is the sun's); shadows keep a mild cool tint (#c7d1eb), the paintings' cool darks (road in shade: painting (97, 97, 106); honest before (130, 120, 123), now about (116, 110, 118)). Signals draw outside this grade (Aster 008 B5); until that is built, an unlit swatch through the grade shifts deltaE 9.7 / 4.3 / 6.5 (cones / guard / rivals) before, 7.2 / 5.0 / 3.3 now."
     },
     "vignette": {
       "intensity": 0.1,
@@ -138,16 +142,16 @@
       "hex": "#fff0d6"
     },
     "light.filter": {
-      "hex": "#fffbf4"
+      "hex": "#ffffff"
     },
     "light.gradeShadows": {
-      "hex": "#9aa8d8"
+      "hex": "#c7d1eb"
     },
     "light.gradeMid": {
       "hex": "#ffffff"
     },
     "light.gradeHighlights": {
-      "hex": "#ffd9a8"
+      "hex": "#ffffff"
     }
   }
 }
