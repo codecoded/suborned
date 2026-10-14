@@ -1,12 +1,11 @@
 {
-  "note": "People layer graybox (brief 010 E; brief 005: people are capsules with a colour block by job). A person is a capsule body in the job's colour block with an ivory head, 1.75 m tall (53 px at play zoom 14, pitch 38, 1080p). Every colour names a material of the civic look palette (contracts/world/civic-look.json palette.materials), which CD-4 gates at >= 20 dE2000 from the signal colours; a block key the people file uses and this file lacks is rejected. Indoors people (at work behind a door, or at home) stand outside their door, tinted `indoors` of the way to the head colour. Latch tunes; Forma's figures replace the capsules.",
+  "note": "People layer graybox (brief 010 E; brief 005: people are capsules with a colour block by job). A person is a capsule body in the job's colour block with an ivory head, 1.75 m tall (53 px at play zoom 14, pitch 38, 1080p). Every colour names a material of the civic look palette (contracts/world/civic-look.json palette.materials), which CD-4 gates at >= 20 dE2000 from the signal colours; a block key the people file uses and this file lacks is rejected. People inside (at work behind a door, or at home) are not drawn (exteriors only); their place shows an `inside: N` counter. Latch tunes; Forma's figures replace the capsules.",
   "height": 1.75,
   "radius": 0.28,
   "head": 0.3,
   "spacing": 0.5,
   "clearance": 0.35,
   "headMaterial": "DK_Enamel_Ivory",
-  "indoors": 0.5,
   "blocks": {
     "job/civic": "DK_Enamel_Teal",
     "job/food": "DK_Bloom_Coral",

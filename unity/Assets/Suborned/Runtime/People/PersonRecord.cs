@@ -10,6 +10,5 @@ namespace Suborned.People
         public string[] ties, routine;
         /// <summary>The routine line the snapshot clock falls in (-1: walking between two lines).</summary>
         public int now = -1;
-        public bool indoors;
     }
 }
