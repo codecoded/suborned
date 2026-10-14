@@ -63,7 +63,6 @@ STYLE = json.loads((Path(__file__).resolve().parents[2] / "contracts/style/subor
 _ROLES = STYLE["palette_world"]["roles"]
 ACCENT = {r["accent"]: r["hex"].upper() for r in _ROLES.values() if "accent" in r}
 ACCENT["coral"] = _ROLES["beam"]["hex"].upper()                                   # coral transit
-GOLD_TRIM = STYLE["palette_world"]["surface_overrides"]["gold_trim"]["hex"].upper()  # the contract's sign-board gold #C9C08E; no kit material reads it since 14 Oct (DK_Gold17 is BRASS_LIGHT)
 SIGNALS = {k: v.upper() for k, v in STYLE["signal_colours"].items() if k != "rule"}
 
 
@@ -82,7 +81,7 @@ def look_hex(role):
 
 for _r in ("teal", "coral", "turquoise", "mint", "flamingo", "peach"):
     LIB.setdefault("DK_Accent_" + _r.capitalize(), ("enamel", look_hex("accent_" + _r)))
-LIB.setdefault("DK_Accent_Gold", ("metal", BRASS))   # was look.json accent_gold #D0C848 (20.9 from guard); brass since 14 Oct: look.json and the style contract still say #D0C848 (Aster / Latch)
+LIB.setdefault("DK_Accent_Gold", ("metal", BRASS))   # was #D0C848 (20.9 from guard); brass since 14 Oct, as look.json and style contract v0.19.0
 LIB.setdefault("DK_Crown_Gold", ("metal", CROWN_GOLD))        # what DK_Gold was (20.6 from guard): tower crowns, spires and skyline pieces, seen against the sky
 LIB.setdefault("DK_Crown_Gold17", ("metal", CROWN_GOLD17))    # what DK_Gold17 was (20.3): the three crown pieces
 LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal faience bands (planters, piers)
