@@ -98,7 +98,11 @@
  "materials": {
   "civic/atom-fountain": {
    "DK_Water": "DK_Pool_Civic"
-  }
+  },
+  "civic/fountain-garden-north-east": { "DK_Accent_Gold": "DK_Brass_Civic" },
+  "civic/fountain-garden-north-west": { "DK_Accent_Gold": "DK_Brass_Civic" },
+  "civic/fountain-garden-south-west": { "DK_Accent_Gold": "DK_Brass_Civic" },
+  "civic/fountain-garden-south-east": { "DK_Accent_Gold": "DK_Brass_Civic" }
  },
  "beds": {
   "kerb": {
