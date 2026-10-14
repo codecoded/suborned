@@ -1,0 +1,1164 @@
+{
+    "fingerprint": "3e68382a8f617e2cd4f6ae0686df937f958631ae85574d2974c051d64c5eb65c",
+    "exportSha256": "9b2b451da1ae2016f3dde7a22690edf9c4a7c8e15da87366b1b2d83c70be1928",
+    "source": "harbour-district v0.3.0 (2026-10-14)",
+    "scene": "Assets/Scenes/HarbourDistrict.unity",
+    "content": "world only: buildings, structures, street furniture and bays; no people, vehicles or sim (not built yet)",
+    "pitch": 38.000003814697266,
+    "yaw": 30.000001907348633,
+    "aspect": 1.7777777910232544,
+    "farMargin": 1605.1610107421875,
+    "width": 1920,
+    "height": 1080,
+    "warmup": {
+        "minSeconds": 180.0,
+        "maxSeconds": 900.0,
+        "dwellSeconds": 10.0,
+        "plateau": 0.019999999552965164
+    },
+    "passes": [
+        {
+            "name": "ab",
+            "why": "headroom and A/B (Redline M1, item 0): uncapped, every variant back to back at every stop, 3 rotated repeats, the first segment again at the end; as-was first, so every delta is against the build before B6",
+            "vSync": 0,
+            "repeats": 3,
+            "window": "FullScreenWindow",
+            "settleSeconds": 2.0,
+            "recordSeconds": 10.0,
+            "missMs": 17.5,
+            "stops": [
+                "home",
+                "cafe-square",
+                "parade",
+                "crown-circus",
+                "harbour-quay",
+                "heaviest",
+                "north-edge"
+            ],
+            "variants": [
+                "as-was",
+                "base",
+                "ssao-depth",
+                "proxies",
+                "cascades-2",
+                "fixes-13",
+                "fixes-123",
+                "ssao-off",
+                "fade-off",
+                "shadows-off"
+            ],
+            "repeatFirst": true,
+            "shots": true
+        },
+        {
+            "name": "capped",
+            "why": "reference (Redline M1): vSync on at the display, fullscreen window, 60 s a stop; a frame past 25 ms (1.5 refresh intervals at 60 Hz) missed its vblank. vSync on macOS paces frames 15.7-17.7 ms round 16.67 without missing one: the first run counted that jitter at 17.5 ms",
+            "vSync": 1,
+            "repeats": 1,
+            "window": "FullScreenWindow",
+            "settleSeconds": 2.0,
+            "recordSeconds": 60.0,
+            "missMs": 25.0,
+            "stops": [
+                "home",
+                "cafe-square",
+                "parade",
+                "crown-circus",
+                "harbour-quay",
+                "heaviest",
+                "north-edge"
+            ],
+            "variants": [
+                "as-was",
+                "base"
+            ],
+            "repeatFirst": true,
+            "shots": false
+        },
+        {
+            "name": "pan",
+            "why": "a moving camera and a level change (Redline section 6), uncapped",
+            "vSync": 0,
+            "repeats": 1,
+            "window": "FullScreenWindow",
+            "settleSeconds": 2.0,
+            "recordSeconds": 0.0,
+            "missMs": 17.5,
+            "stops": [
+                "pan-civic",
+                "pan-quay-deck"
+            ],
+            "variants": [
+                "as-was",
+                "base"
+            ],
+            "repeatFirst": false,
+            "shots": false
+        },
+        {
+            "name": "counts",
+            "why": "machine-independent counts only (Aster, 2026-10-14: the Studio's timings say nothing of the Air): every variant at every stop, 1 s each, drawer per-view draws, SetPass, triangles, shadow casters and a shot; run with -perfNoWarm; frame times are not read",
+            "vSync": 0,
+            "repeats": 1,
+            "window": "FullScreenWindow",
+            "settleSeconds": 2.0,
+            "recordSeconds": 1.0,
+            "missMs": 17.5,
+            "stops": [
+                "home",
+                "cafe-square",
+                "parade",
+                "crown-circus",
+                "harbour-quay",
+                "heaviest",
+                "north-edge"
+            ],
+            "variants": [
+                "as-was",
+                "base",
+                "ssao-depth",
+                "proxies",
+                "cascades-2",
+                "fixes-13",
+                "fixes-123",
+                "ssao-off",
+                "fade-off",
+                "shadows-off"
+            ],
+            "repeatFirst": false,
+            "shots": true
+        }
+    ],
+    "variants": [
+        {
+            "name": "as-was",
+            "why": "the build before B6 (ab-1's base): SSAO from the depth-normals prepass, 4 cascades, every LOD casts",
+            "ssao": "normals",
+            "proxies": "off",
+            "cascades": 4,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "base",
+            "why": "as built (since B6: SSAO from depth after opaques, 2 cascades, LOD1 shadow proxies)",
+            "ssao": "",
+            "proxies": "",
+            "cascades": 0,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "ssao-depth",
+            "why": "Redline fix 1 alone on as-was: SSAO after opaques from the depth texture, no depth-normals prepass",
+            "ssao": "depth",
+            "proxies": "off",
+            "cascades": 4,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "proxies",
+            "why": "Redline fix 2 alone on as-was: kit facades and street trees cast from their LOD1 proxy, no LOD casts its own",
+            "ssao": "normals",
+            "proxies": "on",
+            "cascades": 4,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "cascades-2",
+            "why": "Redline fix 3 alone on as-was: one air cascade and the street band",
+            "ssao": "normals",
+            "proxies": "off",
+            "cascades": 2,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "fixes-13",
+            "why": "fixes 1 and 3 without the proxies: what the proxies add on top of them",
+            "ssao": "depth",
+            "proxies": "off",
+            "cascades": 2,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "fixes-123",
+            "why": "fixes 1-3 named switch by switch (equals base since B6; the guard that base is what ships)",
+            "ssao": "depth",
+            "proxies": "on",
+            "cascades": 2,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "ssao-off",
+            "why": "as-was without SSAO: what SSAO costs at all",
+            "ssao": "off",
+            "proxies": "off",
+            "cascades": 4,
+            "shadowsOff": false,
+            "fadeOff": false
+        },
+        {
+            "name": "fade-off",
+            "why": "Redline item 9 on as-was: what the fade's discard variant costs",
+            "ssao": "normals",
+            "proxies": "off",
+            "cascades": 4,
+            "shadowsOff": false,
+            "fadeOff": true
+        },
+        {
+            "name": "shadows-off",
+            "why": "bound on as-was: what the play camera's shadows cost at all",
+            "ssao": "normals",
+            "proxies": "off",
+            "cascades": 4,
+            "shadowsOff": true,
+            "fadeOff": false
+        }
+    ],
+    "stops": [
+        {
+            "name": "home",
+            "why": "civic block home frame: Records Square centre (plan records-square rect -180..-138, -261..-204), the play camera's built focus",
+            "focus": {
+                "x": -159.0,
+                "y": 0.0,
+                "z": -232.5
+            },
+            "zoom": 14.0,
+            "standOff": 77.80938720703125,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "cafe-square",
+            "why": "the Corner café terrace on Records Square at play zoom (civic/cafe/terrace)",
+            "focus": {
+                "x": -159.0,
+                "y": 0.0,
+                "z": -221.5
+            },
+            "zoom": 14.0,
+            "standOff": 83.04141235351563,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "parade",
+            "why": "Crown Parade under the Parade Galleries (plan parade-galleries x 136..288, mall at y 0; perf-007's Parade focus, then the heaviest of four)",
+            "focus": {
+                "x": 212.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "zoom": 14.0,
+            "standOff": 132.5921630859375,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "crown-circus",
+            "why": "Crown Circus gyratory and its monument (plan crown-circus arc 0,0)",
+            "focus": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "zoom": 14.0,
+            "standOff": 77.76182556152344,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "harbour-quay",
+            "why": "the crane walk on the harbour quay at deck level (plan market-deck quayWalk x 312..330, y -594..-419)",
+            "focus": {
+                "x": 321.0,
+                "y": 9.430000305175781,
+                "z": -506.5
+            },
+            "zoom": 14.0,
+            "standOff": 60.7492790222168,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "heaviest",
+            "why": "the most triangles of the 2026-10-14 sweep (648 street foci on a 40 m grid, export 9b2b451d, fingerprint 80fdd304): 2.59 M triangles p50 at play zoom, the records area 104 m east-north-east of home (out/perf/b6-sweep-2026-10-14-fbf540e.json); perf-007's heaviest, the Parade, is a stop already",
+            "focus": {
+                "x": -60.0,
+                "y": 0.0,
+                "z": -200.0
+            },
+            "zoom": 14.0,
+            "standOff": 92.86336517333984,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "north-edge",
+            "why": "fill-bound: the 2026-10-14 sweep's (-220, 280) framed in 13.4 ms p50 at only 0.76 M triangles, as slow as the heaviest (Redline M8)",
+            "focus": {
+                "x": -220.0,
+                "y": 0.0,
+                "z": 280.0
+            },
+            "zoom": 14.0,
+            "standOff": 74.03990173339844,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "pan-civic",
+            "why": "a moving camera (Redline section 6): home to the café to the records area at 8 m/s; the fade's reach swaps materials as it goes",
+            "focus": {
+                "x": -159.0,
+                "y": 0.0,
+                "z": -232.5
+            },
+            "zoom": 14.0,
+            "standOff": 77.80938720703125,
+            "path": [
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -232.5
+                    },
+                    "standOff": 77.80938720703125,
+                    "along": 0.0
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -230.6666717529297
+                    },
+                    "standOff": 79.06053161621094,
+                    "along": 1.8333333730697632
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -228.8333282470703
+                    },
+                    "standOff": 80.31167602539063,
+                    "along": 3.6666667461395264
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -227.0
+                    },
+                    "standOff": 81.56278991699219,
+                    "along": 5.5
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -225.1666717529297
+                    },
+                    "standOff": 82.81393432617188,
+                    "along": 7.333333492279053
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -223.3333282470703
+                    },
+                    "standOff": 81.790283203125,
+                    "along": 9.166666984558105
+                },
+                {
+                    "focus": {
+                        "x": -159.0,
+                        "y": 0.0,
+                        "z": -221.5
+                    },
+                    "standOff": 83.04141235351563,
+                    "along": 11.0
+                },
+                {
+                    "focus": {
+                        "x": -157.05882263183594,
+                        "y": 0.0,
+                        "z": -221.07843017578125
+                    },
+                    "standOff": 84.09394836425781,
+                    "along": 12.986425399780273
+                },
+                {
+                    "focus": {
+                        "x": -155.11764526367188,
+                        "y": 0.0,
+                        "z": -220.6568603515625
+                    },
+                    "standOff": 85.14646911621094,
+                    "along": 14.972850799560547
+                },
+                {
+                    "focus": {
+                        "x": -153.1764678955078,
+                        "y": 0.0,
+                        "z": -220.23529052734375
+                    },
+                    "standOff": 86.19900512695313,
+                    "along": 16.95927619934082
+                },
+                {
+                    "focus": {
+                        "x": -151.23529052734375,
+                        "y": 0.0,
+                        "z": -219.813720703125
+                    },
+                    "standOff": 87.25152587890625,
+                    "along": 18.945701599121094
+                },
+                {
+                    "focus": {
+                        "x": -149.2941131591797,
+                        "y": 0.0,
+                        "z": -219.39215087890625
+                    },
+                    "standOff": 88.2456283569336,
+                    "along": 20.932126998901367
+                },
+                {
+                    "focus": {
+                        "x": -147.35293579101563,
+                        "y": 0.0,
+                        "z": -218.9705810546875
+                    },
+                    "standOff": 88.9029769897461,
+                    "along": 22.91855239868164
+                },
+                {
+                    "focus": {
+                        "x": -145.41175842285156,
+                        "y": 0.0,
+                        "z": -218.5490264892578
+                    },
+                    "standOff": 83.54237365722656,
+                    "along": 24.904977798461914
+                },
+                {
+                    "focus": {
+                        "x": -143.4705810546875,
+                        "y": 0.0,
+                        "z": -218.12745666503906
+                    },
+                    "standOff": 84.59489440917969,
+                    "along": 26.891403198242188
+                },
+                {
+                    "focus": {
+                        "x": -141.5294189453125,
+                        "y": 0.0,
+                        "z": -217.7058868408203
+                    },
+                    "standOff": 85.64741516113281,
+                    "along": 28.877830505371094
+                },
+                {
+                    "focus": {
+                        "x": -139.58824157714844,
+                        "y": 0.0,
+                        "z": -217.28431701660156
+                    },
+                    "standOff": 85.90834045410156,
+                    "along": 30.864255905151367
+                },
+                {
+                    "focus": {
+                        "x": -137.64706420898438,
+                        "y": 0.0,
+                        "z": -216.8627471923828
+                    },
+                    "standOff": 85.9083251953125,
+                    "along": 32.85068130493164
+                },
+                {
+                    "focus": {
+                        "x": -135.7058868408203,
+                        "y": 0.0,
+                        "z": -216.44117736816406
+                    },
+                    "standOff": 85.90834045410156,
+                    "along": 34.83710479736328
+                },
+                {
+                    "focus": {
+                        "x": -133.76470947265625,
+                        "y": 0.0,
+                        "z": -216.0196075439453
+                    },
+                    "standOff": 85.90834045410156,
+                    "along": 36.82353210449219
+                },
+                {
+                    "focus": {
+                        "x": -131.8235321044922,
+                        "y": 0.0,
+                        "z": -215.59803771972656
+                    },
+                    "standOff": 85.90833282470703,
+                    "along": 38.80995559692383
+                },
+                {
+                    "focus": {
+                        "x": -129.88235473632813,
+                        "y": 0.0,
+                        "z": -215.1764678955078
+                    },
+                    "standOff": 85.90834045410156,
+                    "along": 40.796382904052734
+                },
+                {
+                    "focus": {
+                        "x": -127.94117736816406,
+                        "y": 0.0,
+                        "z": -214.75489807128906
+                    },
+                    "standOff": 56.024898529052734,
+                    "along": 42.782806396484375
+                },
+                {
+                    "focus": {
+                        "x": -126.0,
+                        "y": 0.0,
+                        "z": -214.3333282470703
+                    },
+                    "standOff": 57.07741928100586,
+                    "along": 44.76923370361328
+                },
+                {
+                    "focus": {
+                        "x": -124.05882263183594,
+                        "y": 0.0,
+                        "z": -213.91175842285156
+                    },
+                    "standOff": 58.129940032958984,
+                    "along": 46.75566101074219
+                },
+                {
+                    "focus": {
+                        "x": -122.11764526367188,
+                        "y": 0.0,
+                        "z": -213.4901885986328
+                    },
+                    "standOff": 59.182491302490234,
+                    "along": 48.74208450317383
+                },
+                {
+                    "focus": {
+                        "x": -120.17646789550781,
+                        "y": 0.0,
+                        "z": -213.06863403320313
+                    },
+                    "standOff": 60.23501205444336,
+                    "along": 50.728511810302734
+                },
+                {
+                    "focus": {
+                        "x": -118.23529052734375,
+                        "y": 0.0,
+                        "z": -212.64706420898438
+                    },
+                    "standOff": 61.287532806396484,
+                    "along": 52.714935302734375
+                },
+                {
+                    "focus": {
+                        "x": -116.29412078857422,
+                        "y": 0.0,
+                        "z": -212.22549438476563
+                    },
+                    "standOff": 62.34006881713867,
+                    "along": 54.70136260986328
+                },
+                {
+                    "focus": {
+                        "x": -114.35294342041016,
+                        "y": 0.0,
+                        "z": -211.80392456054688
+                    },
+                    "standOff": 63.3925895690918,
+                    "along": 56.68778610229492
+                },
+                {
+                    "focus": {
+                        "x": -112.4117660522461,
+                        "y": 0.0,
+                        "z": -211.38235473632813
+                    },
+                    "standOff": 64.44511413574219,
+                    "along": 58.67421340942383
+                },
+                {
+                    "focus": {
+                        "x": -110.47058868408203,
+                        "y": 0.0,
+                        "z": -210.96078491210938
+                    },
+                    "standOff": 65.49766540527344,
+                    "along": 60.66063690185547
+                },
+                {
+                    "focus": {
+                        "x": -108.52941131591797,
+                        "y": 0.0,
+                        "z": -210.53921508789063
+                    },
+                    "standOff": 66.55018615722656,
+                    "along": 62.647064208984375
+                },
+                {
+                    "focus": {
+                        "x": -106.5882339477539,
+                        "y": 0.0,
+                        "z": -210.11764526367188
+                    },
+                    "standOff": 67.60270690917969,
+                    "along": 64.63349151611328
+                },
+                {
+                    "focus": {
+                        "x": -104.64705657958984,
+                        "y": 0.0,
+                        "z": -209.69607543945313
+                    },
+                    "standOff": 68.65524291992188,
+                    "along": 66.61991119384766
+                },
+                {
+                    "focus": {
+                        "x": -102.70587921142578,
+                        "y": 0.0,
+                        "z": -209.27450561523438
+                    },
+                    "standOff": 69.70775604248047,
+                    "along": 68.60633850097656
+                },
+                {
+                    "focus": {
+                        "x": -100.76470184326172,
+                        "y": 0.0,
+                        "z": -208.85293579101563
+                    },
+                    "standOff": 70.76030731201172,
+                    "along": 70.59276580810547
+                },
+                {
+                    "focus": {
+                        "x": -98.82352447509766,
+                        "y": 0.0,
+                        "z": -208.43136596679688
+                    },
+                    "standOff": 71.81282806396484,
+                    "along": 72.57919311523438
+                },
+                {
+                    "focus": {
+                        "x": -96.8823471069336,
+                        "y": 0.0,
+                        "z": -208.00979614257813
+                    },
+                    "standOff": 87.4215316772461,
+                    "along": 74.56561279296875
+                },
+                {
+                    "focus": {
+                        "x": -94.94117736816406,
+                        "y": 0.0,
+                        "z": -207.58824157714844
+                    },
+                    "standOff": 88.47405242919922,
+                    "along": 76.55204010009766
+                },
+                {
+                    "focus": {
+                        "x": -93.0,
+                        "y": 0.0,
+                        "z": -207.1666717529297
+                    },
+                    "standOff": 89.5265884399414,
+                    "along": 78.53846740722656
+                },
+                {
+                    "focus": {
+                        "x": -91.05882263183594,
+                        "y": 0.0,
+                        "z": -206.74510192871094
+                    },
+                    "standOff": 90.57910919189453,
+                    "along": 80.52489471435547
+                },
+                {
+                    "focus": {
+                        "x": -89.11764526367188,
+                        "y": 0.0,
+                        "z": -206.3235321044922
+                    },
+                    "standOff": 91.63162994384766,
+                    "along": 82.51132202148438
+                },
+                {
+                    "focus": {
+                        "x": -87.17646789550781,
+                        "y": 0.0,
+                        "z": -205.90196228027344
+                    },
+                    "standOff": 92.6841812133789,
+                    "along": 84.49774169921875
+                },
+                {
+                    "focus": {
+                        "x": -85.23529052734375,
+                        "y": 0.0,
+                        "z": -205.4803924560547
+                    },
+                    "standOff": 79.1805191040039,
+                    "along": 86.48416900634766
+                },
+                {
+                    "focus": {
+                        "x": -83.29411315917969,
+                        "y": 0.0,
+                        "z": -205.05882263183594
+                    },
+                    "standOff": 80.23303985595703,
+                    "along": 88.47059631347656
+                },
+                {
+                    "focus": {
+                        "x": -81.35294342041016,
+                        "y": 0.0,
+                        "z": -204.6372528076172
+                    },
+                    "standOff": 81.28556060791016,
+                    "along": 90.45702362060547
+                },
+                {
+                    "focus": {
+                        "x": -79.4117660522461,
+                        "y": 0.0,
+                        "z": -204.21568298339844
+                    },
+                    "standOff": 82.33809661865234,
+                    "along": 92.44344329833984
+                },
+                {
+                    "focus": {
+                        "x": -77.47058868408203,
+                        "y": 0.0,
+                        "z": -203.7941131591797
+                    },
+                    "standOff": 83.39063262939453,
+                    "along": 94.42987060546875
+                },
+                {
+                    "focus": {
+                        "x": -75.52941131591797,
+                        "y": 0.0,
+                        "z": -203.37254333496094
+                    },
+                    "standOff": 84.44315338134766,
+                    "along": 96.41629791259766
+                },
+                {
+                    "focus": {
+                        "x": -73.5882339477539,
+                        "y": 0.0,
+                        "z": -202.9509735107422
+                    },
+                    "standOff": 85.49567413330078,
+                    "along": 98.40272521972656
+                },
+                {
+                    "focus": {
+                        "x": -71.64705657958984,
+                        "y": 0.0,
+                        "z": -202.5294189453125
+                    },
+                    "standOff": 86.54821014404297,
+                    "along": 100.38914489746094
+                },
+                {
+                    "focus": {
+                        "x": -69.70587921142578,
+                        "y": 0.0,
+                        "z": -202.10784912109375
+                    },
+                    "standOff": 87.6007308959961,
+                    "along": 102.37557220458984
+                },
+                {
+                    "focus": {
+                        "x": -67.76470184326172,
+                        "y": 0.0,
+                        "z": -201.686279296875
+                    },
+                    "standOff": 88.65326690673828,
+                    "along": 104.36199951171875
+                },
+                {
+                    "focus": {
+                        "x": -65.82353210449219,
+                        "y": 0.0,
+                        "z": -201.26470947265625
+                    },
+                    "standOff": 89.7057876586914,
+                    "along": 106.34842681884766
+                },
+                {
+                    "focus": {
+                        "x": -63.88235092163086,
+                        "y": 0.0,
+                        "z": -200.8431396484375
+                    },
+                    "standOff": 90.7583236694336,
+                    "along": 108.33484649658203
+                },
+                {
+                    "focus": {
+                        "x": -61.94117736816406,
+                        "y": 0.0,
+                        "z": -200.42156982421875
+                    },
+                    "standOff": 91.81084442138672,
+                    "along": 110.32127380371094
+                },
+                {
+                    "focus": {
+                        "x": -60.0,
+                        "y": 0.0,
+                        "z": -200.0
+                    },
+                    "standOff": 92.86336517333984,
+                    "along": 112.30770111083984
+                }
+            ],
+            "speed": 8.0
+        },
+        {
+            "name": "pan-quay-deck",
+            "why": "a level change (Redline section 6): the focus rises from the street to the deck at the harbour quay, then runs along the crane walk",
+            "focus": {
+                "x": 321.0,
+                "y": 0.0,
+                "z": -506.5
+            },
+            "zoom": 14.0,
+            "standOff": 66.55497741699219,
+            "path": [
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 0.0,
+                        "z": -506.5
+                    },
+                    "standOff": 66.55497741699219,
+                    "along": 0.0
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 1.8860000371932983,
+                        "z": -506.5
+                    },
+                    "standOff": 65.39384460449219,
+                    "along": 1.8860000371932983
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 3.7720000743865967,
+                        "z": -506.5
+                    },
+                    "standOff": 64.23269653320313,
+                    "along": 3.7720000743865967
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 5.658000469207764,
+                        "z": -506.5
+                    },
+                    "standOff": 63.07155990600586,
+                    "along": 5.6579999923706055
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 7.544000148773193,
+                        "z": -506.5
+                    },
+                    "standOff": 61.91042709350586,
+                    "along": 7.544000148773193
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -506.5
+                    },
+                    "standOff": 60.7492790222168,
+                    "along": 9.430000305175781
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -508.4814758300781
+                    },
+                    "standOff": 59.39704513549805,
+                    "along": 11.411481857299805
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -510.46295166015625
+                    },
+                    "standOff": 68.14137268066406,
+                    "along": 13.392963409423828
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -512.4444580078125
+                    },
+                    "standOff": 66.78912353515625,
+                    "along": 15.374444961547852
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -514.4259033203125
+                    },
+                    "standOff": 65.43690490722656,
+                    "along": 17.355926513671875
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -516.4074096679688
+                    },
+                    "standOff": 64.08465576171875,
+                    "along": 19.3374080657959
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -518.388916015625
+                    },
+                    "standOff": 62.73240661621094,
+                    "along": 21.318889617919922
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -520.370361328125
+                    },
+                    "standOff": 61.38018798828125,
+                    "along": 23.300371170043945
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -522.3518676757813
+                    },
+                    "standOff": 60.02793884277344,
+                    "along": 25.28185272216797
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -524.3333129882813
+                    },
+                    "standOff": 58.67572021484375,
+                    "along": 27.263334274291992
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -526.3148193359375
+                    },
+                    "standOff": 57.32347106933594,
+                    "along": 29.244815826416016
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -528.2963256835938
+                    },
+                    "standOff": 55.971221923828125,
+                    "along": 31.22629737854004
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -530.2777709960938
+                    },
+                    "standOff": 54.61900329589844,
+                    "along": 33.20777893066406
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -532.25927734375
+                    },
+                    "standOff": 53.266754150390625,
+                    "along": 35.18925857543945
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -534.24072265625
+                    },
+                    "standOff": 51.91453552246094,
+                    "along": 37.17074203491211
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -536.2222290039063
+                    },
+                    "standOff": 50.562286376953125,
+                    "along": 39.1522216796875
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -538.2036743164063
+                    },
+                    "standOff": 49.21006774902344,
+                    "along": 41.133705139160156
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -540.1851806640625
+                    },
+                    "standOff": 47.857818603515625,
+                    "along": 43.11518478393555
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -542.1666870117188
+                    },
+                    "standOff": 46.50556945800781,
+                    "along": 45.0966682434082
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -544.1481323242188
+                    },
+                    "standOff": 45.153350830078125,
+                    "along": 47.078147888183594
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -546.129638671875
+                    },
+                    "standOff": 43.80110168457031,
+                    "along": 49.05963134765625
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -548.111083984375
+                    },
+                    "standOff": 42.448883056640625,
+                    "along": 51.04111099243164
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -550.0925903320313
+                    },
+                    "standOff": 41.09663391113281,
+                    "along": 53.0225944519043
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -552.0740966796875
+                    },
+                    "standOff": 39.74436950683594,
+                    "along": 55.00407409667969
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -554.0555419921875
+                    },
+                    "standOff": 37.817527770996094,
+                    "along": 56.985557556152344
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -556.0370483398438
+                    },
+                    "standOff": 31.891021728515625,
+                    "along": 58.967037200927734
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -558.0184936523438
+                    },
+                    "standOff": 30.538818359375,
+                    "along": 60.94852066040039
+                },
+                {
+                    "focus": {
+                        "x": 321.0,
+                        "y": 9.430000305175781,
+                        "z": -560.0
+                    },
+                    "standOff": 29.440271377563477,
+                    "along": 62.93000030517578
+                }
+            ],
+            "speed": 8.0
+        }
+    ]
+}

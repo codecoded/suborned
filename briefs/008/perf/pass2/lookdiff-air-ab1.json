@@ -1,0 +1,198 @@
+{
+ "cafe-square|fade-off": {
+  "meanAbs": 2.72,
+  "changed": 0.0647
+ },
+ "cafe-square|ssao-off": {
+  "meanAbs": 0.05,
+  "changed": 0.0007
+ },
+ "cafe-square|shadows-off": {
+  "meanAbs": 10.6,
+  "changed": 0.2832
+ },
+ "cafe-square|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0006
+ },
+ "cafe-square|ssao-depth": {
+  "meanAbs": 0.06,
+  "changed": 0.0006
+ },
+ "cafe-square|fixes-123": {
+  "meanAbs": 0.09,
+  "changed": 0.0017
+ },
+ "cafe-square|cascades-2": {
+  "meanAbs": 0.03,
+  "changed": 0.0005
+ },
+ "crown-circus|shadows-off": {
+  "meanAbs": 10.75,
+  "changed": 0.3151
+ },
+ "crown-circus|fixes-123": {
+  "meanAbs": 0.06,
+  "changed": 0.0013
+ },
+ "crown-circus|ssao-off": {
+  "meanAbs": 0.02,
+  "changed": 0.0004
+ },
+ "crown-circus|ssao-depth": {
+  "meanAbs": 0.04,
+  "changed": 0.0007
+ },
+ "crown-circus|cascades-2": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "crown-circus|fade-off": {
+  "meanAbs": 4.26,
+  "changed": 0.1212
+ },
+ "crown-circus|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0006
+ },
+ "heaviest|cascades-2": {
+  "meanAbs": 0.16,
+  "changed": 0.0006
+ },
+ "heaviest|fixes-123": {
+  "meanAbs": 0.31,
+  "changed": 0.0027
+ },
+ "heaviest|ssao-off": {
+  "meanAbs": 0.09,
+  "changed": 0.0005
+ },
+ "heaviest|fade-off": {
+  "meanAbs": 11.83,
+  "changed": 0.1878
+ },
+ "heaviest|ssao-depth": {
+  "meanAbs": 0.17,
+  "changed": 0.0006
+ },
+ "heaviest|shadows-off": {
+  "meanAbs": 15.23,
+  "changed": 0.4348
+ },
+ "heaviest|proxies": {
+  "meanAbs": 0.07,
+  "changed": 0.0015
+ },
+ "parade|ssao-depth": {
+  "meanAbs": 0.02,
+  "changed": 0.0
+ },
+ "parade|fade-off": {
+  "meanAbs": 4.54,
+  "changed": 0.1089
+ },
+ "parade|cascades-2": {
+  "meanAbs": 0.16,
+  "changed": 0.0026
+ },
+ "parade|shadows-off": {
+  "meanAbs": 5.96,
+  "changed": 0.2126
+ },
+ "parade|proxies": {
+  "meanAbs": 0.04,
+  "changed": 0.0014
+ },
+ "parade|ssao-off": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "parade|fixes-123": {
+  "meanAbs": 0.2,
+  "changed": 0.004
+ },
+ "north-edge|cascades-2": {
+  "meanAbs": 0.21,
+  "changed": 0.0003
+ },
+ "north-edge|fade-off": {
+  "meanAbs": 13.65,
+  "changed": 0.2495
+ },
+ "north-edge|proxies": {
+  "meanAbs": 0.08,
+  "changed": 0.0001
+ },
+ "north-edge|shadows-off": {
+  "meanAbs": 14.77,
+  "changed": 0.3867
+ },
+ "north-edge|ssao-off": {
+  "meanAbs": 0.42,
+  "changed": 0.0094
+ },
+ "north-edge|ssao-depth": {
+  "meanAbs": 0.51,
+  "changed": 0.0083
+ },
+ "north-edge|fixes-123": {
+  "meanAbs": 0.61,
+  "changed": 0.0087
+ },
+ "home|fixes-123": {
+  "meanAbs": 0.12,
+  "changed": 0.002
+ },
+ "home|ssao-depth": {
+  "meanAbs": 0.09,
+  "changed": 0.0017
+ },
+ "home|shadows-off": {
+  "meanAbs": 5.82,
+  "changed": 0.1574
+ },
+ "home|cascades-2": {
+  "meanAbs": 0.04,
+  "changed": 0.0002
+ },
+ "home|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0002
+ },
+ "home|fade-off": {
+  "meanAbs": 0.02,
+  "changed": 0.0
+ },
+ "home|ssao-off": {
+  "meanAbs": 0.1,
+  "changed": 0.0025
+ },
+ "harbour-quay|cascades-2": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "harbour-quay|ssao-off": {
+  "meanAbs": 0.02,
+  "changed": 0.0002
+ },
+ "harbour-quay|shadows-off": {
+  "meanAbs": 14.68,
+  "changed": 0.402
+ },
+ "harbour-quay|fixes-123": {
+  "meanAbs": 0.06,
+  "changed": 0.0009
+ },
+ "harbour-quay|ssao-depth": {
+  "meanAbs": 0.04,
+  "changed": 0.0002
+ },
+ "harbour-quay|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0007
+ },
+ "harbour-quay|fade-off": {
+  "meanAbs": 0.2,
+  "changed": 0.0028
+ }
+}

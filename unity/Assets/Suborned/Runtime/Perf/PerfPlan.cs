@@ -41,17 +41,21 @@ namespace Suborned.Perf
         public bool repeatFirst, shots;
     }
 
-    /// <summary>A/B switches. ssao: "" or "on" = as built, "depth" = after opaques from the depth texture (no depth-normals
-    /// prepass), "off". cascades: 0 = as built (TacticalShadows). proxies: kit facades and street trees cast their shadow from
-    /// their LOD1 mesh (a shadows-only renderer) and no LOD casts its own.</summary>
+    /// <summary>A/B switches, each "" (or 0) = as built. ssao: "on" = as built, "depth" = after opaques from the depth texture (no
+    /// prepass; as built since B6), "normals" = before opaques from the depth-normals prepass (as built before B6), "off".
+    /// cascades: the play camera's shadow cascades (TacticalShadows; 2 as built since B6, 4 before). proxies: "on" = kit facades and
+    /// street trees cast from their LOD1 shadow proxy (ShadowProxy) and no LOD casts its own (as built since B6), "off" = every LOD
+    /// casts as before. A variant that names every switch measures the same scene in any build: `as-was` is the build before B6.</summary>
     [Serializable]
     public sealed class PerfVariant
     {
-        public string name, why, ssao = "";
+        public string name, why, ssao = "", proxies = "";
         public int cascades;
-        public bool shadowsOff, fadeOff, proxies;
+        public bool shadowsOff, fadeOff;
 
-        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "on" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : "on")}, proxies {(proxies ? "on" : "off")}";
+        public bool UsesProxies => proxies == "on" || proxies == "off";
+
+        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : "on")}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}";
     }
 
     [Serializable]

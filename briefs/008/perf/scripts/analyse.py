@@ -59,7 +59,7 @@ for p in r['passes']:
 
 print('\n== drawer, per frame: camera triangles | shadow triangles (all splits)')
 for k in cells:
-    if k[2] in ('base', 'proxies', 'cascades-2', 'fixes-13', 'fixes-123'):
+    if k[2] in ('as-was', 'base', 'ssao-depth', 'proxies', 'cascades-2', 'fixes-13', 'fixes-123'):
         d = next((s['drawer'] for s in cells[k] if s['drawer'] and s['drawer'].get('cameraInstances')), None)
         if d: print(f"  {k[0]:5} {k[1]:13} {k[2]:11} {d['cameraTriangles'] // 1000}k | {d['shadowTriangles'] // 1000}k in {d['shadowSplits']} splits")
 print('\nranking', r['ranking'])

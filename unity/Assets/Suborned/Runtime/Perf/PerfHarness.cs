@@ -7,8 +7,8 @@ namespace Suborned.Perf
 {
     /// <summary>Frame-time harness (brief 008 B6; Redline's review out/review/008-b6-perf.html, M1-M8 and item 0). In a development
     /// player started with `-perf plan.json [-perfOut result.json] [-perfShots dir] [-perfPass name] [-perfStrict]` and, to pin one
-    /// variant for the whole run, `[-perfSsao on|depth|off] [-perfCascades n] [-perfShadows on|off] [-perfFade on|off]
-    /// [-perfProxies on|off]`, it drives the scene's play camera (the real rig: rotation, orthographic zoom, TacticalShadows fitted
+    /// variant for the whole run, `[-perfSsao on|depth|normals|off] [-perfCascades n] [-perfShadows on|off] [-perfFade on|off]
+    /// [-perfProxies on|off]` (`-perfNoWarm` skips the warm-up, for a counts-only pass), it drives the scene's play camera (the real rig: rotation, orthographic zoom, TacticalShadows fitted
     /// to the stand-off, ArchitectureFade about the focus). Preflight: the machine's load and power go into the report and a busy
     /// machine is flagged (refused with -perfStrict). Warm-up cycles the stops unrecorded until the frame time plateaus (PerfWarm).
     /// Then every segment of the schedule (PerfSchedule: passes, rotated repeats, interleaved variants) settles (thermal state;
@@ -89,10 +89,8 @@ namespace Suborned.Perf
                 if (report.machineStart.busy && Array.IndexOf(args, "-perfStrict") >= 0)
                     throw new InvalidOperationException("Perf: the machine is busy (-perfStrict): " + string.Join("; ", report.machineStart.warnings));
                 if (report.machineStart.busy) Debug.LogWarning("Perf: MACHINE BUSY, this run is not a reference measure: " + string.Join("; ", report.machineStart.warnings));
-                PerfProxies proxies = null;
-                foreach (var s in schedule) if (plan.variants[s.variant].proxies) { proxies = new PerfProxies(stamp.transform); break; }
-                if (proxies is { Count: 0 }) throw new InvalidOperationException("Perf: a variant switches shadow proxies on, but this player has none (build it with PerfBuild: PerfProxyScene adds them)");
-                report.proxyRenderers = proxies?.Count ?? 0; report.proxyTriangles = proxies?.Triangles ?? 0;
+                var proxies = new PerfProxies(); // the scene's baked shadow proxies (ShadowProxy), as built on or off
+                report.proxyRenderers = proxies.Count; report.proxyTriangles = proxies.Triangles; report.proxiesAsBuilt = proxies.BuiltOn;
                 switches = new PerfSwitches(cam, shadows, fade, proxies);
                 report.ssaoAsBuilt = switches.SsaoAsBuilt;
                 nan = new PerfNaN(cam, plan.width, plan.height);
@@ -109,6 +107,7 @@ namespace Suborned.Perf
                 Application.runInBackground = true;
                 Pace(plan.passes[schedule[0].pass]);
                 runStart = Time.realtimeSinceStartup;
+                if (Array.IndexOf(args, "-perfNoWarm") >= 0) plan.warmup.maxSeconds = 0f; // counts only (no timing read): no warm-up
                 if (plan.warmup.maxSeconds > 0f)
                 {
                     warm = new PerfWarm(plan.warmup, plan.stops.Length, MaxFps);
@@ -127,7 +126,7 @@ namespace Suborned.Perf
         {
             string ssao = Arg(args, "-perfSsao"), casc = Arg(args, "-perfCascades"), sh = Arg(args, "-perfShadows"), fd = Arg(args, "-perfFade"), px = Arg(args, "-perfProxies");
             if (ssao == null && casc == null && sh == null && fd == null && px == null) return null;
-            var v = new PerfVariant { ssao = ssao ?? "", cascades = casc != null ? int.Parse(casc) : 0, shadowsOff = sh == "off", fadeOff = fd == "off", proxies = px == "on" };
+            var v = new PerfVariant { ssao = ssao ?? "", cascades = casc != null ? int.Parse(casc) : 0, shadowsOff = sh == "off", fadeOff = fd == "off", proxies = px ?? "" };
             v.name = "cli: " + v.Describe(); v.why = "pinned by the command line";
             return v;
         }
