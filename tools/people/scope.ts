@@ -4,8 +4,10 @@
 import { civic, toPlanFn, type Civic } from '../plan/civic';
 import { area, centroid, dist, inPoly, type V } from '../plan/geom';
 import { derive, type Derived, type Plan } from '../plan/plan';
+import { blockersOf } from '../plan/walk';
 import type { Place } from '../../contracts/people/people.schema';
 import { employerOfBlock, type Rules } from './rules';
+import { cafeSets, seatId, seatPoints, standId, standingPoints, type Table } from './seats';
 
 export const SCOPES = ['civic-block'] as const;
 /** Residents who are simulated people per home plot; the rest of a plot is background (the density target tops the street up). [S] */
@@ -23,17 +25,29 @@ export type Scope = {
   id: string; areas: string[]; plots: { id: string; area: string; use: string; civic?: string }[];
   stops: { place: string; line: string; id: string; mode: 'tram' | 'skyrail'; name: string }[];
   units: Unit[]; places: Place[]; homes: Home[];
-  bayPolys: Record<string, V[]>; zones: { id: string; test(p: V): boolean }[];
-  /** where a customer of the café sits: the nearest seat to its door
-  */
-  /** the places a person may stand off-shift without being in a keep-clear zone: seats */
+  bayPolys: Record<string, V[]>; zones: { id: string; bars: string[]; test(p: V): boolean }[];
+  /** the chairs a person may sit in off-shift: every chair of the café sets, bar a zone that bars tables (seats.ts) */
   seats: string[];
+  /** the café's tables with a chair a person may take, nearest the café door first; `seats` are their chair places in the order they are taken */
+  tables: Table[];
+  /** every café set the world draws, with its chairs (place ids and positions): what P-13 holds the seats to */
+  sets: { id: string; piece?: string; at: V; yaw: number; seats: { place: string; at: V }[] }[];
+  /** the standing points beside the café (kind 'stand'), nearest its door first: taken when every chair is held */
+  stands: string[];
+  /** the places that are the café's customers' side: its chairs and its standing points (see atCafeSide) */
+  cafeSide: string[];
   /** the walk speed (m/s) the people are timed by */
   speed: number;
+  /** the first chair of the table nearest the café's door: where a pre-shift stop is aimed, and the placeholder before seats are shared out */
   cafe: string;
-  /** the unit whose door the cafe seat stands by: someone sitting at `cafe` is at that unit's customers' side (a regular) */
+  /** the unit whose door the café's seats stand by */
   cafeUnit: string;
 };
+
+/** A stop at the café unit's customers' side, for a regular tie: before the shift, at one of its chairs or standing points (§05 the guard's café stop; §08 the café keeper tips on the
+ *  guard). A meal or an evening at a café chair is a customer's, and counts for no tie: it is where the rules' regular ("a customer who comes back") was never asked for. One definition
+ *  for the expander, P-7 and the review. */
+export const atCafeSide = (scope: Pick<Scope, 'cafeSide'>, place: string, doing: string) => doing === 'pre-shift' && scope.cafeSide.includes(place);
 
 const kebab = (s: string) => s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const rectDist = (p: V, r: [number, number, number, number]) => Math.hypot(Math.max(r[0] - p[0], 0, p[0] - r[1]), Math.max(r[2] - p[1], 0, p[1] - r[3]));
@@ -101,17 +115,23 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
     const trade = mode === 'tram' ? 'tram-kiosk' : 'skyrail-kiosk', hours: [number, number] = [service.from, service.to % 24];
     units.push({ id: `${id}-kiosk`, plot: plots[0]!.id, area: areas[0]!, trade, employer: `${id}-kiosk`, category: 'kiosk', name: `${best.name} kiosk`, kind: 'kiosk', staffPerShift: occ[trade]!.staffPerUnit, hours, shifts: shiftsOf(hours, lengthH(trade)), door: id });
   }
-  // seats: the block's tables; a seat inside a keep-clear zone is a place but nobody sits there off-shift
+  // seats: the chairs of the café sets the world draws on the block's tables (seats.ts). A zone bars the kinds it lists and none lists a table, so a chair
+  // stands where its table does; a zone that did bar tables would take its chairs out of `seats`.
   const dress: any = civ.dressing ?? {};
   const zones = ((dress.keepClear ?? []) as any[]).map(z => ({
-    id: z.id as string,
+    id: z.id as string, bars: (z.bars ?? []) as string[],
     test: z.ring ? (p: V) => { const c = toPlan(z.ring.centre), r = dist(p, c); return r >= z.ring.r0 && r <= z.ring.r1; } : (p: V) => inPoly(p, (z.polygon as V[]).map(toPlan)),
   }));
-  const seats: string[] = [];
-  for (const o of civ.objects.filter(x => x.kind === 'table').sort((a, b) => (a.id < b.id ? -1 : 1))) {
-    const c = centroid(o.poly), pl = plotAt(c);
-    add({ id: o.id, kind: 'seat', name: o.id, at: c, area: pl?.area ?? areas[0]!, ...(pl ? { plot: pl.id } : {}) });
-    if (!zones.some(z => z.test(c))) seats.push(o.id);
+  const sets = cafeSets(civ), seats: string[] = [], eligible = (p: V) => !zones.some(z => z.bars.includes('table') && z.test(p));
+  const setsOut: Scope['sets'] = [];
+  for (const o of sets) {
+    const pts = seatPoints(o), ids: { place: string; at: V }[] = [];
+    pts.forEach((c, k) => {
+      const pl = plotAt(c), id = seatId(o.id, k);
+      add({ id, kind: 'seat', name: `${o.id} seat ${k}`, at: c, area: pl?.area ?? areas[0]!, ...(pl ? { plot: pl.id } : {}) });
+      ids.push({ place: id, at: c });
+    });
+    setsOut.push({ id: o.id, ...(o.piece ? { piece: o.piece } : {}), at: o.at, yaw: o.yaw, seats: ids });
   }
   // homes: life.generator.homes of the scope's areas within the transit reach of a scope plot; the door is on the face nearest the scope
   const centre = centroid(plots.flatMap(p => polyOf(p.id)));
@@ -128,10 +148,18 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
     add({ id, kind: 'home', name: `${plan.plots.find(x => x.id === h.plot)?.name ?? h.plot} door`, at: [gx, gy], area: h.area, plot: h.plot });
     homes.push({ plot: h.plot, area: h.area, residents: h.residents, place: id });
   }
-  // the café stop of a customer is a table: the eligible seat nearest the café's door (the door itself is a keep-clear zone)
-  const cafeDoor = places.find(p => p.id === (units.find(u => u.kind === 'frontage' && u.trade === 'diner') ?? units.find(u => u.kind === 'frontage')!).door)!;
-  const cafeUnit = (units.find(u => u.kind === 'frontage' && u.trade === 'diner') ?? units.find(u => u.kind === 'frontage')!).id;
-  const cafe = [...seats].sort((a, b) => dist(places.find(p => p.id === a)!.at as V, cafeDoor.at as V) - dist(places.find(p => p.id === b)!.at as V, cafeDoor.at as V) || (a < b ? -1 : 1))[0] ?? cafeDoor.id;
+  // the café's customers sit at its tables: the tables nearest the café's door first; beside them, standing points that keep every keep-clear zone clear
+  const cafeUnitRow = units.find(u => u.kind === 'frontage' && u.trade === 'diner') ?? units.find(u => u.kind === 'frontage')!;
+  const cafeDoor = places.find(p => p.id === cafeUnitRow.door)!, cafeUnit = cafeUnitRow.id;
+  const tables: Table[] = setsOut.map(o => ({ id: o.id, at: o.at, seats: o.seats.filter(x => eligible(x.at)).map(x => x.place) })).filter(t => t.seats.length)
+    .sort((a, b) => dist(a.at, cafeDoor.at as V) - dist(b.at, cafeDoor.at as V) || (a.id < b.id ? -1 : 1));
+  for (const t of tables) seats.push(...t.seats);
+  const { polys, rounds } = blockersOf(plan, d, civ), bays = Object.values(bayPolys);
+  const free = (p: V) => !polys.some(b => inPoly(p, b)) && !rounds.some(l => dist(p, l.c) < l.r);
+  const clear = (p: V) => !zones.some(z => z.test(p)) && !bays.some(b => inPoly(p, b));
+  const stands = standingPoints(civ, cafeDoor.at as V, setsOut.flatMap(o => o.seats.map(x => x.at)).concat(sets.map(o => o.at)), free, clear), standIds: string[] = [];
+  stands.forEach((c, k) => { const pl = plotAt(c), id = standId(k); add({ id, kind: 'stand', name: `café standing point ${k}`, at: c, area: pl?.area ?? areas[0]!, ...(pl ? { plot: pl.id } : {}) }); standIds.push(id); });
+  const cafe = tables[0]?.seats[0] ?? cafeDoor.id;
   places.sort((a, b) => (a.id < b.id ? -1 : 1)); units.sort((a, b) => (a.id < b.id ? -1 : 1));
-  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, speed: life.pedestrians.walkSpeed, cafe, cafeUnit }, civ, d };
+  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, tables, sets: setsOut, stands: standIds, cafeSide: [...setsOut.flatMap(o => o.seats.map(x => x.place)), ...standIds].sort(), speed: life.pedestrians.walkSpeed, cafe, cafeUnit }, civ, d };
 }

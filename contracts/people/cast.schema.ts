@@ -53,3 +53,22 @@ export const Cast = z.object({
 export type Cast = z.infer<typeof Cast>;
 export type Row = z.infer<typeof Row>;
 export type Routine = z.infer<typeof Routine>;
+
+/** suborned.cast.promotion/1: the record beside a promoted cast (contracts/people/<plan id>.cast.json, written by promoting an accepted people run, as run r011's
+ *  skyline text was promoted into the plan). The cast file is the run's accepted `cast` byte for byte (JSON.stringify(cast, null, 1), no trailing newline), so
+ *  the record names the run, the round, the sha256 of the round's output file and of the cast file, and who promoted it and when; tools/people/promoted.ts holds
+ *  the file to it (and to the run on disk) every time `bun run people`, `bun run verify` and the contracts tests run. */
+export const CastPromotion = z.object({
+  schema: z.literal('suborned.cast.promotion/1'),
+  plan: word, scope: word,
+  cast: z.object({ file: z.string(), sha256: z.string().regex(/^[0-9a-f]{64}$/), bytes: z.number().int().positive() }),
+  source: z.object({
+    run: z.string().regex(/^r\d{3}$/), round: z.number().int().min(1), version: z.string().describe('the round\'s plan version label in run.json (finalVersion for the accepted round)'),
+    file: z.string().describe('the round\'s output file, under runs/levels/<plan id>/<run>/'), path: z.literal('cast').describe('where the cast stands in that file'),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/).describe('sha256 of the whole round output file'),
+    runFile: z.string(), outcome: z.literal('ACCEPTED'),
+  }),
+  promoted: z.string().describe('who promoted it and when, as Sky\'s ruling was given: "Sky, 2026-10-15"'),
+  why: z.string(),
+});
+export type CastPromotion = z.infer<typeof CastPromotion>;

@@ -4,7 +4,7 @@
 import type { V } from '../plan/geom';
 import { toPlanFn } from '../plan/civic';
 import type { Person } from '../../contracts/people/people.schema';
-import { castRoles, type Cast, type CastMission, type CastRules } from '../missions/handover/cast';
+import { castRoles, type Cast, type CastMission, type CastOptions, type CastRules } from '../missions/handover/cast';
 import type { Scope } from './scope';
 
 export type { Cast };
@@ -18,7 +18,7 @@ export const castRulesOf = (r: { temperaments: Record<string, { refuses: readonl
 /** Who the Handover casts for each role the mission names (P-6, the same casting as M-2): employer, position, shift and place, and
  *  the role's need, approach and regularOf under `rules`. Without `rules` only the place counts (a fallback for naming a
  *  cast that cannot meet the conditions; the checker never uses it). */
-export function castHandover(persons: Person[], scope: Scope, mission: MissionIn, plan: { civic: unknown }, rules?: Parameters<typeof castRulesOf>[0]): Cast[] {
+export function castHandover(persons: Person[], scope: Scope, mission: MissionIn, plan: { civic: unknown }, rules?: Parameters<typeof castRulesOf>[0], opts?: CastOptions): Cast[] {
   const at = new Map(scope.places.map(p => [p.id, p.at as V])), plot = new Map(scope.places.map(p => [p.id, p.plot]));
-  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id], plotOf: id => plot.get(id) }, rules && castRulesOf(rules));
+  return castRoles(persons, mission, { toPlan: toPlanFn(plan.civic), placeAt: id => at.get(id), polyOf: id => scope.bayPolys[id], plotOf: id => plot.get(id) }, rules && castRulesOf(rules), opts);
 }

@@ -1,0 +1,7 @@
+{
+ "source": "Unity 6000.6.2f1, eval over the built prefab Assets/Suborned/Kit/Prefabs/Built/DK_CafeSet_Tulip_Play.prefab (the piece the block's tables draw), 2026-10-15 (Splice): the LOD0 mesh's vertices in the prefab root's space; the centre of each chair's foot ring (vertices at y <= 0.03 and 0.45 m or more from the table pivot; the two clusters of each ring averaged). Kit frame: x, z of the prefab; the placer turns the kit +x to (cos yaw, sin yaw) in plan and +z to (-sin yaw, cos yaw) (KitPlacer.Place).",
+ "piece": "CafeSet_Tulip_Play",
+ "radius": 0.72,
+ "chairsKit": [[0.36, -0.6235], [0.36, 0.6235], [-0.72, 0]],
+ "tolerance": 0.002
+}

@@ -1,0 +1,22 @@
+{
+ "schema": "suborned.cast.promotion/1",
+ "plan": "harbour-district",
+ "scope": "civic-block",
+ "cast": {
+  "file": "contracts/people/harbour-district.cast.json",
+  "sha256": "d4d8e2e70cb9a3ea28e9a29b6f1349e1fdec6cf8e3d1db95475f64b293f0476e",
+  "bytes": 21075
+ },
+ "source": {
+  "run": "r013",
+  "round": 2,
+  "version": "0.4.0-r013.2",
+  "file": "runs/levels/harbour-district/r013/round-2/pulse.json",
+  "path": "cast",
+  "sha256": "8e287ec609f6d72f1ddb6800feda2527ea43b85ddc6d03cd0f1baceed3c5a1e3",
+  "runFile": "runs/levels/harbour-district/r013/run.json",
+  "outcome": "ACCEPTED"
+ },
+ "promoted": "Sky, 2026-10-15",
+ "why": "People run r013 (civic block, continues r012) was ACCEPTED in 2 rounds (Keel's one round-1 fault was stale why-texts after the expander fix; round 2 clean: 126 people, P-0..P-12 ok, M-2 casts all four roles). Sky accepted its cast tables on 2026-10-15 (\"seems good, go\", relayed by Aster); the cast file is round 2's `cast` byte for byte, so `bun run people` with no --cast expands it. The stand-in cast (tools/people/standin.ts) stays as a test fixture only. Same promotion as skyline run r011 into the plan (871dd13): the file stands beside its run and is held to it, never edited by hand; a new cast is a new run, promoted again."
+}

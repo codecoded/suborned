@@ -57,7 +57,7 @@ describe('people plug-in', () => {
       const rep = await replayRun(plugins, 'harbour-district', r.runId);
       expect(rep.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
       expect(rep.ok).toBe(true);
-      expect(rep.lines).toContain(`ok    round-1: checker rerun matches checks.json (13/13)`);
+      expect(rep.lines).toContain(`ok    round-1: checker rerun matches checks.json (14/14)`);
     } finally { delete process.env.LEVELS_RUNS; delete process.env.LEVELS_OUT; }
   });
 

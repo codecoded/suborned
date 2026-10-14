@@ -26,7 +26,7 @@ export const VERDICT_FILES = [
 
 /** The files of the hash, under `base` (the repo root; a test points it at a copy). */
 export const skylineFiles = (base: string = root): string[] => [
-  ...ts(base, 'tools/plan'), ...ts(base, 'tools/world'), ...VERDICT_FILES,
+  ...ts(base, 'tools/plan'), ...ts(base, 'tools/world'), ...ts(base, 'tools/people'), ...ts(base, 'contracts/people'), ...VERDICT_FILES, // tools/people, contracts/people: rule M-2 (the overlay) expands the promoted cast (Redline H1)
 ];
 
 export async function skylineHash(base: string = root): Promise<string> {

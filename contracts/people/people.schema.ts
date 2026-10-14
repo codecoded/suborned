@@ -9,7 +9,7 @@ const minute = z.number().int().min(0).max(1440);
 const v2 = z.array(z.number()).length(2);
 
 export const Place = z.object({
-  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'home']), name: z.string().min(1), at: v2.describe('plan frame, metres'),
+  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'stand', 'home']).describe('seat: a chair of a café set the world draws; stand: a standing point beside the café that keeps every keep-clear zone clear (tools/people/seats.ts)'), name: z.string().min(1), at: v2.describe('plan frame, metres'),
   area: id, plot: id.optional(),
 });
 export const Stop = z.object({
@@ -34,6 +34,8 @@ export const Person = z.object({
   memory: z.tuple([]).describe('empty at the start (rules person.memoryAtStart)'),
   ties: z.array(z.object({ kind: z.string(), with: z.string() })).describe('two-way ties stand on both people; a directed tie stands on its source'),
   look: z.object({ block: z.string().describe('job colour block key, e.g. job/food') }),
+  position: id.describe('the person\'s position in their unit, or their role at a civic employer; "resident" for a resident (brief 010, keel-rulebook.md point 8)'),
+  needWeights: z.record(id, z.number().int().positive()).describe('the needs the person\'s own cast row offers their position, as integer per mille (largest remainder, sum 1000): the weights the rulebook draws a replacement need from (Sky Q2). `need` is one of them'),
 });
 /** Rules knowledge (P5), derived from the people at the start: what a person knows besides their own day. */
 export const Knowledge = z.object({
@@ -43,7 +45,8 @@ export const Knowledge = z.object({
 export const People = z.object({
   schema: z.literal('suborned.people/1'),
   plan: z.object({ id: z.string(), version: z.string() }), scope: id,
-  inputs: z.object({ cast: z.string(), life: z.string(), block: z.string(), rules: z.string() }).describe('sha256 of each input'),
+  inputs: z.object({ cast: z.string(), life: z.string(), block: z.string(), rules: z.string(), mission: z.string(), plan: z.string(), tools: z.string().optional() })
+    .describe('sha256 of each input: the cast (of its parsed JSON), life.json, the civic block, the people rules, the mission and the plan text. `tools` (written by `bun run people`): the people tools hash (tools/levels/people/hash.ts), so a file made by other code is known. A reader (M-2, the Unity people layer) refuses a file whose hashes are not the current inputs\''),
   places: z.array(Place),
   units: z.array(z.object({ id, plot: id, area: id, trade: id, employer: id, name: z.string(), staffPerShift: z.number().int(), hours: v2, shifts: z.array(z.object({ from: minute, to: minute })) })),
   persons: z.array(Person),

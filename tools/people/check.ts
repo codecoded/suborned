@@ -5,12 +5,13 @@ import { Cast as CastSchema } from '../../contracts/people/cast.schema';
 import { People as PeopleSchema, Person as PersonSchema, type Person } from '../../contracts/people/people.schema';
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
-import { expand, inShift, rowOf, type Ctx } from './expand';
+import { expand, inShift, needsOf, needWeightsOf, rowOf, type Ctx } from './expand';
 import { castHandover, type MissionIn } from './handover';
 import { deriveKnowledge } from './knowledge';
 import { pinnedByRole } from './roles';
 import { positionsOf } from './rules';
-import type { Unit } from './scope';
+import { seatId, seatPoints, SEAT_TOL, STAND } from './seats';
+import { atCafeSide, type Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
 
 export const GROUP = 'People';
@@ -20,6 +21,7 @@ const PersonShape = PersonSchema.shape as Record<string, unknown>;
 export const FIELD_READER: Record<string, string> = {
   id: '~key: the person\'s key; no rule reads it', tier: '~tiers: rules tiers.simulated (background people are counts, not persons)', name: 'name', temperament: 'temperament', need: 'need',
   institution: 'temperament', start: 'scales', memory: 'memory', ties: 'ties', routine: 'routine', home: 'routine', work: 'routine', look: '~look: the graybox job colour (brief 010 E), no rule reads it',
+  position: 'need', needWeights: 'need', // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
 };
 export const RULES_SRC: Record<string, string> = {
   'P-0': 'GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope\'s area × occupation pairs, and only those',
@@ -35,6 +37,7 @@ export const RULES_SRC: Record<string, string> = {
   'P-10': 'people.rules.json temperamentsBy.mix (P3): no temperament over rowMaxShare of a cast row; a unit of whenStaffAtLeast staff or more carries unitMinDistinct temperaments; GDD §09 risk: sameness',
   'P-11': 'people.rules.json knowledge (P5): a keeper\'s needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08',
   'P-12': 'people.rules.json person.readBy (P2): every field a person carries names the rule that reads it; GDD §09 risk: sameness (Legion\'s bios did nothing)',
+  'P-13': 'GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear',
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
 const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.value ?? (r.bad.length ? `${r.bad.length} fault(s)` : 'ok'), limit: r.limit ?? '0 faults', ok: !r.bad.length, ...(r.bad.length ? { detail: r.bad.slice(0, 12).join('; ') + (r.bad.length > 12 ? `; +${r.bad.length - 12} more` : '') } : {}), source: RULES_SRC[r.id] });
@@ -139,6 +142,11 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       if (!al?.includes(t)) bad.push(`${p.id}: ${key} may not be ${p.temperament}`);
       if (JSON.stringify(p.start) !== JSON.stringify(d.start)) bad.push(`${p.id}: starting scales differ from ${p.temperament}'s`);
       if (!rules.needs.list[p.need]) bad.push(`${p.id}: need ${p.need} is not in the rules`);
+      // unknown = reject: the need is one the person's own row offers their position (the row's need list, by position), not any need the rules know
+      const own = p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, scope.homes.find(h => h.plot === p.home.plot)?.area ?? scope.areas[0]!, 'resident'), pos = p.work ? (p.work.position ?? p.work.role) : 'resident';
+      if (p.position !== pos) bad.push(`${p.id}: position ${p.position}, their work says ${pos}`);
+      if (JSON.stringify(p.needWeights) !== JSON.stringify(needWeightsOf(own, pos))) bad.push(`${p.id}: needWeights are not their row's per mille (${JSON.stringify(needWeightsOf(own, pos))})`);
+      if (rules.needs.list[p.need] && !needsOf(own, pos).some(n => n.need === p.need)) bad.push(`${p.id}: need ${p.need} is not one its row (${own ? `${own.area}/${own.occupation}` : 'none'}) offers a ${pos} (${needsOf(own, pos).map(n => n.need).join(', ') || 'none'})`);
       for (const x of p.ties) if (!kinds.includes(x.kind)) bad.push(`${p.id}: tie kind ${x.kind} is not in the rules`);
       if (p.work) {
         const w = p.work, u = unitOf.get(w.unit);
@@ -172,12 +180,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     out.push({ id: 'P-4', rule: 'Staff counts match life.json per unit and shift; one keeper per unit', bad, value: `${scope.units.length} units`, limit: 'life.json staffPerUnit' });
   }
 
-  // P-5 keep-clear zones
+  // P-5 keep-clear zones. A seat is a chair at a table, and no zone bars tables (CD-1: planter, lamp, bollard, tree, parasol, band), so a chair is held by the zones that bar
+  // tables, if any; a standing point is held by every zone.
   {
-    const bad: string[] = [], pl = new Map(scope.places.map(p => [p.id, p.at as V]));
+    const bad: string[] = [], pl = new Map(scope.places.map(p => [p.id, p]));
     for (const p of P) for (const s of p.routine.stops) {
       const onShift = !!p.work && (s.doing === 'work' || (s.doing === 'meal' && s.place === p.work.place));
-      const z = pl.has(s.place) ? scope.zones.find(x => x.test(pl.get(s.place)!)) : undefined;
+      const here = pl.get(s.place), z = here ? scope.zones.find(x => x.test(here.at as V) && (here.kind !== 'seat' || x.bars.includes('table'))) : undefined;
       if (z && !onShift) bad.push(`${p.id}: ${s.doing} at ${s.place} stands in ${z.id}`);
     }
     out.push({ id: 'P-5', rule: 'No one stands in a CD-1 keep-clear zone off-shift', bad, value: `${scope.zones.length} zones`, limit: '0 off-shift stops inside' });
@@ -207,7 +216,8 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
         const w = (a: Person, b: Person) => a.work && b.work;
         if (spec.between === 'same-employer' && !(w(p, q) && p.work!.employer === q.work!.employer)) bad.push(`${p.id}: workmate ${q.id} has another employer`);
         if (spec.between === 'same-trade-or-employer' && !(w(p, q) && (p.work!.trade === q.work!.trade || p.work!.employer === q.work!.employer))) bad.push(`${p.id}: rival ${q.id} shares no trade or employer`);
-        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && s.place === scope.cafe)) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
+        if (spec.between === 'routine-stop' && p.work && q.work && p.work.employer === q.work.employer) bad.push(`${p.id}: regular of ${q.id}, who works for the same employer (${p.work.employer}): a regular is a customer of another unit, those are workmates`);
+        if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && atCafeSide(scope, s.place, s.doing))) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
       }
       for (const k of Object.keys(T)) if (p.ties.filter(t => t.kind === k).length > T[k as keyof typeof T].maxPerPerson) bad.push(`${p.id}: more than ${T[k as keyof typeof T].maxPerPerson} ${k} ties`);
     }
@@ -254,12 +264,17 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     out.push({ id: 'P-8', rule: 'Names come from one district pool of mixed origins, with no era, unique, and the pinned names present once', bad: [...new Set(bad)], value: `${P.length} names`, limit: 'rules names' });
   }
 
-  // P-9 shape, determinism, tiers
+  // P-9 shape, determinism, tiers. "Same tables, same people" is a second expansion of the cast, made here, and compared byte for byte with the people under test: a file that is
+  // not the expansion of its cast fails it, and so does an expander whose two runs differ.
   {
-    const bad: string[] = [], again = given ? people : expand(c).people;
+    const bad: string[] = [], again = expand(c).people;
     const ps = PeopleSchema.safeParse(people);
     if (!ps.success) bad.push(`the people fail their schema: ${ps.error.issues.slice(0, 3).map(i => i.path.join('.') + ' ' + i.message).join(' | ')}`);
-    if (JSON.stringify(again) !== JSON.stringify(people)) bad.push('two expansions of the same inputs differ');
+    const a = JSON.stringify(people), b = JSON.stringify(again);
+    if (a !== b) {
+      const other = new Map(again.persons.map(p => [p.id, JSON.stringify(p)])), diff = people.persons.filter(p => other.get(p.id) !== JSON.stringify(p)).map(p => p.id);
+      bad.push(`two expansions of the same inputs differ${diff.length ? ` (${diff.slice(0, 4).join(', ')}${diff.length > 4 ? `, +${diff.length - 4} more` : ''})` : ' (not in the persons)'}`);
+    }
     for (const p of P) if (p.memory.length) bad.push(`${p.id}: memory is not empty at the start`);
     for (const b of people.background) if (b.simulated > b.residents) bad.push(`${b.plot}: more simulated people than residents`);
     out.push({ id: 'P-9', rule: 'The expansion is valid, empty of memory, and byte-identical twice', bad, value: `${P.length} people`, limit: 'deterministic' });
@@ -313,6 +328,37 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     for (const p of P) for (const f of Object.keys(p)) if (!shape.includes(f) && !seen.has(f)) { seen.add(f); bad.push(`${p.id} carries ${f}, which the schema does not list`); }
     for (const b of people.background as Record<string, unknown>[]) for (const f of ['name', 'temperament', 'need', 'ties']) if (f in b) bad.push(`background ${b.plot} carries ${f}`);
     out.push({ id: 'P-12', rule: 'Every field a person carries names the rule that reads it', bad: [...new Set(bad)], value: `${shape.length} fields`, limit: 'each read by a rule' });
+  }
+  // P-13 seats: one holder at a time; every seat on a chair (or table) the world draws; every standing point clear
+  {
+    const bad: string[] = [], pl = new Map(scope.places.map(p => [p.id, p])), hm = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+    const held = new Map<string, { who: string; from: number; to: number }[]>();
+    let stops = 0;
+    for (const p of P) for (const s of p.routine.stops) {
+      const k = pl.get(s.place)?.kind; if (k !== 'seat' && k !== 'stand') continue;
+      stops++; held.set(s.place, [...(held.get(s.place) ?? []), { who: p.id, from: s.from, to: s.to }]);
+    }
+    for (const [place, list] of held) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+      const a = list[i]!, b = list[j]!;
+      if (a.from < b.to && b.from < a.to) bad.push(`${a.who} and ${b.who} both hold ${place} (${hm(a.from)}-${hm(a.to)}, ${hm(b.from)}-${hm(b.to)})`);
+    }
+    // the seats the world gives: each chair of each set (a table the world draws no chairs on seats one, at the table), by id, within SEAT_TOL of where the world puts it
+    const real = new Map<string, V>();
+    for (const o of scope.sets) seatPoints(o).forEach((q, k) => real.set(seatId(o.id, k), q));
+    for (const pa of scope.places.filter(x => x.kind === 'seat')) {
+      const q = real.get(pa.id);
+      if (!q) bad.push(`seat ${pa.id} is on no table or chair the world draws`);
+      else if (Math.hypot(pa.at[0] - q[0], pa.at[1] - q[1]) > SEAT_TOL) bad.push(`seat ${pa.id} is at ${pa.at.join(', ')}, ${Math.hypot(pa.at[0] - q[0], pa.at[1] - q[1]).toFixed(2)} m from its chair (${q.join(', ')})`);
+    }
+    for (const id of real.keys()) if (!pl.has(id)) bad.push(`the chair ${id} the world draws is not a place`);
+    const chairs = [...real.values()];
+    for (const pa of scope.places.filter(x => x.kind === 'stand')) {
+      const z = scope.zones.find(x => x.test(pa.at as V)), near = chairs.find(q => Math.hypot(pa.at[0] - q[0], pa.at[1] - q[1]) < STAND.chair);
+      if (z) bad.push(`standing point ${pa.id} is in ${z.id}`);
+      if (near) bad.push(`standing point ${pa.id} is on a chair (${near.join(', ')})`);
+      if (!c.walk.free(pa.at as V)) bad.push(`standing point ${pa.id} is not walkable ground`);
+    }
+    out.push({ id: 'P-13', rule: 'No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear', bad: [...new Set(bad)], value: `${stops} stops at ${held.size} seats and standing points`, limit: 'one holder at a time, every seat on a chair' });
   }
   const checks = out.map(row);
   void rowOf; void (null as unknown as Unit);

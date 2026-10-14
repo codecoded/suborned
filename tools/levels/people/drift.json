@@ -13,6 +13,90 @@
      "P-11"
     ]
    }
+  ],
+  "5680645daed445870d397b38f3ac483c7bc9cd0abc083bd43aae6ba723ac6bfc": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "brief 010 follow-up, café seating (Aster, 2026-10-15): the café's seats are the chairs of the café sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the café (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the café's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   }
+  ],
+  "c016d652510675e7e56e71d2f90eb9ec1bab8374c1eb39f90d453e24a464c121": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "brief 010 follow-up, café seating (Aster, 2026-10-15): the café's seats are the chairs of the café sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the café (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the café's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Redline H1/M1 and Keel's rulebook point 8, 2026-10-15: a person carries position and needWeights (per mille, from the row), so P-12 counts 15 fields and P-3 holds both to the row; the people file's inputs carry the mission and plan hashes (and, from bun run people, the tools hash); P-9 makes a real second expansion and compares it with the people under test; M-2 expands the promoted cast itself",
+    "rules": [
+     "P-12"
+    ]
+   }
+  ],
+  "c666d9ed05e19ef6a999f7910beccc18a8294d703664b6e1cb186e59b95569c9": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "brief 010 follow-up, café seating (Aster, 2026-10-15): the café's seats are the chairs of the café sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the café (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the café's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Redline H1/M1 and Keel's rulebook point 8, 2026-10-15: a person carries position and needWeights (per mille, from the row), so P-12 counts 15 fields and P-3 holds both to the row; the people file's inputs carry the mission and plan hashes (and, from bun run people, the tools hash); P-9 makes a real second expansion and compares it with the people under test; M-2 expands the promoted cast itself",
+    "rules": [
+     "P-12"
+    ]
+   }
   ]
  }
 }

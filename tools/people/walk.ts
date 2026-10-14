@@ -1,6 +1,8 @@
 // The walk graph the people are checked on (brief 010 B, P-1): the plan checker's blockers (built plots, the block's
 // footprints, water, landmarks: tools/plan/walk.ts blockersOf) on a 2 m grid, 16 neighbours, shortest paths from each place by
 // Dijkstra. The grid is the scope's bounding box, so a run costs a few thousand cells. Minutes = metres / walk speed.
+// District scale (Redline M6, 2026-10-15; for Pulse's district plan, not fixed here): every source keeps a full Float64Array (`memo`, never freed), about 1.6 MB a source on a
+// 616 x 976 m grid, so ~1,150 sources need ~1.9 GB and about a minute; a district run needs a per-scope grid, a bounded search or a shared field per source cell.
 import { type V, dist, inPoly } from '../plan/geom';
 import type { Civic } from '../plan/civic';
 import type { Derived, Plan } from '../plan/plan';
