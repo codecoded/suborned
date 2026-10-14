@@ -48,6 +48,8 @@ export type Mass = {
   fade?: true;
   /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
   groundBy?: string;
+  /** Civic only: a material this mass draws in place of its kit piece's own, by the piece's material slot (`{ DK_Water: 'DK_Pool_Civic' }` on the atom fountain). Absent = the piece's own. */
+  materials?: Record<string, string>;
 }; // civic objects (grammar §11): `kit` stands in for the extrusion (the ring stays the footprint)
 /** spacing > 0: a double track, two ribbons spacing apart either side of `line`. */
 export type Track = { id: string; surface: string; line: V[]; width: number; level: number; depth: number; spacing: number };

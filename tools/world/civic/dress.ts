@@ -1,5 +1,5 @@
 // The civic block's dressing (civic-block.json `dressing`, brief 008) as export masses: the pieces on the block's two buildings, parasols, lamps, bollards,
-// planter runs, cypresses, topiaries and the paving bands. Every placement is read from the block (positions, yaws, the bed a tree stands in) and from
+// planter runs, cypresses, topiaries, the paving bands and the free-standing planting beds (beds.ts). Every placement is read from the block (positions, yaws, the bed a tree stands in) and from
 // contracts/world/civic-look.json; nothing is chosen here. A block without `dressing` is left as it is.
 import type { KitAsset } from '../../../contracts/world/kit.schema';
 import type { Mass } from '../../../contracts/world/world.schema';
@@ -7,7 +7,10 @@ import type { Civic } from '../../plan/civic';
 import type { V } from '../../plan/geom';
 import { adoptedBy } from '../gen/kitrefs';
 import { r3, r4 } from '../gen/common';
+import { dressBeds } from './beds';
+import { footOf } from './foot';
 import { look } from './look';
+export { footOf };
 
 type At = { id: string; at: V; yawDeg?: number; on?: string };
 export type Dressing = {
@@ -35,13 +38,6 @@ function arcRing(a: KitAsset, k: { scale: number[]; yaw?: number; at: V }): V[] 
   return [...t.map(x => pt(R1, x)), ...t.reverse().map(x => pt(R0, x))];
 }
 
-/** A kit piece's footprint at its scale (turned by its yaw, about its footprint centre): kit x → plan along yaw, kit z → across (front = yaw + 90°); the footprint centre
- *  sits at the pivot + pivotOffset. */
-export function footOf(a: KitAsset, k: { scale: number[]; yaw?: number; at: V }): V[] {
-  const y = k.yaw ?? 0, cs = Math.cos(y), sn = Math.sin(y), off = a.pivotOffset ?? [0, 0], sx = k.scale[0]!, sz = k.scale[2] ?? sx, hw = (a.size[0] * sx) / 2, hd = (a.size[2] * sz) / 2;
-  return ([[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]] as V[]).map(([x, z]) => [k.at[0] + (x + off[0] * sx) * cs - (z + off[1] * sz) * sn, k.at[1] + (x + off[0] * sx) * sn + (z + off[1] * sz) * cs] as V);
-}
-
 const bbox = (rings: V[][]): V[] => {
   const xs = rings.flat().map(p => p[0]), ys = rings.flat().map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
   return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
@@ -60,6 +56,12 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
     return { id, surface: 'trim', ring: (o.ring ?? arcRing(a, kit) ?? footOf(a, kit)).map(rv), base: r3(base), height: o.height ?? r3(a.size[1] * kit.scale[1]), source: 'kit', kit, ...(fade.has(name) ? { fade: true as const } : {}) };
   };
   const mass = (id: string) => out.find(m => m.id === id);
+  const add: Mass[] = [], keep = (m: Mass | undefined) => { if (m) add.push(m); };
+
+  /** The pieces that go with `p` (civic-look.json companions: the café terrace with the café bay): the same pivot and yaw, on the same ground. */
+  const along = (p: { piece: string; at: V; yawDeg: number }, base: number) => {
+    for (const c of look.companions[p.piece] ?? []) keep(put(look.place[c] ?? (() => { throw new Error(`civic dressing: ${c} goes with ${p.piece} and has no mass id in civic-look.json place`); })(), c, p.at, p.yawDeg, base));
+  };
 
   // the block's pieces: on the structures they stand for (the structures stay logical solids in the block, the piece is what is drawn), or as a building's ground storey
   for (const p of dr.pieces) {
@@ -69,6 +71,7 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
       const b = mass(`civic/${g.building}`); if (!b) throw new Error(`civic dressing: ${p.piece} stands under ${g.building}, which the block lacks`);
       const ground = put(id, p.piece, p.at, p.yawDeg, b.base, { ring: b.ring, height: g.top }); if (!ground) continue;
       out.splice(out.indexOf(b), 1, { ...b, base: r3(b.base + g.top), height: r3(b.height - g.top), groundBy: id }, ground);
+      along(p, b.base);
       continue;
     }
     const on = (p.on ?? []).map(s => mass(`civic/${s}`) ?? (() => { throw new Error(`civic dressing: ${p.piece} stands on ${s}, which the block lacks`); })());
@@ -76,9 +79,9 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
     const at = out.indexOf(on[0]!);
     out = out.filter(m => !on.includes(m));
     out.splice(Math.min(at, out.length), 0, placed);
+    along(p, pav);
   }
 
-  const add: Mass[] = [], keep = (m: Mass | undefined) => { if (m) add.push(m); };
   for (const s of dr.parasols.on) keep(put(`civic/${s.table}/parasol`, dr.parasols.piece, s.at, 0, pav));
   for (const l of dr.lamps.at) keep(put(`civic/${l.id}`, dr.lamps.piece, l.at, l.yawDeg, pav));
   for (const b of dr.bollards.at) keep(put(`civic/${b.id}`, dr.bollards.piece, b.at, 0, pav));
@@ -90,7 +93,10 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
   }
   for (const t of dr.topiary.at) keep(put(`civic/${t.id}`, dr.topiary.piece, t.at, 0, pav));
   for (const b of look.bands.pieces) keep(put(`civic/band/${b.id}`, b.piece, b.at, b.yawDeg, pav, { scale: [b.scaleX ?? 1, 1, 1] }));
-  return [...out, ...add].map(m => (m.kit && fade.has(m.kit.id) && !m.fade ? { ...m, fade: true as const } : m)); // the shelter's piers take the fade the shelter does
+  return dressBeds([...out, ...add]).map(m => {
+    const faded = m.kit && fade.has(m.kit.id) && !m.fade ? { ...m, fade: true as const } : m; // the shelter's piers take the fade the shelter does
+    return look.materials[m.id] ? { ...faded, materials: look.materials[m.id] } : faded; // the pool draws its water in its own material
+  });
 }
 
 /** The keep-clear kind of each piece the dressing places (dressing.keepClear `bars`): the kit id → planter | lamp | bollard | tree | parasol | band. */

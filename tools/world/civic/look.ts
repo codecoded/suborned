@@ -23,6 +23,19 @@ export type Look = {
   overhead: string[];
   /** Pieces the play camera's architecture fade may thin (they stand between the camera and a person). */
   fade: string[];
+  /** A piece placed with another at the same pivot and yaw (the café terrace with the café bay): the dressing's piece → the pieces that go with it. */
+  companions: Record<string, string[]>;
+  /** Pieces whose footprint is a box round open ground (the terrace): a person-scale piece inside it is where it belongs, not overlapping it. */
+  frame: string[];
+  /** Materials a civic mass draws in place of its piece's own: export mass id → kit slot → material (the atom fountain's water is DK_Pool_Civic). */
+  materials: Record<string, Record<string, string>>;
+  /** The free-standing planting beds (civic masses of surface `park` without a kit piece), Vela's recipe: kerb, hedge, tufts. */
+  beds: {
+    kerb: { surface: string; material: string };
+    hedge: { surface: string; material: string; inset: number; rise: number };
+    tufts: { pieces: string[]; drop: number; rows: { inset: number; step: number; minFromRing?: number }[] };
+    source: string;
+  };
   budget: { lod0Tris: number };
   slab: { material: string; tile_m: number; surfaces: string[]; note: string };
   bands: { frame: string; pieces: Band[] };

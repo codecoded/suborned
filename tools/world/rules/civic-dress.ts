@@ -1,6 +1,7 @@
 // CD-1..CD-4: the civic block's dressing (civic-block.json `dressing`, brief 008 B3). Each reads the export's civic masses, so what Unity draws is what is checked.
 // CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted);
-// CD-2 every piece the block names is adopted in the kit; CD-3 the pieces brief 008 added stay within their LOD0 triangle budget; CD-4 every colour they draw is >= 20 dE2000 from the signal colours.
+// CD-2 every piece the block names is adopted in the kit, and a material a mass draws in place of its piece's own replaces a slot the piece has; CD-3 the pieces brief 008 added (the bed tufts and the terrace among them)
+// stay within their LOD0 triangle budget; CD-4 every colour they draw (pieces, bed kerb and hedge, replaced slots, the whole look palette) is >= 20 dE2000 from the signal colours.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Mass } from '../../../contracts/world/world.schema';
@@ -62,11 +63,18 @@ export function clearRule(masses: Mass[], kinds: Map<string, string>, zones: Zon
 /** Every piece id the block's dressing and civic-look.json name. */
 export function namedPieces(dr: Dressing): string[] {
   const named = [...dr.pieces.map(p => p.piece), dr.parasols.piece, dr.lamps.piece, dr.bollards.piece, dr.cypress.piece, dr.topiary.piece, ...dr.planterRuns.runs.flatMap(r => r.modules.map(m => m.piece)),
-    ...look.bands.pieces.map(b => b.piece), ...look.pieces, ...Object.values(look.swaps)];
+    ...look.bands.pieces.map(b => b.piece), ...look.pieces, ...Object.values(look.swaps), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces];
   return [...new Set(named)].sort();
 }
-export function adoptedRule(named: string[], isAdopted: (id: string) => boolean = id => !!adoptedBy(id)): Check {
-  return rule('CD-2', 'Civic dressing', 'Every piece the civic block names is adopted in contracts/world/kit.json', named.length, named.filter(id => !isAdopted(id)).map(id => `${id} is not adopted`), 'none', 'Splice: anything not in the rulebook is rejected · brief 008 B3');
+/** A mass that draws a material in place of its piece's own: the slot is one the piece has (judged only where the catalogue lists the piece's materials: a run's pinned kit digest does not), and the material is one the look palette holds. */
+export function overrideProblems(masses: Mass[], slotsOf: (id: string) => string[] | undefined = id => adoptedBy(id)?.materials, palette = look.palette): string[] {
+  const held = new Set(palette.materials.map(m => m.material));
+  return masses.flatMap(m => Object.entries(m.materials ?? {}).flatMap(([slot, to]) => [
+    ...((m.kit ? slotsOf(m.kit.id) : [])?.includes(slot) !== false ? [] : [`${m.id} replaces ${slot}, which ${m.kit?.id ?? 'a mass with no kit piece'} does not draw`]), ...(held.has(to) ? [] : [`${m.id} draws ${slot} as ${to}, which the palette does not list`])]));
+}
+export function adoptedRule(named: string[], isAdopted: (id: string) => boolean = id => !!adoptedBy(id), overrides: string[] = []): Check {
+  return rule('CD-2', 'Civic dressing', 'Every piece the civic block names is adopted in contracts/world/kit.json, and a material a mass draws in place of its piece\'s own replaces a slot the piece has',
+    named.length, [...named.filter(id => !isAdopted(id)).map(id => `${id} is not adopted`), ...overrides], 'none', 'Splice: anything not in the rulebook is rejected · brief 008 B3, colour round');
 }
 
 /** LOD0 triangles of the pieces brief 008 added, as placed in the export's civic masses. */
@@ -76,20 +84,27 @@ export function budgetRule(masses: Mass[], limit = look.budget.lod0Tris): Check 
   return stat('CD-3', 'Civic dressing', 'The pieces brief 008 added cost at most the LOD0 triangle budget in the civic block', n.toLocaleString('en-GB'), `≤ ${limit.toLocaleString('en-GB')}`, n <= limit, 'brief 008 B3 (Vela counts 68,324 with everything placed) · GDD §11 60 fps at 1080p');
 }
 
-/** CD-4: the unlit palette of the pieces (civic-look.json palette.materials) keeps `minDE` from every signal colour; a material of a piece that the palette does not list fails. */
-export function paletteRule(pieces: string[], p = look.palette, materialsOf = (id: string) => adoptedBy(id)?.materials ?? []): Check {
+/** Materials the civic masses draw outside their pieces' own slots: the bed kerb and hedge, and each replaced slot's material. */
+export const drawnApart = (masses: Mass[] = [], b = look.beds): { material: string; by: string }[] => [
+  { material: b.kerb.material, by: `bed kerb (${b.kerb.surface})` }, { material: b.hedge.material, by: `bed hedge (${b.hedge.surface})` },
+  ...masses.flatMap(m => Object.entries(m.materials ?? {}).map(([slot, to]) => ({ material: to, by: `${m.id} ${slot}` }))), ...Object.values(look.materials).flatMap(o => Object.values(o).map(to => ({ material: to, by: 'civic-look.json materials' })))];
+/** CD-4: the unlit palette (civic-look.json palette.materials) keeps `minDE` from every signal colour, for every entry it lists and for every material the pieces, the bed kerb and hedge and the replaced slots draw; a material the palette does not list fails. */
+export function paletteRule(pieces: string[], p = look.palette, materialsOf = (id: string) => adoptedBy(id)?.materials ?? [], apart: { material: string; by: string }[] = []): Check {
   const by = new Map(p.materials.map(m => [m.material, m.unlit])), bad: string[] = [], seen = new Set<string>();
-  for (const id of pieces) for (const m of materialsOf(id)) {
-    if (seen.has(m)) continue; seen.add(m);
-    const hex = by.get(m); if (!hex) { bad.push(`${m} (${id}) has no unlit colour in the palette`); continue; }
+  const gate = (m: string, who: string) => {
+    if (seen.has(m)) return; seen.add(m);
+    const hex = by.get(m); if (!hex) { bad.push(`${m} (${who}) has no unlit colour in the palette`); return; }
     for (const [sig, h] of Object.entries(p.signals)) { const e = deltaE2000(hex, h); if (e < p.minDE) bad.push(`${m} is ${e.toFixed(1)} dE from ${sig}`); }
-  }
-  return rule('CD-4', 'Civic dressing', `Every colour the civic pieces draw is at least ${p.minDE} dE2000 from the cones, guard and rivals signal colours (unlit palette)`, seen.size, bad, 'none', 'GDD §10, §15 (ΔE gate on the unlit palette) · out/decokit-008/civic-colour-roles.json');
+  };
+  for (const id of pieces) for (const m of materialsOf(id)) gate(m, id);
+  for (const a of apart) gate(a.material, a.by);
+  for (const m of p.materials) gate(m.material, 'palette');
+  return rule('CD-4', 'Civic dressing', `Every colour the civic block draws (pieces, bed kerb and hedge, replaced slots, the look palette) is at least ${p.minDE} dE2000 from the cones, guard and rivals signal colours (unlit palette)`, seen.size, bad, 'none', 'GDD §10, §15 (ΔE gate on the unlit palette) · out/decokit-008/civic-colour-roles.json');
 }
 
 export function civicDressRules(c: WCtx): Check[] {
   const dr = dressingOf(c.civ);
   if (!dr) return []; // a block without dressing (every recorded run's) has nothing to check
   const toPlan = toPlanFn(c.plan.civic);
-  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan)), adoptedRule(namedPieces(dr)), budgetRule(c.w.civic), paletteRule(look.pieces)];
+  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan)), adoptedRule(namedPieces(dr), undefined, overrideProblems(c.w.civic)), budgetRule(c.w.civic), paletteRule(look.pieces, undefined, undefined, drawnApart(c.w.civic))];
 }

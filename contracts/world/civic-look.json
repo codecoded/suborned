@@ -2,10 +2,11 @@
  "schema": "suborned.civic-look/1",
  "brief": "008 B3 (Splice): what the civic block takes from Vela's brief 008 B1/B2 output. Committed so generation never reads out/. Edit by re-importing from the sources named here, never by hand.",
  "sources": {
-  "out/decokit-008/catalogue.proposal.json": "ff253af07db7fc39d784f0216e8f91140b97454a33527147534d157b14faba7f",
+  "out/decokit-008/catalogue.proposal.json": "3f6c174d8f0ab4955ee0589573658909a49f6d55ee14d7d96386f4b52e6877bb",
   "out/decokit-008/paving-bands.json": "3e92f39cc96ea19019be86fc02f98dbc69cd3f6da5156e3b0aa1e121c4c68a94",
-  "out/decokit-008/civic-colour-roles.json": "53bc72c438a310042aa688eec800684b3586d15263cc03e3ac992b96ed1fd4fc",
-  "out/decokit-008/measured.json": "75ad0454c6712c862a461983c0d966261c001e5b0a178ba3ce6a0e36e1a09154"
+  "out/decokit-008/civic-colour-roles.json": "e78acb22272edfd74ca51d6a130cefcc2d6eb2913b935dcad62a4e84a0b1b96d",
+  "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
+  "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6"
  },
  "pieces": [
   "BollardSphere",
@@ -34,7 +35,11 @@
   "InlayArc_R2_W06",
   "InlayArc_R4_W06",
   "InlayArc_R9_W12",
-  "PottedTopiary_Play"
+  "PottedTopiary_Play",
+  "CafeTerrace",
+  "BedTuft_A",
+  "BedTuft_B",
+  "BedTuft_C"
  ],
  "swaps": {
   "CafeSet_Tulip": "CafeSet_Tulip_Play",
@@ -49,7 +54,8 @@
  "place": {
   "CafeBay": "civic/cafe/ground",
   "RecordsEntrance": "civic/office-public-entrance",
-  "RecordsEntrance_Official": "civic/office-official-entrance"
+  "RecordsEntrance_Official": "civic/office-official-entrance",
+  "CafeTerrace": "civic/cafe/terrace"
  },
  "ground": {
   "CafeBay": {
@@ -69,6 +75,14 @@
   "BoardingPavilion_Square_v2",
   "PavilionPier_Square"
  ],
+ "companions": {
+  "CafeBay": [
+   "CafeTerrace"
+  ]
+ },
+ "frame": [
+  "CafeTerrace"
+ ],
  "budget": {
   "lod0Tris": 110000
  },
@@ -80,6 +94,43 @@
    "civic"
   ],
   "note": "plot surfaces of the fountain square, the café terrace and the office apron; world-space UVs"
+ },
+ "materials": {
+  "civic/atom-fountain": {
+   "DK_Water": "DK_Pool_Civic"
+  }
+ },
+ "beds": {
+  "kerb": {
+   "surface": "bed-kerb",
+   "material": "DK_Limestone"
+  },
+  "hedge": {
+   "surface": "bed-hedge",
+   "material": "DK_Leaf_CivicDark",
+   "inset": 0.22,
+   "rise": 0.22
+  },
+  "tufts": {
+   "pieces": [
+    "BedTuft_A",
+    "BedTuft_B",
+    "BedTuft_C"
+   ],
+   "drop": 0.04,
+   "rows": [
+    {
+     "inset": 0.5,
+     "step": 0.55
+    },
+    {
+     "inset": 1.05,
+     "step": 0.62,
+     "minFromRing": 0.9
+    }
+   ]
+  },
+  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG"
  },
  "bands": {
   "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
@@ -496,15 +547,20 @@
     "material": "DK_Accent_Gold",
     "unlit": "#D0C848",
     "used_by": [
-     "BoardingPavilion_Square_v2",
-     "CafeBay",
-     "RecordsEntrance",
-     "RecordsEntrance_Official"
+     "OceanLiner",
+     "PlanterArc"
     ]
    },
    {
     "material": "DK_Banner_Comet",
     "unlit": "#5D9D90",
+    "used_by": [
+     "PlazaSphereLamp"
+    ]
+   },
+   {
+    "material": "DK_Banner_Comet_Seafoam",
+    "unlit": "#8DBEB1",
     "used_by": [
      "RecordsEntrance",
      "RecordsEntrance_Official"
@@ -525,7 +581,8 @@
      "PlanterRun_4_A",
      "PlanterRun_Corner_A",
      "PlanterRun_End_A",
-     "CafeBay"
+     "CafeTerrace",
+     "BedTuft_A"
     ]
    },
    {
@@ -539,7 +596,9 @@
      "PlanterRun_Corner_A",
      "PlanterRun_End_A",
      "PlanterRun_End_C",
-     "CafeBay"
+     "CafeTerrace",
+     "BedTuft_A",
+     "BedTuft_C"
     ]
    },
    {
@@ -550,7 +609,8 @@
      "PlanterRun_4_B",
      "PlanterRun_Corner_B",
      "PlanterRun_End_B",
-     "CafeBay"
+     "CafeTerrace",
+     "BedTuft_B"
     ]
    },
    {
@@ -564,7 +624,19 @@
      "PlanterRun_Corner_B",
      "PlanterRun_End_B",
      "PlanterRun_End_C",
-     "CafeBay"
+     "CafeTerrace",
+     "BedTuft_B",
+     "BedTuft_C"
+    ]
+   },
+   {
+    "material": "DK_Brass_Civic",
+    "unlit": "#99784D",
+    "used_by": [
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
     ]
    },
    {
@@ -600,7 +672,9 @@
     "unlit": "#72B5A7",
     "used_by": [
      "Parasol_Stripe",
-     "PlazaSphereLamp_Play"
+     "PlazaSphereLamp_Play",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
     ]
    },
    {
@@ -657,16 +731,7 @@
      "CafeSet_Tulip_Play",
      "PlazaSphereLamp_Play",
      "CafeBay",
-     "RecordsEntrance",
-     "RecordsEntrance_Official"
-    ]
-   },
-   {
-    "material": "DK_Fabric_Banner",
-    "unlit": "#04897C",
-    "used_by": [
-     "RecordsEntrance",
-     "RecordsEntrance_Official"
+     "RecordsEntrance"
     ]
    },
    {
@@ -716,8 +781,9 @@
      "PlanterRun_End_A",
      "PlanterRun_End_B",
      "PlanterRun_End_C",
-     "CafeBay",
-     "PottedTopiary_Play"
+     "PottedTopiary_Play",
+     "CafeTerrace",
+     "BedTuft_A"
     ]
    },
    {
@@ -736,8 +802,10 @@
      "PlanterRun_End_A",
      "PlanterRun_End_B",
      "PlanterRun_End_C",
-     "CafeBay",
-     "PottedTopiary_Play"
+     "PottedTopiary_Play",
+     "CafeTerrace",
+     "BedTuft_B",
+     "BedTuft_C"
     ]
    },
    {
@@ -781,7 +849,8 @@
      "CafeBay",
      "RecordsEntrance",
      "RecordsEntrance_Official",
-     "PottedTopiary_Play"
+     "PottedTopiary_Play",
+     "CafeTerrace"
     ]
    },
    {
@@ -789,6 +858,13 @@
     "unlit": "#E4DACA",
     "used_by": [
      "plot surfaces (paving)"
+    ]
+   },
+   {
+    "material": "DK_Pool_Civic",
+    "unlit": "#3A9AA6",
+    "used_by": [
+     "civic/atom-fountain (water slot, mapped from DK_Water)"
     ]
    },
    {
@@ -801,7 +877,7 @@
   ]
  },
  "roles": {
-  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off.",
+  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity).",
   "roles": {
    "stone": {
     "materials": [
@@ -814,15 +890,28 @@
      "#EFE8D6",
      "#E4DACA mean"
     ],
+    "facade_swatch": {
+     "civic_w": "#EEE9DA"
+    },
+    "role": "walls, piers, planters, kerbs, steps, paving, soffits, the facade fields of the café and the Office",
+    "painting": "records-office and inez-cutaway: ivory stone fields (shade reads tan in the paintings too: #AE9881 on gp-entrance's door pier); gp-entrance kerb face #E3CEB1 in sun",
     "use": "walls, piers, planters, steps, paving, soffits"
    },
    "band": {
     "materials": [
-     "DK_Enamel_Seafoam"
+     "DK_Enamel_Seafoam",
+     "DK_Enamel_Mint"
     ],
     "hex": [
-     "#72B5A7"
+     "#72B5A7",
+     "#A8D3BE"
     ],
+    "facade_swatch": {
+     "e_seafoam": "#72B5A7",
+     "e_seafoam_pale": "#9BCFC2"
+    },
+    "role": "canopy and marquee fascias, window surround, pier and pilaster caps, bands and fins on the facades, plinth bands, banner cloth, paving inlay (DK_Inlay_Seafoam, same hex)",
+    "painting": "records-office: the seafoam bands and fins of the tower; inez-cutaway: the café canopy fascia and the wrap-round band; gp-entrance: marquee top #A4B3A1 and fascia #778D84 in sun and shade",
     "use": "canopy and marquee fascias, bands, shelter fascia, bollard band, banners (cloth), paving inlay (DK_Inlay_Seafoam, same hex)"
    },
    "deep": {
@@ -832,27 +921,41 @@
     "hex": [
      "#1F6C67"
     ],
-    "use": "base courses, caps, sign body, cushions, lamp sleeve, window surround"
+    "rule": "an accent of 0.3 m or less: the café blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+    "painting": "the paintings use it only as thin edge lines and the sign blades",
+    "use": "sign body, cushions, lamp sleeve, window reveal"
    },
    "metal": {
     "materials": [
      "DK_Chrome",
      "DK_Steel"
     ],
+    "role": "posts, balls, rails, globe, handles, blades",
+    "painting": "all three paintings: chrome balls, rails and the globe",
     "use": "posts, balls, rails, globe, handles, blades"
    },
    "hairline": {
     "materials": [
-     "DK_Accent_Gold"
+     "DK_Brass_Civic"
     ],
     "hex": [
-     "#D0C848"
+     "#99784D"
     ],
-    "rule": "only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin or fascia; at most 6% of any elevation's area",
+    "facade_swatch": {
+     "gold": "#99784D",
+     "paletteOverride.gold_trim": "#99784D"
+    },
+    "old": {
+     "material": "DK_Accent_Gold",
+     "hex": "#D0C848"
+    },
+    "rule": "only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin, fascia or band; at most 6% of any elevation's area. #99784D is dE2000 21.3 from the guard colour: a gold of this hue that is any lighter than L 52 falls inside the gate, so this dark brass is the gold",
+    "painting": "gp-entrance: the door posts, #99784D in the shade of the marquee (lit brass is lighter; the unlit palette gate reads this value)",
     "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"
    },
    "banner": {
     "materials": [
+     "DK_Banner_Comet_Seafoam",
      "DK_Cloth_Seafoam",
      "DK_Cloth_CoralSoft",
      "DK_Cloth_FlamingoSoft",
@@ -860,11 +963,17 @@
     ],
     "hex": [
      "#72B5A7",
+     "#72B5A7",
      "#FC9C84",
      "#E8609A",
      "#FCC4AC"
     ],
-    "rule": "never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents below are 21.7 or more"
+    "old": {
+     "material": "DK_Banner_Comet + DK_Fabric_Banner",
+     "hex": "#048A7C (texture field)"
+    },
+    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents are 21.7 or more",
+    "painting": "gp-entrance: the pier banners, ivory comet on a teal field (#406464 as painted; seafoam here because the shaded Unity faces multiply it by about 0.18 in linear light)"
    },
    "flowers": {
     "materials": [
@@ -879,7 +988,8 @@
      "#FCC4AC",
      "#F6EBCB"
     ],
-    "rule": "planting variants A coral+cream, B flamingo+peach, C cream+peach; neighbours differ"
+    "rule": "planting variants A coral+cream, B flamingo+peach, C cream+peach; neighbours differ; the beds use the same three (BedTuft_A/B/C)",
+    "painting": "gp-entrance and mission-block: coral, flamingo and peach flowers in the beds"
    },
    "leaf": {
     "materials": [
@@ -889,7 +999,38 @@
     "hex": [
      "#6A9B5C",
      "#46794C"
-    ]
+    ],
+    "role": "cushions, tufts, hedge fill of the beds",
+    "painting": "gp-entrance: clipped hedges and conifers"
+   },
+   "bed": {
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Leaf_Civic"
+    ],
+    "hex": [
+     "#E7DECA",
+     "#46794C",
+     "#6A9B5C"
+    ],
+    "rule": "recipe in civic-beds.json: a limestone kerb, a clipped hedge fill, BedTuft_A/B/C on top; replaces the plain `park` colour (#A6E29C) on these masses",
+    "painting": "gp-entrance: low cream kerb, clipped hedge, flowers"
+   },
+   "pool": {
+    "materials": [
+     "DK_Pool_Civic"
+    ],
+    "hex": [
+     "#3A9AA6"
+    ],
+    "rule": "opaque enamel water (smoothness 0.8, no alpha) so the sky cannot wash it white; Latch maps AtomFountain's DK_Water slot to it for civic/atom-fountain only",
+    "painting": "gameplay-plan: the pool is a saturated turquoise under the spray (lit median #4C6C7C with sky and palm reflections)",
+    "dE": {
+     "cones": 51.3,
+     "guard": 44.8,
+     "rivals": 33.4
+    }
    },
    "glass": {
     "materials": [
@@ -898,7 +1039,9 @@
     "hex": [
      "#35585A"
     ],
-    "rule": "clear dark teal, no blue curtain wall (facade.json glass_clear)"
+    "rule": "clear dark teal, no blue curtain wall (facade.json glass_clear)",
+    "painting": "records-office: dark glazing",
+    "use": "glass"
    },
    "lamp": {
     "materials": [
@@ -913,25 +1056,35 @@
   "parts": {
    "CafeBay": {
     "stone": "piers, coping",
-    "band": "canopy fascia",
-    "deep": "base course, sign body",
-    "hairline": "mullions, transom, sill, head, door frames, fascia lines",
+    "band": "canopy fascia, base course (seafoam, was deep teal)",
+    "deep": "blade-sign body",
+    "hairline": "mullions, transom, sill, head, door frames, fascia lines (brass)",
     "glass": "film over a charcoal sheet",
-    "lamp": "soffit downlights",
-    "flowers": "terrace wall troughs: variants A, B"
+    "lamp": "soffit downlights"
+   },
+   "CafeTerrace": {
+    "stone": "trough (DK_Limestone)",
+    "leaf": "cushions and hedge band",
+    "flowers": "variants A, B"
    },
    "RecordsEntrance": {
     "stone": "piers, steps, cheeks, globe plinth",
-    "band": "window surround (outer), marquee top, pier band",
-    "deep": "window surround (inner), marquee fascia, pier caps, banner field (comet texture)",
-    "hairline": "door frames, window grid, marquee lines, banner rods",
+    "band": "marquee fascia and top, window surround, pier cap (seafoam), pier band and marquee rim (mint), banner cloth",
+    "deep": "an 8 cm reveal round the window",
+    "hairline": "door frames, window grid, marquee lines, banner rods (brass)",
     "metal": "globe, stand, rails, blades, finials",
     "lamp": "marquee lanterns"
+   },
+   "RecordsEntrance_Official": {
+    "stone": "pilasters, canopy soffit",
+    "band": "canopy fascia and top, pilaster cap, banner cloth",
+    "hairline": "door frames, canopy lines, banner rods (brass)",
+    "lamp": "canopy lanterns"
    },
    "BoardingPavilion_Square_v2": {
     "stone": "roof (Enamel_Ivory)",
     "band": "fascia",
-    "hairline": "fascia bead",
+    "hairline": "fascia bead (brass)",
     "metal": "posts",
     "lamp": "underside strip"
    },
@@ -954,6 +1107,10 @@
     "leaf": "cushions and hedge band",
     "flowers": "by variant"
    },
+   "BedTuft_*": {
+    "leaf": "hedge cushion",
+    "flowers": "by variant"
+   },
    "Inlay*": {
     "band": "DK_Inlay_Seafoam (glazed tile, #72B5A7), 4 mm proud"
    },
@@ -962,44 +1119,89 @@
    }
   },
   "pool_water": {
+   "material": "DK_Pool_Civic",
    "surface": "#3A9AA6",
-   "depth": "#1F6C67",
-   "alpha": 0.62,
-   "smoothness": 0.95,
+   "alpha": 1.0,
+   "smoothness": 0.8,
+   "kind": "opaque enamel",
    "coping": "DK_Limestone with DK_Enamel_Seafoam lip",
    "dE": {
     "cones": 51.3,
     "guard": 44.8,
     "rivals": 33.4
    },
-   "basis": "infer: harbour.water #3d8d93 (lagoon) pushed toward accent_turquoise #1cb9c6; the 26 Sep paintings' pool is a saturated turquoise, but its lit median reads #648094 with sky and palm reflections, which is not a palette value",
-   "apply": "AtomFountain's DK_Water glass #6FB7C4 (pale, reads white in the play shot) -> this tint on the basin water at alpha 0.62 over a DK_Enamel_Teal floor; Glint adds the reflection (B5)."
+   "basis": "infer: harbour.water #3d8d93 (lagoon) pushed toward accent_turquoise #1cb9c6; the 26 Sep paintings' pool is a saturated turquoise, but its lit median reads #4C6C7C with sky and palm reflections, which is not a palette value",
+   "apply": "AtomFountain's water is one flat disc (R 3.0, z 0.34) in DK_Water, a glass of alpha 0.3 over the pale basin, which the sky turns white. Map that material slot to the kit material DK_Pool_Civic (out/decokit-008/Materials/DK_Pool_Civic.mat) on civic/atom-fountain only; the fountain's own files are unchanged (DK_Water stays for the other three pieces that use it). Not a facade key."
   },
   "facade_patch": {
-   "file": "unity/Assets/Suborned/Editor/World/facade.json (Latch / Splice apply in B3; not touched here)",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json (Latch applies; not touched here). Replaces the 14 Oct patch.",
+   "why": "First Unity build: the civic masses took the `records` area (ivory 7 / cream 3 families, a seafoam / deep teal / apricot enamel pair) and the ivory family's plinth swatch ivory_p = #D0C848. That gave salmon fins (apricot A), deep-teal bands and fins (deep teal), thick yellow-green base bands (ivory_p) and tan walls (cream_w). The civic masses now get their own area.",
    "swatches_add": {
-    "e_seafoam": "#72B5A7",
-    "e_deepteal": "#1F6C67"
+    "civic_w": "#EEE9DA",
+    "e_seafoam_pale": "#9BCFC2"
+   },
+   "swatches_change": {
+    "ivory_p": {
+     "now": "#d0c848",
+     "to": "#72b5a7"
+    },
+    "gold": {
+     "now": "#d0c848",
+     "to": "#99784d"
+    }
+   },
+   "families_add": {
+    "civic": [
+     "civic_w",
+     "e_seafoam",
+     "roof_e"
+    ]
+   },
+   "areas_add": {
+    "civic": {
+     "families": {
+      "civic": 1
+     },
+     "enamel": [
+      "e_seafoam",
+      "e_seafoam_pale"
+     ]
+    }
    },
    "areas.records.enamel": {
     "now": [
-     "gold",
-     "e_teal",
-     "navy",
-     "e_coral"
-    ],
-    "to": [
      "e_seafoam",
      "e_deepteal",
      "e_seafoam",
      "e_apricot"
     ],
-    "why": "gold fins and aqua bands come off the Records palette; apricot (#fcc4ac) replaces coral for any small accent"
+    "to": [
+     "e_seafoam",
+     "e_seafoam_pale"
+    ],
+    "why": "the Records district around the block: no deep-teal fins or bands, no apricot (coral, flamingo and peach are for banners and flowers)"
    },
    "paletteOverride.gold_trim": {
-    "now": "#c9c08e",
-    "to": "#d0c848 hairlines only"
-   }
+    "now": "#d0c848",
+    "to": "#99784d",
+    "district_wide": "75 sign boards use the gold_trim palette key"
+   },
+   "optional_district_wide": {
+    "e_sun": {
+     "now": "#d0c848",
+     "to": "#f4e27a",
+     "why": "e_sun is the sunshine enamel, not gold; the same hex as the old gold gave gold-looking roof spheres and boxes (roof trim takes the host's enamel pair, `roofItems.trim`: @A / @B) and yellow-green fins; #F4E27A is dE 21.1 from the guard"
+    },
+    "sand_p": {
+     "now": "#d0c848",
+     "to": "#f4e27a"
+    },
+    "t_hotel": {
+     "now": "#d0c848",
+     "to": "#f4e27a"
+    }
+   },
+   "gate": "every swatch above is at least dE2000 20 from cones #E03A2F, guard #F0A020 and rivals #8A4FD0 (facade_check in out/decokit-008/facade-patch.check.txt)"
   }
  }
 }

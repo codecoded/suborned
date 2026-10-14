@@ -8,6 +8,12 @@
     "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
     "rules": []
    }
+  ],
+  "6ea548474bff7f731791bccb658fb43fdc13e58541ccb9c6d0dae4e5de5e73cd": [
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   }
   ]
  }
 }

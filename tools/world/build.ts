@@ -179,6 +179,7 @@ export function civicClearance(civic: Mass[]): string[] {
     for (const o of civic) {
       if (o === m || o.base > m.base + 1.2 || o.base + o.height < m.base + 0.05) continue; // only what stands in the same body of air
       if (o.kit && look.overhead.includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
+      if (o.kit && look.frame.includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
       const ring = o.kit && person.has(o.kit.id) ? foot(o) : o.ring;
       if (pieces.indexOf(o) >= 0 && pieces.indexOf(o) < pieces.indexOf(m)) continue; // each pair once
       if (overlap(f, ring)) out.push(`${m.id} (${m.kit!.id} x1) overlaps ${o.id}`);
