@@ -1,0 +1,21 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route B with the turned driver also blocking the pickup camera (GDD §07 \"driver blocks pickup camera 2:30\"; Keel S21 without its fixture). In the engine a turned driver always moves the pickup to the service lane, so this is route B with one blockade more, not a pickup at the bay.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 591, "op": "scout", "do": "watch", "target": "driver"},
+  {"tick": 1111, "op": "scout", "do": "listen", "target": "driver"},
+  {"tick": 1531, "op": "fixer", "do": "turn", "target": "driver", "approach": "help"},
+  {"tick": 2031, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 2031, "op": "fixer", "do": "call", "target": "driver"},
+  {"tick": 3200, "op": "scout", "do": "mislead", "target": "rivals"},
+  {"tick": 3700, "op": "enforcer", "do": "take"},
+  {"tick": 4080, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 4468, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 4800
+}

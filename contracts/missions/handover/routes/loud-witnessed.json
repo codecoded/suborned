@@ -1,0 +1,27 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Loud with a witness (Keel S05): route A to the call, then the Enforcer shoots the guard beside Inez at the café; she witnesses it; the entry still wins, narrowly.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Between tables"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Courtyard"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Courtyard"},
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 283, "op": "scout", "do": "watch", "target": "waitress"},
+  {"tick": 283, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 803, "op": "scout", "do": "move", "to": "beside-inez"},
+  {"tick": 813, "op": "scout", "do": "listen", "target": "waitress"},
+  {"tick": 1233, "op": "fixer", "do": "turn", "target": "waitress", "approach": "help"},
+  {"tick": 1233, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 1233, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1733, "op": "fixer", "do": "call", "target": "waitress"},
+  {"tick": 1929, "op": "scout", "do": "mislead", "target": "rivals"},
+  {"tick": 2183, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 2183, "op": "enforcer", "do": "move", "to": "d:Office entrance"},
+  {"tick": 2646, "op": "enforcer", "do": "enter"},
+  {"tick": 3026, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 3371, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 4800
+}

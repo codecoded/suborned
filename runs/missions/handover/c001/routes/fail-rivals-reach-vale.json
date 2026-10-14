@@ -1,0 +1,19 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"rivals reach Vale\" (Suture N2): route B without the false tip; the rivals follow the car to the service lane and reach Vale at the take.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 591, "op": "scout", "do": "watch", "target": "driver"},
+  {"tick": 1111, "op": "scout", "do": "listen", "target": "driver"},
+  {"tick": 1531, "op": "fixer", "do": "turn", "target": "driver", "approach": "help"},
+  {"tick": 2031, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 3700, "op": "enforcer", "do": "take"},
+  {"tick": 4080, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 4468, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 4800
+}

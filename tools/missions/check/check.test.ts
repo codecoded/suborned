@@ -1,0 +1,107 @@
+// The mission checker (brief 011 B): the route manifest and scripts parse; the variations are the transforms they claim; each §09
+// condition fails on a failing example; and, where dotnet is installed, the Handover's routes play headless (route A and route B
+// win) and the recorded check replays to the same hashes. Run: bun test tools/missions
+import { describe, expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { Routes } from '../../../contracts/missions/routes.schema';
+import { ROOT, engineAt, hasDotnet, type Script } from './engine';
+import { judge, assessment, type Digest, type Plays } from './judge';
+import { check, load, replay, runsDir } from './run';
+import { contactsOf, lateFrom, stepsOf, withoutContact } from './vary';
+
+setDefaultTimeout(120_000);
+const DIR = join(ROOT, 'contracts/missions/handover/routes'), L = load(DIR), raw = readFileSync(join(DIR, 'routes.json'), 'utf8');
+const broken = (edit: (m: any) => void) => { const m = JSON.parse(raw); edit(m); return Routes.safeParse(m).success; };
+
+describe('the Handover route manifest and scripts', () => {
+  test('parse, and every script is an engine order script for the Handover', () => {
+    expect(L.manifest.scripts.length).toBeGreaterThanOrEqual(16);
+    for (const s of Object.values(L.scripts)) {
+      expect(s.schema).toBe('suborned.sim.script/1');
+      expect(s.start).toEqual({}); // no fixture: every route starts from the mission's own start
+      expect(s.orders.every((o, i, a) => i === 0 || a[i - 1]!.tick <= o.tick)).toBe(true);
+    }
+    // §07: route A and route B quiet, a loud route, every fail listed, the two pending fight scripts
+    const by = (k: string) => L.manifest.scripts.filter(s => s.kind === k).map(s => s.id);
+    expect(by('quiet')).toEqual(['route-a', 'route-a-pressure', 'route-b', 'route-b-block']);
+    expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in official car', 'rivals reach Vale', 'district seals', 'Enforcer down', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
+    expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale']);
+  });
+  test('the manifest rejects what it must', () => {
+    expect(broken(() => {})).toBe(true);
+    expect(broken(m => { m.scripts[0].primary = false; })).toBe(false); // route A has no primary script
+    expect(broken(m => { delete m.scripts[0].closes; })).toBe(false); // a primary quiet route names its closing event
+    expect(broken(m => { m.scripts.find((s: any) => s.id === 'fail-vale-dead').expects.fail = 'sealed'; })).toBe(false); // reaches a fail by a code it doesn't list
+    expect(broken(m => { delete m.scripts.find((s: any) => s.id === 'loud').route; })).toBe(false);
+    expect(broken(m => { m.scripts[1].id = 'route-a'; })).toBe(false);
+  });
+});
+
+describe('variations', () => {
+  const a = L.scripts['route-a']!;
+  test('without a contact drops exactly the orders that work through it', () => {
+    expect(contactsOf(a, ['waitress', 'driver'])).toEqual(['waitress']);
+    const w = withoutContact(a, 'waitress');
+    expect(a.orders.length - w.orders.length).toBe(4); // watch, listen, turn (help), call
+    expect(w.orders.some(o => o.target === 'waitress')).toBe(false);
+    expect(withoutContact(a, 'driver').orders).toEqual(a.orders);
+  });
+  test('late from a step moves that step and every later order, and nothing before it', () => {
+    const steps = stepsOf(a), at = steps[4]!, v = lateFrom(a, at, 7);
+    a.orders.forEach((o, i) => expect(v.orders[i]!.tick).toBe(o.tick >= at ? o.tick + 70 : o.tick));
+  });
+});
+
+describe('the §09 conditions, each with a failing example', () => {
+  const win = (tick: number, trail: number, marks: Record<string, number> = {}): Digest => ({ outcome: 'success', fail: '', tick, cash: 60000, trail, alert: 0, gunfire: 0, startHash: 's', finalHash: 'f', replayIdentical: true, rejected: 0, scriptSha: 'x', marks });
+  const fail = (code: string): Digest => ({ ...win(4800, 0), outcome: 'failure', fail: code });
+  /** Plays that meet every condition: A and B win, loud wins dearer, each fail is reached, each contact leaves the other route. */
+  const good = (): Plays => {
+    const p: Plays = {
+      'route-a': win(3097, 3, { 'enter.in': 2329 }), 'route-a-pressure': win(3097, 6), 'route-b': win(4468, 2, { 'take.done': 4080 }), 'route-b-block': win(4468, 3),
+      loud: { ...win(2252, 6), gunfire: 2 }, 'loud-witnessed': { ...win(3371, 8), gunfire: 1 }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
+    };
+    for (const s of L.manifest.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
+    for (const s of ['route-a', 'route-a-pressure']) p[`${s}~no-waitress`] = fail('entry-seen-guard');
+    for (const s of ['route-b', 'route-b-block']) p[`${s}~no-driver`] = fail('abduction-seen-camera');
+    return p;
+  };
+  const ids = (p: Plays) => judge(L.manifest, L.scripts, p, []).conditions.filter(c => !c.ok).map(c => c.id);
+  test('the good plays pass every condition', () => expect(ids(good())).toEqual([]));
+  test('MC-0: a script that does not do what its manifest says', () => { const p = good(); p['fail-vale-dead'] = fail('sealed'); expect(ids(p)).toContain('MC-0'); });
+  test('MC-1: one quiet route', () => { const p = good(); p['route-b'] = fail('vale-leaves'); p['route-b-block'] = fail('vale-leaves'); expect(ids(p)).toContain('MC-1'); });
+  test('MC-2: the loud route no dearer than a quiet one', () => { const p = good(); p.loud = { ...p.loud!, trail: 3 }; expect(ids(p)).toContain('MC-2'); });
+  test('MC-3: a fail no script reaches', () => { const p = good(); p['fail-district-seals'] = fail('enforcer-down'); expect(ids(p)).toContain('MC-3'); });
+  test('MC-4: a contact without whom no quiet route wins', () => {
+    const p = good(); p['route-b~no-waitress'] = fail('vale-leaves'); p['route-b-block~no-waitress'] = fail('vale-leaves');
+    const r = judge(L.manifest, L.scripts, p, []);
+    expect(r.conditions.find(c => c.id === 'MC-4')!.ok).toBe(false);
+    expect(r.contacts.find(c => c.role === 'waitress')!.routesWithout).toEqual([]);
+  });
+  test('MC-4 names a contact that leaves fewer than 2 quiet routes, and still passes while a quiet route wins without it', () => {
+    const r = judge(L.manifest, L.scripts, good(), []);
+    expect(r.contacts.map(c => [c.role, c.needs, c.named])).toEqual([['waitress', ['A'], true], ['driver', ['B'], true]]);
+    expect(r.conditions.find(c => c.id === 'MC-4')!.ok).toBe(true);
+  });
+  test('MC-5: Vale secured under a minute before a route\'s closing event', () => {
+    const p = good(); p['route-b'] = win(4468, 2, { 'take.done': 4500 }); // taken 30 s before the 8:00 close
+    expect(ids(p)).toEqual(['MC-5']);
+    expect(assessment(judge(L.manifest, L.scripts, p, [])).failures.map(f => f.rule)).toEqual(['MC-5']);
+  });
+});
+
+describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at HEAD)', () => {
+  test('route A and route B win quietly, the loud route costs more Trail, every fail is reached, and the check ships', async () => {
+    const c = await check(L, engineAt('HEAD'), () => {}, { slack: false });
+    expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
+    expect([c.plays['route-a']!.gunfire, c.plays['route-b']!.gunfire]).toEqual([0, 0]);
+    expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
+    expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
+  });
+  test('the recorded check c001 replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c001'));
+    expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
+    expect(r.ok).toBe(true);
+  });
+});

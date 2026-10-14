@@ -150,6 +150,82 @@
    "note": "Restated 2026-10-15 (Waymark): the café door is now 62.4 m from the Office entrance on the walk graph, 45 s at walking pace, not §07's 30 s (30 s would need 2.08 m/s). The stay is §07's 60 s, so the window is 2:30, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
   }
  ],
+ "points": [
+  {
+   "id": "cabinet",
+   "structure": "civic-control-cabinet",
+   "src": "civic-block.json structures civic-control-cabinet (centre)",
+   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, in the square 28 m from the public door and outside every cone, as the top-down test's cabinet stood about 31 units from the door."
+  },
+  {
+   "id": "beside-inez",
+   "at": [-8.2, -29.0],
+   "src": "Keel",
+   "reason": "Listen needs the Scout within 3 m of Inez (rulebook listen-reach-m [B]); the Courtyard point is 3.5 m from the café door, so this stands 2.1 m from her, between the café palms."
+  },
+  {
+   "id": "rival-park",
+   "at": [84.0, -31.0],
+   "src": "GDD §07: 3:10 rival car parks near pickup",
+   "reason": "on Apron Road, 5.8 m south of the official car in the official bay."
+  },
+  {
+   "id": "rival-entry",
+   "at": [36.0, 10.0],
+   "src": "GDD §05 rivals: own schedule; the top-down test: the rivals enter from the east street",
+   "reason": "the middle east street (block x 30–42 open to the east), the nearest street mouth to the Office on the east side."
+  },
+  {
+   "id": "security-entry",
+   "at": [-46.0, -32.0],
+   "src": "GDD §07 final fight, loud: police from west street",
+   "reason": "§07's \"west street\" is the top-down test's compass. The real block is built on its west side (y < −62); its one street on the café and getaway side is the north street (block x < −38, y −36 to −28), so the response unit enters there."
+  },
+  {
+   "id": "patrol-a",
+   "at": [40.75, -34.0],
+   "src": "the top-down test: the patrol sweeps 11 units in front of the public door, from 4 to one side of it to 16 to the other",
+   "reason": "the same offsets from the real public door (51.75, −30): 11 m north of it, 4 m west to 16 m east."
+  },
+  {
+   "id": "patrol-b",
+   "at": [40.75, -14.0],
+   "src": "as patrol-a",
+   "reason": "the far end of the sweep."
+  },
+  {
+   "id": "patrol-reroute",
+   "at": [20.0, -58.0],
+   "src": "the top-down test: a rerouted patrol waits at the far corner from the door",
+   "reason": "the square's west edge, 33 m from the public door and out of its sightlines."
+  },
+  {
+   "id": "block-spot",
+   "at": [75.7, -36.4],
+   "src": "GDD §07 route B: driver blocks pickup camera 2:30",
+   "reason": "on the sightline from the pickup camera to the official car, 40% of the way from the camera, on the pavement between the Office and the bay."
+  }
+ ],
+ "cameras": [
+  {
+   "id": "entrance",
+   "at": [49.5, -41.5],
+   "looksAt": "Office entrance",
+   "reachM": 22,
+   "halfM": 9,
+   "src": "GDD §05 cameras: fixed visible cones; §07 route A: Tech loops the entrance camera",
+   "reason": "a pole at the forecourt's west corner, looking at the public door across the foot of its steps: the door, the steps and the Office approach in the cone, the tower beside the door clear of the sightline."
+  },
+  {
+   "id": "pickup",
+   "at": [74.0, -40.0],
+   "looksAt": "Official drop-off",
+   "reachM": 18,
+   "halfM": 9,
+   "src": "GDD §07 route B: the pickup camera",
+   "reason": "a pole at the Office's south-west corner looking at the official car in the bay; the Office and its official tower stand outside the sightline."
+  }
+ ],
  "destinations": [
   {
    "name": "Courtyard",

@@ -1,0 +1,10 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 \"Withdraw ends the attempt\" (Keel N08): an outcome, not a fail.",
+ "start": {},
+ "orders": [
+  {"tick": 300, "do": "withdraw"}
+ ],
+ "until": 4800
+}
