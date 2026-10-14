@@ -9,7 +9,8 @@ import type { Scope } from './scope';
 
 export type { Cast };
 export type MissionIn = CastMission & { destinations: { name: string; at: [number, number]; surface: string }[] };
-export const startMin = (m: { clock: { startsAt: string } }) => { const [h, mi] = m.clock.startsAt.split(':').map(Number); return h! * 60 + mi!; };
+/** The mission's start in day minutes, seconds included (17:24:30 → 1044.5). */
+export const startMin = (m: { clock: { startsAt: string } }) => { const [h, mi, s] = m.clock.startsAt.split(':').map(Number); return h! * 60 + mi! + (s ?? 0) / 60; };
 
 /** What the roles read of the people rules (temperament refusals, each need's approaches). */
 export const castRulesOf = (r: { temperaments: Record<string, { refuses: readonly string[] }>; needs: { list: Record<string, { metBy: readonly string[] }> } }): CastRules => ({ temperaments: r.temperaments, needs: r.needs.list });

@@ -5,7 +5,9 @@
 // Rule M-2 (brief 010 D, suborned.mission/3): the file's roles are cast from the generated people (out/people/<plan id>.people.json,
 // `bun run people`) by tools/missions/handover/cast.ts, one person pinned per role by id; it fails naming each role nobody can fill.
 // A recorded run's layer has no roles, so M-2 is never part of a replay. A role's need, approach and regularOf are checked against
-// contracts/people/people.rules.json (temperaments' refusals, needs' approaches; Motive §3, Sky Q4).
+// contracts/people/people.rules.json (temperaments' refusals, needs' approaches; Motive §3, Sky Q4). Until brief 011's engine plays
+// the mission, M-2 also reads the roles' static playability conditions (castRoles `{ play: true }`: tiedTo, leavesTo, waitsFor,
+// alone; Suture's review of r013, 2026-10-15), each failing with the role and the condition.
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Check } from '../../plan/checks';
@@ -35,7 +37,7 @@ export const overlay = (plan: any, block: any, people?: PeopleIn, mission?: Cast
 
 /** M-2: every role the mission names is cast from the people, one pinned per role. */
 function castCheck(plan: any, civ: { bays: { id: string; poly: V[] }[] }, m: CastMission, given?: PeopleIn): Check {
-  const rule = { id: 'M-2', group: 'Mission', rule: 'Every role the mission names is cast from the city\'s people, one pinned by id', limit: 'all roles' };
+  const rule = { id: 'M-2', group: 'Mission', rule: 'Every role the mission names is cast from the city\'s people, there when needed, one pinned by id, and the cast can play it', limit: 'all roles' };
   const file = peopleFile(plan);
   if (!given && !existsSync(file)) return { ...rule, value: `0/${m.roles.length} roles`, ok: false, detail: `no people: ${file} is missing (bun run people)` };
   const people: PeopleIn = given ?? JSON.parse(readFileSync(file, 'utf8'));
@@ -45,7 +47,7 @@ function castCheck(plan: any, civ: { bays: { id: string; poly: V[] }[] }, m: Cas
     toPlan: toPlanFn(plan.civic), placeAt: id => place.get(id)?.at as V | undefined,
     polyOf: id => { const p = place.get(id); return p?.kind === 'bay' ? civ.bays.find(b => b.id === p.name)?.poly : undefined; },
     plotOf: id => place.get(id)?.plot,
-  }, castRules());
+  }, castRules(), { play: true });
   const bad = c.filter(x => !x.ok);
   return { ...rule, value: c.map(x => `${x.role} ${x.pinned ?? '-'}`).join(', '), ok: !bad.length, detail: (bad.length ? bad : c).map(x => `${x.role}: ${x.why}`).join('; ') };
 }

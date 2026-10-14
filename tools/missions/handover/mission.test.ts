@@ -14,9 +14,10 @@ import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { createHash } from 'node:crypto';
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { Mission } from '../../../contracts/missions/mission.schema';
+import { Mission, offsetS } from '../../../contracts/missions/mission.schema';
 import { check } from '../../plan/checks';
-import { civic } from '../../plan/civic';
+import { civic, toPlanFn } from '../../plan/civic';
+import type { V } from '../../plan/geom';
 import { derive, type Plan } from '../../plan/plan';
 import { readTexts, world } from '../../people/inputs';
 import { expand } from '../../people/expand';
@@ -58,6 +59,14 @@ describe('handover mission file', () => {
     expect(broken(m => { m.events[0].at = '5:31'; })).toBe(false); // the event has left its timeline entry
     expect(broken(m => { delete m.timeline[0].src; })).toBe(false);
     expect(broken(m => { m.cast = []; })).toBe(false); // unknown key
+    expect(broken(m => { m.clock.provisional = true; })).toBe(false); // a ruled start is settled
+    expect(broken(m => { m.windows[0].walk.s = 30; })).toBe(false); // the walk is its metres at its pace, not the GDD's figure
+    expect(broken(m => { m.windows[0].windowS = 120; })).toBe(false); // out, stay and back
+    expect(broken(m => { m.windows[0].role = 'doorman'; })).toBe(false); // a role the mission does not name
+    expect(broken(m => { m.roles[1].tiedTo[0].role = 'driver'; })).toBe(false); // a tie to one's own role
+    expect(broken(m => { m.roles[1].waitsFor = 'waitress'; })).toBe(false); // waits for a role that never leaves for a point
+    expect(broken(m => { m.roles[3].leavesTo.at = 'Nowhere'; })).toBe(false);
+    expect(broken(m => { delete m.roles[2].at; })).toBe(false); // alone, and nowhere
   });
 
   test('destinations, crew and routes are byte-for-byte the ones moved out of the world, but for the declared moves and rename', () => {
@@ -77,15 +86,36 @@ describe('handover mission file', () => {
     expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '5:30', 300, 1.8]]); // the chime's crowd
   });
 
-  test('the day start is held provisional, and both timings and placements stay adjustable', () => {
-    expect(mission.clock).toMatchObject({ startsAt: '17:00', provisional: true });
-    expect(mission.clock.contradiction?.readings.map(r => r.chime)).toEqual(['17:05:30', '17:30']);
+  test('the day start is Sky\'s ruling: the 5:30 chime is the Office\'s 17:30 shift end; timings and placements stay adjustable', async () => {
+    expect(mission.clock).toMatchObject({ startsAt: '17:24:30', provisional: false, band: 'peak', ruling: { by: 'Sky', on: '2026-10-15', was: '17:00' } });
+    expect(mission.clock.contradiction).toBeUndefined(); // the ruling settled it
+    const life = JSON.parse(await text('contracts/world/harbour-district.life.json'));
+    const chime = mission.timeline.find(e => e.what === 'handover chime')!.at, [h, mi, se] = mission.clock.startsAt.split(':').map(Number);
+    expect(h! * 3600 + mi! * 60 + se! + offsetS(chime)).toBe(17.5 * 3600); // 17:24:30 + 5:30 = 17:30
+    const units = ((await people()) as unknown as { units: { id: string; shifts: { from: number; to: number }[] }[] }).units;
+    expect(units.find(u => u.id === 'records-office')!.shifts.map(x => x.to)).toEqual([17.5 * 60]); // the Office's one shift ends at 17:30
+    const band = life.clock.bands.find((b: any) => b.id === mission.clock.band); expect(h! >= band.from && h! < band.to).toBe(true);
     expect(mission.status).toMatchObject({ state: 'preserved', adjustable: ['timings', 'placements'] });
+  });
+
+  test('route A\'s window is restated against the world: the walk graph\'s 62 m at walking pace, 45 s each way, a 2:30 window', async () => {
+    const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block'), win = mission.windows![0]!;
+    const walk = w.ctx(standInCast(w.scope, w.rules)).walk, tp = toPlanFn(w.plan.civic as never), pt = (n: string) => tp(mission.destinations.find(d => d.name === n)!.at as V);
+    expect(Math.abs(walk.m(pt(win.walk.from), pt(win.walk.to)) - win.walk.m)).toBeLessThan(0.5); // the world moves: so must this figure
+    expect(win.walk.speed).toBe(w.scope.speed); // life.json pedestrians.walkSpeed
+    expect([win.walk.s, win.stayS, win.windowS]).toEqual([45, 60, 150]);
+    const gdd = readdirSync(resolve(root, 'GDD')).find(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f))!;
+    const routeA = (await text(`GDD/${gdd}`)).split('\n').find(l => l.startsWith('route A, front door'))!;
+    expect(routeA).toContain(win.gdd); // the GDD's figure, verbatim, beside the restated one
+    // the entry window: the earliest call (listen 1:34, then Help's timeS) to the chime, when the outgoing guard's shift ends
+    const guard = mission.roles.find(r => r.id === win.role)!, rules = JSON.parse(await text('contracts/people/people.rules.json'));
+    expect(offsetS(guard.shift.from)).toBe(offsetS(routeA.match(/listens to Inez \((\d+:\d\d)\)/)![1]!) + rules.approaches.help.timeS);
+    expect(guard.shift.to).toBe(mission.timeline.find(e => e.what === 'handover chime')!.at);
   });
 
   test('the overlay still passes on the world (people that meet the roles), and every event names a plan area', async () => {
     const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
-    const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block, met(await people()))), by = (id: string) => R.checks.find(c => c.id === id)!;
+    const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block, play(await people()))), by = (id: string) => R.checks.find(c => c.id === id)!;
     expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual([]);
     expect(by('C-3').value).toBe(`${mission.destinations.length}/${mission.destinations.length}`);
     expect(by('W-4').value).toBe('2/2'); // the overlay's walk origins (standards.walking.from): Café door, Office entrance
@@ -101,15 +131,32 @@ describe('handover mission file', () => {
 // cast, expanded in process, so the test does not read out/) and pins one person by id (rule M-2).
 /** The people the stand-in cast expands to, as `bun run people` writes them. */
 const people = async (): Promise<PeopleIn> => { const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block'); return expand(w.ctx(standInCast(w.scope, w.rules))).people; };
-/** Who the stand-in cast pins: the first who fits by id. A live cast (brief 010 C) moves these; the roles stay. The stand-in
- *  (tools/people/standin.ts) meets Motive §3: the café server row weights debt, the driver row cash, every guard's day starts at the café. */
+/** Who M-2 casts from the playable stand-in (`play` below): the first who fits by id. A live cast (brief 010 C) moves these; the
+ *  roles stay. Nobody is pinned in the mission until a cast passes M-2. */
 const PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-15', councillor: 'p-records-office-61' };
-/** A copy of the people with `edit` applied to the named persons (default: Inez in debt, which the stand-in already has). */
-const met = (p: PeopleIn, edit: Record<string, (x: PeopleIn['persons'][number]) => void> = { 'p-cafe-11': x => { x.need = 'debt'; } }): PeopleIn => {
+type Who = PeopleIn['persons'][number];
+/** A copy of the people with `edit` applied to the named persons (default: none). */
+const met = (p: PeopleIn, edit: Record<string, (x: Who) => void> = {}): PeopleIn => {
   const c: PeopleIn = structuredClone(p);
   for (const [id, f] of Object.entries(edit)) f(c.persons.find(x => x.id === id)!);
   return c;
 };
+/** The stand-in's six guards share the door, none is a regular of a 12:00 server, no councillor goes to the bay and no driver is
+ *  tied to one: it fails M-2's playability (the next test). `play` makes it playable, the least edit per condition, as Pulse's
+ *  routines must: one guard on the door (the others posted off it), his regular tie to Inez, Vale to the bay at 17:31, and his
+ *  driver tied to him and waiting at the bay to 17:33. */
+const GUARDS = ['p-records-office-15', 'p-records-office-29', 'p-records-office-30', 'p-records-office-36', 'p-records-office-57', 'p-records-office-67'];
+const offDoor = (x: Who) => { for (const s of x.routine.stops) if (s.place === 'office-entrance') s.place = 'beyond'; };
+const toBay = (from: number) => (x: Who) => { x.routine.stops = [...x.routine.stops.filter(s => s.from < 1050 || s.from >= from + 2), { place: 'office-bay', doing: 'commute', from, to: from + 2 }].sort((a, b) => a.from - b.from); };
+const waitTo = (to: number) => (x: Who) => { x.routine.stops.find(s => s.place === 'office-bay' && s.to === 1050)!.to = to; };
+const tie = (kind: string, to: string) => (x: Who) => { x.ties = [...(x.ties ?? []), { kind, with: to }]; };
+const both = (...fs: ((x: Who) => void)[]) => (x: Who) => { for (const f of fs) f(x); };
+const play = (p: PeopleIn) => met(p, {
+  ...Object.fromEntries(GUARDS.slice(1).map(id => [id, offDoor])),
+  'p-records-office-15': tie('regular', 'p-cafe-11'),
+  'p-records-office-61': both(toBay(1051), tie('workmate', 'p-records-office-01')),
+  'p-records-office-01': both(waitTo(1053), tie('workmate', 'p-records-office-61')),
+});
 
 describe('handover roles', () => {
   const setup = async () => {
@@ -130,7 +177,16 @@ describe('handover roles', () => {
       ['waitress', 'debt', 'help', null], ['driver', 'cash', 'help', null], ['guard', null, null, 'cafe'], ['councillor', null, null, null],
     ]);
     expect(broken(m => { m.roles[0].approach = 'bribe'; })).toBe(false); // an approach not in the rules' four
-    expect(mission.roles.every(r => r.shift.from === '0:00' && r.shift.to === '8:00' && !r.pin)).toBe(true); // the whole mission; nothing pinned until a cast is accepted
+    // there when the mission needs them (Sky 2026-10-15): Inez all mission, the guard in route A's entry window, the driver and Vale to the chime
+    expect(mission.roles.map(r => `${r.id} ${r.shift.from}-${r.shift.to}`)).toEqual(['waitress 0:00-8:00', 'driver 0:00-5:30', 'guard 2:24-5:30', 'councillor 0:00-5:30']);
+    // the static playability conditions M-2 reads (Suture 2026-10-15 §3)
+    expect(mission.roles.map(r => [r.id, r.tiedTo ?? null, r.leavesTo ?? null, r.waitsFor ?? null, r.alone ?? null])).toEqual([
+      ['waitress', null, null, null, null],
+      ['driver', [{ kind: 'workmate', role: 'councillor', cast: true }], null, 'councillor', null],
+      ['guard', [{ kind: 'regular', role: 'waitress' }], null, null, true],
+      ['councillor', null, { at: 'Meet driver', by: '6:10' }, null, null],
+    ]);
+    expect(mission.roles.every(r => !r.pin)).toBe(true); // nothing pinned until a cast passes M-2
     expect(raw).not.toMatch(/"p-[a-z]/); // no person id written in the mission
     expect(broken(m => { m.roles[0].role = 'guard'; })).toBe(false); // both position and role
     expect(broken(m => { delete m.roles[0].position; })).toBe(false); // neither
@@ -140,14 +196,19 @@ describe('handover roles', () => {
     expect(broken(m => { m.roles[0].pin = 'Inez'; })).toBe(false); // a pin is a person id
   });
 
-  test('the stand-in cast meets M-2 (Motive §3: the live run must meet it too)', async () => {
-    const s = await setup(), c = m2(s);
-    expect(c.ok).toBe(true);
-    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
+  test('the stand-in cast fails M-2\'s playability, naming each role and condition (Pulse fixes the routines; the live run must pass)', async () => {
+    const s = await setup(), c = m2(s), lines = c.detail!.split('; ');
+    expect(c).toMatchObject({ ok: false, value: 'waitress p-cafe-11, driver -, guard -, councillor -' });
+    expect(lines.map(l => l.replace(/:.*?(has|·)/, ' $1').replace(/: p-.*?( ·|$)/g, '$1'))).toEqual([ // the failing roles; Inez casts
+      'driver has a workmate tie to a councillor of records-office who can be cast as councillor',
+      'guard has a regular tie to a server of cafe in place for waitress in this window · and at most one guard of records-office at Office entrance in 2:24-5:30: 6 at 17:26:54 (p-records-office-15, p-records-office-29, p-records-office-30, p-records-office-36, p-records-office-57, p-records-office-67)',
+      'councillor has a routine that reaches Meet driver by 6:10 (17:30:40)',
+    ]);
+    expect(lines[2]).toContain('p-records-office-61 t1-records@17:34'); // Vale takes the tram home, never the official car
   });
 
   test('every role is cast, pinned by id, deterministically; the pinned names land on the pinned people', async () => {
-    const s = { ...(await setup()) }; s.p = met(s.p);
+    const s = { ...(await setup()) }; s.p = play(s.p);
     const c = m2(s);
     expect(c.ok).toBe(true);
     const a = castRoles(s.p.persons, mission, { toPlan: (q) => q, placeAt: () => undefined, polyOf: () => undefined }); // no place resolves: only the councillor (no point) casts
@@ -161,7 +222,7 @@ describe('handover roles', () => {
   });
 
   test('failing example: a role nobody can fill fails M-2, naming the role', async () => {
-    const s = { ...(await setup()) }; s.p = met(s.p); const m = JSON.parse(raw);
+    const s = { ...(await setup()) }; s.p = play(s.p); const m = JSON.parse(raw);
     m.roles.push({ id: 'official-door-guard', what: 'a guard at the official door', employer: 'records-office', role: 'guard', at: 'Official entrance', near: 2, shift: { from: '0:00', to: '8:00' }, src: 'test' });
     expect(Mission.safeParse(m).success).toBe(true); // a valid mission: the role is well formed, nobody stands there
     const c = m2(s, m);
@@ -170,25 +231,25 @@ describe('handover roles', () => {
   });
 
   test('failing examples for each role condition: need, a refused approach, a regular of the café, an unsound role', async () => {
-    const s = await setup(), p = met(s.p);
+    const s = await setup(), p = play(s.p);
     const one = (m: any, q: PeopleIn = p) => m2(s, m, q).detail!.split('; ').filter(x => !/ of \d+ on shift/.test(x)); // the failing roles only
-    let m = JSON.parse(raw); m.roles[1].need = 'advancement'; // the drivers on shift need cash, cash, advancement (p-records-office-46), papers
+    let m = JSON.parse(raw); m.roles[1].need = 'advancement'; // the drivers at the bay need cash, cash, advancement (p-records-office-46), papers
+    delete m.roles[1].tiedTo; delete m.roles[1].waitsFor; // the need alone: p-records-office-46 is not Vale's driver
     expect(m2(s, m, p)).toMatchObject({ ok: true, value: expect.stringContaining('driver p-records-office-46') });
     m.roles[1].need = 'housing';
-    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-8:00 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 cash, p-records-office-46 advancement, p-records-office-64 papers']);
+    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-5:30 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 cash, p-records-office-46 advancement, p-records-office-64 papers']);
     // Q4: the wrong temperament still works (a Mercenary helped), a refusal fails: an Idealist refuses Pay
     m = JSON.parse(raw); m.roles[0].approach = 'pay';
-    const idealists = met(s.p, Object.fromEntries(['p-cafe-11', 'p-cafe-12', 'p-cafe-14', 'p-cafe-15', 'p-cafe-16'].map(id => [id, (x: any) => { x.need = 'debt'; x.temperament = 'idealist'; }])));
+    const idealists = met(p, Object.fromEntries(['p-cafe-11', 'p-cafe-12', 'p-cafe-14', 'p-cafe-15', 'p-cafe-16'].map(id => [id, (x: any) => { x.need = 'debt'; x.temperament = 'idealist'; }])));
     expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
     expect(m2(s, JSON.parse(raw), idealists).ok).toBe(true); // Help is refused by no temperament
     expect(one(m, met(idealists, { 'p-cafe-11': x => { x.temperament = 'shy'; } }))[0]).toContain('p-cafe-11 shy (unknown)'); // unknown = reject
     // §05, §08: the guard is a regular of the café only by a regular tie to its staff (one definition with P-6 and the review): a pre-shift stop alone is not enough; a tie restores one
-    const guards = ['p-records-office-15', 'p-records-office-29', 'p-records-office-30', 'p-records-office-36', 'p-records-office-57', 'p-records-office-67'];
-    const noStop = met(p, Object.fromEntries(guards.map(id => [id, (x: any) => { x.routine.stops = x.routine.stops.filter((t: any) => t.doing !== 'pre-shift'); x.ties = (x.ties ?? []).filter((t: any) => !t.with.startsWith('p-cafe')); }])));
-    expect(one(JSON.parse(raw), noStop)).toEqual(['guard: none of the 6 who fit (guard of records-office on shift 0:00-8:00 at Office entrance) has a regular tie to the staff of cafe: p-records-office-15 none, p-records-office-29 none, p-records-office-30 none, p-records-office-36 none, p-records-office-57 none, p-records-office-67 none']);
-    const tied = met(noStop, { 'p-records-office-36': x => { x.ties = [...(x.ties ?? []), { kind: 'regular', with: 'p-cafe-01' }]; } });
-    expect(m2(s, JSON.parse(raw), tied)).toMatchObject({ ok: true, value: expect.stringContaining('guard p-records-office-36') });
-    const workmate = met(noStop, { 'p-records-office-36': x => { x.ties = [{ kind: 'workmate', with: 'p-cafe-01' }]; } }); // only a regular tie counts
+    const noStop = met(p, Object.fromEntries(GUARDS.map(id => [id, (x: any) => { x.routine.stops = x.routine.stops.filter((t: any) => t.doing !== 'pre-shift'); x.ties = (x.ties ?? []).filter((t: any) => !t.with.startsWith('p-cafe')); }])));
+    expect(one(JSON.parse(raw), noStop)).toEqual(['guard: none of the 1 who fit (guard of records-office on shift 2:24-5:30 at Office entrance) has a regular tie to the staff of cafe: p-records-office-15 none']); // the one guard on the door
+    const tied = met(noStop, { 'p-records-office-15': tie('regular', 'p-cafe-11') });
+    expect(m2(s, JSON.parse(raw), tied)).toMatchObject({ ok: true, value: expect.stringContaining('guard p-records-office-15') });
+    const workmate = met(noStop, { 'p-records-office-15': x => { x.ties = [{ kind: 'workmate', with: 'p-cafe-11' }]; } }); // only a regular tie counts
     expect(m2(s, JSON.parse(raw), workmate).ok).toBe(false);
     // a pin that lacks a condition names it; a role the rules cannot hold fails before anyone is cast
     m = JSON.parse(raw); m.roles[0].pin = 'p-cafe-12';
@@ -199,9 +260,40 @@ describe('handover roles', () => {
     expect(one(m)).toEqual(['driver: pressure does not act on need cash (metBy help, pay)']);
   });
 
+  test('failing examples for each playability condition: alone, the guard\'s tie, Vale to the bay, the driver\'s tie and wait', async () => {
+    const s = await setup(), p = play(s.p), m = JSON.parse(raw);
+    const why = (q: PeopleIn, role: string) => { const c = m2(s, m, q); return c.detail!.split('; ').find(x => x.startsWith(`${role}: `))!; };
+    expect(m2(s, m, p).ok).toBe(true);
+    // alone: a second guard back on the door in the entry window
+    const two = met(p, { 'p-records-office-29': x => { x.routine.stops.find(t => t.place === 'beyond' && t.to === 1050)!.place = 'office-entrance'; } });
+    expect(why(two, 'guard')).toBe('guard: p-records-office-15 cast, but at most one guard of records-office at Office entrance in 2:24-5:30: 2 at 17:26:54 (p-records-office-15, p-records-office-29)');
+    // the guard's regular tie: to a server off shift then fails; to another server of Inez's shift passes (Inez or her shift)
+    const morning = met(p, { 'p-records-office-15': x => { x.ties = x.ties!.filter(t => t.with !== 'p-cafe-11'); x.ties.push({ kind: 'regular', with: 'p-cafe-02' }); } });
+    expect(why(morning, 'guard')).toStartWith('guard: none of the 1 who fit (guard of records-office on shift 2:24-5:30 at Office entrance) has a regular tie to a server of cafe in place for waitress in this window: p-records-office-15 p-cafe-04+p-cafe-02');
+    expect(m2(s, m, met(morning, { 'p-records-office-15': tie('regular', 'p-cafe-12') })).ok).toBe(true);
+    // in place throughout: Inez away from the door for a minute in the mission falls to the next server by id
+    const away = met(p, { 'p-cafe-11': x => { const w = x.routine.stops.find(t => t.place === 'cafe-entrance' && t.from <= 1045 && 1045 < t.to)!; x.routine.stops.push({ ...w, from: 1047, to: w.to }, { place: 'cafe-table-0', doing: 'meal', from: 1046, to: 1047 }); w.to = 1046; x.routine.stops.sort((a, b) => a.from - b.from); } });
+    expect(m2(s, m, away).value).toStartWith('waitress p-cafe-14,'); // p-cafe-12 is not in debt; the guard's tie to Inez now fails too
+    // leavesTo: Vale at the bay a minute late (17:32 > 17:30:40, rounded up to 17:31)
+    const late = met(p, { 'p-records-office-61': x => { x.routine.stops.find(t => t.place === 'office-bay')!.from = 1052; } });
+    expect(why(late, 'councillor')).toContain('has a routine that reaches Meet driver by 6:10 (17:30:40): p-records-office-61 office-bay@17:32');
+    // waitsFor: the driver leaves the bay as Vale arrives
+    const gone = met(p, { 'p-records-office-01': x => { x.routine.stops.find(t => t.place === 'office-bay' && t.to === 1053)!.to = 1051; } });
+    expect(why(gone, 'driver')).toBe('driver: p-records-office-01 cast, but waits at Meet driver for councillor p-records-office-61, who arrives 17:31: p-records-office-01 leaves 17:31');
+    // tiedTo cast: the councillor cast follows the driver's tie (p-records-office-65 too goes to the bay; the driver is his)
+    const other = met(p, {
+      'p-records-office-65': both(toBay(1051), tie('workmate', 'p-records-office-01')),
+      'p-records-office-01': x => { x.ties = x.ties!.filter(t => t.with !== 'p-records-office-61'); x.ties.push({ kind: 'workmate', with: 'p-records-office-65' }); },
+    });
+    expect(m2(s, m, other)).toMatchObject({ ok: true, value: 'waitress p-cafe-11, driver p-records-office-01, guard p-records-office-15, councillor p-records-office-65' });
+    // and with no councillor tied to a driver who can be cast, the driver names it
+    const untied = met(p, { 'p-records-office-01': x => { x.ties = x.ties!.filter(t => t.kind !== 'workmate'); } });
+    expect(why(untied, 'driver')).toBe('driver: none of the 2 who fit (official-driver of records-office on shift 0:00-5:30 at Meet driver) has a workmate tie to a councillor of records-office who can be cast as councillor: p-records-office-01 none, p-records-office-39 p-records-office-23+p-records-office-30');
+  });
+
   test('a pin that no longer fits fails, and so does a missing people file', async () => {
     const debt = (x: PeopleIn['persons'][number]) => { x.need = 'debt'; };
-    const s = { ...(await setup()) }; s.p = met(s.p, { 'p-cafe-11': debt, 'p-cafe-14': debt }); const m = JSON.parse(raw);
+    const s = { ...(await setup()) }; s.p = met(play(s.p), { 'p-cafe-11': debt, 'p-cafe-14': debt }); const m = JSON.parse(raw);
     m.roles[0].pin = 'p-cafe-02'; // a server on the morning shift, gone by 17:00
     expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-8:00 at Café door');
     m.roles[0].pin = 'p-cafe-14';
