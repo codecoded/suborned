@@ -7,13 +7,15 @@ using UnityEngine.Rendering.Universal;
 
 namespace Suborned.World.Perf
 {
-    /// <summary>The perf player's ssao-depth switch (Redline fix 1) needs SSAO's depth-source variants (_SOURCE_DEPTH_LOW/MEDIUM/HIGH),
-    /// which URP's prefiltering strips from a build whose renderers only use DepthNormals. For the perf build only, a copy of the play
-    /// renderer whose SSAO reads depth (after opaque) joins the pipeline asset's renderer list, so the build keeps them; the camera
+    /// <summary>The perf player's SSAO switches (Redline fix 1) need the variants of the SSAO source the play renderer does not use,
+    /// which URP's prefiltering strips: the depth source (_SOURCE_DEPTH_LOW/MEDIUM/HIGH, after opaque) when the play renderer reads
+    /// depth-normals, the depth-normals source (prepass) when it reads depth, as built since B6. For the perf build only, a copy of the
+    /// play renderer whose SSAO uses the other source joins the pipeline asset's renderer list, so the build keeps both; the camera
     /// keeps renderer 0, so the copy never draws. Remove takes it out again and re-gathers the prefiltering a normal build writes.</summary>
     public static class PerfVariantsRenderer
     {
-        const string CopyPath = PerfProxyAsset.Folder + "/PerfVariants_Renderer.asset";
+        public const string Folder = "Assets/Suborned/PerfBuildTemp";
+        const string CopyPath = Folder + "/PerfVariants_Renderer.asset";
 
         /// <summary>Adds the copy; returns what the build keeps.</summary>
         public static string Add()
@@ -22,16 +24,21 @@ namespace Suborned.World.Perf
             var so = new SerializedObject(asset);
             var list = so.FindProperty("m_RendererDataList");
             var play = list.GetArrayElementAtIndex(so.FindProperty("m_DefaultRendererIndex").intValue).objectReferenceValue;
+            if (AssetDatabase.IsValidFolder(Folder)) AssetDatabase.DeleteAsset(Folder);
+            AssetDatabase.CreateFolder("Assets/Suborned", "PerfBuildTemp");
             if (!AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(play), CopyPath)) throw new InvalidOperationException($"Perf: could not copy {play.name} to {CopyPath}");
             var copy = AssetDatabase.LoadAssetAtPath<ScriptableRendererData>(CopyPath);
-            int ssao = 0;
+            int ssao = 0; string kept = "";
             foreach (var f in copy.rendererFeatures)
             {
                 if (f is not ScreenSpaceAmbientOcclusion || !f.isActive) continue;
                 if (AssetDatabase.GetAssetPath(f) != CopyPath) throw new InvalidOperationException("Perf: the renderer copy shares its SSAO feature with the play renderer");
                 var fs = new SerializedObject(f);
-                fs.FindProperty("m_Settings.Source").enumValueIndex = 0; // DepthSource.Depth
-                fs.FindProperty("m_Settings.AfterOpaque").boolValue = true;
+                var source = fs.FindProperty("m_Settings.Source");
+                bool depth = source.enumValueIndex != 0; // the play renderer reads depth-normals: keep depth (0), and the other way round
+                source.enumValueIndex = depth ? 0 : 1;   // DepthSource.Depth : DepthSource.DepthNormals
+                fs.FindProperty("m_Settings.AfterOpaque").boolValue = depth;
+                kept = depth ? "SSAO from depth, after opaque" : "SSAO from depth-normals, prepass";
                 fs.ApplyModifiedPropertiesWithoutUndo();
                 ssao++;
             }
@@ -40,7 +47,7 @@ namespace Suborned.World.Perf
             list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = copy;
             so.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();
-            return $"{asset.name} + {copy.name} (SSAO from depth, after opaque)";
+            return $"{asset.name} + {copy.name} ({kept})";
         }
 
         public static void Remove()
@@ -56,6 +63,7 @@ namespace Suborned.World.Perf
                 list.DeleteArrayElementAtIndex(i);
             }
             so.ApplyModifiedPropertiesWithoutUndo();
+            if (AssetDatabase.IsValidFolder(Folder)) AssetDatabase.DeleteAsset(Folder);
             Regather();
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();

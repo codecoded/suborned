@@ -1,0 +1,56 @@
+Counts per frame, Studio player (Mac17,14), pass `counts`, against `as-was` (the build before B6). Machine-independent: draws = GPU Resident Drawer draw commands, camera x passes (2 with SSAO's depth-normals prepass) + every shadow split; triangles, shadow casters, SetPass = profiler counters. Batches: the player has no Batches/Draw Calls counter under the GPU Resident Drawer; its draw commands are the batches.
+
+== as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                           733                  1.47 M               357              88                   298k|868k
+cafe-square                    721                  1.43 M               348              81                   287k|855k
+parade                         455                  1.50 M               254              79                   349k|804k
+crown-circus                   467                  0.83 M               287              80                   116k|601k
+harbour-quay                   316                  0.59 M               138              68                   173k|241k
+heaviest                      1075                  2.59 M               539             111                  570k|1468k
+
+== ssao-depth vs as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                   -170 (-23%)            -298k (-20%)          +0 (+0%)      -12 (-14%)                   298k|868k  0.1 / 0.1%
+cafe-square            -169 (-23%)            -287k (-20%)          +0 (+0%)      -11 (-14%)                   287k|855k  0.1 / 0.0%
+parade                  -98 (-22%)            -349k (-23%)          +0 (+0%)       -9 (-11%)                   349k|804k  0.0 / 0.0%
+crown-circus            -83 (-18%)            -114k (-14%)          +0 (+0%)      -11 (-14%)                   116k|601k  0.0 / 0.1%
+harbour-quay            -89 (-28%)            -173k (-29%)          +0 (+0%)      -11 (-16%)                   173k|241k  0.0 / 0.0%
+heaviest               -219 (-20%)            -563k (-22%)          +0 (+0%)      -15 (-14%)                  570k|1468k  0.2 / 0.1%
+
+== proxies vs as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                     -50 (-7%)            -265k (-18%)        -50 (-14%)        -6 (-7%)                   298k|602k  0.0 / 0.0%
+cafe-square              -50 (-7%)            -275k (-19%)        -50 (-14%)        -3 (-4%)                   287k|579k  0.0 / 0.1%
+parade                    +0 (+0%)              -82k (-5%)          +0 (+0%)        -1 (-1%)                   349k|722k  0.0 / 0.1%
+crown-circus            -70 (-15%)              -62k (-7%)        -70 (-24%)        -4 (-5%)                   116k|539k  0.0 / 0.1%
+harbour-quay              +0 (+0%)              -15k (-3%)          +0 (+0%)        +0 (+0%)                   173k|226k  0.0 / 0.1%
+heaviest                 -80 (-7%)            -937k (-36%)        -80 (-15%)        -4 (-4%)                   570k|525k  0.1 / 0.1%
+
+== cascades-2 vs as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                     -66 (-9%)            -245k (-17%)        -60 (-17%)      -14 (-16%)                   298k|623k  0.0 / 0.0%
+cafe-square             -79 (-11%)            -220k (-15%)        -73 (-21%)      -13 (-16%)                   287k|635k  0.0 / 0.0%
+parade                  -70 (-15%)            -171k (-11%)        -70 (-28%)      -13 (-16%)                   349k|633k  0.1 / 0.2%
+crown-circus           -110 (-24%)            -241k (-29%)       -106 (-37%)      -13 (-16%)                   116k|360k  0.0 / 0.0%
+harbour-quay            -48 (-15%)             -63k (-11%)        -48 (-35%)       -8 (-12%)                   173k|178k  0.0 / 0.0%
+heaviest               -206 (-19%)            -422k (-16%)       -178 (-33%)      -22 (-20%)                  570k|1043k  0.1 / 0.1%
+
+== fixes-13 vs as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                   -236 (-32%)            -544k (-37%)        -60 (-17%)      -26 (-30%)                   298k|623k  0.1 / 0.1%
+cafe-square            -248 (-34%)            -506k (-35%)        -73 (-21%)      -24 (-30%)                   287k|635k  0.1 / 0.1%
+parade                 -168 (-37%)            -521k (-35%)        -70 (-28%)      -22 (-28%)                   349k|633k  0.1 / 0.2%
+crown-circus           -193 (-41%)            -355k (-43%)       -106 (-37%)      -24 (-30%)                   116k|360k  0.0 / 0.1%
+harbour-quay           -137 (-43%)            -236k (-40%)        -48 (-35%)      -19 (-28%)                   173k|178k  0.0 / 0.0%
+heaviest               -425 (-40%)            -984k (-38%)       -178 (-33%)      -37 (-33%)                  570k|1043k  0.2 / 0.1%
+
+== base vs as-was
+stop                         draws               triangles           casters         SetPass    cam|shadow tris (drawer)  look: mean|Δ| / px>8
+home                   -286 (-39%)            -766k (-52%)       -110 (-31%)      -30 (-34%)                   298k|400k  0.1 / 0.1%
+cafe-square            -288 (-40%)            -749k (-52%)       -113 (-32%)      -26 (-32%)                   287k|391k  0.1 / 0.1%
+parade                 -168 (-37%)            -603k (-40%)        -70 (-28%)      -23 (-29%)                   349k|551k  0.2 / 0.4%
+crown-circus           -243 (-52%)            -404k (-49%)       -156 (-54%)      -26 (-32%)                   116k|311k  0.1 / 0.1%
+harbour-quay           -137 (-43%)            -251k (-43%)        -48 (-35%)      -19 (-28%)                   173k|163k  0.1 / 0.1%
+heaviest               -525 (-49%)          -1,652k (-64%)       -278 (-52%)      -39 (-35%)                   570k|370k  0.3 / 0.2%
+

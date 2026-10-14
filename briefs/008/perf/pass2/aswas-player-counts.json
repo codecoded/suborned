@@ -1,0 +1,380 @@
+{
+ "home|base": {
+  "setPassCalls": 87.0,
+  "triangles": 1465271.0,
+  "shadowCasters": 357.0,
+  "frames": 5117
+ },
+ "home|ssao-depth": {
+  "setPassCalls": 75.0,
+  "triangles": 1166892.0,
+  "shadowCasters": 357.0,
+  "frames": 4788
+ },
+ "home|ssao-off": {
+  "setPassCalls": 71.0,
+  "triangles": 1166888.0,
+  "shadowCasters": 357.0,
+  "frames": 8989
+ },
+ "home|proxies": {
+  "setPassCalls": 82.0,
+  "triangles": 1199833.0,
+  "shadowCasters": 307.0,
+  "frames": 5364
+ },
+ "home|cascades-2": {
+  "setPassCalls": 73.0,
+  "triangles": 1220147.0,
+  "shadowCasters": 297.0,
+  "frames": 5441
+ },
+ "home|fixes-123": {
+  "setPassCalls": 58.0,
+  "triangles": 699674.0,
+  "shadowCasters": 247.0,
+  "frames": 5279
+ },
+ "home|fixes-13": {
+  "setPassCalls": 61.0,
+  "triangles": 921768.0,
+  "shadowCasters": 297.0,
+  "frames": 5138
+ },
+ "home|fade-off": {
+  "setPassCalls": 74.0,
+  "triangles": 1465271.0,
+  "shadowCasters": 357.0,
+  "frames": 5271
+ },
+ "home|shadows-off": {
+  "setPassCalls": 55.0,
+  "triangles": 599454.0,
+  "shadowCasters": 0.0,
+  "frames": 6310
+ },
+ "cafe-square|ssao-depth": {
+  "setPassCalls": 70.0,
+  "triangles": 1141365.0,
+  "shadowCasters": 348.0,
+  "frames": 4689
+ },
+ "cafe-square|ssao-off": {
+  "setPassCalls": 66.0,
+  "triangles": 1141361.0,
+  "shadowCasters": 348.0,
+  "frames": 5190
+ },
+ "cafe-square|proxies": {
+  "setPassCalls": 78.0,
+  "triangles": 1152726.0,
+  "shadowCasters": 298.0,
+  "frames": 3312
+ },
+ "cafe-square|cascades-2": {
+  "setPassCalls": 68.0,
+  "triangles": 1208293.0,
+  "shadowCasters": 275.0,
+  "frames": 3378
+ },
+ "cafe-square|fixes-123": {
+  "setPassCalls": 55.0,
+  "triangles": 678674.0,
+  "shadowCasters": 235.0,
+  "frames": 3136
+ },
+ "cafe-square|fixes-13": {
+  "setPassCalls": 57.0,
+  "triangles": 921597.0,
+  "shadowCasters": 275.0,
+  "frames": 3200
+ },
+ "cafe-square|fade-off": {
+  "setPassCalls": 66.0,
+  "triangles": 1428061.0,
+  "shadowCasters": 345.0,
+  "frames": 3675
+ },
+ "cafe-square|shadows-off": {
+  "setPassCalls": 52.0,
+  "triangles": 575895.0,
+  "shadowCasters": 0.0,
+  "frames": 6047
+ },
+ "cafe-square|base": {
+  "setPassCalls": 81.0,
+  "triangles": 1428061.0,
+  "shadowCasters": 348.0,
+  "frames": 4969
+ },
+ "parade|ssao-off": {
+  "setPassCalls": 66.0,
+  "triangles": 1155318.0,
+  "shadowCasters": 254.0,
+  "frames": 7647
+ },
+ "parade|proxies": {
+  "setPassCalls": 78.0,
+  "triangles": 1422391.0,
+  "shadowCasters": 254.0,
+  "frames": 4775
+ },
+ "parade|cascades-2": {
+  "setPassCalls": 66.0,
+  "triangles": 1333569.0,
+  "shadowCasters": 184.0,
+  "frames": 4819
+ },
+ "parade|fixes-123": {
+  "setPassCalls": 56.0,
+  "triangles": 901828.0,
+  "shadowCasters": 184.0,
+  "frames": 5196
+ },
+ "parade|fixes-13": {
+  "setPassCalls": 57.0,
+  "triangles": 984164.0,
+  "shadowCasters": 184.0,
+  "frames": 5051
+ },
+ "parade|fade-off": {
+  "setPassCalls": 63.0,
+  "triangles": 1504727.0,
+  "shadowCasters": 254.0,
+  "frames": 5979
+ },
+ "parade|shadows-off": {
+  "setPassCalls": 47.0,
+  "triangles": 700581.0,
+  "shadowCasters": 0.0,
+  "frames": 5524
+ },
+ "parade|base": {
+  "setPassCalls": 79.0,
+  "triangles": 1504727.0,
+  "shadowCasters": 254.0,
+  "frames": 4583
+ },
+ "parade|ssao-depth": {
+  "setPassCalls": 70.0,
+  "triangles": 1155322.0,
+  "shadowCasters": 254.0,
+  "frames": 5009
+ },
+ "crown-circus|proxies": {
+  "setPassCalls": 76.0,
+  "triangles": 769130.0,
+  "shadowCasters": 217.0,
+  "frames": 5062
+ },
+ "crown-circus|cascades-2": {
+  "setPassCalls": 67.0,
+  "triangles": 590599.0,
+  "shadowCasters": 181.0,
+  "frames": 5213
+ },
+ "crown-circus|fixes-123": {
+  "setPassCalls": 54.0,
+  "triangles": 427373.0,
+  "shadowCasters": 131.0,
+  "frames": 5096
+ },
+ "crown-circus|fixes-13": {
+  "setPassCalls": 56.0,
+  "triangles": 476453.0,
+  "shadowCasters": 181.0,
+  "frames": 5153
+ },
+ "crown-circus|fade-off": {
+  "setPassCalls": 65.0,
+  "triangles": 831491.0,
+  "shadowCasters": 287.0,
+  "frames": 5819
+ },
+ "crown-circus|shadows-off": {
+  "setPassCalls": 52.0,
+  "triangles": 232295.0,
+  "shadowCasters": 0.0,
+  "frames": 6954
+ },
+ "crown-circus|base": {
+  "setPassCalls": 80.0,
+  "triangles": 831491.0,
+  "shadowCasters": 287.0,
+  "frames": 5196
+ },
+ "crown-circus|ssao-depth": {
+  "setPassCalls": 69.0,
+  "triangles": 717345.0,
+  "shadowCasters": 287.0,
+  "frames": 5051
+ },
+ "crown-circus|ssao-off": {
+  "setPassCalls": 65.0,
+  "triangles": 717341.0,
+  "shadowCasters": 287.0,
+  "frames": 8173
+ },
+ "harbour-quay|cascades-2": {
+  "setPassCalls": 60.0,
+  "triangles": 527572.0,
+  "shadowCasters": 90.0,
+  "frames": 5769
+ },
+ "harbour-quay|fixes-123": {
+  "setPassCalls": 49.0,
+  "triangles": 339090.0,
+  "shadowCasters": 90.0,
+  "frames": 5595
+ },
+ "harbour-quay|fixes-13": {
+  "setPassCalls": 49.0,
+  "triangles": 354102.0,
+  "shadowCasters": 90.0,
+  "frames": 5851
+ },
+ "harbour-quay|fade-off": {
+  "setPassCalls": 60.0,
+  "triangles": 590106.0,
+  "shadowCasters": 138.0,
+  "frames": 6140
+ },
+ "harbour-quay|shadows-off": {
+  "setPassCalls": 50.0,
+  "triangles": 348647.0,
+  "shadowCasters": 0.0,
+  "frames": 7664
+ },
+ "harbour-quay|base": {
+  "setPassCalls": 68.0,
+  "triangles": 590106.0,
+  "shadowCasters": 138.0,
+  "frames": 6099
+ },
+ "harbour-quay|ssao-depth": {
+  "setPassCalls": 57.0,
+  "triangles": 416636.0,
+  "shadowCasters": 138.0,
+  "frames": 5742
+ },
+ "harbour-quay|ssao-off": {
+  "setPassCalls": 53.0,
+  "triangles": 416632.0,
+  "shadowCasters": 138.0,
+  "frames": 11427
+ },
+ "harbour-quay|proxies": {
+  "setPassCalls": 68.0,
+  "triangles": 575094.0,
+  "shadowCasters": 138.0,
+  "frames": 6214
+ },
+ "heaviest|fixes-123": {
+  "setPassCalls": 72.0,
+  "triangles": 934910.0,
+  "shadowCasters": 261.0,
+  "frames": 3417
+ },
+ "heaviest|fixes-13": {
+  "setPassCalls": 75.0,
+  "triangles": 1602615.0,
+  "shadowCasters": 361.0,
+  "frames": 3479
+ },
+ "heaviest|fade-off": {
+  "setPassCalls": 74.0,
+  "triangles": 2587009.0,
+  "shadowCasters": 438.0,
+  "frames": 5148
+ },
+ "heaviest|shadows-off": {
+  "setPassCalls": 67.0,
+  "triangles": 1134571.0,
+  "shadowCasters": 0.0,
+  "frames": 3429
+ },
+ "heaviest|base": {
+  "setPassCalls": 111.0,
+  "triangles": 2587009.0,
+  "shadowCasters": 539.0,
+  "frames": 2780
+ },
+ "heaviest|ssao-depth": {
+  "setPassCalls": 96.0,
+  "triangles": 2024399.0,
+  "shadowCasters": 539.0,
+  "frames": 3238
+ },
+ "heaviest|ssao-off": {
+  "setPassCalls": 92.0,
+  "triangles": 2024395.0,
+  "shadowCasters": 539.0,
+  "frames": 4596
+ },
+ "heaviest|proxies": {
+  "setPassCalls": 106.0,
+  "triangles": 1650344.0,
+  "shadowCasters": 459.0,
+  "frames": 2879
+ },
+ "heaviest|cascades-2": {
+  "setPassCalls": 90.0,
+  "triangles": 2165225.0,
+  "shadowCasters": 361.0,
+  "frames": 3013
+ },
+ "north-edge|fixes-13": {
+  "setPassCalls": 43.0,
+  "triangles": 455760.0,
+  "shadowCasters": 95.0,
+  "frames": 3984
+ },
+ "north-edge|fade-off": {
+  "setPassCalls": 49.0,
+  "triangles": 760219.0,
+  "shadowCasters": 130.0,
+  "frames": 5646
+ },
+ "north-edge|shadows-off": {
+  "setPassCalls": 40.0,
+  "triangles": 302825.0,
+  "shadowCasters": 0.0,
+  "frames": 4238
+ },
+ "north-edge|base": {
+  "setPassCalls": 55.0,
+  "triangles": 760219.0,
+  "shadowCasters": 130.0,
+  "frames": 3567
+ },
+ "north-edge|ssao-depth": {
+  "setPassCalls": 49.0,
+  "triangles": 609660.0,
+  "shadowCasters": 130.0,
+  "frames": 3893
+ },
+ "north-edge|ssao-off": {
+  "setPassCalls": 45.0,
+  "triangles": 609656.0,
+  "shadowCasters": 130.0,
+  "frames": 6062
+ },
+ "north-edge|proxies": {
+  "setPassCalls": 55.0,
+  "triangles": 730195.0,
+  "shadowCasters": 130.0,
+  "frames": 3557
+ },
+ "north-edge|cascades-2": {
+  "setPassCalls": 49.0,
+  "triangles": 606319.0,
+  "shadowCasters": 95.0,
+  "frames": 3611
+ },
+ "north-edge|fixes-123": {
+  "setPassCalls": 43.0,
+  "triangles": 425736.0,
+  "shadowCasters": 95.0,
+  "frames": 4082
+ }
+}

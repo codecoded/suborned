@@ -136,6 +136,8 @@ namespace Suborned.World
             var (fadeKit, fadeBatches, fadeFlagged) = FadeTags.Apply(root, batches, facade.Spec.Atlas, flagged);
             Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer}); " +
                 $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
+            var (proxies, proxyTris) = ShadowProxies.Build(root); // after FadeTags: proxies take their LOD1's fade bit
+            Debug.Log($"World: shadow proxies {proxies} (kit facades and street trees cast from LOD1, {proxyTris} triangles; no LOD of theirs casts)");
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
 

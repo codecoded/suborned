@@ -12,8 +12,8 @@ namespace Suborned.World.Perf
     /// and variants; sweep.json for the grid; refine.json round the heaviest foci of sweep.result.json) and builds a macOS
     /// development player of the HarbourDistrict scene alone into out/build/perf/SubornedPerf.app. Only BuildPlayerOptions carry
     /// the build's settings (development, no profiler autoconnect): EditorBuildSettings and EditorUserBuildSettings are left as
-    /// they are; for the build alone the project carries the shadow-proxy meshes (PerfProxyAsset) and a renderer copy that keeps the
-    /// A/B switches' shader variants (PerfVariantsRenderer), both taken out after. The player runs any plan (PerfHarness, `-perf`). Menu: Suborned/Perf/* (a Write rewrites a plan alone: the player
+    /// they are; for the build alone the project carries a renderer copy that keeps the A/B switches' shader variants
+    /// (PerfVariantsRenderer), taken out after. The shadow proxies are the scene's own (ShadowProxies, built with the world). The player runs any plan (PerfHarness, `-perf`). Menu: Suborned/Perf/* (a Write rewrites a plan alone: the player
     /// reads it at start, so a stop change needs no rebuild), with the scene open and saved. CLI (Editor closed):
     /// Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Perf.PerfBuild.Cli [-perfSweep | -perfRefine]</summary>
     public static class PerfBuild
@@ -71,7 +71,7 @@ namespace Suborned.World.Perf
             var plan = PerfPlanner.Stops();
             Write(PlanPath, plan);
             BuildReport report;
-            int proxies = PerfProxyAsset.Write(GameObject.Find(HarbourWorldBuilder.RootName).transform);
+            int proxies = GameObject.Find(HarbourWorldBuilder.RootName).GetComponentsInChildren<ShadowProxy>(true).Length;
             string variants = "";
             try
             {
@@ -85,14 +85,14 @@ namespace Suborned.World.Perf
                     options = BuildOptions.Development,
                 });
             }
-            finally { PerfVariantsRenderer.Remove(); PerfProxyAsset.Delete(); }
+            finally { PerfVariantsRenderer.Remove(); }
             // The Input System puts its project-wide actions into PlayerSettings.preloadedAssets for the build and takes them out after,
             // but the build saves ProjectSettings.asset in between: save PlayerSettings again so the file is the project as it is.
             EditorUtility.SetDirty(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
             AssetDatabase.SaveAssets();
             var s = report.summary;
             var line = $"Perf: player {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; " +
-                $"plan {PlanPath} ({plan.stops.Length} stops, fingerprint {plan.fingerprint}, export {plan.exportSha256}); {proxies} shadow-proxy meshes; variants kept by {variants}";
+                $"plan {PlanPath} ({plan.stops.Length} stops, fingerprint {plan.fingerprint}, export {plan.exportSha256}); {proxies} shadow proxies in the scene; variants kept by {variants}";
             File.WriteAllText(Path.Combine(Dir, "build.txt"), line + "\n");
             if (s.result == BuildResult.Succeeded) Debug.Log(line); else Debug.LogError(line);
             return report;

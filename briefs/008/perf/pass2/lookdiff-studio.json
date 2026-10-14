@@ -1,0 +1,254 @@
+{
+ "parade|fade-off": {
+  "meanAbs": 4.57,
+  "changed": 0.1372
+ },
+ "parade|ssao-off": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "parade|cascades-2": {
+  "meanAbs": 0.13,
+  "changed": 0.0025
+ },
+ "parade|fixes-13": {
+  "meanAbs": 0.14,
+  "changed": 0.0025
+ },
+ "parade|base": {
+  "meanAbs": 0.18,
+  "changed": 0.0038
+ },
+ "parade|ssao-depth": {
+  "meanAbs": 0.02,
+  "changed": 0.0
+ },
+ "parade|proxies": {
+  "meanAbs": 0.04,
+  "changed": 0.0014
+ },
+ "parade|fixes-123": {
+  "meanAbs": 0.18,
+  "changed": 0.0038
+ },
+ "parade|shadows-off": {
+  "meanAbs": 5.89,
+  "changed": 0.2415
+ },
+ "crown-circus|ssao-off": {
+  "meanAbs": 0.02,
+  "changed": 0.0009
+ },
+ "crown-circus|ssao-depth": {
+  "meanAbs": 0.03,
+  "changed": 0.0005
+ },
+ "crown-circus|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0006
+ },
+ "crown-circus|shadows-off": {
+  "meanAbs": 10.76,
+  "changed": 0.3331
+ },
+ "crown-circus|cascades-2": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "crown-circus|base": {
+  "meanAbs": 0.05,
+  "changed": 0.001
+ },
+ "crown-circus|fixes-13": {
+  "meanAbs": 0.04,
+  "changed": 0.0005
+ },
+ "crown-circus|fade-off": {
+  "meanAbs": 4.13,
+  "changed": 0.1575
+ },
+ "crown-circus|fixes-123": {
+  "meanAbs": 0.05,
+  "changed": 0.001
+ },
+ "heaviest|fade-off": {
+  "meanAbs": 11.68,
+  "changed": 0.2403
+ },
+ "heaviest|proxies": {
+  "meanAbs": 0.07,
+  "changed": 0.0012
+ },
+ "heaviest|ssao-depth": {
+  "meanAbs": 0.16,
+  "changed": 0.0005
+ },
+ "heaviest|ssao-off": {
+  "meanAbs": 0.09,
+  "changed": 0.0006
+ },
+ "heaviest|shadows-off": {
+  "meanAbs": 14.94,
+  "changed": 0.4799
+ },
+ "heaviest|base": {
+  "meanAbs": 0.28,
+  "changed": 0.0024
+ },
+ "heaviest|fixes-123": {
+  "meanAbs": 0.28,
+  "changed": 0.0024
+ },
+ "heaviest|fixes-13": {
+  "meanAbs": 0.25,
+  "changed": 0.0013
+ },
+ "heaviest|cascades-2": {
+  "meanAbs": 0.13,
+  "changed": 0.0006
+ },
+ "cafe-square|ssao-depth": {
+  "meanAbs": 0.05,
+  "changed": 0.0004
+ },
+ "cafe-square|fade-off": {
+  "meanAbs": 2.64,
+  "changed": 0.094
+ },
+ "cafe-square|cascades-2": {
+  "meanAbs": 0.03,
+  "changed": 0.0004
+ },
+ "cafe-square|ssao-off": {
+  "meanAbs": 0.05,
+  "changed": 0.0011
+ },
+ "cafe-square|base": {
+  "meanAbs": 0.08,
+  "changed": 0.0014
+ },
+ "cafe-square|fixes-123": {
+  "meanAbs": 0.08,
+  "changed": 0.0013
+ },
+ "cafe-square|shadows-off": {
+  "meanAbs": 10.57,
+  "changed": 0.3119
+ },
+ "cafe-square|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0006
+ },
+ "cafe-square|fixes-13": {
+  "meanAbs": 0.07,
+  "changed": 0.0008
+ },
+ "harbour-quay|ssao-depth": {
+  "meanAbs": 0.03,
+  "changed": 0.0
+ },
+ "harbour-quay|base": {
+  "meanAbs": 0.05,
+  "changed": 0.0006
+ },
+ "harbour-quay|shadows-off": {
+  "meanAbs": 14.69,
+  "changed": 0.4038
+ },
+ "harbour-quay|cascades-2": {
+  "meanAbs": 0.01,
+  "changed": 0.0
+ },
+ "harbour-quay|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0006
+ },
+ "harbour-quay|fixes-123": {
+  "meanAbs": 0.05,
+  "changed": 0.0006
+ },
+ "harbour-quay|fixes-13": {
+  "meanAbs": 0.04,
+  "changed": 0.0
+ },
+ "harbour-quay|ssao-off": {
+  "meanAbs": 0.03,
+  "changed": 0.0003
+ },
+ "harbour-quay|fade-off": {
+  "meanAbs": 0.2,
+  "changed": 0.0051
+ },
+ "north-edge|fixes-123": {
+  "meanAbs": 0.54,
+  "changed": 0.0034
+ },
+ "north-edge|proxies": {
+  "meanAbs": 0.07,
+  "changed": 0.0
+ },
+ "north-edge|fade-off": {
+  "meanAbs": 13.15,
+  "changed": 0.307
+ },
+ "north-edge|fixes-13": {
+  "meanAbs": 0.54,
+  "changed": 0.0034
+ },
+ "north-edge|cascades-2": {
+  "meanAbs": 0.17,
+  "changed": 0.0002
+ },
+ "north-edge|ssao-off": {
+  "meanAbs": 0.45,
+  "changed": 0.014
+ },
+ "north-edge|ssao-depth": {
+  "meanAbs": 0.47,
+  "changed": 0.0031
+ },
+ "north-edge|shadows-off": {
+  "meanAbs": 14.64,
+  "changed": 0.4463
+ },
+ "north-edge|base": {
+  "meanAbs": 0.54,
+  "changed": 0.0033
+ },
+ "home|shadows-off": {
+  "meanAbs": 5.83,
+  "changed": 0.1602
+ },
+ "home|ssao-depth": {
+  "meanAbs": 0.07,
+  "changed": 0.0007
+ },
+ "home|fade-off": {
+  "meanAbs": 0.02,
+  "changed": 0.0
+ },
+ "home|fixes-123": {
+  "meanAbs": 0.09,
+  "changed": 0.001
+ },
+ "home|cascades-2": {
+  "meanAbs": 0.03,
+  "changed": 0.0001
+ },
+ "home|base": {
+  "meanAbs": 0.09,
+  "changed": 0.001
+ },
+ "home|proxies": {
+  "meanAbs": 0.02,
+  "changed": 0.0002
+ },
+ "home|ssao-off": {
+  "meanAbs": 0.11,
+  "changed": 0.004
+ },
+ "home|fixes-13": {
+  "meanAbs": 0.08,
+  "changed": 0.0008
+ }
+}
