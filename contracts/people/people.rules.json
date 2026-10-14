@@ -1,0 +1,390 @@
+{
+  "schema": "suborned.people.rules/1",
+  "author": "Motive (brief 010 A, 2026-10-15)",
+  "gdd": "the-suborned-agent-gdd-v0.20.1-2026-10-14.md",
+  "rule": "The rules a generated person must obey. Anything not in this file is rejected (GDD §01 house rules: unknown = reject). Every entry cites its GDD § in `src`; an entry the GDD does not state is marked `proposed: true` with a `reason`, for Sky to accept or strike. Tags in src: [B] built, [S] starting value to tune by playtest.",
+  "person": {
+    "is": ["routine", "need", "temperament", "memory"],
+    "needsPerPerson": 1,
+    "memoryAtStart": "empty",
+    "src": "§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory",
+    "reason": "memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with."
+  },
+  "tiers": {
+    "simulated": { "carries": ["name", "temperament", "need", "ties", "scales", "memory", "routine"], "src": "§09; life.json generator.tiers [G]" },
+    "background": {
+      "carries": ["routine"],
+      "src": "life.json generator.tiers: walk, run and cheer only",
+      "proposed": true,
+      "reason": "background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to."
+    }
+  },
+  "scales": {
+    "bravery": {
+      "min": 0, "max": 3, "integer": true,
+      "steps": ["informant", "helper", "accomplice", "fighter"],
+      "src": "§04 bravery [S]: Informant → Helper → Accomplice → Fighter, +1 step per job completed unexposed"
+    },
+    "resentment": {
+      "min": 0, "max": 2, "integer": true,
+      "steps": ["compliant", "resentful", "informer"],
+      "src": "§04 resentment [S]: Compliant → Resentful → Informer, +1 step per pressure or exposure"
+    },
+    "fear": {
+      "min": 0, "max": 3, "integer": true,
+      "src": "§04 talker test names fear; §04 Pressure leaves fear; §05 a threat adds fear",
+      "proposed": true,
+      "reason": "the GDD names fear but gives it no scale. 0–3 integers, one step per pressure or threat, so it weighs against bravery's four steps in the Talker test."
+    },
+    "loyalty": {
+      "min": 0, "max": 3, "integer": true,
+      "to": "cell",
+      "src": "§04 talker test names loyalty; §04 standing: Hero turning is slower, dearer, loyal",
+      "proposed": true,
+      "reason": "the GDD does not say loyal to whom. In the Talker test it must be loyalty to the cell: read as loyalty to an institution, the Office's loyal guard would shield the cell from investigators. Institution loyalty is the Loyal temperament's `institution`, not this number. Every person starts at 0; only being turned raises it."
+    }
+  },
+  "temperaments": {
+    "idealist": {
+      "name": "Idealist",
+      "respondsTo": ["help"], "refuses": ["pay"], "reportsApproach": false, "institution": false,
+      "hero": "volunteers free; bravery fast", "menace": "refuses; may report",
+      "start": { "bravery": 1, "resentment": 0, "fear": 0, "loyalty": 0 },
+      "src": "§04 temperament [S]: Idealist responds to Help, refuses bribes",
+      "proposed": true,
+      "reason": "starting bravery 1 (Helper) is new: §04 says an Idealist volunteers and grows brave fast, so an Idealist begins one step up the ladder. Resentment 0 = Compliant (§04)."
+    },
+    "mercenary": {
+      "name": "Mercenary",
+      "respondsTo": ["pay"], "refuses": [], "reportsApproach": false, "institution": false,
+      "hero": "overcharges", "menace": "discount; sells you to highest bidder",
+      "start": { "bravery": 0, "resentment": 0, "fear": 0, "loyalty": 0 },
+      "src": "§04 temperament [S]: Mercenary responds to Pay; ladders start at Informant and Compliant (§04)"
+    },
+    "fearful": {
+      "name": "Fearful",
+      "respondsTo": ["pressure"], "refuses": [], "reportsApproach": false, "institution": false,
+      "hero": "hesitates; needs Help ×2", "menace": "folds free",
+      "start": { "bravery": 0, "resentment": 0, "fear": 1, "loyalty": 0 },
+      "src": "§04 temperament [S]: Fearful responds to Pressure",
+      "proposed": true,
+      "reason": "starting fear 1 is new: it makes a Fearful person a Talker from the start (1 + 0 > 0 + 0) until Help or a job makes them braver, which is what Fearful means under questioning (§05)."
+    },
+    "loyal": {
+      "name": "Loyal (institution)",
+      "respondsTo": ["help"], "refuses": [], "reportsApproach": true, "institution": true,
+      "hero": "turns after repeated Help", "menace": "reports any approach",
+      "start": { "bravery": 0, "resentment": 0, "fear": 0, "loyalty": 0 },
+      "src": "§04 temperament [S]: Loyal (institution) responds to trust over time; reports any approach"
+    }
+  },
+  "institutions": {
+    "kinds": ["employer", "civic"],
+    "rule": "a Loyal person names one institution: a worker is loyal to their employer (work unit or civic employer); a person with no work in the district is loyal to the civic order",
+    "src": "§04 Loyal (institution); §01 world: the city fears disorder most, an orderly city runs on routine and paperwork",
+    "proposed": true,
+    "reason": "the GDD names the temperament but not which institutions exist. Two kinds keep it checkable from data the expander already has (work unit, home)."
+  },
+  "approaches": {
+    "ask": { "requires": "nothing", "usd": 0, "timeS": 25, "trail": 1, "leaves": "remembered refusal: later offers +$10,000, +1 T" },
+    "pay": { "requires": "routine", "usd": 70000, "timeS": 50, "trail": 2, "leaves": "traceable payment; neutral" },
+    "help": { "requires": "need", "usd": 40000, "timeS": 50, "trail": 1, "leaves": "gratitude; bravery can grow" },
+    "pressure": { "requires": "need", "usd": 0, "timeS": 35, "trail": 3, "leaves": "fear; resentment grows; can identify Fixer" },
+    "src": "§04 approaches [B], Inez's prices in the training mission. Reference prices: a person's own price is Keel's rule, not this file's."
+  },
+  "needs": {
+    "rule": "exactly one need per simulated person, from this closed list. `metBy` = the approaches that act on the need (Help meets it, Pressure leans on it, Pay meets it only where money is the need). Pay as a plain bribe and Ask stay open to anyone; they need no need known.",
+    "list": {
+      "debt": {
+        "metBy": ["help", "pressure", "pay"], "help": "cash",
+        "requires": "nothing",
+        "src": "§04 Help (clear debt); §07 Inez, café waitress, in debt"
+      },
+      "cash": {
+        "metBy": ["help", "pay"], "help": "cash",
+        "requires": "nothing",
+        "src": "§07 official driver (needs cash), turned for $40,000"
+      },
+      "housing": {
+        "metBy": ["help", "pressure"], "help": "favour",
+        "requires": "home",
+        "src": "§07 brief: Vale signed the clearance order for the marked block",
+        "proposed": true,
+        "reason": "a home under a clearance order or a waiting list: the Handover's own cause, and a need only the civic order can meet or threaten. Needs a home in the district."
+      },
+      "papers": {
+        "metBy": ["help", "pressure"], "help": "favour",
+        "requires": "nothing",
+        "src": "§01 world: records are physical (microfilm, punch cards, stamped forms)",
+        "proposed": true,
+        "reason": "a permit, licence or record on file that must be stamped, found or lost. The world's records are paper held by people, so a clerk can meet it and a threat can file one."
+      },
+      "kin": {
+        "metBy": ["help", "pressure"], "help": "favour",
+        "requires": "family-tie",
+        "src": "§04 between missions: arrested (lost unless freed); standing: Hero frees arrested locals",
+        "proposed": true,
+        "reason": "a family member arrested or in trouble. Needs a family tie, so the checker can see whose kin it is."
+      },
+      "care": {
+        "metBy": ["help"], "help": "favour",
+        "requires": "nothing",
+        "src": "§08 wounds: a turned doctor heals fast and quietly",
+        "proposed": true,
+        "reason": "illness at home, met by a doctor contact. Help only: §06 content line keeps harm to bystanders out of leverage."
+      },
+      "protection": {
+        "metBy": ["help", "pressure"], "help": "favour",
+        "requires": "rival-tie",
+        "src": "§05 rivals; §06 citizens and fights",
+        "proposed": true,
+        "reason": "someone leans on them. Needs a rival tie, so the threat is a person in the cast, not prose."
+      },
+      "advancement": {
+        "metBy": ["help", "pay"], "help": "favour",
+        "requires": "work",
+        "src": "§04 between missions: promoted (new access)",
+        "proposed": true,
+        "reason": "wants the better post or the access that comes with it. A promotion is a §04 outcome, so a person who wants one gives Help a lasting payoff. Needs work in the district."
+      },
+      "secret": {
+        "metBy": ["help", "pressure"], "help": "favour",
+        "requires": "nothing",
+        "src": "§04 Pressure (need known; leaves fear)",
+        "proposed": true,
+        "reason": "something they hide, learned by Listen. Gives Pressure a target that is not money, and Help (keeping it buried) a quieter answer."
+      }
+    },
+    "requiresKinds": {
+      "nothing": "any simulated person",
+      "home": "a home plot in the district (commuters and visitors from beyond the sheet have none)",
+      "work": "a work unit or civic employer in the district",
+      "family-tie": "at least one family tie",
+      "rival-tie": "at least one rival tie"
+    }
+  },
+  "ties": {
+    "kinds": {
+      "family": {
+        "direction": "both", "maxPerPerson": 4, "between": "any",
+        "src": "§04 between missions: introduces a friend (new contact); arrested (lost unless freed)",
+        "proposed": true,
+        "reason": "limit 4 [S]. Family may live apart and need not share a family name (a mixed cast, §15)."
+      },
+      "workmate": {
+        "direction": "both", "maxPerPerson": 3, "between": "same-employer",
+        "src": "§08 assets: Inez introduces café contacts; Act II takes a workplace",
+        "proposed": true,
+        "reason": "limit 3 [S]. Both work the same unit or the same civic employer, so a workplace can be turned link by link (§08)."
+      },
+      "regular": {
+        "direction": "from-customer", "maxPerPerson": 3, "maxIncoming": 12, "between": "routine-stop",
+        "src": "§08 economy: café owner tips needs before Scout listens; §05 counters: reach witness first",
+        "proposed": true,
+        "reason": "a customer who comes back. The customer's routine stops at the other person's work unit, so the tie is checkable on the routine. 3 out, 12 in [S]: staff know many regulars."
+      },
+      "debtor": {
+        "direction": "from-debtor", "maxPerPerson": 2, "maxIncoming": 6, "between": "any",
+        "src": "§04 Help (clear debt); §07 Inez in debt",
+        "proposed": true,
+        "reason": "who owes whom. 2 owed, 6 owing in [S]. A debt need may be owed to a bureau or pawnbroker as a trade, so a debt need does not require a debtor tie."
+      },
+      "rival": {
+        "direction": "both", "maxPerPerson": 1, "between": "same-trade-or-employer",
+        "src": "§04 Mercenary sells you to highest bidder; §05 rivals",
+        "proposed": true,
+        "reason": "one rival at most [S], in the same trade in the district or at the same employer: a grudge with a place."
+      }
+    },
+    "betweenKinds": {
+      "any": "any two simulated people",
+      "same-employer": "both work the same unit or the same civic employer",
+      "routine-stop": "the from-person's routine has a stop at the to-person's work unit while they are on shift",
+      "same-trade-or-employer": "same occupation anywhere in the district, or the same employer"
+    },
+    "perPerson": { "min": 1, "max": 8 },
+    "noSelf": true,
+    "onePerKindPerPair": true,
+    "simulatedOnly": true,
+    "src": "§09 people: occupation × temperament × need × relationships × routine",
+    "proposed": true,
+    "reason": "1–8 ties per simulated person [S]: nobody stands alone (introductions, §04, need someone to introduce), nobody is a hub. Ties join simulated people only; background people have none."
+  },
+  "talker": {
+    "when": "questioned",
+    "test": { "left": ["fear", "resentment"], "op": ">", "right": ["bravery", "loyalty"] },
+    "deterministic": true,
+    "gives": "known-facts",
+    "facts": ["fixer-face", "cell-car", "place-time"],
+    "src": "§04 talker [S]: questioned, a person gives up known facts if fear + resentment > bravery + loyalty (deterministic). Facts: saw Fixer's face, knows cell car, saw where/when",
+    "lie": {
+      "when": { "talker": false, "helped": true, "braveryAtLeast": 1 },
+      "gives": { "hero": "false-lead", "otherwise": "nothing" },
+      "src": "§04 brave helped contact lies → nothing or false lead; §05 Hero campaign: brave locals give false leads",
+      "proposed": true,
+      "reason": "the GDD says brave and helped; brave is read as bravery ≥ 1 (Helper). Which of nothing or a false lead is decided by the district's standing, so it stays deterministic."
+    }
+  },
+  "positions": {
+    "rule": "every work unit has exactly one keeper; the rest of its staff take the other positions of its category. A mission casts by position and place (a server on shift at the café), never by name.",
+    "byCategory": {
+      "food": ["keeper", "server", "cook"],
+      "nightlife": ["keeper", "server", "door", "entertainer"],
+      "retail": ["keeper", "assistant"],
+      "trade": ["keeper", "hand"],
+      "service": ["keeper", "operator"],
+      "kiosk": ["keeper", "attendant"],
+      "cinema": ["keeper", "usher", "projectionist"],
+      "lobby": ["keeper", "porter"],
+      "market": ["keeper"]
+    },
+    "src": "brief 010 Fixed: mission people are city people pinned by role; §08 café owner tips needs; §07 cast (café waitress)",
+    "proposed": true,
+    "reason": "the Handover must cast a waitress (server), and §08 a café owner (keeper). The categories are life.json's; the positions within them are new."
+  },
+  "temperamentsBy": {
+    "rule": "a person's temperament must be one its occupation (trade) or role allows. Every trade and role allows at least two, so no job reads as one kind of person (§09 risk: sameness).",
+    "trades": {
+      "diner": { "category": "food", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "automat": { "category": "kiosk", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "soda-fountain": { "category": "food", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "cocktail-lounge": { "category": "food", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "tiki-bar": { "category": "food", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "jazz-club": { "category": "nightlife", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "dance-hall": { "category": "nightlife", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "dockside-tavern": { "category": "food", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "appliance-showroom": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "department-store": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "robot-repair": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "hover-garage": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "service-station": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "rocket-parts-chandler": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "ships-chandler": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "radio-tv-repair": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "launderette": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "barber": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "beauty-salon": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "newsstand": { "category": "kiosk", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "tailor": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "couture-boutique": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "record-shop": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "camera-shop": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "florist": { "category": "kiosk", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "grocer": { "category": "retail", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "cinema": { "category": "cinema", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "bowling": { "category": "nightlife", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "hotel-lobby": { "category": "lobby", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "travel-bureau": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "pawnbroker": {
+        "category": "service", "allow": ["mercenary", "fearful", "loyal"],
+        "proposed": true,
+        "reason": "a creditor: debt is the need the Handover turns on (§07). An Idealist lender forgives it, so the city's creditors are never Idealist."
+      },
+      "credit-bureau": {
+        "category": "service", "allow": ["mercenary", "fearful", "loyal"],
+        "proposed": true,
+        "reason": "as pawnbroker: the city's creditors are never Idealist (§07 debt)."
+      },
+      "employment-bureau": { "category": "service", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "hiring-hall": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "bonded-warehouse": { "category": "trade", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "market-stall": { "category": "market", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "tram-kiosk": { "category": "kiosk", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "skyrail-kiosk": { "category": "kiosk", "allow": ["idealist", "mercenary", "fearful", "loyal"] },
+      "lobby": { "category": "lobby", "allow": ["idealist", "mercenary", "fearful", "loyal"] }
+    },
+    "tradesSrc": "the 39 trades of plan standards.frontage.trades = the 39 occupations of life.json generator.occupations (category from life.json); all four temperaments unless marked: §04 Hero and Menace turn different halves of the city, so most jobs carry every kind",
+    "roles": {
+      "resident": { "employer": "none", "allow": ["idealist", "mercenary", "fearful", "loyal"], "src": "life.json routines.resident; §09" },
+      "visitor": {
+        "employer": "none", "allow": ["idealist", "mercenary", "fearful", "loyal"],
+        "src": "life.json routines shopper, reveller; commuters from beyond the sheet",
+        "proposed": true,
+        "reason": "a simulated person who neither lives nor works in the district (shopper, reveller) still needs a role the checker knows."
+      },
+      "docker": {
+        "employer": "hiring-hall", "allow": ["idealist", "mercenary", "fearful", "loyal"],
+        "src": "life.json routines.docker; §08 Act II takes a workplace e.g. docks",
+        "proposed": true,
+        "reason": "port workers hired by shift at the hiring hall are not its staff, so they need their own role."
+      },
+      "clerk": {
+        "employer": "records-office", "allow": ["idealist", "mercenary", "fearful", "loyal"],
+        "src": "§08 economy: clerk skims cash; life.json civicEmployers records-office",
+        "proposed": true,
+        "reason": "the Records Office's staff. All four: §08's skimming clerk is a Mercenary, and the Office must hold some who can be helped."
+      },
+      "guard": {
+        "employer": "records-office", "allow": ["loyal", "mercenary"],
+        "src": "§05 security: guard on door routine (café stop pre-shift); §07 cast; brief 010 A (Sky): Loyal to the Office or Mercenary, never Idealist",
+        "proposed": true,
+        "reason": "Sky's question in the brief, answered yes. Not Fearful either: a guard who folds to a threat would make §07 route A's Help-and-call the costly way round."
+      },
+      "official-driver": {
+        "employer": "records-office", "allow": ["idealist", "mercenary", "fearful", "loyal"],
+        "src": "§07 official driver (needs cash), turned before 5:40",
+        "proposed": true,
+        "reason": "all four: the Handover picks a driver it can turn (brief 010 D), the city does not shape its drivers for one mission."
+      },
+      "councillor": {
+        "employer": "records-office", "allow": ["loyal", "mercenary", "fearful"],
+        "src": "§07 Councillor Vale signed the clearance order",
+        "proposed": true,
+        "reason": "the one who signs clearance orders. Never Idealist, for the same reason creditors are not: the order is the harm."
+      },
+      "watcher": {
+        "employer": "civic", "allow": ["loyal", "mercenary", "fearful"],
+        "src": "§01 world: cameras are closed-circuit, watched by people; §05 watchers",
+        "proposed": true,
+        "reason": "the people behind the cameras. Never Idealist: a watcher's log is the city's record against the cell (§05)."
+      },
+      "patrol-officer": {
+        "employer": "civic", "allow": ["loyal", "mercenary"],
+        "src": "§05 security: patrol sweep, response unit; §06 health guard/officer 3",
+        "proposed": true,
+        "reason": "as guard: Loyal or Mercenary."
+      },
+      "investigator": {
+        "employer": "civic", "allow": ["loyal", "mercenary"],
+        "src": "§05 investigators",
+        "proposed": true,
+        "reason": "as guard: Loyal or Mercenary. An investigator who could be helped across would undo §05's pressure."
+      }
+    },
+    "employers": {
+      "records-office": { "plot": "records-office", "block": "civic-office", "kind": "civic", "src": "life.json generator.civicEmployers; civic-block.json civic-office" },
+      "cafe": {
+        "block": "cafe", "kind": "trade", "trade": "diner",
+        "src": "civic-block.json cafe (Corner café); plan standards.frontage.placement.corner: corners on two streets take an anchor trade (w ≥ 18), else a diner; the records mix lists diner",
+        "proposed": true,
+        "reason": "the café is none of the 39 trades by name. A 22 m corner unit takes a diner (the plan's corner rule; diner is an anchor in the records mix and opens 6–24, covering the 17:00 Handover). Datum or Vantage may name it otherwise."
+      },
+      "civic": {
+        "kind": "civic", "src": "§05 security, watchers, investigators",
+        "proposed": true,
+        "reason": "the city's own security, which the plan does not site. Its people are loyal to the civic order (institution kind civic)."
+      }
+    }
+  },
+  "names": {
+    "scope": "district",
+    "pool": "one pool per district, carried by the cast tables (brief 010 B); every simulated person's given and family name come from it",
+    "form": { "parts": ["given", "family"], "pattern": "^\\p{Lu}[\\p{L}'-]{1,15}$" },
+    "noEraDate": "no digits, years, dates, generational suffixes (Jr, Sr, II, III) or titles in a name; the pattern forbids them",
+    "avoid": ["Betty", "Peggy", "Dottie", "Dolores", "Mabel", "Gertrude", "Hank", "Buddy", "Butch", "Biff", "Skip", "Sonny", "Junior", "Chester", "Elmer"],
+    "minGiven": 60,
+    "minFamily": 80,
+    "origins": ["anglo", "celtic", "french", "iberian", "italian", "germanic", "nordic", "slavic", "greek", "levantine", "arabic", "persian", "turkish", "west-african", "east-african", "south-asian", "east-asian", "southeast-asian", "polynesian", "caribbean", "latin-american"],
+    "minOrigins": 6,
+    "maxOriginShare": 0.25,
+    "uniqueFullName": true,
+    "background": "unnamed",
+    "pinned": [
+      { "part": "given", "name": "Inez", "position": "server", "employer": "cafe", "src": "§07 cast: Inez (café waitress, in debt)" },
+      { "part": "family", "name": "Vale", "role": "councillor", "employer": "records-office", "src": "§07 cast: Councillor Vale" }
+    ],
+    "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast",
+    "proposed": true,
+    "reason": "the GDD gives the principle, not the numbers. Each pool entry is tagged with one origin from the closed list; ≥ 6 origins and no origin over a quarter of a pool make a mixed cast checkable. 60 × 80 = 4,800 full names keeps every simulated person in a district unique. The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the GDD names Inez and Vale, so the person the Handover pins by role takes that name part; no other name is ever authored."
+  }
+}
