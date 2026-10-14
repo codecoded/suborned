@@ -12,7 +12,7 @@ One row per area × occupation in the scope (the task lists them; add none, drop
 
 What the Handover needs of the cast (Motive §3; read them from the mission's roles in the task, name no person):
 - the row of a role with a `need` weights that need: the café server row weights `debt`, the official-driver row `cash`. Use `positions` on a need entry to weight it for that position only (a server, not the cook), and keep a temperament the role's `approach` does not refuse (the server and the driver are turned with Help, once);
-- the row of a role with `regularOf` carries a routine variant with `preShift: cafe` for that position (use `positions` on the variant: the guard's day starts at the café, the clerk's does not) and a `regular` tie share, so a share of its people hold a regular tie into the café;
+- the row of a role with `regularOf` carries a routine variant with `preShift: cafe` for that position (use `positions` on the variant: the guard's day starts at the café, the clerk's does not) and a `regular` tie share, so at least half of its people hold a regular tie to the café's staff (the expander aims the guard's ties at the café staff on shift at the pre-shift stop; a stop alone does not count);
 - no temperament over 60% of a row's weight, and every unit of 3 or more staff carries at least 2 temperaments (rules `temperamentsBy.mix`, checker P-10);
 - the café keeper knows the needs of workmates and regulars; code derives it from the ties (rules `knowledge`, P-11), so give the café `workmate` and `regular` ties and let its guards and clerks pass through it;
 - every field a person carries is read by a rule (P-12): add no field, no bio, no value or dream; `why` stays about the place, at most 300 characters.

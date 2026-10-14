@@ -7,7 +7,7 @@
 // With `rules` (M-2; brief 010 follow-up, Motive §3, Sky Q4) a role also carries what the person must be, and a fit must meet it:
 // `need` (the person's one need), `approach` (the planned approach: the person's temperament must not refuse it, rules
 // temperaments[t].refuses; the wrong temperament still works one step worse, so only a refusal fails) and `regularOf` (an
-// employer: a regular tie to one of its staff, or a pre-shift stop on the plot its staff work on; §05 the guard's café stop).
+// employer: a regular tie to one of its staff; §05 the guard's café stop, §08 the keeper's tip).
 // Without `rules` (P-6) only employer, position, shift and place count, so P-6 and M-2 can pin different people: M-2's pin is
 // the mission's. Pure: no file is read here.
 import { dist, inPoly, type V } from '../../plan/geom';
@@ -36,9 +36,15 @@ export type Where = {
   placeAt: (id: string) => V | undefined;
   /** a bay place's polygon, plan frame; undefined for a door */
   polyOf: (id: string) => V[] | undefined;
-  /** a place's plot; without it a pre-shift stop never counts for `regularOf` */
+  /** a place's plot (no longer read: `regularOf` is a regular tie only) */
   plotOf?: (id: string) => string | undefined;
 };
+
+/** "A regular of X" (GDD §05, §08), one definition for M-2, P-6, the review and the critic: the person holds a `regular` tie to
+ *  someone who works for X. A pre-shift stop alone is not enough: the keeper's tip on the guard (§08) runs along the tie. */
+export const hasRegularTie = (p: { ties?: readonly { kind: string; with: string }[] }, staff: ReadonlySet<string>) => !!p.ties?.some(t => t.kind === 'regular' && staff.has(t.with));
+/** The share of a position's people that must hold that tie for the requirement to read met. [S] */
+export const REGULAR_SHARE_MIN = 0.5;
 
 /** Default reach of a door role (m) when the role gives no `near`. [S] */
 export const NEAR_M = 4;
@@ -65,11 +71,8 @@ function conditions(r: Role, persons: Castable[], where: Where, rules: CastRules
     out.push({ name: `a temperament that does not refuse ${a}`, ok: p => !!t(p) && !t(p)!.refuses.includes(a), has: p => `${p.id} ${p.temperament ?? 'no temperament'}${t(p) ? '' : ' (unknown)'}` });
   }
   if (r.regularOf) {
-    const e = r.regularOf, staff = persons.filter(p => p.work?.employer === e), ids = new Set(staff.map(p => p.id));
-    const plots = new Set(staff.flatMap(p => where.plotOf?.(p.work!.place) ?? []));
-    const tie = (p: Castable) => !!p.ties?.some(t => t.kind === 'regular' && ids.has(t.with));
-    const pre = (p: Castable) => p.routine.stops.some(s => s.doing === 'pre-shift' && plots.has(where.plotOf?.(s.place) ?? ''));
-    out.push({ name: `a regular of ${e} (a regular tie to its staff or a pre-shift stop at it)`, ok: p => tie(p) || pre(p), has: p => `${p.id} neither` });
+    const e = r.regularOf, ids = new Set(persons.filter(p => p.work?.employer === e).map(p => p.id));
+    out.push({ name: `a regular tie to the staff of ${e}`, ok: p => hasRegularTie(p, ids), has: p => `${p.id} none` });
   }
   return out;
 }

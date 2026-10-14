@@ -1,4 +1,17 @@
 {
- "recorded": {},
- "declared": {}
+ "recorded": {
+  "dac7871a73660abb": "people run r012 (d27fdee)"
+ },
+ "declared": {
+  "59aa3d617b9088dea88a9cb633deef3380da58bf95758d22f07718abed91fdb0": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   }
+  ]
+ }
 }

@@ -207,7 +207,14 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
     switch (spec.between) {
       case 'same-employer': pool = persons.filter(b => ok(b) && !!a.work && b.work?.employer === a.work.employer); break;
       case 'same-trade-or-employer': pool = persons.filter(b => ok(b) && !!a.work && !!b.work && (b.work.trade === a.work.trade || b.work.employer === a.work.employer)); break;
-      case 'routine-stop': pool = persons.filter(b => ok(b) && stops(a).some(s => covers(b, s.place, s))); break;
+      case 'routine-stop': {
+        // a customer's own workplace is not a place they are a regular of (those are workmates); a pre-shift stop is aimed first
+        // (§05 the guard's café stop; §08 the café keeper tips on the guard), then any other stop their day passes
+        const away = stops(a).filter(s => s.doing !== 'work'), aim = away.filter(s => s.doing === 'pre-shift');
+        const at = (xs: Stop[]) => persons.filter(b => ok(b) && xs.some(s => covers(b, s.place, s)));
+        pool = at(aim); if (!pool.length || !aim.length) pool = at(away);
+        break;
+      }
       default: pool = kind === 'family' ? persons.filter(b => ok(b) && b.home.plot === a.home.plot && b.home.plot !== 'beyond') : persons.filter(ok);
     }
     if (spec.direction === 'both') pool = pool.filter(b => b.ties.length < max && count(b, kind) < spec.maxPerPerson);

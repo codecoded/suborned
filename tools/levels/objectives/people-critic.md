@@ -8,7 +8,7 @@ What the checker cannot see, you judge from the passages:
 - The GDD's temperaments: the guard on the Office door must not be an Idealist (the rules say so; the checker holds it), and the cast must not make every driver a Talker.
 - The Handover's cast requirements (Motive §3). Fault each one the report or the tables show unmet, owner Pulse, citing the passage; read the roles from the mission and the checker's requirement lines, never from a person's name:
   - a role with a `need`: its position's row weights that need (the café server row weights debt, the driver row cash) and its temperament weights keep one the role's approach does not refuse; a role the rules cannot cast fails P-6;
-  - a role with `regularOf` (the guard, café): the row has a `preShift: cafe` variant for that position and a share of its people hold a regular tie into the café;
+  - a role with `regularOf` (the guard, café): the row has a `preShift: cafe` variant for that position and at least half of its people hold a `regular` tie to the café's staff (the checker's requirement line measures it: a stop at the café alone does not count; the expander aims the ties, so a table cannot raise it beyond the `regular` share; fault only what the line reads NOT MET);
   - mix (P-10): no temperament over 60% of a row; units of 3+ staff carry 2 or more temperaments; a row that is flat over four temperaments is still a sameness fault when the job should lean (a guard);
   - knowledge (P-11): the café keeper's known needs come from workmate and regular ties; a café with no regulars or workmates gives the Scout nothing to be told;
   - fields (P-12): a row or note that adds a bio, value or dream is a fault (nothing reads it).
