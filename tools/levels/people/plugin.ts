@@ -43,7 +43,7 @@ export const peoplePlugin: Plugin<State> = {
   code: {
     label: 'tools/people (scope, expand, check, walk), tools/plan, contracts/people, tools/levels/people',
     hash: peopleHash, ledger: peopleLedger, ledgerFile: peopleLedgerFile,
-    declare: 'bun tools/levels/people/drift.ts declare', record: recordPeople,
+    declare: 'bun tools/levels/people/drift.ts declare', moves: true, record: recordPeople,
   },
   async open(path, scope = SCOPES[0]) {
     if (!(SCOPES as readonly string[]).includes(scope)) throw new Error(`unknown scope ${scope}`);

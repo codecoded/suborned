@@ -176,6 +176,21 @@ describe('cast requirements and the review page', () => {
     const g = expand({ ...ctx, cast }), r = requirements({ ...ctx, cast }, g.people);
     expect(r.find(x => x.id === 'waitress-weights-debt')!.ok).toBe(false);
   });
+  test('the guard requirement is a share of guards holding a regular tie into the café, and the ties are aimed at the café staff', () => {
+    const cafeStaff = new Set(gen.people.persons.filter(q => q.work?.employer === 'cafe').map(q => q.id));
+    const guards = gen.people.persons.filter(q => q.work?.role === 'guard' && q.work.employer === 'records-office');
+    const aimed = guards.filter(q => q.ties.some(t => t.kind === 'regular' && cafeStaff.has(t.with)));
+    expect(aimed.length / guards.length).toBeGreaterThanOrEqual(0.5); // a pre-shift stop is aimed at the café's staff, not the Office's own
+    for (const q of guards) for (const t of q.ties.filter(x => x.kind === 'regular')) expect(gen.people.persons.find(o => o.id === t.with)!.work!.employer).not.toBe('records-office');
+    // failing example: preShift cafe on every variant and a stop at the café, but no guard holds the tie: NOT MET (the old rule read ties > 0 or a stop)
+    const p = clone(gen.people);
+    for (const q of p.persons) q.ties = q.ties.filter(t => !(t.kind === 'regular' && cafeStaff.has(t.with)));
+    const line = requirements(ctx, p).find(x => x.id === 'guard-regular-of-cafe')!;
+    expect(line.ok).toBe(false); expect(line.detail).toContain('0 of');
+    // one tie in eleven is not a share
+    const one = clone(p), g1 = one.persons.find(q => q.id === aimed[0]!.id)!; g1.ties.push({ kind: 'regular', with: [...cafeStaff][0]! });
+    expect(requirements(ctx, one).find(x => x.id === 'guard-regular-of-cafe')!.ok).toBe(false);
+  });
   test('the page shows step words, can introduce and knows the needs of, byte-identically', () => {
     const checks = checkPeople(ctx, w.mission, w.plan, gen).checks, html = reviewHtml(ctx, gen.people, checks, 'test');
     expect(html).toBe(reviewHtml(ctx, gen.people, checks, 'test'));

@@ -6,6 +6,7 @@ import type { Cast } from '../../contracts/people/cast.schema';
 import type { People, Person } from '../../contracts/people/people.schema';
 import type { Check } from '../plan/checks';
 import type { Ctx } from './expand';
+import { hasRegularTie, REGULAR_SHARE_MIN } from '../missions/handover/cast';
 import { castForNames } from './roles';
 import type { Rules } from './rules';
 
@@ -33,8 +34,10 @@ export function requirements(c: Ctx, people: People): Req[] {
     if (r.regularOf) {
       const staff = new Set(P.filter(p => p.work?.employer === r.regularOf).map(p => p.id));
       const variants = (row?.routines ?? []).filter(v => v.skeleton === 'worker' && (!v.positions || v.positions.includes(pos)));
-      const pre = variants.length > 0 && variants.every(v => v.preShift === 'cafe'), ties = mine.filter(p => p.ties.some(t => t.kind === 'regular' && staff.has(t.with))).length;
-      out.push({ id: `${r.id}-regular-of-${r.regularOf}`, need: `the ${pos} row carries preShift cafe and a share of regular ties into ${r.regularOf}`, ok: pre && ties > 0, detail: `${pre ? 'every variant has' : 'not every variant has'} preShift cafe; ${ties} of ${mine.length} hold a regular tie into ${r.regularOf}` });
+      const pre = variants.length > 0 && variants.every(v => v.preShift === 'cafe'), ties = mine.filter(p => hasRegularTie(p, staff)).length;
+      const unserved = mine.filter(p => p.routine.stops.some(s => s.doing === 'pre-shift') && !p.routine.stops.some(s => s.doing === 'pre-shift' && P.some(q => staff.has(q.id) && q.work && q.routine.stops.some(x => x.doing === 'work' && x.place === q.work!.place && x.from < s.to && x.to > s.from)))).length;
+      const share = mine.length ? ties / mine.length : 0;
+      out.push({ id: `${r.id}-regular-of-${r.regularOf}`, need: `the ${pos} row carries preShift cafe, and at least ${Math.round(REGULAR_SHARE_MIN * 100)}% of ${pos}s hold a regular tie into ${r.regularOf}`, ok: pre && share >= REGULAR_SHARE_MIN, detail: `${pre ? 'every variant has' : 'not every variant has'} preShift cafe; ${ties} of ${mine.length} hold a regular tie into ${r.regularOf} (${Math.round(share * 100)}%)${unserved ? `; ${unserved} pre-shift stops fall when no ${r.regularOf} staff is on shift, so no tie can aim there` : ''}` });
     }
   }
   const keepers = new Set(roles.map(r => r.employer));

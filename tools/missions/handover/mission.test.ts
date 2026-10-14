@@ -182,10 +182,10 @@ describe('handover roles', () => {
     expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
     expect(m2(s, JSON.parse(raw), idealists).ok).toBe(true); // Help is refused by no temperament
     expect(one(m, met(idealists, { 'p-cafe-11': x => { x.temperament = 'shy'; } }))[0]).toContain('p-cafe-11 shy (unknown)'); // unknown = reject
-    // §05: the guard is a regular of the café: without the guards' pre-shift stops and café ties nobody is; a regular tie restores one
+    // §05, §08: the guard is a regular of the café only by a regular tie to its staff (one definition with P-6 and the review): a pre-shift stop alone is not enough; a tie restores one
     const guards = ['p-records-office-15', 'p-records-office-29', 'p-records-office-30', 'p-records-office-36', 'p-records-office-57', 'p-records-office-67'];
     const noStop = met(p, Object.fromEntries(guards.map(id => [id, (x: any) => { x.routine.stops = x.routine.stops.filter((t: any) => t.doing !== 'pre-shift'); x.ties = (x.ties ?? []).filter((t: any) => !t.with.startsWith('p-cafe')); }])));
-    expect(one(JSON.parse(raw), noStop)).toEqual(['guard: none of the 6 who fit (guard of records-office on shift 0:00-8:00 at Office entrance) has a regular of cafe (a regular tie to its staff or a pre-shift stop at it): p-records-office-15 neither, p-records-office-29 neither, p-records-office-30 neither, p-records-office-36 neither, p-records-office-57 neither, p-records-office-67 neither']);
+    expect(one(JSON.parse(raw), noStop)).toEqual(['guard: none of the 6 who fit (guard of records-office on shift 0:00-8:00 at Office entrance) has a regular tie to the staff of cafe: p-records-office-15 none, p-records-office-29 none, p-records-office-30 none, p-records-office-36 none, p-records-office-57 none, p-records-office-67 none']);
     const tied = met(noStop, { 'p-records-office-36': x => { x.ties = [...(x.ties ?? []), { kind: 'regular', with: 'p-cafe-01' }]; } });
     expect(m2(s, JSON.parse(raw), tied)).toMatchObject({ ok: true, value: expect.stringContaining('guard p-records-office-36') });
     const workmate = met(noStop, { 'p-records-office-36': x => { x.ties = [{ kind: 'workmate', with: 'p-cafe-01' }]; } }); // only a regular tie counts
