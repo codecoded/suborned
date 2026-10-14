@@ -1,0 +1,269 @@
+{
+ "brief": "011 C (play the Handover: HUD and action cards)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "Codex CLI image tool: python3 ~/Projects/the-suborned/workbench/Tools/Concept/codex_image.py (codex exec; ChatGPT plan; cost 0 per image; no Runware). The tool appends ' Leave clear margin around every figure: nothing cropped at the head or feet.' to every prompt and picks its own size.",
+ "style_contract": {
+  "path": "contracts/style/suborned.style.json",
+  "version": "0.20.1",
+  "sha256": "8862da8d3ba41b3a43f2ae4cc023746388df3197ea7f10f3c9c795b10c5d0798",
+  "used": "concept_prompt era, city, avoid, rule (the interface prompts open with the era line, the Streamline Moderne/Googie city materials and the avoid list)"
+ },
+ "deviations_from_the_style_contract": [
+  "concept_prompt.avoid lists 'text, signage lettering or words' and rules.all says 'no text in the image': lifted for HUD concepts, because a price card has to carry strings. Every prompt quotes the strings exactly; spec.html and the spec renders, not the generated pictures, are the authority for every string.",
+  "concept_prompt.era is for places, objects and machines: used here for the interface as an object and machine.",
+  "No people are drawn (the portrait slot is an empty hatched silhouette), so the people rules (no era date) are not engaged; round 1 drew a period nurse, which is why round 2 forbids a face."
+ ],
+ "base_frame": {
+  "path": "briefs/010/shots/people-1700-cafe.png",
+  "sha256": "36e408d0f4ee0d635912a4f2ba50e7803ac7894c38e809e0637ced4dc22bc574",
+  "note": "Latch's play view at 17:00 (mission 0:00 = 17:00, mission.json clock.startsAt, provisional), Inez p-cafe-11 at the café door; same camera as people-0900-cafe.png. Ground scale measured on the frame: the 19.6 m fountain ring is 707 px, so 36.1 px/m; characters 44-49 px."
+ },
+ "inputs": {
+  "rulebook": {
+   "path": "contracts/rules/rulebook.json",
+   "sha256": "d4b0557945dba08c78600cb2841b8908051ecae3b43f859bd1c46546d2784012",
+   "note": "Keel's rulebook was still growing while this ran (cell, security, perception tables landed during the work); the fields cited are in the file at this hash."
+  },
+  "people_rules": {
+   "path": "contracts/people/people.rules.json",
+   "sha256": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372"
+  },
+  "people_export": {
+   "path": "out/people/harbour-district.people.json",
+   "sha256": "21cd9068dd251179604ab1caed98b498d341d9742bc9a30d8ca9726e8989aeda",
+   "note": "Inez p-cafe-11 (Idealist, debt, server, Corner café, 12:00-18:00), guard p-records-office-02 Ulrich Sandvik (Mercenary, debt, door, 09:30-17:30)."
+  },
+  "mission": {
+   "path": "contracts/missions/handover/mission.json",
+   "sha256": "84fc36bfa3d98f8ae7f3c202dba94ed3dac40b48d539ec5ad36f682f8bb34957"
+  },
+  "gdd": {
+   "path": "GDD/the-suborned-agent-gdd-v0.21.0-2026-10-15.md",
+   "sha256": "cf4e7e4cbc0a168d1f75c1206772fc218967718a3c936f38ae99f2734ac06683"
+  },
+  "reference_history": "briefs/008/concepts/the-suborned-tactical-gameplay-hud-2026-09-26.webp (the 26 Sep HUD painting: a dark deep-teal left rail with brass lines; looked at for continuity, not a decision source)"
+ },
+ "generated_images": [
+  {
+   "file": "raw/round1-A.png",
+   "prompt_key": "A",
+   "round": "round1",
+   "size": [
+    1536,
+    1024
+   ],
+   "seconds": 108,
+   "sha256": "66d1bfb194e2e06474dea9703e061f07303a5b4006f48f3f8a12e48e994be24d",
+   "generated_at": "2026-10-15T02:26:47+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction A, 'Enamel panels': docked panels, the plainest and most readable layout. (1) A slim top bar across the full width of the band: ivory enamel with a seafoam lower trim and a brass hairline. At its left an ink-teal dot-matrix window shows the mission clock \"2:17\" in large ivory dots, next to a round chrome pause button (two vertical bars) and a wide button \"Next event\" with the smaller line \"3:10 Rival car parks\". In the centre a long horizontal timeline strip from \"0:00\" to \"8:00\" with a turquoise playhead at 2:17 and tick marks labelled \"3:10\", \"5:30\", \"5:40\", \"5:50\", \"6:10\", \"8:00\"; the ticks are solid; one short band just after the playhead is outlined in turquoise dots (a planned action). At the right four small display windows in a row: a coin pictogram with \"$100,000\"; a fingerprint pictogram with \"0\" and a faint dotted turquoise \"+1\" beside it; four unlit beacon-lamp pips with the word \"Routine\"; a slim horizontal bar with a centre mark and the word \"Neutral\". (2) Bottom left: four wide tabs in a row on a chrome tray, each with a big numeral, a role pictogram, four tiny health pips and a one-line state: \"1 Scout\" \"Idle\"; \"2 Fixer\" \"Ready\" selected with a turquoise outline; \"3 Tech\" \"Idle\"; \"4 Enforcer\" \"Idle\". (3) Down the right edge, one tall docked panel about 26% of the band width, from below the top bar to above the band's bottom edge, ivory enamel with a deep-teal header band. Header: \"Inez Bermudez\" and under it \"Server · Corner café · 12:00–18:00\". Then a small portrait window with a soft hatched fog over the face and a row of four small fact chips, each with a state pictogram: \"Face\", \"Routine\", \"Need: Debt\", \"Idealist\". Then three short sections: \"Known\" (solid ink text on ivory): \"Works the café door until 18:00\" and \"Idealist: Help works\"; \"Suspected\" (same text style on a diagonal-hatch ground): \"Freya may know her debt\"; \"Planned\" (text inside a turquoise dotted outline): \"Help · $40,000 · done 3:07\". Below, the action card: a header strip \"Fixer · Turn\" and Four approach rows, each with the approach name at the left, then four small price boxes (coin, stopwatch, fingerprint, beacon) and an outcome badge at the right. Row 1: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\", outcome: a dark round window with a tiny red slashed circle and the word \"Refused\". Row 2: \"Pay\", \"$70,000\", \"50 s\", \"+2\", \"0\", outcome: the same dark window and \"Refused\". Row 3, highlighted by a turquoise outline because the pointer is on it: \"Help\", \"$40,000\", \"50 s\", \"+1\", \"0\", outcome: a seafoam badge with a check mark and the word \"Works\". Row 4: \"Pressure\", \"$0\", \"35 s\", \"+4\", \"+1 if seen\", outcome: a half-filled seafoam badge with a check mark and a small down-step arrow and the words \"Works, 1 step worse\". At the card's foot a thin strip: \"Purse $100,000 → $60,000\"."
+  },
+  {
+   "file": "raw/round1-B.png",
+   "prompt_key": "B",
+   "round": "round1",
+   "size": [
+    1536,
+    1024
+   ],
+   "seconds": 120,
+   "sha256": "4da49825e2814df3e650fb8f2d750f6141142e374f666db2847bc628da26cc10",
+   "generated_at": "2026-10-15T02:28:47+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction B, 'Field instruments': the cell's own sharper kit, a few instruments floating over the view, minimal. Matte ink-teal (#17302f) panels with thin ivory linework and ivory type, chrome rims, one turquoise highlight; no ornament and no deco motifs (the cell are visitors from a nearby timeline: clean and technical). (1) Top left: a round chronometer dial about 150 px wide at 1080p (chrome rim, cream face, a sweep arc from 0:00 to 8:00 with small ticks at the event times, a turquoise hand at 2:17); under it a small dot-matrix window \"2:17\"; beside it two round chrome buttons: pause (two vertical bars) and next event (a skip arrow) with a small ink label \"3:10 Rival car parks\". (2) Top right: a small readout \"$100,000\" with a coin pictogram above a row of three round gauges: a Trail dial (fingerprint pictogram, needle at the bottom of its scale, label \"0\" and a faint dotted turquoise \"+1\"), an Alert bezel of four unlit lamps (label \"Routine\"), a Standing slider with a centre mark (label \"Neutral\"). (3) Bottom centre: four large round operative tokens on a chrome rail, each with a numeral, a role pictogram and a health arc: \"1 Scout\", \"2 Fixer\" raised and ringed in turquoise, \"3 Tech\", \"4 Enforcer\". Above the selected token a thin strip of its verbs: \"Turn\" and \"Call\". (4) A floating card, not docked, in the upper-middle-left of the view: its top-left corner at about 42% across and 26% down the canvas, about 28% of the band wide and 60% of the band tall, tied by a thin leader line that runs from the card's top-left corner up and to the left and ends in a small turquoise dot at about 37% across and 25% down (the dot marks the person the card is about). Card header: \"Inez Bermudez\" and \"Server · Corner café\". Three index tabs on the card's top edge: \"Known\" (open), \"Suspected\", \"Planned\". Open tab shows two lines: \"Works the café door until 18:00\" and \"Idealist: Help works\", beside a small portrait window with a soft hatched fog over the face and a row of four state chips \"Face\", \"Routine\", \"Need: Debt\", \"Idealist\". Under the tabs a strip \"Fixer · Turn\" and Four approach rows, each with the approach name at the left, then four small price boxes (coin, stopwatch, fingerprint, beacon) and an outcome badge at the right. Row 1: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\", outcome: a dark round window with a tiny red slashed circle and the word \"Refused\". Row 2: \"Pay\", \"$70,000\", \"50 s\", \"+2\", \"0\", outcome: the same dark window and \"Refused\". Row 3, highlighted by a turquoise outline because the pointer is on it: \"Help\", \"$40,000\", \"50 s\", \"+1\", \"0\", outcome: a seafoam badge with a check mark and the word \"Works\". Row 4: \"Pressure\", \"$0\", \"35 s\", \"+4\", \"+1 if seen\", outcome: a half-filled seafoam badge with a check mark and a small down-step arrow and the words \"Works, 1 step worse\". At the card's foot: \"Purse $100,000 → $60,000\". Nothing else floats over the view."
+  },
+  {
+   "file": "raw/round1-C.png",
+   "prompt_key": "C",
+   "round": "round1",
+   "size": [
+    1536,
+    1024
+   ],
+   "seconds": 116,
+   "sha256": "3f2d675564bf8a4f484d317feb5489f699e08bbcc3dc08bf8dd6ae2b4025a8da",
+   "generated_at": "2026-10-15T02:30:43+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction C, 'Case file': the interface is the city's own paper. Records are physical in this world (microfilm, punch cards, pneumatic-tube carriers, stamped forms), so the cell keeps its case on the city's own cards. Cards are cream-ivory card stock with a seafoam edge band, printed in ink teal, drawn flat and crisp. (1) Down the right edge, a tall pinned aperture card (a punch card with a clipped top-left corner), about 27% of the band wide: a rectangular microfilm window at the upper left showing a soft-hatched fogged face; a row of small punched holes along the top where open holes mean facts known and holes covered by a seafoam sticker mean facts not learned yet; printed header \"Inez Bermudez\" and \"Server · Corner café · 12:00–18:00\"; form fields with typed ink lines: \"Need: Debt\", \"Idealist\"; one field covered by a hatched redaction bar (not learned); a section \"Known\" (typed lines: \"Works the café door until 18:00\", \"Idealist: Help works\"), a section \"Suspected\" (lines printed on a diagonal-hatch ground: \"Freya may know her debt\"), a section \"Planned\" (a turquoise dotted-outline slip clipped to the card: \"Help · $40,000 · done 3:07\"). (2) Under the aperture card, a clipped order slip like a pneumatic-tube carrier form, headed \"Fixer · Turn\", with four approach rows, each with the approach name at the left, then four small price boxes (coin, stopwatch, fingerprint, beacon) and a rubber-stamp outcome at the right. Row 1: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\", outcome: a slanted black-ink rubber stamp \"Refused\" beside a tiny dark round window with a tiny red slashed circle. Row 2: \"Pay\", \"$70,000\", \"50 s\", \"+2\", \"0\", outcome: the same stamp and window. Row 3, highlighted by a turquoise outline because the pointer is on it: \"Help\", \"$40,000\", \"50 s\", \"+1\", \"0\", outcome: a straight seafoam-ink rubber stamp \"Works\" with a check mark. Row 4: \"Pressure\", \"$0\", \"35 s\", \"+4\", \"+1 if seen\", outcome: a half-faded seafoam-ink rubber stamp \"Works, 1 step worse\" with a down-step arrow. The price boxes are the perforated tear-off docket along each row. A footer strip: \"Purse $100,000 → $60,000\". (3) Across the top, a long film strip with sprocket holes along both edges serving as the timeline, from \"0:00\" to \"8:00\", with punched notches at the event times labelled \"3:10\", \"5:30\", \"5:40\", \"5:50\", \"6:10\", \"8:00\" and a turquoise slider marker at 2:17; at its left a dark dot-matrix window \"2:17\", a round chrome pause button and a button \"Next event\" with the line \"3:10 Rival car parks\"; at its right four stamped boxes in a row: coin \"$100,000\", fingerprint \"0\" with a faint dotted turquoise \"+1\", four unlit lamps \"Routine\", a slim bar with a centre mark \"Neutral\". (4) Bottom left: four filing tabs in a row \"1 Scout\", \"2 Fixer\" (pulled up and outlined in turquoise), \"3 Tech\", \"4 Enforcer\", each with a role pictogram and four tiny health pips."
+  },
+  {
+   "file": "raw/round2-A.png",
+   "prompt_key": "A2",
+   "round": "round2",
+   "size": [
+    1577,
+    997
+   ],
+   "seconds": 113,
+   "sha256": "6d0ea8a138e5daf1d43148c12a1f861ceedd37a3c17d8c560e7a6447b2649ed1",
+   "generated_at": "2026-10-15T02:35:24+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction A, 'Enamel panels': docked panels, the plainest and most readable layout. (1) A slim top bar across the full width of the band: ivory enamel with a seafoam lower trim and a brass hairline. At its left an ink-teal dot-matrix window shows the mission clock \"0:20\" in large ivory dots, next to a round chrome pause button (two vertical bars) and a wide button \"Next event\" with the smaller line \"3:10 Rival car parks\". In the centre a long horizontal timeline strip from \"0:00\" to \"8:00\" with a turquoise playhead at 0:20 and tick marks labelled \"3:10\", \"5:30\", \"5:40\", \"5:50\", \"6:10\", \"8:00\"; the \"5:30\" tick is solid, the \"3:10\" tick is drawn on a diagonal-hatch ground; a solid short bar from 0:00 to 0:52 (an order under way) and a turquoise dotted-outline bar right after it (a planned order). At the right four small display windows in a row: a coin pictogram with \"$100,000\"; a fingerprint pictogram with \"0\"; a row of four unlit beacon-lamp pips with the word \"Routine\"; a slim track of seven notches with a marker on the middle notch and the word \"Neutral\". (2) Bottom left: four wide tabs in a row on a chrome tray, each with a big numeral, a role pictogram, four tiny health pips and a one-line state: \"1 Scout\" \"Watch 0:32\"; \"2 Fixer\" \"Ready\" selected with a turquoise outline; \"3 Tech\" \"Idle\"; \"4 Enforcer\" \"Idle\"; role pictograms: Scout binoculars, Fixer a telephone handset, Tech a tape reel, Enforcer a closed fist; none of them a shield. (3) Down the right edge, one tall docked panel about 23% of the band width, ivory enamel with a deep-teal header band. Header: \"Inez Bermudez\" and under it \"Server · Corner café · 12:00–18:00\". Then a portrait window holding only a pale empty head-and-shoulders silhouette under diagonal hatching, with no face, no hair and no clothes drawn (nothing about her is learned yet) beside a row of three small fact chips, each a dotted ring with a question mark and a label: \"Routine\", \"Need\", \"Temperament\". Then three short sections: \"Known\" (solid ink text on ivory): \"Works the café door, 12:00–18:00\"; \"Suspected\" (the same text style on a diagonal-hatch ground): \"In debt (briefing)\"; \"Planned\" (text inside a turquoise dotted outline): \"Watch · Scout · done 0:52\". Below, the action card: a header strip \"Fixer · Turn\" and Four approach rows. Each row: the approach name at the left, then four price boxes (coin, stopwatch, fingerprint, beacon) and an outcome marker at the right. Because Inez's temperament is not known yet, every outcome marker is a dotted ring holding a question mark \"?\". Row 1, bright and available: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\", marker \"?\". Rows 2, 3 and 4 are dimmed because they are locked, but their numbers stay readable, and each carries a small padlock and a short unlock hint at its right. Row 2: \"Pay\", \"$70,000\" with a tiny second line \"+$20,000 ?\", \"50 s\", \"+2\", \"0\", marker \"?\", padlock hint \"Watch first\". Row 3: \"Help\", \"$40,000\" with a tiny second line \"+1 Help ?\", \"50 s\", \"+1\", \"0\", marker \"?\", padlock hint \"Listen first\". Row 4: \"Pressure\", \"$0\", \"35 s\", \"+3\" with a tiny second line \"+1 T ?\", \"0\", marker \"?\", padlock hint \"Listen first\". At the card's foot a thin strip: \"Purse $100,000\"."
+  },
+  {
+   "file": "raw/round2-B.png",
+   "prompt_key": "B2",
+   "round": "round2",
+   "size": [
+    1536,
+    1024
+   ],
+   "seconds": 92,
+   "sha256": "1d619194d65bfa2bf0df29ee6f37513a1a812875764d32ec69a09ab869fa3422",
+   "generated_at": "2026-10-15T02:36:56+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction B, 'Field instruments': the cell's own sharper kit, a few instruments floating over the view, minimal. Every panel, dial face and token is DARK matte ink teal (#17302f) with thin ivory linework and ivory type and chrome rims; there are no cream or ivory panel faces at all. No ornament and no deco motifs (the cell are visitors from a nearby timeline: clean and technical). (1) Top left: a round chronometer dial about 150 px wide at 1080p (chrome rim, dark face, ivory numerals, a sweep arc from 0:00 to 8:00 with small ticks at 3:10 (hatched), 5:30 and 8:00, a turquoise hand at 0:20); under it a small dot-matrix window \"0:20\"; beside it two round chrome buttons: pause (two vertical bars) and next event (a skip arrow) with a small label \"3:10 Rival car parks\". (2) Top right: a small readout \"$100,000\" with a coin pictogram above a row of three round gauges: a Trail dial (fingerprint pictogram, label \"0\"), an Alert bezel with exactly four unlit lamps in a column (label \"Routine\"), a Standing slider of seven notches with a marker on the middle notch (label \"Neutral\"). (3) Bottom centre: four large round operative tokens on a chrome rail, each with a numeral, a role pictogram and a health arc: \"1 Scout\" with a small line \"Watch 0:32\", \"2 Fixer\" raised and ringed in turquoise, \"3 Tech\", \"4 Enforcer\"; role pictograms: Scout binoculars, Fixer a telephone handset, Tech a tape reel, Enforcer a closed fist; none of them a shield. Above the selected token a thin strip of its verbs: \"Turn\" and \"Call\". (4) A floating card, not docked, in the upper-middle-left of the view: its top-left corner at about 42% across and 26% down the canvas, about 28% of the band wide and 60% of the band tall, tied by a thin leader line that runs from the card's top-left corner up and to the left and ends in a small turquoise dot at about 37% across and 25% down (the dot marks the person the card is about). Card header: \"Inez Bermudez\" and \"Server · Corner café\". Three index tabs on the card's top edge: \"Known\" (open), \"Suspected\", \"Planned\". The open tab shows a portrait window holding only a pale empty head-and-shoulders silhouette under diagonal hatching, with no face, no hair and no clothes drawn (nothing about her is learned yet) and a row of three small fact chips, each a dotted ring with a question mark and a label: \"Routine\", \"Need\", \"Temperament\", and one line \"Works the café door, 12:00–18:00\". Under the tabs a strip \"Fixer · Turn\" and Four approach rows. Each row: the approach name at the left, then four price boxes (coin, stopwatch, fingerprint, beacon) and an outcome marker at the right. Because Inez's temperament is not known yet, every outcome marker is a dotted ring holding a question mark \"?\". Row 1, bright and available: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\", marker \"?\". Rows 2, 3 and 4 are dimmed because they are locked, but their numbers stay readable, and each carries a small padlock and a short unlock hint at its right. Row 2: \"Pay\", \"$70,000\" with a tiny second line \"+$20,000 ?\", \"50 s\", \"+2\", \"0\", marker \"?\", padlock hint \"Watch first\". Row 3: \"Help\", \"$40,000\" with a tiny second line \"+1 Help ?\", \"50 s\", \"+1\", \"0\", marker \"?\", padlock hint \"Listen first\". Row 4: \"Pressure\", \"$0\", \"35 s\", \"+3\" with a tiny second line \"+1 T ?\", \"0\", marker \"?\", padlock hint \"Listen first\". At the card's foot: \"Purse $100,000\". Nothing else floats over the view."
+  },
+  {
+   "file": "raw/round2-C.png",
+   "prompt_key": "C2",
+   "round": "round2",
+   "size": [
+    1536,
+    1024
+   ],
+   "seconds": 77,
+   "sha256": "e3893dafe30ebb40b0de3076d45b1701e945718cbb8c964072587beb5aaf6f15",
+   "generated_at": "2026-10-15T02:38:13+0700",
+   "tool": "codex exec image tool (codex_image.py)",
+   "prompt": "Game interface concept art for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: 1950s-styled instruments, displays and robots doing super-advanced things. Atomic power made everything physical abundant; thinking machines and networks never came, so the interface is clockwork-smart: enamel panels, chrome bezels, dot-matrix display windows, stamped paper records; never a touchscreen, hologram, glass blur or app-style flat design. Streamline Moderne, Art Deco and Googie; clean, prosperous and graceful. Materials: cream and ivory enamel, seafoam and deep-teal faience bands, chrome, a thin brushed-brass hairline only (brass is never a large surface). Drawn flat and crisp and readable at 1080p: no glow, no drop shadows, no gradients on panels, no grime, no present-day phone or app interface, no sci-fi neon. Canvas rule: the interface occupies only the middle 16:9 band of the canvas; the top 80 px and the bottom 80 px of the canvas are flat magenta #ff00ff. Everything that is not an interface panel is one flat, perfectly even, solid magenta #ff00ff: it stands for the game picture, with no scene, no shadow, no gradient and no vignette on it. Magenta never appears inside a panel. All panels are fully opaque. Colour rules: interface colours are ivory #eee9da, cream #f7f4ec, deep teal #1f6c67, seafoam #72b5a7, ink teal #17302f, chrome grey, a brass hairline #99784d, and one highlight, turquoise #1cb9c6, used only for the selected item and for planned previews. No amber, no violet, no orange, no gold surfaces and no red anywhere, with one exception: a refused marker is a tiny round dark display window holding a tiny red slashed-circle pictogram. Text rule: use only the exact words and numbers quoted in this prompt, spelled exactly; no other words, no logos, no watermark. Where a label is not quoted, draw a small pictogram instead. Pictograms: coin = cash; stopwatch = time; fingerprint = Trail; beacon lamp = Alert. Direction C, 'Case file': the interface is the city's own paper. Records are physical in this world (microfilm, punch cards, pneumatic-tube carriers, stamped forms), so the cell keeps its case on the city's own cards. Cards are cream-ivory card stock with a seafoam edge band, printed in ink teal, drawn flat and crisp. (1) Down the right edge, a tall pinned aperture card (a punch card with a clipped top-left corner), about 25% of the band wide: a rectangular microfilm window at the upper left holding a portrait window holding only a pale empty head-and-shoulders silhouette under diagonal hatching, with no face, no hair and no clothes drawn (nothing about her is learned yet); a row of exactly four small holes along the top, every one covered by a seafoam sticker (nothing is learned yet); printed header \"Inez Bermudez\" and \"Server · Corner café · 12:00–18:00\"; printed form fields, each covered by a hatched redaction bar: \"Routine\", \"Need\", \"Temperament\"; a section \"Known\" (typed line: \"Works the café door, 12:00–18:00\"), a section \"Suspected\" (a typed line on a diagonal-hatch ground: \"In debt (briefing)\"), a section \"Planned\" (a turquoise dotted-outline slip clipped to the card: \"Watch · Scout · done 0:52\"). (2) Under the aperture card, a clipped order slip like a pneumatic-tube carrier form, headed \"Fixer · Turn\", with four approach rows, each with a perforated tear-off price docket of four boxes (coin, stopwatch, fingerprint, beacon). Because her temperament is not known yet, every outcome is an unstamped dotted ring holding a question mark \"?\" in place of a rubber stamp. Row 1, bright: \"Ask cold\", \"$0\", \"25 s\", \"+1\", \"0\". Rows 2, 3 and 4 are dimmed because they are locked, each with a small padlock and a short hint, but their numbers stay readable: Row 2: \"Pay\", \"$70,000\" with a tiny line \"+$20,000 ?\", \"50 s\", \"+2\", \"0\", hint \"Watch first\". Row 3: \"Help\", \"$40,000\" with a tiny line \"+1 Help ?\", \"50 s\", \"+1\", \"0\", hint \"Listen first\". Row 4: \"Pressure\", \"$0\", \"35 s\", \"+3\" with a tiny line \"+1 T ?\", \"0\", hint \"Listen first\". A footer strip: \"Purse $100,000\". (3) Across the top, a long film strip with sprocket holes along both edges serving as the timeline, from \"0:00\" to \"8:00\", with punched notches at the event times labelled \"3:10\" (a hatched notch), \"5:30\", \"5:40\", \"5:50\", \"6:10\", \"8:00\", a solid short bar from 0:00 to 0:52 and a turquoise dotted bar right after it, and a turquoise slider marker at 0:20; at its left a dark dot-matrix window \"0:20\", a round chrome pause button and a button \"Next event\" with the line \"3:10 Rival car parks\"; at its right four stamped boxes in a row: coin \"$100,000\", fingerprint \"0\", exactly four unlit lamps \"Routine\", a slim track of seven notches with a marker on the middle notch \"Neutral\". (4) Bottom left: four filing tabs in a row \"1 Scout\" (with a line \"Watch 0:32\"), \"2 Fixer\" (pulled up and outlined in turquoise), \"3 Tech\", \"4 Enforcer\", each with a role pictogram and four tiny health pips; role pictograms: Scout binoculars, Fixer a telephone handset, Tech a tape reel, Enforcer a closed fist; none of them a shield."
+  }
+ ],
+ "composites": [
+  {
+   "file": "direction-A-enamel-docked.jpg",
+   "from": "raw/round2-A.png",
+   "recipe": "chroma key (magenta #ff00ff, un-mixed edges) -> pieces cut by hand-measured boxes -> placed at 0.95 x native on the 1920x1080 frame; world layer (selection ring, tag) drawn by worldlayer.py, the same in every direction",
+   "sha256": "adc31ff02bab002fc945acb29601efc9bcc28a0dd41ee02897fbc39ab19bb891"
+  },
+  {
+   "file": "direction-B-field-instruments.jpg",
+   "from": "raw/round2-B.png",
+   "recipe": "chroma key (magenta #ff00ff, un-mixed edges) -> pieces cut by hand-measured boxes -> placed at 0.95 x native on the 1920x1080 frame; world layer (selection ring, tag) drawn by worldlayer.py, the same in every direction",
+   "sha256": "6bc3cf3b9508a9f8c6ba5385ec61f630ec1b2ad5f37fc1a36e8207a88dcb9326"
+  },
+  {
+   "file": "direction-C-case-file.jpg",
+   "from": "raw/round2-C.png",
+   "recipe": "chroma key (magenta #ff00ff, un-mixed edges) -> pieces cut by hand-measured boxes -> placed at 0.95 x native on the 1920x1080 frame; world layer (selection ring, tag) drawn by worldlayer.py, the same in every direction",
+   "sha256": "e60d4fbc27e8574172a7aef6593712c5bc52e9f86b8da80ab5e09ed2b95e7b1f"
+  }
+ ],
+ "spec_renders": [
+  {
+   "file": "spec-1-first-contact-annotated.jpg",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "cc4a2a4ff0f0d6fa23ea14c49a8ee7c35722521d0407123254a9d64e9764264f"
+  },
+  {
+   "file": "spec-2-known-annotated.jpg",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "a1cae09b7e60b3b7ee92ded9fd09df6e5a88546e69f52ea39ee456d486869fca"
+  },
+  {
+   "file": "spec-1-first-contact.jpg",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "a5be09a65be39835dd8bfbf91945ca10b080601368a6d926863382c990e6cf32"
+  },
+  {
+   "file": "spec-2-known.jpg",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "02c30755e9b88d06d3ae3fe855e203a1652ec0e25852f2c661f6c8f6a60b18b6"
+  },
+  {
+   "file": "spec-card-states.png",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "4f799d1bbdae5d7a6ee977b9fd9089419f40dd0cbe23d47d416645631cdad543"
+  },
+  {
+   "file": "spec-card-targets.png",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "f4416cc592de29d8f67b8aeaba1ab21793e09d0a22c2b0eb69e91a3c8ca57113"
+  },
+  {
+   "file": "spec-readouts.png",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "4f5db2b5f88b30e332caa58798c4fff04bb0997171ca8cd96009deb8b4ee400b"
+  },
+  {
+   "file": "spec-clock.png",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "46e1a9daf796a877ddb6b4356847a06af75c126cc0f7095fbf1b307faadde9e1"
+  },
+  {
+   "file": "spec-tray-states.png",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "064a08b2ee78b174c37e0c21a5bba89fc3d03e61cd21c815219b72dcdb2b70b1"
+  },
+  {
+   "file": "spec-tags-signals.jpg",
+   "drawn_by": "out/concepts/ui-011/{render_spec,sheets,annotate}.py (PIL, vector at 3x, no generation)",
+   "data": "out/concepts/ui-011/states.py (strings and numbers from the rulebook, people rules, people export, mission)",
+   "sha256": "4a344673c3a7955e97f81505c8581ec581917c0ab945e2dfab9d6938a7599999"
+  }
+ ],
+ "decisions_from_art": [
+  {
+   "decision": "Recommended direction A, drawn as the spec (docked layout; ink instruments for the cell's own readouts; ivory file for the city's people; C's fog, dotted-ring '?' and stamp-like outcome markers)",
+   "cites": [
+    "raw/round2-A.png (prompt A2)",
+    "raw/round2-B.png (prompt B2)",
+    "raw/round2-C.png (prompt C2)"
+   ],
+   "why": "A and C show an order timeline with planned windows and keep the street clear; B floats a card over the plaza and shows Known, Suspected and Planned as tabs; dark ink holds the signal colours (amber on cream 1.96:1), ivory carries the city's paper."
+  },
+  {
+   "decision": "One grammar for knowledge: known solid, suspected hatched, unknown empty ring or redaction bar, planned dotted turquoise",
+   "cites": [
+    "raw/round2-A.png",
+    "raw/round2-C.png"
+   ],
+   "why": "A2 and C2 both drew the three grounds as plain, hatch and dotted without being asked to match; the tag, the file and the timeline reuse it."
+  },
+  {
+   "decision": "Round 1 superseded",
+   "cites": [
+    "raw/round1-A.png",
+    "raw/round1-B.png",
+    "raw/round1-C.png"
+   ],
+   "why": "period nurse portrait (v0.20.1 people rule), 'if seen' drawn under Alert instead of Trail, shield pictogram for the Enforcer (the shield is the guard's signal shape), four-pip alert missing in B."
+  }
+ ],
+ "palette": {
+  "source": "style contract palette_world and signal_colours; HUD colours checked in out/concepts/ui-011/de2000.py (min dE2000 to cones #e03a2f, guard #f0a020, rivals #8a4fd0 is 21.3 for brass hairline, >= 26 for everything else)",
+  "colours": {
+   "ink bar": "#142827",
+   "ink window": "#213d3b",
+   "ink": "#17302f",
+   "ivory": "#eee9da",
+   "cream": "#f7f4ec",
+   "deep teal": "#1f6c67",
+   "seafoam": "#72b5a7",
+   "chrome": "#cbc6c3",
+   "brass": "#99784d",
+   "turquoise": "#1cb9c6",
+   "muted ink": "#52635f",
+   "locked ink": "#586461",
+   "pale text": "#d3eae2"
+  }
+ },
+ "rebuild": [
+  "cd out/concepts/ui-011",
+  "python3 gen.py A2 B2 C2            # about 2 min each, serial; raw/ gets the images and ledger.json",
+  "python3 composite.py A2 B2 C2      # key magenta, lay over the frame with the world layer",
+  "python3 render_spec.py s1 s3 s4 s5 && python3 sheets.py && python3 annotate.py",
+  "python3 build_spec.py              # copies to briefs/011/ui, writes spec.html and this file"
+ ],
+ "generated_at": "2026-10-15T02:58:34+0700"
+}
