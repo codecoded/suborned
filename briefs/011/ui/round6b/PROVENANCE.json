@@ -1,0 +1,136 @@
+{
+ "brief": "011 C round 6b: the scene feed (bottom right)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "No new image generation this round. The card, strip and tab art is the round 6 Codex panel kit pn_cab (prompt, seconds and sha256 in briefs/011/ui/round6/PROVENANCE.json), nine-sliced in code; everything else is drawn in code over the real plates. Cost 0.",
+ "reused_generation": [
+  {
+   "key": "pn_cab",
+   "file": "pn_cab.png",
+   "seconds": 46,
+   "sha256": "6f23b2e07c6443e281a3fe49182f1152ad6d16738108f6d04afa7bd4b24f978f",
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a polished chrome beaded edge, tiny chrome screws and a seafoam enamel stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 60 px of magenta between them and from the edge, all flush rectangles with softly rounded corners, nothing sticking out. PIECE 1, top left: the DARK PANEL, about 640 px wide and 400 px tall: dark ink-teal satin enamel, a polished chrome beaded edge all round, four tiny chrome screws at its corners, interior one flat even satin dark teal, completely empty. PIECE 2, top right: the IVORY CARD, about 520 px wide and 400 px tall: ivory enamel with a thin polished chrome edge and soft rounded corners, a deep teal enamel header band across its top quarter with a fine chrome line under the band, the body one flat even ivory, completely empty. PIECE 3, bottom left: the SLIM STRIP, about 880 px wide and 110 px tall: a long slim dark ink-teal satin strip with a chrome beaded edge and rounded ends, completely empty. PIECE 4, bottom right: the TAB, a small stadium-shaped cream enamel plate about 300 px wide and 90 px tall with a polished chrome rim and a glossy face, completely empty.",
+   "at": "2026-10-15T20:32:46+0700",
+   "use": "text panel kit in the r04 cab finish: dark panel, ivory card with a teal header, slim strip, tab; nine-sliced in code for every panel in the HUD"
+  }
+ ],
+ "portraits": "Forma's unified portraits (briefs/012/cell/A/A-codex-portrait-*-white.png), as round 6.",
+ "text": "Real lines from Fable's contracts/missions/handover/text.json (read this round; it now exists) wherever it has them: Scout 'Close enough to hear.' (arrive/listen), 'A debt. Proud. Cash would insult her.' (read/listen/idealist), Fixer 'I hear you're in a spot.' (arrive/help), Inez 'You paid my debt? I'm yours. Say when.' (reply/help/turned/idealist), Fixer 'Time to call it in.' (ack/call), Inez 'Right. For the block. Watch the door.' (confirm/idealist), 'Oh! I'm so sorry. Your coat!' / 'Easy, easy. It's only coffee.' / 'Guard's with Inez. The door is open.' (guard-at-cafe), 'Camera two. Runner at the steps.' / 'You there! Walk, please.' (run-seen), the chime, rivals-arrive, going-loud, fight-loud, agent-down lines. Placeholder (mine, to be replaced by Fable's scenes): Inez and the guard's overheard exchange about him coming by after his shift ('He's coming by after his shift. I haven't got the money.' / 'The lender? Not on my step, Inez. Keep it civil.' / 'Civil. He doesn't know the word.'), the Help exchange 'Who sent you? Nobody does this for free.' / 'It's a debt, not a trade. No strings.', and every card's result footer and title.",
+ "palette_check": "Card header tints, footers and the card ivory against cone red, guard amber and rival violet (CIEDE2000): minimum 26.3 (the card ivory itself is 23.6 from guard amber, as in every earlier round). Two tints were first drawn too close to rival violet (city 16.3, call 20.2) and were changed (city sage grey, call slate teal) before export. The only amber and violet in the feed are the small guard shield and rival diamond on speaker chips, as everywhere else.",
+ "coverage": {
+  "b1-listen-live": {
+   "feed_rect": [
+    1522,
+    788,
+    384,
+    278
+   ],
+   "feed_rect_pct": 5.1,
+   "feed_pixels_pct": 3.7,
+   "hud_pixels_pct_all": 13.9,
+   "agents_or_inez_under_feed": []
+  },
+  "b2-listen-done": {
+   "feed_rect": [
+    1522,
+    800,
+    384,
+    266
+   ],
+   "feed_rect_pct": 4.9,
+   "feed_pixels_pct": 3.8,
+   "hud_pixels_pct_all": 13.9,
+   "agents_or_inez_under_feed": []
+  },
+  "b3-help-result": {
+   "feed_rect": [
+    1522,
+    754,
+    384,
+    312
+   ],
+   "feed_rect_pct": 5.8,
+   "feed_pixels_pct": 4.6,
+   "hud_pixels_pct_all": 14.7,
+   "agents_or_inez_under_feed": []
+  },
+  "b4-three-stacked": {
+   "feed_rect": [
+    1522,
+    740,
+    384,
+    326
+   ],
+   "feed_rect_pct": 6.0,
+   "feed_pixels_pct": 4.8,
+   "hud_pixels_pct_all": 15.2,
+   "agents_or_inez_under_feed": []
+  },
+  "b5-history": {
+   "feed_rect": [
+    1522,
+    500,
+    384,
+    566
+   ],
+   "feed_rect_pct": 10.5,
+   "feed_pixels_pct": 10.3,
+   "hud_pixels_pct_all": 20.8,
+   "agents_or_inez_under_feed": []
+  },
+  "b6-fight": {
+   "feed_rect": [
+    1522,
+    916,
+    384,
+    150
+   ],
+   "feed_rect_pct": 2.8,
+   "feed_pixels_pct": 2.6,
+   "hud_pixels_pct_all": 13.7,
+   "agents_or_inez_under_feed": []
+  }
+ },
+ "coverage_note": "feed_rect_pct = the feed's bounding rectangle as a share of the frame; feed_pixels_pct = frame pixels the feed actually changes; agents_or_inez_under_feed checked against each person's 28 x 64 px box.",
+ "frames": [
+  {
+   "file": "b1-listen-live.jpg",
+   "caption": "A Listen is running. The card is live: lines arrive as the act progresses, a progress bar runs, the footer says the result lands when she finishes.",
+   "sha256": "22926f625095d46b1129df115d94125a412fb967c352ee0c360a629e9cca9763"
+  },
+  {
+   "file": "b2-listen-done.jpg",
+   "caption": "The Listen lands. The result goes in the highlighted footer, the unread dot and the tick (G) appear, and hovering the card rings Inez in the street: a click pans there.",
+   "sha256": "ac4de8b8b0e96333d29adb0b3bce55af404d41f8fcf74b45cecbc506712cb45c"
+  },
+  {
+   "file": "b3-help-result.jpg",
+   "caption": "Help on Inez: a new card on top (NEW), the older Listen card beneath it still waiting for a tick.",
+   "sha256": "33ab43f6a09f53a304fcbfd907a3caf5f01a534a3e805bf6b9b9efa76851c62d"
+  },
+  {
+   "file": "b4-three-stacked.jpg",
+   "caption": "Five unread scenes: three show, newest on top and expanded, then '+2 more'.",
+   "sha256": "a0c708c8ebf85767a85ebf94b0802f54e91ad8e3272c4c3b997ddf34ddcdb470"
+  },
+  {
+   "file": "b5-history.jpg",
+   "caption": "History open: unread on top with Read all, earlier scenes below, filters, a scrollbar.",
+   "sha256": "b1badbcfe6302d063fdb6070a9d0c50673e8d2a03cf5efa80cfa7743164a989d"
+  },
+  {
+   "file": "b6-fight.jpg",
+   "caption": "The fight: the feed folds to one line per card so the street stays clear; hover opens a card.",
+   "sha256": "c59ee3fd7d458a9f66f6fa4057a6138fe14d725608eac7eb60c6eadfee9fe9b5"
+  },
+  {
+   "file": "k1-scene-kinds.jpg",
+   "caption": "kinds",
+   "sha256": "94d0dd01af12fe5fd180151b0d3eed222e9ce54ee255a27494d9ef7c8d794dc3"
+  }
+ ]
+}
