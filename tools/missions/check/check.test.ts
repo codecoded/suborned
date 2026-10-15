@@ -111,8 +111,8 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at 
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
-  test('the latest recorded check (c003, engine 0.4.0 on the mission\'s own data) replays to its recorded hashes', async () => {
-    const r = await replay(join(runsDir('handover'), 'c003'));
+  test('the latest recorded check (c004, pinned to 80548b8) replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c004'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);
   });
