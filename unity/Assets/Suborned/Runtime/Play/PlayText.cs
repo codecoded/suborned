@@ -26,6 +26,8 @@ namespace Suborned.Play
         public string Title = "", Objective = "", Win = "", ClockLine = "", Close = "8:30", PurseLine = "", Tracker = "", Seed = "handover-1";
         public readonly List<string> Card = new(), Hints = new();
         public readonly List<(string code, string line)> Fails = new();
+        /// <summary>The status pill's marks (briefing.timeline): m:ss, label, and whether the cell knows it before it happens.</summary>
+        public readonly List<(string at, string label, bool known)> Timeline = new();
         public readonly Dictionary<string, string> Cell = new(), Speakers = new(), TargetNames = new(), TargetAbout = new();
         public readonly Dictionary<string, ActionText> Actions = new();
         public readonly List<LockText> Locks = new();
@@ -37,6 +39,11 @@ namespace Suborned.Play
         /// <summary>A cancel's consequence by the engine's cost id (Activity.CancelCost: stop, lost, aborted, ends, …).</summary>
         public readonly Dictionary<string, string> CancelCosts = new();
         public readonly List<(string seed, string key, int n, int count, int index)> Vectors = new();
+        /// <summary>The training hints (Motive's table, Fable's words): id → priority, line, and the prose trigger, ring and gone-when.</summary>
+        public sealed class Hint { public string Id = "", Line = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = ""; public int Priority; }
+        public readonly List<Hint> Hints2 = new();
+        public readonly Dictionary<string, string> Toasts = new();
+        public string LoudCaptured = "";
         public readonly List<(string sample, string code)> LockSamples = new();
         public readonly List<Entry> Dialogue = new();
 
@@ -69,6 +76,7 @@ namespace Suborned.Play
                 if (b.Opt("clock") is JNode ck) { ClockLine = S(ck, "line") ?? ""; Close = S(ck, "close") ?? Close; }
                 if (b.Opt("purse") is JNode pu) PurseLine = S(pu, "line") ?? "";
                 if (b.Opt("hints") is JNode h) foreach (var kv in h.Entries) Hints.Add(kv.Value.Str());
+                if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool()));
                 if (b.Opt("cell") is JNode ce) foreach (var kv in ce.Entries) Cell[kv.Key] = kv.Value.Str();
             }
             if (n.Opt("targets") is JNode ts) foreach (var kv in ts.Entries) { TargetNames.TryAdd(kv.Key, S(kv.Value, "name") ?? kv.Key); TargetAbout[kv.Key] = S(kv.Value, "about") ?? ""; }
@@ -99,6 +107,15 @@ namespace Suborned.Play
                 foreach (var kv in av.Entries)
                     if (kv.Value.Kind == JKind.Str) Activity[kv.Key] = kv.Value.Str();
                     else foreach (var sub in kv.Value.Entries) Activity[$"{kv.Key}.{sub.Key}"] = sub.Value.Str();
+            if (n.Opt("hints")?.Opt("items") is JNode hi)
+                foreach (var kv in hi.Entries)
+                {
+                    var v = kv.Value; int.TryParse(v.Opt("priority")?.NumberText ?? "99", out var pr);
+                    Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "" });
+                }
+            Hints2.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+            if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
+            if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();
             if (n.Opt("exchange") is JNode ex) foreach (var kv in ex.Entries) Exchange[kv.Key] = kv.Value.Strs();
             if (n.Opt("silentLogs") is JNode sl) foreach (var kv in sl.Entries) Silent.Add(kv.Key);
