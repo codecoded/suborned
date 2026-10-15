@@ -16,7 +16,7 @@ namespace Suborned.Play
             public string Key = "", Name = "", Stance = "", Glyph = "", Label = "", Left = "", Under = "", CancelTip = "", Phase = "";
             public bool Selected, HintRing, Armed, Drawn, Down, Busy, CanCancel; public int Hp, HpMax, Progress = -1;
             // for the kit view (Glyph's slot strip): role, the atlas icon, the state tag, the ready/hurt/down line, the queued act, the cancel tooltip
-            public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = ""; public bool Hurt, Show;
+            public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = ""; public bool Hurt, Show, Compact;
         }
         public sealed class AgentMark { public Vector3? World; public string Num = "", Verb = ""; public bool Selected; }
         public sealed class CastIcon { public Vector3? World; public string A = "", B; }
@@ -26,7 +26,19 @@ namespace Suborned.Play
         /// <summary>One person in Intel (Glyph's intel_panel): what the cell knows of them, and the secret and the lover tie only once known.</summary>
         public sealed class IntelRow { public string Role = "", Name = "", Job = "", NeedIcon = "p_unknown", NeedMark = "unk", TempIcon = "p_unknown", Next = "", NextIcon = "", Secret = ""; public bool Turned, Known; }
         public readonly IntelRow[] Intel = { new(), new(), new(), new() }; public int IntelKnown; public bool IntelOpen;
-        public sealed class PanelCard { public string Key = "", Title = "", Does = "", Price = "", Lock = "", Verb = ""; public bool Available, Mine; }
+        public sealed class PanelCard
+        {
+            public string Key = "", Title = "", Does = "", Price = "", Lock = "", Verb = "";
+            // the kit's card: icon, the four price parts, the outcome and its mark, the walk, the lock reason and what unlocks it
+            public string Icon = "", Usd = "", Time = "", Trail = "", Alert = "", Outcome = "", OutcomeMark = "unk", Walk = "", Reason = "", Unlock = "", Role = "", Name = "";
+            public bool Available, Mine, Leverage, Suggested;
+        }
+        public string PanelRole = "", PanelTarget = "", PanelBadge = "", PanelSub = "", PanelNeed = "", PanelNeedMark = "", PanelTemp = ""; public bool PanelPerson, PanelSecret;
+        // the price chip's parts (the kit's chip_price: verb icon, $ · time · Trail · Alert, the outcome mark)
+        public string ChipIcon = "", ChipUsd = "", ChipTime = "", ChipTrail = "", ChipAlert = "", ChipMark = "unk";
+        // the briefing as the kit's card lays it out
+        public string BriefTitle = "", BriefSub = "", BriefSituation = "", BriefObjective = "", BriefWin = "", BriefClock = "", BriefPurse = "", BeginKey = "", RestartKey = "";
+        public readonly List<string> BriefFails = new(); public readonly List<(string title, string body)> BriefWays = new();
         public enum ChipKind { None, Price, Hint, Aim, AimWarn, Move }
         public enum Part { Title, Body, Small, Footer }
 
@@ -115,14 +127,15 @@ namespace Suborned.Play
                 s.Stance = op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down;
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
                 s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : "";
-                s.Under = op.Down ? "down: another agent carries them (right click)" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
+                s.Under = op.Down ? "" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
                     : s.Armed && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
                 s.StateTag = op.Down ? "DOWN" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
                 s.Queued = d.Queued.StartsWith("then: ") ? "then " + d.Queued[6..] : d.Queued;
-                s.HintLine = op.Down ? "Down: select another agent and right click to carry" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "Right click to give an order";
+                // state, never a control (Fable C2, C4; the controls are taught once, by the hints)
+                s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
                 // under the agent: number and verb; over a busy one: the ring
                 var t = h.Views?.Find("op/" + Op.Name((OpId)i)); bool on = t && t.gameObject.activeSelf;
                 var m = Marks[i]; m.World = on ? t.position : null; m.Num = Nums[i]; m.Selected = h.Selected[i];
@@ -141,12 +154,18 @@ namespace Suborned.Play
             var slots = HandoverHost.Slots[(int)h.Agent];
             for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length; VerbGlyph[i] = VerbHas[i] ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = VerbHas[i] ? AtlasIcon(slots[i].Id, slots[i].Id, "") : ""; VerbName[i] = VerbHas[i] ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
-            for (int i = 0; i < 4; i++) { var s2 = Slots[i]; s2.Show = AllStrips || s2.Busy || s2.Hurt || s2.Down || s2.Selected || s2.Queued.Length > 0; }
+            // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
+            // down; ` shows every strip full
+            for (int i = 0; i < 4; i++)
+            {
+                var s2 = Slots[i]; bool full = s2.Busy && !s2.Down || s2.Hurt || s2.Queued.Length > 0;
+                s2.Show = AllStrips || full || s2.Down || s2.Selected; s2.Compact = !AllStrips && !full;
+            }
             VerbLit = h.LitSlot; VerbCaption = $"{Names[(int)h.Agent]}: {(h.LitSlot >= 0 && h.LitSlot < slots.Length ? slots[h.LitSlot].Label : "")}";
             // the fight
             Fighters.Clear(); Down.Clear();
             foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = gun.Health, Max = Mathf.Max(gun.Max, gun.Health), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
-            for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} DOWN · select another agent, right click: carry" });
+            for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
             var hov = h.Hover; bool act = hov != null && hov.Kind != "crowd" && hov.Kind != "op" && !ended;
             Cursor = h.AimLine != null ? (h.AimNoLine ? 3 : 2) : act ? 1 : 0;
@@ -154,11 +173,14 @@ namespace Suborned.Play
             string alt = !ended && h.Panel == null && h.Loud == null ? h.AimLine ?? (hov == null ? h.MoveChip : null) : null;
             var it = h.HoverIntent;
             if (alt != null) { ChipText = alt; Chip = h.AimLine == null ? ChipKind.Move : h.AimLine.StartsWith("CIVILIAN") || h.AimLine.StartsWith("Vale") ? ChipKind.AimWarn : ChipKind.Aim; }
-            else if (it != null && hov != null && !ended && h.Panel == null)
+            else if (it != null && hov != null && !ended && h.Panel == null && it.Actionable)
             {
-                Chip = it.Actionable ? ChipKind.Price : ChipKind.Hint;
-                ChipText = !it.Actionable ? (it.Hint.Length > 0 ? it.Hint : it.Label) + (hov.Kind == "crowd" ? "" : "   ·   right click: actions")
-                    : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}{(h.Picked < 0 ? "   ·   right click: actions" : "")}";
+                // the price, only where a right click acts; a target this agent can't act on shows the hover ring alone (Fable A6, A7: no "can't
+                // act … select the Fixer", no "right click: actions")
+                Chip = ChipKind.Price;
+                var o = it.Order; ChipIcon = AtlasIcon(o.Do, o.Approach, ""); ChipUsd = it.Usd; ChipTime = it.Time; ChipTrail = it.Trail.Replace("T ", ""); ChipAlert = it.Alert.Replace("A ", "");
+                ChipMark = MarkOf(it.Outcome);
+                ChipText = $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
             }
             else Chip = ChipKind.None;
             Pops = h.Pops; Pulses = h.Pulses;
@@ -168,6 +190,17 @@ namespace Suborned.Play
             {
                 var pn = h.Panel; cardsFor = pn; PanelCards.Clear();
                 PanelTitle = pn.T.Label; PanelAbout = pn.About; PanelNote = pn.Note; PanelAt = pn.Gui;
+                int first = System.Array.IndexOf(h.Selected, true); PanelRole = first >= 0 ? Op.Name((OpId)first) : "scout"; PanelTarget = pn.T.Label;
+                // the header: who the target is, and what the cell knows of them (as Intel: need, temperament, the secret once known)
+                PanelPerson = pn.T.Kind == "person"; PanelBadge = Badge(pn.T); PanelSub = pn.T.Label; PanelNeed = PanelNeedMark = PanelTemp = ""; PanelSecret = false;
+                if (PanelPerson)
+                {
+                    int ri = System.Array.IndexOf(Roles, pn.T.Key); var p = g.PersonByRole(pn.T.Key);
+                    if (ri >= 0) { var row = Intel[ri]; PanelTarget = row.Name; PanelNeed = row.NeedIcon; PanelNeedMark = row.NeedMark; PanelTemp = row.TempIcon; PanelSub = row.Job; }
+                    if (p.KNeed) PanelSub += " · " + NeedShort(p.Need); if (p.KTemperament) PanelSub += " · " + char.ToUpperInvariant(p.Temperament[0]) + p.Temperament[1..];
+                    PanelSecret = p.Knows("secret");
+                }
+                string hintVerb = null; if (h.HintNow != null && h.Text != null) { var hi = h.Text.Hints2.Find(x => x.Id == h.HintNow.Id); hintVerb = hi?.Verb; }
                 foreach (var row in pn.Rows)
                 {
                     var i2 = row.I;
@@ -177,6 +210,10 @@ namespace Suborned.Play
                         Price = i2.Move ? i2.Time : $"{(i2.Walk.Length > 0 ? i2.Walk + " " : "")}{i2.Usd} · {i2.Time} · {i2.Trail} · {i2.Alert}{(i2.Outcome.Length > 0 ? $" · {i2.Outcome}" : "")}",
                         Lock = row.Available ? "" : $"Locked: {row.Reason}{(row.Unlock.Length > 0 ? $"\n{row.Unlock}" : "")}",
                         Verb = row.Slot >= 0 ? h.VerbKey(row.Slot) : "",
+                        Icon = AtlasIcon(row.I.Order.Do, row.I.Order.Approach, ""), Usd = i2.Usd, Time = i2.Time, Trail = i2.Trail.Replace("T ", ""), Alert = i2.Alert.Replace("A ", ""),
+                        Outcome = OutcomeWords(row.I, pn.T.Key), OutcomeMark = i2.Order?.Do == "turn" && i2.Orders > 1 && i2.Outcome == "turned" ? "half" : MarkOf(i2.Outcome),
+                        Walk = i2.WalkS > 0 ? $"walk {i2.WalkS} s" : "", Reason = row.Available ? "" : row.Reason, Unlock = row.Available ? "" : row.Unlock, Role = Op.Name(row.By),
+                        Name = row.Verb, Leverage = i2.Leverage, Suggested = hintVerb != null && hintVerb != "turn" && i2.Order != null && i2.Order.Do == hintVerb,
                     });
                 }
             }
@@ -196,17 +233,22 @@ namespace Suborned.Play
             TickerAge = Ticker == null ? 99f : Time.unscaledTime - Ticker.Born;
         }
 
+        /// <summary>A history card passes the filter: learned, turned (an approach or call that went the cell's way), city, warnings (warning, fight).</summary>
+        static bool Passes(string filter, HandoverHost.FeedCard c) => filter switch
+        {
+            "learned" => c.Kind == "learned", "turned" => (c.Kind is "approach" or "call") && c.Tone == HandoverHost.Feedback.Ok, "city" => c.Kind == "city",
+            "warnings" => c.Kind is "warning" or "fight", _ => true,
+        };
+
+        /// <summary>The history: what happened, newest first, unread (still in the stack) then read; a card with no lines and no result is no row
+        /// (Fable rule 10). The cell's chatter is not history (the Cell filter is gone).</summary>
         void HistoryRows(HandoverHost h)
         {
-            string key = $"{Filter}:{h.Feed.Count}:{h.FeedHistory.Count}:{h.Talk.Count}:{h.Unread}";
+            string key = $"{Filter}:{h.Feed.Count}:{h.FeedHistory.Count}:{h.Unread}";
             if (key == historyKey) return; historyKey = key; History.Clear();
-            if (Filter == "cell")
-            {
-                for (int i = h.Talk.Count - 1; i >= 0 && History.Count < 18; i--) { var t = h.Talk[i]; if (t.Agent >= 0 || t.Speaker.Length == 0) History.Add(($"{HandoverHost.MissionClock(t.Tick)}  {(t.Name.Length > 0 ? t.Name + ": " : "")}{t.Text}", null, false)); }
-                return;
-            }
-            for (int i = h.Feed.Count - 1; i >= 0; i--) { var c = h.Feed[i]; if (!c.Live) History.Add(($"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", c, true)); }
-            for (int i = h.FeedHistory.Count - 1; i >= 0 && History.Count < 18; i--) { var c = h.FeedHistory[i]; History.Add(($"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", c, false)); }
+            static bool Says(HandoverHost.FeedCard c) => c.Footer.Length > 0 || c.Lines.Count > 0;
+            for (int i = h.Feed.Count - 1; i >= 0; i--) { var c = h.Feed[i]; if (!c.Live && Says(c) && Passes(Filter, c)) History.Add(($"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", c, !c.Read)); }
+            for (int i = h.FeedHistory.Count - 1; i >= 0 && History.Count < 40; i--) { var c = h.FeedHistory[i]; if (Says(c) && Passes(Filter, c)) History.Add(($"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", c, false)); }
         }
 
         void LoudCard(HandoverHost h)
@@ -234,6 +276,11 @@ namespace Suborned.Play
         void BriefingParts(HandoverHost h)
         {
             var t = h.Text; if (t == null) return;
+            BriefTitle = t.Title; BriefSub = $"Harbour District · {h.MissionStartsAt[..5]}"; BriefSituation = string.Join(" ", t.Card);
+            BriefObjective = t.Objective; BriefWin = t.Win; BriefClock = t.ClockLine; BriefPurse = t.PurseLine;
+            BriefFails.Clear(); foreach (var f in t.Fails) if (f.code is not ("engine-error" or "withdraw")) BriefFails.Add(f.line.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'));
+            BriefWays.Clear(); foreach (var hnt in t.Hints) { int cut = hnt.IndexOf(':'); BriefWays.Add(cut > 0 ? (hnt[..cut], hnt[(cut + 1)..].Trim()) : ("A way in", hnt)); }
+            BeginKey = h.controls.Label(PlayAction.Pause);
             Briefing.Add((t.Title.ToUpperInvariant(), Part.Title));
             Briefing.Add((string.Join(" ", t.Card), Part.Body));
             Briefing.Add(("<b>Objective</b>   " + t.Objective, Part.Body));
@@ -249,22 +296,88 @@ namespace Suborned.Play
             Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   right click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
         }
 
+        /// <summary>The end card in the player's words (Fable §1 I): a headline, the result line from the text's fails, the tally, then the debrief
+        /// ids as sentences. The replay verdict and hash are engineering: F12 only (they are in the session's .end.txt as well). The sentences
+        /// for the debrief ids are host placeholders until Fable's text carries them; an id with no sentence is not shown.</summary>
         void EndCard(HandoverHost h)
         {
+            RestartKey = h.controls.Label(PlayAction.Restart);
             var g = h.Game; var d = h.EndDebrief; Ended = true; EndLines.Clear();
-            EndLines.Add(g.Result == Outcome.Success ? "VALE IS IN THE CAR" : g.Result == Outcome.Withdrawn ? "WITHDRAWN" : g.FailCode == "vale-leaves" || g.FailCode == "rivals-reach-vale" ? "THE CLOSE" : "FAILED");
-            EndLines.Add(g.FailText.Length > 0 ? g.FailText : g.Result == Outcome.Success ? "The crew escapes with Vale alive." : "");
-            EndLines.Add($"time {HandoverHost.MissionClock(g.Tick)}   ·   spent ${g.S.Purse - g.Cash:N0} of ${g.S.Purse:N0}   ·   Trail {g.Trail}   ·   Alert {g.Alert}   ·   shots {g.Gunfire}");
+            string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
+            string head = failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : "";
+            EndLines.Add(g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
+            EndLines.Add(g.Result == Outcome.Success ? "The crew escapes with Vale alive." : failLine.Length > 0 ? failLine : g.FailText);
+            EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
             if (d != null)
             {
-                EndLines.Add($"security: {d.PublicSecurity}   ·   investigation: {d.InvestigationState}{(d.InvestigationCause.Length > 0 ? $" ({d.InvestigationCause})" : "")}");
-                if (d.Route.Count > 0) EndLines.Add("route: " + string.Join(", ", d.Route));
-                if (d.FightBranch.Length > 0) EndLines.Add($"final fight: {d.FightBranch}, {d.FightHostiles} hostiles, {d.FightHits} hits taken");
-                if (d.Assets.Count > 0) EndLines.Add("contacts kept: " + string.Join(", ", d.Assets));
+                string sec = d.PublicSecurity switch { "calm" => "Security is calm.", "raised" => "Security is raised.", "high" => "Security is on high alert.", _ => "" };
+                string inv = d.InvestigationState switch { "little" => "Investigators: none yet.", "early" => "Investigators have a few leads.", "active" => "An investigation is open" + (Cause(d.InvestigationCause) is string cz ? $": {cz}." : "."), _ => "" };
+                EndLines.Add($"{sec} {inv}".Trim());
+                var route = d.Route.ConvertAll(RouteWords).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
+                if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
+                var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
             }
-            EndLines.Add(h.Ending);
-            EndLines.Add("Return: play again   ·   the session is saved in out/play/ and replays exactly");
+            if (h.ShowDebug) EndLines.Add(h.Ending);
         }
+
+        static string RouteWords(string id) => id switch
+        {
+            "waitress-pulls-guard-away" => "Inez drew the guard off the door.", "guard-shot-beside-waitress" => "The guard was shot beside Inez.", "guard-shot-away-from-waitress" => "The guard was shot away from Inez.",
+            "entrance-camera-looped" => "The entrance camera was looped.", "patrol-diverted" => "The patrol was rerouted.", "entry-timed-between-sweeps" => "The Enforcer went in between the patrol's sweeps.",
+            "vale-taken-through-office" => "The Enforcer took Vale through the Office.", "vale-reaches-getaway-car" => "Vale reached the getaway car.",
+            "driver-moves-vale-to-service-lane" => "The driver brought Vale round to the service lane.", "pickup-camera-blocked" => "The driver's car blinded the pickup camera.",
+            "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "Vale was taken outside.",
+            _ => null,
+        };
+
+        static string AssetWords(string id) => id switch
+        {
+            "waitress-introduces-cafe" => "Inez, who can introduce you at the café.", "waitress-may-be-questioned" => "Inez, though investigators may question her.",
+            "waitress-may-identify-fixer" => "Inez, who could identify the Fixer.", "waitress-witnessed-shooting" => "Inez, who saw the shooting.", "driver-alters-pickups" => "The driver, who can alter pickups.",
+            _ => null,
+        };
+
+        static string Cause(string id) => id switch
+        {
+            "waitress-shot" => "Inez was shot", "driver-shot" => "the driver was shot", "waitress-witnessed-shooting" => "Inez saw the shooting", "waitress-can-identify-fixer" => "Inez can identify the Fixer",
+            "staged-distraction" => "the guard's trip to the café looks staged", "several-interventions" => "several traces lead to the cell", "few-leads" => "a few traces",
+            _ => null,
+        };
+
+        static string NeedShort(string need) => need switch { "debt" => "in debt", "cash" => "short of cash", "" => "need unknown", _ => need.Replace('-', ' ') };
+
+        /// <summary>A card's outcome in words (Glyph's frame 05): "Works", "Works, one step worse", "They would refuse", "?"; what a Watch or Listen
+        /// learns; the other verbs' own outcome.</summary>
+        static string OutcomeWords(HandoverHost.Intent i, string target)
+        {
+            var o = i.Order;
+            if (o == null) return i.Outcome;
+            switch (o.Do)
+            {
+                case "turn":
+                    return i.Outcome switch
+                    {
+                        "turned" => i.Orders > 1 ? "Works, one step worse" : "Works", "kept" => "Works", "refused" => "They would refuse", "not-yet" => "Not yet: one more try",
+                        _ => "? until the Scout learns who they are",
+                    };
+                case "watch": return "Learns their routine";
+                case "listen": return "Learns their need and temperament";
+                case "loop": return "Loops the camera; the Tech stays at the cabinet";
+                case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
+                case "extract": return i.Outcome.StartsWith("win") ? "Wins the mission" + (i.Outcome.Contains("captured") ? i.Outcome[3..] : "") : i.Outcome;
+                case "fire": return "Goes loud";
+                default: return i.Outcome;
+            }
+        }
+
+        static string Badge(HandoverHost.Target t) => t.Kind switch
+        {
+            "person" => t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" },
+            "rivals" => "badges/signal_rival", "patrol" => "badges/signal_unit", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
+        };
+
+        /// <summary>The kit's outcome mark for a card's outcome: turned or kept ok, refused no, not yet half, unknown "?".</summary>
+        static string MarkOf(string outcome) => outcome.StartsWith("turned") || outcome.StartsWith("kept") || outcome == "win" ? "ok" : outcome.StartsWith("refused") ? "no" : outcome.StartsWith("not-yet") ? "half" : "unk";
 
         /// <summary>The kit's atlas icon for a verb (or an approach, or a phase), Glyph's names (icons_atlas: ask pay help pressure call watch listen …).</summary>
         public static string AtlasIcon(string verb, string approach, string phase) => verb switch

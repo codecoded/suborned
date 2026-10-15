@@ -9,7 +9,7 @@ namespace Suborned.Play
         Verb1, Verb2, Verb3, Verb4,
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
-        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView,
+        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView, Intel,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -61,11 +61,16 @@ namespace Suborned.Play
             new() { action = PlayAction.Acknowledge, keys = new[] { Key.K }, label = "K" },
             new() { action = PlayAction.AllStrips, keys = new[] { Key.Backquote }, label = "`" },
             new() { action = PlayAction.HudView, keys = new[] { Key.F11 }, label = "F11" },
+            new() { action = PlayAction.Intel, keys = new[] { Key.I }, label = "I" },
         };
         static readonly Binding[] defaults = Defaults();
 
         [UnityEngine.Tooltip("Pan when the mouse is at the screen's edge (off by default).")]
         public bool edgeScroll = false;
+        [UnityEngine.Tooltip("WASD, arrows and edge pan speed in m/s at play zoom 14; it scales with the zoom, so the screen moves at the same rate at any zoom.")]
+        public float keyPanSpeed = 18f;
+        [UnityEngine.Tooltip("Middle-drag: 1 = grab the map (the ground point under the cursor stays under it, 1:1 at any zoom); above 1 moves the map faster than the mouse.")]
+        public float dragPan = 1f;
         [UnityEngine.Tooltip("Edge band for edge scrolling, in pixels at 1080p.")]
         public float edgePixels = 12f;
         [UnityEngine.Tooltip("Where the roster and the verb hotbar sit (Glyph's placements: bottom, left column, corner).")]

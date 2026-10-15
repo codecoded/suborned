@@ -109,8 +109,8 @@ namespace Suborned.Play
                 for (int i = 0; i < 4; i++)
                 {
                     var mk = m.Marks[i]; if (!mk.World.HasValue) continue;
-                    var p = cam.WorldToScreenPoint(mk.World.Value + Vector3.down * 0.15f); if (p.z <= 0) continue;
-                    var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s);
+                    var p = cam.WorldToScreenPoint(mk.World.Value + Vector3.down * 0.15f); if (p.z <= 0 || UnderKit(p)) continue;
+                    var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s); if (UnderKit(r)) continue;
                     if (mk.Selected) GUI.DrawTexture(r, plateLit);
                     GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), mk.Num, mid);
                     GUI.Label(new Rect(r.x + 20 * s, r.y, 32 * s, r.height), mk.Verb, mid);
@@ -121,13 +121,14 @@ namespace Suborned.Play
                 for (int k = 0; k < 4; k++)
                 {
                     var ci = m.Cast[k]; if (!ci.World.HasValue) continue;
-                    var p = cam.WorldToScreenPoint(ci.World.Value + Vector3.up * 2.05f); if (p.z <= 0) continue;
+                    var p = cam.WorldToScreenPoint(ci.World.Value + Vector3.up * 2.05f); if (p.z <= 0 || UnderKit(p)) continue;
                     float w = 26 * s; var x = p.x - (ci.B == null ? w / 2 : w + 1 * s); var y = Screen.height - p.y - w;
+                    if (UnderKit(new Rect(x, y, ci.B == null ? w : 2 * w + 2 * s, w))) continue;
                     Icon(new Rect(x, y, w, w), ci.A); if (ci.B != null) Icon(new Rect(x + w + 2 * s, y, w, w), ci.B);
                 }
 
-            // the chip at the cursor: the crosshair's or the walk-or-run chip, else the price
-            if (m.Chip != HudModel.ChipKind.None)
+            // the chip at the cursor: the crosshair's or the walk-or-run chip, else the price (the kit draws its own)
+            if (m.Chip != HudModel.ChipKind.None && !kit)
             {
                 if (m.ChipText != chipLine || chipKey != txt.fontSize) { chipLine = m.ChipText; chipKey = txt.fontSize; chipSize = txt.CalcSize(new GUIContent(chipLine)); }
                 var r = new Rect(m.Mouse.x + 22 * s, m.Mouse.y + 6 * s, chipSize.x + 24 * s, 34 * s);
@@ -264,7 +265,7 @@ namespace Suborned.Play
         /// history (L) above the kit's feed bar, and the ring in the street for the feed card under the mouse.</summary>
         void KitRest(Camera cam)
         {
-            if (m.HistoryOpen) History(new Rect(Screen.width - (14 + 384) * s, 0, 384 * s, Screen.height - (14 + 32 + 6) * s));
+            // the history, the cards, the briefing, the end card and the hint plate are the kit's
             if (m.Box is Rect box)
             {
                 float b = Mathf.Max(1f, 1.5f * s);
@@ -276,11 +277,29 @@ namespace Suborned.Play
                 var p = cam.WorldToScreenPoint(at); if (p.z > 0) { float rw = 80 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); }
             }
             Activities(cam); FightMarks(cam); HoverRing(cam); Pulses(cam);
-            if (m.PanelOpen) PanelGui();
-            if (m.LoudOpen) LoudCardGui();
-            Pops(cam); HintGui(cam);
-            if (m.BriefingOpen) Briefing();
-            if (m.Ended) EndCard();
+            Pops(cam); HintRing(cam);
+        }
+
+        /// <summary>With the kit view on, an IMGUI world mark never draws over a kit piece (Sky: a teal block over a feed card): a mark whose
+        /// screen point (origin bottom left) falls on one is skipped.</summary>
+        static bool UnderKit(Vector3 screen) => HudToolkit.Active && HudToolkit.Blocks(new Vector2(screen.x, screen.y));
+        /// <summary>Any of a GUI rect's corners or its centre under a kit piece: a mark whose centre is clear can still reach over the kit.</summary>
+        static bool UnderKit(Rect gui)
+        {
+            if (!HudToolkit.Active) return false;
+            foreach (var g in new[] { gui.center, gui.min, gui.max, new Vector2(gui.xMin, gui.yMax), new Vector2(gui.xMax, gui.yMin) })
+                if (HudToolkit.Blocks(new Vector2(g.x, Screen.height - g.y))) return true;
+            return false;
+        }
+
+        /// <summary>With the kit's hint plate: only the ring on the hint's target in the street (a world mark, step 4).</summary>
+        void HintRing(Camera cam)
+        {
+            if (m.Hint == null || !cam || !m.HintRing.HasValue) return;
+            var p = cam.WorldToScreenPoint(m.HintRing.Value); if (p.z <= 0 || UnderKit(p)) return;
+            float k = 1f + 0.15f * Mathf.Sin(Time.unscaledTime * 4f), rw = 90 * s * k * 14f / cam.orthographicSize, rh = rw * 0.62f;
+            var cc = GUI.color; GUI.color = new Color(1f, 0.85f, 0.45f, 0.95f);
+            GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); GUI.color = cc;
         }
 
         /// <summary>Over each busy agent: the act's icon in a ring of progress dots; hovered, an ✕ that cancels (its consequence above). Walking
@@ -291,9 +310,9 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++)
             {
                 var rg = m.Rings[i]; if (!rg.Show) continue;
-                var p = cam.WorldToScreenPoint(rg.World + Vector3.up * 2.35f); if (p.z <= 0) continue;
+                var p = cam.WorldToScreenPoint(rg.World + Vector3.up * 2.35f); if (p.z <= 0 || UnderKit(p)) continue;
                 var c = new Vector2(p.x, Screen.height - p.y); float rad = 17 * s, dot = 4 * s;
-                var box = new Rect(c.x - rad - 4 * s, c.y - rad - 4 * s, 2 * rad + 8 * s, 2 * rad + 8 * s);
+                var box = new Rect(c.x - rad - 4 * s, c.y - rad - 4 * s, 2 * rad + 8 * s, 2 * rad + 8 * s); if (UnderKit(box)) continue;
                 GUI.DrawTexture(new Rect(c.x - 13 * s, c.y - 11 * s, 26 * s, 22 * s), rg.Selected ? plateLit : plate);
                 GUI.Label(new Rect(c.x - 20 * s, c.y - 11 * s, 40 * s, 22 * s), rg.Glyph, iconSmall);
                 int on = rg.Progress < 0 ? -1 : Mathf.RoundToInt(rg.Progress * 24 / 1000f);
@@ -314,8 +333,8 @@ namespace Suborned.Play
                 }
                 if (rg.ActAt.HasValue)
                 {
-                    var e = cam.WorldToScreenPoint(rg.ActAt.Value + Vector3.up * 0.3f); if (e.z <= 0) continue;
-                    var er = new Rect(e.x - 16 * s, Screen.height - e.y - 12 * s, 32 * s, 24 * s);
+                    var e = cam.WorldToScreenPoint(rg.ActAt.Value + Vector3.up * 0.3f); if (e.z <= 0 || UnderKit(e)) continue;
+                    var er = new Rect(e.x - 16 * s, Screen.height - e.y - 12 * s, 32 * s, 24 * s); if (UnderKit(er)) continue;
                     GUI.DrawTexture(er, plateLit); GUI.Label(er, rg.ActGlyph, iconSmall);
                 }
             }
@@ -361,7 +380,7 @@ namespace Suborned.Play
             if (!cam || Event.current.type != EventType.Repaint) return;
             foreach (var f in m.Fighters)
             {
-                var p = cam.WorldToScreenPoint(f.World + Vector3.up * 2.05f); if (p.z <= 0) continue;
+                var p = cam.WorldToScreenPoint(f.World + Vector3.up * 2.05f); if (p.z <= 0 || UnderKit(p)) continue;
                 float d = 5 * s; float width = f.Max * d * 1.6f;
                 var bg = new Rect(p.x - width / 2 - 3 * s, Screen.height - p.y - 3 * s, width + 4 * s, d + 6 * s);
                 GUI.DrawTexture(bg, f.Cell ? plate : refusedPlate);
@@ -369,7 +388,7 @@ namespace Suborned.Play
             }
             foreach (var dn in m.Down)
             {
-                var p = cam.WorldToScreenPoint(dn.World + Vector3.up * 1.0f); if (p.z <= 0) continue;
+                var p = cam.WorldToScreenPoint(dn.World + Vector3.up * 1.0f); if (p.z <= 0 || UnderKit(p)) continue;
                 var size = smallBright.CalcSize(new GUIContent(dn.Line));
                 var r = new Rect(p.x - size.x / 2 - 8 * s, Screen.height - p.y - 12 * s, size.x + 16 * s, 24 * s);
                 GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 8 * s, r.y, r.width, r.height), dn.Line, smallBright);
@@ -549,17 +568,17 @@ namespace Suborned.Play
         void History(Rect area)
         {
             float w = area.width, pad = 8 * s, lh = 20 * s; var rows = m.History;
-            float h = 30 * s + rows.Count * lh + 8 * s;
+            float h = 52 * s + rows.Count * lh + 8 * s;
             var r = new Rect(area.x, area.yMax - h, w, h); GUI.DrawTexture(r, ivoryTex); hits.Add(r);
             float x = r.x + pad;
-            foreach (var f in new[] { "all", "scenes", "cell" })
+            foreach (var f in new[] { "all", "learned", "turned", "city", "warnings", "cell" })
             {
-                var fr = new Rect(x, r.y + 5 * s, 64 * s, 20 * s); GUI.DrawTexture(fr, m.Filter == f ? plateLit : plate); GUI.Label(fr, f == "all" ? "All" : f == "scenes" ? "Scenes" : "Cell", smallC);
-                if (GUI.Button(fr, GUIContent.none, GUIStyle.none)) host.FeedFilter = f; x += 70 * s;
+                var fr = new Rect(x, r.y + 5 * s, 44 * s, 20 * s); GUI.DrawTexture(fr, m.Filter == f ? plateLit : plate); GUI.Label(fr, char.ToUpperInvariant(f[0]) + f[1..], smallC);
+                if (GUI.Button(fr, GUIContent.none, GUIStyle.none)) host.FeedFilter = f; x += 47 * s;
             }
-            var ra = new Rect(r.xMax - 84 * s, r.y + 5 * s, 78 * s, 20 * s); GUI.DrawTexture(ra, plate); GUI.Label(ra, "Read all", smallC);
+            var ra = new Rect(r.xMax - 66 * s, r.y + 28 * s, 60 * s, 20 * s); GUI.DrawTexture(ra, plate); GUI.Label(ra, "Read all", smallC);
             if (GUI.Button(ra, GUIContent.none, GUIStyle.none)) host.ReadAll();
-            float y = r.y + 30 * s;
+            float y = r.y + 52 * s;
             foreach (var (text, card, unread) in rows)
             {
                 var lr = new Rect(r.x + pad, y, w - 2 * pad, lh);
@@ -604,7 +623,7 @@ namespace Suborned.Play
             int want = m.Cursor;
             if (want != cursorIs) { var tex = want == 3 ? cursorNoLine : want == 2 ? cursorAim : want == 1 ? cursorAct : null; Cursor.SetCursor(tex, tex ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIs = want; }
             if (!m.HoverRing.HasValue || !cam) return;
-            var p = cam.WorldToScreenPoint(m.HoverRing.Value); if (p.z <= 0) return;
+            var p = cam.WorldToScreenPoint(m.HoverRing.Value); if (p.z <= 0 || UnderKit(p)) return;
             float rw = 64 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; // the ground circle at pitch 38
             GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring);
         }
@@ -616,7 +635,7 @@ namespace Suborned.Play
             foreach (var (w, kind, born) in m.Pulses)
             {
                 float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue;
-                var p = cam.WorldToScreenPoint(w); if (p.z <= 0) continue;
+                var p = cam.WorldToScreenPoint(w); if (p.z <= 0 || UnderKit(p)) continue;
                 float rw = (50 + 90 * a) * s * 14f / cam.orthographicSize, rh = rw * 0.62f;
                 var c = GUI.color; GUI.color = new Color(kind == HandoverHost.Feedback.Refused ? 1f : 0.85f, kind == HandoverHost.Feedback.Refused ? 0.55f : 1f, 0.85f, 1f - a);
                 GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); GUI.color = c;
@@ -631,8 +650,8 @@ namespace Suborned.Play
             {
                 var pp = m.Pops[i]; if (now > pp.Until) continue;
                 Vector2 at;
-                if (pp.World.HasValue && cam) { var p = cam.WorldToScreenPoint(pp.World.Value + Vector3.up * 2.6f); if (p.z <= 0) continue; at = new Vector2(p.x, Screen.height - p.y); }
-                else if (pp.Screen.HasValue) at = pp.Screen.Value + new Vector2(18 * s, -40 * s);
+                if (pp.World.HasValue && cam) { var p = cam.WorldToScreenPoint(pp.World.Value + Vector3.up * 2.6f); if (p.z <= 0 || UnderKit(p)) continue; at = new Vector2(p.x, Screen.height - p.y); }
+                else if (pp.Screen.HasValue) { at = pp.Screen.Value + new Vector2(18 * s, -40 * s); if (UnderKit(new Vector3(pp.Screen.Value.x, Screen.height - pp.Screen.Value.y, 1))) continue; }
                 else continue;
                 var size = small.CalcSize(new GUIContent(pp.Text)); size.x = Mathf.Min(size.x, 420 * s);
                 var r = new Rect(Mathf.Clamp(at.x - size.x / 2, 8, Screen.width - size.x - 24 * s), at.y - y0, size.x + 16 * s, 24 * s);

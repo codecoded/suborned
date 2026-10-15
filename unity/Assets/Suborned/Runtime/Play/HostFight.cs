@@ -48,11 +48,14 @@ namespace Suborned.Play
 
         static string SourceName(string s) => s switch { "F" => "F", "right" => "the right button", "both" => "both buttons", _ => "the button" };
 
+        /// <summary>Orders the cell takes in silence (Fable §4): a click confirmed is not a line; the strip and the badge show it.</summary>
+        static readonly HashSet<string> SilentAcks = new() { "move", "run", "cancel", "stance", "cease", "holster" };
+
         void Send(List<Order> orders, Vector2? screen, Vector3? at)
         {
             bool said = false;
             foreach (var o in orders)
-                if (Issue(o, screen, at) && !said)
+                if (Issue(o, screen, at) && !said && !SilentAcks.Contains(o.Do))
                 {
                     said = true;
                     string speaker = o.Op == "cell" ? "enforcer" : o.Op;
@@ -72,7 +75,7 @@ namespace Suborned.Play
                 _ => mouse != null && mouse.leftButton.isPressed,
             };
             if (kb != null && kb.escapeKey.wasPressedThisFrame) held = false;
-            if (!held) { Pop("backed off: nothing given", null, Loud.At, Feedback.Info); Status = "Going loud: backed off"; Loud = null; return; }
+            if (!held) { Status = "Going loud: backed off"; Loud = null; return; } // the card closing is the answer (Fable B9)
             if (GateProgress < 1f) return;
             var g = Loud; Loud = null;
             Send(new List<Order>(g.Orders), null, g.At);
@@ -96,7 +99,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) any = true;
             for (int k = 0; k < 4; k++)
                 if (Selected[k] && Armed(k) && Drawn(k) == any) list.Add(new Order { Op = Op.Name((OpId)k), Do = any ? "holster" : "draw" });
-            if (list.Count == 0) { Pop(Array.IndexOf(Selected, true) < 0 ? "select an agent first" : "nobody selected carries a weapon (Arms)", null, SelectedWorld(), Feedback.Info); return; }
+            if (list.Count == 0) { Pop("Nobody selected is armed.", null, SelectedWorld(), Feedback.Info); return; }
             Fight(list, "F", null, SelectedWorld(), any ? "holster" : "draw");
         }
 
@@ -105,7 +108,7 @@ namespace Suborned.Play
         {
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
-            if (list.Count == 0) { Pop("no weapon drawn", null, SelectedWorld(), Feedback.Info); return; }
+            if (list.Count == 0) { Pop("No weapon drawn.", null, SelectedWorld(), Feedback.Info); return; }
             Send(list, null, SelectedWorld());
         }
 
@@ -116,7 +119,7 @@ namespace Suborned.Play
         void CycleStance()
         {
             int first = -1; for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) { first = k; break; }
-            if (first < 0) { Pop("nobody selected carries a weapon (Arms)", null, SelectedWorld(), Feedback.Info); return; }
+            if (first < 0) { Pop("Nobody selected is armed.", null, SelectedWorld(), Feedback.Info); return; }
             var next = Stances[(Array.IndexOf(Stances, Game.Ops[first].Gun.Stance) + 1) % 3];
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "stance", Stance = next });
@@ -124,9 +127,11 @@ namespace Suborned.Play
             Pop($"stance: {StanceName(next)}", null, SelectedWorld(), Feedback.Info);
         }
 
-        /// <summary>Both buttons: panic (every armed agent draws and fires at will), only once a fight is on; the engine refuses it otherwise.</summary>
+        /// <summary>Both buttons: panic (every armed agent draws and fires at will), only once a fight is on. Outside a fight the gesture is not
+        /// read at all (Controls), so nothing is sent, refused or said.</summary>
         void Panic(Vector2 screen)
         {
+            if (!Game.FightOn) return;
             if (Panel != null) ClosePanel();
             Send(new List<Order> { new Order { Op = "cell", Do = "panic" } }, screen, null);
         }
@@ -198,7 +203,7 @@ namespace Suborned.Play
                 Give((OpId)k, new Order { Op = Op.Name((OpId)k), Do = "carry", Target = t.Key }, t, screen);
                 return true;
             }
-            Pop($"select another agent to carry the {t.Key}", screen, null, Feedback.Info);
+            Pop($"Another agent has to carry the {Cap(t.Key)}.", screen, null, Feedback.Info);
             return true;
         }
 
@@ -305,8 +310,7 @@ namespace Suborned.Play
             }
             var colour = by is "scout" or "fixer" or "tech" or "enforcer" ? cellHeadColour : by.StartsWith("rival") ? rivalColour : guardColour;
             views.Tracer(src, dst, colour);
-            Pulses.Add((hit ? to.Value : dst, hit ? Feedback.Refused : Feedback.Info, Time.unscaledTime));
-            while (Pulses.Count > 12) Pulses.RemoveAt(0);
+            if (hit) { Pulses.Add((to.Value, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: the tracer is enough
         }
 
         /// <summary>Where a shooter or target stands in the world: the engine's position, else (down, gone) its view's last.</summary>

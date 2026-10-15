@@ -17,7 +17,7 @@ namespace Suborned.Play
         /// <summary>One agent's activity as the HUD shows it: the engine's, named for the player, with the host's queued act.</summary>
         public sealed class Doing
         {
-            public string Verb = "", Phase = "idle", Label = "Ready", Glyph = "", Queued = "", QueuedGlyph = "", OnDone = "", CancelText = "", CancelVerb = "";
+            public string Verb = "", Phase = "idle", Label = "Ready", Glyph = "", Queued = "", QueuedGlyph = "", OnDone = "", CancelText = "", CancelVerb = "", CancelCode = "";
             public int Progress = -1;   // per mille, -1 = no bar (idle, open-ended)
             public int TicksLeft = -1;  // -1 = open-ended
             public bool CanCancel;
@@ -38,6 +38,7 @@ namespace Suborned.Play
                 Activity a = null; if (!Guard("activity", () => a = Game.ActivityOf((OpId)k))) return;
                 var d = doing[k]; var op = Game.Ops[k]; var q = pending[k];
                 d.Verb = a.Verb; d.Phase = a.Phase; d.OnDone = a.OnDone; d.CanCancel = a.CanCancel || q != null;
+                d.CancelCode = a.CancelCost ?? "";
                 d.CancelText = Text != null && Text.CancelCosts.TryGetValue(a.CancelCost, out var cct) ? cct : a.CancelText;
                 d.Progress = a.TicksLeft < 0 || a.Phase is "idle" or "down" ? -1 : Mathf.Clamp(a.Progress, 0, 1000);
                 d.TicksLeft = a.Phase == "firing" ? -1 : a.TicksLeft;
@@ -113,30 +114,30 @@ namespace Suborned.Play
             "mislead" => "tip", "enter" => "in", "take" => "take", "extract" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "" => "", _ => verb,
         };
 
-        /// <summary>Cancel for one agent (the roster ✕, the in-world ✕): the queued act is dropped, and the engine's cancel order stops what it shows.</summary>
+        /// <summary>Cancel costs that lose nothing (the text's cancelCosts keys): a walk stopped, a weapon holstered or a fire ceased, nothing under way.</summary>
+        static readonly HashSet<string> CancelFree = new() { "", "stop", "holster", "cease", "nothing", "none", "down" };
+
+        /// <summary>Cancel for one agent (the roster ✕, the in-world ✕): the queued act is dropped, and the engine's cancel order stops what it shows.
+        /// Silent (Glyph #4, Fable E3, §4): the strip shows the agent stopped; only a cancel that loses something (time spent, money back but a
+        /// face remembered, the loop gone) closes its card, or opens one, with that cost. A walk stopped is not an event.</summary>
         public void CancelAgent(int k, Vector2? screen)
         {
             if (Game == null || Fault != null || Game.Over) return;
-            var d = doing[k]; var op = Game.Ops[k]; string who = AgentNames[k], cost = d.CancelText, what = d.CancelVerb.Length > 0 ? d.CancelVerb : "it";
-            bool dropped = pending[k] != null; pending[k] = null; pendingAt[k] = null;
+            var d = doing[k]; string cost = d.CancelText, what = d.CancelVerb.Length > 0 ? d.CancelVerb : "it";
+            bool walking = d.Phase is "walking" or "running", costly = !walking && !CancelFree.Contains(d.CancelCode);
+            pending[k] = null; pendingAt[k] = null;
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k));
-            if (a != null && a.CanCancel) FeedCancelled(k, cost);
-            bool sent = a != null && a.CanCancel && Issue(new Order { Op = Op.Name((OpId)k), Do = "cancel" }, null, null, true);
-            if (sent || dropped)
-            {
-                Pop($"{who}: cancelled {what}", screen, screen.HasValue ? null : frame.World(op.Pos), Feedback.Info);
-                if (!Beat("ack", "cancel", Op.Name((OpId)k))) Say(Op.Name((OpId)k), "Stopping.", Feedback.Info);
-                Say("", $"{who} cancels {what}: {(sent ? cost : "the queued act is dropped.")}", Feedback.Info);
-            }
-            else Pop($"{who}: {(a?.CancelText.Length > 0 ? a.CancelText : "nothing to cancel")}", screen, screen.HasValue ? null : frame.World(op.Pos), Feedback.Info);
+            if (a != null && a.CanCancel && costly) FeedCancelled(k, cost, what);
+            else CloseActCard(k);
+            if (a != null && a.CanCancel) Issue(new Order { Op = Op.Name((OpId)k), Do = "cancel" }, null, null, true);
             Track(); intentKey = "";
         }
 
-        /// <summary>The cancel key (C): every selected agent.</summary>
+        /// <summary>The cancel key (C): every selected agent (nothing to cancel says nothing).</summary>
         public void CancelSelected()
         {
             int n = 0; for (int k = 0; k < 4; k++) if (Selected[k] && (doing[k].CanCancel || pending[k] != null)) { CancelAgent(k, null); n++; }
-            if (n == 0) { Status = "nothing to cancel"; Pop("nothing to cancel", null, Array.IndexOf(Selected, true) is var f && f >= 0 ? frame.World(Game.Ops[f].Pos) : (Vector3?)null, Feedback.Info); }
+            if (n == 0) Status = "nothing to cancel";
         }
 
         // ---------------------------------------------------------------- the briefing and the dialogue log

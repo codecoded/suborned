@@ -104,10 +104,24 @@ namespace Suborned.World.People
             string startsAt = J.S(J.Get(mission, "clock"), "startsAt");
             float start = PeopleLayer.Minutes(startsAt);
             var views = J.A(Json.Parse(File.ReadAllText(HarbourWorldBuilder.ViewsPath)), "views");
+            // the cast: rule M-2's, as Keel's site carries it (sim/data/handover.site.json cast, written by tools/missions/handover/cast.ts
+            // from the promoted people); each role's mission point from mission.json roles[].at. Unknown role = reject.
+            var sitePath = Repo("sim/data/handover.site.json");
+            var siteCast = J.O(J.Get(Json.Parse(File.ReadAllText(sitePath)), "cast") ?? throw new InvalidDataException($"Plates: {sitePath} has no cast"));
+            var castFrom = siteCast.TryGetValue("from", out var cf) ? cf as string : null;
+            var castSha = siteCast.TryGetValue("sha256", out var cs) ? cs as string : null;
+            var roleAt = J.A(mission, "roles").ToDictionary(r => J.S(r, "id"), r => J.S(r, "at"));
+            var cast = new List<(string role, string id, string name, string temperament, string at)>();
+            foreach (var role in new[] { "waitress", "guard", "driver", "councillor" })
+            {
+                if (!siteCast.TryGetValue(role, out var c) || J.S(c, "id") is not { Length: > 0 } cid) { cast.Add((role, null, null, null, roleAt.GetValueOrDefault(role))); continue; }
+                if (!roleAt.ContainsKey(role)) throw new InvalidDataException($"Plates: the site casts {role}, mission.json has no such role (unknown = reject)");
+                cast.Add((role, cid, J.S(c, "name"), J.S(c, "temperament"), roleAt[role]));
+            }
             var m2File = Path.Combine(Dir, "m2.txt");
             string m2 = File.Exists(m2File) ? File.ReadAllText(m2File).Trim() : null;
 
-            // the Handover's people: Inez and Vale pinned by id (rules names.pinned, cast by name), the guard and driver by role
+            // the Handover's people as cast above; a role the site leaves uncast is reported by who stands at its mission point
             string Role(object p) => J.Get(p, "work") is { } w ? J.S(w, "role") ?? J.S(w, "position") : null;
             string Employer(object p) => J.Get(p, "work") is { } w ? J.S(w, "employer") : null;
             var guards = persons.Values.Where(p => Employer(p) == "records-office" && Role(p) == "guard").Select(p => J.S(p, "id")).ToHashSet();
@@ -215,14 +229,19 @@ namespace Suborned.World.People
                         d["inFrame"] = door.x >= 0 && door.x <= W && door.y >= 0 && door.y <= H;
                     }
 
-                    var inez = Who("p-cafe-11", "Inez (waitress; M-2 casts p-cafe-11)");
-                    var vale = Who("p-records-office-01", "Vale (pinned name; M-2 casts no councillor yet)");
-                    var guardAt = dest["Office entrance"]; var driverAt = dest["Meet driver"];
-                    var gThere = recs.Values.Where(r => guards.Contains(r.id) && (Flat(r.transform.position) - guardAt).magnitude <= 6f).OrderBy(r => r.id, StringComparer.Ordinal).Select(r => Who(r.id, null)).ToList();
-                    var dThere = recs.Values.Where(r => drivers.Contains(r.id) && (Flat(r.transform.position) - driverAt).magnitude <= 8f).OrderBy(r => r.id, StringComparer.Ordinal).Select(r => Who(r.id, null)).ToList();
+                    var castPeople = cast.Where(c => c.id != null).ToDictionary(c => c.role, c =>
+                    {
+                        if (!persons.ContainsKey(c.id)) throw new InvalidDataException($"Plates: the site casts {c.role} as {c.id}, who is not in {PeopleLayer.PeoplePath}; the people file and the site differ");
+                        return Who(c.id, $"{c.name} ({c.role}, {c.temperament}; M-2 casts {c.id})");
+                    });
+                    List<Dictionary<string, object>> There(HashSet<string> pool, string point, float m) => point != null && dest.TryGetValue(point, out var at)
+                        ? recs.Values.Where(r => pool.Contains(r.id) && (Flat(r.transform.position) - at).magnitude <= m).OrderBy(r => r.id, StringComparer.Ordinal).Select(r => Who(r.id, null)).ToList()
+                        : new List<Dictionary<string, object>>();
+                    var gThere = castPeople.ContainsKey("guard") ? new List<Dictionary<string, object>>() : There(guards, roleAt.GetValueOrDefault("guard"), 6f);
+                    var dThere = castPeople.ContainsKey("driver") ? new List<Dictionary<string, object>>() : There(drivers, roleAt.GetValueOrDefault("driver"), 8f);
 
                     // visible pixels for everyone listed and in frame
-                    var listed = new[] { inez, vale }.Concat(gThere).Concat(dThere).Where(d => d["drawn"] is true && d["inFrame"] is true).ToList();
+                    var listed = castPeople.Values.Concat(gThere).Concat(dThere).Where(d => d["drawn"] is true && d["inFrame"] is true).ToList();
                     if (listed.Count > 0)
                     {
                         var was = allPeople.ToDictionary(r => r, r => (r.forceRenderingOff, r.shadowCastingMode));
@@ -243,13 +262,19 @@ namespace Suborned.World.People
                         finally { foreach (var kv in was) { kv.Key.forceRenderingOff = kv.Value.forceRenderingOff; kv.Key.shadowCastingMode = kv.Value.shadowCastingMode; } }
                     }
 
-                    var roles = new List<object>
+                    var roles = new List<object>();
+                    foreach (var c in cast)
                     {
-                        new Dictionary<string, object> { ["role"] = "waitress", ["missionPoint"] = "Café door", ["cast"] = "p-cafe-11", ["person"] = inez },
-                        new Dictionary<string, object> { ["role"] = "guard", ["missionPoint"] = "Office entrance", ["cast"] = null, ["why"] = "M-2 casts no guard yet (see casting.m2)", ["standingThere"] = gThere.Cast<object>().ToList(), ["standingThereNote"] = "records-office guards drawn within 6 m of the Office entrance" },
-                        new Dictionary<string, object> { ["role"] = "driver", ["missionPoint"] = "Meet driver", ["cast"] = null, ["why"] = "M-2 casts no driver yet (see casting.m2)", ["standingThere"] = dThere.Cast<object>().ToList(), ["standingThereNote"] = "records-office official drivers drawn within 8 m of Meet driver (the official bay)" },
-                        new Dictionary<string, object> { ["role"] = "councillor", ["missionPoint"] = "inside the Records Office, then Meet driver by 6:10", ["cast"] = null, ["why"] = "M-2 casts no councillor yet; the name Vale is pinned on p-records-office-01 (see casting.m2)", ["person"] = vale },
-                    };
+                        var row = new Dictionary<string, object> { ["role"] = c.role, ["missionPoint"] = c.at ?? "inside the Records Office, then Meet driver by 6:10", ["cast"] = c.id };
+                        if (c.id != null) row["person"] = castPeople[c.role];
+                        else
+                        {
+                            row["why"] = $"the site casts no {c.role} (see casting.m2)";
+                            var there = c.role == "guard" ? gThere : c.role == "driver" ? dThere : null;
+                            if (there != null) { row["standingThere"] = there.Cast<object>().ToList(); row["standingThereNote"] = $"records-office {(c.role == "guard" ? "guards drawn within 6 m" : "official drivers drawn within 8 m")} of {c.at}"; }
+                        }
+                        roles.Add(row);
+                    }
                     var camPos = clone.transform.position;
                     outPlates.Add(new Dictionary<string, object>
                     {
@@ -269,7 +294,7 @@ namespace Suborned.World.People
                         ["people"] = new Dictionary<string, object> { ["drawn"] = res.Drawn, ["walking"] = res.Walking, ["inside"] = res.Inside, ["offSheet"] = res.Beyond },
                         ["roles"] = roles,
                     });
-                    log.AppendLine($"{stem}.png: zoom {zoom}, focus {f2}, {res.Drawn} drawn ({res.Walking} walking), Inez {(inez.TryGetValue("visiblePx", out var iv) ? iv : "-")} px, {gThere.Count} guards and {dThere.Count} drivers at their points");
+                    log.AppendLine($"{stem}.png: zoom {zoom}, focus {f2}, {res.Drawn} drawn ({res.Walking} walking), {string.Join(", ", castPeople.Select(kv => $"{kv.Key} {(kv.Value.TryGetValue("visiblePx", out var iv) ? iv : "-")} px"))}{(gThere.Count + dThere.Count > 0 ? $", {gThere.Count} guards and {dThere.Count} drivers at uncast points" : "")}");
                     Debug.Log($"Plates: {file} ({W}x{H}, zoom {zoom}, pitch 38, yaw 30, focus {f2}; {Capture.Describe})");
                 }
             }
@@ -291,7 +316,9 @@ namespace Suborned.World.People
                 {
                     ["command"] = "bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts",
                     ["m2"] = m2,
-                    ["note"] = "Inez (p-cafe-11) is the only role M-2 casts. The guard, driver and councillor fail M-2 today, so each plate names who stands at the role's point (standingThere). Vale is the pinned name on p-records-office-01 (rules names.pinned, the fallback cast by place).",
+                    ["site"] = Rel(sitePath), ["from"] = castFrom, ["sha256"] = castSha,
+                    ["cast"] = cast.Select(c => (object)new Dictionary<string, object> { ["role"] = c.role, ["id"] = c.id, ["name"] = c.name, ["temperament"] = c.temperament }).ToList(),
+                    ["note"] = "Each role's person is the site's cast (rule M-2, written from the promoted people); a role the site leaves uncast names who stands at its mission point (standingThere).",
                 },
                 ["plates"] = outPlates,
             };

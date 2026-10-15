@@ -17,7 +17,17 @@ namespace Suborned.Play
         /// <summary>The hint on screen now, else null.</summary>
         public HintShown HintNow { get; private set; }
         public bool HintsOn { get => PlayerPrefs.GetInt(HintsPref, 1) == 1; set { PlayerPrefs.SetInt(HintsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
-        const string HintsPref = "Suborned.Play.Hints";
+        const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
+        /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
+        /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11" };
+        static HashSet<string> learned;
+        static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
+        static void Learn(string id)
+        {
+            if (!ControlHints.Contains(id) || !Learned().Add(id)) return;
+            PlayerPrefs.SetString(LearnedPref, string.Join(",", learned)); PlayerPrefs.Save();
+        }
         readonly HashSet<string> hintsDone = new();
         int hintOrdersAt; // the order count when the hint showed (its gone-when reads the orders after it)
         int lastOrderTick;
@@ -46,15 +56,16 @@ namespace Suborned.Play
             if (!HintsOn) { HintNow = null; return; }
             if (HintNow != null)
             {
-                if (Gone(HintNow.Id)) { hintsDone.Add(HintNow.Id); HintNow = null; }
+                if (Gone(HintNow.Id)) { hintsDone.Add(HintNow.Id); Learn(HintNow.Id); HintNow = null; }
                 else if (Trigger(HintNow.Id, out var ring, out var portrait) is false) HintNow = null; // its trigger stopped holding: hidden, not spent
                 else { HintNow.Ring = ring; HintNow.Portrait = portrait; }
                 return;
             }
             if (ShowBriefing || Game.Tick - lastOrderTick < 8 * Game.Hz) return;
+            var known = Learned();
             foreach (var h in Text.Hints2)
             {
-                if (hintsDone.Contains(h.Id) || h.Line.Length == 0) continue;
+                if (hintsDone.Contains(h.Id) || known.Contains(h.Id) || h.Line.Length == 0) continue;
                 if (!Trigger(h.Id, out var ring, out var portrait)) continue;
                 HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = ring, Portrait = portrait }; hintOrdersAt = Game.Orders.Count;
                 return;
@@ -62,8 +73,9 @@ namespace Suborned.Play
         }
 
         /// <summary>The ✕ on the hint: this one is spent. H: the whole layer off (or back on).</summary>
+        public void RelearnHints() { PlayerPrefs.DeleteKey(LearnedPref); learned = null; PlayerPrefs.Save(); HintsOn = true; Status = "Hints on, from the start."; Pop(Status, null, SelectedWorld(), Feedback.Info); }
         public void DismissHint() { if (HintNow != null) { hintsDone.Add(HintNow.Id); HintNow = null; } }
-        public void ToggleHints() { HintsOn = !HintsOn; if (!HintsOn) HintNow = null; Status = HintsOn ? "Hints on (H)." : "Hints off for good (H turns them back on)."; Pop(Status, null, SelectedWorld(), Feedback.Info); }
+        public void ToggleHints() { HintsOn = !HintsOn; if (!HintsOn) HintNow = null; Status = HintsOn ? "Hints on." : $"Hints off. {controls.Label(PlayAction.Hints)} brings them back."; Pop(Status, null, SelectedWorld(), Feedback.Info); }
 
         IEnumerable<Order> OrdersTaken(int from = 0) { for (int i = from; i < Game.Orders.Count; i++) if (Game.Orders[i].ok) yield return Game.Orders[i].order; }
         bool Given(Func<Order, bool> f, int from = 0) { foreach (var o in OrdersTaken(from)) if (f(o)) return true; return false; }
