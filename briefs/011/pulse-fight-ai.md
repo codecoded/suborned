@@ -167,7 +167,7 @@ A civic robot: clockwork-smart, a fixed routine, breaks it only for gunfire.
 - **Which objects:** height ≥ `minHeightCm` (90, Motive's 0.9 m). The 0.52 m beds, tables and palms are out; foliage (cypress, topiary) is out; posts narrower than a body (`minWidthCm` 60: bollards, lamp feet) are out.
 - **Where a point stands:** each face of an object is a run of edges (turn under 30°, under 6 m); a point at the middle of each run up to 4.6 m (one more each 4.6 m beyond), on the free grid cell nearest 85 cm off the face, 65–135 cm, outside every other object by a body.
 - **Facing and arc:** `faces` is the unit vector from the point to the nearest point of the face; `arc` is 85% of the narrower side of the face's angular span seen from the point.
-- **Quality:** `q = H × (250 + 750 × min(arc, 60) / 60) / 1000`, H = 800 (0.9–1.19 m), 900 (1.2–1.59 m), 1000 (eye height and up), floored. ≥ 600 full, 350–599 partial, below not written. So a planter run (1.1 m, 55°) is 749, a cabinet 607, a pier 612 (the others 462–512), cabinets 460–607, a car 630–663, the fountain 1000.
+- **Quality:** `q = H × (250 + 750 × min(arc, 60) / 60) / 1000`, H = 800 (0.9–1.19 m), 900 (1.2–1.59 m), 1000 (eye height and up), floored. ≥ 600 full, 350–599 partial, below not written. So a planter run (1.1 m, 55°) is 740–749, a cabinet 607, a pier 612 (the others 462–512), cabinets 460–607, a car 630–663, the fountain 1000.
 - **What a point protects against:** `fire` for objects under eye height (a body can see over them: they turn bullets, not sight); `fire+sight` for objects at or above it. A shooter is shielded if it is at least 5 m away and inside the cone about `faces` (§5.3).
 
 ### 5.3 What the engine does with it (the three functions)
@@ -191,37 +191,31 @@ selectCover(me, taken): over points c not taken, present, q ≥ 350, |me − c.a
 
 An area has an anchor (the getaway car), hostile posts (the ambush posts for the safe fight, the police posts for the loud), the cell's places (the crew), and allies. Rule **CV-2**, "every fight area has cover for both sides": at least half the hostile posts have a shielding cover point within 6 m (`hostileReachCm`, the two seconds a rival can run after a first second of aim), and at least half are answered by a cover point within 8 m of the car (`cellReachCm`) that shields the cell from a shooter at the post. **CV-1**: the file is well formed (free ground, unit facings, `cos` and `q` recomputed, blockers at eye height, names resolve, the inputs it was made from are today's). Both have failing examples in `tools/cover/cover.test.ts`.
 
-## 6. The Handover's fights lack cover: where, and whose it is
+## 6. The Handover's fights: where cover was lacking, and what is left
 
-`bun run cover` today: **CV-1 passes, CV-2 fails** (the safe fight's hostile side). 97 points: 24 on planter runs, 30 on the terrace wall, 11 on the fountain, 14 on the cars, 8 on the pavilion piers, 10 on cabinets, and almost none of it near the posts.
+First run (97 points): CV-2 failed, only 1 of the safe fight's 5 ambush posts had cover. Vantage then added two planter runs through `civic-block.adjust.json` (`run-sq-south`, `run-sq-west`, below eye height, so quiet-route sightlines are unchanged; commit 50d4e3f). `bun run cover` now: **CV-1 and CV-2 pass**, 103 points (30 on planter runs, 30 on the terrace wall, 11 on the fountain, 14 on the cars, 8 on the pavilion piers, 10 on cabinets).
 
 | area | hostile posts with cover | the cell is answered at |
 |---|---|---|
-| getaway-safe (rivals) | **1 of 5** (only `ambush-4`, at the café terrace's wall) | 5 of 5 |
+| getaway-safe (rivals) | **3 of 5** (`ambush-3` and `ambush-5` now behind Vantage's runs, `ambush-4` at the terrace wall) | 5 of 5 |
 | getaway-loud (police) | 2 of 4 (`police-3`, `police-4`: the wall) | 4 of 4 |
 
-The posts with none, what is under each, the nearest shielding point, and what would give it (from the report; a planter run broadside to the car, clear of the keep-clear zones, checked by making the file again with it in):
+Posts still without cover that shields them from the car (the report; a planter run broadside to the car, clear of the keep-clear zones, checked by making the file again with it in):
 
 | post | distance to the car | stands on | nearest shielding point | a PlanterRun would shield it at |
 |---|---|---|---|---|
-| ambush-1 (20, −56) | 13.9 m | **road rocket-lane** | 31 m (café wall) | (18.7, −55.1), on the road |
+| ambush-1 (20, −56) | 13.9 m | **road rocket-lane** | 11.9 m (Vantage's `run-sq-south/0`) | (18.7, −55.1), on the road |
 | ambush-2 (−4, −58) | 15.9 m | **road rocket-lane** | 16 m (café wall) | (−2.7, −57.0), on the road |
-| ambush-3 (22, −42) | 14.9 m | plot records-square | 22 m (fountain) | (20.6, −42.7) |
-| ambush-5 (14, −36) | 13.4 m | plot records-square | 13 m (fountain) | no free spot within 4 m |
-| police-1 (−4, −50) | 12.6 m | plot records-square | 9 m (café wall) | no free spot within 4 m |
-| police-2 (−8, −56) | 18.3 m | **road rocket-lane** | 13 m (café wall) | (−6.6, −55.3), on the road |
+| police-1 (−4, −50) | 12.6 m | plot records-square | 9.2 m (café wall) | no free spot within 4 m |
+| police-2 (−8, −56) | 18.3 m | **road rocket-lane** | 12.9 m (café wall) | (−6.6, −55.3), on the road |
 
-What the numbers say:
+What it says:
 
-- The cell side is covered, by the getaway car and the two pavilion piers beside the bay. Thin (two of the five ambush posts are answered by a single point), and it is all there is: the block's dressing keeps a zone round the car clear of planters, lamps, bollards and trees (`crew-line-getaway`, x −2…16, y −52…−44, "the first thing the player reads and the last walk of the mission"). That zone is a deliberate Vantage and Glint choice, and it is why nothing near the car shields anyone.
-- The hostile side has cover only where the café terrace's wall happens to be (`ambush-4`, `police-3`, `police-4`). The other posts stand in the open: **three on the road** (`rocket-lane`) and three on the open square.
-- **Whose it is.**
-  - **The three posts on the lane** (`ambush-1`, `ambush-2`, `police-2`) are the mission's to move, not the world's to furnish: a planter run in the roadway is wrong. They are the engine's own points in `tools/sim/site.ts` (Waymark is to adopt them into `mission.json`, Suture O-6). Move them onto cover that exists (the terrace wall, 9–16 m off) or onto the square. **Waymark and Keel.**
-  - **The three on the square** (`ambush-3`, `ambush-5`, `police-1`) and the thin cell side are the block's furniture: **Vantage** (block layouts and dressing). One planter run near `ambush-3` and a second kind of cover near the bay's flanks, outside `crew-line-getaway`, would answer them; `ambush-5` and `police-1` stand against beds and the zone, so they want moving or a different piece.
-  - **Not Datum.** The plan's roads and plots are right; Datum owns neither the furniture nor the posts. The one Datum question would be to put cover in the lane's streetscape (parked cars, planter strips) so a post on the road has some; not recommended, since it moves the fight into the street.
-- Motive saw the same from the posts' own reason text ("the open square, each with a clear line to it"): the open square is by design, and his loud fight in cover (4 officers in cover, the last row of his table) is the one that costs the cell most. Cover for the hostiles is now a count: 1 post of 5 for the rivals, 2 of 4 for the police.
+- The cell side is covered, by the getaway car and the two pavilion piers beside the bay, and thin (two of the five ambush posts are answered by a single point). The dressing keeps a zone round the car clear of planters, lamps, bollards and trees (`crew-line-getaway`, x −2…16, y −52…−44, "the first thing the player reads and the last walk of the mission"): a deliberate Vantage and Glint choice, and why nothing near the car shields anyone.
+- The posts left are **three on the lane** (`ambush-1`, `ambush-2`, `police-2`) and `police-1` on the square against the zone. A planter run in the roadway is wrong: the lane posts are the mission's to move, onto cover that exists (Vantage's runs and the terrace wall are 9–16 m off) or onto the square. They are the engine's own points in `tools/sim/site.ts` (Waymark is to adopt them into `mission.json`, Suture O-6). **Waymark and Keel.** `police-1` wants moving or a different piece: **Vantage** or Waymark. Not Datum.
+- Two selections now cross the lane: from `ambush-1` with the car as its foe a hostile reaches Vantage's run only with a 12 m seek (`cv-081`); at the rivals' 8 m it advances to `cv-090` without one and holds in the open once engaged. Whether that is acceptable (a rival with no cover at `ambush-1` and `ambush-2` of five) is Motive's balance question: CV-2 asks for half the posts, and 3 of 5 meets it.
 
-The test `the safe fight's ambush posts 1, 2, 3 and 5 …` locks this finding; it changes with the world.
+The test `the safe fight's ambush-1 and ambush-2 and …` locks this state; it changes with the world or the posts.
 
 ## 7. Values
 
@@ -249,25 +243,25 @@ The test `the safe fight's ambush posts 1, 2, 3 and 5 …` locks this finding; i
 
 | body at | with the car as foe | advancing (no foe) |
 |---|---|---|
-| ambush-1 | none | cv-084 |
+| ambush-1 | none (12 m seek: cv-081) | cv-090 |
 | ambush-2 | none | none |
-| ambush-3 | none | cv-087 |
+| ambush-3 | **cv-083** (`run-sq-south/1`, q 740) | cv-083 |
 | ambush-4 | **cv-044** (café wall, q 800) | cv-046 |
-| ambush-5 | none | cv-021 |
+| ambush-5 | **cv-085** (`run-sq-west/0`, q 749) | cv-085 |
 | police-1 | none (12 m seek: cv-044) | none |
-| police-2 | none | cv-082 |
-| police-3 | **cv-047** (wall, q 800) | cv-094 |
+| police-2 | none | cv-088 |
+| police-3 | **cv-047** (wall, q 800) | cv-100 |
 | police-4 | **cv-042** (wall, q 600) | cv-043 |
-| guard-ally | none | cv-085 |
+| guard-ally | **cv-081** (`run-sq-south/0`, q 740) | cv-080 |
 
-4. The cell's cover at the car (always present): `cv-001…006` (the getaway car: its two ends and sides, q 630–663) and `cv-090…097` (the pavilion piers, q 462–612).
+4. The cell's cover at the car (always present): `cv-001…006` (the getaway car: its two ends and sides, q 630–663) and `cv-096…103` (the pavilion piers, q 462–612).
 5. Determinism: two `bun run cover` runs give the same bytes; a fight run twice gives the same checksums.
 
 ## 9. Open items
 
 - **Motive:** `mod-cover-partial` 750 and the classes' thresholds (`cover-q-full` 600); whether police should take the Enforcer as class 1 (his `OFFICER_PRI`); the rivals' break rule counts the whole crew (`n`), including rivals not yet present.
 - **Keel:** (a) load `suborned.cover/1` (the schema is strict: unknown = reject), either reading the contract or a byte copy that `sim:site` writes to `sim/data/handover.cover.json`, held fresh by a test as the people file is; (b) add `blockers` to the occluders and re-run the scenarios; (c) the crowd's occlusion of watchers needs a position grid; (d) the response unit's join and the stand overflow; (e) the new events I would log: `ai.alerted`, `ai.cover` (point id), `ai.target` (class), `ai.break`, `ai.gone`, `crowd.startled`, `crowd.sheltered`, `crowd.witness` (count).
-- **Waymark:** the six posts (three on the road); `security-entry` is called the west street in §07 and the north street in the engine's notes.
-- **Vantage:** the furniture on `records-square` near `ambush-3`, `ambush-5`, `police-1`, and whether `crew-line-getaway` should still bar every kind of cover.
+- **Waymark:** the four posts without cover (three on the road); `security-entry` is called the west street in §07 and the north street in the engine's notes.
+- **Vantage:** thank you for the two runs; `police-1` and the thin cell side remain, and whether `crew-line-getaway` should still bar every kind of cover.
 - **Latch and Glyph:** cover points are worth showing (a low chevron on the ground, `faces` as its direction); an order "take cover" for the cell that sends an operative to `selectCover` with the nearest foe is the player's version of §2.3.
 - **Stale file:** the cover file hashes the parts of `handover.site.json` it reads (grid, places, schedule, fight references). If Keel changes the posts or the grid, `bun run cover` writes it again and `bun test tools/cover` says so until then.
