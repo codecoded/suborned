@@ -75,6 +75,8 @@ async function main() {
       if (m?.corpusHash !== ch) say('WARN', 'corpus', `this tree's corpus ${ch.slice(0, 12)} not indexed`, 'run bun run ingest');
       else if (m.embeddingModel !== embeddingModel) say('WARN', 'corpus', 'stale (embedding model changed)', 'run bun run ingest');
       else say('PASS', 'corpus', `indexed and current (${ch.slice(0, 12)}, database ${db})`);
+      // the people graph (tools/people-graph): a derived view of the promoted cast; reported, never a failure
+      try { const g = await (await import('./people-graph/status')).promotedGraphLine(); say(g.level, 'people', g.msg, g.fix); } catch (e) { say('WARN', 'people', String((e as Error).message).slice(0, 80), 'bun run people:graph'); }
     } catch (e) { say('FAIL', 'surrealdb', String((e as Error).message).slice(0, 80), restart); }
   }
 
