@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, lineKey, lockOf, lookup, pickIndex, pickLine, wordCount } from './text.schema.ts';
+import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, fillLock, lineKey, lookup, pickIndex, pickLine, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -44,11 +44,11 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, x] of Object.entries(t.cancelCosts)) push(`cancelCosts.${k}`, x);
   const walk = (path: string, o: unknown) => { if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walk(`${path}.${k}`, v); };
   walk('activity', t.activity);
-  for (const l of t.locks) push(`locks.${l.code}`, l.line);
+  for (const [code, l] of Object.entries(t.locks)) push(`locks.${code}`, l.line);
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
-const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera');
+const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30');
 
 describe('the file', () => {
   test('parses as suborned.text/1 for the handover', () => {
@@ -63,8 +63,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd} {target}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|target\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {tick} {target}', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -110,7 +110,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'N', 'C', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'N', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -203,67 +203,62 @@ describe('verbs and refusals', () => {
       for (const ag of a.by) expect(AGENTS).toContain(ag);
     }
   });
-  test('lock samples resolve to their own code (file order decides), and every lock names real verbs', () => {
-    const bad: string[] = [];
-    for (const l of t.locks) {
-      for (const s of l.samples) { const got = lockOf(t, s)?.code; if (got !== l.code) bad.push(`"${s}" → ${got} (wanted ${l.code})`); }
-      for (const v of l.verbs) if (v !== '*' && !(v in t.actions)) bad.push(`${l.code}: verb ${v}`);
-      for (const m of l.match) new RegExp(m, 'i');
-    }
-    expect(bad).toEqual([]);
-    expect(new Set(t.locks.map((l) => l.code)).size).toBe(t.locks.length);
-  });
-  test('every refusal the engine can return finds a lock (GameOrders.cs, GameCombat.cs)', () => {
+  const engineCodes = (): string[] => {
+    const m = simFile('Model.cs');
+    const list = m.slice(m.indexOf('public static readonly string[] Codes'), m.indexOf('};', m.indexOf('public static readonly string[] Codes')));
+    return [...list.matchAll(/"([a-z-]+)"/g)].map((x) => x[1]!);
+  };
+  test('text.json has a line for every refusal code the engine gives, and no other (Answer.Codes)', () => {
     if (!haveSim) return;
-    const SAMPLE: [RegExp, string][] = [[/o\.Op|Op\.Name|op\.Id/, 'scout'], [/p\.Role|\.Role/, 'waitress'], [/[rR]each \/ 100/, '4'], [/BusyEnd/, '4120'], [/o\.Do/, 'dance'],
-      [/o\.To\b/, 'nowhere'], [/o\.Target/, 'scout'], [/o\.Stance/, 'sulk'], [/MaxCm/, '25'], [/\bt\b/, 'waitress']];
-    const fill = (s: string) => s.replace(/\{([^}]*)\}/g, (_m, expr: string) => SAMPLE.find(([re]) => re.test(expr))?.[1] ?? 'x');
-    const IGNORE = new Set(['needs x']); // `needs {Describe(c)}`: the next test runs every Describe case
-    // the functions that return refusals; their literals after `return` / `Refused =` are the engine's words
-    const region = (src: string, from: string, to?: string) => { const a = src.indexOf(from); if (a < 0) throw new Error(`${from} not found`); return src.slice(a, to ? src.indexOf(to, a) : undefined); };
-    const orders = simFile('GameOrders.cs'), combat = simFile('GameCombat.cs');
-    const regions = [region(orders, 'string Check(Order o)', 'void Land('), region(orders, 'public bool CanCall'), region(combat, 'string Draw(Op op, Order o)', 'void Captures()'),
-      region(combat, 'public LoudCard GoingLoud', 'public MoveQuote QuoteMove'), region(combat, 'string RunRefusal')];
-    if (existsSync(join(SIM, 'GameCancel.cs'))) regions.push(region(simFile('GameCancel.cs'), 'string Cancel(Op op)', 'void ReportBy'));
-    const found: { file: string; text: string }[] = [];
-    for (const block of regions) {
-      for (const line of block.split('\n')) {
-        const bare = line.replace(/\$?"(?:[^"\\]|\\.)*"/g, (m) => 'x'.repeat(m.length)); // find `return` outside any string
-        const at = bare.search(/\breturn\b|Refused\s*=/);
-        if (at < 0 || /^\s*\/\//.test(line)) continue;
-        for (const m of line.slice(at).matchAll(/\$?"((?:[^"\\]|\\.)*)"/g)) {
-          const text = fill(m[1]!);
-          if (!/\s/.test(text) || IGNORE.has(text)) continue; // a refusal is a sentence; a code or a name is not
-          found.push({ file: 'engine', text });
-        }
+    const codes = engineCodes();
+    expect(codes.length).toBeGreaterThanOrEqual(80);
+    expect(Object.keys(t.locks).sort()).toEqual([...codes].sort());
+  });
+  test('every code the engine can raise is in that list, and every lock names real verbs', () => {
+    if (!haveSim) return;
+    const codes = new Set(engineCodes());
+    const used = new Set<string>();
+    for (const src of simAll()) for (const m of src.matchAll(/\bNo\("([a-z-]*[a-z])"/g)) used.add(m[1]!); // `No("needs-" + kind)` builds its code; those are in the list
+    expect([...used].filter((c) => !codes.has(c))).toEqual([]);
+    expect(used.size).toBeGreaterThanOrEqual(60);
+    for (const [c, l] of Object.entries(t.locks)) for (const v of l.verbs) expect(v === '*' || v in t.actions, `${c}: ${v}`).toBe(true);
+  });
+  test('a line carries exactly the numbers the engine sends with its code (m or cm → {m}, usd, tick)', () => {
+    if (!haveSim) return;
+    const sent = new Map<string, Set<string>>();
+    for (const src of simAll()) for (const line of src.split('\n')) {
+      for (const m of line.matchAll(/\bNo\("([a-z-]+)",[^;]*?(?:,\s*(m|cm|usd|tick): )/g)) {
+        const f = new Set(sent.get(m[1]!) ?? []);
+        for (const x of line.slice(m.index).matchAll(/[,(]\s*(m|cm|usd|tick): /g)) f.add(x[1] === 'cm' ? 'm' : x[1]!);
+        sent.set(m[1]!, f);
       }
     }
-    // the cancel order's refusals are the activity's CancelText when it can't be cancelled
-    if (existsSync(join(SIM, 'GameCancel.cs'))) for (const line of simFile('GameCancel.cs').split('\n')) {
-      if (!/CancelCost = "(down|keeps-vale|nothing|none)"/.test(line)) continue;
-      const m = line.match(/CancelText = "([^"]+)"/);
-      if (m) found.push({ file: 'GameCancel.cs', text: m[1]! });
+    expect(sent.size).toBeGreaterThanOrEqual(10);
+    const bad: string[] = [];
+    for (const [c, l] of Object.entries(t.locks)) {
+      const uses = new Set([...l.line.matchAll(/\{(m|usd|tick)\}/g)].map((x) => x[1]!));
+      const send = sent.get(c) ?? new Set<string>();
+      for (const u of uses) if (!send.has(u)) bad.push(`${c}: line uses {${u}} but the engine does not send it`);
+      for (const f of send) if (!uses.has(f)) bad.push(`${c}: the engine sends ${f} and the line ignores it`);
     }
-    expect(found.length).toBeGreaterThan(40); // the scan reads something
-    const holes = found.filter((f) => !lockOf(t, f.text)).map((f) => `${f.file}: ${f.text}`);
-    expect(holes).toEqual([]);
+    expect(bad).toEqual([]);
   });
-  test('every "needs …" reason (GameOrders.Describe) finds a lock', () => {
-    if (!haveSim) return;
-    const src = simFile('GameOrders.cs');
-    const block = src.slice(src.indexOf('static string Describe(Cond c)'), src.indexOf('bool Holds(Cond c, PCtx x)'));
-    const reasons: string[] = [];
-    for (const line of block.split('\n')) {
-      const m = line.match(/^\s*"([a-z-]+)" =>\s*(.*?),?\s*$/);
-      if (!m) continue;
-      const body = m[2]!;
-      const variants = /c\.B\("is"\) \?/.test(body) ? [...body.matchAll(/"([^"]*)"/g)].slice(1).map((x) => x[1]!) : [body.replace(/c\.S\("approach"\)/g, '"@A"').replace(/c\.S\("what"\)/g, '"routine"').replace(/"\s*\+\s*"/g, '').replace(/"\s*\+\s*/g, '').replace(/\s*\+\s*"/g, '').replace(/^"|"$/g, '')];
-      for (const v of variants) reasons.push(...(v.includes('@A') ? (['ask', 'pay', 'help', 'pressure'] as const).filter((a) => people.approaches[a].requires !== 'nothing').map((a) => v.replace('@A', a)) : [v]));
-    }
-    expect(reasons.length).toBeGreaterThanOrEqual(8);
-    const holes = reasons.map((r) => 'needs ' + r).filter((r) => !lockOf(t, r));
-    expect(holes).toEqual([]);
+  test('fillLock fills the numbers and the names', () => {
+    const clock = (tk: number) => `${Math.floor(tk / 600)}:${String(Math.floor(tk / 10) % 60).padStart(2, '0')}`;
+    expect(fillLock(t, { code: 'too-far', m: 4 }, { who: 'Inez' })).toBe('Too far from Inez. Walk within 4 m first.');
+    expect(fillLock(t, { code: 'stand-at-door', cm: 600 })).toContain('within 6 m');
+    expect(fillLock(t, { code: 'no-cash', usd: 90000 })).toContain('$90,000');
+    expect(fillLock(t, { code: 'agent-busy', tick: 1830 }, { op: 'Scout', clock })).toBe('Scout is busy until 3:03. Wait, or use another agent.');
+    expect(fillLock(t, { code: 'nope' })).toBeUndefined();
   });
+  const dotnet = Bun.which('dotnet');
+  test.skipIf(!dotnet || !haveSim)('text.json matches `suborned-sim codes` (the built engine)', () => {
+    const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
+    const r = Bun.spawnSync(['dotnet', 'run', '--project', 'sim/cli', '--', 'codes'], { cwd: root, env, stdout: 'pipe', stderr: 'pipe' });
+    expect(r.exitCode, new TextDecoder().decode(r.stderr)).toBe(0);
+    const codes = JSON.parse(new TextDecoder().decode(r.stdout)) as string[];
+    expect(Object.keys(t.locks).sort()).toEqual([...codes].sort());
+  }, 120000);
   test('every fail code the engine can return has plain words and a spoken line', () => {
     if (!haveSim) return;
     const codes = new Set<string>(['engine-error']);
@@ -329,6 +324,32 @@ describe('training hints, the run toast, the going-loud card', () => {
     expect(t.toasts['run-seen']!.line).toMatch(/run/i);
     expect(t.toasts['run-seen']!.line).toContain('Alert 1');
     expect(t.goingLoud.captured.toLowerCase()).toBe('anyone downed is captured unless carried.');
+  });
+});
+
+describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.md)', () => {
+  // A key a line names must be bound to what the line means. Anything not listed here must not appear.
+  const MEANS: Record<string, { action: string; where: string[] }> = {
+    N: { action: 'next event', where: ['hints.H7'] },
+    F: { action: 'draw or holster', where: ['locks.not-drawn'] },
+    Ctrl: { action: 'force fire', where: ['locks.civilian-target'] },
+    Return: { action: 'play again', where: ['locks.mission-over'] },
+  };
+  const howTo = existsSync(join(root, 'briefs/011/play/HOW-TO-PLAY.md')) ? read('briefs/011/play/HOW-TO-PLAY.md') : '';
+  const KEY = /\((?:[A-Z]|F\d+)\)|\bCtrl\b|\bShift-|\bAlt\b|\bEsc\b|\bTab\b|\bPress (?:Return|Space|Esc|Tab)\b|\bF\d{1,2}\b|\b[NCXVLBHFQWER]\b(?=[ ,.;:)]|$)/g;
+  test('every key a line names is one the game binds to what the line means, and no line names C for carry', () => {
+    const named: { key: string; path: string }[] = [];
+    for (const s of strings) for (const m of s.text.matchAll(KEY)) named.push({ key: m[0].replace(/[()]/g, '').replace(/^Press /, ''), path: s.path });
+    const bad = named.filter((n) => !MEANS[n.key] || !MEANS[n.key]!.where.some((w) => n.path.startsWith(w))).map((n) => `${n.key}: ${n.path}`);
+    expect(bad).toEqual([]);
+    expect(named.length).toBeGreaterThanOrEqual(4); // the scan finds the keys that are there
+    if (howTo) for (const [k, v] of Object.entries(MEANS)) expect(howTo, `${k} (${v.action}) is bound in HOW-TO-PLAY.md`).toMatch(new RegExp(`\\*\\*[^*]*\\b${k}\\b[^*]*\\*\\*`));
+  });
+  test('H11 says how to carry: right click the downed agent with another selected', () => {
+    const l = t.hints.items.H11!.line;
+    expect(l).toMatch(/right click/i);
+    expect(l).toMatch(/another agent/i);
+    expect(l).not.toMatch(/\(C\)/);
   });
 });
 

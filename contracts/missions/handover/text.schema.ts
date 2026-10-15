@@ -9,9 +9,8 @@
 //   actions    every verb the action panel can show: label, who gives it, one plain line with its trade-off, and a line for the
 //              same verb on a particular target
 //   cancelCosts · activity   what cancelling an order costs or keeps; what each agent is doing now, in words for the roster
-//   locks      every reason the engine (or the host's own panel) can refuse an order with, as a code, the patterns that find the
-//              code from the engine's text, and one line saying what unlocks it. The engine returns free text, not codes
-//              (sim/Suborned.Sim/GameOrders.cs); `lockOf` is the reference for turning one into the other
+//   locks      one line for every refusal code the engine gives (Game.Issue returns Answer { ok, code, why, m, cm, usd, tick });
+//              the line says what unlocks it and carries {who} {op} {m} {usd} {tick}; `fillLock` is the reference for filling them
 //   events     the situations that can speak: what triggers each (an order, the engine's log code, the clock) and who may speak
 //   exchange   the order in which an order's events play, for the collapsible dialogue
 //   dialogue   the lines: event × verb × speaker × outcome × temperament, 2–4 variants each; `lookup` and `pickLine` are the
@@ -62,12 +61,8 @@ export const Action = z.strictObject({
 });
 
 export const Lock = z.strictObject({
-  code,
-  from: z.enum(['engine', 'host', 'both']).describe('whose text this is: sim/Suborned.Sim, or HandoverHost.Locked'),
-  match: z.array(z.string().min(1)).min(1).describe('regular expressions (case-insensitive) over the refusal text; the first lock in file order that matches wins'),
-  line: Line.describe('what is wrong and what unlocks it'),
+  line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer'),
   verbs: z.array(z.union([Verb, z.literal('*')])).min(1).describe('the verbs that can return it'),
-  samples: z.array(z.string().min(1)).min(1).describe('refusal texts it must match (the checker runs them)'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
@@ -156,7 +151,7 @@ export const TextFile = z.strictObject({
   actions: z.record(Verb, Action),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
-  locks: z.array(Lock).min(1),
+  locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),
   events: z.record(code, EventDef),
   exchange: z.record(Verb, z.array(code)).describe('verb → the events an order plays through, in order; the collapsed view shows the last'),
   silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
@@ -167,9 +162,19 @@ export type TextFile = z.infer<typeof TextFile>;
 
 // ---------------------------------------------------------------- the reference lookups (Latch ports these; the checker runs them)
 
-/** Which lock a refusal text is: the first lock in file order with a matching pattern. Undefined = an unknown refusal (a hole in `locks`). */
-export function lockOf(t: Pick<TextFile, 'locks'>, why: string): TextFile['locks'][number] | undefined {
-  return t.locks.find((l) => l.match.some((m) => new RegExp(m, 'i').test(why)));
+/** What the engine sends with a refusal (sim Answer): -1 = none. */
+export type Answer = { code: string; m?: number; cm?: number; usd?: number; tick?: number };
+/** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
+ *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
+export function fillLock(t: Pick<TextFile, 'locks'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string } = {}): string | undefined {
+  const l = t.locks[a.code];
+  if (!l) return undefined;
+  const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
+  return l.line
+    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent')
+    .replace(/\{m\}/g, m === undefined ? '?' : String(m))
+    .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
+    .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');
 }
 
 export type Query = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string };
