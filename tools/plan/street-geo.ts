@@ -18,6 +18,7 @@ export class Grid<T> {
   private m = new Map<string, T[]>();
   constructor(private cell: number, private at: (t: T) => V) {}
   add(t: T) { const [x, y] = this.at(t), k = `${Math.floor(x / this.cell)},${Math.floor(y / this.cell)}`; (this.m.get(k) ?? this.m.set(k, []).get(k)!).push(t); }
+  remove(t: T) { const [x, y] = this.at(t), l = this.m.get(`${Math.floor(x / this.cell)},${Math.floor(y / this.cell)}`), i = l ? l.indexOf(t) : -1; if (l && i >= 0) l.splice(i, 1); }
   near(p: V, r: number): T[] {
     const out: T[] = [], c = this.cell;
     for (let i = Math.floor((p[0] - r) / c); i <= Math.floor((p[0] + r) / c); i++) for (let j = Math.floor((p[1] - r) / c); j <= Math.floor((p[1] + r) / c); j++) out.push(...(this.m.get(`${i},${j}`) ?? []));

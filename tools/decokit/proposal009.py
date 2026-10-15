@@ -3,7 +3,7 @@
   catalogue.proposal.json   one KitAsset-shaped row per piece (contracts/world/kit.schema.ts fields) + parts, shadow flags, budget, source script, sha256
   crossing-colours.json     every material the pieces draw: unlit hex, role, dE2000 to cones / guard / rivals, the one display exception
 and prints the district totals (from the world export's crossings). Nothing under out/decokit/, contracts/ or the store is written.
-Run: python3 tools/decokit/proposal009.py"""
+Run: python3 tools/decokit/proposal009.py [--only A,B --tag field]   (--only: just those rows; --tag: files become catalogue.proposal.<tag>.json and crossing-colours.<tag>.json)"""
 
 import hashlib
 import json
@@ -36,6 +36,7 @@ ROLE = {
     "DK_Cross_Beam": ("light beam, translucent glow (alpha 0.28)", "pale seafoam #9BCFC2"),
     "DK_Cross_Halo": ("halo disc under the beam, translucent glow (alpha 0.40)", "kit seafoam #72B5A7"),
     "DK_Inlay_Seafoam": ("kerb inlay arc band, glazed faience (as the civic paving inlay)", "kit seafoam #72B5A7"),
+    "DK_Cross_Pool": ("light spilt on the road: the lit strip's glow quad (kind glow, translucent; Latch draws it additive and double-sided, Glint sets the strength)", "kit seafoam #72B5A7, glow alpha 0.40"),
 }
 EXEMPT = {"DK_Cross_Stop"}
 PX = 1080 / 28  # play zoom: orthographic size 14 at 1080 p
@@ -71,6 +72,15 @@ SPEC = {
                             note="Brass frame line for one long edge of the crossing strip: 2.00 x 0.04 m, one quad, 6 mm proud, faces up, nothing below the pivot plane; long axis X, centred, yaw to the walking direction; ends butt with no seam. Place at y = +-2.0 (the strip's edge line) and move the dot rows in to y = +-1.75 so their outer hairline (1.965) clears it. Separate from the dot row on purpose: it serves the bar variant too, runs the strip's whole length whatever the row layout, and is a quad per 2 m."),
     "CrossEdgeLine_1": dict(use=["crossing:edge"], budget=10, sight="open", src="crossing_flat.py", order=9,
                             note="1 m end module of CrossEdgeLine_2 (1.00 x 0.04 m): a line of any whole metre is 2 m modules plus at most one of these."),
+    "LightField_2": dict(use=["crossing:field"], budget=4, sight="open", src="crossing_opts.py", order=10,
+                         note="The lit strip (Sky's pick, 15 Oct, brief 009 option d1): 2 m of soft seafoam light across the whole strip, one 2.0 x 3.9 m quad of kind glow (DK_Cross_Pool: translucent, additive, double-sided), 2 mm above the road, "
+                              "no sides, faces up, nothing below the pivot plane; long axis X, centred, ends butt with no seam. Lay it end to end along the strip's centre line, between the brass edge lines (y = +-2.0; the quad spans y = +-1.95), "
+                              "from the same end (0.5 m off each kerb) as the dot lines, UNDER the dot rows (lens 4 mm) and the brass hairlines (6 mm); the dots stay as they are. "
+                              "SHADER (Latch): UV is the face's box projection, u = metres along the strip from the piece's centre, v = metres across from the centre line; fade = (1 - |v| / 1.95) ^ 1.5, so the quad is full on the centre line and nothing at the edge lines. "
+                              "The beam's halo already fades by radius; this is the same material with |v| in place of length(uv). STRENGTH (Glint): the options sheet drew it as the dot colour (154, 219, 198) at 0.34 of full, added to the road, the fade above, no bloom; "
+                              "that read as a frosted lit lane. It does not cast or receive shadows. Light state: the quad is the strip's walk cue, live 3D (lit on walk, dark on stop is Latch's to switch)."),
+    "LightField_1": dict(use=["crossing:field"], budget=4, sight="open", src="crossing_opts.py", order=11,
+                         note="1 m end module of LightField_2 (1.0 x 3.9 m): a field of any whole metre is 2 m modules plus at most one of these. Same glow, UVs and fade."),
     "CrossInlayArc_R24_W08": dict(use=["inlay:crossing-arc"], budget=70, sight="open", src="crossing_flat.py", order=7,
                                   note="Quarter ring of seafoam faience, centreline R 2.4 m, band 0.8 m (R 2.0 to 2.8) between 3 cm brass hairlines (outer edge R 2.83); pivot = arc centre, sweeps +X to +Y, 4 mm / 6 mm proud. Placed so the outer edge is tangent to the kerb line and to the strip's edge line: centre = mouth corner + (2.83, 2.83) into the pavement, quarter-turn yaw (180 NE, 90 SE, 270 NW, 0 SW in the render009 frame); a pair rounds both corners of a crossing's mouth."),
 }
@@ -124,19 +134,29 @@ def district():
     bars = sum(round(x) for x in ln)
     mods2 = sum(int(x // 2) * 3 + (1 if x % 2 >= 0.5 else 0) * 0 for x in ln)  # three rows of 2 m modules (the 1 m ends are counted below)
     ends = sum(3 if (x % 2) >= 1 else 0 for x in ln)
-    return dict(crossings=len(w), metres=round(sum(ln), 1), bars=bars, orbs_2_per_crossing=2 * len(w), orbs_4_per_crossing=4 * len(w), dot_rows_2m=mods2, dot_rows_1m=ends)
+    return dict(crossings=len(w), metres=round(sum(ln), 1), bars=bars, orbs_2_per_crossing=2 * len(w), orbs_4_per_crossing=4 * len(w), dot_rows_2m=mods2, dot_rows_1m=ends, **field_modules())
+
+
+def field_modules():
+    """The lit strip lies along one line per crossing (the dot rows' spans on the left line): its modules, from the world export (read only)."""
+    items = json.loads((REPO / "out/world/harbour-district.world.json").read_text())["street"]
+    left = [s for s in items if s["kind"] == "crossing-dots" and s["id"].split("/")[-1].startswith("l")]
+    n2, n1 = sum(1 for s in left if s["size"][0] == 2), sum(1 for s in left if s["size"][0] == 1)
+    return dict(field_2m=n2, field_1m=n1, field_tris=2 * (n2 + n1))
 
 
 def main():
-    rows = [row(n) for n in SPEC]
+    arg = lambda k: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None  # noqa: E731
+    rows = [row(n) for n in (arg("--only").split(",") if arg("--only") else SPEC)]
+    sfx = f".{arg('--tag')}" if arg("--tag") else ""
     cols = colours(rows)
-    (OUT / "catalogue.proposal.json").write_text(json.dumps(dict(
+    (OUT / f"catalogue.proposal{sfx}.json").write_text(json.dumps(dict(
         schema="suborned.kit/1 (proposal: KitAsset rows, status candidate)", brief="009 A", generator="tools/decokit (Blender 5.2.2), --out out/decokit-009",
         roots={"generated": "out/decokit-009 (this proposal's generator output; adopting = same relative paths under out/decokit)"},
         note="Rows follow contracts/world/kit.schema.ts (KitAsset) plus sight, sourceScript, budget, heightAbovePivot (the manifest's size[1] is the bounding box, which for the flat pieces starts at z 0.004) and parts as objects "
-             "(object, role, castShadows, default, tris L0/L1). Kinds: DK_Cross_Beam and DK_Cross_Halo are kind `glow` (translucent light volumes): no .mat is written, Latch draws them additive and double-sided. kit.json is not touched.",
+             "(object, role, castShadows, default, tris L0/L1). Kinds: DK_Cross_Beam, DK_Cross_Halo and DK_Cross_Pool (the lit strip) are kind `glow` (translucent light volumes): no .mat is written, Latch draws them additive and double-sided. kit.json is not touched.",
         assets=rows), indent=1) + "\n")
-    (OUT / "crossing-colours.json").write_text(json.dumps(dict(
+    (OUT / f"crossing-colours{sfx}.json").write_text(json.dumps(dict(
         schema="suborned.crossing-colours/1", brief="009 A", date="2026-10-14", signals=SIGNALS,
         rule="dE2000 >= 20 from every signal colour on the unlit palette (base colour of the material, emission off), except the stop pictogram: Sky's exception of 2026-10-14 (small emissive display pictograms only, never a surface; the cones keep their shape and motion cue). Owed: GDD s10 / s15 and the style contract.",
         materials=cols, below_20=[c["material"] for c in cols if c["min"] < 20], district=district()), indent=1) + "\n")

@@ -5,6 +5,7 @@ import { civic, toPlanFn, type Civic } from '../plan/civic';
 import { area, centroid, dist, inPoly, type V } from '../plan/geom';
 import { derive, type Derived, type Plan } from '../plan/plan';
 import { blockersOf } from '../plan/walk';
+import { bodyOf } from '../plan/walk-solids';
 import type { Place } from '../../contracts/people/people.schema';
 import { employerOfBlock, type Rules } from './rules';
 import { cafeSets, seatId, seatPoints, standId, standingPoints, type Table } from './seats';
@@ -165,7 +166,7 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
   const { polys, rounds } = blockersOf(plan, d, civ), bays = Object.values(bayPolys);
   const free = (p: V) => !polys.some(b => inPoly(p, b)) && !rounds.some(l => dist(p, l.c) < l.r);
   const clear = (p: V) => !zones.some(z => z.test(p)) && !bays.some(b => inPoly(p, b));
-  const stands = standingPoints(civ, cafeDoor.at as V, setsOut.flatMap(o => o.seats.map(x => x.at)).concat(sets.map(o => o.at)), free, clear), standIds: string[] = [];
+  const stands = standingPoints(civ, cafeDoor.at as V, setsOut.flatMap(o => o.seats.map(x => x.at)).concat(sets.map(o => o.at)), free, clear, bodyOf(plan)), standIds: string[] = [];
   stands.forEach((c, k) => { const pl = plotAt(c), id = standId(k); add({ id, kind: 'stand', name: `café standing point ${k}`, at: c, area: pl?.area ?? areas[0]!, ...(pl ? { plot: pl.id } : {}) }); standIds.push(id); });
   const cafe = tables[0]?.seats[0] ?? cafeDoor.id;
   places.sort((a, b) => (a.id < b.id ? -1 : 1)); units.sort((a, b) => (a.id < b.id ? -1 : 1));

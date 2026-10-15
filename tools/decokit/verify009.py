@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
 
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-IDS = ARGS[ARGS.index("--ids") + 1].split(",") if "--ids" in ARGS else ["SignalEye", "KerbStud", "LightBar_4", "LightDotRow_2", "LightDotRow_1", "CrossInlayArc_R24_W08", "CrossEdgeLine_2", "CrossEdgeLine_1"]
+IDS = ARGS[ARGS.index("--ids") + 1].split(",") if "--ids" in ARGS else ["SignalEye", "KerbStud", "LightBar_4", "LightDotRow_2", "LightDotRow_1", "CrossInlayArc_R24_W08", "CrossEdgeLine_2", "CrossEdgeLine_1", "LightField_2", "LightField_1"]
 PX_PER_M = 1080 / 28  # play camera: orthographic size 14 on a 1080 p frame
 r3 = lambda v: round(v + 0.0, 3)  # noqa: E731
 

@@ -230,7 +230,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}),
+    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ, toPlanFn(plan.civic)), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {

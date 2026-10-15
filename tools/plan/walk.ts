@@ -4,13 +4,13 @@
 import { type V, dist, inPoly } from './geom';
 import type { Derived, Plan } from './plan';
 import { type Civic, footprints } from './civic';
-import { type Edge, Solids } from './walk-solids';
+import { type Edge, Solids, bodyOf } from './walk-solids';
 
 export type Walk = { from: string; to: string; kind: string; m: number; straight: number; path: V[] };
 /** One tram stop or sky rail station and its shortest walk (m) from the nearest origin; Infinity = no walk at all. */
 export type Reach = { line: string; id: string; kind: string; name: string; at: V; m: number };
 
-const OPEN = new Set(['park', 'open', 'square', 'civic']); // civic plots: only their building footprints block
+export const OPEN = new Set(['park', 'open', 'square', 'civic']); // civic plots: only their building footprints block
 
 const memo = new WeakMap<Derived, { walks: Walk[]; reach: Reach[] }>();
 export const walks = (plan: Plan, d: Derived, civ: Civic): Walk[] => solve(plan, d, civ).walks;
@@ -59,7 +59,7 @@ function run(plan: Plan, d: Derived, civ: Civic) {
   };
   const steps: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1], [1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]];
   // the block's ground solids block a step by their own edges, not by cell centres: each cell lists the edges a step from it can meet
-  const solids = new Solids(civ.solids), edgesAt = new Map<number, Edge[]>(), grow = solids.r + 2.5 * cell; // a step reaches 2 cells along one axis and 1 across
+  const solids = new Solids(civ.solids, bodyOf(plan)), edgesAt = new Map<number, Edge[]>(), grow = solids.r + 2.5 * cell; // a step reaches 2 cells along one axis and 1 across
   for (const e of solids.list) {
     const i0 = Math.max(0, Math.floor((e.x0 - grow - x0) / cell)), i1 = Math.min(nx - 1, Math.floor((e.x1 + grow - x0) / cell));
     const j0 = Math.max(0, Math.floor((e.y0 - grow - y0) / cell)), j1 = Math.min(ny - 1, Math.floor((e.y1 + grow - y0) / cell));

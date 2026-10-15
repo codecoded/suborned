@@ -3,10 +3,11 @@
 import type { Orders } from './orders';
 
 export type Ext = [number, number, number, number] | null;
-export type Built = { split: number; roof: number | null; lower: Ext; upper: Ext; crown: Ext; tip: number; tipPlan: number };
+export type Built = { split: number; roof: number | null; lower: Ext; upper: Ext; crown: Ext; tip: number; tipPlan: number; tiers?: [number, number][] | null };
 export type FitRow = { piece: string; order: string; size: string; tip: number; limit: number; fits: boolean; why: string[] };
 export const TOL = 0.05; // the order's tip is rounded to 0.1 (built 167.83 vs 167.8); the disc rim lip allowance below
 export const LIP = 0.1;  // a landing disc's rim bead stands this far proud of its radius
+export const NARROW = 0.1; // a tier may be this much narrower than the order's width: the widths are on a 0.1 m grid (19.5, 10.8, 8.6) and the built envelope is exact to a few mm
 
 const half = (e: Ext) => e ? [Math.max(-e[0], e[1]), Math.max(-e[2], e[3])] as const : [0, 0] as const;
 const inside = (e: Ext, w: number, d: number, tol = 0) => { const [hx, hy] = half(e); return hx * 2 <= w + tol + 1e-9 && hy * 2 <= d + tol + 1e-9; };
@@ -29,6 +30,10 @@ export function fitRow(orders: Orders, id: string, order: { hash: string }, b: B
     // the tip is bounded by the order (standards.skyline.rivalMax and tiers), not the old towers.crownTip 106
     if (!inside(b.upper, w - 2 * g.halfBay, d - 2 * g.halfBay)) why.push(`above the setback ${half(b.upper).map(h => h * 2)} > ${w - 2 * g.halfBay}×${d - 2 * g.halfBay}`);
     if (!inside(b.crown, w, d)) why.push(`crown ${half(b.crown).map(h => h * 2)} > site`);
+    // no narrower than the plan: each tier's built width (x) against the order's, so a tower that is thinner than it was ordered fails as a fat one does
+    const want = (o.regen as { tiers: [number, number, number][] }).tiers;
+    if (!b.tiers) why.push('no tier widths in the build: regenerate (tools/decokit measures them since 15 Oct)');
+    else want.forEach(([tw], i) => { const got = b.tiers![i]?.[0] ?? 0; if (got < tw - NARROW - 1e-9) why.push(`tier ${i + 1} is ${got.toFixed(2)} m wide, the plan's ${tw} m (no narrower than by ${NARROW} m)`); });
   } else {
     const m = /rims inside x (\d+)–(\d+), \|y\| ≤ ([\d.]+)/.exec(reg.discsInPlan ?? ''), [ax, ay] = reg.at ?? [0, 0];
     if (!m) why.push('no rim bound in the order');

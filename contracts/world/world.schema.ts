@@ -27,6 +27,8 @@ export type World = {
   connectors: Connector[]; // stairs, ramps, escalators, lifts, stair towers: every deck and concourse reaches the street
   street: StreetItem[]; // trees, lamps, furniture, transit kits, station entrances, watchers
   crossings?: Crossing[]; // kerb-to-kerb crossings (present when the plan carries streetscape.crossings.strip): each is its landings (keep-clear footprints, not drawn), the strip between them, and its parts (street items: light bars or dots, signal orbs, kerb studs, inlay arcs)
+  /** The coverage rules' doing (streetscape.crossings.coverage.rules; present when the plan carries them): the crossings each rule placed, the twins dropped (each named with the crossing it kept), the furniture moved out of a landing's way, and the sites left out for want of ground, each with why. SF-22 holds the crossings to it. */
+  crossingRules?: { sites: Record<string, number>; twins: string[]; moved: string[]; left: string[] };
   levels: Level[]; // standards.levels.list: street, deck, concourse; decks carry their columns
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size

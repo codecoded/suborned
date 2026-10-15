@@ -79,26 +79,27 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
 
 test('a crossing\'s lights draw `glow`, its arcs `inlay`, its orbs `orb`; its studs stay `trim` (brass, a frame line); no slab is left to draw `crossing`', () => {
   const part = (kind: string) => w.street.filter(s => s.kind === kind);
-  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(980); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
-  expect(part('crossing-arc').length).toBe(237); for (const s of part('crossing-arc')) expect(s.surface, s.id).toBe(INLAY);
-  expect(part('signal-orb').length).toBe(156); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
-  expect(part('crossing-stud').length).toBe(536); for (const s of part('crossing-stud')) expect(s.surface, s.id).toBe('trim');
+  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(1464); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
+  expect(part('crossing-field').length).toBe(747); for (const s of part('crossing-field')) expect(s.surface, s.id).toBe(GLOW); // the lit strip is light too
+  expect(part('crossing-arc').length).toBe(322); for (const s of part('crossing-arc')) expect(s.surface, s.id).toBe(INLAY);
+  expect(part('signal-orb').length).toBe(207); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
+  expect(part('crossing-stud').length).toBe(704); for (const s of part('crossing-stud')) expect(s.surface, s.id).toBe('trim');
   expect(part('crossing')).toEqual([]);
-  expect(withKey(GLOW).length).toBe(980); expect(withKey(INLAY).length).toBe(237); expect(withKey(ORB).length).toBe(156);
+  expect(withKey(GLOW).length).toBe(2211); expect(withKey(INLAY).length).toBe(322); expect(withKey(ORB).length).toBe(207); // 1464 dot rows + 747 lit strip modules
 });
 
-test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 482 + 1,373 parts in them', () => {
+test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 482 + 2,740 parts in them', () => {
   const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB, GLOW, INLAY, ORB];
   expect(keys.sort()).toEqual(named.sort());
   const count = (ks: string[]) => ks.reduce((n, k) => n + withKey(k).length, 0);
   expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(482);
-  expect(count([GLOW, INLAY, ORB])).toBe(1373);
-  expect(count(OWN_KEYS as unknown as string[])).toBe(1855);
+  expect(count([GLOW, INLAY, ORB])).toBe(2740);
+  expect(count(OWN_KEYS as unknown as string[])).toBe(3222);
 });
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
   const was: Record<string, string> = {
-    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-edge': 'trim', 'crossing-stud': 'trim',
+    'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-edge': 'trim', 'crossing-field': 'glow', 'crossing-stud': 'trim',
     hydrant: 'trim', 'kiosk-food': 'enamel', 'kiosk-tickets': 'enamel', lamp: 'trim', mailbox: 'enamel', 'mast-camera': 'trim', newsstand: 'enamel',
     'phone-booth': 'booth', planter: 'park', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
     'tram-shelter': 'enamel', tree: 'park', 'tub-palm': 'tub', 'vending-robot': 'enamel',
@@ -106,5 +107,5 @@ test('nothing else moved: every other street kind keeps the surface it drew befo
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length).toBe(6074); // 3031 without the 3,043 crossing parts (1,909 + 1,134 edge line modules), the 86 beacons gone where an eye stands; the 162 landing slabs it was 3279 with are keep-clear footprints now
+  expect(w.street.length).toBe(8187); // 3091 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
 });

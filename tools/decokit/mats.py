@@ -5,6 +5,7 @@ Colours are sRGB hex sampled from the reference sheet (Concepts/DecoKitReference
   ceramic  glazed tile: satin, no coat          stone  limestone / terrazzo: matte
   chrome   polished metal                        metal  brushed / gold metal
   rubber   tyres, seals                          glass  tinted transparent
+  brass    satin brass: street-level brass (DK_Gold, DK_Gold17, DK_Accent_Gold, DK_Brass_Civic); the crowns keep `metal`
   emit     lamp glass, signals, screens (strength in Blender W/m^2-ish units, Unity nits scale)
 `export_json()` writes the table for Unity (Assets/TheSuborned/Art/DecoKit/decokit_materials.json).
 """
@@ -19,7 +20,7 @@ import bpy
 # decides). BRASS is the painted brass of gp-entrance's door posts (DK_Brass_Civic since the colour round), 21.3 dE2000 from the guard colour. BRASS_LIGHT is the
 # lightest brass the gate lets through: a lighter, yellower brass drifts onto the guard amber (L 73, C 68), so the highlight brass leans rose (#AD866F, 21.3).
 # DK_Gold, DK_Gold17 and DK_Accent_Gold are brass; the crown pieces (crown.py) draw DK_Crown_Gold / DK_Crown_Gold17 at the old values, so the shared names can turn.
-# Gold stays hairline, frame, bead and the small metal of a piece, never a fat panel.
+# Gold stays hairline, frame, bead and the small metal of a piece, never a fat panel. 15 Oct: the brass rows are kind `brass` (satin, KIND below), the crown rows stay `metal`.
 BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#99784D", "#AD866F", "#E3D681", "#C9C08E"
 
 LIB = {
@@ -38,7 +39,7 @@ LIB = {
     "DK_Soil": ("stone", "#3B2C22"),
     # metal
     "DK_Chrome": ("chrome", "#EDEDED"), "DK_Steel": ("metal", "#A9ABAE"),
-    "DK_Gold": ("metal", BRASS), "DK_Iron": ("metal", "#3A3C3E"),
+    "DK_Gold": ("brass", BRASS), "DK_Iron": ("metal", "#3A3C3E"),
     # misc
     "DK_Rubber": ("rubber", "#1B1C1E"), "DK_Glass": ("glass", "#CFEDE6"),
     "DK_GlassDark": ("glass", "#35585A"),
@@ -81,7 +82,7 @@ def look_hex(role):
 
 for _r in ("teal", "coral", "turquoise", "mint", "flamingo", "peach"):
     LIB.setdefault("DK_Accent_" + _r.capitalize(), ("enamel", look_hex("accent_" + _r)))
-LIB.setdefault("DK_Accent_Gold", ("metal", BRASS))   # was #D0C848 (20.9 from guard); brass since 14 Oct, as look.json and style contract v0.19.0
+LIB.setdefault("DK_Accent_Gold", ("brass", BRASS))   # was #D0C848 (20.9 from guard); brass since 14 Oct, as look.json and style contract v0.19.0
 LIB.setdefault("DK_Crown_Gold", ("metal", CROWN_GOLD))        # what DK_Gold was (20.6 from guard): tower crowns, spires and skyline pieces, seen against the sky
 LIB.setdefault("DK_Crown_Gold17", ("metal", CROWN_GOLD17))    # what DK_Gold17 was (20.3): the three crown pieces
 LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal faience bands (planters, piers)
@@ -156,6 +157,10 @@ KIND = {
     "decal": (0.3, 0.0, 1.0, 0.03, 1.0), "art": (0.45, 0.0, 0.6, 0.05, 1.0), "fabric": (0.85, 0.0, 0.0, 0.0, 1.0),
     "cutout": (0.85, 0.0, 0.0, 0.0, 1.0),  # + near-zero specular (get): dark leaves on bent card normals read as satin
     "satin": (0.5, 1.0, 0.0, 0.0, 1.0),  # brushed/cast metal that must not mirror the studio black (ground.py)
+    # satin brass (Sky, 15 Oct, brief 009: "satin brass"): the street-level brass pieces drew `metal` (metallic 1.0, smoothness 0.7), which has no diffuse colour and mirrors the dark
+    # zenith above a street: near-black studs and edge lines in Unity. Metallic 0.3, smoothness 0.5 is lit by sun and sky and reads as the brass hex; the colours are unchanged
+    # (dE2000 21.3 from the guard amber). The skyline crowns keep `metal` and their gold (DK_Crown_Gold, DK_Crown_Gold17: crown.py).
+    "brass": (0.5, 0.3, 0.0, 0.0, 1.0),
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here
     "glow": (1.0, 0.0, 0.0, 0.0, 1.0),  # light volume (crossing beam, halo disc; brief 009): register(name, "glow", hex, strength, alpha); no .mat is written, Latch draws it additive, double-sided

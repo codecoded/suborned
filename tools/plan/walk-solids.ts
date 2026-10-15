@@ -4,6 +4,9 @@
 // so every other plan, and every recorded run, walks as it always did.
 import { type V, inPoly, segDist, segHit } from './geom';
 
+/** The body clearance the plan states (standards.walking.body.r, W-5): one value for every walk the game measures. A plan that states none walks with BODY. */
+export const bodyOf = (plan: { standards: { walking?: { body?: { r?: number } } } }): number => plan.standards.walking?.body?.r ?? BODY;
+
 /** The clearance (m) a walker keeps from a solid. Calibrated on the two walks Waymark measured in the game, Crew line → Between tables 26.2 m and
  *  Service lane → Office entrance 25.5 m: one clearance fits both (0.65 gives 26.1 and 25.5; the walls and beds alone, with none, give 24.7 and 24.4). */
 export const BODY = 0.65;

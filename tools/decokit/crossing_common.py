@@ -23,7 +23,7 @@ register("DK_Cross_Walk", "emit", "#9BCFC2", 2.4)
 register("DK_Cross_Stop", "emit", "#E8402F", 2.4)
 register("DK_Cross_Beam", "glow", "#9BCFC2", 2.0, 0.28)
 register("DK_Cross_Halo", "glow", mats.LIB["DK_Enamel_Seafoam"][1], 2.0, 0.40)
-register("DK_Brass_Civic", "metal", "#99784D")                                 # as civic_common.py (setdefault: the same row)
+register("DK_Brass_Civic", "brass", "#99784D")                                 # as civic_common.py (setdefault: the same row)
 register("DK_Inlay_Seafoam", "ceramic", mats.LIB["DK_Enamel_Seafoam"][1])      # as civic_paving.py
 
 INLAY, LIGHT, BRASS = 0.004, 0.004, 0.006   # heights above the surface: inlay tile, light lens, brass frame

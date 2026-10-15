@@ -24,7 +24,7 @@ export class Layer {
   items: StreetItem[] = [];
   private uncounted = 0; // items placed under an explicit id that take no number from the ids minted after them (the civic landings)
   landings: Landing[] = [];
-  private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
+  private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean; id: string }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
   private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
   private boxes: Float64Array; private doorGrid = new Grid<V[]>(8, c => c[0]!);
   constructor(readonly ctx: Ctx, readonly solids: V[][], readonly decks: Rect[], readonly columns: V[], readonly keep: Rect[], readonly pylons: V[], readonly doors: V[][] = []) {
@@ -56,6 +56,20 @@ export class Layer {
   clearGround(ring: V[], at: V, gap: number): boolean {
     return !this.placed.near(at, 12).some(o => !o.exempt && ringGap(o.ring, ring) < gap);
   }
+  /** The items of `kinds` standing within `gap` m of a flat ring that a crossing placed here would have to move (the others are `fixed`, or not furniture: kiosks, kits and watchers stay), or undefined if something else is in the way. */
+  blockers(ring: V[], at: V, gap: number, kinds: ReadonlySet<string>): string[] | undefined {
+    if (this.crossings.some(c => ringGap(c, ring) < 1)) return undefined;
+    const out: string[] = [];
+    for (const o of this.placed.near(at, 12)) { if (o.exempt || ringGap(o.ring, ring) >= gap) continue; if (!kinds.has(o.k)) return undefined; out.push(o.id); }
+    return out;
+  }
+  /** Take the items with these ids out of the street (a coverage site claims the ground: nothing else moves, so no id changes). */
+  evict(ids: string[]): void {
+    const gone = new Set(ids), at = new Map(this.items.filter(x => gone.has(x.id)).map(x => [x.id, x.at]));
+    for (const [id, p] of at) for (const o of this.placed.near(p, 0.5)) if (o.id === id) this.placed.remove(o);
+    this.items = this.items.filter(x => !gone.has(x.id));
+  }
+
   /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
   add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
@@ -69,11 +83,12 @@ export class Layer {
       if (!o.force && kind !== 'lamp' && kind !== 'mooring-cleat' && quayBlock(this.ctx, samples9(ring))) return false; // the quay edge is the water's (SF-14)
     }
     if (kind === 'crossing') this.crossings.push(ring);
-    this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/') });
     const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
     if (o.uncounted) this.uncounted++;
+    const id = o.id ?? `street/${edge}/${kind}-${this.items.length - this.uncounted}`;
+    this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/'), id });
     this.items.push({
-      id: o.id ?? `street/${edge}/${kind}-${this.items.length - this.uncounted}`, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
+      id, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
       sight: c ? sightOf(c.sight) : kind === 'tree' ? 'open' : 'open', ...(staffed ? { staffed } : {}), ...(o.variant ? { variant: o.variant } : {}),
     });
     return true;

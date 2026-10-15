@@ -5,7 +5,7 @@ grid, the tip, the footprint, the frame. z = 0 is the podium deck for towers (gr
 No order: nothing registers, the kit is unchanged.
 
 Footprint is the outer envelope (piers, bands, parapets, canopy): plates are inset by the measured excess so a tier of
-width W is W wide as built. `measure` reports the built footprint below and above the first setback and the tip; the
+width W is W wide as built (`tiers` in the measure reads each tier's own width; fit.ts fails one narrower than the plan by more than 0.1 m). `measure` reports the built footprint below and above the first setback and the tip; the
 fit table (tools/decokit/fit.ts, tools/kit) checks them against the site.
 """
 
@@ -109,14 +109,28 @@ def _split(o):
     return o["regen"]["tiers"][0][2] + 1.4  # past the first terrace: parapet 1.1, planters 1.3 stand inside the tier below
 
 
+def tier_widths(o, vs):
+    """Each tier's built envelope [x, y] in metres, read in the tier's own top band (z1 - 1.5, z1 + 0.02]: there the teal and coral bands (0.35 out), the piers' tops and the
+    hanging greenery are the widest things the tier has, and nothing beside it is wider (the tier above starts at z1 and is narrower; the terrace furniture of the tier below
+    stands at most 1.31 m over its own top, 12 m or more under this band). None for a tower with no tiers (shaft towers, the portals)."""
+    if o["kind"] != "tower" or "tiers" not in o["regen"]:
+        return None
+    out = []
+    for _, _, z1 in _tiers(o):
+        p = [v for v in vs if z1 - 1.5 < v[2] <= z1 + 0.02]
+        out.append([round(max(v[0] for v in p) - min(v[0] for v in p), 3), round(max(v[1] for v in p) - min(v[1] for v in p), 3)])
+    return out
+
+
 def measure(name, obj):
-    """Built footprint below / above the first setback (or the frame), the tip, in the piece's frame (pivot = footprint centre)."""
+    """Built footprint below / above the first setback (or the frame), the tip, in the piece's frame (pivot = footprint centre); per-tier widths for a tiered tower."""
     o, vs = ORDERS[name], _verts(obj)
     sp = _split(o)
     zmax = max(v[2] for v in vs)
     roof = None if (o["kind"] != "tower" or "tiers" not in o["regen"]) else o["regen"]["tiers"][-1][2] + 1.2  # body roof incl. parapet: the crown stands above
     return dict(split=sp, roof=roof, lower=extents(vs, -1e9, sp + EPS), upper=extents(vs, sp + EPS, roof + EPS if roof else 1e9),
-                crown=extents(vs, roof + EPS, 1e9) if roof else None, tip=round(zmax, 3), tipPlan=round(zmax + (GRID["deck"] if o["kind"] == "tower" else 0.0), 3))
+                crown=extents(vs, roof + EPS, 1e9) if roof else None, tip=round(zmax, 3), tipPlan=round(zmax + (GRID["deck"] if o["kind"] == "tower" else 0.0), 3),
+                tiers=tier_widths(o, vs))
 
 
 def _excess(o, fn):
@@ -126,7 +140,9 @@ def _excess(o, fn):
     obj = s.build(None, bevel=0.0)
     vs, out = _verts(obj), []
     for i, (w, z0, z1) in enumerate(_tiers(o)):
-        lo = z0 + (5.0 if i == 0 else 0.0)  # the base canopy is trimmed separately
+        # Tier 0: above the base canopy (trimmed separately). The others: above the terrace of the tier below, whose parapet (top 1.1) and planters (1.31) stand outside
+        # this tier's plate: read from z0 they gave every upper tier the lower tier's parapet as its own excess, and built 4 to 7 m narrower than the plan (15 Oct, brief 009).
+        lo = z0 + (5.0 if i == 0 else 1.4)
         p = [v for v in vs if lo < v[2] <= z1 + 1.15]
         out.append(round(max(max(abs(v[0]), abs(v[1])) for v in p) - w / 2, 3))
     import bpy
@@ -258,9 +274,32 @@ def disc_tower(s, o, ex, canopy):
     disc_tower_at(s, o["regen"]["body"][2])
 
 
+def _fit_excess(o, fn, ex, rounds=6):
+    """The probe cannot see everything: a tier's excess moves with its plate (the hanging greenery's balls sit at stations along the plate's rim, so their sizes and reach change
+    as it shrinks: the terrace tower's upper tiers came out 0.3 to 0.5 m short). So build the tower as it will be built, read each upper tier's width in its own band (tier_widths,
+    what fit.ts checks), and move that tier's excess by half its difference from the plan until it is the plan's width to 5 mm. Tier 0 keeps the probe's value: it is bounded by the
+    site over its whole height (the fit table's `lower`), not by a band."""
+    import bpy
+    ex, t = list(ex), _tiers(o)
+    for _ in range(rounds):
+        s = Shape("DK_probe")
+        fn(s, o, ex, max(0.05, ex[0] - 0.3))
+        obj = s.build(None, bevel=0.0)
+        env = tier_widths(o, _verts(obj))
+        me = obj.data
+        bpy.data.objects.remove(obj)
+        bpy.data.meshes.remove(me)
+        gap = [(env[i][0] - w) / 2 for i, (w, _, _) in enumerate(t)]
+        if all(abs(g) <= 0.005 for g in gap[1:]):
+            break
+        for i in range(1, len(ex)):
+            ex[i] += gap[i]
+    return ex
+
+
 def _inset_tower(fn):
     def build(s, o):
-        ex = _excess(o, fn)
+        ex = _fit_excess(o, fn, _excess(o, fn))
         canopy = max(0.05, ex[0] - 0.3)
         fn(s, o, ex, canopy)
     return build

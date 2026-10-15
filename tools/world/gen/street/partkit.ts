@@ -6,7 +6,7 @@ import { r4 } from '../common';
 import { forUse, reachYaw } from '../kitrefs';
 
 /** The use tag of the piece each part kind takes. */
-export const PART_USE: Record<string, string> = { 'crossing-bar': 'crossing:bar', 'crossing-dots': 'crossing:dots', 'crossing-edge': 'crossing:edge', 'crossing-stud': 'stud:kerb', 'crossing-arc': 'inlay:crossing-arc', 'signal-orb': 'signal:eye' };
+export const PART_USE: Record<string, string> = { 'crossing-bar': 'crossing:bar', 'crossing-dots': 'crossing:dots', 'crossing-edge': 'crossing:edge', 'crossing-field': 'crossing:field', 'crossing-stud': 'stud:kerb', 'crossing-arc': 'inlay:crossing-arc', 'signal-orb': 'signal:eye' };
 /** Metres a piece's size may differ from the part's (KerbStud is 0.38 deep, the plan's stud 0.4 across). */
 const FIT = 0.05;
 /** The heading (plan frame) the inlay arc piece bulges toward at kit yaw 0: from its pivot (the circle's centre) to its footprint centre, kit pivotOffset [-1.415, -1.415], which is -X and -Z in kit axes. Kit +X runs along the yaw and +Z is
