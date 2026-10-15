@@ -230,3 +230,27 @@ Engine `suborned.sim/0.4.0`. Every value is in `contracts/rules/rulebook.json`, 
   - `dotnet test` 213/213; `bun test tools/sim contracts/rules` 39/39; typecheck clean.
   - The 61 scenarios against the post-blocker run: 47 identical with hashes stripped; the fights differ, as the AI intends.
   - Perf in Release: S10 32k sim-s/s, N10 10k, N12 8.7k.
+
+## Round 7 (2026-10-15): refusal codes (Fable), Motive's addendum, the crowd (Pulse §4)
+- **Refusal codes:**
+  - `Game.Issue` returns `Answer { ok, code, why, m, cm, usd, tick }`. It deconstructs as (ok, why) or (ok, code, why), and converts to the old (ok, why) tuple.
+  - Codes are Fable's 76 names (`Answer.Codes`; `suborned-sim codes`), plus `needs-temperament` and `needs-<kind>` for other rulebook needs. A code not in the list fails a test.
+  - The numbers ride as fields: `m` for too-far, out-of-range and the stand-beside reaches; `cm` for the device reaches; `usd` for no-cash's worst case; `tick` for busy-until, the car, the patrol and the driver.
+  - The hash reads the code, not the words. Only runs that refuse an order changed hash: N09b, N19b, N21, N25, N26, N27, N33, S07, S22, S23, S24, S27 and route fail-district-seals. Their outcomes are unchanged.
+- **Motive's addendum** ("Sky-approved fights, Motive addendum 2026-10-15"):
+  - `gunfire-trail` 2: once a shooting, at its first shot at a target, hit or miss; not in the final fight.
+  - `draw-incident-s` 5: drawings within 5 s and witness range are one incident.
+  - `weapon-drawn` moves standing one step toward Menace.
+  - Vale remembers an aborted take.
+  - A guard downed by the rivals: chain `guard-down-by-rivals`, check-in kept, no ledger lines.
+  - The safe fight lost with the Enforcer down fails `rivals-reach-vale`.
+  - The going-loud card gains `TrailPerShooting` and `DownedCaptured`.
+  - Waymark's loud goes to 9 T without the crowd (and 10 T with it: a fleeing person sees the Tech draw, 55 s after the Scout).
+  - N36 is new: the unprepared safe fight lost.
+- **Crowd** (`GameScatter.cs`, rulebook `crowd`):
+  - The city's people startle at a shot within 30 m or a drawn weapon in sight within 13 m, flee to a refuge, shelter, and walk back 30 s after it's quiet.
+  - Witnesses remember `saw-gunfire`. People on the street block watchers' sightlines (not the hostiles' aim).
+  - The cast by role keep their places.
+  - N37 and N38 are new.
+  - Against the pre-crowd run, every outcome, tick, Trail and Alert is unchanged; logs gain `crowd.*`, and N11b gains one sighting span.
+- **Evidence:** `dotnet test` 223/223; `bun test tools/sim contracts/rules` 39/39; typecheck clean. Perf in Release: S10 26k sim-s/s, N10 5.5k, N12 8.9k.

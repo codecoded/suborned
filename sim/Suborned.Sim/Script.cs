@@ -38,7 +38,7 @@ namespace Suborned.Sim
         public static string Write(Game g, ulong inputsHash)
         {
             var w = new JWriter().Obj().Prop("schema", "suborned.sim.script/1").Prop("mission", "handover").Key("start").Raw(g.Start.Canonical()).OpenArr("orders");
-            foreach (var (o, _, _) in g.Orders) o.Write(w);
+            foreach (var (o, _, _, _) in g.Orders) o.Write(w);
             w.EndArr().Prop("until", g.Tick);
             w.Open("expect").Prop("inputs", Hash.Hex(inputsHash)).Prop("engine", Engine.Version).Prop("mvid", Engine.Mvid).Prop("start", Hash.Hex(g.StartHash)).Prop("outcome", g.Result.ToString().ToLowerInvariant());
             w.OpenArr("checkpoints"); foreach (var (t, h) in g.Checkpoints) w.Arr().Num(t).Str(Hash.Hex(h)).EndArr(); w.EndArr().EndObj();
@@ -71,7 +71,7 @@ namespace Suborned.Sim
                 .Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)).Prop("replayIdentical", replayIdentical);
             w.OpenArr("checkpoints"); foreach (var (t, h) in g.Checkpoints) w.Obj().Prop("tick", t).Prop("hash", Hash.Hex(h)).EndObj(); w.EndArr();
             w.OpenArr("checks"); foreach (var c in checks) w.Obj().Prop("ok", c.ok).Prop("what", c.what).EndObj(); w.EndArr();
-            w.OpenArr("orders"); foreach (var (o, ok, why) in g.Orders) { w.Obj().Key("order").Raw(o.ToString()).Prop("ok", ok); if (!ok) w.Prop("why", why); w.EndObj(); } w.EndArr();
+            w.OpenArr("orders"); foreach (var (o, ok, code, why) in g.Orders) { w.Obj().Key("order").Raw(o.ToString()).Prop("ok", ok); if (!ok) w.Prop("code", code).Prop("why", why); w.EndObj(); } w.EndArr();
             w.OpenArr("ledger"); foreach (var (t, what, d, now, cause) in g.Ledger) w.Obj().Prop("tick", t).Prop("what", what).Prop("delta", d).Prop("now", now).Prop("cause", cause).EndObj(); w.EndArr();
             w.OpenArr("log"); foreach (var l in g.Log) w.Obj().Prop("tick", l.Tick).Prop("code", l.Code).Prop("text", l.Text).EndObj(); w.EndArr();
             if (g.Result == Outcome.Success) { w.Key("debrief"); var d = new JWriter(); Debrief.Of(g).Write(d); w.Raw(d.ToString()); }

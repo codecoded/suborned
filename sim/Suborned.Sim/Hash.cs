@@ -74,11 +74,12 @@ namespace Suborned.Sim
             foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); }
             foreach (var x in g.Captured) h.S(x);
             foreach (var x in g.Hostiles) h.P(x.Home);
-            g.HashAi(h.I);
+            g.HashAi(h.I); h.I(g.LastShotTick);
             if (g.People2 != null && g.Start.Crowd)
                 foreach (var w in g.Walkers)
                 {
                     var at = g.CrowdPos(w); h.Z(at.HasValue); if (at.HasValue) h.P(at.Value);
+                    if (w.St.Length > 0) h.S(w.St).I(w.Until).I(w.RunStart).P(w.At).S(w.Refuge); // only a scattered person adds bytes
                     h.I(w.P.Memory.Count); foreach (var m in w.P.Memory) h.S(m.Act).S(m.By).I(m.Tick); foreach (var v in w.P.Sc) h.I(v);
                 }
             // what the debrief reads, and the record of the run (Redline E4): every flag, incident, ledger row, debrief line, chain link,
@@ -89,7 +90,7 @@ namespace Suborned.Sim
             foreach (var (t, line, who, detail) in g.DebriefLines) h.I(t).S(line).S(who).S(detail);
             foreach (var x in g.Chain) h.S(x);
             foreach (var x in g.Actions) h.S(x);
-            foreach (var (o, ok, why) in g.Orders) h.S(o.ToString()).Z(ok).S(why);
+            foreach (var (o, ok, code, _) in g.Orders) h.S(o.ToString()).Z(ok).S(code); // the refusal code, never the words (Fable)
             foreach (var l in g.Log) h.I(l.Tick).S(l.Code);
             foreach (var op in g.Ops) h.I(op.BusyPaid);
             foreach (var i in g.Incidents) { h.I(i.Tick).S(i.Kind).S(i.Cause).P(i.At).I(i.Witnesses.Count); foreach (var (p, at) in i.Witnesses) h.S(p.Id).P(at); }

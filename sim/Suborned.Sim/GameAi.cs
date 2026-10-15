@@ -128,17 +128,17 @@ namespace Suborned.Sim
             var h = HostileOf(id);
             if (h != null) { FightBody(h); return; }
             int k = SecIndex(id);
-            if (k >= 0) { if (!SecGuns[k].Down) PreFight(id, SecGuns[k], SecOfficerPose(k)?.pos, p => SecOfficerWatching(k, p)); return; }
+            if (k >= 0) { if (!SecGuns[k].Down) PreFight(id, SecGuns[k], SecOfficerPose(k)?.pos, p => SecOfficerWatching(k, p, false)); return; } // its own aim ignores people (Pulse §1.6)
             switch (id)
             {
                 case "guard":
                     if (!GuardEngaged || GuardDown) return;
-                    PreFight("guard", GuardGun, PosOf("guard"), GuardWatching);
+                    PreFight("guard", GuardGun, PosOf("guard"), p => GuardWatching(p, false));
                     if (GuardGun.NoFoeSince >= 0 && Tick - GuardGun.NoFoeSince >= T(R.GuardReturnS)) { GuardEngaged = false; GuardGun.NoFoeSince = -1; Note("guard.stands-down", "No foe in reach: the guard stands down."); }
                     return;
                 case "patrol":
                     if (!PatrolChasing || PatrolDown || PatrolAwayUntil > Tick) return;
-                    PreFight("patrol", PatrolGun, PosOf("patrol"), PatrolWatching);
+                    PreFight("patrol", PatrolGun, PosOf("patrol"), p => PatrolWatching(p, false));
                     if (!patrolReturning && PatrolGun.NoFoeSince >= 0 && Tick - PatrolGun.NoFoeSince >= T(R.PatrolResumeS)) { patrolReturning = true; Note("patrol.resumes", "No foe in reach: the patrol goes back to its sweep."); }
                     return;
                 case "rivals":

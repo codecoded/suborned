@@ -31,6 +31,8 @@ namespace Suborned.Sim
         public int Officers, ResponseOfficers; // the loud fight's officers from the north street, and the response unit's
         public bool GuardAllyLost, WarningLost; // the safe fight's ally and Inez's warning, lost
         public int TrailPerHit, TrailPerDown, HoldTicks; // the price per person, and the card's commit hold
+        public int TrailPerShooting;      // +T once per shooting, hit or miss (Motive addendum Q1)
+        public bool DownedCaptured;       // the loss line: anyone downed is captured unless carried (Motive addendum Q3)
     }
 
     /// <summary>The price chip for a move (motive-fights.md §1.2): walk time, run time, who would see the run now, and whether it can run.</summary>
@@ -53,6 +55,7 @@ namespace Suborned.Sim
         readonly HashSet<string> violenceBy = new HashSet<string>(StringComparer.Ordinal);
         readonly Dictionary<string, Incident> fireIncident = new Dictionary<string, Incident>(StringComparer.Ordinal);
         public bool CellFiredOn; // someone has fired on the cell this mission: a fight is on
+        Incident? lastDrawIncident;
 
         Gun NewGun(string id, Weapon? w, bool trained, int health) => new Gun(id) { W = w, Trained = trained, Health = health, Max = health };
 
@@ -237,7 +240,7 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- a shot
 
-        sealed class PendingShot { public string By = "", T = ""; public Gun G = null!; public Pt At; public long D; public int Acc; public bool Hit; }
+        sealed class PendingShot { public string By = "", T = ""; public Gun G = null!; public Pt At, From; public long D; public int Acc; public bool Hit; }
         readonly List<PendingShot> pending = new List<PendingShot>();
 
         /// <summary>A body fires: the accumulator moves now (it is the shooter's), the shot lands with the others at the end of the tick.</summary>
@@ -246,7 +249,7 @@ namespace Suborned.Sim
             int acc = R.Accuracy(g.W!, d, moving, CoverMod(t, at, from), vale, !g.Trained);
             g.Acc += acc; bool hit = g.Acc >= 1000; if (hit) g.Acc -= 1000;
             g.NextShot = Tick + g.W!.Every; g.Fired = g.Engaged = true;
-            pending.Add(new PendingShot { By = by, T = t, G = g, At = at, D = d, Acc = acc, Hit = hit });
+            pending.Add(new PendingShot { By = by, T = t, G = g, At = at, From = from, D = d, Acc = acc, Hit = hit });
         }
 
         void Resolve()
@@ -256,6 +259,7 @@ namespace Suborned.Sim
                 if (Over) return;
                 var tg = GunOf(s.T)!;
                 tg.ShotBy = s.By; tg.ShotByTick = Tick;
+                shotsThisTick.Add(s.From); LastShotTick = Tick; lastShooter = s.From; // the crowd hears it (Pulse §4)
                 if (IsOpId(s.T)) CellFiredOn = true;
                 Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
                 bool cell = IsOpId(s.By), untraced = cell && IsFightHostile(s.T) && !R.FightTraced;
@@ -281,6 +285,7 @@ namespace Suborned.Sim
             if (!fireIncident.TryGetValue(t, out var inc))
             {
                 incidents.Add("fire:" + t);
+                AddTrail(R.GunfireTrail, "gunfire:" + t); // a shooting is a case: once, at its first shot, hit or miss (Motive addendum Q1)
                 inc = AddIncident(IsCivilianTarget(t) ? "violence" : "gunfire", (IsCivilianTarget(t) ? "violence:" : "gunfire:") + t, IsPersonTarget(t) ? at : op.Pos);
                 fireIncident[t] = inc;
             }
@@ -289,7 +294,7 @@ namespace Suborned.Sim
             foreach (var (p, wp) in seen)
             {
                 if (inc.Witnesses.Exists(x => x.p == p)) continue;
-                inc.Witnesses.Add((p, wp)); Remember(p, "saw-act", name, true);
+                inc.Witnesses.Add((p, wp)); Remember(p, "saw-gunfire", name, true); // Pulse §4: a witness of a shot, before any startle
             }
             int civSees = 0;
             if (IsPersonTarget(t))
@@ -393,7 +398,12 @@ namespace Suborned.Sim
             if (FightBranch.Length > 0) FightHits++;
             Note(name + ".hit." + (IsFightHostile(by) ? "fight" : by), $"{by} hits the {name}. {op.Gun.Health} health left.");
             if (!down) return;
-            if (op.Id == OpId.Enforcer) { Fail("enforcer-down", "The Enforcer is down."); return; }
+            if (op.Id == OpId.Enforcer)
+            {
+                if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", "The Enforcer is down and the rival crew takes Vale off him."); // the rivals' goal (Motive addendum Q7)
+                else Fail("enforcer-down", "The Enforcer is down.");
+                return;
+            }
             if (op.Busy != null) { Cash += op.BusyPaid; op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; } // an action cut short: the price comes back, as a refusal's does
             op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Target = "";
             if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
@@ -405,7 +415,8 @@ namespace Suborned.Sim
             if (down)
             {
                 GuardDown = true; GuardP.Down = true; GuardEngaged = false; MissingNotice = Tick + T(R.CheckInS);
-                Chain.Add("guard-shot"); Note("guard.down", "The guard falls. His missed check-in will draw more attention.");
+                bool rivals = IsFightHostile(by); // downed by the rivals in the safe fight: the post is still empty, but no act of the cell (Motive addendum Q6)
+                Chain.Add(rivals ? "guard-down-by-rivals" : "guard-shot"); Note("guard.down", rivals ? "The rivals drop the guard. His missed check-in will still be noticed." : "The guard falls. His missed check-in will draw more attention.");
                 return;
             }
             var pose = GuardPose()!.Value;
@@ -450,8 +461,14 @@ namespace Suborned.Sim
                 var ws = WitnessesWithPos(op.Pos, null).FindAll(x => x.p.Civilian);
                 if (ws.Count == 0) continue;
                 drawSeen.Add(pk);
-                AddIncident("weapon-drawn", "weapon-drawn:" + name, op.Pos, ws);
-                if (incidents.Add(pk)) { AddTrail(R.WitnessTrail, $"witnessed:weapon-drawn:{name}"); MoveStanding(R.Traceable["weapon-drawn"] * R.StandingStep, "witnessed:weapon-drawn"); }
+                // drawings at one place and time are one incident (Motive addendum Q1): within weapons.costs.drawWindow and witness range of the last
+                var same = lastDrawIncident != null && Tick - lastDrawIncident.Tick < T(R.DrawWindowS) && G.Within(lastDrawIncident.At, op.Pos, witnessRange);
+                if (same) { foreach (var w in ws) if (!lastDrawIncident!.Witnesses.Exists(x => x.p == w.p)) lastDrawIncident.Witnesses.Add(w); }
+                else
+                {
+                    lastDrawIncident = AddIncident("weapon-drawn", "weapon-drawn:" + name, op.Pos, ws);
+                    AddTrail(R.WitnessTrail, $"witnessed:weapon-drawn:{name}"); MoveStanding(R.Traceable["weapon-drawn"] * R.StandingStep, "witnessed:weapon-drawn");
+                }
                 RaiseAlert(R.DrawSeenPeople, $"drawn-seen:people:{name}");
                 foreach (var (p, _) in ws) Remember(p, "saw-act", name, true);
                 Note("witness.weapon-drawn", $"{ws.Count} see the {name}'s weapon drawn.");
@@ -518,8 +535,8 @@ namespace Suborned.Sim
         string Draw(Op op, Order o)
         {
             var g = op.Gun;
-            if (g.W == null) return $"{o.Op} carries no weapon (Arms)";
-            if (g.Drawn && g.HolsterAt < 0) return "the weapon is already drawn";
+            if (g.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
+            if (g.Drawn && g.HolsterAt < 0) return No("already-drawn", "the weapon is already drawn");
             StartDraw(op);
             Note("order.draw", $"{Sim.Op.Name(op.Id)} draws ({R.DrawTicks / Hz}.{R.DrawTicks % Hz} s).");
             return "";
@@ -527,7 +544,7 @@ namespace Suborned.Sim
         string Holster(Op op, Order o)
         {
             var g = op.Gun;
-            if (!g.Drawn || g.HolsterAt >= 0) return "no weapon drawn";
+            if (!g.Drawn || g.HolsterAt >= 0) return No("not-drawn", "no weapon drawn");
             g.HolsterAt = Tick + R.HolsterTicks; g.Order = ""; g.Force = false; g.Target = "";
             Note("order.holster", $"{Sim.Op.Name(op.Id)} holsters.");
             return "";
@@ -535,23 +552,23 @@ namespace Suborned.Sim
         string Cease(Op op, Order o)
         {
             var g = op.Gun;
-            if (!g.Drawn) return "no weapon drawn";
+            if (!g.Drawn) return No("not-drawn", "no weapon drawn");
             g.Order = ""; g.Force = false; g.Target = ""; g.LostAt = -1;
             Note("order.cease", $"{Sim.Op.Name(op.Id)} ceases fire.");
             return "";
         }
         string Stance(Op op, Order o)
         {
-            if (op.Gun.W == null) return $"{o.Op} carries no weapon (Arms)";
-            if (o.Stance != "hold" && o.Stance != "return" && o.Stance != "free") return $"stance '{o.Stance}' is unknown (hold, return, free)";
+            if (op.Gun.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
+            if (o.Stance != "hold" && o.Stance != "return" && o.Stance != "free") return No("stance-unknown", $"stance '{o.Stance}' is unknown (hold, return, free)");
             op.Gun.Stance = o.Stance;
             Note("order.stance", $"{Sim.Op.Name(op.Id)}: {o.Stance}.");
             return "";
         }
         string Panic(Order o)
         {
-            if (o.Op != "cell") return "panic is the cell's: op \"cell\"";
-            if (!FightOn) return "no fight: panic works only once a fight is on";
+            if (o.Op != "cell") return No("panic-not-cell", "panic is the cell's: op \"cell\"");
+            if (!FightOn) return No("panic-no-fight", "no fight: panic works only once a fight is on");
             int n = 0;
             foreach (var op in Ops)
             {
@@ -559,7 +576,7 @@ namespace Suborned.Sim
                 if (!op.Gun.Drawn || op.Gun.HolsterAt >= 0) StartDraw(op);
                 op.Gun.Stance = "free"; n++;
             }
-            if (n == 0) return "nobody armed can fire";
+            if (n == 0) return No("panic-nobody", "nobody armed can fire");
             Note("order.panic", $"Panic: {n} armed operatives fire at will.");
             return "";
         }
@@ -586,18 +603,18 @@ namespace Suborned.Sim
         string Fire(Op op, Order o)
         {
             var g = op.Gun;
-            if (g.W == null) return $"{o.Op} carries no weapon (Arms)";
-            if (op.Running) return "a running operative doesn't fire: walk or stop first";
-            if (op.Carrying.HasValue) return "carrying, the operative doesn't fire";
+            if (g.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
+            if (op.Running) return No("fire-running", "a running operative doesn't fire: walk or stop first");
+            if (op.Carrying.HasValue) return No("fire-carrying", "carrying, the operative doesn't fire");
             string t = FireTarget(op, o.Target);
-            if (t.Length == 0) return o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at";
-            if (IsOpId(t)) return "the cell doesn't fire on its own";
-            var tg = GunOf(t); if (tg == null) return $"target '{o.Target}' is unknown (unknown = reject)";
-            if (IsCivilianTarget(t) && !o.Force) return $"{t} is a civilian or a contact: a target only when forced (Ctrl)";
+            if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
+            if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
+            var tg = GunOf(t); if (tg == null) return No("target-unknown", $"target '{o.Target}' is unknown (unknown = reject)");
+            if (IsCivilianTarget(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when forced (Ctrl)");
             var at = PosOf(t);
-            if (!at.HasValue || tg.Down) return $"no {o.Target} to fire at";
-            if (!G.Within(op.Pos, at.Value, g.W.MaxCm)) return $"out of range ({g.W.MaxCm / 100} m)";
-            if (!Sees(op.Pos, at.Value)) return "no clear line";
+            if (!at.HasValue || tg.Down) return No("no-target", $"no {o.Target} to fire at");
+            if (!G.Within(op.Pos, at.Value, g.W.MaxCm)) return No("out-of-range", $"out of range ({g.W.MaxCm / 100} m)", m: g.W.MaxCm / 100);
+            if (!Sees(op.Pos, at.Value)) return No("no-clear-line", "no clear line");
             if (!g.Drawn || g.HolsterAt >= 0) StartDraw(op);
             g.Order = t; g.Force = o.Force; g.LostAt = -1;
             Actions.Add("fire:" + o.Target);
@@ -607,14 +624,14 @@ namespace Suborned.Sim
 
         string Carry(Op op, Order o)
         {
-            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return "the Enforcer is carrying Vale";
-            if (op.Carrying.HasValue) return "already carrying";
-            if (!IsOpId(o.Target)) return "carry names a downed operative";
+            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("carry-vale", "the Enforcer is carrying Vale");
+            if (op.Carrying.HasValue) return No("already-carrying", "already carrying");
+            if (!IsOpId(o.Target)) return No("carry-names-downed", "carry names a downed operative");
             var other = OpOf(Sim.Op.Parse(o.Target));
-            if (other == op) return "nobody carries themself";
-            if (!other.Down) return $"{o.Target} is not down";
-            if (other.CarriedBy.HasValue) return $"{o.Target} is already carried";
-            if (!G.Within(op.Pos, other.Pos, actReach)) return $"stand beside the {o.Target}";
+            if (other == op) return No("carry-self", "nobody carries themself");
+            if (!other.Down) return No("not-down", $"{o.Target} is not down");
+            if (other.CarriedBy.HasValue) return No("already-carried", $"{o.Target} is already carried");
+            if (!G.Within(op.Pos, other.Pos, actReach)) return No("stand-beside-op", $"stand beside the {o.Target}", m: actReach / 100);
             Engage(op, o, R.CarryS); op.Gun.Order = ""; op.Gun.Target = "";
             return "";
         }
@@ -639,7 +656,7 @@ namespace Suborned.Sim
         /// this order make the run loud, and what follows. Changes nothing.</summary>
         public LoudCard GoingLoud(Order o)
         {
-            var c = new LoudCard { TrailPerHit = R.HitTrail, TrailPerDown = R.DownTrail, HoldTicks = R.LoudHoldTicks, ResponseOfficers = R.ResponseOfficers, AlertTo = Alert };
+            var c = new LoudCard { TrailPerHit = R.HitTrail, TrailPerDown = R.DownTrail, TrailPerShooting = R.GunfireTrail, HoldTicks = R.LoudHoldTicks, ResponseOfficers = R.ResponseOfficers, AlertTo = Alert };
             if (Over) { c.Refused = "the mission is over"; return c; }
             bool loudNow = Alert >= 2 || Gunfire > 0 || FightBranch == "loud";
             if (o.Do == "panic") { c.Why = "panic"; if (!FightOn) c.Refused = "no fight: panic works only once a fight is on"; else c.Why = "fight-on"; return c; }
@@ -671,7 +688,7 @@ namespace Suborned.Sim
                 var pp = PatrolPose();
                 c.PatrolBreaks = !PatrolDown && PatrolAwayUntil <= Tick && !PatrolChasing && pp.HasValue && G.Within(pp.Value.pos, op.Pos, R.PatrolBreakCm);
             }
-            c.Loud = true; c.Civilians = civ; c.ReportedBy = reported;
+            c.Loud = true; c.Civilians = civ; c.ReportedBy = reported; c.DownedCaptured = true;
             if (delay >= 0) { c.PoliceInS = delay; c.SecurityArrives = Math.Min(SecurityArrives, Tick + T(delay)); c.Seal = c.SecurityArrives + T(R.SealS); }
             else if (SecurityArrives != INF) { c.SecurityArrives = SecurityArrives; c.Seal = Lockdown; }
             if (Start.FinalFight && FightBranch.Length == 0)
@@ -712,11 +729,11 @@ namespace Suborned.Sim
         /// <summary>Why this operative can't run now, or "" (motive-fights.md §1.1; Sky 2026-10-15 Q3: no running while carrying Vale).</summary>
         string RunRefusal(Op op)
         {
-            if (op.Down) return $"the {Sim.Op.Name(op.Id)} is down";
-            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return "carrying Vale, the Enforcer walks: a man being taken walks";
-            if (op.Carrying.HasValue) return "carrying a downed operative, the operative walks";
-            if (op.Id == OpId.Tech && LoopOn) return "the Tech is tethered to the cabinet while the loop holds";
-            if (op.Busy != null) return $"{Sim.Op.Name(op.Id)} is busy until {op.BusyEnd}";
+            if (op.Down) return No("agent-down", $"the {Sim.Op.Name(op.Id)} is down");
+            if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("run-carrying-vale", "carrying Vale, the Enforcer walks: a man being taken walks");
+            if (op.Carrying.HasValue) return No("run-carrying-downed", "carrying a downed operative, the operative walks");
+            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Busy != null) return No("agent-busy", $"{Sim.Op.Name(op.Id)} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             return "";
         }
     }

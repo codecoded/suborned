@@ -36,6 +36,7 @@ namespace Suborned.Sim
         public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
         public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
         public readonly string CoverSha = "";
+        public readonly List<(string id, Pt at, string kind)> Refuges = new List<(string, Pt, string)>(); // where the crowd runs (Pulse §4)
 
         public Site(string json)
         {
@@ -88,7 +89,12 @@ namespace Suborned.Sim
             GuardWalkS = Sec("guardWalkS", 1); GuardStayS = Sec("guardStayS", 1); BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
-            var cv = r["cover"]; cv.Only("from", "sha256", "src", "points", "blockers");
+            var cv = r["cover"]; cv.Only("from", "sha256", "src", "points", "blockers", "refuge");
+            foreach (var f in cv["refuge"].Items)
+            {
+                f.Only("id", "at", "kind"); var k = f["kind"].Str(); if (k != "door" && k != "mouth") throw new FormatException($"{f.Path}.kind '{k}'");
+                Refuges.Add((f["id"].Str(), Pt.Of(f["at"]), k));
+            }
             CoverSha = cv["sha256"].Str(); if (CoverSha.Length != 64) throw new FormatException($"{cv.Path}.sha256 is not a sha256");
             var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach (var c in cv["points"].Items)

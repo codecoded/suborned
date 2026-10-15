@@ -1997,6 +1997,33 @@
     "h": 196,
     "poly": [[472,-4700],[584,-4700],[584,-4588],[472,-4588]]
    }
+  ],
+  "refuge": [
+   {
+    "id": "door:cafe-entrance",
+    "at": [-1030,-2900],
+    "kind": "door"
+   },
+   {
+    "id": "door:office-entrance",
+    "at": [5175,-3000],
+    "kind": "door"
+   },
+   {
+    "id": "door:official-entrance",
+    "at": [7625,-3000],
+    "kind": "door"
+   },
+   {
+    "id": "mouth:rival-entry",
+    "at": [3600,1000],
+    "kind": "mouth"
+   },
+   {
+    "id": "mouth:security-entry",
+    "at": [-4600,-3200],
+    "kind": "mouth"
+   }
   ]
  }
 }

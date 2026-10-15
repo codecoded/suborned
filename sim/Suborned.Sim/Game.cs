@@ -69,7 +69,7 @@ namespace Suborned.Sim
         public long Cash; public int Trail, Alert, Gunfire, Reported, Standing;
         public Outcome Result; public string FailCode = "", FailText = "";
         public readonly List<LogLine> Log = new List<LogLine>();
-        public readonly List<(Order order, bool ok, string why)> Orders = new List<(Order, bool, string)>();
+        public readonly List<(Order order, bool ok, string code, string why)> Orders = new List<(Order, bool, string, string)>();
         public readonly List<(int tick, ulong hash)> Checkpoints = new List<(int, ulong)>();
         public readonly List<string> Chain = new List<string>();
         public readonly List<string> Actions = new List<string>();
@@ -229,6 +229,7 @@ namespace Suborned.Sim
             if (!Over) DrawnSeen();
             if (!Over) FightStep();
             if (!Over) Combat();
+            if (!Over) CrowdStep();
             if (!Over && Tick >= Lockdown && Vale != ValeAt.Car) Fail("sealed", "Security seals the district before Vale reaches the getaway car.");
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
                 Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
@@ -414,27 +415,28 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- who sees what (rulebook perception)
 
         bool Sees(Pt from, Pt to) => S.Sight(from, to, eye);
-        public bool CameraWatching(string id, Pt p)
+        public bool CameraWatching(string id, Pt p, bool crowd = true)
         {
             if (id == "entrance" && LoopOn) return false;
             if (id == "pickup" && !PickupCameraLive()) return false;
-            foreach (var c in S.Cameras) if (c.Id == id) return G.InCone(c.At, c.Facing, c.Reach, c.Half, 0, p) && Sees(c.At, p);
+            foreach (var c in S.Cameras) if (c.Id == id) return G.InCone(c.At, c.Facing, c.Reach, c.Half, 0, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
             throw new FormatException($"site has no camera '{id}'");
         }
         public bool PickupCameraLive() => (Driver.Turned && Tick >= T(driverLastS)) || Tick < BlockedFrom || Tick >= BlockedUntil;
-        public bool GuardWatching(Pt p)
+        /// <summary>The guard's cone; crowd: people on the street block it (Pulse §4: watchers), false for his own aim (§1.6).</summary>
+        public bool GuardWatching(Pt p, bool crowd = true)
         {
             var g = GuardPose(); if (!g.HasValue) return false;
             var (pos, f, phase) = g.Value;
-            if (phase == "door") return G.InCone(pos, f, R.DoorReachCm, R.DoorHalfCm, 0, p) && Sees(pos, p);
-            return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p);
+            if (phase == "door") return G.InCone(pos, f, R.DoorReachCm, R.DoorHalfCm, 0, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
+            return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
         }
-        public bool PatrolWatching(Pt p)
+        public bool PatrolWatching(Pt p, bool crowd = true)
         {
             if (PatrolDown || PatrolAwayUntil > Tick) return false;
             var (pos, f) = PatrolPose()!.Value;
-            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p);
-            return InSweepCone(pos, f, p) && Sees(pos, p);
+            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
+            return InSweepCone(pos, f, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
         }
         bool InSweepCone(Pt pos, Pt f, Pt p)
         {
@@ -455,10 +457,10 @@ namespace Suborned.Sim
             for (int k = 0; k < SecGuns.Length; k++) if (SecOfficerWatching(k, p)) return true;
             return false;
         }
-        bool SecOfficerWatching(int k, Pt p)
+        bool SecOfficerWatching(int k, Pt p, bool crowd = true)
         {
             var s = SecOfficerPose(k); if (!s.HasValue) return false;
-            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p);
+            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p));
         }
         public bool RivalsWatching(Pt p)
         {

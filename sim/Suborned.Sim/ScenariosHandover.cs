@@ -93,7 +93,7 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "fired on until down, the guard drops");
                 r.Is(!g.InezWitnessedShooting, "Inez cannot witness a shot far from her café");
-                r.Eq(g.Trail - trail, 4, "+2 T for the person hit, +2 T for the down (the cost on the victim, not the shot)");
+                r.Eq(g.Trail - trail, 6, "+2 T the shooting, +2 T the person hit, +2 T the down (once each, not per shot; Motive addendum Q1)");
                 r.Eq(g.Alert, 2, "unwitnessed gunfire raises Alert to 2 (§05 any gunfire)");
             }, Turned(Inez)); // FIX → start state: Inez turned before the mission (the prototype set contacts.inez)
 

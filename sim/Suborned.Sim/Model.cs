@@ -121,6 +121,32 @@ namespace Suborned.Sim
 
     public struct LogLine { public int Tick; public string Code, Text; }
 
+    /// <summary>The answer to an order (Fable's request, briefs/011/fable-text.md): taken, or refused with a stable kebab-case code, the
+    /// engine's words for the log, and the numbers the line needs as fields (-1 when it has none). The checkpoint hash reads the code, never
+    /// the words. Deconstructs as (ok, why) or (ok, code, why).</summary>
+    public struct Answer
+    {
+        public bool ok; public string code, why; public int m, cm, tick; public long usd;
+        public void Deconstruct(out bool ok, out string why) { ok = this.ok; why = this.why; }
+        public static implicit operator (bool ok, string why)(Answer a) => (a.ok, a.why); // older callers that hold (ok, why) keep compiling
+        public void Deconstruct(out bool ok, out string code, out string why) { ok = this.ok; code = this.code; why = this.why; }
+        /// <summary>Every refusal code the engine gives (Fable's `locks`, plus needs-* for a rulebook need of another kind).</summary>
+        public static readonly string[] Codes =
+        {
+            "mission-over", "engine-error", "unknown-verb", "agent-down", "enforcer-inside", "agent-busy", "guard-down", "guard-not-at-door", "person-down",
+            "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
+            "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
+            "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", "car-gone", "car-busy",
+            "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "patrol-down", "patrol-away", "no-rivals",
+            "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "no-vale-yet", "stand-at-getaway",
+            "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "fire-running",
+            "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
+            "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
+            "stand-beside-op",
+            "needs-tier", "needs-reach", "needs-need-is", "needs-standing", "needs-fit", "needs-scale", "needs-trail",
+        };
+    }
+
     /// <summary>The action card's price (§02 full price; K8 line items; Sky Q3 "?").</summary>
     public sealed class Quote
     {
