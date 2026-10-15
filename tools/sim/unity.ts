@@ -2,7 +2,7 @@
 // engine and its three inputs at a commit (default HEAD: the committed engine; --tree: the working tree), builds the CLI against that very
 // project (Release), plays every scenario headless through it, and copies into the Unity project:
 //   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)
-//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json (the inputs it ran on),
+//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json (the inputs it ran on),
 //                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json
 // Unity's Suborned/Sim/Run Scenarios plays the same scenarios with the same DLL and inputs and must give the same hashes (§11).
 // The inputs are validated by bun first, with the schemas of the same commit (Redline E1: Engine.FromTexts lets unknown keys through, and a
@@ -10,14 +10,17 @@
 // resolves; the site parses, names its schema and nests no deeper than MAX_DEPTH; and the CLI loads all three and plays every scenario.
 // engine.json records their sha256 only after that, and Unity loads only texts with those hashes.
 // Both folders are generated (git-ignored). Run: bun tools/sim/unity.ts [--tree] [--routes]   (--routes: also play the route scripts in
-// contracts/missions/handover/routes/ headless, for the hand-played comparison; they are read from the working tree)
+// contracts/missions/handover/routes/ headless, for the hand-played comparison; they are read from the working tree; --dll <file>: use those
+// exact engine bytes (e.g. Keel's Release build) in place of this build's, for the CLI and for Unity alike: the SDK stamps the git commit into
+// the DLL's informational version, so a build made before a commit differs from one made after it in those bytes only)
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
 const root = join(import.meta.dir, '..', '..');
 const argv = process.argv.slice(2);
-for (const a of argv) if (!['--tree', '--routes'].includes(a)) { console.error(`unknown option ${a}; known: --tree --routes`); process.exit(2); }
+const dllArg = (() => { const i = argv.indexOf('--dll'); return i < 0 ? undefined : argv[i + 1]; })();
+for (const a of argv) if (a.startsWith('--') && !['--tree', '--routes', '--dll'].includes(a)) { console.error(`unknown option ${a}; known: --tree --routes --dll <Suborned.Sim.dll>`); process.exit(2); }
 const tree = argv.includes('--tree');
 const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
 const sh = (cmd: string[], cwd = root) => {
@@ -29,10 +32,10 @@ const need = (r: { code: number; out: string; err: string }, what: string) => { 
 
 const SCHEMAS = ['contracts/rules/rulebook.schema.ts', 'contracts/people/people.rules.schema.ts'];
 const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader recurses per level
-const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json' } as const;
+const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json' } as const;
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
 const dirty = sh(['git', 'diff', '--quiet', 'HEAD', '--', 'sim/Suborned.Sim', ...Object.values(INPUTS)]).code !== 0;
-const label = tree ? `working tree on ${commit.slice(0, 12)}${dirty ? ' (uncommitted engine or input changes)' : ''}` : `commit ${commit.slice(0, 12)}`;
+const label = (tree ? `working tree on ${commit.slice(0, 12)}${dirty ? ' (uncommitted engine or input changes)' : ''}` : `commit ${commit.slice(0, 12)}`) + (dllArg ? `, engine bytes from ${dllArg}` : '');
 const work = join(root, 'out', 'sim-unity', tree ? 'tree' : commit.slice(0, 12));
 rmSync(work, { recursive: true, force: true }); mkdirSync(work, { recursive: true });
 
@@ -57,15 +60,17 @@ if (tree) {
   if (problems.length) { console.error(`rulebook refs fail:\n  ${problems.join('\n  ')}`); process.exit(1); }
   const site = read(INPUTS['handover.site.json']);
   if (site.schema !== 'suborned.sim.site/1' || site.mission !== 'handover') { console.error('the site is not suborned.sim.site/1 for the Handover'); process.exit(1); }
+  if (read(INPUTS['handover.people.json']).schema !== 'suborned.sim.people/1') { console.error('handover.people.json is not suborned.sim.people/1'); process.exit(1); }
   const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.map(depth)) : v && typeof v === 'object' ? 1 + Math.max(0, ...Object.values(v).map(depth)) : 0;
   for (const rel of Object.values(INPUTS)) { const d = depth(read(rel)); if (d > MAX_DEPTH) { console.error(`${rel} nests ${d} deep (> ${MAX_DEPTH})`); process.exit(1); } }
-  console.log('bun: rulebook.json and people.rules.json parse with their schemas and every ref resolves; the site parses; nesting within bounds');
+  console.log('bun: rulebook.json and people.rules.json parse with their schemas and every ref resolves; the site and people parse with their schema ids; nesting within bounds');
 }
 
 // 2. one Release build: the CLI references the engine project, so both hosts load the bytes built here
 need(sh(['dotnet', 'build', join(work, 'sim/cli/cli.csproj'), '-c', 'Release', '-nologo', '-v', 'q']), 'dotnet build');
-const dll = join(work, 'sim/Suborned.Sim/bin/Release/netstandard2.1/Suborned.Sim.dll');
 const cliDir = join(work, 'sim/cli/bin/Release/net10.0');
+let dll = join(work, 'sim/Suborned.Sim/bin/Release/netstandard2.1/Suborned.Sim.dll');
+if (dllArg) { const given = join(root, dllArg); cpSync(given, join(cliDir, 'Suborned.Sim.dll')); cpSync(given, dll); dll = join(cliDir, 'Suborned.Sim.dll'); }
 const dllSha = sha(readFileSync(dll));
 if (sha(readFileSync(join(cliDir, 'Suborned.Sim.dll'))) !== dllSha) { console.error('the CLI copy of Suborned.Sim.dll differs from the build'); process.exit(1); }
 const cli = (...a: string[]) => sh(['dotnet', join(cliDir, 'suborned-sim.dll'), ...a], work);
@@ -102,5 +107,5 @@ const bad = scenarios.filter(s => s.exit !== 0 || !s.replayIdentical);
 console.log(`engine ${label}: Suborned.Sim.dll sha256 ${dllSha.slice(0, 12)} (${readFileSync(dll).length} bytes), inputs ${Object.entries(inputs).map(([k, v]) => `${k} ${v.slice(0, 12)}`).join(', ')}`);
 console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scenarios pass with identical replay${bad.length ? `; failing: ${bad.map(b => b.id).join(' ')}` : ''}`);
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
-console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, 3 inputs)`);
+console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, 4 inputs)`);
 process.exit(bad.length ? 1 : 0);
