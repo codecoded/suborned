@@ -249,6 +249,10 @@ namespace Suborned.Sim
                 r.Refused(Fixer, "fire", GuardR, "carrying, no fire");
                 r.Send(Fixer, "d:Getaway bay"); r.Wait(T(5));
                 r.Eq(r.Op(Scout).Pos, r.Op(Fixer).Pos, "the carried Scout goes where the Fixer goes");
+                // carried is not yet safe (Waymark asked): only at the car, within the same reach as Extract (cell.atReach)
+                r.Is(!G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), 2000) && g.WouldBeCaptured().Contains(Scout), "carried 20 m and more from the car, an extract now would leave him: captured");
+                r.Until(() => r.Op(Fixer).Walk == null, T(120));
+                r.Is(G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), g.R.AtReachCm) && g.WouldBeCaptured().Count == 0, "carried to the car, within Extract's reach: he escapes");
             });
         }
     }

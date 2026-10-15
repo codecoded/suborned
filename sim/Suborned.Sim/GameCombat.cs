@@ -639,15 +639,20 @@ namespace Suborned.Sim
         /// <summary>The mission ends with Vale in the car: a downed operative not carried to it, nor lying beside it, is captured (§06).</summary>
         void Captures()
         {
-            var car = S.At(S.GetawayCar);
-            foreach (var op in Ops)
+            foreach (var name in WouldBeCaptured())
             {
-                if (!op.Down) continue;
-                if (G.Within(op.Pos, car, R.AtReachCm)) continue;
-                string name = Sim.Op.Name(op.Id);
                 Captured.Add(name); Chain.Add(name + "-captured");
                 Note("captured", $"The {name} is left behind and captured.");
             }
+        }
+
+        /// <summary>The operatives an extract now would leave behind: every downed one not within the getaway car's reach (cell.atReach, the
+        /// same reach as Extract), carried or not; a carried one stands where its carrier stands. For the HUD's warning (Motive's H11).</summary>
+        public List<string> WouldBeCaptured()
+        {
+            var car = S.At(S.GetawayCar); var l = new List<string>();
+            foreach (var op in Ops) if (op.Down && !G.Within(op.Pos, car, R.AtReachCm)) l.Add(Sim.Op.Name(op.Id));
+            return l;
         }
 
         // ---------------------------------------------------------------- the cards
