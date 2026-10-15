@@ -24,6 +24,7 @@ const PIECES: [string, string, [number, number, number]][] = [
   ['SignalEye', 'signal:eye', [1.12, 3.23, 1.12]], ['KerbStud', 'stud:kerb', [0.4, 0.084, 0.3804]], ['LightBar_4', 'crossing:bar', [4, 0.006, 0.44]],
   ['LightDotRow_2', 'crossing:dots', [2, 0.006, 0.43]], ['LightDotRow_1', 'crossing:dots', [1, 0.006, 0.43]], ['CrossInlayArc_R24_W08', 'inlay:crossing-arc', [2.83, 0.006, 2.83]],
   ['CrossEdgeLine_2', 'crossing:edge', [2, 0.006, 0.04]], ['CrossEdgeLine_1', 'crossing:edge', [1, 0.006, 0.04]],
+  ['LightField_2', 'crossing:field', [2, 0.002, 3.9]], ['LightField_1', 'crossing:field', [1, 0.002, 3.9]],
 ];
 const catalogue = (mutate: (rows: any[]) => void = () => {}) => {
   const kit = read('contracts/world/kit.json'), rows = PIECES.map(([id, use, size]) => ({ id, category: 'Street', size: [...size], pivot: 'footprint-centre-ground', front: '+Z', tris: 10, materials: [], tags: { use: [use], scale: [1, 1], squash: 1, wave: 2, sight: 'open' }, status: 'adopted', source: 'generated', files: [] }));
@@ -41,10 +42,11 @@ test('the pieces are adopted in the live kit: every part is bound to one, none s
   expect(bound(gone).every(s => s.source === 'procedural' && !s.kit)).toBe(true);
 });
 
-test('adopted, each part takes its piece by use and size: 768 + 212 dot rows, 1134 edge lines, 536 studs, 237 arcs, 156 eyes; none scaled', () => {
+test('adopted, each part takes its piece by use and size: 1200 + 264 dot rows, 732 + 15 lit strip modules, 1652 edge lines, 704 studs, 322 arcs, 207 eyes; none scaled', () => {
   const out = bound(catalogue()), by = (id: string) => out.filter(s => s.kit?.id === id).length;
-  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([768, 212, 536, 237, 156, 0]);
-  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1134);
+  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([1200, 264, 704, 322, 207, 0]);
+  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1652);
+  expect([by('LightField_2'), by('LightField_1')]).toEqual([732, 15]);
   expect(out.every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
 });
 

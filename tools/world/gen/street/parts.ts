@@ -3,6 +3,7 @@
 //   crossing-dots  one module of a light line (LightDotRow_2 / _1: a row of flush dots in a brass frame), laid end to end along the walk   crossing-bar  the same line made of LightBar_4 (the plan's other `form`)
 //   signal-orb     the SignalEye over each kerb end and each refuge: chrome orb, a display on each face, a beam to a halo disc on the ground       crossing-stud  a brass dome stud on the kerb edge of a landing
 //   crossing-edge  one module of the brass frame line on a long edge of the strip (CrossEdgeLine_2 / _1), the strip's whole length, at y = +-width/2
+//   crossing-field one module of the lit strip (LightField_2 / _1: a soft seafoam glow across the strip, under the dots; brief 009, Sky's d1): light spilt on the road, not paving, in whole modules end to end, off the refuges
 //   crossing-arc   a quarter ring of seafoam inlay that rounds each corner of the crossing's mouth (CrossInlayArc: tangent to the kerb line and to the strip's edge line)
 // The light runs ALONG the walk, kerb to kerb: two lines, one near each edge of the strip, never stripes across it (that is a zebra drawn in light; Aster 2026-10-14). The brass edge line (Vela, a6ab1b3) runs along each long edge of the strip, outside the light lines. A crossing lays no slab: its landings are keep-clear footprints (Crossing.landings), their paving is the street's.
 import type { Crossing, Landing, StreetItem } from '../../../../contracts/world/world.schema';
@@ -12,7 +13,7 @@ import { discRing } from '../box';
 import { GLOW, INLAY, ORB } from '../surfaces';
 
 /** Street item kinds that are parts of a crossing. */
-export const PART_KINDS = ['crossing-bar', 'crossing-dots', 'crossing-edge', 'crossing-stud', 'crossing-arc', 'signal-orb'] as const;
+export const PART_KINDS = ['crossing-bar', 'crossing-dots', 'crossing-edge', 'crossing-field', 'crossing-stud', 'crossing-arc', 'signal-orb'] as const;
 export type PartKind = (typeof PART_KINDS)[number];
 
 /** The plan's look of a crossing (standards.streetscape.crossings.strip: lights, signal, studs, arc), `arc.sweep` in degrees there and radians here. */
@@ -24,6 +25,8 @@ export type Look = {
   bars: { modules: number[]; width: number };
   /** The brass frame line on each long edge of the strip (CrossEdgeLine_2 / _1): centred on the edge, `end` short of a kerb, whole modules end to end, centred. */
   edge: { modules: number[]; width: number; end: number };
+  /** The lit strip under the light lines (LightField_2 / _1), across the strip's width: whole modules end to end in each free span, `end` short of a kerb or refuge. Absent in a plan that has not adopted it. */
+  field?: { modules: number[]; width: number; end: number; thick: number };
   dots: { modules: number[]; width: number; pitch: number; d: number };
   signal: { state: 'walk' | 'stop'; hover: number; size: number; halo: number; top: number };
   studs: { count: number; d: number; h: number; off: number };
@@ -34,7 +37,7 @@ export function lookOf(strip: any): Look {
   const form = strip.lights.form ?? 'dots', { inset, end, thick, bars, dots, edge } = strip.lights;
   if (!edge?.modules?.length) throw new Error('streetscape.crossings.strip.lights.edge is missing: the brass edge line of a crossing is placed from it (brief 009)');
   if (form !== 'bars' && form !== 'dots') throw new Error(`streetscape.crossings.strip.lights.form is '${form}', not bars or dots`);
-  return { form, lines: { inset, end, thick }, bars, dots, edge, signal: strip.signal, studs: strip.studs, arc: { ...strip.arc, sweep: (strip.arc.sweep * Math.PI) / 180 } };
+  return { form, lines: { inset, end, thick }, bars, dots, edge, ...(strip.lights.field ? { field: strip.lights.field } : {}), signal: strip.signal, studs: strip.studs, arc: { ...strip.arc, sweep: (strip.arc.sweep * Math.PI) / 180 } };
 }
 /** The outer radius of an arc: the band's outer edge and the brass hairline. */
 export const outerOf = (a: { r: number; w: number; hair: number }) => r4(a.r + a.w / 2 + a.hair);
@@ -97,6 +100,17 @@ export function partsOf(c: Pick<Crossing, 'id' | 'line' | 'strip' | 'width' | 'r
     id, kind, at: rv(at), yaw: wrap(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface, edge, sight: 'open', crossing: c.id, castShadows: false, ...extra,
   });
   const out: StreetItem[] = [];
+
+  // the lit strip: the glow across the whole strip under the light lines (brief 009, Sky's d1), whole modules end to end, centred in each free span, off the refuges like the lights
+  if (look.field) {
+    const f = look.field;
+    let n = 0;
+    for (const [s0, s1] of freeSpans(a, u, len, c.refuges)) {
+      const lo = s0 + f.end, hi = s1 - f.end, ms = hi > lo ? modulesIn(hi - lo, f.modules) : [];
+      let s = lo + (hi - lo - ms.reduce((t, m) => t + m, 0)) / 2;
+      for (const m of ms) { out.push(item(partId(c.id, 'field', n++), 'crossing-field', add(a, mul(u, s + m / 2)), way, level, [m, f.width, f.thick], GLOW, c.id)); s += m; }
+    }
+  }
 
   // two light lines along the walk, kerb to kerb, one near each edge of the strip: whole modules end to end, centred in each free span, stopping short of a kerb or a refuge
   const bars = look.form === 'bars', mod = bars ? look.bars : look.dots, { inset, end, thick } = look.lines, off = c.width / 2 - inset - mod.width / 2, what = bars ? 'bar' : 'dots';

@@ -20,6 +20,8 @@ export type Civic = {
   dressing?: Record<string, unknown>;
   /** From block/4 with a `dressing`: the ground solids a walker cannot cross, plan frame: the pieces' wall, cheeks and pilasters (not the overhead marquee), the objects (beds, tables, fountain) and the pillars, cabinets and monument. Absent on a block without one, so recorded walks read what they always did. */
   solids?: V[][];
+  /** The name of each solid, in the same order (a piece's solid is `<piece>/<id>`): for the rules that say which solids a walk passes between. */
+  solidIds?: string[];
 };
 
 const SOLID_STRUCTURES = new Set(['pavilion-support', 'service-cabinet', 'civic-monument']); // the steps, landings and canopies of the others are walked on or under
@@ -52,6 +54,11 @@ export function civic(spec: any, block: any): Civic {
         ...block.objects.map((o: any) => o.polygon.map(toPlan)),
         ...block.structures.filter((x: any) => SOLID_STRUCTURES.has(x.category)).map((x: any) => x.polygon.map(toPlan)),
       ] as V[][],
+      solidIds: [
+        ...(block.dressing.pieces ?? []).flatMap((p: any) => (p.solids ?? []).filter((x: any) => x.z === undefined).map((x: any) => `${p.piece}/${x.id}`)),
+        ...block.objects.map((o: any) => o.id as string),
+        ...block.structures.filter((x: any) => SOLID_STRUCTURES.has(x.category)).map((x: any) => x.id as string),
+      ] as string[],
     } : {}),
   };
 }

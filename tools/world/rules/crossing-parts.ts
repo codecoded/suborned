@@ -98,6 +98,32 @@ export function partProblem(c: WCtx, gc: Ctx, look: Look, x: Crossing, byId: Map
   // the light lines clear the edge line: the row's outer edge stays inside the line's inner edge (Vela: hairline 1.965, line 1.98)
   for (const s of lights) if (Math.abs(across(s.at)) + s.size[1] / 2 > W / 2 - ed.width / 2 + TOL) return `${s.id} reaches the brass edge line`;
 
+  // the lit strip (Sky's d1): where the plan gives one, the glow across the whole strip under the lights, in whole modules end to end in each free span, centred on the walk, flat on the surface, light and not paving
+  const fields = of('crossing-field'), fl = look.field;
+  if (!fl && fields.length) return `has ${fields.length} lit strip pieces, the plan gives none`;
+  if (fl) {
+    const wantF = spans.flatMap(([s0, s1]) => (s1 - fl.end > s0 + fl.end ? modulesIn(s1 - s0 - 2 * fl.end, fl.modules) : [])).sort().join();
+    if (!fields.length && wantF) return 'has no lit strip under its lights';
+    for (const s of fields) {
+      const ring = itemRing(s), ss = ring.map(along), lat = across(s.at), why = ((): string => {
+        if (axisGap(s.yaw, Math.atan2(u[1], u[0])) > 0.01) return 'does not lie along the walk';
+        if (ring.some(p => !inStrip(p))) return 'reaches off the strip';
+        if (x.refuges.some(r => areaOf(clipConvex(ring, r)) > 0.01)) return 'lies over a refuge';
+        if (!near(s.z, level)) return `is at z ${s.z} over a surface at ${level}`;
+        if (s.surface !== GLOW) return `draws ${s.surface}, not ${GLOW}`;
+        if (!fl.modules.some(m => near(s.size[0], m)) || !near(s.size[1], fl.width) || !near(s.size[2], fl.thick)) return `is ${s.size[0]} × ${s.size[1]} m, the plan's lit strip modules are ${fl.modules.join(' or ')} × ${fl.width}`;
+        if (Math.abs(lat) > TOL) return `lies ${lat.toFixed(2)} m off the middle of the strip`;
+        if (!spans.some(([s0, s1]) => Math.min(...ss) >= s0 + fl.end - TOL && Math.max(...ss) <= s1 - fl.end + TOL)) return `is within ${fl.end} m of a kerb or a refuge`;
+        return '';
+      })();
+      if (why) return `${s.id} ${why}`;
+    }
+    const sorted = [...fields].sort((p, q) => along(p.at) - along(q.at));
+    for (let i = 1; i < sorted.length; i++) if (along(sorted[i]!.at) - sorted[i]!.size[0] / 2 < along(sorted[i - 1]!.at) + sorted[i - 1]!.size[0] / 2 - TOL) return `${sorted[i]!.id} overlaps ${sorted[i - 1]!.id}`;
+    const haveF = fields.map(s => s.size[0]).sort().join();
+    if (wantF !== haveF) return `has lit strip modules [${haveF}] m, the strip and the plan's modules call for [${wantF}] (as many whole modules as fit between the kerbs and refuges)`;
+  }
+
   // the orbs: one over each kerb end and each refuge where the plan gives the road a signal, none where it does not
   const orbs = of('signal-orb'), want = x.control === 'signal' ? [...ends.map((_, i) => 'ab'[i]!), ...x.refuges.map((_, i) => `r${i}`)] : [], have = orbs.map(s => s.id.slice(`${x.id}/signal/`.length));
   if ([...have].sort().join() !== [...want].sort().join()) return `has signal orbs [${have}], its kerb ends and refuges call for [${want}]`;

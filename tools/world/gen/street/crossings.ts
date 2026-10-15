@@ -15,13 +15,13 @@ import { idOf, kindOf, plotRing } from '../edges';
 import { bbox, edgeN } from '../geo';
 import type { Landing, Layer } from './kit';
 import { ROAD_Z, lawn, levelAt, onRoad } from './ground';
+import { type CoverageLog, type Pair, acrossRoad, armSeeds, dedupe, islandSeeds, mallSeeds, midBlockGaps, midOffsets, place, rulesOf, variants } from './coverage';
 import { type End, type Site, bandGap, lookOf, partsOf } from './parts';
 import { landing } from './roads';
 import { toPlanFn } from '../../../plan/civic';
 import type { Dressing } from '../../civic/dress';
 
 type Edge = { key: string; a: V; u: V; len: number; n: V; road: string; cls: string; civic: boolean };
-type Pair = { a: Landing; b: Landing; ka: V; kb: V };
 const QUARTER = Math.PI / 2;
 
 /** The district and access plot edges, by `<plot>/e<i>` (the street item's `edge`). Civic plots are listed: the pavement is theirs, but nothing is placed on it. */
@@ -87,7 +87,7 @@ export function stripBlock(strip: V[], tracks: V[][], envelope: number, bays: V[
 export const stripRing = (ka: V, kb: V, width: number): V[] => boxRing([(ka[0] + kb[0]) / 2, (ka[1] + kb[1]) / 2], dist(ka, kb), width, Math.atan2(kb[1] - ka[1], kb[0] - ka[0])).map(rv);
 
 /** What pairCrossings did, for the export's log: kerb landings found, pairs standing already, partners added, each landing dropped with the reason, and each signal orb left out for want of clear ground under its halo. */
-export type CrossingLog = { landings: number; paired: number; added: number; dropped: string[]; skipped: string[] };
+export type CrossingLog = { landings: number; paired: number; added: number; dropped: string[]; skipped: string[]; coverage?: CoverageLog };
 
 /** The landings the civic block names (`dressing.crossings.at`, block/4), on its own kerb: the patch alone, no bollards or beacons (the block states none). They are placed after
  *  every district item so no id or seeded choice moves, and pair with the district landing the generator dropped for lack of a partner (pairCrossings, step 1). */
@@ -188,11 +188,57 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     if (why) { for (const l of [p.a, p.b]) drop.set(l.id, why); } else ok.push(p);
   }
 
+  // 3b. the coverage rules (streetscape.crossings.coverage.rules; coverage.ts): twins go, then the crossings the plot edges do not give are placed after the furniture, so no existing id moves
+  const rules = rulesOf(ctx), cov: CoverageLog = { dedupe: [], sites: {}, skipped: [], moved: [] }, lateIds = new Set<string>(civicIds);
+  const twinPairs: Pair[] = []; // the twins the dedupe rule drops: they keep their crossing numbers, so no other crossing's id moves
+  if (rules) {
+    const edgeLen = (p: Pair) => Math.max(...[p.a, p.b].map(l => edges.get(items.get(l.id)?.edge ?? '')?.len ?? 0));
+    const twins = dedupe(ctx, ok.filter(p => !civicIds.includes(p.a.id) && !civicIds.includes(p.b.id)), edgeLen, rules);
+    for (const [p, why] of twins) { twinPairs.push(p); for (const l of [p.a, p.b]) drop.set(l.id, why); cov.dedupe.push(`${p.a.road} at ${p.ka.map(v => v.toFixed(0)).join(',')}: ${why}`); }
+    for (let i = ok.length - 1; i >= 0; i--) if (twins.has(ok[i]!)) ok.splice(i, 1);
+    const sites: Pair[] = [], reach = rules.reach ?? 4;
+    let blockedWhy = '';
+    /** Place a seed at the nearest of its variants where its strip may stand and both landings are free; failing that, at the nearest where the furniture can be moved out of the way. */
+    const put = (seed: import('./coverage').Seed): boolean => {
+      let why = '';
+      for (const claim of [false, true]) for (const v of variants(ctx, seed, reach)) {
+        if ((blockedWhy = blocked(v.ka, v.kb))) { why ||= blockedWhy; continue; }
+        const r = place(ctx, L, v, W, claim);
+        if ('why' in r) { why ||= r.why; continue; }
+        sites.push(r.pair); lateIds.add(r.pair.a.id); lateIds.add(r.pair.b.id); cov.sites[seed.rule] = (cov.sites[seed.rule] ?? 0) + 1; cov.moved.push(...r.moved);
+        return true;
+      }
+      cov.skipped.push(`${seed.id}: ${why} (nor within ${reach} m either way)`);
+      return false;
+    };
+    for (const seed of [...armSeeds(ctx, rules), ...islandSeeds(ctx, rules), ...mallSeeds(ctx, rules)]) put(seed);
+    // mid-block: the gaps between what stands now (kerb pairs, sites, and the stop and bank patches the platforms give), one site at the middle of each wide gap
+    const landedIds = new Set(L.landings.map(l => l.id)), mids = (ps: Pair[]) => ps.map(p => ({ road: p.a.road, mid: [(p.ka[0] + p.kb[0]) / 2, (p.ka[1] + p.kb[1]) / 2] as V }));
+    const patches = L.items.filter(x => x.kind === 'crossing' && !landedIds.has(x.id)).map(x => ({ road: roadAt(ctx, x.at, x.edge)?.road ?? '', mid: x.at }));
+    for (const g of midBlockGaps(ctx, rules, [...mids(ok), ...mids(sites), ...patches])) {
+      const mb = rules.midBlock!;
+      let done = false;
+      for (const claim of [false, true]) {
+        for (const o of midOffsets(mb.reach)) {
+          if (g.s + o <= g.from + 6 || g.s + o >= g.to - 6) continue; // never nearer a neighbour than 6 m
+          const seed = acrossRoad(ctx, 'mid', `mid/${g.road}/${Math.round(g.s)}`, g.road, g.s + o, `${ctx.d.roads.find(r => r.id === g.road)!.name}, the middle of a ${Math.round(g.to - g.from)} m gap`);
+          if (!seed || blocked(seed.ka, seed.kb)) continue;
+          const r = place(ctx, L, seed, W, claim);
+          if ('why' in r) continue;
+          sites.push(r.pair); lateIds.add(r.pair.a.id); lateIds.add(r.pair.b.id); cov.sites.mid = (cov.sites.mid ?? 0) + 1; cov.moved.push(...r.moved); done = true; break;
+        }
+        if (done) break;
+      }
+      if (!done) cov.skipped.push(`mid/${g.road}/${Math.round(g.s)}: no spot within ${mb.reach} m of the middle of the gap where both landings stand free`);
+    }
+    ok.push(...sites);
+  }
+
   // 4. the crossings: kerb pairs in landing order, then the stop and bank patches; each with the parts the plan's standard gives it
   const out: Crossing[] = [], parts: StreetItem[] = [], skipped: string[] = [], n = new Map<string, number>(), zones = ctx.d.zones.filter(z => z.kind === 'median'), medians = zones.filter(z => z.poly);
   const nextId = (road: string) => { const k = n.get(road) ?? 0; n.set(road, k + 1); return `crossing/${road}/${k}`; };
   const order = new Map(L.landings.map((l, i) => [l.id, i])), placed = new Map(L.items.map(x => [x.id, x])); // placed: with the partners step 2 added
-  const civicOnes = new Set(civicIds), isCivic = (p: Pair) => civicOnes.has(p.a.id) || civicOnes.has(p.b.id); // civic pairs number after the district's, so no district crossing id moves
+  const isCivic = (p: Pair) => lateIds.has(p.a.id) || lateIds.has(p.b.id); // civic pairs and the coverage sites number after the district's, so no district crossing id moves
   const bands: V[][] = [], site: Site = { // the arcs placed so far claim their ground: a later crossing's arc whose band would overlap one is left out (its corner is already rounded)
     clear: (ring, at) => L.clearGround(ring, at, 0.001), pave: p => !lawn(ctx, p) && !onRoad(ctx, p),
     take: (pts, w) => { if (bands.some(b => bandGap(b, pts) < w - 0.011)) return false; bands.push(pts); return true; },
@@ -203,7 +249,8 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     out.push({ ...x, items: ps.map(q => q.id), walk }); parts.push(...ps);
     ends.forEach((e, i) => { if (ps.some(q => q.id === `${x.id}/signal/${'ab'[i]}`)) eyed.add(e.landing.id); }); // a signal eye stands at this kerb end
   };
-  for (const p of [...ok].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
+  for (const p of [...ok, ...twinPairs].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
+    if (twinPairs.includes(p)) { nextId(p.a.road); continue; } // numbered, never built
     const strip = stripRing(p.ka, p.kb, W), refuged = medians.filter(z => dist(z.poly![1]!, z.poly![2]!) >= std.refuge - 1e-9).map(z => ({ z, ring: clipConvex(strip, z.poly!) })).filter(r => areaOf(r.ring) > 0.25);
     const control = std.control?.[p.a.cls], its = [placed.get(p.a.id)!, placed.get(p.b.id)!], ks = [p.ka, p.kb];
     const ends: End[] = its.map((it, i) => ({ landing: landingOf(it), k: rv(ks[i]!), inward: norm(sub(it.at, ks[i]!)) }));
@@ -226,5 +273,5 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
   const byId = new Map(L.items.map(x => [x.id, x]));
   for (const l of L.landings) if (eyed.has(l.id)) for (const f of l.flank) if (byId.get(f)?.kind === 'beacon') gone.add(f);
   L.items = L.items.filter((x: StreetItem) => !gone.has(x.id) && x.kind !== 'crossing'); // no slab: every patch left is now some crossing's landing
-  return { crossings: out, log: { landings: own.length, paired: pairs0, added, dropped: noted, skipped }, parts };
+  return { crossings: out, log: { landings: own.length, paired: pairs0, added, dropped: noted, skipped, ...(rules ? { coverage: cov } : {}) }, parts };
 }

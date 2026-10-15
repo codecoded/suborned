@@ -3,14 +3,14 @@
 import { type V, dist, inPoly } from './geom';
 import type { Derived, Plan } from './plan';
 import type { Civic } from './civic';
-import { Solids } from './walk-solids';
+import { Solids, bodyOf } from './walk-solids';
 import { blockersOf } from './walk';
 
 /** The length (m) of the shortest walk from a to b, or Infinity if there is none. */
 export function walkBetween(plan: Plan, d: Derived, civ: Civic, a: V, b: V, cell = 0.1): number {
   const margin = Math.max(25, dist(a, b) / 2), x0 = Math.min(a[0], b[0]) - margin, y0 = Math.min(a[1], b[1]) - margin;
   const nx = Math.ceil((Math.max(a[0], b[0]) + margin - x0) / cell), ny = Math.ceil((Math.max(a[1], b[1]) + margin - y0) / cell);
-  const { polys, rounds } = blockersOf(plan, d, civ), solids = new Solids(civ.solids), bad = new Uint8Array(nx * ny);
+  const { polys, rounds } = blockersOf(plan, d, civ), solids = new Solids(civ.solids, bodyOf(plan)), bad = new Uint8Array(nx * ny);
   const cx = (i: number) => x0 + (i + 0.5) * cell, cy = (j: number) => y0 + (j + 0.5) * cell;
   const cellOf = (p: V) => Math.floor((p[1] - y0) / cell) * nx + Math.floor((p[0] - x0) / cell);
   for (const poly of polys) {

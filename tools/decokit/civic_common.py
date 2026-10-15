@@ -27,7 +27,7 @@ register("DK_Leaf_Civic", "stone", "#6A9B5C")        # planting greens: far from
 register("DK_Leaf_CivicDark", "stone", "#46794C")
 register("DK_Inlay_Seafoam", "ceramic", mats.LIB["DK_Enamel_Seafoam"][1])  # paving inlay: the kit seafoam, as glazed tile
 register("DK_Inlay_Teal", "ceramic", mats.LIB["DK_Enamel_Teal"][1])
-register("DK_Brass_Civic", "metal", "#99784D")      # hairline gold: the brass of gp-entrance's door posts (shaded brass), 21.3 dE2000 from the guard colour; DK_Accent_Gold #D0C848 stays for the other families
+register("DK_Brass_Civic", "brass", "#99784D")      # hairline gold: the brass of gp-entrance's door posts (shaded brass), 21.3 dE2000 from the guard colour; DK_Accent_Gold #D0C848 stays for the other families
 register("DK_Banner_Comet_Seafoam", "fabric", "#FFFFFF")  # banner_comet_seafoam_v1.png: derive008.py recolours the kit comet banner to the seafoam field
 mats.TEXTURES.setdefault("DK_Banner_Comet_Seafoam", ("banner_comet_seafoam_v1.png", 1.0))
 register("DK_Pool_Civic", "enamel", "#3A9AA6")      # fountain pool water, opaque: AtomFountain's DK_Water (alpha 0.3 glass, #6FB7C4) reads white under the sky

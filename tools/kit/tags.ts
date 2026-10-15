@@ -25,7 +25,7 @@ const SCALE: Record<string, [number, number]> = {
   Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
   CCTVPole: [0.8, 1.8], DomeCamera: [0.6, 1.2], CoconutPalm: [0.5, 2.2], FanPalm: [0.5, 2.2], Cypress: [0.6, 2.2], AdColumn: [0.9, 1.2],
   BladeSign_Cafe: [0.5, 1], BladeSign_Hotel: [0.5, 1], BladeSign_Cinema: [0.5, 1], NeonStar_Wall: [0.4, 1.2],
-  SignalEye: [1, 1], KerbStud: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], CrossEdgeLine_2: [1, 1], CrossEdgeLine_1: [1, 1], CrossInlayArc_R24_W08: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1
+  SignalEye: [1, 1], KerbStud: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], CrossEdgeLine_2: [1, 1], CrossEdgeLine_1: [1, 1], CrossInlayArc_R24_W08: [1, 1], LightField_2: [1, 1], LightField_1: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1
   SphereStation: [0.4, 1.5], Skyport_Tower: [0.4, 1.5], CircusMonument: [0.4, 1.5],
 };
 const SQUASH: Record<string, number> = { Streetlamp: 0.7, CCTVPole: 0.5 }; // trees and palms scale uniformly (squash 1)
@@ -36,7 +36,8 @@ const USE_BY_CATEGORY: Record<string, string> = { Street: 'street', Signals: 'st
 const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmark:liner-berth'], OceanLiner: ['landmark:ocean-liner'], // OceanLiner: the moored liner on the water site Datum is siting beside the berth (a landmark once the plan has it)
   PlanterArc: ['planter:fountain-garden'], SkyRailStation_Twin: ['station:twin'], SkyRailStation_Decks: ['station:decks'], ParadeGate_Block: ['portal:parade-gate'],
   // the crossing's pieces (brief 009 A, Vela; adopted by Splice): the generator places a part by its use tag and never scales it
-  SignalEye: ['signal:eye'], KerbStud: ['stud:kerb'], LightBar_4: ['crossing:bar'], LightDotRow_2: ['crossing:dots'], LightDotRow_1: ['crossing:dots'], CrossEdgeLine_2: ['crossing:edge'], CrossEdgeLine_1: ['crossing:edge'], CrossInlayArc_R24_W08: ['inlay:crossing-arc'] };
+  SignalEye: ['signal:eye'], KerbStud: ['stud:kerb'], LightBar_4: ['crossing:bar'], LightDotRow_2: ['crossing:dots'], LightDotRow_1: ['crossing:dots'], CrossEdgeLine_2: ['crossing:edge'], CrossEdgeLine_1: ['crossing:edge'], CrossInlayArc_R24_W08: ['inlay:crossing-arc'],
+  LightField_2: ['crossing:field'], LightField_1: ['crossing:field'] }; // the lit strip (brief 009, Sky's d1): one additive quad per module under the dots, 3.9 m across the strip
 
 export function tagsOf(name: string, category: string): KitTags {
   const form = /Corner/.test(name) ? 'corner' : /End/.test(name) ? 'end' : /Bay/.test(name) ? 'bay' : undefined;

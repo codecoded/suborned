@@ -23,7 +23,7 @@ register("DK_Enamel_Cobalt", "enamel", accent("cobalt"))
 register("DK_Enamel_Turquoise", "enamel", accent("turquoise"))
 register("DK_Enamel_Mint17", "enamel", accent("mint"))
 register("DK_Enamel_Coral17", "enamel", accent("coral"))
-register("DK_Gold17", "metal", BRASS_LIGHT)  # was the v0.17 world gold #C9C08E (style contract gold_trim override, 20.3 from guard); light brass since 14 Oct (Sky: brass over gold), 21.3
+register("DK_Gold17", "brass", BRASS_LIGHT)  # was the v0.17 world gold #C9C08E (style contract gold_trim override, 20.3 from guard); light brass since 14 Oct (Sky: brass over gold), 21.3
 register("DK_Water", "glass", "#6FB7C4")
 register("DK_Spray", "glass", "#EEF9FA")
 
