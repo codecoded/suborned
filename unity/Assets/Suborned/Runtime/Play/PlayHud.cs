@@ -18,9 +18,10 @@ namespace Suborned.Play
         // never kept over a domain reload (a kept style with its textures gone would draw nothing): built on the first OnGUI
         [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white, ring, refusedPlate, okPlate, cursorAct;
         [System.NonSerialized] bool cursorIsAct;
-        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold, smallWrap; float s;
+        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold, smallWrap, wrapBright, wrapBold, wrapRefused; float s;
+        [System.NonSerialized] Texture2D barOn, barOff, chipAgent, refusedText;
         // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
-        [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "";
+        [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "", tracker = "";
         [System.NonSerialized] readonly string[] slotState = new string[4];
         [System.NonSerialized] readonly (string a, string b)[] icons = new (string, string)[4];
         [System.NonSerialized] int pillKey = int.MinValue, chipKey; [System.NonSerialized] HandoverHost.Intent chipFor; [System.NonSerialized] Vector2 chipSize;
@@ -61,9 +62,13 @@ namespace Suborned.Play
                 key = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter }; mid = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter };
                 smallC = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter }; icon = new GUIStyle(mid); iconSmall = new GUIStyle(mid);
                 smallBright = new GUIStyle(small) { normal = { textColor = Cream } }; txtSmallBold = new GUIStyle(txt); smallWrap = new GUIStyle(small) { wordWrap = true, alignment = TextAnchor.UpperLeft };
+                wrapBright = new GUIStyle(smallWrap) { normal = { textColor = Cream } }; wrapBold = new GUIStyle(wrapBright) { fontStyle = FontStyle.Bold };
+                wrapRefused = new GUIStyle(smallWrap) { normal = { textColor = new Color(1f, 0.72f, 0.62f) } };
+                barOn = Tex(Cream); barOff = Tex(new Color(1, 1, 1, 0.18f)); chipAgent = Tex(new Color(0.85f, 0.8f, 0.62f, 1f)); refusedText = Tex(new Color(0.42f, 0.16f, 0.14f, 0.95f));
             }
             txt.fontSize = Mathf.RoundToInt(18 * s); big.fontSize = Mathf.RoundToInt(24 * s); small.fontSize = Mathf.RoundToInt(13 * s); key.fontSize = Mathf.RoundToInt(13 * s); mid.fontSize = Mathf.RoundToInt(15 * s);
-            smallC.fontSize = small.fontSize; smallBright.fontSize = Mathf.RoundToInt(14 * s); smallWrap.fontSize = Mathf.RoundToInt(14 * s); txtSmallBold.fontSize = Mathf.RoundToInt(15 * s); icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
+            smallC.fontSize = small.fontSize; smallBright.fontSize = Mathf.RoundToInt(14 * s); smallWrap.fontSize = Mathf.RoundToInt(14 * s);
+            wrapBright.fontSize = wrapRefused.fontSize = Mathf.RoundToInt(15 * s); wrapBold.fontSize = Mathf.RoundToInt(16 * s); txtSmallBold.fontSize = Mathf.RoundToInt(15 * s); icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
         }
 
         void Plate(Rect r, bool lit = false)
@@ -93,7 +98,7 @@ namespace Suborned.Play
                 {
                     var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
                     var p = cam.WorldToScreenPoint(t.position + Vector3.down * 0.15f); if (p.z <= 0) continue;
-                    var op = g.Ops[i]; string verb = op.Busy != null ? Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
+                    var op = g.Ops[i]; string verb = op.Busy != null ? HandoverHost.Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
                     var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s);
                     if (host.Selected[i]) { GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height), plateLit); }
                     GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), Nums[i], mid);
@@ -139,47 +144,76 @@ namespace Suborned.Play
                 GUI.Label(new Rect(x, r.y, 70 * s, r.height), pillTrail, txt); x += 64 * s;
                 GUI.Label(new Rect(x, r.y, 24 * s, r.height), "A", txt); Pips(x + 20 * s, r.y + 16 * s, g.Alert, 3, 12 * s); x += 80 * s;
                 GUI.Label(new Rect(x, r.y, 120 * s, r.height), pillState, txt);
-                GUI.Label(new Rect(r.x, r.yMax + 2 * s, r.width, 18 * s), pillCity, small);
+                if (tracker.Length > 0) GUI.Label(new Rect(r.x + 4 * s, r.yMax + 4 * s, r.width, 22 * s), tracker, txtSmallBold);
+                GUI.Label(new Rect(r.x + 4 * s, r.yMax + 26 * s, r.width, 18 * s), pillCity, small);
             }
 
-            // roster: four slots (F-key, portrait, health pips, state) and the verb hotbar beside it; where they sit is one setting (controls.dock)
+            // roster: four slots (F-key, name, health pips, and what the agent is doing now: icon, label, progress and time left, the queued
+            // act, an ✕ to cancel); the verb hotbar above it. Where they sit is one setting (controls.dock)
             var dock = host.controls.dock;
-            float slotW = 84 * s, slotH = 74 * s, kw = 64 * s, kh = 50 * s;
+            float slotW = 214 * s, slotH = 98 * s, kw = 64 * s, kh = 50 * s;
             bool column = dock == RosterDock.Left;
             float rosterW = column ? slotW + 10 * s : slotW * 4 + 10 * s, rosterH = column ? slotH * 4 + 8 * s : slotH;
             var roster = dock switch
             {
-                RosterDock.Left => new Rect(16 * s, Screen.height / 2f - rosterH / 2, rosterW, rosterH),
-                RosterDock.Corner => new Rect(16 * s, Screen.height - slotH - 48 * s, rosterW, rosterH),
-                _ => new Rect(Screen.width / 2f - rosterW / 2, Screen.height - slotH - 16 * s, rosterW, rosterH),
+                RosterDock.Left => new Rect(16 * s, Screen.height / 2f - rosterH / 2 - 60 * s, rosterW, rosterH),
+                RosterDock.Corner => new Rect(16 * s, Screen.height - slotH - 16 * s, rosterW, rosterH),
+                _ => new Rect(Screen.width / 2f - rosterW / 2 + 140 * s, Screen.height - slotH - 16 * s, rosterW, rosterH),
             };
             Plate(roster); hits.Add(roster);
+            string tip = null; Rect tipAt = default;
             for (int i = 0; i < 4; i++)
             {
                 var r = column ? new Rect(roster.x + 5 * s, roster.y + 4 * s + i * slotH, slotW - 4 * s, slotH - 8 * s) : new Rect(roster.x + 5 * s + i * slotW, roster.y + 4 * s, slotW - 4 * s, slotH - 8 * s);
                 if (host.Selected[i]) GUI.DrawTexture(r, plateLit);
-                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.PortraitClick(i, Event.current.shift);
-                var op = g.Ops[i];
-                GUI.Label(new Rect(r.x + 4 * s, r.y, 24 * s, 18 * s), host.AgentKeyLabel(i), key);
-                GUI.Label(new Rect(r.x, r.y + 12 * s, r.width, 30 * s), Names[i], mid);
-                int hp = i == 3 ? g.EnforcerHealth : 4, hpMax = i == 3 ? Mathf.Max(g.EnforcerHealth, g.R.EnforcerHealth) : 4;
-                Pips(r.x + 10 * s, r.y + 44 * s, hp, hpMax, 7 * s);
-                GUI.Label(new Rect(r.x, r.y + 50 * s, r.width, 16 * s), slotState[i], smallC);
+                var op = g.Ops[i]; var d = host.DoingOf(i);
+                var x = new Rect(r.xMax - 26 * s, r.y + 28 * s, 22 * s, 22 * s); // the cancel ✕
+                bool canX = d.CanCancel && host.Ending.Length == 0;
+                if (canX && x.Contains(Event.current.mousePosition)) { tip = $"Cancel {d.CancelVerb} — {d.CancelText}"; tipAt = r; }
+                if (canX && GUI.Button(x, GUIContent.none, GUIStyle.none)) host.CancelAgent(i, null);
+                else if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.PortraitClick(i, Event.current.shift);
+                GUI.Label(new Rect(r.x + 4 * s, r.y + 2 * s, 28 * s, 20 * s), host.AgentKeyLabel(i), key);
+                GUI.Label(new Rect(r.x + 32 * s, r.y + 1 * s, 100 * s, 22 * s), Names[i], txtSmallBold);
+                int hp = op.Gun.Health, hpMax = Mathf.Max(op.Gun.Max, op.Gun.Health);
+                Pips(r.xMax - 6 * s - hpMax * 7 * s * 1.6f, r.y + 9 * s, hp, hpMax, 7 * s);
+                // what they are doing
+                var gl = new Rect(r.x + 4 * s, r.y + 28 * s, 34 * s, 22 * s);
+                if (d.Busy) { GUI.DrawTexture(gl, plateLit); GUI.Label(gl, d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph, iconSmall); }
+                GUI.Label(new Rect(r.x + 42 * s, r.y + 28 * s, r.width - (canX ? 72 : 46) * s, 22 * s), d.Label, d.Busy ? smallBright : small);
+                if (canX) { GUI.DrawTexture(x, x.Contains(Event.current.mousePosition) ? refusedPlate : plate); GUI.Label(x, "✕", mid); }
+                if (d.Progress >= 0)
+                {
+                    var bar = new Rect(r.x + 6 * s, r.y + 56 * s, r.width - 58 * s, 6 * s);
+                    GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * d.Progress / 1000f, bar.height), barOn);
+                    GUI.Label(new Rect(bar.xMax + 4 * s, r.y + 49 * s, 46 * s, 18 * s), slotState[i], small);
+                }
+                string under = d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone : "";
+                if (under.Length > 0) GUI.Label(new Rect(r.x + 6 * s, r.y + 66 * s, r.width - 10 * s, 18 * s), under, small);
+            }
+            if (tip != null)
+            {
+                var size = smallBright.CalcSize(new GUIContent(tip)); size.x = Mathf.Min(size.x, 520 * s);
+                var tr = new Rect(Mathf.Clamp(tipAt.x, 8 * s, Screen.width - size.x - 24 * s), tipAt.y - 34 * s, size.x + 20 * s, 26 * s);
+                GUI.DrawTexture(tr, refusedPlate); GUI.Label(new Rect(tr.x + 10 * s, tr.y, tr.width, tr.height), tip, smallBright);
             }
 
             // the verb hotbar for the agent (keys 1–4), the lit key is what a right click gives
             var slots = HandoverHost.Slots[(int)host.Agent];
-            var bar = column ? new Rect(roster.xMax + 10 * s, roster.y, kw * 4 + 12 * s, kh) : new Rect(roster.x + 6 * s, roster.y - kh - 10 * s, kw * 4 + 12 * s, kh);
+            var hb = column ? new Rect(roster.xMax + 10 * s, roster.y, kw * 4 + 12 * s, kh) : new Rect(roster.x + 6 * s, roster.y - kh - 10 * s, kw * 4 + 12 * s, kh);
             for (int i = 0; i < 4; i++)
             {
-                var r = new Rect(bar.x + i * (kw + 4 * s), bar.y, kw, kh); hits.Add(r);
+                var r = new Rect(hb.x + i * (kw + 4 * s), hb.y, kw, kh); hits.Add(r);
                 bool has = i < slots.Length, lit = has && host.LitSlot == i;
                 Plate(r, lit);
                 if (has && GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Pick(i);
                 GUI.Label(new Rect(r.x, r.y + 2 * s, r.width, 26 * s), has ? slots[i].Glyph : "·", mid);
                 GUI.Label(new Rect(r.x, r.yMax - 20 * s, r.width, 18 * s), host.VerbKey(i), key);
             }
-            GUI.Label(new Rect(bar.xMax + 10 * s, bar.y, 420 * s, kh), $"{Names[(int)host.Agent]}: {(host.LitSlot >= 0 && host.LitSlot < slots.Length ? slots[host.LitSlot].Label : "")}", txt);
+            GUI.Label(new Rect(hb.xMax + 10 * s, hb.y, 420 * s, kh), $"{Names[(int)host.Agent]}: {(host.LitSlot >= 0 && host.LitSlot < slots.Length ? slots[host.LitSlot].Label : "")}", txt);
+
+            // the dialogue log, docked beside the roster (bottom left)
+            DialogueLog(dock == RosterDock.Corner ? new Rect(roster.xMax + 10 * s, 0, Mathf.Min(520 * s, Screen.width - roster.xMax - 640 * s), roster.yMax)
+                : new Rect(16 * s, 0, column ? 520 * s : Mathf.Min(520 * s, roster.x - 32 * s), Screen.height - 16 * s));
 
             // the selection box being dragged
             if (host.BoxScreen is Rect box)
@@ -189,15 +223,118 @@ namespace Suborned.Play
                 GUI.DrawTexture(new Rect(box.x, box.y, b, box.height), edge); GUI.DrawTexture(new Rect(box.xMax - b, box.y, b, box.height), edge);
             }
 
-            // status line
-            GUI.Label(new Rect(16 * s, Screen.height - 34 * s, Mathf.Max(400 * s, Screen.width / 2f - 360 * s), 24 * s), host.Status, small);
+            // status line (top left)
+            GUI.Label(new Rect(16 * s, 12 * s, Mathf.Max(400 * s, Screen.width - 660 * s), 22 * s), host.Status, small);
 
+            Activities(cam);
             HoverRing(cam);
             Pulses(cam);
             if (host.Panel != null) PanelGui(g);
             Pops(cam);
 
+            if (host.ShowBriefing && host.Ending.Length == 0) Briefing(g);
             if (host.Ending.Length > 0) EndCard(g);
+        }
+
+        /// <summary>Over each busy agent: the act's icon in a ring of progress dots; hovered, an ✕ that cancels (its consequence above). Walking
+        /// to an act: the act's icon at the end of the walk line (HostViews draws the line).</summary>
+        void Activities(Camera cam)
+        {
+            if (!cam || host.Views == null || host.Ending.Length > 0) return;
+            var g = host.Game;
+            for (int i = 0; i < 4; i++)
+            {
+                var d = host.DoingOf(i); if (!d.Busy || d.Phase == "down") continue;
+                var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
+                var p = cam.WorldToScreenPoint(t.position + Vector3.up * 2.35f); if (p.z <= 0) continue;
+                var c = new Vector2(p.x, Screen.height - p.y); float rad = 17 * s, dot = 4 * s;
+                var box = new Rect(c.x - rad - 4 * s, c.y - rad - 4 * s, 2 * rad + 8 * s, 2 * rad + 8 * s);
+                bool walking = d.Phase is "walking" or "running";
+                string glyph = walking ? (d.QueuedGlyph.Length > 0 ? d.QueuedGlyph : d.Phase == "running" ? "»" : "›") : d.Glyph;
+                GUI.DrawTexture(new Rect(c.x - 13 * s, c.y - 11 * s, 26 * s, 22 * s), host.Selected[i] ? plateLit : plate);
+                GUI.Label(new Rect(c.x - 20 * s, c.y - 11 * s, 40 * s, 22 * s), glyph, iconSmall);
+                int on = d.Progress < 0 ? -1 : Mathf.RoundToInt(d.Progress * 24 / 1000f);
+                for (int k = 0; k < 24; k++)
+                {
+                    float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24; // clockwise from the top
+                    var dr = new Rect(c.x + rad * Mathf.Cos(a) - dot / 2, c.y - rad * Mathf.Sin(a) - dot / 2, dot, dot);
+                    GUI.DrawTexture(dr, on < 0 ? (k % 2 == 0 ? pipOn : pipOff) : k < on ? pipOn : pipOff);
+                }
+                if (d.CanCancel && box.Contains(Event.current.mousePosition))
+                {
+                    var x = new Rect(box.xMax - 6 * s, box.y - 6 * s, 20 * s, 20 * s); hits.Add(box);
+                    GUI.DrawTexture(x, refusedPlate); GUI.Label(x, "✕", iconSmall);
+                    if (GUI.Button(box, GUIContent.none, GUIStyle.none)) host.CancelAgent(i, null);
+                    var tip = $"Cancel {d.CancelVerb} — {d.CancelText}"; var size = smallBright.CalcSize(new GUIContent(tip));
+                    var tr = new Rect(c.x - size.x / 2 - 8 * s, box.y - 32 * s, size.x + 16 * s, 24 * s);
+                    GUI.DrawTexture(tr, refusedPlate); GUI.Label(new Rect(tr.x + 8 * s, tr.y, tr.width, tr.height), tip, smallBright);
+                }
+                if (d.ActAt.HasValue && walking && d.QueuedGlyph.Length > 0)
+                {
+                    var e = cam.WorldToScreenPoint(d.ActAt.Value + Vector3.up * 0.3f); if (e.z <= 0) continue;
+                    var er = new Rect(e.x - 16 * s, Screen.height - e.y - 12 * s, 32 * s, 24 * s);
+                    GUI.DrawTexture(er, plateLit); GUI.Label(er, d.QueuedGlyph, iconSmall);
+                }
+            }
+        }
+
+        /// <summary>The dialogue log: collapsed, its header and the last line; open (L, or click the header), the last nine. Each line has its
+        /// speaker's chip (an agent's number, else the first letter); refusals red-brown.</summary>
+        void DialogueLog(Rect area)
+        {
+            var talk = host.Talk; int show = host.LogOpen ? Mathf.Min(9, talk.Count) : Mathf.Min(1, talk.Count);
+            float w = area.width, head = 24 * s, pad = 6 * s, chip = 22 * s; if (w < 200 * s) return;
+            float textW = w - chip - 3 * pad;
+            float h = head + pad;
+            var heights = new float[show];
+            for (int i = 0; i < show; i++) { var l = talk[talk.Count - show + i]; heights[i] = Mathf.Max(chip, wrapBright.CalcHeight(new GUIContent(Line(l)), textW)) + 4 * s; h += heights[i]; }
+            if (show == 0) h += 24 * s;
+            var r = new Rect(area.x, area.yMax - h, w, h); Plate(r); hits.Add(r);
+            var hr = new Rect(r.x, r.y, w, head);
+            if (GUI.Button(hr, GUIContent.none, GUIStyle.none)) host.LogOpen = !host.LogOpen;
+            GUI.Label(new Rect(r.x + pad, r.y, w, head), $"{(host.LogOpen ? "▾" : "▸")} Dialogue  ({host.controls.Label(PlayAction.DialogueLog)})", small);
+            float y = r.y + head;
+            if (show == 0) GUI.Label(new Rect(r.x + pad, y, w - 2 * pad, 22 * s), "Orders, replies and what the cell learns appear here.", small);
+            for (int i = 0; i < show; i++)
+            {
+                var l = talk[talk.Count - show + i];
+                var cr = new Rect(r.x + pad, y + 1 * s, chip, chip);
+                GUI.DrawTexture(cr, l.Agent >= 0 ? chipAgent : plateLit);
+                GUI.Label(cr, l.Agent >= 0 ? $"<color=#1a2a28>{Nums[l.Agent]}</color>" : l.Name.Length > 0 ? l.Name[..1] : "·", iconSmall);
+                GUI.Label(new Rect(cr.xMax + pad, y, textW, heights[i]), Line(l), l.Kind == HandoverHost.Feedback.Refused ? wrapRefused : wrapBright);
+                y += heights[i];
+            }
+        }
+
+        static string Line(HandoverHost.Said l) => $"<b>{HandoverHost.MissionClock(l.Tick)}</b>  {(l.Name.Length > 0 ? l.Name + ": " : "")}{l.Text}";
+
+        /// <summary>The briefing card (open at the start; B): the job, objective, win, every way it fails, the clock and its close, the purse,
+        /// the two known ways in as hints, and what each agent does.</summary>
+        void Briefing(Game g)
+        {
+            var t = host.Text; if (t == null) return;
+            float w = 860 * s, pad = 22 * s, iw = w - 2 * pad;
+            var parts = new List<(string text, GUIStyle st)>
+            {
+                (t.Title.ToUpperInvariant(), big),
+                (string.Join(" ", t.Card), wrapBright),
+                ("<b>Objective</b>   " + t.Objective, wrapBright),
+                ("<b>Win</b>   " + t.Win, wrapBright),
+                ("<b>Fail if</b>   " + string.Join("  ·  ", t.Fails.FindAll(f => f.code is not ("engine-error" or "withdraw")).ConvertAll(f => f.line.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))), wrapBright),
+                ("<b>Clock</b>   " + t.ClockLine, wrapBright),
+                ("<b>Purse</b>   " + t.PurseLine, wrapBright),
+                ("<b>Two ways in</b>", wrapBright),
+            };
+            foreach (var hnt in t.Hints) parts.Add(("   ▸ " + hnt, wrapBright));
+            parts.Add(("<b>The cell</b>", wrapBright));
+            foreach (var k in new[] { "scout", "fixer", "tech", "enforcer" }) if (t.Cell.TryGetValue(k, out var cl)) parts.Add(("   " + cl, smallWrap));
+            var c = host.controls;
+            parts.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   right click a person or thing for actions   ·   text: {t.Source}", small));
+            float h = 2 * pad; var hs = new float[parts.Count];
+            for (int i = 0; i < parts.Count; i++) { hs[i] = parts[i].st.wordWrap ? parts[i].st.CalcHeight(new GUIContent(parts[i].text), iw) : 30 * s; hs[i] += 6 * s; h += hs[i]; }
+            var r = new Rect(Screen.width / 2f - w / 2, Mathf.Max(70 * s, Screen.height / 2f - h / 2 - 70 * s), w, h); Plate(r); hits.Add(r);
+            float y = r.y + pad;
+            for (int i = 0; i < parts.Count; i++) { GUI.Label(new Rect(r.x + pad, y, iw, hs[i]), parts[i].text, parts[i].st); y += hs[i]; }
         }
 
         /// <summary>A ring at the feet of what the mouse is on, when the cell can act on it, and the action cursor; nothing on scenery or passers-by.</summary>
@@ -248,41 +385,61 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The action panel at the cursor (≤ 280 px at 1080p): every action on the target, by agent, the selected agent's first; available
-        /// rows first, locked rows dimmed with their reason; click a row to give it (to that row's agent); hover a row to see the walk.</summary>
+        /// <summary>The action panel at the cursor, ~410 px at 1080p: one small card per action the selected agents have on the target. Each card:
+        /// who and the action in plain words ("F2 Fixer · Pay Inez"), one line on what it does and its trade-off (Fable's text), the walk and
+        /// the price ($ · time · Trail · Alert · outcome); a locked card is dimmed, says why, and what unlocks it. Click a card to give it (to
+        /// that card's agent); hover one to see the walk.</summary>
         void PanelGui(Game g)
         {
-            var pn = host.Panel; float w = 380 * s, head = 26 * s, rh = 56 * s;
-            float h = head + (pn.Note.Length > 0 ? 42 * s : 0) + rh * pn.Rows.Count + 6 * s;
-            var r = new Rect(Mathf.Min(pn.Gui.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(pn.Gui.y - 12 * s, 8 * s, Screen.height - h - 8 * s), w, h);
-            Plate(r); hits.Add(r);
-            GUI.Label(new Rect(r.x + 10 * s, r.y + 2 * s, w - 20 * s, head), pn.T.Label, txt);
-            float y = r.y + head;
-            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + 10 * s, y, w - 20 * s, 40 * s), pn.Note, smallWrap); y += 42 * s; }
-            int hover = -1;
-            for (int i = 0; i < pn.Rows.Count; i++)
+            var pn = host.Panel; float w = 410 * s, head = 30 * s, pad = 10 * s, iw = w - 2 * pad - 8 * s;
+            if (cardsFor != pn || cardsFont != wrapBright.fontSize)
             {
-                var row = pn.Rows[i]; var rr = new Rect(r.x + 4 * s, y + i * rh, w - 8 * s, rh - 2 * s);
+                cardsFor = pn; cardsFont = wrapBright.fontSize; cards.Clear();
+                foreach (var row in pn.Rows)
+                {
+                    var it = row.I;
+                    string title = $"{Names[(int)row.By]} · {row.Verb}";
+                    string price = it.Move ? it.Time : $"{(it.Walk.Length > 0 ? it.Walk + " " : "")}{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
+                    string lockLine = row.Available ? "" : $"Locked: {row.Reason}{(row.Unlock.Length > 0 ? $"\n{row.Unlock}" : "")}";
+                    float h = 24 * s + (it.Does.Length > 0 ? wrapBright.CalcHeight(new GUIContent(it.Does), iw) : 0) + smallWrap.CalcHeight(new GUIContent(price), iw)
+                        + (lockLine.Length > 0 ? wrapRefused.CalcHeight(new GUIContent(lockLine), iw) : 0) + 10 * s;
+                    cards.Add((title, it.Does, price, lockLine, h));
+                }
+            }
+            float aboutH = pn.About.Length > 0 ? smallWrap.CalcHeight(new GUIContent(pn.About), w - 2 * pad) + 4 * s : 0;
+            float total = head + aboutH + (pn.Note.Length > 0 ? 44 * s : 0) + 6 * s; foreach (var cd in cards) total += cd.h + 4 * s;
+            var r = new Rect(Mathf.Min(pn.Gui.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(pn.Gui.y - 12 * s, 8 * s, Mathf.Max(8 * s, Screen.height - total - 8 * s)), w, total);
+            Plate(r); hits.Add(r);
+            GUI.Label(new Rect(r.x + pad, r.y + 2 * s, w - 2 * pad, head), pn.T.Label, txt);
+            float y = r.y + head;
+            if (aboutH > 0) { GUI.Label(new Rect(r.x + pad, y - 4 * s, w - 2 * pad, aboutH), pn.About, smallWrap); y += aboutH; }
+            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + pad, y, w - 2 * pad, 42 * s), pn.Note, smallWrap); y += 44 * s; }
+            int hover = -1;
+            for (int i = 0; i < pn.Rows.Count && i < cards.Count; i++)
+            {
+                var row = pn.Rows[i]; var cd = cards[i]; var rr = new Rect(r.x + 4 * s, y, w - 8 * s, cd.h);
                 bool mine = host.Selected[(int)row.By];
-                if (rr.Contains(Event.current.mousePosition)) { hover = i; GUI.DrawTexture(rr, plateLit); }
-                else if (mine) GUI.DrawTexture(new Rect(rr.x, rr.y, 3 * s, rr.height), edge);
+                GUI.DrawTexture(rr, rr.Contains(Event.current.mousePosition) ? plateLit : plate);
+                if (rr.Contains(Event.current.mousePosition)) hover = i;
+                GUI.DrawTexture(new Rect(rr.x, rr.y, 3 * s, rr.height), row.Available ? edge : refusedText);
                 if (GUI.Button(rr, GUIContent.none, GUIStyle.none)) host.PanelDo(i);
-                var c = GUI.color; if (!row.Available) GUI.color = new Color(1, 1, 1, 0.5f);
-                GUI.Label(new Rect(rr.x + 8 * s, rr.y + 1 * s, 30 * s, 20 * s), host.AgentKeyLabel((int)row.By), key);
-                GUI.Label(new Rect(rr.x + 38 * s, rr.y, rr.width - 44 * s, 20 * s), $"{Names[(int)row.By]} · {row.Verb}{(row.Slot >= 0 && mine ? $"  [{host.VerbKey(row.Slot)}]" : "")}", txtSmallBold);
-                var it = row.I;
-                string line = !row.Available ? row.Reason : it.Move ? it.Time : $"{(it.Walk.Length > 0 ? it.Walk + " " : "")}{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
-                GUI.Label(new Rect(rr.x + 38 * s, rr.y + 18 * s, rr.width - 44 * s, 36 * s), line, smallWrap);
+                var c = GUI.color; if (!row.Available) GUI.color = new Color(1, 1, 1, 0.62f);
+                float yy = rr.y + 3 * s;
+                GUI.Label(new Rect(rr.x + 8 * s, yy, 30 * s, 20 * s), host.AgentKeyLabel((int)row.By), key);
+                GUI.Label(new Rect(rr.x + 40 * s, yy, iw - 40 * s, 20 * s), cd.title, txtSmallBold);
+                if (row.Slot >= 0 && mine) GUI.Label(new Rect(rr.xMax - 34 * s, yy, 30 * s, 20 * s), $"[{host.VerbKey(row.Slot)}]", key);
+                yy += 22 * s;
+                if (cd.does.Length > 0) { float dh = wrapBright.CalcHeight(new GUIContent(cd.does), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, dh), cd.does, wrapBright); yy += dh; }
+                float ph = smallWrap.CalcHeight(new GUIContent(cd.price), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, ph), cd.price, smallWrap); yy += ph;
                 GUI.color = c;
+                if (cd.lockLine.Length > 0) GUI.Label(new Rect(rr.x + pad, yy, iw, rr.yMax - yy), cd.lockLine, wrapRefused);
+                y += cd.h + 4 * s;
             }
             if (Event.current.type == EventType.Repaint) host.SetPanelHover(hover);
         }
 
-        static string Glyph(string verb, string approach) => verb switch
-        {
-            "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "reroute" => "route",
-            "mislead" => "tip", "enter" => "in", "take" => "take", "extract" => "car", "fire" => "fire", _ => verb,
-        };
+        [System.NonSerialized] HandoverHost.ActionPanel cardsFor; [System.NonSerialized] int cardsFont;
+        [System.NonSerialized] readonly List<(string title, string does, string price, string lockLine, float h)> cards = new();
 
         /// <summary>Two icons at most: what the cell knows of them, and their state toward the cell.</summary>
         static (string a, string b) Icons(Game g, string role)
@@ -308,11 +465,14 @@ namespace Suborned.Play
             pillKey = Key(g);
             pillClock = HandoverHost.MissionClock(g.Tick); pillNext = "▶▶ " + HandoverHost.MissionClock(host.NextMark());
             pillCash = $"${g.Cash:N0}"; pillTrail = $"T {g.Trail}"; pillState = host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}";
-            pillCity = $"{host.CityClock()} · Space pause · = − speed · N next event · F12 debug";
+            var c = host.controls;
+            pillCity = $"{host.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Briefing)} briefing · {c.Label(PlayAction.DialogueLog)} log · {c.Label(PlayAction.Cancel)} cancel · N next";
+            tracker = host.Text == null ? "" : "▸ " + host.Text.Tracker.Replace("{close}", host.Text.Close);
             for (int i = 0; i < 4; i++)
             {
                 var op = g.Ops[i];
-                slotState[i] = op.Inside ? "inside" : op.Busy != null ? $"{Glyph(op.Busy.Do, op.Busy.Approach)} {HandoverHost.MissionClock(op.BusyEnd)}" : op.Walk != null ? (op.Running ? "running" : "walking") : "ready";
+                var d = host.DoingOf(i);
+                slotState[i] = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : "";
                 icons[i] = Icons(g, Roles[i]);
             }
         }

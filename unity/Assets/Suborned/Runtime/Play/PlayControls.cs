@@ -9,6 +9,7 @@ namespace Suborned.Play
         Verb1, Verb2, Verb3, Verb4,
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
+        Cancel, Briefing, DialogueLog,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -22,7 +23,9 @@ namespace Suborned.Play
         [Serializable]
         public struct Binding { public PlayAction action; public Key[] keys; public string label; }
 
-        public Binding[] keys =
+        public Binding[] keys = Defaults();
+
+        public static Binding[] Defaults() => new Binding[]
         {
             new() { action = PlayAction.PanUp, keys = new[] { Key.W, Key.UpArrow }, label = "W" },
             new() { action = PlayAction.PanDown, keys = new[] { Key.S, Key.DownArrow }, label = "S" },
@@ -44,7 +47,11 @@ namespace Suborned.Play
             new() { action = PlayAction.Restart, keys = new[] { Key.Enter, Key.NumpadEnter }, label = "Return" },
             new() { action = PlayAction.Debug, keys = new[] { Key.F12 }, label = "F12" },
             new() { action = PlayAction.AddToGroup, keys = new[] { Key.LeftShift, Key.RightShift }, label = "Shift" },
+            new() { action = PlayAction.Cancel, keys = new[] { Key.C }, label = "C" },
+            new() { action = PlayAction.Briefing, keys = new[] { Key.B }, label = "B" },
+            new() { action = PlayAction.DialogueLog, keys = new[] { Key.L }, label = "L" },
         };
+        static readonly Binding[] defaults = Defaults();
 
         [UnityEngine.Tooltip("Pan when the mouse is at the screen's edge (off by default).")]
         public bool edgeScroll = false;
@@ -57,7 +64,8 @@ namespace Suborned.Play
         [UnityEngine.Tooltip("Two presses or clicks within this many seconds count as a double (centre on the agent, run).")]
         public float doubleSeconds = 0.35f;
 
-        Binding Of(PlayAction a) { foreach (var b in keys) if (b.action == a) return b; return default; }
+        /// <summary>The binding for an action: this table's, else the default's (a table saved in a scene before an action existed keeps working).</summary>
+        Binding Of(PlayAction a) { if (keys != null) foreach (var b in keys) if (b.action == a) return b; foreach (var b in defaults) if (b.action == a) return b; return default; }
 
         public bool Down(Keyboard kb, PlayAction a) { if (kb == null) return false; var b = Of(a); if (b.keys == null) return false; foreach (var k in b.keys) if (kb[k].wasPressedThisFrame) return true; return false; }
         public bool Held(Keyboard kb, PlayAction a) { if (kb == null) return false; var b = Of(a); if (b.keys == null) return false; foreach (var k in b.keys) if (kb[k].isPressed) return true; return false; }
