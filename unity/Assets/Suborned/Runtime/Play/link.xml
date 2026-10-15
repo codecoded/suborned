@@ -1,0 +1,5 @@
+<!-- Keel (brief 011 A, keel-engine.md): keep the whole engine under IL2CPP's managed stripping; Unity loads Suborned.Sim as a plugin and
+     reaches parts of it only through the scenario list (Scenarios.All) and the order verbs, which the linker cannot see as used. -->
+<linker>
+  <assembly fullname="Suborned.Sim" preserve="all"/>
+</linker>

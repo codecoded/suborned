@@ -14,7 +14,7 @@ namespace Suborned.World.Perf
     public sealed class PerfStrip : IProcessSceneWithReport
     {
         /// <summary>Roots a perf build without people leaves out.</summary>
-        public static readonly string[] Roots = { People.PeopleLayer.RootName };
+        public static readonly string[] Roots = { People.PeopleLayer.RootName, Play.PlayInstall.RootName }; // the live host draws the engine's people (brief 011 D)
 
         /// <summary>Set by PerfBuild for its own build only.</summary>
         internal static bool Active;

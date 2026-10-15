@@ -142,6 +142,7 @@ namespace Suborned.World
             Debug.Log($"World: shadow proxies {proxies} ({proxyTris} LOD1 triangles), {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
             ProcKit.Report(world, facade);
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
+            Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
 
             // Verify before saving: a scene that disagrees with the export is never written.
             Debug.Log(placer.Summary());

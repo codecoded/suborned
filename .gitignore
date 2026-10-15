@@ -36,6 +36,12 @@ unity/Assets/Scenes/HarbourDistrict-crosslight.mat
 unity/Assets/Scenes/HarbourDistrict-crosslight.mat.meta
 unity/Assets/Scenes/HarbourDistrict-probe-*
 
+# The engine for Unity: DLL and validated inputs built by `bun tools/sim/unity.ts` (brief 011 D)
+unity/Assets/Suborned/Sim/
+unity/Assets/Suborned/Sim.meta
+unity/Assets/StreamingAssets/
+unity/Assets/StreamingAssets.meta
+
 # Machine-local endpoints and secrets (.env.example)
 .env
 
