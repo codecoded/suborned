@@ -624,6 +624,137 @@
   "fixer.down": "spoken by `agent-down`",
   "tech.down": "spoken by `agent-down`"
  },
+ "hints": {
+  "rules": {
+   "source": "briefs/011/motive-fights.md §8 (Motive); words by Fable; each line fits Glyph's 110 characters",
+   "one": "One at a time, in priority order (H1 first).",
+   "once": "Each fires once per run, and H hides the layer for good.",
+   "idle": "A hint shows only after the cell has given no order for 8 s.",
+   "vanishes": "It vanishes the moment its gone-when act happens, or when its trigger stops holding.",
+   "words": "Each line names an agent, a verb and a target, introduces one verb, and never names an approach, a time or a sequence."
+  },
+  "items": {
+   "H1": {
+    "priority": 1,
+    "agent": "scout",
+    "verb": "watch",
+    "target": "the people on the café terrace",
+    "line": "The door has a guard. The Scout can Watch the people on the café terrace.",
+    "trigger": "briefing closed, nothing learned about anyone, no Watch or Listen given",
+    "rings": "the café terrace (the place, not Inez)",
+    "goneWhen": "any Watch or Listen order"
+   },
+   "H2": {
+    "priority": 2,
+    "agent": "scout",
+    "verb": "listen",
+    "target": "the watched person",
+    "line": "Watching shows where and when. The Scout can Listen, close by, to learn who someone is.",
+    "trigger": "a person's routine is known (Watch done), their need and temperament are not",
+    "rings": "the watched person",
+    "goneWhen": "Listen ordered on them"
+   },
+   "H3": {
+    "priority": 3,
+    "agent": "fixer",
+    "verb": "turn",
+    "target": "the person whose need is known",
+    "line": "The Fixer can turn this person. Hover an option to read its price.",
+    "trigger": "a person's need is known, they're not turned, and no approach has been given",
+    "rings": "the Fixer's portrait",
+    "goneWhen": "any Turn order"
+   },
+   "H4": {
+    "priority": 4,
+    "agent": "tech",
+    "verb": "loop",
+    "target": "the control cabinet",
+    "line": "A camera watches the public door. The Tech can Loop it from the control cabinet.",
+    "trigger": "the entrance camera is live, the Tech is idle, and 0:45 has passed",
+    "rings": "the cabinet",
+    "goneWhen": "a Loop order"
+   },
+   "H5": {
+    "priority": 5,
+    "agent": "fixer",
+    "verb": "call",
+    "target": "the turned contact",
+    "line": "Turned people act on a call. The Fixer can Call them: right click to see what they do.",
+    "trigger": "a contact is turned and has never been called",
+    "rings": "the contact",
+    "goneWhen": "a Call order"
+   },
+   "H6": {
+    "priority": 6,
+    "agent": "scout",
+    "verb": "listen",
+    "target": "the refused person",
+    "line": "They refused, and they will remember. The Scout can Listen to learn who someone is.",
+    "trigger": "an approach was refused",
+    "rings": "the refused person",
+    "goneWhen": "the next order to the Scout or the Fixer"
+   },
+   "H7": {
+    "priority": 7,
+    "agent": "tech",
+    "verb": "reroute",
+    "target": "the patrol",
+    "line": "A patrol sweeps this door. The Tech can Reroute it, and N shows it coming round.",
+    "trigger": "the patrol's cone will cover the public door within the next 15 s, and the Enforcer stands within 10 m of it, not inside",
+    "rings": "the patrol's cone",
+    "goneWhen": "Enter, Reroute, or the Enforcer moving away"
+   },
+   "H8": {
+    "priority": 8,
+    "agent": "scout",
+    "verb": "mislead",
+    "target": "the rival car",
+    "line": "Another crew watches the pickup. The Scout can give them a false tip.",
+    "trigger": "3:10 has passed (the rivals have parked) and nobody has acted on them",
+    "rings": "the rival car",
+    "goneWhen": "a Mislead order, or the Enforcer holding Vale"
+   },
+   "H9": {
+    "priority": 9,
+    "agent": "fixer",
+    "verb": "turn",
+    "target": "the driver",
+    "line": "Vale leaves by car. His driver waits at the pickup, and the Fixer can turn drivers.",
+    "trigger": "4:00 has passed, route A isn't under way (no contact turned, no Enter), and the driver is unknown",
+    "rings": "the driver",
+    "goneWhen": "any order on the driver, or a contact turned"
+   },
+   "H10": {
+    "priority": 10,
+    "agent": "enforcer",
+    "verb": "fire",
+    "target": "the getaway bay",
+    "line": "Who covers the Enforcer on the way to the getaway car? Anyone armed can Fire.",
+    "trigger": "the Enforcer holds Vale, and no other armed operative stands within 15 m of the getaway car",
+    "rings": "the getaway bay",
+    "goneWhen": "an armed operative within 15 m of the car, or a draw"
+   },
+   "H11": {
+    "priority": 11,
+    "agent": "any",
+    "verb": "carry",
+    "target": "the downed operative",
+    "line": "A downed agent left behind is captured. Another agent can Carry them (C) to the car.",
+    "trigger": "an operative is downed, the final fight is on or over, and nobody is carrying them",
+    "rings": "the downed operative",
+    "goneWhen": "a Carry order, or the extract"
+   }
+  }
+ },
+ "toasts": {
+  "run-seen": {
+   "trigger": "the first `run.seen` of the run (Motive §8: shown on the next order)",
+   "line": "Security saw someone run and is looking into it (Alert 1)."
+  }
+ },
+ "goingLoud": {
+  "captured": "Anyone downed is captured unless carried."
+ },
  "dialogue": [
   {"event":"ack","verb":"watch","speaker":"scout","lines":["Watching.","Eyes on.","I'll sit on it."]},
   {"event":"ack","verb":"listen","speaker":"scout","lines":["Listening.","Closer. I'll hear it.","Quiet now. I'm in."]},

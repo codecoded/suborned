@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, FAILS, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, lineKey, lockOf, lookup, pickIndex, pickLine, wordCount } from './text.schema.ts';
+import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, lineKey, lockOf, lookup, pickIndex, pickLine, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -25,9 +25,9 @@ const simFile = (f: string) => read(`sim/Suborned.Sim/${f}`);
 const simAll = () => readdirSync(SIM).filter((f) => f.endsWith('.cs')).map((f) => simFile(f));
 
 // ---------------------------------------------------------------- every string in the file, with what kind it is
-type Str = { path: string; text: string; spoken: boolean };
+type Str = { path: string; text: string; spoken: boolean; max?: number };
 const strings: Str[] = [];
-const push = (path: string, text: string, spoken = false) => strings.push({ path, text, spoken });
+const push = (path: string, text: string, spoken = false, max?: number) => strings.push({ path, text, spoken, max });
 {
   const b = t.briefing;
   b.card.forEach((s, i) => push(`briefing.card[${i}]`, s));
@@ -38,6 +38,9 @@ const push = (path: string, text: string, spoken = false) => strings.push({ path
   for (const [k, s] of Object.entries(b.cell)) push(`briefing.cell.${k}`, s);
   for (const [k, x] of Object.entries(t.targets)) push(`targets.${k}.about`, x.about);
   for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); if (a.withTarget) push(`actions.${k}.withTarget`, a.withTarget); if (a.then) push(`actions.${k}.then`, a.then); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); }
+  for (const [id, h] of Object.entries(t.hints.items)) push(`hints.${id}`, h.line, false, HINT_MAX);
+  for (const [k, x] of Object.entries(t.toasts)) push(`toasts.${k}`, x.line, false, HINT_MAX);
+  push('goingLoud.captured', t.goingLoud.captured);
   for (const [k, x] of Object.entries(t.cancelCosts)) push(`cancelCosts.${k}`, x);
   const walk = (path: string, o: unknown) => { if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walk(`${path}.${k}`, v); };
   walk('activity', t.activity);
@@ -53,7 +56,7 @@ describe('the file', () => {
     expect(t.dialogue.length).toBeGreaterThan(200);
   });
   test('every line is at most 80 characters, placeholders filled at their widest', () => {
-    const long = strings.filter((s) => widest(s.text).length > MAX_LINE).map((s) => `${s.path}: ${s.text} (${widest(s.text).length})`);
+    const long = strings.filter((s) => widest(s.text).length > (s.max ?? MAX_LINE)).map((s) => `${s.path}: ${s.text} (${widest(s.text).length})`);
     expect(long).toEqual([]);
   });
   test('a spoken line is 1–12 words, has no stray spacing, and ends like a sentence', () => {
@@ -107,7 +110,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'N', 'C', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -287,6 +290,45 @@ describe('verbs and refusals', () => {
     const literal = new Set([...codes]);
     const missing = [...spoken].filter((c) => !literal.has(c) && !c.endsWith('.'));
     expect(missing).toEqual([]);
+  });
+});
+
+describe('training hints, the run toast, the going-loud card', () => {
+  const motive = join(root, 'briefs', '011', 'motive-fights.md');
+  const rows = new Map<string, { trigger: string; rings: string; goneWhen: string }>();
+  if (existsSync(motive)) for (const m of read('briefs/011/motive-fights.md').matchAll(/^\| (H\d+) \| (.*?) \| (.*?) \| (.*?) \| (.*?) \|$/gm)) rows.set(m[1]!, { trigger: m[2]!, rings: m[4]!, goneWhen: m[5]! });
+  const items = Object.entries(t.hints.items);
+  test('H1–H11 are all here, in priority order, with Motive\'s trigger, ring and gone-when copied word for word', () => {
+    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 11 }, (_, i) => `H${i + 1}`));
+    expect(items.map(([, h]) => h.priority)).toEqual(items.map((_, i) => i + 1));
+    if (!rows.size) return;
+    expect([...rows.keys()]).toEqual(items.map(([id]) => id));
+    for (const [id, h] of items) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
+  });
+  test('each hint fits 110 characters, names an agent, a verb and a target, and introduces only its own verb', () => {
+    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip' };
+    const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take'];
+    const bad: string[] = [];
+    for (const [id, h] of items) {
+      const l = h.line;
+      if (l.length > HINT_MAX) bad.push(`${id}: ${l.length} characters`);
+      const named = h.agent === 'any' ? /\bagent\b/i.test(l) : new RegExp(`\\b${h.agent}\\b`, 'i').test(l);
+      if (!named) bad.push(`${id}: names no agent`);
+      if (!l.toLowerCase().includes(word[h.verb] ?? h.verb)) bad.push(`${id}: names no verb (${h.verb})`);
+      const own = (word[h.verb] ?? h.verb).toLowerCase();
+      for (const lab of labels) if (new RegExp(`\\b${lab}\\b`).test(l) && lab.toLowerCase() !== own) bad.push(`${id}: also introduces ${lab}`);
+      if (!h.target.length) bad.push(`${id}: no target`);
+    }
+    expect(bad).toEqual([]);
+  });
+  test('no hint names an approach, a time or a sequence (it never solves the plan)', () => {
+    const bad = items.filter(([, h]) => /\b(ask|pay|paying|help|helping|pressure|pressing|first|then|before|after|next|finally|until|once|\d)\b|\d/i.test(h.line)).map(([id, h]) => `${id}: ${h.line}`);
+    expect(bad).toEqual([]);
+  });
+  test('the run toast and the loss line exist; the loss line says what Motive asked', () => {
+    expect(t.toasts['run-seen']!.line).toMatch(/run/i);
+    expect(t.toasts['run-seen']!.line).toContain('Alert 1');
+    expect(t.goingLoud.captured.toLowerCase()).toBe('anyone downed is captured unless carried.');
   });
 });
 

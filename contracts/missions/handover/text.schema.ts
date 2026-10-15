@@ -4,6 +4,7 @@
 // What is in the file:
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
+//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), the first-run toasts, the going-loud card's words
 //   targets    one line on each thing the cell can right click: who or what it is, in what the cell may know at the start
 //   actions    every verb the action panel can show: label, who gives it, one plain line with its trade-off, and a line for the
 //              same verb on a particular target
@@ -76,6 +77,20 @@ export const Activity = z.strictObject({
   acting: z.strictObject({ watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line }),
 });
 
+/** A training hint line fits Glyph's 110 characters (briefs/011/motive-fights.md §8). */
+export const HINT_MAX = 110;
+const HintLine = z.string().min(1).max(HINT_MAX).regex(/^[^\n<>]+$/);
+export const Hint = z.strictObject({
+  priority: z.number().int().min(1),
+  agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
+  verb: DVerb,
+  target: z.string().min(1).describe('what the hint rings, in words'),
+  line: HintLine,
+  trigger: z.string().min(1).describe('copied from Motive: the game state that shows it'),
+  rings: z.string().min(1),
+  goneWhen: z.string().min(1),
+});
+
 export const Target = z.strictObject({ name: z.string().min(1).max(32), about: Line });
 
 export const EventDef = z.strictObject({
@@ -135,6 +150,9 @@ export const TextFile = z.strictObject({
     cell: z.record(z.enum(AGENTS), Line),
   }),
   targets: z.record(z.string(), Target),
+  hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
+  toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
+  goingLoud: z.strictObject({ captured: Line }).describe('lines on the going-loud card beyond its numbers'),
   actions: z.record(Verb, Action),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
