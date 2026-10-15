@@ -89,7 +89,7 @@ namespace Suborned.Play
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
-            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = ""; public bool Move;
+            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = ""; public bool Move;
             /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
             public bool Actionable => Order != null && !Move;
         }
@@ -632,8 +632,9 @@ namespace Suborned.Play
             if (t.Kind == "crowd") pn.Note = "passer-by — not yet known to the cell";
             else Guard("panel", () =>
             {
-                var order = new List<int>(); int first = Array.IndexOf(Selected, true); if (first >= 0) order.Add((int)Agent);
-                for (int k = 0; k < 4; k++) if (!order.Contains(k)) order.Add(k);
+                // Sky: "the action menu should only show the actions for the player(s) I've selected"
+                var order = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k]) order.Add(k);
+                if (order.Count == 0) { pn.Note = "select an agent: F1–F4 (or click one)"; return; }
                 foreach (var k in order)
                 {
                     var rows = new List<PanelRow>();
@@ -642,12 +643,14 @@ namespace Suborned.Play
                     else for (int i = 0; i < Slots[k].Length; i++)
                         {
                             var v = Verb((OpId)k, i, t); if (v == null) continue;
+                            var aw = ActPlace((OpId)k, v.Order, t); // distance never hides an action: it adds the walk to the price
+                            if (aw != null) v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then";
                             rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = Slots[k][i].Label, Reason = Locked((OpId)k, v, t) });
                         }
                     foreach (var r in rows) r.Available = r.Reason.Length == 0;
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
-                if (pn.Rows.Count == 0) pn.Note = $"no agent can act on {t.Label} yet";
+                if (pn.Rows.Count == 0) pn.Note = $"{string.Join(" and ", order.ConvertAll(k => AgentNames[k]))} can't act on {t.Label}" + (WhoCan(t) is var h && h.Contains("select the") ? " — " + h[(h.IndexOf("select the"))..] : "");
             });
             Panel = pn; PanelHover = -1; views.ShowPath(null);
         }
@@ -660,8 +663,8 @@ namespace Suborned.Play
             if (row == PanelHover || Panel == null) return;
             PanelHover = row;
             if (row < 0 || row >= Panel.Rows.Count || !Panel.World.HasValue) { views.ShowPath(null); return; }
-            var op = Game.Ops[(int)Panel.Rows[row].By]; var to = frame.Engine(Panel.World.Value);
-            Pt[] route = null; Guard("path", () => { var f = Game.S.Grid.NearestFree(to); route = f.HasValue ? Game.S.Grid.Route(op.Pos, f.Value) : null; });
+            var rw = Panel.Rows[row]; var op = Game.Ops[(int)rw.By];
+            Pt[] route = null; Guard("path", () => { var aw = ActPlace(rw.By, rw.I.Order, Panel.T); route = aw == null ? null : Game.S.Grid.Route(op.Pos, aw.To); });
             var pts = new List<Vector3>();
             if (route != null) foreach (var p in route) pts.Add(frame.World(p) + Vector3.up * 0.08f);
             else { pts.Add(frame.World(op.Pos) + Vector3.up * 0.08f); pts.Add(Panel.World.Value + Vector3.up * 0.08f); }
@@ -719,41 +722,83 @@ namespace Suborned.Play
 
         /// <summary>Give an order for an agent; if the engine says they stand too far, they walk to the target first and the order follows on arrival
         /// (both are engine orders at their own ticks, so the session replays as played).</summary>
+        /// <summary>Where an act happens (Sky: "they need to be moved next to it when the action is done"): the Tech loops and reroutes standing at
+        /// the control cabinet, the Enforcer enters at the public door and puts Vale in at the getaway car (those are the mission's places, so
+        /// the walk is a place-based engine order); a Watch, Listen, Turn, Take, False tip or shot happens within that verb's reach, so the agent
+        /// walks the route until they are inside it (half a metre to spare), not onto the person. Null when the agent is already there.</summary>
+        public sealed class ActWalk { public string Place = ""; public Pt To; public int Cm, Seconds; }
+
+        public ActWalk ActPlace(OpId by, Order o, Target t)
+        {
+            var g = Game; var s = g.S; var R = g.R; var op = g.Ops[(int)by];
+            string place = ""; int reach = 0; Pt? tp = null;
+            switch (o.Do)
+            {
+                case "loop": case "reroute": place = "cabinet"; break;
+                case "enter": place = s.GuardPost; break;
+                case "extract": place = s.GetawayCar; break;
+                case "watch": case "listen": tp = PosOf(t); reach = ReachOf("scout." + o.Do); break;
+                case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;
+                case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
+                case "mislead": tp = g.RivalsPose()?.pos; reach = R.ActReachCm; break;
+                case "fire": tp = PosOf(t); reach = o.Target == "rivals" ? R.FireRivalsReachCm : R.FireReachCm; break;
+                default: return null; // a call is made from wherever the Fixer stands
+            }
+            if (place.Length > 0)
+            {
+                var st = s.Stand(place); if (G.Dist(op.Pos, st) <= 100) return null;
+                var r = s.Grid.Route(op.Pos, st); return r == null ? null : Walk(place, st, r);
+            }
+            if (!tp.HasValue || G.Dist(op.Pos, tp.Value) <= reach - 50) return null;
+            var goal = s.Grid.NearestFree(tp.Value); if (!goal.HasValue) return null;
+            var route = s.Grid.Route(op.Pos, goal.Value); if (route == null) return null;
+            var cut = new List<Pt> { route[0] };
+            for (int i = 1; i < route.Length; i++) // corners can be far apart: 25 cm steps, stop at the first free point within reach
+            {
+                Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 25);
+                for (int k = 1; k <= n; k++) { var q = G.Lerp(a, c, k, n); if (G.Dist(q, tp.Value) <= reach - 50 && s.Grid.Free(q)) { cut.Add(q); return Walk("", q, cut.ToArray()); } }
+                cut.Add(c);
+            }
+            return Walk("", goal.Value, route);
+        }
+
+        ActWalk Walk(string place, Pt to, Pt[] route)
+        {
+            long mm = new Sim.Path(route).Length; int speed = Math.Max(1, Game.R.CellSpeed);
+            return new ActWalk { Place = place, To = to, Cm = (int)(mm / 10), Seconds = (int)((mm + speed * Game.Hz - 1) / (speed * Game.Hz)) };
+        }
+
+        Pt? PosOf(Target t) => t.Kind switch
+        {
+            "person" => Game.PersonPos(Game.PersonByRole(t.Key)), "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
+            "security" => Game.SecurityPose()?.pos, "hostile" => TargetWorld(t) is Vector3 w ? frame.Engine(w) : (Pt?)null, _ => null,
+        };
+
+        int ReachOf(string ev)
+        {
+            foreach (var c in Game.R.Ev(ev).Needs) if (c.K == "reach") return (int)Game.R.Num(c.S("m")) * 100;
+            return Game.R.ActReachCm;
+        }
+
+        /// <summary>Give an order for an agent: if the act has a place they are not at, they walk there first (a place-based move for the
+        /// mission's places, else the point within reach) and the order follows on arrival. Every step is an engine order at its own tick.</summary>
         void Give(OpId by, Order o, Target t, Vector2? screen)
         {
             var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point };
             pending[(int)by] = null;
-            if (Issue(order, screen, TargetWorld(t), quietRefusal: true)) return;
-            var why = Game.Orders[Game.Orders.Count - 1].why;
-            bool far = why.StartsWith("stand ") || why.StartsWith("out of range");
-            if (!far) { Pop(Humanise(order, why), screen, TargetWorld(t), Feedback.Refused); return; }
-            var tw = TargetWorld(t); if (!tw.HasValue) { Pop(Humanise(order, why), screen, null, Feedback.Refused); return; }
-            string place = t.Kind switch { "door" => Game.S.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => Game.S.GetawayCar, _ => "" };
-            Pt? to = place.Length > 0 ? Game.S.Stand(place) : Game.S.Grid.NearestFree(frame.Engine(tw.Value));
-            // "stand within 6 m": walk the route only until within reach (less half a metre), not onto the person
-            var m = System.Text.RegularExpressions.Regex.Match(why, @"within (\d+) m");
-            if (m.Success && place.Length == 0 && to.HasValue)
-            {
-                int reach = int.Parse(m.Groups[1].Value) * 100 - 50; var tp = frame.Engine(tw.Value);
-                var route = Game.S.Grid.Route(Game.Ops[(int)by].Pos, to.Value);
-                // the route's corners can be far apart: walk it in 25 cm steps and stop at the first free point within reach
-                if (route != null)
-                    for (int i = 1; i < route.Length; i++)
-                    {
-                        Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 25); bool found = false;
-                        for (int k = 1; k <= n; k++) { var q = G.Lerp(a, c, k, n); if (G.Dist(q, tp) <= reach && Game.S.Grid.Free(q)) { to = q; found = true; break; } }
-                        if (found) break;
-                    }
-            }
-            if (!to.HasValue) { Pop(Humanise(order, why), screen, tw, Feedback.Refused); return; }
-            var walk = place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = place } : new Order { Op = order.Op, Do = "move", Point = to };
+            ActWalk w = null; Guard("walk", () => w = ActPlace(by, order, t));
+            var tw = TargetWorld(t);
+            if (w == null) { Issue(order, screen, tw); return; }
+            var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place } : new Order { Op = order.Op, Do = "move", Point = w.To };
             if (Issue(walk, screen, null))
             {
                 pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach };
                 pendingAt[(int)by] = tw;
-                Pop($"{AgentNames[(int)by]} walks to {t.Label}, then {(order.Do == "turn" ? order.Approach : order.Do)}", screen, tw, Feedback.Ok);
+                Pop($"{AgentNames[(int)by]} walks {w.Cm / 100} m ({w.Seconds} s) to {(w.Place.Length > 0 ? PlaceName(w.Place) : t.Label)}, then {(order.Do == "turn" ? order.Approach : order.Do)}", screen, tw, Feedback.Ok);
             }
         }
+
+        string PlaceName(string place) => place == "cabinet" ? "the control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar ? "the getaway car" : place;
 
         readonly Order[] pending = new Order[4]; readonly Vector3?[] pendingAt = new Vector3?[4];
 

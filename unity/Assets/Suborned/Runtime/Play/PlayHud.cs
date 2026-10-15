@@ -18,7 +18,7 @@ namespace Suborned.Play
         // never kept over a domain reload (a kept style with its textures gone would draw nothing): built on the first OnGUI
         [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white, ring, refusedPlate, okPlate, cursorAct;
         [System.NonSerialized] bool cursorIsAct;
-        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold; float s;
+        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold, smallWrap; float s;
         // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
         [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "";
         [System.NonSerialized] readonly string[] slotState = new string[4];
@@ -60,10 +60,10 @@ namespace Suborned.Play
                 big = new GUIStyle(txt); small = new GUIStyle(txt) { fontStyle = FontStyle.Normal, normal = { textColor = Dim } };
                 key = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter }; mid = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter };
                 smallC = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter }; icon = new GUIStyle(mid); iconSmall = new GUIStyle(mid);
-                smallBright = new GUIStyle(small) { normal = { textColor = Cream } }; txtSmallBold = new GUIStyle(txt);
+                smallBright = new GUIStyle(small) { normal = { textColor = Cream } }; txtSmallBold = new GUIStyle(txt); smallWrap = new GUIStyle(small) { wordWrap = true, alignment = TextAnchor.UpperLeft };
             }
             txt.fontSize = Mathf.RoundToInt(18 * s); big.fontSize = Mathf.RoundToInt(24 * s); small.fontSize = Mathf.RoundToInt(13 * s); key.fontSize = Mathf.RoundToInt(13 * s); mid.fontSize = Mathf.RoundToInt(15 * s);
-            smallC.fontSize = small.fontSize; smallBright.fontSize = Mathf.RoundToInt(14 * s); txtSmallBold.fontSize = Mathf.RoundToInt(15 * s); icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
+            smallC.fontSize = small.fontSize; smallBright.fontSize = Mathf.RoundToInt(14 * s); smallWrap.fontSize = Mathf.RoundToInt(14 * s); txtSmallBold.fontSize = Mathf.RoundToInt(15 * s); icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
         }
 
         void Plate(Rect r, bool lit = false)
@@ -252,13 +252,13 @@ namespace Suborned.Play
         /// rows first, locked rows dimmed with their reason; click a row to give it (to that row's agent); hover a row to see the walk.</summary>
         void PanelGui(Game g)
         {
-            var pn = host.Panel; float w = 280 * s, head = 26 * s, rh = 40 * s;
-            float h = head + (pn.Note.Length > 0 ? 26 * s : 0) + rh * pn.Rows.Count + 6 * s;
+            var pn = host.Panel; float w = 380 * s, head = 26 * s, rh = 56 * s;
+            float h = head + (pn.Note.Length > 0 ? 42 * s : 0) + rh * pn.Rows.Count + 6 * s;
             var r = new Rect(Mathf.Min(pn.Gui.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(pn.Gui.y - 12 * s, 8 * s, Screen.height - h - 8 * s), w, h);
             Plate(r); hits.Add(r);
             GUI.Label(new Rect(r.x + 10 * s, r.y + 2 * s, w - 20 * s, head), pn.T.Label, txt);
             float y = r.y + head;
-            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + 10 * s, y, w - 20 * s, 24 * s), pn.Note, small); y += 26 * s; }
+            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + 10 * s, y, w - 20 * s, 40 * s), pn.Note, smallWrap); y += 42 * s; }
             int hover = -1;
             for (int i = 0; i < pn.Rows.Count; i++)
             {
@@ -271,8 +271,8 @@ namespace Suborned.Play
                 GUI.Label(new Rect(rr.x + 8 * s, rr.y + 1 * s, 30 * s, 20 * s), host.AgentKeyLabel((int)row.By), key);
                 GUI.Label(new Rect(rr.x + 38 * s, rr.y, rr.width - 44 * s, 20 * s), $"{Names[(int)row.By]} · {row.Verb}{(row.Slot >= 0 && mine ? $"  [{host.VerbKey(row.Slot)}]" : "")}", txtSmallBold);
                 var it = row.I;
-                string line = !row.Available ? row.Reason : it.Move ? it.Time : $"{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
-                GUI.Label(new Rect(rr.x + 38 * s, rr.y + 18 * s, rr.width - 44 * s, 20 * s), line, small);
+                string line = !row.Available ? row.Reason : it.Move ? it.Time : $"{(it.Walk.Length > 0 ? it.Walk + " " : "")}{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
+                GUI.Label(new Rect(rr.x + 38 * s, rr.y + 18 * s, rr.width - 44 * s, 36 * s), line, smallWrap);
                 GUI.color = c;
             }
             if (Event.current.type == EventType.Repaint) host.SetPanelHover(hover);
