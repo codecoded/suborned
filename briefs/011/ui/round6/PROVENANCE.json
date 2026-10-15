@@ -1,0 +1,790 @@
+{
+ "brief": "011 C round 6: the whole HUD designed for clarity",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "Codex CLI image tool via out/concepts/ui-011-r6/gen5.py; cost 0; no Runware or other paid service",
+ "finish": "r04 train-cab cluster; dock (a) left column, one key frame in dock (b) corner",
+ "portraits": "Forma's unified portraits briefs/012/cell/A/A-codex-portrait-<role>-white.png (sha256 in briefs/011/ui/round5/placement/refs/ and below); hurt-state portraits are the round 5b image-tool edits of hers",
+ "portrait_refs": {
+  "A-codex-portrait-enforcer-white.png": "99f83e2b90550ad70b1a5d53d8757a36a4fc30792ee99dcff347e44d29eccf88",
+  "A-codex-portrait-fixer-white.png": "9e67af4e43ef7d0b8ec1bfa7924872dfff850d91c174d15d50768ad00549f03b",
+  "A-codex-portrait-scout-white.png": "57f960f8972048dc1285098bf4f4f2f8085e1fecf853271ef4063bf6c062f0a5",
+  "A-codex-portrait-tech-white.png": "4862d7b342809336ad8264c200f296a2159bf1ff9afe1b2329158669cffbecf6"
+ },
+ "reused_generations": [
+  {
+   "key": "k4_cab",
+   "file": "k4_cab.png",
+   "sha256": "7af007107776ce530931b79d090c4e5a2eb670179a22231b95630d1a17a58f33",
+   "round": "5"
+  },
+  {
+   "key": "col4_cab",
+   "file": "col4_cab.png",
+   "sha256": "595620f3427ced6e4c28784e05c0837ed8c1e37e78fd05cb975163c1acb294e0",
+   "round": "5b"
+  },
+  {
+   "key": "hurt_fixer",
+   "file": "hurt_fixer.png",
+   "sha256": "4b2151b0f8b15965f9f762cef0a0ef852b11b739bc1d7cadb1f3469580eb377a",
+   "round": "5b"
+  },
+  {
+   "key": "hurt_scout",
+   "file": "hurt_scout.png",
+   "sha256": "9955c44e135bb85287e4e03526265ba85f1e3911a0565c2e3f820a6faee71165",
+   "round": "5b"
+  },
+  {
+   "key": "hurt_tech",
+   "file": "hurt_tech.png",
+   "sha256": "035436fdc9f5f5a53c27d310abcfd98382a21ffefaea26a7ee640a0fd35320a7",
+   "round": "5b"
+  },
+  {
+   "key": "hurt_enforcer",
+   "file": "hurt_enforcer.png",
+   "sha256": "db414982cd75253d9f73344f0b81c82fae25cdb6b80082245e759959c1726d38",
+   "round": "5b"
+  }
+ ],
+ "text": "contracts/missions/handover/text.json does not exist yet (checked); every line is a placeholder written for the mock-up in Fable's register, to be replaced. Facts (timings, prices, the brief, the win and fail list, the going-loud card, the schedule) come from GDD v0.22.0 \u00a706 and \u00a707 and briefs/011/motive-fights.md; costs shown on the Help, Pay and Ask cards use the round 3 and 4 figures ($40,000 Help, $70,000 Pay, +1/+2 Trail).",
+ "method": "One new image-tool sheet (the text panel kit); everything else is drawn in code over the real Handover plates (cafe-front-172430, office-door-1730, service-lane-1730) as in rounds 4 and 5, from a single state dict per frame (hud6.py, frames6.py), so every frame is the same system in a different state. Panels are nine-sliced from the kit; portraits, glyphs, text, bars and rings are code.",
+ "palette_check": "CIEDE2000 against cone red, guard amber and rival violet: every HUD text and mark colour is at least 27.8 from all three (grey 27.8, warm ink 31.2, cream 30.3, light turquoise 46). The panel art is pulled to at least dE 22 as in round 5. The only red in the HUD is the 8 px slashed circle of 'she would refuse' (a small pictogram, the display exception). The brick-red number badges in the two anatomy sheets are annotation, not HUD.",
+ "coverage": {
+  "01-start-briefing": {
+   "hud_bbox_pct_all": 28.8,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [
+    "scout",
+    "fixer",
+    "tech",
+    "enforcer"
+   ],
+   "inez_under_a_panel": true,
+   "hud_pixels_pct_all": 28.3,
+   "hud_pixels_pct_left_dock_x<600": 7.9
+  },
+  "02-first-hint": {
+   "hud_bbox_pct_all": 12.9,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": false,
+   "hud_pixels_pct_all": 13.1,
+   "hud_pixels_pct_left_dock_x<600": 8.2
+  },
+  "03-scout-listening": {
+   "hud_bbox_pct_all": 12.0,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": false,
+   "hud_pixels_pct_all": 12.2,
+   "hud_pixels_pct_left_dock_x<600": 9.3
+  },
+  "04-intel-updated": {
+   "hud_bbox_pct_all": 17.1,
+   "hud_bbox_pct_docked": 14.5,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": false,
+   "hud_pixels_pct_all": 17.3,
+   "hud_pixels_pct_left_dock_x<600": 8.2
+  },
+  "05-fixer-actions": {
+   "hud_bbox_pct_all": 22.0,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [
+    "scout",
+    "enforcer"
+   ],
+   "inez_under_a_panel": false,
+   "hud_pixels_pct_all": 19.9,
+   "hud_pixels_pct_left_dock_x<600": 7.9
+  },
+  "06-dialogue-open": {
+   "hud_bbox_pct_all": 16.6,
+   "hud_bbox_pct_docked": 16.6,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": false,
+   "hud_pixels_pct_all": 16.7,
+   "hud_pixels_pct_left_dock_x<600": 14.2
+  },
+  "07-tech-holding": {
+   "hud_bbox_pct_all": 13.4,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": null,
+   "hud_pixels_pct_all": 13.9,
+   "hud_pixels_pct_left_dock_x<600": 8.4
+  },
+  "08-going-loud": {
+   "hud_bbox_pct_all": 15.9,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [
+    "scout"
+   ],
+   "inez_under_a_panel": null,
+   "hud_pixels_pct_all": 16.3,
+   "hud_pixels_pct_left_dock_x<600": 7.9
+  },
+  "09-fight": {
+   "hud_bbox_pct_all": 10.3,
+   "hud_bbox_pct_docked": 10.3,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": null,
+   "hud_pixels_pct_all": 11.5,
+   "hud_pixels_pct_left_dock_x<600": 8.0
+  },
+  "10-win-debrief": {
+   "hud_bbox_pct_all": 17.5,
+   "hud_bbox_pct_docked": 10.2,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": null,
+   "hud_pixels_pct_all": 17.7,
+   "hud_pixels_pct_left_dock_x<600": 8.0
+  },
+  "12-compact-strips": {
+   "hud_pixels_pct_all": 7.3,
+   "hud_pixels_pct_left_dock_x<600": 4.8,
+   "agents_under_a_panel": [],
+   "inez_under_a_panel": null
+  }
+ },
+ "frames": [
+  {
+   "file": "01-start-briefing.jpg",
+   "n": 1,
+   "caption": "The start: the briefing card, paused. Everyone Ready; the objective line sits under the pill.",
+   "sha256": "999e34273dc334c669941ba334f8916da668a9196cd553db483bbb9e5307fac3",
+   "pieces": {
+    "verbs": [
+     363,
+     216,
+     229,
+     54
+    ],
+    "pill": [
+     1328,
+     12,
+     578,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ],
+    "briefing": [
+     650,
+     150,
+     700,
+     548
+    ]
+   }
+  },
+  {
+   "file": "02-first-hint.jpg",
+   "n": 2,
+   "caption": "The first next-step hint: it names the person, the agent, the key and the click, and rings Inez in the street.",
+   "sha256": "fad98d2d8184c265639c90533ea8e18e993d64fc9ded2b6fd6450835b5d49247",
+   "pieces": {
+    "verbs": [
+     363,
+     216,
+     229,
+     54
+    ],
+    "pill": [
+     1328,
+     12,
+     578,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "hint": [
+     520,
+     12,
+     600,
+     92
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "03-scout-listening.jpg",
+   "n": 3,
+   "caption": "The Scout is busy: slot with action, bar, time left and cancel; the same in the street with a ring, a line to Inez and a time flag.",
+   "sha256": "b9f1990856e109ec68690a314e4011616444e0b4aa2c3a3ee99e1b3712d58ece",
+   "pieces": {
+    "verbs": [
+     363,
+     123,
+     229,
+     54
+    ],
+    "pill": [
+     1329,
+     12,
+     577,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ],
+    "tooltip": [
+     373,
+     196,
+     292,
+     123
+    ]
+   }
+  },
+  {
+   "file": "04-intel-updated.jpg",
+   "n": 4,
+   "caption": "Intel after the Scout finished: what is known about each person, and the one next action that would learn more.",
+   "sha256": "9ed86af6a995bb02a2be449476acc11caa782275e6667db02b4f0b46a33ec933",
+   "pieces": {
+    "verbs": [
+     363,
+     216,
+     229,
+     54
+    ],
+    "pill": [
+     1328,
+     12,
+     578,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "hint": [
+     520,
+     12,
+     600,
+     92
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     308
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "05-fixer-actions.jpg",
+   "n": 5,
+   "caption": "Right-click Inez: the Fixer's action panel. Each card says what it does, the trade-off, the price, the walk and the likely outcome.",
+   "sha256": "6e29aa8ada9aa19478d0a1ae30b11222e8831697bf8af7c051ab87f8f0291e81",
+   "pieces": {
+    "verbs": [
+     363,
+     216,
+     229,
+     54
+    ],
+    "pill": [
+     1328,
+     12,
+     578,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ],
+    "action_panel": [
+     1068,
+     100,
+     384,
+     634
+    ]
+   }
+  },
+  {
+   "file": "06-dialogue-open.jpg",
+   "n": 6,
+   "caption": "The dialogue log expanded, docked under the roster; collapsed it shows only the last line.",
+   "sha256": "ce5aaa7d5b7ce9af2c830c90b2ecf57685d0970cb05f63d5c3a081794af17258",
+   "pieces": {
+    "verbs": [
+     363,
+     216,
+     229,
+     54
+    ],
+    "pill": [
+     1332,
+     12,
+     574,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     754,
+     480,
+     314
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "07-tech-holding.jpg",
+   "n": 7,
+   "caption": "Three agents busy at once: the Tech holds the loop (tethered), the Fixer calls Inez, the Scout watches; the Enforcer's next act is queued.",
+   "sha256": "84099d7625b18b21a5bcb0e87b188eadb833f6d8b6fe8d093a0acddc64ebb41a",
+   "pieces": {
+    "verbs": [
+     363,
+     312,
+     229,
+     54
+    ],
+    "pill": [
+     1332,
+     12,
+     574,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "hint": [
+     520,
+     12,
+     600,
+     110
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "08-going-loud.jpg",
+   "n": 8,
+   "caption": "The alternative: the going-loud card, committed by a 0.5 s hold with no pause.",
+   "sha256": "87d3b914bd847e48f92c1002c1680c286015a846d4bd087bece17058b545b1a9",
+   "pieces": {
+    "verbs": [
+     363,
+     406,
+     229,
+     54
+    ],
+    "pill": [
+     1297,
+     12,
+     609,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ],
+    "going_loud": [
+     1088,
+     470,
+     430,
+     268
+    ]
+   }
+  },
+  {
+   "file": "09-fight.jpg",
+   "n": 9,
+   "caption": "The fight: crosshair chip, health bars, stances, a downed agent with the carry prompt, Alert 2.",
+   "sha256": "26703a91977eca7b10db228eecebdcedee08f0193e5bb654f2510862053e98d7",
+   "pieces": {
+    "verbs": [
+     363,
+     406,
+     229,
+     54
+    ],
+    "pill": [
+     1321,
+     12,
+     585,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "10-win-debrief.jpg",
+   "n": 10,
+   "caption": "The win: Vale at the car.",
+   "sha256": "10638ee0b4c0cc2e8d383772d55c758417acc4c642f9542e2a68d6c3139cd0b8",
+   "pieces": {
+    "verbs": [
+     363,
+     406,
+     229,
+     54
+    ],
+    "pill": [
+     1368,
+     12,
+     538,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ],
+    "debrief": [
+     720,
+     160,
+     560,
+     270
+    ]
+   }
+  },
+  {
+   "file": "12-compact-strips.jpg",
+   "n": 12,
+   "caption": "Option: strips only for agents that are busy, hurt, down or selected; Ready agents show just their portrait. Same moment as frame 3.",
+   "sha256": "7c59e2f3504dec3456f8a4a4ca05667b5c34f91c6375eccc2260089b564887a9",
+   "pieces": {
+    "verbs": [
+     363,
+     123,
+     229,
+     54
+    ],
+    "pill": [
+     1329,
+     12,
+     577,
+     44
+    ],
+    "objective": [
+     1514,
+     62,
+     391,
+     34
+    ],
+    "intel": [
+     1588,
+     108,
+     318,
+     34
+    ],
+    "log": [
+     12,
+     1026,
+     480,
+     42
+    ],
+    "column": [
+     12,
+     84,
+     109,
+     416
+    ],
+    "strips": [
+     125,
+     104,
+     228,
+     375
+    ]
+   }
+  },
+  {
+   "file": "11-corner-dock-key-frame.jpg",
+   "n": 11,
+   "caption": "The same moment as frame 7 docked bottom-left (placement b): the activity strips stack above the roster row, the log collapses beside it.",
+   "sha256": "51f4411a92150738995638103eed0bf55321101deff5e9c785e3946b8b0bef05",
+   "pieces": {}
+  },
+  {
+   "file": "a1-anatomy-roster-and-street.jpg",
+   "n": 0,
+   "caption": "anatomy",
+   "sha256": "066cc29ddccf84db0038e5e7be2925b410b8edbd3a0ee73d4a058eef90dd6208",
+   "pieces": {}
+  },
+  {
+   "file": "a2-anatomy-panels.jpg",
+   "n": 0,
+   "caption": "anatomy",
+   "sha256": "bea230c0d87708f34cb963e14d0d201b84489ae682eef99e453930b353295fa9",
+   "pieces": {}
+  }
+ ],
+ "kit_generation": [
+  {
+   "key": "pn_cab",
+   "file": "pn_cab.png",
+   "seconds": 46,
+   "sha256": "6f23b2e07c6443e281a3fe49182f1152ad6d16738108f6d04afa7bd4b24f978f",
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a polished chrome beaded edge, tiny chrome screws and a seafoam enamel stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 60 px of magenta between them and from the edge, all flush rectangles with softly rounded corners, nothing sticking out. PIECE 1, top left: the DARK PANEL, about 640 px wide and 400 px tall: dark ink-teal satin enamel, a polished chrome beaded edge all round, four tiny chrome screws at its corners, interior one flat even satin dark teal, completely empty. PIECE 2, top right: the IVORY CARD, about 520 px wide and 400 px tall: ivory enamel with a thin polished chrome edge and soft rounded corners, a deep teal enamel header band across its top quarter with a fine chrome line under the band, the body one flat even ivory, completely empty. PIECE 3, bottom left: the SLIM STRIP, about 880 px wide and 110 px tall: a long slim dark ink-teal satin strip with a chrome beaded edge and rounded ends, completely empty. PIECE 4, bottom right: the TAB, a small stadium-shaped cream enamel plate about 300 px wide and 90 px tall with a polished chrome rim and a glossy face, completely empty.",
+   "at": "2026-10-15T20:32:46+0700",
+   "use": "text panel kit in the r04 cab finish: dark panel, ivory card with a teal header, slim strip, tab; nine-sliced in code for every panel in the HUD"
+  }
+ ],
+ "coverage_note": "hud_pixels_pct_all = share of the frame whose pixels differ from the bare street (plates + world marks) by more than 24: panels, pop-ups, text. left_dock = the same measure inside x < 600 (column, strips, verbs). hud_bbox_pct_* = share covered by the bounding rectangles of the pieces. agents_under_a_panel is checked against each agent's 28 x 64 px box."
+}
