@@ -1,0 +1,54 @@
+{
+ "id": "hint_plate",
+ "sprite": "panel_dark",
+ "width": 600,
+ "height": "56 + 18 * lines (2-3 lines)",
+ "position": {
+  "anchor": "top-left",
+  "x": 520,
+  "y": 12
+ },
+ "padding": [
+  48,
+  70,
+  8,
+  32
+ ],
+ "children": [
+  {
+   "id": "tab",
+   "sprite": "panel_tab_small",
+   "rect": [
+    28,
+    12,
+    94,
+    22
+   ],
+   "text_style": "hint-tab",
+   "text": "NEXT STEP"
+  },
+  {
+   "id": "close",
+   "sprite": "btn_close_normal",
+   "size": 17,
+   "rect": [
+    562,
+    15,
+    17,
+    17
+   ],
+   "key": "H hides the hint layer"
+  },
+  {
+   "id": "body",
+   "rect": [
+    32,
+    48,
+    530,
+    54
+   ],
+   "text_style": "hint-body"
+  }
+ ],
+ "behaviour": "one at a time, once per run, vanishes the moment the player acts (see text.json hints.rules)"
+}

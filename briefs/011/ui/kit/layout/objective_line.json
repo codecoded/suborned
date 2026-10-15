@@ -1,0 +1,38 @@
+{
+ "id": "objective_line",
+ "sprite": "panel_strip",
+ "height": 34,
+ "position": {
+  "anchor": "top-right",
+  "right": 14,
+  "top": 62
+ },
+ "padding": [
+  0,
+  26,
+  0,
+  40
+ ],
+ "children": [
+  {
+   "id": "marker",
+   "rect": [
+    23,
+    12,
+    11,
+    11
+   ],
+   "note": "ring r5.5 turquoise-light, dot r2.2"
+  },
+  {
+   "id": "objective",
+   "text_style": "objective",
+   "text": "Take Vale alive to the getaway car"
+  },
+  {
+   "id": "tail",
+   "text_style": "objective-tail",
+   "text": "  ·  closes 8:30"
+  }
+ ]
+}

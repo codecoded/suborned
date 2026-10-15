@@ -1,0 +1,76 @@
+{
+ "id": "verb_plate",
+ "sprite": "plate_verbs",
+ "size": [
+  229,
+  54
+ ],
+ "position": {
+  "relative_to": "selected slot_strip",
+  "x": "strip.right + 10 = 363",
+  "y": "centred on the selected strip"
+ },
+ "children": [
+  {
+   "id": "knob",
+   "sprite": "btn_verb_normal",
+   "states": [
+    "hover",
+    "pressed",
+    "selected",
+    "disabled"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "count": 4,
+   "first_center": [
+    42.3,
+    27
+   ],
+   "pitch_px": 47.6,
+   "note": "the 48 px sprite holds a 40 px knob; the extra 4 px is the selection ring"
+  },
+  {
+   "id": "glyph",
+   "atlas_icon": "<verb>",
+   "size": 20,
+   "tint": "cream (grey #7a8c8a disabled)"
+  },
+  {
+   "id": "numeral",
+   "rect_in_knob": [
+    27,
+    28,
+    12,
+    12
+   ],
+   "text_style": "numplate",
+   "color": "cream",
+   "text": "1..4"
+  },
+  {
+   "id": "cooldown",
+   "sprite": "btn_verb_cooldown_fill",
+   "fill": "radial clockwise from top",
+   "text_style": "slot-time",
+   "text": "seconds"
+  },
+  {
+   "id": "armed_name",
+   "sprite": "plate_dark",
+   "rect": "under the armed knob: width = text + 16, height 18, y = plate.bottom + 4",
+   "text_style": "verb-name"
+  }
+ ],
+ "selector_notch": {
+  "color": "turquoise",
+  "outline": "white",
+  "size_px": [
+   8,
+   14
+  ],
+  "at": "left edge of the plate, centred"
+ }
+}

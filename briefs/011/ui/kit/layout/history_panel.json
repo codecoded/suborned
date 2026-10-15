@@ -1,0 +1,43 @@
+{
+ "id": "history_panel",
+ "sprite": "panel_dark",
+ "width": 384,
+ "position": {
+  "anchor": "bottom-right",
+  "right": 14,
+  "above": "feed_bar",
+  "gap": 6
+ },
+ "rows": {
+  "height": 50,
+  "unread_section": "folded cards with ack",
+  "earlier": "kind accent bar 3 px + icon + title + where + clock + result"
+ },
+ "scroll": "vertical scrollbar, 6 px track",
+ "children": [
+  {
+   "id": "title",
+   "text": "SCENES · HISTORY",
+   "text_style": "section-label"
+  },
+  {
+   "id": "filters",
+   "sprite": "plate_light|plate_dark",
+   "labels": [
+    "All",
+    "Learned",
+    "Turned",
+    "City",
+    "Warnings"
+   ],
+   "text_style": "feed-filter",
+   "height": 19,
+   "gap": 6
+  },
+  {
+   "id": "read_all",
+   "sprite": "pill_white",
+   "text": "Read all"
+  }
+ ]
+}

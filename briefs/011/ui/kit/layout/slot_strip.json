@@ -1,0 +1,179 @@
+{
+ "id": "slot_strip",
+ "sprite": "panel_slot",
+ "size": [
+  228,
+  92
+ ],
+ "position": {
+  "relative_to": "roster_column",
+  "x": "column.right + 4 = 125",
+  "y": "centred on its window"
+ },
+ "padding": [
+  0,
+  30,
+  0,
+  30
+ ],
+ "gap_between_strips_px": 3,
+ "children": [
+  {
+   "id": "role_tag",
+   "rect": [
+    30,
+    7,
+    120,
+    16
+   ],
+   "text_style": "role-tag",
+   "text": "ROLE"
+  },
+  {
+   "id": "state_tag",
+   "style_by_class": "slot-state-*",
+   "follows": "role_tag",
+   "gap_px": 8,
+   "text": "· READY|BUSY|RUNNING|HURT|DOWN"
+  },
+  {
+   "id": "stance",
+   "sprite": "stance_<hold|return|free>",
+   "rect": [
+    190,
+    7,
+    20,
+    20
+   ],
+   "only_in": "fight"
+  },
+  {
+   "id": "action_icon",
+   "atlas_icon": "<verb glyph>",
+   "rect": [
+    21,
+    27,
+    18,
+    18
+   ],
+   "tint": "cream",
+   "visible_if": "busy"
+  },
+  {
+   "id": "action_label",
+   "rect": [
+    55,
+    28,
+    140,
+    20
+   ],
+   "text_style": "slot-action",
+   "visible_if": "busy"
+  },
+  {
+   "id": "progress_bar",
+   "rect": [
+    30,
+    48,
+    106,
+    8
+   ],
+   "track": "#0a1a1c 100% outline #82a09c",
+   "fill": "turquoise-light",
+   "visible_if": "busy"
+  },
+  {
+   "id": "time_left",
+   "rect": [
+    142,
+    46,
+    56,
+    14
+   ],
+   "text_style": "slot-time",
+   "align": "left",
+   "visible_if": "busy"
+  },
+  {
+   "id": "cancel",
+   "sprite": "btn_close_normal",
+   "states": [
+    "hover",
+    "pressed",
+    "disabled"
+   ],
+   "rect": [
+    186,
+    46,
+    21,
+    21
+   ],
+   "visible_if": "busy",
+   "key": "Backspace (selected agent)",
+   "tooltip": "piece tooltip_cancel"
+  },
+  {
+   "id": "queued",
+   "atlas_icon": "nextevent",
+   "icon_rect": [
+    31,
+    69,
+    11,
+    11
+   ],
+   "rect": [
+    47,
+    68,
+    150,
+    16
+   ],
+   "text_style": "slot-queued",
+   "text": "then {order}",
+   "visible_if": "queued"
+  },
+  {
+   "id": "ready_label",
+   "rect": [
+    30,
+    29,
+    160,
+    20
+   ],
+   "text_style": "slot-ready",
+   "text": "Ready",
+   "visible_if": "ready"
+  },
+  {
+   "id": "hint_line",
+   "rect": [
+    30,
+    50,
+    170,
+    16
+   ],
+   "text_style": "slot-hint",
+   "visible_if": "ready|hurt|down"
+  },
+  {
+   "id": "carry_key",
+   "sprite": "plate_light",
+   "rect": [
+    176,
+    66,
+    22,
+    19
+   ],
+   "text_style": "keycap",
+   "text": "C",
+   "visible_if": "down"
+  }
+ ],
+ "selected_outline": {
+  "outer_px": 3.4,
+  "outer_color": "white",
+  "inner_px": 1.8,
+  "inner_color": "turquoise",
+  "radius_px": 12
+ },
+ "compact_default": "only shown when busy, hurt, down, selected or queued; Tab toggles all four"
+}

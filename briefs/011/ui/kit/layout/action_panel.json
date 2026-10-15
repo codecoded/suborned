@@ -1,0 +1,153 @@
+{
+ "id": "action_panel",
+ "sprite": "panel_dark",
+ "width": 384,
+ "position": {
+  "anchor": "popup",
+  "at": "right of the clicked target, clamped to the screen with 14 px margin"
+ },
+ "padding": [
+  54,
+  8,
+  8,
+  8
+ ],
+ "gap_px": 6,
+ "children": [
+  {
+   "id": "header",
+   "rect": [
+    0,
+    0,
+    384,
+    54
+   ],
+   "children": [
+    {
+     "id": "cameo",
+     "sprite": "cameo_<role>_normal",
+     "size": 28,
+     "rect": [
+      14,
+      13,
+      28,
+      28
+     ]
+    },
+    {
+     "id": "title",
+     "text_style": "panel-title",
+     "text": "{Agent} → {Target}",
+     "rect": [
+      52,
+      10,
+      300,
+      18
+     ]
+    },
+    {
+     "id": "sub",
+     "text_style": "panel-sub",
+     "rect": [
+      52,
+      31,
+      300,
+      16
+     ]
+    },
+    {
+     "id": "close",
+     "sprite": "btn_close_normal",
+     "size": 17,
+     "rect": [
+      355,
+      13,
+      17,
+      17
+     ]
+    }
+   ]
+  },
+  {
+   "id": "card",
+   "sprite": "panel_card",
+   "width": 368,
+   "height": "30 + 10 + lines*17 + 6 + 20 + 22 + 8 (locked: + 21 + unlock lines)",
+   "repeat": "one per verb",
+   "children": [
+    {
+     "id": "icon",
+     "atlas_icon": "<verb>",
+     "size": 16,
+     "rect": [
+      8,
+      7,
+      16,
+      16
+     ]
+    },
+    {
+     "id": "title",
+     "text_style": "card-title",
+     "rect": [
+      24,
+      7,
+      200,
+      18
+     ]
+    },
+    {
+     "id": "tag",
+     "sprite": "pill_new",
+     "text": "SUGGESTED",
+     "text_style": "card-tag",
+     "fill": "turquoise"
+    },
+    {
+     "id": "key",
+     "sprite": "plate_light",
+     "text_style": "keycap",
+     "rect": [
+      332,
+      5,
+      22,
+      19
+     ],
+     "text": "1..4"
+    },
+    {
+     "id": "lock",
+     "atlas_icon": "lock",
+     "size": 13,
+     "visible_if": "locked"
+    },
+    {
+     "id": "body",
+     "text_style": "card-body",
+     "rect": [
+      14,
+      38,
+      330,
+      "auto"
+     ]
+    },
+    {
+     "id": "price",
+     "children": "four atlas icons (p_cash p_time p_trail p_alert) 14 px + card-price text, gap 10",
+     "text_style": "card-price"
+    },
+    {
+     "id": "outcome",
+     "sprite": "mark_ok|mark_half|mark_no|mark_unk",
+     "text_style": "card-outcome"
+    },
+    {
+     "id": "walk",
+     "atlas_icon": "s_moving",
+     "text_style": "card-walk",
+     "align": "right"
+    }
+   ]
+  }
+ ]
+}

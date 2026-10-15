@@ -1,0 +1,58 @@
+{
+ "id": "overhead_marks",
+ "note": "over a character's head, at most two icons",
+ "children": [
+  {
+   "id": "agent_number",
+   "sprite": "plate_light",
+   "size": [
+    25,
+    21
+   ],
+   "text_style": "numplate",
+   "offset": "head-top -8"
+  },
+  {
+   "id": "activity_badge",
+   "sprite": "disc_dark_30",
+   "ring": [
+    "ring_track",
+    "ring_fill"
+   ],
+   "ring_size": 44,
+   "cancel": "btn_close_normal 15 px at the badge's top-right, selected agent only"
+  },
+  {
+   "id": "person_marks",
+   "sprite": "disc_dark_24",
+   "glyphs": "need + temperament; dashed ring overlay = suspected; seafoam tick = known",
+   "max": 2
+  },
+  {
+   "id": "signals",
+   "sprites": [
+    "signal_guard",
+    "signal_rival",
+    "signal_camera",
+    "signal_unit",
+    "signal_police"
+   ],
+   "size": 20
+  },
+  {
+   "id": "selection_ring",
+   "sprite": "ring_ground_selected",
+   "under": "character feet"
+  },
+  {
+   "id": "hint_ring",
+   "sprite": "ring_ground_hint"
+  },
+  {
+   "id": "flag",
+   "sprite": "plate_dark",
+   "text_style": "verb-name",
+   "note": "destination flag with time left; the dotted line to it is drawn by the game"
+  }
+ ]
+}

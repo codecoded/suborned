@@ -1,0 +1,41 @@
+{
+ "id": "roster_row",
+ "sprite": "roster_row",
+ "size": [
+  398,
+  92
+ ],
+ "dock": "corner",
+ "position": {
+  "anchor": "bottom-left",
+  "x": 14,
+  "y": 14
+ },
+ "windows": [
+  {
+   "x": 37,
+   "y": 15,
+   "w": 65,
+   "h": 64
+  },
+  {
+   "x": 123,
+   "y": 15,
+   "w": 65,
+   "h": 64
+  },
+  {
+   "x": 210,
+   "y": 15,
+   "w": 65,
+   "h": 64
+  },
+  {
+   "x": 296,
+   "y": 15,
+   "w": 65,
+   "h": 64
+  }
+ ],
+ "note": "same layers and children as roster_column; windows are 65x64"
+}

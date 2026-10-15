@@ -1,0 +1,104 @@
+{
+ "id": "roster_column",
+ "sprite": "roster_column",
+ "size": [
+  109,
+  416
+ ],
+ "dock": "left",
+ "position": {
+  "anchor": "top-left",
+  "x": 12,
+  "y": 84
+ },
+ "windows": [
+  {
+   "x": 22,
+   "y": 34,
+   "w": 66,
+   "h": 65
+  },
+  {
+   "x": 22,
+   "y": 127,
+   "w": 66,
+   "h": 66
+  },
+  {
+   "x": 22,
+   "y": 222,
+   "w": 66,
+   "h": 66
+  },
+  {
+   "x": 22,
+   "y": 317,
+   "w": 66,
+   "h": 65
+  }
+ ],
+ "layers": [
+  "portrait (66x66 at the window)",
+  "portrait_shade",
+  "sprite roster_column (frame, windows transparent)",
+  "portrait_scrim + pips (bottom of window)",
+  "number plate",
+  "portrait_ring_selected (selected)",
+  "portrait_ring_busy (busy)",
+  "selected notch"
+ ],
+ "children": [
+  {
+   "id": "portrait",
+   "rect_in_window": [
+    0,
+    0,
+    66,
+    66
+   ],
+   "sprites": [
+    "portrait_<role>_<normal|dim|hurt|down>",
+    "portrait_shade"
+   ]
+  },
+  {
+   "id": "numplate",
+   "sprite": "plate_light",
+   "rect_in_window": [
+    2,
+    1,
+    25,
+    21
+   ],
+   "text_style": "numplate",
+   "text": "F1..F4"
+  },
+  {
+   "id": "pips",
+   "rect_in_window": [
+    0,
+    56,
+    66,
+    8
+   ],
+   "sprites": [
+    "pip_full",
+    "pip_empty"
+   ],
+   "pip_pitch_px": 8.9,
+   "pip_size_px": 6,
+   "centred": true,
+   "scrim": "portrait_scrim 66x14 at the window bottom"
+  },
+  {
+   "id": "ring_selected",
+   "sprite": "portrait_ring_selected",
+   "extends_window_by_px": 11
+  },
+  {
+   "id": "ring_busy",
+   "sprite": "portrait_ring_busy",
+   "extends_window_by_px": 11
+  }
+ ]
+}

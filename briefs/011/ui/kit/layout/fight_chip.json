@@ -1,0 +1,17 @@
+{
+ "id": "fight_chip",
+ "sprite": "chip_price",
+ "height": 42,
+ "position": {
+  "anchor": "cursor",
+  "dx": 24,
+  "dy": -18
+ },
+ "children": [
+  {
+   "id": "parts",
+   "text_style": "fight-chip",
+   "text": "{target} · hits 3 in 4 · down in 5.5 s · untraced"
+  }
+ ]
+}

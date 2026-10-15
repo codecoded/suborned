@@ -1,0 +1,28 @@
+{
+ "id": "debrief_card",
+ "sprite": "panel_dark_modal",
+ "size": [
+  560,
+  270
+ ],
+ "position": {
+  "anchor": "top-center",
+  "x_offset": 40,
+  "y": 160
+ },
+ "children": [
+  {
+   "id": "buttons",
+   "sprite": "btn_text_normal",
+   "size": [
+    150,
+    40
+   ],
+   "labels": [
+    "Debrief",
+    "Replay"
+   ],
+   "gap": 20
+  }
+ ]
+}

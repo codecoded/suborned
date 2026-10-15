@@ -1,0 +1,41 @@
+{
+ "id": "going_loud_card",
+ "sprite": "panel_dark_modal",
+ "size": [
+  430,
+  268
+ ],
+ "position": {
+  "anchor": "popup",
+  "at": "near the cursor"
+ },
+ "children": [
+  {
+   "id": "icon",
+   "sprite": "disc_dark_30",
+   "atlas_icon": "p_alert"
+  },
+  {
+   "id": "title",
+   "text_style": "loud-title",
+   "text": "Going loud"
+  },
+  {
+   "id": "rows",
+   "text_style": "loud-row",
+   "icon_tint": "turquoise-light",
+   "count": 4
+  },
+  {
+   "id": "hold_ring",
+   "sprite": "ring_track + ring_fill",
+   "size": 44,
+   "fill": "radial clockwise over 0.5 s",
+   "note": "the hold is the commit; releasing cancels; right-click on empty ground cancels"
+  },
+  {
+   "id": "hold_label",
+   "text_style": "loud-hold"
+  }
+ ]
+}

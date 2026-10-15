@@ -1,0 +1,32 @@
+{
+ "id": "tooltip_cancel",
+ "sprite": "panel_card",
+ "width": 292,
+ "height": "38 + lines*17 + 34",
+ "position": {
+  "anchor": "cursor",
+  "dx": 14,
+  "dy": 14
+ },
+ "children": [
+  {
+   "id": "title",
+   "text_style": "tooltip-title"
+  },
+  {
+   "id": "body",
+   "text_style": "tooltip-body",
+   "wrap_width": 262
+  },
+  {
+   "id": "key",
+   "sprite": "plate_light",
+   "text_style": "keycap",
+   "text": "Backspace"
+  },
+  {
+   "id": "keytext",
+   "text_style": "tooltip-key"
+  }
+ ]
+}

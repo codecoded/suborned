@@ -1,0 +1,42 @@
+{
+ "id": "price_chip",
+ "sprite": "chip_price",
+ "height": 42,
+ "position": {
+  "anchor": "cursor",
+  "dx": 14,
+  "dy": -6,
+  "note": "bottom-left tail points at the cursor"
+ },
+ "padding_from_content_rect": {
+  "left": 17,
+  "top": 4,
+  "right": 16,
+  "bottom": 15
+ },
+ "children": [
+  {
+   "id": "verb",
+   "atlas_icon": "<verb>",
+   "size": 20,
+   "tint": "#fffcec"
+  },
+  {
+   "id": "items",
+   "row": [
+    "p_cash",
+    "p_time",
+    "p_trail",
+    "p_alert"
+   ],
+   "icon": 17,
+   "value_style": "chip-value",
+   "gap": 16
+  },
+  {
+   "id": "outcome",
+   "sprite": "mark_unk|mark_ok",
+   "size": 17
+  }
+ ]
+}
