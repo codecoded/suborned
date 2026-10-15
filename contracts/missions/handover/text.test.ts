@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, fillLock, lineKey, lookup, pickIndex, pickLine, wordCount } from './text.schema.ts';
+import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, fillLock, lineKey, lookup, lookupScene, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -38,6 +38,10 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, s] of Object.entries(b.cell)) push(`briefing.cell.${k}`, s);
   for (const [k, x] of Object.entries(t.targets)) push(`targets.${k}.about`, x.about);
   for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); if (a.withTarget) push(`actions.${k}.withTarget`, a.withTarget); if (a.then) push(`actions.${k}.then`, a.then); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); }
+  t.scenes.items.forEach((sc, i) => {
+    push(`scenes[${i}].result ${sceneKey(sc)}`, sc.result);
+    sc.variants.forEach((v, j) => v.beats.forEach((b, k) => { if ('line' in b) push(`scenes[${i}].variants[${j}].beats[${k}] ${sceneKey(sc)}`, b.line, true); }));
+  });
   for (const [id, h] of Object.entries(t.hints.items)) push(`hints.${id}`, h.line, false, HINT_MAX);
   for (const [k, x] of Object.entries(t.toasts)) push(`toasts.${k}`, x.line, false, HINT_MAX);
   push('goingLoud.captured', t.goingLoud.captured);
@@ -48,7 +52,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
-const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30');
+const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30').replace(/\{need\}/g, 'protection').replace(/\{temperament\}/g, 'Mercenary').replace(/\{alert\}/g, '3');
 
 describe('the file', () => {
   test('parses as suborned.text/1 for the handover', () => {
@@ -63,8 +67,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd} {tick} {target}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert}', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -132,10 +136,6 @@ describe('tone and names', () => {
     expect(keys('named')).toEqual(keys('unnamed'));
     expect(keys('named').length).toBe(4);
   });
-  test('the parked affair appears nowhere', () => {
-    for (const s of strings) expect(s.text.toLowerCase(), s.path).not.toMatch(/affair|lover|sweetheart|romance|mistress/);
-    expect(JSON.stringify(raw).toLowerCase()).not.toMatch(/affair|lover/);
-  });
 });
 
 describe('times and numbers agree with the mission', () => {
@@ -163,6 +163,7 @@ describe('times and numbers agree with the mission', () => {
   });
   test('the hints name the two known approaches', () => {
     expect(t.briefing.hints['front-door']).toMatch(/Inez/);
+    expect(t.briefing.hints['front-door']).toMatch(/guard/); // she is close to the door guard (the Story spine)
     expect(t.briefing.hints.pickup).toMatch(/driver/);
   });
 });
@@ -353,6 +354,104 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
   });
 });
 
+describe('scenes', () => {
+  const items = t.scenes.items;
+  const roleKey: Record<string, string> = { waitress: 'diner', driver: 'official-driver', guard: 'guard', councillor: 'councillor' };
+  const beatsOf = (sc: (typeof items)[number]) => sc.variants.flatMap((v) => v.beats);
+  const textOf = (sc: (typeof items)[number], seed = 'a', n = 0) => playScene(t, sc, seed, n).beats.map((b) => b.text).join(' ');
+  test('no two scenes share a key', () => {
+    const seen = new Set<string>(), dup: string[] = [];
+    for (const sc of items) { const k = sceneKey(sc); if (seen.has(k)) dup.push(k); seen.add(k); }
+    expect(dup).toEqual([]);
+  });
+  test('Watch has a scene for each role; Listen for each role and each temperament it can have', () => {
+    const bad: string[] = [];
+    for (const role of PEOPLE) {
+      const w = lookupScene(t, { kind: 'overheard', verb: 'watch', about: role });
+      if (!w || w.about !== role) bad.push(`watch ${role}`); else expect(w.learns).toEqual(['routine']);
+      for (const temp of allowedTemperaments(people, roleKey[role]!)!) {
+        const l = lookupScene(t, { kind: 'overheard', verb: 'listen', about: role, temperament: temp });
+        if (!l || l.temperament !== temp || l.about !== role) bad.push(`listen ${role} ${temp}`); else { expect(l.learns).toContain('need'); expect(l.learns).toContain('temperament'); }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+  test('every approach the rulebook can produce has a scene for each role the temperament allows, ending on the contact\'s reply and the Fixer\'s reaction', () => {
+    const bad: string[] = [];
+    for (const cell of replyCells()) {
+      const [verb, temp, outcome] = cell.split('/') as [string, (typeof TEMPERAMENTS)[number], string];
+      for (const role of ['waitress', 'driver', 'guard']) {
+        if (!allowedTemperaments(people, roleKey[role]!)!.includes(temp)) continue;
+        const sc = items.find((x) => x.kind === 'approach' && x.verb === verb && x.about === role && x.outcome === outcome && x.temperament === temp);
+        if (!sc) { bad.push(`${verb} ${role} ${temp} ${outcome}`); continue; }
+        for (const v of sc.variants) {
+          const last = v.beats.slice(-2);
+          if (!('ref' in last[0]!) || last[0]!.ref !== 'reply' || last[0]!.speaker !== role || !('ref' in last[1]!) || last[1]!.ref !== 'done' || last[1]!.speaker !== 'fixer') bad.push(`${verb} ${role} ${temp} ${outcome}: wrong ending`);
+          if (v.beats[0]!.speaker !== 'fixer') bad.push(`${verb} ${role} ${temp} ${outcome}: the Fixer opens`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+    const dead = items.filter((x) => x.kind === 'approach').filter((x) => !replyCells().has(`${x.verb}/${x.temperament}/${x.outcome}`)).map(sceneKey);
+    expect(dead).toEqual([]);
+  });
+  test('the call: Inez calls the guard over and he leaves his post; the driver blinds the camera; each in all four voices', () => {
+    for (const role of ['waitress', 'driver']) for (const temp of TEMPERAMENTS) {
+      const sc = lookupScene(t, { kind: 'call', verb: 'call', about: role, temperament: temp });
+      expect(sc?.temperament, `${role} ${temp}`).toBe(temp);
+    }
+    for (const sc of items.filter((x) => x.kind === 'call' && x.about === 'waitress')) {
+      expect(sc.result).toMatch(/guard/);
+      for (const v of sc.variants) { const who = new Set(v.beats.map((b) => b.speaker)); expect(who.has('waitress') && who.has('guard')).toBe(true); }
+    }
+    for (const sc of items.filter((x) => x.kind === 'call' && x.about === 'driver')) expect(sc.result).toMatch(/camera/);
+  });
+  test('Inez and the door guard (the Story spine): Listen on Inez overhears them, in every temperament and variant, and the Learned line says what was learned', () => {
+    for (const temp of TEMPERAMENTS) {
+      const sc = lookupScene(t, { kind: 'overheard', verb: 'listen', about: 'waitress', temperament: temp })!;
+      expect(sc.learns).toContain('secret');
+      expect(sc.result).toBe('Learned: Inez is in debt · {temperament} · Secret: she\'s seeing the door guard.');
+      for (const v of sc.variants) { const who = new Set(v.beats.map((b) => b.speaker)); expect(who.has('waitress') && who.has('guard'), temp).toBe(true); }
+    }
+    const text = (verb: string, outcome: string) => items.filter((x) => x.kind === 'approach' && x.verb === verb && x.about === 'waitress' && x.outcome === outcome).map((x) => beatsOf(x).flatMap((b) => ('line' in b ? [b.line] : [])).join(' ')).join(' ');
+    expect(text('pressure', 'turned')).toMatch(/guard/); // Pressure threatens to expose the secret
+    expect(text('help', 'turned')).toMatch(/debt|owe|lender/); // Help clears the debt
+    expect(text('pay', 'turned')).not.toMatch(/guard/);
+  });
+  test('Watch and Listen scenes have the target in them; every scene has 2–4 variants with no repeated line, and its variants differ', () => {
+    for (const sc of items) {
+      if (sc.kind === 'overheard') for (const v of sc.variants) expect(v.beats.some((b) => b.speaker === sc.about), sceneKey(sc)).toBe(true);
+      expect(new Set(sc.variants.map((v) => JSON.stringify(v))).size, sceneKey(sc)).toBe(sc.variants.length);
+      for (const v of sc.variants) { const lines = v.beats.map((b) => ('line' in b ? b.line : b.ref + b.speaker)); expect(new Set(lines).size, sceneKey(sc)).toBe(lines.length); }
+    }
+  });
+  test('city scenes play with a world event, say whether they are seen anywhere or only within sight, and the chime has both', () => {
+    for (const sc of items.filter((x) => x.kind === 'city')) { expect(sc.event! in t.events, sc.event).toBe(true); expect(sc.sight).toBeTruthy(); }
+    for (const e of ['rivals-arrive', 'chime', 'guard-at-cafe']) expect(scenesFor(t, 'city', e).length, e).toBeGreaterThanOrEqual(1);
+    expect(scenesFor(t, 'city', 'chime').map((x) => x.sight).sort()).toEqual(['always', 'in-sight']);
+    expect(scenesFor(t, 'city', 'rivals-arrive')[0]!.sight).toBe('in-sight');
+    expect(items.filter((x) => x.kind !== 'city').every((x) => x.sight === undefined)).toBe(true);
+  });
+  test('every scene plays: each ref finds a dialogue line, nothing is empty, and it is deterministic and seed-dependent', () => {
+    for (const sc of items) {
+      for (const n of [0, 1, 2]) for (const p of [playScene(t, sc, 'seed-1', n)]) {
+        expect(p.beats.length).toBeGreaterThanOrEqual(3);
+        for (const b of p.beats) expect(b.text.length, sceneKey(sc)).toBeGreaterThan(0);
+        expect(p.result.length).toBeGreaterThan(0);
+      }
+      expect(playScene(t, sc, 's', 1)).toEqual(playScene(t, sc, 's', 1));
+    }
+    const sc = lookupScene(t, { kind: 'overheard', verb: 'listen', about: 'waitress', temperament: 'fearful' })!;
+    const seen = new Set(Array.from({ length: 12 }, (_, n) => textOf(sc, 'seed-9', n)));
+    expect(seen.size).toBe(sc.variants.length); // every variant is reached; none repeats back to back is the pick's rule
+  });
+  test('the scene results state what the player knows or has, in plain words', () => {
+    for (const sc of items) expect(sc.result, sceneKey(sc)).toMatch(/^[A-Z{]/);
+    expect(items.find((x) => x.kind === 'overheard' && x.verb === 'watch')!.result).toMatch(/^Learned:/);
+    expect(items.filter((x) => x.kind === 'approach' && x.outcome === 'turned').every((x) => /turned/.test(x.result))).toBe(true);
+  });
+});
+
 describe('labels with a target', () => {
   test('every verb that takes a target has a with-target label and a queued clause that carry {target}', () => {
     const bad: string[] = [];
@@ -412,6 +511,25 @@ describe('cancel and activity', () => {
   });
 });
 
+// ---- the replies: derived from the rulebook, not typed here
+/** Every (approach, temperament, outcome) the rulebook can produce in any band; `suspicious` when the approach is reported. */
+function replyCells(): Set<string> {
+  const cells = new Set<string>();
+  const ALL = new Set<R.Know>(['routine', 'need', 'temperament']);
+  for (const temp of TEMPERAMENTS) for (const band of ['hero', 'neutral', 'menace'] as const) for (const a of ['ask', 'pay', 'help', 'pressure']) {
+    let s: R.Subject = { id: 'x', tier: 'simulated', temperament: temp, need: 'debt', scales: { ...people.temperaments[temp].start }, memory: [], turned: false };
+    const evt = R.event(rb, `turn.${a}`);
+    for (let i = 0; i < 4; i++) {
+      const r = R.resolve(rb, people, evt, { subject: s, band, knows: ALL, given: { reach: true } as never });
+      const reported = r.changes.some((c) => c.do === 'report');
+      cells.add(`${a}/${temp}/${reported ? 'suspicious' : r.outcome}`);
+      s = R.apply(rb, people, s, r.changes, { by: 'fixer', place: 'p', time: 10 + i, witnessed: false });
+      if (a !== 'help' && i >= 1) break;
+    }
+  }
+  return cells;
+}
+
 describe('the dialogue', () => {
   const ev = t.events;
   test('every entry is a known event, spoken by someone allowed to, about a verb the event allows, with 2–4 variants', () => {
@@ -462,24 +580,6 @@ describe('the dialogue', () => {
     expect(bad).toEqual([]);
   });
 
-  // ---- the replies: derived from the rulebook, not typed here
-  /** Every (approach, temperament, outcome) the rulebook can produce in any band; `suspicious` when the approach is reported. */
-  function replyCells(): Set<string> {
-    const cells = new Set<string>();
-    const ALL = new Set<R.Know>(['routine', 'need', 'temperament']);
-    for (const temp of TEMPERAMENTS) for (const band of ['hero', 'neutral', 'menace'] as const) for (const a of ['ask', 'pay', 'help', 'pressure']) {
-      let s: R.Subject = { id: 'x', tier: 'simulated', temperament: temp, need: 'debt', scales: { ...people.temperaments[temp].start }, memory: [], turned: false };
-      const evt = R.event(rb, `turn.${a}`);
-      for (let i = 0; i < 4; i++) {
-        const r = R.resolve(rb, people, evt, { subject: s, band, knows: ALL, given: { reach: true } as never });
-        const reported = r.changes.some((c) => c.do === 'report');
-        cells.add(`${a}/${temp}/${reported ? 'suspicious' : r.outcome}`);
-        s = R.apply(rb, people, s, r.changes, { by: 'fixer', place: 'p', time: 10 + i, witnessed: false });
-        if (a !== 'help' && i >= 1) break;
-      }
-    }
-    return cells;
-  }
   test('every reply the rulebook can produce has a line from each Handover role the temperament allows', () => {
     const cells = replyCells();
     expect(cells.size).toBeGreaterThanOrEqual(30);

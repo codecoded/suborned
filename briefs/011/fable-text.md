@@ -62,7 +62,7 @@ Same mission, other voices: a Fearful Inez pressured ("Please. Don't. I'll do wh
 ## Open for Sky or others
 
 1. **Halcyon** (pending Sky): the `cliffhanger` lines come in two sets, `named` (Halcyon, marked `pending`) and `unnamed`. Ship `unnamed` until Sky decides. The brief card does not name Halcyon, the Tomorrow Plan, Meridian or the Chrome Choir (all Story proposals).
-2. **Inez's secret** (the affair) is parked and appears nowhere. Her need in every line is the debt.
+2. ~~Inez's secret is parked~~ Corrected by Sky: Inez and the door guard are lovers (canon); see the last update below.
 3. **The Fixer is not gendered** in any line (the Story spine calls her a woman); say if the Fixer should be.
 4. **Keel**: refusals are free text and the replay hash covers them (`Orders` hashes `why`). A stable code beside the text would let `lockOf` retire its patterns; the patterns work until then. The `cancel` order is in Keel's working tree, uncommitted: if its refusals change, `text.test.ts` fails and says which.
 5. **Motive** reviews the temperament voices (the §14 handoff); **Chime** voices the contact confirmations (`confirm`); **Glyph** lays out the card, the panel rows and the collapsible beats.
@@ -105,3 +105,37 @@ In `text.json`: `hints` (the layer's rules, and `items` H1–H11), `toasts`, `go
 - **Tests check against the engine.** `text.json` locks must equal `Answer.Codes` (read from `Model.cs`) and `suborned-sim codes` (the test runs the built CLI when `dotnet` is present; `DOTNET_ROOT` defaults to `/opt/homebrew/opt/dotnet/libexec`). Every `No("code", …)` in the engine must be in the list. A line must use exactly the numbers the engine sends with its code: a line that shows `{tick}` where none is sent fails, and so does an ignored number.
 - **H11** now reads "A downed agent left behind is captured. Select another agent and right click them to carry them." (no key letter). A test now checks every key a line names (`N`, `F`, `Ctrl`, `Return`) against `HOW-TO-PLAY.md` and fails on any other, which would have caught the `(C)` (cancel).
 - **The crowd.** `crowd-state` (speaker: a passer-by; `outcome` is startled, fleeing, sheltered, returning, or `back` when `crowd.back` logs) and `saw-gunfire` (a witness who remembers a shot: a passer-by, Inez or the guard). The host should speak one passer-by near the cell per change, not the whole crowd. The people cast by role do not scatter, so they have no crowd lines. 323 entries, 694 lines; 54 tests green, typecheck clean.
+
+## Update: scenes for the update feed, and Inez and the door guard (canon)
+
+**Correction applied.** Inez and the door guard are lovers, per the Story spine, and never were parked. The "affair nowhere" test and every `canon` hedge are gone. It is written plainly and with tact (a secret worth keeping, nothing explicit): she is in debt (her need: Help clears it) and the guard is her secret (Pressure threatens to expose it). The cell learns it by Listening at the café; he takes his café stop to see her; when the turned Inez calls him over, he leaves his door for her, and the coffee spill is the cover.
+
+**`scenes`** in `text.json` (`rules` + `items`; schema `Scene`, reference `lookupScene`, `playScene`, `scenesFor`):
+- **Overheard** (Watch, Listen): one scene per role (Watch) and per role × temperament (Listen), 2 variants, 4–6 beats. Listen on Inez is always the lovers' exchange, in all four temperaments and both variants.
+- **Approach**: one scene per rulebook reply cell for Inez, the driver and the guard (73 scenes, 2 variants each): the Fixer arrives, the contact opens, the Fixer pitches, the contact replies, the Fixer reacts. The arrive, reply and done beats are `ref`s into `dialogue`, so a scene extends the exchange and cannot contradict it.
+- **Call**: Inez calls the guard over and he leaves his post, with the spill as cover; the driver parks across the pickup camera and the Tech says so. Four voices each.
+- **City**: the rival car arriving (in sight only), the chime (heard anywhere, and a second scene seen only within sight of the Office), the guard's café stop (in sight only).
+- **Result line** per scene, with `{who}` `{need}` `{temperament}` `{usd}` `{alert}` filled from engine state.
+
+Sample, Listen on Inez (Fearful):
+```
+Guard     I'll come by after my shift.
+Inez      Please don't. The lender's man is round.
+Guard     He frightens you?
+Inez      Everything does lately. Come later. Quietly.
+Guard     Then by the back way.
+=> Learned: Inez is in debt · Fearful · Secret: she's seeing the door guard.
+```
+Sample, the call (Fearful Inez):
+```
+Fixer     Making the call.
+Inez      Okay. Okay. I'll call him. Be quick.
+Inez      Please, come over. Quickly. Quietly.
+Guard     Inez calling me over? Five minutes.
+Inez      Oh! Oh no, I'm sorry!
+=> Inez called the guard over. He has left his door for her.
+```
+
+**Existing text changed for the canon.** The briefing's front-door hint ("the guard takes his coffee at Inez's café, and she is close to him") and pickup hint (no longer a plan: "Vale rides from the official bay, and his driver is short of cash"); the target lines for Inez and the guard; the action cards for Listen, Pressure and Call on Inez; the Scout's Listen read-outs for Inez (now name the guard); Inez's Pressure replies (about being told on, not the debt); her confirm lines when called; the guard's line when she calls him; and new `questioned` lines (the debrief hooks: a pressured Inez may identify the Fixer, a helped one lies; the helped warning is `fight-warned`).
+
+**For the engine (Keel/Motive).** The text assumes Pressure on Inez threatens the secret and that the call's window is the guard leaving for her. Neither is text's to decide: if the engine models the secret (a need of kind `secret` on Inez), the Listen result line and the Pressure scenes already read right. Nothing in the text carries a mechanic. 329 dialogue entries, 706 lines, 102 scenes (73 approach, 17 overheard, 8 call, 4 city; two variants each); 62 tests green, typecheck clean.
