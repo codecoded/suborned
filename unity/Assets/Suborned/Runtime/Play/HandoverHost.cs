@@ -123,6 +123,7 @@ namespace Suborned.Play
         /// <summary>A new run from the start state (Start, and Return after the end card).</summary>
         public void Begin()
         {
+            if (Game != null && Fault == null) Save(); // a restart closes the run being left at its last tick
             Fault = null; Ending = ""; EndDebrief = null; lastLog = 0; acc = 0f; steps = 0; stepMs = 0; StepMsMax = 0; frames = 0; frameEngineMs = 0;
             Paused = startPaused; Speed = 1; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
             if (viewRoot) Destroy(viewRoot.gameObject);
@@ -174,6 +175,7 @@ namespace Suborned.Play
                 while (acc >= 0.1f && n < 80 && !Game.Over) { if (!StepOnce()) return; acc -= 0.1f; n++; }
                 if (n == 80) acc = 0f;
                 frameEngineMs += Now() - t0;
+                if (Game.Tick - savedTick >= 5 * Game.Hz && Fault == null && !Game.Over) Save();
             }
             frames++;
             if (Game.Over && Ending.Length == 0) End();
@@ -214,7 +216,7 @@ namespace Suborned.Play
             bool shift = c.Held(kb, PlayAction.AddToGroup);
             if (kb != null)
             {
-                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) ShowBriefing = false; }
+                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) ShowBriefing = false; else Save(); }
                 if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
                 if (c.Down(kb, PlayAction.DialogueLog)) LogOpen = !LogOpen;
                 if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
@@ -615,7 +617,7 @@ namespace Suborned.Play
             int n0 = Game.Log.Count, until = Game.T(Game.S.Over) + 1, next = NextMark();
             double t0 = Now();
             while (!Game.Over && Game.Log.Count == n0 && Game.Tick < next && Game.Tick < until) if (!StepOnce()) break;
-            frameEngineMs += Now() - t0; acc = 0f; views.Frame(1f);
+            frameEngineMs += Now() - t0; acc = 0f; views.Frame(1f); if (!Game.Over) Save();
             if (Game.Over && Ending.Length == 0) End();
         }
 
@@ -625,7 +627,7 @@ namespace Suborned.Play
             if (Game == null || Fault != null) return;
             double t0 = Now();
             while (!Game.Over && Game.Tick < tick) if (!StepOnce()) break;
-            frameEngineMs += Now() - t0; acc = 0f; views.Frame(1f);
+            frameEngineMs += Now() - t0; acc = 0f; views.Frame(1f); if (!Game.Over) Save();
             if (Game.Over && Ending.Length == 0) End();
         }
 
@@ -918,10 +920,13 @@ namespace Suborned.Play
             return Path.Combine(dir, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}.script.json");
         }
 
-        /// <summary>The session as a replayable script with its run record: start state, every order (taken or refused), checkpoints, until this tick.</summary>
+        /// <summary>The session as a replayable script with its run record: start state, every order (taken or refused), checkpoints, until this
+        /// tick. Written on every order, every 5 s of mission time while the clock runs, on pause, restart, quit and the end, so `until` is the
+        /// session's last tick and a replay plays everything after the last order too (Keel: a fight after the last order was left out).</summary>
         void Save()
         {
             if (Game == null || SessionPath.Length == 0) return;
+            savedTick = Game.Tick;
             try
             {
                 // a session still running has no closing checkpoint; the replay takes one at `until` (Engine.Play calls Finish), so the record
@@ -951,6 +956,8 @@ namespace Suborned.Play
             try { File.WriteAllText(Path.ChangeExtension(SessionPath, null) + ".end.txt", $"{Ending}\n{Game.FailText}\nengine {Bundle.Source} dll {Bundle.DllSha}\nstep mean {StepMsMean:F4} ms, max {StepMsMax:F3} ms over {steps} steps; engine per frame {FrameMsMean:F4} ms over {frames} frames\n"); } catch { }
             Debug.Log($"Play: {Ending}; session {SessionPath}");
         }
+
+        int savedTick = -1;
 
         void OnDestroy() { if (Game != null) Save(); if (background) background.SetActive(true); foreach (var c in covered) if (c) c.enabled = true; }
 
