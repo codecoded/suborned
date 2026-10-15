@@ -443,7 +443,7 @@
    "src": "mission.json destinations \"Between tables\""
   },
   "d:Under parasol": {
-   "at": [-850,-2350],
+   "at": [-810,-2370],
    "src": "mission.json destinations \"Under parasol\""
   },
   "d:Fountain": {
@@ -699,8 +699,6 @@
   "valeExits": 350,
   "valeAtCar": 370,
   "over": 510,
-  "guardWalkS": 47,
-  "guardStayS": 60,
   "blockMoveS": 8,
   "blockHoldS": 150,
   "src": "mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline's closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)"
@@ -714,35 +712,43 @@
    "id": "p-cafe-11",
    "name": "Inez Bermudez",
    "temperament": "idealist",
-   "need": "debt"
+   "need": "debt",
+   "secret": "affair",
+   "lover": "guard"
   },
   "driver": {
    "id": "p-records-office-27",
    "name": "Sigrid Lambros",
    "temperament": "mercenary",
-   "need": "cash"
+   "need": "cash",
+   "secret": "",
+   "lover": ""
   },
   "guard": {
    "id": "p-records-office-07",
    "name": "Leif Nair",
    "temperament": "loyal",
-   "need": "debt"
+   "need": "debt",
+   "secret": "affair",
+   "lover": "waitress"
   },
   "councillor": {
    "id": "p-records-office-49",
    "name": "Nikos Vale",
    "temperament": "loyal",
-   "need": "secret"
+   "need": "secret",
+   "secret": "",
+   "lover": ""
   },
   "from": "sim/data/fixtures/harbour-district.handover-fix.people.json",
-  "sha256": "77eba841828119bf033ce44f47fd7624deef1a33781546891b7d699ebe043c21",
+  "sha256": "c7a5453600290bf47fbc72c18533a8b14e8c906ed17a2d8452a24ff0a736eef6",
   "startsAt": "17:24:30",
   "fixture": "Pulse's Handover fix cast (out/people/harbour-district.handover-fix.cast.people.json, 2026-10-15 03:06, sha256 77eba841…), the one people file M-2 casts at 17:24:30 until Pulse's corrected cast is promoted (Aster, 2026-10-15)",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "ad40bdc2942faac0b198f72ead4177071ff6e215dc65776d6cd66de576d0452f",
+  "sha256": "d243474b6bcaf74ff08b367f8d4b98fecb3015ec9b26a35a84fce10751ba2741",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {

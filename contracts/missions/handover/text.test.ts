@@ -234,6 +234,9 @@ describe('verbs and refusals', () => {
         sent.set(m[1]!, f);
       }
     }
+    // `return No(code, why, tick: code == "summon-too-far" ? walk : -1)` sends the walk with that one code (a duration in ticks)
+    expect(simAll().join('\n')).toContain('tick: code == "summon-too-far"');
+    sent.set('summon-too-far', new Set(['tick']));
     expect(sent.size).toBeGreaterThanOrEqual(10);
     const bad: string[] = [];
     for (const [c, l] of Object.entries(t.locks)) {
@@ -244,12 +247,22 @@ describe('verbs and refusals', () => {
     }
     expect(bad).toEqual([]);
   });
+  test('every summons refusal has Inez\'s answer and the guard\'s, in lines that carry no numbers', () => {
+    if (!haveSim) return;
+    const summon = engineCodes().filter((c) => c.startsWith('summon-'));
+    expect(summon.length).toBeGreaterThanOrEqual(7);
+    for (const c of summon) for (const sp of ['waitress', 'guard']) expect(lookup(t, { event: 'summon-refused', speaker: sp, outcome: c })?.outcome, `${sp} ${c}`).toBe(c);
+    const stray = t.dialogue.filter((e) => e.event === 'summon-refused' && !summon.includes(e.outcome ?? '')).map(lineKey);
+    expect(stray).toEqual([]);
+    for (const c of summon) expect(c in t.locks, c).toBe(true);
+  });
   test('fillLock fills the numbers and the names', () => {
     const clock = (tk: number) => `${Math.floor(tk / 600)}:${String(Math.floor(tk / 10) % 60).padStart(2, '0')}`;
     expect(fillLock(t, { code: 'too-far', m: 4 }, { who: 'Inez' })).toBe('Too far from Inez. Walk within 4 m first.');
     expect(fillLock(t, { code: 'stand-at-door', cm: 600 })).toContain('within 6 m');
     expect(fillLock(t, { code: 'no-cash', usd: 90000 })).toContain('$90,000');
     expect(fillLock(t, { code: 'agent-busy', tick: 1830 }, { op: 'Scout', clock })).toBe('Scout is busy until 3:03. Wait, or use another agent.');
+    expect(fillLock(t, { code: 'summon-too-far', tick: 950 }, { clock })).toBe('Too far: his walk to her would take 1:35. He will not come.');
     expect(fillLock(t, { code: 'nope' })).toBeUndefined();
   });
   const dotnet = Bun.which('dotnet');
@@ -276,6 +289,9 @@ describe('verbs and refusals', () => {
         for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
         for (const m of src.matchAll(/Note\([^"()]*\?\s*"([a-z.\-]+)"\s*:\s*"([a-z.\-]+)"/g)) { codes.add(m[1]!); codes.add(m[2]!); } // Note(hit ? "shot.hit" : "shot.miss", …)
       }
+    // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed (the driver's own call logs "call.driver" literally)
+    expect(simAll().join('\n')).toContain('Note("call." + p.Role');
+    if (codes.delete('call.')) for (const r of ['waitress', 'driver']) codes.add('call.' + r);
     for (const c of ['scout.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
     const spoken = new Set(Object.values(t.events).flatMap((e) => e.log ?? []));
     const covers = (code: string, set: Iterable<string>) => [...set].some((p) => (p.endsWith('.') ? code.startsWith(p) : code === p));

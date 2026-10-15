@@ -122,6 +122,13 @@ export async function verifyQueries(db: string, p: Prepared): Promise<Check[]> {
     out.push(check(`role-fit: ${want.length} roles, ${want.reduce((n, x) => n + x.people.length, 0)} cast people with their ties equal the reference`, same(got, want), got, want));
   }
 
+  // lovers: each pair once, with both ends' positions and secrets (none in a cast whose tables make none)
+  {
+    const got = ((await ask(db, 'lovers')) as { a: string; b: string; a_position: string; b_position: string; a_secret?: string; b_secret?: string }[]).map(x => ({ a: x.a, b: x.b, a_position: x.a_position, b_position: x.b_position, ...(x.a_secret ? { a_secret: x.a_secret } : {}), ...(x.b_secret ? { b_secret: x.b_secret } : {}) }));
+    const want = ref.lovers(r);
+    out.push(check(`lovers: ${want.length} pairs, with both ends' secrets, equal the reference`, same(got, want), got, want));
+  }
+
   // neighbourhood and graph-view
   {
     const bad3: string[] = [], bad4: string[] = [];

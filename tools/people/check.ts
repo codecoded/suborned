@@ -6,11 +6,12 @@ import { People as PeopleSchema, Person as PersonSchema, type Person } from '../
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
 import { stepMin } from './day';
-import { expand, inShift, needsOf, needWeightsOf, rowOf, type Ctx } from './expand';
+import { expand, inShift, needsOf, needWeightsOf, routineMeet, rowOf, type Ctx } from './expand';
+import { withSecrets } from './secrets';
 import { castHandover, type MissionIn } from './handover';
 import { deriveKnowledge } from './knowledge';
 import { pinnedByRole } from './roles';
-import { positionsOf } from './rules';
+import { positionsOf, type Rules } from './rules';
 import { seatId, seatPoints, SEAT_TOL, STAND } from './seats';
 import { atCafeSide, type Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
@@ -22,7 +23,7 @@ const PersonShape = PersonSchema.shape as Record<string, unknown>;
 export const FIELD_READER: Record<string, string> = {
   id: '~key: the person\'s key; no rule reads it', tier: '~tiers: rules tiers.simulated (background people are counts, not persons)', name: 'name', temperament: 'temperament', need: 'need',
   institution: 'temperament', start: 'scales', memory: 'memory', ties: 'ties', routine: 'routine', home: 'routine', work: 'routine', look: '~look: the graybox job colour (brief 010 E), no rule reads it',
-  position: 'need', needWeights: 'need', // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
+  position: 'need', needWeights: 'need', secret: 'secret', // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
 };
 export const RULES_SRC: Record<string, string> = {
   'P-0': 'GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope\'s area × occupation pairs, and only those',
@@ -39,6 +40,8 @@ export const RULES_SRC: Record<string, string> = {
   'P-11': 'people.rules.json knowledge (P5): a keeper\'s needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08',
   'P-12': 'people.rules.json person.readBy (P2): every field a person carries names the rule that reads it; GDD §09 risk: sameness (Legion\'s bios did nothing)',
   'P-13': 'GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear',
+  'P-14': 'people.rules.json ties.kinds.lover (Motive briefs/011/motive-lovers.md §1): mutual, one per person, met on their routines, never family, at most maxShare of the simulated people',
+  'P-15': 'people.rules.json secrets (Motive briefs/011/motive-lovers.md §2): 0 or 1 per person from the closed list; affair exactly for everyone with a lover tie; the need secret retired into the record share',
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
 const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.value ?? (r.bad.length ? `${r.bad.length} fault(s)` : 'ok'), limit: r.limit ?? '0 faults', ok: !r.bad.length, ...(r.bad.length ? { detail: r.bad.slice(0, 12).join('; ') + (r.bad.length > 12 ? `; +${r.bad.length - 12} more` : '') } : {}), source: RULES_SRC[r.id] });
@@ -48,7 +51,7 @@ export type Checked = { ok: boolean; checks: Check[]; counts: { persons: number;
 
 /** `mission`: the Handover mission's clock and destinations (undefined: P-6 fails, there is nothing to cast). */
 export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civic: unknown }, given?: Pick<ReturnType<typeof expand>, 'people' | 'gaps'>): Checked {
-  const { scope, rules, cast } = c, out: R[] = [];
+  const { scope, rules } = c, cast = withSecrets(c.cast, rules), out: R[] = [];
   const parsed = CastSchema.safeParse(cast);
   const { people, gaps } = given ?? expand(c);
   const P = people.persons, pairs = scope.units.map(u => `${u.area}/${u.trade}`).concat(scope.homes.length ? [...new Set(scope.homes.map(h => `${h.area}/resident`))] : []);
@@ -203,13 +206,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
 
   // P-7 ties
   {
-    const bad: string[] = [], byId = new Map(P.map(p => [p.id, p])), T = rules.ties.kinds, inc = new Map<string, number>();
+    const bad: string[] = [], byId = new Map(P.map(p => [p.id, p])), T = rules.ties.kinds as Record<string, NonNullable<Rules['ties']['kinds'][keyof Rules['ties']['kinds']]> | undefined>, inc = new Map<string, number>();
     const stopsOf = (p: Person) => p.routine.stops.filter(s => s.doing !== 'home' && s.place !== 'beyond');
     for (const p of P) {
       if (p.ties.length < rules.ties.perPerson.min || p.ties.length > rules.ties.perPerson.max) bad.push(`${p.id}: ${p.ties.length} ties, rules ${rules.ties.perPerson.min}-${rules.ties.perPerson.max}`);
       const seen = new Set<string>();
       for (const t of p.ties) {
-        const q = byId.get(t.with), spec = T[t.kind as keyof typeof T];
+        const q = byId.get(t.with), spec = T[t.kind];
         if (!q) { bad.push(`${p.id}: ${t.kind} tie to unknown ${t.with}`); continue; }
         if (!spec) continue;
         if (q.id === p.id) bad.push(`${p.id}: tie to self`);
@@ -221,12 +224,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
         const w = (a: Person, b: Person) => a.work && b.work;
         if (spec.between === 'same-employer' && !(w(p, q) && p.work!.employer === q.work!.employer)) bad.push(`${p.id}: workmate ${q.id} has another employer`);
         if (spec.between === 'same-trade-or-employer' && !(w(p, q) && (p.work!.trade === q.work!.trade || p.work!.employer === q.work!.employer))) bad.push(`${p.id}: rival ${q.id} shares no trade or employer`);
+        if (spec.between === 'routine-meet' && !routineMeet(scope, p, q)) bad.push(`${p.id}: ${t.kind} partner ${q.id} is met on no routine: neither one's stops stand at the other's work while the other works`);
         if (spec.between === 'routine-stop' && p.work && q.work && p.work.employer === q.work.employer) bad.push(`${p.id}: regular of ${q.id}, who works for the same employer (${p.work.employer}): a regular is a customer of another unit, those are workmates`);
         if (spec.between === 'routine-stop' && !(q.work && stopsOf(p).some(s => (s.place === q.work!.place || (q.work!.unit === scope.cafeUnit && atCafeSide(scope, s.place, s.doing, ['pre-shift', 'evening']))) && (inShift(q.work!.shift, s.from) || inShift(q.work!.shift, Math.max(s.from, s.to - 1)))))) bad.push(`${p.id}: regular of ${q.id}, but no stop at their work while they are on shift`);
       }
-      for (const k of Object.keys(T)) if (p.ties.filter(t => t.kind === k).length > T[k as keyof typeof T].maxPerPerson) bad.push(`${p.id}: more than ${T[k as keyof typeof T].maxPerPerson} ${k} ties`);
+      for (const k of Object.keys(T)) { const mp = T[k]?.maxPerPerson; if (mp !== undefined && p.ties.filter(t => t.kind === k).length > mp) bad.push(`${p.id}: more than ${mp} ${k} ties`); }
     }
-    for (const [k, n] of inc) { const [kind] = k.split('/'); const m = (T[kind as keyof typeof T] as { maxIncoming?: number }).maxIncoming; if (m !== undefined && n > m) bad.push(`${k}: ${n} incoming, limit ${m}`); }
+    for (const [k, n] of inc) { const [kind] = k.split('/'); const m = (T[kind!] as { maxIncoming?: number } | undefined)?.maxIncoming; if (m !== undefined && n > m) bad.push(`${k}: ${n} incoming, limit ${m}`); }
     out.push({ id: 'P-7', rule: 'Ties are of the kinds, limits, directions and pairs the rules allow', bad, value: `${P.reduce((n, p) => n + p.ties.length, 0)} ties`, limit: 'rules ties' });
   }
 
@@ -323,13 +327,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     const bad: string[] = [], readers = Object.keys(rules.person.readBy.fields), carries = rules.tiers.simulated.carries;
     for (const f of carries) if (!readers.includes(f)) bad.push(`${f} is carried but no rule reads it`);
     for (const f of readers) if (!carries.includes(f)) bad.push(`${f} is read but not carried`);
-    const shape = Object.keys(PersonShape), seen = new Set<string>();
+    const shape = Object.keys(PersonShape).filter(f => f !== 'secret' || !!rules.secrets), seen = new Set<string>(); // a rulebook without `secrets` has no such field (a pinned older one)
     for (const f of shape) {
       const to = FIELD_READER[f];
       if (!to) bad.push(`field ${f} of a person has no named reader (add it to FIELD_READER with the rule that reads it)`);
       else if (!to.startsWith('~') && !readers.includes(to)) bad.push(`field ${f} is read by ${to}, which people.rules.json person.readBy does not list`);
     }
-    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f)) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
+    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f) && !(f === 'secret' && !rules.secrets)) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
     for (const p of P) for (const f of Object.keys(p)) if (!shape.includes(f) && !seen.has(f)) { seen.add(f); bad.push(`${p.id} carries ${f}, which the schema does not list`); }
     for (const b of people.background as Record<string, unknown>[]) for (const f of ['name', 'temperament', 'need', 'ties']) if (f in b) bad.push(`background ${b.plot} carries ${f}`);
     out.push({ id: 'P-12', rule: 'Every field a person carries names the rule that reads it', bad: [...new Set(bad)], value: `${shape.length} fields`, limit: 'each read by a rule' });
@@ -364,6 +368,60 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       if (!c.walk.free(pa.at as V)) bad.push(`standing point ${pa.id} is not walkable ground`);
     }
     out.push({ id: 'P-13', rule: 'No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear', bad: [...new Set(bad)], value: `${stops} stops at ${held.size} seats and standing points`, limit: 'one holder at a time, every seat on a chair' });
+  }
+  // P-14 lovers (brief 011)
+  {
+    const bad: string[] = [], spec = rules.ties.kinds.lover, byId = new Map(P.map(p => [p.id, p])), mine = (p: Person) => p.ties.filter(t => t.kind === 'lover');
+    const holders = P.filter(p => mine(p).length);
+    if (!spec) { for (const p of holders) bad.push(`${p.id}: carries a lover tie, which the rules do not have`); for (const r of cast.rows) for (const t of r.ties) if (t.kind === 'lover') bad.push(`${r.area}/${r.occupation}: names a lover tie, which the rules do not have`); }
+    else {
+      const cap = Math.floor((spec.maxShare ?? 1) * P.length);
+      if (holders.length > cap) bad.push(`${holders.length} of ${P.length} people hold a lover tie, the rules' share ${spec.maxShare} allows ${cap}`);
+      for (const p of holders) {
+        const t = mine(p), q = byId.get(t[0]!.with);
+        if (t.length > spec.maxPerPerson) bad.push(`${p.id}: ${t.length} lovers, rules ${spec.maxPerPerson}`);
+        if (!q) { bad.push(`${p.id}: lover ${t[0]!.with} is not in the cast`); continue; }
+        if (!mine(q).some(x => x.with === p.id)) bad.push(`${p.id}: lover ${q.id} does not return it`);
+        if (p.ties.some(x => x.kind === 'family' && x.with === q.id)) bad.push(`${p.id}: lover ${q.id} is family (a public partner)`);
+        if (!routineMeet(scope, p, q)) bad.push(`${p.id}: lover ${q.id} is met on no routine`);
+      }
+      for (const r of cast.rows) for (const t of r.ties) if (t.kind === 'lover') {
+        if (t.at && !(['pre-shift', 'evening'] as const).includes(t.at)) bad.push(`${r.area}/${r.occupation}: a lover tie at ${t.at}`);
+      }
+    }
+    const pairs = new Set(holders.map(p => [p.id, mine(p)[0]!.with].sort().join('|'))).size;
+    out.push({ id: 'P-14', rule: 'Lovers: mutual, one each, met on their routines, never family, at most the rules\' share of the people', bad: [...new Set(bad)], value: `${pairs} pairs, ${holders.length} of ${P.length} people`, limit: spec ? `≤ ${Math.round((spec.maxShare ?? 1) * 100)}% hold one` : 'no lover kind in the rules' });
+  }
+  // P-15 secrets (brief 011)
+  {
+    const bad: string[] = [], S = rules.secrets, list = S ? Object.keys(S.list) : [];
+    if (!S) {
+      for (const p of P) if ('secret' in p) bad.push(`${p.id}: carries a secret, which the rules do not have`);
+      for (const r of cast.rows) if (r.secrets?.length) bad.push(`${r.area}/${r.occupation}: names secrets, which the rules do not have`);
+    } else {
+      for (const r of cast.rows) {
+        const key = `${r.area}/${r.occupation}`, seen = new Set<string>();
+        for (const x of r.secrets ?? []) {
+          if (!list.includes(x.secret)) bad.push(`${key}: secret ${x.secret} is not in the rules`);
+          else if (x.secret === 'affair') bad.push(`${key}: names the affair, which is never written in a table: everyone with a lover tie holds it`);
+          else if ((S.list as Record<string, { requires: string }>)[x.secret]?.requires === 'lover-tie') bad.push(`${key}: ${x.secret} needs a lover tie, which a table share cannot give`);
+          if (seen.has(x.secret)) bad.push(`${key}: secret ${x.secret} named twice`);
+          seen.add(x.secret);
+        }
+        if (r.needs.some(n => n.need === 'secret')) bad.push(`${key}: weights the need secret, which the secrets replace (record share)`);
+      }
+      for (const p of P) {
+        const lover = p.ties.some(t => t.kind === 'lover');
+        if (p.secret === undefined) { bad.push(`${p.id}: carries no secret field (null for none)`); continue; }
+        if (p.secret !== null && !list.includes(p.secret)) bad.push(`${p.id}: secret ${p.secret} is not in the rules`);
+        if (lover && p.secret !== 'affair') bad.push(`${p.id}: has a lover tie but secret ${p.secret ?? 'none'}, not the affair`);
+        if (!lover && p.secret === 'affair') bad.push(`${p.id}: holds the affair with no lover tie`);
+        if (p.need === 'secret') bad.push(`${p.id}: need secret, which the secrets replace`);
+        if (p.secret === 'record') { const row = p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, scope.homes.find(h => h.plot === p.home.plot)?.area ?? scope.areas[0]!, 'resident'); if (!row?.secrets?.some(x => x.secret === 'record')) bad.push(`${p.id}: holds a record, which its row does not name`); }
+        if (p.secret === 'affair') { const q = P.find(x => x.id === p.ties.find(t => t.kind === 'lover')?.with); if (q && q.secret !== 'affair') bad.push(`${p.id}: the affair is not held by lover ${q.id}`); }
+      }
+    }
+    out.push({ id: 'P-15', rule: 'Secrets: 0 or 1 per person from the rules\' list; the affair exactly for everyone with a lover tie; the need secret retired', bad: [...new Set(bad)], value: S ? `${P.filter(p => p.secret === 'affair').length} affairs, ${P.filter(p => p.secret === 'record').length} records` : 'none in the rules', limit: S ? 'one each, listed' : 'none' });
   }
   const checks = out.map(row);
   void rowOf; void (null as unknown as Unit);

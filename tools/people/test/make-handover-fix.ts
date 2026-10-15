@@ -23,6 +23,8 @@ const rows = base.rows.map(r => {
       { kind: 'regular', share: 0.3, positions: ['clerk'] },
       { kind: 'regular', share: 1, positions: ['guard'], with: 'server', at: 'pre-shift' as const }, // the morning's server, whom he meets before his shift
       { kind: 'regular', share: 1, positions: ['guard'], with: 'server', at: 'evening' as const },   // the afternoon's, whom he meets after it (the watch's pre-shift stop is the same hour)
+      // Inez and the door guard (brief 011, Sky's canon): a lover tie from the door guard to the afternoon's server, drawn along the regular tie above; only the door guard carries it
+      { kind: 'lover' as const, share: 1, positions: ['guard'], posts: ['door' as const], with: 'server', at: 'evening' as const },
       { kind: 'workmate', share: 1, positions: ['official-driver'], with: 'councillor' },
       { kind: 'family', share: 0.3 },
     ],

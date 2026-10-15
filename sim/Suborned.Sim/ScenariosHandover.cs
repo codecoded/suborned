@@ -102,7 +102,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Between tables")); // 7.3 m from the café door, behind where the guard will stand
                 r.Do(Fixer, "call", Inez);
-                r.Wait(T(g.S.GuardWalkS)); // mission.json windows.front-door: the walk (45 s, then 47; the prototype's 30)
+                r.Wait(g.VisitWalkTicks); // the summoned lover's own walk, the grid route at walking pace (rulebook summon), not a mission number
                 r.Eq(g.GuardPose()!.Value.phase, "at café", "the guard is at the café");
                 r.Is(g.GuardReachedCafe, "the guard reached Inez");
                 r.Fire(Enf, GuardR);
@@ -129,7 +129,7 @@ namespace Suborned.Sim
                 r.Done(Fixer);
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
-                r.To(g.LureTick + T(g.S.GuardWalkS));
+                r.To(g.LureTick + g.VisitWalkTicks);
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 r.Is(g.InezWitnessedShooting, "Inez witnesses the shooting");
@@ -157,7 +157,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Plaza east"));
                 r.Do(Fixer, "call", Inez);
-                r.Wait(T(g.S.GuardWalkS + g.S.GuardStayS + 15 - 2)); // walk, stay, 15 s back (the prototype's 30 + 60 + 15), less the draw and the aim
+                r.Wait(g.VisitWalkTicks + T(g.R.SummonStayS + 15 - 2)); // walk, stay, 15 s back (the prototype's 30 + 60 + 15), less the draw and the aim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Is(g.GuardPose()!.Value.phase != "returning to door", $"seeing the weapon, or hit, on his walk back the guard stops where he is ({g.GuardPose()!.Value.phase})");
@@ -527,7 +527,7 @@ namespace Suborned.Sim
                 r.Is(!g.Inez.KTemperament && g.Preview("pay", Inez).Outcome == "refused", "the cell learns only that she refuses a fee (✗), not her temperament");
             });
 
-            Add("S25", "434", "Pressure: $0, +4 T (one step worse on an Idealist), and she can be called.", r =>
+            Add("S25", "434", "Pressure: $0, +3 T (exposure of her affair, learned by Listen: no step worse on an Idealist; Motive, motive-lovers.md), and she can be called.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
@@ -536,7 +536,7 @@ namespace Suborned.Sim
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "she agrees under pressure");
                 r.Eq(g.Cash, 100000L, "pressure avoids the payment");
-                r.Eq(g.Trail, 4, "pressure leaves a larger trail: +3, +1 the wrong approach");
+                r.Eq(g.Trail, 3, "pressure by exposure leaves +3 T: Listen found her affair, so no wrong-approach step (Motive, motive-lovers.md §2.2; was +4)");
                 r.Is(g.CanCall(Inez), "she can be called");
             });
 
@@ -838,7 +838,8 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
                 r.Eq(g.Preview("help", Inez).Outcome, "turned", "after Listen the card says Help turns her");
                 r.Eq(g.Preview("pay", Inez).Outcome, "refused", "and that Pay is refused");
-                r.Eq(g.Preview("pressure", Inez).Trail, 4L, "and that Pressure, the wrong approach, costs +4 T");
+                r.Eq(g.Preview("pressure", Inez).Trail, 3L, "and that Pressure costs +3 T: Listen found her affair, so exposure is at its proper step (Motive, motive-lovers.md §2.2)");
+                r.Is(g.Preview("pressure", Inez).Leverage, "the card reads exposure: her secret");
             }, tip);
 
             Add("N15", "—", "K1, K2, K8 in the mission: Help writes a memory entry with the Fixer's face; gratitude is +1 loyalty; the price is line items.", r =>

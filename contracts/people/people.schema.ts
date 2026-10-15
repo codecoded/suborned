@@ -34,6 +34,7 @@ export const Person = z.object({
   memory: z.tuple([]).describe('empty at the start (rules person.memoryAtStart)'),
   ties: z.array(z.object({ kind: z.string(), with: z.string() })).describe('two-way ties stand on both people; a directed tie stands on its source'),
   look: z.object({ block: z.string().describe('job colour block key, e.g. job/food') }),
+  secret: z.enum(['affair', 'record']).nullable().optional().describe('0 or 1 secret (rules secrets): `affair` for everyone with a lover tie, `record` a past on file; null for none. Written only when the rules have a `secrets` section (rules pinned before it make people without the field). Read by turn.pressure and the lover\'s summons'),
   position: id.describe('the person\'s position in their unit, or their role at a civic employer; "resident" for a resident (brief 010, keel-rulebook.md point 8)'),
   needWeights: z.record(id, z.number().int().positive()).describe('the needs the person\'s own cast row offers their position, as integer per mille (largest remainder, sum 1000): the weights the rulebook draws a replacement need from (Sky Q2). `need` is one of them'),
 });

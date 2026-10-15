@@ -230,6 +230,89 @@ namespace Suborned.Sim
                 r.Is(g.Incidents.Exists(i => i.Cause == "violence:waitress" && i.Witnesses.Count >= inRange.Count), "and they are the incident's witnesses (for the investigators)");
             });
 
+            Add("N39", "—", "Route A's window is the lover tie (Motive, briefs/011/motive-lovers.md; Sky: Inez and the door guard are lovers): the turned Inez's call sends for the guard, read from the city's ties; he walks the grid to her, stays 60 s (summon.stay) and walks back.", r =>
+            {
+                var g = r.G;
+                r.Is(g.Inez.Lover == g.GuardP && g.GuardP.Lover == g.Inez, "the cast's people file ties them as lovers, both ends");
+                r.Do(Fixer, "call", Inez);
+                var c = g.Log.FindLast(l => l.Code == "call.waitress");
+                r.Is(c.Code == "call.waitress", $"the call sends for him: {c.Text}");
+                int walk = g.VisitWalkTicks;
+                r.Eq(g.GuardAwayUntil - g.LureTick, 2 * walk + T(g.R.SummonStayS), "away for his walk there, 60 s, and his walk back");
+                r.Is(walk > 0 && walk <= T(g.R.SummonWalkMaxS), $"his walk from the door is {walk / 10} s, within summon.walkMax");
+                r.Wait(T(5));
+                r.Is(!g.GuardAtDoor, "the door is empty: route A's window");
+                r.To(g.LureTick + walk);
+                r.Eq(g.GuardPose()!.Value.phase, "at café", "he is with her");
+                r.To(g.GuardAwayUntil);
+                r.Is(g.GuardAtDoor, "and back at his post when the window closes");
+                r.Is(g.Chain.Contains("waitress-calls-guard"), "the debrief chain names it");
+            }, Turned(Inez));
+
+            var untied = Turned(Inez); untied.Untie.Add(Inez);
+            Add("N39b", "—", "With no lover tie the call doesn't pull him (systems over scripts: the lure is the tie, never the mission): a turned Inez has nothing to do on a call.", r =>
+            {
+                var g = r.G;
+                r.Is(g.Inez.Lover == null && g.Inez.Secret.Length == 0, "the tie and her affair are cut (a test's start state)");
+                var (ok, code, _) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Inez });
+                r.Is(!ok && code == "nothing-to-call", $"refused: {code}");
+                r.Wait(T(5));
+                r.Is(g.GuardAtDoor && g.Trail == 0, "the guard stays at the door, and the refused call costs nothing");
+            }, untied);
+
+            Add("N39c", "—", "The summons refused, each at no cost with its code (rulebook summon): already away (busy), come once this shift, and Alert above summon.alertMax; and Alert reaching 2 mid-visit sends him running back.", r =>
+            {
+                var g = r.G;
+                r.Do(Fixer, "call", Inez);
+                int trail = g.Trail;
+                var (ok, code, _) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Inez });
+                r.Is(!ok && code == "summon-busy" && g.Trail == trail, $"while he's away: {code}, no cost");
+                r.To(g.GuardAwayUntil + 1);
+                (ok, code, _) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Inez });
+                r.Is(!ok && code == "summon-came-once" && g.Trail == trail, $"back at his post: {code}, no cost");
+                r.Is(!g.CanCall(Inez), "the card says the call can't be given");
+            }, Turned(Inez));
+
+            Add("N39d", "—", "Alert reaching 2 ends the visit (rulebook summon): he runs back to his post at security's pace; and a call at Alert 2 is refused (summon-alert).", r =>
+            {
+                var g = r.G;
+                r.To(r.SendTo(Enf, BesideDoor));
+                r.Do(Fixer, "call", Inez);
+                int planned = g.GuardAwayUntil;
+                r.Wait(T(20));
+                r.Fire(Enf, "patrol");
+                r.Is(r.Until(() => g.Alert >= 2, T(60)), "gunfire: Alert 2");
+                r.Wait(1);
+                r.Is(g.Log.Exists(l => l.Code == "guard.recalled"), "the visit ends: he runs back");
+                r.Is(g.GuardAwayUntil < planned, $"back sooner than the planned window ({Report.Clock(g.GuardAwayUntil)} < {Report.Clock(planned)})");
+            }, Turned(Inez));
+
+            var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" };
+            Add("N40", "—", "Watching the lovers together teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
+            {
+                var g = r.G;
+                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Scout, "d:Courtyard")));
+                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                r.Is(!g.Inez.KSecret && !g.GuardP.KSecret, "help needs no secret: the affair is still unknown");
+                r.Eq(g.Preview("pressure", GuardR).Outcome == "?" || !g.Preview("pressure", GuardR).Leverage, true, "no leverage on the guard yet");
+                r.Do(Fixer, "call", Inez);
+                r.To(g.LureTick + g.VisitWalkTicks);
+                r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.Is(g.Inez.KSecret && g.GuardP.KSecret, "a Watch that ends with them together teaches the affair, on both");
+                var q = g.Preview("pressure", GuardR);
+                r.Is(q.Leverage, "the card reads exposure: his secret");
+                r.Eq(q.Reports, "no", "a Loyal man pressed by exposure doesn't report it");
+                r.Eq(q.Trail, (long)g.R.Num("p:approaches.pressure.trail"), "at its proper step: no wrong-approach line for a Loyal guard");
+                var gp = g.GuardPose()!.Value.pos;
+                if (!G.Within(r.Op(Fixer).Pos, gp, g.R.ApproachReachCm)) r.To(r.SendTo(Fixer, g.S.Grid.NearestFree(gp)!.Value));
+                r.Is(g.GuardPose()!.Value.phase == "at café", "he is still with her");
+                {
+                    int alert = g.Alert;
+                    r.Do(Fixer, "turn", GuardR, "pressure"); r.Done(Fixer);
+                    r.Is(g.GuardP.Turned && g.Alert == alert, "turned, and no report");
+                }
+            }, known);
+
             Add("N26", "—", "Downed and carried (motive-fights.md §2.2, §1.1): the guard downs the Scout, who holds fire; the Fixer lifts him in 3 s; the carrier can't run or fire; the Scout's orders are refused.", r =>
             {
                 var g = r.G;

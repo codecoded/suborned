@@ -52,6 +52,7 @@ namespace Suborned.Sim
             foreach (var p in g.People)
             {
                 h.S(p.Role).S(p.Temperament).S(p.Need).Z(p.Turned).Z(p.NeedMet).Z(p.Down).Z(p.KRoutine).Z(p.KNeed).Z(p.KTemperament);
+                if (p.Secret.Length > 0) h.S(p.Secret).Z(p.KSecret).I(p.Summoned); // only a person with a secret adds bytes
                 foreach (var v in p.Sc) h.I(v);
                 foreach (var a in p.KnownRefused) h.S(a);
                 h.I(p.Memory.Count);

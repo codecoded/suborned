@@ -37,6 +37,7 @@ export const Tie = z.object({
   share: z.number().min(0).max(1).describe('share of the unit\'s people who carry one tie of this kind'),
   positions: z.array(word).max(8).optional().describe('only these positions of the row carry this pattern (the guard\'s regulars, the driver\'s councillor); absent: every position'),
   with: word.optional().describe('the tie is made with a person of this position (a server, a councillor); absent: anyone the kind allows'),
+  posts: z.array(z.enum(['door', 'inside', 'bay', 'official'])).max(4).optional().describe('only people standing these posts carry this pattern: the door guard, not the guards on rounds'),
   at: z.enum(['pre-shift', 'evening']).optional().describe('a regular tie only: the stop of the carrier\'s day it is aimed at, by the staff on shift when they arrive; absent: the pre-shift stop first, then any other, as before'),
 });
 
@@ -47,6 +48,7 @@ export const Row = z.object({
   temperaments: z.array(z.object({ temperament: word, weight })).min(1).max(4),
   needs: z.array(z.object({ need: word, weight, positions: z.array(word).max(8).optional().describe('only these positions of the row are drawn this weight (the café server weights debt, the driver cash); absent: every position') })).min(1).max(12),
   ties: z.array(Tie).max(8),
+  secrets: z.array(z.object({ secret: word, share: z.number().min(0).max(1) })).max(2).optional().describe('the share of the row\'s people who hold this secret: `record` (a past on file; it replaces the need `secret`, whose weight moves here). `affair` is never written here: everyone with a lover tie holds it'),
   routines: z.array(Routine).min(1).max(4),
 });
 

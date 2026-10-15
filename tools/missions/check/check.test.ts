@@ -116,7 +116,7 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at 
     expect(c.plays.loud!.trail).toBeGreaterThan(c.plays['route-a-pressure']!.trail); // MC-2 against every quiet variant (Motive's addendum)
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
-  test('the latest recorded check (c005, pinned to a103daf) replays to its recorded hashes', async () => {
+  test('the latest fully pinned check (c005, a103daf) replays to its recorded hashes', async () => {
     const r = await replay(join(runsDir('handover'), 'c005'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);

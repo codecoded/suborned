@@ -25,7 +25,7 @@ export const nodeStatement = (n: Node) => `CREATE ${recordId(n.table, n.id)} CON
 export const edgeStatement = (e: Edge) => `RELATE ${recordId(e.from.table, e.from.id)}->${recordId(e.table, e.id)}->${recordId(e.to.table, e.to.id)} CONTENT ${literal(e.fields)};`;
 
 /** The load order: lookups first, then the nodes a link points to, then everything that links. */
-export const NODE_ORDER = ['temperament', 'need', 'tie_kind', 'place', 'unit', 'shift', 'role', 'person'] as const;
+export const NODE_ORDER = ['temperament', 'need', 'secret', 'tie_kind', 'place', 'unit', 'shift', 'role', 'person'] as const;
 export const EDGE_ORDER = ['lives_at', 'works_at', 'tie', 'stops_at', 'sits_at', 'knows_need_of', 'has_need', 'has_temperament', 'casts'] as const;
 export const TABLES = [...NODE_ORDER, ...EDGE_ORDER] as const;
 

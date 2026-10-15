@@ -91,11 +91,11 @@ namespace Suborned.Sim
     {
         public static readonly string[] ScaleNames = { "bravery", "resentment", "fear", "loyalty" };
         public const int Bravery = 0, Resentment = 1, Fear = 2, Loyalty = 3;
-        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, Knows = { "routine", "need", "temperament", "refused" };
+        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, Knows = { "routine", "need", "temperament", "refused", "secret" };
 
         static readonly Dictionary<string, string[]> CondKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            ["tier"] = new[] { "is" }, ["turned"] = new[] { "is", "of" }, ["known"] = new[] { "what" }, ["requires"] = new[] { "approach" },
+            ["tier"] = new[] { "is" }, ["turned"] = new[] { "is", "of" }, ["known"] = new[] { "what", "is" }, ["leverage"] = new[] { "approach" }, ["lover-within"] = new[] { "m" }, ["requires"] = new[] { "approach" },
             ["need-met-by"] = new[] { "approach" }, ["need-is"] = new[] { "in" }, ["need-met"] = new[] { "is" }, ["reach"] = new[] { "m" },
             ["cash-covers"] = new string[0], ["memory"] = new[] { "act", "has", "this", "of" }, ["fit"] = new[] { "is" }, ["temperament"] = new[] { "in" },
             ["standing"] = new[] { "band" }, ["orders-reached"] = new[] { "is" }, ["reports"] = new string[0], ["reports-approach"] = new string[0],
@@ -114,7 +114,7 @@ namespace Suborned.Sim
         };
         /// <summary>The kinds the engine itself evaluates inside a mission (the interpreted events: scout.*, turn.*; the reports table).</summary>
         static readonly HashSet<string> MissionKinds = new HashSet<string>(StringComparer.Ordinal)
-        { "tier", "turned", "known", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
+        { "tier", "turned", "known", "leverage", "lover-within", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
         /// <summary>The effects the engine applies inside a mission's interpreted events.</summary>
         static readonly HashSet<string> MissionEffects = new HashSet<string>(StringComparer.Ordinal) { "charge", "turn", "move", "need-met", "learn", "forget", "remember", "report", "debrief" };
 
@@ -165,6 +165,9 @@ namespace Suborned.Sim
         public readonly Weapon Pistol, Carbine;
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
         public readonly string CancelTurn, CancelEnter, CancelTake;
+        // the summons and the secret (Motive, briefs/011/motive-lovers.md)
+        public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift, TogetherCm;
+        public readonly HashSet<string> SecretIds = new HashSet<string>(StringComparer.Ordinal);
         // the fight AI (Pulse, briefs/011/pulse-fight-ai.md)
         public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
             SeekRivalCm, SeekPoliceCm, SeekResponseCm, SeekAllyCm, SeekGuardCm, RivalGoneCm, GuardReturnS, PatrolResumeS;
@@ -188,9 +191,9 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "crowd", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
-            pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
+            pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
 
             // ---- people rules: what the engine reads, strictly
@@ -338,6 +341,13 @@ namespace Suborned.Sim
             var sk = ai["seek"]; sk.Only("rival", "police", "response", "ally", "guard");
             SeekRivalCm = RI(sk["rival"]); SeekPoliceCm = RI(sk["police"]); SeekResponseCm = RI(sk["response"]); SeekAllyCm = RI(sk["ally"]); SeekGuardCm = RI(sk["guard"]);
             RivalGoneCm = RI(ai["rivalGone"]); GuardReturnS = RI(ai["guardReturn"]); PatrolResumeS = RI(ai["patrolResume"]);
+            var su = b["summon"]; su.Only("stay", "walkMax", "alertMax", "perShift", "together", "rule", "tag", "src", "proposed", "reason");
+            SummonStayS = RI(su["stay"]); SummonWalkMaxS = RI(su["walkMax"]); SummonAlertMax = RI(su["alertMax"]); SummonsPerShift = RI(su["perShift"]); TogetherCm = RI(su["together"]) * 100;
+            if (pp.Opt("secrets") is JNode sec)
+            {
+                sec.Only("rule", "perPerson", "list", "src", "proposed", "reason");
+                foreach (var kv in sec["list"].Entries) { kv.Value.Only("requires", "learnedBy", "src", "proposed", "reason"); OneOf(kv.Value["requires"], new[] { "nothing", "lover-tie" }); SecretIds.Add(kv.Key); }
+            }
             var cr = b["crowd"]; cr.Only("scatter", "startle", "startleFearful", "run", "fleeMax", "quiet", "occlude", "rule", "tag", "src", "proposed", "reason");
             CrowdScatterCm = RI(cr["scatter"]) * 100; CrowdStartleTicks = RI(cr["startle"]); CrowdStartleFearfulTicks = RI(cr["startleFearful"]); CrowdRunSpeed = RI(cr["run"]);
             CrowdFleeMaxCm = RI(cr["fleeMax"]); CrowdQuietS = RI(cr["quiet"]); CrowdOccludeCm = RI(cr["occlude"]);
@@ -450,7 +460,9 @@ namespace Suborned.Sim
             {
                 case "tier": OneOf(n["is"], new[] { "simulated", "background" }); break;
                 case "turned": Bool("is"); if (n.Has("of")) OneOf(n["of"], new[] { "friend" }); break;
-                case "known": OneOf(n["what"], Knows); break;
+                case "known": OneOf(n["what"], Knows); Bool("is"); break;
+                case "leverage": Known(approaches, c.S("approach"), "approach", w); break;
+                case "lover-within": Num(c.S("m")); break;
                 case "requires": case "need-met-by": Known(approaches, c.S("approach"), "approach", w); break;
                 case "need-is": foreach (var x in c.L("in")) Known(Needs, x, "need", w); break;
                 case "need-met": case "orders-reached": case "talker": case "lies": case "cell": case "called": case "exposed": case "tie-between-holds": Bool("is"); break;

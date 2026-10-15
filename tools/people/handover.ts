@@ -13,7 +13,7 @@ export type MissionIn = CastMission & { destinations: { name: string; at: [numbe
 export const startMin = (m: { clock: { startsAt: string } }) => { const [h, mi, s] = m.clock.startsAt.split(':').map(Number); return h! * 60 + mi! + (s ?? 0) / 60; };
 
 /** What the roles read of the people rules (temperament refusals, each need's approaches). */
-export const castRulesOf = (r: { temperaments: Record<string, { refuses: readonly string[] }>; needs: { list: Record<string, { metBy: readonly string[] }> } }): CastRules => ({ temperaments: r.temperaments, needs: r.needs.list });
+export const castRulesOf = (r: { temperaments: Record<string, { refuses: readonly string[] }>; needs: { list: Record<string, { metBy: readonly string[] }> }; secrets?: { list: Record<string, unknown> } }): CastRules => ({ temperaments: r.temperaments, needs: r.needs.list, ...(r.secrets ? { secrets: r.secrets.list } : {}) });
 
 /** Who the Handover casts for each role the mission names (P-6, the same casting as M-2): employer, position, shift and place, and
  *  the role's need, approach and regularOf under `rules`. Without `rules` only the place counts (a fallback for naming a

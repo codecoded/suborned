@@ -10,10 +10,11 @@ const text = z.string().min(1);
 
 export const TEMPERAMENTS = ['idealist', 'mercenary', 'fearful', 'loyal'] as const;
 export const APPROACHES = ['ask', 'pay', 'help', 'pressure'] as const;
-export const TIE_KINDS = ['family', 'workmate', 'regular', 'debtor', 'rival'] as const;
+export const TIE_KINDS = ['family', 'workmate', 'regular', 'debtor', 'rival', 'lover'] as const;
 export const SCALES = ['bravery', 'resentment', 'fear', 'loyalty'] as const;
 export const NEED_REQUIRES = ['nothing', 'home', 'work', 'family-tie', 'rival-tie'] as const;
-export const TIE_BETWEEN = ['any', 'same-employer', 'routine-stop', 'same-trade-or-employer'] as const;
+export const TIE_BETWEEN = ['any', 'same-employer', 'routine-stop', 'same-trade-or-employer', 'routine-meet'] as const;
+export const SECRETS = ['affair', 'record'] as const;
 export const FACTS = ['fixer-face', 'cell-car', 'place-time'] as const;
 export const IDENTITY_STATES = ['face', 'alias', 'name'] as const; // DF's three (Adams 2017); the file says which are in play
 export const KNOWN_VIA = ['workmate', 'unit-regular'] as const;
@@ -70,6 +71,9 @@ const Tie = ground({
   maxIncoming: z.number().int().positive().optional(), // directed ties: the cap on the receiving end
   between: z.enum(TIE_BETWEEN),
   introduces: z.boolean(), // §04 introduces a friend: a turned contact can introduce the people this tie joins them to
+  secret: z.boolean().optional(), // the lover tie: nobody in the city is told it, and the cell learns it only with the secret (Motive, motive-lovers.md)
+  maxShare: z.number().positive().max(1).optional(), // the share of a district's simulated people who may hold it
+  formsAlong: z.array(z.enum(TIE_KINDS)).optional(), // the generator draws it first from these ties
 }).refine((t) => (t.direction === 'both') === (t.maxIncoming === undefined), { message: 'a directed tie sets maxIncoming; a two-way tie does not' });
 
 const Trade = maybeProposed({ category: id, allow: z.array(temperament).min(2) });
@@ -86,7 +90,8 @@ export const PeopleRules = z.strictObject({
   schema: z.literal('suborned.people.rules/1'),
   author: text, gdd: text, rule: text,
   person: z.strictObject({
-    is: z.tuple([z.literal('routine'), z.literal('need'), z.literal('temperament'), z.literal('memory')]),
+    // a person is routine + need + temperament + memory, and sometimes a secret; rules pinned before the secret (recorded runs) say four
+    is: z.union([z.tuple([z.literal('routine'), z.literal('need'), z.literal('temperament'), z.literal('memory'), z.literal('secret')]), z.tuple([z.literal('routine'), z.literal('need'), z.literal('temperament'), z.literal('memory')])]),
     needsPerPerson: z.literal(1),
     memoryAtStart: z.literal('empty'),
     src: text, reason: text,
@@ -105,9 +110,15 @@ export const PeopleRules = z.strictObject({
     list: z.record(id, Need).refine((l) => Object.keys(l).length > 0, { message: 'the need list is empty' }),
     requiresKinds: z.strictObject(Object.fromEntries(NEED_REQUIRES.map((k) => [k, text])) as Record<(typeof NEED_REQUIRES)[number], typeof text>),
   }),
+  // optional so that the rules a recorded run pinned (before the lover and the secret) still parse: the tools read an absent `secrets` as none
+  secrets: ground({
+    rule: text,
+    perPerson: z.strictObject({ min: z.literal(0), max: z.literal(1) }),
+    list: z.strictObject(Object.fromEntries(SECRETS.map((k) => [k, ground({ requires: z.enum(['nothing', 'lover-tie']), learnedBy: z.array(z.string().regex(/^[a-z]+\.[a-z-]+$/)).min(1) })])) as Record<(typeof SECRETS)[number], ReturnType<typeof ground>>),
+  }).optional(),
   ties: ground({
-    kinds: z.strictObject({ family: Tie, workmate: Tie, regular: Tie, debtor: Tie, rival: Tie }),
-    betweenKinds: z.strictObject(Object.fromEntries(TIE_BETWEEN.map((k) => [k, text])) as Record<(typeof TIE_BETWEEN)[number], typeof text>),
+    kinds: z.strictObject({ family: Tie, workmate: Tie, regular: Tie, debtor: Tie, rival: Tie, lover: Tie.optional() }),
+    betweenKinds: z.strictObject({ ...(Object.fromEntries(TIE_BETWEEN.filter((k) => k !== 'routine-meet').map((k) => [k, text])) as Record<Exclude<(typeof TIE_BETWEEN)[number], 'routine-meet'>, typeof text>), 'routine-meet': text.optional() }),
     perPerson: z.strictObject({ min: z.number().int().nonnegative(), max: z.number().int().positive() }),
     noSelf: z.literal(true), onePerKindPerPair: z.literal(true), simulatedOnly: z.literal(true),
   }),

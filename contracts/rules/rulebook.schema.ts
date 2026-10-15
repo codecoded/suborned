@@ -15,7 +15,7 @@ export const Ref = z.string().regex(/^(v:[a-z][a-z0-9-]*|p:[a-zA-Z][a-zA-Z0-9.-]
 export const TAGS = ['B', 'S', 'L'] as const;
 export const BANDS = ['hero', 'neutral', 'menace'] as const;
 export const FITS = ['suits', 'worse', 'refused'] as const;
-export const KNOWS = ['routine', 'need', 'temperament', 'refused'] as const; // refused: the cell knows this event's approach is refused by this person
+export const KNOWS = ['routine', 'need', 'temperament', 'refused', 'secret'] as const; // refused: the cell knows this event's approach is refused by this person
 export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
 export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'contact', 'person', 'investigator', 'city'] as const;
 
@@ -31,7 +31,9 @@ const ground = <T extends z.ZodRawShape>(shape: T) => z.strictObject({ ...shape,
 export const Cond = z.discriminatedUnion('k', [
   z.strictObject({ k: z.literal('tier'), is: z.enum(['simulated', 'background']) }), // people.rules tiers
   z.strictObject({ k: z.literal('turned'), is: z.boolean(), of: z.literal('friend').optional() }),
-  z.strictObject({ k: z.literal('known'), what: Know }), // the cell knows this of the subject
+  z.strictObject({ k: z.literal('known'), what: Know, is: z.boolean().optional() }), // the cell knows this of the subject (is false: it does not)
+  z.strictObject({ k: z.literal('leverage'), approach: id }), // the approach's knowledge known and the need it acts on, or the subject's secret known (Motive, motive-lovers.md §2.2)
+  z.strictObject({ k: z.literal('lover-within'), m: Ref }), // the subject's lover stands within m of them (a Watch that sees them together)
   z.strictObject({ k: z.literal('requires'), approach: id }), // people.rules approaches[a].requires is known
   z.strictObject({ k: z.literal('need-met-by'), approach: id }), // the subject's need lists the approach in people.rules metBy
   z.strictObject({ k: z.literal('need-is'), in: z.array(id).min(1) }),
@@ -207,6 +209,8 @@ export const Rulebook = z.strictObject({
   }),
   // The crowd in a fight (Pulse §4): every number a ref.
   crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, rule: text }),
+  // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
+  summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref, rule: text }),
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
   cancel: ground({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),

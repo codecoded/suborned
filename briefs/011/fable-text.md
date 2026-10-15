@@ -139,3 +139,11 @@ Inez      Oh! Oh no, I'm sorry!
 **Existing text changed for the canon.** The briefing's front-door hint ("the guard takes his coffee at Inez's café, and she is close to him") and pickup hint (no longer a plan: "Vale rides from the official bay, and his driver is short of cash"); the target lines for Inez and the guard; the action cards for Listen, Pressure and Call on Inez; the Scout's Listen read-outs for Inez (now name the guard); Inez's Pressure replies (about being told on, not the debt); her confirm lines when called; the guard's line when she calls him; and new `questioned` lines (the debrief hooks: a pressured Inez may identify the Fixer, a helped one lies; the helped warning is `fight-warned`).
 
 **For the engine (Keel/Motive).** The text assumes Pressure on Inez threatens the secret and that the call's window is the guard leaving for her. Neither is text's to decide: if the engine models the secret (a need of kind `secret` on Inez), the Listen result line and the Pressure scenes already read right. Nothing in the text carries a mechanic. 329 dialogue entries, 706 lines, 102 scenes (73 approach, 17 overheard, 8 call, 4 city; two variants each); 62 tests green, typecheck clean.
+
+## Update: Keel's lovers engine (uncommitted tree)
+
+- **Eight new refusal codes, with lines:** `summon-busy`, `summon-came-once`, `summon-alert`, `summon-saw-violence`, `summon-too-far` (its line carries `{tick}`: the walk, a duration in ticks, filled as m:ss), `summon-off-street`, `summon-no-visit`, and `no-leverage` ("{who} has nothing to lean on yet. Have the Scout Listen.").
+- **In voices.** New event `summon-refused` (outcome is the code): Inez answers the Fixer ("He came already. He can't again."), and the guard, when he is within earshot ("I came once. The door can't spare me twice."). Two lines each, all seven summons reasons.
+- **`guard.recalled`.** New event `guard-recalled`: the guard ("Alarm! Back to my post!"), Inez ("Go! Quickly, before anyone sees.") and the Scout.
+- **`call.<role>`.** The drift test expands the dynamic `Note("call." + p.Role, …)` to the roles a call can succeed for (waitress, driver) and asserts the source still builds it that way.
+- Checked against `suborned-sim codes` on the current tree (91 codes). 63 tests green; 346 dialogue entries, 740 lines.

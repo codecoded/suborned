@@ -95,7 +95,9 @@
    "shift": { "from": "0:00", "to": "8:30" },
    "need": "debt",
    "approach": "help",
-   "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
+   "secret": "affair",
+   "tiedTo": [{ "kind": "lover", "role": "guard", "cast": true }],
+   "src": "GDD §07 cast: Inez (café waitress, in debt); Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door (Motive briefs/011/motive-lovers.md: the lover tie, the affair secret, the summons), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
    "note": "In place at the café entrance from 0:00 to the 8:30 close (17:24:30-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
@@ -143,12 +145,11 @@
    "route": "A",
    "what": "Fixer calls Inez: the door guard walks to the café, stays, and walks back; the Enforcer enters while he is away",
    "role": "guard",
-   "walk": { "from": "Office entrance", "to": "Café door", "m": 65.9, "speed": 1.4, "s": 47 },
-   "stayS": 60,
-   "windowS": 154,
+   "rule": "summon",
+   "walk": { "from": "Office entrance", "to": "Café door" },
    "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
-   "src": "GDD §07 route A; walk: tools/people/walk.ts on the plan between the two destinations (Suture 2026-10-15 §3: 62.4 m); speed life.json pedestrians.walkSpeed 1.4 m/s",
-   "note": "Restated 2026-10-15 (Waymark): the café door is 65.9 m from the Office entrance on the walk graph (62.4 m before Splice's walk clearance followed the plan's standards.walking.body.r), 47 s at walking pace, not §07's 30 s. The stay is §07's 60 s, so the window is 2:34, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
+   "src": "GDD §07 route A; Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door; rulebook summon (Motive briefs/011/motive-lovers.md §1.3): stay lover-stay-s, walk at most summon-walk-max-s, on the walk grid at walking pace",
+   "note": "Read from the rules since the lovers canon (Waymark 2026-10-15): the guard is Inez's lover and her call summons him; how long he stays and how far he will walk are the rulebook's summon values, and his walk is the grid's (66 m, about 46-47 s at 1.4 m/s; §07 says 30 s), so the window (about 2:33) follows the world and the rules, never a number written here. tools/missions/handover/mission.test.ts measures the walk and checks it against the summons' limit."
   }
  ],
  "arms": {
@@ -350,7 +351,7 @@
   },
   {
    "name": "Under parasol",
-   "at": [-8.5, -23.5],
+   "at": [-8.1, -23.7],
    "surface": "ground"
   },
   {

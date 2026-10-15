@@ -7,7 +7,7 @@ import { num, type Cond, type Eff, type Event, type Rulebook } from './rulebook.
 
 export type Band = 'hero' | 'neutral' | 'menace';
 export type Fit = 'suits' | 'worse' | 'refused';
-export type Know = 'routine' | 'need' | 'temperament' | 'refused';
+export type Know = 'routine' | 'need' | 'temperament' | 'refused' | 'secret';
 export type Mem = { act: string; by: string; place: string; time: number; witnessed: boolean; told?: string[] };
 export type Subject = {
   id: string; tier: 'simulated' | 'background'; temperament: string; need: string;
@@ -76,7 +76,12 @@ export function holds(rb: Rulebook, people: PeopleRules, c: Cond, x: Ctx, ev?: E
   switch (c.k) {
     case 'tier': return s.tier === c.is;
     case 'turned': if (c.of) break; return s.turned === c.is;
-    case 'known': return x.knows.has(c.what);
+    case 'known': return x.knows.has(c.what) === (c.is ?? true);
+    case 'leverage': {
+      const r = people.approaches[c.approach as 'ask'].requires;
+      const need = (r === 'nothing' || x.knows.has(r)) && ((people.needs.list[s.need]?.metBy as readonly string[] | undefined)?.includes(c.approach) ?? false);
+      return need || x.knows.has('secret');
+    }
     case 'requires': {
       const r = people.approaches[c.approach as 'ask'].requires;
       return r === 'nothing' || x.knows.has(r);
@@ -202,7 +207,7 @@ export function forgetIndex(memory: readonly Mem[]): number {
     for (let j = 0; j < memory.length; j++) if (ok(memory[j]!) && (i < 0 || memory[j]!.time < memory[i]!.time)) i = j;
     return i;
   };
-  const seen = pick((m) => m.act === 'saw-act' || m.act === 'saw-runner' || m.act === 'saw-gunfire' || m.act === 'told');
+  const seen = pick((m) => ['saw-act', 'saw-runner', 'saw-gunfire', 'saw-violence', 'saw-weapon-drawn', 'told'].includes(m.act));
   return seen >= 0 ? seen : pick(() => true);
 }
 

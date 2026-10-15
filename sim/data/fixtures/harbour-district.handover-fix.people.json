@@ -1762,6 +1762,7 @@
    },
    "temperament": "idealist",
    "need": "debt",
+   "secret": "affair",
    "institution": null,
    "start": {
     "bravery": 1,
@@ -1778,6 +1779,10 @@
     {
      "kind": "family",
      "with": "p-records-office-11"
+    },
+    {
+     "kind": "lover",
+     "with": "p-records-office-07"
     }
    ],
    "look": {
@@ -4672,6 +4677,7 @@
    },
    "temperament": "loyal",
    "need": "debt",
+   "secret": "affair",
    "institution": "records-office",
    "start": {
     "bravery": 0,
@@ -4700,6 +4706,10 @@
     {
      "kind": "workmate",
      "with": "p-records-office-01"
+    },
+    {
+     "kind": "lover",
+     "with": "p-cafe-11"
     }
    ],
    "look": {

@@ -15,6 +15,7 @@ import { expand, needWeightsOf, needsOf, rowOf, type Ctx } from '../expand';
 import { readTexts, world, type World } from '../inputs';
 import { castFileOf, promotionFileOf } from '../promoted';
 import { castForNames } from '../roles';
+import { withSecrets } from '../secrets';
 
 const root = join(import.meta.dir, '..', '..', '..');
 let w: World, ctx: Ctx, gen: ReturnType<typeof expand>, texts: Awaited<ReturnType<typeof readTexts>>;
@@ -48,7 +49,9 @@ describe('M-2 casts from the promoted cast, not from the last file written', () 
     const now = currentPeople(setup().plan, JSON.parse(texts.mission));
     expect(now.problems).toEqual([]);
     expect(JSON.stringify(now.people)).toBe(JSON.stringify(gen.people));
-    expect(m2(setup()).value).toContain('waitress p-cafe-11'); // whatever stands in out/people
+    // whatever stands in out/people: the casting is that of the people just expanded (the promoted r013 cannot cast the waitress under the lovers' canon, brief 011: she needs the affair)
+    const s = setup(), given = overlay(s.plan, s.block, gen.people as never, JSON.parse(texts.mission)).civic({ plan: s.plan, d: s.d, civ: s.civ } as never).find(c => c.id === 'M-2')!;
+    expect(m2(setup()).value).toBe(given.value);
   });
   test('it follows the mission it is given: a pin that Inez\'s row cannot carry fails', () => {
     const mission = JSON.parse(texts.mission); mission.roles.find((r: { id: string }) => r.id === 'waitress').pin = 'p-records-office-02';
@@ -91,7 +94,7 @@ describe('the export carries what the rulebook reads', () => {
     for (const p of gen.people.persons) {
       expect(p.tier).toBe('simulated');
       expect(p.position).toBe(p.work ? (p.work.position ?? p.work.role)! : 'resident');
-      const own = p.work ? rowOf(ctx.cast, p.work.area, p.work.trade) : rowOf(ctx.cast, w.scope.homes.find(h => h.plot === p.home.plot)!.area, 'resident');
+      const cast = withSecrets(ctx.cast, ctx.rules), own = p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, w.scope.homes.find(h => h.plot === p.home.plot)!.area, 'resident');
       expect(Object.keys(p.needWeights).sort()).toEqual([...new Set(needsOf(own, p.position).map(n => n.need))].sort());
       expect(Object.values(p.needWeights).reduce((a, b) => a + b, 0)).toBe(1000);
       expect(Object.values(p.needWeights).every(v => Number.isInteger(v) && v > 0)).toBe(true);

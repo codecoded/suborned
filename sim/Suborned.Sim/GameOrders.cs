@@ -42,6 +42,7 @@ namespace Suborned.Sim
             {
                 case "known": return No("needs-" + c.S("what"), why);
                 case "requires": { var req = R.ApproachRequires(c.S("approach")); return No(req == "need" ? "needs-need" : req == "temperament" ? "needs-temperament" : "needs-routine", why); }
+                case "leverage": return No("no-leverage", why);
                 case "need-met-by": return No("no-act-need", why);
                 case "need-met": return No("need-met", why);
                 case "memory": return No("refusal-remembered", why);
@@ -254,7 +255,7 @@ namespace Suborned.Sim
             if (p.Memory.Count <= R.MemoryCap) return;
             int drop = -1;
             for (int j = 0; j < p.Memory.Count; j++)
-                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "saw-gunfire" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
+                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "saw-gunfire" || p.Memory[j].Act == "saw-violence" || p.Memory[j].Act == "saw-weapon-drawn" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
             if (drop < 0) for (int j = 0; j < p.Memory.Count; j++) if (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick) drop = j;
             p.Memory.RemoveAt(drop);
         }
@@ -302,6 +303,7 @@ namespace Suborned.Sim
         {
             "requires" => "the " + c.S("approach") + " approach's knowledge (Watch for routine, Listen for need)",
             "need-met-by" => "a need this approach acts on",
+            "leverage" => "the need it acts on known, or their secret known (Listen)",
             "need-met" => "a need still unmet",
             "memory" => "no remembered refusal",
             "turned" => c.B("is") ? "a turned contact" : "someone not yet turned",
@@ -317,7 +319,13 @@ namespace Suborned.Sim
             {
                 case "tier": return c.S("is") == "simulated";
                 case "turned": if (c.N.Has("of")) break; return p.Turned == c.B("is");
-                case "known": return p.Knows(c.S("what"));
+                case "known": return p.Knows(c.S("what")) == (!c.N.Has("is") || c.B("is"));
+                case "leverage": // Motive, motive-lovers.md §2.2: the need it acts on (known), or the person's secret known
+                    {
+                        var r = R.ApproachRequires(c.S("approach"));
+                        return ((r == "nothing" || p.Knows(r)) && R.NeedMetBy(p.Need, c.S("approach"))) || p.Knows("secret");
+                    }
+                case "lover-within": { if (p.Lover == null) return false; var a = PersonPos(p); var b = PersonPos(p.Lover); return a.HasValue && b.HasValue && G.Within(a.Value, b.Value, (int)R.Num(c.S("m")) * 100); }
                 case "requires": { var r = R.ApproachRequires(c.S("approach")); return r == "nothing" || p.Knows(r); }
                 case "need-met-by": return R.NeedMetBy(p.Need, c.S("approach"));
                 case "need-is": return c.L("in").Contains(p.Need);
@@ -385,10 +393,13 @@ namespace Suborned.Sim
             q.Orders = OrdersFor(ev, x);
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
             q.Event = ev.Id;
+            q.Leverage = ev.Id == "turn.pressure" && p.Knows("secret");
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal) && p.KnownRefused.Contains(ev.Id.Substring(5))) q.Outcome = "refused"; // a refusal seen: ✗
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))
             {
-                q.Reports = p.KTemperament ? (Holds(ReportsCond, x) ? "yes" : "no") : Agree(p, t => Holds(ReportsCond, WithTemperament(x, t)) ? "yes" : "no");
+                // would they report it: the event's own report rows (its `also` with a report), so an exposure that silences a Loyal person reads "no"
+                bool Rep(PCtx c) { foreach (var a in ev.Also) if (a.Changes.Exists(e => e.Do == "report") && AllHold(a.When, c)) return true; return false; }
+                q.Reports = p.KTemperament ? (Rep(x) ? "yes" : "no") : Agree(p, t => Rep(WithTemperament(x, t)) ? "yes" : "no");
                 var list = R.AlertByIncident;
                 q.AlertIfReported = Math.Max(Alert, list[Math.Min(Reported + 1, list.Length) - 1]);
             }
@@ -416,7 +427,7 @@ namespace Suborned.Sim
 
         PCtx WithTemperament(PCtx x, string t)
         {
-            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place };
+            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place, Secret = x.P.Secret, KSecret = x.P.KSecret, Lover = x.P.Lover };
             Array.Copy(x.P.Sc, q.Sc, 4); q.Memory.AddRange(x.P.Memory);
             return new PCtx { P = q, Ev = x.Ev, Band = x.Band, Outcome = x.Outcome, Reach = x.Reach, Cash = x.Cash };
         }
@@ -435,9 +446,30 @@ namespace Suborned.Sim
         {
             var p = PersonByRole(role); var f = OpOf(OpId.Fixer);
             if (Over || f.Busy != null || p.Down || !p.Turned) return false;
-            if (p == Inez) return !GuardDown && GuardAtDoor;
             if (p == Driver) return Vale != ValeAt.Car && (BlockMove == INF || Tick >= BlockedUntil + blockMoveT) && Tick < T(driverLastS) - blockMoveT;
-            return false;
+            return p.Lover != null && SummonRefusal(p, out _).code == null;
+        }
+
+        /// <summary>Why the contact's lover won't come to a call now (rulebook summon), or code null; walkTicks: his walk to the caller.</summary>
+        (string? code, string why) SummonRefusal(Person caller, out int walkTicks)
+        {
+            walkTicks = 0;
+            var lover = caller.Lover!;
+            if (lover != GuardP) return ("summon-no-visit", $"{lover.Role} has no post to leave (only a lover with a post is modelled)");
+            if (GuardDown || lover.Down) return ("summon-busy", "he's down");
+            var at = GuardPose(); if (!at.HasValue) return ("summon-off-street", "he isn't on the street");
+            if (GuardHeld || GuardEngaged || !GuardAtDoor) return ("summon-busy", "he's busy");
+            if (Alert > R.SummonAlertMax) return ("summon-alert", "security is searching: he won't leave");
+            foreach (var m in lover.Memory)
+                if ((m.Act == "saw-gunfire" || m.Act == "saw-violence" || m.Act == "saw-weapon-drawn") && (m.By == "scout" || m.By == "fixer" || m.By == "tech" || m.By == "enforcer"))
+                    return ("summon-saw-violence", "he saw what you did");
+            if (lover.Summoned >= R.SummonsPerShift) return ("summon-came-once", "he came once already");
+            var to = PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street");
+            var route = S.Grid.Route(S.Grid.NearestFree(at.Value.pos) ?? at.Value.pos, S.Grid.NearestFree(to.Value) ?? to.Value);
+            if (route == null) return ("summon-too-far", "no walk between them");
+            long len = new Path(route).Length; walkTicks = (int)((len + opSpeed - 1) / opSpeed); // at walking pace (cell.speed)
+            if (walkTicks > T(R.SummonWalkMaxS)) return ("summon-too-far", $"too far: {walkTicks / Hz} s away");
+            return (null, "");
         }
 
         string Call(Op op, Order o)
@@ -446,17 +478,7 @@ namespace Suborned.Sim
             var p = PersonByRole(o.Target);
             if (p.Down) return No("person-down", $"{p.Role} is down");
             if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
-            if (p == Inez)
-            {
-                if (GuardDown) return No("guard-down", "the guard is down");
-                if (!GuardAtDoor) return No("guard-not-at-door", "the guard is not at the door");
-                LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT;
-                AddTrail(R.CallTrail, "call:waitress"); Remember(Inez, "job", "fixer", false);
-                Actions.Add("call:waitress"); Chain.Add("waitress-calls-guard");
-                Note("call.waitress", "Inez calls the guard. He leaves the entrance and walks toward her café.");
-                return "";
-            }
-            if (p == Driver)
+            if (p == Driver) // the driver's call is his role job, the camera block (unchanged)
             {
                 if (Vale == ValeAt.Car) return No("car-gone", "the official car is gone");
                 if (BlockMove != INF && Tick < BlockedUntil + blockMoveT) return No("car-busy", "the car is still blocking or returning", tick: BlockedUntil + blockMoveT);
@@ -467,7 +489,26 @@ namespace Suborned.Sim
                 Note("call.driver", "The driver starts moving the car across the pickup camera.");
                 return "";
             }
+            if (p.Lover != null) return Summon(p);
             return No("nothing-to-call", $"{p.Role} has nothing to do on a call");
+        }
+
+        /// <summary>The summons (rulebook summon; Motive, motive-lovers.md §1.3): a turned contact's call sends for their lover, read from the
+        /// city's ties. He walks the grid to her at walking pace, stays summon.stay and walks back; refused at no cost, with its code.</summary>
+        string Summon(Person p)
+        {
+            var (code, why) = SummonRefusal(p, out int walk);
+            if (code != null) return No(code, why, tick: code == "summon-too-far" ? walk : -1);
+            var lover = p.Lover!;
+            var from = GuardPose()!.Value.pos; var to = PersonPos(p)!.Value;
+            guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(to) ?? to)!);
+            guardBack = new Path(S.Grid.Route(S.Grid.NearestFree(to) ?? to, S.Grid.NearestFree(from) ?? from)!);
+            walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
+            LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT; lover.Summoned++;
+            AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
+            Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");
+            Note("call." + p.Role, $"{p.Name} calls {lover.Name}. He leaves his post and walks over to her ({walkT / Hz} s), to stay {R.SummonStayS} s.");
+            return "";
         }
 
         string Loop(Op op, Order o)

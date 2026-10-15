@@ -15,6 +15,7 @@ import { Solids } from '../plan/walk-solids';
 import { type V, dist, inPoly } from '../plan/geom';
 import { castRoles } from '../missions/handover/cast';
 import { castRules } from '../missions/handover/overlay';
+import { summonRules } from '../missions/handover/summon';
 import { createHash } from 'node:crypto';
 import { buildPeople, PEOPLE_OUT } from './people';
 
@@ -123,10 +124,9 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     if (es.length !== 1) throw new Error(`mission.json timeline: ${es.length} entries read "${word}", the engine needs exactly one`);
     const [m, s] = String(es[0].at).split(':').map(Number); return m! * 60 + s!;
   };
-  const win = mission.windows.find((w: { id: string }) => w.id === 'front-door');
+  // the guard's visit (mission.json windows rule summon) is the engine's: its grid walk and the rulebook's stay; the site writes neither
   const schedule = {
     rivalsArrive: at('3:10', /rival car/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn driver/), valeExits: at('5:50', /Vale exits/), valeAtCar: at('6:10', /Vale at car/), over: at('8:00', /= over$/),
-    guardWalkS: win.walk.s, guardStayS: win.stayS,
     blockMoveS: 8, blockHoldS: 150,
     src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };
@@ -139,12 +139,19 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     toPlan, placeAt: (id) => placeOf.get(id)?.at,
     polyOf: (id) => { const p = placeOf.get(id); return p?.kind === 'bay' ? civ.bays.find((b: { id: string }) => b.id === p.name)?.poly : undefined; },
     plotOf: (id) => placeOf.get(id)?.plot,
-  }, castRules(), { play: true });
+  }, castRules(), { play: true, summon: { maxWalkS: summonRules().walkMaxS } }); // the walk itself is the engine's, checked by M-2 (overlay.ts)
   const failed = casting.filter((c) => !c.ok);
   if (failed.length) throw new Error(`M-2 can't cast the Handover from ${src.people} at ${mission.clock.startsAt}: ${failed.map((c) => `${c.role}: ${c.why}`).join('; ')}`);
-  const byId = new Map<string, { id: string; name: string; temperament: string; need: string }>(peopleIn.persons.map((p: { id: string; name: string; temperament: string; need: string }) => [p.id, p]));
+  type CastPerson = { id: string; name: string; temperament: string; need: string; secret?: string; ties?: { kind: string; with: string }[] };
+  const byId = new Map<string, CastPerson>(peopleIn.persons.map((p: CastPerson) => [p.id, p]));
+  const roleOf = new Map(casting.map((c) => [c.pinned!, c.role]));
   const cast: Record<string, unknown> = {};
-  for (const c of casting) { const p = byId.get(c.pinned!)!; cast[c.role] = { id: p.id, name: p.name, temperament: p.temperament, need: p.need }; }
+  // the cast's secret and lover (Motive, briefs/011/motive-lovers.md): read from the people file's ties, never from the mission; the lover is
+  // named by role when the other end is cast too ("" when none), so the engine's summons reads the city's ties
+  for (const c of casting) {
+    const p = byId.get(c.pinned!)!, lover = (p.ties ?? []).find((t) => t.kind === 'lover');
+    cast[c.role] = { id: p.id, name: p.name, temperament: p.temperament, need: p.need, secret: p.secret ?? '', lover: lover ? (roleOf.get(lover.with) ?? '') : '' };
+  }
   cast.from = src.people;
   cast.sha256 = createHash('sha256').update(peopleText).digest('hex');
   cast.startsAt = mission.clock.startsAt;

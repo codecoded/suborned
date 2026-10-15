@@ -4,7 +4,7 @@
   "gdd": "the-suborned-agent-gdd-v0.21.0-2026-10-15.md",
   "rule": "The rules a generated person must obey. Anything not in this file is rejected (GDD §01 house rules: unknown = reject). Every entry cites its GDD § in `src`; an entry the GDD does not state is marked `proposed: true` with a `reason`, for Sky to accept or strike. Tags in src: [B] built, [S] starting value to tune by playtest.",
   "person": {
-    "is": ["routine", "need", "temperament", "memory"],
+    "is": ["routine", "need", "temperament", "memory", "secret"],
     "needsPerPerson": 1,
     "memoryAtStart": "empty",
     "src": "§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory",
@@ -17,7 +17,8 @@
         "ties": "§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie",
         "scales": "§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)",
         "memory": "§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief",
-        "routine": "§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it"
+        "routine": "§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it",
+        "secret": "§04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)"
       },
       "src": "GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md",
       "proposed": true,
@@ -25,7 +26,7 @@
     }
   },
   "tiers": {
-    "simulated": { "carries": ["name", "temperament", "need", "ties", "scales", "memory", "routine"], "src": "§09; life.json generator.tiers [G]" },
+    "simulated": { "carries": ["name", "temperament", "need", "ties", "scales", "memory", "routine", "secret"], "src": "§09; life.json generator.tiers [G]" },
     "background": {
       "carries": ["routine"],
       "src": "life.json generator.tiers: walk, run and cheer only",
@@ -179,6 +180,27 @@
       "rival-tie": "at least one rival tie"
     }
   },
+  "secrets": {
+    "rule": "0 or 1 secret per simulated person, from this closed list. A secret is a fact the person hides, separate from their need: the need is what they want (Help meets it), the secret is what they fear known (Pressure threatens it). Learned only by the cell, only by Listen, or by a Watch that ends while two lovers stand together (rulebook summon.together). Never told along ties, never in a keeper's tips. Read by turn.pressure: a known secret is Pressure's leverage. Until the need `secret` retires (Pulse's cast tables), a person may still carry that need; the person field `secret` is this list's.",
+    "perPerson": { "min": 0, "max": 1 },
+    "list": {
+      "affair": {
+        "requires": "lover-tie", "learnedBy": ["scout.listen", "scout.watch"],
+        "src": "Story spine v0.1: Inez's affair with the guard is her secret; Pressure threatens to expose it",
+        "proposed": true,
+        "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Watch teaches it only when it ends with the two lovers together."
+      },
+      "record": {
+        "requires": "nothing", "learnedBy": ["scout.listen"],
+        "src": "§01 world: records are physical; the retired need `secret` (people.rules needs.list.secret)",
+        "proposed": true,
+        "reason": "a past on file that a word in the right office could surface; it carries the generator's existing secrets over when the need `secret` retires, so no district loses its pressable people."
+      }
+    },
+    "src": "Motive, briefs/011/motive-lovers.md §2.1 (2026-10-15)",
+    "proposed": true,
+    "reason": "the need is what they want, the secret what they fear known; knowing more lowers the price (pillar 1)."
+  },
   "ties": {
     "kinds": {
       "family": {
@@ -210,9 +232,16 @@
         "src": "§04 Mercenary sells you to highest bidder; §05 rivals",
         "proposed": true,
         "reason": "one rival at most [S], in the same trade in the district or at the same employer: a grudge with a place."
+      },
+      "lover": {
+        "direction": "both", "maxPerPerson": 1, "between": "routine-meet", "introduces": false, "secret": true, "maxShare": 0.15, "formsAlong": ["regular", "workmate"],
+        "src": "Story spine v0.1 (Inez canon: an affair with the office guard, learned by listening at the café); Sky 2026-10-15 via Aster: the guard comes when she calls him, and that is what makes him leave his post (Motive, briefs/011/motive-lovers.md)",
+        "proposed": true,
+        "reason": "one per person [S]: an affair is one person. Always secret: a public partner is family. Mutual, so both carry it and both carry the secret. Between routine-meet: they must meet somewhere the rules can see, or the call has no walk to price. introduces false: an introduction is a public vouching, and a secret lover who vouches exposes the affair. maxShare 15 % of a district's simulated people [S]. formsAlong: the generator draws a lover first from a person's regular and workmate ties, so lovers sit where missions cast (Pulse's generator)."
       }
     },
     "betweenKinds": {
+      "routine-meet": "either person's routine stops at the other's work unit while the other is on shift: routine-stop read in both directions",
       "any": "any two simulated people",
       "same-employer": "both work the same unit or the same civic employer",
       "routine-stop": "the from-person's routine has a stop at the to-person's work unit while they are on shift",

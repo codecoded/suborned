@@ -18,6 +18,7 @@ export const VERDICT_FILES = [
   'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
   'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
   'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts', 'tools/missions/handover/cast.ts',
+  'tools/missions/handover/summon.ts', // the lover summons' walk and limits (Waymark): cast.ts's M-2 reads them, and `bun run people` reports M-2
   'tools/missions/handover/overlay.ts', // `bun run people` reports M-2 on the people it makes through the overlay's own check (a candidate cast is held to the Handover before it is promoted)
   'tools/levels/people/hash.ts', // the list above is part of what a hash means (and `bun run people` records the hash in the file it writes)
   'tools/world/civic/cafe.ts', // where the world draws the café sets: seats.ts places the chairs from it

@@ -16,6 +16,7 @@ import { STEP_OFF, staffing, stepMin, workPlaceOf } from '../day';
 import { expand, type Ctx } from '../expand';
 import { readTexts, world, type World } from '../inputs';
 import { rng } from '../../world/gen/common';
+import { legacyRules } from './legacy';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (f: string) => JSON.parse(readFileSync(join(root, f), 'utf8'));
@@ -30,9 +31,9 @@ beforeAll(async () => {
   promoted = w.ctx(Cast.parse(read('contracts/people/harbour-district.cast.json'))); promGen = expand(promoted);
 });
 /** M-2 on these people, the check the plan checker's overlay runs (it expands the promoted cast itself; here the people are given). */
-const m2 = (people: People) => {
+const m2 = (people: People, mission: object = JSON.parse(texts.mission)) => {
   const block = JSON.parse(texts.block);
-  return overlay(w.plan, block, people as never, JSON.parse(texts.mission)).civic!({ d: derive(w.plan), civ: civic(w.plan.civic, block) } as never).find(c => c.id === 'M-2')!;
+  return overlay(w.plan, block, people as never, mission as never).civic!({ d: derive(w.plan), civ: civic(w.plan.civic, block) } as never).find(c => c.id === 'M-2')!;
 };
 const failed = (people: People) => checkPeople(fix, w.mission, w.plan, { people, gaps: [] }).checks.filter(c => !c.ok).map(c => c.id);
 const by = (people: People, f: (p: Person) => boolean) => people.persons.filter(f);
@@ -44,7 +45,10 @@ describe('the day, split out of the expander', () => {
   test('the promoted cast makes the same people it always did', () => {
     // the vocabulary below is opt-in: a cast row that does not use it expands exactly as before. This hash is of the persons of the promoted cast (r013) at the commit that
     // moved the day into day.ts; a deliberate change to the expansion updates it, with its cause declared in tools/levels/people/drift.json.
-    expect(sha256(JSON.stringify(promGen.people.persons))).toBe('e2bf019be3f486a2d6906ae576203c487ad6510a44c3c96422035ee65f79af75');
+    // under the rulebook of that commit (no lover tie, no secrets: legacyRules) it is the same bytes; under the current rules the persons carry a secret and the need `secret`
+    // is retired into the row's record share, so the needs of the people who drew it differ (brief 011; declared in drift.json)
+    expect(sha256(JSON.stringify(expand({ ...promoted, rules: legacyRules(w.rules) }).people.persons))).toBe('e2bf019be3f486a2d6906ae576203c487ad6510a44c3c96422035ee65f79af75');
+    expect(sha256(JSON.stringify(promGen.people.persons))).toBe('e64b2230b6dbb28a4883cbf268c0b4903befe958e9fcce1438baa7b05dc12405');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;
@@ -266,14 +270,22 @@ describe('the staffing vocabulary in the cast schema', () => {
 // Live run r014 (the corrected tables, 2026-10-15) was rejected in three rounds; round 1's faults were the table's, rounds 2 and 3 were the generator's: a busy square that
 // double-booked a chair, and a day guard who drew the variant made for the night watch and so had no café to be a regular of. The run's own tables are the fixtures (the run
 // record is committed): they must now expand clean and play the Handover.
+/** The mission as r014 and the runs before the lovers' canon saw it: the waitress needs no lover tie and no secret (their tables carry no lover pattern; brief 011). */
+const unlovedMission = () => {
+  const m = JSON.parse(texts.mission) as { roles: { tiedTo?: { kind: string }[]; secret?: string }[] };
+  for (const r of m.roles) { if (r.tiedTo) r.tiedTo = r.tiedTo.filter(t => t.kind !== 'lover'); delete r.secret; }
+  return m;
+};
 describe('generator gaps found by r014', () => {
+  let wo: World; // the world with the mission as r014 saw it (casting, and so the pinned names, follow the mission)
+  beforeAll(() => { wo = world({ ...texts, mission: JSON.stringify(unlovedMission()) }, 'civic-block'); });
   const run = (n: number) => Cast.parse(JSON.parse(readFileSync(join(root, `runs/levels/harbour-district/r014/round-${n}/pulse.json`), 'utf8')).cast);
-  const checks = (c: Ctx, g: ReturnType<typeof expand>) => checkPeople(c, w.mission, w.plan, g).checks.filter(x => !x.ok).map(x => `${x.id} ${x.detail}`);
+  const checks = (c: Ctx, g: ReturnType<typeof expand>) => checkPeople(c, wo.mission, w.plan, g).checks.filter(x => !x.ok).map(x => `${x.id} ${x.detail}`);
   for (const n of [2, 3]) test(`the tables of r014 round ${n} expand without a fault and play the Handover (round 2: P-0 and P-13, round 3: P-6)`, () => {
-    const c = w.ctx(run(n)), g = expand(c);
+    const c = wo.ctx(run(n)), g = expand(c);
     expect(g.gaps).toEqual([]);
     expect(checks(c, g)).toEqual([]);
-    expect(m2(g.people).ok, m2(g.people).detail).toBe(true);
+    expect(m2(g.people, unlovedMission()).ok, m2(g.people, unlovedMission()).detail).toBe(true);
   });
   test('round 2: the one person with no seat at 13:41 eats on site, and is noted, not faulted; nobody holds a place another holds', () => {
     const g = expand(w.ctx(run(2)));
@@ -284,7 +296,7 @@ describe('generator gaps found by r014', () => {
   test('a square with more diners than places never double-books: the rest eat on site', () => {
     const cast = clone(fix.cast), r = cast.rows.find(x => x.occupation === 'records-office')!;
     for (const v of r.routines) if (v.positions?.includes('clerk')) v.meal = 'square'; // all 66 clerks to 48 places
-    const c = { ...fix, cast }, g = expand(c);
+    const c = wo.ctx(cast), g = expand(c);
     expect(g.gaps).toEqual([]);
     expect(checks(c, g)).toEqual([]);
     expect(g.notes.length).toBeGreaterThan(0);

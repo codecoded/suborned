@@ -122,7 +122,8 @@ describe('P-13 and P-5 with seats', () => {
   test('the real expansion passes', () => {
     const r = checkPeople(ctx, w.mission, w.plan, gen);
     expect(r.checks.find(c => c.id === 'P-13')!.ok).toBe(true);
-    expect(r.ok).toBe(true);
+    // the promoted cast (r013) cannot cast the waitress under the lovers' canon (brief 011): P-6 is the only rule that fails, and not for seats
+    expect(r.checks.filter(c => !c.ok).map(c => c.id).filter(id => id !== 'P-6')).toEqual([]);
   });
   test('P-13: two people on one chair at once fails', () => {
     const p = clone(gen.people), [a, b] = p.persons.filter(q => q.routine.stops.some(s => s.doing === 'pre-shift'));

@@ -22,10 +22,12 @@ namespace Suborned.Sim
         public bool FinalFight = true;  // §07: the final fight is always fought; the top-down test's 28 had none
         public bool Crowd = true;       // §05 witnesses among the city's people; Suture's T4 arm switches it off
         public int? Arms;               // the mission's Arms (site arms) unless a scenario fixes it: one sidearm per weapons.sidearmArms
+        public readonly List<string> Untie = new List<string>(); // roles whose lover tie (and affair) a test cuts: "with no tie, the call doesn't pull him"
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie");
+            if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
             if (n.Opt("arms") is JNode ar) { s.Arms = ar.Int(); if (s.Arms < 0 || s.Arms > 100) throw new FormatException($"{ar.Path}: arms 0..100"); }
             if (n.Opt("finalFight") is JNode ff) s.FinalFight = ff.Bool();
             if (n.Opt("crowd") is JNode cr) s.Crowd = cr.Bool();
@@ -47,6 +49,7 @@ namespace Suborned.Sim
             if (!FinalFight) w.Prop("finalFight", false);
             if (!Crowd) w.Prop("crowd", false);
             if (Arms.HasValue) w.Prop("arms", Arms.Value);
+            if (Untie.Count > 0) { w.OpenArr("untie"); foreach (var x in Untie) w.Str(x); w.EndArr(); }
             return w.EndObj().ToString();
         }
     }
@@ -83,10 +86,11 @@ namespace Suborned.Sim
         public bool LoopOn;
         // the guard (§05 guard on door routine; mission.json windows.front-door)
         public int LureTick = -1, GuardAwayUntil, MissingNotice = INF;
+        public int VisitWalkTicks => walkT; // the summoned lover's walk, from the grid route at walking pace (rulebook summon)
         public int GuardHealth => GuardGun.Health;
         public bool GuardHeld, GuardEngaged, GuardReachedCafe, GuardDown;
         Pt heldPos, heldFacing; string heldPhase = "";
-        readonly Path guardOut, guardBack;
+        Path guardOut = null!, guardBack = null!, guardRun = null!; bool guardRunning; // the visit's walks (the summons), and its run back
         // the official car and the driver
         public int BlockMove = INF, BlockedFrom = INF, BlockedUntil;
         Pt? carStoppedAt; Path? carToService;
@@ -114,7 +118,7 @@ namespace Suborned.Sim
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
         readonly int opSpeed, secSpeed, rivSpeed, chaseSpeed;
-        readonly int walkT, stayT, rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+        int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
         {
@@ -125,7 +129,6 @@ namespace Suborned.Sim
             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
             witnessRange = R.WitnessRangeCm;
             opSpeed = R.CellSpeed; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
-            walkT = T(S.GuardWalkS); stayT = T(S.GuardStayS);
             rivalsArriveS = S.RivalsArrive; driverLastS = S.DriverLast; valeExitsS = S.ValeExits; valeAtCarS = S.ValeAtCar; overS = S.Over;
             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
 
@@ -152,20 +155,28 @@ namespace Suborned.Sim
             for (int i = 0; i < 4; i++)
             {
                 var c = S.Role(roles[i]);
-                var p = new Person { Role = roles[i], Id = c.Id, Name = c.Name, Temperament = Start.Temperament.TryGetValue(roles[i], out var tm) ? tm : c.Temperament, Need = c.Need, Place = places[i] };
+                var p = new Person { Role = roles[i], Id = c.Id, Name = c.Name, Temperament = Start.Temperament.TryGetValue(roles[i], out var tm) ? tm : c.Temperament, Need = c.Need, Place = places[i], Secret = c.Secret };
+                if (p.Secret.Length > 0 && !R.SecretIds.Contains(p.Secret)) throw new FormatException($"cast {roles[i]}: secret '{p.Secret}' is not in people.rules secrets (unknown = reject)");
                 var t = R.Temp(p.Temperament); R.CheckNeed(p.Need);
                 for (int k = 0; k < 4; k++) p.Sc[k] = t.Start[k];
                 People.Add(p);
                 civGuns[roles[i]] = NewGun(roles[i], null, false, R.HealthCivilian);
             }
+            // lovers (people.rules ties.kinds.lover): mutual, and an affair is exactly a lover tie (Motive, motive-lovers.md)
+            for (int i = 0; i < 4; i++)
+            {
+                var c = S.Role(roles[i]); if (c.Lover.Length == 0 || Start.Untie.Contains(roles[i]) || Start.Untie.Contains(c.Lover)) continue;
+                var other = PersonByRole(c.Lover);
+                if (S.Role(c.Lover).Lover != roles[i]) throw new FormatException($"cast {roles[i]}: a lover tie is mutual, and {c.Lover} names no lover back");
+                People[i].Lover = other;
+            }
+            foreach (var p in People) if (p.Secret == "affair" && p.Lover == null && (Start.Untie.Contains(p.Role) || Start.Untie.Exists(r => S.Role(r).Lover == p.Role))) p.Secret = "";
+            foreach (var p in People) if ((p.Secret == "affair") != (p.Lover != null)) throw new FormatException($"cast {p.Role}: an affair is a lover tie (people.rules secrets.affair requires lover-tie)");
             Inez.Suspected = Inez.Need; Driver.Suspected = Driver.Need; // Sky 2026-10-15: "in debt" shows as suspected from 0:00, from the briefing
             foreach (var role in Start.Turned) PersonByRole(role).Turned = true;
             foreach (var kv in Start.Known) foreach (var w in kv.Value) PersonByRole(kv.Key).Learn(w);
             RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
 
-            var post = S.Stand(S.GuardPost); var cafe = S.Stand(S.GuardCafe);
-            guardOut = new Path(S.Grid.Route(post, cafe) ?? throw new FormatException("no walk from the guard's post to the café"));
-            guardBack = new Path(S.Grid.Route(cafe, post) ?? throw new FormatException("no walk from the café to the guard's post"));
             blockPath = new Path(new[] { S.At(S.CarPickup), S.At(S.CarBlock) });
             var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
             var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
@@ -247,7 +258,17 @@ namespace Suborned.Sim
         void GuardTimeline()
         {
             if (LureTick < 0 || GuardHeld || GuardDown) return;
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", "The guard reaches Inez at the café. She spills coffee and keeps him away from the door."); }
+            // Alert above summon.alertMax ends the visit: he runs back to his post at security's pace (Motive, motive-lovers.md §1.3)
+            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax)
+            {
+                var from = GuardPose()!.Value.pos;
+                guardRun = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
+                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
+                Note("guard.recalled", "The alarm is up: the guard runs back to his post.");
+                return;
+            }
+            if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
+            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", "The guard reaches Inez at the café. She keeps him talking, away from the door."); }
             if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }
@@ -313,6 +334,7 @@ namespace Suborned.Sim
             if (GuardHeld) return (heldPos, heldFacing, heldPhase);
             var post = S.Stand(S.GuardPost);
             if (LureTick < 0 || Tick >= GuardAwayUntil) return (post, S.GuardFacing, "door");
+            if (guardRunning) { long rm = (long)(Tick - LureTick) * secSpeed; return (guardRun.At(rm), guardRun.Heading(rm), "returning to door"); }
             int age = Tick - LureTick;
             if (age < walkT) { long mm = guardOut.Length * age / walkT; return (guardOut.At(mm), guardOut.Heading(mm), "walking to café"); }
             if (age < walkT + stayT) return (guardOut.End, S.CafeFacing, "at café");
@@ -501,7 +523,7 @@ namespace Suborned.Sim
         void ViolenceSeen(string incident, Person witness, string by)
         {
             RaiseAlert(R.ViolenceSeen, $"violence-seen:{incident}:{(witness.Role.Length > 0 ? witness.Role : witness.Id)}");
-            Remember(witness, "saw-act", by, true);
+            Remember(witness, "saw-violence", by, true);
             if (witness.Turned) LadderMove(witness, "saw-violence");
             if (!incidents.Add("seen:" + incident)) return;
             AddTrail(R.WitnessTrail, $"witnessed:{incident}");

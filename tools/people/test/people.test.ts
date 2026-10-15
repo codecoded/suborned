@@ -19,7 +19,7 @@ const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 const failed = (people: People, c: Ctx = ctx, mission = w.mission) => checkPeople(c, mission, w.plan, { people, gaps: [] }).checks.filter(x => !x.ok).map(x => x.id);
 beforeAll(async () => {
   w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block');
-  ctx = w.ctx(standInCast(w.scope, w.rules)); gen = expand(ctx);
+  ctx = w.ctx(standInCast(w.scope, w.rules, { lovers: true })); gen = expand(ctx);
 });
 
 describe('scope', () => {

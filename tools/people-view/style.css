@@ -1,7 +1,7 @@
 :root{--cream:#fbf6ea;--paper:#fffdf8;--ink:#22313a;--muted:#667580;--teal:#0e7c7b;--teal-d:#0a5857;--teal-l:#d5ece9;--peach:#f6dcc6;--peach-d:#e9bd9b;--sand:#efe6d2;--line:#e4dac4;--fail:#b3261e;--fail-l:#fbe3df;--blue:#2f5f9e;--shadow:0 1px 2px rgba(34,49,58,.12),0 6px 18px rgba(34,49,58,.08);
 --u-cafe:#12908e;--u-records-office:#35508f;--u-s1-gardens-kiosk:#67a74b;--u-t1-records-kiosk:#7b8794;--u-resident:#b8895a;
 --t-idealist:#2f80c8;--t-mercenary:#8c6a43;--t-fearful:#4fb3a0;--t-loyal:#24324d;
---k-workmate:#17807e;--k-family:#25418c;--k-regular:#4b9a3f;--k-debtor:#8d6e4c;--k-rival:#2b2b2b}
+--k-workmate:#17807e;--k-family:#25418c;--k-regular:#4b9a3f;--k-debtor:#8d6e4c;--k-rival:#2b2b2b;--k-lover:#a23b7c}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--cream);color:var(--ink)}
@@ -142,7 +142,7 @@ select{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:8
 #graph{display:block;width:100%;height:calc(100vh - 250px);min-height:440px;background:#fffdf8;border:1px solid var(--line);border-radius:12px;cursor:grab;touch-action:none}
 #graph.drag{cursor:grabbing}
 #graph .e{fill:none;stroke-width:1.2;opacity:.55}
-#graph .e.workmate{stroke:var(--k-workmate)}#graph .e.family{stroke:var(--k-family);stroke-width:1.8}#graph .e.regular{stroke:var(--k-regular);stroke-dasharray:6 3}#graph .e.debtor{stroke:var(--k-debtor);stroke-dasharray:2 3 7 3}#graph .e.rival{stroke:var(--k-rival);stroke-dasharray:1.5 3.5;stroke-width:1.6}
+#graph .e.workmate{stroke:var(--k-workmate)}#graph .e.family{stroke:var(--k-family);stroke-width:1.8}#graph .e.regular{stroke:var(--k-regular);stroke-dasharray:6 3}#graph .e.debtor{stroke:var(--k-debtor);stroke-dasharray:2 3 7 3}#graph .e.rival{stroke:var(--k-rival);stroke-dasharray:1.5 3.5;stroke-width:1.6}#graph .e.lover{stroke:var(--k-lover);stroke-dasharray:9 2 1 2;stroke-width:2.2;opacity:.85}
 #graph .n circle{stroke:#fff;stroke-width:1.2;cursor:pointer}
 #graph .n .ringc{fill:none;stroke:var(--ink);stroke-width:2.2}
 #graph .n text{font-size:9.5px;fill:#33434d;pointer-events:none;paint-order:stroke;stroke:#fffdf8;stroke-width:2.5px;text-anchor:middle}
@@ -188,6 +188,7 @@ select{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:8
 .wt .bar{height:8px;background:var(--sand);border-radius:4px;overflow:hidden}.wt .bar b{display:block;height:100%;background:#9ab8c4}
 .wt .me{font-weight:700}.wt .me .bar b{background:var(--teal)}
 .tie{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;padding:3px 0;border-bottom:1px dotted var(--line)}
+.secretchip{display:inline-block;padding:0 6px;border-radius:5px;background:#f3e1ec;color:#7d2a5f;border:1px solid #d9a9c4;font-size:11.5px;font-weight:600}
 .kind{display:inline-block;min-width:62px;text-align:center;padding:0 6px;border-radius:5px;color:#fff;font-size:11.5px;font-weight:600}
 .lnk{color:var(--teal-d);cursor:pointer;text-decoration:underline;text-decoration-color:#a8d3cf;background:none;border:0;padding:0;font:inherit}
 .lnk:hover{text-decoration-color:var(--teal)}

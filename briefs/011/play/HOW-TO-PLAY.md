@@ -26,7 +26,7 @@ Sky's scheme of 2026-10-15 ("everything but rotation"). The camera keeps yaw 30.
 | **right click empty ground** | closes the panel; else drops a picked verb; else stops the selection's walks (and the act they were walking to). It never cancels an act under way: that is C or an ✕, which say the cost first. |
 | **C** | **cancel** what the selected agents are doing (the engine's cancel order). Walking to an act, the walk stops and the act is dropped. An act under way stops at its cost: a Watch or Listen loses its time, a Turn gives the money back but they remember the approach, a held loop ends, an entry or a take may be reported. |
 | **✕ on a roster slot, or on the ring over an agent** | the same cancel for that agent. Hovering the ✕ shows what it costs ("Cancel Watch — The time is spent and nothing lands."). |
-| **L** (or click the log's header) | open or collapse the **dialogue log** (bottom left). Collapsed, it shows the latest line. |
+| **L** (or click the feed's bar) | open or close the feed's **history**: unread first, Read all, and filters All, Scenes and Cell (the cell's own chatter). |
 | **B** | the briefing |
 | **hover empty ground** | with an agent selected, the chip shows the walk and the run there: "Scout: walk 8 s · run 4 s · unseen by security · 2 people near", or who would see the run and the Alert it costs, or why they can't run |
 | **F** | **draw or holster** the selection's weapons (every agent is armed: pistols, the Enforcer a carbine). A thin ring shows each drawn, selected agent's effective range. |
@@ -50,9 +50,11 @@ Sky's scheme of 2026-10-15 ("everything but rotation"). The camera keeps yaw 30.
 | **=  /  −** | speed ×1, ×2, ×4, ×8 |
 | **N** | next event: run the clock until something happens |
 | **F12** | debug layer: the engine, its cost and the last log lines |
+| **F11** | switch the HUD between Glyph's kit (UI Toolkit, the default) and the old placeholder (IMGUI), to compare them live |
+| **`** (backquote) | show all four slot strips (by default only the busy, hurt, down, selected or queued agents have one) |
 | **Return** | after the end card, play again |
 
-The roster and hotbar can sit at the bottom, in a left column or in the corner: `controls.dock` (Bottom, Left, Corner).
+The HUD is Glyph's kit (briefs/011/ui/kit) on UI Toolkit: the status pill and objective line top right, the roster column of portraits on the left with a slot strip beside each agent who is doing something, the verb plate (1–4) beside the selected agent, the ticker under the column, and the scene feed bottom right. Pieces not rebuilt in the kit yet (the action panel, briefing, chips, marks in the world, hint, going-loud and end cards) still draw in the placeholder style. The old roster could sit at the bottom or in the corner (`controls.dock`); the kit view has the left column so far.
 
 **The verbs** (keys 1–4 for the selected agent):
 - **Scout:** 1 Watch (their routine), 2 Listen (their need and temperament: only Listen reveals temperament), 3 False tip (the rivals).

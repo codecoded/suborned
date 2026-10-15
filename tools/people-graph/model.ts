@@ -6,7 +6,7 @@ import { inShift } from '../people/expand';
 import type { Rules } from '../people/rules';
 
 /** Bump with any change to schema.surql or to what this file writes: it is part of the hash, so a new version loads into a database of its own. */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2; // 2: the secret (lookup, person.secret, role.secret) and the lover tie's secret flag (brief 011)
 
 export class Rec { constructor(readonly table: string, readonly id: string) {} }
 export type Node = { table: string; id: string; fields: Record<string, unknown> };
@@ -17,7 +17,7 @@ export type Model = { nodes: Node[]; edges: Edge[]; counts: Counts };
 /** A Handover role as the mission names it (contracts/missions/handover/mission.json `roles`) and what the casting made of it. */
 export type RoleIn = {
   id: string; what: string; employer: string; position?: string; role?: string; at?: string; near?: number; shift: { from: string; to: string };
-  need?: string; approach?: string; regularOf?: string; tiedTo?: { kind: string; role: string; cast?: boolean }[]; leavesTo?: { at: string; by: string }; waitsFor?: string; alone?: boolean;
+  need?: string; approach?: string; secret?: string; regularOf?: string; tiedTo?: { kind: string; role: string; cast?: boolean }[]; leavesTo?: { at: string; by: string }; waitsFor?: string; alone?: boolean;
 };
 export type RoleCast = { role: string; ok: boolean; who: string[]; pinned?: string; why: string };
 /** What the people file does not carry. `units`: the places each unit owns (scope.units); `cafeUnit`, `cafeSide`: the café and its customers' side (scope); `sets`: the chairs of each café set (scope.sets);
@@ -33,6 +33,7 @@ export const PERSON_FIELDS: Record<keyof Person, string> = {
   routine: 'stops_at (one edge per stop) + sits_at (stops at a chair) + person.routine_variant', temperament: 'person.temperament + has_temperament', need: 'person.need + has_need',
   institution: 'person.institution', start: 'person.start', memory: 'person.memory', ties: 'tie (person -> person)', look: 'person.look', position: 'person.position (and works_at.position)',
   needWeights: 'person.need_weights (and has_need.weight for the person\'s own need)',
+  secret: 'person.secret (the secret lookup; an affair is the lover tie\'s other face, held by both lovers)',
 };
 
 const by = <T>(key: (x: T) => string) => (a: T, b: T) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0);
@@ -56,8 +57,11 @@ export function buildModel(people: People, rules: Rules, x: Extras): Model {
 
   // ---- lookups: only what the rules list
   for (const [id, t] of Object.entries(rules.temperaments)) node('temperament', id, { name: t.name, responds_to: [...t.respondsTo], refuses: [...t.refuses], reports_approach: t.reportsApproach, institution: t.institution, hero: t.hero, menace: t.menace, start: { ...t.start } });
+  // the secrets a rulebook lists (brief 011): a lookup; a rulebook without them has none, and no person carries one
+  for (const [id, s] of Object.entries(rules.secrets?.list ?? {})) node('secret', id, { requires: s.requires, learned_by: [...s.learnedBy] });
   for (const [id, n] of Object.entries(rules.needs.list)) node('need', id, { met_by: [...n.metBy], help: n.help, requires: n.requires });
-  for (const [id, k] of Object.entries(rules.ties.kinds)) node('tie_kind', id, { direction: k.direction, between: k.between, introduces: k.introduces, max_per_person: k.maxPerPerson, max_incoming: some((k as { maxIncoming?: number }).maxIncoming) });
+  for (const [id, k] of Object.entries(rules.ties.kinds)) node('tie_kind', id, { direction: k.direction, between: k.between, introduces: k.introduces, max_per_person: k.maxPerPerson, max_incoming: some((k as { maxIncoming?: number }).maxIncoming),
+    secret: (k as { secret?: boolean }).secret, max_share: (k as { maxShare?: number }).maxShare, forms_along: (k as { formsAlong?: string[] }).formsAlong ? [...(k as { formsAlong: string[] }).formsAlong] : undefined });
 
   // ---- places, units, shifts
   const unitOfPlace = new Map<string, string>(), setOfPlace = new Map<string, string>();
@@ -85,12 +89,12 @@ export function buildModel(people: People, rules: Rules, x: Extras): Model {
   // ---- roles
   for (const [seq, r] of x.roles.entries()) {
     const c = x.casts.find(k => k.role === r.id);
-    node('role', r.id, { seq, what: r.what, employer: r.employer, position: r.position, civic_role: r.role, at: r.at, near: r.near, window_from: r.shift.from, window_to: r.shift.to, need: r.need ? new Rec('need', r.need) : undefined, approach: r.approach, regular_of: r.regularOf, tied_to: r.tiedTo, leaves_to: r.leavesTo, waits_for: r.waitsFor, alone: r.alone, cast_ok: c?.ok ?? false, cast_mode: x.castMode, cast_why: c?.why ?? 'not cast' });
+    node('role', r.id, { seq, what: r.what, employer: r.employer, position: r.position, civic_role: r.role, at: r.at, near: r.near, window_from: r.shift.from, window_to: r.shift.to, need: r.need ? new Rec('need', r.need) : undefined, approach: r.approach, secret: r.secret ? new Rec('secret', r.secret) : undefined, regular_of: r.regularOf, tied_to: r.tiedTo, leaves_to: r.leavesTo, waits_for: r.waitsFor, alone: r.alone, cast_ok: c?.ok ?? false, cast_mode: x.castMode, cast_why: c?.why ?? 'not cast' });
   }
 
   // ---- persons and what they link to
   for (const p of persons) {
-    node('person', p.id, { name: p.name, tier: p.tier, position: p.position, temperament: new Rec('temperament', p.temperament), need: new Rec('need', p.need), need_weights: { ...p.needWeights }, institution: some(p.institution), start: { ...p.start }, memory: [...p.memory], look: p.look.block, routine_variant: p.routine.variant, home_plot: p.home.plot });
+    node('person', p.id, { name: p.name, tier: p.tier, position: p.position, temperament: new Rec('temperament', p.temperament), need: new Rec('need', p.need), need_weights: { ...p.needWeights }, institution: some(p.institution), start: { ...p.start }, memory: [...p.memory], look: p.look.block, routine_variant: p.routine.variant, home_plot: p.home.plot, secret: p.secret ? new Rec('secret', p.secret) : undefined });
     const me = new Rec('person', p.id);
     if (!(p.temperament in rules.temperaments)) throw new Error(`${p.id}: temperament ${p.temperament} is not in the rules`);
     if (!(p.need in rules.needs.list)) throw new Error(`${p.id}: need ${p.need} is not in the rules`);
@@ -120,7 +124,9 @@ export function buildModel(people: People, rules: Rules, x: Extras): Model {
     if (mutual && !q.ties.some(y => y.kind === t.kind && y.with === p.id)) throw new Error(`${p.id}: ${t.kind} tie to ${q.id} is not returned`);
     if (done.has(id)) continue;
     done.add(id);
-    edge('tie', id, new Rec('person', a.id), new Rec('person', b.id), { kind: new Rec('tie_kind', t.kind), introduces: spec.introduces, mutual, at: t.kind === 'regular' ? regularAt(a, b, x) : undefined });
+    // the stop of the day the tie is made on: a regular's is the carrier's; a lover's is whichever of the two meets the other at work (either way round: routine-meet)
+    const at = t.kind === 'regular' ? regularAt(a, b, x) : t.kind === 'lover' ? regularAt(a, b, x) ?? regularAt(b, a, x) : undefined;
+    edge('tie', id, new Rec('person', a.id), new Rec('person', b.id), { kind: new Rec('tie_kind', t.kind), introduces: spec.introduces, mutual, secret: (spec as { secret?: boolean }).secret, at });
     ties[t.kind] = (ties[t.kind] ?? 0) + 1;
   }
 
