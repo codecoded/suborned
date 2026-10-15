@@ -1,0 +1,29 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "The loud front (GDD §07 loud; Keel N10): loop the camera and reroute the patrol, shoot the guard, enter (68 s at Alert 2), take Vale out and fight the police at the getaway car with the whole armed cell. No contact. The fastest loud win, which leaves the downed Scout to be captured (Motive: kept as a variant). The Tech and the Enforcer run (free once loud; before it, noticed); the cell covers the car, closes on the officers once the response unit is down, and the Enforcer extracts the moment the last officer is down.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300],"run":true},
+  {"tick":136,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":756,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1206,"op":"enforcer","do":"fire","target":"guard"},
+  {"tick":1206,"op":"scout","do":"move","to":[1175,-4825],"run":true},
+  {"tick":1206,"op":"scout","do":"draw"},
+  {"tick":1206,"op":"scout","do":"stance","stance":"free"},
+  {"tick":1206,"op":"fixer","do":"move","to":[1325,-4625],"run":true},
+  {"tick":1206,"op":"fixer","do":"draw"},
+  {"tick":1206,"op":"fixer","do":"stance","stance":"free"},
+  {"tick":1246,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1274,"op":"enforcer","do":"enter"},
+  {"tick":1274,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1954,"op":"tech","do":"draw"},
+  {"tick":1954,"op":"tech","do":"stance","stance":"free"},
+  {"tick":1954,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2004,"op":"scout","do":"move","to":[100,-4500]},
+  {"tick":2004,"op":"tech","do":"move","to":[300,-4300]},
+  {"tick":2331,"op":"enforcer","do":"extract"}
+ ],
+ "until": 5100
+}
