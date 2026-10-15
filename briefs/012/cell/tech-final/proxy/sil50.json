@@ -1,0 +1,50 @@
+{
+ "walk-side": {
+  "figure_heights_px": [
+   50,
+   50,
+   50,
+   50
+  ],
+  "size": [
+   182,
+   62
+  ]
+ },
+ "walk-front": {
+  "figure_heights_px": [
+   50,
+   50,
+   50,
+   50
+  ],
+  "size": [
+   142,
+   62
+  ]
+ },
+ "run-side": {
+  "figure_heights_px": [
+   50,
+   49,
+   46,
+   50
+  ],
+  "size": [
+   219,
+   62
+  ]
+ },
+ "run-front": {
+  "figure_heights_px": [
+   50,
+   49,
+   41,
+   50
+  ],
+  "size": [
+   165,
+   62
+  ]
+ }
+}

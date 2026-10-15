@@ -1,0 +1,1442 @@
+{
+ "a": {
+  "label": "Round 5 a: Restrained",
+  "figures": {
+   "scout": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#696664",
+      "dE": 28.5,
+      "share_within_20": 0.0065,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#696664",
+      "dE": 37.3,
+      "share_within_20": 0.0002,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#5c7276",
+      "dE": 17.5,
+      "share_within_20": 0.0431,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 26.0,
+    "L_lower": 18.9,
+    "dominant": [
+     [
+      "#2f2b2a",
+      0.304
+     ],
+     [
+      "#221f1d",
+      0.252
+     ],
+     [
+      "#3e3b39",
+      0.227
+     ],
+     [
+      "#525251",
+      0.14
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2c2927",
+      0.306
+     ],
+     [
+      "#383433",
+      0.285
+     ],
+     [
+      "#474744",
+      0.164
+     ],
+     [
+      "#211e1c",
+      0.149
+     ]
+    ]
+   },
+   "fixer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#736b67",
+      "dE": 26.7,
+      "share_within_20": 0.0084,
+      "share_within_10": 0.0001
+     },
+     "guard": {
+      "nearest_painted": "#736b67",
+      "dE": 34.8,
+      "share_within_20": 0.0005,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6c6663",
+      "dE": 29.8,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 23.3,
+    "L_lower": 23.2,
+    "dominant": [
+     [
+      "#332f2e",
+      0.359
+     ],
+     [
+      "#25211f",
+      0.223
+     ],
+     [
+      "#403c3a",
+      0.164
+     ],
+     [
+      "#542729",
+      0.126
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#383433",
+      0.306
+     ],
+     [
+      "#2f2b2a",
+      0.306
+     ],
+     [
+      "#54282a",
+      0.114
+     ],
+     [
+      "#221e1c",
+      0.102
+     ]
+    ]
+   },
+   "tech": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#673a25",
+      "dE": 25.1,
+      "share_within_20": 0.0021,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#6a6665",
+      "dE": 37.5,
+      "share_within_20": 0.0004,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6b7482",
+      "dE": 17.5,
+      "share_within_20": 0.0945,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 27.1,
+    "L_lower": 20.7,
+    "dominant": [
+     [
+      "#312d2c",
+      0.288
+     ],
+     [
+      "#231f1d",
+      0.249
+     ],
+     [
+      "#3f3c3b",
+      0.184
+     ],
+     [
+      "#585d68",
+      0.173
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#312d2c",
+      0.336
+     ],
+     [
+      "#252220",
+      0.213
+     ],
+     [
+      "#535964",
+      0.182
+     ],
+     [
+      "#3e3b3a",
+      0.178
+     ]
+    ]
+   },
+   "enforcer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#65544a",
+      "dE": 27.1,
+      "share_within_20": 0.0049,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#6c6663",
+      "dE": 36.7,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6c6663",
+      "dE": 29.8,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 23.2,
+    "L_lower": 18.6,
+    "dominant": [
+     [
+      "#2a2624",
+      0.274
+     ],
+     [
+      "#363230",
+      0.251
+     ],
+     [
+      "#201c1a",
+      0.24
+     ],
+     [
+      "#48413e",
+      0.122
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#312c2b",
+      0.246
+     ],
+     [
+      "#272321",
+      0.214
+     ],
+     [
+      "#3d3734",
+      0.161
+     ],
+     [
+      "#1f1b19",
+      0.143
+     ]
+    ]
+   }
+  },
+  "colour_pair_dE_50px": {
+   "scout-fixer": 2.3,
+   "scout-tech": 2.9,
+   "scout-enforcer": 2.2,
+   "fixer-tech": 3.7,
+   "fixer-enforcer": 2.3,
+   "tech-enforcer": 2.5
+  },
+  "min_colour_pair": 2.2,
+  "mean_colour_pair": 2.6,
+  "min_dE_to_signal": {
+   "cones": 25.1,
+   "guard": 34.8,
+   "rivals": 17.5
+  },
+  "worst_share_within_20": {
+   "cones": 0.0084,
+   "guard": 0.0005,
+   "rivals": 0.0945
+  },
+  "ground_contrast": {
+   "cream paving": {
+    "scout": 64.5,
+    "fixer": 64.5,
+    "tech": 69.0,
+    "enforcer": 69.6
+   },
+   "lilac-grey asphalt": {
+    "scout": 42.5,
+    "fixer": 42.5,
+    "tech": 44.4,
+    "enforcer": 44.6
+   }
+  },
+  "mean_iou": 0.587,
+  "mean_profile_dist": 0.0449,
+  "min_profile_dist": 0.0273,
+  "closest_pair": "02",
+  "strip": "strips/strip-a.png",
+  "strip_size": [
+   272,
+   118
+  ]
+ },
+ "b": {
+  "label": "Round 5 b: Monochrome",
+  "figures": {
+   "scout": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#867b74",
+      "dE": 25.8,
+      "share_within_20": 0.0089,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#d1c6be",
+      "dE": 25.2,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6b6764",
+      "dE": 30.1,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 41.1,
+    "L_lower": 17.6,
+    "dominant": [
+     [
+      "#2c2928",
+      0.31
+     ],
+     [
+      "#211f1e",
+      0.214
+     ],
+     [
+      "#383533",
+      0.199
+     ],
+     [
+      "#dbd1ca",
+      0.152
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2d2a29",
+      0.378
+     ],
+     [
+      "#393533",
+      0.185
+     ],
+     [
+      "#221f1e",
+      0.159
+     ],
+     [
+      "#d8cec7",
+      0.094
+     ]
+    ]
+   },
+   "fixer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#696766",
+      "dE": 28.6,
+      "share_within_20": 0.007,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#b7aba2",
+      "dE": 24.0,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#696766",
+      "dE": 28.8,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 26.6,
+    "L_lower": 66.2,
+    "dominant": [
+     [
+      "#2f2c2b",
+      0.475
+     ],
+     [
+      "#e1d8d2",
+      0.183
+     ],
+     [
+      "#d4cac3",
+      0.119
+     ],
+     [
+      "#bfb5ae",
+      0.079
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2d2928",
+      0.299
+     ],
+     [
+      "#dcd3cc",
+      0.279
+     ],
+     [
+      "#3e3a38",
+      0.214
+     ],
+     [
+      "#9c928e",
+      0.073
+     ]
+    ]
+   },
+   "tech": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#663b28",
+      "dE": 25.2,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#c7bcb5",
+      "dE": 24.9,
+      "share_within_20": 0.0003,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#595654",
+      "dE": 30.6,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 30.9,
+    "L_lower": 21.8,
+    "dominant": [
+     [
+      "#252221",
+      0.378
+     ],
+     [
+      "#33302f",
+      0.362
+     ],
+     [
+      "#d7cdc6",
+      0.102
+     ],
+     [
+      "#553122",
+      0.084
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2f2c2b",
+      0.393
+     ],
+     [
+      "#242220",
+      0.265
+     ],
+     [
+      "#3d3938",
+      0.101
+     ],
+     [
+      "#d0c6bf",
+      0.088
+     ]
+    ]
+   },
+   "enforcer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#746b66",
+      "dE": 26.5,
+      "share_within_20": 0.002,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#c1b6ae",
+      "dE": 24.4,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6c6663",
+      "dE": 29.8,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 39.3,
+    "L_lower": 22.9,
+    "dominant": [
+     [
+      "#33302f",
+      0.235
+     ],
+     [
+      "#292625",
+      0.227
+     ],
+     [
+      "#d3c9c2",
+      0.201
+     ],
+     [
+      "#1f1c1b",
+      0.183
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2a2726",
+      0.275
+     ],
+     [
+      "#343130",
+      0.201
+     ],
+     [
+      "#201d1c",
+      0.167
+     ],
+     [
+      "#524b48",
+      0.134
+     ]
+    ]
+   }
+  },
+  "colour_pair_dE_50px": {
+   "scout-fixer": 2.0,
+   "scout-tech": 1.1,
+   "scout-enforcer": 4.2,
+   "fixer-tech": 2.3,
+   "fixer-enforcer": 10.8,
+   "tech-enforcer": 4.4
+  },
+  "min_colour_pair": 1.1,
+  "mean_colour_pair": 4.1,
+  "min_dE_to_signal": {
+   "cones": 25.2,
+   "guard": 24.0,
+   "rivals": 28.8
+  },
+  "worst_share_within_20": {
+   "cones": 0.0089,
+   "guard": 0.0003,
+   "rivals": 0.0001
+  },
+  "ground_contrast": {
+   "cream paving": {
+    "scout": 63.8,
+    "fixer": 7.8,
+    "tech": 69.9,
+    "enforcer": 66.5
+   },
+   "lilac-grey asphalt": {
+    "scout": 42.3,
+    "fixer": 14.7,
+    "tech": 44.7,
+    "enforcer": 43.4
+   }
+  },
+  "mean_iou": 0.583,
+  "mean_profile_dist": 0.0551,
+  "min_profile_dist": 0.0414,
+  "closest_pair": "02",
+  "strip": "strips/strip-b.png",
+  "strip_size": [
+   272,
+   120
+  ]
+ },
+ "c": {
+  "label": "Round 5 c: Flight deck",
+  "figures": {
+   "scout": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#847b75",
+      "dE": 26.3,
+      "share_within_20": 0.0088,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#948b85",
+      "dE": 27.4,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#383a42",
+      "dE": 28.8,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 26.4,
+    "L_lower": 16.7,
+    "dominant": [
+     [
+      "#211f1f",
+      0.366
+     ],
+     [
+      "#2b292a",
+      0.274
+     ],
+     [
+      "#343336",
+      0.168
+     ],
+     [
+      "#7c716d",
+      0.08
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#211e1f",
+      0.295
+     ],
+     [
+      "#2b2828",
+      0.291
+     ],
+     [
+      "#2a2a2e",
+      0.143
+     ],
+     [
+      "#443e3d",
+      0.131
+     ]
+    ]
+   },
+   "fixer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#766b63",
+      "dE": 26.2,
+      "share_within_20": 0.0075,
+      "share_within_10": 0.0001
+     },
+     "guard": {
+      "nearest_painted": "#766b63",
+      "dE": 33.4,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#797777",
+      "dE": 28.3,
+      "share_within_20": 0.0016,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 20.7,
+    "L_lower": 21.8,
+    "dominant": [
+     [
+      "#221f1f",
+      0.475
+     ],
+     [
+      "#29292f",
+      0.18
+     ],
+     [
+      "#322d2c",
+      0.149
+     ],
+     [
+      "#6a615b",
+      0.139
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#211e1e",
+      0.315
+     ],
+     [
+      "#292625",
+      0.234
+     ],
+     [
+      "#27282d",
+      0.191
+     ],
+     [
+      "#60544d",
+      0.108
+     ]
+    ]
+   },
+   "tech": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#663a25",
+      "dE": 25.3,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#777678",
+      "dE": 34.8,
+      "share_within_20": 0.0018,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#555c66",
+      "dE": 19.2,
+      "share_within_20": 0.0338,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 23.5,
+    "L_lower": 16.7,
+    "dominant": [
+     [
+      "#222021",
+      0.566
+     ],
+     [
+      "#313134",
+      0.211
+     ],
+     [
+      "#5c5e64",
+      0.088
+     ],
+     [
+      "#5d3623",
+      0.05
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#201e1f",
+      0.391
+     ],
+     [
+      "#29282a",
+      0.336
+     ],
+     [
+      "#404044",
+      0.109
+     ],
+     [
+      "#60656e",
+      0.07
+     ]
+    ]
+   },
+   "enforcer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#736964",
+      "dE": 26.3,
+      "share_within_20": 0.0015,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#b5aba5",
+      "dE": 25.0,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#393c42",
+      "dE": 27.7,
+      "share_within_20": 0.0004,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 26.0,
+    "L_lower": 19.5,
+    "dominant": [
+     [
+      "#202024",
+      0.257
+     ],
+     [
+      "#302e2f",
+      0.229
+     ],
+     [
+      "#221f1e",
+      0.207
+     ],
+     [
+      "#49413e",
+      0.14
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#1e1d1e",
+      0.255
+     ],
+     [
+      "#2f2a29",
+      0.184
+     ],
+     [
+      "#3e3a38",
+      0.162
+     ],
+     [
+      "#242428",
+      0.144
+     ]
+    ]
+   }
+  },
+  "colour_pair_dE_50px": {
+   "scout-fixer": 1.9,
+   "scout-tech": 2.1,
+   "scout-enforcer": 1.7,
+   "fixer-tech": 3.0,
+   "fixer-enforcer": 2.7,
+   "tech-enforcer": 2.6
+  },
+  "min_colour_pair": 1.7,
+  "mean_colour_pair": 2.3,
+  "min_dE_to_signal": {
+   "cones": 25.3,
+   "guard": 25.0,
+   "rivals": 19.2
+  },
+  "worst_share_within_20": {
+   "cones": 0.0088,
+   "guard": 0.0018,
+   "rivals": 0.0338
+  },
+  "ground_contrast": {
+   "cream paving": {
+    "scout": 72.7,
+    "fixer": 74.1,
+    "tech": 73.1,
+    "enforcer": 71.0
+   },
+   "lilac-grey asphalt": {
+    "scout": 45.7,
+    "fixer": 46.3,
+    "tech": 45.8,
+    "enforcer": 45.1
+   }
+  },
+  "mean_iou": 0.551,
+  "mean_profile_dist": 0.0509,
+  "min_profile_dist": 0.0399,
+  "closest_pair": "02",
+  "strip": "strips/strip-c.png",
+  "strip_size": [
+   272,
+   116
+  ]
+ },
+ "R4-L1": {
+  "label": "Round 4 L1 (reference, rejected)",
+  "figures": {
+   "scout": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#a6694b",
+      "dE": 15.3,
+      "share_within_20": 0.1289,
+      "share_within_10": 0.0002
+     },
+     "guard": {
+      "nearest_painted": "#c37c5a",
+      "dE": 20.2,
+      "share_within_20": 0.0053,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6c6663",
+      "dE": 29.8,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 65.9,
+    "L_lower": 60.8,
+    "dominant": [
+     [
+      "#e5e1df",
+      0.34
+     ],
+     [
+      "#c1bab5",
+      0.146
+     ],
+     [
+      "#a96c4f",
+      0.141
+     ],
+     [
+      "#322c26",
+      0.127
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#e1dcd9",
+      0.304
+     ],
+     [
+      "#b9b4ac",
+      0.179
+     ],
+     [
+      "#483f37",
+      0.138
+     ],
+     [
+      "#8c877a",
+      0.136
+     ]
+    ]
+   },
+   "fixer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#ca6887",
+      "dE": 21.1,
+      "share_within_20": 0.011,
+      "share_within_10": 0.0001
+     },
+     "guard": {
+      "nearest_painted": "#b6b1ae",
+      "dE": 26.4,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#ca6887",
+      "dE": 25.6,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 63.9,
+    "L_lower": 64.2,
+    "dominant": [
+     [
+      "#e4dfdd",
+      0.294
+     ],
+     [
+      "#817875",
+      0.219
+     ],
+     [
+      "#a8a2a0",
+      0.185
+     ],
+     [
+      "#ea81a4",
+      0.169
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#aeabaa",
+      0.239
+     ],
+     [
+      "#8a817e",
+      0.206
+     ],
+     [
+      "#e5dfde",
+      0.188
+     ],
+     [
+      "#e981a3",
+      0.172
+     ]
+    ]
+   },
+   "tech": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#683924",
+      "dE": 24.8,
+      "share_within_20": 0.0012,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#b9b1ae",
+      "dE": 26.2,
+      "share_within_20": 0.0004,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6b6664",
+      "dE": 29.2,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 60.5,
+    "L_lower": 59.1,
+    "dominant": [
+     [
+      "#e4e0dd",
+      0.4
+     ],
+     [
+      "#6b6664",
+      0.179
+     ],
+     [
+      "#3d2d23",
+      0.168
+     ],
+     [
+      "#999491",
+      0.157
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#e3e0de",
+      0.281
+     ],
+     [
+      "#918e8b",
+      0.192
+     ],
+     [
+      "#6e6a68",
+      0.154
+     ],
+     [
+      "#b9b9b6",
+      0.144
+     ]
+    ]
+   },
+   "enforcer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#7b716d",
+      "dE": 25.8,
+      "share_within_20": 0.0126,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#c5bdba",
+      "dE": 26.5,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#025c96",
+      "dE": 24.7,
+      "share_within_20": 0.0065,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 65.6,
+    "L_lower": 59.4,
+    "dominant": [
+     [
+      "#ded8d6",
+      0.266
+     ],
+     [
+      "#312c2b",
+      0.2
+     ],
+     [
+      "#ece8e6",
+      0.18
+     ],
+     [
+      "#6e645f",
+      0.157
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#e0dbd9",
+      0.309
+     ],
+     [
+      "#706c69",
+      0.219
+     ],
+     [
+      "#cac6c4",
+      0.209
+     ],
+     [
+      "#343130",
+      0.131
+     ]
+    ]
+   }
+  },
+  "colour_pair_dE_50px": {
+   "scout-fixer": 8.2,
+   "scout-tech": 5.0,
+   "scout-enforcer": 5.1,
+   "fixer-tech": 6.5,
+   "fixer-enforcer": 9.5,
+   "tech-enforcer": 4.8
+  },
+  "min_colour_pair": 4.8,
+  "mean_colour_pair": 6.5,
+  "min_dE_to_signal": {
+   "cones": 15.3,
+   "guard": 20.2,
+   "rivals": 24.7
+  },
+  "worst_share_within_20": {
+   "cones": 0.1289,
+   "guard": 0.0053,
+   "rivals": 0.0065
+  },
+  "ground_contrast": {
+   "cream paving": {
+    "scout": 8.8,
+    "fixer": 17.2,
+    "tech": 9.1,
+    "enforcer": 9.3
+   },
+   "lilac-grey asphalt": {
+    "scout": 9.0,
+    "fixer": 4.5,
+    "tech": 8.3,
+    "enforcer": 15.3
+   }
+  },
+  "mean_iou": 0.578,
+  "mean_profile_dist": 0.0522,
+  "min_profile_dist": 0.0312,
+  "closest_pair": "02",
+  "strip": "strips/strip-R4-L1.png",
+  "strip_size": [
+   272,
+   119
+  ]
+ },
+ "R4-L4": {
+  "label": "Round 4 L4 (reference, rejected)",
+  "figures": {
+   "scout": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#a5694c",
+      "dE": 15.4,
+      "share_within_20": 0.0665,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#bbb3ab",
+      "dE": 24.7,
+      "share_within_20": 0.0002,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#756c66",
+      "dE": 31.5,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 59.1,
+    "L_lower": 57.5,
+    "dominant": [
+     [
+      "#e2ddd8",
+      0.294
+     ],
+     [
+      "#81a331",
+      0.239
+     ],
+     [
+      "#2f2a23",
+      0.155
+     ],
+     [
+      "#91887e",
+      0.132
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#7d9e32",
+      0.216
+     ],
+     [
+      "#958e82",
+      0.216
+     ],
+     [
+      "#d6d4ca",
+      0.205
+     ],
+     [
+      "#4f4835",
+      0.18
+     ]
+    ]
+   },
+   "fixer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#d36d85",
+      "dE": 19.5,
+      "share_within_20": 0.0304,
+      "share_within_10": 0.0001
+     },
+     "guard": {
+      "nearest_painted": "#c4bcb8",
+      "dE": 26.1,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#d36d85",
+      "dE": 28.1,
+      "share_within_20": 0.0,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 64.1,
+    "L_lower": 75.4,
+    "dominant": [
+     [
+      "#e9e4e2",
+      0.313
+     ],
+     [
+      "#f18ca5",
+      0.271
+     ],
+     [
+      "#d6cecc",
+      0.139
+     ],
+     [
+      "#7c716e",
+      0.11
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#e6e1df",
+      0.357
+     ],
+     [
+      "#f18da6",
+      0.225
+     ],
+     [
+      "#786a67",
+      0.134
+     ],
+     [
+      "#b2a8a7",
+      0.106
+     ]
+    ]
+   },
+   "tech": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#95553a",
+      "dE": 15.7,
+      "share_within_20": 0.051,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#b3aca9",
+      "dE": 26.3,
+      "share_within_20": 0.0002,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#6b6663",
+      "dE": 30.0,
+      "share_within_20": 0.0001,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 49.2,
+    "L_lower": 55.9,
+    "dominant": [
+     [
+      "#03684f",
+      0.249
+     ],
+     [
+      "#35332d",
+      0.218
+     ],
+     [
+      "#e8e3e1",
+      0.205
+     ],
+     [
+      "#76422b",
+      0.129
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#cbc7c4",
+      0.296
+     ],
+     [
+      "#0e6d55",
+      0.258
+     ],
+     [
+      "#73432e",
+      0.122
+     ],
+     [
+      "#84938b",
+      0.114
+     ]
+    ]
+   },
+   "enforcer": {
+    "signals": {
+     "cones": {
+      "nearest_painted": "#6c6663",
+      "dE": 27.6,
+      "share_within_20": 0.023,
+      "share_within_10": 0.0
+     },
+     "guard": {
+      "nearest_painted": "#c5bdb9",
+      "dE": 26.1,
+      "share_within_20": 0.0004,
+      "share_within_10": 0.0
+     },
+     "rivals": {
+      "nearest_painted": "#015888",
+      "dE": 25.3,
+      "share_within_20": 0.0177,
+      "share_within_10": 0.0
+     }
+    },
+    "L_upper": 54.4,
+    "L_lower": 44.0,
+    "dominant": [
+     [
+      "#e1dbd9",
+      0.317
+     ],
+     [
+      "#2b2726",
+      0.287
+     ],
+     [
+      "#0172ab",
+      0.114
+     ],
+     [
+      "#665d57",
+      0.107
+     ]
+    ],
+    "dominant_50px": [
+     [
+      "#2e2b29",
+      0.243
+     ],
+     [
+      "#d5d1d0",
+      0.203
+     ],
+     [
+      "#0b80b4",
+      0.159
+     ],
+     [
+      "#615b57",
+      0.157
+     ]
+    ]
+   }
+  },
+  "colour_pair_dE_50px": {
+   "scout-fixer": 14.9,
+   "scout-tech": 13.7,
+   "scout-enforcer": 15.3,
+   "fixer-tech": 15.5,
+   "fixer-enforcer": 13.4,
+   "tech-enforcer": 15.5
+  },
+  "min_colour_pair": 13.4,
+  "mean_colour_pair": 14.7,
+  "min_dE_to_signal": {
+   "cones": 15.4,
+   "guard": 24.7,
+   "rivals": 25.3
+  },
+  "worst_share_within_20": {
+   "cones": 0.0665,
+   "guard": 0.0004,
+   "rivals": 0.0177
+  },
+  "ground_contrast": {
+   "cream paving": {
+    "scout": 23.4,
+    "fixer": 9.1,
+    "tech": 10.9,
+    "enforcer": 10.6
+   },
+   "lilac-grey asphalt": {
+    "scout": 11.5,
+    "fixer": 16.6,
+    "tech": 11.1,
+    "enforcer": 12.9
+   }
+  },
+  "mean_iou": 0.608,
+  "mean_profile_dist": 0.055,
+  "min_profile_dist": 0.041,
+  "closest_pair": "03",
+  "strip": "strips/strip-R4-L4.png",
+  "strip_size": [
+   272,
+   120
+  ]
+ }
+}
