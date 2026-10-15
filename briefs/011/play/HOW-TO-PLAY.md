@@ -10,28 +10,37 @@
 Every order shows its full price before you commit.
 
 ## Controls
+Sky's scheme of 2026-10-15 ("everything but rotation"). The camera keeps yaw 30. Every key comes from one bindings table (`controls` on the `handover` object in the scene, class `PlayControls`), so remapping means editing that table.
+
 | | |
 |---|---|
-| **1 2 3 4** or left click | select Scout, Fixer, Tech or Enforcer. Shift adds to the group. |
-| **right click the ground** | move there. Roads can be crossed anywhere. |
+| **left click an agent** | select it. **Shift**-click adds to the group. |
+| **drag a box on the ground** | select every agent inside the box |
+| **left click the ground** | the selection walks there. Roads can be crossed anywhere. |
+| **double-click the ground** | run. The engine has no running rule yet (Keel and Motive are writing it), so the agents walk and the HUD says "run: not yet in the rulebook" once. |
 | **hover a person or thing** | the price chip at the cursor shows what a right click will do: $ · time · Trail · Alert · the outcome. "?" means you don't know yet. |
-| **right click a person or thing** | the selected agent does it |
-| **Q W E R** | pick a different verb. The hotbar above the roster lights the one a right click will give. |
+| **right click a person or thing** | the selected agent's current verb on it |
+| **right click empty ground** | cancel: drops a picked verb; with none picked, stops the selection's walks |
+| **1 2 3 4** | pick a different verb. The hotbar above the roster shows them and lights the one a right click will give. |
+| **F1 F2 F3 F4** or a **roster portrait** | select Scout, Fixer, Tech or Enforcer (Shift adds). Press twice quickly, or double-click the portrait, to centre the camera on them. |
+| **Tab** | next agent |
+| **WASD, arrow keys, middle-mouse drag** | pan. Edge scrolling is off by default (`controls.edgeScroll`). |
+| **mouse wheel** | zoom 12.5–18.5. People stay 40–60 px tall, as §10 asks. No rotation. |
 | **Space** | pause or run. You can give orders while paused. |
 | **=  /  −** | speed ×1, ×2, ×4, ×8 |
 | **N** | next event: run the clock until something happens |
-| **arrow keys, middle mouse** | pan |
-| **mouse wheel** | zoom 12.5–18.5. People stay 40–60 px tall, as §10 asks. Pitch and yaw are fixed (38°, 30°). |
-| **F1** | debug layer: the engine, its cost and the last log lines |
+| **F12** | debug layer: the engine, its cost and the last log lines |
 | **Return** | after the end card, play again |
 
-**The verbs.**
-- **Scout:** Q Watch (their routine), W Listen (their need and temperament: only Listen reveals temperament), E False tip (the rivals).
-- **Fixer:** Q Ask, W Pay, E Help, R Pressure. Right click a contact you have already turned to **call** them.
-- **Tech:** Q Loop the entrance camera (stand at the control cabinet first), W Reroute the patrol.
-- **Enforcer:** Q acts on whatever you point at: the public door (Enter), Vale at his car (Take), the getaway car (put Vale in). W Fire.
+The roster and hotbar can sit at the bottom, in a left column or in the corner: `controls.dock` (Bottom, Left, Corner).
 
-If a verb doesn't fit the target, a right click walks the agent there.
+**The verbs** (keys 1–4 for the selected agent):
+- **Scout:** 1 Watch (their routine), 2 Listen (their need and temperament: only Listen reveals temperament), 3 False tip (the rivals).
+- **Fixer:** 1 Ask, 2 Pay, 3 Help, 4 Pressure. Right click a contact you have already turned to **call** them.
+- **Tech:** 1 Loop the entrance camera (stand at the control cabinet first), 2 Reroute the patrol.
+- **Enforcer:** 1 acts on whatever you point at: the public door (Enter), Vale at his car (Take), the getaway car (put Vale in). 2 Fire.
+
+If the picked verb doesn't fit the target, a right click walks the agent there.
 
 ## What you see
 - **Top right:** the mission clock, the next scheduled event, cash, Trail, Alert (three pips), and PAUSE or the speed.
@@ -62,7 +71,8 @@ At the end, `<file>.end.txt` says whether Unity's own replay of the session matc
 
 ## Known limits (graybox)
 - People are capsules, and the HUD icons are text placeholders for Glyph's v10 art.
-- The cell starts under the roofed getaway bay, so pan the camera or select agents with 1–4.
+- The cell starts under the roofed getaway bay, so pan the camera or press F1–F4 twice to centre on an agent.
 - The Fixer's call has no verb key: right click the turned contact.
+- If Unity isn't the front app, the clock waits (the project's `runInBackground` is off).
 - The final fight is fought with W Fire on the hostiles, and they hit back. The scripts move the Enforcer between volleys.
 - Background people walk on the engine's grid, between the routine stops from Pulse's fix cast. That fixture stands in until a cast passes M-2.

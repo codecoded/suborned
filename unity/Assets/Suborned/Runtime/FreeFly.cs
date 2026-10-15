@@ -19,6 +19,7 @@ namespace Suborned
         static void Spawn()
         {
             if (SceneManager.GetActiveScene().name != "HarbourDistrict" || FindAnyObjectByType<FreeFly>()) return;
+            if (FindAnyObjectByType<Suborned.Play.HandoverHost>()) return; // the Handover plays here: Tab cycles agents and WASD pans (brief 011 D)
             var main = Camera.main;
             var go = new GameObject("free-fly");
             var cam = go.AddComponent<Camera>();

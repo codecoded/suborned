@@ -15,11 +15,14 @@ namespace Suborned.Play
     /// Suborned.Sim DLL the headless CLI runs) steps at 10 Hz; the capsules move by it (HostViews), never by a recorded stream; every order goes in
     /// as an engine order and the engine's own order log is written after each one, with the run's checkpoint hashes, to out/play/ (a player:
     /// persistentDataPath/play), so any session replays and can become a route script.
-    /// Controls: left click an agent or 1–4 to select (Shift adds to the group) · right click the ground to move (roads cross anywhere: the engine's
-    /// walk grid leaves carriageways open) · right click a person or object for the selected agent's verb on it · hover first: the price chip at
-    /// the cursor shows $, time, Trail and Alert before the click commits (§02) · Q W E R pick another verb (the hotbar lights the one a right
-    /// click gives) · Space pauses (on at the start) · = and - change speed · N jumps to the next event · arrows or the middle mouse pan · the
-    /// wheel zooms 12.5–18.5, where a 1.75 m person stays 40–60 px at 1080p (§10) · F1 the debug layer · Return restarts after the end card.
+    /// Controls (Sky, 2026-10-15, "everything but rotation"; one table, PlayControls): left click an agent to select (Shift adds; drag a box
+    /// on the ground to select every agent in it) · left click the ground to walk there (roads cross anywhere; a double click asks to run,
+    /// which waits for the rulebook) · right click a person or object for the selected agent's verb, priced at the cursor before the click
+    /// (§02) · right click empty ground cancels the picked verb, else stops the selection's walks · 1–4 pick a verb (the hotbar lights the
+    /// one a right click gives) · F1–F4 or a roster portrait select an agent, twice quickly centres on them · Tab cycles agents · WASD,
+    /// arrows or the middle mouse pan (edge scrolling is a setting, off) · the wheel zooms 12.5–18.5, where a 1.75 m person stays 40–60 px
+    /// at 1080p (§10); no rotation, yaw stays 30 · Space pauses (on at the start) · = and − change speed · N jumps to the next event ·
+    /// F12 the debug layer · Return restarts after the end card.
     /// Engine exceptions stop the host at this boundary, never the Editor (Redline E1). Preview (one A* and four temperament evaluations) is
     /// called only when the hovered target, the agent or the verb changes.</summary>
     [DefaultExecutionOrder(-50)]
@@ -73,7 +76,13 @@ namespace Suborned.Play
             new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route") },
             new[] { new Slot("act", "Enter / Take / Car", "act"), new Slot("fire", "Fire", "fire") },
         };
-        public static readonly string[] Keys = { "Q", "W", "E", "R" };
+        [Tooltip("Key bindings and HUD settings: one table (remap here; a settings screen later edits the same object).")]
+        public PlayControls controls = new();
+        public string VerbKey(int i) => controls.Label(PlayAction.Verb1 + i);
+        public string AgentKeyLabel(int i) => controls.Label(PlayAction.Agent1 + i);
+        /// <summary>The box being dragged, in GUI space (the HUD draws it), else null.</summary>
+        public Rect? BoxScreen { get; private set; }
+        Vector2 dragFrom, lastGround; bool dragging; float lastGroundAt = -10f, lastAgentKeyAt = -10f; int lastAgentKey = -1;
 
         public sealed class Target { public string Kind = "", Key = "", Label = ""; } // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
@@ -83,7 +92,7 @@ namespace Suborned.Play
         }
 
         public OpId Agent { get; private set; } = OpId.Scout;   // the agent the hotbar is for (the first selected)
-        public int Picked { get; private set; } = -1;           // Q/W/E/R pick, -1 = the default for the target
+        public int Picked { get; private set; } = -1;           // the 1–4 pick, -1 = the default for the target
         public Target Hover { get; private set; }
         public Intent HoverIntent { get; private set; }
         public int LitSlot => HoverIntent?.Slot ?? (Picked >= 0 ? Picked : 0);
@@ -129,7 +138,7 @@ namespace Suborned.Play
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
             SessionPath = SessionFile();
             Save();
-            Status = "Paused (Space). Select an agent (1–4 or left click), hover a target to see the price, right click to act.";
+            Status = "Paused (Space). F1–F4 or left click selects, left click the ground walks, hover a target for the price, right click acts.";
         }
 
         /// <summary>Only the play camera draws to the screen: a review tool's camera (an open Flyby window makes one at depth 100, sometimes
@@ -147,9 +156,9 @@ namespace Suborned.Play
             Uncover();
             if (Game == null) return;
             var kb = Keyboard.current;
-            if (kb != null && kb.f1Key.wasPressedThisFrame) ShowDebug = !ShowDebug;
+            if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
-            if (Ending.Length > 0) { if (kb != null && (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)) Begin(); views?.Frame(1f); return; }
+            if (Ending.Length > 0) { if (controls.Down(kb, PlayAction.Restart)) Begin(); views?.Frame(1f); return; }
             Controls();
             if (Fault != null) return;
             if (!Paused && !Game.Over)
@@ -181,37 +190,81 @@ namespace Suborned.Play
 
         void Controls()
         {
-            var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current;
-            bool shift = kb != null && (kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed);
+            var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current; var c = controls;
+            bool shift = c.Held(kb, PlayAction.AddToGroup);
             if (kb != null)
             {
-                if (kb.spaceKey.wasPressedThisFrame) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; }
-                if (kb.digit1Key.wasPressedThisFrame) Select(OpId.Scout, shift);
-                if (kb.digit2Key.wasPressedThisFrame) Select(OpId.Fixer, shift);
-                if (kb.digit3Key.wasPressedThisFrame) Select(OpId.Tech, shift);
-                if (kb.digit4Key.wasPressedThisFrame) Select(OpId.Enforcer, shift);
-                if (kb.qKey.wasPressedThisFrame) Pick(0);
-                if (kb.wKey.wasPressedThisFrame) Pick(1);
-                if (kb.eKey.wasPressedThisFrame) Pick(2);
-                if (kb.rKey.wasPressedThisFrame) Pick(3);
-                if (kb.nKey.wasPressedThisFrame) NextEvent();
-                if (kb.equalsKey.wasPressedThisFrame || kb.numpadPlusKey.wasPressedThisFrame) Speed = Mathf.Min(8, Speed * 2);
-                if (kb.minusKey.wasPressedThisFrame || kb.numpadMinusKey.wasPressedThisFrame) Speed = Mathf.Max(1, Speed / 2);
+                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (c.Down(kb, PlayAction.Verb1 + i)) Pick(i);
+                    if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
+                }
+                if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
+                if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
+                if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
+                if (c.Down(kb, PlayAction.Slower)) Speed = Mathf.Max(1, Speed / 2);
                 var pan = Vector2.zero;
-                if (kb.upArrowKey.isPressed) pan.y += 1; if (kb.downArrowKey.isPressed) pan.y -= 1;
-                if (kb.rightArrowKey.isPressed) pan.x += 1; if (kb.leftArrowKey.isPressed) pan.x -= 1;
+                if (c.Held(kb, PlayAction.PanUp)) pan.y += 1; if (c.Held(kb, PlayAction.PanDown)) pan.y -= 1;
+                if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
                 if (pan != Vector2.zero && cam) Pan(pan * panSpeed * Time.unscaledDeltaTime);
             }
             if (mouse == null || !cam) return;
+            var p = mouse.position.ReadValue();
             if (mouse.middleButton.isPressed) { var d = mouse.delta.ReadValue(); Pan(-d * (2f * cam.orthographicSize / Screen.height)); }
+            if (c.edgeScroll && Application.isFocused)
+            {
+                float band = c.edgePixels * Screen.height / 1080f; var e = Vector2.zero;
+                if (p.x <= band) e.x -= 1; if (p.x >= Screen.width - band) e.x += 1; if (p.y <= band) e.y -= 1; if (p.y >= Screen.height - band) e.y += 1;
+                if (e != Vector2.zero) Pan(e * panSpeed * Time.unscaledDeltaTime);
+            }
             float wheel = mouse.scroll.ReadValue().y;
             if (wheel != 0f) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
-            var p = mouse.position.ReadValue();
             if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
-            if (PlayHud.Blocks(p) || DebugHud.Blocks(p)) return;
-            if (mouse.leftButton.wasPressedThisFrame) PointerLeft(p, shift);
-            if (mouse.rightButton.wasPressedThisFrame) PointerRight(p);
+            bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p);
+            if (mouse.leftButton.wasPressedThisFrame && !onHud) { dragFrom = p; dragging = true; }
+            if (dragging && mouse.leftButton.isPressed && (p - dragFrom).magnitude > 6f) BoxScreen = GuiRect(dragFrom, p);
+            if (dragging && mouse.leftButton.wasReleasedThisFrame)
+            {
+                dragging = false;
+                if (BoxScreen.HasValue) { BoxSelect(BoxScreen.Value, shift); BoxScreen = null; }
+                else PointerLeft(p, shift);
+            }
+            if (mouse.rightButton.wasPressedThisFrame && !onHud) PointerRight(p);
+        }
+
+        /// <summary>An agent's key (F1–F4): select (Shift adds to the group); pressed twice quickly, the camera centres on them.</summary>
+        public void AgentKey(int i, bool add)
+        {
+            bool twice = lastAgentKey == i && Time.unscaledTime - lastAgentKeyAt < controls.doubleSeconds;
+            lastAgentKey = i; lastAgentKeyAt = Time.unscaledTime;
+            Select((OpId)i, add);
+            if (twice) CentreOn((OpId)i);
+        }
+
+        /// <summary>A roster portrait clicked: as the agent's key (double click centres).</summary>
+        public void PortraitClick(int i, bool add) => AgentKey(i, add);
+
+        public void CentreOn(OpId id) { var op = Game.Ops[(int)id]; LookAt(frame.World(op.Pos)); Status = $"centred on {Op.Name(id)}"; }
+
+        static Rect GuiRect(Vector2 a, Vector2 b) => Rect.MinMaxRect(Mathf.Min(a.x, b.x), Screen.height - Mathf.Max(a.y, b.y), Mathf.Max(a.x, b.x), Screen.height - Mathf.Min(a.y, b.y));
+
+        /// <summary>Every agent whose feet are inside the dragged box (GUI space) is selected; Shift adds them to the selection.</summary>
+        public void BoxSelect(Rect gui, bool add)
+        {
+            var pick = new List<int>();
+            for (int i = 0; i < 4; i++)
+            {
+                var op = Game.Ops[i]; if (op.Inside) continue;
+                var sp = cam.WorldToScreenPoint(frame.World(op.Pos)); if (sp.z <= 0) continue;
+                if (gui.Contains(new Vector2(sp.x, Screen.height - sp.y))) pick.Add(i);
+            }
+            if (pick.Count == 0) { if (!add) Status = "no agent in the box"; return; }
+            if (!add) Array.Clear(Selected, 0, 4);
+            foreach (var i in pick) Selected[i] = true;
+            Agent = (OpId)Array.IndexOf(Selected, true); Picked = -1; intentKey = "";
+            Status = $"{pick.Count} agent{(pick.Count > 1 ? "s" : "")} selected";
         }
 
         void Pan(Vector2 screen)
@@ -245,9 +298,9 @@ namespace Suborned.Play
 
         public void Pick(int slot)
         {
-            if (slot >= Slots[(int)Agent].Length) { Status = $"{Op.Name(Agent)} has no verb on {Keys[slot]}"; return; }
+            if (slot >= Slots[(int)Agent].Length) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
             Picked = slot; intentKey = "";
-            Status = $"{Keys[slot]}: {Slots[(int)Agent][slot].Label} — right click a target";
+            Status = $"{VerbKey(slot)}: {Slots[(int)Agent][slot].Label} — right click a target";
         }
 
         /// <summary>The mouse over the world (pixels, origin bottom left): what is under it, and what a right click would do there, priced once per change.</summary>
@@ -261,13 +314,27 @@ namespace Suborned.Play
             HoverIntent = t == null ? null : IntentFor(t);
         }
 
+        /// <summary>Left click: on an agent, select (Shift adds); anywhere else, the selection walks there (roads cross anywhere). A second
+        /// click on the same spot within the double-click time asks to run, which the engine has no rule for yet: the agents walk, and the HUD
+        /// says so once (Keel and Motive are writing the running rule; no speed is invented here).</summary>
         public void PointerLeft(Vector2 screen, bool shift = false)
         {
             var t = TargetAt(screen, true);
-            if (t != null && t.Kind == "op") Select(Op.Parse(t.Key), shift);
+            if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
+            bool twice = Time.unscaledTime - lastGroundAt < controls.doubleSeconds && (screen - lastGround).magnitude < 24f;
+            lastGroundAt = Time.unscaledTime; lastGround = screen;
+            if (twice)
+            {
+                if (!RunInRulebook) { if (!runNoted) { runNoted = true; Status = "run: not yet in the rulebook (walking)"; } return; } // the first click already sent the walk
+            }
+            MoveSelection(screen);
         }
 
-        /// <summary>Right click: on the ground, the selection moves (a group stands in a 0.9 m square); on a target, the hovered intent is given.</summary>
+        /// <summary>Whether the engine's order format has a run flag (Order.Run). Until Keel's running rule lands it does not.</summary>
+        public static readonly bool RunInRulebook = typeof(Order).GetField("Run") != null || typeof(Order).GetProperty("Run") != null;
+        bool runNoted;
+
+        /// <summary>Right click: on a person or object, the selected agent's current verb (the hovered intent, priced first); on empty ground, Cancel.</summary>
         public void PointerRight(Vector2 screen)
         {
             if (Game == null || Fault != null || !cam) return;
@@ -280,6 +347,26 @@ namespace Suborned.Play
                 Issue(i.Order);
                 return;
             }
+            Cancel();
+        }
+
+        /// <summary>Right click on empty ground: drop the picked verb; with none picked, stop the selected agents' walks (an engine order: a move
+        /// to where each stands). An action already under way runs to its end.</summary>
+        public void Cancel()
+        {
+            if (Picked >= 0) { Picked = -1; intentKey = ""; Status = "verb cancelled"; return; }
+            int stopped = 0;
+            for (int n = 0; n < 4; n++)
+            {
+                var op = Game.Ops[n]; if (!Selected[n] || op.Walk == null || op.Inside) continue;
+                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = op.Pos }); stopped++;
+            }
+            Status = stopped > 0 ? $"stopped {stopped}" : "nothing to cancel";
+        }
+
+        /// <summary>The selection walks to the ground under a screen point; a group stands in a 0.9 m square.</summary>
+        public void MoveSelection(Vector2 screen)
+        {
             if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) return;
             var at = frame.Engine(w); int k = 0;
             for (int n = 0; n < 4; n++)
