@@ -214,6 +214,22 @@ namespace Suborned.Sim
                 r.Is(found > 0 && !g.CrowdBlocks(p0 + new Pt(-1000, found), p0 + new Pt(1000, found)), $"a line 1 m clear of everyone is not ({found} cm off)");
             });
 
+            Add("N38b", "—", "Shots in a crowd are witnessed (Pulse §4; Latch's play test asked): people within witness range on a clear line of the shooter or the target at the shot remember saw-gunfire with the Fixer's face; people beyond it only startle.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.Do(Fixer, "draw"); r.Wait(g.R.DrawTicks + 1); // drawn first, so the shot is the only new act
+                var inez = g.PersonPos(g.Inez)!.Value;
+                r.Fire(Fixer, Inez, force: true);
+                r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the shot");
+                var at = r.Op(Fixer).Pos;
+                var inRange = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && ((G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(p.Value, at, g.R.Eye)) || (G.Within(p.Value, inez, g.R.WitnessRangeCm) && g.S.Sight(p.Value, inez, g.R.Eye))); });
+                r.Is(inRange.Count > 0, $"people stand within witness range of the shot ({inRange.Count})");
+                r.Is(inRange.TrueForAll(w => w.P.Has("saw-gunfire")), "each remembers saw-gunfire");
+                r.Is(inRange.Exists(w => g.HoldsFace(w.P)), "with the Fixer's face");
+                r.Is(g.Incidents.Exists(i => i.Cause == "violence:waitress" && i.Witnesses.Count >= inRange.Count), "and they are the incident's witnesses (for the investigators)");
+            });
+
             Add("N26", "—", "Downed and carried (motive-fights.md §2.2, §1.1): the guard downs the Scout, who holds fire; the Fixer lifts him in 3 s; the carrier can't run or fire; the Scout's orders are refused.", r =>
             {
                 var g = r.G;
