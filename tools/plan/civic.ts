@@ -18,11 +18,30 @@ export type Civic = {
   crossing: V[];
   /** The block's `dressing` key (block/4), unchanged and in block frame: keep-clear zones, lamps, bollards, planters, parasols, piece pivots. The world generator places it (tools/world/civic/dress.ts); rules CD-1..4 hold it. */
   dressing?: Record<string, unknown>;
-  /** From block/4 with a `dressing`: the ground solids a walker cannot cross, plan frame: the pieces' wall, cheeks and pilasters (not the overhead marquee), the objects (beds, tables, fountain) and the pillars, cabinets and monument. Absent on a block without one, so recorded walks read what they always did. */
+  /** From block/4 with a `dressing`: the ground solids a walker cannot cross, plan frame: the pieces' wall, cheeks and pilasters (not the overhead marquee), the objects (beds, tables, fountain), the pillars, cabinets and monument, and the dressing's planter runs, pots, bollards and lamp bases (plan.civic.groundPieces). Absent on a block without one, so recorded walks read what they always did. */
   solids?: V[][];
   /** The name of each solid, in the same order (a piece's solid is `<piece>/<id>`): for the rules that say which solids a walk passes between. */
   solidIds?: string[];
 };
+
+/** The ground furniture of the block's dressing a walker cannot cross, as footprints in the plan frame: every planter run module, topiary pot, bollard and lamp base (civic-block.json `dressing`),
+ *  each a rectangle of the size plan.civic.groundPieces gives its piece (along its yaw, across it; the pivot is the centre: the lamp's is the pole), turned by the dressing's yawDeg (block frame: from +x toward +y).
+ *  The pieces' own sizes are Vela's (kit.json); the plan states the walker's version of them so a kit re-hash does not move a walk. A piece the plan gives no size is an error, never a gap in the floor. */
+function furniture(spec: any, dressing: any, toPlan: (p: V) => V): { poly: V[]; id: string }[] {
+  const sizes: Record<string, [number, number]> | undefined = spec.groundPieces?.sizes;
+  if (!sizes) return [];
+  const out: { poly: V[]; id: string }[] = [];
+  const put = (id: string, piece: string, at: V, yawDeg = 0) => {
+    const size = sizes[piece]; if (!size) throw new Error(`civic dressing: ${id} is ${piece}, which plan.civic.groundPieces.sizes gives no footprint (add it, or the walkers walk through it)`);
+    const y = (yawDeg * Math.PI) / 180, u: V = [Math.cos(y), Math.sin(y)], v: V = [-Math.sin(y), Math.cos(y)], hl = size[0] / 2, hw = size[1] / 2;
+    out.push({ id, poly: ([[-hl, -hw], [hl, -hw], [hl, hw], [-hl, hw]] as V[]).map(([a, b]) => toPlan([at[0] + a * u[0] + b * v[0], at[1] + a * u[1] + b * v[1]])) });
+  };
+  for (const run of dressing.planterRuns?.runs ?? []) (run.modules ?? []).forEach((m: any, i: number) => put(`${run.id}/${i}`, m.piece, m.at, run.yawDeg));
+  for (const t of dressing.topiary?.at ?? []) put(t.id, dressing.topiary.piece, t.at, t.yawDeg);
+  for (const b of dressing.bollards?.at ?? []) put(b.id, dressing.bollards.piece, b.at, b.yawDeg);
+  for (const l of dressing.lamps?.at ?? []) put(l.id, dressing.lamps.piece, l.at, l.yawDeg);
+  return out;
+}
 
 const SOLID_STRUCTURES = new Set(['pavilion-support', 'service-cabinet', 'civic-monument']); // the steps, landings and canopies of the others are walked on or under
 
@@ -36,6 +55,7 @@ export function civic(spec: any, block: any): Civic {
   const toPlan = toPlanFn(spec);
   const blockRect = (r: Rect) => rectPoly(r).map(toPlan);
   const w = spec.walk;
+  const ground = block.dressing ? furniture(spec, block.dressing, toPlan) : [];
   const entrances = block.buildings.flatMap((b: any) => (b.entrances ?? []).map((e: any) => ({ id: e.id as string, name: e.name as string, building: b.id as string, p: toPlan(e.at) })));
 
   return {
@@ -53,11 +73,13 @@ export function civic(spec: any, block: any): Civic {
         ...(block.dressing.pieces ?? []).flatMap((p: any) => (p.solids ?? []).filter((x: any) => x.z === undefined).map((x: any) => x.polygon.map(toPlan))),
         ...block.objects.map((o: any) => o.polygon.map(toPlan)),
         ...block.structures.filter((x: any) => SOLID_STRUCTURES.has(x.category)).map((x: any) => x.polygon.map(toPlan)),
+        ...ground.map(g => g.poly),
       ] as V[][],
       solidIds: [
         ...(block.dressing.pieces ?? []).flatMap((p: any) => (p.solids ?? []).filter((x: any) => x.z === undefined).map((x: any) => `${p.piece}/${x.id}`)),
         ...block.objects.map((o: any) => o.id as string),
         ...block.structures.filter((x: any) => SOLID_STRUCTURES.has(x.category)).map((x: any) => x.id as string),
+        ...ground.map(g => g.id),
       ] as string[],
     } : {}),
   };

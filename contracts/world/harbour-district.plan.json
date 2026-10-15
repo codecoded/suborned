@@ -1873,7 +1873,19 @@
     },
     "walk": 4,
     "blocks": { "square": [-26, 31, -50, -8], "office": [44, 80, -50, 4] },
-    "crossing": [31, 44, -32.5, -27.5]
+    "crossing": [31, 44, -32.5, -27.5],
+    "groundPieces": {
+      "tag": "[S]",
+      "why": "The dressing's ground furniture a walker cannot cross (Vantage, 2026-10-15: tools/plan/civic.ts left the planter runs out, so the walk graph, the engine site and the people's seats went through all 15 modules). civic.ts turns each placement of these pieces into a walk solid: a rectangle of this size, centred on the pivot (the lamp's is the pole), turned by the dressing's yawDeg. The walker's footprint is stated here, not read from kit.json, so a kit re-hash never moves a walk; Vela's sizes (kit.json) are the source, rounded up to the cm: planter run modules 4.30 to 4.37 x 0.68 (PlanterRun_4_A/B/C), the potted topiary 0.72 (PottedTopiary_Play), the bollard 0.42 (BollardSphere), the lamp's 0.52 plinth (PlazaSphereLamp_Play: pole at the pivot, arms overhead). A dressing piece of these kinds with no size here fails civic() by name. Trees stand in beds (objects) and parasols over tables, which are solids already.",
+      "sizes": {
+        "PlanterRun_4_A": [4.37, 0.68],
+        "PlanterRun_4_B": [4.37, 0.68],
+        "PlanterRun_4_C": [4.37, 0.68],
+        "PottedTopiary_Play": [0.72, 0.72],
+        "BollardSphere": [0.42, 0.42],
+        "PlazaSphereLamp_Play": [0.52, 0.52]
+      }
+    }
   },
 
   "notes": {

@@ -98,7 +98,7 @@ const SOURCE22 = 'streetscape.crossings.coverage.rules (arms, island, mall, midB
  *  why no ground stood free for it. (c) The export's log names only sites the rules make. A rule that cannot be met is seen here, never silent. */
 function coverageRule(c: WCtx): Check[] {
   const gc = ctxOf(c.plan, c.d, c.civ), rules = rulesOf(gc), log = c.w.crossingRules; if (!rules || !log) return [];
-  const bad: string[] = [], xs = c.w.crossings ?? [], kerb = xs.filter(x => x.kind === 'kerb'), plain = kerb.filter(x => !x.landings.some(l => /^street\/(arm|island|mall|mid)\//.test(l.id))); // a site is the rules' own: the island's two crossings either side of a mouth are two footways, not twins
+  const bad: string[] = [], xs = c.w.crossings ?? [], kerb = xs.filter(x => x.kind === 'kerb'), plain = kerb.filter(x => x.landings.length === 2 && !x.landings.some(l => /^street\/(arm|island|mall|mid)\//.test(l.id))); // a site is the rules' own: the island's two crossings either side of a mouth are two footways, not twins
   const pairs = plain.map(x => ({ a: { id: x.landings[0]!.id, road: x.road, cls: '', flank: [] }, b: { id: x.landings[1]!.id, road: x.road, cls: '', flank: [] }, ka: x.line[0], kb: x.line[1], x }) as Pair & { x: typeof kerb[number] });
   for (const [p, why] of dedupe(gc, pairs, () => 0, rules)) bad.push(`${(p as Pair & { x: { id: string } }).x.id} is ${why}`);
   const mid = (x: { line: V[] }): V => [(x.line[0]![0] + x.line[1]![0]) / 2, (x.line[0]![1] + x.line[1]![1]) / 2], reach = (rules.reach ?? 4) + 0.5;
