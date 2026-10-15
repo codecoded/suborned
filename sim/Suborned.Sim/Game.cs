@@ -199,6 +199,7 @@ namespace Suborned.Sim
                 }
             }
             if (!Over) Tether();
+            if (!Over) Watchers();
             if (!Over) PatrolChase();
             if (!Over && Tick == MissingNotice)
             {
@@ -471,6 +472,12 @@ namespace Suborned.Sim
             RaiseAlert(Math.Min(3, Alert + R.PerShot), "gunfire:" + target);
             EnforcerNextShot = Tick + T(R.ShotEveryS);
             incidents.Add("fire:" + target);
+            if (target != "guard" && target != "waitress" && target != "driver")
+            {
+                var ws = WitnessesWithPos(Enforcer.Pos, null);
+                AddIncident("gunfire", "gunfire:" + target, Enforcer.Pos, ws);
+                foreach (var (c, _) in ws) Remember(c, "saw-act", "enforcer", true);
+            }
             DrawRivals(); WakePatrol();
         }
         void DrawRivals()

@@ -35,7 +35,7 @@ namespace Suborned.Sim
                 foreach (var v in p.Sc) h.I(v);
                 foreach (var a in p.KnownRefused) h.S(a);
                 h.I(p.Memory.Count);
-                foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed);
+                foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
             }
             h.I(g.EnforcerHealth).I(g.EnforcerNextShot).Z(g.LoopOn);
             h.I(g.LureTick).I(g.GuardAwayUntil).I(g.GuardHealth).I(g.GuardNextShot).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
@@ -67,6 +67,9 @@ namespace Suborned.Sim
             foreach (var (o, ok, why) in g.Orders) h.S(o.ToString()).Z(ok).S(why);
             foreach (var l in g.Log) h.I(l.Tick).S(l.Code);
             foreach (var op in g.Ops) h.I(op.BusyPaid);
+            foreach (var i in g.Incidents) { h.I(i.Tick).S(i.Kind).S(i.Cause).P(i.At).I(i.Witnesses.Count); foreach (var (p, at) in i.Witnesses) h.S(p.Id).P(at); }
+            foreach (var s in g.Sightings) h.S(s.Watcher).S(s.Op).I(s.From).I(s.To).P(s.At);
+            foreach (var x in g.ExposedByWatcher) h.S(x);
             return h.V;
         }
     }

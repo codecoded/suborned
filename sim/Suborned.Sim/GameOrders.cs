@@ -215,6 +215,7 @@ namespace Suborned.Sim
             var list = R.AlertByIncident;
             int at = list[Math.Min(Reported, list.Length) - 1];
             RaiseAlert(at, $"report:{p.Role}");
+            AddIncident("report", "report:" + p.Role, PersonPos(p) ?? S.Stand(S.GuardPost), new[] { (p, PersonPos(p) ?? S.Stand(S.GuardPost)) });
             Note("report", $"{p.Name} reports the approach. Alert {Alert}.");
         }
 
@@ -223,8 +224,11 @@ namespace Suborned.Sim
         bool WitnessAct(string act, Person subject, string by)
         {
             var at = PersonPos(subject); if (!at.HasValue) return false;
-            var seen = WitnessesOf(at.Value, subject);
+            var seenAt = WitnessesWithPos(at.Value, subject);
+            var seen = seenAt.ConvertAll(x => x.p);
             if (seen.Count == 0) return false;
+            var inc = AddIncident(act, act + ":" + subject.Role, at.Value, seenAt);
+            inc.Witnesses.Add((subject, at.Value)); // the person the act was done to stood at it: the nearest to question (§05 sightline + distance)
             if (incidents.Add($"{act}:{subject.Role}:{Tick}"))
             {
                 AddTrail(R.WitnessTrail, $"witnessed:{act}:{subject.Role}");
@@ -278,6 +282,11 @@ namespace Suborned.Sim
                 case "reports-approach": return R.Temp(p.Temperament).ReportsApproach;
                 case "outcome": return x.Outcome != null && c.L("is").Contains(x.Outcome);
                 case "talker": return R.IsTalker(p.Sc) == c.B("is");
+                case "lies":
+                    {
+                        bool lies = R.IsTalker(p.Sc) == R.LieTalker && p.Has(R.HelpedAct) == R.LieHelped && p.Sc[Rules.Bravery] >= R.LieBraveryAtLeast;
+                        return lies == c.B("is");
+                    }
                 case "holds-fact": return (p.Memory.Count > 0) == c.B("is");
                 case "scale":
                     {
@@ -537,6 +546,9 @@ namespace Suborned.Sim
         {
             var pose = GuardPose()!.Value;
             bool seen = GuardWatching(op.Pos), bot = PatrolWatching(op.Pos), cam = CameraWatching("entrance", op.Pos);
+            var seenGuard = WitnessesWithPos(pose.pos, GuardP);
+            foreach (var w in WitnessesWithPos(op.Pos, GuardP)) if (!seenGuard.Exists(x => x.p == w.p)) seenGuard.Add(w);
+            AddIncident("gunfire", "gunfire:guard", pose.pos, seenGuard);
             var civilians = WitnessesOf(pose.pos, GuardP).FindAll(c => c.Civilian);   // §05: violence seen by a civilian → 3 at once
             bool inezSees = civilians.Contains(Inez), civSees = civilians.Count > 0;
             RegisterGunfire("guard");
@@ -562,7 +574,7 @@ namespace Suborned.Sim
         void FireCivilian(Person p, string text)
         {
             var g = GuardPose(); var at = PersonPos(p);
-            if (at.HasValue) foreach (var c in WitnessesOf(at.Value, p)) Remember(c, "saw-act", "enforcer", true);
+            if (at.HasValue) { var ws = WitnessesWithPos(at.Value, p); AddIncident("violence", "violence:" + p.Role, at.Value, ws); foreach (var (c, _) in ws) Remember(c, "saw-act", "enforcer", true); }
             RegisterGunfire(p.Role);
             RaiseAlert(R.ViolenceSeen, $"violence-seen:{p.Role}");
             if (incidents.Add("seen:" + p.Role)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{p.Role}"); MoveStanding(-R.StandingStep, $"violence-seen:{p.Role}"); }

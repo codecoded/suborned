@@ -10,7 +10,8 @@ namespace Suborned.Sim
     {
         public string PublicSecurity = "", InvestigationState = "", InvestigationCause = "";
         public int Contacts; public bool Loud;
-        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits, FightShots; public readonly List<string> FightWhy = new List<string>();
+        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits, FightShots;
+        public Investigation Inv = new Investigation(); public Between Next = new Between(); public int Sightings; public readonly List<string> FightWhy = new List<string>();
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
 
         public static Debrief Of(Game g)
@@ -18,11 +19,15 @@ namespace Suborned.Sim
             var d = new Debrief { Loud = g.Gunfire > 0 };
             d.PublicSecurity = g.Alert >= 3 ? "high" : d.Loud ? "raised" : "calm";
             bool inezExposed = g.GuardReachedCafe;
+            d.Inv = g.Investigate(); d.Next = g.BetweenMissions(d.Inv); d.Sightings = g.Sightings.Count;
+            // §08: little → early → active by Trail (0 / 1–2 / 3+); a named cause takes precedence: a civilian shot, a witness of violence, the
+            // Fixer's face given up to the investigators (rulebook investigation), the staged distraction; then the count
             (d.InvestigationState, d.InvestigationCause) =
                 g.Inez.Down ? ("active", "waitress-shot") :
                 g.Driver.Down ? ("active", "driver-shot") :
                 g.InezWitnessedShooting ? ("active", "waitress-witnessed-shooting") :
                 g.InezMethod == "pressure" ? ("active", "waitress-can-identify-fixer") :
+                d.Inv.NamedCause.Length > 0 ? ("active", d.Inv.NamedCause) :
                 inezExposed ? ("active", "staged-distraction") :
                 g.Trail >= 3 ? ("active", "several-interventions") :
                 g.Trail > 0 ? ("early", "few-leads") : ("little", "");
@@ -76,6 +81,22 @@ namespace Suborned.Sim
             w.OpenArr("route"); foreach (var a in Route) w.Str(a); w.EndArr();
             w.OpenArr("extraInterventions"); foreach (var a in Extra) w.Str(a); w.EndArr();
             w.OpenArr("chain"); foreach (var a in Chain) w.Str(a); w.EndArr();
+            w.Open("investigators").Prop("count", Inv.Investigators).Prop("hops", Inv.Hops).Prop("sightings", Sightings).OpenArr("findings");
+            foreach (var x in Inv.Findings)
+            {
+                w.Obj().Prop("hop", x.Hop).Prop("who", x.Who).Prop("outcome", x.Outcome).Prop("lead", x.Lead);
+                w.OpenArr("gives"); foreach (var f in x.Facts) w.Str(f); w.EndArr();
+                if (x.Cause.Length > 0) w.Prop("because", x.Cause);
+                w.EndObj();
+            }
+            w.EndArr().EndObj();
+            w.Open("nextMission").Prop("ambush", Next.Ambush); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
+            w.OpenArr("lines"); foreach (var l in Next.Lines) w.Obj().Prop("line", l.Line).Prop("who", l.Who).Prop("detail", l.Detail).EndObj(); w.EndArr();
+            w.OpenArr("contacts");
+            foreach (var c in Next.Contacts)
+                w.Obj().Prop("who", c.Role.Length > 0 ? c.Role : c.Id).Prop("name", c.Name).Prop("need", c.Need).Prop("needKnown", c.KNeed)
+                 .Prop("bravery", c.Sc[0]).Prop("resentment", c.Sc[1]).Prop("fear", c.Sc[2]).Prop("loyalty", c.Sc[3]).EndObj();
+            w.EndArr().EndObj();
             if (FightBranch.Length > 0)
             {
                 w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("hitsTaken", FightHits).Prop("shots", FightShots);

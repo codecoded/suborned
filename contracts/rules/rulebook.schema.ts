@@ -202,6 +202,7 @@ export const Rulebook = z.strictObject({
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
     volley: Ref, hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
   }),
+  investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   streams: ground({
     hash: z.literal('fnv1a-32'), generator: z.literal('mulberry32'), draw: z.literal('integer'),

@@ -9,6 +9,7 @@ namespace Suborned.Sim
     public struct Mem
     {
         public string Act, By, Place; public int Tick; public bool Witnessed;
+        public string? Told; // a told entry's facts, '|'-joined (rulebook memory.acts.told: as told)
     }
 
     /// <summary>A simulated person (people.rules tiers.simulated): routine, need, temperament, memory, and what the cell knows of them.</summary>

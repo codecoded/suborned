@@ -141,6 +141,9 @@ namespace Suborned.Sim
         public readonly List<string> NeedIds = new List<string>();
         public readonly HashSet<string> TieKinds = new HashSet<string>(StringComparer.Ordinal);
         public readonly int[] ScaleMin = new int[4], ScaleMax = new int[4];
+        public readonly List<string>[] ScaleSteps = new List<string>[4];
+        /// <summary>A scale value as its step word (people.rules scales.*.steps: every number reads as a word).</summary>
+        public string Step(int scale, int v) => v >= 0 && v < ScaleSteps[scale].Count ? ScaleSteps[scale][v] : v.ToString(System.Globalization.CultureInfo.InvariantCulture);
         public readonly int[] TalkerLeft, TalkerRight; public readonly int LieBraveryAtLeast; public readonly bool LieTalker, LieHelped; public readonly string LieGivesHero, LieGivesOtherwise;
         public readonly List<string> Facts;
         public readonly List<string> KnownBy;
@@ -164,12 +167,17 @@ namespace Suborned.Sim
         public readonly int NearCm, Eye, DoorReachCm, DoorHalfCm, FacingReachCm, FacingHalfCm, SecReachCm, SecHalfCm, RivReachCm, RivHalfCm, PatrolDepthCm, PatrolHalfBase, PatrolHalfPerMille;
         // the final fight
         public readonly int SafeHostiles, SafeMinus, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, VolleyS, HoldCm; public readonly bool FightTraced;
+        // the investigation and between missions
+        public readonly int InvestigatorsBase, InvestigatorsPerAlert, InvestigatorHops, WordHops, WordQuietLoyalty, IntroductionsPerContact, NeedWeightScale;
+        public readonly Dictionary<string, string> StreamKeys = new Dictionary<string, string>(StringComparer.Ordinal);
+        public readonly Dictionary<string, bool> TieIntroduces = new Dictionary<string, bool>(StringComparer.Ordinal);
+        public readonly List<string> ScaleStepNames = new List<string>();
 
         public Rules(string rulebookJson, string peopleJson)
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "perception", "fight", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -209,7 +217,8 @@ namespace Suborned.Sim
                 if (Array.IndexOf(new[] { "nothing", "home", "work", "family-tie", "rival-tie" }, n.Requires) < 0) throw new FormatException($"{v.Path}.requires '{n.Requires}'");
                 Needs[kv.Key] = n; NeedIds.Add(kv.Key);
             }
-            foreach (var k in pp["ties"]["kinds"].Keys) TieKinds.Add(k);
+            foreach (var kv in pp["ties"]["kinds"].Entries) { TieKinds.Add(kv.Key); TieIntroduces[kv.Key] = kv.Value["introduces"].Bool(); }
+            for (int i = 0; i < 4; i++) { var steps = pp["scales"][ScaleNames[i]].Opt("steps"); ScaleSteps[i] = steps == null ? new List<string>() : steps.Strs(); }
             var tk = pp["talker"]; tk.Only("when", "test", "deterministic", "gives", "facts", "src", "lie");
             tk["test"].Only("left", "op", "right");
             if (tk["test"]["op"].Str() != ">") throw new FormatException("people.talker.test.op is not >");
@@ -311,6 +320,10 @@ namespace Suborned.Sim
             fg["safe"].Only("hostiles", "minus", "warn", "ambush"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeMinus = RI(fg["safe"]["minus"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100;
             fg["loud"].Only("officers", "alert", "civilian"); LoudOfficers = RI(fg["loud"]["officers"]); LoudAlert = RI(fg["loud"]["alert"]); LoudCivilian = RI(fg["loud"]["civilian"]);
             VolleyS = RI(fg["volley"]); HoldCm = RI(fg["hold"]) * 100; FightTraced = fg["traced"].Bool();
+            var inv = b["investigation"]; inv.Only("base", "perAlert", "hops", "rule", "tag", "src", "proposed", "reason");
+            InvestigatorsBase = RI(inv["base"]); InvestigatorsPerAlert = RI(inv["perAlert"]); InvestigatorHops = RI(inv["hops"]);
+            WordHops = VI("word-hops"); WordQuietLoyalty = VI("word-quiet-loyalty"); IntroductionsPerContact = VI("introductions-per-contact"); NeedWeightScale = VI("need-weight-scale");
+            foreach (var kv in b["streams"]["keys"].Entries) StreamKeys[kv.Key] = kv.Value.Str();
 
             // ---- events: parsed, every id checked, every kind where it may stand
             foreach (var e in b["events"].Items) { var ev = new Event(e); if (events.ContainsKey(ev.Id)) throw new FormatException($"event {ev.Id} repeats"); events[ev.Id] = ev; Events.Add(ev); }
@@ -340,6 +353,7 @@ namespace Suborned.Sim
         void ValidateEvent(Event ev)
         {
             bool interpreted = ev.Id.StartsWith("turn.", StringComparison.Ordinal) || ev.Id.StartsWith("scout.", StringComparison.Ordinal);
+            bool choosesOnly = ev.Id == "investigator.question"; // the engine reads its needs and picks its outcome; its effects are the investigation's own
             if (ev.IsTurn) Known(approaches, ev.Approach, "approach", ev.Id);
             var outs = new HashSet<string>(StringComparer.Ordinal); foreach (var o in ev.Outcomes) if (!outs.Add(o.Id)) throw new FormatException($"{ev.Id}: outcome {o.Id} repeats");
             void Check(IEnumerable<Cond> cs, string part)
@@ -351,7 +365,7 @@ namespace Suborned.Sim
                     if (part == "price" && (c.K == "orders-reached" || c.K == "reports" || c.K == "outcome")) throw new FormatException($"{c.N.Path}: '{c.K}' may not price a line");
                     if (c.K == "outcome" && (part == "needs" || part == "outcomes")) throw new FormatException($"{c.N.Path}: outcome stands only in also and witnesses");
                     if ((c.K == "fit" || c.K == "orders-reached") && !ev.IsTurn) throw new FormatException($"{c.N.Path}: '{c.K}' reads a Turn's approach");
-                    if (interpreted && !MissionKinds.Contains(c.K)) throw new FormatException($"{c.N.Path}: '{c.K}' is not evaluated in a mission event");
+                    if ((interpreted || (choosesOnly && part != "also")) && !MissionKinds.Contains(c.K)) throw new FormatException($"{c.N.Path}: '{c.K}' is not evaluated in a mission event");
                 }
             }
             Check(ev.Needs, "needs");
