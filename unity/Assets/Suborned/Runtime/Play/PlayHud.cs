@@ -6,7 +6,7 @@ using Event = UnityEngine.Event;
 
 namespace Suborned.Play
 {
-    /// <summary>The play HUD at round 4's v10 "signage hotbar" fidelity (Sky, 2026-10-15; briefs/011/ui/round4/v10-signage-hotbar*.jpg), simple and
+    /// <summary>The IMGUI view of the HUD model (HudModel): the fallback and debug view once the UI Toolkit view lands. The play HUD at round 4's v10 "signage hotbar" fidelity (Sky, 2026-10-15; briefs/011/ui/round4/v10-signage-hotbar*.jpg), simple and
     /// placeholder-iconed: the roster of four slots at the bottom (number, portrait, health pips, state), the 1–4 verb hotbar above it with the
     /// verb a right click gives lit, the top-right pill (mission clock, next event, $, Trail, Alert pips), number and verb markers on the pavement
     /// under the cell, at most two icons over a cast person, the price chip at the cursor ($ · time · Trail · Alert) before a right click commits
@@ -20,13 +20,11 @@ namespace Suborned.Play
         [System.NonSerialized] int cursorIs; // 0 default, 1 act, 2 crosshair, 3 crosshair with no line
         [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold, smallWrap, wrapBright, wrapBold, wrapRefused; float s;
         [System.NonSerialized] Texture2D barOn, barOff, chipAgent, refusedText;
-        // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
-        [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "", tracker = "";
-        [System.NonSerialized] readonly string[] slotState = new string[4];
-        [System.NonSerialized] readonly (string a, string b)[] icons = new (string, string)[4];
-        [System.NonSerialized] int pillKey = int.MinValue, chipKey; [System.NonSerialized] HandoverHost.Intent chipFor; [System.NonSerialized] Vector2 chipSize;
+        // the model this view draws (HudModel: plain data the host fills; the UI Toolkit view will read the same); clicks call the host
+        [System.NonSerialized] readonly HudModel m = new();
+        public HudModel Model => m;
+        [System.NonSerialized] string chipLine = ""; [System.NonSerialized] int chipKey; [System.NonSerialized] Vector2 chipSize;
         static readonly string[] Nums = { "1", "2", "3", "4" };
-        static readonly string[] Roles = { "waitress", "driver", "guard", "councillor" };
         static readonly List<Rect> hits = new();
         static readonly Color Teal = new(0.09f, 0.35f, 0.33f, 0.96f), TealLit = new(0.16f, 0.52f, 0.48f, 1f), Cream = new(0.96f, 0.93f, 0.85f), Dim = new(0.62f, 0.72f, 0.69f);
         static readonly string[] Names = { "Scout", "Fixer", "Tech", "Enforcer" };
@@ -102,79 +100,67 @@ namespace Suborned.Play
         {
             if (host == null || host.Game == null) return;
             s = Screen.height / 1080f; Styles();
-            if (Event.current.type == EventType.Layout) hits.Clear();
-            var g = host.Game; var cam = host.View;
-            if (host.Fault != null) { var fr = new Rect(20 * s, 20 * s, 1000 * s, 50 * s); Plate(fr); GUI.Label(new Rect(fr.x + 14 * s, fr.y, fr.width, fr.height), $"<color=#ff9a8a>{host.Status}</color>", txt); return; }
+            if (Event.current.type == EventType.Layout) { hits.Clear(); m.Frame(host); } // the model, once a frame
+            var cam = host.View; bool kit = HudToolkit.Active; // the kit view draws the pill, roster, strips, verb plate, ticker and feed
+            if (m.Fault != null) { var fr = new Rect(20 * s, 20 * s, 1000 * s, 50 * s); Plate(fr); GUI.Label(new Rect(fr.x + 14 * s, fr.y, fr.width, fr.height), $"<color=#ff9a8a>{m.Fault}</color>", txt); return; }
 
             // markers on the pavement under the cell: the agent's number and what it is doing
-            if (cam && host.Views != null)
+            if (cam)
                 for (int i = 0; i < 4; i++)
                 {
-                    var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
-                    var p = cam.WorldToScreenPoint(t.position + Vector3.down * 0.15f); if (p.z <= 0) continue;
-                    var op = g.Ops[i]; string verb = op.Busy != null ? HandoverHost.Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
+                    var mk = m.Marks[i]; if (!mk.World.HasValue) continue;
+                    var p = cam.WorldToScreenPoint(mk.World.Value + Vector3.down * 0.15f); if (p.z <= 0) continue;
                     var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s);
-                    if (host.Selected[i]) { GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height), plateLit); }
-                    GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), Nums[i], mid);
-                    GUI.Label(new Rect(r.x + 20 * s, r.y, 32 * s, r.height), verb, mid);
+                    if (mk.Selected) GUI.DrawTexture(r, plateLit);
+                    GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), mk.Num, mid);
+                    GUI.Label(new Rect(r.x + 20 * s, r.y, 32 * s, r.height), mk.Verb, mid);
                 }
 
             // at most two icons over a cast person
-            if (pillKey != Key(g)) Refresh(g);
-            if (cam && host.Views != null)
+            if (cam)
                 for (int k = 0; k < 4; k++)
                 {
-                    var t = host.Views.Find(Roles[k]); if (!t || !t.gameObject.activeSelf) continue;
-                    var p = cam.WorldToScreenPoint(t.position + Vector3.up * 2.05f); if (p.z <= 0) continue;
-                    var (a, b) = icons[k];
-                    float w = 26 * s; var x = p.x - (b == null ? w / 2 : w + 1 * s); var y = Screen.height - p.y - w;
-                    Icon(new Rect(x, y, w, w), a); if (b != null) Icon(new Rect(x + w + 2 * s, y, w, w), b);
+                    var ci = m.Cast[k]; if (!ci.World.HasValue) continue;
+                    var p = cam.WorldToScreenPoint(ci.World.Value + Vector3.up * 2.05f); if (p.z <= 0) continue;
+                    float w = 26 * s; var x = p.x - (ci.B == null ? w / 2 : w + 1 * s); var y = Screen.height - p.y - w;
+                    Icon(new Rect(x, y, w, w), ci.A); if (ci.B != null) Icon(new Rect(x + w + 2 * s, y, w, w), ci.B);
                 }
 
-            // the crosshair chip, or the walk-or-run chip on empty ground, at the cursor
-            string alt = host.Ending.Length == 0 && host.Panel == null && host.Loud == null ? host.AimLine ?? (host.Hover == null ? host.MoveChip : null) : null;
-            if (alt != null)
+            // the chip at the cursor: the crosshair's or the walk-or-run chip, else the price
+            if (m.Chip != HudModel.ChipKind.None)
             {
-                var size = txt.CalcSize(new GUIContent(alt));
-                var r = new Rect(host.Mouse.x + 22 * s, host.Mouse.y + 6 * s, size.x + 24 * s, 34 * s);
-                if (r.xMax > Screen.width) r.x = host.Mouse.x - r.width - 10 * s;
-                bool warn = host.AimLine != null && (host.AimLine.StartsWith("CIVILIAN") || host.AimLine.StartsWith("Vale"));
-                GUI.DrawTexture(r, warn ? refusedPlate : plate); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), alt, host.AimLine != null ? txt : smallBright);
-            }
-            // the price chip at the cursor
-            var it = host.HoverIntent;
-            if (alt == null && it != null && host.Hover != null && host.Ending.Length == 0 && host.Panel == null)
-            {
-                if (it != chipFor || chipKey != txt.fontSize)
+                if (m.ChipText != chipLine || chipKey != txt.fontSize) { chipLine = m.ChipText; chipKey = txt.fontSize; chipSize = txt.CalcSize(new GUIContent(chipLine)); }
+                var r = new Rect(m.Mouse.x + 22 * s, m.Mouse.y + 6 * s, chipSize.x + 24 * s, 34 * s);
+                if (r.xMax > Screen.width) r.x = m.Mouse.x - r.width - 10 * s;
+                switch (m.Chip)
                 {
-                    chipFor = it; chipKey = txt.fontSize;
-                    chipLine = !it.Actionable ? (it.Hint.Length > 0 ? it.Hint : it.Label) + (host.Hover.Kind == "crowd" ? "" : "   ·   right click: actions")
-                        : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}{(host.Picked < 0 ? "   ·   right click: actions" : "")}";
-                    chipSize = txt.CalcSize(new GUIContent(chipLine));
+                    case HudModel.ChipKind.Price: Plate(r, true); break;
+                    case HudModel.ChipKind.Hint: Plate(r, false); break;
+                    default: GUI.DrawTexture(r, m.Chip == HudModel.ChipKind.AimWarn ? refusedPlate : plate); break;
                 }
-                string line = chipLine; var size = chipSize;
-                var r = new Rect(host.Mouse.x + 22 * s, host.Mouse.y + 6 * s, size.x + 24 * s, 34 * s);
-                if (r.xMax > Screen.width) r.x = host.Mouse.x - r.width - 10 * s;
-                Plate(r, it.Actionable); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), line, it.Actionable ? txt : small);
+                var st = m.Chip is HudModel.ChipKind.Price or HudModel.ChipKind.Aim or HudModel.ChipKind.AimWarn ? txt : m.Chip == HudModel.ChipKind.Move ? smallBright : small;
+                GUI.Label(new Rect(r.x + 12 * s, r.y, chipSize.x, r.height), chipLine, st);
             }
 
-            // top right pill: clock · next event · $ · Trail · Alert pips
+            // top right pill: clock · next on the timeline · $ · Trail · Alert pips
+            if (!kit)
             {
                 var r = new Rect(Screen.width - 760 * s, 16 * s, 744 * s, 44 * s); Plate(r); hits.Add(r);
                 float x = r.x + 14 * s;
-                GUI.Label(new Rect(x, r.y, 90 * s, r.height), pillClock, big); x += 86 * s;
-                GUI.Label(new Rect(x, r.y, 270 * s, r.height), pillNext, txtSmallBold); x += 264 * s;
-                GUI.Label(new Rect(x, r.y, 150 * s, r.height), pillCash, txt); x += 128 * s;
-                GUI.Label(new Rect(x, r.y, 70 * s, r.height), pillTrail, txt); x += 64 * s;
-                GUI.Label(new Rect(x, r.y, 24 * s, r.height), "A", txt); Pips(x + 20 * s, r.y + 16 * s, g.Alert, 3, 12 * s); x += 80 * s;
-                GUI.Label(new Rect(x, r.y, 120 * s, r.height), pillState, txt);
-                if (tracker.Length > 0) GUI.Label(new Rect(r.x + 4 * s, r.yMax + 4 * s, r.width, 22 * s), tracker, txtSmallBold);
-                GUI.Label(new Rect(r.x + 4 * s, r.yMax + 26 * s, r.width, 18 * s), pillCity, small);
+                GUI.Label(new Rect(x, r.y, 90 * s, r.height), m.Clock, big); x += 86 * s;
+                GUI.Label(new Rect(x, r.y, 270 * s, r.height), m.Next, txtSmallBold); x += 264 * s;
+                GUI.Label(new Rect(x, r.y, 150 * s, r.height), m.Cash, txt); x += 128 * s;
+                GUI.Label(new Rect(x, r.y, 70 * s, r.height), m.Trail, txt); x += 64 * s;
+                GUI.Label(new Rect(x, r.y, 24 * s, r.height), "A", txt); Pips(x + 20 * s, r.y + 16 * s, m.Alert, 3, 12 * s); x += 80 * s;
+                GUI.Label(new Rect(x, r.y, 120 * s, r.height), m.State, txt);
+                if (m.Tracker.Length > 0) GUI.Label(new Rect(r.x + 4 * s, r.yMax + 4 * s, r.width, 22 * s), m.Tracker, txtSmallBold);
+                GUI.Label(new Rect(r.x + 4 * s, r.yMax + 26 * s, r.width, 18 * s), m.City, small);
             }
 
             // roster: four slots (F-key, name, health pips, and what the agent is doing now: icon, label, progress and time left, the queued
             // act, an ✕ to cancel); the verb hotbar above it. Where they sit is one setting (controls.dock)
-            var dock = host.controls.dock;
+            if (kit) { KitRest(cam); return; }
+            var dock = m.Dock;
             float slotW = 214 * s, slotH = 98 * s, kw = 64 * s, kh = 50 * s;
             bool column = dock == RosterDock.Left;
             float rosterW = column ? slotW + 10 * s : slotW * 4 + 10 * s, rosterH = column ? slotH * 4 + 8 * s : slotH;
@@ -182,47 +168,43 @@ namespace Suborned.Play
             {
                 RosterDock.Left => new Rect(16 * s, Screen.height / 2f - rosterH / 2 - 60 * s, rosterW, rosterH),
                 RosterDock.Corner => new Rect(16 * s, Screen.height - slotH - 16 * s, rosterW, rosterH),
-                _ => new Rect(Screen.width / 2f - rosterW / 2 + 140 * s, Screen.height - slotH - 16 * s, rosterW, rosterH),
+                _ => new Rect(Screen.width / 2f - rosterW / 2, Screen.height - slotH - 16 * s, rosterW, rosterH),
             };
             Plate(roster); hits.Add(roster);
             string tip = null; Rect tipAt = default;
             for (int i = 0; i < 4; i++)
             {
                 var r = column ? new Rect(roster.x + 5 * s, roster.y + 4 * s + i * slotH, slotW - 4 * s, slotH - 8 * s) : new Rect(roster.x + 5 * s + i * slotW, roster.y + 4 * s, slotW - 4 * s, slotH - 8 * s);
-                if (host.Selected[i]) GUI.DrawTexture(r, plateLit);
-                if (host.HintNow != null && host.HintNow.Portrait == i) // the hint rings this portrait
+                var sl = m.Slots[i];
+                if (sl.Selected) GUI.DrawTexture(r, plateLit);
+                if (sl.HintRing) // the hint rings this portrait
                 {
                     float b = 3 * s; var cc = GUI.color; GUI.color = new Color(1f, 0.85f, 0.45f, 0.6f + 0.4f * Mathf.Sin(Time.unscaledTime * 5f));
                     GUI.DrawTexture(new Rect(r.x, r.y, r.width, b), white); GUI.DrawTexture(new Rect(r.x, r.yMax - b, r.width, b), white);
                     GUI.DrawTexture(new Rect(r.x, r.y, b, r.height), white); GUI.DrawTexture(new Rect(r.xMax - b, r.y, b, r.height), white); GUI.color = cc;
                 }
-                var op = g.Ops[i]; var d = host.DoingOf(i);
                 var x = new Rect(r.xMax - 26 * s, r.y + 28 * s, 22 * s, 22 * s); // the cancel ✕
-                bool canX = d.CanCancel && host.Ending.Length == 0;
-                if (canX && x.Contains(Event.current.mousePosition)) { tip = $"Cancel {d.CancelVerb} — {d.CancelText}"; tipAt = r; }
+                bool canX = sl.CanCancel;
+                if (canX && x.Contains(Event.current.mousePosition)) { tip = sl.CancelTip; tipAt = r; }
                 if (canX && GUI.Button(x, GUIContent.none, GUIStyle.none)) host.CancelAgent(i, null);
                 else if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.PortraitClick(i, Event.current.shift);
-                GUI.Label(new Rect(r.x + 4 * s, r.y + 2 * s, 28 * s, 20 * s), host.AgentKeyLabel(i), key);
-                if (op.Gun.W != null) // the stance (hold, return, at will) under the key; a dot when the weapon is drawn
-                    GUI.Label(new Rect(r.x + 2 * s, r.y + 15 * s, 32 * s, 14 * s), $"{(op.Gun.Drawn && op.Gun.HolsterAt < 0 ? "•" : "")}{(op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R")}", iconSmall);
-                GUI.Label(new Rect(r.x + 32 * s, r.y + 1 * s, 100 * s, 22 * s), Names[i], txtSmallBold);
-                int hp = op.Gun.Health, hpMax = Mathf.Max(op.Gun.Max, op.Gun.Health);
-                Pips(r.xMax - 6 * s - hpMax * 7 * s * 1.6f, r.y + 9 * s, hp, hpMax, 7 * s);
+                GUI.Label(new Rect(r.x + 4 * s, r.y + 2 * s, 28 * s, 20 * s), sl.Key, key);
+                if (sl.Armed) GUI.Label(new Rect(r.x + 2 * s, r.y + 15 * s, 32 * s, 14 * s), $"{(sl.Drawn ? "•" : "")}{sl.Stance}", iconSmall); // stance; a dot when drawn
+                GUI.Label(new Rect(r.x + 32 * s, r.y + 1 * s, 100 * s, 22 * s), sl.Name, txtSmallBold);
+                Pips(r.xMax - 6 * s - sl.HpMax * 7 * s * 1.6f, r.y + 9 * s, sl.Hp, sl.HpMax, 7 * s);
                 // what they are doing
                 var gl = new Rect(r.x + 4 * s, r.y + 28 * s, 34 * s, 22 * s);
-                if (d.Busy) { GUI.DrawTexture(gl, plateLit); GUI.Label(gl, d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph, iconSmall); }
-                GUI.Label(new Rect(r.x + 42 * s, r.y + 28 * s, r.width - (canX ? 72 : 46) * s, 22 * s), d.Label, d.Busy ? smallBright : small);
+                if (sl.Busy) { GUI.DrawTexture(gl, plateLit); GUI.Label(gl, sl.Glyph, iconSmall); }
+                GUI.Label(new Rect(r.x + 42 * s, r.y + 28 * s, r.width - (canX ? 72 : 46) * s, 22 * s), sl.Label, sl.Busy ? smallBright : small);
                 if (canX) { GUI.DrawTexture(x, x.Contains(Event.current.mousePosition) ? refusedPlate : plate); GUI.Label(x, "✕", mid); }
-                if (d.Progress >= 0)
+                if (sl.Progress >= 0)
                 {
                     var bar = new Rect(r.x + 6 * s, r.y + 56 * s, r.width - 58 * s, 6 * s);
-                    GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * d.Progress / 1000f, bar.height), barOn);
-                    GUI.Label(new Rect(bar.xMax + 4 * s, r.y + 49 * s, 46 * s, 18 * s), slotState[i], small);
+                    GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * sl.Progress / 1000f, bar.height), barOn);
+                    GUI.Label(new Rect(bar.xMax + 4 * s, r.y + 49 * s, 46 * s, 18 * s), sl.Left, small);
                 }
-                string under = op.Down ? "down: another agent carries them (right click)" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
-                    : op.Gun.W != null && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
-                if (op.Down) { var cc = GUI.color; GUI.color = new Color(0, 0, 0, 0.45f); GUI.DrawTexture(r, white); GUI.color = cc; }
-                if (under.Length > 0) GUI.Label(new Rect(r.x + 6 * s, r.y + 66 * s, r.width - 10 * s, 18 * s), under, small);
+                if (sl.Down) { var cc = GUI.color; GUI.color = new Color(0, 0, 0, 0.45f); GUI.DrawTexture(r, white); GUI.color = cc; }
+                if (sl.Under.Length > 0) GUI.Label(new Rect(r.x + 6 * s, r.y + 66 * s, r.width - 10 * s, 18 * s), sl.Under, small);
             }
             if (tip != null)
             {
@@ -232,18 +214,17 @@ namespace Suborned.Play
             }
 
             // the verb hotbar for the agent (keys 1–4), the lit key is what a right click gives
-            var slots = HandoverHost.Slots[(int)host.Agent];
             var hb = column ? new Rect(roster.xMax + 10 * s, roster.y, kw * 4 + 12 * s, kh) : new Rect(roster.x + 6 * s, roster.y - kh - 10 * s, kw * 4 + 12 * s, kh);
             for (int i = 0; i < 4; i++)
             {
                 var r = new Rect(hb.x + i * (kw + 4 * s), hb.y, kw, kh); hits.Add(r);
-                bool has = i < slots.Length, lit = has && host.LitSlot == i;
+                bool has = m.VerbHas[i], lit = has && m.VerbLit == i;
                 Plate(r, lit);
                 if (has && GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Pick(i);
-                GUI.Label(new Rect(r.x, r.y + 2 * s, r.width, 26 * s), has ? slots[i].Glyph : "·", mid);
-                GUI.Label(new Rect(r.x, r.yMax - 20 * s, r.width, 18 * s), host.VerbKey(i), key);
+                GUI.Label(new Rect(r.x, r.y + 2 * s, r.width, 26 * s), m.VerbGlyph[i], mid);
+                GUI.Label(new Rect(r.x, r.yMax - 20 * s, r.width, 18 * s), m.VerbKey[i], key);
             }
-            GUI.Label(new Rect(hb.xMax + 10 * s, hb.y, 420 * s, kh), $"{Names[(int)host.Agent]}: {(host.LitSlot >= 0 && host.LitSlot < slots.Length ? slots[host.LitSlot].Label : "")}", txt);
+            GUI.Label(new Rect(hb.xMax + 10 * s, hb.y, 420 * s, kh), m.VerbCaption, txt);
 
             // the scene feed (bottom right; lifted above the roster when the roster reaches the corner)
             {
@@ -252,12 +233,11 @@ namespace Suborned.Play
                 FeedGui(new Rect(fx, 0, fw, fb));
             }
 
-            // the dialogue log, docked beside the roster (bottom left)
-            DialogueLog(dock == RosterDock.Corner ? new Rect(roster.xMax + 10 * s, 0, Mathf.Min(520 * s, Screen.width - roster.xMax - 640 * s), roster.yMax)
-                : new Rect(16 * s, 0, column ? 520 * s : Mathf.Min(520 * s, roster.x - 32 * s), Screen.height - 16 * s));
+            // the ticker (Glyph round 6b: the old dialogue log's place): the cell's last word, one line, fading after a few seconds
+            Ticker(column ? new Rect(roster.x, roster.yMax + 8 * s, roster.width + 240 * s, 26 * s) : new Rect(roster.x, hb.y - 34 * s, Mathf.Min(620 * s, roster.width), 26 * s));
 
             // the selection box being dragged
-            if (host.BoxScreen is Rect box)
+            if (m.Box is Rect box)
             {
                 float b = Mathf.Max(1f, 1.5f * s);
                 GUI.DrawTexture(new Rect(box.x, box.y, box.width, b), edge); GUI.DrawTexture(new Rect(box.x, box.yMax - b, box.width, b), edge);
@@ -265,59 +245,78 @@ namespace Suborned.Play
             }
 
             // status line (top left)
-            GUI.Label(new Rect(16 * s, 12 * s, Mathf.Max(400 * s, Screen.width - 660 * s), 22 * s), host.Status, small);
+            GUI.Label(new Rect(16 * s, 12 * s, Mathf.Max(400 * s, Screen.width - 820 * s), 22 * s), m.Status, small);
 
             Activities(cam);
             FightMarks(cam);
             HoverRing(cam);
             Pulses(cam);
-            if (host.Panel != null) PanelGui(g);
-            if (host.Loud != null) LoudCardGui(g);
+            if (m.PanelOpen) PanelGui();
+            if (m.LoudOpen) LoudCardGui();
             Pops(cam);
 
             HintGui(cam);
-            if (host.ShowBriefing && host.Ending.Length == 0) Briefing(g);
-            if (host.Ending.Length > 0) EndCard(g);
+            if (m.BriefingOpen) Briefing();
+            if (m.Ended) EndCard();
+        }
+
+        /// <summary>With the kit view on: what it does not draw yet (steps 3 and 4) — the world marks, the chips, the cards, the hint, the
+        /// history (L) above the kit's feed bar, and the ring in the street for the feed card under the mouse.</summary>
+        void KitRest(Camera cam)
+        {
+            if (m.HistoryOpen) History(new Rect(Screen.width - (14 + 384) * s, 0, 384 * s, Screen.height - (14 + 32 + 6) * s));
+            if (m.Box is Rect box)
+            {
+                float b = Mathf.Max(1f, 1.5f * s);
+                GUI.DrawTexture(new Rect(box.x, box.y, box.width, b), edge); GUI.DrawTexture(new Rect(box.x, box.yMax - b, box.width, b), edge);
+                GUI.DrawTexture(new Rect(box.x, box.y, b, box.height), edge); GUI.DrawTexture(new Rect(box.xMax - b, box.y, b, box.height), edge);
+            }
+            if (cam && Event.current.type == EventType.Repaint && HudToolkit.HoverPlace is Vector3 at)
+            {
+                var p = cam.WorldToScreenPoint(at); if (p.z > 0) { float rw = 80 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); }
+            }
+            Activities(cam); FightMarks(cam); HoverRing(cam); Pulses(cam);
+            if (m.PanelOpen) PanelGui();
+            if (m.LoudOpen) LoudCardGui();
+            Pops(cam); HintGui(cam);
+            if (m.BriefingOpen) Briefing();
+            if (m.Ended) EndCard();
         }
 
         /// <summary>Over each busy agent: the act's icon in a ring of progress dots; hovered, an ✕ that cancels (its consequence above). Walking
         /// to an act: the act's icon at the end of the walk line (HostViews draws the line).</summary>
         void Activities(Camera cam)
         {
-            if (!cam || host.Views == null || host.Ending.Length > 0) return;
-            var g = host.Game;
+            if (!cam) return;
             for (int i = 0; i < 4; i++)
             {
-                var d = host.DoingOf(i); if (!d.Busy || d.Phase == "down") continue;
-                var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
-                var p = cam.WorldToScreenPoint(t.position + Vector3.up * 2.35f); if (p.z <= 0) continue;
+                var rg = m.Rings[i]; if (!rg.Show) continue;
+                var p = cam.WorldToScreenPoint(rg.World + Vector3.up * 2.35f); if (p.z <= 0) continue;
                 var c = new Vector2(p.x, Screen.height - p.y); float rad = 17 * s, dot = 4 * s;
                 var box = new Rect(c.x - rad - 4 * s, c.y - rad - 4 * s, 2 * rad + 8 * s, 2 * rad + 8 * s);
-                bool walking = d.Phase is "walking" or "running";
-                string glyph = walking ? (d.QueuedGlyph.Length > 0 ? d.QueuedGlyph : d.Phase == "running" ? "»" : "›") : d.Glyph;
-                GUI.DrawTexture(new Rect(c.x - 13 * s, c.y - 11 * s, 26 * s, 22 * s), host.Selected[i] ? plateLit : plate);
-                GUI.Label(new Rect(c.x - 20 * s, c.y - 11 * s, 40 * s, 22 * s), glyph, iconSmall);
-                int on = d.Progress < 0 ? -1 : Mathf.RoundToInt(d.Progress * 24 / 1000f);
+                GUI.DrawTexture(new Rect(c.x - 13 * s, c.y - 11 * s, 26 * s, 22 * s), rg.Selected ? plateLit : plate);
+                GUI.Label(new Rect(c.x - 20 * s, c.y - 11 * s, 40 * s, 22 * s), rg.Glyph, iconSmall);
+                int on = rg.Progress < 0 ? -1 : Mathf.RoundToInt(rg.Progress * 24 / 1000f);
                 for (int k = 0; k < 24; k++)
                 {
                     float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24; // clockwise from the top
                     var dr = new Rect(c.x + rad * Mathf.Cos(a) - dot / 2, c.y - rad * Mathf.Sin(a) - dot / 2, dot, dot);
                     GUI.DrawTexture(dr, on < 0 ? (k % 2 == 0 ? pipOn : pipOff) : k < on ? pipOn : pipOff);
                 }
-                if (d.CanCancel && box.Contains(Event.current.mousePosition))
+                if (rg.CanCancel && box.Contains(Event.current.mousePosition))
                 {
                     var x = new Rect(box.xMax - 6 * s, box.y - 6 * s, 20 * s, 20 * s); hits.Add(box);
                     GUI.DrawTexture(x, refusedPlate); GUI.Label(x, "✕", iconSmall);
                     if (GUI.Button(box, GUIContent.none, GUIStyle.none)) host.CancelAgent(i, null);
-                    var tip = $"Cancel {d.CancelVerb} — {d.CancelText}"; var size = smallBright.CalcSize(new GUIContent(tip));
+                    var size = smallBright.CalcSize(new GUIContent(rg.Tip));
                     var tr = new Rect(c.x - size.x / 2 - 8 * s, box.y - 32 * s, size.x + 16 * s, 24 * s);
-                    GUI.DrawTexture(tr, refusedPlate); GUI.Label(new Rect(tr.x + 8 * s, tr.y, tr.width, tr.height), tip, smallBright);
+                    GUI.DrawTexture(tr, refusedPlate); GUI.Label(new Rect(tr.x + 8 * s, tr.y, tr.width, tr.height), rg.Tip, smallBright);
                 }
-                if (d.ActAt.HasValue && walking && d.QueuedGlyph.Length > 0)
+                if (rg.ActAt.HasValue)
                 {
-                    var e = cam.WorldToScreenPoint(d.ActAt.Value + Vector3.up * 0.3f); if (e.z <= 0) continue;
+                    var e = cam.WorldToScreenPoint(rg.ActAt.Value + Vector3.up * 0.3f); if (e.z <= 0) continue;
                     var er = new Rect(e.x - 16 * s, Screen.height - e.y - 12 * s, 32 * s, 24 * s);
-                    GUI.DrawTexture(er, plateLit); GUI.Label(er, d.QueuedGlyph, iconSmall);
+                    GUI.DrawTexture(er, plateLit); GUI.Label(er, rg.ActGlyph, iconSmall);
                 }
             }
         }
@@ -326,20 +325,20 @@ namespace Suborned.Play
         /// the street. Below it, a toast (the run-seen line) for a few seconds.</summary>
         void HintGui(Camera cam)
         {
-            var h = host.HintNow; float w = 620 * s, pad = 12 * s, y = 70 * s;
-            if (h != null && host.Ending.Length == 0 && !host.ShowBriefing)
+            float w = 620 * s, pad = 12 * s, y = 70 * s;
+            if (m.Hint != null)
             {
-                float th = wrapBright.CalcHeight(new GUIContent(h.Line), w - 2 * pad - 40 * s);
+                float th = wrapBright.CalcHeight(new GUIContent(m.Hint), w - 2 * pad - 40 * s);
                 var r = new Rect(Screen.width / 2f - w / 2, y, w, th + 34 * s); Plate(r); hits.Add(r);
                 GUI.Label(new Rect(r.x + pad, r.y + 4 * s, 200 * s, 18 * s), "NEXT STEP", small);
-                GUI.Label(new Rect(r.x + pad, r.y + 24 * s, w - 2 * pad - 40 * s, th), h.Line, wrapBright);
+                GUI.Label(new Rect(r.x + pad, r.y + 24 * s, w - 2 * pad - 40 * s, th), m.Hint, wrapBright);
                 var x = new Rect(r.xMax - 30 * s, r.y + 6 * s, 22 * s, 22 * s); GUI.DrawTexture(x, plateLit); GUI.Label(x, "✕", mid);
                 if (GUI.Button(x, GUIContent.none, GUIStyle.none)) host.DismissHint();
-                GUI.Label(new Rect(r.xMax - 30 * s, r.y + 30 * s, 22 * s, 16 * s), host.controls.Label(PlayAction.Hints), key);
+                GUI.Label(new Rect(r.xMax - 30 * s, r.y + 30 * s, 22 * s, 16 * s), m.HintKey, key);
                 y = r.yMax + 8 * s;
-                if (cam && h.Ring.HasValue)
+                if (cam && m.HintRing.HasValue)
                 {
-                    var p = cam.WorldToScreenPoint(h.Ring.Value); if (p.z > 0)
+                    var p = cam.WorldToScreenPoint(m.HintRing.Value); if (p.z > 0)
                     {
                         float k = 1f + 0.15f * Mathf.Sin(Time.unscaledTime * 4f), rw = 90 * s * k * 14f / cam.orthographicSize, rh = rw * 0.62f;
                         var cc = GUI.color; GUI.color = new Color(1f, 0.85f, 0.45f, 0.95f);
@@ -347,11 +346,11 @@ namespace Suborned.Play
                     }
                 }
             }
-            if (host.Toast != null && Time.unscaledTime < host.ToastUntil)
+            if (m.Toast != null)
             {
-                var size = smallBright.CalcSize(new GUIContent(host.Toast));
+                var size = smallBright.CalcSize(new GUIContent(m.Toast));
                 var r = new Rect(Screen.width / 2f - size.x / 2 - 12 * s, y, size.x + 24 * s, 28 * s);
-                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 12 * s, r.y, r.width, r.height), host.Toast, smallBright);
+                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 12 * s, r.y, r.width, r.height), m.Toast, smallBright);
             }
         }
 
@@ -359,60 +358,38 @@ namespace Suborned.Play
         /// the fight's hostiles), and a DOWN plate with the carry hint over a downed agent.</summary>
         void FightMarks(Camera cam)
         {
-            if (!cam || host.Views == null || Event.current.type != EventType.Repaint) return;
-            foreach (var (id, gun) in host.Fighters())
+            if (!cam || Event.current.type != EventType.Repaint) return;
+            foreach (var f in m.Fighters)
             {
-                var w = host.WorldOf(id); if (!w.HasValue) continue;
-                var p = cam.WorldToScreenPoint(w.Value + Vector3.up * 2.05f); if (p.z <= 0) continue;
-                float d = 5 * s; int max = Mathf.Max(gun.Max, gun.Health); float width = max * d * 1.6f;
+                var p = cam.WorldToScreenPoint(f.World + Vector3.up * 2.05f); if (p.z <= 0) continue;
+                float d = 5 * s; float width = f.Max * d * 1.6f;
                 var bg = new Rect(p.x - width / 2 - 3 * s, Screen.height - p.y - 3 * s, width + 4 * s, d + 6 * s);
-                GUI.DrawTexture(bg, id is "scout" or "fixer" or "tech" or "enforcer" ? plate : refusedPlate);
-                Pips(bg.x + 3 * s, bg.y + 3 * s, gun.Health, max, d);
+                GUI.DrawTexture(bg, f.Cell ? plate : refusedPlate);
+                Pips(bg.x + 3 * s, bg.y + 3 * s, f.Hp, f.Max, d);
             }
-            var g = host.Game;
-            for (int i = 0; i < 4; i++)
+            foreach (var dn in m.Down)
             {
-                if (!g.Ops[i].Down) continue;
-                var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
-                var p = cam.WorldToScreenPoint(t.position + Vector3.up * 1.0f); if (p.z <= 0) continue;
-                string line = $"{Names[i]} DOWN · select another agent, right click: carry";
-                var size = smallBright.CalcSize(new GUIContent(line));
+                var p = cam.WorldToScreenPoint(dn.World + Vector3.up * 1.0f); if (p.z <= 0) continue;
+                var size = smallBright.CalcSize(new GUIContent(dn.Line));
                 var r = new Rect(p.x - size.x / 2 - 8 * s, Screen.height - p.y - 12 * s, size.x + 16 * s, 24 * s);
-                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 8 * s, r.y, r.width, r.height), line, smallBright);
+                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 8 * s, r.y, r.width, r.height), dn.Line, smallBright);
             }
         }
 
         /// <summary>The going-loud card at the cursor (motive-fights.md §2.6): what this order sets off, read from the engine (Game.GoingLoud),
         /// with the commit ring that fills while the same input is held. The clock keeps running.</summary>
-        void LoudCardGui(Game g)
+        void LoudCardGui()
         {
-            var gate = host.Loud; var c = gate.Card; float w = 440 * s, pad = 12 * s;
-            var lines = new List<string> { $"<b>GOING LOUD</b>  ·  {gate.What}" };
-            lines.Add($"Now: Alert → {c.AlertTo}{(c.Civilians > 0 ? $" ({c.Civilians} civilian{(c.Civilians > 1 ? "s" : "")} see it)" : "")}");
-            var who = new List<string>();
-            if (c.PoliceInS >= 0) who.Add($"police in {c.PoliceInS} s (reported: {c.ReportedBy})");
-            if (c.Seal >= 0) who.Add($"district sealed at {HandoverHost.MissionClock(c.Seal)}");
-            if (c.RivalsInS >= 0) who.Add(c.RivalsInS == 0 ? "the rivals come now" : $"the rivals in {c.RivalsInS} s");
-            if (c.PatrolBreaks) who.Add("the patrol breaks to you");
-            if (who.Count > 0) lines.Add("Who comes: " + string.Join(" · ", who));
-            var lose = new List<string>();
-            if (c.FightAfter == "loud") lose.Add($"the final fight turns loud ({c.Officers} officers + {c.ResponseOfficers} response)");
-            if (c.GuardAllyLost) lose.Add("the guard won't help");
-            if (c.WarningLost) lose.Add("Inez's warning");
-            if (lose.Count > 0) lines.Add("You lose: " + string.Join(" · ", lose));
-            lines.Add($"Costs: +{c.TrailPerShooting} T for the shooting, +{c.TrailPerHit} T per person hit, +{c.TrailPerDown} T more per person down");
-            if (c.DownedCaptured && host.Text != null && host.Text.LoudCaptured.Length > 0) lines.Add(host.Text.LoudCaptured);
-            string src = gate.Source switch { "F" => host.controls.Label(PlayAction.Draw), "right" => "the right button", "both" => "both buttons", _ => "the button" };
-            lines.Add($"Hold {src} to commit · release or Esc to back off · the clock runs");
+            float w = 440 * s, pad = 12 * s; var lines = m.LoudLines;
             float h = pad * 2; var hs = new float[lines.Count];
             for (int i = 0; i < lines.Count; i++) { hs[i] = wrapBright.CalcHeight(new GUIContent(lines[i]), w - 2 * pad - 50 * s) + 2 * s; h += hs[i]; }
-            var r = new Rect(Mathf.Min(gate.Gui.x + 24 * s, Screen.width - w - 8 * s), Mathf.Clamp(gate.Gui.y - h - 16 * s, 8 * s, Screen.height - h - 8 * s), w, h);
+            var r = new Rect(Mathf.Min(m.LoudAt.x + 24 * s, Screen.width - w - 8 * s), Mathf.Clamp(m.LoudAt.y - h - 16 * s, 8 * s, Screen.height - h - 8 * s), w, h);
             GUI.DrawTexture(r, refusedPlate); hits.Add(r);
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && r.Contains(Event.current.mousePosition)) { host.GateHoldByCard(); Event.current.Use(); }
             float y = r.y + pad;
             for (int i = 0; i < lines.Count; i++) { GUI.Label(new Rect(r.x + pad, y, w - 2 * pad - 50 * s, hs[i]), lines[i], i == 0 ? wrapBold : wrapBright); y += hs[i]; }
             // the commit ring: 24 dots, filled as the hold runs
-            var cc = new Vector2(r.xMax - 30 * s, r.y + 30 * s); float rad = 16 * s, dot = 4 * s; int on = Mathf.RoundToInt(host.GateProgress * 24);
+            var cc = new Vector2(r.xMax - 30 * s, r.y + 30 * s); float rad = 16 * s, dot = 4 * s; int on = Mathf.RoundToInt(m.LoudProgress * 24);
             for (int k = 0; k < 24; k++)
             {
                 float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24;
@@ -420,111 +397,200 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The scene feed (placeholder look until Glyph's round 6b): a header (unread count, the history toggle), the newest cards above
-        /// it. A card: who and what, a progress bar while the act runs, the last lines said, and the footer with what came of it. Click a card:
-        /// acknowledge it and pan to its place; K acknowledges the oldest finished card. Only the cards and the header take clicks.</summary>
+        // Glyph's round 6b feed colours (feed6.py, ΔE-checked against the signals): header tints by kind (cream text), history accent bars,
+        // the result and live footers, the NEW pill, the tick button, the card ivory
+        static readonly Dictionary<string, Color> KindTint = new()
+        {
+            ["learned"] = Hex(0x1f6c67), ["approach"] = Hex(0x244c48), ["call"] = Hex(0x306064), ["city"] = Hex(0x607064), ["warning"] = Hex(0x283436), ["fight"] = Hex(0x0e1a1b),
+        };
+        static readonly Dictionary<string, Color> KindAccent = new()
+        {
+            ["learned"] = Hex(0x65b2ad), ["approach"] = Hex(0x6a928e), ["call"] = Hex(0x76a6aa), ["city"] = Hex(0xa6b6aa), ["warning"] = Hex(0x6e7a7c), ["fight"] = Hex(0x546061),
+        };
+        static readonly Color CardIvory = Hex(0xfce4cc), FooterSea = Hex(0xbae2d6), FooterLine = Hex(0x629e92), LiveFooter = Hex(0xd6deda), LiveLine = Hex(0x96aaa6),
+            Ink = Hex(0x17302f), Stripe = Hex(0xece9e0), NewPill = Hex(0x1cb9c6), CheckDisc = Hex(0x1f6c67);
+        static Color Hex(int rgb) => new(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f, 1f);
+        [System.NonSerialized] readonly Dictionary<string, Texture2D> tints = new();
+        Texture2D TintTex(string kind) { if (!tints.TryGetValue(kind, out var t) || !t) tints[kind] = t = Tex(KindTint.TryGetValue(kind, out var c) ? c : KindTint["city"]); return t; }
+        [System.NonSerialized] Texture2D ivoryTex, footerTex, liveTex, pillTex, discTex, stripeTex;
+        [System.NonSerialized] readonly Dictionary<string, Texture2D> accents = new();
+        Texture2D AccentTex(string kind) { if (!accents.TryGetValue(kind, out var t) || !t) accents[kind] = t = Tex(KindAccent.TryGetValue(kind, out var c) ? c : KindAccent["city"]); return t; }
+        void Outline(Rect r, Color c, float px) { var cc = GUI.color; GUI.color = c; GUI.DrawTexture(new Rect(r.x, r.y, r.width, px), white); GUI.DrawTexture(new Rect(r.x, r.yMax - px, r.width, px), white); GUI.DrawTexture(new Rect(r.x, r.y, px, r.height), white); GUI.DrawTexture(new Rect(r.xMax - px, r.y, px, r.height), white); GUI.color = cc; } [System.NonSerialized] GUIStyle inkWrap, inkBold, inkSmall, headTxt;
+
+        void FeedStyles()
+        {
+            if (ivoryTex == null) { ivoryTex = Tex(CardIvory); footerTex = Tex(FooterSea); liveTex = Tex(LiveFooter); pillTex = Tex(NewPill); discTex = Tex(CheckDisc); stripeTex = Tex(Stripe); }
+            if (inkWrap == null)
+            {
+                inkWrap = new GUIStyle(smallWrap) { normal = { textColor = Ink }, richText = true };
+                inkBold = new GUIStyle(inkWrap) { fontStyle = FontStyle.Bold, wordWrap = false };
+                inkSmall = new GUIStyle(inkWrap) { normal = { textColor = new Color(0.32f, 0.39f, 0.37f) }, wordWrap = false };
+                headTxt = new GUIStyle(txtSmallBold) { normal = { textColor = Cream }, clipping = TextClipping.Clip };
+            }
+            inkWrap.fontSize = Mathf.RoundToInt(14 * s); inkBold.fontSize = Mathf.RoundToInt(14 * s); inkSmall.fontSize = Mathf.RoundToInt(13 * s); headTxt.fontSize = Mathf.RoundToInt(15 * s);
+        }
+
+        /// <summary>A speaker chip (placeholder for Forma's portraits and Glyph's badges): the cell's number on cream; Inez a cup, the guard an
+        /// amber shield, the driver a wheel, Vale a star, a rival a violet diamond, a watcher a camera, anyone else a plain figure.</summary>
+        void Chip(Rect r, string speaker)
+        {
+            int k = System.Array.IndexOf(new[] { "scout", "fixer", "tech", "enforcer" }, speaker);
+            if (k >= 0) { GUI.DrawTexture(r, chipAgent); GUI.Label(r, $"<color=#1a2a28>{Nums[k]}</color>", iconSmall); return; }
+            var (bg, glyph) = speaker switch
+            {
+                "waitress" => (Hex(0x8fb9b0), "☕"), "guard" => (Hex(0xf0a020), "◆"), "driver" => (Hex(0x8fb9b0), "◎"), "councillor" => (Hex(0x8fb9b0), "★"),
+                "rivals" => (Hex(0x8a4fd0), "◆"), "watcher" => (Hex(0x8fb9b0), "▣"), "patrol" or "security" => (Hex(0xf0a020), "◆"), _ => (Hex(0xb9c4bf), "•"),
+            };
+            var c = GUI.color; GUI.color = bg; GUI.DrawTexture(r, white); GUI.color = c; GUI.Label(r, $"<color=#17302f>{glyph}</color>", iconSmall);
+        }
+
+        /// <summary>The scene feed (Glyph's round 6b structure, placeholder art): at most three cards above the bar, newest on top and open, the
+        /// other two folded to header and footer, "+N more" for the rest; in a fight every card folds to its header (hover opens it). A card:
+        /// a header in its kind's tint (kind and verb icons, title, where, clock, NEW), its lines with speaker chips (a "…" for the next speaker
+        /// while it plays), and the highlighted result footer with the tick (✓ K). A click on the body pans to its place; the tick acknowledges.
+        /// The bar: "SCENES n new", the keys, and the history (L) with unread first, Read all and filter chips.</summary>
         void FeedGui(Rect area)
         {
-            float w = area.width, pad = 8 * s, head = 24 * s; var feed = host.Feed;
-            var hr = new Rect(area.x, area.yMax - head, w, head); Plate(hr); hits.Add(hr);
-            int unread = host.Unread, live = 0; foreach (var c in feed) if (c.Live) live++;
-            GUI.Label(new Rect(hr.x + pad, hr.y, w - 2 * pad, head), $"Feed  ·  {unread} new{(live > 0 ? $"  ·  {live} under way" : "")}  ·  {host.controls.Label(PlayAction.Acknowledge)} ok  ·  {(host.FeedHistoryOpen ? "▾" : "▸")} history ({host.FeedHistory.Count})", small);
-            if (GUI.Button(hr, GUIContent.none, GUIStyle.none)) host.FeedHistoryOpen = !host.FeedHistoryOpen;
-            float y = hr.y - 4 * s;
-            // the newest four cards, newest nearest the header
-            int shown = 0;
-            for (int i = feed.Count - 1; i >= 0 && shown < 4; i--, shown++)
+            FeedStyles();
+            float w = area.width, pad = 8 * s, head = 26 * s, chip = 18 * s; var feed = m.Feed; bool fight = m.FeedFold;
+            // the bar
+            var bar = new Rect(area.x, area.yMax - 26 * s, w, 26 * s); Plate(bar); hits.Add(bar);
+            int unread = m.Unread;
+            GUI.Label(new Rect(bar.x + pad, bar.y, 90 * s, bar.height), "SCENES", txtSmallBold);
+            if (unread > 0) { var nb = new Rect(bar.x + 78 * s, bar.y + 4 * s, 60 * s, 18 * s); GUI.DrawTexture(nb, ivoryTex); GUI.Label(nb, $"<color=#17302f>{unread} new</color>", smallC); }
+            GUI.Label(new Rect(bar.xMax - 190 * s, bar.y, 182 * s, bar.height), $"{m.AckKey} ack · {m.HistoryKey} history {(m.HistoryOpen ? "▾" : "▴")}", small);
+            if (GUI.Button(new Rect(bar.xMax - 110 * s, bar.y, 110 * s, bar.height), GUIContent.none, GUIStyle.none)) host.FeedHistoryOpen = !host.FeedHistoryOpen;
+            float y = bar.y - 6 * s;
+            if (m.HistoryOpen) { History(new Rect(area.x, 0, w, y)); return; }
+            if (feed.Count > 3) { var mr = new Rect(area.xMax - 90 * s, y - 20 * s, 90 * s, 20 * s); Plate(mr); GUI.Label(mr, $"+{feed.Count - 3} more", smallC); hits.Add(mr); y = mr.y - 4 * s; }
+            // oldest of the three nearest the bar, newest on top
+            if (Event.current.type == EventType.Repaint) { hoverCard = hoverNow; hoverNow = -1; }
+            int first = Mathf.Max(0, feed.Count - 3);
+            for (int i = first; i < feed.Count; i++)
             {
-                var c = feed[i]; float iw = w - 2 * pad;
-                var lines = new List<string>();
-                for (int j = Mathf.Max(0, c.Lines.Count - 2); j < c.Lines.Count; j++) lines.Add($"<b>{c.Lines[j].who}:</b> {c.Lines[j].text}");
-                float h = 22 * s + (c.Live && c.Progress >= 0 ? 10 * s : 0) + 6 * s;
-                foreach (var l in lines) h += wrapBright.CalcHeight(new GUIContent(l), iw);
-                if (c.Footer.Length > 0) h += smallWrap.CalcHeight(new GUIContent(c.Footer), iw) + 2 * s;
-                var r = new Rect(area.x, y - h, w, h); y = r.y - 4 * s;
-                bool hover = r.Contains(Event.current.mousePosition);
-                GUI.DrawTexture(r, c.Tone == HandoverHost.Feedback.Refused && !c.Live ? refusedPlate : hover ? plateLit : plate); hits.Add(r);
-                if (!c.Live && !c.Read) GUI.DrawTexture(new Rect(r.x, r.y, 4 * s, r.height), c.Tone == HandoverHost.Feedback.Ok ? pipOn : edge); // unread
-                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Acknowledge(c, true);
-                float yy = r.y + 3 * s;
-                if (c.Agent >= 0) { var cr = new Rect(r.x + pad, yy + 1 * s, 18 * s, 18 * s); GUI.DrawTexture(cr, chipAgent); GUI.Label(cr, $"<color=#1a2a28>{Nums[c.Agent]}</color>", iconSmall); }
-                GUI.Label(new Rect(r.x + pad + (c.Agent >= 0 ? 24 * s : 0), yy, iw, 20 * s), $"<b>{c.Title}</b>{(c.Live ? "  …" : "")}", smallBright); yy += 22 * s;
+                var c = feed[i]; bool newest = i == feed.Count - 1;
+                float iw = w - 2 * pad - chip - 6 * s;
+                // fold: the older two show header and footer; in a fight every card shows only its header unless hovered
+                bool open = fight ? c.Id == hoverCard : newest; // in a fight, cards fold to their header; hovering one opens it
+                var shown = new List<HandoverHost.FeedLine>();
+                for (int j = 0; j < Mathf.Min(c.Revealed, c.Lines.Count); j++) shown.Add(c.Lines[j]);
+                float linesH = 0; if (open) foreach (var l in shown) linesH += Mathf.Max(chip, inkWrap.CalcHeight(new GUIContent($"<b>{l.Name}</b>  {l.Text}"), iw)) + 3 * s;
+                if (open && c.Typing) linesH += chip;
+                bool footer = (c.Live || c.Footer.Length > 0) && (!fight || open || newest);
+                float bodyH = (open ? linesH + 6 * s : 0) + (c.Live && c.Progress >= 0 ? 10 * s : 0) + (footer ? 26 * s : 0);
+                var r = new Rect(area.x, y - head - bodyH, w, head + bodyH);
+                if (Event.current.type == EventType.Repaint) { if (r.Contains(Event.current.mousePosition)) hoverNow = c.Id; }
+                y = r.y - 6 * s;
+                hits.Add(r);
+                // header
+                var hr = new Rect(r.x, r.y, w, head); GUI.DrawTexture(hr, TintTex(c.Kind));
+                if (c.Kind == "warning") for (float sx = hr.x; sx < hr.xMax; sx += 14 * s) { GUI.DrawTexture(new Rect(sx, hr.y, 6 * s, 2 * s), stripeTex); GUI.DrawTexture(new Rect(sx, hr.yMax - 2 * s, 6 * s, 2 * s), stripeTex); }
+                float x = hr.x + pad;
+                GUI.Label(new Rect(x, hr.y, 22 * s, head), c.Icon, iconSmall); x += 24 * s;
+                var title = new GUIContent(c.Title); float tw = headTxt.CalcSize(title).x;
+                GUI.Label(new Rect(x, hr.y, Mathf.Min(tw, w * 0.5f), head), title, headTxt); x += Mathf.Min(tw, w * 0.5f) + 8 * s;
+                GUI.Label(new Rect(x, hr.y + 1 * s, hr.xMax - x - 100 * s, head), c.Where, small);
+                bool isNew = !c.Live && !c.Read;
+                if (isNew) { var nr = new Rect(hr.xMax - 98 * s, hr.y + 5 * s, 38 * s, 16 * s); GUI.DrawTexture(nr, pillTex); GUI.Label(nr, "<color=#17302f>NEW</color>", iconSmall); }
+                GUI.Label(new Rect(hr.xMax - 54 * s, hr.y, 50 * s, head), HandoverHost.MissionClock(c.Started), txtSmallBold);
+                if (r.height <= head + 0.5f) { HoverPan(c, r); continue; }
+                // body
+                var br = new Rect(r.x, hr.yMax, w, r.height - head); GUI.DrawTexture(br, ivoryTex);
+                float yy = br.y + 3 * s;
                 if (c.Live && c.Progress >= 0)
                 {
-                    var bar = new Rect(r.x + pad, yy, iw - 50 * s, 5 * s); GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * c.Progress / 1000f, bar.height), barOn);
-                    if (c.TicksLeft >= 0) GUI.Label(new Rect(bar.xMax + 6 * s, yy - 7 * s, 46 * s, 18 * s), $"{(c.TicksLeft + Game.Hz - 1) / Game.Hz} s", small);
+                    var pb = new Rect(br.x + pad, yy + 2 * s, w - 2 * pad - 50 * s, 4 * s); GUI.DrawTexture(pb, barOff); var cc = GUI.color; GUI.color = CheckDisc; GUI.DrawTexture(new Rect(pb.x, pb.y, pb.width * c.Progress / 1000f, pb.height), white); GUI.color = cc;
+                    if (c.TicksLeft >= 0) GUI.Label(new Rect(pb.xMax + 4 * s, yy - 6 * s, 46 * s, 16 * s), $"{(c.TicksLeft + Game.Hz - 1) / Game.Hz} s", inkSmall);
                     yy += 10 * s;
                 }
-                foreach (var l in lines) { float lh = wrapBright.CalcHeight(new GUIContent(l), iw); GUI.Label(new Rect(r.x + pad, yy, iw, lh), l, wrapBright); yy += lh; }
-                if (c.Footer.Length > 0) GUI.Label(new Rect(r.x + pad, yy + 2 * s, iw, r.yMax - yy), c.Footer, smallWrap);
-            }
-            if (feed.Count > 4) { var mr = new Rect(area.x, y - 20 * s, w, 20 * s); GUI.Label(mr, $"+{feed.Count - 4} more", smallC); y = mr.y; }
-            if (host.FeedHistoryOpen && host.FeedHistory.Count > 0)
-            {
-                int n = Mathf.Min(8, host.FeedHistory.Count); float lh = 20 * s;
-                var r = new Rect(area.x, y - n * lh - 8 * s, w, n * lh + 8 * s); Plate(r); hits.Add(r);
-                for (int i = 0; i < n; i++)
+                if (open)
                 {
-                    var c = host.FeedHistory[host.FeedHistory.Count - n + i];
-                    var lr = new Rect(r.x + pad, r.y + 4 * s + i * lh, w - 2 * pad, lh);
-                    GUI.Label(lr, $"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", small);
-                    if (GUI.Button(lr, GUIContent.none, GUIStyle.none) && host.PlaceNow(c) is Vector3 at) host.LookAt(at);
+                    foreach (var l in shown)
+                    {
+                        var content = new GUIContent($"<b>{l.Name}</b>  {l.Text}"); float lh = Mathf.Max(chip, inkWrap.CalcHeight(content, iw));
+                        Chip(new Rect(br.x + pad, yy, chip, chip), l.Speaker);
+                        GUI.Label(new Rect(br.x + pad + chip + 6 * s, yy, iw, lh), content, inkWrap); yy += lh + 3 * s;
+                    }
+                    if (c.Typing && c.Revealed < c.Lines.Count) { Chip(new Rect(br.x + pad, yy, chip, chip), c.Lines[c.Revealed].Speaker); GUI.Label(new Rect(br.x + pad + chip + 6 * s, yy, iw, chip), "…", inkBold); yy += chip; }
                 }
+                if (footer)
+                {
+                    var fr = new Rect(br.x + 4 * s, br.yMax - 26 * s, w - 8 * s, 22 * s);
+                    if (c.Live) { GUI.DrawTexture(fr, liveTex); Outline(fr, LiveLine, Mathf.Max(1f, s)); GUI.Label(new Rect(fr.x + 8 * s, fr.y, fr.width - 16 * s, fr.height), "The result lands when the act finishes.", inkSmall); }
+                    else
+                    {
+                        GUI.DrawTexture(fr, footerTex); Outline(fr, FooterLine, Mathf.Max(1f, 1.2f * s));
+                        var disc = new Rect(fr.x + 5 * s, fr.y + 4 * s, 14 * s, 14 * s); GUI.DrawTexture(disc, discTex); GUI.Label(disc, $"<color=#f7f4ec>{(c.Tone == HandoverHost.Feedback.Refused ? "✕" : "✓")}</color>", iconSmall);
+                        GUI.Label(new Rect(fr.x + 24 * s, fr.y, fr.width - 88 * s, fr.height), c.Footer, inkBold);
+                        var tick = new Rect(fr.xMax - 58 * s, fr.y + 2 * s, 54 * s, 18 * s); GUI.DrawTexture(tick, white); Outline(tick, CheckDisc, Mathf.Max(1f, 1.6f * s)); GUI.Label(tick, $"<color=#17302f>✓ {m.AckKey}</color>", iconSmall);
+                        if (!c.Read) { var dot = new Rect(tick.xMax - 4 * s, tick.y - 4 * s, 8 * s, 8 * s); GUI.DrawTexture(dot, white); GUI.DrawTexture(new Rect(dot.x + 2 * s, dot.y + 2 * s, 4 * s, 4 * s), pillTex); }
+                        if (GUI.Button(tick, GUIContent.none, GUIStyle.none)) { host.Acknowledge(c, false); continue; }
+                    }
+                }
+                HoverPan(c, r);
             }
         }
 
-        /// <summary>The dialogue log: collapsed, its header and the last line; open (L, or click the header), the last nine. Each line has its
-        /// speaker's chip (an agent's number, else the first letter); refusals red-brown.</summary>
-        void DialogueLog(Rect area)
+        [System.NonSerialized] int hoverCard = -1, hoverNow = -1;
+
+        /// <summary>Hovering a card rings its place in the street; a click on it pans there.</summary>
+        void HoverPan(HandoverHost.FeedCard c, Rect r)
         {
-            var talk = host.Talk; int show = host.LogOpen ? Mathf.Min(9, talk.Count) : Mathf.Min(1, talk.Count);
-            float w = area.width, head = 24 * s, pad = 6 * s, chip = 22 * s; if (w < 200 * s) return;
-            float textW = w - chip - 3 * pad;
-            float h = head + pad;
-            var heights = new float[show];
-            for (int i = 0; i < show; i++) { var l = talk[talk.Count - show + i]; heights[i] = Mathf.Max(chip, wrapBright.CalcHeight(new GUIContent(Line(l)), textW)) + 4 * s; h += heights[i]; }
-            if (show == 0) h += 24 * s;
-            var r = new Rect(area.x, area.yMax - h, w, h); Plate(r); hits.Add(r);
-            var hr = new Rect(r.x, r.y, w, head);
-            if (GUI.Button(hr, GUIContent.none, GUIStyle.none)) host.LogOpen = !host.LogOpen;
-            GUI.Label(new Rect(r.x + pad, r.y, w, head), $"{(host.LogOpen ? "▾" : "▸")} Dialogue  ({host.controls.Label(PlayAction.DialogueLog)})", small);
-            float y = r.y + head;
-            if (show == 0) GUI.Label(new Rect(r.x + pad, y, w - 2 * pad, 22 * s), "Orders, replies and what the cell learns appear here.", small);
-            for (int i = 0; i < show; i++)
+            bool hover = r.Contains(Event.current.mousePosition);
+            if (hover && Event.current.type == EventType.Repaint && host.View && host.PlaceNow(c) is Vector3 at)
             {
-                var l = talk[talk.Count - show + i];
-                var cr = new Rect(r.x + pad, y + 1 * s, chip, chip);
-                GUI.DrawTexture(cr, l.Agent >= 0 ? chipAgent : plateLit);
-                GUI.Label(cr, l.Agent >= 0 ? $"<color=#1a2a28>{Nums[l.Agent]}</color>" : l.Name.Length > 0 ? l.Name[..1] : "·", iconSmall);
-                GUI.Label(new Rect(cr.xMax + pad, y, textW, heights[i]), Line(l), l.Kind == HandoverHost.Feedback.Refused ? wrapRefused : wrapBright);
-                y += heights[i];
+                var p = host.View.WorldToScreenPoint(at); if (p.z > 0) { float rw = 80 * s * 14f / host.View.orthographicSize, rh = rw * 0.62f; GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); }
+            }
+            if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Acknowledge(c, true);
+        }
+
+        /// <summary>The history (L): the unread first with Read all, then the acknowledged, newest first; filter chips All, Scenes, Cell (the cell's
+        /// own chatter, the old dialogue log's lines). Each line pans to its place.</summary>
+        void History(Rect area)
+        {
+            float w = area.width, pad = 8 * s, lh = 20 * s; var rows = m.History;
+            float h = 30 * s + rows.Count * lh + 8 * s;
+            var r = new Rect(area.x, area.yMax - h, w, h); GUI.DrawTexture(r, ivoryTex); hits.Add(r);
+            float x = r.x + pad;
+            foreach (var f in new[] { "all", "scenes", "cell" })
+            {
+                var fr = new Rect(x, r.y + 5 * s, 64 * s, 20 * s); GUI.DrawTexture(fr, m.Filter == f ? plateLit : plate); GUI.Label(fr, f == "all" ? "All" : f == "scenes" ? "Scenes" : "Cell", smallC);
+                if (GUI.Button(fr, GUIContent.none, GUIStyle.none)) host.FeedFilter = f; x += 70 * s;
+            }
+            var ra = new Rect(r.xMax - 84 * s, r.y + 5 * s, 78 * s, 20 * s); GUI.DrawTexture(ra, plate); GUI.Label(ra, "Read all", smallC);
+            if (GUI.Button(ra, GUIContent.none, GUIStyle.none)) host.ReadAll();
+            float y = r.y + 30 * s;
+            foreach (var (text, card, unread) in rows)
+            {
+                var lr = new Rect(r.x + pad, y, w - 2 * pad, lh);
+                if (card != null) GUI.DrawTexture(new Rect(r.x + 2 * s, y + 3 * s, 4 * s, lh - 6 * s), AccentTex(card.Kind));
+                GUI.Label(lr, text, unread ? inkBold : inkSmall);
+                if (card != null && GUI.Button(lr, GUIContent.none, GUIStyle.none) && host.PlaceNow(card) is Vector3 at) host.LookAt(at);
+                y += lh;
             }
         }
 
-        static string Line(HandoverHost.Said l) => $"<b>{HandoverHost.MissionClock(l.Tick)}</b>  {(l.Name.Length > 0 ? l.Name + ": " : "")}{l.Text}";
+        /// <summary>The ticker: the cell's last word (an order taken, an arrival) for four seconds, then it fades. One line, no stack, no tick.</summary>
+        void Ticker(Rect r)
+        {
+            var last = m.Ticker; if (last == null) return;
+            float age = m.TickerAge; if (age > 5f) return;
+            var c = GUI.color; GUI.color = new Color(1, 1, 1, Mathf.Clamp01((5f - age) / 1f));
+            string line = $"{last.Name}: {last.Text}"; var size = smallBright.CalcSize(new GUIContent(line));
+            var rr = new Rect(r.x, r.y, Mathf.Min(r.width, size.x + 40 * s), r.height); GUI.DrawTexture(rr, last.Kind == HandoverHost.Feedback.Refused ? refusedPlate : plate);
+            Chip(new Rect(rr.x + 4 * s, rr.y + 4 * s, 18 * s, 18 * s), last.Speaker);
+            GUI.Label(new Rect(rr.x + 28 * s, rr.y, rr.width - 32 * s, rr.height), line, smallBright);
+            GUI.color = c;
+        }
 
         /// <summary>The briefing card (open at the start; B): the job, objective, win, every way it fails, the clock and its close, the purse,
         /// the two known ways in as hints, and what each agent does.</summary>
-        void Briefing(Game g)
+        void Briefing()
         {
-            var t = host.Text; if (t == null) return;
+            if (m.Briefing.Count == 0) return;
             float w = 860 * s, pad = 22 * s, iw = w - 2 * pad;
-            var parts = new List<(string text, GUIStyle st)>
-            {
-                (t.Title.ToUpperInvariant(), big),
-                (string.Join(" ", t.Card), wrapBright),
-                ("<b>Objective</b>   " + t.Objective, wrapBright),
-                ("<b>Win</b>   " + t.Win, wrapBright),
-                ("<b>Fail if</b>   " + string.Join("  ·  ", t.Fails.FindAll(f => f.code is not ("engine-error" or "withdraw")).ConvertAll(f => f.line.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))), wrapBright),
-                ("<b>Clock</b>   " + t.ClockLine, wrapBright),
-                ("<b>Purse</b>   " + t.PurseLine, wrapBright),
-                ("<b>Two ways in</b>", wrapBright),
-            };
-            foreach (var hnt in t.Hints) parts.Add(("   ▸ " + hnt, wrapBright));
-            parts.Add(("<b>The cell</b>", wrapBright));
-            foreach (var k in new[] { "scout", "fixer", "tech", "enforcer" }) if (t.Cell.TryGetValue(k, out var cl)) parts.Add(("   " + cl, smallWrap));
-            var c = host.controls;
-            parts.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   right click a person or thing for actions   ·   text: {t.Source}", small));
+            var parts = new List<(string text, GUIStyle st)>(m.Briefing.Count);
+            foreach (var (text, part) in m.Briefing) parts.Add((text, part switch { HudModel.Part.Title => big, HudModel.Part.Small => smallWrap, HudModel.Part.Footer => small, _ => wrapBright }));
             float h = 2 * pad; var hs = new float[parts.Count];
             for (int i = 0; i < parts.Count; i++) { hs[i] = parts[i].st.wordWrap ? parts[i].st.CalcHeight(new GUIContent(parts[i].text), iw) : 30 * s; hs[i] += 6 * s; h += hs[i]; }
             var r = new Rect(Screen.width / 2f - w / 2, Mathf.Max(70 * s, Screen.height / 2f - h / 2 - 70 * s), w, h); Plate(r); hits.Add(r);
@@ -535,12 +601,10 @@ namespace Suborned.Play
         /// <summary>A ring at the feet of what the mouse is on, when the cell can act on it, and the action cursor; nothing on scenery or passers-by.</summary>
         void HoverRing(Camera cam)
         {
-            var t = host.Hover; bool act = t != null && t.Kind != "crowd" && t.Kind != "op" && host.Ending.Length == 0;
-            int want = host.AimLine != null ? (host.AimNoLine ? 3 : 2) : act ? 1 : 0;
+            int want = m.Cursor;
             if (want != cursorIs) { var tex = want == 3 ? cursorNoLine : want == 2 ? cursorAim : want == 1 ? cursorAct : null; Cursor.SetCursor(tex, tex ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIs = want; }
-            if (!act || !cam) return;
-            var w = host.TargetWorld(t); if (!w.HasValue) return;
-            var p = cam.WorldToScreenPoint(w.Value); if (p.z <= 0) return;
+            if (!m.HoverRing.HasValue || !cam) return;
+            var p = cam.WorldToScreenPoint(m.HoverRing.Value); if (p.z <= 0) return;
             float rw = 64 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; // the ground circle at pitch 38
             GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring);
         }
@@ -549,7 +613,7 @@ namespace Suborned.Play
         void Pulses(Camera cam)
         {
             if (!cam) return; float now = Time.unscaledTime;
-            foreach (var (w, kind, born) in host.Pulses)
+            foreach (var (w, kind, born) in m.Pulses)
             {
                 float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue;
                 var p = cam.WorldToScreenPoint(w); if (p.z <= 0) continue;
@@ -563,9 +627,9 @@ namespace Suborned.Play
         void Pops(Camera cam)
         {
             float now = Time.unscaledTime; float y0 = 0f;
-            for (int i = host.Pops.Count - 1; i >= 0; i--)
+            for (int i = m.Pops.Count - 1; i >= 0; i--)
             {
-                var pp = host.Pops[i]; if (now > pp.Until) continue;
+                var pp = m.Pops[i]; if (now > pp.Until) continue;
                 Vector2 at;
                 if (pp.World.HasValue && cam) { var p = cam.WorldToScreenPoint(pp.World.Value + Vector3.up * 2.6f); if (p.z <= 0) continue; at = new Vector2(p.x, Screen.height - p.y); }
                 else if (pp.Screen.HasValue) at = pp.Screen.Value + new Vector2(18 * s, -40 * s);
@@ -585,126 +649,57 @@ namespace Suborned.Play
         /// who and the action in plain words ("F2 Fixer · Pay Inez"), one line on what it does and its trade-off (Fable's text), the walk and
         /// the price ($ · time · Trail · Alert · outcome); a locked card is dimmed, says why, and what unlocks it. Click a card to give it (to
         /// that card's agent); hover one to see the walk.</summary>
-        void PanelGui(Game g)
+        void PanelGui()
         {
-            var pn = host.Panel; float w = 410 * s, head = 30 * s, pad = 10 * s, iw = w - 2 * pad - 8 * s;
-            if (cardsFor != pn || cardsFont != wrapBright.fontSize)
+            float w = 410 * s, head = 30 * s, pad = 10 * s, iw = w - 2 * pad - 8 * s; var cards = m.PanelCards;
+            if (heightsFor != cards.Count + (cards.Count > 0 ? cards[0].Title.GetHashCode() : 0) || heightsFont != wrapBright.fontSize)
             {
-                cardsFor = pn; cardsFont = wrapBright.fontSize; cards.Clear();
-                foreach (var row in pn.Rows)
-                {
-                    var it = row.I;
-                    string title = $"{Names[(int)row.By]} · {row.Verb}";
-                    string price = it.Move ? it.Time : $"{(it.Walk.Length > 0 ? it.Walk + " " : "")}{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
-                    string lockLine = row.Available ? "" : $"Locked: {row.Reason}{(row.Unlock.Length > 0 ? $"\n{row.Unlock}" : "")}";
-                    float h = 24 * s + (it.Does.Length > 0 ? wrapBright.CalcHeight(new GUIContent(it.Does), iw) : 0) + smallWrap.CalcHeight(new GUIContent(price), iw)
-                        + (lockLine.Length > 0 ? wrapRefused.CalcHeight(new GUIContent(lockLine), iw) : 0) + 10 * s;
-                    cards.Add((title, it.Does, price, lockLine, h));
-                }
+                heightsFor = cards.Count + (cards.Count > 0 ? cards[0].Title.GetHashCode() : 0); heightsFont = wrapBright.fontSize; heights.Clear();
+                foreach (var cd in cards)
+                    heights.Add(24 * s + (cd.Does.Length > 0 ? wrapBright.CalcHeight(new GUIContent(cd.Does), iw) : 0) + smallWrap.CalcHeight(new GUIContent(cd.Price), iw)
+                        + (cd.Lock.Length > 0 ? wrapRefused.CalcHeight(new GUIContent(cd.Lock), iw) : 0) + 10 * s);
             }
-            float aboutH = pn.About.Length > 0 ? smallWrap.CalcHeight(new GUIContent(pn.About), w - 2 * pad) + 4 * s : 0;
-            float total = head + aboutH + (pn.Note.Length > 0 ? 44 * s : 0) + 6 * s; foreach (var cd in cards) total += cd.h + 4 * s;
-            var r = new Rect(Mathf.Min(pn.Gui.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(pn.Gui.y - 12 * s, 8 * s, Mathf.Max(8 * s, Screen.height - total - 8 * s)), w, total);
+            float aboutH = m.PanelAbout.Length > 0 ? smallWrap.CalcHeight(new GUIContent(m.PanelAbout), w - 2 * pad) + 4 * s : 0;
+            float total = head + aboutH + (m.PanelNote.Length > 0 ? 44 * s : 0) + 6 * s; foreach (var hh in heights) total += hh + 4 * s;
+            var r = new Rect(Mathf.Min(m.PanelAt.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(m.PanelAt.y - 12 * s, 8 * s, Mathf.Max(8 * s, Screen.height - total - 8 * s)), w, total);
             Plate(r); hits.Add(r);
-            GUI.Label(new Rect(r.x + pad, r.y + 2 * s, w - 2 * pad, head), pn.T.Label, txt);
+            GUI.Label(new Rect(r.x + pad, r.y + 2 * s, w - 2 * pad, head), m.PanelTitle, txt);
             float y = r.y + head;
-            if (aboutH > 0) { GUI.Label(new Rect(r.x + pad, y - 4 * s, w - 2 * pad, aboutH), pn.About, smallWrap); y += aboutH; }
-            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + pad, y, w - 2 * pad, 42 * s), pn.Note, smallWrap); y += 44 * s; }
+            if (aboutH > 0) { GUI.Label(new Rect(r.x + pad, y - 4 * s, w - 2 * pad, aboutH), m.PanelAbout, smallWrap); y += aboutH; }
+            if (m.PanelNote.Length > 0) { GUI.Label(new Rect(r.x + pad, y, w - 2 * pad, 42 * s), m.PanelNote, smallWrap); y += 44 * s; }
             int hover = -1;
-            for (int i = 0; i < pn.Rows.Count && i < cards.Count; i++)
+            for (int i = 0; i < cards.Count && i < heights.Count; i++)
             {
-                var row = pn.Rows[i]; var cd = cards[i]; var rr = new Rect(r.x + 4 * s, y, w - 8 * s, cd.h);
-                bool mine = host.Selected[(int)row.By];
+                var cd = cards[i]; var rr = new Rect(r.x + 4 * s, y, w - 8 * s, heights[i]);
                 GUI.DrawTexture(rr, rr.Contains(Event.current.mousePosition) ? plateLit : plate);
                 if (rr.Contains(Event.current.mousePosition)) hover = i;
-                GUI.DrawTexture(new Rect(rr.x, rr.y, 3 * s, rr.height), row.Available ? edge : refusedText);
+                GUI.DrawTexture(new Rect(rr.x, rr.y, 3 * s, rr.height), cd.Available ? edge : refusedText);
                 if (GUI.Button(rr, GUIContent.none, GUIStyle.none)) host.PanelDo(i);
-                var c = GUI.color; if (!row.Available) GUI.color = new Color(1, 1, 1, 0.62f);
+                var c = GUI.color; if (!cd.Available) GUI.color = new Color(1, 1, 1, 0.62f);
                 float yy = rr.y + 3 * s;
-                GUI.Label(new Rect(rr.x + 8 * s, yy, 30 * s, 20 * s), host.AgentKeyLabel((int)row.By), key);
-                GUI.Label(new Rect(rr.x + 40 * s, yy, iw - 40 * s, 20 * s), cd.title, txtSmallBold);
-                if (row.Slot >= 0 && mine) GUI.Label(new Rect(rr.xMax - 34 * s, yy, 30 * s, 20 * s), $"[{host.VerbKey(row.Slot)}]", key);
+                GUI.Label(new Rect(rr.x + 8 * s, yy, 30 * s, 20 * s), cd.Key, key);
+                GUI.Label(new Rect(rr.x + 40 * s, yy, iw - 40 * s, 20 * s), cd.Title, txtSmallBold);
+                if (cd.Verb.Length > 0 && cd.Mine) GUI.Label(new Rect(rr.xMax - 34 * s, yy, 30 * s, 20 * s), $"[{cd.Verb}]", key);
                 yy += 22 * s;
-                if (cd.does.Length > 0) { float dh = wrapBright.CalcHeight(new GUIContent(cd.does), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, dh), cd.does, wrapBright); yy += dh; }
-                float ph = smallWrap.CalcHeight(new GUIContent(cd.price), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, ph), cd.price, smallWrap); yy += ph;
+                if (cd.Does.Length > 0) { float dh = wrapBright.CalcHeight(new GUIContent(cd.Does), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, dh), cd.Does, wrapBright); yy += dh; }
+                float ph = smallWrap.CalcHeight(new GUIContent(cd.Price), iw); GUI.Label(new Rect(rr.x + pad, yy, iw, ph), cd.Price, smallWrap); yy += ph;
                 GUI.color = c;
-                if (cd.lockLine.Length > 0) GUI.Label(new Rect(rr.x + pad, yy, iw, rr.yMax - yy), cd.lockLine, wrapRefused);
-                y += cd.h + 4 * s;
+                if (cd.Lock.Length > 0) GUI.Label(new Rect(rr.x + pad, yy, iw, rr.yMax - yy), cd.Lock, wrapRefused);
+                y += heights[i] + 4 * s;
             }
             if (Event.current.type == EventType.Repaint) host.SetPanelHover(hover);
         }
 
-        [System.NonSerialized] HandoverHost.ActionPanel cardsFor; [System.NonSerialized] int cardsFont;
-        [System.NonSerialized] readonly List<(string title, string does, string price, string lockLine, float h)> cards = new();
-
-        /// <summary>Two icons at most: what the cell knows of them, and their state toward the cell.</summary>
-        static (string a, string b) Icons(Game g, string role)
-        {
-            var p = g.PersonByRole(role);
-            if (role == "councillor") return ("★", null);
-            if (role == "guard") return (g.GuardAtDoor ? "◆door" : "◆", p.Turned ? "✓" : null);
-            string known = p.KTemperament ? p.Temperament[..1].ToUpperInvariant() : "?";
-            string need = p.Turned ? "✓" : p.KNeed ? "$" : p.Suspected.Length > 0 ? "$?" : null;
-            return (known, need);
-        }
+        [System.NonSerialized] int heightsFor = -1, heightsFont; [System.NonSerialized] readonly List<float> heights = new();
 
         void Icon(Rect r, string text)
         {
             GUI.DrawTexture(r, plate); GUI.Label(r, text, text.Length > 2 ? iconSmall : icon);
         }
 
-        /// <summary>What the pill, the roster states and the cast icons show changes at most once a tick, on an order, or with pause and speed.</summary>
-        int Key(Game g) => unchecked(g.Tick * 31 + g.Orders.Count * 7919 + (host.Paused ? 1 : 0) + host.Speed * 3 + g.Log.Count * 104729);
-
-        void Refresh(Game g)
+        void EndCard()
         {
-            pillKey = Key(g);
-            pillClock = HandoverHost.MissionClock(g.Tick); pillNext = NextOnTimeline(g);
-            pillCash = $"${g.Cash:N0}"; pillTrail = $"T {g.Trail}"; pillState = host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}";
-            var c = host.controls;
-            pillCity = $"{host.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Briefing)} briefing · {c.Label(PlayAction.DialogueLog)} log · {c.Label(PlayAction.Cancel)} cancel · N next";
-            tracker = host.Text == null ? "" : "▸ " + host.Text.Tracker.Replace("{close}", host.Text.Close);
-            for (int i = 0; i < 4; i++)
-            {
-                var op = g.Ops[i];
-                var d = host.DoingOf(i);
-                slotState[i] = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : "";
-                icons[i] = Icons(g, Roles[i]);
-            }
-        }
-
-        /// <summary>The briefing's timeline (Fable's): the next mark after now, "▸ 5:30 Handover chime"; a mark the cell can't know yet shows
-        /// "?" until it has happened. Without the text, the engine's next scheduled change.</summary>
-        string NextOnTimeline(Game g)
-        {
-            var tl = host.Text?.Timeline;
-            if (tl == null || tl.Count == 0) return "▶▶ " + HandoverHost.MissionClock(host.NextMark());
-            foreach (var (at, label, known) in tl)
-            {
-                var p = at.Split(':'); int tick = (int.Parse(p[0]) * 60 + int.Parse(p[1])) * Game.Hz;
-                if (tick > g.Tick) return $"▸ {at} {(known ? label : "?")}";
-            }
-            return "▸ the close";
-        }
-
-        void EndCard(Game g)
-        {
-            var d = host.EndDebrief;
-            var lines = new List<string>
-            {
-                g.Result == Outcome.Success ? "VALE IS IN THE CAR" : g.Result == Outcome.Withdrawn ? "WITHDRAWN" : g.FailCode == "vale-leaves" || g.FailCode == "rivals-reach-vale" ? "THE CLOSE" : "FAILED",
-                g.FailText.Length > 0 ? g.FailText : g.Result == Outcome.Success ? "The crew escapes with Vale alive." : "",
-                $"time {HandoverHost.MissionClock(g.Tick)}   ·   spent ${g.S.Purse - g.Cash:N0} of ${g.S.Purse:N0}   ·   Trail {g.Trail}   ·   Alert {g.Alert}   ·   shots {g.Gunfire}",
-            };
-            if (d != null)
-            {
-                lines.Add($"security: {d.PublicSecurity}   ·   investigation: {d.InvestigationState}{(d.InvestigationCause.Length > 0 ? $" ({d.InvestigationCause})" : "")}");
-                if (d.Route.Count > 0) lines.Add("route: " + string.Join(", ", d.Route));
-                if (d.FightBranch.Length > 0) lines.Add($"final fight: {d.FightBranch}, {d.FightHostiles} hostiles, {d.FightHits} hits taken");
-                if (d.Assets.Count > 0) lines.Add("contacts kept: " + string.Join(", ", d.Assets));
-            }
-            lines.Add(host.Ending);
-            lines.Add("Return: play again   ·   the session is saved in out/play/ and replays exactly");
+            var lines = m.EndLines;
             float w = 1100 * s, lh = 34 * s, h = 30 * s + lh * lines.Count;
             var r = new Rect(Screen.width / 2f - w / 2, Screen.height / 2f - h / 2 - 60 * s, w, h); Plate(r); hits.Add(r);
             for (int i = 0; i < lines.Count; i++) GUI.Label(new Rect(r.x + 24 * s, r.y + 14 * s + i * lh, w - 48 * s, lh), lines[i], i == 0 ? big : i == lines.Count - 1 || i == lines.Count - 2 ? small : txt);

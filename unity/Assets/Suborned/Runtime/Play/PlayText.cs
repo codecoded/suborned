@@ -42,6 +42,11 @@ namespace Suborned.Play
         /// <summary>The training hints (Motive's table, Fable's words): id → priority, line, and the prose trigger, ring and gone-when.</summary>
         public sealed class Hint { public string Id = "", Line = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = ""; public int Priority; }
         public readonly List<Hint> Hints2 = new();
+        /// <summary>The feed's scenes (Fable, text.json `scenes`): overheard, approach, call, city; each variant's beats are a line or a `ref` to a
+        /// dialogue event (ack, arrive, reply, done, confirm) picked as playScene does.</summary>
+        public sealed class SceneBeat { public string Speaker = "", Line, Ref; }
+        public sealed class Scene { public string Kind = "", Verb, About, Outcome, Temperament, Event, Sight, Result = ""; public readonly List<List<SceneBeat>> Variants = new(); }
+        public readonly List<Scene> Scenes = new();
         public readonly Dictionary<string, string> Toasts = new();
         public string LoudCaptured = "";
         public readonly List<(string sample, string code)> LockSamples = new();
@@ -116,6 +121,13 @@ namespace Suborned.Play
                     Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "" });
                 }
             Hints2.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+            if (n.Opt("scenes")?.Opt("items") is JNode sci)
+                foreach (var it in sci.Items)
+                {
+                    var sc = new Scene { Kind = S(it, "kind") ?? "", Verb = S(it, "verb"), About = S(it, "about"), Outcome = S(it, "outcome"), Temperament = S(it, "temperament"), Event = S(it, "event"), Sight = S(it, "sight"), Result = S(it, "result") ?? "" };
+                    foreach (var v in it["variants"].Items) { var beats = new List<SceneBeat>(); foreach (var bt in v["beats"].Items) beats.Add(new SceneBeat { Speaker = S(bt, "speaker") ?? "", Line = S(bt, "line"), Ref = S(bt, "ref") }); sc.Variants.Add(beats); }
+                    Scenes.Add(sc);
+                }
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();
@@ -230,8 +242,62 @@ namespace Suborned.Play
             return at;
         }
 
+        // ---------------------------------------------------------------- scenes (ports of text.schema.ts lookupScene, sceneKey, playScene)
+
+        public struct SceneQuery { public string Kind, Verb, About, Outcome, Temperament, Event; }
+
+        public Scene LookupScene(SceneQuery q)
+        {
+            Scene best = null; int bestScore = -1;
+            foreach (var sc in Scenes)
+            {
+                if (sc.Kind != q.Kind) continue;
+                int score = 0; bool ok = true;
+                void F(string have, string want) { if (!ok || have == null) return; if (have != want) ok = false; else score++; }
+                F(sc.Verb, q.Verb); F(sc.About, q.About); F(sc.Outcome, q.Outcome); F(sc.Temperament, q.Temperament); F(sc.Event, q.Event);
+                if (ok && score > bestScore) { best = sc; bestScore = score; }
+            }
+            return best;
+        }
+
+        public List<Scene> ScenesFor(string kind, string ev) => Scenes.FindAll(sc => sc.Kind == kind && sc.Event == ev);
+
+        public static string SceneKey(Scene sc)
+        {
+            var parts = new List<string>(7);
+            foreach (var x in new[] { sc.Kind, sc.Verb, sc.About, sc.Outcome, sc.Temperament, sc.Event, sc.Sight }) if (x != null) parts.Add(x);
+            return string.Join("/", parts);
+        }
+
+        /// <summary>A scene played for its n-th use in the run: the variant by pickIndex over the scene key, each `ref` beat the dialogue line
+        /// for this scene's verb, outcome and temperament picked with the same seed and n (as playScene). Beats: speaker, text, and whether the
+        /// beat is the target's reply (the host holds those back until the act lands).</summary>
+        public List<(string speaker, string text, bool reply)> PlayScene(Scene sc, int n)
+        {
+            var key = SceneKey(sc); var v = sc.Variants[PickIndex(Seed, key, n, sc.Variants.Count)];
+            var o = new List<(string, string, bool)>();
+            foreach (var b in v)
+            {
+                if (b.Line != null) { o.Add((b.Speaker, b.Line, false)); continue; }
+                Query q = b.Ref switch
+                {
+                    "done" => new Query { Event = "done", Verb = "turn", Speaker = b.Speaker, Outcome = sc.Outcome },
+                    "reply" => new Query { Event = "reply", Verb = sc.Verb, Speaker = b.Speaker, Outcome = sc.Outcome, Temperament = sc.Temperament },
+                    "confirm" => new Query { Event = "confirm", Verb = "call", Speaker = b.Speaker, Temperament = sc.Temperament },
+                    _ => new Query { Event = b.Ref, Verb = sc.Verb, Speaker = b.Speaker },
+                };
+                var e = Lookup(q);
+                o.Add((b.Speaker, e == null || e.Lines.Count == 0 ? "" : e.Lines[PickIndex(Seed, LineKey(q), n, e.Lines.Count)], b.Ref is "reply" or "done"));
+            }
+            return o;
+        }
+
+        readonly Dictionary<string, int> sceneUses = new();
+        /// <summary>The next use count of a scene in this run (n for PlayScene).</summary>
+        public int SceneUse(Scene sc) { var k = SceneKey(sc); sceneUses.TryGetValue(k, out var n); sceneUses[k] = n + 1; return n; }
+
         readonly Dictionary<string, int> uses = new();
-        public void ResetUses() => uses.Clear();
+        public void ResetUses() { uses.Clear(); sceneUses.Clear(); }
 
         /// <summary>A line for a query, or null; each use of a key advances its count, so a run's n-th use always shows the same variant.</summary>
         public string Pick(Query q)

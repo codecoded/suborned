@@ -1,0 +1,5156 @@
+{
+ "schema": "suborned.ui.layout/1",
+ "schema_note": {
+  "purpose": "The HUD of rounds 6 and 6b as data, for Latch to generate USS/UXML. Everything is px at the 1920x1080 reference unless a key says otherwise.",
+  "top_level": {
+   "reference": "design resolution and scaling rule",
+   "fonts": "two OFL families with files",
+   "type_styles": "name -> {font, weight, size_px, color (a colour variable), letter_spacing_px, line_height_px, uppercase}",
+   "colors": "variable name -> hex and role; --<name> in USS",
+   "colors_delta_e": "CIEDE2000 of each colour against the reserved signals (all >= 20)",
+   "reserved_signals": "cone, guard and rival colours; only for small pictograms (signal_* sprites), never panel or text colours",
+   "sprites": "name -> files at 1x and 2x, size, slice insets (left/top/right/bottom, px of that file) when nine-sliced, windows/content rects, margin",
+   "classes": "state and kind class names with what each changes",
+   "docks": "anchor rules for left_column, corner, bottom",
+   "pieces": "one record per HUD piece: sprite, size, position (anchor/offset or relative_to), padding [top,right,bottom,left], children with rects relative to the piece (or to a window)"
+  },
+  "conventions": [
+   "rect = [x, y, w, h] relative to the parent piece's top-left unless stated; 'auto' means size to text",
+   "padding is [top, right, bottom, left]",
+   "text_style names refer to type_styles",
+   "sprite names refer to sprites; 'x|y' means one of",
+   "'<role>' = scout|fixer|tech|enforcer; '<verb>' = an atlas icon name",
+   "slice insets: use them as -unity-slice-left/top/right/bottom on the @1x file; for the @2x file use its own insets with -unity-slice-scale: 0.5px (or set the texture scale so 2 texels = 1 px)",
+   "states are USS classes on the element: .busy .ready .hurt .down .selected .disabled .hover .pressed .new .unread .live .folded .collapsed .compact .locked .armed .kind-*",
+   "acknowledge = K, history = L, cancel = Backspace (selected agent), hide hint = H, carry = C, verbs = 1-4, agents = F1-F4, show all strips = Tab"
+  ]
+ },
+ "built": "2026-10-15",
+ "from": "briefs/011/ui rounds 6 and 6b (finish r04 cab cluster, dock left column, compact default)",
+ "reference": {
+  "width": 1920,
+  "height": 1080,
+  "scale_mode": "ScaleWithScreenSize, match height (1.0)",
+  "scales": {
+   "1080p": 1.0,
+   "1440p": 1.3333,
+   "4K": 2.0
+  },
+  "textures": "ship @2x with USS slice scale so 4K is sharp; @1x for 1080p-only builds",
+  "min_text_px": 12,
+  "min_text_note": "reading text is 12 px and up; keycap, number-plate and tag labels (10.5-11.5 px, bold caps or numerals) are the exception",
+  "min_hit_px": 28,
+  "safe_margin_px": 14,
+  "note": "at 1440p and 4K everything scales uniformly from the left, top-right and bottom-right anchors; characters stay 40-60 px (zoom limit), so the HUD does not change with zoom"
+ },
+ "fonts": {
+  "display": {
+   "family": "Jost",
+   "licence": "SIL Open Font License 1.1",
+   "licence_file": "fonts/OFL-Jost.txt",
+   "source": "https://github.com/google/fonts/tree/main/ofl/jost (variable font; static Medium, SemiBold and Bold instances cut with fontTools)",
+   "files": {
+    "500": "fonts/Jost-Medium.ttf",
+    "600": "fonts/Jost-SemiBold.ttf",
+    "700": "fonts/Jost-Bold.ttf"
+   },
+   "stands_in_for": "Futura (not shippable)"
+  },
+  "body": {
+   "family": "Barlow",
+   "licence": "SIL Open Font License 1.1",
+   "licence_file": "fonts/OFL-Barlow.txt",
+   "source": "https://github.com/google/fonts/tree/main/ofl/barlow",
+   "files": {
+    "400": "fonts/Barlow-Regular.ttf",
+    "500": "fonts/Barlow-Medium.ttf",
+    "600": "fonts/Barlow-SemiBold.ttf"
+   },
+   "stands_in_for": "Avenir Next (not shippable)"
+  }
+ },
+ "type_styles": {
+  "clock": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 20,
+   "color": "cream",
+   "letter_spacing_px": 0.4,
+   "line_height_px": 26,
+   "uppercase": false
+  },
+  "pill-label": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 14,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "pill-value": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 14,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "role-tag": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 11.5,
+   "color": "text-dim",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "slot-state-ready": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 11.5,
+   "color": "text-sea",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "slot-state-busy": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 11.5,
+   "color": "turquoise-light",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "slot-state-hurt": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 11.5,
+   "color": "cream",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "slot-state-down": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 11.5,
+   "color": "text-grey",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "slot-action": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 15,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "slot-ready": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 15,
+   "color": "text-sea",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "slot-time": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 12.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "slot-queued": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "turquoise-light",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "slot-hint": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "numplate": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 10.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 14,
+   "uppercase": false
+  },
+  "keycap": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 11,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 14,
+   "uppercase": false
+  },
+  "verb-name": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 12,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "objective": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 14,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "objective-tail": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 14,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "hint-tab": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 11,
+   "color": "ink",
+   "letter_spacing_px": 0.8,
+   "line_height_px": 14,
+   "uppercase": true
+  },
+  "hint-body": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 14.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "section-label": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 11.5,
+   "color": "text-dim",
+   "letter_spacing_px": 0.9,
+   "line_height_px": 15,
+   "uppercase": true
+  },
+  "panel-title": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 15,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "panel-sub": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "intel-name": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 14,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "intel-job": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "intel-next": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "turquoise-light",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "card-title": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 15,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "card-tag": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 10.5,
+   "color": "ink",
+   "letter_spacing_px": 0.4,
+   "line_height_px": 14,
+   "uppercase": true
+  },
+  "card-body": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "card-body-locked": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "card-price": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "card-outcome": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 12.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "card-walk": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-warm-ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "briefing-title": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 28,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 36,
+   "uppercase": false
+  },
+  "briefing-sub": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 14,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "briefing-body": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 15,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "briefing-small": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "briefing-fact": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 13.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "button-label": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 16,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 21,
+   "uppercase": false
+  },
+  "loud-title": {
+   "font": "display",
+   "weight": 600,
+   "size_px": 22,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 29,
+   "uppercase": false
+  },
+  "loud-row": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "loud-hold": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 13,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-title": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 13.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "feed-where": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12,
+   "color": "feed-where",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "feed-clock": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 12.5,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "feed-name": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 13,
+   "color": "text-warm-ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-name-cell": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 13,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-line": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-line-npc": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "text-card",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-result": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 13,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "feed-live": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 12.5,
+   "color": "text-warm-ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "feed-bar": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 12.5,
+   "color": "cream",
+   "letter_spacing_px": 0.5,
+   "line_height_px": 16,
+   "uppercase": true
+  },
+  "feed-bar-sub": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12,
+   "color": "text-dim",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "feed-filter": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 11,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 14,
+   "uppercase": false
+  },
+  "history-row-title": {
+   "font": "body",
+   "weight": 600,
+   "size_px": 13,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "history-row-result": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-sea",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "chip-value": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 15,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 20,
+   "uppercase": false
+  },
+  "fight-chip": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 14,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "tooltip-title": {
+   "font": "display",
+   "weight": 700,
+   "size_px": 14,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 18,
+   "uppercase": false
+  },
+  "tooltip-body": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13.5,
+   "color": "ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  },
+  "tooltip-key": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 12.5,
+   "color": "text-warm-ink",
+   "letter_spacing_px": 0,
+   "line_height_px": 16,
+   "uppercase": false
+  },
+  "ticker": {
+   "font": "body",
+   "weight": 500,
+   "size_px": 13,
+   "color": "cream",
+   "letter_spacing_px": 0,
+   "line_height_px": 17,
+   "uppercase": false
+  }
+ },
+ "colors": {
+  "ink": {
+   "hex": "#17302f",
+   "role": "text on cream, glyph on cream enamel",
+   "uss_var": "--ink"
+  },
+  "ink-2": {
+   "hex": "#244442",
+   "role": "secondary panel teal",
+   "uss_var": "--ink-2"
+  },
+  "ink-deep": {
+   "hex": "#0b1615",
+   "role": "pixel-dark outline, darkest teal",
+   "uss_var": "--ink-deep"
+  },
+  "cream": {
+   "hex": "#f7f4ec",
+   "role": "text and glyphs on dark panels",
+   "uss_var": "--cream"
+  },
+  "ivory": {
+   "hex": "#eee9da",
+   "role": "light enamel",
+   "uss_var": "--ivory"
+  },
+  "card-ivory": {
+   "hex": "#fce4cc",
+   "role": "approximate colour of the card sprite body (the sprite is the truth)",
+   "uss_var": "--card-ivory"
+  },
+  "white": {
+   "hex": "#ffffff",
+   "role": "selection inner line, ack button fill",
+   "uss_var": "--white"
+  },
+  "deep-teal": {
+   "hex": "#1f6c67",
+   "role": "learn header, ack outline, check discs",
+   "uss_var": "--deep-teal"
+  },
+  "seafoam": {
+   "hex": "#72b5a7",
+   "role": "marks, seafoam accents",
+   "uss_var": "--seafoam"
+  },
+  "pale-seafoam": {
+   "hex": "#9bcfc2",
+   "role": "pale accents",
+   "uss_var": "--pale-seafoam"
+  },
+  "chrome": {
+   "hex": "#cbc6c3",
+   "role": "rims (drawn in the art)",
+   "uss_var": "--chrome"
+  },
+  "brass": {
+   "hex": "#99784d",
+   "role": "hairline only (art)",
+   "uss_var": "--brass"
+  },
+  "turquoise": {
+   "hex": "#1cb9c6",
+   "role": "selection, planned, NEW pill, unread dot, ring lines (the one highlight)",
+   "uss_var": "--turquoise"
+  },
+  "turquoise-light": {
+   "hex": "#60e0ea",
+   "role": "turquoise on dark panels: progress fill, links, queued text",
+   "uss_var": "--turquoise-light"
+  },
+  "text-dim": {
+   "hex": "#b0cdc7",
+   "role": "secondary text on dark panels",
+   "uss_var": "--text-dim"
+  },
+  "text-sea": {
+   "hex": "#7ac4b4",
+   "role": "ready state, results in history",
+   "uss_var": "--text-sea"
+  },
+  "text-warm-ink": {
+   "hex": "#46524e",
+   "role": "secondary text on cards",
+   "uss_var": "--text-warm-ink"
+  },
+  "text-card": {
+   "hex": "#2c3a38",
+   "role": "NPC lines on cards",
+   "uss_var": "--text-card"
+  },
+  "text-grey": {
+   "hex": "#7a8c8a",
+   "role": "down state text",
+   "uss_var": "--text-grey"
+  },
+  "feed-where": {
+   "hex": "#c8e0da",
+   "role": "place text on a scene header",
+   "uss_var": "--feed-where"
+  },
+  "kind-learn": {
+   "hex": "#1f6c67",
+   "role": "scene header: learned",
+   "uss_var": "--kind-learn"
+  },
+  "kind-approach": {
+   "hex": "#244c48",
+   "role": "scene header: approach result",
+   "uss_var": "--kind-approach"
+  },
+  "kind-call": {
+   "hex": "#306064",
+   "role": "scene header: contact call",
+   "uss_var": "--kind-call"
+  },
+  "kind-city": {
+   "hex": "#607064",
+   "role": "scene header: city event",
+   "uss_var": "--kind-city"
+  },
+  "kind-warn": {
+   "hex": "#283436",
+   "role": "scene header: warning (with stripes #ece9e0)",
+   "uss_var": "--kind-warn"
+  },
+  "kind-fight": {
+   "hex": "#0e1a1b",
+   "role": "scene header: fight",
+   "uss_var": "--kind-fight"
+  },
+  "stripe-warn": {
+   "hex": "#ece9e0",
+   "role": "warning header stripes",
+   "uss_var": "--stripe-warn"
+  },
+  "footer-result": {
+   "hex": "#bae2d6",
+   "role": "scene result footer fill",
+   "uss_var": "--footer-result"
+  },
+  "footer-result-line": {
+   "hex": "#629e92",
+   "role": "scene result footer outline",
+   "uss_var": "--footer-result-line"
+  },
+  "footer-live": {
+   "hex": "#d6deda",
+   "role": "live scene footer fill",
+   "uss_var": "--footer-live"
+  },
+  "footer-live-line": {
+   "hex": "#96aaa6",
+   "role": "live scene footer outline",
+   "uss_var": "--footer-live-line"
+  },
+  "panel-line": {
+   "hex": "#d2e6e2",
+   "role": "dividers at 22-35% alpha on dark panels",
+   "uss_var": "--panel-line"
+  },
+  "pip-full": {
+   "hex": "#faf6e8",
+   "role": "health pip",
+   "uss_var": "--pip-full"
+  },
+  "pip-empty": {
+   "hex": "#142c2c",
+   "role": "empty health pip",
+   "uss_var": "--pip-empty"
+  }
+ },
+ "reserved_signals": {
+  "signal-cone": {
+   "hex": "#e03a2f",
+   "role": "RESERVED: camera cones; also the small slashed-circle 'refused' display",
+   "uss_var": "--signal-cone"
+  },
+  "signal-guard": {
+   "hex": "#f0a020",
+   "role": "RESERVED: guard, patrol, investigator",
+   "uss_var": "--signal-guard"
+  },
+  "signal-rival": {
+   "hex": "#8a4fd0",
+   "role": "RESERVED: rivals",
+   "uss_var": "--signal-rival"
+  }
+ },
+ "colors_delta_e": {
+  "ink": {
+   "cone": 48.7,
+   "guard": 61.6,
+   "rival": 34.3
+  },
+  "ink-2": {
+   "cone": 47.8,
+   "guard": 57.5,
+   "rival": 32.4
+  },
+  "ink-deep": {
+   "cone": 48.2,
+   "guard": 64.9,
+   "rival": 38.7
+  },
+  "cream": {
+   "cone": 44.5,
+   "guard": 30.3,
+   "rival": 50.9
+  },
+  "ivory": {
+   "cone": 43.5,
+   "guard": 27.8,
+   "rival": 52.4
+  },
+  "card-ivory": {
+   "cone": 40.2,
+   "guard": 23.6,
+   "rival": 53.2
+  },
+  "white": {
+   "cone": 45.6,
+   "guard": 33.2,
+   "rival": 48.9
+  },
+  "deep-teal": {
+   "cone": 52.7,
+   "guard": 49.0,
+   "rival": 34.8
+  },
+  "seafoam": {
+   "cone": 55.3,
+   "guard": 39.0,
+   "rival": 42.2
+  },
+  "pale-seafoam": {
+   "cone": 54.8,
+   "guard": 37.3,
+   "rival": 44.8
+  },
+  "chrome": {
+   "cone": 36.3,
+   "guard": 27.0,
+   "rival": 41.1
+  },
+  "brass": {
+   "cone": 25.9,
+   "guard": 21.3,
+   "rival": 47.8
+  },
+  "turquoise": {
+   "cone": 57.7,
+   "guard": 46.1,
+   "rival": 42.4
+  },
+  "turquoise-light": {
+   "cone": 61.1,
+   "guard": 46.1,
+   "rival": 47.6
+  },
+  "text-dim": {
+   "cone": 48.3,
+   "guard": 34.1,
+   "rival": 41.1
+  },
+  "text-sea": {
+   "cone": 57.9,
+   "guard": 39.6,
+   "rival": 45.1
+  },
+  "text-warm-ink": {
+   "cone": 39.5,
+   "guard": 48.4,
+   "rival": 31.2
+  },
+  "text-card": {
+   "cone": 43.6,
+   "guard": 57.5,
+   "rival": 32.6
+  },
+  "text-grey": {
+   "cone": 37.9,
+   "guard": 34.5,
+   "rival": 27.8
+  },
+  "feed-where": {
+   "cone": 49.3,
+   "guard": 34.3,
+   "rival": 44.2
+  },
+  "kind-learn": {
+   "cone": 52.7,
+   "guard": 49.0,
+   "rival": 34.8
+  },
+  "kind-approach": {
+   "cone": 49.3,
+   "guard": 55.8,
+   "rival": 33.7
+  },
+  "kind-call": {
+   "cone": 46.4,
+   "guard": 50.2,
+   "rival": 26.3
+  },
+  "kind-city": {
+   "cone": 40.3,
+   "guard": 38.8,
+   "rival": 34.2
+  },
+  "kind-warn": {
+   "cone": 42.6,
+   "guard": 59.1,
+   "rival": 27.3
+  },
+  "kind-fight": {
+   "cone": 47.9,
+   "guard": 64.6,
+   "rival": 34.8
+  },
+  "stripe-warn": {
+   "cone": 43.0,
+   "guard": 29.0,
+   "rival": 49.9
+  },
+  "footer-result": {
+   "cone": 54.2,
+   "guard": 36.5,
+   "rival": 46.9
+  },
+  "footer-result-line": {
+   "cone": 52.3,
+   "guard": 39.3,
+   "rival": 38.4
+  },
+  "footer-live": {
+   "cone": 44.2,
+   "guard": 31.3,
+   "rival": 44.2
+  },
+  "footer-live-line": {
+   "cone": 41.5,
+   "guard": 32.3,
+   "rival": 34.3
+  },
+  "panel-line": {
+   "cone": 48.6,
+   "guard": 34.2,
+   "rival": 44.2
+  },
+  "pip-full": {
+   "cone": 45.5,
+   "guard": 29.6,
+   "rival": 53.8
+  },
+  "pip-empty": {
+   "cone": 48.7,
+   "guard": 62.4,
+   "rival": 34.0
+  }
+ },
+ "sprites": {
+  "panel_dark_modal": {
+   "file@1x": "panels/panel_dark_modal@1x.png",
+   "file@2x": "panels/panel_dark_modal@2x.png",
+   "size@1x": [
+    96,
+    96
+   ],
+   "size@2x": [
+    192,
+    192
+   ],
+   "slice@1x": {
+    "left": 22,
+    "top": 22,
+    "right": 22,
+    "bottom": 22
+   },
+   "slice@2x": {
+    "left": 44,
+    "top": 44,
+    "right": 44,
+    "bottom": 44
+   },
+   "type": "nine-slice",
+   "use": "briefing card, going-loud card, debrief card",
+   "fill_center": true
+  },
+  "panel_dark": {
+   "file@1x": "panels/panel_dark@1x.png",
+   "file@2x": "panels/panel_dark@2x.png",
+   "size@1x": [
+    96,
+    96
+   ],
+   "size@2x": [
+    192,
+    192
+   ],
+   "slice@1x": {
+    "left": 18,
+    "top": 18,
+    "right": 18,
+    "bottom": 18
+   },
+   "slice@2x": {
+    "left": 35,
+    "top": 35,
+    "right": 35,
+    "bottom": 35
+   },
+   "type": "nine-slice",
+   "use": "action panel header, Intel panel, history panel, hint plate",
+   "fill_center": true
+  },
+  "panel_slot": {
+   "file@1x": "panels/panel_slot@1x.png",
+   "file@2x": "panels/panel_slot@2x.png",
+   "size@1x": [
+    96,
+    92
+   ],
+   "size@2x": [
+    192,
+    184
+   ],
+   "slice@1x": {
+    "left": 13,
+    "top": 13,
+    "right": 13,
+    "bottom": 13
+   },
+   "slice@2x": {
+    "left": 26,
+    "top": 26,
+    "right": 26,
+    "bottom": 26
+   },
+   "type": "nine-slice",
+   "use": "agent slot strips (228 x 92)",
+   "fill_center": true
+  },
+  "panel_strip": {
+   "file@1x": "panels/panel_strip@1x.png",
+   "file@2x": "panels/panel_strip@2x.png",
+   "size@1x": [
+    96,
+    34
+   ],
+   "size@2x": [
+    192,
+    68
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 25,
+    "top": 25,
+    "right": 25,
+    "bottom": 25
+   },
+   "type": "nine-slice",
+   "use": "objective line, Intel collapsed, ticker, collapsed log, scene feed bar, fight rows",
+   "fill_center": true
+  },
+  "panel_card": {
+   "file@1x": "panels/panel_card@1x.png",
+   "file@2x": "panels/panel_card@2x.png",
+   "size@1x": [
+    96,
+    96
+   ],
+   "size@2x": [
+    192,
+    192
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 28,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 56,
+    "right": 24,
+    "bottom": 24
+   },
+   "type": "nine-slice",
+   "use": "action cards, scene cards, tooltip, briefing approach cards",
+   "fill_center": true
+  },
+  "panel_tab": {
+   "file@1x": "panels/panel_tab@1x.png",
+   "file@2x": "panels/panel_tab@2x.png",
+   "size@1x": [
+    96,
+    40
+   ],
+   "size@2x": [
+    192,
+    80
+   ],
+   "slice@1x": {
+    "left": 15,
+    "top": 15,
+    "right": 15,
+    "bottom": 15
+   },
+   "slice@2x": {
+    "left": 30,
+    "top": 30,
+    "right": 30,
+    "bottom": 30
+   },
+   "type": "nine-slice",
+   "use": "text buttons (Begin, Debrief, Replay)",
+   "fill_center": true
+  },
+  "panel_tab_small": {
+   "file@1x": "panels/panel_tab_small@1x.png",
+   "file@2x": "panels/panel_tab_small@2x.png",
+   "size@1x": [
+    64,
+    22
+   ],
+   "size@2x": [
+    128,
+    44
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 10,
+    "right": 12,
+    "bottom": 10
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 21,
+    "right": 24,
+    "bottom": 21
+   },
+   "type": "nine-slice",
+   "use": "section tabs (MISSION BRIEFING, NEXT STEP)",
+   "fill_center": true
+  },
+  "pill_status": {
+   "file@1x": "panels/pill_status@1x.png",
+   "file@2x": "panels/pill_status@2x.png",
+   "size@1x": [
+    278,
+    44
+   ],
+   "size@2x": [
+    556,
+    88
+   ],
+   "slice@1x": {
+    "left": 47,
+    "top": 0,
+    "right": 47,
+    "bottom": 0
+   },
+   "slice@2x": {
+    "left": 93,
+    "top": 0,
+    "right": 93,
+    "bottom": 0
+   },
+   "content@1x": {
+    "left": 19,
+    "top": 7,
+    "right": 18,
+    "bottom": 7
+   },
+   "content@2x": {
+    "left": 39,
+    "top": 14,
+    "right": 37,
+    "bottom": 14
+   },
+   "type": "nine-slice-horizontal",
+   "use": "top-right status pill (44 tall)",
+   "fill_center": true
+  },
+  "chip_price": {
+   "file@1x": "panels/chip_price@1x.png",
+   "file@2x": "panels/chip_price@2x.png",
+   "size@1x": [
+    273,
+    42
+   ],
+   "size@2x": [
+    547,
+    84
+   ],
+   "slice@1x": {
+    "left": 36,
+    "top": 0,
+    "right": 36,
+    "bottom": 0
+   },
+   "slice@2x": {
+    "left": 71,
+    "top": 0,
+    "right": 71,
+    "bottom": 0
+   },
+   "content@1x": {
+    "left": 17,
+    "top": 4,
+    "right": 16,
+    "bottom": 15
+   },
+   "content@2x": {
+    "left": 34,
+    "top": 9,
+    "right": 33,
+    "bottom": 30
+   },
+   "type": "nine-slice-horizontal",
+   "use": "price chip and fight chip at the cursor (42 tall; the pointer tail is in the left cap, bottom)",
+   "fill_center": true
+  },
+  "plate_verbs": {
+   "file@1x": "panels/plate_verbs@1x.png",
+   "file@2x": "panels/plate_verbs@2x.png",
+   "size@1x": [
+    96,
+    54
+   ],
+   "size@2x": [
+    192,
+    108
+   ],
+   "slice@1x": {
+    "left": 27,
+    "top": 26,
+    "right": 27,
+    "bottom": 26
+   },
+   "slice@2x": {
+    "left": 54,
+    "top": 53,
+    "right": 54,
+    "bottom": 53
+   },
+   "type": "nine-slice",
+   "use": "verb plate behind the 1-4 knobs (229 x 54); the knobs are separate sprites (btn_verb_*). Plain strip art: the round 6 mock-up's baked knobs and cream end caps are not in this sprite",
+   "fill_center": true,
+   "knob_pitch_px_1x": 47.6,
+   "knob_diameter_px_1x": 40,
+   "first_knob_center_x_1x": 42.3
+  },
+  "roster_column": {
+   "file@1x": "roster/roster_column@1x.png",
+   "file@2x": "roster/roster_column@2x.png",
+   "size@1x": [
+    109,
+    416
+   ],
+   "size@2x": [
+    218,
+    833
+   ],
+   "windows@1x": [
+    {
+     "x": 22,
+     "y": 34,
+     "w": 66,
+     "h": 65
+    },
+    {
+     "x": 22,
+     "y": 127,
+     "w": 66,
+     "h": 66
+    },
+    {
+     "x": 22,
+     "y": 222,
+     "w": 66,
+     "h": 66
+    },
+    {
+     "x": 22,
+     "y": 317,
+     "w": 66,
+     "h": 65
+    }
+   ],
+   "windows@2x": [
+    {
+     "x": 43,
+     "y": 67,
+     "w": 132,
+     "h": 130
+    },
+    {
+     "x": 43,
+     "y": 254,
+     "w": 132,
+     "h": 132
+    },
+    {
+     "x": 43,
+     "y": 445,
+     "w": 132,
+     "h": 131
+    },
+    {
+     "x": 43,
+     "y": 634,
+     "w": 132,
+     "h": 131
+    }
+   ],
+   "type": "fixed",
+   "use": "left-dock roster: four round windows stacked; portraits sit UNDER this sprite (the windows are transparent)"
+  },
+  "roster_row": {
+   "file@1x": "roster/roster_row@1x.png",
+   "file@2x": "roster/roster_row@2x.png",
+   "size@1x": [
+    398,
+    92
+   ],
+   "size@2x": [
+    796,
+    184
+   ],
+   "windows@1x": [
+    {
+     "x": 37,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 123,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 210,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 296,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    }
+   ],
+   "windows@2x": [
+    {
+     "x": 73,
+     "y": 29,
+     "w": 131,
+     "h": 129
+    },
+    {
+     "x": 247,
+     "y": 29,
+     "w": 131,
+     "h": 129
+    },
+    {
+     "x": 419,
+     "y": 29,
+     "w": 131,
+     "h": 129
+    },
+    {
+     "x": 592,
+     "y": 29,
+     "w": 131,
+     "h": 129
+    }
+   ],
+   "type": "fixed",
+   "use": "corner-dock roster: four square windows in a row; portraits under the sprite"
+  },
+  "btn_verb_normal": {
+   "file@1x": "buttons/btn_verb_normal@1x.png",
+   "file@2x": "buttons/btn_verb_normal@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "round knurled verb knob (1-4); the pictogram is a separate tinted icon on top (cream, grey when disabled)"
+  },
+  "btn_verb_hover": {
+   "file@1x": "buttons/btn_verb_hover@1x.png",
+   "file@2x": "buttons/btn_verb_hover@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "round knurled verb knob (1-4); the pictogram is a separate tinted icon on top (cream, grey when disabled)"
+  },
+  "btn_verb_pressed": {
+   "file@1x": "buttons/btn_verb_pressed@1x.png",
+   "file@2x": "buttons/btn_verb_pressed@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "round knurled verb knob (1-4); the pictogram is a separate tinted icon on top (cream, grey when disabled)"
+  },
+  "btn_verb_disabled": {
+   "file@1x": "buttons/btn_verb_disabled@1x.png",
+   "file@2x": "buttons/btn_verb_disabled@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "round knurled verb knob (1-4); the pictogram is a separate tinted icon on top (cream, grey when disabled)"
+  },
+  "btn_verb_selected": {
+   "file@1x": "buttons/btn_verb_selected@1x.png",
+   "file@2x": "buttons/btn_verb_selected@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "round knurled verb knob (1-4); the pictogram is a separate tinted icon on top (cream, grey when disabled)"
+  },
+  "btn_verb_cooldown_fill": {
+   "file@1x": "buttons/btn_verb_cooldown_fill@1x.png",
+   "file@2x": "buttons/btn_verb_cooldown_fill@2x.png",
+   "size@1x": [
+    48,
+    48
+   ],
+   "size@2x": [
+    96,
+    96
+   ],
+   "type": "fixed",
+   "use": "radial-fill overlay (clockwise from top) for the cooldown; draw the seconds as text on top"
+  },
+  "disc_dark_24": {
+   "file@1x": "markers/disc_dark_24@1x.png",
+   "file@2x": "markers/disc_dark_24@2x.png",
+   "size@1x": [
+    32,
+    32
+   ],
+   "size@2x": [
+    64,
+    64
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "disc_dark_30": {
+   "file@1x": "markers/disc_dark_30@1x.png",
+   "file@2x": "markers/disc_dark_30@2x.png",
+   "size@1x": [
+    38,
+    38
+   ],
+   "size@2x": [
+    76,
+    76
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "disc_light_24": {
+   "file@1x": "markers/disc_light_24@1x.png",
+   "file@2x": "markers/disc_light_24@2x.png",
+   "size@1x": [
+    32,
+    32
+   ],
+   "size@2x": [
+    64,
+    64
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "disc_light_22": {
+   "file@1x": "markers/disc_light_22@1x.png",
+   "file@2x": "markers/disc_light_22@2x.png",
+   "size@1x": [
+    30,
+    30
+   ],
+   "size@2x": [
+    60,
+    60
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "disc_dark_24_selected": {
+   "file@1x": "markers/disc_dark_24_selected@1x.png",
+   "file@2x": "markers/disc_dark_24_selected@2x.png",
+   "size@1x": [
+    32,
+    32
+   ],
+   "size@2x": [
+    64,
+    64
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "disc_light_24_selected": {
+   "file@1x": "markers/disc_light_24_selected@1x.png",
+   "file@2x": "markers/disc_light_24_selected@2x.png",
+   "size@1x": [
+    32,
+    32
+   ],
+   "size@2x": [
+    64,
+    64
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "enamel disc under an icon (over-head markers, feed kind icon, speaker chip)"
+  },
+  "plate_light": {
+   "file@1x": "markers/plate_light@1x.png",
+   "file@2x": "markers/plate_light@2x.png",
+   "size@1x": [
+    44,
+    29
+   ],
+   "size@2x": [
+    88,
+    58
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 4,
+   "type": "nine-slice",
+   "use": "enamel plate: number plate (F1-F4), keycap, labels, filter chips, flag labels",
+   "fill_center": true
+  },
+  "plate_light_selected": {
+   "file@1x": "markers/plate_light_selected@1x.png",
+   "file@2x": "markers/plate_light_selected@2x.png",
+   "size@1x": [
+    44,
+    29
+   ],
+   "size@2x": [
+    88,
+    58
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 4,
+   "type": "nine-slice",
+   "use": "enamel plate: number plate (F1-F4), keycap, labels, filter chips, flag labels",
+   "fill_center": true
+  },
+  "plate_dark": {
+   "file@1x": "markers/plate_dark@1x.png",
+   "file@2x": "markers/plate_dark@2x.png",
+   "size@1x": [
+    52,
+    30
+   ],
+   "size@2x": [
+    104,
+    60
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 4,
+   "type": "nine-slice",
+   "use": "enamel plate: number plate (F1-F4), keycap, labels, filter chips, flag labels",
+   "fill_center": true
+  },
+  "btn_close_normal": {
+   "file@1x": "buttons/btn_close_normal@1x.png",
+   "file@2x": "buttons/btn_close_normal@2x.png",
+   "size@1x": [
+    29,
+    29
+   ],
+   "size@2x": [
+    58,
+    58
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "cancel (x) on a slot activity, the in-world ring, cards; scale to 15 px in small places"
+  },
+  "btn_close_hover": {
+   "file@1x": "buttons/btn_close_hover@1x.png",
+   "file@2x": "buttons/btn_close_hover@2x.png",
+   "size@1x": [
+    29,
+    29
+   ],
+   "size@2x": [
+    58,
+    58
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "cancel (x) on a slot activity, the in-world ring, cards; scale to 15 px in small places"
+  },
+  "btn_close_pressed": {
+   "file@1x": "buttons/btn_close_pressed@1x.png",
+   "file@2x": "buttons/btn_close_pressed@2x.png",
+   "size@1x": [
+    29,
+    29
+   ],
+   "size@2x": [
+    58,
+    58
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "cancel (x) on a slot activity, the in-world ring, cards; scale to 15 px in small places"
+  },
+  "btn_close_disabled": {
+   "file@1x": "buttons/btn_close_disabled@1x.png",
+   "file@2x": "buttons/btn_close_disabled@2x.png",
+   "size@1x": [
+    29,
+    29
+   ],
+   "size@2x": [
+    58,
+    58
+   ],
+   "margin_px_1x": 4,
+   "type": "fixed",
+   "use": "cancel (x) on a slot activity, the in-world ring, cards; scale to 15 px in small places"
+  },
+  "btn_ack_normal": {
+   "file@1x": "buttons/btn_ack_normal@1x.png",
+   "file@2x": "buttons/btn_ack_normal@2x.png",
+   "size@1x": [
+    65,
+    28
+   ],
+   "size@2x": [
+    130,
+    56
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 2,
+   "type": "nine-slice",
+   "use": "acknowledge pill: tick icon + keycap K inside",
+   "fill_center": true
+  },
+  "btn_ack_hover": {
+   "file@1x": "buttons/btn_ack_hover@1x.png",
+   "file@2x": "buttons/btn_ack_hover@2x.png",
+   "size@1x": [
+    65,
+    28
+   ],
+   "size@2x": [
+    130,
+    56
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 2,
+   "type": "nine-slice",
+   "use": "acknowledge pill: tick icon + keycap K inside",
+   "fill_center": true
+  },
+  "btn_ack_pressed": {
+   "file@1x": "buttons/btn_ack_pressed@1x.png",
+   "file@2x": "buttons/btn_ack_pressed@2x.png",
+   "size@1x": [
+    65,
+    28
+   ],
+   "size@2x": [
+    130,
+    56
+   ],
+   "slice@1x": {
+    "left": 12,
+    "top": 12,
+    "right": 12,
+    "bottom": 12
+   },
+   "slice@2x": {
+    "left": 24,
+    "top": 24,
+    "right": 24,
+    "bottom": 24
+   },
+   "margin_px_1x": 2,
+   "type": "nine-slice",
+   "use": "acknowledge pill: tick icon + keycap K inside",
+   "fill_center": true
+  },
+  "btn_text_normal": {
+   "file@1x": "buttons/btn_text_normal@1x.png",
+   "file@2x": "buttons/btn_text_normal@2x.png",
+   "size@1x": [
+    96,
+    40
+   ],
+   "size@2x": [
+    192,
+    80
+   ],
+   "slice@1x": {
+    "left": 15,
+    "top": 15,
+    "right": 15,
+    "bottom": 15
+   },
+   "slice@2x": {
+    "left": 30,
+    "top": 30,
+    "right": 30,
+    "bottom": 30
+   },
+   "type": "nine-slice",
+   "use": "text button (Begin, Debrief, Replay, Read all); label in Jost SemiBold 16, ink",
+   "fill_center": true
+  },
+  "btn_text_hover": {
+   "file@1x": "buttons/btn_text_hover@1x.png",
+   "file@2x": "buttons/btn_text_hover@2x.png",
+   "size@1x": [
+    96,
+    40
+   ],
+   "size@2x": [
+    192,
+    80
+   ],
+   "slice@1x": {
+    "left": 15,
+    "top": 15,
+    "right": 15,
+    "bottom": 15
+   },
+   "slice@2x": {
+    "left": 30,
+    "top": 30,
+    "right": 30,
+    "bottom": 30
+   },
+   "type": "nine-slice",
+   "use": "text button (Begin, Debrief, Replay, Read all); label in Jost SemiBold 16, ink",
+   "fill_center": true
+  },
+  "btn_text_pressed": {
+   "file@1x": "buttons/btn_text_pressed@1x.png",
+   "file@2x": "buttons/btn_text_pressed@2x.png",
+   "size@1x": [
+    96,
+    40
+   ],
+   "size@2x": [
+    192,
+    80
+   ],
+   "slice@1x": {
+    "left": 15,
+    "top": 15,
+    "right": 15,
+    "bottom": 15
+   },
+   "slice@2x": {
+    "left": 30,
+    "top": 30,
+    "right": 30,
+    "bottom": 30
+   },
+   "type": "nine-slice",
+   "use": "text button (Begin, Debrief, Replay, Read all); label in Jost SemiBold 16, ink",
+   "fill_center": true
+  },
+  "btn_text_disabled": {
+   "file@1x": "buttons/btn_text_disabled@1x.png",
+   "file@2x": "buttons/btn_text_disabled@2x.png",
+   "size@1x": [
+    96,
+    40
+   ],
+   "size@2x": [
+    192,
+    80
+   ],
+   "slice@1x": {
+    "left": 15,
+    "top": 15,
+    "right": 15,
+    "bottom": 15
+   },
+   "slice@2x": {
+    "left": 30,
+    "top": 30,
+    "right": 30,
+    "bottom": 30
+   },
+   "type": "nine-slice",
+   "use": "text button (Begin, Debrief, Replay, Read all); label in Jost SemiBold 16, ink",
+   "fill_center": true
+  },
+  "pill_new": {
+   "file@1x": "markers/pill_new@1x.png",
+   "file@2x": "markers/pill_new@2x.png",
+   "size@1x": [
+    36,
+    17
+   ],
+   "size@2x": [
+    72,
+    34
+   ],
+   "slice@1x": {
+    "left": 7,
+    "top": 7,
+    "right": 7,
+    "bottom": 7
+   },
+   "slice@2x": {
+    "left": 14,
+    "top": 14,
+    "right": 14,
+    "bottom": 14
+   },
+   "margin_px_1x": 1,
+   "type": "nine-slice",
+   "use": "NEW tag on the newest scene card; label Jost Bold 10.5 ink",
+   "fill_center": true
+  },
+  "pill_white": {
+   "file@1x": "markers/pill_white@1x.png",
+   "file@2x": "markers/pill_white@2x.png",
+   "size@1x": [
+    42,
+    22
+   ],
+   "size@2x": [
+    84,
+    44
+   ],
+   "slice@1x": {
+    "left": 10,
+    "top": 10,
+    "right": 10,
+    "bottom": 10
+   },
+   "slice@2x": {
+    "left": 20,
+    "top": 20,
+    "right": 20,
+    "bottom": 20
+   },
+   "margin_px_1x": 1,
+   "type": "nine-slice",
+   "use": "'N new' count on the feed bar; 'Read all'",
+   "fill_center": true
+  },
+  "dot_unread": {
+   "file@1x": "markers/dot_unread@1x.png",
+   "file@2x": "markers/dot_unread@2x.png",
+   "size@1x": [
+    14,
+    14
+   ],
+   "size@2x": [
+    28,
+    28
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "unread dot at a card's top-right corner"
+  },
+  "pip_full": {
+   "file@1x": "markers/pip_full@1x.png",
+   "file@2x": "markers/pip_full@2x.png",
+   "size@1x": [
+    8,
+    8
+   ],
+   "size@2x": [
+    16,
+    16
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "health pip, full"
+  },
+  "pip_empty": {
+   "file@1x": "markers/pip_empty@1x.png",
+   "file@2x": "markers/pip_empty@2x.png",
+   "size@1x": [
+    8,
+    8
+   ],
+   "size@2x": [
+    16,
+    16
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "health pip, empty"
+  },
+  "ring_track": {
+   "file@1x": "overlays/ring_track@1x.png",
+   "file@2x": "overlays/ring_track@2x.png",
+   "size@1x": [
+    44,
+    44
+   ],
+   "size@2x": [
+    88,
+    88
+   ],
+   "margin_px_1x": 0,
+   "type": "fixed",
+   "use": "activity ring track (white 47%) round the 30 px badge"
+  },
+  "ring_fill": {
+   "file@1x": "overlays/ring_fill@1x.png",
+   "file@2x": "overlays/ring_fill@2x.png",
+   "size@1x": [
+    44,
+    44
+   ],
+   "size@2x": [
+    88,
+    88
+   ],
+   "margin_px_1x": 0,
+   "tint": "turquoise_light #60e0ea",
+   "type": "fixed",
+   "use": "activity ring fill: white sprite, tint turquoise-light, Image radial fill clockwise from top"
+  },
+  "crosshair": {
+   "file@1x": "overlays/crosshair@1x.png",
+   "file@2x": "overlays/crosshair@2x.png",
+   "size@1x": [
+    40,
+    40
+   ],
+   "size@2x": [
+    80,
+    80
+   ],
+   "margin_px_1x": 0,
+   "type": "fixed",
+   "use": "the cursor with weapons drawn; hot spot = centre"
+  },
+  "ring_ground_selected": {
+   "file@1x": "overlays/ring_ground_selected@1x.png",
+   "file@2x": "overlays/ring_ground_selected@2x.png",
+   "size@1x": [
+    60,
+    36
+   ],
+   "size@2x": [
+    120,
+    72
+   ],
+   "margin_px_1x": 0,
+   "type": "fixed",
+   "use": "selection ring on the pavement under the selected agent (draw under the character, scale with zoom)"
+  },
+  "ring_ground_hint": {
+   "file@1x": "overlays/ring_ground_hint@1x.png",
+   "file@2x": "overlays/ring_ground_hint@2x.png",
+   "size@1x": [
+    60,
+    36
+   ],
+   "size@2x": [
+    120,
+    72
+   ],
+   "margin_px_1x": 0,
+   "type": "fixed",
+   "use": "dashed target ring for the training hint"
+  },
+  "signal_guard": {
+   "file@1x": "badges/signal_guard@1x.png",
+   "file@2x": "badges/signal_guard@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "reserved signal pictogram on a small ink chip: shield = guard (amber), diamond = rival (violet), arrow = camera (red), car = response unit (amber); never recolour",
+   "reserved_signal": true
+  },
+  "signal_rival": {
+   "file@1x": "badges/signal_rival@1x.png",
+   "file@2x": "badges/signal_rival@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "reserved signal pictogram on a small ink chip: shield = guard (amber), diamond = rival (violet), arrow = camera (red), car = response unit (amber); never recolour",
+   "reserved_signal": true
+  },
+  "signal_camera": {
+   "file@1x": "badges/signal_camera@1x.png",
+   "file@2x": "badges/signal_camera@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "reserved signal pictogram on a small ink chip: shield = guard (amber), diamond = rival (violet), arrow = camera (red), car = response unit (amber); never recolour",
+   "reserved_signal": true
+  },
+  "signal_unit": {
+   "file@1x": "badges/signal_unit@1x.png",
+   "file@2x": "badges/signal_unit@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "reserved signal pictogram on a small ink chip: shield = guard (amber), diamond = rival (violet), arrow = camera (red), car = response unit (amber); never recolour",
+   "reserved_signal": true
+  },
+  "signal_police": {
+   "file@1x": "badges/signal_police@1x.png",
+   "file@2x": "badges/signal_police@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "margin_px_1x": 1,
+   "type": "fixed",
+   "use": "reserved signal pictogram on a small ink chip: shield = guard (amber), diamond = rival (violet), arrow = camera (red), car = response unit (amber); never recolour",
+   "reserved_signal": true
+  },
+  "npc_waitress": {
+   "file@1x": "badges/npc_waitress@1x.png",
+   "file@2x": "badges/npc_waitress@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "type": "fixed",
+   "use": "NPC speaker badge (cream enamel disc, ink pictogram)"
+  },
+  "npc_driver": {
+   "file@1x": "badges/npc_driver@1x.png",
+   "file@2x": "badges/npc_driver@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "type": "fixed",
+   "use": "NPC speaker badge (cream enamel disc, ink pictogram)"
+  },
+  "npc_councillor": {
+   "file@1x": "badges/npc_councillor@1x.png",
+   "file@2x": "badges/npc_councillor@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "type": "fixed",
+   "use": "NPC speaker badge (cream enamel disc, ink pictogram)"
+  },
+  "npc_watcher": {
+   "file@1x": "badges/npc_watcher@1x.png",
+   "file@2x": "badges/npc_watcher@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "type": "fixed",
+   "use": "NPC speaker badge (cream enamel disc, ink pictogram)"
+  },
+  "npc_passer": {
+   "file@1x": "badges/npc_passer@1x.png",
+   "file@2x": "badges/npc_passer@2x.png",
+   "size@1x": [
+    24,
+    24
+   ],
+   "size@2x": [
+    48,
+    48
+   ],
+   "type": "fixed",
+   "use": "NPC speaker badge (cream enamel disc, ink pictogram)"
+  },
+  "stance_hold": {
+   "file@1x": "badges/stance_hold@1x.png",
+   "file@2x": "badges/stance_hold@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "fire stance: hold (square), return (arrow), at will (starburst); top-right of a slot in a fight"
+  },
+  "stance_return": {
+   "file@1x": "badges/stance_return@1x.png",
+   "file@2x": "badges/stance_return@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "fire stance: hold (square), return (arrow), at will (starburst); top-right of a slot in a fight"
+  },
+  "stance_free": {
+   "file@1x": "badges/stance_free@1x.png",
+   "file@2x": "badges/stance_free@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "fire stance: hold (square), return (arrow), at will (starburst); top-right of a slot in a fight"
+  },
+  "mark_ok": {
+   "file@1x": "badges/mark_ok@1x.png",
+   "file@2x": "badges/mark_ok@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "Intel marks: ok = known, unk = unknown (dotted ring ?), sus = suspected (dashed ring), no = refused (the only red: small slashed-circle display pictogram), half = works one step worse"
+  },
+  "mark_unk": {
+   "file@1x": "badges/mark_unk@1x.png",
+   "file@2x": "badges/mark_unk@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "Intel marks: ok = known, unk = unknown (dotted ring ?), sus = suspected (dashed ring), no = refused (the only red: small slashed-circle display pictogram), half = works one step worse"
+  },
+  "mark_sus": {
+   "file@1x": "badges/mark_sus@1x.png",
+   "file@2x": "badges/mark_sus@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "Intel marks: ok = known, unk = unknown (dotted ring ?), sus = suspected (dashed ring), no = refused (the only red: small slashed-circle display pictogram), half = works one step worse"
+  },
+  "mark_no": {
+   "file@1x": "badges/mark_no@1x.png",
+   "file@2x": "badges/mark_no@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "Intel marks: ok = known, unk = unknown (dotted ring ?), sus = suspected (dashed ring), no = refused (the only red: small slashed-circle display pictogram), half = works one step worse"
+  },
+  "mark_half": {
+   "file@1x": "badges/mark_half@1x.png",
+   "file@2x": "badges/mark_half@2x.png",
+   "size@1x": [
+    20,
+    20
+   ],
+   "size@2x": [
+    40,
+    40
+   ],
+   "type": "fixed",
+   "use": "Intel marks: ok = known, unk = unknown (dotted ring ?), sus = suspected (dashed ring), no = refused (the only red: small slashed-circle display pictogram), half = works one step worse"
+  },
+  "stripes_warn": {
+   "file@1x": "overlays/stripes_warn@1x.png",
+   "file@2x": "overlays/stripes_warn@2x.png",
+   "size@1x": [
+    36,
+    25
+   ],
+   "size@2x": [
+    72,
+    50
+   ],
+   "type": "tile",
+   "use": "repeating stripes for the warning card header (repeat-x), 25 px tall"
+  },
+  "portrait_scout_normal": {
+   "file@1x": "portraits/portrait_scout_normal@1x.png",
+   "file@2x": "portraits/portrait_scout_normal@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "selected or only-agent look",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-scout-white.png"
+  },
+  "portrait_scout_dim": {
+   "file@1x": "portraits/portrait_scout_dim@1x.png",
+   "file@2x": "portraits/portrait_scout_dim@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "unselected agent (slightly dimmer, cooler)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-scout-white.png"
+  },
+  "portrait_scout_hurt": {
+   "file@1x": "portraits/portrait_scout_hurt@1x.png",
+   "file@2x": "portraits/portrait_scout_hurt@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "hurt (HP below max)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-scout-white.png + round 5b hurt edit"
+  },
+  "portrait_scout_down": {
+   "file@1x": "portraits/portrait_scout_down@1x.png",
+   "file@2x": "portraits/portrait_scout_down@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "down (hurt portrait, greyed)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-scout-white.png + round 5b hurt edit"
+  },
+  "portrait_fixer_normal": {
+   "file@1x": "portraits/portrait_fixer_normal@1x.png",
+   "file@2x": "portraits/portrait_fixer_normal@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "selected or only-agent look",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-fixer-white.png"
+  },
+  "portrait_fixer_dim": {
+   "file@1x": "portraits/portrait_fixer_dim@1x.png",
+   "file@2x": "portraits/portrait_fixer_dim@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "unselected agent (slightly dimmer, cooler)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-fixer-white.png"
+  },
+  "portrait_fixer_hurt": {
+   "file@1x": "portraits/portrait_fixer_hurt@1x.png",
+   "file@2x": "portraits/portrait_fixer_hurt@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "hurt (HP below max)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-fixer-white.png + round 5b hurt edit"
+  },
+  "portrait_fixer_down": {
+   "file@1x": "portraits/portrait_fixer_down@1x.png",
+   "file@2x": "portraits/portrait_fixer_down@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "down (hurt portrait, greyed)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-fixer-white.png + round 5b hurt edit"
+  },
+  "portrait_tech_normal": {
+   "file@1x": "portraits/portrait_tech_normal@1x.png",
+   "file@2x": "portraits/portrait_tech_normal@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "selected or only-agent look",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-tech-white.png"
+  },
+  "portrait_tech_dim": {
+   "file@1x": "portraits/portrait_tech_dim@1x.png",
+   "file@2x": "portraits/portrait_tech_dim@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "unselected agent (slightly dimmer, cooler)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-tech-white.png"
+  },
+  "portrait_tech_hurt": {
+   "file@1x": "portraits/portrait_tech_hurt@1x.png",
+   "file@2x": "portraits/portrait_tech_hurt@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "hurt (HP below max)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-tech-white.png + round 5b hurt edit"
+  },
+  "portrait_tech_down": {
+   "file@1x": "portraits/portrait_tech_down@1x.png",
+   "file@2x": "portraits/portrait_tech_down@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "down (hurt portrait, greyed)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-tech-white.png + round 5b hurt edit"
+  },
+  "portrait_enforcer_normal": {
+   "file@1x": "portraits/portrait_enforcer_normal@1x.png",
+   "file@2x": "portraits/portrait_enforcer_normal@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "selected or only-agent look",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-enforcer-white.png"
+  },
+  "portrait_enforcer_dim": {
+   "file@1x": "portraits/portrait_enforcer_dim@1x.png",
+   "file@2x": "portraits/portrait_enforcer_dim@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "unselected agent (slightly dimmer, cooler)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-enforcer-white.png"
+  },
+  "portrait_enforcer_hurt": {
+   "file@1x": "portraits/portrait_enforcer_hurt@1x.png",
+   "file@2x": "portraits/portrait_enforcer_hurt@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "hurt (HP below max)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-enforcer-white.png + round 5b hurt edit"
+  },
+  "portrait_enforcer_down": {
+   "file@1x": "portraits/portrait_enforcer_down@1x.png",
+   "file@2x": "portraits/portrait_enforcer_down@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "down (hurt portrait, greyed)",
+   "source": "Forma briefs/012/cell/A/A-codex-portrait-enforcer-white.png + round 5b hurt edit"
+  },
+  "portrait_shade": {
+   "file@1x": "portraits/portrait_shade@1x.png",
+   "file@2x": "portraits/portrait_shade@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "overlay above the portrait, below the frame: inner shadow and a soft top-left sheen"
+  },
+  "portrait_mask": {
+   "file@1x": "portraits/portrait_mask@1x.png",
+   "file@2x": "portraits/portrait_mask@2x.png",
+   "size@1x": [
+    66,
+    66
+   ],
+   "size@2x": [
+    132,
+    132
+   ],
+   "type": "fixed",
+   "use": "the round window as a mask (alpha) if the portrait is clipped in UI Toolkit"
+  },
+  "portrait_ring_selected": {
+   "file@1x": "portraits/portrait_ring_selected@1x.png",
+   "file@2x": "portraits/portrait_ring_selected@2x.png",
+   "size@1x": [
+    87,
+    87
+   ],
+   "size@2x": [
+    174,
+    174
+   ],
+   "inset_px@1x": 11,
+   "inset_px@2x": 21,
+   "type": "fixed",
+   "use": "selection: turquoise band, white inner line and a soft glow round the window; sprite is larger than the window by inset_px each side; draw over the frame"
+  },
+  "portrait_ring_busy": {
+   "file@1x": "portraits/portrait_ring_busy@1x.png",
+   "file@2x": "portraits/portrait_ring_busy@2x.png",
+   "size@1x": [
+    87,
+    87
+   ],
+   "size@2x": [
+    174,
+    174
+   ],
+   "inset_px@1x": 11,
+   "inset_px@2x": 21,
+   "type": "fixed",
+   "use": "busy: a thin light-turquoise ring just outside the bezel (tint #60e0ea); pulse its opacity, or Image radial-fill it with the action's progress"
+  },
+  "portrait_scrim": {
+   "file@1x": "portraits/portrait_scrim@1x.png",
+   "file@2x": "portraits/portrait_scrim@2x.png",
+   "size@1x": [
+    66,
+    14
+   ],
+   "size@2x": [
+    132,
+    28
+   ],
+   "type": "fixed",
+   "use": "gradient at the bottom of the window behind the health pips"
+  },
+  "cameo_scout_normal": {
+   "file@1x": "portraits/cameo_scout_normal@1x.png",
+   "file@2x": "portraits/cameo_scout_normal@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_scout_hurt": {
+   "file@1x": "portraits/cameo_scout_hurt@1x.png",
+   "file@2x": "portraits/cameo_scout_hurt@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_fixer_normal": {
+   "file@1x": "portraits/cameo_fixer_normal@1x.png",
+   "file@2x": "portraits/cameo_fixer_normal@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_fixer_hurt": {
+   "file@1x": "portraits/cameo_fixer_hurt@1x.png",
+   "file@2x": "portraits/cameo_fixer_hurt@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_tech_normal": {
+   "file@1x": "portraits/cameo_tech_normal@1x.png",
+   "file@2x": "portraits/cameo_tech_normal@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_tech_hurt": {
+   "file@1x": "portraits/cameo_tech_hurt@1x.png",
+   "file@2x": "portraits/cameo_tech_hurt@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_enforcer_normal": {
+   "file@1x": "portraits/cameo_enforcer_normal@1x.png",
+   "file@2x": "portraits/cameo_enforcer_normal@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "cameo_enforcer_hurt": {
+   "file@1x": "portraits/cameo_enforcer_hurt@1x.png",
+   "file@2x": "portraits/cameo_enforcer_hurt@2x.png",
+   "size@1x": [
+    34,
+    34
+   ],
+   "size@2x": [
+    68,
+    68
+   ],
+   "type": "fixed",
+   "use": "28 px round portrait with a chrome rim: speaker chip in scene cards, action panel header"
+  },
+  "icons_atlas": {
+   "file@1x": "icons/icons_atlas@1x.png",
+   "file@2x": "icons/icons_atlas@2x.png",
+   "size@1x": [
+    340,
+    204
+   ],
+   "size@2x": [
+    680,
+    408
+   ],
+   "tint": "white glyphs; tint in USS (-unity-background-image-tint-color) with cream #f7f4ec, ink #17302f, turquoise_light #60e0ea or grey",
+   "type": "atlas",
+   "use": "verbs, prices, Intel facts, states, plus close_x, check, lock, chevrons, dot; also individually in icons/singles/",
+   "rects@1x": {
+    "ask": [
+     1,
+     1,
+     32,
+     32
+    ],
+    "pay": [
+     35,
+     1,
+     32,
+     32
+    ],
+    "help": [
+     69,
+     1,
+     32,
+     32
+    ],
+    "pressure": [
+     103,
+     1,
+     32,
+     32
+    ],
+    "call": [
+     137,
+     1,
+     32,
+     32
+    ],
+    "watch": [
+     171,
+     1,
+     32,
+     32
+    ],
+    "listen": [
+     205,
+     1,
+     32,
+     32
+    ],
+    "mislead": [
+     239,
+     1,
+     32,
+     32
+    ],
+    "loop": [
+     273,
+     1,
+     32,
+     32
+    ],
+    "reroute": [
+     307,
+     1,
+     32,
+     32
+    ],
+    "enter": [
+     1,
+     35,
+     32,
+     32
+    ],
+    "take": [
+     35,
+     35,
+     32,
+     32
+    ],
+    "fire": [
+     69,
+     35,
+     32,
+     32
+    ],
+    "nextevent": [
+     103,
+     35,
+     32,
+     32
+    ],
+    "pause": [
+     137,
+     35,
+     32,
+     32
+    ],
+    "p_cash": [
+     171,
+     35,
+     32,
+     32
+    ],
+    "p_time": [
+     205,
+     35,
+     32,
+     32
+    ],
+    "p_trail": [
+     239,
+     35,
+     32,
+     32
+    ],
+    "p_alert": [
+     273,
+     35,
+     32,
+     32
+    ],
+    "p_unknown": [
+     307,
+     35,
+     32,
+     32
+    ],
+    "debt": [
+     1,
+     69,
+     32,
+     32
+    ],
+    "cash": [
+     35,
+     69,
+     32,
+     32
+    ],
+    "housing": [
+     69,
+     69,
+     32,
+     32
+    ],
+    "papers": [
+     103,
+     69,
+     32,
+     32
+    ],
+    "kin": [
+     137,
+     69,
+     32,
+     32
+    ],
+    "care": [
+     171,
+     69,
+     32,
+     32
+    ],
+    "protection": [
+     205,
+     69,
+     32,
+     32
+    ],
+    "advancement": [
+     239,
+     69,
+     32,
+     32
+    ],
+    "secret": [
+     273,
+     69,
+     32,
+     32
+    ],
+    "idealist": [
+     307,
+     69,
+     32,
+     32
+    ],
+    "mercenary": [
+     1,
+     103,
+     32,
+     32
+    ],
+    "fearful": [
+     35,
+     103,
+     32,
+     32
+    ],
+    "loyal": [
+     69,
+     103,
+     32,
+     32
+    ],
+    "refused": [
+     103,
+     103,
+     32,
+     32
+    ],
+    "talker": [
+     137,
+     103,
+     32,
+     32
+    ],
+    "sawyou": [
+     171,
+     103,
+     32,
+     32
+    ],
+    "s_watching": [
+     205,
+     103,
+     32,
+     32
+    ],
+    "s_listening": [
+     239,
+     103,
+     32,
+     32
+    ],
+    "s_looping": [
+     273,
+     103,
+     32,
+     32
+    ],
+    "s_calling": [
+     307,
+     103,
+     32,
+     32
+    ],
+    "s_inside": [
+     1,
+     137,
+     32,
+     32
+    ],
+    "s_carrying": [
+     35,
+     137,
+     32,
+     32
+    ],
+    "s_hurt": [
+     69,
+     137,
+     32,
+     32
+    ],
+    "s_downed": [
+     103,
+     137,
+     32,
+     32
+    ],
+    "s_moving": [
+     137,
+     137,
+     32,
+     32
+    ],
+    "s_ready": [
+     171,
+     137,
+     32,
+     32
+    ],
+    "close_x": [
+     205,
+     137,
+     32,
+     32
+    ],
+    "check": [
+     239,
+     137,
+     32,
+     32
+    ],
+    "lock": [
+     273,
+     137,
+     32,
+     32
+    ],
+    "chev_up": [
+     307,
+     137,
+     32,
+     32
+    ],
+    "chev_down": [
+     1,
+     171,
+     32,
+     32
+    ],
+    "dot": [
+     35,
+     171,
+     32,
+     32
+    ]
+   },
+   "rects@2x": {
+    "ask": [
+     2,
+     2,
+     64,
+     64
+    ],
+    "pay": [
+     70,
+     2,
+     64,
+     64
+    ],
+    "help": [
+     138,
+     2,
+     64,
+     64
+    ],
+    "pressure": [
+     206,
+     2,
+     64,
+     64
+    ],
+    "call": [
+     274,
+     2,
+     64,
+     64
+    ],
+    "watch": [
+     342,
+     2,
+     64,
+     64
+    ],
+    "listen": [
+     410,
+     2,
+     64,
+     64
+    ],
+    "mislead": [
+     478,
+     2,
+     64,
+     64
+    ],
+    "loop": [
+     546,
+     2,
+     64,
+     64
+    ],
+    "reroute": [
+     614,
+     2,
+     64,
+     64
+    ],
+    "enter": [
+     2,
+     70,
+     64,
+     64
+    ],
+    "take": [
+     70,
+     70,
+     64,
+     64
+    ],
+    "fire": [
+     138,
+     70,
+     64,
+     64
+    ],
+    "nextevent": [
+     206,
+     70,
+     64,
+     64
+    ],
+    "pause": [
+     274,
+     70,
+     64,
+     64
+    ],
+    "p_cash": [
+     342,
+     70,
+     64,
+     64
+    ],
+    "p_time": [
+     410,
+     70,
+     64,
+     64
+    ],
+    "p_trail": [
+     478,
+     70,
+     64,
+     64
+    ],
+    "p_alert": [
+     546,
+     70,
+     64,
+     64
+    ],
+    "p_unknown": [
+     614,
+     70,
+     64,
+     64
+    ],
+    "debt": [
+     2,
+     138,
+     64,
+     64
+    ],
+    "cash": [
+     70,
+     138,
+     64,
+     64
+    ],
+    "housing": [
+     138,
+     138,
+     64,
+     64
+    ],
+    "papers": [
+     206,
+     138,
+     64,
+     64
+    ],
+    "kin": [
+     274,
+     138,
+     64,
+     64
+    ],
+    "care": [
+     342,
+     138,
+     64,
+     64
+    ],
+    "protection": [
+     410,
+     138,
+     64,
+     64
+    ],
+    "advancement": [
+     478,
+     138,
+     64,
+     64
+    ],
+    "secret": [
+     546,
+     138,
+     64,
+     64
+    ],
+    "idealist": [
+     614,
+     138,
+     64,
+     64
+    ],
+    "mercenary": [
+     2,
+     206,
+     64,
+     64
+    ],
+    "fearful": [
+     70,
+     206,
+     64,
+     64
+    ],
+    "loyal": [
+     138,
+     206,
+     64,
+     64
+    ],
+    "refused": [
+     206,
+     206,
+     64,
+     64
+    ],
+    "talker": [
+     274,
+     206,
+     64,
+     64
+    ],
+    "sawyou": [
+     342,
+     206,
+     64,
+     64
+    ],
+    "s_watching": [
+     410,
+     206,
+     64,
+     64
+    ],
+    "s_listening": [
+     478,
+     206,
+     64,
+     64
+    ],
+    "s_looping": [
+     546,
+     206,
+     64,
+     64
+    ],
+    "s_calling": [
+     614,
+     206,
+     64,
+     64
+    ],
+    "s_inside": [
+     2,
+     274,
+     64,
+     64
+    ],
+    "s_carrying": [
+     70,
+     274,
+     64,
+     64
+    ],
+    "s_hurt": [
+     138,
+     274,
+     64,
+     64
+    ],
+    "s_downed": [
+     206,
+     274,
+     64,
+     64
+    ],
+    "s_moving": [
+     274,
+     274,
+     64,
+     64
+    ],
+    "s_ready": [
+     342,
+     274,
+     64,
+     64
+    ],
+    "close_x": [
+     410,
+     274,
+     64,
+     64
+    ],
+    "check": [
+     478,
+     274,
+     64,
+     64
+    ],
+    "lock": [
+     546,
+     274,
+     64,
+     64
+    ],
+    "chev_up": [
+     614,
+     274,
+     64,
+     64
+    ],
+    "chev_down": [
+     2,
+     342,
+     64,
+     64
+    ],
+    "dot": [
+     70,
+     342,
+     64,
+     64
+    ]
+   },
+   "missing": []
+  }
+ },
+ "classes": {
+  "busy": {
+   "applies_to": [
+    "slot_strip",
+    "roster window"
+   ],
+   "effects": [
+    "show action_icon/label/progress/time/cancel",
+    "state tag text-style slot-state-busy",
+    "portrait_ring_busy visible"
+   ]
+  },
+  "ready": {
+   "applies_to": [
+    "slot_strip"
+   ],
+   "effects": [
+    "show 'Ready' + hint line",
+    "state tag slot-state-ready"
+   ]
+  },
+  "hurt": {
+   "applies_to": [
+    "slot_strip",
+    "roster window"
+   ],
+   "effects": [
+    "portrait_<role>_hurt",
+    "state tag slot-state-hurt"
+   ]
+  },
+  "down": {
+   "applies_to": [
+    "slot_strip",
+    "roster window"
+   ],
+   "effects": [
+    "portrait_<role>_down",
+    "state tag slot-state-down",
+    "show carry prompt with keycap C"
+   ]
+  },
+  "selected": {
+   "applies_to": [
+    "slot_strip",
+    "roster window",
+    "knob",
+    "verb button"
+   ],
+   "effects": [
+    "strip outline white 3.4 + turquoise 1.8",
+    "portrait_ring_selected",
+    "portrait_<role>_normal (others use _dim)",
+    "selector notch to the verb plate",
+    "btn_verb_selected for the armed knob"
+   ]
+  },
+  "disabled": {
+   "applies_to": [
+    "knob",
+    "button",
+    "card"
+   ],
+   "effects": [
+    "btn_*_disabled",
+    "icon tint text-grey",
+    "locked card: body shown with the unlock reason, lock icon, 38% darker card"
+   ]
+  },
+  "hover": {
+   "applies_to": [
+    "knob",
+    "button",
+    "scene_card",
+    "cancel"
+   ],
+   "effects": [
+    "btn_*_hover",
+    "scene_card hot outline and a click-to-pan ring in the street"
+   ]
+  },
+  "pressed": {
+   "applies_to": [
+    "knob",
+    "button",
+    "cancel",
+    "ack"
+   ],
+   "effects": [
+    "btn_*_pressed"
+   ]
+  },
+  "new": {
+   "applies_to": [
+    "scene_card"
+   ],
+   "effects": [
+    "pill_new visible on the newest card only"
+   ]
+  },
+  "unread": {
+   "applies_to": [
+    "scene_card"
+   ],
+   "effects": [
+    "dot_unread, ack button (tick + K) visible",
+    "counts in the feed bar 'N new'"
+   ]
+  },
+  "live": {
+   "applies_to": [
+    "scene_card"
+   ],
+   "effects": [
+    "progress bar + remaining text, typing dots, footer-live instead of footer-result"
+   ]
+  },
+  "folded": {
+   "applies_to": [
+    "scene_card"
+   ],
+   "effects": [
+    "62 px: header + footer only (second and third card of the stack)"
+   ]
+  },
+  "collapsed": {
+   "applies_to": [
+    "feed",
+    "intel_panel",
+    "log"
+   ],
+   "effects": [
+    "one-line version (fight: one 34 px row per card)"
+   ]
+  },
+  "compact": {
+   "applies_to": [
+    "roster"
+   ],
+   "effects": [
+    "slot strips only for busy|hurt|down|selected|queued"
+   ]
+  },
+  "locked": {
+   "applies_to": [
+    "action card"
+   ],
+   "effects": [
+    "lock icon, reason line in card-body bold, 'To unlock:' line"
+   ]
+  },
+  "armed": {
+   "applies_to": [
+    "action card",
+    "knob"
+   ],
+   "effects": [
+    "turquoise 2.4 px outline on the card the right-click will use"
+   ]
+  },
+  "kind-learn": {
+   "applies_to": [
+    "scene_card header",
+    "history accent"
+   ],
+   "color": "kind-learn"
+  },
+  "kind-approach": {
+   "applies_to": [
+    "scene_card header"
+   ],
+   "color": "kind-approach"
+  },
+  "kind-call": {
+   "applies_to": [
+    "scene_card header"
+   ],
+   "color": "kind-call"
+  },
+  "kind-city": {
+   "applies_to": [
+    "scene_card header"
+   ],
+   "color": "kind-city"
+  },
+  "kind-warn": {
+   "applies_to": [
+    "scene_card header"
+   ],
+   "color": "kind-warn",
+   "extra": "stripes_warn repeat-x over the header's top and bottom 2 px"
+  },
+  "kind-fight": {
+   "applies_to": [
+    "scene_card header"
+   ],
+   "color": "kind-fight"
+  }
+ },
+ "docks": {
+  "left_column (default)": {
+   "roster": "roster_column at (12, 84)",
+   "strips": "slot_strip x=125, one per window, vertically centred on it; compact: only busy|hurt|down|selected|queued, Tab shows all four",
+   "verb_plate": "right of the selected strip, +10 px",
+   "ticker": "below the column, +8 px",
+   "feed": "bottom-right (14, 14)",
+   "pill": "top-right (14, 12)",
+   "objective": "under the pill (right 14, top 62)",
+   "intel": "right 14, top 108",
+   "hint": "top, left 520",
+   "popups": "right of the clicked target"
+  },
+  "corner": {
+   "roster": "roster_row at bottom-left (14, 14)",
+   "strips": "stack above the row, bottom-up, 92 tall + 6 gap, busy|hurt|down|selected only",
+   "verb_plate": "above the strip stack, x = row.x + 4",
+   "ticker": "right of the row, x = row.right + 12, bottom 14, width 520",
+   "feed": "unchanged",
+   "pill": "unchanged",
+   "popups": "unchanged"
+  },
+  "bottom": {
+   "roster": "roster_row centred at the bottom (bottom 14)",
+   "verb_plate": "centred above the row, +10",
+   "strips": "not shown (use the hint/pill); ticker above the verb plate",
+   "note": "round 5's layout, kept as a third setting"
+  }
+ },
+ "pieces": {
+  "roster_column": {
+   "sprite": "roster_column",
+   "size": [
+    109,
+    416
+   ],
+   "dock": "left",
+   "position": {
+    "anchor": "top-left",
+    "x": 12,
+    "y": 84
+   },
+   "windows": [
+    {
+     "x": 22,
+     "y": 34,
+     "w": 66,
+     "h": 65
+    },
+    {
+     "x": 22,
+     "y": 127,
+     "w": 66,
+     "h": 66
+    },
+    {
+     "x": 22,
+     "y": 222,
+     "w": 66,
+     "h": 66
+    },
+    {
+     "x": 22,
+     "y": 317,
+     "w": 66,
+     "h": 65
+    }
+   ],
+   "layers": [
+    "portrait (66x66 at the window)",
+    "portrait_shade",
+    "sprite roster_column (frame, windows transparent)",
+    "portrait_scrim + pips (bottom of window)",
+    "number plate",
+    "portrait_ring_selected (selected)",
+    "portrait_ring_busy (busy)",
+    "selected notch"
+   ],
+   "children": [
+    {
+     "id": "portrait",
+     "rect_in_window": [
+      0,
+      0,
+      66,
+      66
+     ],
+     "sprites": [
+      "portrait_<role>_<normal|dim|hurt|down>",
+      "portrait_shade"
+     ]
+    },
+    {
+     "id": "numplate",
+     "sprite": "plate_light",
+     "rect_in_window": [
+      2,
+      1,
+      25,
+      21
+     ],
+     "text_style": "numplate",
+     "text": "F1..F4"
+    },
+    {
+     "id": "pips",
+     "rect_in_window": [
+      0,
+      56,
+      66,
+      8
+     ],
+     "sprites": [
+      "pip_full",
+      "pip_empty"
+     ],
+     "pip_pitch_px": 8.9,
+     "pip_size_px": 6,
+     "centred": true,
+     "scrim": "portrait_scrim 66x14 at the window bottom"
+    },
+    {
+     "id": "ring_selected",
+     "sprite": "portrait_ring_selected",
+     "extends_window_by_px": 11
+    },
+    {
+     "id": "ring_busy",
+     "sprite": "portrait_ring_busy",
+     "extends_window_by_px": 11
+    }
+   ]
+  },
+  "roster_row": {
+   "sprite": "roster_row",
+   "size": [
+    398,
+    92
+   ],
+   "dock": "corner",
+   "position": {
+    "anchor": "bottom-left",
+    "x": 14,
+    "y": 14
+   },
+   "windows": [
+    {
+     "x": 37,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 123,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 210,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    },
+    {
+     "x": 296,
+     "y": 15,
+     "w": 65,
+     "h": 64
+    }
+   ],
+   "note": "same layers and children as roster_column; windows are 65x64"
+  },
+  "slot_strip": {
+   "sprite": "panel_slot",
+   "size": [
+    228,
+    92
+   ],
+   "position": {
+    "relative_to": "roster_column",
+    "x": "column.right + 4 = 125",
+    "y": "centred on its window"
+   },
+   "padding": [
+    0,
+    30,
+    0,
+    30
+   ],
+   "gap_between_strips_px": 3,
+   "children": [
+    {
+     "id": "role_tag",
+     "rect": [
+      30,
+      7,
+      120,
+      16
+     ],
+     "text_style": "role-tag",
+     "text": "ROLE"
+    },
+    {
+     "id": "state_tag",
+     "style_by_class": "slot-state-*",
+     "follows": "role_tag",
+     "gap_px": 8,
+     "text": "· READY|BUSY|RUNNING|HURT|DOWN"
+    },
+    {
+     "id": "stance",
+     "sprite": "stance_<hold|return|free>",
+     "rect": [
+      190,
+      7,
+      20,
+      20
+     ],
+     "only_in": "fight"
+    },
+    {
+     "id": "action_icon",
+     "atlas_icon": "<verb glyph>",
+     "rect": [
+      21,
+      27,
+      18,
+      18
+     ],
+     "tint": "cream",
+     "visible_if": "busy"
+    },
+    {
+     "id": "action_label",
+     "rect": [
+      55,
+      28,
+      140,
+      20
+     ],
+     "text_style": "slot-action",
+     "visible_if": "busy"
+    },
+    {
+     "id": "progress_bar",
+     "rect": [
+      30,
+      48,
+      106,
+      8
+     ],
+     "track": "#0a1a1c 100% outline #82a09c",
+     "fill": "turquoise-light",
+     "visible_if": "busy"
+    },
+    {
+     "id": "time_left",
+     "rect": [
+      142,
+      46,
+      56,
+      14
+     ],
+     "text_style": "slot-time",
+     "align": "left",
+     "visible_if": "busy"
+    },
+    {
+     "id": "cancel",
+     "sprite": "btn_close_normal",
+     "states": [
+      "hover",
+      "pressed",
+      "disabled"
+     ],
+     "rect": [
+      186,
+      46,
+      21,
+      21
+     ],
+     "visible_if": "busy",
+     "key": "Backspace (selected agent)",
+     "tooltip": "piece tooltip_cancel"
+    },
+    {
+     "id": "queued",
+     "atlas_icon": "nextevent",
+     "icon_rect": [
+      31,
+      69,
+      11,
+      11
+     ],
+     "rect": [
+      47,
+      68,
+      150,
+      16
+     ],
+     "text_style": "slot-queued",
+     "text": "then {order}",
+     "visible_if": "queued"
+    },
+    {
+     "id": "ready_label",
+     "rect": [
+      30,
+      29,
+      160,
+      20
+     ],
+     "text_style": "slot-ready",
+     "text": "Ready",
+     "visible_if": "ready"
+    },
+    {
+     "id": "hint_line",
+     "rect": [
+      30,
+      50,
+      170,
+      16
+     ],
+     "text_style": "slot-hint",
+     "visible_if": "ready|hurt|down"
+    },
+    {
+     "id": "carry_key",
+     "sprite": "plate_light",
+     "rect": [
+      176,
+      66,
+      22,
+      19
+     ],
+     "text_style": "keycap",
+     "text": "C",
+     "visible_if": "down"
+    }
+   ],
+   "selected_outline": {
+    "outer_px": 3.4,
+    "outer_color": "white",
+    "inner_px": 1.8,
+    "inner_color": "turquoise",
+    "radius_px": 12
+   },
+   "compact_default": "only shown when busy, hurt, down, selected or queued; Tab toggles all four"
+  },
+  "verb_plate": {
+   "sprite": "plate_verbs",
+   "size": [
+    229,
+    54
+   ],
+   "position": {
+    "relative_to": "selected slot_strip",
+    "x": "strip.right + 10 = 363",
+    "y": "centred on the selected strip"
+   },
+   "children": [
+    {
+     "id": "knob",
+     "sprite": "btn_verb_normal",
+     "states": [
+      "hover",
+      "pressed",
+      "selected",
+      "disabled"
+     ],
+     "size": [
+      48,
+      48
+     ],
+     "count": 4,
+     "first_center": [
+      42.3,
+      27
+     ],
+     "pitch_px": 47.6,
+     "note": "the 48 px sprite holds a 40 px knob; the extra 4 px is the selection ring"
+    },
+    {
+     "id": "glyph",
+     "atlas_icon": "<verb>",
+     "size": 20,
+     "tint": "cream (grey #7a8c8a disabled)"
+    },
+    {
+     "id": "numeral",
+     "rect_in_knob": [
+      27,
+      28,
+      12,
+      12
+     ],
+     "text_style": "numplate",
+     "color": "cream",
+     "text": "1..4"
+    },
+    {
+     "id": "cooldown",
+     "sprite": "btn_verb_cooldown_fill",
+     "fill": "radial clockwise from top",
+     "text_style": "slot-time",
+     "text": "seconds"
+    },
+    {
+     "id": "armed_name",
+     "sprite": "plate_dark",
+     "rect": "under the armed knob: width = text + 16, height 18, y = plate.bottom + 4",
+     "text_style": "verb-name"
+    }
+   ],
+   "selector_notch": {
+    "color": "turquoise",
+    "outline": "white",
+    "size_px": [
+     8,
+     14
+    ],
+    "at": "left edge of the plate, centred"
+   }
+  },
+  "status_pill": {
+   "sprite": "pill_status",
+   "height": 44,
+   "position": {
+    "anchor": "top-right",
+    "right": 14,
+    "top": 12
+   },
+   "padding_from_content_rect": {
+    "left": 19,
+    "top": 7,
+    "right": 18,
+    "bottom": 7
+   },
+   "width": "content + padding (about 574)",
+   "children": [
+    {
+     "id": "clock",
+     "text_style": "clock"
+    },
+    {
+     "id": "next_icon",
+     "atlas_icon": "nextevent",
+     "size": 17,
+     "tint": "turquoise-light"
+    },
+    {
+     "id": "next_label",
+     "text_style": "pill-label",
+     "text": "{event} · "
+    },
+    {
+     "id": "next_time",
+     "text_style": "pill-value"
+    },
+    {
+     "id": "cash_icon",
+     "atlas_icon": "p_cash",
+     "size": 17
+    },
+    {
+     "id": "cash",
+     "text_style": "pill-value"
+    },
+    {
+     "id": "trail_icon",
+     "atlas_icon": "p_trail",
+     "size": 17
+    },
+    {
+     "id": "trail",
+     "text_style": "pill-value"
+    },
+    {
+     "id": "alert_lamps",
+     "count": 3,
+     "lamp_diameter_px": 12.4,
+     "pitch_px": 17,
+     "off": "#0a1c1e fill, #78968f outline 1.4",
+     "on": "cream core #fffcf0 with 90 alpha halo",
+     "rays": "3 short rays on the lamp that just lit"
+    }
+   ],
+   "separators": "1 px #d2e6e2 at 35%, 18 px tall, 12 px gap"
+  },
+  "objective_line": {
+   "sprite": "panel_strip",
+   "height": 34,
+   "position": {
+    "anchor": "top-right",
+    "right": 14,
+    "top": 62
+   },
+   "padding": [
+    0,
+    26,
+    0,
+    40
+   ],
+   "children": [
+    {
+     "id": "marker",
+     "rect": [
+      23,
+      12,
+      11,
+      11
+     ],
+     "note": "ring r5.5 turquoise-light, dot r2.2"
+    },
+    {
+     "id": "objective",
+     "text_style": "objective",
+     "text": "Take Vale alive to the getaway car"
+    },
+    {
+     "id": "tail",
+     "text_style": "objective-tail",
+     "text": "  ·  closes 8:30"
+    }
+   ]
+  },
+  "hint_plate": {
+   "sprite": "panel_dark",
+   "width": 600,
+   "height": "56 + 18 * lines (2-3 lines)",
+   "position": {
+    "anchor": "top-left",
+    "x": 520,
+    "y": 12
+   },
+   "padding": [
+    48,
+    70,
+    8,
+    32
+   ],
+   "children": [
+    {
+     "id": "tab",
+     "sprite": "panel_tab_small",
+     "rect": [
+      28,
+      12,
+      94,
+      22
+     ],
+     "text_style": "hint-tab",
+     "text": "NEXT STEP"
+    },
+    {
+     "id": "close",
+     "sprite": "btn_close_normal",
+     "size": 17,
+     "rect": [
+      562,
+      15,
+      17,
+      17
+     ],
+     "key": "H hides the hint layer"
+    },
+    {
+     "id": "body",
+     "rect": [
+      32,
+      48,
+      530,
+      54
+     ],
+     "text_style": "hint-body"
+    }
+   ],
+   "behaviour": "one at a time, once per run, vanishes the moment the player acts (see text.json hints.rules)"
+  },
+  "intel_panel": {
+   "sprite": "panel_dark",
+   "width": 318,
+   "position": {
+    "anchor": "top-right",
+    "right": 14,
+    "top": 108
+   },
+   "collapsed": {
+    "sprite": "panel_strip",
+    "height": 34
+   },
+   "open": {
+    "header": 32,
+    "row": 62,
+    "footer": 28
+   },
+   "children": [
+    {
+     "id": "title",
+     "text": "INTEL",
+     "text_style": "section-label"
+    },
+    {
+     "id": "subtitle",
+     "text_style": "panel-sub",
+     "text": "what the cell knows"
+    },
+    {
+     "id": "chevron",
+     "atlas_icon": "chev_up|chev_down",
+     "size": 14
+    },
+    {
+     "id": "row",
+     "rect": "x 28, y = header + i*62 + 6",
+     "children": [
+      {
+       "id": "name",
+       "text_style": "intel-name"
+      },
+      {
+       "id": "job",
+       "text_style": "intel-job"
+      },
+      {
+       "id": "need",
+       "sprite": "disc_dark_24",
+       "glyph": "debt|cash|housing|..",
+       "pos": [
+        26,
+        19,
+        24,
+        24
+       ],
+       "mark": "mark_ok|mark_sus|mark_unk"
+      },
+      {
+       "id": "temperament",
+       "sprite": "disc_dark_24",
+       "glyph": "idealist|mercenary|fearful|loyal",
+       "pos": [
+        56,
+        19,
+        24,
+        24
+       ]
+      },
+      {
+       "id": "turned",
+       "sprite": "mark_ok|dashed ring",
+       "pos": [
+        88,
+        22,
+        17,
+        17
+       ]
+      },
+      {
+       "id": "next_action",
+       "atlas_icon": "<verb>",
+       "icon_pos": [
+        118,
+        24,
+        15,
+        15
+       ],
+       "text_style": "intel-next",
+       "text_pos": [
+        130,
+        22,
+        170,
+        16
+       ]
+      }
+     ]
+    },
+    {
+     "id": "legend",
+     "rect": "y = bottom - 12",
+     "text_style": "panel-sub"
+    }
+   ]
+  },
+  "ticker": {
+   "sprite": "panel_strip",
+   "size": [
+    341,
+    34
+   ],
+   "position": {
+    "relative_to": "roster_column",
+    "x": 12,
+    "y": "column.bottom + 8 = 508"
+   },
+   "children": [
+    {
+     "id": "chip",
+     "sprite": "cameo_<role>_normal",
+     "size": 28,
+     "rect": [
+      14,
+      3,
+      28,
+      28
+     ]
+    },
+    {
+     "id": "text",
+     "rect": [
+      48,
+      8,
+      280,
+      18
+     ],
+     "text_style": "ticker",
+     "ellipsis": true
+    }
+   ],
+   "behaviour": "the cell's own order acknowledgement and arrive line; fades after about 4 s; not interactive"
+  },
+  "feed_bar": {
+   "sprite": "panel_strip",
+   "size": [
+    384,
+    32
+   ],
+   "position": {
+    "anchor": "bottom-right",
+    "right": 14,
+    "bottom": 14
+   },
+   "children": [
+    {
+     "id": "title",
+     "text": "SCENES",
+     "text_style": "feed-bar",
+     "rect": [
+      24,
+      9,
+      60,
+      14
+     ]
+    },
+    {
+     "id": "count",
+     "sprite": "pill_white",
+     "text_style": "feed-filter",
+     "text": "N new",
+     "rect": [
+      82,
+      7,
+      "auto",
+      18
+     ]
+    },
+    {
+     "id": "keys",
+     "text_style": "feed-bar-sub",
+     "text": "K ack · L history",
+     "align": "right",
+     "rect": [
+      210,
+      9,
+      134,
+      14
+     ]
+    },
+    {
+     "id": "chevron",
+     "atlas_icon": "chev_up|chev_down",
+     "rect": [
+      358,
+      9,
+      14,
+      14
+     ]
+    }
+   ]
+  },
+  "scene_card": {
+   "sprite": "panel_card",
+   "width": 384,
+   "height": "36 + (12 live) + sum(line heights) + 8 + 36 expanded; 62 folded",
+   "gap_px": 6,
+   "position": {
+    "anchor": "bottom-right",
+    "right": 14,
+    "above": "feed_bar",
+    "gap": 4
+   },
+   "stack": "newest on top; 3 visible; '+N more' chip",
+   "children": [
+    {
+     "id": "header",
+     "rect": [
+      3.5,
+      3.5,
+      377,
+      25
+     ],
+     "fill": "kind tint (class kind-*)",
+     "radius": 7
+    },
+    {
+     "id": "kind_icon",
+     "sprite": "disc_light_24",
+     "size": 21,
+     "rect": [
+      10,
+      6,
+      21,
+      21
+     ],
+     "atlas_icon": "<kind glyph>"
+    },
+    {
+     "id": "verb_icon",
+     "atlas_icon": "<verb>",
+     "size": 15,
+     "rect": [
+      34,
+      10,
+      15,
+      15
+     ],
+     "tint": "cream"
+    },
+    {
+     "id": "title",
+     "text_style": "feed-title",
+     "rect": [
+      50,
+      9,
+      150,
+      16
+     ]
+    },
+    {
+     "id": "where",
+     "text_style": "feed-where",
+     "ellipsis": true
+    },
+    {
+     "id": "clock",
+     "text_style": "feed-clock",
+     "align": "right",
+     "rect": [
+      300,
+      9,
+      72,
+      16
+     ]
+    },
+    {
+     "id": "new",
+     "sprite": "pill_new",
+     "rect": [
+      260,
+      9,
+      34,
+      15
+     ],
+     "visible_if": "new"
+    },
+    {
+     "id": "unread_dot",
+     "sprite": "dot_unread",
+     "rect": [
+      372,
+      2,
+      12,
+      12
+     ],
+     "visible_if": "unread"
+    },
+    {
+     "id": "progress",
+     "rect": [
+      14,
+      37,
+      284,
+      8
+     ],
+     "visible_if": "live"
+    },
+    {
+     "id": "remaining",
+     "text_style": "feed-live",
+     "align": "right",
+     "visible_if": "live"
+    },
+    {
+     "id": "line",
+     "repeat": "3-6",
+     "row_height": "17 per wrapped line + 5 (min 22)",
+     "children": [
+      {
+       "id": "chip",
+       "sprite": "cameo_<role>|npc_<role>|signal_<guard|rival>",
+       "rect": [
+        14,
+        0,
+        22,
+        22
+       ]
+      },
+      {
+       "id": "speaker",
+       "text_style": "feed-name | feed-name-cell"
+      },
+      {
+       "id": "text",
+       "text_style": "feed-line | feed-line-npc",
+       "wrap_width": 286
+      }
+     ]
+    },
+    {
+     "id": "typing",
+     "visible_if": "live",
+     "note": "three dots, 3 px radius, 11 px pitch"
+    },
+    {
+     "id": "footer",
+     "rect": "x 8, w 368, h 30, bottom 6",
+     "fill": "footer-result (footer-live while live)",
+     "outline": "footer-result-line",
+     "radius": 7,
+     "children": [
+      {
+       "id": "check",
+       "sprite": "disc 16 deep-teal + atlas check cream",
+       "rect": [
+        8,
+        7,
+        16,
+        16
+       ]
+      },
+      {
+       "id": "result",
+       "text_style": "feed-result",
+       "rect": [
+        32,
+        7,
+        230,
+        16
+       ],
+       "ellipsis": true
+      },
+      {
+       "id": "ack",
+       "sprite": "btn_ack_normal",
+       "states": [
+        "hover",
+        "pressed"
+       ],
+       "rect": [
+        303,
+        3,
+        61,
+        24
+       ],
+       "children": [
+        {
+         "id": "tick",
+         "atlas_icon": "check",
+         "size": 12,
+         "tint": "deep-teal"
+        },
+        {
+         "id": "key",
+         "sprite": "plate_light",
+         "text_style": "keycap",
+         "text": "K"
+        }
+       ],
+       "visible_if": "unread"
+      }
+     ]
+    }
+   ],
+   "hot": "white 3.2 + turquoise 1.6 outline when hovered or targeted by a click-to-pan"
+  },
+  "history_panel": {
+   "sprite": "panel_dark",
+   "width": 384,
+   "position": {
+    "anchor": "bottom-right",
+    "right": 14,
+    "above": "feed_bar",
+    "gap": 6
+   },
+   "rows": {
+    "height": 50,
+    "unread_section": "folded cards with ack",
+    "earlier": "kind accent bar 3 px + icon + title + where + clock + result"
+   },
+   "scroll": "vertical scrollbar, 6 px track",
+   "children": [
+    {
+     "id": "title",
+     "text": "SCENES · HISTORY",
+     "text_style": "section-label"
+    },
+    {
+     "id": "filters",
+     "sprite": "plate_light|plate_dark",
+     "labels": [
+      "All",
+      "Learned",
+      "Turned",
+      "City",
+      "Warnings"
+     ],
+     "text_style": "feed-filter",
+     "height": 19,
+     "gap": 6
+    },
+    {
+     "id": "read_all",
+     "sprite": "pill_white",
+     "text": "Read all"
+    }
+   ]
+  },
+  "action_panel": {
+   "sprite": "panel_dark",
+   "width": 384,
+   "position": {
+    "anchor": "popup",
+    "at": "right of the clicked target, clamped to the screen with 14 px margin"
+   },
+   "padding": [
+    54,
+    8,
+    8,
+    8
+   ],
+   "gap_px": 6,
+   "children": [
+    {
+     "id": "header",
+     "rect": [
+      0,
+      0,
+      384,
+      54
+     ],
+     "children": [
+      {
+       "id": "cameo",
+       "sprite": "cameo_<role>_normal",
+       "size": 28,
+       "rect": [
+        14,
+        13,
+        28,
+        28
+       ]
+      },
+      {
+       "id": "title",
+       "text_style": "panel-title",
+       "text": "{Agent} → {Target}",
+       "rect": [
+        52,
+        10,
+        300,
+        18
+       ]
+      },
+      {
+       "id": "sub",
+       "text_style": "panel-sub",
+       "rect": [
+        52,
+        31,
+        300,
+        16
+       ]
+      },
+      {
+       "id": "close",
+       "sprite": "btn_close_normal",
+       "size": 17,
+       "rect": [
+        355,
+        13,
+        17,
+        17
+       ]
+      }
+     ]
+    },
+    {
+     "id": "card",
+     "sprite": "panel_card",
+     "width": 368,
+     "height": "30 + 10 + lines*17 + 6 + 20 + 22 + 8 (locked: + 21 + unlock lines)",
+     "repeat": "one per verb",
+     "children": [
+      {
+       "id": "icon",
+       "atlas_icon": "<verb>",
+       "size": 16,
+       "rect": [
+        8,
+        7,
+        16,
+        16
+       ]
+      },
+      {
+       "id": "title",
+       "text_style": "card-title",
+       "rect": [
+        24,
+        7,
+        200,
+        18
+       ]
+      },
+      {
+       "id": "tag",
+       "sprite": "pill_new",
+       "text": "SUGGESTED",
+       "text_style": "card-tag",
+       "fill": "turquoise"
+      },
+      {
+       "id": "key",
+       "sprite": "plate_light",
+       "text_style": "keycap",
+       "rect": [
+        332,
+        5,
+        22,
+        19
+       ],
+       "text": "1..4"
+      },
+      {
+       "id": "lock",
+       "atlas_icon": "lock",
+       "size": 13,
+       "visible_if": "locked"
+      },
+      {
+       "id": "body",
+       "text_style": "card-body",
+       "rect": [
+        14,
+        38,
+        330,
+        "auto"
+       ]
+      },
+      {
+       "id": "price",
+       "children": "four atlas icons (p_cash p_time p_trail p_alert) 14 px + card-price text, gap 10",
+       "text_style": "card-price"
+      },
+      {
+       "id": "outcome",
+       "sprite": "mark_ok|mark_half|mark_no|mark_unk",
+       "text_style": "card-outcome"
+      },
+      {
+       "id": "walk",
+       "atlas_icon": "s_moving",
+       "text_style": "card-walk",
+       "align": "right"
+      }
+     ]
+    }
+   ]
+  },
+  "briefing_card": {
+   "sprite": "panel_dark_modal",
+   "size": [
+    700,
+    548
+   ],
+   "position": {
+    "anchor": "top-center",
+    "x_offset": 40,
+    "y": 150
+   },
+   "padding": [
+    24,
+    30,
+    24,
+    30
+   ],
+   "modal": true,
+   "children": [
+    {
+     "id": "tab",
+     "sprite": "panel_tab_small",
+     "size": [
+      170,
+      28
+     ],
+     "text": "MISSION BRIEFING",
+     "text_style": "hint-tab"
+    },
+    {
+     "id": "title",
+     "text_style": "briefing-title",
+     "text": "The Handover"
+    },
+    {
+     "id": "sub",
+     "text_style": "briefing-sub",
+     "text": "Harbour District · 17:24"
+    },
+    {
+     "id": "objective",
+     "icon": "take",
+     "label_style": "section-label",
+     "text_style": "briefing-body"
+    },
+    {
+     "id": "target",
+     "icon": "p_unknown",
+     "label_style": "section-label",
+     "text_style": "briefing-body"
+    },
+    {
+     "id": "win_lose",
+     "columns": 2,
+     "box_fill": "#183c3a",
+     "box_radius": 8,
+     "box_height": 94,
+     "marks": [
+      "mark_ok",
+      "mark_no"
+     ],
+     "text_style": "briefing-small"
+    },
+    {
+     "id": "facts",
+     "row": [
+      "p_time",
+      "p_cash",
+      "p_alert",
+      "fire"
+     ],
+     "text_style": "briefing-fact",
+     "gap": 22
+    },
+    {
+     "id": "approaches",
+     "columns": 2,
+     "sprite": "panel_card",
+     "height": 106,
+     "title_style": "card-title",
+     "body_style": "card-body"
+    },
+    {
+     "id": "begin",
+     "sprite": "btn_text_normal",
+     "size": [
+      190,
+      40
+     ],
+     "text": "Begin",
+     "text_style": "button-label",
+     "keycap": "Space",
+     "anchor": "bottom-right",
+     "offset": [
+      -30,
+      -16
+     ]
+    },
+    {
+     "id": "foot",
+     "text_style": "briefing-small",
+     "text": "Time stops until you begin. Space pauses at any time.",
+     "color": "text-dim",
+     "anchor": "bottom-left"
+    }
+   ]
+  },
+  "going_loud_card": {
+   "sprite": "panel_dark_modal",
+   "size": [
+    430,
+    268
+   ],
+   "position": {
+    "anchor": "popup",
+    "at": "near the cursor"
+   },
+   "children": [
+    {
+     "id": "icon",
+     "sprite": "disc_dark_30",
+     "atlas_icon": "p_alert"
+    },
+    {
+     "id": "title",
+     "text_style": "loud-title",
+     "text": "Going loud"
+    },
+    {
+     "id": "rows",
+     "text_style": "loud-row",
+     "icon_tint": "turquoise-light",
+     "count": 4
+    },
+    {
+     "id": "hold_ring",
+     "sprite": "ring_track + ring_fill",
+     "size": 44,
+     "fill": "radial clockwise over 0.5 s",
+     "note": "the hold is the commit; releasing cancels; right-click on empty ground cancels"
+    },
+    {
+     "id": "hold_label",
+     "text_style": "loud-hold"
+    }
+   ]
+  },
+  "debrief_card": {
+   "sprite": "panel_dark_modal",
+   "size": [
+    560,
+    270
+   ],
+   "position": {
+    "anchor": "top-center",
+    "x_offset": 40,
+    "y": 160
+   },
+   "children": [
+    {
+     "id": "buttons",
+     "sprite": "btn_text_normal",
+     "size": [
+      150,
+      40
+     ],
+     "labels": [
+      "Debrief",
+      "Replay"
+     ],
+     "gap": 20
+    }
+   ]
+  },
+  "tooltip_cancel": {
+   "sprite": "panel_card",
+   "width": 292,
+   "height": "38 + lines*17 + 34",
+   "position": {
+    "anchor": "cursor",
+    "dx": 14,
+    "dy": 14
+   },
+   "children": [
+    {
+     "id": "title",
+     "text_style": "tooltip-title"
+    },
+    {
+     "id": "body",
+     "text_style": "tooltip-body",
+     "wrap_width": 262
+    },
+    {
+     "id": "key",
+     "sprite": "plate_light",
+     "text_style": "keycap",
+     "text": "Backspace"
+    },
+    {
+     "id": "keytext",
+     "text_style": "tooltip-key"
+    }
+   ]
+  },
+  "price_chip": {
+   "sprite": "chip_price",
+   "height": 42,
+   "position": {
+    "anchor": "cursor",
+    "dx": 14,
+    "dy": -6,
+    "note": "bottom-left tail points at the cursor"
+   },
+   "padding_from_content_rect": {
+    "left": 17,
+    "top": 4,
+    "right": 16,
+    "bottom": 15
+   },
+   "children": [
+    {
+     "id": "verb",
+     "atlas_icon": "<verb>",
+     "size": 20,
+     "tint": "#fffcec"
+    },
+    {
+     "id": "items",
+     "row": [
+      "p_cash",
+      "p_time",
+      "p_trail",
+      "p_alert"
+     ],
+     "icon": 17,
+     "value_style": "chip-value",
+     "gap": 16
+    },
+    {
+     "id": "outcome",
+     "sprite": "mark_unk|mark_ok",
+     "size": 17
+    }
+   ]
+  },
+  "fight_chip": {
+   "sprite": "chip_price",
+   "height": 42,
+   "position": {
+    "anchor": "cursor",
+    "dx": 24,
+    "dy": -18
+   },
+   "children": [
+    {
+     "id": "parts",
+     "text_style": "fight-chip",
+     "text": "{target} · hits 3 in 4 · down in 5.5 s · untraced"
+    }
+   ]
+  },
+  "overhead_marks": {
+   "note": "over a character's head, at most two icons",
+   "children": [
+    {
+     "id": "agent_number",
+     "sprite": "plate_light",
+     "size": [
+      25,
+      21
+     ],
+     "text_style": "numplate",
+     "offset": "head-top -8"
+    },
+    {
+     "id": "activity_badge",
+     "sprite": "disc_dark_30",
+     "ring": [
+      "ring_track",
+      "ring_fill"
+     ],
+     "ring_size": 44,
+     "cancel": "btn_close_normal 15 px at the badge's top-right, selected agent only"
+    },
+    {
+     "id": "person_marks",
+     "sprite": "disc_dark_24",
+     "glyphs": "need + temperament; dashed ring overlay = suspected; seafoam tick = known",
+     "max": 2
+    },
+    {
+     "id": "signals",
+     "sprites": [
+      "signal_guard",
+      "signal_rival",
+      "signal_camera",
+      "signal_unit",
+      "signal_police"
+     ],
+     "size": 20
+    },
+    {
+     "id": "selection_ring",
+     "sprite": "ring_ground_selected",
+     "under": "character feet"
+    },
+    {
+     "id": "hint_ring",
+     "sprite": "ring_ground_hint"
+    },
+    {
+     "id": "flag",
+     "sprite": "plate_dark",
+     "text_style": "verb-name",
+     "note": "destination flag with time left; the dotted line to it is drawn by the game"
+    }
+   ]
+  }
+ }
+}
