@@ -7,5 +7,5 @@
   {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Boarding pavilion"},
   {"tick": 3700, "op": "enforcer", "do": "fire", "target": "councillor"}
  ],
- "until": 4800
+ "until": 5100
 }

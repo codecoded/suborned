@@ -1,0 +1,18 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'Enforcer down' in the final fight, loud (Suture N10): the loud route to the getaway car, and the Enforcer doesn't answer the police.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": [4850, -2300]},
+  {"tick": 380, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 1000, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1450, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1510, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1510, "op": "enforcer", "do": "move", "to": "d:Office entrance"},
+  {"tick": 1576, "op": "enforcer", "do": "enter"},
+  {"tick": 1956, "op": "enforcer", "do": "move", "to": "d:Getaway bay"}
+ ],
+ "until": 5100
+}

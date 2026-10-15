@@ -9,6 +9,8 @@
 // contracts/people/people.rules.json (temperaments' refusals, needs' approaches; Motive §3, Sky Q4). Until brief 011's engine plays
 // the mission, M-2 also reads the roles' static playability conditions (castRoles `{ play: true }`: tiedTo, leavesTo, waitsFor,
 // alone; Suture's review of r013, 2026-10-15), each failing with the role and the condition.
+// Rule V-1 (brief 003 B; brief 011, Vantage 2026-10-15): every mission point is seen at the play camera past architecture, without the fade
+// (tools/missions/handover/visibility.ts), measured on the generated world. Like M-2 it reads the file's mission only, so recorded runs never meet it.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Check } from '../../plan/checks';
@@ -18,6 +20,8 @@ import { lineDist, inPoly, type V } from '../../plan/geom';
 import type { Overlay, Route } from '../../plan/overlay';
 import { currentPeople } from '../../people/current';
 import { castRoles, type Castable, type CastMission, type CastRules } from './cast';
+import { generated } from '../../plan/world-ctx';
+import { blockersFor, visibility, v1 } from './visibility';
 
 const ROOT = resolve(import.meta.dir, '../../..'), FILE = resolve(ROOT, 'contracts/missions/handover/mission.json');
 /** The people a cast reads: the expanded people file's places and persons (contracts/people/people.schema.ts). */
@@ -62,7 +66,7 @@ function build(plan: any, destinations: { name: string; at: V; surface: string }
     civic: ({ d, civ }) => {
       const lost = points.filter(pt => !d.plots.some(p => inPoly(pt.p, p.polyV)) && !d.roads.some(r => lineDist(pt.p, r.line) <= r.w / 2));
       const c3: Check = { id: 'C-3', group: 'Civic', rule: 'Mission points land on a plot or a street', value: `${points.length - lost.length}/${points.length}`, limit: 'all', ok: !lost.length, detail: lost.map(p => p.name).join(', ') || undefined };
-      return cast ? [c3, castCheck(plan, civ, cast, people)] : [c3];
+      return cast ? [c3, castCheck(plan, civ, cast, people), v1(visibility(cast as any, civ, plan, blockersFor(generated(plan, d, civ).w, civ, plan)))] : [c3];
     },
     routes: ({ plan, d, E, roadById }) => {
       const gateAt = new Map(plan.gates.map(g => [`${g.node}|${g.road}`, g.name]));

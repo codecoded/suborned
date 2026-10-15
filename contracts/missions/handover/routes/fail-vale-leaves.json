@@ -7,5 +7,5 @@
   {"tick": 0, "op": "scout", "do": "move", "to": "rival-park"},
   {"tick": 2500, "op": "scout", "do": "mislead", "target": "rivals"}
  ],
- "until": 4800
+ "until": 5100
 }

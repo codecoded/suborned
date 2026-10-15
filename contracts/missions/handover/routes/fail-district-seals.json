@@ -12,5 +12,5 @@
   {"tick": 1510, "op": "enforcer", "do": "fire", "target": "guard"},
   {"tick": 1520, "op": "enforcer", "do": "move", "to": "d:Behind café"}
  ],
- "until": 4800
+ "until": 5100
 }

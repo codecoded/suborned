@@ -1,0 +1,19 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'Enforcer down' in the final fight, safe (Suture N11): route B to the take, then the Enforcer walks Vale into the rivals' ambush and doesn't answer it.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 591, "op": "scout", "do": "watch", "target": "driver"},
+  {"tick": 791, "op": "scout", "do": "listen", "target": "driver"},
+  {"tick": 1211, "op": "fixer", "do": "turn", "target": "driver", "approach": "pay"},
+  {"tick": 1711, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 3200, "op": "scout", "do": "mislead", "target": "rivals"},
+  {"tick": 3700, "op": "enforcer", "do": "take"},
+  {"tick": 4080, "op": "enforcer", "do": "move", "to": "d:Getaway bay"}
+ ],
+ "until": 5100
+}

@@ -58,9 +58,10 @@
    "note": "Not in the removed anchors (Pulse, life.json v0.2.0 review, flag F10); added from §07."
   },
   {
-   "at": "8:00",
+   "at": "8:30",
    "what": "rivals take Vale or car leaves = over",
-   "src": "GDD §07"
+   "src": "GDD §07; Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
+   "note": "Retimed with the world (CLAUDE.md: the Handover's timings may move): route B cannot take Vale before he reaches the service lane at 6:10, and the take (38 s, §07) and the 54 m walk to the getaway bay (39 s) left it 33 s before 8:00; at 8:30 it has 1:03, inside the 8-12 min mission rule (§01). Route A and the loud route finish long before either close. GDD §07's schedule still reads 8:00 (text owed in the next GDD version). The close ends the take, not a carry already under way (Waymark's ruling, 2026-10-15): if the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open), and it wins only when Vale reaches the getaway car; the final fight and the seal bound the carry."
   }
  ],
  "events": [
@@ -72,7 +73,7 @@
    "surge": 1.8,
    "who": "Records Office staff leave by the front and service doors toward T1/records and the Circus",
    "src": "GDD §07 (chime at 5:30); surge [S]; window and who have no source",
-   "note": "Removed life.events.list[0], src 'GDD §07', at '17:05:30 mission clock (17:30 day)'. §07 gives only the chime time. The removed events.src tags the surge '[S] surge numbers'; windowS and who are not in §07 and carried no source of their own. The 300 s window runs to 10:30, past the 8:00 close."
+   "note": "Removed life.events.list[0], src 'GDD §07', at '17:05:30 mission clock (17:30 day)'. §07 gives only the chime time. The removed events.src tags the surge '[S] surge numbers'; windowS and who are not in §07 and carried no source of their own. The 300 s window runs to 10:30, past the 8:30 close."
   }
  ],
  "stands": [
@@ -91,11 +92,11 @@
    "position": "server",
    "at": "Café door",
    "near": 4,
-   "shift": { "from": "0:00", "to": "8:00" },
+   "shift": { "from": "0:00", "to": "8:30" },
    "need": "debt",
    "approach": "help",
    "src": "GDD §07 cast: Inez (café waitress, in debt), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
-   "note": "In place at the café entrance from 0:00 to 8:00 (17:24:30-17:32:30): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+   "note": "In place at the café entrance from 0:00 to the 8:30 close (17:24:30-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
    "id": "driver",

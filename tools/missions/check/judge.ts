@@ -18,24 +18,36 @@ export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' |
   rejected: number; scriptSha: string;
   /** the first tick of each event-log code (enter.in, take.done, …): when the route secured Vale */
   marks: Record<string, number>;
+  /** the Enforcer's shots before the final fight (§07: the fight's branch is loud if any shot was fired before it) */
+  shots: number;
+  /** the final fight's branch, if one began */
+  fight?: 'safe' | 'loud';
 };
 /** `marks`: keep the event marks (a base script's; a variation needs only its outcome and hash). */
 export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => {
   const marks: Record<string, number> = {};
   if (keepMarks) for (const l of p.log) if (!(l.code in marks) && !l.code.startsWith('order.')) marks[l.code] = l.tick;
-  return { outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical, rejected: p.orders.filter(o => !o.ok).length, scriptSha, marks };
+  const fightAt = p.log.find(l => l.code === 'fight.safe' || l.code === 'fight.loud');
+  const shots = p.log.filter(l => l.code.startsWith('fire.') && l.code !== 'fire.hostiles' && (!fightAt || l.tick < fightAt.tick)).length;
+  return {
+    outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical,
+    rejected: p.orders.filter(o => !o.ok).length, scriptSha, marks, shots, ...(fightAt ? { fight: fightAt.code === 'fight.safe' ? 'safe' as const : 'loud' as const } : {}),
+  };
 };
 /** Every play the checker made, by name: `<script>`, `<script>~no-<role>`, `<script>~late@<tick>+<s>s`. */
 export type Plays = Record<string, Digest>;
-/** How late each step of a primary route can be: the most seconds (contiguous from 0) every later order can slip and still win. */
+/** How late each planned step of a primary route can be (its steps up to the one that secures Vale; the final fight after it is
+ *  fought, not planned): the most seconds, contiguous from 0, every later order can slip and still win. */
 export type Slack = { script: string; steps: { tick: number; orders: string; slackS: number; breaksAs?: string }[]; maxS: number };
 
 export type Condition = { id: string; rule: string; ok: boolean; value: string; detail: string };
 export type Report = { ok: boolean; conditions: Condition[]; scripts: Row[]; contacts: ContactRow[]; informed: InformedRow[]; slack: Slack[]; pending: string[] };
-type Row = { id: string; kind: string; route?: string; expects: string; got: string; ok: boolean; at: string; trail: number; alert: number; shots: number; cash: number; replay: boolean };
+type Row = { id: string; kind: string; route?: string; expects: string; got: string; ok: boolean; at: string; trail: number; alert: number; shots: number; fightShots: number; fight: string; cash: number; replay: boolean };
 type ContactRow = { role: string; who: string; quietWinsWithout: string[]; routesWithout: string[]; needs: string[]; named: boolean };
 type InformedRow = { script: string; route: string; closes: string; secured: string; spareS: number; extracted: string; closeSpareS: number; slackS: number };
 
+/** A quiet win: Vale at the getaway car with no shot before the final fight (the fight's own shots don't make a route loud, §07). */
+export const quietWin = (d?: Digest) => !!d && d.outcome === 'success' && d.shots === 0;
 export const clock = (tick: number) => { const s = Math.floor(tick / 10); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}${tick % 10 ? `.${tick % 10}` : ''}`; };
 const ticksOf = (at: string) => { const [m, s] = at.split(':').map(Number); return (m! * 60 + s!) * 10; };
 const got = (d: Digest) => (d.outcome === 'failure' ? `failure ${d.fail}` : d.outcome);
@@ -44,23 +56,23 @@ const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outco
 
 export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[]): Report {
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
-  const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: got(d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.gunfire, cash: d.cash, replay: d.replayIdentical }; });
+  const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: got(d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
   const C: Condition[] = [];
 
   const off = rows.filter(x => !x.ok);
   C.push({ id: 'MC-0', rule: 'Every script plays as the manifest expects and replays to identical checkpoints', ok: !off.length, value: `${rows.length - off.length}/${rows.length}`, detail: off.map(x => `${x.id}: expected ${x.expects}, got ${x.got}${x.replay ? '' : ' (replay differs)'}`).join('; ') || `${pending.length} pending: ${pending.join(', ') || 'none'}` });
 
-  const quiet = live.filter(s => s.kind === 'quiet'), wins = (s: RouteScript) => { const d = plays[s.id]; return !!d && d.outcome === 'success' && d.gunfire === 0; };
+  const quiet = live.filter(s => s.kind === 'quiet'), wins = (s: RouteScript) => quietWin(plays[s.id]);
   const quietRoutes = [...new Set(quiet.filter(wins).map(s => s.route!))].sort();
-  C.push({ id: 'MC-1', rule: '≥ 2 quiet routes win (no shot), counted by route', ok: quietRoutes.length >= 2, value: `${quietRoutes.length} (${quietRoutes.join(', ')})`, detail: quiet.map(s => `${s.id} (route ${s.route}) ${wins(s) ? `wins at ${clock(plays[s.id]!.tick)}, ${plays[s.id]!.trail} T` : got(plays[s.id]!)}`).join('; ') });
+  C.push({ id: 'MC-1', rule: '≥ 2 quiet routes win (no shot before the final fight), counted by route', ok: quietRoutes.length >= 2, value: `${quietRoutes.length} (${quietRoutes.join(', ')})`, detail: quiet.map(s => `${s.id} (route ${s.route}) ${wins(s) ? `wins at ${clock(plays[s.id]!.tick)}, ${plays[s.id]!.trail} T` : got(plays[s.id]!)}`).join('; ') });
 
   const loud = live.find(s => s.kind === 'loud' && s.primary), ld = loud && plays[loud.id];
   const primaries = quiet.filter(s => s.primary), maxPrimary = Math.max(...primaries.map(s => plays[s.id]!.trail));
   const variants = quiet.filter(s => !s.primary && wins(s) && ld && plays[s.id]!.trail >= ld.trail);
   C.push({
-    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every primary quiet route', ok: !!ld && ld.outcome === 'success' && ld.gunfire > 0 && ld.trail > maxPrimary,
+    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every primary quiet route', ok: !!ld && ld.outcome === 'success' && ld.shots > 0 && ld.trail > maxPrimary,
     value: ld ? `loud ${ld.trail} T vs quiet ${primaries.map(s => `${s.route} ${plays[s.id]!.trail}`).join(', ')}` : 'no loud script',
-    detail: [...live.filter(s => s.kind === 'loud').map(s => `${s.id}: ${got(plays[s.id]!)}, ${plays[s.id]!.trail} T, ${plays[s.id]!.gunfire} shots, A ${plays[s.id]!.alert}`),
+    detail: [...live.filter(s => s.kind === 'loud').map(s => `${s.id}: ${got(plays[s.id]!)}, ${plays[s.id]!.trail} T, ${plays[s.id]!.shots} shots before the fight, A ${plays[s.id]!.alert}`),
       ...variants.map(s => `note: quiet variant ${s.id} costs ${plays[s.id]!.trail} T, not less than the loud route`)].join('; '),
   });
 
@@ -69,7 +81,7 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
   C.push({ id: 'MC-3', rule: 'Every §07 fail is reached by a played script', ok: !missing.length, value: `${r.fails.length - missing.length}/${r.fails.length}`, detail: [...r.fails.map(f => `${f.gdd}: ${reached(f).join(', ') || 'NOT REACHED'}`), ...(pending.length ? [`pending (not played): ${pending.join(', ')}`] : [])].join('; ') });
 
   const contacts: ContactRow[] = r.contacts.map(c => {
-    const without = quiet.filter(s => { const d = plays[`${s.id}~no-${c.role}`] ?? plays[s.id]; return !!d && d.outcome === 'success' && d.gunfire === 0; });
+    const without = quiet.filter(s => quietWin(plays[`${s.id}~no-${c.role}`] ?? plays[s.id]));
     const routesWithout = [...new Set(without.map(s => s.route!))].sort(), all = [...new Set(quiet.filter(wins).map(s => s.route!))];
     const needs = all.filter(rt => !routesWithout.includes(rt)).sort();
     return { role: c.role, who: c.who, quietWinsWithout: without.map(s => s.id), routesWithout, needs, named: routesWithout.length < 2 };
@@ -90,7 +102,7 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
   C.push({
     id: 'MC-5', rule: `The fully informed player secures Vale ≥ ${spare} before each primary quiet route's closing event`, ok: informed.length >= 1 && informed.length === primaries.length && !short.length,
     value: informed.map(x => `route ${x.route} ${x.spareS >= 0 ? clock(x.spareS * 10) : 'never'} early`).join(', ') || 'no primary quiet route wins',
-    detail: informed.map(x => `route ${x.route} (${x.script}): Vale secured at ${x.secured}, ${x.spareS >= 0 ? clock(x.spareS * 10) : '-'} before ${x.closes}${x.spareS < r.informedSpareS ? ' (UNDER the spare)' : ''}; at the getaway car ${x.extracted}, ${clock(x.closeSpareS * 10)} before the mission's ${r.closing.at} close; every step can slip ${x.slackS} s and still win`).join('; '),
+    detail: informed.map(x => `route ${x.route} (${x.script}): Vale secured at ${x.secured}, ${x.spareS >= 0 ? clock(x.spareS * 10) : '-'} before ${x.closes}${x.spareS < r.informedSpareS ? ' (UNDER the spare)' : ''}; at the getaway car ${x.extracted}, ${clock(x.closeSpareS * 10)} before the mission's ${r.closing.at} close; every planned step can slip ${x.slackS} s and still win`).join('; '),
   });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }

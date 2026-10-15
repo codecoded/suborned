@@ -67,6 +67,13 @@ describe('handover mission file', () => {
     expect(broken(m => { m.roles[1].waitsFor = 'waitress'; })).toBe(false); // waits for a role that never leaves for a point
     expect(broken(m => { m.roles[3].leavesTo.at = 'Nowhere'; })).toBe(false);
     expect(broken(m => { delete m.roles[2].at; })).toBe(false); // alone, and nowhere
+    // the engine's points and cameras (brief 011 B, Suture O-6): mission content, read into the site by tools/sim/site.ts
+    expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'block-spot']);
+    expect(mission.cameras!.map(c => `${c.id}>${c.looksAt}`)).toEqual(['entrance>Office entrance', 'pickup>Official drop-off']);
+    expect(broken(m => { m.points[0].at = [0, 0]; })).toBe(false); // a structure's centre and a point at once
+    expect(broken(m => { m.points[1].id = 'cabinet'; })).toBe(false);
+    expect(broken(m => { m.cameras[0].looksAt = 'Nowhere'; })).toBe(false);
+    expect(broken(m => { delete m.points[2].reason; })).toBe(false); // every point says why it stands there
   });
 
   test('destinations, crew and routes are byte-for-byte the ones moved out of the world, but for the declared moves and rename', () => {
@@ -77,12 +84,15 @@ describe('handover mission file', () => {
     expect(sha(was)).toBe(WAS);
   });
 
-  test('the timeline is GDD §07\'s schedule, entry for entry', async () => {
+  test('the timeline is GDD §07\'s schedule, entry for entry, but for the entries retimed with the world (each declared here)', async () => {
     const gdd = readdirSync(resolve(root, 'GDD')).filter(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f));
     expect(gdd).toHaveLength(1);
     const s07 = (await text(`GDD/${gdd[0]}`)).split(/^## /m).find(s => s.startsWith('§07 '))!;
     const schedule = s07.split('\n').find(l => l.startsWith('schedule: '))!.slice('schedule: '.length).replace(/\.$/, '').split(' · ');
-    expect(mission.timeline.map(e => `${e.at} ${e.what}`)).toEqual(schedule);
+    /** Sky 2026-10-15 (brief 011 Decisions): the close moves 8:00 → 8:30; GDD §07 text owed in the next version. */
+    const RETIMED: Record<string, string> = { 'rivals take Vale or car leaves = over': '8:30' };
+    expect(mission.timeline.map(e => `${RETIMED[e.what] && e.at === RETIMED[e.what] ? schedule.find(x => x.endsWith(` ${e.what}`))!.split(' ')[0] : e.at} ${e.what}`)).toEqual(schedule);
+    for (const [what, at] of Object.entries(RETIMED)) expect(mission.timeline.find(e => e.what === what)).toMatchObject({ at, note: expect.stringContaining('Retimed') });
     expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '5:30', 300, 1.8]]); // the chime's crowd
   });
 
@@ -116,7 +126,8 @@ describe('handover mission file', () => {
   test('the overlay still passes on the world (people that meet the roles), and every event names a plan area', async () => {
     const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
     const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block, play(await people()))), by = (id: string) => R.checks.find(c => c.id === id)!;
-    expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual([]);
+    // V-1 (Vantage, 2026-10-15) fails until Sky picks an option for the public door (briefs/011/vantage-visibility.md); then this expects []
+    expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual(['V-1']);
     expect(by('C-3').value).toBe(`${mission.destinations.length}/${mission.destinations.length}`);
     expect(by('W-4').value).toBe('2/2'); // the overlay's walk origins (standards.walking.from): Café door, Office entrance
     expect(by('M-1').ok).toBe(true);
@@ -178,7 +189,7 @@ describe('handover roles', () => {
     ]);
     expect(broken(m => { m.roles[0].approach = 'bribe'; })).toBe(false); // an approach not in the rules' four
     // there when the mission needs them (Sky 2026-10-15): Inez all mission, the guard in route A's entry window, the driver and Vale to the chime
-    expect(mission.roles.map(r => `${r.id} ${r.shift.from}-${r.shift.to}`)).toEqual(['waitress 0:00-8:00', 'driver 0:00-5:30', 'guard 2:24-5:30', 'councillor 0:00-5:30']);
+    expect(mission.roles.map(r => `${r.id} ${r.shift.from}-${r.shift.to}`)).toEqual(['waitress 0:00-8:30', 'driver 0:00-5:30', 'guard 2:24-5:30', 'councillor 0:00-5:30']);
     // the static playability conditions M-2 reads (Suture 2026-10-15 §3)
     expect(mission.roles.map(r => [r.id, r.tiedTo ?? null, r.leavesTo ?? null, r.waitsFor ?? null, r.alone ?? null])).toEqual([
       ['waitress', null, null, null, null],
@@ -241,7 +252,7 @@ describe('handover roles', () => {
     // Q4: the wrong temperament still works (a Mercenary helped), a refusal fails: an Idealist refuses Pay
     m = JSON.parse(raw); m.roles[0].approach = 'pay';
     const idealists = met(p, Object.fromEntries(['p-cafe-11', 'p-cafe-12', 'p-cafe-14', 'p-cafe-15', 'p-cafe-16'].map(id => [id, (x: any) => { x.need = 'debt'; x.temperament = 'idealist'; }])));
-    expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:00 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
+    expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:30 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
     expect(m2(s, JSON.parse(raw), idealists).ok).toBe(true); // Help is refused by no temperament
     expect(one(m, met(idealists, { 'p-cafe-11': x => { x.temperament = 'shy'; } }))[0]).toContain('p-cafe-11 shy (unknown)'); // unknown = reject
     // §05, §08: the guard is a regular of the café only by a regular tie to its staff (one definition with P-6 and the review): a pre-shift stop alone is not enough; a tie restores one
@@ -295,7 +306,7 @@ describe('handover roles', () => {
     const debt = (x: PeopleIn['persons'][number]) => { x.need = 'debt'; };
     const s = { ...(await setup()) }; s.p = met(play(s.p), { 'p-cafe-11': debt, 'p-cafe-14': debt }); const m = JSON.parse(raw);
     m.roles[0].pin = 'p-cafe-02'; // a server on the morning shift, gone by 17:00
-    expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-8:00 at Café door');
+    expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-8:30 at Café door');
     m.roles[0].pin = 'p-cafe-14';
     expect(m2(s, m)).toMatchObject({ ok: true, value: expect.stringContaining('waitress p-cafe-14') }); // a pin that fits wins over the tie-break
     const other = { ...s.plan, version: '0.0.0-test' };
