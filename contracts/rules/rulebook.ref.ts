@@ -194,7 +194,7 @@ export function apply(rb: Rulebook, people: PeopleRules, s: Subject, changes: Ef
   return out;
 }
 
-/** rulebook memory.whenFull: the oldest saw-act or told entry (lowest time, then first written); only when none is held, the oldest
+/** rulebook memory.whenFull: the oldest saw-act, saw-runner or told entry (lowest time, then first written); only when none is held, the oldest
  *  entry. People forget what they saw before what was done to them (Motive's review #9). */
 export function forgetIndex(memory: readonly Mem[]): number {
   const pick = (ok: (m: Mem) => boolean) => {
@@ -202,7 +202,7 @@ export function forgetIndex(memory: readonly Mem[]): number {
     for (let j = 0; j < memory.length; j++) if (ok(memory[j]!) && (i < 0 || memory[j]!.time < memory[i]!.time)) i = j;
     return i;
   };
-  const seen = pick((m) => m.act === 'saw-act' || m.act === 'told');
+  const seen = pick((m) => m.act === 'saw-act' || m.act === 'saw-runner' || m.act === 'told');
   return seen >= 0 ? seen : pick(() => true);
 }
 
@@ -264,4 +264,21 @@ export function replaceNeed(rb: Rulebook, people: PeopleRules, p: NeedHolder, mi
   const cands = replacementNeeds(people, p);
   const weighted = cands.map((n) => ({ item: n, weight: weights[n] ?? 0 })).filter((w) => w.weight > 0);
   return drawWeighted(key, weighted.length ? weighted : cands.map((n) => ({ item: n, weight: 1 })));
+}
+
+/** A shot's accuracy in per mille (Sky 2026-10-15, briefs/011/motive-fights.md): the band's, times each modifier that applies. */
+export function accuracy(rb: Rulebook, people: PeopleRules, weapon: 'pistol' | 'carbine', distanceM: number, mods: readonly ('moving' | 'cover' | 'vale' | 'untrained')[]): number {
+  const w = rb.weapons, n = (r: string) => num(rb, people, r);
+  if (distanceM > n(w[weapon].max)) return 0;
+  let a = distanceM <= n(w.pointBlank) ? n(w.acc.point) : distanceM <= n(w[weapon].eff) ? n(w.acc.eff) : n(w.acc.long);
+  for (const m of mods) a = Math.floor((a * n(w.mod[m])) / 1000);
+  return a;
+}
+
+/** Deterministic hits: the accumulator starts at acc.start; each shot adds the accuracy, and at 1000 the shot hits and 1000 comes off. */
+export function hits(rb: Rulebook, people: PeopleRules, acc: number, shots: number): boolean[] {
+  let a = num(rb, people, rb.weapons.acc.start);
+  const out: boolean[] = [];
+  for (let i = 0; i < shots; i++) { a += acc; const hit = a >= 1000; if (hit) a -= 1000; out.push(hit); }
+  return out;
 }

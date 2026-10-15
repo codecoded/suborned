@@ -10,7 +10,8 @@ namespace Suborned.Sim
     {
         public string PublicSecurity = "", InvestigationState = "", InvestigationCause = "";
         public int Contacts; public bool Loud;
-        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits, FightShots;
+        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightDownedByCell, FightHits, FightShots;
+        public readonly List<string> Captured = new List<string>(); public readonly List<(string op, int health, int max)> Cell = new List<(string, int, int)>();
         public Investigation Inv = new Investigation(); public Between Next = new Between(); public int Sightings; public readonly List<string> FightWhy = new List<string>();
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
 
@@ -37,7 +38,8 @@ namespace Suborned.Sim
                 d.Assets.Add(g.InezWitnessedShooting ? "waitress-witnessed-shooting" : g.InezMethod == "pressure" ? "waitress-may-identify-fixer" : inezExposed ? "waitress-may-be-questioned" : "waitress-introduces-cafe");
             if (g.Driver.Turned && !g.Driver.Down) d.Assets.Add("driver-alters-pickups");
             d.Chain.AddRange(g.Chain);
-            d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightHits = g.FightHits; d.FightShots = g.FightShots; d.FightWhy.AddRange(g.FightWhy);
+            d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightDownedByCell = g.DownedByCell; d.FightHits = g.FightHits; d.FightShots = g.FightShots; d.FightWhy.AddRange(g.FightWhy);
+            d.Captured.AddRange(g.Captured); foreach (var op in g.Ops) d.Cell.Add((Sim.Op.Name(op.Id), op.Gun.Health, op.Gun.Max)); // wounds carry over (§08)
 
             var relevant = new HashSet<string>(StringComparer.Ordinal);
             if (g.RouteKind == "front")
@@ -99,9 +101,11 @@ namespace Suborned.Sim
             w.EndArr().EndObj();
             if (FightBranch.Length > 0)
             {
-                w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("hitsTaken", FightHits).Prop("shots", FightShots);
+                w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("downedByCell", FightDownedByCell).Prop("hitsTaken", FightHits).Prop("shots", FightShots);
                 w.OpenArr("why"); foreach (var a in FightWhy) w.Str(a); w.EndArr(); w.EndObj();
             }
+            w.OpenArr("cell"); foreach (var (op, hp, max) in Cell) w.Obj().Prop("op", op).Prop("health", hp).Prop("max", max).EndObj(); w.EndArr();
+            w.OpenArr("captured"); foreach (var c in Captured) w.Str(c); w.EndArr();
             w.EndObj();
         }
     }
@@ -127,7 +131,7 @@ namespace Suborned.Sim
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.3.0";
+        public const string Version = "suborned.sim/0.4.0";
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
         public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null)

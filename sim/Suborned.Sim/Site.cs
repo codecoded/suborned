@@ -33,12 +33,13 @@ namespace Suborned.Sim
         public readonly string[] FightAmbush, FightPolice;
         public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, GuardWalkS, GuardStayS, BlockMoveS, BlockHoldS;
         public readonly long Purse;
+        public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
 
         public Site(string json)
         {
             Root = JNode.Parse(json, "site");
             var r = Root;
-            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "cast");
+            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast");
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             if (r["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
             r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
@@ -85,6 +86,7 @@ namespace Suborned.Sim
             GuardWalkS = Sec("guardWalkS", 1); GuardStayS = Sec("guardStayS", 1); BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
+            Arms = r["arms"].Int(); if (Arms < 0 || Arms > 100) throw new FormatException("site arms is out of range"); r["armsSrc"].Str();
             var cast = r["cast"]; cast.Only("waitress", "driver", "guard", "councillor", "from", "sha256", "startsAt", "fixture", "src");
             foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
             {

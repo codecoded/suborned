@@ -56,28 +56,81 @@ namespace Suborned.Sim
         public void Wait(int ticks) => G.Advance(ticks);
         /// <summary>Run until the operative's action in progress lands.</summary>
         public void Done(string op) { var o = G.OpOf(Sim.Op.Parse(op)); if (o.Busy != null) G.RunTo(o.BusyEnd); }
-        /// <summary>The Enforcer fights it out as a player would: fire when the shot is ready and a hostile is in reach, else close on the
-        /// nearest one still up; then to the car. Orders only, so the run replays from its log. Returns when the car is free or the run ends.</summary>
-        public void FightItOut(int limitS = 120)
+        /// <summary>Give a fire order now (until the target is down); force for a civilian or a contact (the Ctrl case).</summary>
+        public bool Fire(string op, string target, bool force = false)
         {
-            int end = G.Tick + Game.T(limitS), reach = G.R.FireReachCm;
-            while (!G.Over && G.Tick < end && G.CarHeld())
+            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "fire", Target = target, Force = force });
+            return Is(ok, $"{op} fires on {target} at {Report.Clock(G.Tick)}{(ok ? "" : ": " + why)}");
+        }
+        /// <summary>Step until the condition holds, the run ends, or the limit passes; returns whether it held.</summary>
+        public bool Until(Func<bool> cond, int limitTicks = 1200)
+        {
+            int end = G.Tick + limitTicks;
+            while (!cond() && !G.Over && G.Tick < end) G.Step();
+            return cond();
+        }
+        /// <summary>The shots in the log, in order: (tick, shooter, target, hit).</summary>
+        public List<(int tick, string by, string target, bool hit)> Shots()
+        {
+            var l = new List<(int, string, string, bool)>();
+            foreach (var x in G.Log)
             {
-                var e = Op("enforcer");
-                Hostile? near = null; long bd = long.MaxValue;
-                foreach (var h in G.Hostiles) { if (h.Down || !h.Present) continue; long d = G.D2(e.Pos, h.Pos(G.Tick)); if (d < bd) { bd = d; near = h; } }
-                if (near == null) { if (e.Walk == null) SendTo("enforcer", G.S.Stand(G.S.GetawayCar)); G.Step(); continue; }
-                if (G.Tick >= G.EnforcerNextShot && e.Busy == null && G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "fire", Target = "hostiles" }).ok) { G.Step(); continue; }
-                if (bd > (long)(reach - 200) * (reach - 200) && (e.Walk == null || e.Walk.End != G.S.Grid.NearestFree(near.Pos(G.Tick))))
+                if (x.Code != "shot.hit" && x.Code != "shot.miss") continue;
+                var by = x.Text.Substring(0, x.Text.IndexOf(" fires on ", StringComparison.Ordinal));
+                var rest = x.Text.Substring(by.Length + 10); var t = rest.Substring(0, rest.IndexOf(" at ", StringComparison.Ordinal));
+                l.Add((x.Tick, by, t, x.Code == "shot.hit"));
+            }
+            return l;
+        }
+        /// <summary>The cell fights as a player would (Sky 2026-10-15 fights): each armed operative named fires on the nearest target up
+        /// with a line in its weapon's reach, walks into its effective reach and stops there to shoot (walking halves the aim). Orders only,
+        /// so the run replays from its log. Runs until `done`, the run ends, or the limit passes.</summary>
+        public void Engage(Func<List<string>> targets, Func<bool> done, int limitS, string[] ops, bool carToEnforcer, bool advance = true)
+        {
+            int end = G.Tick + Game.T(limitS);
+            while (!done() && !G.Over && G.Tick < end)
+            {
+                var ts = targets();
+                foreach (var name in ops)
                 {
-                    var to = G.S.Grid.NearestFree(near.Pos(G.Tick));
-                    if (to.HasValue) G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "move", Point = to.Value });
+                    var e = Op(name); var w = e.Gun.W;
+                    if (e.Down || e.Inside || e.Busy != null || w == null) continue;
+                    string near = ""; Pt np = default; long bd = long.MaxValue;
+                    foreach (var id in ts) { var at = G.PosOf(id); if (!at.HasValue || G.GunOf(id)!.Down) continue; long d = G.D2(e.Pos, at.Value); if (d < bd) { bd = d; near = id; np = at.Value; } }
+                    if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.S.Stand(G.S.GetawayCar) }); continue; }
+                    bool line = G.S.Sight(e.Pos, np, G.R.Eye);
+                    bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
+                    bool firedOn = G.GunOf(near)!.Target == name;
+                    if (e.Gun.Order.Length == 0 && line && bd <= (long)w.MaxCm * w.MaxCm && (inEff || (advance && e.Walk == null) || firedOn)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "fire", Target = near });
+                    if (!advance) continue; // holding a post
+                    if (!inEff)
+                    {
+                        var to = G.S.Grid.NearestFree(np);
+                        if (to.HasValue && (e.Walk == null || e.Walk.End != to.Value)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = to.Value });
+                    }
+                    else if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); // in reach: stand and shoot
                 }
                 G.Step();
             }
+        }
+        /// <summary>The city's gunmen up on the street: the response unit's officers, a chasing patrol, drawn rivals.</summary>
+        public List<string> CityGunmen()
+        {
+            var ids = new List<string>(); foreach (var s in G.SecGuns) ids.Add(s.Id);
+            if (G.PatrolChasing && !G.PatrolDown) ids.Add("patrol");
+            if (G.RivalsDrawn && G.RivalsPresent) ids.Add("rivals");
+            return ids;
+        }
+        /// <summary>Hold posts and fire on the city's gunmen once they come into effective reach (or fire on the operative).</summary>
+        public void FightOff(Func<bool> done, int limitS, params string[] ops) => Engage(CityGunmen, done, limitS, ops, false, false);
+        /// <summary>The final fight: fight the hostiles until the car is free, then the Enforcer walks to it.</summary>
+        public void FightItOut(int limitS = 120, params string[] with)
+        {
+            var ops = new List<string> { "enforcer" }; ops.AddRange(with);
+            Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; }, () => !G.CarHeld(), limitS, ops.ToArray(), true);
             if (G.Over) return;
             var car = G.S.At(G.S.GetawayCar);
-            if (!G.Within(Op("enforcer").Pos, car, G.R.ActReachCm)) To(SendTo("enforcer", G.S.Stand(G.S.GetawayCar)));
+            if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) To(SendTo("enforcer", G.S.Stand(G.S.GetawayCar)));
         }
         public Pt At(string place) => G.S.At(place);
         public Pt Stand(string place) => G.S.Stand(place);

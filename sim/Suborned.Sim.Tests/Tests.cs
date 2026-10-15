@@ -126,6 +126,50 @@ public class RulesTests
         Assert.Throws<FormatException>(() => Order.Parse(JNode.Parse("{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"speed\":9}")));
         Assert.Throws<FormatException>(() => JNode.Parse("{\"v\": 1.5}")["v"].Long()); // integer state only
     }
+
+    [Fact]
+    public void TheFightOrdersKeepTheOrderFormat()
+    {
+        // new keys are written only when set: an older order reads and writes as before
+        var walk = Order.Parse(JNode.Parse("{\"tick\":3,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Courtyard\"}"));
+        Assert.Equal("{\"tick\":3,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Courtyard\"}", walk.ToString().Replace(" ", ""));
+        var forced = Order.Parse(JNode.Parse("{\"tick\":3,\"op\":\"enforcer\",\"do\":\"fire\",\"target\":\"waitress\",\"force\":true}"));
+        Assert.True(forced.Force); Assert.Contains("\"force\"", forced.ToString());
+        Assert.Equal("free", Order.Parse(JNode.Parse("{\"tick\":3,\"op\":\"scout\",\"do\":\"stance\",\"stance\":\"free\"}")).Stance);
+        Assert.Throws<FormatException>(() => Order.Parse(JNode.Parse("{\"tick\":3,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Courtyard\",\"force\":true}")));
+        Assert.Throws<FormatException>(() => Order.Parse(JNode.Parse("{\"tick\":3,\"op\":\"scout\",\"do\":\"fire\",\"target\":\"guard\",\"stance\":\"free\"}")));
+        var g = New();
+        Assert.False(g.Issue(new Order { Tick = 0, Op = "scout", Do = "stance", Stance = "wild" }).ok); // unknown = reject
+        Assert.False(g.Issue(new Order { Tick = 0, Op = "cell", Do = "panic" }).ok);                     // no fight on
+        Assert.False(g.Issue(new Order { Tick = 0, Op = "enforcer", Do = "fire", Target = "plaza" }).ok);
+    }
+
+    [Fact]
+    public void ArmsDecideWhoCarriesASidearm()
+    {
+        var none = new Start { Arms = 0 };
+        var g = New(none);
+        Assert.Equal("carbine", g.Enforcer.Gun.W!.Id);                        // the cell's, uses no Arms
+        Assert.Null(g.OpOf(OpId.Fixer).Gun.W);
+        Assert.False(g.Issue(new Order { Tick = 0, Op = "fixer", Do = "draw" }).ok);
+        var all = New();                                                        // the Handover issues three (site arms)
+        Assert.All(all.Ops, o => Assert.NotNull(o.Gun.W));
+        Assert.Equal(new[] { 4, 4, 4, 6 }, all.Ops.Select(o => o.Gun.Health).ToArray());
+    }
+
+    [Fact]
+    public void AccuracyMatchesTheTypeScriptReference()
+    {
+        var r = New().R;
+        // contracts/rules/rulebook.test.ts "bands and modifiers"
+        Assert.Equal(750, r.Accuracy(r.Pistol, 1200, false, false, false, false));
+        Assert.Equal(750, r.Accuracy(r.Pistol, 400, false, false, false, true));
+        Assert.Equal(375, r.Accuracy(r.Pistol, 1200, true, false, false, false));
+        Assert.Equal(187, r.Accuracy(r.Pistol, 1200, true, true, false, false));
+        Assert.Equal(400, r.Accuracy(r.Pistol, 2000, false, false, false, false));
+        Assert.Equal(0, r.Accuracy(r.Pistol, 2600, false, false, false, false));
+        Assert.Equal(750, r.Accuracy(r.Carbine, 1800, false, false, false, false));
+    }
 }
 
 public class GeometryTests

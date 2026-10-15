@@ -91,7 +91,7 @@ export type Eff = z.infer<typeof Eff>;
 /** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
 export const UNIT_BOUNDS = {
   s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [0, 100], alert: [0, 3], standing: [-1000, 1000],
-  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000],
+  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000],
 } as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
@@ -107,6 +107,8 @@ export type Line = z.infer<typeof Line>;
 const Outcome = z.strictObject({ id, when: z.array(Cond), changes: z.array(Eff).min(1) });
 const Also = z.strictObject({ when: z.array(Cond).min(1), changes: z.array(Eff).min(1) });
 const Witness = z.strictObject({ when: z.array(Cond).optional(), act: id });
+
+const Weapon = z.strictObject({ damage: Ref, every: Ref, eff: Ref, max: Ref });
 
 export const Event = z.strictObject({
   id: eventId,
@@ -147,7 +149,7 @@ export const Rulebook = z.strictObject({
   standing: ground({ start: Ref, step: Ref, hero: Ref, menace: Ref, rule: text }),
   alert: ground({
     levels: z.tuple([z.literal('routine'), z.literal('inquiry'), z.literal('search'), z.literal('lockdown')]),
-    byIncident: z.array(Ref).min(1), perShot: Ref, violenceSeen: Ref, rule: text,
+    byIncident: z.array(Ref).min(1), gunfire: Ref, violenceSeen: Ref, rule: text,
   }),
   fit: ground({
     from: z.strictObject({ suits: z.literal('respondsTo'), refused: z.literal('refuses'), otherwise: z.literal('worse') }),
@@ -169,14 +171,14 @@ export const Rulebook = z.strictObject({
   traceable: z.record(id, Traceable),
   // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref.
   cell: ground({
-    speed: Ref, runSpeed: Ref, carryRunSpeed: Ref, reach: Ref,
+    speed: Ref, runSpeed: Ref, runAlert: Ref, reach: Ref, atReach: Ref,
     loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref }),
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     call: z.strictObject({ trail: Ref }),
-    enter: z.strictObject({ s: Ref }),
+    enter: z.strictObject({ s: Ref, alarm: Ref }),
+    carry: z.strictObject({ s: Ref }),
     take: z.strictObject({ s: Ref, trailUnturned: Ref }),
-    fire: z.strictObject({ every: Ref, reach: Ref, reachRivals: Ref, trail: Ref, hits: Ref, enforcerHealth: Ref }),
     rule: text,
   }),
   security: ground({
@@ -184,8 +186,16 @@ export const Rulebook = z.strictObject({
     checkIn: Ref, seal: Ref, speed: Ref,
     rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }),
     patrol: z.strictObject({ breakTo: Ref, period: Ref, chase: Ref }),
-    aim: Ref,
-    fireEvery: z.strictObject({ guard: Ref, patrol: Ref, security: Ref, rivals: Ref }),
+    rule: text,
+  }),
+  // Weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md): deterministic hits by accumulator.
+  weapons: ground({
+    pistol: Weapon, carbine: Weapon, pointBlank: Ref,
+    acc: z.strictObject({ point: Ref, eff: Ref, long: Ref, start: Ref }),
+    mod: z.strictObject({ moving: Ref, cover: Ref, vale: Ref, untrained: Ref }),
+    draw: Ref, holster: Ref, aimNew: Ref, react: Ref, lineLapse: Ref, sidearmArms: Ref,
+    health: z.strictObject({ enforcer: Ref, op: Ref, guard: Ref, officer: Ref, rival: Ref, patrol: Ref, civilian: Ref, responseOfficers: Ref }),
+    costs: z.strictObject({ hit: Ref, down: Ref, drawSeenSecurity: Ref, drawSeenPeople: Ref, loudHold: Ref }),
     rule: text,
   }),
   perception: ground({
@@ -200,7 +210,7 @@ export const Rulebook = z.strictObject({
   fight: ground({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
-    volley: Ref, hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
+    hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
   }),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),

@@ -176,3 +176,27 @@ Places are the civic block's. The Scout listens from `beside-inez`, because the 
   - N10 (loud): Trail 14 → 6, Alert 3 → 2, shots 6 → 2, debrief High → Raised. The fight's 4 shots no longer count.
   - N11 and N11b (safe): Trail 19 → 5 and 12 → 4, Alert 3 → 0, debrief High → Calm. A quiet route's fight leaves it quiet.
   - The other 29 are unchanged.
+
+## Round 4 (2026-10-15): running and real-time shoot-outs (Sky approved briefs/011/motive-fights.md, all five answers)
+Engine `suborned.sim/0.4.0`. Every value is in `contracts/rules/rulebook.json`, tagged [S], proposed, with "Sky 2026-10-15, briefs/011/motive-fights.md" as its source.
+- **Running.** `op-run-speed-cm-s` 280. A run is refused, with its reason, for the Enforcer holding Vale, a carrier, the Tech while the loop holds, and anyone mid-action; `op-carry-run-cm-s` is retired. A run is noticed where an act would be. People within 13 m remember `saw-runner` (where, when, the face); it costs no Trail. Security (the guard, the patrol, a live camera, the response unit) counts one found fault a run: Alert → `run-alert` 1. A guard who saw the run is no ally. Running is free once a fight is on or the run is loud. `Game.QuoteMove` is the chip: walk and run time, who would see, Alert after.
+- **Weapons** (`weapons` section): pistol and carbine, three range bands, the four modifiers, health per kind, and the response unit as 2 officers. Hits are counted by an integer accumulator (start 500; at 1000 a hit, minus 1000), so at 750 ‰ exactly three in four hit: `Rules.Accuracy` = `rulebook.ref.ts accuracy()`. Arms come from site `arms` (3: all four armed). Orders: draw, holster, fire until down (`force` for a civilian or contact), cease, stance (hold, return, free), panic (op `cell`, only once a fight is on), carry. New keys are written only when set: older orders hash as before.
+- **Costs.** +2 T a person hit (once) and +2 T at a down; any gunfire → Alert ≥ 2 (`alert.gunfire` replaces `perShot`). A drawn weapon seen by security → Alert 2, and the watcher engages and calls it in. Seen by people, it is one witnessed incident (+1 T, Alert ≥ 1, the face) under the new traceable `weapon-drawn`; its standing is "none", which is Motive's call. The final fight stays untraced.
+- **Going loud.** `Game.GoingLoud(order)` is pure: it reads loud or not, Alert to, civilians, who reports, police ETA, arrival, seal, rivals, patrol, the fight after, the officers, ally and warning lost, the price, and the 0.5 s hold. The engine never pauses.
+- **Enter +30 s** once Alert ≥ 2 (`enter-alarm-s`).
+- **Retired:** `shot-every-s`, `fire-reach-m`, `fire-rivals-reach-m`, `shot-trail`, `shot-alert`, `hits-to-drop`, `enforcer-health`, `aim-s`, the four `*-fire-every-s` values, and `fight-volley-s`. Take's "rivals within reach" now reads the rivals' pistol effective reach (15 m, was 16).
+- **Sky's playtest (Aster):** acts on a device or a door are done at it. `at-reach-cm` 150 applies to Loop and Reroute at the cabinet, Enter at the public door, and Extract at the car. `tether-m` goes from 8 to 2. People acts keep `act-reach-m` 6.
+- **Re-timed scenarios:**
+  - S03–S09, S12–S19 fire until down, with honest expectations: the guard falls to 2 carbine hits, the react is 2 s, a drawn weapon is seen first, and civilians need force.
+  - S05 and S11 became losses: the response unit stands at the service lane when Vale comes out. They are re-scripted with the cell covering: S05 holds lane posts; S11 holds posts at the Office approach and Enters at the door.
+  - S19 runs to the north street (running is free once loud).
+  - N10, N11, N11b and N18 fight with the whole armed cell. A lone Enforcer dies in N10 and N11b, as Motive's calculator says for loud.
+- **New scenarios:**
+  - N20 a running witness, N20b running free once loud, N21 runs refused;
+  - N22 hit, hit, miss, hit;
+  - N23 the drawn-weapon incident, N24 going loud, N25 panic, N26 downed and carried.
+- **Evidence:**
+  - `dotnet test sim/Suborned.Sim.Tests`: 185/185 (52 scenarios × 3, plus the rest);
+  - `bun test contracts/rules tools/sim` 38/38; `bun run typecheck` clean.
+  - Identical to HEAD except hashes: N08, N09, N09b, N12, N12b, N14–N17b, S01, S02, S23–S25, S27, S28.
+  - Perf: S10 37k sim-s/s, N10 19k, N12 12k.
