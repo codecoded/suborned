@@ -16,9 +16,10 @@ namespace Suborned.Play
     /// as an engine order and the engine's own order log is written after each one, with the run's checkpoint hashes, to out/play/ (a player:
     /// persistentDataPath/play), so any session replays and can become a route script.
     /// Controls (Sky, 2026-10-15, "everything but rotation"; one table, PlayControls): left click an agent to select (Shift adds; drag a box
-    /// on the ground to select every agent in it) · left click the ground to walk there (roads cross anywhere; a double click asks to run,
-    /// which waits for the rulebook) · right click a person or object for the selected agent's verb, priced at the cursor before the click
-    /// (§02) · right click empty ground cancels the picked verb, else stops the selection's walks · 1–4 pick a verb (the hotbar lights the
+    /// on the ground to select every agent in it) · left click the ground to walk there (roads cross anywhere; a double click runs, the
+    /// engine's opt-in run) · right click a person or object opens the action panel (every action the cell has on it, priced, §02); with a
+    /// verb picked on the hotbar the right click gives it at once · right click empty ground closes the panel, else cancels the picked verb,
+    /// else stops the selection's walks · 1–4 pick a verb (the hotbar lights the
     /// one a right click gives) · F1–F4 or a roster portrait select an agent, twice quickly centres on them · Tab cycles agents · WASD,
     /// arrows or the middle mouse pan (edge scrolling is a setting, off) · the wheel zooms 12.5–18.5, where a 1.75 m person stays 40–60 px
     /// at 1080p (§10); no rotation, yaw stays 30 · Space pauses (on at the start) · = and − change speed · N jumps to the next event ·
@@ -82,13 +83,15 @@ namespace Suborned.Play
         public string AgentKeyLabel(int i) => controls.Label(PlayAction.Agent1 + i);
         /// <summary>The box being dragged, in GUI space (the HUD draws it), else null.</summary>
         public Rect? BoxScreen { get; private set; }
-        Vector2 dragFrom, lastGround; bool dragging; float lastGroundAt = -10f, lastAgentKeyAt = -10f; int lastAgentKey = -1;
+        Vector2 dragFrom, lastGround, lastRight; bool dragging; float lastGroundAt = -10f, lastAgentKeyAt = -10f; int lastAgentKey = -1;
 
         public sealed class Target { public string Kind = "", Key = "", Label = ""; } // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
-            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = ""; public bool Move;
+            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = ""; public bool Move;
+            /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
+            public bool Actionable => Order != null && !Move;
         }
 
         public OpId Agent { get; private set; } = OpId.Scout;   // the agent the hotbar is for (the first selected)
@@ -121,7 +124,7 @@ namespace Suborned.Play
         public void Begin()
         {
             Fault = null; Ending = ""; EndDebrief = null; lastLog = 0; acc = 0f; steps = 0; stepMs = 0; StepMsMax = 0; frames = 0; frameEngineMs = 0;
-            Paused = startPaused; Speed = 1; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null;
+            Paused = startPaused; Speed = 1; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
             if (viewRoot) Destroy(viewRoot.gameObject);
             Guard("load", () =>
             {
@@ -161,7 +164,7 @@ namespace Suborned.Play
             if (Ending.Length > 0) { if (controls.Down(kb, PlayAction.Restart)) Begin(); views?.Frame(1f); return; }
             Controls();
             if (Fault != null) return;
-            if (!Paused && !Game.Over)
+            if (!Paused && !Game.Over && !(Panel != null && controls.pauseWithPanel))
             {
                 acc += Time.unscaledDeltaTime * Speed;
                 int n = 0; double t0 = Now();
@@ -179,8 +182,12 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) views.Tick();
-            if (Game.Log.Count > lastLog) { var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count; }
+            if (ok) { views.Tick(); FollowUp(); }
+            if (Game.Log.Count > lastLog)
+            {
+                for (int i = lastLog; i < Game.Log.Count; i++) Landed(Game.Log[i]);
+                var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
+            }
             return ok;
         }
 
@@ -197,9 +204,10 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; }
                 for (int i = 0; i < 4; i++)
                 {
-                    if (c.Down(kb, PlayAction.Verb1 + i)) Pick(i);
+                    if (c.Down(kb, PlayAction.Verb1 + i)) { if (Panel != null) PanelKey(i); else Pick(i); }
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
+                if (kb.escapeKey.wasPressedThisFrame && Panel != null) ClosePanel();
                 if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
@@ -223,6 +231,7 @@ namespace Suborned.Play
             if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
             bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p);
+            if (mouse.leftButton.wasPressedThisFrame && !onHud && Panel != null) { ClosePanel(); return; } // a left click elsewhere closes the panel
             if (mouse.leftButton.wasPressedThisFrame && !onHud) { dragFrom = p; dragging = true; }
             if (dragging && mouse.leftButton.isPressed && (p - dragFrom).magnitude > 6f) BoxScreen = GuiRect(dragFrom, p);
             if (dragging && mouse.leftButton.wasReleasedThisFrame)
@@ -326,27 +335,31 @@ namespace Suborned.Play
             if (twice)
             {
                 if (!RunInRulebook) { if (!runNoted) { runNoted = true; Status = "run: not yet in the rulebook (walking)"; } return; } // the first click already sent the walk
+                MoveSelection(screen, true); // the second click turns the walk into a run (Keel: "run": true, 350 cm/s; carrying Vale stays at walking pace)
+                return;
             }
             MoveSelection(screen);
         }
 
-        /// <summary>Whether the engine's order format has a run flag (Order.Run). Until Keel's running rule lands it does not.</summary>
+        /// <summary>Whether the engine's order format has a run flag (Order.Run; Keel a295f76: opt-in on a move).</summary>
         public static readonly bool RunInRulebook = typeof(Order).GetField("Run") != null || typeof(Order).GetProperty("Run") != null;
         bool runNoted;
 
         /// <summary>Right click: on a person or object, the selected agent's current verb (the hovered intent, priced first); on empty ground, Cancel.</summary>
         public void PointerRight(Vector2 screen)
         {
+            lastRight = screen;
             if (Game == null || Fault != null || !cam) return;
             var t = TargetAt(screen);
             if (t != null && t.Kind != "op")
             {
                 PointerHover(screen);
                 var i = HoverIntent;
-                if (i?.Order == null) { Status = $"{Op.Name(Agent)}: nothing to do on {t.Label}"; return; }
-                Issue(i.Order);
+                if (Picked >= 0 && i != null && i.Actionable) { Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once
+                OpenPanel(t, screen);                                                                       // else the action panel (Sky: "expecting an actions panel to pop out")
                 return;
             }
+            if (Panel != null) { ClosePanel(); return; } // right click on empty ground closes the panel, and cancels nothing else
             Cancel();
         }
 
@@ -354,7 +367,7 @@ namespace Suborned.Play
         /// to where each stands). An action already under way runs to its end.</summary>
         public void Cancel()
         {
-            if (Picked >= 0) { Picked = -1; intentKey = ""; Status = "verb cancelled"; return; }
+            if (Picked >= 0) { Picked = -1; intentKey = ""; Status = "verb cancelled"; Pop("cancelled", lastRight, null, Feedback.Info); return; }
             int stopped = 0;
             for (int n = 0; n < 4; n++)
             {
@@ -362,17 +375,24 @@ namespace Suborned.Play
                 Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = op.Pos }); stopped++;
             }
             Status = stopped > 0 ? $"stopped {stopped}" : "nothing to cancel";
+            Pop(stopped > 0 ? $"stopped {stopped}" : "nothing to cancel", lastRight, null, Feedback.Info);
         }
 
         /// <summary>The selection walks to the ground under a screen point; a group stands in a 0.9 m square.</summary>
-        public void MoveSelection(Vector2 screen)
+        public void MoveSelection(Vector2 screen, bool run = false)
         {
+            for (int n = 0; n < 4; n++) if (Selected[n]) pending[n] = null; // a new walk replaces the order an agent was walking for
             if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) return;
             var at = frame.Engine(w); int k = 0;
             for (int n = 0; n < 4; n++)
             {
                 if (!Selected[n]) continue;
-                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = new Pt(at.X + (k % 2) * 90, at.Y + (k / 2) * 90) }); k++;
+                // snap to the nearest walkable cell of the engine's grid within 3 m (the café terrace, planters, the fountain are solids), and
+                // send the snapped point, so the order is what the agent does and the replay is exact
+                var want = new Pt(at.X + (k % 2) * 90, at.Y + (k / 2) * 90); k++;
+                Pt? to = Game.S.Grid.Free(want) ? want : Game.S.Grid.NearestFree(want);
+                if (!to.HasValue || G.Dist(to.Value, want) > 300) { Pop("can't walk there: nothing walkable within 3 m", screen, null, Feedback.Refused); continue; }
+                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null);
             }
         }
 
@@ -387,7 +407,7 @@ namespace Suborned.Play
             {
                 if (!hit.collider.transform.IsChildOf(viewRoot)) continue;
                 var t = TargetOf(hit.collider.transform); if (t == null) continue;
-                int r = t.Kind == "op" ? (agents ? 0 : 2) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" ? (agents ? 1 : 0) : (agents ? 2 : 1);
+                int r = t.Kind == "op" ? (agents ? 0 : 3) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" ? (agents ? 1 : 0) : t.Kind == "crowd" ? (agents ? 3 : 2) : (agents ? 2 : 1);
                 if (r < rank || (r == rank && hit.distance < dist)) { best = t; rank = r; dist = hit.distance; }
             }
             return best;
@@ -404,6 +424,7 @@ namespace Suborned.Play
                 if (n.StartsWith("rivals/")) return new Target { Kind = "rivals", Key = "rivals", Label = "the rival crew" };
                 if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = "the response unit" };
                 if (n.StartsWith("hostile/")) return new Target { Kind = "hostile", Key = "hostiles", Label = "a hostile" };
+                if (n.StartsWith("crowd/")) return new Target { Kind = "crowd", Key = n, Label = "a passer-by" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
@@ -417,16 +438,51 @@ namespace Suborned.Play
         Intent IntentFor(Target t)
         {
             if (t.Kind == "op") return null;
+            if (t.Kind == "crowd") return new Intent { Label = "passer-by", Hint = "a passer-by: the engine has no verbs for them yet (they witness what you do)" };
             Intent got = null;
             Guard("price", () =>
             {
                 var slots = Slots[(int)Agent];
                 if (Agent == OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned) { got = Call(t); return; }
                 if (Picked >= 0) got = Verb(Agent, Picked, t);
-                for (int i = 0; got == null && i < slots.Length; i++) got = Verb(Agent, i, t);
-                got ??= Go(t);
+                // the default never fires on a person who is not a hostile: shooting is picked on purpose (2 = Fire)
+                for (int i = 0; got == null && i < slots.Length; i++) if (!(Slots[(int)Agent][i].Id == "fire" && t.Kind == "person")) got = Verb(Agent, i, t);
+                got ??= new Intent { Label = t.Label, Hint = WhoCan(t) };
             });
             return got;
+        }
+
+        static readonly string[] AgentNames = { "Scout", "Fixer", "Tech", "Enforcer" };
+        static readonly string[] AgentDoes = { "to watch or listen", "to talk", "to work the camera or patrol", "to act" };
+
+        /// <summary>"Scout can't act on this — select the Fixer (F2) to talk": the first other agent with a verb on the target.</summary>
+        string WhoCan(Target t)
+        {
+            var me = AgentNames[(int)Agent];
+            for (int k = 0; k < 4; k++)
+            {
+                if (k == (int)Agent) continue;
+                for (int i = 0; i < Slots[k].Length; i++)
+                {
+                    Intent v = null; Guard("price", () => v = Verb((OpId)k, i, t));
+                    if (v != null) return $"{me} can't act on {t.Label} — select the {AgentNames[k]} ({AgentKeyLabel(k)}) {AgentDoes[k]}";
+                }
+            }
+            return $"{me} can't act on {t.Label}, and no agent can yet";
+        }
+
+        /// <summary>The engine's refusal, said for the player: who, what to do about it.</summary>
+        static string Title(string s) => s.Length == 0 ? s : char.ToUpperInvariant(s[0]) + s[1..];
+
+        public string Humanise(Order o, string why)
+        {
+            string who = o.Target switch { "waitress" => "Inez", "councillor" => "Vale", "" => "", var r => "the " + r };
+            string agent = o.Op.Length > 0 ? char.ToUpperInvariant(o.Op[0]) + o.Op[1..] : "";
+            if (why.StartsWith("stand within ")) return $"{agent} is too far from {(who.Length > 0 ? who : "it")} — {why.Replace("stand", "walk")}";
+            if (why.Contains("knowledge")) return $"{Title(o.Approach)} needs what the Scout learns about {who}: Watch (routine), then Listen (need) — {why}";
+            if (why.Contains("can't be walked")) return "can't walk there: a roof, a wall or a solid";
+            if (why.Contains(" is busy until ")) return $"{agent} is busy until {MissionClock(int.TryParse(why[(why.LastIndexOf(' ') + 1)..], out var t) ? t : Game.Tick)}";
+            return $"{agent}: {why}";
         }
 
         Intent Verb(OpId by, int slot, Target t)
@@ -504,13 +560,22 @@ namespace Suborned.Play
         Pt? CameraAt(string id) { foreach (var c in Game.S.Cameras) if (c.Id == id) return c.At; return null; }
 
         /// <summary>Give an order now, stamped with the engine's tick. A refusal is the engine's, with its reason, and is in the log like any order.</summary>
-        public bool Issue(Order o)
+        public bool Issue(Order o) => Issue(o, null, null);
+
+        /// <summary>As Issue, and the answer shows where the player clicked: a refusal's reason at the cursor and on the target for ~2.5 s, a
+        /// taken order as a short confirmation and a ring pulse on the target (Sky: "right click doesn't seem to do anything").</summary>
+        public bool Issue(Order o, Vector2? screen, Vector3? target, bool quietRefusal = false)
         {
             if (Game == null || Fault != null) return false;
             o.Tick = Game.Tick;
             (bool ok, string why) r = (false, "");
             if (!Guard("order", () => r = Game.Issue(o))) return false;
             Status = r.ok ? $"{o.Op}: {o.Do} {o.Approach} {o.Target}".Replace("  ", " ") : $"{o.Op} {o.Do} {o.Target}: {r.why}";
+            if (screen.HasValue || target.HasValue)
+            {
+                if (r.ok) { if (o.Do != "move") Pop($"✓ {o.Op} {(o.Do == "turn" ? o.Approach : o.Do)}{(o.Target.Length > 0 ? " " + o.Target : "")}", screen, target, Feedback.Ok); }
+                else if (!quietRefusal) Pop(Humanise(o, r.why), screen, target, Feedback.Refused);
+            }
             Save();
             views.Tick(); views.Frame(1f); intentKey = "";
             if (Game.Over && Ending.Length == 0) End();
@@ -545,10 +610,197 @@ namespace Suborned.Play
             void C(int x) { if (x > t && x < best) best = x; }
             var s = g.S; foreach (var k in new[] { s.RivalsArrive, s.Chime, s.DriverLast, s.ValeExits, s.ValeAtCar, s.Over }) C(Game.T(k));
             int speed = g.R.CellSpeed;
-            foreach (var op in g.Ops) { if (op.Busy != null) C(op.BusyEnd); if (op.Walk != null) C(t + (int)((op.Walk.Length - op.WalkMm + speed - 1) / speed)); }
+            foreach (var op in g.Ops) { if (op.Busy != null) C(op.BusyEnd); int sp = op.WalkSpeed > 0 ? op.WalkSpeed : speed; if (op.Walk != null) C(t + (int)((op.Walk.Length - op.WalkMm + sp - 1) / sp)); }
             if (g.LureTick >= 0) { int w = Game.T(s.GuardWalkS), st = Game.T(s.GuardStayS); C(g.LureTick + w); C(g.LureTick + w + st); C(g.GuardAwayUntil); }
             C(g.RivalsDelayedUntil); C(g.BlockedFrom); C(g.BlockedUntil); C(g.SecurityArrives); C(g.Lockdown); C(g.PatrolAwayUntil); C(g.MissingNotice);
             return best == int.MaxValue ? t + 1 : best;
+        }
+
+        // ---------------------------------------------------------------- the action panel (GDD §10: click a person → action card with the full price)
+
+        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = ""; public bool Available; }
+        public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = ""; public readonly List<PanelRow> Rows = new(); }
+        /// <summary>The open panel, else null. Built once on opening (Preview is ~500 KB a call); the clock runs on unless controls.pauseWithPanel.</summary>
+        public ActionPanel Panel { get; private set; }
+        public int PanelHover { get; private set; } = -1;
+
+        /// <summary>Every action the cell can take on a target, grouped by agent, the selected agent's first: available rows first within each
+        /// agent, locked rows dimmed with their reason. Distance is never a lock: an agent out of reach walks there first.</summary>
+        public void OpenPanel(Target t, Vector2 screen)
+        {
+            var pn = new ActionPanel { T = t, Gui = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y), World = TargetWorld(t) };
+            if (t.Kind == "crowd") pn.Note = "passer-by — not yet known to the cell";
+            else Guard("panel", () =>
+            {
+                var order = new List<int>(); int first = Array.IndexOf(Selected, true); if (first >= 0) order.Add((int)Agent);
+                for (int k = 0; k < 4; k++) if (!order.Contains(k)) order.Add(k);
+                foreach (var k in order)
+                {
+                    var rows = new List<PanelRow>();
+                    if (k == (int)OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned)
+                    { var c = Call(t); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = "Call", Reason = Game.CanCall(t.Key) ? "" : "not now (the guard is not at the door, or too late)" }); }
+                    else for (int i = 0; i < Slots[k].Length; i++)
+                        {
+                            var v = Verb((OpId)k, i, t); if (v == null) continue;
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = Slots[k][i].Label, Reason = Locked((OpId)k, v, t) });
+                        }
+                    foreach (var r in rows) r.Available = r.Reason.Length == 0;
+                    pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
+                }
+                if (pn.Rows.Count == 0) pn.Note = $"no agent can act on {t.Label} yet";
+            });
+            Panel = pn; PanelHover = -1; views.ShowPath(null);
+        }
+
+        public void ClosePanel() { Panel = null; PanelHover = -1; views?.ShowPath(null); }
+
+        /// <summary>Hovering a row draws that agent's walk to the target (one A* when the hovered row changes).</summary>
+        public void SetPanelHover(int row)
+        {
+            if (row == PanelHover || Panel == null) return;
+            PanelHover = row;
+            if (row < 0 || row >= Panel.Rows.Count || !Panel.World.HasValue) { views.ShowPath(null); return; }
+            var op = Game.Ops[(int)Panel.Rows[row].By]; var to = frame.Engine(Panel.World.Value);
+            Pt[] route = null; Guard("path", () => { var f = Game.S.Grid.NearestFree(to); route = f.HasValue ? Game.S.Grid.Route(op.Pos, f.Value) : null; });
+            var pts = new List<Vector3>();
+            if (route != null) foreach (var p in route) pts.Add(frame.World(p) + Vector3.up * 0.08f);
+            else { pts.Add(frame.World(op.Pos) + Vector3.up * 0.08f); pts.Add(Panel.World.Value + Vector3.up * 0.08f); }
+            views.ShowPath(pts);
+        }
+
+        /// <summary>A row clicked: the order goes to that row's agent, even if another is selected; the panel closes.</summary>
+        public void PanelDo(int row)
+        {
+            if (Panel == null || row < 0 || row >= Panel.Rows.Count) return;
+            var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
+            if (!r.Available) { Pop($"{r.Verb}: {r.Reason}", at, Panel.World, Feedback.Refused); return; }
+            ClosePanel();
+            Give(r.By, r.I.Order, t, at);
+        }
+
+        /// <summary>1–4 inside the panel: the selected agent's row for that verb slot.</summary>
+        void PanelKey(int slot)
+        {
+            if (Panel == null) return;
+            for (int i = 0; i < Panel.Rows.Count; i++) if (Panel.Rows[i].By == Agent && Panel.Rows[i].Slot == slot) { PanelDo(i); return; }
+            Pop($"{AgentNames[(int)Agent]} has no {VerbKey(slot)} here", null, Panel.World, Feedback.Info);
+        }
+
+        /// <summary>Why a row cannot be given now, from the engine's own state (the engine still answers the order; its refusal shows as a pop).</summary>
+        string Locked(OpId by, Intent v, Target t)
+        {
+            var g = Game; var op = g.Ops[(int)by]; var o = v.Order;
+            if (op.Inside) return "inside the Office";
+            if (op.Busy != null) return $"busy until {MissionClock(op.BusyEnd)}";
+            switch (o.Do)
+            {
+                case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? "" : "not out on the street";
+                case "turn":
+                    {
+                        var p = g.PersonByRole(o.Target);
+                        if (!g.PersonPos(p).HasValue) return "not out on the street";
+                        var need = g.R.ApproachRequires(o.Approach);
+                        string her = o.Target == "waitress" ? "her" : "their";
+                        if (need != "nothing" && !p.Knows(need)) return $"needs {her} {need} — {(need == "routine" ? "Watch" : "Listen")} (Scout) first";
+                        if (p.KnownRefused.Contains(o.Approach)) return $"{(o.Target == "waitress" ? "Inez" : "they")} refused this already";
+                        var q = g.Preview(o.Approach, o.Target, OpId.Fixer); if (q.WorstUsd > g.Cash) return $"not enough cash (${q.WorstUsd:N0})";
+                        return "";
+                    }
+                case "loop": return g.LoopOn ? "the loop already holds" : "";
+                case "reroute": return g.PatrolAwayUntil > g.Tick ? "the patrol is already away" : "";
+                case "mislead": return g.RivalsPresent ? "" : "no rivals here yet";
+                case "enter": return g.Vale == ValeAt.Office ? "" : "Vale is not inside";
+                case "take": return g.Vale == ValeAt.Pickup ? "" : "Vale is not at his car yet";
+                case "extract": return g.Vale == ValeAt.WithEnforcer ? "" : "you don't have Vale yet";
+                case "fire": return g.Tick < g.EnforcerNextShot ? "reloading" : "";
+            }
+            return "";
+        }
+
+        /// <summary>Give an order for an agent; if the engine says they stand too far, they walk to the target first and the order follows on arrival
+        /// (both are engine orders at their own ticks, so the session replays as played).</summary>
+        void Give(OpId by, Order o, Target t, Vector2? screen)
+        {
+            var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point };
+            pending[(int)by] = null;
+            if (Issue(order, screen, TargetWorld(t), quietRefusal: true)) return;
+            var why = Game.Orders[Game.Orders.Count - 1].why;
+            bool far = why.StartsWith("stand ") || why.StartsWith("out of range");
+            if (!far) { Pop(Humanise(order, why), screen, TargetWorld(t), Feedback.Refused); return; }
+            var tw = TargetWorld(t); if (!tw.HasValue) { Pop(Humanise(order, why), screen, null, Feedback.Refused); return; }
+            string place = t.Kind switch { "door" => Game.S.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => Game.S.GetawayCar, _ => "" };
+            Pt? to = place.Length > 0 ? Game.S.Stand(place) : Game.S.Grid.NearestFree(frame.Engine(tw.Value));
+            // "stand within 6 m": walk the route only until within reach (less half a metre), not onto the person
+            var m = System.Text.RegularExpressions.Regex.Match(why, @"within (\d+) m");
+            if (m.Success && place.Length == 0 && to.HasValue)
+            {
+                int reach = int.Parse(m.Groups[1].Value) * 100 - 50; var tp = frame.Engine(tw.Value);
+                var route = Game.S.Grid.Route(Game.Ops[(int)by].Pos, to.Value);
+                // the route's corners can be far apart: walk it in 25 cm steps and stop at the first free point within reach
+                if (route != null)
+                    for (int i = 1; i < route.Length; i++)
+                    {
+                        Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 25); bool found = false;
+                        for (int k = 1; k <= n; k++) { var q = G.Lerp(a, c, k, n); if (G.Dist(q, tp) <= reach && Game.S.Grid.Free(q)) { to = q; found = true; break; } }
+                        if (found) break;
+                    }
+            }
+            if (!to.HasValue) { Pop(Humanise(order, why), screen, tw, Feedback.Refused); return; }
+            var walk = place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = place } : new Order { Op = order.Op, Do = "move", Point = to };
+            if (Issue(walk, screen, null))
+            {
+                pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach };
+                pendingAt[(int)by] = tw;
+                Pop($"{AgentNames[(int)by]} walks to {t.Label}, then {(order.Do == "turn" ? order.Approach : order.Do)}", screen, tw, Feedback.Ok);
+            }
+        }
+
+        readonly Order[] pending = new Order[4]; readonly Vector3?[] pendingAt = new Vector3?[4];
+
+        /// <summary>After each step: an agent who has arrived (no walk, nothing in hand) gives the order they walked for.</summary>
+        void FollowUp()
+        {
+            for (int k = 0; k < 4; k++)
+            {
+                var o = pending[k]; if (o == null) continue;
+                var op = Game.Ops[k]; if (op.Walk != null || op.Busy != null || op.Inside) continue;
+                pending[k] = null;
+                Issue(new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach }, null, pendingAt[k]);
+            }
+        }
+
+        // ---------------------------------------------------------------- feedback: every click answers where it was made
+
+        public enum Feedback { Info, Ok, Refused }
+        public sealed class PopUp { public string Text = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born; }
+        /// <summary>Pops the HUD draws (at the cursor, or over a world point), newest last; and ring pulses on targets.</summary>
+        public readonly List<PopUp> Pops = new();
+        public readonly List<(Vector3 world, Feedback kind, float born)> Pulses = new();
+
+        public void Pop(string text, Vector2? screen, Vector3? world, Feedback kind, float seconds = 2.5f)
+        {
+            float now = Time.unscaledTime;
+            var gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : (Vector2?)null;
+            Pops.Add(new PopUp { Text = text, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
+            if (world.HasValue) Pulses.Add((world.Value, kind, now));
+            while (Pops.Count > 6) Pops.RemoveAt(0);
+            while (Pulses.Count > 6) Pulses.RemoveAt(0);
+        }
+
+        public Vector3? TargetWorld(Target t)
+        {
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", _ => null };
+            var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
+        }
+
+        /// <summary>An order landing (watched, listened, turned, refused, called) pops over the person it was about.</summary>
+        void Landed(LogLine l)
+        {
+            if (!(l.Code.StartsWith("turn.") || l.Code.StartsWith("scout.") || l.Code.StartsWith("call.") || l.Code.StartsWith("loop.") || l.Code.StartsWith("patrol.rerouted") || l.Code.StartsWith("rivals.misled") || l.Code.StartsWith("fail.") || l.Code == "success")) return;
+            string key = l.Text.Contains("(waitress)") || l.Code == "call.waitress" ? "waitress" : l.Text.Contains("(driver)") || l.Code == "call.driver" ? "driver" : l.Text.Contains("(guard)") ? "guard" : l.Text.Contains("(councillor)") ? "councillor" : null;
+            var tr = key != null ? views.Find(key) : null;
+            var kind = l.Code.EndsWith(".refused") || l.Code.StartsWith("fail.") ? Feedback.Refused : Feedback.Ok;
+            Pop(l.Text, null, tr ? tr.position : (Vector3?)null, kind, 4f);
         }
 
         // ---------------------------------------------------------------- the session, the end
@@ -564,7 +816,16 @@ namespace Suborned.Play
         void Save()
         {
             if (Game == null || SessionPath.Length == 0) return;
-            try { File.WriteAllText(SessionPath, Script.Write(Game, Bundle.Inputs.Hash) + "\n"); } catch (Exception e) { Debug.LogWarning($"Play: session not saved: {e.Message}"); }
+            try
+            {
+                // a session still running has no closing checkpoint; the replay takes one at `until` (Engine.Play calls Finish), so the record
+                // carries it too, written beside the live list and taken out again (the live game's checkpoints are untouched)
+                var cps = Game.Checkpoints; bool add = !Game.Over && (cps.Count == 0 || cps[cps.Count - 1].tick != Game.Tick);
+                if (add) cps.Add((Game.Tick, Hash.State(Game)));
+                try { File.WriteAllText(SessionPath, Script.Write(Game, Bundle.Inputs.Hash) + "\n"); }
+                finally { if (add) cps.RemoveAt(cps.Count - 1); }
+            }
+            catch (Exception e) { Debug.LogWarning($"Play: session not saved: {e.Message}"); }
         }
 
         void End()

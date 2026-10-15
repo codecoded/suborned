@@ -16,11 +16,13 @@ Sky's scheme of 2026-10-15 ("everything but rotation"). The camera keeps yaw 30.
 |---|---|
 | **left click an agent** | select it. **Shift**-click adds to the group. |
 | **drag a box on the ground** | select every agent inside the box |
-| **left click the ground** | the selection walks there. Roads can be crossed anywhere. |
-| **double-click the ground** | run. The engine has no running rule yet (Keel and Motive are writing it), so the agents walk and the HUD says "run: not yet in the rulebook" once. |
-| **hover a person or thing** | the price chip at the cursor shows what a right click will do: $ · time · Trail · Alert · the outcome. "?" means you don't know yet. |
-| **right click a person or thing** | the selected agent's current verb on it |
-| **right click empty ground** | cancel: drops a picked verb; with none picked, stops the selection's walks |
+| **left click the ground** | the selection walks there. Roads can be crossed anywhere. A click on something solid (the café terrace, a planter, the fountain) snaps to the nearest walkable spot within 3 m; a ring marks where each agent will stop. |
+| **double-click the ground** | run (3.5 m/s; carrying Vale stays at walking pace). The marker shows » while running. |
+| **hover a person or thing** | a ring and an action cursor show the cell can act on it; the chip shows the selected agent's price ($ · time · Trail · Alert · outcome, "?" = not known yet). Passers-by show "passer-by". |
+| **right click a person or thing** | opens the **action panel**: every action the cell has on it, by agent (yours first), each with its full price. Locked actions are dimmed with the reason ("needs her routine — Watch (Scout) first"). Click a row to give it, to that row's agent. Hover a row to see the walk. 1–4 pick the selected agent's rows. Esc, a left click elsewhere or a right click on empty ground closes it. The clock keeps running (`controls.pauseWithPanel` pauses it). |
+| **right click with a verb picked (1–4)** | gives that verb at once, no panel (the fast path) |
+| **right click empty ground** | closes the panel; else drops a picked verb; else stops the selection's walks ("cancelled" shows) |
+| **every order answers** | a refusal pops its reason at the cursor and over the target; a taken order pops ✓ and pulses a ring on the target; landings (watched, refused, turned) pop over the person. An agent too far away walks into reach first, then acts. |
 | **1 2 3 4** | pick a different verb. The hotbar above the roster shows them and lights the one a right click will give. |
 | **F1 F2 F3 F4** or a **roster portrait** | select Scout, Fixer, Tech or Enforcer (Shift adds). Press twice quickly, or double-click the portrait, to centre the camera on them. |
 | **Tab** | next agent |
