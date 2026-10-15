@@ -1,0 +1,158 @@
+{
+ "scout": {
+  "target": "#4f7a4a",
+  "target_dE": {
+   "cones": 54.7,
+   "guard": 40.9,
+   "rivals": 46.4
+  },
+  "takes": {
+   "R3-2-scout-1-rooftop-runner": {
+    "share": 0.0018,
+    "painted": "#565d41",
+    "cones": 41.0,
+    "guard": 41.4,
+    "rivals": 51.4
+   },
+   "R3-2-scout-2-sky-rail-lookout": {
+    "share": 0.0035,
+    "painted": "#3d412d",
+    "cones": 41.9,
+    "guard": 52.3,
+    "rivals": 49.3
+   },
+   "R3-2-scout-3-alpine-surveyor": null,
+   "R3-2-scout-4-courier-rider": {
+    "share": 0.0025,
+    "painted": "#595e46",
+    "cones": 39.1,
+    "guard": 40.6,
+    "rivals": 48.7
+   },
+   "R3-2-scout-5-fin-pack-glider": null
+  }
+ },
+ "fixer": {
+  "target": "#74483a",
+  "target_dE": {
+   "cones": 22.1,
+   "guard": 41.6,
+   "rivals": 35.8
+  },
+  "takes": {
+   "R3-2-fixer-1-column-diplomat": {
+    "share": 0.0054,
+    "painted": "#5c3627",
+    "cones": 27.3,
+    "guard": 49.6,
+    "rivals": 38.9
+   },
+   "R3-2-fixer-2-long-coat": {
+    "share": 0.0138,
+    "painted": "#5e3f33",
+    "cones": 27.0,
+    "guard": 47.4,
+    "rivals": 36.7
+   },
+   "R3-2-fixer-3-trouser-suit": {
+    "share": 0.0214,
+    "painted": "#513327",
+    "cones": 29.8,
+    "guard": 51.8,
+    "rivals": 38.6
+   },
+   "R3-2-fixer-4-dispatcher": {
+    "share": 0.0086,
+    "painted": "#543428",
+    "cones": 29.1,
+    "guard": 51.4,
+    "rivals": 38.3
+   },
+   "R3-2-fixer-5-high-collar": {
+    "share": 0.0092,
+    "painted": "#493326",
+    "cones": 32.0,
+    "guard": 52.3,
+    "rivals": 39.8
+   }
+  }
+ },
+ "tech": {
+  "target": "#a9d9e0",
+  "target_dE": {
+   "cones": 51.1,
+   "guard": 39.3,
+   "rivals": 38.3
+  },
+  "takes": {
+   "R3-2-tech-1-mender-smith": {
+    "share": 0.0004,
+    "painted": "#92a7a6",
+    "cones": 40.7,
+    "guard": 33.0,
+    "rivals": 30.9
+   },
+   "R3-2-tech-2-hakama-mender": {
+    "share": 0.0017,
+    "painted": "#aecdcb",
+    "cones": 47.8,
+    "guard": 34.9,
+    "rivals": 38.8
+   },
+   "R3-2-tech-3-harness-listener": {
+    "share": 0.0012,
+    "painted": "#9ab5b7",
+    "cones": 43.2,
+    "guard": 34.4,
+    "rivals": 31.1
+   },
+   "R3-2-tech-4-duster-turret": null,
+   "R3-2-tech-5-tool-skirt": {
+    "share": 0.0011,
+    "painted": "#a9c2c0",
+    "cones": 45.0,
+    "guard": 33.5,
+    "rivals": 36.7
+   }
+  }
+ },
+ "enforcer": {
+  "target": "#1f3a5f",
+  "target_dE": {
+   "cones": 46.1,
+   "guard": 64.9,
+   "rivals": 25.2
+  },
+  "takes": {
+   "R3-2-enforcer-1-greatcoat": null,
+   "R3-2-enforcer-2-marshal": {
+    "share": 0.002,
+    "painted": "#252c3a",
+    "cones": 43.3,
+    "guard": 62.7,
+    "rivals": 29.3
+   },
+   "R3-2-enforcer-3-open-apron-coat": {
+    "share": 0.0053,
+    "painted": "#2e3c4f",
+    "cones": 42.9,
+    "guard": 60.4,
+    "rivals": 24.3
+   },
+   "R3-2-enforcer-4-hooded-heavy": {
+    "share": 0.0015,
+    "painted": "#333d50",
+    "cones": 41.5,
+    "guard": 59.8,
+    "rivals": 24.7
+   },
+   "R3-2-enforcer-5-slash-coat": {
+    "share": 0.0009,
+    "painted": "#262d3d",
+    "cones": 43.3,
+    "guard": 62.9,
+    "rivals": 29.1
+   }
+  }
+ }
+}
