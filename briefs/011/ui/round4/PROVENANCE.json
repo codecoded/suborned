@@ -1,0 +1,715 @@
+{
+ "brief": "011 C round 4 (wide exploration: 28 variations)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "Codex CLI image tool via out/concepts/ui-011-r4/gen4.py (round 3's gen2.py call); cost 0 per image; no Runware or other paid service",
+ "concurrency": "2 workers, 5 generations, no timeouts or retries (44-60 s each)",
+ "method": "Frames are composited, not generated whole: the Codex images are KIT SHEETS (icon hands, paper objects, orbs, signs) on flat magenta, keyed and cut; layouts, panels, rings, arcs, text and the pixel language are drawn in code (PIL, 3x supersampled; scripts in out/concepts/ui-011-r4/) over the real Handover plates. Reason: 28 layouts x 3 beats of exact numbers and positions cannot come out of one prompt per frame; round 3 made the same split.",
+ "plates": "briefs/011/ui/plates/ (Latch): cafe-front-172430 (0:58 beat), office-door-1730 (the take), service-lane-1730 (the fight). Cell, guards, rivals, the response car and the camera cone are drawn by out/concepts/ui-011-r4/scene.py (the plates carry no cell capsules, no cones, no vehicles); they are identical under every variation.",
+ "research": "briefs/011/research/hud-round4.md (and syndicate-hud.md from round 3)",
+ "palette_check": "CIEDE2000 against cone red #e03a2f, guard amber #f0a020, rival violet #8a4fd0 (out/concepts/ui-011/de2000.py): every colour the HUD uses is >= 21.3 away (brass #99784d is the lowest, a thin line only; ink teal 34.3, cream 30.3, turquoise 42.4, seafoam 39.0). Sampled sprite colours (paper cream, orb glass) >= 23.6. FAILED and NOT USED: manila luggage-tag #e6cf9f (18.3 from guard amber) and peach tag #f1c4a6 (18.4); the paper language uses cream stock only.",
+ "footprint_metric": "share of the 1920x1080 frame the HUD draws (alpha > 40) at the 0:58 beat: docked = the standing layout alone, total = everything incl. radial, price and icons. Cross-check by pixel difference against plate + world layer: round 3 d3-hybrid 12.0 %, d1 12.6 %, d2 6.3 %; round 4 v01 0.9 %, v06 1.3 %, v10 2.6 %, v23 5.9 % (difference method counts any changed pixel, so it reads a little higher than the alpha method).",
+ "coverage_pct_b0": {
+  "v01": {
+   "docked": 0.04,
+   "total": 0.62
+  },
+  "v02": {
+   "docked": 0.1,
+   "total": 0.48
+  },
+  "v03": {
+   "docked": 0.19,
+   "total": 1.2
+  },
+  "v04": {
+   "docked": 0.09,
+   "total": 0.67
+  },
+  "v05": {
+   "docked": 0.11,
+   "total": 0.76
+  },
+  "v06": {
+   "docked": 0.27,
+   "total": 0.94
+  },
+  "v07": {
+   "docked": 0.28,
+   "total": 0.99
+  },
+  "v08": {
+   "docked": 0.1,
+   "total": 0.89
+  },
+  "v09": {
+   "docked": 0.38,
+   "total": 0.94
+  },
+  "v10": {
+   "docked": 1.52,
+   "total": 2.39
+  },
+  "v11": {
+   "docked": 0.43,
+   "total": 0.97
+  },
+  "v12": {
+   "docked": 1.7,
+   "total": 2.65
+  },
+  "v13": {
+   "docked": 1.21,
+   "total": 2.06
+  },
+  "v14": {
+   "docked": 0.52,
+   "total": 1.35
+  },
+  "v15": {
+   "docked": 0.42,
+   "total": 0.9
+  },
+  "v16": {
+   "docked": 1.55,
+   "total": 1.99
+  },
+  "v17": {
+   "docked": 1.55,
+   "total": 2.4
+  },
+  "v18": {
+   "docked": 1.29,
+   "total": 1.8
+  },
+  "v19": {
+   "docked": 1.54,
+   "total": 2.22
+  },
+  "v20": {
+   "docked": 1.11,
+   "total": 2.3
+  },
+  "v21": {
+   "docked": 1.73,
+   "total": 2.65
+  },
+  "v22": {
+   "docked": 1.36,
+   "total": 1.94
+  },
+  "v23": {
+   "docked": 5.06,
+   "total": 5.74
+  },
+  "v24": {
+   "docked": 4.87,
+   "total": 5.49
+  },
+  "v25": {
+   "docked": 4.86,
+   "total": 5.87
+  },
+  "v26": {
+   "docked": 5.41,
+   "total": 6.23
+  },
+  "v27": {
+   "docked": 0.09,
+   "total": 0.59
+  },
+  "v28": {
+   "docked": 4.55,
+   "total": 5.11
+  }
+ },
+ "generations": [
+  {
+   "key": "p1_paper",
+   "file": "p1_paper.png",
+   "seconds": 46,
+   "sha256": "3b230bf21d46d4df2b9ce6d8d8c5e703641bb233c4a115f8d7f5cd7ef473368d",
+   "refs": [],
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface kit sheet for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead; thinking machines and networks never came, so everything is clockwork, paper and enamel: stamped forms, punch cards, luggage tags, engraved dial plates; never a touchscreen, hologram, glass blur or sci-fi neon. Streamline Moderne and Googie, clean and prosperous. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No labels, no captions, no numbers, no text of any kind. Every piece is fully opaque, about the same size, in a regular grid with clear magenta gaps of at least 60 px between pieces and from the edge. STYLE: nine BLANK paper objects, no writing, no marks, no numbers on any of them. Flat, crisp and lightly paper-textured, each in one flat paper colour with a slightly darker edge line, like 1950s office and railway supplies; no shadows, no gradients. Colours: manila #e6cf9f, cream #f7f4ec, pale peach #f1c4a6, pale seafoam #bfe0d6; brass only as a thin eyelet or pin. Each about 220 px tall, in a grid of three columns and three rows, in exactly this order: 1 an upright manila luggage tag with a reinforced round eyelet at the top and a short loop of twine; 2 the same tag shape in pale peach with its twine; 3 the same tag shape in pale seafoam with its twine; 4 a wide rectangular cream shipping label with clipped corners and an eyelet at one end and twine; 5 a cream ticket stub with a perforated edge and a half-round notch; 6 a pale seafoam punch card with one clipped corner and a row of small round holes along the top edge; 7 a cream index card held at the top by a brass pin; 8 a narrow paper wrist-band strip in manila with a round snap at one end; 9 a small round cream gummed paper seal with a scalloped edge.",
+   "used_for": "k3 paper seals, tickets, index cards (paper language)",
+   "at": "2026-10-15T11:09:31+0700"
+  },
+  {
+   "key": "m1_verbs",
+   "file": "m1_verbs.png",
+   "seconds": 60,
+   "sha256": "80e08fee1f73c1a08963d6dd21718e6601481f77cba9f1f5629d1537f9c2e459",
+   "refs": [],
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface kit sheet for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead; thinking machines and networks never came, so everything is clockwork, paper and enamel: stamped forms, punch cards, luggage tags, engraved dial plates; never a touchscreen, hologram, glass blur or sci-fi neon. Streamline Moderne and Googie, clean and prosperous. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No labels, no captions, no numbers, no text of any kind. Every piece is fully opaque, about the same size, in a regular grid with clear magenta gaps of at least 60 px between pieces and from the edge. STYLE, thin monoline: every pictogram is drawn with ONE constant thin stroke (about 5% of the pictogram's height), round caps and round joins, in ink teal #17302f, on the magenta; no fills, no solid areas, no containers, no circle or badge round the pictogram, no shading, no outline-plus-fill; open line drawings in the manner of an engraved 1950s technical manual, simple enough to stay readable when shrunk to 28 px. Each pictogram fits a square of about 140 px. A grid of five columns and four rows, drawn left to right, top to bottom, in exactly this order:  ROW 1: 1 ask (a speech bubble with a question mark); 2 pay (a hand holding out a banknote); 3 help (an open hand reaching out with a small coin above it); 4 pressure (a flat hand pressing down hard, three short force lines under it); 5 call (a telephone handset). ROW 2: 6 watch (binoculars); 7 listen (an ear); 8 mislead (two footprints with a dashed arc bending away); 9 loop (a tape reel with a circling arrow); 10 reroute (a route line with a bend and an arrow). ROW 3: 11 enter (a door with an arrow going in); 12 take (a closed fist gripping, with an arrow carrying away); 13 fire (a pistol seen from the side); 14 next event (a double arrow, skip); 15 pause (two vertical bars). ROW 4, the four prices and the unknown: 16 cash (a coin seen at an angle); 17 time (a stopwatch); 18 Trail (a fingerprint); 19 Alert (a dome beacon lamp on a base with short rays); 20 unknown (a dotted ring holding a question mark).",
+   "used_for": "k1 monoline verb glyphs (price, verbs)",
+   "at": "2026-10-15T11:09:45+0700"
+  },
+  {
+   "key": "o1_orbs",
+   "file": "o1_orbs.png",
+   "seconds": 45,
+   "sha256": "255287582006bb4e8362fe6e8966147e972306092224329f4d642269f470966d",
+   "refs": [],
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface kit sheet for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead; thinking machines and networks never came, so everything is clockwork, paper and enamel: stamped forms, punch cards, luggage tags, engraved dial plates; never a touchscreen, hologram, glass blur or sci-fi neon. Streamline Moderne and Googie, clean and prosperous. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No labels, no captions, no numbers, no text of any kind. Every piece is fully opaque, about the same size, in a regular grid with clear magenta gaps of at least 60 px between pieces and from the edge. STYLE: six floating signal orbs, as on this city's pedestrian crossings: each a smooth glass sphere held in a thin brass equator ring, floating in the air with no pole, seen from above at 38 degrees, the sphere's inside glowing softly; directly under each orb, a flat soft ellipse of light on the ground (wider than tall) as if the orb lit the pavement, joined to the orb by a faint straight beam of light. Inside the sphere a plain small round lit disc, no drawing and no symbol on it. Drawn crisp and flat-shaded with a small white highlight on the glass, no sci-fi neon. In a grid of three columns and two rows, in this order, by the colour of the light: 1 seafoam #72b5a7; 2 turquoise #1cb9c6; 3 warm cream #f7f4ec; 4 deep teal #1f6c67; 5 ink teal #17302f with a cream core (an unlit orb); 6 pale seafoam #bfe0d6 (a faint, planned orb). Each piece (orb, beam and ground ellipse together) about 300 px tall.",
+   "used_for": "k4 floating orbs (light-in-the-road language)",
+   "at": "2026-10-15T11:10:16+0700"
+  },
+  {
+   "key": "m2_know",
+   "file": "m2_know.png",
+   "seconds": 57,
+   "sha256": "17e51d4f4561ab0b78c62ebcf4ddd71d7476584be6ca3b0f31db2ac5090a3f3e",
+   "refs": [],
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface kit sheet for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead; thinking machines and networks never came, so everything is clockwork, paper and enamel: stamped forms, punch cards, luggage tags, engraved dial plates; never a touchscreen, hologram, glass blur or sci-fi neon. Streamline Moderne and Googie, clean and prosperous. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No labels, no captions, no numbers, no text of any kind. Every piece is fully opaque, about the same size, in a regular grid with clear magenta gaps of at least 60 px between pieces and from the edge. STYLE, thin monoline: every pictogram is drawn with ONE constant thin stroke (about 5% of the pictogram's height), round caps and round joins, in ink teal #17302f, on the magenta; no fills, no solid areas, no containers, no circle or badge round the pictogram, no shading, no outline-plus-fill; open line drawings in the manner of an engraved 1950s technical manual, simple enough to stay readable when shrunk to 28 px. Each pictogram fits a square of about 140 px. A grid of five columns and four rows, drawn left to right, top to bottom, in exactly this order:  ROW 1, needs: 1 debt (a coin chained to a ball); 2 cash (a short stack of coins); 3 housing (a little house with a key); 4 papers (a stamped document); 5 kin (an adult and a child, two simple figures). ROW 2: 6 care (a plain medical cross); 7 protection (an open umbrella); 8 advancement (three rising steps with an arrow up); 9 secret (a sealed envelope with a keyhole); 10 seen (an open eye). ROW 3, temperaments and states: 11 Idealist (a flame); 12 Mercenary (an open palm holding a coin); 13 Fearful (a cold-sweat drop beside a trembling hand); 14 Loyal (a rope knot); 15 turned (a bold check mark). ROW 4: 16 refused (a circle with a diagonal slash); 17 talker risk (a speech bubble with an exclamation mark); 18 carrying (a simple figure slung over a shoulder); 19 inside, an off-screen action (a door with a small clock); 20 hurt (a heart outline with a crack).",
+   "used_for": "k2 monoline fact glyphs (need, temperament, state)",
+   "at": "2026-10-15T11:10:43+0700"
+  },
+  {
+   "key": "s1_signs",
+   "file": "s1_signs.png",
+   "seconds": 44,
+   "sha256": "786e55f8158f005405a55eaa8837e0e39aa2e80ece9f6a87548cff75abdbf634",
+   "refs": [],
+   "size": [
+    1536,
+    1024
+   ],
+   "prompt": "Game interface kit sheet for a real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead; thinking machines and networks never came, so everything is clockwork, paper and enamel: stamped forms, punch cards, luggage tags, engraved dial plates; never a touchscreen, hologram, glass blur or sci-fi neon. Streamline Moderne and Googie, clean and prosperous. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No labels, no captions, no numbers, no text of any kind. Every piece is fully opaque, about the same size, in a regular grid with clear magenta gaps of at least 60 px between pieces and from the edge. STYLE: nine BLANK porcelain-enamel transit signs, no writing, no pictogram, no numerals on any of them, like the station and platform signs of a 1950s metro, drawn flat and crisp with a thin cream inner border line, a soft rounded corner, a slightly glossy enamel; no shadows, no gradients. Colours: deep teal #1f6c67, ink teal #17302f, seafoam #72b5a7, cream #f7f4ec. In a grid of three columns and three rows, in exactly this order, each about 200 px: 1 a wide rectangular plate, deep teal, with a cream inner border; 2 a square plate, deep teal, with a cream inner border; 3 a wide plate, ink teal, with a seafoam inner border; 4 a square plate, seafoam, with an ink teal inner border; 5 a round roundel: a seafoam ring with a deep teal horizontal bar across its middle (the bar and the ring's centre empty); 6 a plain ink teal round disc with a thin cream rim; 7 a blade sign: a wide deep teal plate hanging from a short chrome bracket arm; 8 a tall narrow plate on a short chrome pole, deep teal, as a platform flag; 9 an arrow-shaped plate pointing right, deep teal, with a cream inner border.",
+   "used_for": "k5 enamel signs (generated; signage language is drawn in code in the end, the sheet informed it)",
+   "at": "2026-10-15T11:11:09+0700"
+  }
+ ],
+ "frames": [
+  {
+   "file": "v01-light-in-road.jpg",
+   "sha256": "24b02df63551cfae371f4893e1d571069cf6eba986a681934842035e89fcc418",
+   "variation": "v01",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "light in the road",
+   "footprint": "onagent",
+   "orders": "context",
+   "icons": "ring",
+   "price": "arcs"
+  },
+  {
+   "file": "v01-light-in-road-take.jpg",
+   "sha256": "c0f823c3688b365105cd96cd316fce4f5f189e655ba0a8da06b71790557f9e22",
+   "variation": "v01",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "light in the road",
+   "footprint": "onagent",
+   "orders": "context",
+   "icons": "ring",
+   "price": "arcs"
+  },
+  {
+   "file": "v01-light-in-road-fight.jpg",
+   "sha256": "683e274eccb7f785b5be07aec224a308ee2a281b980376021b258eee58f0a249",
+   "variation": "v01",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "light in the road",
+   "footprint": "onagent",
+   "orders": "context",
+   "icons": "ring",
+   "price": "arcs"
+  },
+  {
+   "file": "v02-right-click-go.jpg",
+   "sha256": "cc26fe64ceb946868c9155e287f3b88382a95a6519ee115ed4b634ba51bf0afc",
+   "variation": "v02",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "flat silhouettes",
+   "footprint": "onagent",
+   "orders": "rclick",
+   "icons": "tint",
+   "price": "risk"
+  },
+  {
+   "file": "v03-luggage-labels.jpg",
+   "sha256": "f411111a015332cb3933047adca4c0386b8afeecb7d0ee7313d4e05fd2ee26fa",
+   "variation": "v03",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "paper tags",
+   "footprint": "onagent",
+   "orders": "drag",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v04-fan-of-four.jpg",
+   "sha256": "2f8d7e492bdf6c9c739d8c4a2b8547453159add9b2305da9aa8f4e4051677924",
+   "variation": "v04",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "thin monoline ink",
+   "footprint": "onagent",
+   "orders": "fan",
+   "icons": "halo",
+   "price": "changes"
+  },
+  {
+   "file": "v04-fan-of-four-take.jpg",
+   "sha256": "b75facb966e980675cd3b6554763b60e042a83ac369b86ac789b87ed3ea77e2e",
+   "variation": "v04",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "thin monoline ink",
+   "footprint": "onagent",
+   "orders": "fan",
+   "icons": "halo",
+   "price": "changes"
+  },
+  {
+   "file": "v04-fan-of-four-fight.jpg",
+   "sha256": "b2b32f2f2f34c0153859141e372826f210d821ce045d05fb9fc30fbcfed12491",
+   "variation": "v04",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "thin monoline ink",
+   "footprint": "onagent",
+   "orders": "fan",
+   "icons": "halo",
+   "price": "changes"
+  },
+  {
+   "file": "v05-station-sign.jpg",
+   "sha256": "2a64f709c4584790e7189a0701a490f5e78e5d1e7aeb187c94aa75cc1c69ac7a",
+   "variation": "v05",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "transit signage",
+   "footprint": "status",
+   "orders": "context",
+   "icons": "ring",
+   "price": "full"
+  },
+  {
+   "file": "v06-slim-enamel.jpg",
+   "sha256": "cd5558fb51e46a47c24f57e9880badedf6d6476583148d9ba0a67278ff5a6fab",
+   "variation": "v06",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "slim enamel",
+   "footprint": "status",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v06-slim-enamel-take.jpg",
+   "sha256": "c793574b92fb5b5986b729f2e755e6a28ba35a9a31513982fd10b55b69929d38",
+   "variation": "v06",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "slim enamel",
+   "footprint": "status",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v06-slim-enamel-fight.jpg",
+   "sha256": "6451f5eb79d9073d7f96c763fbc0e6f03f4c38855a86628e8c4a7df7b6a0c81a",
+   "variation": "v06",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "slim enamel",
+   "footprint": "status",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v07-pixel-pointer.jpg",
+   "sha256": "c4b239c499f1005313c18e5fad47713a9b92086600ac6192db405a85c084de6d",
+   "variation": "v07",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "low-res pixel",
+   "footprint": "status",
+   "orders": "context",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v08-tick-the-price.jpg",
+   "sha256": "0ee5975ede54b527d3616c59e6c2a3beebed8c1f8e9f01e82e5efe7bb362aef0",
+   "variation": "v08",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "flat silhouettes",
+   "footprint": "status",
+   "orders": "fan",
+   "icons": "ground",
+   "price": "ticks"
+  },
+  {
+   "file": "v09-punch-hole-rings.jpg",
+   "sha256": "e5494cea19cbf8cb54a642b98a28e49e6b131c296e5dfaec91c75fd9bd8c106c",
+   "variation": "v09",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "paper tags",
+   "footprint": "status",
+   "orders": "rclick",
+   "icons": "ring",
+   "price": "risk"
+  },
+  {
+   "file": "v10-signage-hotbar.jpg",
+   "sha256": "09f9e6ab5ddb9b92092dbd5eb3d720afaa9f657b755987a1cd6652c0e7e7dccf",
+   "variation": "v10",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "transit signage",
+   "footprint": "hotbar",
+   "orders": "hotbar",
+   "icons": "ground",
+   "price": "full"
+  },
+  {
+   "file": "v10-signage-hotbar-take.jpg",
+   "sha256": "1ea08d9920f6ccb074955d7045dabfd1e89fb44f5b5d3ad95d243760fefd6418",
+   "variation": "v10",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "transit signage",
+   "footprint": "hotbar",
+   "orders": "hotbar",
+   "icons": "ground",
+   "price": "full"
+  },
+  {
+   "file": "v10-signage-hotbar-fight.jpg",
+   "sha256": "54478191b362f4c7be11011cbabc5ea547fc5ef7adfbc08c21b08fdeb922e89a",
+   "variation": "v10",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "transit signage",
+   "footprint": "hotbar",
+   "orders": "hotbar",
+   "icons": "ground",
+   "price": "full"
+  },
+  {
+   "file": "v11-four-flat-keys.jpg",
+   "sha256": "834ab63f8e6abdbcf864b3ed31c437170551bbb604ea725abd53df621a34e0fb",
+   "variation": "v11",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "flat silhouettes",
+   "footprint": "keys",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "changes"
+  },
+  {
+   "file": "v11-four-flat-keys-take.jpg",
+   "sha256": "3484975e877cc4ba16924de31479abb9c4258c881793b2f30507288fd80a8f76",
+   "variation": "v11",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "flat silhouettes",
+   "footprint": "keys",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "changes"
+  },
+  {
+   "file": "v11-four-flat-keys-fight.jpg",
+   "sha256": "3c62b4d4e27711d0f210a99f3a51df728cc459a6cac64e7458c6a7751d027b5e",
+   "variation": "v11",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "flat silhouettes",
+   "footprint": "keys",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "changes"
+  },
+  {
+   "file": "v12-pixel-hotbar.jpg",
+   "sha256": "1826ba553fb2fcb68c5c0155647b3cdf6634c499cf5a9c189f2d69eb20b0958c",
+   "variation": "v12",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "low-res pixel",
+   "footprint": "hotbar",
+   "orders": "hotbar",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v13-index-card-hotbar.jpg",
+   "sha256": "4a0206b39e7961c91d939b639b882285bb440c7222af3d80c6ac290f6cff6f84",
+   "variation": "v13",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "paper tags",
+   "footprint": "hotbar",
+   "orders": "hotbar",
+   "icons": "none",
+   "price": "ticks"
+  },
+  {
+   "file": "v14-orb-roster.jpg",
+   "sha256": "874eb2ab47cd208fcd827a6424f1ad8b1fc9f31c944957757558782567b3ff0d",
+   "variation": "v14",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "light in the road",
+   "footprint": "keys",
+   "orders": "fan",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v15-wire-thin-drag.jpg",
+   "sha256": "9d20aecb9d18bd173f863c75feff221f4d10f2e56dffa359c6e54e6327c7bb1e",
+   "variation": "v15",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "thin monoline ink",
+   "footprint": "keys",
+   "orders": "drag",
+   "icons": "ring",
+   "price": "arcs"
+  },
+  {
+   "file": "v16-enamel-halo.jpg",
+   "sha256": "568f98f605026f0945d10e0aa828c78d02fafd871a0be8f7db8bb3b12dbf82ea",
+   "variation": "v16",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "slim enamel",
+   "footprint": "strip",
+   "orders": "context",
+   "icons": "halo",
+   "price": "changes"
+  },
+  {
+   "file": "v17-round3-on-a-diet.jpg",
+   "sha256": "661a7c5509f12a85045d0189506345690ee7ba92af7d5694a9fbb48b416d8432",
+   "variation": "v17",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "slim enamel",
+   "footprint": "strip",
+   "orders": "radial",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v18-monoline-rail.jpg",
+   "sha256": "5b34260e89fc6cc4f59af6437eec6f5d9afa3f6438301cbef6e3e3782e1471de",
+   "variation": "v18",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "thin monoline ink",
+   "footprint": "rail",
+   "orders": "context",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v19-signage-strip.jpg",
+   "sha256": "a182e10eabdb2c9851de1e81894d641f117f5bccbd7c9638372f8376969d8aa5",
+   "variation": "v19",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "transit signage",
+   "footprint": "strip",
+   "orders": "fan",
+   "icons": "pips",
+   "price": "changes"
+  },
+  {
+   "file": "v20-card-file-rail.jpg",
+   "sha256": "dcbf9a7ac3dd7790f6d644704a41ebd642aabf99a9ac5a1192d0a528046579e1",
+   "variation": "v20",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "paper tags",
+   "footprint": "rail",
+   "orders": "radial",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v21-pixel-strip.jpg",
+   "sha256": "921983bc0564b5e8a38022e2ce11b1400af2e50b3df4b1059d722434252244ae",
+   "variation": "v21",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "low-res pixel",
+   "footprint": "strip",
+   "orders": "radial",
+   "icons": "pips",
+   "price": "full"
+  },
+  {
+   "file": "v22-orb-strip.jpg",
+   "sha256": "4503ff676de1a3a9d197a3300a7607bda9344c39f194d99e83667483a28d678a",
+   "variation": "v22",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "light in the road",
+   "footprint": "strip",
+   "orders": "radial",
+   "icons": "ground",
+   "price": "arcs"
+  },
+  {
+   "file": "v23-syndicate-literal.jpg",
+   "sha256": "5e9668edf9dda1d88642d30a1fa4d66eb20dc62a322f66fb7c787bceecee7965",
+   "variation": "v23",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "low-res pixel",
+   "footprint": "syndicate",
+   "orders": "rclick",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v23-syndicate-literal-take.jpg",
+   "sha256": "61ba6031a95dc03378e078e07c14d0844464d227c0339b3ed90be873f467ff05",
+   "variation": "v23",
+   "beat": "5:36 the take at the door",
+   "plate": "office-door-1730.png",
+   "language": "low-res pixel",
+   "footprint": "syndicate",
+   "orders": "rclick",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v23-syndicate-literal-fight.jpg",
+   "sha256": "6f772098821f3f13d42178e474541bb377c4c38443ee4f8886f7b71dd1b303f5",
+   "variation": "v23",
+   "beat": "6:02 the fight, Alert rising",
+   "plate": "service-lane-1730.png",
+   "language": "low-res pixel",
+   "footprint": "syndicate",
+   "orders": "rclick",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v24-enamel-column.jpg",
+   "sha256": "022456ceeb762e111acf84b97fac8ecada86df53dfd07f1857cd9a1a288a63b3",
+   "variation": "v24",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "slim enamel",
+   "footprint": "syndicate",
+   "orders": "context",
+   "icons": "tint",
+   "price": "full"
+  },
+  {
+   "file": "v25-station-board.jpg",
+   "sha256": "e7652e0e56c488dc05645ac65baa76f5039be8782c4c9010600bd6ffb884ecd3",
+   "variation": "v25",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "transit signage",
+   "footprint": "syndicate",
+   "orders": "hotbar",
+   "icons": "tags",
+   "price": "full"
+  },
+  {
+   "file": "v26-card-column.jpg",
+   "sha256": "14e65838f1336ea0415284c7b893b913466810539d609dc12e08bc1a123ab766",
+   "variation": "v26",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "paper tags",
+   "footprint": "syndicate",
+   "orders": "drag",
+   "icons": "ground",
+   "price": "full"
+  },
+  {
+   "file": "v27-hairline-radial.jpg",
+   "sha256": "15a10d17a3d09a0c899cb4694213a15a3a7ec160e31fe288839a7008de902dd6",
+   "variation": "v27",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "thin monoline ink",
+   "footprint": "onagent",
+   "orders": "radial",
+   "icons": "none",
+   "price": "risk"
+  },
+  {
+   "file": "v28-flat-syndicate.jpg",
+   "sha256": "2f99a4211d87947a6afe112369efc0edec281d55c6beeb0b0a310b81d520d482",
+   "variation": "v28",
+   "beat": "0:58 Pay on Inez",
+   "plate": "cafe-front-172430.png",
+   "language": "flat silhouettes",
+   "footprint": "syndicate",
+   "orders": "radial",
+   "icons": "halo",
+   "price": "changes"
+  }
+ ],
+ "sheets": [
+  {
+   "file": "i1-icons-play-zoom.jpg",
+   "sha256": "643cb30fa03004008e6d979e7ae0f84942b20d7462e408c88d0366cbe7e6df95"
+  },
+  {
+   "file": "i2-icons-closeup.jpg",
+   "sha256": "d5dba1283485d32d480ca21bdc5879d59fb49611682ae1555355351bd7fb7e99"
+  },
+  {
+   "file": "k1-kit-monoline-verbs.jpg",
+   "sha256": "65b59df993acabe3b1f3f448c48b4f4e941f81226f5c87d43170d5effc3d58a2"
+  },
+  {
+   "file": "k2-kit-monoline-facts.jpg",
+   "sha256": "5fd2f85f7c4481b4c081805c3cd8e82e303e1e0a11de94a3b5ca34284df6367a"
+  },
+  {
+   "file": "k3-kit-paper.jpg",
+   "sha256": "40fbe93ed3ec49542571922e6928aad10a758c918ef490a550b942a1680ed695"
+  },
+  {
+   "file": "k4-kit-orbs.jpg",
+   "sha256": "62ff215cd17b5d7cc3c2242a886c803cb315917d0f8b0fb2dfebeed21c9a5040"
+  },
+  {
+   "file": "k5-kit-signs.jpg",
+   "sha256": "dbf2d5f55d376f3b308925747bfb2fba543c465256ae4b00fd17f73309a0ff3d"
+  },
+  {
+   "file": "s1-seven-languages.jpg",
+   "sha256": "3561c4bc9a7d2ff02fb1a9114b4c8acc2cfbd3a52f22673ca73387918cbc87de"
+  }
+ ],
+ "signals": "cones red, guard amber, rivals violet only as small pictograms (shield on a chip over guards, diamond over rivals, camera arrow on its own chip, response unit amber car) and the world cone wedge; each with its shape (shield, diamond, wedge/arrow). Nothing else in any frame is amber, red or violet."
+}
