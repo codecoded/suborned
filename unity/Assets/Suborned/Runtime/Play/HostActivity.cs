@@ -146,15 +146,15 @@ namespace Suborned.Play
         /// <summary>The dialogue log, expanded (L or its header) or collapsed to its last line.</summary>
         public bool LogOpen { get; set; }
 
-        public sealed class Said { public int Tick; public string Speaker = "", Name = "", Text = ""; public int Agent = -1; public Feedback Kind; }
+        public sealed class Said { public int Tick; public float Born; public string Speaker = "", Name = "", Text = ""; public int Agent = -1; public Feedback Kind; }
         public readonly List<Said> Talk = new();
 
         void Say(string speaker, string text, Feedback kind = Feedback.Info)
         {
             if (string.IsNullOrEmpty(text)) return;
             int agent = Array.IndexOf(OpKeys, speaker);
-            Talk.Add(new Said { Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
-            FeedSay(speaker, text); FeedCity(speaker, text);
+            Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
+            FeedSay(speaker, text);
             while (Talk.Count > 200) Talk.RemoveAt(0);
         }
 
@@ -200,6 +200,7 @@ namespace Suborned.Play
             if (!Beat("ack", verb, speaker, who: Name(o.Target), kind: Feedback.Ok))
                 Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok);
             if (w == null) SayArrive(by, o);
+            if (o.Do == "call") FeedCall(o.Target);
         }
 
         /// <summary>The agent is in reach and the act begins (after a walk, the act FollowUp gives).</summary>

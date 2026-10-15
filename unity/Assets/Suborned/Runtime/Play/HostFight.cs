@@ -76,6 +76,7 @@ namespace Suborned.Play
             if (GateProgress < 1f) return;
             var g = Loud; Loud = null;
             Send(new List<Order>(g.Orders), null, g.At);
+            FeedLoud(g.Card, g.What);
             if (Text != null && Text.Events.TryGetValue("going-loud", out var e)) WorldBeat(e, null, "", Feedback.Refused, 1);
             Status = "The run is loud.";
         }

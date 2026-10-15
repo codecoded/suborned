@@ -63,6 +63,10 @@ namespace Suborned.Play
         public double FrameMsMean => frames == 0 ? 0 : frameEngineMs / frames;
         public string MissionStartsAt { get; private set; } = "17:24:30";
         public HostViews Views => views;
+        /// <summary>The kit view's compact strips show only the busy, hurt, down, selected or queued agents; this shows all four (a key).</summary>
+        public bool ShowAllStrips { get; set; }
+        /// <summary>Intel (the kit's panel under the objective) open or collapsed to its strip.</summary>
+        public bool IntelOpen { get; set; }
         public Camera View => cam;
 
         // ---------------------------------------------------------------- verbs: four slots an agent, Q W E R
@@ -115,6 +119,7 @@ namespace Suborned.Play
                 focus = cam.transform.position + cam.transform.forward * (shadows ? shadows.focusDepth : 80f);
                 focus.y = 0f; PlaceCamera();
             }
+            if (!GetComponent<HudToolkit>()) gameObject.AddComponent<HudToolkit>(); // Glyph's kit on UI Toolkit (off until the kit is imported)
             background = GameObject.Find("people");
             if (background) background.SetActive(false); // the engine's crowd steps the city's people; the editor snapshot would double them
             Begin();
@@ -193,7 +198,7 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
+            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
             Drain();
             return ok;
         }
@@ -218,13 +223,15 @@ namespace Suborned.Play
             {
                 if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) ShowBriefing = false; else Save(); }
                 if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
-                if (c.Down(kb, PlayAction.DialogueLog)) LogOpen = !LogOpen;
+                if (c.Down(kb, PlayAction.DialogueLog)) FeedHistoryOpen = !FeedHistoryOpen; // L: the feed's history (the old dialogue log is the ticker now)
                 if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
                 if (c.Down(kb, PlayAction.Cease)) CeaseFire();
                 if (c.Down(kb, PlayAction.Stance)) CycleStance();
                 if (c.Down(kb, PlayAction.Hints)) ToggleHints();
-                if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeOldest();
+                if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
+                if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
+                if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
                 if (kb.leftCtrlKey.wasPressedThisFrame || kb.leftCtrlKey.wasReleasedThisFrame || kb.rightCtrlKey.wasPressedThisFrame || kb.rightCtrlKey.wasReleasedThisFrame) UpdateAim();
                 for (int i = 0; i < 4; i++)
                 {
@@ -259,7 +266,7 @@ namespace Suborned.Play
             if (wheel != 0f) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
             if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
-            bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p);
+            bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p) || HudToolkit.Blocks(p);
             if (mouse.leftButton.wasPressedThisFrame && !onHud && Panel != null) { ClosePanel(); return; } // a left click elsewhere closes the panel
             if (mouse.leftButton.wasPressedThisFrame && !onHud) { dragFrom = p; dragging = true; }
             if (dragging && mouse.leftButton.isPressed && (p - dragFrom).magnitude > 6f) BoxScreen = GuiRect(dragFrom, p);
@@ -534,7 +541,7 @@ namespace Suborned.Play
                         i.Usd = q.WorstUsd > q.Usd ? $"${q.Usd:N0}–{q.WorstUsd:N0}" : $"${q.Usd:N0}";
                         i.Time = $"{q.S} s{(q.WalkS > 0 ? $" +{q.WalkS} walk" : "")}"; i.Trail = $"T +{q.Trail}";
                         i.Alert = q.Reports == "no" ? "A 0" : q.Reports == "yes" ? $"A →{q.AlertIfReported}" : $"A ?→{q.AlertIfReported}";
-                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome;
+                        i.Outcome = (q.Outcome == "?" ? "?" : q.Outcome) + (q.Leverage ? " · leans on their secret" : "");
                         return i;
                     }
                 case "loop":
@@ -604,6 +611,7 @@ namespace Suborned.Play
                 else if (!quietRefusal) Pop(Humanise(o, r), screen, target, Feedback.Refused);
             }
             if (!r.ok && !quietRefusal && o.Do != "move") Say(o.Op, Humanise(o, r), Feedback.Refused);
+            if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not
             if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); }
             Save();
             views.Tick(); views.Frame(1f); intentKey = ""; Track();
@@ -640,7 +648,7 @@ namespace Suborned.Play
             var s = g.S; foreach (var k in new[] { s.RivalsArrive, s.Chime, s.DriverLast, s.ValeExits, s.ValeAtCar, s.Over }) C(Game.T(k));
             int speed = g.R.CellSpeed;
             foreach (var op in g.Ops) { if (op.Busy != null) C(op.BusyEnd); int sp = op.WalkSpeed > 0 ? op.WalkSpeed : speed; if (op.Walk != null) C(t + (int)((op.Walk.Length - op.WalkMm + sp - 1) / sp)); }
-            if (g.LureTick >= 0) { int w = Game.T(s.GuardWalkS), st = Game.T(s.GuardStayS); C(g.LureTick + w); C(g.LureTick + w + st); C(g.GuardAwayUntil); }
+            if (g.LureTick >= 0) { int w = g.VisitWalkTicks, st = Game.T(g.R.SummonStayS); C(g.LureTick + w); C(g.LureTick + w + st); C(g.GuardAwayUntil); } // the summoned lover's walk (the engine's) and stay (the rulebook's)
             C(g.RivalsDelayedUntil); C(g.BlockedFrom); C(g.BlockedUntil); C(g.SecurityArrives); C(g.Lockdown); C(g.PatrolAwayUntil); C(g.MissingNotice);
             return best == int.MaxValue ? t + 1 : best;
         }
@@ -775,13 +783,12 @@ namespace Suborned.Play
         /// not while his car is still moving, and not after his last chance.</summary>
         Answer CallLock(string role)
         {
-            var g = Game; var yes = new Answer { ok = true, code = "", why = "" };
-            if (g.CanCall(role)) return yes;
-            Answer No(string code, string why, int tick = -1) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = tick };
-            if (role == "waitress") return g.GuardAtDoor ? No("call-too-late", "too late to call her") : No("guard-not-at-door", "the guard is not at the door");
-            int last = Game.T(g.S.DriverLast);
-            if (g.Tick >= last) return No("call-too-late", "too late: the car has gone for the pickup", last);
-            return g.BlockedUntil > g.Tick ? No("car-busy", "the car is still moving", g.BlockedUntil) : No("call-too-late", "not now", last);
+            // the engine's own answer before the click (Game.CallQuery: the same Answer Issue would give, read-only), so the card is locked with
+            // the right reason (Fable's lock line by code); a race between hover and click still gets the refusal card on the feed
+            Answer a = new Answer { ok = true, code = "", why = "" };
+            Guard("call query", () => a = Game.CallQuery(role));
+            a.why ??= ""; a.code ??= "";
+            return a;
         }
 
         /// <summary>Give an order for an agent; if the engine says they stand too far, they walk to the target first and the order follows on arrival

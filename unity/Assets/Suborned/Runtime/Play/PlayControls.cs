@@ -9,10 +9,13 @@ namespace Suborned.Play
         Verb1, Verb2, Verb3, Verb4,
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
-        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge,
+        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
+
+    /// <summary>Which HUD draws: Glyph's kit on UI Toolkit (HudToolkit, its pieces as they land) or the IMGUI placeholder (PlayHud).</summary>
+    public enum HudView { Kit, Imgui }
 
     /// <summary>The play controls in one table (Sky, 2026-10-15, "everything but rotation": the camera keeps yaw 30), and the HUD's settings.
     /// Every key the host reads comes from `keys`; the mouse buttons are fixed by the scheme (left select and move, right act, middle pan,
@@ -56,6 +59,8 @@ namespace Suborned.Play
             new() { action = PlayAction.Force, keys = new[] { Key.LeftCtrl, Key.RightCtrl }, label = "Ctrl" },
             new() { action = PlayAction.Hints, keys = new[] { Key.H }, label = "H" },
             new() { action = PlayAction.Acknowledge, keys = new[] { Key.K }, label = "K" },
+            new() { action = PlayAction.AllStrips, keys = new[] { Key.Backquote }, label = "`" },
+            new() { action = PlayAction.HudView, keys = new[] { Key.F11 }, label = "F11" },
         };
         static readonly Binding[] defaults = Defaults();
 
@@ -64,7 +69,9 @@ namespace Suborned.Play
         [UnityEngine.Tooltip("Edge band for edge scrolling, in pixels at 1080p.")]
         public float edgePixels = 12f;
         [UnityEngine.Tooltip("Where the roster and the verb hotbar sit (Glyph's placements: bottom, left column, corner).")]
-        public RosterDock dock = RosterDock.Bottom;
+        public RosterDock dock = RosterDock.Left; // the kit's default (Glyph round 6: the left column)
+        [UnityEngine.Tooltip("Kit: Glyph's HUD on UI Toolkit (falls back to IMGUI where a piece has not landed, or when the kit is not imported). F11 switches.")]
+        public HudView view = HudView.Kit;
         [UnityEngine.Tooltip("Pause the clock while the action panel is open (off: real time, Sky's lean).")]
         public bool pauseWithPanel = false;
         [UnityEngine.Tooltip("Two presses or clicks within this many seconds count as a double (centre on the agent, run).")]
