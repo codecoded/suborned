@@ -12,7 +12,8 @@
 //   at      m:ss: no earlier than this mission time;
 //   clear   seconds the run must go on without failing after the order is given (an entry the patrol would see is "taken", then fails);
 //   by      m:ss: the latest the step may be given; past it the plan fails to compose, naming the step;
-//   when    an engine log code that must have been logged first (fight.over: the last hostile is down).
+//   when    an engine log code that must have been logged first (fight.over: the last hostile is down);
+//   unless  an engine log code that must not be logged by the order or `clear` s after it (captured: nobody left behind at the extract).
 // The search: from the earliest tick, every 5 s until taken, then back tick by tick to the first tick taken. Deterministic: the same
 // plan on the same engine gives the same script.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -26,7 +27,7 @@ export const Step = z.strictObject({
   to: z.union([z.string().min(1), z.tuple([z.number().int(), z.number().int()])]).optional(), target: z.string().min(1).optional(), approach: z.string().min(1).optional(),
   run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(),
   label: z.string().min(1).optional(), after: z.array(z.string().min(1)).optional(), gap: z.number().nonnegative().optional(),
-  at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), why: z.string().min(1).optional(),
+  at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.string().min(1).optional(), why: z.string().min(1).optional(),
 });
 export const Plan = z.strictObject({
   schema: z.literal('suborned.mission.plan/1'), mission: z.string().min(1), note: z.string().min(1),
@@ -55,7 +56,7 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? */
     const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12)).map((p, k) => {
       const t = ts[k]!, mine = p.orders.find(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
-      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || p.log.some(l => l.code === s.when && l.tick <= t));
+      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || p.log.some(l => l.code === s.when && l.tick <= t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
     });
     let found = -1;
     for (let t0 = lo; t0 <= hi && found < 0; t0 += 50 * 12) { // coarse: every 5 s, twelve at a time

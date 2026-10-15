@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "The loud front (GDD §07 loud; Keel N10): loop the camera and reroute the patrol, shoot the guard, enter (68 s at Alert 2), take Vale out and fight the police at the getaway car with the whole armed cell. No contact. The Tech and the Enforcer run (free once the run is loud; before it, noticed). Once the guard is shot the Scout, Fixer and Tech run to cover by the car and draw; the Enforcer brings Vale to the car under their cover; once the response unit is down the Scout and Tech close on the officers holding at the café wall, and the Enforcer extracts when the last is down: the fastest loud win the checker knows, which the informed quiet route must not be slower than (T2).",
+ "note": "The loud front (GDD §07 loud; Keel N10): loop the camera and reroute the patrol, shoot the guard, enter (68 s at Alert 2), take Vale out and fight the police at the getaway car with the whole armed cell. No contact. The Tech and the Enforcer run (free once the run is loud; before it, noticed). Once the guard is shot the Scout, Fixer and Tech run to cover by the car and draw; the Enforcer brings Vale to the car under their cover; once the response unit is down the Scout and Tech close on the officers holding at the café wall, the Fixer carries the downed Scout to the car, and the Enforcer extracts when the last officer is down and nobody is left behind (Motive's loud-carry, briefs/011/motive-fights.md: the reference loud leaves no one captured): the fastest loud win the checker knows, which the informed quiet route must not be slower than (T2).",
  "start": {},
  "until": 5100,
  "steps": [
@@ -19,11 +19,14 @@
   {"op": "enforcer", "do": "move", "to": "d:Office entrance", "after": ["shot"], "gap": 4, "run": true},
   {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter", "why": "Alert 2: the entry takes 68 s"},
   {"op": "tech", "do": "move", "to": [675, -4625], "after": ["enter"], "why": "once the Enforcer is inside the loop can go: the Tech walks (no run while his loop holds) to cover behind the square pavilion's west support"},
-  {"op": "tech", "do": "draw"},
+  {"op": "tech", "do": "draw", "when": "fight.loud", "why": "draws when the police come, not on the walk to cover: a drawn weapon seen on the street is a witnessed incident"},
   {"op": "tech", "do": "stance", "stance": "free", "why": "fire at the nearest officer that shows"},
   {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "label": "out", "why": "with Vale to the car: the cell covers him from the pavilion and the car; the car is held until the last officer is down, and the extract waits for it", "after": ["enter"]},
   {"op": "scout", "do": "move", "to": [100, -4500], "after": ["enter"], "when": "security.down", "why": "the response unit down, the officers hold at the café wall out of the cell's reach: the Scout and Tech close to 14 m"},
   {"op": "tech", "do": "move", "to": [300, -4300], "after": ["enter"], "when": "security.down"},
-  {"op": "enforcer", "do": "extract", "after": ["out"]}
+  {"op": "fixer", "do": "move", "to": [100, -4500], "after": ["enter"], "when": "scout.down", "label": "to-scout", "why": "the Scout is down at the café wall: the Fixer goes to him (Motive: a downed operative is carried or captured)"},
+  {"op": "fixer", "do": "carry", "target": "scout", "label": "carry", "why": "lift him (3 s)"},
+  {"op": "fixer", "do": "move", "to": "d:Getaway bay", "why": "carry him to the car"},
+  {"op": "enforcer", "do": "extract", "after": ["out"], "unless": "captured", "why": "the last officer down and the Scout at the car: nobody left behind"}
  ]
 }

@@ -3,7 +3,7 @@
 // brief 011 B). Pure: it reads the route manifest, the scripts and what each play reported, and says which conditions hold and why.
 // MC-0 every script plays as its manifest expects, and replays to identical checkpoints.
 // MC-1 ≥ 2 quiet routes win: routes, not scripts (a variant of route A is still route A).
-// MC-2 the loud route exists, wins, and costs more Trail than every primary quiet route (variants are reported beside it).
+// MC-2 the loud route exists, wins, and costs more Trail than every quiet win, variants included (Motive's addendum).
 // MC-3 every §07 fail is reached by a script that is played (a pending script reaches nothing yet, and is listed).
 // MC-4 no single contact is essential: without each contact a quiet route still wins. The routes that need the contact are named,
 //      and a contact that leaves fewer than 2 quiet routes is named as the one those routes depend on (brief 011 B).
@@ -68,13 +68,14 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
   C.push({ id: 'MC-1', rule: '≥ 2 quiet routes win (no shot before the final fight), counted by route', ok: quietRoutes.length >= 2, value: `${quietRoutes.length} (${quietRoutes.join(', ')})`, detail: quiet.map(s => `${s.id} (route ${s.route}) ${wins(s) ? `wins at ${clock(plays[s.id]!.tick)}, ${plays[s.id]!.trail} T` : got(plays[s.id]!)}`).join('; ') });
 
   const loud = live.find(s => s.kind === 'loud' && s.primary), ld = loud && plays[loud.id];
-  const primaries = quiet.filter(s => s.primary), maxPrimary = Math.max(...primaries.map(s => plays[s.id]!.trail));
-  const variants = quiet.filter(s => !s.primary && wins(s) && ld && plays[s.id]!.trail >= ld.trail);
+  // every quiet win, variants too (Motive, briefs/011/motive-fights.md: Pressure on an Idealist must not cost as much as going loud)
+  const primaries = quiet.filter(s => s.primary), quietAll = quiet.filter(wins), maxQuiet = Math.max(...quietAll.map(s => plays[s.id]!.trail));
+  const dear = quietAll.filter(s => ld && plays[s.id]!.trail >= ld.trail);
   C.push({
-    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every primary quiet route', ok: !!ld && ld.outcome === 'success' && ld.shots > 0 && ld.trail > maxPrimary,
-    value: ld ? `loud ${ld.trail} T vs quiet ${primaries.map(s => `${s.route} ${plays[s.id]!.trail}`).join(', ')}` : 'no loud script',
+    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every quiet win (variants too)', ok: !!ld && ld.outcome === 'success' && ld.shots > 0 && quietAll.length > 0 && ld.trail > maxQuiet,
+    value: ld ? `loud ${ld.trail} T vs quiet ${quietAll.map(s => `${s.id} ${plays[s.id]!.trail}`).join(', ')}` : 'no loud script',
     detail: [...live.filter(s => s.kind === 'loud').map(s => `${s.id}: ${got(plays[s.id]!)}, ${plays[s.id]!.trail} T, ${plays[s.id]!.shots} shots before the fight, A ${plays[s.id]!.alert}`),
-      ...variants.map(s => `note: quiet variant ${s.id} costs ${plays[s.id]!.trail} T, not less than the loud route`)].join('; '),
+      ...dear.map(s => `${s.id} (quiet) costs ${plays[s.id]!.trail} T, not less than the loud route's ${ld!.trail}`)].join('; '),
   });
 
   const reached = (f: Routes['fails'][number]) => live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id);
@@ -107,12 +108,14 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
   });
   // MC-6 (T2, §13; Motive's +30 s Enter at Alert 2): informed quiet play is not slower than the fastest loud win
   const quietWins = quiet.filter(wins).map(s => ({ id: s.id, tick: plays[s.id]!.tick })).sort((a, b) => a.tick - b.tick);
-  const loudWins = live.filter(s => s.kind === 'loud' && plays[s.id]?.outcome === 'success').map(s => ({ id: s.id, tick: plays[s.id]!.tick })).sort((a, b) => a.tick - b.tick);
+  // a loud win that leaves an operative captured is reported, but T2 races the fastest loud win that brings everyone home (Motive)
+  const loudAll = live.filter(s => s.kind === 'loud' && plays[s.id]?.outcome === 'success').map(s => ({ id: s.id, tick: plays[s.id]!.tick, captured: 'captured' in plays[s.id]!.marks })).sort((a, b) => a.tick - b.tick);
+  const loudWins = loudAll.filter(x => !x.captured);
   const fq = quietWins[0], fl = loudWins[0], margin = fq && fl ? fl.tick - fq.tick : undefined;
   C.push({
-    id: 'MC-6', rule: 'The fastest informed quiet win is not slower than the fastest loud win (T2)', ok: margin !== undefined && margin >= 0,
+    id: 'MC-6', rule: 'The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2)', ok: margin !== undefined && margin >= 0,
     value: fq && fl ? `${fq.id} ${clock(fq.tick)} vs ${fl.id} ${clock(fl.tick)}: ${margin! >= 0 ? `${(margin! / 10).toFixed(1)} s faster` : `${(-margin! / 10).toFixed(1)} s SLOWER`}` : 'no quiet or no loud win',
-    detail: [...quietWins.map(x => `${x.id} (quiet) ${clock(x.tick)}`), ...loudWins.map(x => `${x.id} (loud) ${clock(x.tick)}`)].join('; '),
+    detail: [...quietWins.map(x => `${x.id} (quiet) ${clock(x.tick)}`), ...loudAll.map(x => `${x.id} (loud) ${clock(x.tick)}${x.captured ? ', leaves an operative captured: not raced' : ''}`)].join('; '),
   });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }
