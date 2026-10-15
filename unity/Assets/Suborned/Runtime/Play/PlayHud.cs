@@ -7,7 +7,7 @@ using Event = UnityEngine.Event;
 namespace Suborned.Play
 {
     /// <summary>The play HUD at round 4's v10 "signage hotbar" fidelity (Sky, 2026-10-15; briefs/011/ui/round4/v10-signage-hotbar*.jpg), simple and
-    /// placeholder-iconed: the roster of four slots at the bottom (number, portrait, health pips, state), the Q/W/E/R verb hotbar above it with the
+    /// placeholder-iconed: the roster of four slots at the bottom (number, portrait, health pips, state), the 1–4 verb hotbar above it with the
     /// verb a right click gives lit, the top-right pill (mission clock, next event, $, Trail, Alert pips), number and verb markers on the pavement
     /// under the cell, at most two icons over a cast person, the price chip at the cursor ($ · time · Trail · Alert) before a right click commits
     /// (§02), and the end card with the debrief numbers. Transit-signage enamel: deep teal plates, cream type, thin brass-free borders. Plain
@@ -124,27 +124,34 @@ namespace Suborned.Play
                 GUI.Label(new Rect(r.x, r.yMax + 2 * s, r.width, 18 * s), pillCity, small);
             }
 
-            // roster: four slots, number, portrait, health pips, state
-            float slotW = 84 * s, slotH = 74 * s, rosterW = slotW * 4 + 10 * s;
-            var roster = new Rect(Screen.width / 2f - rosterW / 2, Screen.height - slotH - 16 * s, rosterW, slotH);
+            // roster: four slots (F-key, portrait, health pips, state) and the verb hotbar beside it; where they sit is one setting (controls.dock)
+            var dock = host.controls.dock;
+            float slotW = 84 * s, slotH = 74 * s, kw = 64 * s, kh = 50 * s;
+            bool column = dock == RosterDock.Left;
+            float rosterW = column ? slotW + 10 * s : slotW * 4 + 10 * s, rosterH = column ? slotH * 4 + 8 * s : slotH;
+            var roster = dock switch
+            {
+                RosterDock.Left => new Rect(16 * s, Screen.height / 2f - rosterH / 2, rosterW, rosterH),
+                RosterDock.Corner => new Rect(16 * s, Screen.height - slotH - 48 * s, rosterW, rosterH),
+                _ => new Rect(Screen.width / 2f - rosterW / 2, Screen.height - slotH - 16 * s, rosterW, rosterH),
+            };
             Plate(roster); hits.Add(roster);
             for (int i = 0; i < 4; i++)
             {
-                var r = new Rect(roster.x + 5 * s + i * slotW, roster.y + 4 * s, slotW - 4 * s, slotH - 8 * s);
+                var r = column ? new Rect(roster.x + 5 * s, roster.y + 4 * s + i * slotH, slotW - 4 * s, slotH - 8 * s) : new Rect(roster.x + 5 * s + i * slotW, roster.y + 4 * s, slotW - 4 * s, slotH - 8 * s);
                 if (host.Selected[i]) GUI.DrawTexture(r, plateLit);
-                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Select((OpId)i, Event.current.shift);
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.PortraitClick(i, Event.current.shift);
                 var op = g.Ops[i];
-                GUI.Label(new Rect(r.x + 4 * s, r.y, 16 * s, 18 * s), Nums[i], key);
+                GUI.Label(new Rect(r.x + 4 * s, r.y, 24 * s, 18 * s), host.AgentKeyLabel(i), key);
                 GUI.Label(new Rect(r.x, r.y + 12 * s, r.width, 30 * s), Names[i], mid);
                 int hp = i == 3 ? g.EnforcerHealth : 4, hpMax = i == 3 ? Mathf.Max(g.EnforcerHealth, g.R.EnforcerHealth) : 4;
                 Pips(r.x + 10 * s, r.y + 44 * s, hp, hpMax, 7 * s);
                 GUI.Label(new Rect(r.x, r.y + 50 * s, r.width, 16 * s), slotState[i], smallC);
             }
 
-            // the Q/W/E/R hotbar for the agent, the lit key is what a right click gives
+            // the verb hotbar for the agent (keys 1–4), the lit key is what a right click gives
             var slots = HandoverHost.Slots[(int)host.Agent];
-            float kw = 64 * s, kh = 50 * s;
-            var bar = new Rect(roster.x + 6 * s, roster.y - kh - 10 * s, kw * 4 + 12 * s, kh);
+            var bar = column ? new Rect(roster.xMax + 10 * s, roster.y, kw * 4 + 12 * s, kh) : new Rect(roster.x + 6 * s, roster.y - kh - 10 * s, kw * 4 + 12 * s, kh);
             for (int i = 0; i < 4; i++)
             {
                 var r = new Rect(bar.x + i * (kw + 4 * s), bar.y, kw, kh); hits.Add(r);
@@ -152,12 +159,20 @@ namespace Suborned.Play
                 Plate(r, lit);
                 if (has && GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Pick(i);
                 GUI.Label(new Rect(r.x, r.y + 2 * s, r.width, 26 * s), has ? slots[i].Glyph : "·", mid);
-                GUI.Label(new Rect(r.x, r.yMax - 20 * s, r.width, 18 * s), HandoverHost.Keys[i], key);
+                GUI.Label(new Rect(r.x, r.yMax - 20 * s, r.width, 18 * s), host.VerbKey(i), key);
             }
             GUI.Label(new Rect(bar.xMax + 10 * s, bar.y, 420 * s, kh), $"{Names[(int)host.Agent]}: {(host.LitSlot >= 0 && host.LitSlot < slots.Length ? slots[host.LitSlot].Label : "")}", txt);
 
+            // the selection box being dragged
+            if (host.BoxScreen is Rect box)
+            {
+                float b = Mathf.Max(1f, 1.5f * s);
+                GUI.DrawTexture(new Rect(box.x, box.y, box.width, b), edge); GUI.DrawTexture(new Rect(box.x, box.yMax - b, box.width, b), edge);
+                GUI.DrawTexture(new Rect(box.x, box.y, b, box.height), edge); GUI.DrawTexture(new Rect(box.xMax - b, box.y, b, box.height), edge);
+            }
+
             // status line
-            GUI.Label(new Rect(16 * s, Screen.height - 34 * s, Screen.width / 2f - rosterW / 2 - 24 * s, 24 * s), host.Status, small);
+            GUI.Label(new Rect(16 * s, Screen.height - 34 * s, Mathf.Max(400 * s, Screen.width / 2f - 360 * s), 24 * s), host.Status, small);
 
             if (host.Ending.Length > 0) EndCard(g);
         }
@@ -192,7 +207,7 @@ namespace Suborned.Play
             pillKey = Key(g);
             pillClock = HandoverHost.MissionClock(g.Tick); pillNext = "▶▶ " + HandoverHost.MissionClock(host.NextMark());
             pillCash = $"${g.Cash:N0}"; pillTrail = $"T {g.Trail}"; pillState = host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}";
-            pillCity = $"{host.CityClock()} · Space pause · = − speed · N next event · F1 debug";
+            pillCity = $"{host.CityClock()} · Space pause · = − speed · N next event · F12 debug";
             for (int i = 0; i < 4; i++)
             {
                 var op = g.Ops[i];
