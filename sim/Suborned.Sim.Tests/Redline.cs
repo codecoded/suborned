@@ -41,6 +41,8 @@ public class RedlineTests
         Rejects(Sub(rb, "\"health-guard\": { \"v\": 3,", "\"health-guard\": { \"v\": 0,"), pr, st, "a health of 0");
         Rejects(Sub(rb, "\"draw-ticks\": { \"v\": 10,", "\"draw-ticks\": { \"v\": 0,"), pr, st, "a 0-tick draw (unit ticks ≥ 1)");
         Rejects(rb, pr, Sub(st, "\"arms\": 3,", "\"arms\": -1,"), "negative Arms");
+        Rejects(Sub(rb, "\"turn\": \"aborted\",", "\"turn\": \"forgotten\","), pr, st, "a cancel line the engine doesn't do (Sky 2026-10-15 playtest)");
+        Rejects(Sub(rb, "\"watch\": \"lost\",", "\"watch\": \"kept\","), pr, st, "a fixed cancel line changed");
         Rejects(Sub(rb, "{ \"id\": \"not-yet\", \"when\": [],", "{ \"id\": \"not-yet\", \"when\": [{ \"k\": \"cash-covers\" }],"), pr, st, "cash-covers in an outcome (it recursed until the stack overflowed)");
     }
 

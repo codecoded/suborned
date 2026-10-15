@@ -198,6 +198,13 @@ export const Rulebook = z.strictObject({
     costs: z.strictObject({ hit: Ref, down: Ref, drawSeenSecurity: Ref, drawSeenPeople: Ref, loudHold: Ref }),
     rule: text,
   }),
+  // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
+  cancel: ground({
+    move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),
+    turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends'), reroute: z.literal('lost'), mislead: z.literal('lost'),
+    enter: z.enum(['staff-report', 'quiet']), take: z.enum(['vale-reports', 'quiet']), carry: z.literal('lost'), carrying: z.literal('put-down'),
+    rule: text,
+  }),
   perception: ground({
     near: Ref, eye: Ref,
     door: z.strictObject({ reach: Ref, half: Ref }),

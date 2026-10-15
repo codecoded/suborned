@@ -123,14 +123,24 @@ namespace Suborned.Sim
         }
         /// <summary>Hold posts and fire on the city's gunmen once they come into effective reach (or fire on the operative).</summary>
         public void FightOff(Func<bool> done, int limitS, params string[] ops) => Engage(CityGunmen, done, limitS, ops, false, false);
-        /// <summary>The final fight: fight the hostiles until the car is free, then the Enforcer walks to it.</summary>
+        /// <summary>The final fight: fight the hostiles (and the city's gunmen) until the car is free, walk the Enforcer to it, and fight
+        /// again if a hostile comes back within hold of the car on the way.</summary>
         public void FightItOut(int limitS = 120, params string[] with)
         {
             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
-            Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; }, () => !G.CarHeld(), limitS, ops.ToArray(), true);
-            if (G.Over) return;
-            var car = G.S.At(G.S.GetawayCar);
-            if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) To(SendTo("enforcer", G.S.Stand(G.S.GetawayCar)));
+            int end = G.Tick + Game.T(limitS); var car = G.S.At(G.S.GetawayCar);
+            while (!G.Over && G.Tick < end)
+            {
+                Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
+                       () => !G.CarHeld(), Math.Max(1, (end - G.Tick) / Game.Hz), ops.ToArray(), true);
+                if (G.Over || G.Tick >= end) return;
+                if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
+                {
+                    int at = SendTo("enforcer", G.S.Stand(G.S.GetawayCar));
+                    while (!G.Over && G.Tick < at && !G.CarHeld()) G.Step();
+                }
+                if (!G.CarHeld() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
+            }
         }
         public Pt At(string place) => G.S.At(place);
         public Pt Stand(string place) => G.S.Stand(place);

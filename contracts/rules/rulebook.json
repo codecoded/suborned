@@ -258,7 +258,8 @@
    "saw-act": { "facts": ["place-time"] },
    "rode-car": { "facts": ["cell-car", "place-time"] },
    "told": { "facts": "as-told" },
-   "saw-runner": { "facts": ["place-time"] }
+   "saw-runner": { "facts": ["place-time"] },
+   "aborted": { "facts": ["place-time"] }
   },
   "reads": { "helped": "help", "refused": "refusal" },
   "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`.",
@@ -327,6 +328,27 @@
   "src": "Sky 2026-10-15, briefs/011/motive-fights.md",
   "proposed": true,
   "reason": "Sky approved Motive's five answers on 2026-10-15; the numbers are Motive's calculator's (briefs/011/motive-fights/fights.py), [S] until Suture's frontier runs on the engine."
+ },
+ "cancel": {
+  "move": "stop",
+  "draw": "holster",
+  "fire": "cease",
+  "watch": "lost",
+  "listen": "lost",
+  "turn": "aborted",
+  "loop": "lost",
+  "loopHeld": "ends",
+  "reroute": "lost",
+  "mislead": "lost",
+  "enter": "staff-report",
+  "take": "vale-reports",
+  "carry": "lost",
+  "carrying": "put-down",
+  "rule": "A cancel order stops what one operative is doing now, the activity the HUD shows: an act in progress first, then a walk or run, then a fire order, then a draw, then a loop held, then a downed operative carried. Each verb's line says what cancelling it costs or keeps. stop: the operative stands where they are. holster: a draw not yet done goes back. cease: the fire order ends, the weapon stays drawn. lost: the act's time is spent and nothing lands (Watch and Listen learn nothing; a Loop, Reroute, Mislead or lift not finished does nothing; their Trail is charged only when they land). aborted: the approach stops mid-conversation; the money held for it comes back (the engine holds the price at the order and pays it only in the outcome's charge, Redline E2), no Trail, and the person remembers an aborted approach (memory act `aborted`, with the Fixer's face): it is no refusal, so the approach may be tried again, but it is a fact an investigator can get. ends: the loop stops and the camera comes back. staff-report: the Enforcer comes back out at the public door without Vale; the Office staff report the intruder, one reported incident (alert.byIncident). vale-reports: Vale is let go at his car and reports the attempt, one reported incident. put-down: the carried operative is laid down where the carrier stands. Extract is instant and has nothing to cancel. Putting Vale down is no cancel: the Enforcer keeps him (a rule of its own if Sky wants one). The verbs whose line may change take one of: turn aborted or lost; enter staff-report or quiet; take vale-reports or quiet.",
+  "tag": "S",
+  "src": "Sky 2026-10-15 playtest: \"there's nothing showing me what the cell player is doing when they're busy, nor is there a way to cancel their action\" (Aster)",
+  "proposed": true,
+  "reason": "Keel's proposal for Motive: cancelling an act already under way spends its time and lands nothing, as a refusal does; the money held comes back because it was never handed over; the two acts that put a stranger in front of someone (Enter, Take) leave a report, as an interrupted intrusion would; a broken-off approach leaves the person the Fixer's face but no refusal, so cancel is no free retry of a bad card but no punishment like a refusal either."
  },
  "perception": {
   "near": "v:near-m",

@@ -28,6 +28,7 @@ namespace Suborned.Sim
             if (o.Do == "panic") return Panic(o);
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return $"the {o.Op} is down";
+            if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
             if (op.Inside) return "the Enforcer is inside the Office";
             if (op.Busy != null) return $"{o.Op} is busy until {op.BusyEnd}";
             switch (o.Do)
@@ -57,7 +58,7 @@ namespace Suborned.Sim
             if (seconds < 1) seconds = 1; // the rulebook bounds every duration to 1 s or more at load (Redline E3); a 1 s floor is the belt
 
             op.Walk = null; op.WalkMm = 0; // engaging stops the approach walk
-            op.Busy = o; op.BusyEnd = Tick + T(seconds);
+            op.Busy = o; op.BusyStart = Tick; op.BusyEnd = Tick + T(seconds);
             Note("order." + o.Do, $"{Sim.Op.Name(op.Id)} {o.Do}{(o.Target.Length > 0 ? " " + o.Target : "")} ({seconds} s)");
         }
 
