@@ -41,7 +41,7 @@
   "per-mille": "integer weight scale for seeded draws"
  },
  "values": {
-  "watch-s": { "v": 52, "unit": "s", "tag": "B", "src": "§04 Pay requires routine known (Watch 52 s); top-down test watchCafe" },
+  "watch-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-15 (Motive's balance, briefs/011/motive-balance.md): Watch 20 s; §04 Pay requires routine known (Watch); the top-down test's watchCafe was 52 s [B]", "proposed": true, "reason": "Motive balance (brief 011, Suture E-8, T2): at 52 s the informed route A calls at 2:42 and loud (3:38) beats it. At 20 s the call is at 2:10, inside the 2:13-2:47 sweep gap, and route A finishes at 3:33, 5 s before the best loud. Watch keeps its place in the chain (Watch, then Listen, then Help) and Sky's Pay lesson stays on the main path: after Watch the Pay card shows '?' and $90,000 worst case. Sky's steer to more real-time also argues for shorter prep timers." },
   "listen-s": { "v": 42, "unit": "s", "tag": "B", "src": "§04 Help requires need known (Listen 42 s); top-down test listenInez" },
   "listen-reach-m": { "v": 3, "unit": "m", "tag": "B", "src": "top-down test listenInez reach 3" },
   "approach-reach-m": { "v": 4, "unit": "m", "tag": "B", "src": "top-down test askInez, offerInez, turnInez, pressureInez reach 4" },
@@ -288,8 +288,8 @@
   "safe": {"hostiles": "v:fight-safe-hostiles", "minus": "v:fight-modifier", "warn": "v:fight-warn-s", "ambush": "v:fight-ambush-m"},
   "loud": {"officers": "v:fight-loud-officers", "alert": "v:fight-loud-alert", "civilian": "v:fight-loud-civilian"},
   "volley": "v:fight-volley-s", "hold": "v:fight-hold-m",
-  "traced": true,
-  "tracedReason": "Motive decides (proposed: true): the final fight is always fought (§07), so if its shots add Trail and Alert as every shot does (§06 [B] +2 T, +1 A), every Handover ends Raised or High with about +10 T, and a quiet route's debrief is never Calm. false: the fight's shots are the consequence, not a new act, and leave no Trail or Alert (the fight still draws the patrol, which answers gunfire). Today true: the rules as written.",
+  "traced": false,
+  "tracedReason": "Sky 2026-10-15: off. The final fight's shots add no Trail and no Alert: the fight is the consequence, not a new act. Shots before it count as every shot does (§06 [B] +2 T, +1 A), so a loud run is still loud. The fight's shots still draw the patrol, which answers gunfire.",
   "rule": "The final fight (§07 [S]: always; 30–60 s; 3–5 hostiles) starts when the Enforcer has Vale. Loud (any shot or Alert ≥ 2): police officers run in from the response unit's entry, base `loud.officers`, +`loud.alert` if Alert reached 3, +`loud.civilian` if a civilian was shot; the seal clock runs; no allies. Safe (no shots, Alert ≤ 1): the rival crew ambushes the extraction when the Enforcer brings Vale within `safe.ambush` of the getaway car: `safe.hostiles`, −`safe.minus` if the driver is turned (he blocks the rival car), −`safe.minus` if the rivals were tipped off earlier; a helped Inez warns `safe.warn` early (the first volley comes that much later); the guard, if he never saw the cell and was never shot, runs in and fights them (he fires as a guard does). Every hostile drops at `cell.fire.hits` hits. While any sees the Enforcer the hostiles fire one volley every `volley`; the car can't leave while one stands within `hold` of it.",
   "tag": "S", "src": "§06 fights; §07 final fight [S], loud and safe"
  },

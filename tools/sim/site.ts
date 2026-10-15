@@ -121,18 +121,18 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     return { id: c.id, at: P(c.at), facing: P([to[0] - c.at[0], to[1] - c.at[1]]), reach: cm(c.reachM), half: cm(c.halfM), src: c.src, reason: c.reason };
   });
 
-  // ---- the mission's schedule, read from mission.json by time and checked by its words
-  const at = (t: string, word: RegExp) => {
-    const e = mission.timeline.find((x: { at: string }) => x.at === t);
-    if (!e || !word.test(e.what)) throw new Error(`mission.json timeline ${t} is not "${word}" (it reads ${e?.what})`);
-    const [m, s] = t.split(':').map(Number); return m! * 60 + s!;
+  // ---- the mission's schedule, read from mission.json by its words, so a retimed entry (Waymark's close, 8:00 → 8:30) moves the engine
+  const at = (_was: string, word: RegExp) => {
+    const es = mission.timeline.filter((x: { what: string }) => word.test(x.what));
+    if (es.length !== 1) throw new Error(`mission.json timeline: ${es.length} entries read "${word}", the engine needs exactly one`);
+    const [m, s] = String(es[0].at).split(':').map(Number); return m! * 60 + s!;
   };
   const win = mission.windows.find((w: { id: string }) => w.id === 'front-door');
   const schedule = {
-    rivalsArrive: at('3:10', /rival car/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn driver/), valeExits: at('5:50', /Vale exits/), valeAtCar: at('6:10', /Vale at car/), over: at('8:00', /over/),
+    rivalsArrive: at('3:10', /rival car/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn driver/), valeExits: at('5:50', /Vale exits/), valeAtCar: at('6:10', /Vale at car/), over: at('8:00', /= over$/),
     guardWalkS: win.walk.s, guardStayS: win.stayS,
     blockMoveS: 8, blockHoldS: 150,
-    src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: §07 8:00 (the top-down test ran to 9:50; Suture M-1, the rulebook takes §07)',
+    src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };
 
   // ---- the cast: M-2's own casting (tools/missions/handover/cast.ts castRoles, { play: true }) on the people file, at the mission's

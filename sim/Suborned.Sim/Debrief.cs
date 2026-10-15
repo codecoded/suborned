@@ -10,7 +10,7 @@ namespace Suborned.Sim
     {
         public string PublicSecurity = "", InvestigationState = "", InvestigationCause = "";
         public int Contacts; public bool Loud;
-        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits; public readonly List<string> FightWhy = new List<string>();
+        public string FightBranch = ""; public int FightHostiles, FightDownedByEnforcer, FightDownedByGuard, FightHits, FightShots; public readonly List<string> FightWhy = new List<string>();
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
 
         public static Debrief Of(Game g)
@@ -32,7 +32,7 @@ namespace Suborned.Sim
                 d.Assets.Add(g.InezWitnessedShooting ? "waitress-witnessed-shooting" : g.InezMethod == "pressure" ? "waitress-may-identify-fixer" : inezExposed ? "waitress-may-be-questioned" : "waitress-introduces-cafe");
             if (g.Driver.Turned && !g.Driver.Down) d.Assets.Add("driver-alters-pickups");
             d.Chain.AddRange(g.Chain);
-            d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightHits = g.FightHits; d.FightWhy.AddRange(g.FightWhy);
+            d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightHits = g.FightHits; d.FightShots = g.FightShots; d.FightWhy.AddRange(g.FightWhy);
 
             var relevant = new HashSet<string>(StringComparer.Ordinal);
             if (g.RouteKind == "front")
@@ -78,7 +78,7 @@ namespace Suborned.Sim
             w.OpenArr("chain"); foreach (var a in Chain) w.Str(a); w.EndArr();
             if (FightBranch.Length > 0)
             {
-                w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("hitsTaken", FightHits);
+                w.Open("finalFight").Prop("branch", FightBranch).Prop("hostiles", FightHostiles).Prop("downedByEnforcer", FightDownedByEnforcer).Prop("downedByGuard", FightDownedByGuard).Prop("hitsTaken", FightHits).Prop("shots", FightShots);
                 w.OpenArr("why"); foreach (var a in FightWhy) w.Str(a); w.EndArr(); w.EndObj();
             }
             w.EndObj();
@@ -135,6 +135,7 @@ namespace Suborned.Sim
         public static Game Play(Inputs i, Start start, IReadOnlyList<Order> orders, int until)
         {
             var g = New(i, start);
+            if (until <= 0) until = Game.T(i.SiteData.Over); // a script without `until` plays to the close mission.json gives
             var list = new List<(int idx, Order o)>(); for (int k = 0; k < orders.Count; k++) list.Add((k, orders[k]));
             list.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.idx.CompareTo(b.idx));
             foreach (var (_, o) in list)

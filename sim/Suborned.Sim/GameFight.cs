@@ -18,7 +18,7 @@ namespace Suborned.Sim
         public string FightBranch = "";                    // "", "loud", "safe"
         public int FightStart = INF, FightSprung = INF, NextVolley = INF, FightOverTick = INF;
         public bool FightWarned, GuardAlly, GuardAllyTracking;
-        public int GuardAllyNextShot, FightHits, DownedByEnforcer, DownedByGuard;
+        public int GuardAllyNextShot, FightHits, DownedByEnforcer, DownedByGuard, FightShots;
         public readonly List<Hostile> Hostiles = new List<Hostile>();
         public readonly List<string> FightWhy = new List<string>();
         Path? guardAllyPath; int guardAllyStart;
@@ -144,7 +144,7 @@ namespace Suborned.Sim
         void FireHostile(Hostile h)
         {
             if (R.FightTraced) RegisterGunfire("hostiles");
-            else { Gunfire++; EnforcerNextShot = Tick + T(R.ShotEveryS); WakePatrol(); } // the fight's shots leave no Trail or Alert (rulebook fight.traced)
+            else { FightShots++; EnforcerNextShot = Tick + T(R.ShotEveryS); WakePatrol(); } // Sky 2026-10-15 (rulebook fight.traced off): the final fight's shots are the consequence, not a new act: no Trail, no Alert, not "a shot fired" for the debrief
             if (--h.Health <= 0) { h.Down = true; DownedByEnforcer++; Note("fight.down", $"The Enforcer drops {h.Id}."); }
             else Note("fight.hit", $"The Enforcer hits {h.Id}.");
         }

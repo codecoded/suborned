@@ -209,7 +209,7 @@ namespace Suborned.Sim
             if (!Over) FightStep();
             if (!Over && Tick >= Lockdown && Vale != ValeAt.Car) Fail("sealed", "Security seals the district before Vale reaches the getaway car.");
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
-                Note("horizon.open", "8:00 (§07 over) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
+                Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
             if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car)
             {
                 if (RivalsPresent) Fail("rivals-reach-vale", "The rival crew reaches Vale first.");

@@ -23,7 +23,7 @@ namespace Suborned.Sim
             n.Only("schema", "mission", "note", "start", "orders", "until", "expect");
             if (n["schema"].Str() != "suborned.sim.script/1") throw new FormatException("script schema is not suborned.sim.script/1");
             if (n["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
-            var s = new Script { Start = Start.Parse(n.Opt("start")), Until = n.Opt("until")?.Int() ?? 4800 };
+            var s = new Script { Start = Start.Parse(n.Opt("start")), Until = n.Opt("until")?.Int() ?? 0 }; // 0: to the mission's close
             foreach (var o in n["orders"].Items) s.Orders.Add(Order.Parse(o));
             if (n.Opt("expect") is JNode e)
             {

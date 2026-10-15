@@ -23,7 +23,7 @@ public class RedlineTests
     {
         string rb = I.Rulebook, pr = I.PeopleRules, st = I.Site;
         Rejects(Sub(rb, "\"schema\": \"suborned.rulebook/1\",", "\"schema\": \"suborned.rulebook/1\", \"stray\": 1,"), pr, st, "an unknown top-level key");
-        Rejects(Sub(rb, "\"watch-s\": { \"v\": 52,", "\"watch-s\": { \"vv\": 1, \"v\": 52,"), pr, st, "an unknown key in a value");
+        Rejects(Sub(rb, "\"watch-s\": { \"v\": 20,", "\"watch-s\": { \"vv\": 1, \"v\": 52,"), pr, st, "an unknown key in a value");
         Rejects(Sub(rb, "\"speed\": \"v:op-speed-cm-s\"", "\"sped\": \"v:op-speed-cm-s\", \"speed\": \"v:op-speed-cm-s\""), pr, st, "an unknown key in the cell section");
         Rejects(Sub(rb, "\"ask\": { \"fit\": \"refused\"", "\"ask\": { \"fit\": \"refusedd\""), pr, st, "a fit typo");
         Rejects(Sub(rb, "\"when\": [{ \"k\": \"reports-approach\" }", "\"when\": [{ \"k\": \"mood\" }"), pr, st, "an unknown condition kind in the reports");
@@ -35,7 +35,7 @@ public class RedlineTests
         Rejects(rb, Sub(pr, "\"respondsTo\": [\"help\"], \"refuses\": [\"pay\"]", "\"respondsToo\": [], \"respondsTo\": [\"help\"], \"refuses\": [\"pay\"]"), st, "an unknown key in a temperament");
         Rejects(rb, pr, Sub(st, "\"schema\": \"suborned.sim.site/1\",", "\"schema\": \"suborned.sim.site/1\",\n \"stray\": 1,"), "an unknown key at the site's root");
         Rejects(rb, pr, Regex.Replace(st, "\"purse\": 100000,", "\"purse\": 100000.5,"), "a float purse");
-        Rejects(Sub(rb, "\"watch-s\": { \"v\": 52,", "\"watch-s\": { \"v\": 0,"), pr, st, "a 0 s action (E3)");
+        Rejects(Sub(rb, "\"watch-s\": { \"v\": 20,", "\"watch-s\": { \"v\": 0,"), pr, st, "a 0 s action (E3)");
         Rejects(Sub(rb, "{ \"id\": \"not-yet\", \"when\": [],", "{ \"id\": \"not-yet\", \"when\": [{ \"k\": \"cash-covers\" }],"), pr, st, "cash-covers in an outcome (it recursed until the stack overflowed)");
     }
 
