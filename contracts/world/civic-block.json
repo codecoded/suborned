@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "03b4994c1d812b4ee893b494e9d28e7f6db0f1e72dbdac81f28a8ca9c4333a7e",
+  "sha256": "e2eeddc22f844123ba200ed812ec731cb15c39b0eec68ac6b1d1b812f3c9a52c",
   "owner": "Vantage",
   "applied": [
    {
@@ -2154,6 +2154,40 @@
        "at": [20.5, -8.5]
       }
      ]
+    },
+    {
+     "id": "run-sq-south",
+     "line": [
+      [20.5, -46],
+      [20.5, -38]
+     ],
+     "yawDeg": 90,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [20.5, -44]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [20.5, -40]
+      }
+     ],
+     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): the square's south-west quarter was bare paving between the fountain court and the south kerb, so the safe fight's ambush-3 (22, -42) stood in the open. Two modules east-west at x 20.5 (y -46.15..-37.85), 1.1 m high: waist cover the rivals take facing the getaway car (its south-face points shield toward it, 12-15 m off), and the cell answers from the car's own side. Under eye height (1.6 m), so no sightline the quiet routes use is cut (the guard at the door, the cameras, the patrol); 2.5 m clear of run-sq-west, 3 m off the kerb run, 10.6 m outside the court-walk ring; no keep-clear zone that bars planters."
+    },
+    {
+     "id": "run-sq-west",
+     "line": [
+      [13.5, -39.5],
+      [17.5, -39.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [15.5, -39.5]
+      }
+     ],
+     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): ambush-5 (14, -36) stands 9.6 m from the fountain, inside the court-walk ring that bars planters, with nothing between it and the car. One module north-south at y -39.5 (x 13.35..17.65), outside the ring (11.4 m from the pool centre at its nearest), 3 m from the post: its east-face point shields toward the car. With run-sq-south it reads as one L-shaped planted corner, the square's south-west answer to the café terrace's planting. 1.1 m: cover from fire, never from sight."
     }
    ],
    "reason": "On the square's two street kerbs (plot edges y -50 and y -8), 0.16 m inside the edge: they close the square to the two streets and leave the ways in the crowd should use: on the west the café flank (north of x -14.4) and the crew and getaway kerb (x -4.6..16.6); on the east the café flank, the fountain axis (x 3.5..9.5) and the south corner (x 22.5..31). Twelve 4 m modules. None on the office plot or between the two plazas: a run on the forecourt's east side (x 44.9, y -21.5..-9.5) cut the walk from 'South walkway' to the official door, and the planter ring and the nine civic-* beds already hold the middle."
