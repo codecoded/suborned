@@ -248,7 +248,7 @@ namespace Suborned.Play
             while (hits < need && shots < 500) { shots++; accum += acc; if (accum >= 1000) { accum -= 1000; hits++; } }
             int ticks = first + (shots - 1) * w.Every;
             string band = d <= R.PointBlankCm ? "point blank" : d <= w.EffCm ? "effective" : "long";
-            string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : $"+{R.HitTrail} T hit · +{R.DownTrail} T down";
+            string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : g.Gunfire > 0 ? $"+{R.HitTrail} T hit · +{R.DownTrail} T down" : $"+{R.GunfireTrail} T shooting · +{R.HitTrail} T hit · +{R.DownTrail} T down";
             return $"{who} · hits {Ratio(acc)} · down in {ticks / Game.Hz}.{ticks % Game.Hz} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
         }
 

@@ -87,11 +87,13 @@ namespace Suborned.Play
                     if (kv.Value.Opt("onTarget") is JNode ot) foreach (var o in ot.Entries) a.OnTarget[o.Key] = o.Value.Str();
                     Actions[kv.Key] = a;
                 }
-            if (n.Opt("locks") is JNode ls)
+            if (n.Opt("locks") is JNode lo && lo.Kind == JKind.Obj) // suborned.text/1 since a103daf: code → { line, verbs }, keyed by Answer.code
+                foreach (var kv in lo.Entries) Locks.Add(new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "" });
+            else if (n.Opt("locks") is JNode ls)
                 foreach (var l in ls.Items)
                 {
                     var lk = new LockText { Code = S(l, "code") ?? "", Line = S(l, "line") ?? "" };
-                    foreach (var m in l["match"].Strs()) lk.Match.Add(new Regex(m, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
+                    if (l.Opt("match") is JNode mt) foreach (var m in mt.Strs()) lk.Match.Add(new Regex(m, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant));
                     if (l.Opt("samples") is JNode sm) foreach (var x in sm.Strs()) LockSamples.Add((x, lk.Code));
                     Locks.Add(lk);
                 }
@@ -177,6 +179,9 @@ namespace Suborned.Play
         }
 
         /// <summary>What unlocks a refusal or a locked row: the first lock whose pattern matches its text; null when none does.</summary>
+        /// <summary>The lock for an engine refusal code (Answer.code), or null when the text has none.</summary>
+        public LockText LockByCode(string code) { foreach (var l in Locks) if (l.Code == code) return l; return null; }
+
         public LockText LockOf(string why)
         {
             if (string.IsNullOrEmpty(why)) return null;

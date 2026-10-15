@@ -393,8 +393,8 @@ namespace Suborned.Play
             if (c.GuardAllyLost) lose.Add("the guard won't help");
             if (c.WarningLost) lose.Add("Inez's warning");
             if (lose.Count > 0) lines.Add("You lose: " + string.Join(" · ", lose));
-            lines.Add($"Costs: +{c.TrailPerHit} T per person hit, +{c.TrailPerDown} T more per person down");
-            if (host.Text != null && host.Text.LoudCaptured.Length > 0) lines.Add(host.Text.LoudCaptured);
+            lines.Add($"Costs: +{c.TrailPerShooting} T for the shooting, +{c.TrailPerHit} T per person hit, +{c.TrailPerDown} T more per person down");
+            if (c.DownedCaptured && host.Text != null && host.Text.LoudCaptured.Length > 0) lines.Add(host.Text.LoudCaptured);
             string src = gate.Source switch { "F" => host.controls.Label(PlayAction.Draw), "right" => "the right button", "both" => "both buttons", _ => "the button" };
             lines.Add($"Hold {src} to commit · release or Esc to back off · the clock runs");
             float h = pad * 2; var hs = new float[lines.Count];

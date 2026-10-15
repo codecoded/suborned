@@ -206,20 +206,30 @@ namespace Suborned.Play
             if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) Beat("arrive", verb, Op.Name(by), who: Name(o.Target));
         }
 
-        /// <summary>A refusal goes in the log too: the text's lock line (lockOf), which says what unlocks it.</summary>
-        void SayRefused(Order o, string why) => Say(o.Op, Humanise(o, why), Feedback.Refused);
-
-        /// <summary>The refusal said for the player: the text's lock line for it (a port of `lockOf`), its {who} {op} {m} {usd} filled; else the
-        /// engine's words with the agent's name.</summary>
-        public string Humanise(Order o, string why)
+        /// <summary>The refusal said for the player: the text's lock line for its code, filled (a port of `fillLock`); else the engine's words.</summary>
+        public string Humanise(Order o, Answer a)
         {
+            var line = LockLine(o, a);
+            if (line != null) return line;
             string agent = o.Op.Length > 0 ? char.ToUpperInvariant(o.Op[0]) + o.Op[1..] : "";
-            var lk = Text?.LockOf(why);
-            if (lk == null || lk.Line.Length == 0) return $"{agent}: {why}";
-            var m = System.Text.RegularExpressions.Regex.Match(why, @"within (\d+(?:\.\d+)?) ?m");
-            var usd = System.Text.RegularExpressions.Regex.Match(why, @"\$([\d,]+)");
-            return Fill(lk.Line, Name(o.Target), m.Success ? (int)Math.Ceiling(double.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)) : 0,
-                usd.Success ? long.Parse(usd.Groups[1].Value.Replace(",", "")) : 0, agent);
+            return $"{agent}: {a.why}";
+        }
+
+        /// <summary>A port of text.schema.ts `fillLock`: the lock line for Answer.code with {who} (the target), {op} (the agent), {m} (Answer.m,
+        /// or cm / 100), {usd} ("$" and thousands) and {tick} (the mission clock) filled; "?" for a number the engine didn't give. Null for a
+        /// code the text has no line for (and for an older text keyed by patterns, `lockOf` over the words).</summary>
+        public string LockLine(Order o, Answer a)
+        {
+            if (Text == null) return null;
+            var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
+            l ??= Text.LockOf(a.why ?? "");
+            if (l == null || l.Line.Length == 0) return null;
+            string who = o.Target.Length > 0 ? Name(o.Target) : "them";
+            string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
+            string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
+            string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
+            string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
+            return l.Line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }
 
         // engine log codes that land an order's act, and the verb and agent whose exchange they belong to
@@ -237,6 +247,7 @@ namespace Suborned.Play
         {
             if (Text == null) return;
             string code = l.Code, role = RoleIn(l);
+            if (code.StartsWith("crowd.")) return; // the crowd speaks by its states (CityBeats): one passer-by near the cell, not the log's counts
             if (code.StartsWith("scout.") && role != null)
             {
                 bool listen = code.StartsWith("scout.listen");
@@ -291,6 +302,44 @@ namespace Suborned.Play
             if (spoke) return;
             foreach (var sl in Text.Silent) if (code == sl || (sl.EndsWith(".") && code.StartsWith(sl))) return;
             Say("", l.Text, code.EndsWith(".refused") ? Feedback.Refused : Feedback.Info);
+        }
+
+        string[] crowdSt; readonly Dictionary<string, int> sawCount = new();
+        static readonly string[] CrowdOrder = { "startled", "fleeing", "returning", "sheltered", "back" };
+
+        /// <summary>The city's voices with no log line: a passer-by whose fight state changes (crowd-state: startled, fleeing, sheltered,
+        /// returning, back) speaks once per change, the one nearest the cell within 40 m, never the whole crowd, and one kind at most every
+        /// 10 s; a person who has just seen a shot (the memory saw-gunfire written) says so (saw-gunfire), Inez and the guard by name.</summary>
+        void CityBeats()
+        {
+            if (Text == null) return;
+            var ws = Game.Walkers;
+            if (crowdSt == null || crowdSt.Length != ws.Count) { crowdSt = new string[ws.Count]; for (int i = 0; i < ws.Count; i++) crowdSt[i] = ws[i].St; }
+            string bestKind = null; long bestD = long.MaxValue;
+            for (int i = 0; i < ws.Count; i++)
+            {
+                string was = crowdSt[i], now = ws[i].St; if (was == now) continue;
+                crowdSt[i] = now;
+                string kind = now.Length == 0 ? "back" : now;
+                var at = Game.CrowdPos(ws[i]) ?? ws[i].At;
+                long d = long.MaxValue; for (int k = 0; k < 4; k++) if (!Game.Ops[k].Inside) d = Math.Min(d, G.D2(Game.Ops[k].Pos, at));
+                if (d > 4000L * 4000L) continue;
+                if (bestKind == null || Array.IndexOf(CrowdOrder, kind) < Array.IndexOf(CrowdOrder, bestKind) || (kind == bestKind && d < bestD)) { bestKind = kind; bestD = d; }
+            }
+            if (bestKind != null && !(beatAt.TryGetValue("crowd-state/" + bestKind, out var t0) && Game.Tick - t0 < 10 * Game.Hz))
+            { beatAt["crowd-state/" + bestKind] = Game.Tick; Beat("crowd-state", null, "crowd", bestKind, kind: Feedback.Info); }
+            // saw-gunfire: a new memory of a shot
+            string speaker = null;
+            void Saw(Person p, string sp)
+            {
+                int n = 0; foreach (var m in p.Memory) if (m.Act == "saw-gunfire") n++;
+                sawCount.TryGetValue(p.Id, out var before); if (n == before) return;
+                sawCount[p.Id] = n; if (n > before && (speaker == null || sp != "crowd")) speaker = sp;
+            }
+            Saw(Game.Inez, "waitress"); Saw(Game.GuardP, "guard");
+            foreach (var w in ws) Saw(w.P, "crowd");
+            if (speaker != null && !(beatAt.TryGetValue("saw-gunfire/" + speaker, out var t1) && Game.Tick - t1 < 15 * Game.Hz))
+            { beatAt["saw-gunfire/" + speaker] = Game.Tick; Beat("saw-gunfire", null, speaker, kind: Feedback.Refused); }
         }
 
         /// <summary>The text's clock beats with no log line of their own (the 5:30 chime, the 5:40 last turn), on the tick they fall.</summary>

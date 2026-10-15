@@ -143,6 +143,10 @@ namespace Suborned.Play
                 int k = stacked.TryGetValue(at.Value, out var n) ? n + 1 : 0; stacked[at.Value] = k;
                 float r = 50f * Mathf.Sqrt(k), th = k * 2.399963f;
                 Set(crowdKeys[i], at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th))));
+                // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
+                // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
+                var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
+                var want = cower ? new Vector3(1.2f, 0.75f, 1.2f) : Vector3.one; if (ct.localScale != want) ct.localScale = want;
             }
             // the final fight's hostiles (officers in the loud branch, the rival ambush in the safe one)
             for (int i = 0; i < MaxHostiles; i++)

@@ -138,7 +138,7 @@ namespace Suborned.Play
             views = new HostViews(this, viewRoot, frame);
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
-            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); beatAt.Clear();
+            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
             Track();
             // open on the cell at the getaway bay with Inez's café door in frame
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
@@ -191,7 +191,7 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
+            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
             Drain();
             return ok;
         }
@@ -591,15 +591,16 @@ namespace Suborned.Play
         {
             if (Game == null || Fault != null) return false;
             o.Tick = Game.Tick;
-            (bool ok, string why) r = (false, "");
+            Answer r = default;
             if (!Guard("order", () => r = Game.Issue(o))) return false;
+            r.why ??= ""; r.code ??= "";
             Status = r.ok ? $"{o.Op}: {o.Do} {o.Approach} {o.Target}".Replace("  ", " ") : $"{o.Op} {o.Do} {o.Target}: {r.why}";
             if (screen.HasValue || target.HasValue)
             {
                 if (r.ok) { if (o.Do != "move") Pop($"✓ {o.Op} {(o.Do == "turn" ? o.Approach : o.Do)}{(o.Target.Length > 0 ? " " + o.Target : "")}", screen, target, Feedback.Ok); }
-                else if (!quietRefusal) Pop(Humanise(o, r.why), screen, target, Feedback.Refused);
+                else if (!quietRefusal) Pop(Humanise(o, r), screen, target, Feedback.Refused);
             }
-            if (!r.ok && !quietRefusal && o.Do != "move") SayRefused(o, r.why);
+            if (!r.ok && !quietRefusal && o.Do != "move") Say(o.Op, Humanise(o, r), Feedback.Refused);
             if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); }
             Save();
             views.Tick(); views.Frame(1f); intentKey = ""; Track();
@@ -643,7 +644,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the action panel (GDD §10: click a person → action card with the full price)
 
-        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = "", Unlock = ""; public bool Available; }
+        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = "", Unlock = ""; public bool Available; public Answer Lock; }
         public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = "", About = ""; public readonly List<PanelRow> Rows = new(); }
         /// <summary>The open panel, else null. Built once on opening (Preview is ~500 KB a call); the clock runs on unless controls.pauseWithPanel.</summary>
         public ActionPanel Panel { get; private set; }
@@ -665,16 +666,17 @@ namespace Suborned.Play
                 {
                     var rows = new List<PanelRow>();
                     if (k == (int)OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned)
-                    { var c = Call(t); Words(c, t); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = c.Name, Reason = Game.CanCall(t.Key) ? "" : "not now (the guard is not at the door, or too late)" }); }
+                    { var c = Call(t); Words(c, t); var cl = CallLock(t.Key); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = c.Name, Lock = cl, Reason = cl.ok ? "" : cl.why }); }
                     else for (int i = 0; i < Slots[k].Length; i++)
                         {
                             var v = Verb((OpId)k, i, t); if (v == null) continue;
                             var aw = ActPlace((OpId)k, v.Order, t); // distance never hides an action: it adds the walk to the price
                             if (aw != null) v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then";
                             Words(v, t);
-                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Reason = Locked((OpId)k, v, t) });
+                            var lk = Locked((OpId)k, v, t);
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.why });
                         }
-                    foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = Text?.LockOf(r.Reason) != null ? Humanise(r.I.Order, r.Reason) : ""; }
+                    foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
                 if (pn.Rows.Count == 0) pn.Note = $"{string.Join(" and ", order.ConvertAll(k => AgentNames[k]))} can't act on {t.Label}" + (WhoCan(t) is var h && h.Contains("select the") ? " — " + h[(h.IndexOf("select the"))..] : "");
@@ -703,7 +705,7 @@ namespace Suborned.Play
         {
             if (Panel == null || row < 0 || row >= Panel.Rows.Count) return;
             var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
-            if (!r.Available) { Pop($"{r.Verb}: {r.Reason}", at, Panel.World, Feedback.Refused); return; }
+            if (!r.Available) { Pop(r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}", at, Panel.World, Feedback.Refused); return; }
             ClosePanel();
             Give(r.By, r.I.Order, t, at);
         }
@@ -730,35 +732,50 @@ namespace Suborned.Play
         public static string TextKey(Target t) => t.Kind switch { "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", _ => t.Key };
 
         /// <summary>Why a row cannot be given now, from the engine's own state (the engine still answers the order; its refusal shows as a pop).</summary>
-        string Locked(OpId by, Intent v, Target t)
+        Answer Locked(OpId by, Intent v, Target t)
         {
             var g = Game; var op = g.Ops[(int)by]; var o = v.Order;
-            if (op.Inside) return "inside the Office";
-            if (op.Busy != null) return $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it";
+            Answer No(string code, string why, int tick = -1, long usd = -1) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = usd, tick = tick };
+            var yes = new Answer { ok = true, code = "", why = "" };
+            if (op.Inside) return No("enforcer-inside", "inside the Office");
+            if (op.Busy != null) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
             switch (o.Do)
             {
-                case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? "" : "not out on the street";
+                case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? yes : No("person-away", "not out on the street");
                 case "turn":
                     {
                         var p = g.PersonByRole(o.Target);
-                        if (!g.PersonPos(p).HasValue) return "not out on the street";
+                        if (!g.PersonPos(p).HasValue) return No("person-away", "not out on the street");
                         var need = g.R.ApproachRequires(o.Approach);
                         string her = o.Target == "waitress" ? "her" : "their";
-                        if (need != "nothing" && !p.Knows(need)) return $"needs {her} {need} — {(need == "routine" ? "Watch" : "Listen")} (Scout) first";
-                        if (p.KnownRefused.Contains(o.Approach)) return $"{(o.Target == "waitress" ? "Inez" : "they")} refused this already";
-                        var q = g.Preview(o.Approach, o.Target, OpId.Fixer); if (q.WorstUsd > g.Cash) return $"not enough cash (${q.WorstUsd:N0})";
-                        return "";
+                        if (need != "nothing" && !p.Knows(need)) return No("needs-" + need, $"needs {her} {need} — {(need == "routine" ? "Watch" : "Listen")} (Scout) first");
+                        if (p.KnownRefused.Contains(o.Approach)) return No("refusal-remembered", $"{(o.Target == "waitress" ? "Inez" : "they")} refused this already");
+                        var q = g.Preview(o.Approach, o.Target, OpId.Fixer); if (q.WorstUsd > g.Cash) return No("no-cash", $"not enough cash (${q.WorstUsd:N0})", -1, q.WorstUsd);
+                        return yes;
                     }
-                case "loop": return g.LoopOn ? "the loop already holds" : "";
-                case "reroute": return g.PatrolAwayUntil > g.Tick ? "the patrol is already away" : "";
-                case "mislead": return g.RivalsPresent ? "" : "no rivals here yet";
-                case "enter": return g.Vale == ValeAt.Office ? "" : "Vale is not inside";
-                case "take": return g.Vale == ValeAt.Pickup ? "" : "Vale is not at his car yet";
-                case "extract": return g.Vale == ValeAt.WithEnforcer ? "" : "you don't have Vale yet";
-                case "fire": return op.Gun.W == null ? "carries no weapon (Arms)" : op.Running ? "a running operative doesn't fire: walk or stop first"
-                        : o.Target is "waitress" or "driver" ? $"{o.Target} is a civilian or a contact: a target only when forced (Ctrl)" : "";
+                case "loop": return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
+                case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
+                case "mislead": return g.RivalsPresent ? yes : No("no-rivals", "no rivals here yet");
+                case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
+                case "take": return g.Vale == ValeAt.Pickup ? yes : No("vale-not-at-car", "Vale is not at his car yet");
+                case "extract": return g.Vale == ValeAt.WithEnforcer ? yes : No("no-vale-yet", "you don't have Vale yet");
+                case "fire": return op.Gun.W == null ? No("no-weapon", "carries no weapon (Arms)") : op.Running ? No("fire-running", "a running operative doesn't fire: walk or stop first")
+                        : o.Target is "waitress" or "driver" ? No("civilian-target", $"{o.Target} is a civilian or a contact: a target only when forced (Ctrl)") : yes;
             }
-            return "";
+            return yes;
+        }
+
+        /// <summary>Why the Fixer can't call a turned contact now, by the engine's codes: Inez only while the guard is on the door; the driver
+        /// not while his car is still moving, and not after his last chance.</summary>
+        Answer CallLock(string role)
+        {
+            var g = Game; var yes = new Answer { ok = true, code = "", why = "" };
+            if (g.CanCall(role)) return yes;
+            Answer No(string code, string why, int tick = -1) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = tick };
+            if (role == "waitress") return g.GuardAtDoor ? No("call-too-late", "too late to call her") : No("guard-not-at-door", "the guard is not at the door");
+            int last = Game.T(g.S.DriverLast);
+            if (g.Tick >= last) return No("call-too-late", "too late: the car has gone for the pickup", last);
+            return g.BlockedUntil > g.Tick ? No("car-busy", "the car is still moving", g.BlockedUntil) : No("call-too-late", "not now", last);
         }
 
         /// <summary>Give an order for an agent; if the engine says they stand too far, they walk to the target first and the order follows on arrival
