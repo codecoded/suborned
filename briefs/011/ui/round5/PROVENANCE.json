@@ -1,0 +1,895 @@
+{
+ "brief": "011 C round 5 step 1: production-finish mockups for v10 (signage hotbar)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "Codex CLI image tool via out/concepts/ui-011-r5/gen5.py (round 3/4 call with -i references); cost 0 per image; no Runware or other paid service",
+ "concurrency": "2 workers; 17 generations kept (4 portraits, 3 first-attempt panel sheets, 10 compact panel sheets); one batch killed by me and restarted with the compact prompt (c4, c5 never finished, not recorded)",
+ "supersedes": "The first portrait pass used briefs/008/concepts/the-suborned-player-cell-concepts-2026-09-26.webp (not Sky's cell); dropped on Aster's correction, nothing from it is in any frame. Portraits come only from the four locked picks below.",
+ "refs_locked_picks": {
+  "source_root": "/Users/sky/Projects/the-suborned-store/concepts/Cell/picks/",
+  "copied_to": "briefs/011/ui/round5/refs/",
+  "sha256": {
+   "enforcer_G3.png": "77405e51f661f22d0b459d1ef73b053e1cb2fde74fc09ac8a85f726c4c402f46",
+   "fixer_P4-6.png": "8e865d37fa58b47698b6ebefa1d16515a7b623facfaa9fd60163b27ef880aa78",
+   "scout_S1-2.png": "ad1d0b81bca12364dc857cb75f2734e0d59ed3ad9802e532d33aa9c8c4ed85bd",
+   "tech_F2-1.png": "934349e86c86546e0bb026e9e2adb6aabef9c991a27e2655687f99eb994e6fb9"
+  },
+  "mapping": {
+   "scout": "scout_S1-2.png",
+   "fixer": "fixer_P4-6.png",
+   "tech": "tech_F2-1.png",
+   "enforcer": "enforcer_G3.png"
+  },
+  "style_contract": "contracts/style/suborned.style.json types.character.board"
+ },
+ "method": "Panel frames, verb plates, status pills and price chips are Codex images (physical-object renders on flat magenta, the portrait windows flat lime). I key them, fill the windows with the four portraits (cropped head and shoulders, inner shadow, hp pips), stretch the pill and chip with a repeating middle, engrave the verb glyphs on the buttons, and draw all text, numbers, over-head markers and the street layer in code (PIL, 3x supersampled) over the real Handover plates (briefs/011/ui/plates). The whole round is therefore art direction on real finish; the Unity build still needs the Step 2 sliceable kit.",
+ "plates": "cafe-front-172430 (0:58 Pay on Inez), office-door-1730 (the take), service-lane-1730 (the fight). Cell, guards, rivals, cone, response car are drawn by scene.py (the plates carry none) and are identical under every direction. Latch's Unity screenshot and briefs/011/play/*.png were used as the reference for the layout only (they carry the text placeholders).",
+ "palette_check": "CIEDE2000 against cone red #e03a2f, guard amber #f0a020, rival violet #8a4fd0. The Codex chrome and enamel carried warm and purple reflections: 0.9 to 4.7 % of panel pixels sat within dE 20 of a signal (worst r01 deco 4.7 %, r06 film 4.1 %, r09 sunburst 3.7 %). They are pulled toward neutral until every pixel clears dE 22 (fin2.guard_signals); after that 0.00 to 0.01 % in all ten. The selection turquoise #1cb9c6 is 42 to 58 from all three. Per-direction numbers are in coverage.",
+ "coverage": {
+  "k1_deco": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 389,
+   "hud_area_pct": 3.46,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 3.14,
+    "rivals": 1.6,
+    "any": 4.73
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k2_dash": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 386,
+   "hud_area_pct": 3.51,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 0.09,
+    "rivals": 0.8,
+    "any": 0.89
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k3_badges": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 395,
+   "hud_area_pct": 3.51,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.19,
+    "guard": 0.89,
+    "rivals": 1.38,
+    "any": 2.46
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.01,
+    "any": 0.01
+   }
+  },
+  "k4_cab": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 398,
+   "hud_area_pct": 3.5,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 2.02,
+    "rivals": 0.46,
+    "any": 2.48
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k5_radio": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 349,
+   "hud_area_pct": 3.4,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 0.43,
+    "rivals": 1.18,
+    "any": 1.61
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k6_film": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 378,
+   "hud_area_pct": 3.59,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 2.84,
+    "rivals": 1.21,
+    "any": 4.06
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k7_medals": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 405,
+   "hud_area_pct": 3.6,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 0.56,
+    "rivals": 1.12,
+    "any": 1.69
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k8_googie": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 402,
+   "hud_area_pct": 3.61,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 0.03,
+    "rivals": 1.54,
+    "any": 1.57
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k9_sunburst": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 352,
+   "hud_area_pct": 3.32,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.01,
+    "guard": 3.06,
+    "rivals": 0.65,
+    "any": 3.71
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  },
+  "k10_overhead": {
+   "roster_height_pct": 8.5,
+   "roster_plus_hotbar_height_pct": 15.0,
+   "roster_plus_hotbar_width_px": 388,
+   "hud_area_pct": 3.44,
+   "panel_px_near_signal_pct_as_generated": {
+    "cones": 0.0,
+    "guard": 0.28,
+    "rivals": 1.12,
+    "any": 1.4
+   },
+   "panel_px_near_signal_pct_after_guard": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   }
+  }
+ },
+ "portrait_signal_check": "scripts portsheet.py: at 66 px the Enforcer carries 1.7 % pixels within dE 12 of guard amber (lenses and gold panels) and 0.6 % violet-hue pixels (collar lining, sleeve trim); the Fixer's dress reads dark plum (0.0 % violet-hue); the Tech's cyan visor is dE 2 to 5 from the turquoise highlight. See s3.",
+ "generations": [
+  {
+   "key": "port_scout",
+   "file": "port_scout.png",
+   "seconds": 58,
+   "sha256": "898bec4eac9d93035b1dbef1002c419150a4aedeb51fbc88f440f5bf61a41b71",
+   "size": [
+    1804,
+    872
+   ],
+   "refs": [
+    "scout_S1-2.png"
+   ],
+   "prompt": "Character portrait pair for the roster of a polished video game, two square head-and-shoulders portraits side by side, each about 480 px square. The character is the young woman with the short dark undercut hair, the cream technical hooded jacket with the black harness straps and backpack straps, the gold accents and the small earpiece, exactly as in the attached reference image (same face, same hair, same costume, same colours and trim; do not redesign anything); a visitor from a nearby timeline, sharp and clean, matte technical fabrics. Both portraits show the same person, looking a little to the left of the viewer, alert. LEFT portrait, NORMAL: composed, the costume tidy. RIGHT portrait, HURT: after a scuffle, hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed, any glasses or visor cracked or flickering; no blood and no red, only dust, grey scuffs and dark bruises. Framing for BOTH: chest-up, the head in the upper half and the same size in both, a slight turn, camera at eye level, the shoulders filling the lower third. Lighting for BOTH: one soft key light from the upper left and a cool seafoam rim light from behind on the right. Background of each portrait: a flat dim teal studio field #2c5a56, no gradient, no vignette, no scenery. Rendering: crisp, painterly-realistic game character art with clean edges, readable when shrunk to 72 px; no text, no frame, no border. Canvas rule: the space around and between the two portraits is one flat, perfectly even, solid magenta #ff00ff, at least 40 px wide; magenta never appears inside a portrait.",
+   "use": "portrait pair (normal + hurt) for the scout",
+   "at": "2026-10-15T18:30:54+0700"
+  },
+  {
+   "key": "port_fixer",
+   "file": "port_fixer.png",
+   "seconds": 62,
+   "sha256": "3bba3b1c7cb1bc89e024734a968c46985312c73088304b66d6ff27bda5080c3b",
+   "size": [
+    1776,
+    1184
+   ],
+   "refs": [
+    "fixer_P4-6.png"
+   ],
+   "prompt": "Character portrait pair for the roster of a polished video game, two square head-and-shoulders portraits side by side, each about 480 px square. The character is the woman with the long black ponytail, bare shoulders and the cream-and-plum column dress top, the small earring, exactly as in the attached reference image (same face, same hair, same costume, same colours and trim; do not redesign anything); a visitor from a nearby timeline, sharp and clean, matte technical fabrics. Both portraits show the same person, turned in three-quarter view with her face toward the viewer, poised and composed. LEFT portrait, NORMAL: composed, the costume tidy. RIGHT portrait, HURT: after a scuffle, hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed, any glasses or visor cracked or flickering; no blood and no red, only dust, grey scuffs and dark bruises. Framing for BOTH: chest-up, the head in the upper half and the same size in both, a slight turn, camera at eye level, the shoulders filling the lower third. Lighting for BOTH: one soft key light from the upper left and a cool seafoam rim light from behind on the right. Background of each portrait: a flat dim teal studio field #2c5a56, no gradient, no vignette, no scenery. Rendering: crisp, painterly-realistic game character art with clean edges, readable when shrunk to 72 px; no text, no frame, no border. Canvas rule: the space around and between the two portraits is one flat, perfectly even, solid magenta #ff00ff, at least 40 px wide; magenta never appears inside a portrait.",
+   "use": "portrait pair (normal + hurt) for the fixer",
+   "at": "2026-10-15T18:30:59+0700"
+  },
+  {
+   "key": "port_enforcer",
+   "file": "port_enforcer.png",
+   "seconds": 54,
+   "sha256": "bd4ff8449a611d6f9227e18a443e9afe3c096c158e891311dbd1545f926d72fd",
+   "size": [
+    1788,
+    880
+   ],
+   "refs": [
+    "enforcer_G3.png"
+   ],
+   "prompt": "Character portrait pair for the roster of a polished video game, two square head-and-shoulders portraits side by side, each about 480 px square. The character is the older man with the swept grey hair, grey beard and amber-tinted glasses, the black and cream coat with the gold panels and raised collar and a hint of the chrome rifle at his shoulder, exactly as in the attached reference image (same face, same hair, same costume, same colours and trim; do not redesign anything); a visitor from a nearby timeline, sharp and clean, matte technical fabrics. Both portraits show the same person, facing the viewer, steady and heavy-set. LEFT portrait, NORMAL: composed, the costume tidy. RIGHT portrait, HURT: after a scuffle, hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed, any glasses or visor cracked or flickering; no blood and no red, only dust, grey scuffs and dark bruises. Framing for BOTH: chest-up, the head in the upper half and the same size in both, a slight turn, camera at eye level, the shoulders filling the lower third. Lighting for BOTH: one soft key light from the upper left and a cool seafoam rim light from behind on the right. Background of each portrait: a flat dim teal studio field #2c5a56, no gradient, no vignette, no scenery. Rendering: crisp, painterly-realistic game character art with clean edges, readable when shrunk to 72 px; no text, no frame, no border. Canvas rule: the space around and between the two portraits is one flat, perfectly even, solid magenta #ff00ff, at least 40 px wide; magenta never appears inside a portrait.",
+   "use": "portrait pair (normal + hurt) for the enforcer",
+   "at": "2026-10-15T18:31:53+0700"
+  },
+  {
+   "key": "port_tech",
+   "file": "port_tech.png",
+   "seconds": 70,
+   "sha256": "12950dd019aa45da3c9f44be206b47a53be0019e10b1922c6236617bf722f988",
+   "size": [
+    1776,
+    1184
+   ],
+   "refs": [
+    "tech_F2-1.png"
+   ],
+   "prompt": "Character portrait pair for the roster of a polished video game, two square head-and-shoulders portraits side by side, each about 480 px square. The character is the man with the short locs, the glowing cyan visor across his eyes, the black vest with cyan light strips and the cyan wrist bands, a short beard, exactly as in the attached reference image (same face, same hair, same costume, same colours and trim; do not redesign anything); a visitor from a nearby timeline, sharp and clean, matte technical fabrics. Both portraits show the same person, facing the viewer, calm and focused. LEFT portrait, NORMAL: composed, the costume tidy. RIGHT portrait, HURT: after a scuffle, hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed, any glasses or visor cracked or flickering; no blood and no red, only dust, grey scuffs and dark bruises. Framing for BOTH: chest-up, the head in the upper half and the same size in both, a slight turn, camera at eye level, the shoulders filling the lower third. Lighting for BOTH: one soft key light from the upper left and a cool seafoam rim light from behind on the right. Background of each portrait: a flat dim teal studio field #2c5a56, no gradient, no vignette, no scenery. Rendering: crisp, painterly-realistic game character art with clean edges, readable when shrunk to 72 px; no text, no frame, no border. Canvas rule: the space around and between the two portraits is one flat, perfectly even, solid magenta #ff00ff, at least 40 px wide; magenta never appears inside a portrait.",
+   "use": "portrait pair (normal + hurt) for the tech",
+   "at": "2026-10-15T18:32:04+0700"
+  },
+  {
+   "key": "c1_deco",
+   "file": "c1_deco.png",
+   "seconds": 53,
+   "sha256": "4dbec88a8d3b842e226e3ab0d5e8c1bb3b1f3c6e311354729f4436f58f186b64",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a DECO-MODERNE CONSOLE: cream enamel body with a stepped ziggurat top edge, a seafoam enamel band, polished chrome stringcourse lines and corner trim, a thin brass hairline inlay. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one long compact panel about 1250 px wide and only 285 px tall (about 4.4:1), holding four equal portrait windows side by side; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rectangular window with a chrome bezel and a slightly bevelled inner edge; under or beside each window a slim empty slot for health pips; nothing else inside the frame. PIECE 2, bottom left: the VERB PLATE, a slim panel about 700 px wide and 150 px tall holding four identical empty buttons in a row, each a square deco keycap with a chrome bezel and a glossy cream enamel face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim long panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 560 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "FIRST attempt (tall roster with a crown and slots under the windows); too tall for the 8% budget; superseded by the k-set; not used in any frame",
+   "at": "2026-10-15T18:32:46+0700"
+  },
+  {
+   "key": "c2_dash",
+   "file": "c2_dash.png",
+   "seconds": 56,
+   "sha256": "1c6cf339289695888fadf00a77b1ef0ae9c1a7f5a3122471e1dc558b7b521e83",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a CHROME DASHBOARD BAR: a long polished brushed-chrome bar with rounded ends like a 1950s car dashboard, deep teal enamel inset panels, chrome end caps with a seafoam stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one long compact panel about 1250 px wide and only 285 px tall (about 4.4:1), holding four equal portrait windows side by side; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rounded-square window set in a chrome ring; under or beside each window a slim empty slot for health pips; nothing else inside the frame. PIECE 2, bottom left: the VERB PLATE, a slim panel about 700 px wide and 150 px tall holding four identical empty buttons in a row, each a round chrome pushbutton with a glossy ivory enamel face and a knurled chrome ring; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim long panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 560 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "FIRST attempt (tall roster with a crown and slots under the windows); too tall for the 8% budget; superseded by the k-set; not used in any frame",
+   "at": "2026-10-15T18:33:00+0700"
+  },
+  {
+   "key": "c3_badges",
+   "file": "c3_badges.png",
+   "seconds": 52,
+   "sha256": "d574bc30c5ff2f97c33b8b6f3d30492aa14881353d5b5ceddea7dbc050058421",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: four ENAMEL BADGE PLATES like polished porcelain enamel station-name plates in a row, each plate cream with a deep teal border, a chrome rim and four tiny chrome rivets, joined by a slim chrome rail behind them so the piece is one object. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one long compact panel about 1250 px wide and only 285 px tall (about 4.4:1), holding four equal portrait windows side by side; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each an upright rounded window in the plate's centre; under or beside each window a slim empty slot for health pips; nothing else inside the frame. PIECE 2, bottom left: the VERB PLATE, a slim panel about 700 px wide and 150 px tall holding four identical empty buttons in a row, each a rounded-square enamel badge button with a chrome rim, a glossy cream face and a tiny rivet; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim long panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 560 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "FIRST attempt (tall roster with a crown and slots under the windows); too tall for the 8% budget; superseded by the k-set; not used in any frame",
+   "at": "2026-10-15T18:33:38+0700"
+  },
+  {
+   "key": "k1_deco",
+   "file": "k1_deco.png",
+   "seconds": 51,
+   "sha256": "fe4ecc5cfec9bec319afb6c927d130ebe4eb5101865f8e118f67b50163b98a93",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a DECO-MODERNE CONSOLE: cream enamel body with a stepped ziggurat top edge, a seafoam enamel band, polished chrome stringcourse lines and corner trim, a thin brass hairline inlay. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rectangular window with a chrome bezel and a slightly bevelled inner edge. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a square deco keycap with a chrome bezel and a glossy cream enamel face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k1_deco",
+   "at": "2026-10-15T18:34:41+0700"
+  },
+  {
+   "key": "k2_dash",
+   "file": "k2_dash.png",
+   "seconds": 53,
+   "sha256": "106104b83a2548e5146573aba21f2495238d1887d6f6f5f126f69ca30b10f500",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a CHROME DASHBOARD BAR: a long polished brushed-chrome bar with rounded ends like a 1950s car dashboard, deep teal enamel inset panels, chrome end caps with a seafoam stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rounded-square window set in a chrome ring. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a round chrome pushbutton with a glossy ivory enamel face and a knurled chrome ring; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k2_dash",
+   "at": "2026-10-15T18:34:43+0700"
+  },
+  {
+   "key": "k4_cab",
+   "file": "k4_cab.png",
+   "seconds": 56,
+   "sha256": "7af007107776ce530931b79d090c4e5a2eb670179a22231b95630d1a17a58f33",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a chrome beaded edge, tiny chrome screws, and a seafoam enamel stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a perfectly round window like a gauge with a thick polished chrome bezel ring and a thin inner ring of cream enamel. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a round chrome knob button with a knurled edge and a deep teal face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k4_cab",
+   "at": "2026-10-15T18:35:39+0700"
+  },
+  {
+   "key": "k3_badges",
+   "file": "k3_badges.png",
+   "seconds": 68,
+   "sha256": "3ff8d56fec1b1c3b8a635ad988220e268501ded35be0dd304beafbd6fb6034e6",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: four ENAMEL BADGE PLATES like polished porcelain enamel station-name plates in a row, each plate cream with a deep teal border, a chrome rim and four tiny chrome rivets, joined by a slim chrome rail behind them so the piece is one object. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each an upright rounded window in the plate's centre. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a rounded-square enamel badge button with a chrome rim, a glossy cream face and a tiny rivet; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k3_badges",
+   "at": "2026-10-15T18:35:50+0700"
+  },
+  {
+   "key": "k5_radio",
+   "file": "k5_radio.png",
+   "seconds": 52,
+   "sha256": "584f04c14ea3f1feb2ee9c72a54697b288a876c0c1668bdfc450b0c33bf5c1a8",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a RADIO-SET FASCIA: cream bakelite-style cabinet front with a softly arched top, a seafoam enamel inlay band, rounded corners, thin chrome trim and tiny chrome knobs at its far ends. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each an arched-top window like a radio dial window with a thin chrome surround. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a long rounded ivory piano-key style pushbutton with a chrome tip; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k5_radio",
+   "at": "2026-10-15T18:36:32+0700"
+  },
+  {
+   "key": "k6_film",
+   "file": "k6_film.png",
+   "seconds": 54,
+   "sha256": "86125e717926e1448d224d284bf2563976598117a94b72398ecc4155e3af7c3f",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a CINEMA FILMSTRIP: a dark ink-teal film band with evenly spaced rounded sprocket holes along the top and bottom edges, edged in thin polished chrome, ends capped in chrome. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rectangular film-frame window with chrome corner brackets. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a rectangular ink-teal film-frame button with chrome corner brackets and a glossy face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k6_film",
+   "at": "2026-10-15T18:36:44+0700"
+  },
+  {
+   "key": "k7_medals",
+   "file": "k7_medals.png",
+   "seconds": 60,
+   "sha256": "723daa94197312d008c2e984d7de1ef1956684acad84827eabedd560aa500c88",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: four MEDALLIONS in a row: each a thick polished chrome ring with an inner seafoam enamel ring, mounted on a slim cream enamel rail with a thin brass hairline. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a perfectly round window set in its medallion. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a round chrome-rimmed enamel medallion button with a glossy cream face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k7_medals",
+   "at": "2026-10-15T18:37:31+0700"
+  },
+  {
+   "key": "k8_googie",
+   "file": "k8_googie.png",
+   "seconds": 51,
+   "sha256": "2dad4ebe61d89127780a76f0c76970381463cff94d334394a1a7a36d71492ef9",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a GOOGIE SPACE-AGE PANEL: a rounded boomerang-shaped cream enamel panel with a swept upward tail at the right end, deep teal enamel inlay, chrome pill tabs, and a tiny atom-shaped chrome rivet. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each an oval cameo window with a chrome rim. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a chrome-rimmed pill-shaped enamel button with a glossy ivory face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k8_googie",
+   "at": "2026-10-15T18:37:35+0700"
+  },
+  {
+   "key": "k9_sunburst",
+   "file": "k9_sunburst.png",
+   "seconds": 51,
+   "sha256": "af74b4346e8118fdd78aab14cdfeae5f3e686038ff98372739bab6c5746abf87",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a SUNBURST DECO PANEL: a deep teal enamel panel crowned with a fan of thin polished chrome rays above the windows, cream enamel side pilasters, a brass hairline. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each an arch-topped window with a chrome surround. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a fan-topped (half-sunburst) ivory enamel button with chrome ribs; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k9_sunburst",
+   "at": "2026-10-15T18:38:23+0700"
+  },
+  {
+   "key": "k10_overhead",
+   "file": "k10_overhead.png",
+   "seconds": 54,
+   "sha256": "f34d6d8ef9f67ecfb49bb0a26d4f329df5637684c36627bdcef9aae3e93e8c8a",
+   "size": [
+    1536,
+    1024
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: an AIRLINER OVERHEAD PANEL: a satin ink-teal panel with a chrome border, tiny chrome toggle switches and knurled chrome knobs between the windows, a seafoam stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rounded-rectangle window with a chrome bezel and a tiny turquoise indicator light above it. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a square toggle-cap button with a chrome bezel and a tiny indicator light above it; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+   "use": "panel kit sheet, compact set: k10_overhead",
+   "at": "2026-10-15T18:38:29+0700"
+  }
+ ],
+ "frames": [
+  {
+   "file": "r01-deco-console.jpg",
+   "sha256": "50975d6bdffdfd553f04cf3cb11f8901055b40e4f92bf45d6ad793f39cdce9ae",
+   "direction": "k1_deco",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     765,
+     976,
+     389,
+     92
+    ],
+    "plate": [
+     836,
+     906,
+     248,
+     60
+    ],
+    "pill": [
+     1426,
+     14,
+     478,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r01-deco-console-take.jpg",
+   "sha256": "a79ce848c7df867cf18a421b9a01c02ea95d53dd3cbd1b9aa09de3f69de8979c",
+   "direction": "k1_deco",
+   "beat": "5:36 the take at the door",
+   "geometry_px": {
+    "roster": [
+     765,
+     976,
+     389,
+     92
+    ],
+    "plate": [
+     836,
+     906,
+     248,
+     60
+    ],
+    "pill": [
+     1435,
+     14,
+     469,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r01-deco-console-fight.jpg",
+   "sha256": "3e1ff5b746403e854af1fbce30ed31d4579d54ed6940a36261b1a58967502ecc",
+   "direction": "k1_deco",
+   "beat": "6:02 the fight, Alert 1 to 2",
+   "geometry_px": {
+    "roster": [
+     765,
+     976,
+     389,
+     92
+    ],
+    "plate": [
+     836,
+     906,
+     248,
+     60
+    ],
+    "pill": [
+     1436,
+     14,
+     468,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r02-chrome-dash.jpg",
+   "sha256": "94bedf13ccdc8ec8e60579585fd5b84728acc3485bda9071c27934544e385a59",
+   "direction": "k2_dash",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     767,
+     976,
+     386,
+     92
+    ],
+    "plate": [
+     823,
+     906,
+     274,
+     60
+    ],
+    "pill": [
+     1430,
+     14,
+     474,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r03-badge-plates.jpg",
+   "sha256": "da3a344ef128f7ff85cb96ee8cb62f9ca3ed2b63af724de0d30c188755e366e9",
+   "direction": "k3_badges",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     762,
+     976,
+     395,
+     92
+    ],
+    "plate": [
+     831,
+     906,
+     258,
+     60
+    ],
+    "pill": [
+     1429,
+     14,
+     475,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r04-cab-cluster.jpg",
+   "sha256": "3581a7f52f60e84c0130b5b84489cb8f1b0bd55b1bfbe6b480ce43d0115395b1",
+   "direction": "k4_cab",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     761,
+     976,
+     398,
+     92
+    ],
+    "plate": [
+     833,
+     906,
+     254,
+     60
+    ],
+    "pill": [
+     1435,
+     14,
+     469,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r04-cab-cluster-take.jpg",
+   "sha256": "e0980bdddc580b120be27cb025a960c3ded0fdd2ee8810ea2a06d2b4df68ca02",
+   "direction": "k4_cab",
+   "beat": "5:36 the take at the door",
+   "geometry_px": {
+    "roster": [
+     761,
+     976,
+     398,
+     92
+    ],
+    "plate": [
+     833,
+     906,
+     254,
+     60
+    ],
+    "pill": [
+     1443,
+     14,
+     461,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r04-cab-cluster-fight.jpg",
+   "sha256": "fe96a5d6c280cec3535b3a9a3f3d9b327adb436d9ecb2db9381f7d4ba4522c9d",
+   "direction": "k4_cab",
+   "beat": "6:02 the fight, Alert 1 to 2",
+   "geometry_px": {
+    "roster": [
+     761,
+     976,
+     398,
+     92
+    ],
+    "plate": [
+     833,
+     906,
+     254,
+     60
+    ],
+    "pill": [
+     1444,
+     14,
+     460,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r05-radio-fascia.jpg",
+   "sha256": "b3b5cb8319cf577949a29570988b011ea394f4b232c97988b6346bba22e14cec",
+   "direction": "k5_radio",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     785,
+     976,
+     349,
+     92
+    ],
+    "plate": [
+     812,
+     906,
+     295,
+     60
+    ],
+    "pill": [
+     1434,
+     14,
+     470,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r06-filmstrip.jpg",
+   "sha256": "c441f5d98a7f956ecc2f0e6c83c9f4e347e034c291ac386432ce7be135546e93",
+   "direction": "k6_film",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     771,
+     976,
+     378,
+     92
+    ],
+    "plate": [
+     808,
+     906,
+     304,
+     60
+    ],
+    "pill": [
+     1416,
+     14,
+     488,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r07-medallions.jpg",
+   "sha256": "cead7ab84f414c0d7235e6de93fc6a9fc903c460ff6183e7dc8d49791104efb6",
+   "direction": "k7_medals",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     757,
+     976,
+     405,
+     92
+    ],
+    "plate": [
+     827,
+     906,
+     266,
+     60
+    ],
+    "pill": [
+     1418,
+     14,
+     486,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r08-googie-panel.jpg",
+   "sha256": "3fdbd727917e718b3043e86d9cf471ca7e14f66474c36e21869c90c3215a12a4",
+   "direction": "k8_googie",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     759,
+     976,
+     402,
+     92
+    ],
+    "plate": [
+     818,
+     906,
+     283,
+     60
+    ],
+    "pill": [
+     1430,
+     14,
+     474,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r09-sunburst-deco.jpg",
+   "sha256": "984ad634d7932ed9bb51b23173e54a45ccf2fe23c30b9e882d2250addb01807b",
+   "direction": "k9_sunburst",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     784,
+     976,
+     352,
+     92
+    ],
+    "plate": [
+     830,
+     906,
+     259,
+     60
+    ],
+    "pill": [
+     1428,
+     14,
+     476,
+     44
+    ]
+   }
+  },
+  {
+   "file": "r10-overhead-panel.jpg",
+   "sha256": "e8db267f8bc52ea6b5c5297e16d225384d2cb369038014c509791f11fbf4c9d1",
+   "direction": "k10_overhead",
+   "beat": "0:58 Pay on Inez",
+   "geometry_px": {
+    "roster": [
+     766,
+     976,
+     388,
+     92
+    ],
+    "plate": [
+     833,
+     906,
+     254,
+     60
+    ],
+    "pill": [
+     1440,
+     14,
+     464,
+     44
+    ]
+   }
+  }
+ ],
+ "other_files": [
+  {
+   "file": "k1-panel-sheet-deco.jpg",
+   "sha256": "95bb07cf82897ae151d6f99e08b2b9600a9fd022d9e1a48a86b0f6711fb30617"
+  },
+  {
+   "file": "k10-panel-sheet-overhead.jpg",
+   "sha256": "c54fab000a99eee502afc2163006fe98968d288bac5395bff2719af52963e67d"
+  },
+  {
+   "file": "k2-panel-sheet-dash.jpg",
+   "sha256": "d118242e0356f583bf45b4da51c2a4eeb179a9652d0df4e7844abfb498428797"
+  },
+  {
+   "file": "k3-panel-sheet-badges.jpg",
+   "sha256": "d1eeb14b4419ab922052ecde45a2dfdbe9560188b0907491349c7db4fd05ab70"
+  },
+  {
+   "file": "k4-panel-sheet-cab.jpg",
+   "sha256": "e60712dfc48915a4f2c44271da98c9cbacf2462caddfe3f2f84fb04ba3c2af85"
+  },
+  {
+   "file": "k5-panel-sheet-radio.jpg",
+   "sha256": "638cd8eb20a5e4a89da68b7bef2cfc307739b9cbfccebaa45b3ebcf7fdcf9b3f"
+  },
+  {
+   "file": "k6-panel-sheet-film.jpg",
+   "sha256": "a7908ec2de6d6bb38ffa7301f0e0171a9f65a27986b50e5b453d0af6f7a224cd"
+  },
+  {
+   "file": "k7-panel-sheet-medals.jpg",
+   "sha256": "2d7af6694944a798c85dca1cdeda8c83a675b85d8f7ce8debc80aed8f00a4f59"
+  },
+  {
+   "file": "k8-panel-sheet-googie.jpg",
+   "sha256": "9975bddf96a06eac89f7663e0f36251b3550d6ccf4084d7bd5d70a5509d561d3"
+  },
+  {
+   "file": "k9-panel-sheet-sunburst.jpg",
+   "sha256": "77caa751369e20955ad395642a50e2a5a6f113bedbffb02b32e3ef596896c3ab"
+  },
+  {
+   "file": "p-enforcer-portrait-pair.jpg",
+   "sha256": "c78dc7bec92074a00b32acdc2684ef2cbf5073087a7862d0d9ed64f88282eccd"
+  },
+  {
+   "file": "p-fixer-portrait-pair.jpg",
+   "sha256": "a4325f78c88a36bf70fef9d10b02722e81260495db48e78d72af23abc8e922d8"
+  },
+  {
+   "file": "p-scout-portrait-pair.jpg",
+   "sha256": "b81c17e6b762ce741887cc6433de7e9f2a9acc4901a123017e0e6666e7ae1a87"
+  },
+  {
+   "file": "p-tech-portrait-pair.jpg",
+   "sha256": "9fe40a529fb712295fb93f3157b5b110c61b9e9500ba84b071005e1c57973b69"
+  },
+  {
+   "file": "s1-states-deco-console.jpg",
+   "sha256": "424fdd7d1f7d82bcf39ac17887bda5362f905989fd6532e9ea943b1eeb26e959"
+  },
+  {
+   "file": "s2-states-cab-cluster.jpg",
+   "sha256": "8d31f9829a1d2e68874990e2a89e42d85e24bbd104c8c9b7c19e984d3744c4ed"
+  },
+  {
+   "file": "s3-portraits-and-signal-check.jpg",
+   "sha256": "7cc28d73eaeb58c11c401680bfa41d1b5dbac747304452f0d9830fde1b2883ae"
+  }
+ ]
+}
