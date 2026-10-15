@@ -48,22 +48,24 @@ namespace Suborned.Sim
             });
 
             var help = new Start(); help.Known[Inez] = new List<string> { "routine", "need", "temperament" };
-            Add("N29", "—", "Cancel an approach mid-conversation (rulebook cancel.turn aborted): the money held comes back, no Trail, and Inez remembers an aborted approach with the Fixer's face; it is no refusal, so Help can be given again and turns her.", r =>
+            Add("N29", "—", "Cancel an approach mid-conversation (rulebook cancel.turn aborted): the money held comes back, no Trail, and Inez remembers an aborted approach with the Fixer's face; it is no refusal, so Help can be given again, and given as often as the card asks it turns her.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 long cash = g.Cash; int trail = g.Trail;
+                var q = g.Preview("help", Inez); // the card's outcome is the cast's: turned (an Idealist), not yet (a Fearful Inez's first of two)
                 r.Do(Fixer, "turn", Inez, "help");
                 r.Is(g.Cash < cash, "the price is held at the order");
                 r.Wait(T(20));
                 var a = g.ActivityOf(OpId.Fixer);
-                r.Eq((a.Verb, a.OnDone, a.CancelCost), ("turn", "turned", "aborted"), "the HUD reads the approach, its outcome and the cancel's cost");
+                r.Eq((a.Verb, a.OnDone, a.CancelCost), ("turn", q.Outcome, "aborted"), "the HUD reads the approach, the card's outcome and the cancel's cost");
                 r.Do(Fixer, "cancel");
                 r.Eq(g.Cash, cash, "the money comes back");
                 r.Eq(g.Trail, trail, "no Trail");
                 r.Is(g.Inez.Has("aborted") && !g.Inez.Has("refusal") && !g.Inez.Turned, "she remembers an aborted approach, not a refusal");
                 r.Is(g.HoldsFace(g.Inez), "with the Fixer's face");
-                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                r.Is(r.Try(Fixer, "turn", Inez, "help"), "no refusal: Help can be given again"); r.Done(Fixer);
+                HelpUntilTurned(r, Inez);
                 r.Is(g.Inez.Turned, "Help again turns her");
             }, help);
 
@@ -102,7 +104,7 @@ namespace Suborned.Sim
                 r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
-                r.Done(Scout); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                r.Done(Scout); HelpUntilTurned(r, Inez);
                 while (!g.SweepSeesEntrance(g.Tick)) g.Step();
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));

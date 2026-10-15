@@ -188,11 +188,19 @@ describe('the graph answers as the JSON does (the model, walked in TypeScript)',
     expect(ref.introHops(r, pins[0]!, pins[3]!)).toBeGreaterThan(0);
     expect(unreachable).toBeGreaterThanOrEqual(0);
   });
-  test('introductions do not run along debtor or rival ties: a chain over every tie can be shorter', () => {
-    const ids = p.people.persons.map(q => q.id), all = adj(false), intro = adj(true);
+  test('introductions do not run along debtor or rival ties: a chain over every tie can be shorter', async () => {
+    // the promoted cast (r016) draws no debtor or rival tie, so the claim needs a table that does: the Handover-fix cast, made from r013's rows, has both
+    const g = await prepare({ cast: 'tools/people/test/handover-fix.cast.json' }), ge = g.model.edges.filter(e => e.table === 'tie');
+    expect(ge.some(e => ['debtor', 'rival'].includes(id(e.fields.kind as Rec)))).toBe(true);
+    const gadj = (introducing: boolean) => {
+      const a = new Map<string, Set<string>>(g.people.persons.map(q => [q.id, new Set()]));
+      for (const e of ge) if (!introducing || e.fields.introduces) { a.get(e.from.id)!.add(e.to.id); a.get(e.to.id)!.add(e.from.id); }
+      return a;
+    };
+    const ids = g.people.persons.map(q => q.id), all = gadj(false), intro = gadj(true);
     const shorter = ids.some(a => { const d1 = ref.distances(all, a), d2 = ref.distances(intro, a); return [...d1].some(([b, n]) => (d2.get(b) ?? 99) > n); });
     expect(shorter).toBe(true);
-    for (const e of edges('tie')) if (!e.fields.introduces) expect(['debtor', 'rival']).toContain(id(e.fields.kind as Rec));
+    for (const e of [...ge, ...edges('tie')]) if (!e.fields.introduces) expect(['debtor', 'rival', 'lover']).toContain(id(e.fields.kind as Rec));
   });
   test('neighbourhood: 1 and 2 hops over every tie kind equal the JSON\'s', () => {
     const g = adj(false);
@@ -280,7 +288,7 @@ describe('the hash, the database and the source', () => {
 });
 
 describe('lovers and secrets (brief 011)', () => {
-  // the Handover-fix cast makes the door guard's lover pair; the promoted cast (r013) makes none, and its people carry a record or nothing
+  // the Handover-fix cast makes the door guard's lover pair; the promoted cast (r016) makes the same pair from its own table
   let f: Prepared, fr: ref.Ref;
   beforeAll(async () => { f = await prepare({ cast: 'tools/people/test/handover-fix.cast.json' }); fr = { people: f.people, rules: f.w.rules, extras: f.extras }; });
   const fedges = (t: string) => f.model.edges.filter(e => e.table === t);
@@ -312,9 +320,11 @@ describe('lovers and secrets (brief 011)', () => {
     const w = f.model.nodes.find(n => n.table === 'role' && n.id === 'waitress')!.fields;
     if (f.extras.roles.find(x => x.id === 'waitress')?.secret) expect(id(w.secret as Rec)).toBe('affair');
   });
-  test('the promoted cast makes no lovers (the table names none), and the reference says so', () => {
-    expect(ref.lovers(r)).toEqual([]);
-    expect(edges('tie').filter(e => id(e.fields.kind as Rec) === 'lover')).toHaveLength(0);
+  test('the promoted cast (r016) makes the Handover\'s pairs, a server and a door guard each, and the reference says so', () => {
+    const got = edges('tie').filter(e => id(e.fields.kind as Rec) === 'lover').map(e => [e.from.id, e.to.id]).sort();
+    expect(got.length).toBeGreaterThanOrEqual(1);
+    expect(ref.lovers(r).map(x => [x.a, x.b])).toEqual(got);
+    for (const x of ref.lovers(r)) { expect([x.a_position, x.b_position].sort()).toEqual(['guard', 'server']); expect([x.a_secret, x.b_secret]).toEqual(['affair', 'affair']); }
   });
 });
 

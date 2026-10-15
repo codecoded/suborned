@@ -10,6 +10,7 @@ import { expand, routineMeet, type Ctx } from '../expand';
 import { readTexts, world, type World } from '../inputs';
 import { requirements } from '../review';
 import { legacyRules } from './legacy';
+import { r013Cast } from './r013';
 import { legacySecretShare, withSecrets } from '../secrets';
 
 const root = join(import.meta.dir, '../../..');
@@ -94,7 +95,7 @@ describe('ambient lovers and the share', () => {
 
 describe('secrets', () => {
   test('the need secret retires: its weight is the row\'s record share, and nobody draws it', () => {
-    const base = Cast.parse(JSON.parse(readFileSync(join(root, 'contracts/people/harbour-district.cast.json'), 'utf8')));
+    const base = r013Cast(); // r013 still carries the need `secret` the new rulebook retires; the promoted cast (r016) was made under the rules that retired it
     const moved = withSecrets(base, w.rules);
     for (const r of base.rows) if (r.needs.some(n => n.need === 'secret')) {
       const m = moved.rows.find(x => x.area === r.area && x.occupation === r.occupation)!;
@@ -107,7 +108,7 @@ describe('secrets', () => {
     expect(g.people.persons.some(p => p.secret === 'record')).toBe(true);
   });
   test('a pinned older rulebook (no secrets) reads its tables as written: no field, no lover, the need as it was', () => {
-    const base = Cast.parse(JSON.parse(readFileSync(join(root, 'contracts/people/harbour-district.cast.json'), 'utf8')));
+    const base = r013Cast(); // a table of the older rulebook: it draws the need `secret`, which the promoted cast (r016) does not
     const oc = { ...w.ctx(base), rules: legacyRules(w.rules) }, g = expand(oc);
     expect(g.people.persons.some(p => 'secret' in p)).toBe(false);
     expect(g.people.persons.some(p => p.need === 'secret')).toBe(true);

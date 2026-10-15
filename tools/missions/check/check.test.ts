@@ -48,7 +48,7 @@ describe('variations', () => {
   test('without a contact drops exactly the orders that work through it', () => {
     expect(contactsOf(a, ['waitress', 'driver'])).toEqual(['waitress']);
     const w = withoutContact(a, 'waitress');
-    expect(a.orders.length - w.orders.length).toBe(4); // watch, listen, turn (help), call
+    expect(a.orders.length - w.orders.length).toBe(5); // watch, listen, turn (help) twice (r016: a Fearful Inez, §04), call
     expect(w.orders.some(o => o.target === 'waitress')).toBe(false);
     expect(withoutContact(a, 'driver').orders).toEqual(a.orders);
   });

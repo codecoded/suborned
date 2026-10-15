@@ -58,6 +58,7 @@ public class RedlineTests
     public void E2_a_refusal_gives_back_exactly_what_was_taken()
     {
         var s = new Start(); s.Known["guard"] = new List<string> { "routine" };
+        s.Temperament["guard"] = "loyal"; // the premise: Menace refuses a Loyal person's Pay, whoever the cast's guard is (r016's is a Mercenary)
         var g = Engine.New(I, s);
         var run = new Run(g);
         run.To(run.Send("fixer", "d:Office approach"));

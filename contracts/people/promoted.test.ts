@@ -1,4 +1,5 @@
-// The promoted cast (Sky, 2026-10-15) is the accepted cast of run r013, byte for byte, and cannot drift from its run silently.
+// The promoted cast (Sky; r016 since 2026-10-16, r013 before it) is the accepted cast of its run, byte for byte, and cannot drift from its run silently.
+// Nothing here names a run: the record says which, and the tests read it, so a new promotion does not break them.
 // Run: bun test contracts/people/promoted.test.ts
 import { describe, expect, test } from 'bun:test';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -21,10 +22,15 @@ function scratch(edit: (dir: string) => void) {
 }
 
 describe('the promoted cast', () => {
-  test('is run r013 round 2 byte for byte, held to its record and to the run on disk', () => {
+  test('is its run\'s accepted round byte for byte, held to its record and to the run on disk', () => {
     const r = checkPromotion(PLAN);
     expect(r.problems).toEqual([]); expect(r.ok).toBe(true);
-    expect(rec).toMatchObject({ plan: PLAN, promoted: 'Sky, 2026-10-15', source: { run: 'r013', round: 2, outcome: 'ACCEPTED' } });
+    expect(rec).toMatchObject({ plan: PLAN, source: { outcome: 'ACCEPTED' } });
+    expect(rec.promoted).toMatch(/^Sky, 20\d\d-\d\d-\d\d/);
+    // the accepted round is the last of the run's rounds, whatever the loop rule's version is (run.json `loop`)
+    const record = JSON.parse(readFileSync(join(root, rec.source.runFile), 'utf8')) as { rounds: { round: number }[] };
+    expect(rec.source.round).toBe(record.rounds.at(-1)!.round);
+    expect(rec.source.file).toBe(`runs/levels/${PLAN}/${rec.source.run}/round-${rec.source.round}/pulse.json`);
     const run = JSON.parse(readFileSync(join(root, rec.source.file), 'utf8')), file = readFileSync(join(root, castFileOf(PLAN)), 'utf8');
     expect(file).toBe(castBytes(run.cast));
     expect(sha256(file)).toBe(rec.cast.sha256);
@@ -43,8 +49,14 @@ describe('the promoted cast', () => {
     expect(r.ok).toBe(false); expect(r.problems.join(' | ')).toContain('the run\'s output changed');
   });
   test('a run that was not accepted, or a different round, fails', () => {
-    const r = scratch(d => { const f = join(d, rec.source.runFile), o = JSON.parse(readFileSync(f, 'utf8')); o.outcome = 'REJECTED'; o.loop = 3; writeFileSync(f, JSON.stringify(o)); });
-    expect(r.ok).toBe(false); expect(r.problems.join(' | ')).toContain('is REJECTED'); expect(r.problems.join(' | ')).toContain('round 3');
+    const r = scratch(d => { const f = join(d, rec.source.runFile), o = JSON.parse(readFileSync(f, 'utf8')); o.outcome = 'REJECTED'; o.rounds.push({ round: o.rounds.at(-1).round + 1 }); writeFileSync(f, JSON.stringify(o)); });
+    expect(r.ok).toBe(false); expect(r.problems.join(' | ')).toContain('is REJECTED'); expect(r.problems.join(' | ')).toContain(`round ${rec.source.round + 1}`);
+  });
+  test('the round is the last of the run\'s rounds, not run.json `loop` (the loop rule\'s version): a loop that differs breaks nothing, one that equals the record\'s round proves nothing', () => {
+    const same = scratch(d => { const f = join(d, rec.source.runFile), o = JSON.parse(readFileSync(f, 'utf8')); o.loop = 99; writeFileSync(f, JSON.stringify(o)); });
+    expect(same.problems).toEqual([]);
+    const forged = scratch(d => { const f = join(d, rec.source.runFile), o = JSON.parse(readFileSync(f, 'utf8')); o.loop = rec.source.round; o.rounds = [...o.rounds, { round: rec.source.round + 1 }]; writeFileSync(f, JSON.stringify(o)); });
+    expect(forged.ok).toBe(false); expect(forged.problems.join(' | ')).toContain(`was accepted in round ${rec.source.round + 1}`);
   });
   test('a cast with no record, and a missing run, fail', () => {
     expect((scratch(d => rmSync(join(d, promotionFileOf(PLAN))))).problems[0]).toContain('no promotion record');

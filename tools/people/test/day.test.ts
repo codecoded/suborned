@@ -1,6 +1,6 @@
 // The day (tools/people/day.ts) and the Handover fix (Pulse, brief 010, 2026-10-15): the posts, the watch and the official car of the civic office, the aimed ties, and
 // the cast the fix is made of (tools/people/test/handover-fix.cast.json, made by make-handover-fix.ts from the promoted cast), held to the Handover's own conditions (M-2, with
-// the playability checks of tools/missions/handover/cast.ts) and to the people checker. The promoted cast is r013: it does not play the Handover, and a test says so.
+// the playability checks of tools/missions/handover/cast.ts) and to the people checker. The r013 cast (the promoted cast until r016, read from its run by test/r013.ts) does not play the Handover, and a test says so; the promoted cast now does, and a test says that.
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -17,10 +17,11 @@ import { expand, type Ctx } from '../expand';
 import { readTexts, world, type World } from '../inputs';
 import { rng } from '../../world/gen/common';
 import { legacyRules } from './legacy';
+import { r013Cast } from './r013';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (f: string) => JSON.parse(readFileSync(join(root, f), 'utf8'));
-let w: World, texts: Awaited<ReturnType<typeof readTexts>>, fix: Ctx, promoted: Ctx, fixGen: ReturnType<typeof expand>, promGen: ReturnType<typeof expand>;
+let w: World, texts: Awaited<ReturnType<typeof readTexts>>, fix: Ctx, promoted: Ctx, r013: Ctx, fixGen: ReturnType<typeof expand>, promGen: ReturnType<typeof expand>, r013Gen: ReturnType<typeof expand>;
 const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 const hm = (t: number) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
 const day = (h: number, m = 0) => h * 60 + m;
@@ -29,6 +30,7 @@ beforeAll(async () => {
   w = world(texts, 'civic-block');
   fix = w.ctx(Cast.parse(read('tools/people/test/handover-fix.cast.json'))); fixGen = expand(fix);
   promoted = w.ctx(Cast.parse(read('contracts/people/harbour-district.cast.json'))); promGen = expand(promoted);
+  r013 = w.ctx(r013Cast()); r013Gen = expand(r013);
 });
 /** M-2 on these people, the check the plan checker's overlay runs (it expands the promoted cast itself; here the people are given). */
 const m2 = (people: People, mission: object = JSON.parse(texts.mission)) => {
@@ -42,13 +44,13 @@ const stopAt = (p: Person, t: number) => p.routine.stops.find(s => s.from <= t &
 const ate = (p: Person, from: number, to: number) => p.routine.stops.filter(s => s.to > from && s.from < to);
 
 describe('the day, split out of the expander', () => {
-  test('the promoted cast makes the same people it always did', () => {
+  test('the r013 cast makes the same people it always did', () => {
     // the vocabulary below is opt-in: a cast row that does not use it expands exactly as before. This hash is of the persons of the promoted cast (r013) at the commit that
     // moved the day into day.ts; a deliberate change to the expansion updates it, with its cause declared in tools/levels/people/drift.json.
     // under the rulebook of that commit (no lover tie, no secrets: legacyRules) it is the same bytes; under the current rules the persons carry a secret and the need `secret`
     // is retired into the row's record share, so the needs of the people who drew it differ (brief 011; declared in drift.json)
-    expect(sha256(JSON.stringify(expand({ ...promoted, rules: legacyRules(w.rules) }).people.persons))).toBe('e2bf019be3f486a2d6906ae576203c487ad6510a44c3c96422035ee65f79af75');
-    expect(sha256(JSON.stringify(promGen.people.persons))).toBe('e64b2230b6dbb28a4883cbf268c0b4903befe958e9fcce1438baa7b05dc12405');
+    expect(sha256(JSON.stringify(expand({ ...r013, rules: legacyRules(w.rules) }).people.persons))).toBe('e2bf019be3f486a2d6906ae576203c487ad6510a44c3c96422035ee65f79af75');
+    expect(sha256(JSON.stringify(r013Gen.people.persons))).toBe('e64b2230b6dbb28a4883cbf268c0b4903befe958e9fcce1438baa7b05dc12405');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;
@@ -86,7 +88,7 @@ describe('staffing: counts, posts, watch', () => {
     expect(posts(1)).toEqual(['door', 'official']);
   });
   test('a position with no count, posts or watch is shared out by weight as it always was', () => {
-    const { plans } = plan(promoted);
+    const { plans } = plan(r013);
     expect(plans[0]!.slots.length).toBe(72);
     expect(plans.slice(1).every(p => p.watch && p.slots.length === 0)).toBe(true); // a row that names no watch makes nobody for the watch shifts
   });
@@ -120,8 +122,13 @@ describe('the Handover fix', () => {
     expect(c.ok, c.detail).toBe(true);
     expect(c.value).toMatch(/^waitress p-cafe-\d+, driver p-records-office-\d+, guard p-records-office-\d+, councillor p-records-office-\d+$/);
   });
-  test('the promoted cast (r013) cannot: the driver has no tie to a councillor, 11 guards stand the door, the councillor goes to a café table', () => {
+  test('the promoted cast (whatever is promoted now; r016 at the lovers) plays the Handover: M-2 casts all four roles and the people checker passes', () => {
     const c = m2(promGen.people);
+    expect(c.ok, c.detail).toBe(true);
+    expect(checkPeople(promoted, w.mission, w.plan, promGen).checks.filter(x => !x.ok).map(x => `${x.id} ${x.detail}`)).toEqual([]);
+  });
+  test('the r013 cast cannot: the driver has no tie to a councillor, 11 guards stand the door, the councillor goes to a café table', () => {
+    const c = m2(r013Gen.people);
     expect(c.ok).toBe(false);
     expect(c.detail).toMatch(/driver: none of the 7/);
     expect(c.detail).toMatch(/at most one guard of records-office at Office entrance in 1:52-5:30: 11 at 17:26:22/);

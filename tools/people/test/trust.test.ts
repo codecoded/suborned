@@ -118,6 +118,10 @@ describe('names follow the cast M-2 pins', () => {
   test('the cast the names follow is the rules\' cast until the people play the mission, then the playable one', () => {
     const c = { scope: w.scope, mission: w.mission, plan: w.plan }, cast = castForNames(gen.people.persons, c, w.rules);
     expect(cast.length).toBe(w.mission.roles.length);
-    expect(cast.find(x => x.role === 'waitress')!.pinned).toBe('p-cafe-11');
+    // the waitress is whoever M-2 casts from these people (r013's p-cafe-11 until r016; the promoted cast's lover, Inez, p-cafe-14, now), never an id written here
+    const plan: Plan = JSON.parse(texts.plan), block = JSON.parse(texts.block), civ = civic(plan.civic, block);
+    const m2 = overlay(plan, block, gen.people as never, JSON.parse(texts.mission)).civic({ plan, d: derive(plan), civ } as never).find(x => x.id === 'M-2')!;
+    expect(m2.ok, m2.detail).toBe(true);
+    expect(cast.find(x => x.role === 'waitress')!.pinned).toBe(/waitress (p-[a-z-]+-\d+)/.exec(String(m2.value))![1]!);
   });
 });

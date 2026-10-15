@@ -3,7 +3,8 @@
   "dac7871a73660abb": "people run r012 (d27fdee)",
   "59aa3d617b9088de": "people run r013 (593fd0e)",
   "3e6d4136cac6ff32": "people run r014 (ca2f68c)",
-  "cbd904342d5cbd5c": "people run r015 (2b1b038)"
+  "cbd904342d5cbd5c": "people run r015 (2b1b038)",
+  "991cc9e49b3993cd": "people run r016 (c01a2cf, dirty)"
  },
  "declared": {
   "59aa3d617b9088dea88a9cb633deef3380da58bf95758d22f07718abed91fdb0": [
@@ -390,6 +391,52 @@
    {
     "cause": "brief 011 lovers (Pulse, 2026-10-15; Motive briefs/011/motive-lovers.md, Sky's canon: Inez and the door guard): the lover tie and the secret in generation and in the checker. The lover tie is mutual, one per person, met on the routines (routine-meet), at most maxShare of the people, drawn along a regular then a workmate tie, made after those ties and only from a table's lover pattern (Tie.posts restricts it to the door post); people carry a secret (affair for everyone with a lover tie, record by the row's share; the need secret retires into that share, tools/people/secrets.ts); new rules P-14 (lovers) and P-15 (secrets); P-7 reads routine-meet; P-12 counts the secret field. All of it is active only when the rulebook carries the lover kind and `secrets`: a pinned older rulebook expands its tables exactly as it did, so no rule a recorded run records changes",
     "rules": []
+   }
+  ],
+  "991cc9e49b3993cd087a7cec937dd05a1c92c5a941ac2b5fe684297788bfe6fe": [
+   {
+    "cause": "the Handover's lovers (brief 011, 94793d7): the expander draws a lover tie after the regular and workmate ties it forms along (a named pattern first, at most the rules' share of the people) and the secret (an affair for everyone with a lover tie, else a record by the row's share), so the people's tie draws and the fields a person carries change; P-6 reads the waitress's affair; P-14 and P-15 are the rules' own",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-12"
+    ]
+   },
+   {
+    "cause": "walk solids (a175d8a, W-5): a walker keeps the plan's body clearance from the block's planter runs, pots, bollards and lamp bases and tests a step against the solids' own edges, so walk times, reachable seats and the stops a day can make move",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   }
+  ],
+  "e9abb3272dd2c9fb61a712497c364c72fab56a4ab064208efaf634d2c892f0a7": [
+   {
+    "cause": "the verdict hash lists name tools/missions/check/engine.ts (the hash test: tools/missions/handover/summon.ts, which the people tools reach, imports it); the file's own text is what is added, no rule's result changes (Splice, 2026-10-16)",
+    "rules": []
+   },
+   {
+    "cause": "the Handover's lovers (brief 011, 94793d7): the expander draws a lover tie after the regular and workmate ties it forms along (a named pattern first, at most the rules' share of the people) and the secret (an affair for everyone with a lover tie, else a record by the row's share), so the people's tie draws and the fields a person carries change; P-6 reads the waitress's affair; P-14 and P-15 are the rules' own",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-12"
+    ]
+   },
+   {
+    "cause": "walk solids (a175d8a, W-5): a walker keeps the plan's body clearance from the block's planter runs, pots, bollards and lamp bases and tests a step against the solids' own edges, so walk times, reachable seats and the stops a day can make move",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
    }
   ]
  }

@@ -1,0 +1,1284 @@
+{
+  "cast": {
+    "schema": "suborned.cast/1",
+    "scope": "civic-block",
+    "rows": [
+      {
+        "area": "records",
+        "occupation": "diner",
+        "why": "Corner cafe on three 6 h shifts, 8 staff each; servers carry small debts, cooks work for cash, office guards pass through it.",
+        "positions": [
+          {
+            "position": "server",
+            "weight": 60,
+            "post": "door"
+          },
+          {
+            "position": "cook",
+            "weight": 40,
+            "post": "inside"
+          }
+        ],
+        "temperaments": [
+          {
+            "temperament": "idealist",
+            "weight": 25
+          },
+          {
+            "temperament": "mercenary",
+            "weight": 25
+          },
+          {
+            "temperament": "fearful",
+            "weight": 20
+          },
+          {
+            "temperament": "loyal",
+            "weight": 30
+          }
+        ],
+        "needs": [
+          {
+            "need": "debt",
+            "weight": 70,
+            "positions": [
+              "server"
+            ]
+          },
+          {
+            "need": "cash",
+            "weight": 30
+          },
+          {
+            "need": "advancement",
+            "weight": 15
+          },
+          {
+            "need": "care",
+            "weight": 10
+          },
+          {
+            "need": "papers",
+            "weight": 10
+          }
+        ],
+        "ties": [
+          {
+            "kind": "workmate",
+            "share": 0.7
+          },
+          {
+            "kind": "family",
+            "share": 0.2
+          }
+        ],
+        "secrets": [
+          {
+            "secret": "record",
+            "share": 0.1
+          }
+        ],
+        "routines": [
+          {
+            "id": "cafe-walk-home",
+            "skeleton": "worker",
+            "weight": 45,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          },
+          {
+            "id": "cafe-walk-square",
+            "skeleton": "worker",
+            "weight": 30,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "square"
+          },
+          {
+            "id": "cafe-tram",
+            "skeleton": "worker",
+            "weight": 25,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "tram",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          }
+        ]
+      },
+      {
+        "area": "records",
+        "occupation": "records-office",
+        "why": "Civic office, 72 staff on the 09:30-17:30 shift; one guard on the public door, one at the service door, a watch after hours; councillor and driver come by car.",
+        "positions": [
+          {
+            "position": "clerk",
+            "weight": 78,
+            "post": "inside"
+          },
+          {
+            "position": "guard",
+            "weight": 15,
+            "post": "inside",
+            "posts": [
+              {
+                "post": "door",
+                "count": 1
+              },
+              {
+                "post": "official",
+                "count": 1
+              }
+            ],
+            "side": "official",
+            "watch": {
+              "count": 2
+            }
+          },
+          {
+            "position": "official-driver",
+            "weight": 3,
+            "post": "bay",
+            "count": 1
+          },
+          {
+            "position": "councillor",
+            "weight": 3,
+            "post": "inside",
+            "count": 1,
+            "side": "official"
+          }
+        ],
+        "temperaments": [
+          {
+            "temperament": "loyal",
+            "weight": 35
+          },
+          {
+            "temperament": "mercenary",
+            "weight": 30
+          },
+          {
+            "temperament": "idealist",
+            "weight": 20
+          },
+          {
+            "temperament": "fearful",
+            "weight": 15
+          }
+        ],
+        "needs": [
+          {
+            "need": "cash",
+            "weight": 70,
+            "positions": [
+              "official-driver"
+            ]
+          },
+          {
+            "need": "cash",
+            "weight": 25,
+            "positions": [
+              "clerk",
+              "guard",
+              "councillor"
+            ]
+          },
+          {
+            "need": "debt",
+            "weight": 25
+          },
+          {
+            "need": "advancement",
+            "weight": 25,
+            "positions": [
+              "clerk",
+              "guard"
+            ]
+          },
+          {
+            "need": "papers",
+            "weight": 15
+          },
+          {
+            "need": "care",
+            "weight": 10
+          }
+        ],
+        "ties": [
+          {
+            "kind": "workmate",
+            "share": 0.5
+          },
+          {
+            "kind": "workmate",
+            "share": 1,
+            "positions": [
+              "official-driver"
+            ],
+            "with": "councillor"
+          },
+          {
+            "kind": "regular",
+            "share": 1,
+            "positions": [
+              "guard"
+            ],
+            "with": "server",
+            "posts": [
+              "door"
+            ],
+            "at": "pre-shift"
+          },
+          {
+            "kind": "regular",
+            "share": 1,
+            "positions": [
+              "guard"
+            ],
+            "with": "server",
+            "posts": [
+              "door"
+            ],
+            "at": "evening"
+          },
+          {
+            "kind": "lover",
+            "share": 1,
+            "positions": [
+              "guard"
+            ],
+            "with": "server",
+            "posts": [
+              "door"
+            ],
+            "at": "evening"
+          },
+          {
+            "kind": "regular",
+            "share": 0.7,
+            "positions": [
+              "guard"
+            ],
+            "with": "server",
+            "at": "pre-shift"
+          },
+          {
+            "kind": "family",
+            "share": 0.2
+          }
+        ],
+        "secrets": [
+          {
+            "secret": "record",
+            "share": 0.12
+          }
+        ],
+        "routines": [
+          {
+            "id": "clerk-walk",
+            "skeleton": "worker",
+            "weight": 60,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "square",
+            "preShift": "none",
+            "evening": "home",
+            "positions": [
+              "clerk"
+            ]
+          },
+          {
+            "id": "clerk-tram",
+            "skeleton": "worker",
+            "weight": 40,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "tram",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home",
+            "positions": [
+              "clerk"
+            ]
+          },
+          {
+            "id": "guard-cafe-square",
+            "skeleton": "worker",
+            "weight": 100,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "cafe",
+            "evening": "square",
+            "positions": [
+              "guard"
+            ]
+          },
+          {
+            "id": "car-pair",
+            "skeleton": "worker",
+            "weight": 100,
+            "leaveBeforeMin": [
+              0,
+              0
+            ],
+            "commute": "car",
+            "meal": "none",
+            "preShift": "none",
+            "evening": "home",
+            "positions": [
+              "councillor",
+              "official-driver"
+            ]
+          }
+        ]
+      },
+      {
+        "area": "records",
+        "occupation": "skyrail-kiosk",
+        "why": "Sphere Gardens sky rail kiosk, one attendant per 6 h 40 shift from 05:00 to 01:00; passengers are the regulars.",
+        "positions": [
+          {
+            "position": "attendant",
+            "weight": 100,
+            "post": "door"
+          }
+        ],
+        "temperaments": [
+          {
+            "temperament": "idealist",
+            "weight": 30
+          },
+          {
+            "temperament": "mercenary",
+            "weight": 30
+          },
+          {
+            "temperament": "fearful",
+            "weight": 20
+          },
+          {
+            "temperament": "loyal",
+            "weight": 20
+          }
+        ],
+        "needs": [
+          {
+            "need": "cash",
+            "weight": 35
+          },
+          {
+            "need": "debt",
+            "weight": 25
+          },
+          {
+            "need": "care",
+            "weight": 15
+          },
+          {
+            "need": "papers",
+            "weight": 15
+          },
+          {
+            "need": "advancement",
+            "weight": 10
+          }
+        ],
+        "ties": [
+          {
+            "kind": "family",
+            "share": 0.3
+          },
+          {
+            "kind": "regular",
+            "share": 0.2
+          }
+        ],
+        "secrets": [
+          {
+            "secret": "record",
+            "share": 0.1
+          }
+        ],
+        "routines": [
+          {
+            "id": "sky-tram",
+            "skeleton": "worker",
+            "weight": 60,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "tram",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          },
+          {
+            "id": "sky-walk",
+            "skeleton": "worker",
+            "weight": 40,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          }
+        ]
+      },
+      {
+        "area": "records",
+        "occupation": "tram-kiosk",
+        "why": "Records tram stop kiosk, one attendant per 6 h 40 shift from 05:00 to 01:00; commuters pass daily.",
+        "positions": [
+          {
+            "position": "attendant",
+            "weight": 100,
+            "post": "door"
+          }
+        ],
+        "temperaments": [
+          {
+            "temperament": "idealist",
+            "weight": 25
+          },
+          {
+            "temperament": "mercenary",
+            "weight": 30
+          },
+          {
+            "temperament": "fearful",
+            "weight": 25
+          },
+          {
+            "temperament": "loyal",
+            "weight": 20
+          }
+        ],
+        "needs": [
+          {
+            "need": "cash",
+            "weight": 35
+          },
+          {
+            "need": "debt",
+            "weight": 25
+          },
+          {
+            "need": "care",
+            "weight": 15
+          },
+          {
+            "need": "papers",
+            "weight": 15
+          },
+          {
+            "need": "advancement",
+            "weight": 10
+          }
+        ],
+        "ties": [
+          {
+            "kind": "family",
+            "share": 0.3
+          },
+          {
+            "kind": "regular",
+            "share": 0.2
+          }
+        ],
+        "secrets": [
+          {
+            "secret": "record",
+            "share": 0.1
+          }
+        ],
+        "routines": [
+          {
+            "id": "tk-walk",
+            "skeleton": "worker",
+            "weight": 55,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          },
+          {
+            "id": "tk-tram",
+            "skeleton": "worker",
+            "weight": 45,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "tram",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "square"
+          }
+        ]
+      },
+      {
+        "area": "records",
+        "occupation": "resident",
+        "why": "Residents of garden-row-east, pylon-row-east and rocket-west; a sample of 8 per plot; ordinary days, some evenings in the square.",
+        "positions": [
+          {
+            "position": "resident",
+            "weight": 100,
+            "post": "inside"
+          }
+        ],
+        "temperaments": [
+          {
+            "temperament": "idealist",
+            "weight": 25
+          },
+          {
+            "temperament": "mercenary",
+            "weight": 25
+          },
+          {
+            "temperament": "fearful",
+            "weight": 25
+          },
+          {
+            "temperament": "loyal",
+            "weight": 25
+          }
+        ],
+        "needs": [
+          {
+            "need": "housing",
+            "weight": 25
+          },
+          {
+            "need": "cash",
+            "weight": 25
+          },
+          {
+            "need": "debt",
+            "weight": 20
+          },
+          {
+            "need": "care",
+            "weight": 15
+          },
+          {
+            "need": "papers",
+            "weight": 10
+          },
+          {
+            "need": "kin",
+            "weight": 10
+          }
+        ],
+        "ties": [
+          {
+            "kind": "family",
+            "share": 0.4
+          },
+          {
+            "kind": "regular",
+            "share": 0.3,
+            "at": "evening"
+          }
+        ],
+        "secrets": [
+          {
+            "secret": "record",
+            "share": 0.1
+          }
+        ],
+        "routines": [
+          {
+            "id": "res-home",
+            "skeleton": "resident",
+            "weight": 60,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "on-site",
+            "preShift": "none",
+            "evening": "home"
+          },
+          {
+            "id": "res-square",
+            "skeleton": "resident",
+            "weight": 40,
+            "leaveBeforeMin": [
+              0,
+              6
+            ],
+            "commute": "walk",
+            "meal": "square",
+            "preShift": "none",
+            "evening": "square"
+          }
+        ]
+      }
+    ],
+    "names": {
+      "given": [
+        {
+          "name": "Marisol",
+          "origin": "iberian"
+        },
+        {
+          "name": "Mateo",
+          "origin": "iberian"
+        },
+        {
+          "name": "Lucia",
+          "origin": "iberian"
+        },
+        {
+          "name": "Joaquin",
+          "origin": "iberian"
+        },
+        {
+          "name": "Elena",
+          "origin": "iberian"
+        },
+        {
+          "name": "Rafael",
+          "origin": "iberian"
+        },
+        {
+          "name": "Pilar",
+          "origin": "iberian"
+        },
+        {
+          "name": "Tomas",
+          "origin": "iberian"
+        },
+        {
+          "name": "Milena",
+          "origin": "slavic"
+        },
+        {
+          "name": "Anton",
+          "origin": "slavic"
+        },
+        {
+          "name": "Katya",
+          "origin": "slavic"
+        },
+        {
+          "name": "Bogdan",
+          "origin": "slavic"
+        },
+        {
+          "name": "Irina",
+          "origin": "slavic"
+        },
+        {
+          "name": "Tomasz",
+          "origin": "slavic"
+        },
+        {
+          "name": "Zora",
+          "origin": "slavic"
+        },
+        {
+          "name": "Dmitri",
+          "origin": "slavic"
+        },
+        {
+          "name": "Astrid",
+          "origin": "nordic"
+        },
+        {
+          "name": "Soren",
+          "origin": "nordic"
+        },
+        {
+          "name": "Ingrid",
+          "origin": "nordic"
+        },
+        {
+          "name": "Leif",
+          "origin": "nordic"
+        },
+        {
+          "name": "Freya",
+          "origin": "nordic"
+        },
+        {
+          "name": "Anders",
+          "origin": "nordic"
+        },
+        {
+          "name": "Sigrid",
+          "origin": "nordic"
+        },
+        {
+          "name": "Nils",
+          "origin": "nordic"
+        },
+        {
+          "name": "Layla",
+          "origin": "arabic"
+        },
+        {
+          "name": "Karim",
+          "origin": "arabic"
+        },
+        {
+          "name": "Samira",
+          "origin": "arabic"
+        },
+        {
+          "name": "Idris",
+          "origin": "arabic"
+        },
+        {
+          "name": "Nadia",
+          "origin": "arabic"
+        },
+        {
+          "name": "Omar",
+          "origin": "arabic"
+        },
+        {
+          "name": "Zahra",
+          "origin": "arabic"
+        },
+        {
+          "name": "Tariq",
+          "origin": "arabic"
+        },
+        {
+          "name": "Kofi",
+          "origin": "west-african"
+        },
+        {
+          "name": "Amara",
+          "origin": "west-african"
+        },
+        {
+          "name": "Chidi",
+          "origin": "west-african"
+        },
+        {
+          "name": "Efua",
+          "origin": "west-african"
+        },
+        {
+          "name": "Kwame",
+          "origin": "west-african"
+        },
+        {
+          "name": "Folake",
+          "origin": "west-african"
+        },
+        {
+          "name": "Tunde",
+          "origin": "west-african"
+        },
+        {
+          "name": "Abena",
+          "origin": "west-african"
+        },
+        {
+          "name": "Priya",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Arjun",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Meera",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Dev",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Anika",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Ravi",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Kavya",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Sanjay",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Mei",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Haruto",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Jiyeon",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Wei",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Sakura",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Minho",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Lian",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Kenji",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Nikos",
+          "origin": "greek"
+        },
+        {
+          "name": "Eleni",
+          "origin": "greek"
+        },
+        {
+          "name": "Stavros",
+          "origin": "greek"
+        },
+        {
+          "name": "Daphne",
+          "origin": "greek"
+        },
+        {
+          "name": "Yannis",
+          "origin": "greek"
+        },
+        {
+          "name": "Thea",
+          "origin": "greek"
+        },
+        {
+          "name": "Costas",
+          "origin": "greek"
+        },
+        {
+          "name": "Ariadne",
+          "origin": "greek"
+        }
+      ],
+      "family": [
+        {
+          "name": "Navarro",
+          "origin": "iberian"
+        },
+        {
+          "name": "Castillo",
+          "origin": "iberian"
+        },
+        {
+          "name": "Ferrer",
+          "origin": "iberian"
+        },
+        {
+          "name": "Mendes",
+          "origin": "iberian"
+        },
+        {
+          "name": "Ortega",
+          "origin": "iberian"
+        },
+        {
+          "name": "Salazar",
+          "origin": "iberian"
+        },
+        {
+          "name": "Quintero",
+          "origin": "iberian"
+        },
+        {
+          "name": "Vidal",
+          "origin": "iberian"
+        },
+        {
+          "name": "Roldan",
+          "origin": "iberian"
+        },
+        {
+          "name": "Cabrera",
+          "origin": "iberian"
+        },
+        {
+          "name": "Lozano",
+          "origin": "iberian"
+        },
+        {
+          "name": "Novak",
+          "origin": "slavic"
+        },
+        {
+          "name": "Kovac",
+          "origin": "slavic"
+        },
+        {
+          "name": "Petrov",
+          "origin": "slavic"
+        },
+        {
+          "name": "Horvat",
+          "origin": "slavic"
+        },
+        {
+          "name": "Wojcik",
+          "origin": "slavic"
+        },
+        {
+          "name": "Marek",
+          "origin": "slavic"
+        },
+        {
+          "name": "Dvorak",
+          "origin": "slavic"
+        },
+        {
+          "name": "Zelenko",
+          "origin": "slavic"
+        },
+        {
+          "name": "Sokol",
+          "origin": "slavic"
+        },
+        {
+          "name": "Bartos",
+          "origin": "slavic"
+        },
+        {
+          "name": "Voronin",
+          "origin": "slavic"
+        },
+        {
+          "name": "Lindqvist",
+          "origin": "nordic"
+        },
+        {
+          "name": "Halvorsen",
+          "origin": "nordic"
+        },
+        {
+          "name": "Bergstrom",
+          "origin": "nordic"
+        },
+        {
+          "name": "Eriksen",
+          "origin": "nordic"
+        },
+        {
+          "name": "Dahl",
+          "origin": "nordic"
+        },
+        {
+          "name": "Nyholm",
+          "origin": "nordic"
+        },
+        {
+          "name": "Sundberg",
+          "origin": "nordic"
+        },
+        {
+          "name": "Thorsen",
+          "origin": "nordic"
+        },
+        {
+          "name": "Ekman",
+          "origin": "nordic"
+        },
+        {
+          "name": "Holm",
+          "origin": "nordic"
+        },
+        {
+          "name": "Rask",
+          "origin": "nordic"
+        },
+        {
+          "name": "Haddad",
+          "origin": "arabic"
+        },
+        {
+          "name": "Nasser",
+          "origin": "arabic"
+        },
+        {
+          "name": "Khoury",
+          "origin": "arabic"
+        },
+        {
+          "name": "Mansour",
+          "origin": "arabic"
+        },
+        {
+          "name": "Farouk",
+          "origin": "arabic"
+        },
+        {
+          "name": "Saleh",
+          "origin": "arabic"
+        },
+        {
+          "name": "Qasim",
+          "origin": "arabic"
+        },
+        {
+          "name": "Habib",
+          "origin": "arabic"
+        },
+        {
+          "name": "Jaber",
+          "origin": "arabic"
+        },
+        {
+          "name": "Rahal",
+          "origin": "arabic"
+        },
+        {
+          "name": "Sabri",
+          "origin": "arabic"
+        },
+        {
+          "name": "Mensah",
+          "origin": "west-african"
+        },
+        {
+          "name": "Okafor",
+          "origin": "west-african"
+        },
+        {
+          "name": "Adeyemi",
+          "origin": "west-african"
+        },
+        {
+          "name": "Boateng",
+          "origin": "west-african"
+        },
+        {
+          "name": "Osei",
+          "origin": "west-african"
+        },
+        {
+          "name": "Nwosu",
+          "origin": "west-african"
+        },
+        {
+          "name": "Danso",
+          "origin": "west-african"
+        },
+        {
+          "name": "Balogun",
+          "origin": "west-african"
+        },
+        {
+          "name": "Owusu",
+          "origin": "west-african"
+        },
+        {
+          "name": "Kamara",
+          "origin": "west-african"
+        },
+        {
+          "name": "Diallo",
+          "origin": "west-african"
+        },
+        {
+          "name": "Iyer",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Chaudhry",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Banerjee",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Nair",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Kapoor",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Rao",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Desai",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Menon",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Sethi",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Varma",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Joshi",
+          "origin": "south-asian"
+        },
+        {
+          "name": "Tanaka",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Cheng",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Park",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Lin",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Sato",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Huang",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Kimura",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Zhou",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Han",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Mori",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Fujita",
+          "origin": "east-asian"
+        },
+        {
+          "name": "Pappas",
+          "origin": "greek"
+        },
+        {
+          "name": "Georgiou",
+          "origin": "greek"
+        },
+        {
+          "name": "Antoniou",
+          "origin": "greek"
+        },
+        {
+          "name": "Kostas",
+          "origin": "greek"
+        },
+        {
+          "name": "Mavros",
+          "origin": "greek"
+        },
+        {
+          "name": "Stavrou",
+          "origin": "greek"
+        },
+        {
+          "name": "Dimitriou",
+          "origin": "greek"
+        },
+        {
+          "name": "Vlahos",
+          "origin": "greek"
+        },
+        {
+          "name": "Nikolaou",
+          "origin": "greek"
+        },
+        {
+          "name": "Alexiou",
+          "origin": "greek"
+        },
+        {
+          "name": "Ferentinos",
+          "origin": "greek"
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Fix: dropped the clerks' evening regular tie to servers. No clerk variant makes an evening square stop, so 13 clerks failed. Clerks reach the café by the square meal only; their ties are workmate and family.",
+    "Guard variant guard-cafe-square (café before the shift, square after) serves the door guard's pre-shift and evening ties and the lover pattern.",
+    "Guard: posts door 1 and official 1, the rest inside on the official side; watch count 2. Councillor and driver count 1 each, by car.",
+    "Over half the guards hold a pre-shift regular tie to the café's servers (share 0.7 plus the door guard's).",
+    "Server debt weight 70 (servers only) so the chime server likely carries debt [S]. Question for Motive: should it be 100?",
+    "Driver cash weight 70, workmate tie to the councillor at share 1. A fearful driver cannot draw cash, so the driver is idealist, loyal or mercenary.",
+    "Starting values [S]: record shares 0.1-0.12, family and workmate shares, resident mix 25% each. Names: 8 origins at 12.5% each."
+  ],
+  "sources": [
+    "d781564276ab9e1934f2fa26",
+    "549c8d6a16f8427fc8b18c58",
+    "b36a1e0c09bb4a6fcb06e522",
+    "b751d6ccbbc84f9d117eb45c",
+    "b6b4241403570d5adfb9b83f"
+  ]
+}

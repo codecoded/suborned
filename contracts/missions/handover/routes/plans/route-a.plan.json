@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, the front door, quiet (GDD §07; Keel N11): watch and listen to Inez, loop the entrance camera, help Inez and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford.",
+ "note": "Route A, the front door, quiet (GDD §07; Keel N11): watch and listen to Inez, loop the entrance camera, help Inez as often as the card asks (twice: the r016 cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford.",
  "start": {},
  "until": 5100,
  "steps": [
@@ -14,7 +14,8 @@
   {"op": "scout", "do": "move", "to": "beside-inez"},
   {"op": "scout", "do": "listen", "target": "waitress"},
   {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute", "why": "the idle Tech sends the patrol off its sweep, so the entry needn't wait for a gap"},
-  {"op": "fixer", "do": "turn", "target": "waitress", "approach": "help", "label": "turned"},
+  {"op": "fixer", "do": "turn", "target": "waitress", "approach": "help", "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2)"},
+  {"op": "fixer", "do": "turn", "target": "waitress", "approach": "help", "label": "turned", "why": "the second Help, which the card says turns her"},
   {"op": "fixer", "do": "call", "target": "waitress", "label": "call"},
   {"op": "enforcer", "do": "move", "to": "d:Office entrance", "after": ["call"], "run": true},
   {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter", "why": "the first moment the door is unwatched: guard away, camera looped, patrol off its sweep"},

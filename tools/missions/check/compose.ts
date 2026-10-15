@@ -53,9 +53,9 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     for (const d of deps) { const t = marks.get(d) ?? lastOf.get(d); if (t === undefined && !s.after) continue; if (t === undefined) throw new Error(`${name} step ${i + 1} (${s.op} ${s.do}): waits for ${d}, which no earlier step is`); lo = Math.max(lo, t); }
     lo += Math.round((s.gap ?? 0) * 10);
     const hi = s.by ? ticks(s.by) : plan.until, clearT = Math.round((s.clear ?? 0) * 10);
-    /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? */
+    /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? The last match is this step's: a repeated order (Help twice) placed at a tick an earlier one holds sorts after it. */
     const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12)).map((p, k) => {
-      const t = ts[k]!, mine = p.orders.find(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
+      const t = ts[k]!, mine = p.orders.findLast(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
       return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || p.log.some(l => l.code === s.when && l.tick <= t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
     });
     let found = -1;

@@ -4,19 +4,19 @@
  "scope": "civic-block",
  "cast": {
   "file": "contracts/people/harbour-district.cast.json",
-  "sha256": "d4d8e2e70cb9a3ea28e9a29b6f1349e1fdec6cf8e3d1db95475f64b293f0476e",
-  "bytes": 21075
+  "sha256": "41e1daca4504dd0df1a1698999ae132a50daa54cbc9bc9818efd2c1806f2f927",
+  "bytes": 19281
  },
  "source": {
-  "run": "r013",
+  "run": "r016",
   "round": 2,
-  "version": "0.4.0-r013.2",
-  "file": "runs/levels/harbour-district/r013/round-2/pulse.json",
+  "version": "0.4.0-r016.2",
+  "file": "runs/levels/harbour-district/r016/round-2/pulse.json",
   "path": "cast",
-  "sha256": "8e287ec609f6d72f1ddb6800feda2527ea43b85ddc6d03cd0f1baceed3c5a1e3",
-  "runFile": "runs/levels/harbour-district/r013/run.json",
+  "sha256": "91d0e418a63fda46dd0d4bedf53beeaf61866e12ef2f448e58ae4bb57778176f",
+  "runFile": "runs/levels/harbour-district/r016/run.json",
   "outcome": "ACCEPTED"
  },
- "promoted": "Sky, 2026-10-15",
- "why": "People run r013 (civic block, continues r012) was ACCEPTED in 2 rounds (Keel's one round-1 fault was stale why-texts after the expander fix; round 2 clean: 126 people, P-0..P-12 ok, M-2 casts all four roles). Sky accepted its cast tables on 2026-10-15 (\"seems good, go\", relayed by Aster); the cast file is round 2's `cast` byte for byte, so `bun run people` with no --cast expands it. The stand-in cast (tools/people/standin.ts) stays as a test fixture only. Same promotion as skyline run r011 into the plan (871dd13): the file stands beside its run and is held to it, never edited by hand; a new cast is a new run, promoted again."
+ "promoted": "Sky, 2026-10-16",
+ "why": "People run r016 (civic block, fresh run with the lovers rules; r015 could not be continued because it ended ACCEPTED) was ACCEPTED in 2 rounds ($0.69): round 1 failed P-0 (a guard's evening tie to a server with no stop in the day variant), round 2 passed with Keel 0 faults. P-0..P-15 ok; M-2 casts waitress p-cafe-14 (Inez Nikolaou) and door guard p-records-office-01 (Folake Okafor) as mutual lovers, both secret: affair, driver p-records-office-31, councillor p-records-office-07. Replaces r013, whose cast had no lovers (the game ran on the labelled fixture). Sky, 2026-10-16: \"yeah, that's fine - I love the fact that characters change based on the connection of others\" (relayed by Aster), accepting that the re-roll changes temperaments (Inez fearful, Vale mercenary). The file is round 2's cast byte for byte, held to its run; a new cast is a new run, promoted again."
 }

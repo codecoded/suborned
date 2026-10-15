@@ -1,7 +1,8 @@
 // S01–S28: the top-down test's scenarios on the real block. "proto" is the prototype test's line. What changed and why is said in
 // each; the common changes are: actions take their rulebook time and land at its end (the prototype landed them at once); Watch
-// reveals the routine only and Listen the need and temperament (Sky 2026-10-15); Inez is an Idealist (Sky 2026-10-15), so Pay is
-// refused and Pressure costs one step more; places are the civic block's (sim/data/handover.site.json); the guard walks 45 s
+// reveals the routine only and Listen the need and temperament (Sky 2026-10-15); who plays each role, and their temperament, is the
+// promoted cast's (sim/data/handover.site.json cast, M-2): a scenario that plays the mission reads the card as a player would (route A
+// helps Inez until the card's "turned" lands), and one that tests a single temperament's rule names it in its start state; places are the civic block's (sim/data/handover.site.json); the guard walks 45 s
 // (mission.json windows.front-door); the mission is over at the close mission.json gives (§07 8:00; Sky moves it to 8:30; the prototype ran to 9:50).
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,26 @@ namespace Suborned.Sim
         static int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }
 
         /// <summary>Turn the driver as a player reads the card after Listen: the approach that turns him in one order, else Help again
-        /// until he turns. (The cast decides: the fixture's driver is a Mercenary, so Pay; an Idealist would take one Help.)</summary>
+        /// until he turns. (The cast decides: a Mercenary driver takes Pay; an Idealist would take one Help.)</summary>
         static void TurnDriver(Run r)
         {
             var g = r.G;
             string a = g.Preview("help", Driver).Outcome == "turned" ? "help" : g.Preview("pay", Driver).Outcome == "turned" ? "pay" : "help";
             r.Do(Fixer, "turn", Driver, a); r.Done(Fixer);
             while (!g.Driver.Turned && !g.Over && a == "help") { r.Do(Fixer, "turn", Driver, a); r.Done(Fixer); }
+        }
+
+        /// <summary>Help a person as route A does (§07: the Fixer helps Inez), reading the card as a player would: Help again while she is
+        /// not yet turned (one Help turns an Idealist; a Fearful person needs Help ×2, a Loyal one trust over time; §04). The cast decides how
+        /// many; a card that reads "refused" is not given, and the scenario's check says so.</summary>
+        static void HelpUntilTurned(Run r, string role, int most = 4)
+        {
+            var g = r.G; var p = g.PersonByRole(role);
+            for (int i = 0; i < most && !p.Turned && !g.Over; i++)
+            {
+                if (!r.Is(g.Preview("help", role).Outcome != "refused", $"the card for Help on {role} does not read refused")) return;
+                r.Do(Fixer, "turn", role, "help"); r.Done(Fixer);
+            }
         }
 
         /// <summary>Route A as S10 plays it, to the moment the Enforcer comes out with Vale.</summary>
@@ -39,7 +53,7 @@ namespace Suborned.Sim
             r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
             r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
-            r.Done(Scout); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+            r.Done(Scout); HelpUntilTurned(r, Inez);
             while (!g.SweepSeesEntrance(g.Tick)) g.Step();
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
@@ -121,12 +135,19 @@ namespace Suborned.Sim
                 r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
                 r.Done(Scout); r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.Do(Fixer, "turn", Inez, "help");
                 // Changed: with every action taking its time the shot lands after the rivals park (3:10). A player who means to shoot sends
                 // the Scout to tip the rivals off first; the prototype's shot came at 1:32, before the rivals were there at all.
                 r.SendTo(Scout, new Pt(8250, -3100));
-                r.Done(Tech); r.Do(Tech, "reroute", "patrol");
-                r.Done(Fixer);
+                // Changed (r016 cast, 2026-10-16): Help as often as the card asks (a Fearful Inez takes two, §04); the Tech reroutes the patrol
+                // with the Help the card says turns her, so its 115 s away covers the shot and the entry however many Helps came first
+                for (int i = 0; i < 4 && !g.Inez.Turned; i++)
+                {
+                    bool last = g.Preview("help", Inez).Outcome == "turned";
+                    r.Do(Fixer, "turn", Inez, "help");
+                    if (last) { r.Done(Tech); r.Do(Tech, "reroute", "patrol"); }
+                    r.Done(Fixer);
+                }
+                r.Is(g.Inez.Turned, "Inez is turned");
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
                 r.To(g.LureTick + g.VisitWalkTicks);
@@ -212,7 +233,7 @@ namespace Suborned.Sim
                 r.Do(Scout, "listen", Inez);
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700)); // the Enforcer waits east of the door, out of the guard's cone
                 r.Done(Scout);
-                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                HelpUntilTurned(r, Inez); // as many Helps as the card asks (the cast's temperament, §04)
                 while (g.SweepSeesEntrance(g.Tick) == false) g.Step(); // call when the patrol's sweep covers the door
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
@@ -482,13 +503,13 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));
-                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                HelpUntilTurned(r, Inez);
                 r.Is(g.CanCall(Inez), "a turned contact can be called");
                 r.To(r.Send(Enf, "d:Courtyard"));
                 r.Refused(Enf, "fire", GuardR, "being near Inez does not reach the guard (carbine max, a clear line)");
             });
 
-            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, Help at +$10,000, T 3.", r =>
+            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -502,13 +523,25 @@ namespace Suborned.Sim
                 r.Refused(Fixer, "turn", Inez, "routine alone does not unlock debt relief", "help");
                 r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
-                r.Is(g.Inez.Turned, "new information lets the Fixer recover from the refusal");
-                r.Eq(g.Cash, 50000L, "the cold approach raises the debt relief price");
-                r.Eq(g.Trail, 3, "the refused approach leaves an extra trail");
+                // Changed (r016 cast, 2026-10-16): the prototype's Inez took one Help ($50,000, T 3). How many Helps she takes is the cast's
+                // (§04: one for an Idealist, two for the Fearful); what this tests is the refusal's line on every one of them.
+                long help = (long)g.R.Num("p:approaches.help.usd"), helpT = (long)g.R.Num("p:approaches.help.trail");
+                long refUsd = (long)g.R.Num("v:refusal-usd"), refT = (long)g.R.Num("v:refusal-trail");
+                int helps = 0; long before = g.Cash;
+                r.Eq(before, 100000L, "the cold approach cost no money");
+                while (!g.Inez.Turned && !g.Over && helps < 4)
+                {
+                    var q = g.Preview("help", Inez); var rb = q.Lines.Find(l => l.Line == "refused-before");
+                    r.Is(rb != null && rb.Holds == "yes" && rb.Usd == refUsd && rb.Trail == refT, $"Help {helps + 1}: the card carries the refusal's +${refUsd}, +{refT} T");
+                    r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); helps++;
+                }
+                r.Is(g.Inez.Turned, $"new information lets the Fixer recover from the refusal ({helps} Help)");
+                r.Eq(g.Cash, before - helps * (help + refUsd), "the cold approach raises the debt relief price, on each Help");
+                r.Eq((long)g.Trail, 1 + helps * (helpT + refT), "the refused approach leaves an extra trail, on each Help");
             });
 
-            Add("S24", "421", "Watch unlocks Pay, shown at $70,000 with \"?\"; Help stays locked; Inez is an Idealist, so Pay is refused and remembered (Sky 2026-10-15).", r =>
+            var idealist = new Start(); idealist.Temperament[Inez] = "idealist";
+            Add("S24", "421", "Watch unlocks Pay, shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard"));
@@ -525,9 +558,9 @@ namespace Suborned.Sim
                 r.Eq(g.Trail, 2, "the offer still leaves its trail");
                 r.Is(g.Inez.Has("refusal"), "she remembers the refusal");
                 r.Is(!g.Inez.KTemperament && g.Preview("pay", Inez).Outcome == "refused", "the cell learns only that she refuses a fee (✗), not her temperament");
-            });
+            }, idealist);
 
-            Add("S25", "434", "Pressure: $0, +3 T (exposure of her affair, learned by Listen: no step worse on an Idealist; Motive, motive-lovers.md), and she can be called.", r =>
+            Add("S25", "434", "Pressure: $0, +3 T (exposure of her affair, learned by Listen: no step worse whatever her temperament; Motive, motive-lovers.md), and she can be called.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
@@ -629,7 +662,10 @@ namespace Suborned.Sim
                 r.FightItOut();
                 r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
-                r.Is(g.DownedByGuard > 0, "the guard dropped at least one of them");
+                // Changed (r016 cast, 2026-10-16): was "the guard dropped at least one of them". A Fearful Inez takes two Helps, route A runs 50 s
+                // later, and the Enforcer drops three before the guard lands one: who fires the last shot is the fight's timing, not the rule
+                // under test (§07 safe: the guard, who never saw the cell, fights them).
+                r.Is(r.Shots().Exists(x => x.by == "guard" && x.target.StartsWith("rival-", StringComparison.Ordinal)), $"the guard fires on them (he dropped {g.DownedByGuard})");
                 r.Is(g.FightWhy.Contains("rivals-break") && g.Hostiles.Exists(h => h.Gun.St == "break" || h.Gun.St == "gone"), "more than half the crew down, the rest break for their car (Pulse §3.1)");
                 r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("guard", StringComparison.Ordinal)), "the guard runs in to cover by his post (Pulse §3.4)");
                 var dd = Debrief.Of(g);
@@ -679,7 +715,10 @@ namespace Suborned.Sim
                     }
                 }
                 r.Is(atStops, "everyone at a stop stands at its place, or is off the street (at home, inside, beyond)");
-                r.Is(onStreet0 > 10, $"people are out on the street at 0:00 ({onStreet0})");
+                // Changed (r016 cast, 2026-10-16): was "more than 10", the fixture cast's count; the people file says who is out at 0:00
+                int outAt0 = 0;
+                foreach (var w in g.Walkers) for (int k = 0; k < w.Place.Length; k++) if (w.From[k] <= 0 && 0 < w.To[k] && w.Out[k]) { outAt0++; break; }
+                r.Is(outAt0 > 0 && onStreet0 >= outAt0, $"people are out on the street at 0:00 ({onStreet0}; the people file puts {outAt0} at a street stop)");
                 r.Is(walking > 0 && mover != null, $"someone walks between stops during the mission ({mover?.P.Id})");
                 if (mover != null)
                 {
@@ -700,9 +739,10 @@ namespace Suborned.Sim
                 foreach (var w in g.Walkers) { var p = g.CrowdPos(w); if (p.HasValue && G.Within(p.Value, door, 1300)) nearby++; }
                 r.Is(nearby > 0, $"people stand near the café door ({nearby})");
                 int trail = g.Trail;
+                var q = g.Preview("help", Inez); // the card after Listen: turned, or not yet (a Fearful Inez takes two; the cast decides)
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
-                r.Is(g.Inez.Turned, "Inez is turned");
-                r.Eq(g.Trail - trail, 2, "+1 T for the Help, +1 T for the witnessed debt-clearing (once, however many saw it)");
+                r.Is(g.Inez.Has("help") && g.Inez.Turned == (q.Outcome == "turned"), $"the Help lands as the card said ({q.Outcome})");
+                r.Eq(g.Trail - trail, (int)q.Trail + 1, "+1 T for the Help, +1 T for the witnessed debt-clearing (once, however many saw it)");
                 r.Eq(g.Standing, 1, "a public debt-clearing moves standing toward Hero");
                 r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness remembers the Fixer's face");
                 r.Is(g.Ledger.Exists(l => l.cause == "witnessed:debt-cleared:waitress"), "the ledger names the witnessed act");
@@ -722,32 +762,56 @@ namespace Suborned.Sim
                 r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Driver && l.Detail.StartsWith("job-exposed", StringComparison.Ordinal)), "the driver's job was exposed: resentment, not bravery");
             }, drvKnown);
 
+            // N17 and N17b test the Talker rule on Inez (Game.Question: what she would tell an investigator), and that the investigation, if its
+            // hops reach her, hears exactly that. Whether they reach her is the cast's: the investigators question the people nearest the act
+            // first, then by id (rulebook investigation); in the r016 cast two café servers (p-cafe-11, -12) share the café entrance with Inez
+            // (p-cafe-14) and at Alert 0 (one investigator, two hops) are asked before her. The fixture's Inez was p-cafe-11 and won that tie.
             Add("N17", "—", "The investigation (§05, rulebook investigation): a pressured Inez is a Talker and gives up the Fixer's face to the investigators, with the cause in words (K7); a helped Inez lies, and in a neutral district that gives them nothing.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
+                var q = g.Question(g.Inez);
+                r.Is(q.Outcome == "gives" && q.Facts.Contains("fixer-face"), "questioned, Inez gives up the Fixer's face");
+                r.Is(q.Cause.Contains(">"), $"with the cause: {q.Cause}");
                 var inv = g.Investigate();
+                r.Is(inv.Findings.Count > 0, "the investigators work the threat");
                 var f = inv.Findings.Find(x => x.Who == Inez);
-                r.Is(f != null && f.Outcome == "gives" && f.Facts.Contains("fixer-face"), "questioned, Inez gives up the Fixer's face");
-                r.Is(f != null && f.Cause.Contains(">"), $"with the cause: {f?.Cause}");
-                r.Eq(inv.NamedCause, "named-witness:waitress", "a named witness: the investigation's cause");
+                r.Is(f == null || (f.Outcome == q.Outcome && string.Join(",", f.Facts) == string.Join(",", q.Facts) && f.Cause == q.Cause), $"reached ({f != null}), she tells them exactly that");
+                var named = inv.Findings.Find(x => x.Outcome == "gives" && x.Facts.Contains("fixer-face"));
+                r.Eq(inv.NamedCause, named != null ? "named-witness:" + named.Who : "", "the first questioned who gave up the Fixer's face is the investigation's named cause");
+                r.Is(f == null || inv.NamedCause == "named-witness:waitress", "if Inez is reached, she is the named witness");
             });
 
-            Add("N17b", "—", "The investigation, the other way: a helped Inez (bravery helper, loyalty obliged) is no Talker and covers for the cell (people.rules talker.lie); in a neutral district she gives the investigators nothing.", r =>
+            Add("N17b", "—", "The investigation, the other way: a helped Inez is no Talker; brave enough (people.rules talker.lie: an Idealist starts a helper) she covers for the cell with a lie, else she says nothing (a Fearful Inez starts an informant); in a neutral district either gives the investigators nothing.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez); // a contact helped as often as the card asks (the cast's temperament)
+                var q = g.Question(g.Inez);
+                bool brave = g.Inez.Sc[Rules.Bravery] >= g.R.LieBraveryAtLeast; // the cast's temperament decides (§04 start: Idealist bravery 1)
+                r.Is(brave ? q.Outcome == "lies" && q.Facts.Count == 1 && q.Facts[0] == "nothing" : q.Outcome == "nothing" && q.Facts.Count == 0,
+                     $"questioned, Inez {(brave ? "lies: nothing" : "is no Talker and says nothing")} ({q.Outcome} {string.Join(",", q.Facts)}; bravery {g.Inez.Sc[Rules.Bravery]})");
                 var inv = g.Investigate();
                 var f = inv.Findings.Find(x => x.Who == Inez);
-                r.Is(f != null && f.Outcome == "lies" && f.Facts.Count == 1 && f.Facts[0] == "nothing", "questioned, Inez lies: nothing");
+                r.Is(f == null || (f.Outcome == q.Outcome && string.Join(",", f.Facts) == string.Join(",", q.Facts)), $"reached ({f != null}), she tells them exactly that");
                 r.Eq(inv.NamedCause, "", "nobody named the cell");
             });
 
-            Add("N18", "—", "Between missions (rulebook phases): after route A, the investigators question Inez, so her job is exposed (resentment compliant → resentful); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her family and workmate ties (K5).", r =>
+            var brave = new Start(); brave.Temperament[Inez] = "idealist";
+            Add("N17c", "—", "The lie itself (people.rules talker.lie), whoever the cast is: the start state makes Inez an Idealist (bravery helper from the start, §04); helped, she is no Talker, covers for the cell, and in a neutral district her lie gives the investigators nothing.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
+                var q = g.Question(g.Inez);
+                r.Is(q.Outcome == "lies" && q.Facts.Count == 1 && q.Facts[0] == "nothing", $"questioned, Inez lies: nothing ({q.Outcome} {string.Join(",", q.Facts)})");
+            }, brave);
+
+            Add("N18", "—", "Between missions (rulebook phases): after route A, Inez's ladder follows the investigation: questioned, her job is exposed (resentment compliant → resentful), else it is not (bravery informant → helper); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her own family, workmate and regular ties (K5).", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -756,14 +820,21 @@ namespace Suborned.Sim
                 r.FightItOut(); r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 var next = Debrief.Of(g).Next;
-                // café customers saw the debt cleared, so the investigators question Inez: questioned, her job is exposed (rulebook exposure)
-                var asked = Debrief.Of(g).Inv.Findings.Exists(f => f.Who == Inez);
-                r.Is(asked, "the investigators reached Inez through the witnessed debt-clearing");
-                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == "job-exposed: resentment compliant → resentful"), "questioned, her job is exposed: resentment compliant → resentful");
+                // Changed (r016 cast, 2026-10-16): café customers saw the debt cleared, so the investigators work that lead, nearest first, then
+                // by id (rulebook investigation). The fixture's Inez (p-cafe-11) was asked first; r016's (p-cafe-14) shares the café entrance
+                // with two servers who are asked before her at Alert 0. Whether she is asked is the cast's; the ladder must follow it.
+                var inv = Debrief.Of(g).Inv;
+                r.Is(inv.Findings.Exists(f => f.Lead == "incident:debt-cleared:waitress"), "the investigators work the witnessed debt-clearing");
+                bool asked = inv.Findings.Exists(f => f.Who == Inez);
+                string ladder = asked ? "job-exposed: resentment compliant → resentful" : "job-unexposed: bravery informant → helper";
+                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == ladder), $"{(asked ? "questioned" : "not questioned")}, her ladder: {ladder}");
                 var need = next.Lines.Find(l => l.Line == "need-replaced" && l.Who == Inez);
                 r.Is(need != null && need.Detail.StartsWith("debt → ", StringComparison.Ordinal) && need.Detail.EndsWith("(told free: a contact)", StringComparison.Ordinal), $"her debt is replaced and told free ({need?.Detail})");
                 r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who == Inez), "obliged, she passes no word");
-                r.Is(next.Lines.Exists(l => l.Line == "introduced" && l.Who == Inez && l.Detail.Contains("(family)")), "she can introduce her family");
+                var kinds = new List<string>(); // the kinds of tie introductions travel along that Inez has in the people file (§04 ties)
+                foreach (var (kind, _) in g.People2!.Ties[g.Inez.Id]) if ((kind == "family" || kind == "workmate" || kind == "regular") && !kinds.Contains(kind)) kinds.Add(kind);
+                var intro = next.Lines.Find(l => l.Line == "introduced" && l.Who == Inez);
+                r.Is(kinds.Count > 0 && intro != null && kinds.TrueForAll(k => intro.Detail.Contains("(" + k + ")")), $"she can introduce along her own ties ({string.Join(", ", kinds)}): {intro?.Detail}");
                 r.Is(!next.Ambush, "no ambush is scheduled");
             });
 
@@ -804,7 +875,9 @@ namespace Suborned.Sim
 
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             var purse = new Start(); purse.Known[Inez] = known.Known[Inez]; purse.Known[Driver] = known.Known[Driver];
-            purse.Temperament[Driver] = "idealist"; // §04's purse is for a driver one Help turns (Motive §3); the fixture cast's driver is a Mercenary
+            // §04's purse is one Help on Inez and one on the driver (Motive §3): the rule under test, so the start state makes both people one
+            // Help turns, whoever the cast is (the r016 cast's Inez is Fearful, two Helps; its driver a Mercenary)
+            purse.Temperament[Inez] = "idealist"; purse.Temperament[Driver] = "idealist";
             Add("N09", "—", "The purse (§04): Help Inez + Help the driver = $80,000 fits $100,000.", r =>
             {
                 var g = r.G;
@@ -825,7 +898,9 @@ namespace Suborned.Sim
                 r.Refused(Fixer, "turn", Driver, "$110,000 is over the purse: the driver can't be helped", "help");
             }, merc);
 
-            var tip = new Start(); tip.Known[Inez] = new List<string> { "routine", "need" };
+            // the refused approach and the one-step-worse line are the rules under test: the start state makes Inez an Idealist (Pay refused,
+            // Pressure without leverage one step worse), whoever the cast is
+            var tip = new Start(); tip.Known[Inez] = new List<string> { "routine", "need" }; tip.Temperament[Inez] = "idealist";
             Add("N14", "—", "The card (Sky Q3, Q4): \"?\" until the temperament is known; a refused approach fails and is remembered; the wrong approach costs one step.", r =>
             {
                 var g = r.G;

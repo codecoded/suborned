@@ -50,6 +50,23 @@ public class ScenarioTests
     }
 
     [Fact]
+    public void OrdersAfterAnOrderEndsTheMissionReplayToo()
+    {
+        // Keel 2026-10-16 (found while re-casting r016): an order that ends the mission (withdraw, an entry seen) leaves the tick where it
+        // is, so anything given after it at that tick is refused (mission-over) and is still the player's, in the record. The replay plays it.
+        var g = Engine.New(Repo.Inputs); var r = new Run(g);
+        r.Wait(Game.T(30));
+        Assert.True(g.Issue(new Order { Tick = g.Tick, Do = "withdraw" }).ok);
+        Assert.True(g.Over);
+        Assert.Equal("mission-over", g.Issue(new Order { Tick = g.Tick, Op = "scout", Do = "move", To = "d:Courtyard" }).code);
+        g.Finish();
+        var replay = Engine.Replay(Repo.Inputs, g);
+        Assert.Equal(g.Orders.Count, replay.Orders.Count);
+        Assert.Equal(g.Checkpoints, replay.Checkpoints);
+        Assert.Equal(g.Result, replay.Result);
+    }
+
+    [Fact]
     public void AScriptRoundTripsThroughTheOrderFormat()
     {
         var played = Scenarios.Run(Repo.Inputs, Scenarios.Find("S10")!).G;

@@ -140,7 +140,7 @@ describe('handover mission file', () => {
     expect(by('C-3').value).toBe(`${mission.destinations.length}/${mission.destinations.length}`);
     expect(by('W-4').value).toBe('2/2'); // the overlay's walk origins (standards.walking.from): Café door, Office entrance
     expect(by('M-1').ok).toBe(true);
-    expect(by('M-2').value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
+    expect(by('M-2').value).toBe(mission.roles.map(r => `${r.id} ${STANDIN_PINS[r.id]}`).join(', '));
     expect(R.routes.map(r => r.id)).toEqual(mission.routes.map(r => r.id));
     expect(R.routes.every(r => r.length < Infinity)).toBe(true);
     expect(mission.events.filter(e => !plan.areas.some(a => a.id === e.area)).map(e => e.id)).toEqual([]);
@@ -151,9 +151,13 @@ describe('handover mission file', () => {
 // cast, expanded in process, so the test does not read out/) and pins one person by id (rule M-2).
 /** The people the stand-in cast expands to, as `bun run people` writes them. */
 const people = async (): Promise<PeopleIn> => { const w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block'); return expand(w.ctx(standInCast(w.scope, w.rules))).people; };
-/** Who M-2 casts from the playable stand-in (`play` below): the first who fits by id. A live cast (brief 010 C) moves these; the
- *  roles stay. Nobody is pinned in the mission until a cast passes M-2. */
-const PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-15', councillor: 'p-records-office-61' };
+/** Who M-2 casts from the playable stand-in (`play` below): the first who fits by id. The stand-in is the tests' own fixture, so
+ *  these stay while the live cast moves. */
+const STANDIN_PINS: Record<string, string> = { waitress: 'p-cafe-11', driver: 'p-records-office-01', guard: 'p-records-office-15', councillor: 'p-records-office-61' };
+/** Who M-2 casts from the promoted cast (people run r016, promoted by Sky 2026-10-16; contracts/people/harbour-district.cast.json),
+ *  as the engine plays them (sim/data/handover.site.json cast, Keel). A new promotion moves these (re-rolls over hand-tuning: promote,
+ *  then re-check); the roles stay. Nobody is pinned in the mission until a cast passes M-2. */
+const PINS: Record<string, string> = { waitress: 'p-cafe-14', driver: 'p-records-office-31', guard: 'p-records-office-01', councillor: 'p-records-office-07' };
 type Who = PeopleIn['persons'][number];
 /** A copy of the people with `edit` applied to the named persons (default: none). */
 const met = (p: PeopleIn, edit: Record<string, (x: Who) => void> = {}): PeopleIn => {
@@ -238,10 +242,22 @@ describe('handover roles', () => {
     expect(a.map(x => x.ok)).toEqual([false, false, false, true]);
     const shuffled = { ...s.p, persons: [...s.p.persons].reverse() }; // the tie-break is the id, not the file's order
     expect(m2(s, mission, shuffled).value).toBe(c.value);
-    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
+    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${STANDIN_PINS[r.id]}`).join(', '));
     const name = (id: string) => s.p.persons.find(p => p.id === id)!.name;
-    expect(name(PINS.waitress!)).toStartWith('Inez '); // people.rules.json names.pinned: Inez is the waitress the mission casts
-    expect(name(PINS.councillor!)).toEndWith(' Vale');
+    expect(name(STANDIN_PINS.waitress!)).toStartWith('Inez '); // people.rules.json names.pinned: Inez is the waitress the mission casts
+    expect(name(STANDIN_PINS.councillor!)).toEndWith(' Vale');
+  });
+
+  test('the promoted cast (r016) passes M-2 and pins the people the engine plays', async () => {
+    const s = await setup(); // no people given: the overlay expands the promoted cast (tools/people/current.ts), as the plan checker does
+    const c = overlay(s.plan, s.block, undefined, mission).civic({ plan: s.plan, d: s.d, civ: s.civ } as never).find(x => x.id === 'M-2')!;
+    expect(c.ok).toBe(true);
+    expect(c.value).toBe(mission.roles.map(r => `${r.id} ${PINS[r.id]}`).join(', '));
+    const site = JSON.parse(await text('sim/data/handover.site.json')).cast; // Keel's engine plays the same people (sim:site, M-2)
+    expect(Object.fromEntries(mission.roles.map(r => [r.id, site[r.id].id]))).toEqual(PINS);
+    expect(site.waitress.name).toStartWith('Inez '); // people.rules.json names.pinned
+    expect(site.councillor.name).toEndWith(' Vale');
+    expect([site.waitress.temperament, site.waitress.lover, site.guard.lover]).toEqual(['fearful', 'guard', 'waitress']); // r016: a Fearful Inez takes Help ×2 (route A)
   });
 
   test('failing example: a role nobody can fill fails M-2, naming the role', async () => {

@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. Checker clean on P-0 to P-15; Handover requirements all met. Last round's P-0 fault is fixed (clerks' evening ties dropped). Guards are loyal or mercenary only, never Idealist. Not every driver is a Talker. No biographies; names mixed, no era. Open questions: night-watch guards (01:30 shift) keep the café stop while the café is shut 00:00–06:00 (likely the 3 of 16 untied); \"a fearful driver cannot draw cash\" is unverified; server debt weight 100 is Motive's call.",
+  "faults": [],
+  "sources": [
+    "549c8d6a16f8427fc8b18c58",
+    "b6b4241403570d5adfb9b83f",
+    "d781564276ab9e1934f2fa26",
+    "b751d6ccbbc84f9d117eb45c",
+    "db59b7c04cfebaa32e41a5bc",
+    "409364487039824661a2c22a"
+  ]
+}

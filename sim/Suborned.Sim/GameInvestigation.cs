@@ -120,7 +120,6 @@ namespace Suborned.Sim
             foreach (var i in Incidents) leads.Add((i.Tick, seq++, "incident:" + i.Cause, i.At, new List<(Person, Pt)>(i.Witnesses)));
             foreach (var s in Sightings) leads.Add((s.From, seq++, "sighting:" + s.Watcher + ":" + s.Op, s.At, PeopleNear(s.At, s.From)));
             var spent = new HashSet<int>(); var asked = new HashSet<Person>();
-            var ev = R.Ev("investigator.question");
             for (int hop = 1; hop <= inv.Hops; hop++)
             {
                 int pick = -1;
@@ -136,13 +135,9 @@ namespace Suborned.Sim
                 if (who.Count == 0) { spent.Add(lead.seq); inv.Findings.Add(new Finding { Hop = hop, Who = "", Outcome = "no-one-to-ask", Lead = lead.what }); continue; }
                 if (who.Count == 1) spent.Add(lead.seq);
                 var p = who[0].p; asked.Add(p);
-                var x = Ctx(p, ev);
-                var outcome = FirstOutcome(ev, x).Id; // holds-nothing, gives, lies, nothing: the rulebook's event decides
-                var f = new Finding { Hop = hop, Who = p.Role.Length > 0 ? p.Role : p.Id, Outcome = outcome, Lead = lead.what };
-                if (outcome == "gives")
+                var f = Question(p, lead.what); f.Hop = hop;
+                if (f.Outcome == "gives")
                 {
-                    foreach (var fact in FactsOf(p)) f.Facts.Add(fact);
-                    f.Cause = TalkerCause(p);
                     foreach (var m in p.Memory) // each fact's place and time becomes a lead (one step up the chain, §02)
                     {
                         if (m.Act == "told") continue;
@@ -151,11 +146,23 @@ namespace Suborned.Sim
                     }
                     if (inv.NamedCause.Length == 0 && f.Facts.Contains(R.FaceFact.TryGetValue("fixer", out var face) ? face : "fixer-face")) inv.NamedCause = "named-witness:" + f.Who;
                 }
-                else if (outcome == "lies") f.Facts.Add(R.BandOf(Standing) == Band.Hero ? R.LieGivesHero : R.LieGivesOtherwise);
                 if (p.Turned && p.Role.Length > 0) inv.Exposed.Add(p.Role);
                 inv.Findings.Add(f);
             }
             return inv;
+        }
+
+        /// <summary>What this person would tell an investigator now (rulebook investigator.question): the outcome, the facts and, for a
+        /// Talker, the cause in words. Read-only; Investigate asks each person it reaches exactly this, so a scenario can test the Talker
+        /// rule on a person whether or not the investigation's hops reach them.</summary>
+        public Finding Question(Person p, string lead = "")
+        {
+            var ev = R.Ev("investigator.question");
+            var outcome = FirstOutcome(ev, Ctx(p, ev)).Id; // holds-nothing, gives, lies, nothing: the rulebook's event decides
+            var f = new Finding { Who = p.Role.Length > 0 ? p.Role : p.Id, Outcome = outcome, Lead = lead };
+            if (outcome == "gives") { foreach (var fact in FactsOf(p)) f.Facts.Add(fact); f.Cause = TalkerCause(p); }
+            else if (outcome == "lies") f.Facts.Add(R.BandOf(Standing) == Band.Hero ? R.LieGivesHero : R.LieGivesOtherwise);
+            return f;
         }
 
         /// <summary>§04 Talker test in words: "fear afraid 2 + resentment resentful 1 > bravery helper 1 + loyalty none 0" (Motive K7).</summary>

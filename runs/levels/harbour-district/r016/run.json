@@ -1,0 +1,187 @@
+{
+  "run": "r016",
+  "plan": "harbour-district",
+  "date": "2026-10-15T18:14:20.348Z",
+  "objective": "people",
+  "proposals": "cast tables",
+  "handoffMode": "answered",
+  "loop": 2,
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.3.0",
+    "hash": "20df76a963187d6d5c1ef5eaa58fbc696dee50094ddd52002ec29c0566419e9b",
+    "rawHash": "16aafabc2c40b5f9f4a3542dfc861dd3792f0b4461f1c2ae64729f88ef718f24",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/civic-block.json",
+    "sha256": "7898d425e4270b1f79da210b93a881ae94ac2ec83101395ce1aea7a460dcd44b"
+  },
+  "inputLife": {
+    "source": "contracts/world/harbour-district.life.json",
+    "sha256": "6f674b120a186d217da28be6ab310335c0b9383527eb9d647feeb309926fc6f9"
+  },
+  "inputRules": {
+    "source": "contracts/people/people.rules.json",
+    "sha256": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8"
+  },
+  "inputMission": {
+    "source": "contracts/missions/handover/mission.json",
+    "sha256": "2057806c11ac1878e2d4b489ee8ee5c9d4f496159a5012db4e9d973a10218fbb"
+  },
+  "scope": "civic-block",
+  "inputKit": {
+    "source": "contracts/world/kit.json",
+    "sourceSha256": "af230e8d2e7195c40c23500f4f7e07a83500a03ca7bb747a8a1b611ec4fb0f6f",
+    "sha256": "522c88c975d3dc5310682ebe3fa3b38795a299ec43f207a1c7e444725e7fc40a",
+    "assets": 282
+  },
+  "inputLook": {
+    "source": "contracts/world/civic-look.json",
+    "sha256": "d5fe22dc4150a8ce0bcc926925e2e074b9ada177742bbefa976e47630b4f4fc8"
+  },
+  "gdd": {
+    "version": "v0.22.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+    "human": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html"
+  },
+  "commit": "c01a2cfe1011316f77db7e1b40d753537031c809",
+  "dirty": true,
+  "live": true,
+  "maxUsd": 5,
+  "approvedBy": "Sky, 2026-10-16, live repair round for the Handover lovers (waitress and door guard), cost limit waived; continue of r015 refused (ACCEPTED), so a fresh run",
+  "toolsHash": "991cc9e49b3993cd087a7cec937dd05a1c92c5a941ac2b5fe684297788bfe6fe",
+  "corpusHash": "9ba32c64c8f2de1e470a6e7831a84bce6b8a6b49d6f4942f71918377e19e6d80",
+  "chunker": 5,
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "schedule-ai-designer": {
+      "source": ".claude/agents/schedule-ai-designer.md",
+      "sourceHash": "048f520fc6d3dec3e8d4d220e4194aad971bc90ed42aed6fa867d81279503e1f"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "8c57421ce7afc8e0e70fa5cd2936aed427b0e9fccac8f022492dd086a6fd468e"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.4.0-r016.1",
+      "seeded": false,
+      "ran": [
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": false,
+      "failedChecks": [
+        "P-0"
+      ],
+      "problems": [],
+      "persons": 130,
+      "verdict": "fail",
+      "keelVerdict": null,
+      "criticRan": false,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [],
+      "handoffFaults": 0,
+      "faults": 1,
+      "uncitedFaults": 0,
+      "faultOwners": [
+        "Pulse"
+      ]
+    },
+    {
+      "round": 2,
+      "version": "0.4.0-r016.2",
+      "seeded": false,
+      "ran": [
+        "pulse"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "persons": 130,
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [],
+      "handoffFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 0.6905,
+    "calls": 3
+  },
+  "calls": [
+    {
+      "id": "01-people-pulse",
+      "objective": "people-pulse",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.26885030000000004,
+      "seconds": 122,
+      "tokens": {
+        "input": 23982,
+        "cacheRead": 18292,
+        "output": 17001
+      },
+      "promptSha256": "aa15e47cc7bf901edad2b51e1ddcda8c6b23517a78921ba9f0f778dd34cca4a0",
+      "schemaSha256": "9f2ac9f0270139fc19b29324fb86cc5865f71cdd344186f63fa7e7aaeeef3006",
+      "briefSha256": "f9d9fcc3bacbba54dacbe9f8d8fe9c9e44e86d220a59e70f9f01a773d2be5971",
+      "effort": "medium"
+    },
+    {
+      "id": "02-people-pulse",
+      "objective": "people-pulse",
+      "role": "schedule-ai-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.1415571,
+      "seconds": 38,
+      "tokens": {
+        "input": 17428,
+        "cacheRead": 8058,
+        "output": 6923
+      },
+      "promptSha256": "ea164fd217740a16e37be3b163604bcb3d8b37732afca171d768b7b2d4710639",
+      "schemaSha256": "9f2ac9f0270139fc19b29324fb86cc5865f71cdd344186f63fa7e7aaeeef3006",
+      "briefSha256": "f9d9fcc3bacbba54dacbe9f8d8fe9c9e44e86d220a59e70f9f01a773d2be5971",
+      "effort": "medium"
+    },
+    {
+      "id": "03-people-critic",
+      "objective": "people-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.28006590000000003,
+      "seconds": 30,
+      "tokens": {
+        "input": 28086,
+        "cacheRead": 26026,
+        "output": 2401
+      },
+      "promptSha256": "e57a3bf7946534ecb359bd63491e9a11486843196d2263b3a6a388d0e3935708",
+      "schemaSha256": "0ac49a09acce455ad1a0cf43fc9c8e0179045fc2fb1022828bb0124bb0ba890e",
+      "briefSha256": "2382a91e813df174f8b59c9cd3b4395a2b89f478969d48ab290729e552ffdff4",
+      "effort": "medium"
+    }
+  ],
+  "finalVersion": "0.4.0-r016.2"
+}

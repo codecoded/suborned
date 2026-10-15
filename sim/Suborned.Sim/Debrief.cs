@@ -166,9 +166,9 @@ namespace Suborned.Sim
             foreach (var (_, o) in list)
             {
                 if (o.Tick > until) break; // orders past `until` are not played (Redline I2)
-                g.RunTo(o.Tick); if (g.Over) break;
-                if (g.Tick == o.Tick) g.Issue(o);
-                if (g.Over) break;
+                g.RunTo(o.Tick);
+                if (g.Over && g.Tick != o.Tick) break; // the mission ended before this order's tick: nothing later was given
+                if (g.Tick == o.Tick) g.Issue(o);      // at the tick it ended, the played run took (and refused) it: so does the replay
             }
             g.RunTo(until); g.Finish();
             return g;
