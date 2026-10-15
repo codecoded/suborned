@@ -169,7 +169,7 @@ export const Rulebook = z.strictObject({
   traceable: z.record(id, Traceable),
   // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref.
   cell: ground({
-    speed: Ref, reach: Ref,
+    speed: Ref, runSpeed: Ref, carryRunSpeed: Ref, reach: Ref,
     loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref }),
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),

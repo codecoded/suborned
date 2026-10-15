@@ -15,6 +15,7 @@ namespace Suborned.Sim
         static readonly Pt Roof = new Pt(6400, -3000); // inside the Records Office
         // where the Enforcer stands to shoot the guard unseen: beside the public door, outside his door cone and both cameras
         static readonly Pt BesideDoor = new Pt(4850, -2300);
+        static Start NoFight() { var s = new Start(); s.FinalFight = false; return s; }
         static Start Turned(params string[] roles) { var s = new Start(); s.Turned.AddRange(roles); return s; }
         static int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }
 
@@ -701,7 +702,7 @@ namespace Suborned.Sim
                 r.Eq(inv.NamedCause, "", "nobody named the cell");
             });
 
-            Add("N18", "—", "Between missions (rulebook phases): after route A, Inez's job was unexposed (bravery helper → accomplice); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her family and workmate ties (K5).", r =>
+            Add("N18", "—", "Between missions (rulebook phases): after route A, the investigators question Inez, so her job is exposed (resentment compliant → resentful); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her family and workmate ties (K5).", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -710,13 +711,48 @@ namespace Suborned.Sim
                 r.FightItOut(); r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 var next = Debrief.Of(g).Next;
-                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == "job-unexposed: bravery helper → accomplice"), "the job, unexposed: bravery helper → accomplice");
+                // café customers saw the debt cleared, so the investigators question Inez: questioned, her job is exposed (rulebook exposure)
+                var asked = Debrief.Of(g).Inv.Findings.Exists(f => f.Who == Inez);
+                r.Is(asked, "the investigators reached Inez through the witnessed debt-clearing");
+                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == "job-exposed: resentment compliant → resentful"), "questioned, her job is exposed: resentment compliant → resentful");
                 var need = next.Lines.Find(l => l.Line == "need-replaced" && l.Who == Inez);
                 r.Is(need != null && need.Detail.StartsWith("debt → ", StringComparison.Ordinal) && need.Detail.EndsWith("(told free: a contact)", StringComparison.Ordinal), $"her debt is replaced and told free ({need?.Detail})");
                 r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who == Inez), "obliged, she passes no word");
                 r.Is(next.Lines.Exists(l => l.Line == "introduced" && l.Who == Inez && l.Detail.Contains("(family)")), "she can introduce her family");
                 r.Is(!next.Ambush, "no ambush is scheduled");
             });
+
+            Add("N19", "—", "Running (Sky 2026-10-15: double-click runs): the Scout runs to the courtyard at the rulebook's run speed and arrives sooner than the Fixer walking the same distance, by exactly the ticks the two paces give.", r =>
+            {
+                var g = r.G;
+                int t0 = g.Tick;
+                int scoutAt = r.Send(Scout, "d:Courtyard", run: true);
+                long len = r.Op(Scout).Walk!.Length;
+                int fixerAt = r.Send(Fixer, "d:Courtyard");
+                long flen = r.Op(Fixer).Walk!.Length;
+                int runTicks = (int)((len + g.R.RunSpeed - 1) / g.R.RunSpeed), walkTicks = (int)((flen + g.R.CellSpeed - 1) / g.R.CellSpeed);
+                r.Eq(scoutAt - t0, runTicks, $"the run takes ceil({len} mm / {g.R.RunSpeed} mm a tick) ticks");
+                r.Eq(fixerAt - t0, walkTicks, $"the walk takes ceil({flen} mm / {g.R.CellSpeed} mm a tick) ticks");
+                r.To(scoutAt);
+                r.Eq(r.Op(Scout).Pos, r.Stand("d:Courtyard"), "the Scout is there at the tick the run gives");
+                r.Is(r.Op(Fixer).Walk != null, "the Fixer is still walking");
+                r.To(fixerAt);
+                r.Eq(r.Op(Fixer).Pos, r.Stand("d:Courtyard"), "the Fixer arrives at the tick the walk gives");
+                r.Is(walkTicks - runTicks > 0, $"running saved {walkTicks - runTicks} ticks");
+            });
+
+            Add("N19b", "—", "Running while carrying Vale: the Enforcer's run falls back to the rulebook's carrying pace (cell.carryRunSpeed, today the walking pace).", r =>
+            {
+                var g = r.G;
+                r.Send(Enf, "d:Service lane");
+                r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
+                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                TurnDriver(r);
+                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.Send(Enf, "d:Getaway bay", run: true);
+                r.Eq(r.Op(Enf).WalkSpeed, g.R.CarryRunSpeed, "carrying Vale, a run moves at the carrying pace");
+            }, NoFight());
 
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             var purse = new Start(); purse.Known[Inez] = known.Known[Inez]; purse.Known[Driver] = known.Known[Driver];

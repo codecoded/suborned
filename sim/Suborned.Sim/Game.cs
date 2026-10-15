@@ -194,8 +194,9 @@ namespace Suborned.Sim
                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
                 if (op.Walk != null)
                 {
-                    op.WalkMm += opSpeed; op.Pos = op.Walk.At(op.WalkMm);
-                    if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; }
+                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; op.Pos = op.Walk.At(op.WalkMm);
+                    if (op.Running) RunAttention(op);
+                    if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
             }
             if (!Over) Tether();

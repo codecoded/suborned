@@ -27,6 +27,7 @@ namespace Suborned.Sim
             foreach (var op in g.Ops)
             {
                 h.I((int)op.Id).P(op.Pos).Z(op.Walk != null).I(op.WalkMm).Z(op.Inside);
+                if (op.Running && op.Walk != null) h.S("run").I(op.WalkSpeed); // only a run adds bytes: a walk hashes as it always did
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
             }
             foreach (var p in g.People)

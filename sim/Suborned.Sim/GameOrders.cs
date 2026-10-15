@@ -64,9 +64,22 @@ namespace Suborned.Sim
             var route = S.Grid.Route(op.Pos, to); if (route == null) return "no walk there";
             op.Walk = new Path(route); op.WalkMm = 0;
             if (op.Walk.Length == 0) op.Walk = null;
-            Note("order.move", $"{Sim.Op.Name(op.Id)} heads for {(o.To.Length > 0 ? o.To : to.ToString())}.");
+            op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
+            Note("order.move", $"{Sim.Op.Name(op.Id)} {(o.Run ? "runs" : "heads")} for {(o.To.Length > 0 ? o.To : to.ToString())}.");
             return "";
         }
+
+        /// <summary>A move's pace: walking (cell.speed), running (cell.runSpeed), or, for an Enforcer carrying Vale, cell.carryRunSpeed.</summary>
+        int PaceOf(Op op, bool run)
+        {
+            if (!run) return opSpeed;
+            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) return R.CarryRunSpeed;
+            return R.RunSpeed;
+        }
+
+        /// <summary>The attention a run draws, a tick at a time. TODO(Motive, briefs/011/motive-fights.md): running's costs — witnesses
+        /// noticing a runner, camera and patrol logs of a running operative, Alert — land here once the proposal is ruled. Today: none.</summary>
+        void RunAttention(Op op) { }
 
         // ---------------------------------------------------------------- the person events (rulebook scout.*, turn.*)
 

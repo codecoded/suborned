@@ -82,6 +82,8 @@
   "hop-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
   "need-weight-scale": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "§11 integer state; §04 needs (Sky Q2) replacement drawn from the person's own stream", "proposed": true, "reason": "the cast rows weight needs as decimals (cast.schema.ts, ≤ 100). The engine draws in integers only, so the export scales each weight by 1,000 and rounds; the same integers in C# and TS give the same draw." },
   "op-speed-cm-s": {"v": 140, "unit": "cm-per-s", "tag": "S", "src": "life.json pedestrians.walkSpeed 1.4 m/s [S]", "proposed": true, "reason": "the operatives walk at the world's one walking pace. The top-down test moved them 1.1 units/s on an unscaled map; the real civic block is in metres, and a second pace would make the cell read as faster than the city."},
+  "op-run-speed-cm-s": {"v": 350, "unit": "cm-per-s", "tag": "S", "src": "Sky 2026-10-15: double click should make them run to the location", "proposed": true, "reason": "Sky 2026-10-15: double-click runs; provisional until Motive's running proposal (briefs/011/motive-fights.md)"},
+  "op-carry-run-cm-s": {"v": 140, "unit": "cm-per-s", "tag": "S", "src": "Sky 2026-10-15: double-click runs; GDD §03 Enforcer carries the target", "proposed": true, "reason": "an Enforcer carrying Vale can't run: a run order while carrying moves at the walking pace (op-speed-cm-s) until Motive's running proposal (briefs/011/motive-fights.md) says otherwise"},
   "act-reach-m": {"v": 6, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): an action's default reach (nearby: reach || 6)"},
   "loop-s": {"v": 62, "unit": "s", "tag": "B", "src": "§07 route A: Tech loops entrance camera (1:02, tethered); top-down test loopCamera"},
   "tether-m": {"v": 8, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the Robot (Tech) more than 8 from the cabinet ends the loop; §03 Tech tethered while holding"},
@@ -250,6 +252,8 @@
  },
  "cell": {
   "speed": "v:op-speed-cm-s",
+  "runSpeed": "v:op-run-speed-cm-s",
+  "carryRunSpeed": "v:op-carry-run-cm-s",
   "reach": "v:act-reach-m",
   "loop": {"s": "v:loop-s", "trail": "v:loop-trail", "tether": "v:tether-m"},
   "reroute": {"s": "v:reroute-s", "trail": "v:reroute-trail", "away": "v:reroute-away-s"},
