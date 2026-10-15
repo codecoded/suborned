@@ -709,41 +709,40 @@
  "armsSrc": "mission.json arms: GDD v0.22.0 §07: Full cell, all four armed (Arms 3); Sky 2026-10-15 Q1 (briefs/011/motive-fights.md §2.1)",
  "cast": {
   "waitress": {
-   "id": "p-cafe-11",
-   "name": "Inez Bermudez",
-   "temperament": "idealist",
+   "id": "p-cafe-14",
+   "name": "Inez Nikolaou",
+   "temperament": "fearful",
    "need": "debt",
    "secret": "affair",
    "lover": "guard"
   },
   "driver": {
-   "id": "p-records-office-27",
-   "name": "Sigrid Lambros",
+   "id": "p-records-office-31",
+   "name": "Mei Zhou",
    "temperament": "mercenary",
    "need": "cash",
    "secret": "",
    "lover": ""
   },
   "guard": {
-   "id": "p-records-office-07",
-   "name": "Leif Nair",
-   "temperament": "loyal",
+   "id": "p-records-office-01",
+   "name": "Folake Okafor",
+   "temperament": "mercenary",
    "need": "debt",
    "secret": "affair",
    "lover": "waitress"
   },
   "councillor": {
-   "id": "p-records-office-49",
-   "name": "Nikos Vale",
-   "temperament": "loyal",
-   "need": "secret",
+   "id": "p-records-office-07",
+   "name": "Efua Vale",
+   "temperament": "mercenary",
+   "need": "debt",
    "secret": "",
    "lover": ""
   },
-  "from": "sim/data/fixtures/harbour-district.handover-fix.people.json",
-  "sha256": "c7a5453600290bf47fbc72c18533a8b14e8c906ed17a2d8452a24ff0a736eef6",
+  "from": "out/people/harbour-district.people.json",
+  "sha256": "021b693f0e760235dcfa7a5fdf6ce4bf2b2081cf782b83bbbb11579d6c8bab15",
   "startsAt": "17:24:30",
-  "fixture": "Pulse's Handover fix cast (out/people/harbour-district.handover-fix.cast.people.json, 2026-10-15 03:06, sha256 77eba841…), the one people file M-2 casts at 17:24:30 until Pulse's corrected cast is promoted (Aster, 2026-10-15)",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {

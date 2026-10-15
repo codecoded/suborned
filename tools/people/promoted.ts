@@ -44,11 +44,12 @@ export function checkPromotion(planId: string, base: string = repo): Promotion {
   }
   if (!existsSync(rd(src.runFile))) problems.push(`the run record ${src.runFile} is missing`);
   else {
-    const r = JSON.parse(readFileSync(rd(src.runFile), 'utf8')) as { run?: string; outcome?: string; finalVersion?: string; loop?: number };
+    const r = JSON.parse(readFileSync(rd(src.runFile), 'utf8')) as { run?: string; outcome?: string; finalVersion?: string; rounds?: { round: number }[] };
     if (r.run !== src.run) problems.push(`${src.runFile} is run ${r.run}, the record says ${src.run}`);
     if (r.outcome !== src.outcome) problems.push(`run ${src.run} is ${r.outcome}, a promoted cast comes from an ${src.outcome} run`);
     if (r.finalVersion !== src.version) problems.push(`run ${src.run} ended at ${r.finalVersion}, the record says ${src.version}`);
-    if (r.loop !== src.round) problems.push(`run ${src.run} was accepted in round ${r.loop}, the record says round ${src.round}`);
+    // the accepted round is the last of the run's rounds; run.json `loop` is the loop rule's version, not a round
+    if (r.rounds?.at(-1)?.round !== src.round) problems.push(`run ${src.run} was accepted in round ${r.rounds?.at(-1)?.round}, the record says round ${src.round}`);
   }
   try { if (!Cast.safeParse(JSON.parse(text)).success) problems.push(`${file} fails the cast schema`); } catch { problems.push(`${file} is not JSON`); }
   return { ok: !problems.length, problems, record: rec, castText: text, label };

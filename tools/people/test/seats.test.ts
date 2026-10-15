@@ -11,9 +11,10 @@ import { readTexts, world, type World } from '../inputs';
 import { requirements } from '../review';
 import { castFileOf } from '../promoted';
 import { CAFE_SET, Holds, SEAT_TOL, STAND, cafeSets, dayParts, seatPicker, seatPoints, type Table } from '../seats';
+import { r013Cast } from './r013';
 import measured from './cafe-set.measured.json';
 
-let w: World, ctx: Ctx, gen: ReturnType<typeof expand>;
+let w: World, ctx: Ctx, gen: ReturnType<typeof expand>, r13: { ctx: Ctx; gen: ReturnType<typeof expand> }; // r13: the r013 cast, for the tests that pin its table
 const clone = <T>(x: T): T => JSON.parse(JSON.stringify(x));
 /** A scope with its own copy of the places (the zones keep their test functions). */
 const scopeCopy = () => ({ ...w.scope, places: clone(w.scope.places) });
@@ -23,6 +24,7 @@ const dist = (a: number[], b: number[]) => Math.hypot(a[0]! - b[0]!, a[1]! - b[1
 beforeAll(async () => {
   w = world(await readTexts('contracts/world/harbour-district.plan.json'), 'civic-block');
   ctx = w.ctx(Cast.parse(JSON.parse(await Bun.file(castFileOf('harbour-district')).text()))); gen = expand(ctx);
+  const c013 = w.ctx(r013Cast()); r13 = { ctx: c013, gen: expand(c013) };
 });
 
 describe('seats are the chairs the world draws', () => {
@@ -96,7 +98,10 @@ describe('who holds which seat', () => {
     expect(held.size).toBeGreaterThan(24);
     for (const [, l] of held) for (const a of l) for (const b of l) if (a !== b) expect(a.from < b.to && b.from < a.to).toBe(false);
     const pre = gen.people.persons.filter(p => p.routine.stops.some(s => s.doing === 'pre-shift')).map(p => p.routine.stops.find(s => s.doing === 'pre-shift')!.place);
-    expect(pre.length).toBeGreaterThanOrEqual(8); expect(new Set(pre).size).toBe(pre.length);
+    expect(pre.length).toBeGreaterThanOrEqual(8);
+    // the day shift's guards before 9:30 sit at distinct chairs; the watch's guards of the evening may take a chair a morning guard has left (the held-twice check above holds every pair by time)
+    const morning = gen.people.persons.flatMap(p => p.routine.stops.filter(s => s.doing === 'pre-shift' && s.from < 12 * 60).map(s => s.place));
+    expect(morning.length).toBeGreaterThanOrEqual(8); expect(new Set(morning).size).toBe(morning.length);
     expect(new Set(pre.map(s => s.replace(/-seat-\d$/, ''))).size).toBeGreaterThanOrEqual(3);
   });
   test('a standing point is taken only while every chair is held', () => {
@@ -122,8 +127,8 @@ describe('P-13 and P-5 with seats', () => {
   test('the real expansion passes', () => {
     const r = checkPeople(ctx, w.mission, w.plan, gen);
     expect(r.checks.find(c => c.id === 'P-13')!.ok).toBe(true);
-    // the promoted cast (r013) cannot cast the waitress under the lovers' canon (brief 011): P-6 is the only rule that fails, and not for seats
-    expect(r.checks.filter(c => !c.ok).map(c => c.id).filter(id => id !== 'P-6')).toEqual([]);
+    // the promoted cast (r016) casts the waitress under the lovers' canon: every rule passes (r013's failed P-6, and not for seats)
+    expect(r.checks.filter(c => !c.ok).map(c => `${c.id} ${c.detail}`)).toEqual([]);
   });
   test('P-13: two people on one chair at once fails', () => {
     const p = clone(gen.people), [a, b] = p.persons.filter(q => q.routine.stops.some(s => s.doing === 'pre-shift'));
@@ -161,10 +166,10 @@ describe('unknown = reject: needs, regulars, mix (Suture QA 2026-10-15)', () => 
       expect(needsOf(row, p.work ? (p.work.position ?? p.work.role) : 'resident').map(n => n.need)).toContain(p.need);
     }
   });
-  test('P-3: a driver with debt, a need the driver row never offers, fails', () => {
-    const p = clone(gen.people), d = p.persons.find(q => q.work?.role === 'official-driver')!;
+  test('P-3: a driver with debt, a need the driver row never offers (r013\'s row), fails', () => {
+    const p = clone(r13.gen.people), d = p.persons.find(q => q.work?.role === 'official-driver')!;
     expect(d.need).not.toBe('debt'); d.need = 'debt';
-    const bad = checkPeople(ctx, w.mission, w.plan, { people: p, gaps: [] }).checks.find(c => c.id === 'P-3')!;
+    const bad = checkPeople(r13.ctx, w.mission, w.plan, { people: p, gaps: [] }).checks.find(c => c.id === 'P-3')!;
     expect(bad.ok).toBe(false); expect(bad.detail).toContain(`${d.id}: need debt is not one its row`);
   });
   test('a temperament that reaches none of a row\'s needs is drawn again from the row\'s weights', () => {
@@ -173,9 +178,9 @@ describe('unknown = reject: needs, regulars, mix (Suture QA 2026-10-15)', () => 
     for (const d of drivers) expect(needFits(w.rules, d.need, d.temperament, { home: true, work: true, family: false, rival: false })).toBe(true);
   });
   test('the repair: a row that draws Fearful almost always still gives every driver a temperament that can meet cash', () => {
-    const cast = clone(ctx.cast), row = cast.rows.find(r => r.occupation === 'records-office')!;
+    const cast = clone(r13.ctx.cast), row = cast.rows.find(x => x.occupation === 'records-office')!; // r013's table: seven drivers, cash only
     row.temperaments = [{ temperament: 'fearful', weight: 59 }, { temperament: 'idealist', weight: 41 }];
-    const g = expand({ ...ctx, cast }), drivers = g.people.persons.filter(q => q.work?.role === 'official-driver');
+    const g = expand({ ...r13.ctx, cast }), drivers = g.people.persons.filter(q => q.work?.role === 'official-driver');
     expect(drivers.length).toBe(7);
     for (const d of drivers) { expect(d.temperament).toBe('idealist'); expect(d.need).toBe('cash'); }
     expect(g.gaps.filter(x => drivers.some(d => x.startsWith(d.id)))).toEqual([]);

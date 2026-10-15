@@ -24,7 +24,7 @@ test('the hidden band behind a mass ends where the ray clears its top', () => {
 });
 
 test('dressing is reported but does not count against architecture; a point under an overhead slab is cut above its soffit only', () => {
-  const tree = { ...box(-0.5, 0.5, -3, -2, 16, false, 'dressing') };
+  const tree = { ...box(-1.9, -1, -3, -2, 16, false, 'dressing') }; // on the ray: from (0,0) it runs (-0.5,-0.87) per metre, so across y -2..-3 it is at x -1.15..-1.73
   const s = seen([0, 0], 0, [tree]);
   expect(s.pastArchitecture).toBe(1); expect(s.clear).toBeLessThan(1);
   const canopy: Blocker = { id: 'canopy', ring: [[-3, -3], [3, -3], [3, 0.5], [-3, 0.5]], z0: 4.05, z1: 4.62, fade: true, kind: 'architecture' };

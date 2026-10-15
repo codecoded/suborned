@@ -1,5 +1,5 @@
 // The 28 scenarios of the top-down test (~/Projects/game-source/docs/prototypes/suborned-world-sim.test.js, sha256 c41a8d78…),
-// rebased on the real civic block, the rulebook and the r013 cast, plus Suture's N-cases the engine owns. Each keeps its intent;
+// rebased on the real civic block, the rulebook and the promoted cast (r016 since 2026-10-16), plus Suture's N-cases the engine owns. Each keeps its intent;
 // its positions and times are the real block's (sim/data/handover.site.json), and every change from the prototype is said beside it.
 // They live in the engine DLL so the xunit tests, the CLI and Unity (brief 011 D) run the very same code.
 using System;

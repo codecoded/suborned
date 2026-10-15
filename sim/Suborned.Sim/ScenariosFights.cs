@@ -287,12 +287,14 @@ namespace Suborned.Sim
                 r.Is(g.GuardAwayUntil < planned, $"back sooner than the planned window ({Report.Clock(g.GuardAwayUntil)} < {Report.Clock(planned)})");
             }, Turned(Inez));
 
-            var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" };
+            // the Loyal guard's exposure rule is under test (§2.2: a Loyal man pressed by exposure doesn't report it), so the start state makes the
+            // guard Loyal whoever the cast is (§04 restricted: a guard is Loyal or Mercenary; the r016 cast's guard is a Mercenary)
+            var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Temperament[GuardR] = "loyal";
             Add("N40", "—", "Watching the lovers together teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Scout, "d:Courtyard")));
-                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                HelpUntilTurned(r, Inez);
                 r.Is(!g.Inez.KSecret && !g.GuardP.KSecret, "help needs no secret: the affair is still unknown");
                 r.Eq(g.Preview("pressure", GuardR).Outcome == "?" || !g.Preview("pressure", GuardR).Leverage, true, "no leverage on the guard yet");
                 r.Do(Fixer, "call", Inez);
