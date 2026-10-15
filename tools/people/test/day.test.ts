@@ -262,3 +262,56 @@ describe('the staffing vocabulary in the cast schema', () => {
     expect(d!.ties.every(t => g.people.persons.find(p => p.id === t.with)!.work?.role !== 'councillor')).toBe(true);
   });
 });
+
+// Live run r014 (the corrected tables, 2026-10-15) was rejected in three rounds; round 1's faults were the table's, rounds 2 and 3 were the generator's: a busy square that
+// double-booked a chair, and a day guard who drew the variant made for the night watch and so had no café to be a regular of. The run's own tables are the fixtures (the run
+// record is committed): they must now expand clean and play the Handover.
+describe('generator gaps found by r014', () => {
+  const run = (n: number) => Cast.parse(JSON.parse(readFileSync(join(root, `runs/levels/harbour-district/r014/round-${n}/pulse.json`), 'utf8')).cast);
+  const checks = (c: Ctx, g: ReturnType<typeof expand>) => checkPeople(c, w.mission, w.plan, g).checks.filter(x => !x.ok).map(x => `${x.id} ${x.detail}`);
+  for (const n of [2, 3]) test(`the tables of r014 round ${n} expand without a fault and play the Handover (round 2: P-0 and P-13, round 3: P-6)`, () => {
+    const c = w.ctx(run(n)), g = expand(c);
+    expect(g.gaps).toEqual([]);
+    expect(checks(c, g)).toEqual([]);
+    expect(m2(g.people).ok, m2(g.people).detail).toBe(true);
+  });
+  test('round 2: the one person with no seat at 13:41 eats on site, and is noted, not faulted; nobody holds a place another holds', () => {
+    const g = expand(w.ctx(run(2)));
+    expect(g.notes).toEqual(['p-records-office-72: no free seat or standing point for the stop at 13:41; the stop is not made']);
+    const p = g.people.persons.find(x => x.id === 'p-records-office-72')!, meal = p.routine.stops.find(s => s.doing === 'meal')!;
+    expect(meal.place).toBe(p.work!.place);
+  });
+  test('a square with more diners than places never double-books: the rest eat on site', () => {
+    const cast = clone(fix.cast), r = cast.rows.find(x => x.occupation === 'records-office')!;
+    for (const v of r.routines) if (v.positions?.includes('clerk')) v.meal = 'square'; // all 66 clerks to 48 places
+    const c = { ...fix, cast }, g = expand(c);
+    expect(g.gaps).toEqual([]);
+    expect(checks(c, g)).toEqual([]);
+    expect(g.notes.length).toBeGreaterThan(0);
+    const held = new Map<string, number>();
+    for (const p of g.people.persons) for (const s of p.routine.stops) if (/seat|stand/.test(s.place) && s.doing === 'meal') held.set(s.place, (held.get(s.place) ?? 0) + 1);
+    expect(Math.max(...held.values())).toBeLessThanOrEqual(2); // the same place at two different times, never at once (P-13 holds the times)
+  });
+  test('a person whose tie names a stop is drawn only among the variants that make it: a night-watch variant with a heavy weight does not take the day door guard\'s café', () => {
+    const cast = clone(fix.cast), r = cast.rows.find(x => x.occupation === 'records-office')!;
+    r.routines.push({ ...r.routines[0]!, id: 'guard-night', weight: 100, preShift: 'none', evening: 'home', positions: ['guard'] });
+    r.routines = r.routines.filter(v => v.id !== 'staff-tram'); // the row keeps at most 4 variants
+    const c = { ...fix, cast }, g = expand(c);
+    expect(g.gaps).toEqual([]);
+    const guards = role(g.people, 'guard');
+    expect(guards.filter(p => p.work!.shift.from === day(9, 30)).every(p => p.routine.variant === 'guard-cafe-both-ends')).toBe(true);
+    expect(guards.filter(p => p.work!.shift.from === day(17, 30)).every(p => p.routine.variant === 'guard-cafe-both-ends')).toBe(true); // his stop before the shift is open to him at 17:13
+    expect(m2(g.people).ok, m2(g.people).detail).toBe(true);
+  });
+  test('a tie the day cannot carry is said plainly (P-0), not left to P-6: no variant makes the stop the pattern names', () => {
+    const cast = clone(fix.cast), r = cast.rows.find(x => x.occupation === 'records-office')!;
+    r.routines.find(v => v.id === 'guard-cafe-both-ends')!.evening = 'home';
+    const g = expand({ ...fix, cast });
+    expect(g.gaps.some(x => /carries a regular tie with a server at evening, but its day \(guard-cafe-both-ends\) has no such stop/.test(x))).toBe(true);
+  });
+  test('a stop the day cannot make is no fault: the 01:30 watch is not asked for a stop before its shift (the café is shut)', () => {
+    const g = expand(fix);
+    expect(g.gaps).toEqual([]);
+    expect(role(g.people, 'guard').filter(p => p.work!.shift.from === day(1, 30)).every(p => !p.routine.stops.some(s => s.doing === 'pre-shift'))).toBe(true);
+  });
+});

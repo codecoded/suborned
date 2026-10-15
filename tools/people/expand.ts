@@ -10,7 +10,7 @@ import { allowedTemperaments, positionsOf, type Rules } from './rules';
 import { atCafeSide, HOME_SAMPLE, type Scope, type Unit } from './scope';
 import { Holds, seatPicker, type Fit, type Pick, type Table } from './seats';
 import type { Walker } from './walk';
-import { fold, residentCycle, staffing, workerCycle, workPlaceOf, type Cycle, type Post } from './day';
+import { fold, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
 import { deriveKnowledge } from './knowledge';
 import { pinnedByRole, type Casting } from './roles';
 
@@ -18,6 +18,10 @@ export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId
 const KEEPER = 'keeper';
 
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
+/** The aimed tie patterns of a row (a tie that names a position or a stop: `with`, `at`) that the person `id` of `position` carries, by pattern index. Each pattern has its own coin,
+ *  so the day (which stops the variant makes) and the ties (who is tied to whom) are decided from the same draws, in any order. */
+export const aimedOf = (row: Row | undefined, id: string, position: string | undefined) => (row?.ties ?? []).flatMap((t, i) =>
+  (t.with || t.at) && (!t.positions || t.positions.includes(position ?? '')) && rng(`${id}/ties-carry/${i}`).f() < t.share ? [t] : []);
 export const inShift = (s: { from: number; to: number }, t: number) => (s.from <= s.to ? t >= s.from && t < s.to : t >= s.from || t < s.to);
 
 const wt = <T>(r: Rng, xs: readonly T[], w: (t: T) => number) => r.weighted(xs, w);
@@ -50,14 +54,21 @@ export function needWeightsOf(row: Row | undefined, position: string | undefined
   return out;
 }
 
-export function expand(c: Ctx): { people: People; gaps: string[] } {
-  const { scope, rules, cast } = c, gaps: string[] = [], persons: Person[] = [], names = new Set<string>();
+export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[] } {
+  const { scope, rules, cast } = c, gaps: string[] = [], notes: string[] = [], persons: Person[] = [], names = new Set<string>();
   const homeWeights = scope.homes.map(h => ({ h, weight: h.residents }));
 
   const make = (id: string, row: Row, u: Unit | undefined, shift: { from: number; to: number } | undefined, position: string, post: Post, residentOf?: { plot: string; place: string }) => {
     const r = rng(id);
     // routine variant
-    const variants = row.routines.filter(v => v.skeleton === (u ? 'worker' : 'resident') && (!v.positions || v.positions.includes(position)));
+    let variants = row.routines.filter(v => v.skeleton === (u ? 'worker' : 'resident') && (!v.positions || v.positions.includes(position)));
+    // a tie that names a stop (`at`) is a promise about the day: a person who carries one is drawn only among the variants that make that stop, where the stop can be made (the
+    // café is open then); the table need not know which variant is for whom. With none that do, any variant is drawn and the tie is reported if it cannot be made.
+    if (u && shift) {
+      const need = aimedOf(row, id, position).flatMap(t => (t.at && stopFeasible(scope, shift, t.at) ? [t.at as AimStop] : []));
+      const fit = variants.filter(x => need.every(at => variantMakes(x, at)));
+      if (need.length && fit.length) variants = fit;
+    }
     const v = variants.length ? wt(r, variants, x => x.weight) : row.routines.find(x => x.skeleton === (u ? 'worker' : 'resident')) ?? row.routines[0]!;
     let home: { plot: string; place: string };
     if (residentOf) home = residentOf;
@@ -129,8 +140,12 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
   // ---- seats: the café's chairs and standing points are shared out by person id (the order just made). One person to a seat at a time while seats last, then the nearest
   // standing points; a person's own table (drawn above) and, for the guard's stop before the shift, the table nearest the door come first. The seat sets the walk, so the
   // times of the stops at it are made again for the seat given; everything else in the day is what it was.
-  const holds = new Holds(), picker = seatPicker(scope.tables, scope.stands, holds, gaps);
-  for (const p of persons) p.routine = { ...p.routine, stops: fold(cycles.get(p.id)!(picker(p.id))) };
+  // The people whose ties name a stop (a guard who is a regular after his shift) are seated first, so a busy square never takes the chair their tie stands on; then everyone by id.
+  // A stop no place can take is not made (seats.ts): a meal is eaten on site, an evening or a stop before the shift is not made, and the loss is a note, not a fault.
+  const holds = new Holds(), picker = seatPicker(scope.tables, scope.stands, holds, notes);
+  const byId = new Map(persons.map(p => [p.id, p]));
+  const seatOrder = [...persons.filter(p => aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position).some(t => t.at)), ...persons.filter(p => !aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position).some(t => t.at))];
+  for (const p of seatOrder) byId.get(p.id)!.routine = { ...p.routine, stops: fold(cycles.get(p.id)!(picker(p.id))) };
   const rowFor = (p: Person) => (p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, scope.homes.find(h => h.plot === p.home.plot)?.area ?? scope.areas[0]!, 'resident'));
   const positionOf = (p: Person) => (p.work ? (p.work.position ?? p.work.role) : 'resident');
   /** `temperament` can carry one of the needs the person's row offers their position (ties not yet made: a need that wants a tie does not count). */
@@ -192,7 +207,13 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
   const aimed = (t: { with?: string; at?: string }) => !!(t.with || t.at);
   for (const a of persons) {
     const row = rowFor(a), r = rng(`${a.id}/ties-aimed`);
-    for (const t of row?.ties ?? []) if (aimed(t) && t.kind in T && (!t.positions || t.positions.includes(positionOf(a) ?? '')) && r.f() < t.share) tryTie(a, t.kind, r, { with: t.with, at: t.at });
+    for (const t of aimedOf(row, a.id, positionOf(a))) {
+      if (!(t.kind in T) || tryTie(a, t.kind, r, { with: t.with, at: t.at })) continue;
+      // a tie the day could carry and nobody could be tied to is the table's to know (P-0), said plainly; a stop the day cannot make (the café is shut at 01:30) is no fault
+      const mine = a.work ? stopFeasible(scope, a.work.shift, (t.at ?? 'pre-shift') as AimStop) : false, has = a.routine.stops.some(s => s.doing === (t.at ?? 'pre-shift'));
+      if (t.at && mine && !has) gaps.push(`${a.id}: carries a ${t.kind} tie ${t.with ? `with a ${t.with} ` : ''}at ${t.at}, but its day (${a.routine.variant}) has no such stop (no variant of its row makes it, or no seat was free)`);
+      else if (t.at && mine) gaps.push(`${a.id}: carries a ${t.kind} tie ${t.with ? `with a ${t.with} ` : ''}at ${t.at}, but no one ${t.with ? `of that position ` : ''}is on shift when it is there`);
+    }
   }
   for (const a of persons) {
     const row = rowFor(a), r = rng(`${a.id}/ties`);
@@ -233,5 +254,5 @@ export function expand(c: Ctx): { people: People; gaps: string[] } {
     places: scope.places, units: scope.units.map(u => ({ id: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, name: u.name, staffPerShift: u.staffPerShift, hours: u.hours, shifts: u.shifts })),
     persons, knowledge: deriveKnowledge(rules, persons), background,
   };
-  return { people, gaps };
+  return { people, gaps, notes };
 }

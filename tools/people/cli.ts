@@ -42,6 +42,8 @@ await mkdir(dirname(out), { recursive: true });
 const written = { ...gen.people, inputs: { ...gen.people.inputs, tools: await peopleHash() } };
 await Bun.write(out, JSON.stringify(written, null, 1) + '\n');
 for (const c of checked.checks) console.log(`${c.ok ? 'ok  ' : 'FAIL'} ${c.id}  ${c.rule}: ${c.value}${c.ok ? '' : `\n       ${c.detail}`}`);
+// stops no seat could take are not made (a meal is eaten on site, an evening not made): a busy square, not a fault; said here so a table that fills the square is seen
+if (gen.notes.length) console.log(`note  ${gen.notes.length} stop(s) not made for want of a free seat or standing point (a meal is eaten on site, an evening or a stop before the shift is dropped): ${gen.notes.slice(0, 3).join('; ')}${gen.notes.length > 3 ? '; …' : ''}`);
 // M-2 on these people: the casting rule the plan checker's overlay runs (the Handover's roles, there when needed, one pinned each, and the cast can play them: alone, tied,
 // leaving, waiting; Waymark's castRoles with `play`), here on the expansion just made, so a candidate cast is held to it before it is promoted. The overlay itself expands the
 // promoted cast, so for that cast this line only repeats what `bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts` says, and it is not enforced here (r013 does not

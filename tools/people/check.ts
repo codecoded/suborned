@@ -47,7 +47,7 @@ const at = (p: Person, t: number) => p.routine.stops.find(s => t >= s.from && t 
 export type Checked = { ok: boolean; checks: Check[]; counts: { persons: number; units: number; faults: number }; handover: ReturnType<typeof castHandover> };
 
 /** `mission`: the Handover mission's clock and destinations (undefined: P-6 fails, there is nothing to cast). */
-export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civic: unknown }, given?: ReturnType<typeof expand>): Checked {
+export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civic: unknown }, given?: Pick<ReturnType<typeof expand>, 'people' | 'gaps'>): Checked {
   const { scope, rules, cast } = c, out: R[] = [];
   const parsed = CastSchema.safeParse(cast);
   const { people, gaps } = given ?? expand(c);

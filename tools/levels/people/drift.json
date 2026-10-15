@@ -1,7 +1,8 @@
 {
  "recorded": {
   "dac7871a73660abb": "people run r012 (d27fdee)",
-  "59aa3d617b9088de": "people run r013 (593fd0e)"
+  "59aa3d617b9088de": "people run r013 (593fd0e)",
+  "3e6d4136cac6ff32": "people run r014 (ca2f68c)"
  },
  "declared": {
   "59aa3d617b9088dea88a9cb633deef3380da58bf95758d22f07718abed91fdb0": [
@@ -168,6 +169,54 @@
    {
     "cause": "tools/plan/street-zones.ts (Splice, brief 009 crossings): FLAT gains crossing-field, a kind that lies flush and never counts as standing in a zone; no rule a people run records changes (carried by Pulse so the declared causes of the Handover fix stay on the current hash; repeat at the next change under the hash)",
     "rules": []
+   }
+  ],
+  "2b676fc6f744a765fd53bd293da8bdc6c8a568b40d89d64a737dba9506df3b58": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "brief 010 follow-up, caf\u00e9 seating (Aster, 2026-10-15): the caf\u00e9's seats are the chairs of the caf\u00e9 sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the caf\u00e9 (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the caf\u00e9's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Redline H1/M1 and Keel's rulebook point 8, 2026-10-15: a person carries position and needWeights (per mille, from the row), so P-12 counts 15 fields and P-3 holds both to the row; the people file's inputs carry the mission and plan hashes (and, from bun run people, the tools hash); P-9 makes a real second expansion and compares it with the people under test; M-2 expands the promoted cast itself",
+    "rules": [
+     "P-12"
+    ]
+   },
+   {
+    "cause": "brief 010 Handover fix (Pulse, 2026-10-15): the day-building moved to tools/people/day.ts, and the staffing vocabulary of the cast row is new and opt-in (Position count, posts, side, watch and the official post; commute car; Tie positions, with and at): exact staffing, a civic watch, the official car at the bay, aimed ties. A hop of 3 m or less costs no minute (stepMin); P-4 counts a civic watch; P-5 lets a person in a car at a bay stand there; P-7 accepts a pre-shift or evening stop as a visit; the CLI reports M-2 on the people it makes. A cast row that uses none of it, as r012 and r013, expands byte for byte as before and every check row is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "tools/plan/street-zones.ts (Splice, brief 009 crossings): FLAT gains crossing-field, a kind that lies flush and never counts as standing in a zone; no rule a people run records changes (carried by Pulse so the declared causes of the Handover fix stay on the current hash; repeat at the next change under the hash)",
+    "rules": []
+   },
+   {
+    "cause": "brief 010 r014 generator fixes (Pulse, 2026-10-15): the seat picker never double-books and a stop with no free seat or standing point is not made (a meal is eaten on site, an evening or a stop before the shift is dropped; a note, not a P-0 fault); seats go first to people whose ties name a stop; a person who carries an aimed tie (`at`) is drawn only among the variants that make the stop, where the caf\u00e9 is open then; an aimed tie the day cannot carry is a P-0 gap naming the person; expand() also returns notes. All opt-in or reached only when seats run out: a cast row that uses none of it and fills no more than the caf\u00e9's 48 places, as r012 and r013, expands byte for byte as before. The hash also holds Splice's uncommitted standing-point and walk-clearance edits (tools/people/walk.ts, seats.ts, scope.ts), which move no rule a recorded people run records",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
    }
   ]
  }

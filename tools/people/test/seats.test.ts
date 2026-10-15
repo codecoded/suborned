@@ -78,15 +78,17 @@ describe('who holds which seat', () => {
     h.take('a', 1380, 1500);
     expect(h.free('a', 30, 90)).toBe(false); expect(h.free('a', 60, 90)).toBe(true); expect(h.free('a', 1200, 1380)).toBe(true); expect(h.free('b', 1380, 1500)).toBe(true);
   });
-  test('the picker gives the person\'s own table first, then the nearest tables, then the standing points, and reports when nothing is free', () => {
+  test('the picker gives the person\'s own table first, then the nearest tables, then the standing points, and when nothing is free the stop is not made (a note, never a held chair twice)', () => {
     const tables: Table[] = [{ id: 't0', at: [0, 0], seats: ['t0a', 't0b'] }, { id: 't1', at: [5, 0], seats: ['t1a'] }, { id: 't2', at: [20, 0], seats: ['t2a'] }];
-    const gaps: string[] = [], holds = new Holds(), pick = seatPicker(tables, ['s0', 's1'], holds, gaps), fit = () => ({ from: 100, to: 130 });
+    const notes: string[] = [], holds = new Holds(), pick = seatPicker(tables, ['s0', 's1'], holds, notes), fit = () => ({ from: 100, to: 130 });
     const got = Array.from({ length: 6 }, (_, i) => pick(`p${i}`)(tables[0]!, fit)!.place);
     expect(got).toEqual(['t0a', 't0b', 't1a', 't2a', 's0', 's1']);
-    expect(gaps).toEqual([]);
-    expect(pick('p6')(tables[0]!, fit)!.place).toBe('t0a'); // nothing free: the own table's first chair, and a gap
-    expect(gaps[0]).toContain('p6');
-    expect(pick('p7')(tables[0]!, () => undefined)).toBeUndefined();
+    expect(notes).toEqual([]);
+    expect(pick('p6')(tables[0]!, fit)).toBeUndefined(); // nothing free: the stop is not made (r014 round 2: the old fallback sat a seventh person on a held chair)
+    expect(notes).toHaveLength(1); expect(notes[0]).toContain('p6');
+    expect(pick('p7')(tables[0]!, () => ({ from: 200, to: 230 }))!.place).toBe('t0a'); // at another time the chair is free again: nothing was taken for p6
+    expect(pick('p8')(tables[0]!, () => undefined)).toBeUndefined(); // a stop that fits no place is not a loss of a seat: no note
+    expect(notes).toHaveLength(1);
   });
   test('the people are given seats: none held twice, and the guards do not stack', () => {
     const held = new Map<string, { who: string; from: number; to: number }[]>();

@@ -14,6 +14,22 @@ import type { Fit, Pick, Table } from './seats';
 import type { Walker } from './walk';
 
 export const DAY = 1440, MEAL = 30;
+type CafeScope = { units: Unit[]; cafeUnit: string };
+/** Whether the café unit is open at day-clock minute `t` (a stop at its customers' side needs staff on shift). */
+export function cafeOpenAt(scope: CafeScope, t: number): boolean {
+  const hours = scope.units.find(x => x.id === scope.cafeUnit)?.hours;
+  if (!hours) return true;
+  const h = (((t % DAY) + DAY) % DAY) / 60, [o, cl] = hours;
+  return o < cl ? h >= o && h < cl : h >= o || h < cl;
+}
+/** The stop of a day a regular tie can be aimed at (`Tie.at`), for the person's shift: a stop at the café's customers' side, which needs the café open then. */
+export type AimStop = 'pre-shift' | 'evening';
+/** Whether the day of a shift can have the café stop `at`: before the shift (as the walk allows, 20 min) or after it (5 min on), while the café is open. */
+export const stopFeasible = (scope: CafeScope, shift: { from: number; to: number }, at: AimStop): boolean =>
+  cafeOpenAt(scope, at === 'pre-shift' ? shift.from - 20 : (shift.to > shift.from ? shift.to : shift.to + DAY) + 5);
+/** Whether routine variant `v` makes the café stop `at`: `preShift: cafe` before the shift, `evening: square` after it. */
+export const variantMakes = (v: Row['routines'][number], at: AimStop): boolean => (at === 'pre-shift' ? v.preShift === 'cafe' : v.evening === 'square');
+
 /** Where a position stands at work: the unit's public door, inside (off-screen), at its bay, or at its official (service) entrance. */
 export type Post = 'door' | 'inside' | 'bay' | 'official';
 /** Metres within which two places are one place: a hop between them costs no minute. The minute that `walk.min` adds to step off and on is for ground crossed; the official
@@ -102,8 +118,7 @@ export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: 
   if (meal0 === 'square' && scope.tables.length) mealAt = r.pick(scope.tables); else if (meal0 === 'square') meal0 = 'on-site';
   const eveningAt = v.evening === 'square' && scope.tables.length ? r.pick(scope.tables) : undefined;
   // the guard's stop is aimed at the table nearest the café door, and only while the café is open (a night watch has no café to stop at)
-  const cafeHours = scope.units.find(x => x.id === scope.cafeUnit)?.hours, cafeOpen = (t: number) => { if (!cafeHours) return true; const h = (((t % DAY) + DAY) % DAY) / 60, [o, cl] = cafeHours; return o < cl ? h >= o && h < cl : h >= o || h < cl; };
-  const pre = v.preShift === 'cafe' && cafeOpen(a - 20) ? scope.tables[0] : undefined;
+  const pre = v.preShift === 'cafe' && cafeOpenAt(scope, a - 20) ? scope.tables[0] : undefined;
   return (pick = first) => {
     const segs: Seg[] = [];
     // a stop at the café before the shift: the seat's walk to work sets when it starts
@@ -121,8 +136,9 @@ export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: 
     if (meal !== 'none' && len >= 240) {
       if (meal === 'square') {
         const s = pick(mealAt!, p => { const q = w(work, p); return ms + MEAL + 2 * q + 5 > b ? undefined : { from: ms + q, to: ms + q + MEAL, q }; });
-        if (!s) meal = 'none';
-        else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: work, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b });
+        if (s) segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: work, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b });
+        else if (ms + MEAL + 5 > b) meal = 'none';
+        else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b }); // no free seat: lunch is eaten on site
       } else if (ms + MEAL + 5 > b) meal = 'none';
       else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b });
     } else meal = 'none';

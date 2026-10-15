@@ -16,8 +16,8 @@ export const CAFE_SET = { radius: 0.72, anglesDeg: [-60, 60, 180] as readonly nu
 /** A seat is on a chair or table position within this many m (the export rounds to 1 mm). */
 export const SEAT_TOL = 0.05;
 /** Standing points beside the café [S]: a lattice `spacing` m apart from the café door, within `within` m of it, the nearest `count` that are walkable, `wall` m off a building,
- *  `solid` m off the block's ground solids (tables, beds, the terrace wall), `chair` m off a chair, outside every keep-clear zone and bay. */
-export const STAND = { spacing: 1.2, within: 22, count: 24, wall: 0.8, solid: 0.5, chair: 0.9 };
+ *  `solid` m off the block's ground solids (tables, beds, the terrace wall; the plan's body clearance, standards.walking.body.r, which scope.ts passes in), `chair` m off a chair, outside every keep-clear zone and bay. */
+export const STAND = { spacing: 1.2, within: 22, count: 24, wall: 0.8, solid: 0.65, chair: 0.9 };
 
 const r3 = (n: number) => Math.round(n * 1000) / 1000;
 const byId = <T extends { id: string }>(a: T, b: T) => (a.id < b.id ? -1 : 1);
@@ -40,14 +40,14 @@ export const seatId = (set: string, k: number) => `${set}-seat-${k}`;
 export const standId = (k: number) => `cafe-stand-${String(k).padStart(2, '0')}`;
 
 /** The standing points: see STAND. `free`: walkable ground (the walk graph's blockers); `clear`: outside every keep-clear zone and every bay. Nearest the door first, ties by x then y. */
-export function standingPoints(civ: Civic, door: V, chairs: V[], free: (p: V) => boolean, clear: (p: V) => boolean): V[] {
+export function standingPoints(civ: Civic, door: V, chairs: V[], free: (p: V) => boolean, clear: (p: V) => boolean, solid: number = STAND.solid): V[] {
   const solids = new Solids(civ.solids ?? []), walls = footprints(civ), ground = civ.solids ?? [];
   const edge = (polys: V[][], p: V) => Math.min(...polys.flatMap(poly => poly.map((a, i) => segDist(p, a, poly[(i + 1) % poly.length]!))));
   const out: V[] = [], n = Math.ceil(STAND.within / STAND.spacing);
   for (let i = -n; i <= n; i++) for (let j = -n; j <= n; j++) {
     const p: V = [r3(door[0] + i * STAND.spacing), r3(door[1] + j * STAND.spacing)];
     if (dist(p, door) > STAND.within || !free(p) || !clear(p) || solids.inside(p) || walls.some(w => inPoly(p, w))) continue;
-    if (edge(ground, p) < STAND.solid || edge(walls, p) < STAND.wall || chairs.some(c => dist(p, c) < STAND.chair)) continue;
+    if (edge(ground, p) < solid || edge(walls, p) < STAND.wall || chairs.some(c => dist(p, c) < STAND.chair)) continue;
     out.push(p);
   }
   return out.sort((a, b) => dist(a, door) - dist(b, door) || a[0] - b[0] || a[1] - b[1]).slice(0, STAND.count);
@@ -75,13 +75,13 @@ export class Holds {
 /** A stop at a seat or standing point: the times (absolute minutes) it would take if the person sat there, and `q`, the walk it costs, where the stop needs it. */
 export type Fit = { from: number; to: number; q?: number };
 export type Seated = Fit & { place: string };
-/** The seat a person takes: the first free place, in this order, for the stop `fit` times. undefined: the stop cannot be fitted at any place (a meal that does not fit the shift). */
+/** The seat a person takes: the first free place, in this order, for the stop `fit` times. undefined: the stop cannot be made (a meal that does not fit the shift, or every place that fits is held for the time). */
 export type Pick = (pref: Table, fit: (place: string) => Fit | undefined) => Seated | undefined;
 export type Table = { id: string; at: V; seats: string[] };
 
 /** A picker over the café: the chairs of every table (the person's own table first, then the nearest), then the standing points nearest the door. Every call that finds a place
- *  holds it. `gaps` collects the stops that no place could take (they sit at their own table's first chair regardless, and P-13 fails on it). */
-export function seatPicker(tables: Table[], stands: string[], holds: Holds, gaps: string[]) {
+ *  holds it. A stop that no place can take is not made (`notes` says which): nobody sits at a seat another holds, so P-13 cannot fail on a busy square. */
+export function seatPicker(tables: Table[], stands: string[], holds: Holds, notes: string[]) {
   const order = new Map<string, string[]>();
   const around = (pref: Table) => {
     let o = order.get(pref.id);
@@ -93,10 +93,10 @@ export function seatPicker(tables: Table[], stands: string[], holds: Holds, gaps
       const f = fit(place); if (!f) continue;
       if (holds.free(place, f.from, f.to)) { holds.take(place, f.from, f.to); return { place, ...f }; }
     }
-    const first = pref.seats[0], f = first ? fit(first) : undefined;
-    if (!f) return undefined;
-    gaps.push(`${who}: no free seat or standing point for the stop at ${Math.floor(f.from / 60) % 24}:${String(f.from % 60).padStart(2, '0')}`);
-    holds.take(first!, f.from, f.to);
-    return { place: first!, ...f };
+    // every place that fits is held for the stop: the stop is not made (undefined), never double-booked. The day falls back (a meal at the café's chairs is eaten on site, an
+    // evening or a stop before the shift is not made: tools/people/day.ts) and the loss is reported as a note, not a fault: a square that is full is a busy square.
+    const f = pref.seats[0] ? fit(pref.seats[0]) : undefined;
+    if (f) notes.push(`${who}: no free seat or standing point for the stop at ${Math.floor(f.from / 60) % 24}:${String(f.from % 60).padStart(2, '0')}; the stop is not made`);
+    return undefined;
   };
 }
