@@ -15,7 +15,7 @@ Work moves to the Mac Studio (M5 Max, 128 GB). The 15-inch MacBook Air M4 stays 
 |---|---|
 | Branch | `play/handover` (from `world/space-age` at 32ccd57, 2026-10-15): brief 011, play the Handover. `world/space-age` is pushed and complete up to brief 010's cast; neither is merged into `main` (`de1a3db`). |
 | `assignment-04` | **Frozen** (the submitted course assignment, tip `a0d05ff`). Never change it, commit to it or check it out. To inspect it, clone it into a separate folder outside `/tmp`. |
-| GDD | v0.21.0 (`GDD/the-suborned-agent-gdd-v0.21.0-2026-10-15.md` + human `.html`, which wins on conflict). Style contract `contracts/style/suborned.style.json` v0.20.1 (§15 unchanged). |
+| GDD | v0.22.0 (`GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md` + human `.html`, which wins on conflict). Style contract `contracts/style/suborned.style.json` v0.20.1, unchanged (§15 adds only a HUD line pointing to §10). |
 | Health at handoff | `bun run typecheck` clean · `bun test tools/world tools/plan` 247 pass · `tools/gen tools/levels` 148 pass · `tools/rag` 33 pass · `bun run plan` and the Handover overlay exit 0 · `bun run verify` OK. |
 | Live export | `out/world/harbour-district.world.json` sha256 `9b2b451d…`. It is **before** brief 009 B: crossings are still zebra, with landing slabs, until Splice regenerates it (§4). |
 

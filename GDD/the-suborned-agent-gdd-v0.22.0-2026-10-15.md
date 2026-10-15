@@ -1,8 +1,9 @@
-# THE SUBORNED · AGENT GDD v0.21.0 · 2026-10-15
-src: the-suborned-gdd-v0.21.0-2026-10-15.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible; its machine copy contracts/style/suborned.style.json (v0.20.1) wins on conflict. The v0.15.0 html art bible is history (~/Projects/the-suborned/GDD/v0.15.0/): concept look reference only; its painted presentation and palette are superseded.
+# THE SUBORNED · AGENT GDD v0.22.0 · 2026-10-15
+src: the-suborned-gdd-v0.22.0-2026-10-15.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART = the art bible; its machine copy contracts/style/suborned.style.json (v0.20.1) wins on conflict. The v0.15.0 html art bible is history (~/Projects/the-suborned/GDD/v0.15.0/): concept look reference only; its painted presentation and palette are superseded.
 tags: [B] built, proven in top-down test · [S] spec, starting value, tune by playtest · [L] after capstone
 load: every agent = §01 + its own §14 block · Aster = §01–§13 + its §14 block · Vela, Forma, Glint, Glyph also §15 · open other sections by number on demand
 units: s seconds · m:ss mission clock · $ cash · T Trail · A Alert
+v0.22.0 (Sky, 2026-10-15; brief 011): real time is the default, pause is a tool, not the mode (§01) · running: double-click, 2.8 m/s, noticed where an act would be, security counts it a found fault (A 1); nobody runs carrying Vale (§03, §05) · real-time shoot-outs, Syndicate-fast, still measuring preparation: the whole cell armed up to Arms, deterministic hit rates shown as "down in n s", stances and a panic order, Trail per person hit instead of per shot, any gunfire → A ≥ 2, Enter +30 s once A ≥ 2, the going-loud card committed by a 0.5 s hold with no pause (§02, §03, §05, §06, §07, §10; briefs/011/motive-fights.md) · Watch 20 s; the Handover closes at 8:30; final-fight shots untraced (§04, §06, §07; briefs/011/motive-balance.md) · controls and HUD for real time: left click select/move, right click opens the action panel, verbs 1–4, agents F1–F4, yaw fixed at 30; roster, verb plate, status pill, price chip, ≤ 2 icons over a person; dock default and finish [open] (§10, §15) · test T8 (§13) · holds (§14) · log in §12 decisions.
 v0.21.0 (Sky, 2026-10-15; brief 010): people are generated: the model writes cast tables per area × occupation, seeded code expands them into people, contracts/people/people.rules.json is the rulebook for a person (unknown = reject) (§04, §09) · named steps for every scale; every field a person carries names the rule that reads it; temperament mix cap; introductions along ties; knowledge only witnessed or told, the cell known by face (§04) · the wrong approach for a temperament works one step worse, a refused one fails; the preview shows the price always and the outcome as "?" until the temperament is known; a met need is replaced between missions (§04) · investigators question simulated people only; news travels along ties as facts, never opinion (§04, §05) · missions name roles and cast them from the city's people, pinned by id (§07, §09) · log in §12 decisions.
 v0.20.1 (Sky, 2026-10-14): people stay free of dates: concept_prompt's 1950s era is for places, objects and machines; people prompts start from the dateless era and the couture line, and people in a place frame are not costume reference (§01, §15; style contract concept_prompt.people) · log in §12 decisions.
 v0.20.0 (Sky, 2026-10-14; briefs 008, 009): world premise: an alternate 1950s that discovered atomic power centuries ago; no thinking machines or networks; people are the weak point (§01, §15) · red allowed on small emissive display pictograms, never a surface (§10, §15) · concept art first: look decisions come from concept art made from an open brief; ΔE and checker rules gate it (§15; style contract concept_prompt) · crossings: floating signal orbs, light flush in the road in brass frames; no zebra, paint or landing slab (§15; brief 009) · reference machine = the 15-inch MacBook Air M4, Mac16,13 (§11) · log in §12 decisions.
@@ -23,6 +24,7 @@ pillars (test):
 - orchestrate the city: does it open or close a window the player can see coming?
 - live with it: will the player meet this choice again?
 tiebreakers, in order: readable > rich · people > powers · systems > scripts (nothing hand-authored) · preparation > improvisation · commander > avatar · exteriors only
+pace (Sky, 2026-10-15: "more realtime than strategy"): real-time play is the default; pause is a tool, not the mode. The tiebreakers stand: you still command from above and prepare before you act.
 terms: Trail = campaign evidence from traceable acts, drives investigations · Alert 0–3 = security response now (routine, inquiry, search, lockdown) · Standing = Hero ↔ Menace per district, witnessed acts only · Heat = T + Menace, threshold schedules a fight · bravery (helped → Fighter) / resentment (coerced → Informer) · Talker = fear + resentment > bravery + loyalty, gives you up when questioned
 house rules:
 - build only against Keel's rulebook (each event: needs, changes, witnesses). Unknown = reject.
@@ -36,22 +38,23 @@ mission: Watch → Learn → Turn → Time → Take → Fight → Inherit
 campaign: turned people pay cash/arms/tips → turn more people (snowball). Contacts grow braver or bitter. T + Standing set pushback.
 | resource | scope | drives | from |
 | Cash | campaign | fees, debts, bribes, turning | sources (skimming clerk, bookmaker) |
-| Arms | campaign | winning fights, arming joiners | sources (quartermaster, hijack) |
+| Arms | campaign | winning fights, arming joiners; how many of your people carry a gun this mission (one sidearm per point; the Enforcer's carbine is the cell's) | sources (quartermaster, hijack) |
 | Assets | campaign | access, income, fight allies | Fixer, introductions |
 | Time | mission | actions 6–62 s; events don't wait | — |
-| Trail | campaign | investigations; part of Heat | traceable acts: threats, visible payments, gunfire |
+| Trail | campaign | investigations; part of Heat | traceable acts: threats, visible payments, people hit by gunfire |
 | Alert 0–3 | mission | security response now | witness reports, found faults, shots |
 | Standing | district | who agrees, crowd behaviour | witnessed acts only |
-rule: every order shows full price before commit ($, time, T, A risk).
+rule: every order shows full price before commit ($, time, T, A risk). In real time this is met by the price chip on hover, the action panel, the run price on ground hover and the going-loud card (§10).
 travel [S]: boarding a tram or sky rail is fast travel round the city: board at any stop or station, ride to any other on the network. Price = time only: wait for the next service + the ride, both from the timetable. No fare.
 chain: Handover route A is itself a chain (watch café → clear Inez's debt → loop camera → coffee spill pulls guard → take Vale). Each person sees only their part; city investigates backward, link by link [S]. Later operations chain more links across a district [L].
 
 ## §03 CELL
 | op | verbs | notes |
-| Scout | Watch, Listen, Mislead | reveals routine/need/temperament; false tips send rivals away |
-| Fixer | Turn, Call | offer/pay/help/threaten; calls contacts in on cue; the face witnesses remember |
-| Tech | Loop, Reroute | blinds surveillance, misdirects patrols; tethered while holding |
-| Enforcer | Enter, Take, Fire | only op who carries the target or shoots |
+| Scout | Watch, Listen, Mislead | reveals routine/need/temperament; false tips send rivals away; fires as untrained |
+| Fixer | Turn, Call | offer/pay/help/threaten; calls contacts in on cue; the face witnesses remember; fires as untrained |
+| Tech | Loop, Reroute | blinds surveillance, misdirects patrols; tethered while holding; fires as untrained |
+| Enforcer | Enter, Take, Fire | only op who carries the target; carries the carbine |
+all ops [S]: any op can carry a sidearm (one per Arms point) and Fire (§06). Every op can run (double-click) at 2.8 m/s, twice the walk, and is noticed (§05). Nobody runs while carrying Vale or a downed op, while tethered or mid-action; nobody fires while running.
 training: full cell. campaign: starts Fixer only; recruit the rest by turning people with the skill [S].
 
 ## §04 PEOPLE
@@ -59,7 +62,7 @@ person = routine + need + temperament + memory. Knowledge lowers price; standing
 approaches (Inez, training) [B]:
 | approach | requires | $ | time | T | leaves |
 | Ask cold | — | 0 | 25 s | +1 | remembered refusal: later offers +$10,000, +1 T |
-| Pay | routine known (Watch 52 s) | 70,000 | 50 s | +2 | traceable payment; neutral |
+| Pay | routine known (Watch 20 s [S]; was 52 s [B]) | 70,000 | 50 s | +2 | traceable payment; neutral |
 | Help (clear debt) | need known (Listen 42 s) | 40,000 | 50 s | +1 | gratitude; bravery can grow |
 | Pressure | need known | 0 | 35 s | +3 | fear; resentment grows; can identify Fixer |
 purse: pay + driver = 110,000 > 100,000; help + driver = 80,000 fits → learning buys the second route.
@@ -95,9 +98,12 @@ rivals [B]: same target, own schedule. False tip: away 3:50. Gunfire: arrive wit
 | A | security does | raised by |
 | 0 routine | follows schedules | — |
 | 1 inquiry [S] | checks spot; patrol tightens | witness report or found fault, once per incident |
-| 2 search [B] | response unit to reported route | 2nd incident or any gunfire |
+| 2 search [B] | response unit to reported route | 2nd incident or any gunfire (sets A ≥ 2; no per-shot +1 A) |
 | 3 lockdown [B] | doors lock; district seals | violence seen by a civilian → 3 at once |
 witness [S]: clear sightline within 13 m of a traceable act → +1 T per incident, moves standing. Crowds also block guard/camera sightlines.
+running [S]: a runner is noticed where an act would be: people with a clear line within 13 m, and the cones of the guard, patrol, live cameras, response unit and rivals. People remember where and when (and the Fixer's face if he ran): a lead, no T, no standing. Security that sees a runner counts a found fault: A ≥ 1, once per run; a guard who saw a runner no longer fights at your side. Running is free once a fight is on, the run is loud, or the op is under fire.
+drawn weapon [S]: seen by security → A ≥ 2 and that watcher engages (reacts 2 s, then fires); seen by people within 13 m → one witnessed incident (+1 T, A ≥ 1), and they remember the face; unseen costs nothing.
+alarm inside [S]: once A ≥ 2 the target's building hides them: Enter +30 s (Handover 38 → 68 s).
 levels [S]: street, deck and sky concourse are all exterior. Sightlines and the 13 m run in 3D: a slab blocks sight straight up and down, an open edge does not. People change level only by stair, ramp, escalator or lift (time from the plan). Watchers stand per level; a station watcher covers its concourse.
 watchers [S]: cameras and civic robots stand at key places on the district plan (stations, stops, gates, squares). Any op in a watcher's sightline is logged with place + time, act or no act. Once a Trail is open, investigators can pull the log: each sighting is a lead (place + time). Hot (Heat over threshold, Motive sets it) or Menace standing in the district: a sighting counts as a witness report (Alert table).
 investigators [S][L]: on foot question ~every 20 s; cars move fast, stop to question; count rises with A and T. Pick civilians near last incident by sightline + distance, not luck. Useful answer = fact with place + time → go there, question again; ~60–90 s per hop.
@@ -106,27 +112,37 @@ counters: keep moving (sightings go stale) · reach witness first (pay/reassure/
 output: findings → debrief Investigation state → next mission. Hero campaign: brave locals give false leads.
 
 ## §06 FIGHTS
-fights measure preparation (arms, brave contacts, streets). Not a separate combat game.
+fights measure preparation (arms, brave contacts, streets). Not a separate combat game: fast and real-time, Syndicate-like; a fight is short, lethal and decided by what you prepared.
 frequency [S]: Heat = campaign T + Menace standing. Threshold crossed → fight event (raid, ambush, rival hit) in next mission. No dice.
 size [S]: act I 3–6 hostiles · II 8–15 · III 20–30. Hard cap 30 simulated combatants; rest = background crowd (run/cheer only).
 your side: cell + Accomplice/Fighter contacts + crowd joiners (Hero), armed up to Arms stock.
 citizen actions: scatter (breaks sightlines, covers retreat) · block (lorry, stalled tram, crowd vs police vehicles) · join (bare-handed or armed) · vehicle strike (ram barricade or rigged vehicle; driver always jumps clear).
 content line: civilians are never the payload; no coerced suicide attacks. Menace can be uglier (collateral, witnesses) but no civilian dies as the weapon.
-health [S][L]: civilian 2 · guard/officer 3 · rival 3 · patrol unit 4 · Scout/Fixer/Tech 4 · Enforcer 6. Bars on select and for all in a fight. Weapons (Arms): pistol 1 dmg, heavier 2–3. Armour via quartermaster, healing via turned doctor (people, not upgrades).
-downed: op at 0 = downed; carry to car, or captured → rescue mission.
+health [S]: civilian 2 · guard/officer 3 · rival 3 · patrol unit 4 · Scout/Fixer/Tech 4 · Enforcer 6. Pips on select and over all in a fight. Weapons (Arms): pistol 1 dmg, heavier 2–3. Armour via quartermaster, healing via turned doctor (people, not upgrades).
+armed [S]: any op can carry a sidearm (pistol), one per Arms point; the Enforcer's carbine is the cell's and uses none. The Enforcer stays the heavy (carbine, health 6, the only one who carries Vale). The Handover issues all four; the campaign starts with the Fixer alone and Arms 0.
+| weapon [S] | dmg | every | point blank | effective | long |
+| pistol | 1 | 1.5 s | ≤ 5 m: 1000 ‰ | ≤ 15 m: 750 ‰ | ≤ 25 m: 400 ‰ |
+| carbine | 2 | 2.0 s | ≤ 5 m: 1000 ‰ | ≤ 20 m: 750 ‰ | ≤ 30 m: 400 ‰ |
+modifiers [S] (multiply, ‰): shooter walking 500 · target still beside cover 500 · Enforcer holding Vale 750 · untrained (Scout, Fixer, Tech, rivals) 750; Enforcer, officers and the guard are trained. No reload or ammunition: Arms is the limit. Draw 1.0 s, holster 0.5 s, first shot on a new target 1.0 s; a hostile surprised outside a fight reacts in 2.0 s.
+hits [S]: deterministic, a hit rate, not a roll: each shooter keeps an integer accumulator per target (starts 500, + accuracy per shot, a hit at 1000). Shown as "hits 3 in 4 · down in n s"; the cursor shows the band by shape. No dice.
+orders [S]: fire (until the target is down; holds aim 3 s if the line breaks; walking keeps firing at the walking rate, running cancels it) · cease · stance: hold (fires only when ordered), return (default on draw: fires at whoever fires on this op), at will (fires at any combatant in reach, nearest first) · panic: every armed op draws and goes to at will, only once a fight is on. Combatant = a final-fight hostile, or anyone who has fired on or aims at the cell; never a civilian, contact, Vale, or a guard or patrol that hasn't engaged, so only an explicit fire starts a loud run. Group focus fire = one fire order to every selected op.
+cost [S]: per person, not per shot: +2 T per person hit (once), +2 T more if they go down (a dropped guard = 4 T); any gunfire → A ≥ 2 (§05); violence seen by a civilian → 3. Shots in the final fight are untraced (no T, no A; Sky, 2026-10-15); shots before it count. Gunfire still calls the response unit, draws rivals in 16 s, breaks the patrol within 30 m, moves Menace if witnessed. Shooting a contact ends the relationship. Shooting the target = fail.
+hostiles [S] (Pulse): advance to the nearest free cover point (made at build time) toward their objective (the getaway car in the final fight, else where they last saw the cell); engage when a foe is in effective reach. Target priority: whoever shoots at them → whoever holds Vale → nearest armed op → nearest op; never Vale, never a civilian. Rivals break when more than half are down; police hold. Crowds within 30 m of gunfire scatter.
+downed: op at 0 = downed; carry (3 s; the carrier walks and doesn't fire) to the car, or captured → rescue mission.
 civilians targetable: every witness → Menace; contact who witnesses loses bravery, gains fear + resentment → some Informer, more Talkers. Fastest way to undo progress.
-prototype [B]: Enforcer shot 6 s; 2 hits drop a person or patrol unit; Enforcer takes 3. Each shot +1 A, +2 T, draws rivals + patrols, Menace if witnessed. Shooting a contact ends the relationship. Shooting the target = fail. T2 decides whether costs rise.
+prototype [B] (history, superseded by the rules above): Enforcer shot 6 s; 2 hits drop a person or patrol unit; Enforcer takes 3. Each shot +1 A, +2 T, draws rivals + patrols, Menace if witnessed.
 decisive shot [L]: 1–2× per fight: slow time, camera behind Enforcer, one aimed shot, back to tactical.
 
 ## §07 HANDOVER (training mission · capstone)
-brief: Councillor Vale signed the clearance order for the marked block. At shift handover he leaves the Civic Records Office for his official car. Take him alive to the getaway car. Full cell. Purse $100,000. Every verb introduced once.
+brief: Councillor Vale signed the clearance order for the marked block. At shift handover he leaves the Civic Records Office for his official car. Take him alive to the getaway car. Full cell, all four armed (Arms 3). Purse $100,000. Every verb introduced once.
 cast: Vale · Inez (café waitress, in debt) · guard · official driver (needs cash) · rival crew · cameras · patrol.
 casting: the mission names roles (employer, position, place, shift, need, approach; the guard a café regular), and rule M-2 casts each from the city's generated people and pins it by id; "Inez" and "Vale" are pinned name parts given to whoever is cast (contracts/missions/handover/mission.json; brief 010).
-schedule: 0:00 Vale inside; routines run; cell at getaway car · 3:10 rival car parks near pickup · 5:30 handover chime · 5:40 last chance to turn driver · 5:50 Vale exits north (service lane if driver turned) · 6:10 Vale at car · 8:00 rivals take Vale or car leaves = over.
+schedule: 0:00 Vale inside; routines run; cell at getaway car · 3:10 rival car parks near pickup · 5:30 handover chime · 5:40 last chance to turn driver · 5:50 Vale exits north (service lane if driver turned) · 6:10 Vale at car · 8:30 rivals take Vale or car leaves = over.
 route A, front door (before 5:50): Scout watches café, listens to Inez (1:34) → Fixer helps Inez ($40,000) → Tech loops entrance camera (1:02, tethered; optional patrol reroute 1:55) → Fixer calls Inez: guard walks 30 s, stays 60 s, returns 30 s = 2:00 window [payoff cut] → Enforcer enters (38 s), exits service door with Vale, to car (44 s).
 route B, pickup (from 5:50): Scout watches car: driver needs cash (48 s) → Fixer turns driver before 5:40 ($40,000): pickup moves to service lane, or driver blocks pickup camera 2:30 → Scout false tip on rivals (44 s), or fight → Enforcer intercepts (38 s), to car (44 s).
-final fight [S]: always; 30–60 s; 3–5 hostiles.
-- loud (any shot or A ≥ 2): police from west street, 2–4 officers, seal clock running, no allies.
+timings [S]: walking legs shorten where the cell runs (Waymark retimes the routes); the Enforcer walks while carrying Vale. Once A ≥ 2, Enter takes 68 s (alarm inside, §05).
+final fight [S]: always; 15–45 s; 3–5 hostiles; its shots are untraced (§06).
+- loud (any shot or A ≥ 2): police from the north street (the top-down test's west street, as built), 2–4 officers, plus the response unit if it is on the street; seal clock running, no allies.
 - safe (no shots, A ≤ 1): rivals ambush extraction; guard (never saw you) fights them; helped Inez warns 10 s early; turned driver blocks rival car (−1 rival); earlier false tip (−1 rival).
 win: Vale alive at getaway car.
 fail: Vale killed · Vale leaves in official car · rivals reach Vale · district seals · Enforcer down · entry seen by guard, live camera or patrol. Withdraw ends the attempt.
@@ -160,8 +176,10 @@ risk: sameness (Watch Dogs: Legion). Fix: history, not backstory; people are mem
 ## §10 PRESENTATION
 camera: fixed tactical view, play zoom 14 at 38°, never first person. Capstone = 3D world built from the plan (DecoKit kit where it counts, procedural fill to the same bar); rules unchanged. Painted plates [L] optional extra at most. Characters 40–60 px tall at 1080p (job, silhouette, facing readable). Levels: architecture above the selected person's level ghosts (§15: 0.2, keeping 0.4 of its shadow).
 split: built world (generated from the plan at build time, fixed in play) = buildings, paving, structures, street furniture, skyline. Live 3D state = people, vehicles, doors, surveillance, barricades, posters, anything with state. One material + light standard for both; match lighting on 1 character + 1 vehicle before building more.
-controls: click select/move · Shift group · 1–4 operative · E engage · F fire · C call · click person/door/camera → action card with full price · Next Event jumps to next scheduled change · live clock + tactical pause (T1).
-readability: cones red · guard amber · rivals violet, drawn unlit and emissive and outside the post grade (the grade shifts them ΔE 4–10), so neither light nor grade shifts them: a signal never depends on the light; each signal also has a shape or motion cue. No environment surface uses a signal colour at full strength: every world colour ≥ ΔE2000 20 from each signal, measured on the unlit palette (lit and shaded surfaces can't hold 20). One exception (Sky, 2026-10-14: "red is definitely ok for electronics displays"): a small emissive pictogram on an electronic display (a crossing signal's stop figure) may be red; never a surface; the cones keep their own shape and motion cue. Dossier separates known / suspected / planned.
+controls (Sky, 2026-10-15; briefs/011/play/HOW-TO-PLAY.md, briefs/011/motive-fights.md §2.5): left click selects an agent or moves the selection (Shift adds); box-drag selects · right click a person or object opens the action panel: every action the cell can take on that target, grouped by agent, each with its full price; locked rows give their reason · with a verb picked on 1–4, right click fires it directly · right click empty ground cancels · double-click runs · WASD, arrow keys, middle-drag pan; the wheel zooms within the 40–60 px limit · the camera does not rotate: yaw stays 30 · F1–F4, a portrait click or Tab selects an agent; a double-tap centres on them · Space pauses (tactical pause, a tool; T1), =/− change speed, N jumps to the next event · fights: F draws or holsters (the cursor becomes a crosshair); with weapons drawn, right click a hostile fires until down (hold and sweep to retarget); X ceases; V cycles the stance; Ctrl + right click for a civilian or contact; both buttons together = panic (only in a fight) · bindings remappable from one table.
+price before commit, in real time: the price chip at the cursor on hover · the action panel · the run price on ground hover (walk time; run time and who will see it) · the going-loud card: the first order that would make a run loud (a draw someone will see, a fire before a fight is on, a panic with no fight) shows Alert to 2 (3 with the civilians watching), who comes and when, the seal time, what the final fight loses, and +2 T per person hit and per person dropped; commit by holding the same input 0.5 s while the game runs, release or Esc cancels; never shown once a fight is on. After it, a per-target chip only.
+HUD (Sky, 2026-10-15; briefs/011/ui/round4 v10, round5, round5/placement): simple, Syndicate-style, built for real time: a roster of the 4 cell portraits with health pips and state · the selected agent's verb plate (1–4) · a slim status pill: clock, next event, $, Trail, Alert · a price chip at the cursor · at most two icons over a person · the right-click action panel. The roster dock is a setting: bottom, left column or corner. Default dock (left column or corner) [open] · finish (cab-cluster or deco-console) [open]: Sky picks.
+readability: cones red · guard amber · rivals violet, drawn unlit and emissive and outside the post grade (the grade shifts them ΔE 4–10), so neither light nor grade shifts them: a signal never depends on the light; each signal also has a shape or motion cue. No environment surface uses a signal colour at full strength: every world colour ≥ ΔE2000 20 from each signal, measured on the unlit palette (lit and shaded surfaces can't hold 20). One exception (Sky, 2026-10-14: "red is definitely ok for electronics displays"): a small emissive pictogram on an electronic display (a crossing signal's stop figure) may be red; never a surface; the cones keep their own shape and motion cue. Dossier separates known / suspected / planned. Fights read: a tracer per shot, a miss that ends past the target (never on the body), pips over everyone in a fight, crosshair band ticks (shape, not colour) and ✕ with no line, a stance icon on the portrait, a thin 13 m ring round a conspicuous runner, the going-loud card with its held commit.
 payoff cut: plan lands → brief street-level cut → same state. Capstone has one (Inez spills coffee, guard walks off). More cuts + decisive shot [L].
 audio = clock: bell, café door, 5:30 handover chime · surveillance click at sweep edge · patrol sound changes when it breaks route · Alert adds music layers; fight = full score · contacts confirm calls aloud.
 look: §15 ART + style contract; palette current, tuneable (Sky reviews it in the world). Retro-future city; cell = visitors from a nearby timeline (sharper, cleaner, no deco ornament) so the four read as outsiders at 50 px.
@@ -189,6 +207,15 @@ models: Opus 5.5 = Aster, Motive, Keel, Latch, Waymark, Datum, Vantage, Suture, 
 tools: Runware (Glyph, Vela, Forma, Chime; concepts incl. Qwen Image 2.1, priced per run) · Codex CLI image tool (ChatGPT plan, cost 0 per run; concepts) · every concept starts from the style contract's concept_prompt (§15) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).
 order: plan before dress: Datum plans the district, Vantage the blocks; Latch builds only a passing plan; art dresses the built world (kit + procedural). Motive + Keel draft rulebook first; others work in parallel against the draft; Latch owns critical path; rulebook frozen after week 4.
 budget: two 20× subscriptions (one Codex, one Claude). Aster drops optional work when allowance is low. Per-use credits (Runware, Meshy) priced first.
+decisions (v0.22.0, 2026-10-15; brief 011, Sky unless marked):
+- Sky: "more realtime than strategy": real-time play is the default and pause is a tool, not the mode. commander > avatar and preparation > improvisation stay tiebreakers (§01).
+- Sky: on Motive's running and shoot-out proposal (briefs/011/motive-fights.md): Q1 the whole cell is armed, limited by Arms · Q2 run at 2.8 m/s · Q3 the Enforcer can't run while carrying Vale · Q4 the going-loud card commits with a 0.5 s hold, no pause · Q5 Enter +30 s once Alert ≥ 2. Its GDD delta goes into §02, §03, §05, §06, §07, §10, §13 (T8) and §14. Fights stay "not a separate combat game": fast, real-time and Syndicate-like, still measuring preparation; the cost moves from the shot to the victim.
+- Sky (brief 011 balance, briefs/011/motive-balance.md; already in the engine): Watch takes 20 s (was 52 s [B]) · the Handover closes at 8:30 (was 8:00; the waitress's shift runs to the close) · shots in the final fight add no Trail or Alert, so a quiet route can end Calm; loud shots before it still count (§04, §06, §07).
+- Sky: controls for real time (briefs/011/play/HOW-TO-PLAY.md and Motive's fight controls) replace "click select/move · Shift group · 1–4 operative · E engage · F fire · C call · click person → action card" (§10). Camera rotation is rejected for now: yaw stays 30.
+- Sky: the HUD is simple and Syndicate-style, built for real time (briefs/011/ui/round4 v10, round5, round5/placement): roster, verb plate, status pill, price chip, at most two icons over a person, the action panel. The dock is a setting; the default dock (left column or corner) and the finish (cab-cluster or deco-console) are [open] for Sky (§10, §15).
+- Sky: "every order shows its full price before you commit" stays; in real time it is met by the price chip on hover, the action panel, the run price on ground hover and the going-loud card (§02, §10).
+- Aster: §07's "west street" is the top-down test's compass; as built the police enter by the north street (contracts/missions/handover/mission.json, police entry reason), as Motive's delta reads.
+- Parked, not in this version: Inez's affair and the Story canon; the cell look rule changes (undecided); camera rotation.
 decisions (v0.21.0, 2026-10-15; brief 010, Sky unless marked):
 - Sky: NPCs are generated through the pipeline with SurrealDB retrieval, from their placements and routines. The model writes cast tables, seeded code makes the people (no per-person model output); mission people are city people cast by role and pinned by id; the civic block first, then the district.
 - Sky: on Motive's Dwarf Fortress pass (briefs/010/research/): Q1 no alias for now, the cell is known by face · Q2 a met need is replaced between missions from the person's own stream · Q3 the preview shows the price always and the outcome as "?" until the temperament is known · Q4 the wrong approach works one step worse, a refused one fails with a remembered refusal · Q5 investigators question simulated people only · Q6 news along ties is facts, never opinion · Q7 named steps, readBy, mix cap, introductions along ties and the knowledge start state go into §04 and §09.
@@ -236,6 +263,7 @@ default: 6 new players.
 | T5 | kidnapping fits tone? | framing survey | cell read as resistance, not criminals |
 | T6 | final fight reads as consequence? | ask "why these enemies?" | ≥ 5/6 link it to loud/quiet |
 | T7 [L] | contacts memorable? | recall 1 day later | name ≥ 2 contacts + what happened |
+| T8 | shoot-outs readable? | ask "why did that operative go down?" | ≥ 5/6 name the cause (outnumbered, no cover, walking, long range) |
 ## §14 ROLES (each agent loads only its own block)
 ### Aster · Lead and producer · Opus 5.5
 owns: The goal, this GDD, the milestone plan, who does what, and the decision log.
@@ -281,7 +309,7 @@ opens: §04, §09 · test T7
 owns: Routines for people, security, transit and rivals; crowds; investigators; fight AI; the people and vehicle generator (tools/life, bun run life) once Splice's 005 move lands.
 receives: Motive's rules, Keel's rulebook, Datum's plan, Vantage's block layouts.
 delivers: Schedules and behaviour, tram and sky rail timetables (the wait + ride that prices boarding). Keel checks; Latch builds.
-hold: Handover: rival car 3:10, last driver turn 5:40, Vale out 5:50, over 8:00. Patrol breaks to gunfire within 30 m; seal 2:25 after the response unit. Witness = sightline within 13 m. Investigators question every ~20 s, 60–90 s per lead. Crowds scatter, block or join; 30 combatants max.
+hold: Handover: rival car 3:10, last driver turn 5:40, Vale out 5:50, over 8:30. Patrol breaks to gunfire within 30 m; seal 2:25 after the response unit. Witness = sightline within 13 m. Investigators question every ~20 s, 60–90 s per lead. Crowds scatter, block or join; 30 combatants max. Fight AI: hostiles advance to cover points made at build time, engage in effective reach, pick whoever shoots them, then whoever holds Vale, then the nearest; rivals break past half down, police hold; crowds within 30 m of gunfire scatter.
 opens: §05–07 · tests T1, T4
 ### Keel · Simulation engineer · Opus 5.5
 owns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).
@@ -293,10 +321,10 @@ opens: §05, §06, §08, §11
 owns: The Unity build and its scenes. The only agent that edits scenes.
 receives: The rulebook, checked content, passing plans, approved art and audio, a playable target.
 delivers: The graybox built from a passing plan (the plan is the source; Unity primitives follow it), then a playable build that records every event and the debrief, to Suture and Redline.
-hold: Week 2: rules in Unity, Handover laid out. Week 3: cell, contacts, security, rivals. Week 4: final fight (both branches), payoff cut, dossier, debrief. Week 5: no new systems. 3D world built from the plan (kit refs + procedural); anything that changes state is live 3D. Hosts Keel's C# sim: steps it live, plays it back. Controls: click, Shift, 1–4, E, F, C, Next Event, pause.
+hold: Week 2: rules in Unity, Handover laid out. Week 3: cell, contacts, security, rivals. Week 4: final fight (both branches), payoff cut, dossier, debrief. Week 5: no new systems. 3D world built from the plan (kit refs + procedural); anything that changes state is live 3D. Hosts Keel's C# sim: steps it live, plays it back. Controls (§10): left click select/move, box select, right click the action panel (a verb picked on 1–4 fires directly), double-click run, F1–F4/portrait/Tab agents, WASD/arrows/middle-drag pan, wheel zoom, Space pause, =/− speed, N next event; fights F draw, X cease, V stance, Ctrl for a civilian, both buttons panic; one remappable bindings table; yaw stays 30, no rotation.
 opens: §07, §10, §11 · tool: Unity (owner)
 ### Suture · Playtest and QA lead · Opus 5.5
-owns: Uncoached playtests, test reports and tests T1–T7.
+owns: Uncoached playtests, test reports and tests T1–T8.
 receives: The build, the scenario, the expected outcome and the questions to ask players.
 delivers: Reports with steps to reproduce, expected against observed, and clips. Sends bugs to their owners and retests.
 hold: Six new players per test; most pass bars are 5 of 6. Handover wins when Vale reaches the car alive. It fails if Vale dies, leaves or is taken, the district seals, the Enforcer goes down, or the entry is seen. Checks the gate every week from week 3.
@@ -335,13 +363,13 @@ opens: §10, §15 · tools: Unity (checks), Blender (previews)
 owns: The HUD, dossier, action cards and signal colours.
 receives: Layout, information hierarchy and accessibility needs.
 delivers: Interface art and colours, handed to Latch.
-hold: Every order shows its full price first: cash, time, Trail, Alert risk. The dossier separates known, suspected and planned. Cones red, guard amber, rivals violet, drawn unlit and emissive and outside the post grade, each with a shape or motion cue too. Investigators show a questioning icon and a dotted line joining their leads.
+hold: Every order shows its full price first: cash, time, Trail, Alert risk; in real time by the price chip on hover, the action panel, the run price on ground hover and the going-loud card. The HUD is simple and Syndicate-style: a roster of four portraits with health pips and state, the selected agent's verb plate (1–4), a slim status pill (clock, next event, $, Trail, Alert), the price chip, at most two icons over a person, the action panel; the dock is a setting, and the default dock and the finish are Sky's open pick. Fights: tracers, crosshair band ticks, the going-loud card, stance icons, the running ring; tracer colours are yours to rule. The dossier separates known, suspected and planned. Cones red, guard amber, rivals violet, drawn unlit and emissive and outside the post grade, each with a shape or motion cue too. Investigators show a questioning icon and a dotted line joining their leads.
 opens: §02, §05, §10 · test T3 · tool: Runware
 ### Chime · Audio designer · GPT 6.1 Sol
 owns: Timing and consequence cues, and the mix.
 receives: Routine, reply and risk states.
 delivers: Cues and the mix. Latch wires them in; Suture checks them.
-hold: Audio is part of the clock: a bell, the café door, the handover chime at 5:30. A surveillance click at the edge of each sweep; the patrol sounds different when it breaks route. Alert adds music layers; a fight brings the whole score. Contacts confirm calls aloud.
+hold: Audio is part of the clock: a bell, the café door, the handover chime at 5:30. A surveillance click at the edge of each sweep; the patrol sounds different when it breaks route. Alert adds music layers; a fight brings the whole score. Contacts confirm calls aloud. One voice per weapon, so you hear who is firing; police dispatch sounds from the north street, so you hear the direction.
 opens: §10 · tool: Runware
 
 ## §15 ART (art bible; Vela, Forma, Glint, Glyph load this)
@@ -353,7 +381,8 @@ world: 3D, built from the plan: DecoKit kit where it counts (landmarks, megastru
 reference (Sky, 2026-10-14; brief 008): civic block + the district's street-level character = the eight concept paintings of 2026-09-26 (briefs/008/concepts/, hashes in PROVENANCE.json): cream stone, seafoam teal bands, chrome spheres, banners, planted terraces, pale paving with teal bands, cypress and palms, parasol terraces · skyline = the AtomicAge and Blocks sheets (brief 007) · the 30 Sep capstone concept and its testbed models (the-suborned-store/testbed-art: cafe-3d, civic-office) are not the reference; their dressing parts (parasols, table sets, plants, fountain materials, boarding pavilion) may be reused.
 concept art first (Sky, 2026-10-14: "everything should come from concept art really"; "let the AI concept art come up with its own design"): look decisions come from concept art generated from an open brief in the world's style; ΔE and checker rules gate what the art proposes, they are not the source of options · every concept generation starts from style contract concept_prompt (era = the §01 premise; city = the city line of the prompts Sky accepted, briefs/009/concepts/PROVENANCE.json; avoid; rule) · concept_prompt.era (with its 1950s) is for places, objects and machines; people prompts never take it (v0.20.1, below: people) · a decision from art cites the image and its prompt · tools: Codex CLI image tool (ChatGPT plan), Runware (Qwen Image 2.1).
 crossings (Sky, brief 009; reference briefs/009/concepts/): floating signal orbs ("I do like those eyes"): chrome orbs or small saucers hovering over the kerb at each end, a round display on each face with a walking figure (the stop figure may be red: display exception, signals below), a thin beam down to a glowing disc where people wait · no zebra, no paint, no landing slab: light set flush in the road, glowing seafoam bars or rows of light dots in brass frames · brass dome studs along the kerb edge · seafoam inlay arcs in the paving where the crossing lands · brass stays a frame line (SF-21).
-camera: play zoom 14 at 38° · tagged architecture ghosts to 0.2 and keeps 0.4 of its shadow (light.json fade.ghostShadow; Glint tunes), so the street behind a faded tower is lit and the tower still marks the ground · characters 40–60 px at 1080p.
+hud (§10; Sky, 2026-10-15): simple, Syndicate-style, built for real time · finish cab-cluster or deco-console [open], dock default left column or corner [open] (briefs/011/ui/round5, round5/placement) · HUD signals obey the signal rules below: unlit, shape or motion before colour.
+camera: play zoom 14 at 38°, yaw 30, no rotation · tagged architecture ghosts to 0.2 and keeps 0.4 of its shadow (light.json fade.ghostShadow; Glint tunes), so the street behind a faded tower is lit and the tower still marks the ground · characters 40–60 px at 1080p.
 people: space-age couture as street clothing, never 1950s period dress (no fedoras, trilbies, tea dresses or Americana): dates in a people prompt pulled character concepts into period dress (v0.6.1; Sky, 2026-10-14: "too strong a 1950s ruined character concept"); people prompts carry no era date, and people in a place frame are not costume reference · mixed cast (ages, builds, ethnicities) · bright coats on cream, white boots + hats · full body, A-pose or relaxed · two space-age markers per figure, no present-day street items · no bubble helmets (≤1 helmet per sheet) · hems knee or above, nothing sheer/trailing/cloak-like, flat boots · job readable at distance = silhouette + one colour block.
 security + institutions: sleeker: ivory, ink black, gold trim, chrome couture, armour accents.
 cell: visitors from a nearby timeline = same materials + light, different design lineage · sharper + cleaner than the crowd, matte technical fabrics, fitted layers · NO deco motifs, gold trim or 1950s tailoring · pass in the street, stand out at 50 px · only the four cross timelines.
