@@ -43,7 +43,7 @@ export const MAX_WORDS = 12;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
-/** One line of text: ≤ 80 characters, one line, no markup. `{who} {op} {m} {usd}` are filled by the host (the checker tests the widest fill). */
+/** One line of text: ≤ 80 characters, one line, no markup. `{who} {op} {m} {usd} {target}` are filled by the host (the checker tests the widest fill). */
 const Line = z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/);
 const Speaker = z.enum(SPEAKERS);
 const Verb = z.enum(VERBS);
@@ -55,6 +55,8 @@ export const Action = z.strictObject({
   by: z.array(z.enum(AGENTS)).min(1).describe('the agents who can give it'),
   engine: z.strictObject({ do: code, approach: code.optional() }).describe('the engine order it becomes (Order.Do, Order.Approach)'),
   does: Line.describe('one plain line: what it does and what it costs'),
+  withTarget: Line.optional().describe('the row or card label once a target is chosen, e.g. "Listen to {target}"; {target} is names.targets[key]. Absent = the verb takes no target'),
+  then: Line.optional().describe('the queued clause after a walk, e.g. "listens to {target}": "{agent} walks to {target}, then {then}"'),
   onTarget: z.record(z.string(), Line).optional().describe('the same verb on one target (a target key from `targets`), when the plain line can say more'),
 });
 
@@ -139,6 +141,7 @@ export const TextFile = z.strictObject({
   locks: z.array(Lock).min(1),
   events: z.record(code, EventDef),
   exchange: z.record(Verb, z.array(code)).describe('verb → the events an order plays through, in order; the collapsed view shows the last'),
+  silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
 });
