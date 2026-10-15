@@ -1,0 +1,836 @@
+{
+ "schema": "suborned.rulebook/1",
+ "author": "Keel (brief 010, 2026-10-15)",
+ "gdd": "the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+ "rule": "Every event the city simulation runs: what it needs, what it charges, what it changes and who sees it (GDD §11: events carry conditions, effects, witnesses). Anything not in this file or in people.rules.json is rejected (§01: unknown = reject). Scales, temperaments, needs, ties, the Talker test, knowledge and the reference approach prices are read from people.rules.json through p: refs and condition kinds, never restated here. Every number lives once in `values`, tagged as the GDD tags it: [B] built and proven in the top-down test, [S] starting value to tune by playtest, [L] later; a value or rule the GDD does not decide carries proposed: true and a reason, for Sky. Conditions are keyed by `k`, effects by `do`, always the first key, so the C# engine reads them as tagged unions. Outcomes are tried in order and the first whose conditions all hold applies; the last has none, so every event resolves to exactly one outcome. `also` entries apply after the outcome, in order.",
+ "reads": {
+  "people": {
+   "path": "contracts/people/people.rules.json",
+   "schema": "suborned.people.rules/1",
+   "reads": [
+    "scales: min, max and named steps; every move clamps to them",
+    "temperaments: respondsTo, refuses and reportsApproach decide an approach's fit; start values",
+    "approaches: requires, usd, timeS and trail are the base price line of each Turn event",
+    "needs.list: metBy (which approach acts on a need), requires (what a replacement need may need)",
+    "ties.kinds: introduces (K5) and between (K4)",
+    "talker: test, facts and lie",
+    "knowledge: needsKnown positions (K9), identity face only, learnedBy witnessed or told",
+    "tiers: only the simulated carry memory and can be questioned (Sky Q5)"
+   ]
+  }
+ },
+ "tags": {
+  "B": "built: proven in the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs) or stated [B] in the GDD",
+  "S": "spec: a starting value the GDD states [S], tuned by playtest",
+  "L": "later: after the capstone"
+ },
+ "units": {
+  "usd": "integer dollars",
+  "s": "integer seconds; the engine steps at 10 Hz (§11), so 1 s = 10 ticks",
+  "m": "metres, compared in 3D (§05 levels)",
+  "trail": "Trail points, integer, campaign scope",
+  "alert": "Alert level, integer 0–3, mission scope",
+  "standing": "district standing, integer: above 0 Hero, below 0 Menace",
+  "orders": "orders of the same approach to the same person",
+  "scale-steps": "steps on a people.rules.json scale",
+  "ticks": "engine ticks, 10 a second",
+  "entries": "memory entries",
+  "hops": "ties crossed by one piece of news",
+  "count": "a plain count",
+  "cm": "centimetres",
+  "cm-per-s": "centimetres a second",
+  "per-mille": "integer weight scale for seeded draws"
+ },
+ "values": {
+  "watch-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-15 (Motive's balance, briefs/011/motive-balance.md): Watch 20 s; §04 Pay requires routine known (Watch); the top-down test's watchCafe was 52 s [B]", "proposed": true, "reason": "Motive balance (brief 011, Suture E-8, T2): at 52 s the informed route A calls at 2:42 and loud (3:38) beats it. At 20 s the call is at 2:10, inside the 2:13-2:47 sweep gap, and route A finishes at 3:33, 5 s before the best loud. Watch keeps its place in the chain (Watch, then Listen, then Help) and Sky's Pay lesson stays on the main path: after Watch the Pay card shows '?' and $90,000 worst case. Sky's steer to more real-time also argues for shorter prep timers." },
+  "listen-s": { "v": 42, "unit": "s", "tag": "B", "src": "§04 Help requires need known (Listen 42 s); top-down test listenInez" },
+  "listen-reach-m": { "v": 3, "unit": "m", "tag": "B", "src": "top-down test listenInez reach 3" },
+  "approach-reach-m": { "v": 4, "unit": "m", "tag": "B", "src": "top-down test askInez, offerInez, turnInez, pressureInez reach 4" },
+  "refusal-usd": { "v": 10000, "unit": "usd", "tag": "B", "src": "§04 Ask cold leaves a remembered refusal: later offers +$10,000; top-down test offerInez, turnInez (+$10,000 when inezRefused)" },
+  "refusal-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "§04 remembered refusal: +1 T; top-down test offerInez, turnInez, pressureInez (+1 T when inezRefused; pressure adds no $)" },
+  "help-orders": { "v": 1, "unit": "orders", "tag": "B", "src": "§07 route A: Fixer helps Inez ($40,000), once" },
+  "worse-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): one more Help; §04 Fearful, Hero: needs Help ×2" },
+  "worse-pay-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price, Keel sets the number", "proposed": true, "reason": "Pay's step is money. $20,000 is twice the refusal surcharge, so a wrong approach costs more than a cold ask's leftover, and it keeps every §04 lesson: a Mercenary is cheapest by Pay ($70,000 < Help ×2 $80,000), a Fearful or Loyal person is cheaper by Help ($80,000 < $90,000) but slower (100 s vs 50 s), and Pay plus the driver stays over the purse." },
+  "worse-pressure-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§04 wrong approach [S] (Sky Q4): a higher price; Pressure's price is Trail", "proposed": true, "reason": "Pressure costs no money, so its step is +1 T (a louder threat), in one order. A second threat instead would add a second +1 resentment and make an Informer of anyone not Fearful (resentment max 2): a cliff, not a step." },
+  "loyal-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 Loyal (institution): trust over time; Hero: turns after repeated Help", "proposed": true, "reason": "'repeated' read as the smallest repeat: one Help more than anyone else, so a Loyal person turns on the second Help even though Help suits them." },
+  "mercenary-hero-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Hero: overcharges; Motive K8 (CK3 additive line items)", "proposed": true, "reason": "the same size as the wrong-approach step, so the preview's lines read in one currency of steps: a Hero district's Mercenary costs what a wrong Pay costs." },
+  "mercenary-menace-usd": { "v": -20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Menace: discount", "proposed": true, "reason": "the mirror of the Hero overcharge: one step off ($50,000 for Inez's reference Pay)." },
+  "standing-start": { "v": 0, "unit": "standing", "tag": "S", "src": "§04 standing: per district, Hero ↔ Menace; neither end loses", "proposed": true, "reason": "every district starts neutral." },
+  "standing-step": { "v": 1, "unit": "standing", "tag": "S", "src": "§04 standing: witnessed acts only; §05 witness moves standing", "proposed": true, "reason": "one step per witnessed incident, as Trail counts one point per incident: one incident counts once." },
+  "hero-at": { "v": 3, "unit": "standing", "tag": "S", "src": "§04 standing table (turning, crowds, fights, street change at each end)", "proposed": true, "reason": "the Hero and Menace columns need a threshold. Three witnessed incidents one way make a district Hero (or Menace at −3): a mission or two of deliberate play, so the player sees it coming and chooses it." },
+  "menace-at": { "v": -3, "unit": "standing", "tag": "S", "src": "§04 standing table", "proposed": true, "reason": "as hero-at, mirrored." },
+  "witness-range-m": { "v": 13, "unit": "m", "tag": "S", "src": "§05 witness [S]: clear sightline within 13 m; §05 levels: in 3D; top-down test inezWitness ≤ 13" },
+  "witness-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§05 witness [S]: +1 T per incident" },
+  "alert-inquiry": { "v": 1, "unit": "alert", "tag": "S", "src": "§05 Alert 1 inquiry [S]: witness report or found fault, once per incident" },
+  "alert-search": { "v": 2, "unit": "alert", "tag": "B", "src": "§05 Alert 2 search [B]: 2nd incident or any gunfire" },
+  "alert-lockdown": { "v": 3, "unit": "alert", "tag": "B", "src": "§05 Alert 3 lockdown [B]: violence seen by a civilian → 3 at once" },
+  "trail-open": { "v": 1, "unit": "trail", "tag": "S", "src": "§05 watchers: once a Trail is open, investigators can pull the log; §08 investigation little at T 0" },
+  "bravery-per-job": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 bravery [S]: +1 step per job completed unexposed" },
+  "resentment-per-exposure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 resentment [S]: +1 step per pressure or exposure" },
+  "resentment-per-pressure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 resentment [S]: +1 step per pressure or exposure" },
+  "fear-per-pressure": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Pressure leaves fear; §05 a threat adds fear; people.rules scales.fear (one step per pressure or threat)" },
+  "loyalty-per-help": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Help leaves gratitude; people.rules scales.loyalty: only being turned raises it", "proposed": true, "reason": "gratitude made a number: each Help that lands is +1 loyalty to the cell (obliged, then trusting). It is what quiets a helped contact under questioning (Talker test) and what keeps a Fearful person from talking once helped (people.rules temperaments.fearful)." },
+  "loyalty-per-volunteer": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Idealist, Hero: volunteers free; standing table: Hero turning is loyal", "proposed": true, "reason": "an Idealist who volunteers in a Hero district starts obliged, as a helped one does." },
+  "violence-bravery": { "v": -1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable: a contact who witnesses loses bravery, gains fear and resentment", "proposed": true, "reason": "one step each way, the size of every other ladder move." },
+  "violence-fear": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable", "proposed": true, "reason": "as violence-bravery." },
+  "violence-resentment": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§06 civilians targetable", "proposed": true, "reason": "as violence-bravery." },
+  "memory-cap": { "v": 8, "unit": "entries", "tag": "S", "src": "Motive K1: capped per person [S]; DF holds 8 short-term memories (dwarf-fortress.md §3)", "proposed": true, "reason": "eight entries hold a person's whole part in a district's campaign (an approach, a job or two, what they saw, what they were told). When full the oldest goes: an old sighting is forgotten, which is the GDD's 'sightings go stale' (§05 counters) made a rule. Fixed size suits the engine's integer arrays." },
+  "word-hops": { "v": 1, "unit": "hops", "tag": "S", "src": "Motive K3: word passes along ties between missions, one hop; §04 knowledge [S] (Sky Q6): news travels along ties as facts", "proposed": true, "reason": "the GDD says news travels along ties; how far is not stated. One hop, between missions only, keeps the spread countable in the debrief." },
+  "word-quiet-loyalty": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§01 pillar subvert people: does knowing more make a person quieter?; Motive's review #10 (briefs/010/motive-rulebook-review.md)", "proposed": true, "reason": "a person who owes the cell (obliged or more) keeps what they saw to themselves; one Help, which needs a Listen, is enough; at 2 a helped Inez would lie to investigators and still tell her family the Fixer's face. Obliged is also the line for reporting and selling." },
+  "introductions-per-contact": { "v": 1, "unit": "count", "tag": "S", "src": "Motive K5: one introduction per contact between missions [S]; §04 between missions: introduces a friend" },
+  "question-s": { "v": 20, "unit": "s", "tag": "S", "src": "§05 investigators [S]: on foot question ~every 20 s" },
+  "hop-min-s": { "v": 60, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
+  "hop-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "§05 investigators: ~60–90 s per hop" },
+  "need-weight-scale": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "§11 integer state; §04 needs (Sky Q2) replacement drawn from the person's own stream", "proposed": true, "reason": "the cast rows weight needs as decimals (cast.schema.ts, ≤ 100). The engine draws in integers only, so the export scales each weight by 1,000 and rounds; the same integers in C# and TS give the same draw." },
+  "op-speed-cm-s": { "v": 140, "unit": "cm-per-s", "tag": "S", "src": "life.json pedestrians.walkSpeed 1.4 m/s [S]", "proposed": true, "reason": "the operatives walk at the world's one walking pace. The top-down test moved them 1.1 units/s on an unscaled map; the real civic block is in metres, and a second pace would make the cell read as faster than the city." },
+  "op-run-speed-cm-s": { "v": 280, "unit": "cm-per-s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md: run at 2.8 m/s (Q2); Syndicate Wars double-click run", "proposed": true, "reason": "2× the walk, so the chip reads half the time. Faster than the response unit's 2.2 m/s [B], and that's fine: the police's threat is cones, guns and the seal, never a foot race." },
+  "act-reach-m": { "v": 6, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): an action's default reach (nearby: reach || 6)" },
+  "loop-s": { "v": 62, "unit": "s", "tag": "B", "src": "§07 route A: Tech loops entrance camera (1:02, tethered); top-down test loopCamera" },
+  "tether-m": { "v": 2, "unit": "m", "tag": "S", "src": "Sky 2026-10-15 playtest: \"Tech was really far from the control box when they could use it\"; §03 Tech tethered while holding. Was 8 m [B] (the top-down test)", "proposed": true, "reason": "the tether is \"stays at the cabinet\" (Aster): the Tech who steps 2 m from the cabinet ends the loop." },
+  "at-reach-cm": { "v": 150, "unit": "cm", "tag": "S", "src": "Sky 2026-10-15 playtest: \"they need to be moved next to it\" (the Tech works the cabinet by hand); Aster: any act on a device or door is at it", "proposed": true, "reason": "Loop and Reroute at the cabinet, Enter at the public door, Extract at the getaway car: the operative stands at it, 1.5 m, not the 6 m act reach [B] that people acts keep." },
+  "reroute-s": { "v": 45, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot 45 s" },
+  "reroute-away-s": { "v": 115, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot: the patrol is away 115 s" },
+  "mislead-s": { "v": 44, "unit": "s", "tag": "B", "src": "§07 route B: Scout false tip on rivals (44 s)" },
+  "false-tip-s": { "v": 230, "unit": "s", "tag": "B", "src": "§05 rivals [B]: false tip: away 3:50" },
+  "enter-s": { "v": 38, "unit": "s", "tag": "B", "src": "§07 route A: Enforcer enters (38 s), exits service door with Vale" },
+  "take-s": { "v": 38, "unit": "s", "tag": "B", "src": "§07 route B: Enforcer intercepts (38 s)" },
+  "mislead-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) delayRival +1 T" },
+  "loop-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) loopCamera +1 T" },
+  "reroute-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) rerouteBot +1 T" },
+  "call-trail": { "v": 1, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) spill, blockCamera +1 T" },
+  "take-trail-unturned": { "v": 2, "unit": "trail", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…) intercept: +2 T unless the driver is a contact" },
+  "response-witness-s": { "v": 12, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a civilian witness reports gunfire, response +12 s" },
+  "response-seen-s": { "v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the guard, a camera or the patrol reports gunfire, response +18 s" },
+  "response-unseen-s": { "v": 45, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): unseen gunfire, response +45 s" },
+  "response-civilian-s": { "v": 8, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a civilian shot (Inez, the driver), response +8 s" },
+  "response-check-in-s": { "v": 20, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the empty post reported, response +20 s" },
+  "response-rivals-unseen-s": { "v": 35, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a firefight with the rivals out of the pickup camera, response +35 s" },
+  "check-in-s": { "v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a downed guard misses his check-in 18 s later" },
+  "seal-s": { "v": 145, "unit": "s", "tag": "B", "src": "§05 security [B]: district seals 2:25 after the response unit arrives" },
+  "security-speed-cm-s": { "v": 220, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the response unit runs 55 units in 25 s" },
+  "rivals-speed-cm-s": { "v": 160, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the rivals cover about 51 units in 32 s" },
+  "rivals-drawn-s": { "v": 16, "unit": "s", "tag": "B", "src": "§05 rivals [B]: gunfire: arrive within 16 s" },
+  "rivals-retreat-s": { "v": 175, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): two hits drive the rivals back 175 s" },
+  "patrol-break-m": { "v": 30, "unit": "m", "tag": "B", "src": "§05 security [B]: patrol sweep, breaks to gunfire within 30 m" },
+  "patrol-period-s": { "v": 100, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the patrol sweep there and back in 100 s" },
+  "patrol-chase-cm-s": { "v": 85, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the chasing patrol moves 0.85 a second" },
+  "near-m": { "v": 3, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): insideFacingCone: anyone within 3 is seen whatever the facing" },
+  "door-reach-m": { "v": 26, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the guard at the door sees 26 deep" },
+  "door-half-m": { "v": 19, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): and 19 either side at that depth" },
+  "facing-reach-m": { "v": 18, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a walking guard or chasing patrol sees 18 ahead (facingCone 18, 9)" },
+  "facing-half-m": { "v": 9, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): 9 either side at that reach" },
+  "security-reach-m": { "v": 19, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the response unit sees 19 ahead" },
+  "rivals-half-m": { "v": 8, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the rivals see 18 ahead, 8 either side" },
+  "patrol-depth-m": { "v": 24, "unit": "m", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the sweeping patrol sees 24 deep" },
+  "patrol-half-base-cm": { "v": 200, "unit": "cm", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth" },
+  "patrol-half-per-mille": { "v": 650, "unit": "per-mille", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): botSightHalfWidth = 2 + 0.65 × depth" },
+  "fight-safe-hostiles": { "v": 5, "unit": "count", "tag": "S", "src": "§07 final fight [S]: 3–5 hostiles; safe: rivals ambush extraction, turned driver −1, earlier false tip −1", "proposed": true, "reason": "the base that §07's two −1s bring down to exactly its range: 5 unprepared, 3 with the driver turned and the rivals tipped off." },
+  "fight-loud-officers": { "v": 2, "unit": "count", "tag": "S", "src": "§07 final fight, loud: police from west street, 2–4 officers", "proposed": true, "reason": "§07 gives the range; the low end is the base, and only violence raises it (fight-loud-alert, fight-loud-civilian), so the count says how loud the run was." },
+  "fight-loud-alert": { "v": 1, "unit": "count", "tag": "S", "src": "§07 loud: 2–4 officers", "proposed": true, "reason": "+1 officer when Alert reached 3 (lockdown): the city sends more to a run a civilian saw." },
+  "fight-loud-civilian": { "v": 1, "unit": "count", "tag": "S", "src": "§07 loud: 2–4 officers; §06 civilians targetable", "proposed": true, "reason": "+1 officer when a civilian was shot: the fourth officer is the price of the ugliest run." },
+  "fight-modifier": { "v": 1, "unit": "count", "tag": "S", "src": "§07 safe: turned driver blocks rival car (−1 rival); earlier false tip (−1 rival)" },
+  "fight-warn-s": { "v": 10, "unit": "s", "tag": "S", "src": "§07 safe: helped Inez warns 10 s early" },
+  "fight-ambush-m": { "v": 20, "unit": "m", "tag": "S", "src": "§07 safe: rivals ambush extraction", "proposed": true, "reason": "the ambush springs when the Enforcer brings Vale within 20 m of the getaway car: close enough that the car is the bait, far enough that the Enforcer can't just step in." },
+  "fight-hold-m": { "v": 25, "unit": "m", "tag": "S", "src": "§07 final fight [S]: always; win: Vale alive at getaway car", "proposed": true, "reason": "the car can't leave while a hostile still stands within 25 m of it: the fight is always fought, as §07 says, and its length is the preparation's measure." },
+  "investigators-base": { "v": 1, "unit": "count", "tag": "S", "src": "§05 investigators [S][L]: count rises with A and T", "proposed": true, "reason": "one investigator works any open Trail; the count is what the debrief reads, so it says how hard the city looks." },
+  "investigators-per-alert": { "v": 1, "unit": "count", "tag": "S", "src": "§05 investigators: count rises with A and T", "proposed": true, "reason": "+1 investigator for each Alert level the mission reached: a lockdown sends four." },
+  "investigator-hops": { "v": 2, "unit": "count", "tag": "S", "src": "§05 investigators: ~60–90 s per hop; useful answer → go there, question again", "proposed": true, "reason": "each investigator follows two leads before the next mission (a hop is one person questioned, §05's 60–90 s, and the debrief reads the result). Two hops are one step up the chain and one more: the Talker who saw the Fixer, then whoever stood where that Talker points." },
+  "run-alert": { "v": 1, "unit": "alert", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §05 Alert 1 [S]: found fault, once per incident", "proposed": true, "reason": "a runner seen by the guard, the patrol, a live camera or the response unit is a found fault: Alert rises to at least 1, once per run order." },
+  "carry-s": { "v": 3, "unit": "s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md §2.4, §2.10: carry a downed operative", "proposed": true, "reason": "lifting a downed operative takes 3 s; then the carrier walks only and doesn't fire (§06 downed: carry or captured)." },
+  "gunfire-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q1; §02 Trail: gunfire is a traceable act", "proposed": true, "reason": "a shooting is a case: the first shot at each target costs +2 T, hit or miss (shots heard on a civic square open a file); the final fight stays untraced. Loud goes to 9 T, above Pressure (8)." },
+  "draw-incident-s": { "v": 5, "unit": "s", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q1: drawn weapons at one place are one incident", "proposed": true, "reason": "Keel: the cell drawing on one order, or one beat apart (c003: the Scout and the Fixer 0.9 s apart), is one sight; a second draw 5 s or more later, or beyond witness range of the first, is a new act. Place is the witness range (witness-range-m)." },
+  "lover-stay-s": { "v": 60, "unit": "s", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4; §07 route A: stays 60 s", "proposed": true, "reason": "one value for every lover in every mission; the mission reads it, never restates it." },
+  "summon-walk-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "keeps a summons local, about one block (≤ 126 m at 1.4 m/s); the Handover's walk fits; bounds the absence at ≤ 4 min, so no generated mission gets an endless lure." },
+  "summon-alert-max": { "v": 1, "unit": "alert", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "he answers through an inquiry (Alert 1) but not a search (Alert 2: security staff stay at their posts): the lure is for a quiet run." },
+  "summons-per-shift": { "v": 1, "unit": "count", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "he can't be missed twice; it also stops call-spam lure loops." },
+  "together-m": { "v": 4, "unit": "m", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.2", "proposed": true, "reason": "watching them together: the mission's near and approach-reach-m, 4 m." },
+  "point-blank-m": { "v": 5, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "can't miss at arm's length: 1000 ‰ inside 5 m." },
+  "pistol-damage": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 pistol 1 dmg" },
+  "pistol-every-ticks": { "v": 15, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "Syndicate-fast: a shot every 1.5 s. The [B] 6 s was a turn-length proxy from the top-down test." },
+  "pistol-eff-m": { "v": 15, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the Handover's fights stand 12–19 m from the car, so a pistol fights at the edge of its effective band." },
+  "pistol-max-m": { "v": 25, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "beyond the cones' 18–22 m: you can hit what can't see you, badly." },
+  "carbine-damage": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 heavier 2–3: the Enforcer's carbine" },
+  "carbine-every-ticks": { "v": 20, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "a shot every 2.0 s." },
+  "carbine-eff-m": { "v": 20, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the carbine fights inside the Handover's 12–19 m spots." },
+  "carbine-max-m": { "v": 30, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "as the pistol's long band, five metres on." },
+  "acc-point": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "point blank: every shot hits." },
+  "acc-eff": { "v": 750, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "effective band: exactly three hits in four (the accumulator)." },
+  "acc-long": { "v": 400, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "long band: two in five, the first a miss." },
+  "acc-start": { "v": 500, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the accumulator's start when a shooter takes a new target: a 50 %+ shot hits first." },
+  "mod-moving": { "v": 500, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md: accuracy halved while walking", "proposed": true, "reason": "walk and shoot halves it; nobody shoots while running." },
+  "mod-cover": { "v": 500, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md: halved again against a target beside cover", "proposed": true, "reason": "a target standing still beside cover; the cover points are Pulse's build-time data (until they land, nobody is beside cover)." },
+  "mod-vale": { "v": 750, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the Enforcer holding Vale fires one-handed." },
+  "mod-untrained": { "v": 750, "unit": "per-mille", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the Scout, the Fixer, the Tech and the rivals are no trained fighters; the Enforcer, officers and the guard are." },
+  "draw-ticks": { "v": 10, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "drawing is a visible beat (1.0 s); the going-loud gate sits on it." },
+  "holster-ticks": { "v": 5, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "holstering takes 0.5 s." },
+  "aim-new-ticks": { "v": 10, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "a shooter whose weapon is drawn fires 1.0 s after taking a new target." },
+  "react-s": { "v": 2, "unit": "s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md: replaces aim-s 3 [B]", "proposed": true, "reason": "a hostile's surprise on first sight of the cell outside a fight." },
+  "line-lapse-s": { "v": 3, "unit": "s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "a fire order holds its aim this long when the line breaks, then lapses." },
+  "sidearm-arms": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md (Q1): the whole cell armed, one sidearm per point of Arms; the Enforcer's carbine is the cell's and uses none" },
+  "health-enforcer": { "v": 6, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health [S][L] brought forward to the Handover" },
+  "health-op": { "v": 4, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: Scout, Fixer, Tech 4" },
+  "health-guard": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: guard/officer 3" },
+  "health-officer": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: guard/officer 3" },
+  "health-rival": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: rival 3" },
+  "health-patrol": { "v": 4, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: patrol unit 4" },
+  "health-civilian": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 health: civilian 2" },
+  "response-officers": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "the response unit as two officers, so downing it is a fight, not one 2-hit target." },
+  "hit-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md: the cost moves from the shot to the victim", "proposed": true, "reason": "+2 T per person hit, once. A dropped guard still costs 4 T, as the [B] two shots did." },
+  "down-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "+2 T more when they go down." },
+  "gunfire-alert": { "v": 2, "unit": "alert", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §05 [B] Alert 2: any gunfire", "proposed": true, "reason": "any gunfire raises Alert to at least 2, in place of +1 a shot: §05's own rule, which settles the §05/§06 conflict the alert rule recorded." },
+  "draw-seen-security-alert": { "v": 2, "unit": "alert", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "a drawn weapon in the cone of the guard, the patrol, a live camera or the response unit: Alert to at least 2, and that watcher engages (Syndicate's police shoot an agent with a weapon out)." },
+  "draw-seen-people-alert": { "v": 1, "unit": "alert", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "a drawn weapon seen within 13 m by people is one witnessed incident: +1 T, Alert at least 1, and they remember the face." },
+  "loud-commit-hold-ticks": { "v": 5, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md (Q4): the going-loud card commits with a 0.5 s hold, no pause", "proposed": true, "reason": "the host's hold; the engine reports it with the going-loud query so the card and the rule share one number." },
+  "enter-alarm-s": { "v": 30, "unit": "s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md (Q5): Enter takes +30 s once Alert ≥ 2", "proposed": true, "reason": "the Office staff hide Vale once the alarm is up: §05's search made physical in the one building that matters, and it keeps route A level with the fastest loud run (T2)." },
+  "cover-snap-cm": { "v": 70, "unit": "cm", "tag": "S", "src": "brief 011 fight AI (Pulse) §5; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a body is beside a cover point within 70 cm: the walk grid cell is 50 cm and the body keeps 65 cm off a solid (plan standards.walking.body.r), so a body that reached the point's cell is within 70 cm of it", "proposed": true },
+  "cover-q-full": { "v": 600, "unit": "per-mille", "tag": "S", "src": "tools/cover/gen.ts RULES.qFull; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a waist-high run seen across a wide arc (800 × (250 + 750 × 40/60) / 1000 = 600) is full cover: the hit modifier mod-cover (Motive, 500 per mille)", "proposed": true },
+  "cover-q-partial": { "v": 350, "unit": "per-mille", "tag": "S", "src": "tools/cover/gen.ts RULES.qPartial; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "below 350 an object is a post or a stump, not cover: it is not written to the file", "proposed": true },
+  "mod-cover-partial": { "v": 750, "unit": "per-mille", "tag": "S", "src": "Motive's mod-cover is 500 (briefs/011/motive-fights.md §2.2); Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "partial cover (a narrow or low object) halves nothing but takes a quarter off: 750 per mille. Motive owns the number", "proposed": true },
+  "cover-retreat-cm": { "v": 200, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §2.4; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "an advancing hostile takes cover no more than 2 m back from its objective: it is going somewhere", "proposed": true },
+  "cover-step-closer-cm": { "v": 300, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §2.4; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a hostile in a fight steps to cover no more than 3 m nearer its target than it stands: cover is for staying alive, not for charging", "proposed": true },
+  "cover-step-gap-s": { "v": 4, "unit": "s", "tag": "S", "src": "brief 011 fight AI §2.4; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "at most one step to cover each 4 s, so a body that has taken cover does not shuffle between two points", "proposed": true },
+  "cover-leave-s": { "v": 2, "unit": "s", "tag": "S", "src": "brief 011 fight AI §2.4; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a body leaves cover only after it has been unprotected from its target for 2 s: the target moved round it", "proposed": true },
+  "ai-engage-lapse-s": { "v": 1, "unit": "s", "tag": "S", "src": "brief 011 fight AI §2.2; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a body that has lost every foe from reach and sight stays stopped 1 s before it advances again, so a foe stepping behind a pier does not make it dance", "proposed": true },
+  "ai-reacquire-s": { "v": 3, "unit": "s", "tag": "S", "src": "Motive line-lapse-s 3 (briefs/011/motive-fights.md §2.4); Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a target reacquired within 3 s of losing it is shot at once: aim-new-s is waived. This is what makes police suppress", "proposed": true },
+  "ai-stop-reach-pct": { "v": 900, "unit": "per-mille", "tag": "S", "src": "brief 011 fight AI §2.2; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "an advancing body halts at 90% of its weapon's effective reach from its foe or objective: inside the band, not on its edge", "proposed": true },
+  "ai-stand-overflow-cm": { "v": 120, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §3.3; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a second body sent to a police stand takes the nearest free cover point within 8 m, else a slot 1.2 m beside the stand (about two body widths)", "proposed": true },
+  "ai-seek-rival-cm": { "v": 800, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §2.3; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "8 m: a run of 5 s at the rivals' 1.6 m/s", "proposed": true },
+  "ai-seek-police-cm": { "v": 800, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §2.3; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "8 m: 3.6 s at 2.2 m/s", "proposed": true },
+  "ai-seek-response-cm": { "v": 1200, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §3.3; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "12 m: the response unit arrives from the street, not from a post, and takes the nearest cover about the stands", "proposed": true },
+  "ai-seek-ally-cm": { "v": 600, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §3.4; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "6 m round the guard's stand", "proposed": true },
+  "ai-seek-guard-cm": { "v": 400, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §3.5; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "4 m round the door: he holds it", "proposed": true },
+  "rival-gone-cm": { "v": 100, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §3.1; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "a rival that broke is gone when it is within 1 m of its car", "proposed": true },
+  "guard-return-s": { "v": 10, "unit": "s", "tag": "S", "src": "brief 011 fight AI §3.5; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "he goes back to the door 10 s after the last foe left his reach", "proposed": true },
+  "patrol-resume-s": { "v": 15, "unit": "s", "tag": "S", "src": "brief 011 fight AI §3.6; Pulse, briefs/011/pulse-fight-ai.md (Motive owns the number)", "reason": "the patrol resumes its sweep 15 s after the last foe left its reach", "proposed": true },
+  "crowd-scatter-m": { "v": 30, "unit": "m", "tag": "S", "src": "Motive §2.7: people within 30 m of gunfire scatter; the same 30 m as patrol-break-m [B]; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "the whole block's square is within 30 m of a fight at the getaway car", "proposed": true },
+  "crowd-startle-ticks": { "v": 5, "unit": "ticks", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "a person starts to run half a second after a shot or a drawn weapon: the half second in which they have witnessed it", "proposed": true },
+  "crowd-startle-fearful-ticks": { "v": 2, "unit": "ticks", "tag": "S", "src": "brief 011 fight AI §4; GDD §04 Fearful; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "a Fearful person bolts first: two ticks. Readable, from a field the player can learn (temperament)", "proposed": true },
+  "crowd-run-cm-s": { "v": 260, "unit": "cm-per-s", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "a civilian runs a little slower than an operative (280): a fleeing person is never faster than the cell", "proposed": true },
+  "crowd-flee-max-cm": { "v": 4000, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "the refuge a person runs to is within 40 m", "proposed": true },
+  "crowd-quiet-s": { "v": 30, "unit": "s", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "people come back 30 s after the last shot", "proposed": true },
+  "crowd-occlude-cm": { "v": 30, "unit": "cm", "tag": "S", "src": "GDD §05 crowds block guard and camera sightlines; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "a person on the street blocks a watcher's sightline that passes within 30 cm of them (a body 60 cm across, head height above the eye); hostiles' own sight ignores people, and a shot never hits one", "proposed": true },
+  "eye-cm": { "v": 160, "unit": "cm", "tag": "S", "src": "§05 levels: sightlines run in 3D", "proposed": true, "reason": "one eye height for everyone, so an occluder blocks a sightline when it spans that height; the top-down test had no heights." }
+ },
+ "standing": {
+  "start": "v:standing-start",
+  "step": "v:standing-step",
+  "hero": "v:hero-at",
+  "menace": "v:menace-at",
+  "rule": "One integer per district. Each witnessed incident of a Hero act adds one step, of a Menace act takes one (traceable[].standing). At or above `hero` the district is in the Hero band, at or below `menace` in the Menace band, otherwise neutral. Only witness.sees moves it: an unwitnessed threat changes nothing (the victim still remembers), and news along ties never does (Sky Q6). Heat (§06) = campaign Trail + max(0, −standing); its threshold is Motive's.",
+  "tag": "S",
+  "src": "§04 standing; §05 witness; §06 Heat = T + Menace standing",
+  "proposed": true,
+  "reason": "the GDD names the axis and what moves it but gives it no scale. A signed integer with two thresholds is the least that lets the temperament table's Hero and Menace columns apply."
+ },
+ "alert": {
+  "levels": ["routine", "inquiry", "search", "lockdown"],
+  "byIncident": ["v:alert-inquiry", "v:alert-search"],
+  "gunfire": "v:gunfire-alert",
+  "violenceSeen": "v:alert-lockdown",
+  "rule": "An incident is one act at one place and time; every shot of one fight with one target is one incident. However many people see or report it, an incident adds witness Trail once, moves standing once, applies the violence move once and raises Alert once: the nth reported incident of a mission raises Alert to at least byIncident[n−1]. Any gunfire raises Alert to at least `gunfire` (§05's own rule; Sky 2026-10-15, briefs/011/motive-fights.md retires §06's +1 A a shot), and calls the response unit. Violence seen by a civilian sets violenceSeen at once. Alert never falls within a mission.",
+  "tag": "S",
+  "src": "§05 Alert table (1 inquiry [S], 2 search [B], 3 lockdown [B]); brief 005 / §14 Keel hold: one incident counts once toward Alert"
+ },
+ "fit": {
+  "from": { "suits": "respondsTo", "refused": "refuses", "otherwise": "worse" },
+  "approaches": {
+   "ask": { "fit": "refused", "tag": "B", "src": "§04 Ask cold: remembered refusal; top-down test askInez: 'No reason for her to trust you yet. She will refuse and remember the approach.'" }
+  },
+  "standing": [
+   { "band": "hero", "temperament": "idealist", "approaches": ["ask"], "fit": "suits", "tag": "S", "src": "§04 Idealist, Hero: volunteers free" },
+   { "band": "menace", "temperament": "idealist", "approaches": ["ask", "pay", "help", "pressure"], "fit": "refused", "tag": "S", "src": "§04 Idealist, Menace: refuses; may report" },
+   { "band": "menace", "temperament": "fearful", "approaches": ["ask"], "fit": "suits", "tag": "S", "src": "§04 Fearful, Menace: folds free" },
+   { "band": "menace", "temperament": "loyal", "approaches": ["ask", "pay", "help", "pressure"], "fit": "refused", "tag": "S", "src": "§04 Loyal, Menace: reports any approach" }
+  ],
+  "rule": "An approach's fit to a person: a standing row for the district's band, the person's temperament and the approach wins; else an approach row; else people.rules.json: an approach the temperament respondsTo suits, one it refuses is refused, any other is worse (Sky Q4: it still works one step worse). The step of a worse approach is its price lines (turn.*). A refused approach fails and leaves a remembered refusal. Hero and Neutral otherwise follow the base rule, so the Fearful's 'needs Help ×2' in a Hero district is the Q4 step itself.",
+  "tag": "S",
+  "src": "§04 temperament [S]; §04 wrong approach [S] (Sky Q4); §04 'Hero and Menace campaigns turn different halves of the city'"
+ },
+ "reports": [
+  {
+   "id": "unwanted-approach",
+   "when": [{ "k": "reports-approach" }, { "k": "fit", "is": ["worse", "refused"] }],
+   "tag": "S",
+   "src": "§04 Loyal (institution): reports any approach; people.rules temperaments.loyal.reportsApproach",
+   "proposed": true,
+   "reason": "people.rules says a Loyal person reports approaches; §04 also says they turn after repeated Help. Read together: they report every approach they do not respond to. In a Menace district nothing suits them (fit table), so they report any approach, as §04's Menace column says; elsewhere they take Help quietly."
+  },
+  {
+   "id": "idealist-in-menace",
+   "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["idealist"] }, { "k": "scale", "scale": "loyalty", "op": "<=", "than": "p:scales.loyalty.min" }],
+   "tag": "S",
+   "src": "§04 Idealist, Menace: refuses; may report",
+   "proposed": true,
+   "reason": "'may' made deterministic from the person's own state: an Idealist in a Menace district reports while they owe the cell nothing (loyalty none). An unturned Idealist's fear never moves (a refused threat moves no scale), so bravery against fear could not change; and a turned Idealist Fighter would have reported every Help. 'Owes you nothing' is the same line as mercenary.sells, so the player learns one threshold (Motive's review #6)."
+  }
+ ],
+ "ladders": {
+  "rule": "The four scales move only on these moves (Motive K2): no roll, no decay. Every move clamps to the scale's people.rules.json min and max.",
+  "moves": {
+   "job-unexposed": { "add": [{ "scale": "bravery", "by": "v:bravery-per-job" }], "tag": "S", "src": "§04 bravery [S]" },
+   "job-exposed": { "add": [{ "scale": "resentment", "by": "v:resentment-per-exposure" }], "tag": "S", "src": "§04 resentment [S]" },
+   "pressure": { "add": [{ "scale": "fear", "by": "v:fear-per-pressure" }, { "scale": "resentment", "by": "v:resentment-per-pressure" }], "tag": "S", "src": "§04 Pressure: fear; resentment grows; §05 counters: threat adds fear" },
+   "help": { "add": [{ "scale": "loyalty", "by": "v:loyalty-per-help" }], "tag": "S", "src": "§04 Help: gratitude", "proposed": true, "reason": "see values.loyalty-per-help." },
+   "volunteer": { "add": [{ "scale": "loyalty", "by": "v:loyalty-per-volunteer" }], "tag": "S", "src": "§04 Idealist, Hero: volunteers free", "proposed": true, "reason": "see values.loyalty-per-volunteer." },
+   "saw-violence": { "add": [{ "scale": "bravery", "by": "v:violence-bravery" }, { "scale": "fear", "by": "v:violence-fear" }, { "scale": "resentment", "by": "v:violence-resentment" }], "tag": "S", "src": "§06 civilians targetable: a contact who witnesses loses bravery, gains fear + resentment", "proposed": true, "reason": "see values.violence-bravery." }
+  },
+  "tag": "S",
+  "src": "§04 bravery, resentment [S]; Motive K2"
+ },
+ "memory": {
+  "entry": ["act", "by", "place", "time", "witnessed"],
+  "cap": "v:memory-cap",
+  "whenFull": "drop the oldest saw-act, saw-runner, saw-gunfire, saw-violence, saw-weapon-drawn or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9)",
+  "faceFacts": { "fixer": "fixer-face" },
+  "acts": {
+   "ask": { "facts": ["place-time"] },
+   "refusal": { "facts": ["place-time"] },
+   "pay": { "facts": ["place-time"] },
+   "help": { "facts": ["place-time"] },
+   "pressure": { "facts": ["place-time"] },
+   "job": { "facts": ["place-time"] },
+   "saw-act": { "facts": ["place-time"] },
+   "rode-car": { "facts": ["cell-car", "place-time"] },
+   "told": { "facts": "as-told" },
+   "saw-runner": { "facts": ["place-time"] },
+   "aborted": { "facts": ["place-time"] },
+   "saw-gunfire": { "facts": ["place-time"] },
+   "saw-violence": { "facts": ["place-time"] },
+   "saw-weapon-drawn": { "facts": ["place-time"] }
+  },
+  "reads": { "helped": "help", "refused": "refusal" },
+  "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`.",
+  "tag": "S",
+  "src": "§04 person = routine + need + temperament + memory; §04 knowledge [S]; Motive K1; people.rules person.memoryAtStart empty"
+ },
+ "exposure": {
+  "rule": "A contact's job this mission is exposed when the city tied the contact to the cell this mission: an investigator questioned the contact, or a watcher logged a cell operative within approach reach (values.approach-reach-m) of the contact. Being seen doing the job is not exposure: a job is an ordinary act and no traceable act (§02). Each completed job is exposed or unexposed, never both.",
+  "tag": "S",
+  "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per pressure or exposure; Motive's review #12",
+  "proposed": true,
+  "reason": "the GDD uses 'exposure' without defining it. Seen doing the job would break route A: the guard sees Inez spill the coffee by design, so every route A would expose her and the bravery ladder would never climb. Both ways that remain are on screen (watcher cones and loops, the questioning icon), so the player can play against them."
+ },
+ "traceable": {
+  "payment": { "standing": "none", "tag": "S", "src": "§02 Trail: traceable acts: visible payments" },
+  "debt-cleared": { "standing": "hero", "tag": "S", "src": "§04 standing, Hero: clear debts publicly", "proposed": true, "reason": "a Help that clears a debt in sight of a witness is the public debt-clearing §04 lists as Hero. It is still a payment, so it adds witness Trail too." },
+  "threat": { "standing": "menace", "tag": "S", "src": "§02 Trail: threats; §04 standing, Menace: public threats" },
+  "gunfire": { "standing": "menace", "tag": "B", "src": "§02 Trail: gunfire; §04 Menace: shoot in crowds; §06 prototype [B]. Made by the fight events (next entries)." },
+  "weapon-drawn": { "standing": "menace", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q5: a drawn weapon seen by people moves standing one step toward Menace per incident; §04 Menace: public threats", "proposed": true, "reason": "a gun shown on a street is the plainest public threat; it mirrors threat, one step per incident (drawings at one place and time are one incident: weapons.costs.drawWindow)." },
+  "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." }
+ },
+ "cell": {
+  "speed": "v:op-speed-cm-s",
+  "runSpeed": "v:op-run-speed-cm-s",
+  "runAlert": "v:run-alert",
+  "reach": "v:act-reach-m",
+  "atReach": "v:at-reach-cm",
+  "loop": { "s": "v:loop-s", "trail": "v:loop-trail", "tether": "v:tether-m" },
+  "reroute": { "s": "v:reroute-s", "trail": "v:reroute-trail", "away": "v:reroute-away-s" },
+  "mislead": { "s": "v:mislead-s", "trail": "v:mislead-trail", "away": "v:false-tip-s" },
+  "call": { "trail": "v:call-trail" },
+  "enter": { "s": "v:enter-s", "alarm": "v:enter-alarm-s" },
+  "carry": { "s": "v:carry-s" },
+  "take": { "s": "v:take-s", "trailUnturned": "v:take-trail-unturned" },
+  "rule": "The cell's verbs other than Turn, Watch and Listen (§03): how long each takes, how near the operative must stand, the Trail it leaves. An act on a device or a door (Loop and Reroute at the cabinet, Enter at the public door, Extract at the getaway car) is done at it, within `atReach`; acts on people keep `reach` (Sky 2026-10-15 playtest). Carry: an operative lifts a downed one in `carry`, then walks only and doesn't fire; a downed operative not brought to the getaway car is captured. An order takes its time and lands at its end; a Call lands at once (the top-down test's spill: the guard walks from the call). Running (Sky 2026-10-15, briefs/011/motive-fights.md): a move with run at runSpeed; refused while carrying Vale or a downed operative, while the Tech holds a loop, or while doing an action; a runner is noticed where an act would be: people remember where and when (and the Fixer's face), security that sees it counts a found fault (runAlert, once per run). Running is free while a fight is on. Enter takes enter.alarm longer once Alert ≥ 2 (the staff hide Vale).",
+  "tag": "B",
+  "src": "§03 cell; §07 route timings; the top-down test; Sky 2026-10-15, briefs/011/motive-fights.md"
+ },
+ "security": {
+  "response": { "witness": "v:response-witness-s", "seen": "v:response-seen-s", "unseen": "v:response-unseen-s", "civilian": "v:response-civilian-s", "checkIn": "v:response-check-in-s", "rivalsUnseen": "v:response-rivals-unseen-s" },
+  "checkIn": "v:check-in-s",
+  "seal": "v:seal-s",
+  "speed": "v:security-speed-cm-s",
+  "rivals": { "speed": "v:rivals-speed-cm-s", "drawn": "v:rivals-drawn-s", "retreat": "v:rivals-retreat-s" },
+  "patrol": { "breakTo": "v:patrol-break-m", "period": "v:patrol-period-s", "chase": "v:patrol-chase-cm-s" },
+  "rule": "Who answers gunfire and how fast. A report calls the response unit (`weapons.health.responseOfficers` officers); the earliest arrival wins and the district seals `seal` after it arrives. The delay is by who reported: a civilian witness, a guard, camera or patrol that saw it, nobody (unseen), a civilian shot, the guard's missed check-in. Gunfire draws the rivals within `rivals.drawn` and the patrol within `patrol.breakTo`. A hostile who first sees the cell outside a fight reacts in `weapons.react`, then fires at its weapon's cadence (Sky 2026-10-15, briefs/011/motive-fights.md: replaces aim 3 s and the per-unit fire rates).",
+  "tag": "B",
+  "src": "§05 security [B], rivals [B]; §06 prototype [B]; the top-down test (Suture M-3: the rulebook carries them, src the prototype)"
+ },
+ "weapons": {
+  "pistol": { "damage": "v:pistol-damage", "every": "v:pistol-every-ticks", "eff": "v:pistol-eff-m", "max": "v:pistol-max-m" },
+  "carbine": { "damage": "v:carbine-damage", "every": "v:carbine-every-ticks", "eff": "v:carbine-eff-m", "max": "v:carbine-max-m" },
+  "pointBlank": "v:point-blank-m",
+  "acc": { "point": "v:acc-point", "eff": "v:acc-eff", "long": "v:acc-long", "start": "v:acc-start" },
+  "mod": { "moving": "v:mod-moving", "cover": "v:mod-cover", "vale": "v:mod-vale", "untrained": "v:mod-untrained" },
+  "draw": "v:draw-ticks",
+  "holster": "v:holster-ticks",
+  "aimNew": "v:aim-new-ticks",
+  "react": "v:react-s",
+  "lineLapse": "v:line-lapse-s",
+  "sidearmArms": "v:sidearm-arms",
+  "health": { "enforcer": "v:health-enforcer", "op": "v:health-op", "guard": "v:health-guard", "officer": "v:health-officer", "rival": "v:health-rival", "patrol": "v:health-patrol", "civilian": "v:health-civilian", "responseOfficers": "v:response-officers" },
+  "costs": { "hit": "v:hit-trail", "down": "v:down-trail", "gunfire": "v:gunfire-trail", "drawWindow": "v:draw-incident-s", "drawSeenSecurity": "v:draw-seen-security-alert", "drawSeenPeople": "v:draw-seen-people-alert", "loudHold": "v:loud-commit-hold-ticks" },
+  "rule": "Who carries what and how a shot lands (Sky 2026-10-15, briefs/011/motive-fights.md). The Enforcer carries the carbine (the cell's); every other operative may carry a pistol, one per `sidearmArms` of Arms (the Handover issues all three); the guard, the patrol, officers and rivals carry pistols; the Enforcer, officers, the guard and the patrol are trained. A shot's accuracy is its band's (inside `pointBlank`, inside the weapon's eff, inside its max) times each modifier that applies, in per mille: the shooter walking (`mod.moving`), the target still beside cover (`mod.cover`), the Enforcer holding Vale (`mod.vale`), an untrained shooter (`mod.untrained`). Hits are deterministic: each shooter keeps an integer accumulator on its target, starting at `acc.start`; each shot adds the accuracy, and at 1000 or more the shot hits and 1000 comes off (750: exactly three in four). A shot does the weapon's damage; health per kind is `health`, at 0 down. The cost moves from the shot to the victim: +`costs.gunfire` T once per shooting (the first shot at each target, hit or miss), +`costs.hit` T per person hit, once, and +`costs.down` more when they go down; the final fight stays untraced (fight.traced). A drawn weapon seen by security raises Alert to `costs.drawSeenSecurity` and that watcher engages; seen by people, it is one witnessed incident (Alert at least `costs.drawSeenPeople`, standing per traceable weapon-drawn), and drawings within `costs.drawWindow` and witness range of it are the same incident (Motive addendum 2026-10-15). Orders: draw (`draw` ticks), holster (`holster`), stance (hold, return, free), fire until down (first shot `aimNew` after taking the target; holds aim `lineLapse` when the line breaks), cease, panic (once a fight is on). A civilian or a contact is a target only when the order says so (the Ctrl case).",
+  "tag": "S",
+  "src": "Sky 2026-10-15, briefs/011/motive-fights.md",
+  "proposed": true,
+  "reason": "Sky approved Motive's five answers on 2026-10-15; the numbers are Motive's calculator's (briefs/011/motive-fights/fights.py), [S] until Suture's frontier runs on the engine."
+ },
+ "ai": {
+  "cover": { "snap": "v:cover-snap-cm", "qFull": "v:cover-q-full", "qPartial": "v:cover-q-partial", "modPartial": "v:mod-cover-partial", "retreat": "v:cover-retreat-cm", "stepCloser": "v:cover-step-closer-cm", "stepGap": "v:cover-step-gap-s", "leave": "v:cover-leave-s" },
+  "engageLapse": "v:ai-engage-lapse-s",
+  "reacquire": "v:ai-reacquire-s",
+  "stopReach": "v:ai-stop-reach-pct",
+  "overflow": "v:ai-stand-overflow-cm",
+  "seek": { "rival": "v:ai-seek-rival-cm", "police": "v:ai-seek-police-cm", "response": "v:ai-seek-response-cm", "ally": "v:ai-seek-ally-cm", "guard": "v:ai-seek-guard-cm" },
+  "rivalGone": "v:rival-gone-cm",
+  "guardReturn": "v:guard-return-s",
+  "patrolResume": "v:patrol-resume-s",
+  "rule": "What a hostile does in a fight (Pulse, briefs/011/pulse-fight-ai.md §2–3; Sky approved real-time shoot-outs, briefs/011/motive-fights.md). One machine: routine, alerted (react; summoned bodies skip it; an ambush waits weapons.aimNew, plus fight.safe.warn if Inez warned), advance (to the cover point the site's cover data gives, else to stopReach of its weapon's effective reach short of its foe or objective; fires nothing while it moves), engage (a foe inside its effective reach on a clear line: stops, takes its target by class: 1 whoever fired at it within weapons.lineLapse, 2 the operative holding Vale, 3 the nearest with a weapon drawn, 4 the nearest; keeps it until down, out of reach or sight for lineLapse, or a better class appears; a new target costs aimNew; steps to cover when unprotected, once each cover.stepGap, and leaves a point unprotected for cover.leave), hold (holders: police, the patrol, a guard; a target reacquired within reacquire is shot at once), break (rivals: more than half the crew down; they run for their car and are gone within rivalGone; no longer combatants, no longer hold the car, no Trail), down. Lapse to hold or advance after engageLapse with no foe in reach. A body beside a cover point (cover.snap) that shields it, standing still, past point blank, is hit at weapons.mod.cover (quality ≥ qFull) or modPartial (≥ qPartial). One body to a cover point. Seek: how far each looks for cover. Police (officers) hold their stand and never break; the response unit joins the loud fight at the nearest police stand (overflow beside a taken one, else the nearest free cover within seek.police); the guard ally runs to his post, taking cover within seek.ally; an engaging guard fights from where he stands and stands down guardReturn after his last foe; the patrol chases to the shot's origin and resumes its sweep patrolResume after its last foe. Shots resolve together at the end of a tick. The crowd's scatter (Pulse §4) is not in yet.",
+  "tag": "S",
+  "src": "Pulse, briefs/011/pulse-fight-ai.md (brief 011); Sky 2026-10-15 approved Motive's briefs/011/motive-fights.md",
+  "proposed": true,
+  "reason": "Pulse's spec, every number his proposal and Motive's to tune; the crowd's values wait for the crowd's states."
+ },
+ "crowd": {
+  "scatter": "v:crowd-scatter-m",
+  "startle": "v:crowd-startle-ticks",
+  "startleFearful": "v:crowd-startle-fearful-ticks",
+  "run": "v:crowd-run-cm-s",
+  "fleeMax": "v:crowd-flee-max-cm",
+  "quiet": "v:crowd-quiet-s",
+  "occlude": "v:crowd-occlude-cm",
+  "rule": "The crowd in a fight (Pulse, briefs/011/pulse-fight-ai.md §4). A person of the city's people on the street is startled by a shot whose shooter stands within `scatter`, seen or not, or by an operative's drawn weapon within witness range on a clear line: they stand `startle` ticks (a Fearful person `startleFearful`), then flee at `run` by the grid to a refuge of the site's cover data (a door or a street mouth) within `fleeMax` that ends farther from the shooter than they stand, the nearest (ties on id), or if none the refuge farthest from the shooter; there they are sheltered, off the street. `quiet` after the last shot they walk back to the stop their routine has for the clock. Witnesses are taken at the shot, before any startle: a person within witness range with a clear line to the shooter or the target remembers saw-gunfire (place, time, the face). Nobody is hit by a stray shot. A person on the street who is not sheltered blocks a watcher's sightline (the guard, the patrol, a camera, the response unit) that passes within `occlude` of them, between two bodies' width of either end; a hostile's own aim ignores people. The four people the Handover casts by role keep their roles: they do not scatter.",
+  "tag": "S",
+  "src": "Pulse, briefs/011/pulse-fight-ai.md §4; §06 citizen actions; §05 crowds block guard and camera sightlines",
+  "proposed": true,
+  "reason": "Pulse's spec; the cast by role keep their places so the mission's contacts stay where its rules need them (Keel)."
+ },
+ "summon": {
+  "stay": "v:lover-stay-s",
+  "walkMax": "v:summon-walk-max-s",
+  "alertMax": "v:summon-alert-max",
+  "perShift": "v:summons-per-shift",
+  "together": "v:together-m",
+  "rule": "The summons (Motive, briefs/011/motive-lovers.md §1.3): a turned contact who is called sends for their lover (people.rules ties.kinds.lover), read from the city's ties, never from the mission. The lover leaves where he is, walks the grid to the caller at walking pace (cell.speed), stays `stay` and walks back. Refused, at no cost and with its code, when he is off the street, busy (down, held, engaged in a fight, or already away), more than `walkMax` away, Alert is above `alertMax`, he holds a memory of the cell's gunfire, violence or drawn weapon, or he has come `perShift` times this shift. Alert reaching above `alertMax` ends the visit: he runs back at security's pace. The visit is no act of the cell: the call keeps cell.call.trail. A contact's role job (the driver's camera block) is the call's other use. `together`: a Watch that ends with two lovers within it teaches the cell their affair (people.rules secrets).",
+  "tag": "S",
+  "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door",
+  "proposed": true,
+  "reason": "systems over scripts: any turned contact with an eligible lover is a lure, in every generated mission (Motive §1.3). Keel models the visit for a lover with a post (the guard), as the Handover needs; another lover is refused until a routine can be left."
+ },
+ "cancel": {
+  "move": "stop",
+  "draw": "holster",
+  "fire": "cease",
+  "watch": "lost",
+  "listen": "lost",
+  "turn": "aborted",
+  "loop": "lost",
+  "loopHeld": "ends",
+  "reroute": "lost",
+  "mislead": "lost",
+  "enter": "staff-report",
+  "take": "vale-reports",
+  "carry": "lost",
+  "carrying": "put-down",
+  "rule": "A cancel order stops what one operative is doing now, the activity the HUD shows: an act in progress first, then a walk or run, then a fire order, then a draw, then a loop held, then a downed operative carried. Each verb's line says what cancelling it costs or keeps. stop: the operative stands where they are. holster: a draw not yet done goes back. cease: the fire order ends, the weapon stays drawn. lost: the act's time is spent and nothing lands (Watch and Listen learn nothing; a Loop, Reroute, Mislead or lift not finished does nothing; their Trail is charged only when they land). aborted: the approach stops mid-conversation; the money held for it comes back (the engine holds the price at the order and pays it only in the outcome's charge, Redline E2), no Trail, and the person remembers an aborted approach (memory act `aborted`, with the Fixer's face): it is no refusal, so the approach may be tried again, but it is a fact an investigator can get. ends: the loop stops and the camera comes back. staff-report: the Enforcer comes back out at the public door without Vale; the Office staff report the intruder, one reported incident (alert.byIncident). vale-reports: Vale is let go at his car and reports the attempt, one reported incident, and he remembers the aborted take (memory act `aborted`, the Enforcer's face), so an investigator who questions him finds a lead (Motive addendum Q4). put-down: the carried operative is laid down where the carrier stands. Extract is instant and has nothing to cancel. Putting Vale down is no cancel: the Enforcer keeps him (a rule of its own if Sky wants one). The verbs whose line may change take one of: turn aborted or lost; enter staff-report or quiet; take vale-reports or quiet.",
+  "tag": "S",
+  "src": "Sky 2026-10-15 playtest: \"there's nothing showing me what the cell player is doing when they're busy, nor is there a way to cancel their action\" (Aster)",
+  "proposed": true,
+  "reason": "Accepted by Motive (addendum 2026-10-15 Q4; no put-Vale-down rule in the Handover). Keel's proposal: cancelling an act already under way spends its time and lands nothing, as a refusal does; the money held comes back because it was never handed over; the two acts that put a stranger in front of someone (Enter, Take) leave a report, as an interrupted intrusion would; a broken-off approach leaves the person the Fixer's face but no refusal, so cancel is no free retry of a bad card but no punishment like a refusal either."
+ },
+ "perception": {
+  "near": "v:near-m",
+  "eye": "v:eye-cm",
+  "door": { "reach": "v:door-reach-m", "half": "v:door-half-m" },
+  "facing": { "reach": "v:facing-reach-m", "half": "v:facing-half-m" },
+  "security": { "reach": "v:security-reach-m", "half": "v:facing-half-m" },
+  "rivals": { "reach": "v:facing-reach-m", "half": "v:rivals-half-m" },
+  "patrol": { "depth": "v:patrol-depth-m", "halfBase": "v:patrol-half-base-cm", "halfPerMille": "v:patrol-half-per-mille" },
+  "rule": "A watcher sees a point inside its cone (ahead within reach, and to the side within half × ahead ÷ reach) or within `near` whatever its facing, along a sightline no occluder crosses at eye height (§05 levels: 3D). A camera's cone is its site's; a guard at his door, a walking guard, a chasing patrol, the response unit and the rivals use these. The sweeping patrol's cone widens with depth.",
+  "tag": "B",
+  "src": "§05 cameras, watchers, levels; the top-down test's cones"
+ },
+ "fight": {
+  "safe": { "hostiles": "v:fight-safe-hostiles", "minus": "v:fight-modifier", "warn": "v:fight-warn-s", "ambush": "v:fight-ambush-m" },
+  "loud": { "officers": "v:fight-loud-officers", "alert": "v:fight-loud-alert", "civilian": "v:fight-loud-civilian" },
+  "hold": "v:fight-hold-m",
+  "traced": false,
+  "tracedReason": "Sky 2026-10-15: off. The final fight's shots add no Trail and no Alert: the fight is the consequence, not a new act. Shots before it count as every shot does (§06 [B] +2 T, +1 A), so a loud run is still loud. The fight's shots still draw the patrol, which answers gunfire.",
+  "rule": "The final fight (§07 [S]: always; 30–60 s; 3–5 hostiles) starts when the Enforcer has Vale. Loud (any shot or Alert ≥ 2): police officers run in from the response unit's entry, base `loud.officers`, +`loud.alert` if Alert reached 3, +`loud.civilian` if a civilian was shot; the seal clock runs; no allies. Safe (no shots, Alert ≤ 1): the rival crew ambushes the extraction when the Enforcer brings Vale within `safe.ambush` of the getaway car: `safe.hostiles`, −`safe.minus` if the driver is turned (he blocks the rival car), −`safe.minus` if the rivals were tipped off earlier; a helped Inez warns `safe.warn` early (the first volley comes that much later); the guard, if he never saw the cell and was never shot, runs in and fights them (he fires as a guard does). Every hostile drops at `cell.fire.hits` hits. Each hostile fires at its own weapon's cadence (Sky 2026-10-15, briefs/011/motive-fights.md: the volley is retired); the car can't leave while one stands within `hold` of it.",
+  "tag": "S",
+  "src": "§06 fights; §07 final fight [S], loud and safe"
+ },
+ "investigation": {
+  "base": "v:investigators-base", "perAlert": "v:investigators-per-alert", "hops": "v:investigator-hops",
+  "rule": "Between the mission and its debrief the city works the Trail (§05 output: findings → debrief Investigation state → next mission). If campaign Trail is at least trail-open, base + perAlert × the mission's Alert investigators each follow `hops` leads. A lead is an incident (an act seen, a shooting, a report: its place, time and witnesses) or a watcher's sighting (§05 watchers: place + time); the newest unfollowed lead goes first. At a lead they question the simulated people who saw it (Sky Q5), nearest first, then by id, one person a hop, each at most once, through investigator.question: a Talker gives every fact they hold and each fact's place-time becomes a lead; a liar gives what people.rules talker.lie says; anyone else, or anyone holding nothing, gives nothing and the hop is spent (K6). A contact questioned is exposed (rulebook exposure). The debrief names the cause: a named witness who gave up the Fixer's face takes precedence over the Trail count (§08).",
+  "tag": "S", "src": "§05 investigators [S][L], watchers [S]; §08 debrief [B]: named witnesses take precedence; rulebook investigator.question", "proposed": true, "reason": "the GDD's investigators walk the district live [L]; for the capstone their work is done between the mission and the debrief, with the same rules, so the debrief can name its cause from what people actually saw and said."
+ },
+ "preview": {
+  "rule": "Every order shows its full price before commit (§02) as additive line items (Motive K8): the base line, then every line whose conditions hold, each with its label. While the cell does not know the target's temperament (Sky Q3), a line or outcome whose answer differs between the temperaments in the district's band shows '?' (its amount still shows, so the price is always on the card); one that every temperament answers alike shows its answer (Ask in a neutral district reads 'refused', not '?': Motive's review, other findings 3). Commit needs cash for the worst case (base + every line that holds or shows '?'); only lines that hold are charged. Help's `orders` lines change how many Helps turn the person, each order paying the per-order lines. No approach tells the cell the temperament (Sky: only Listen does); a refusal tells it only that this approach is refused by this person, so that card shows refused (✗) from then on (Aster's reading, 2026-10-15).",
+  "unknown": "?",
+  "knownBy": ["scout.listen"],
+  "knownByRule": "The one switch for what reveals a temperament: completing an event listed in knownBy teaches the cell the subject's temperament. Sky, 2026-10-15 (Motive's fork, option A): Listen reveals need and temperament, Watch reveals routine only. Eyes give where and when, ears give who they are: after Watch alone, Pay shows '?' and an Idealist refuses it and remembers. GDD §04's preview line ('until Watch or Listen reveals the temperament') changes at the next version.",
+  "tag": "S",
+  "src": "§02 every order shows its full price; §04 preview (Sky Q3); Motive K8; Sky 2026-10-15: Listen alone reveals the temperament"
+ },
+ "streams": {
+  "hash": "fnv1a-32",
+  "generator": "mulberry32",
+  "draw": "integer",
+  "keys": { "need-replace": "{person}/need/{mission}" },
+  "weightScale": "v:need-weight-scale",
+  "weights": "the person's cast row need weights (cast.schema.ts Row.needs, with the expander's position filter) × weightScale, rounded to integers at export",
+  "rule": "Every runtime draw takes its own stream keyed by entity and stage, and a new stage takes a new key, never draws from an old one (dwarf-fortress.md §8). hash: FNV-1a 32-bit over the key's UTF-16 code units (tools/world/gen/common.ts hash32). generator: mulberry32 seeded by the hash, 0 → 1 (common.ts rng). draw: u = the generator's next 32-bit output; x = floor(u × total ÷ 2^32) in 64-bit integers; walk the candidates in order, subtracting each weight; the first that takes x below 0 wins. {mission} is the campaign's mission number, 1-based, of the mission just played.",
+  "tag": "S",
+  "src": "§01 same orders → same result; §04 needs (Sky Q2): drawn from the person's own stream (id + mission number); tools/people/expand.ts rng(`${id}/need`)"
+ },
+ "phases": {
+  "mission-start": ["keeper.tips"],
+  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "contact.introduces"],
+  "iterate": "within a phase, events in the order listed; within an event, subjects by person id in ordinal order (C# string.CompareOrdinal, JS <)",
+  "tag": "S",
+  "src": "§04 between missions; §08 debrief [B] → next mission; §11 exact replay"
+ },
+ "debrief": {
+  "lines": {
+   "turned-how": { "fields": ["who", "approach", "price"], "src": "§08 assets: how turned, what they saw" },
+   "not-yet": { "fields": ["who", "approach", "orders-left"], "src": "§04 wrong approach (Sky Q4): one more Help" },
+   "kept": { "fields": ["who", "need", "loyalty"], "src": "§04 Help: gratitude" },
+   "refused": { "fields": ["who", "approach", "temperament"], "src": "§04 remembered refusal" },
+   "give-up": { "fields": ["who", "fact", "left", "right"], "src": "Motive K7: 'X gave up the Fixer's face because fear 2 + resentment 1 > bravery 1', each side the Talker test's scales with their step words (people.rules scales.*.steps); §08 [B]" },
+   "lie": { "fields": ["who", "gives", "bravery", "helped"], "src": "§04 brave helped contact lies; §05 Hero campaign: false leads" },
+   "ladder": { "fields": ["who", "move", "scale", "from", "to"], "src": "§08 debrief: bravery, resentment per contact [S]; Motive K2" },
+   "informer": { "fields": ["who", "resentment"], "src": "§04 resentment: Informer sells a route → ambush scheduled later" },
+   "sold": { "fields": ["who", "standing"], "src": "§04 Mercenary, Menace: sells you to highest bidder" },
+   "need-replaced": { "fields": ["who", "old", "new", "told"], "src": "§04 needs (Sky Q2)" },
+   "word": { "fields": ["who", "fact", "to", "tie"], "src": "Motive K3: listed in the debrief" },
+   "tie-lapsed": { "fields": ["who", "with", "kind", "why"], "src": "Motive K4" },
+   "introduced": { "fields": ["who", "friend", "tie"], "src": "§04 between missions: introduces a friend; Motive K5" }
+  },
+  "rule": "Every change between missions and every give-up is a debrief line with its cause (§08 [B]: the debrief reports each with cause). The fields are data; Fable writes the words, Glyph lays them out.",
+  "tag": "B",
+  "src": "§08 debrief [B]; §04 between missions: debrief reports each with cause"
+ },
+ "events": [
+  {
+   "id": "scout.watch",
+   "by": "scout",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky 2026-10-15: Watch reveals routine only (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: a Watch that ends with two lovers together reveals their affair",
+   "needs": [{ "k": "tier", "is": "simulated" }],
+   "price": [{ "line": "base", "s": "v:watch-s" }],
+   "outcomes": [
+    { "id": "watched", "when": [], "changes": [{ "do": "learn", "what": ["routine"], "of": "subject" }] }
+   ],
+   "also": [{ "when": [{ "k": "lover-within", "m": "v:together-m" }], "changes": [{ "do": "learn", "what": ["secret"], "of": "subject" }] }]
+  },
+  {
+   "id": "scout.listen",
+   "by": "scout",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky 2026-10-15: Listen reveals need and temperament (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: and the secret (an affair teaches the tie and the secret on both lovers)",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "known", "what": "routine" }, { "k": "reach", "m": "v:listen-reach-m" }],
+   "price": [{ "line": "base", "s": "v:listen-s" }],
+   "outcomes": [
+    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need", "secret"], "of": "subject" }] }
+   ]
+  },
+  {
+   "id": "turn.ask",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Ask cold, requires nothing, $0, 25 s, +1 T, leaves a remembered refusal; §04 Idealist Hero volunteers free, Fearful Menace folds free",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "requires", "approach": "ask" },
+    { "k": "memory", "act": "refusal", "has": false },
+    { "k": "reach", "m": "v:approach-reach-m" }
+   ],
+   "price": [{ "line": "base", "usd": "p:approaches.ask.usd", "s": "p:approaches.ask.timeS", "trail": "p:approaches.ask.trail" }],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "ask" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "standing", "band": ["hero"] }], "changes": [{ "do": "move", "on": "volunteer" }] },
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "standing", "band": ["menace"] }], "changes": [{ "do": "move", "on": "pressure" }] },
+    { "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }
+   ]
+  },
+  {
+   "id": "turn.pay",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Pay, routine known, $70,000, 50 s, +2 T, traceable payment; §04 Mercenary Hero overcharges, Menace discount; Sky Q4",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "requires", "approach": "pay" },
+    { "k": "reach", "m": "v:approach-reach-m" },
+    { "k": "cash-covers" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.pay.usd", "s": "p:approaches.pay.timeS", "trail": "p:approaches.pay.trail" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "usd": "v:refusal-usd", "trail": "v:refusal-trail" },
+    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }], "usd": "v:worse-pay-usd" },
+    { "line": "hero-overcharge", "when": [{ "k": "standing", "band": ["hero"] }, { "k": "temperament", "in": ["mercenary"] }], "usd": "v:mercenary-hero-usd" },
+    { "line": "menace-discount", "when": [{ "k": "standing", "band": ["menace"] }, { "k": "temperament", "in": ["mercenary"] }], "usd": "v:mercenary-menace-usd" }
+   ],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "turn" }, { "do": "remember", "act": "pay" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "need-met-by", "approach": "pay" }], "changes": [{ "do": "need-met" }] },
+    { "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }
+   ],
+   "witnesses": [{ "when": [{ "k": "outcome", "is": ["turned"] }], "act": "payment" }]
+  },
+  {
+   "id": "turn.help",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Help, need known, $40,000, 50 s, +1 T, gratitude; §04 wrong approach (Sky Q4): one more Help; Loyal turns after repeated Help; §07 route A, route B",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "requires", "approach": "help" },
+    { "k": "need-met-by", "approach": "help" },
+    { "k": "need-met", "is": false },
+    { "k": "reach", "m": "v:approach-reach-m" },
+    { "k": "cash-covers" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.help.usd", "s": "p:approaches.help.timeS", "trail": "p:approaches.help.trail", "orders": "v:help-orders" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "usd": "v:refusal-usd", "trail": "v:refusal-trail" },
+    { "line": "one-more-help", "when": [{ "k": "turned", "is": false }, { "k": "fit", "is": ["worse"] }], "orders": "v:worse-help-orders" },
+    { "line": "trust-over-time", "when": [{ "k": "turned", "is": false }, { "k": "temperament", "in": ["loyal"] }, { "k": "fit", "is": ["suits"] }], "orders": "v:loyal-help-orders" }
+   ],
+   "outcomes": [
+    { "id": "kept", "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "kept" }] },
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [{ "k": "orders-reached", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "turn" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "turned-how" }] },
+    { "id": "not-yet", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "not-yet" }] }
+   ],
+   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
+   "witnesses": [
+    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["debt"] }], "act": "debt-cleared" },
+    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["cash"] }], "act": "payment" }
+   ]
+  },
+  {
+   "id": "turn.pressure",
+   "by": "fixer",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§04 approaches [B]: Pressure, need known, $0, 35 s, +3 T, fear, resentment grows, can identify Fixer; Sky Q4 one step worse; Motive, briefs/011/motive-lovers.md (2026-10-15) §2.2: a known secret is Pressure's leverage (needs no pressable need, no wrong-approach step, a Loyal person pressed by exposure doesn't report it)",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "turned", "is": false },
+    { "k": "leverage", "approach": "pressure" },
+    { "k": "reach", "m": "v:approach-reach-m" }
+   ],
+   "price": [
+    { "line": "base", "usd": "p:approaches.pressure.usd", "s": "p:approaches.pressure.timeS", "trail": "p:approaches.pressure.trail" },
+    { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "trail": "v:refusal-trail" },
+    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }, { "k": "known", "what": "secret", "is": false }], "trail": "v:worse-pressure-trail" }
+   ],
+   "outcomes": [
+    { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
+    { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "pressure" }, { "do": "turn" }, { "do": "remember", "act": "pressure" }, { "do": "debrief", "line": "turned-how" }] }
+   ],
+   "also": [{ "when": [{ "k": "reports" }, { "k": "known", "what": "secret", "is": false }], "changes": [{ "do": "report" }] }],
+   "witnesses": [{ "act": "threat" }]
+  },
+  {
+   "id": "contact.job",
+   "by": "contact",
+   "phase": "mission",
+   "tag": "B",
+   "src": "§03 Fixer calls contacts in on cue; §07 route A: Fixer calls Inez (the coffee spill); top-down test spill",
+   "needs": [{ "k": "turned", "is": true }, { "k": "called", "is": true }],
+   "outcomes": [
+    { "id": "done", "when": [], "changes": [{ "do": "remember", "act": "job" }] }
+   ]
+  },
+  {
+   "id": "witness.sees",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "§05 witness [S]: clear sightline within 13 m of a traceable act → +1 T per incident, moves standing; §05 levels: 3D; Sky Q5: background witnesses add T, A and standing but carry no state; §06 a contact who witnesses violence",
+   "needs": [
+    { "k": "act", "in": ["payment", "debt-cleared", "threat", "gunfire", "violence"] },
+    { "k": "within", "m": "v:witness-range-m", "sightline": "3d" },
+    { "k": "cell", "is": false }
+   ],
+   "outcomes": [
+    { "id": "seen", "when": [], "changes": [{ "do": "trail", "add": "v:witness-trail", "per": "incident" }, { "do": "standing", "step": "v:standing-step", "per": "incident" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "tier", "is": "simulated" }], "changes": [{ "do": "remember", "act": "saw-act" }] },
+    { "when": [{ "k": "act", "in": ["violence"] }], "changes": [{ "do": "alert", "atLeast": "v:alert-lockdown", "per": "incident" }] },
+    { "when": [{ "k": "act", "in": ["violence"] }, { "k": "turned", "is": true }], "changes": [{ "do": "move", "on": "saw-violence" }] }
+   ]
+  },
+  {
+   "id": "investigator.question",
+   "by": "investigator",
+   "phase": "mission",
+   "tag": "S",
+   "src": "§05 investigators [S][L]; §04 talker [S]; Sky Q5: simulated people only; Motive K6: a person holding no fact gives nothing and the hop is still spent; §02 the city investigates backward, link by link",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "trail", "atLeast": "v:trail-open" }],
+   "price": [{ "line": "base", "s": "v:question-s" }],
+   "outcomes": [
+    { "id": "holds-nothing", "when": [{ "k": "holds-fact", "is": false }], "changes": [{ "do": "spend-hop" }] },
+    { "id": "gives", "when": [{ "k": "talker", "is": true }], "changes": [{ "do": "lead", "from": "facts" }, { "do": "debrief", "line": "give-up" }] },
+    { "id": "lies", "when": [{ "k": "lies", "is": true }], "changes": [{ "do": "lead", "from": "lie" }, { "do": "debrief", "line": "lie" }] },
+    { "id": "nothing", "when": [], "changes": [{ "do": "spend-hop" }] }
+   ],
+   "also": [{ "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "expose" }] }],
+   "how": [
+    "picks: the unit questions simulated people near the lead it follows: first those who had a clear sightline to the lead's place at the lead's time within witness range, then by distance, then by person id (§05: by sightline + distance, not luck)",
+    "gives: every fact the person holds becomes a lead (place + time); facts point to where others saw the next link, so one answer is one step up the chain",
+    "lies: people.rules talker.lie.gives by the district's band (hero: a false lead, otherwise nothing). A false lead points at the place of the liar's own routine farthest from the true fact's place, at the fact's time; ties by place id (proposed: a lie the liar could tell, never a random place)",
+    "follows: after an answer the unit follows the newest lead it holds (latest time, then people.rules talker.facts order); a lead followed is spent, so a place nobody saw anything newer at ends the trail (§05 counters: keep moving, sightings go stale)"
+   ],
+   "band": { "what": "one hop (travel + question) at the civic block, checked by the mission checker, not a parameter", "s": ["v:hop-min-s", "v:hop-max-s"] }
+  },
+  {
+   "id": "keeper.tips",
+   "by": "contact",
+   "phase": "mission-start",
+   "tag": "S",
+   "src": "§08 economy [S]: café owner tips needs before Scout listens; people.rules knowledge.needsKnown; Motive K9",
+   "needs": [{ "k": "turned", "is": true }, { "k": "keeper-position" }],
+   "outcomes": [
+    { "id": "tips", "when": [], "changes": [{ "do": "learn", "what": ["need"], "of": "needs-known" }] }
+   ],
+   "how": ["the people tipped are the people export's knowledge.needsKnown[keeper].knows. Only the need is learned: the temperament stays unknown, so the preview shows '?' for them until Listen (Sky Q3; preview.knownBy)"]
+  },
+  {
+   "id": "ladder.job",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 bravery: +1 per job completed unexposed; resentment: +1 per exposure; Motive K2",
+   "needs": [{ "k": "turned", "is": true }, { "k": "memory", "act": "job", "has": true, "this": "mission" }],
+   "outcomes": [
+    { "id": "exposed", "when": [{ "k": "exposed", "is": true }], "changes": [{ "do": "move", "on": "job-exposed" }, { "do": "debrief", "line": "ladder" }] },
+    { "id": "unexposed", "when": [], "changes": [{ "do": "move", "on": "job-unexposed" }, { "do": "debrief", "line": "ladder" }] }
+   ],
+   "how": ["once per job done this mission, in the order the jobs were done"]
+  },
+  {
+   "id": "contact.informs",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 resentment [S]: Informer sells a route → ambush scheduled later; §06 frequency",
+   "needs": [{ "k": "turned", "is": true }, { "k": "scale", "scale": "resentment", "op": ">=", "than": "p:scales.resentment.max" }],
+   "outcomes": [
+    { "id": "informs", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "informer" }] }
+   ],
+   "how": ["one ambush per next mission however many contacts sell or inform; each one is a debrief line (Motive's review #4)"]
+  },
+  {
+   "id": "mercenary.sells",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 Mercenary, Menace: sells you to highest bidder; §05 rivals: same target, own schedule",
+   "needs": [
+    { "k": "turned", "is": true },
+    { "k": "temperament", "in": ["mercenary"] },
+    { "k": "standing", "band": ["menace"] },
+    { "k": "scale", "scale": "loyalty", "op": "<=", "than": "p:scales.loyalty.min" },
+    { "k": "scale", "scale": "resentment", "op": "<", "than": "p:scales.resentment.max" }
+   ],
+   "outcomes": [
+    { "id": "sells", "when": [], "changes": [{ "do": "schedule", "fight": "ambush" }, { "do": "debrief", "line": "sold" }] }
+   ],
+   "how": ["one ambush per next mission however many contacts sell or inform; each one is a debrief line (Motive's review #4)"],
+   "proposed": true,
+   "reason": "'sells you' made deterministic: a Mercenary contact in a Menace district who owes the cell nothing (loyalty none) sells a route to the rivals, with the Informer's effect. One Help (loyalty obliged) buys them off. The resentment condition keeps one contact from scheduling two ambushes."
+  },
+  {
+   "id": "need.replaced",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 needs [S] (Sky Q2): a met need is replaced between missions, drawn from the person's own stream (id + mission number); a turned contact tells it free in the debrief, anyone else needs Listen again",
+   "needs": [{ "k": "tier", "is": "simulated" }, { "k": "need-met", "is": true }],
+   "outcomes": [
+    { "id": "replaced", "when": [], "changes": [{ "do": "replace-need", "stream": "need-replace" }, { "do": "debrief", "line": "need-replaced" }] }
+   ],
+   "also": [
+    { "when": [{ "k": "turned", "is": true }], "changes": [{ "do": "learn", "what": ["need"], "of": "subject" }] },
+    { "when": [{ "k": "turned", "is": false }], "changes": [{ "do": "forget", "what": ["need"] }] }
+   ],
+   "how": ["candidates: people.rules needs.list in its order, each whose `requires` the person meets and whose metBy shares an approach with the temperament's respondsTo (the expander's own rule, tools/people/expand.ts), never the need just met; weights from streams.weights", "the new need is unmet: replace-need clears the need-met flag, so turn.help's need-met guard opens again (Motive's review, other findings 5)"]
+  },
+  {
+   "id": "word.passes",
+   "by": "person",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 knowledge [S] (Sky Q6): news travels along ties as facts, never opinion; standing stays witnessed acts only; §01 information moves through people; Motive K3",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "holds-fact", "is": true, "how": "witnessed" },
+    { "k": "scale", "scale": "loyalty", "op": "<", "than": "v:word-quiet-loyalty" }
+   ],
+   "outcomes": [
+    { "id": "told", "when": [], "changes": [{ "do": "tell", "along": ["family", "workmate"], "hops": "v:word-hops" }, { "do": "debrief", "line": "word" }] }
+   ],
+   "how": ["each fact the person holds from an entry that is not `told` goes to each partner on a family or workmate tie who does not hold it, as a `told` entry with the fact's place and time. Facts only: no scale, standing or memory of the act itself moves (Sky Q6)"],
+   "proposed": true,
+   "reason": "Motive's K3 sets family and workmate ties and one hop; the quiet rule (an obliged contact passes nothing) is new, see values.word-quiet-loyalty."
+  },
+  {
+   "id": "tie.lapses",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "Motive K4: a regular tie lapses when the routine stops visiting; family and rival ties never decay; people.rules ties.kinds.*.between",
+   "needs": [{ "k": "tie", "kinds": ["regular", "workmate"] }, { "k": "tie-between-holds", "is": false }],
+   "outcomes": [
+    { "id": "lapsed", "when": [], "changes": [{ "do": "lapse-tie" }, { "do": "debrief", "line": "tie-lapsed" }] }
+   ],
+   "how": ["a tie of a listed kind whose people.rules `between` no longer holds (a promotion or arrest moved the routine or the employer) lapses. Family and rival ties are never listed: they never lapse"],
+   "proposed": true,
+   "reason": "Motive K4 names regular ties; workmate ties rest on the same kind of fact (the same employer), so they lapse the same way."
+  },
+  {
+   "id": "debtor.lapses",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "people.rules ties.kinds.debtor (who owes whom); §04 Help (clear debt)",
+   "needs": [{ "k": "tie", "kinds": ["debtor"] }, { "k": "need-is", "in": ["debt"] }, { "k": "need-met", "is": true }],
+   "outcomes": [
+    { "id": "lapsed", "when": [], "changes": [{ "do": "lapse-tie" }, { "do": "debrief", "line": "tie-lapsed" }] }
+   ],
+   "how": ["runs before need.replaced (phases), so it reads the debt that was met this mission, not its replacement"],
+   "proposed": true,
+   "reason": "a cleared debt ends the tie that carried it; otherwise the creditor keeps leverage over someone who owes nothing."
+  },
+  {
+   "id": "contact.introduces",
+   "by": "contact",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "§04 between missions: introduces a friend (new contact); §08 Inez introduces café contacts; people.rules ties.kinds.*.introduces; Motive K5",
+   "needs": [
+    { "k": "turned", "is": true },
+    { "k": "scale", "scale": "resentment", "op": "<", "than": "p:scales.resentment.max" },
+    { "k": "introduces-along" },
+    { "k": "turned", "is": false, "of": "friend" },
+    { "k": "memory", "act": "refusal", "has": false, "of": "friend" },
+    { "k": "count", "event": "contact.introduces", "below": "v:introductions-per-contact" }
+   ],
+   "outcomes": [
+    { "id": "introduced", "when": [], "changes": [{ "do": "learn", "what": ["routine", "need", "temperament"], "of": "friend" }, { "do": "debrief", "line": "introduced" }] }
+   ],
+   "order": "the player picks the friend in the debrief, from the contact's ties whose kind introduces; no pick, no introduction. The pick is an order, so a replay holds it",
+   "proposed": true,
+   "reason": "the GDD says a friend is introduced but not what that gives. Here an introduction makes the friend known (routine, need and temperament: a Watch and a Listen saved, 94 s on the Handover's numbers), and turning them is still the player's order at the full price. Turning them for free would skip the price §04 is built on."
+  }
+ ]
+}

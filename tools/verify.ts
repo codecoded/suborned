@@ -1,8 +1,9 @@
-// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast held to its run. Exit 0 only if all hold.
-import { readdirSync } from 'node:fs';
+// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast and any promoted dialogue tables held to their runs. Exit 0 only if all hold.
+import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inProcess } from './levels/checker';
 import { runDirs, runsRoot } from './gen/paths';
+import { checkPromotion as checkVoices } from './dialogue/promoted';
 import { checkPromotion } from './people/promoted';
 import { root } from './rag/config';
 
@@ -74,6 +75,15 @@ line(`${SUBMITTED} ${last} plan (strict, pinned block)`, await inProcess(await B
 const promo = checkPromotion(PLAN); // the promoted cast is its accepted run's output byte for byte (contracts/people/<plan>.cast.promotion.json)
 console.log(`promoted cast: ${promo.ok ? 'matches its run' : 'DRIFTED'}  ${promo.label}`);
 if (!promo.ok) { bad.push('promoted cast'); for (const p of promo.problems) console.log('      ' + p.slice(0, 200)); }
+
+// promoted dialogue tables (contracts/dialogue/<plan>.<scope>.voices.json, brief 012) are held to their runs once they exist; a record with no tables, or tables with no record, fails too
+const dlgDir = resolve(root, 'contracts/dialogue'), dlgScopes = !existsSync(dlgDir) ? [] : [...new Set(readdirSync(dlgDir).flatMap(f => { const m = f.match(new RegExp(`^${PLAN}\\.([a-z0-9-]+)\\.voices(?:\\.promotion)?\\.json$`)); return m ? [m[1]!] : []; }))].sort();
+if (!dlgScopes.length) console.log('promoted dialogue tables: none yet');
+for (const scope of dlgScopes) {
+  const v = checkVoices(PLAN, scope);
+  console.log(`promoted dialogue tables (${scope}): ${v.ok ? 'match their run' : 'DRIFTED'}  ${v.label}`);
+  if (!v.ok) { bad.push(`promoted dialogue tables ${scope}`); for (const p of v.problems) console.log('      ' + p.slice(0, 200)); }
+}
 
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);

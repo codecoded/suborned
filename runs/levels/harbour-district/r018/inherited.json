@@ -1,0 +1,723 @@
+{
+  "parent": {
+    "plan": "harbour-district",
+    "run": "r017",
+    "outcome": "REJECTED",
+    "round": 3,
+    "version": "0.4.0-r017.3",
+    "runSha256": "c13581e663373a2cdcba531ac729ed2934d6acfe57d5ab74ca80e38bcb3e4375",
+    "gdd": "v0.22.0",
+    "chunker": 5
+  },
+  "proposals": {
+    "fable": {
+      "voices": {
+        "schema": "suborned.voices/1",
+        "scope": "lexicon",
+        "groups": [],
+        "scenes": [],
+        "lexicon": {
+          "needs": [
+            {
+              "need": "advancement",
+              "noun": "advancement",
+              "own": "my promotion",
+              "met": "the promotion is through"
+            },
+            {
+              "need": "care",
+              "noun": "medical care",
+              "own": "my medical care",
+              "met": "the care is arranged"
+            },
+            {
+              "need": "cash",
+              "noun": "money",
+              "own": "my money",
+              "met": "the money trouble is gone"
+            },
+            {
+              "need": "debt",
+              "noun": "debt",
+              "own": "my debt",
+              "met": "the debt is gone"
+            },
+            {
+              "need": "housing",
+              "noun": "housing",
+              "own": "my housing",
+              "met": "the housing is secure"
+            },
+            {
+              "need": "kin",
+              "noun": "family",
+              "own": "my family",
+              "met": "the family is safe"
+            },
+            {
+              "need": "papers",
+              "noun": "papers",
+              "own": "my papers",
+              "met": "the papers are in order"
+            },
+            {
+              "need": "protection",
+              "noun": "protection",
+              "own": "my safety",
+              "met": "the danger has passed"
+            }
+          ],
+          "positions": [
+            {
+              "position": "keeper",
+              "job": "keep the shop",
+              "noun": "the keeper"
+            },
+            {
+              "position": "server",
+              "job": "pour the coffee",
+              "noun": "the server"
+            },
+            {
+              "position": "assistant",
+              "job": "serve the counter",
+              "noun": "the assistant"
+            },
+            {
+              "position": "attendant",
+              "job": "tend the kiosk",
+              "noun": "the attendant"
+            },
+            {
+              "position": "usher",
+              "job": "seat the queue",
+              "noun": "the usher"
+            },
+            {
+              "position": "porter",
+              "job": "carry the bags",
+              "noun": "the porter"
+            },
+            {
+              "position": "operator",
+              "job": "work the switchboard",
+              "noun": "the operator"
+            },
+            {
+              "position": "door",
+              "job": "mind the door",
+              "noun": "the door guard"
+            },
+            {
+              "position": "entertainer",
+              "job": "play the room",
+              "noun": "the entertainer"
+            },
+            {
+              "position": "cook",
+              "job": "run the stove",
+              "noun": "the cook"
+            },
+            {
+              "position": "hand",
+              "job": "work the floor",
+              "noun": "the hand"
+            },
+            {
+              "position": "projectionist",
+              "job": "run the projector",
+              "noun": "the projectionist"
+            },
+            {
+              "position": "docker",
+              "job": "load the crates",
+              "noun": "the docker"
+            },
+            {
+              "position": "resident",
+              "job": "live on this street",
+              "noun": "the resident"
+            },
+            {
+              "position": "visitor",
+              "job": "am only passing through",
+              "noun": "the visitor"
+            },
+            {
+              "position": "clerk",
+              "job": "stamp the forms",
+              "noun": "the clerk"
+            },
+            {
+              "position": "guard",
+              "job": "hold the post",
+              "noun": "the guard"
+            },
+            {
+              "position": "patrol-officer",
+              "job": "walk the beat",
+              "noun": "the patrol officer"
+            },
+            {
+              "position": "watcher",
+              "job": "watch the cameras",
+              "noun": "the watcher"
+            },
+            {
+              "position": "investigator",
+              "job": "pull the logs",
+              "noun": "the investigator"
+            },
+            {
+              "position": "official-driver",
+              "job": "drive the official car",
+              "noun": "the driver"
+            },
+            {
+              "position": "councillor",
+              "job": "sit on the council",
+              "noun": "the councillor"
+            }
+          ],
+          "reads": [
+            {
+              "temperament": "idealist",
+              "lines": [
+                "Trouble with {need}. Proud. Won't take a bribe.",
+                "Help, not pay. That is the only way in.",
+                "Once {met}, they stand firm."
+              ]
+            },
+            {
+              "temperament": "mercenary",
+              "lines": [
+                "Trouble with {need}. Money talks.",
+                "Sells their time to whoever pays.",
+                "Counts the cost of everything."
+              ]
+            },
+            {
+              "temperament": "fearful",
+              "lines": [
+                "Trouble with {need}. Jumpy at every footstep.",
+                "Folds under pressure.",
+                "Calms down once {met}."
+              ]
+            },
+            {
+              "temperament": "loyal",
+              "lines": [
+                "Trouble with {need}. Loyal to the order of things.",
+                "Sticks to the rules. Trust comes slowly.",
+                "Reports odd approaches."
+              ]
+            }
+          ],
+          "debrief": [
+            {
+              "id": "turned-how",
+              "lines": [
+                "{who} turned by {approach}. Cost: {price}.",
+                "{who} said yes to {approach}. The price was {price}."
+              ]
+            },
+            {
+              "id": "not-yet",
+              "lines": [
+                "{who} took {approach} but wants more: {orders-left}.",
+                "{who} is not there yet after {approach}: {orders-left}."
+              ]
+            },
+            {
+              "id": "kept",
+              "lines": [
+                "{who} was helped again. Need: {need}. Loyalty: {loyalty}.",
+                "{who} stays with us. Need {need}, loyalty {loyalty}."
+              ]
+            },
+            {
+              "id": "refused",
+              "lines": [
+                "{who} refused {approach}. Read as {temperament}; it is on record.",
+                "{who} turned down {approach}. Seen as {temperament}."
+              ]
+            },
+            {
+              "id": "give-up",
+              "lines": [
+                "{who} gave up {fact}: {left} outweighed {right}.",
+                "{who} told investigators {fact}. {left} against {right}."
+              ]
+            },
+            {
+              "id": "lie",
+              "lines": [
+                "{who} told investigators {gives}. Rank {bravery}, helped {helped}.",
+                "{who} gave {gives}. Held at {bravery}, helped {helped}."
+              ]
+            },
+            {
+              "id": "ladder",
+              "lines": [
+                "{who}: {move}. {scale} went from {from} to {to}.",
+                "{who} moved on the {scale} scale: {from} to {to} ({move})."
+              ]
+            },
+            {
+              "id": "informer",
+              "lines": [
+                "{who} is now at {resentment} and will talk to security.",
+                "{who} has reached {resentment}. Expect word to travel."
+              ]
+            },
+            {
+              "id": "sold",
+              "lines": [
+                "{who} sold the cell out. Standing here: {standing}.",
+                "{who} gave us up to the highest bidder. We stand as {standing}."
+              ]
+            },
+            {
+              "id": "need-replaced",
+              "lines": [
+                "{who}'s {old} need is met. New need: {new}, {told}.",
+                "{who}'s {old} need is settled. Now it is {new}, {told}."
+              ]
+            },
+            {
+              "id": "word",
+              "lines": [
+                "Word of {fact} went from {who} to {to}, a {tie}.",
+                "{who} passed {fact} on to {to}, along a {tie} tie."
+              ]
+            },
+            {
+              "id": "tie-lapsed",
+              "lines": [
+                "{who} and {with} lost their {kind} tie: {why}.",
+                "The {kind} tie between {who} and {with} lapsed: {why}."
+              ]
+            },
+            {
+              "id": "introduced",
+              "lines": [
+                "{who} brought in {friend} along a {tie} tie.",
+                "{friend} came through {who}, by a {tie} tie."
+              ]
+            }
+          ],
+          "summons": [
+            {
+              "key": "summon-busy",
+              "caller": [
+                "{other} is tied up just now. Try again soon.",
+                "I can't reach {other} at the moment."
+              ],
+              "summoned": [
+                "I can't leave right now. Try me later.",
+                "Not now. I'm on duty."
+              ]
+            },
+            {
+              "key": "summon-came-once",
+              "caller": [
+                "{other} already came once. Twice would be noticed.",
+                "{other} was here today. Another visit looks odd."
+              ],
+              "summoned": [
+                "I came once already. Again, and people talk.",
+                "Once was enough. They'd start asking."
+              ]
+            },
+            {
+              "key": "summon-alert",
+              "caller": [
+                "The alarm is up. {other} can't come now.",
+                "Too many watchers about. Not while it's like this."
+              ],
+              "summoned": [
+                "Watchers everywhere. I'm staying put.",
+                "Not with the alarm up."
+              ]
+            },
+            {
+              "key": "summon-saw-violence",
+              "caller": [
+                "{other} saw what happened here. No visit.",
+                "The shooting shook {other}. A visit is out."
+              ],
+              "summoned": [
+                "I saw what happened. I'm not coming.",
+                "After that, I'm keeping my head down."
+              ]
+            },
+            {
+              "key": "summon-too-far",
+              "caller": [
+                "{other} is too far to come in time.",
+                "It's a long way for {other}. They'd be missed."
+              ],
+              "summoned": [
+                "I'd be gone too long. Someone would notice.",
+                "It's too far to get there in time."
+              ]
+            },
+            {
+              "key": "summon-off-street",
+              "caller": [
+                "{other} isn't on the street. No way to reach them.",
+                "{other} is indoors. A visit can't happen."
+              ],
+              "summoned": [
+                "I'm inside, out of sight. I can't slip out.",
+                "I'm off the street just now."
+              ]
+            },
+            {
+              "key": "summon-no-visit",
+              "caller": [
+                "There'll be no visit from {other} this time.",
+                "{other} won't be coming. Don't ask me why."
+              ],
+              "summoned": [
+                "I won't come. That's all there is to it.",
+                "No visit today. Don't ask again."
+              ]
+            },
+            {
+              "key": "recalled",
+              "caller": [
+                "The alarm's up. Go back, {other}, before you're seen.",
+                "{other}, leave now. They're watching the street."
+              ],
+              "summoned": [
+                "I heard. I'm going back now.",
+                "Understood. I'm leaving before anyone looks."
+              ]
+            }
+          ]
+        }
+      },
+      "notes": [
+        "Reads lead with 'Trouble with {need}.' so every noun reads right; {own} dropped from reads.",
+        "Nouns changed: advancement, family (kin), money (cash); own for kin is 'my family'.",
+        "All met clauses are present-state.",
+        "Loyal read says 'order of things', fitting residents and visitors too.",
+        "Debrief need-replaced and tie-lapsed use forms that take any id or kind; lie uses 'helped {helped}'.",
+        "Question for Motive: debrief 'word' {to} (recipient) and 'ladder' {to} (scale step) share a name; confirm.",
+        "Summons use only {other}; {other_noun} is not in the summons slot list.",
+        "The 'door' noun is 'the door guard', per the Handover."
+      ],
+      "sources": [
+        "d781564276ab9e1934f2fa26",
+        "b751d6ccbbc84f9d117eb45c",
+        "c66f00b9af229bba908cd3dc",
+        "4a6665ac94c66d1a2c1977ab"
+      ]
+    }
+  },
+  "calls": {
+    "fable": {
+      "id": "04-dialogue-fable",
+      "objective": "dialogue-fable",
+      "role": "dialogue-designer",
+      "model": "claude-sonnet-5-5",
+      "modelsUsed": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5"
+      ],
+      "tools": [
+        "StructuredOutput"
+      ],
+      "cliVersion": "2.1.299",
+      "costUsd": 0.1472358,
+      "seconds": 43,
+      "attempts": 1,
+      "card": {
+        "source": ".claude/agents/dialogue-designer.md",
+        "sourceHash": "f017f5d0f6e59272b7c7704b623c231fa8e613c62843b9c22c6f5410bef31362"
+      },
+      "brief": {
+        "source": "tools/levels/objectives/dialogue-fable.md",
+        "sourceHash": "f37961cc72ff4b147c9b854e020985d6f4a4c10a71b3cfacc09316d98e1cd86d"
+      },
+      "promptSha256": "34f8c1aa46b91ca05c70a9b2c2234cd45e60d9e8aeacddbdb73bfcfac9cee561",
+      "schemaSha256": "54c67e3e7d4ab9698ccc1e2c6f0da62338f78926cb637af97c4180dc767f67a4",
+      "effort": "medium",
+      "retrieval": {
+        "query": "GDD §04 temperament table: Idealist Mercenary Fearful Loyal, responds to, refuses, Hero, Menace; wrong approach works one step worse; Loyal reports any approach ‖ GDD §04 approaches Ask Pay Help Pressure: requires, price, leaves; needs list debt cash housing papers kin care protection advancement secret; ties family workmate regular debtor rival ‖ GDD §04 talker: questioned, a person gives up known facts if fear + resentment > bravery + loyalty; a brave helped contact lies; knowledge only witnessed or told ‖ GDD §09 generation: dialogue, portraits, voices from person data and state (brave, resentful, promoted), checked by tone and rating filters; risk sameness: history, not backstory; text is a light layer ‖ GDD §01 world: an alternate 1950s that discovered atomic power centuries ago, no thinking machines or networks, records are paper, calls are voice; optimistic surface, coercive underneath ‖ GDD §14 Fable dialogue designer: lines that match what each person can do and how they feel; hold: history not backstory, built at build time never live, tone and rating filters, civilians are never the payload ‖ Slot reading: the reads template \"Needs {need}.\" (idealist, mercenary, fearful, loyal) with noun \"debt\" gives \"Needs debt.\", which reads as wanting debt (p-cafe-04 fearful, p-cafe-07 loyal, p-records-office-03 idealist, p-records-office-07). With kin's noun \"family trouble\" it gives \"Needs family tr ‖ Slot reading: advancement's `met` is \"the promotion came through\" (past tense), but every other met clause is in the present and the templates expect the present. It gives \"Calms down once the promotion came through.\" (fearful read) and \"Once the promotion came through, they stand firm.\" (idealist r ‖ Slot reading in the debrief: need-replaced \"{who} no longer has {old}.\" fills {old} with a need id. That gives \"no longer has kin\" (it sounds as if their relatives died), \"no longer has care\" and \"no longer has advancement\". Each says the opposite of a met need, or nothing.",
+        "queries": [
+          "GDD §04 temperament table: Idealist Mercenary Fearful Loyal, responds to, refuses, Hero, Menace; wrong approach works one step worse; Loyal reports any approach",
+          "GDD §04 approaches Ask Pay Help Pressure: requires, price, leaves; needs list debt cash housing papers kin care protection advancement secret; ties family workmate regular debtor rival",
+          "GDD §04 talker: questioned, a person gives up known facts if fear + resentment > bravery + loyalty; a brave helped contact lies; knowledge only witnessed or told",
+          "GDD §09 generation: dialogue, portraits, voices from person data and state (brave, resentful, promoted), checked by tone and rating filters; risk sameness: history, not backstory; text is a light layer",
+          "GDD §01 world: an alternate 1950s that discovered atomic power centuries ago, no thinking machines or networks, records are paper, calls are voice; optimistic surface, coercive underneath",
+          "GDD §14 Fable dialogue designer: lines that match what each person can do and how they feel; hold: history not backstory, built at build time never live, tone and rating filters, civilians are never the payload",
+          "Slot reading: the reads template \"Needs {need}.\" (idealist, mercenary, fearful, loyal) with noun \"debt\" gives \"Needs debt.\", which reads as wanting debt (p-cafe-04 fearful, p-cafe-07 loyal, p-records-office-03 idealist, p-records-office-07). With kin's noun \"family trouble\" it gives \"Needs family tr",
+          "Slot reading: advancement's `met` is \"the promotion came through\" (past tense), but every other met clause is in the present and the templates expect the present. It gives \"Calms down once the promotion came through.\" (fearful read) and \"Once the promotion came through, they stand firm.\" (idealist r",
+          "Slot reading in the debrief: need-replaced \"{who} no longer has {old}.\" fills {old} with a need id. That gives \"no longer has kin\" (it sounds as if their relatives died), \"no longer has care\" and \"no longer has advancement\". Each says the opposite of a met need, or nothing."
+        ],
+        "pinned": [
+          "4e9abf8a6ce1ff9723bd285e",
+          "a32fbb8970f4cdd4f23f1a19",
+          "b751d6ccbbc84f9d117eb45c",
+          "b244071a6c0c49c5b980debe",
+          "c66f00b9af229bba908cd3dc"
+        ],
+        "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+        "corpusHash": "9ba32c64c8f2de1e470a6e7831a84bce6b8a6b49d6f4942f71918377e19e6d80",
+        "embeddingModel": "BAAI/bge-small-en-v1.5",
+        "hits": [
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "bm25": 1.871002435684204,
+            "key": "d781564276ab9e1934f2fa26",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › person and tiers",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+            "text": "people rules › person and tiers\n{\"is\":[\"routine\",\"need\",\"temperament\",\"memory\",\"secret\"],\"needsPerPerson\":1,\"memoryAtStart\":\"empty\",\"src\":\"§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory\",\"reason\":\"memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.\",\"readBy\":{\"fields\":{\"name\":\"§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\",\"temperament\":\"§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\",\"need\":\"§04 Help and Pressure require the need known (Listen); needs.list.metBy\",\"ties\":\"§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\",\"scales\":\"§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\",\"memory\":\"§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\",\"routine\":\"§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\",\"secret\":\"§04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\"},\"src\":\"GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\",\"proposed\":true,\"reason\":\"Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.\"}}\ntiers: {\"simulated\":{\"carries\":[\"name\",\"temperament\",\"need\",\"ties\",\"scales\",\"memory\",\"routine\",\"secret\"],\"src\":\"§09; life.json generator.tiers [G]\"},\"background\":{\"carries\":[\"routine\"],\"src\":\"life.json generator.tiers: walk, run and cheer only\",\"proposed\":true,\"reason\":\"background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to.\"}}",
+            "version": "suborned.people.rules/1",
+            "score": 0.16208119783709574,
+            "signals": [
+              "keyword:1",
+              "semantic:2",
+              "keyword:2",
+              "keyword:3",
+              "semantic:4",
+              "keyword:4",
+              "semantic:6",
+              "semantic:7",
+              "keyword:7",
+              "semantic:9",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "Agent GDD (the human GDD wins on conflict)",
+            "distance": 0.26987372220315076,
+            "key": "62e9bdba29d194f7f497bb79",
+            "kind": "gdd-agent",
+            "lineEnd": 82,
+            "lineStart": 82,
+            "section": "§04 PEOPLE › needs",
+            "source": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+            "sourceHash": "2681ea43c5701a8634639f8c5f31def20b42010bb3ad2c8ffce8270dc781affe",
+            "text": "§04 PEOPLE › needs\nneeds [S]: one clear need per person from a closed list: debt · cash · housing · papers · kin · care · protection · advancement · secret. Each is met by Help or Pressure; a need that requires something (kin: a family tie; protection: a rival tie; advancement: work) is checked in the data. A met need is replaced between missions, drawn from the person's own stream (id + mission number); a turned contact tells it free in the debrief, anyone else needs Listen again.",
+            "version": "v0.22.0",
+            "score": 0.14100122471615414,
+            "signals": [
+              "semantic:2",
+              "keyword:2",
+              "keyword:4",
+              "semantic:7",
+              "keyword:7",
+              "semantic:8",
+              "keyword:8",
+              "semantic:9",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "Human GDD (wins on conflict)",
+            "distance": 0.2061460018157959,
+            "key": "4e9abf8a6ce1ff9723bd285e",
+            "kind": "gdd-human",
+            "lineEnd": 300,
+            "lineStart": 289,
+            "section": "Knowledge makes consent cheap. Reputation decides who says yes. › What a person is made of Spec (1/2)",
+            "source": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html",
+            "sourceHash": "dcded369f4a98029c0ec934bb3cc53aba3a225111656b2fb4b56a8bc63946fc6",
+            "text": "Knowledge makes consent cheap. Reputation decides who says yes. › What a person is made of Spec\nEvery number about a person reads as a word, so the dossier never shows a bare score:\nBravery: informant · helper · accomplice · fighter. Resentment: compliant · resentful · informer.\nFear: calm · uneasy · afraid · terrified. Loyalty (to the cell): none · obliged · trusting · sworn. In the Talker test, loyalty means loyalty to the cell; loyalty to an employer or to the civic order is what the Loyal temperament is.\nAt the start everyone is at the bottom of every scale, except that an Idealist starts one step braver (helper) and a Fearful person starts uneasy, so they talk when questioned until someone helps them.\nOne clear need from a closed list: debt, cash, housing, papers, kin, care, protection, advancement or a secret. Each can be met by Help or Pressure. Once a need is met, a new one appears between missions, drawn from the person's own stream so it replays; a turned contact tells you it free in the debrief, and anyone else has to be listened to again.",
+            "version": "v0.22.0",
+            "score": 0.13930334094200475,
+            "signals": [
+              "semantic:1",
+              "keyword:2",
+              "semantic:3",
+              "keyword:3",
+              "semantic:7",
+              "keyword:7",
+              "semantic:8",
+              "keyword:8",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "bm25": 2.877967357635498,
+            "key": "b751d6ccbbc84f9d117eb45c",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › readBy",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+            "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+            "version": "suborned.people.rules/1",
+            "score": 0.13461400864693704,
+            "signals": [
+              "keyword:1",
+              "semantic:2",
+              "keyword:2",
+              "keyword:3",
+              "keyword:4",
+              "semantic:7",
+              "keyword:7",
+              "semantic:9",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "Human GDD (wins on conflict)",
+            "distance": 0.19728810771036642,
+            "key": "c66f00b9af229bba908cd3dc",
+            "kind": "gdd-human",
+            "lineEnd": 281,
+            "lineStart": 269,
+            "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec",
+            "source": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html",
+            "sourceHash": "dcded369f4a98029c0ec934bb3cc53aba3a225111656b2fb4b56a8bc63946fc6",
+            "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec\nTemperament | Responds to | If you are Heroes | If you are a Menace |\nIdealist | Help. Refuses bribes. | Volunteers with no offer needed; gains bravery fast | Refuses, and may report you |\nMercenary | Pay | Overcharges you: \"heroes can afford it\" | Gives a discount, and sells you out to the highest bidder |\nFearful | Pressure | Hesitates and needs Help twice | Folds immediately, for free |\nLoyal (to an institution) | Only trust built over time | Can turn after repeated Help | Reports any approach |\nA Hero campaign and a Menace campaign turn different halves of the city , so a second playthrough has a different cast. That's the replay value.",
+            "version": "v0.22.0",
+            "score": 0.11746152948358832,
+            "signals": [
+              "semantic:1",
+              "keyword:1",
+              "keyword:2",
+              "semantic:3",
+              "semantic:4",
+              "semantic:6",
+              "keyword:7",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.27250926062409386,
+            "key": "4a6665ac94c66d1a2c1977ab",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › needs",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+            "text": "people rules › needs\nexactly one need per simulated person, from this closed list. `metBy` = the approaches that act on the need (Help meets it, Pressure leans on it, Pay meets it only where money is the need). Pay as a plain bribe and Ask stay open to anyone; they need no need known.\ndebt: met by help, pressure, pay; help is cash; requires nothing; §04 Help (clear debt); §07 Inez, café waitress, in debt\ncash: met by help, pay; help is cash; requires nothing; §07 official driver (needs cash), turned for $40,000\nhousing: met by help, pressure; help is favour; requires home; §07 brief: Vale signed the clearance order for the marked block\npapers: met by help, pressure; help is favour; requires nothing; §01 world: records are physical (microfilm, punch cards, stamped forms)\nkin: met by help, pressure; help is favour; requires family-tie; §04 between missions: arrested (lost unless freed); standing: Hero frees arrested locals\ncare: met by help; help is favour; requires nothing; §08 wounds: a turned doctor heals fast and quietly\nprotection: met by help, pressure; help is favour; requires rival-tie; §05 rivals; §06 citizens and fights\nadvancement: met by help, pay; help is favour; requires work; §04 between missions: promoted (new access)\nsecret: met by help, pressure; help is favour; requires nothing; §04 Pressure (need known; leaves fear)",
+            "version": "suborned.people.rules/1",
+            "score": 0.10973450963963298,
+            "signals": [
+              "semantic:2",
+              "keyword:2",
+              "semantic:7",
+              "keyword:7",
+              "keyword:8",
+              "semantic:9",
+              "keyword:9"
+            ]
+          },
+          {
+            "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+            "distance": 0.19763624668121338,
+            "key": "b244071a6c0c49c5b980debe",
+            "kind": "people-rules",
+            "lineEnd": 0,
+            "lineStart": 0,
+            "section": "people rules › scales",
+            "source": "contracts/people/people.rules.json",
+            "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+            "text": "people rules › scales\nbravery: 0-3 (informant, helper, accomplice, fighter); §04 bravery [S]: Informant → Helper → Accomplice → Fighter, +1 step per job completed unexposed\nresentment: 0-2 (compliant, resentful, informer); §04 resentment [S]: Compliant → Resentful → Informer, +1 step per pressure or exposure\nfear: 0-3 (calm, uneasy, afraid, terrified); §04 talker test names fear; §04 Pressure leaves fear; §05 a threat adds fear\nloyalty: 0-3 (none, obliged, trusting, sworn); §04 talker test names loyalty; §04 standing: Hero turning is slower, dearer, loyal",
+            "version": "suborned.people.rules/1",
+            "score": 0.09940995021490379,
+            "signals": [
+              "semantic:1",
+              "semantic:2",
+              "semantic:3",
+              "keyword:3",
+              "semantic:4",
+              "semantic:6",
+              "semantic:8"
+            ]
+          },
+          {
+            "authority": "Agent GDD (the human GDD wins on conflict)",
+            "distance": 0.2704792022705078,
+            "key": "7da11a383ddcab7cc682c542",
+            "kind": "gdd-agent",
+            "lineEnd": 281,
+            "lineStart": 275,
+            "section": "§14 ROLES › Motive",
+            "source": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+            "sourceHash": "2681ea43c5701a8634639f8c5f31def20b42010bb3ad2c8ffce8270dc781affe",
+            "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing, bravery and resentment, Talkers, Heat and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+            "version": "v0.22.0",
+            "score": 0.09925868492441103,
+            "signals": [
+              "semantic:1",
+              "semantic:2",
+              "keyword:2",
+              "semantic:4",
+              "semantic:6",
+              "semantic:7",
+              "semantic:8"
+            ]
+          },
+          {
+            "authority": "Agent GDD (the human GDD wins on conflict)",
+            "key": "a32fbb8970f4cdd4f23f1a19",
+            "kind": "gdd-agent",
+            "lineEnd": 79,
+            "lineStart": 79,
+            "section": "§04 PEOPLE › scales",
+            "source": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+            "sourceHash": "2681ea43c5701a8634639f8c5f31def20b42010bb3ad2c8ffce8270dc781affe",
+            "text": "§04 PEOPLE › scales\nscales [S]: every number reads as a word: bravery informant·helper·accomplice·fighter (0–3) · resentment compliant·resentful·informer (0–2) · fear calm·uneasy·afraid·terrified (0–3) · loyalty none·obliged·trusting·sworn (0–3). Loyalty in the talker test = loyalty to the cell, 0 at start; loyalty to an employer or the civic order is the Loyal temperament. Start: everyone 0, except Idealist bravery 1 (helper) and Fearful fear 1 (talks when questioned until helped).",
+            "version": "v0.22.0",
+            "score": 0,
+            "signals": [
+              "critic-cited"
+            ]
+          }
+        ]
+      },
+      "pinning": {
+        "cited": 5,
+        "pinned": 5,
+        "truncated": false,
+        "dropped": []
+      }
+    }
+  },
+  "faults": [
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, reads: the mercenary template \"Trouble with {need}. Money talks.\" with cash's noun \"money\" gives \"Trouble with money. Money talks.\" for every mercenary who needs cash (p-cafe-08, p-garden-row-east-03, p-records-office-04, p-records-office-31). This is last round's echo, still there. With protection's noun the reads give \"Trouble with protection.\", which reads like a protection racket, not someone who needs protecting.",
+      "fix": "Lead with the noun alone, as the Handover does (\"Money. Sells their time.\"). Or change the mercenary second sentence, e.g. \"Has a price.\". Make protection read rightly after the lead-in, e.g. noun \"no protection\" or \"threats\".",
+      "chunks": [
+        "4e9abf8a6ce1ff9723bd285e",
+        "c66f00b9af229bba908cd3dc"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, debrief ladder: \"{who}: {move}. {scale} went from {from} to {to}.\" fills {scale} with a lower-case scale name. That gives \"Sunita Ferrer: bravery +1. resentment went from compliant to informer.\", a sentence that starts in lower case.",
+      "fix": "Keep {scale} away from the start of a sentence, e.g. \"{who}: {move}; {scale} went from {from} to {to}.\" or \"{who}'s {scale} went from {from} to {to} ({move}).\"",
+      "chunks": [
+        "b244071a6c0c49c5b980debe",
+        "a32fbb8970f4cdd4f23f1a19"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, summons: summon-busy summoned \"Not now. I'm on duty.\" is shared by every lover who is summoned, including residents and visitors who hold no post and have no duty. The lover tie's summons applies to anyone who holds an affair secret. The Handover's line belonged to a guard. This is the same post-assumption fixed in the loyal read last round.",
+      "fix": "Use wording that fits anyone, e.g. \"Not now. I'm tied up.\" or \"Not now. I can't get away.\"",
+      "chunks": [
+        "b751d6ccbbc84f9d117eb45c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading: the reads template \"Needs {need}.\" (idealist, mercenary, fearful, loyal) with noun \"debt\" gives \"Needs debt.\", which reads as wanting debt (p-cafe-04 fearful, p-cafe-07 loyal, p-records-office-03 idealist, p-records-office-07). With kin's noun \"family trouble\" it gives \"Needs family trouble.\" For mercenaries with cash it gives \"Needs money. Money talks.\", a clumsy echo.",
+    "fix": "Lead the reads with the noun alone, as the Handover does (\"Debt. Money talks.\"), or rephrase, e.g. \"Trouble with {need}.\"; or make kin's noun read rightly after any lead-in.",
+    "chunks": [
+      "4e9abf8a6ce1ff9723bd285e",
+      "a32fbb8970f4cdd4f23f1a19"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading: advancement's `met` is \"the promotion came through\" (past tense), but every other met clause is in the present and the templates expect the present. It gives \"Calms down once the promotion came through.\" (fearful read) and \"Once the promotion came through, they stand firm.\" (idealist read). Both are ungrammatical for any person who needs advancement, e.g. p-records-office-65.",
+    "fix": "Use a present-state clause, e.g. \"the promotion is through\" or \"the promotion is settled\".",
+    "chunks": [
+      "4e9abf8a6ce1ff9723bd285e"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading in the debrief: need-replaced \"{who} no longer has {old}.\" fills {old} with a need id. That gives \"no longer has kin\" (it sounds as if their relatives died), \"no longer has care\" and \"no longer has advancement\". Each says the opposite of a met need, or nothing.",
+    "fix": "Use a form that works for every need id, e.g. \"{who}'s {old} need is met. Now it is {new}, {told}.\"",
+    "chunks": [
+      "4e9abf8a6ce1ff9723bd285e"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading in the debrief: tie-lapsed \"{who} and {with} are no longer {kind}: {why}.\" gives \"are no longer regular\", \"are no longer debtor\" and \"are no longer rival\". These are ungrammatical, or the wrong sense for a tie kind.",
+    "fix": "Use \"{who} and {with} lost their {kind} tie: {why}.\" or a similar form that takes the kind as a modifier.",
+    "chunks": [
+      "b751d6ccbbc84f9d117eb45c"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading in the debrief: lie \"Held at {bravery} after help {helped}.\" gives \"after help twice\", which is ungrammatical.",
+    "fix": "Use \"Held at {bravery}, helped {helped}.\" or \"after being helped {helped}\".",
+    "chunks": [
+      "b244071a6c0c49c5b980debe"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Temperament fit: the loyal read \"Needs {need}. Loyal to the post.\" is spoken over every loyal person, including residents and visitors who hold no post (p-garden-row-east-06, resident/loyal). The Loyal temperament is loyalty to an institution or to the civic order, not always to a post.",
+    "fix": "Use wording that fits anyone, e.g. \"Loyal to the order of things.\" or \"Trusts the institutions.\"",
+    "chunks": [
+      "c66f00b9af229bba908cd3dc",
+      "a32fbb8970f4cdd4f23f1a19"
+    ]
+  }
+]

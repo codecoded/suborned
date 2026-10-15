@@ -1,0 +1,12 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. The checker report is clean (D-0 to D-12) and I found no further faults. Last round's fault is fixed: loyal read line 3 no longer says the Loyal report every approach, which is true only for a Menace cell. The other reads match the Temperament Spec. Need and met clauses, position jobs, debrief lines and summons lines all read correctly in their slots and fit their keys. No one is gendered. Open question for Motive: does {to} mean the same in `word` and `ladder`?",
+  "faults": [],
+  "sources": [
+    "c66f00b9af229bba908cd3dc",
+    "4e9abf8a6ce1ff9723bd285e",
+    "b751d6ccbbc84f9d117eb45c",
+    "7e715458cf0b800aa97a93b4",
+    "d781564276ab9e1934f2fa26"
+  ]
+}

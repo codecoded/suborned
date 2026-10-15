@@ -1,0 +1,458 @@
+{
+ "schema": "suborned.dialogue.rules/1",
+ "author": "Fable",
+ "gdd": "v0.22.0 §04 people (approaches, temperaments, needs, ties, talker), §09 generation (dialogue from person data + state; tone + rating filters), §14 Fable (history, not backstory; text is a light layer; built at build time, never live; civilians are never the payload)",
+ "rule": "The model writes tables by voice group × temperament × situation, plus one lexicon and the scenes between tied people; seeded code expands them into each person's lines and scenes, filling slots from who the person is (position, need, ties, secret). The checker holds the tables and every expanded line to this file. A table says how a kind of person sounds; the person's own history lives in the systems, not in the words (GDD §09 risk: sameness).",
+ "limits": {
+  "maxLine": 80,
+  "minWords": 1,
+  "maxWords": 12,
+  "cellLines": {
+   "min": 2,
+   "max": 4
+  },
+  "sceneVariants": {
+   "min": 2,
+   "max": 3
+  },
+  "sceneBeats": {
+   "min": 3,
+   "max": 6
+  },
+  "addressTerms": {
+   "min": 3,
+   "max": 6
+  },
+  "debriefMax": 110,
+  "qualifiedCellsPerGroup": 12,
+  "templateMax": 110
+ },
+ "groups": {
+  "counter": {
+   "covers": [
+    "keeper",
+    "server",
+    "assistant",
+    "attendant",
+    "usher",
+    "porter",
+    "operator",
+    "door",
+    "entertainer"
+   ],
+   "why": "front of house: the people a customer meets at a counter, a door or a kiosk window (the Handover's café server is of this kind)"
+  },
+  "workshop": {
+   "covers": [
+    "cook",
+    "hand",
+    "projectionist",
+    "docker"
+   ],
+   "why": "back of house and the trades: hands, kitchens, booths and the hiring hall; practical, short, tired"
+  },
+  "resident": {
+   "covers": [
+    "resident",
+    "visitor"
+   ],
+   "without": [
+    "work"
+   ],
+   "why": "people on the street with no post: errands, homes, the square"
+  },
+  "clerk": {
+   "covers": [
+    "clerk"
+   ],
+   "why": "the Records Office's desks: forms, stamps, shifts and the chime"
+  },
+  "security": {
+   "covers": [
+    "guard",
+    "patrol-officer",
+    "watcher",
+    "investigator"
+   ],
+   "why": "the city's own watchers: posts, rules, logs; polite while they watch (the coercive-underneath tone lives here)"
+  },
+  "driver": {
+   "covers": [
+    "official-driver"
+   ],
+   "why": "the official drivers: cars, wages, schedules, a councillor to wait for"
+  },
+  "official": {
+   "covers": [
+    "councillor"
+   ],
+   "why": "councillors: formal and pompous, then frightened (loyal blusters, mercenary bargains, fearful begs)"
+  }
+ },
+ "scopes": {
+  "lexicon": {
+   "blocks": [
+    "lexicon"
+   ],
+   "why": "the shared words: each need as a noun and in the first person, each position as a job and a noun, the Scout's Listen read-outs, the debrief lines, the lovers' summons lines. Written first: every other scope fills its slots from it."
+  },
+  "scenes": {
+   "blocks": [
+    "scenes"
+   ],
+   "why": "the overheard and called scenes between tied people: Listen by tie kind × temperament, the lovers' Watch and call."
+  },
+  "street": {
+   "blocks": [
+    "groups"
+   ],
+   "groups": [
+    "counter",
+    "workshop",
+    "resident"
+   ],
+   "why": "the people of the street: their replies, confirmations, questioning, gunfire, and the Scout's Watch."
+  },
+  "civic": {
+   "blocks": [
+    "groups"
+   ],
+   "groups": [
+    "clerk",
+    "security",
+    "driver",
+    "official"
+   ],
+   "why": "the people of the Office: the same, in the city's voices."
+  }
+ },
+ "slots": {
+  "cell": [
+   "address",
+   "job",
+   "noun",
+   "work",
+   "need",
+   "own",
+   "met"
+  ],
+  "reads": [
+   "job",
+   "noun",
+   "work",
+   "need",
+   "own",
+   "met"
+  ],
+  "scene": [
+   "focus",
+   "other",
+   "work",
+   "need",
+   "own",
+   "met"
+  ],
+  "summons": [
+   "other"
+  ],
+  "needIn": [
+   "reply/help",
+   "reply/pressure",
+   "questioned"
+  ],
+  "needSlots": [
+   "need",
+   "own",
+   "met"
+  ],
+  "familyNoun": "a relative"
+ },
+ "situations": {
+  "reply": {
+   "event": "reply",
+   "verbs": [
+    "ask",
+    "pay",
+    "help",
+    "pressure"
+   ],
+   "derive": "rulebook turn events × temperament × band"
+  },
+  "confirm": {
+   "event": "confirm",
+   "verb": "call"
+  },
+  "questioned": {
+   "event": "questioned",
+   "outcomes": [
+    "gives",
+    "lies",
+    "nothing"
+   ]
+  },
+  "world": [
+   "saw-gunfire",
+   "gunfire"
+  ]
+ },
+ "lexicon": {
+  "readsListen": "one line set per temperament",
+  "summonKeys": [
+   "summon-busy",
+   "summon-came-once",
+   "summon-alert",
+   "summon-saw-violence",
+   "summon-too-far",
+   "summon-off-street",
+   "summon-no-visit",
+   "recalled"
+  ],
+  "summonCodesFrom": "sim/Suborned.Sim/Model.cs",
+  "debriefFill": {
+   "who": "Sunita Ferrer",
+   "approach": "pressure",
+   "price": "$70,000",
+   "orders-left": "2 more orders",
+   "need": "advancement",
+   "loyalty": "obliged",
+   "fact": "the Fixer's face",
+   "left": "fear 2 + resentment 1",
+   "right": "bravery 1 + loyalty 0",
+   "gives": "a false lead",
+   "bravery": "accomplice",
+   "helped": "twice",
+   "move": "bravery +1",
+   "scale": "resentment",
+   "from": "compliant",
+   "to": "informer",
+   "resentment": "informer",
+   "standing": "Menace",
+   "old": "debt",
+   "new": "housing",
+   "told": "told free",
+   "tie": "workmate",
+   "friend": "Dimitra Marchetti",
+   "with": "Dimitra Marchetti",
+   "kind": "regular",
+   "why": "the café closed",
+   "temperament": "mercenary"
+  }
+ },
+ "listen": {
+  "tieByNeed": {
+   "debt": "debtor",
+   "kin": "family",
+   "protection": "rival",
+   "advancement": "workmate",
+   "housing": "family",
+   "care": "family",
+   "cash": "regular",
+   "papers": "workmate"
+  },
+  "tieOrder": [
+   "workmate",
+   "regular",
+   "family",
+   "debtor",
+   "rival"
+  ],
+  "secretFirst": true,
+  "sides": {
+   "regular": "focus is the regular, a customer of other, who works the unit",
+   "debtor": "focus owes other",
+   "lover": "mutual and secret; nobody in the city is told",
+   "family": "mutual",
+   "workmate": "mutual, same employer",
+   "rival": "mutual, same trade or employer"
+  },
+  "needFacts": {
+   "debt": "is in debt",
+   "cash": "is short of cash",
+   "housing": "is short of a roof",
+   "papers": "needs their papers in order",
+   "kin": "is worried about family",
+   "care": "is looking after someone",
+   "protection": "needs protecting",
+   "advancement": "wants a step up",
+   "secret": "has something to hide"
+  },
+  "results": {
+   "listen": "Learned: {focus} {need_fact} · {temperament}",
+   "secretAffair": " · Secret: {focus} is seeing {other}, {other_noun}.",
+   "secretRecord": " · Secret: a past on file.",
+   "watch": "Learned: where {focus} goes, and when.",
+   "watchLovers": "Learned: where {focus} goes, and when · Secret: {focus} is seeing {other}, {other_noun}.",
+   "call": "{focus} called {other} over. {other} is on the way."
+  }
+ },
+ "tone": {
+  "world": "An alternate 1950s that found atomic power centuries ago: 1950s manners and speech, centuries-ahead machines, no thinking machines or networks. Optimistic on the surface, coercive underneath: the city is polite, orderly and watching. Speech is plain, short and spoken; no period slang to dress it up, no modern internet speech.",
+  "avoid": [
+   "hack",
+   "hacked",
+   "hacking",
+   "online",
+   "internet",
+   "email",
+   "e-mail",
+   "wifi",
+   "wi-fi",
+   "app",
+   "download",
+   "upload",
+   "digital",
+   "cyber",
+   "computer",
+   "network",
+   "networks",
+   "algorithm",
+   "smartphone",
+   "mobile",
+   "text me",
+   "ping",
+   "dude",
+   "guys",
+   "awesome",
+   "cool",
+   "lol",
+   "ok boomer",
+   "swell",
+   "dame",
+   "gumshoe",
+   "copacetic",
+   "daddy-o",
+   "golly",
+   "gosh",
+   "gee",
+   "cat's pajamas",
+   "bee's knees",
+   "twenty-three skidoo"
+  ],
+  "profanity": [
+   "fuck",
+   "shit",
+   "bitch",
+   "bastard",
+   "cunt",
+   "cock",
+   "dick",
+   "piss",
+   "whore",
+   "slut",
+   "nigger",
+   "faggot",
+   "retard"
+  ],
+  "rating": {
+   "explicit": [
+    "sex",
+    "sexual",
+    "naked",
+    "nude",
+    "bedroom",
+    "erotic",
+    "orgasm",
+    "lust"
+   ],
+   "gore": [
+    "gore",
+    "guts",
+    "entrails",
+    "dismember",
+    "decapitat",
+    "mutilat",
+    "disembowel"
+   ]
+  },
+  "signal": [
+   "trail",
+   "talker",
+   "idealist",
+   "mercenary",
+   "fearful",
+   "temperament",
+   "fixer",
+   "scout",
+   "enforcer",
+   "operative",
+   "mission",
+   "objective",
+   "alert level"
+  ],
+  "pending": [
+   "Halcyon",
+   "Tomorrow Plan",
+   "Meridian",
+   "Chrome Choir"
+  ],
+  "payload": [
+   "human shield",
+   "suicide",
+   "strapped",
+   "blow yourself",
+   "detonat",
+   "sacrifice"
+  ],
+  "capitals": [
+   "I",
+   "Councillor",
+   "Council",
+   "Office",
+   "Records",
+   "Civic",
+   "Police",
+   "Handover",
+   "Doctor",
+   "Officer",
+   "Citizen"
+  ],
+  "gendered": [
+   "he",
+   "him",
+   "his",
+   "himself",
+   "she",
+   "her",
+   "hers",
+   "herself",
+   "sir",
+   "madam",
+   "ma'am",
+   "mister",
+   "lady",
+   "ladies",
+   "gentleman",
+   "gentlemen",
+   "boy",
+   "girl",
+   "man",
+   "men",
+   "woman",
+   "women",
+   "husband",
+   "wife",
+   "brother",
+   "sister",
+   "mother",
+   "father",
+   "son",
+   "daughter",
+   "doorman",
+   "waitress",
+   "barman",
+   "barmaid",
+   "policeman",
+   "policewoman",
+   "postman",
+   "chairman",
+   "councilman",
+   "councilwoman",
+   "usherette",
+   "hostess",
+   "actress"
+  ]
+ },
+ "pick": {
+  "rule": "Each person gets every template of the cell the lookup finds (the entry naming the most of event, verb, outcome, temperament, need and secret wins), filled from their own data. The line said is picked at play time by the reference pickIndex (contracts/missions/handover/text.schema.ts): fnv1a32(seed|key|i) mod count, never the same variant twice running; the key carries the person's id, so two people with one table do not say the same thing at the same moment. The address term is fnv1a32(seed|person id|address) mod the group's terms; the scene's partner is the person's tie of the chosen kind with the smallest fnv1a32(seed|person id|kind|partner id)."
+ }
+}

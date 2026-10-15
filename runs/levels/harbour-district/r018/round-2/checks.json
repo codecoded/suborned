@@ -1,0 +1,131 @@
+{
+  "plan": "harbour-district",
+  "version": "0.4.0-r018.2",
+  "scope": "lexicon",
+  "ok": true,
+  "counts": {
+    "persons": 130,
+    "entries": 194,
+    "scenes": 0,
+    "faults": 0
+  },
+  "checks": [
+    {
+      "id": "D-0",
+      "group": "Dialogue",
+      "rule": "Every situation has a cell, and only those; a scope writes only its own blocks",
+      "value": "0 group(s), 0 cell(s), 0 scene(s), lexicon",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §09 (nothing hand-authored; unknown = reject): every situation the rulebook and the people rules can produce has a cell, and no cell is for one they cannot; the blocks a scope writes are exactly its own"
+    },
+    {
+      "id": "D-1",
+      "group": "Dialogue",
+      "rule": "Everyone speaks: every person of the groups in scope has all their lines and scenes",
+      "value": "130 people",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §04 person = routine + need + temperament + memory; §09 dialogue from person data: every person of the groups in scope has a line for every situation they can be in, a Listen scene and a Watch scene"
+    },
+    {
+      "id": "D-2",
+      "group": "Dialogue",
+      "rule": "Every filled line fits: at most 80 characters, spoken lines 1–12 words, sentence ends, 2–4 variants",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "dialogue.rules.json limits (the Handover's text.test.ts: a line ≤ 80 characters, a spoken line 1–12 words, ends like a sentence, 2–4 variants); GDD §10 text is a light layer"
+    },
+    {
+      "id": "D-3",
+      "group": "Dialogue",
+      "rule": "Slots: only the allowed ones, each filled, none left over",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "dialogue.rules.json slots: only the slots the context allows, every slot filled for every person who reaches it, none left in a filled line"
+    },
+    {
+      "id": "D-4",
+      "group": "Dialogue",
+      "rule": "Names: the tables name no one; a scene names only the two people on its tie",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §09/§14 history, not backstory: the tables name no one; a scene names only the two people on its tie (the Handover's \"no uncast names\")"
+    },
+    {
+      "id": "D-5",
+      "group": "Dialogue",
+      "rule": "Tone: no modern speech, strong profanity, explicit or gory words, no gendered words; civilians are never the payload",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §09 tone + rating filters; dialogue.rules.json tone (avoid, profanity, rating, gendered, payload); GDD §14 civilians are never the payload"
+    },
+    {
+      "id": "D-6",
+      "group": "Dialogue",
+      "rule": "Signal words: none of the cell's words in a person's mouth, no digits, nothing awaiting Sky",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "dialogue.rules.json tone.signal and tone.pending: the game's own words are the cell's, a person says no digits, and no line names what awaits Sky"
+    },
+    {
+      "id": "D-7",
+      "group": "Dialogue",
+      "rule": "No repeats: within a cell, a group, a scope or a scene",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "the Handover's text.test.ts: no two lines repeat, and no cell repeats its own (GDD §09 risk: sameness)"
+    },
+    {
+      "id": "D-8",
+      "group": "Dialogue",
+      "rule": "Knowledge: a cold approach surfaces no need; qualified cells name a need or secret of the rules",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §04 knowledge: a cold Ask or a Pay surfaces no need; a qualified cell is for a need or secret the rules list, on the replies and questioning that read them; dialogue.rules.json limits.qualifiedCellsPerGroup"
+    },
+    {
+      "id": "D-9",
+      "group": "Dialogue",
+      "rule": "The expansion is deterministic and valid as suborned.lines/1",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §01/§09 same orders → same result: the expansion is byte-identical twice and valid as suborned.lines/1"
+    },
+    {
+      "id": "D-10",
+      "group": "Dialogue",
+      "rule": "Scenes: a focus who speaks, a partner only on a tie, the Scout only in a Watch, 3–6 beats, variants that differ",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "brief 012: a scene has a focus who speaks, a partner only where the tie gives one, the Scout only in a Watch, 3–6 beats, 2–3 variants that differ"
+    },
+    {
+      "id": "D-11",
+      "group": "Dialogue",
+      "rule": "The lexicon words every need, position, temperament, debrief line and summons key, each debrief line with its cause",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "people.rules needs, positions and roles; the rulebook debrief.lines fields (\"the debrief reports each with cause\"); the engine's summons codes: the lexicon words every one, and a debrief line carries its cause"
+    },
+    {
+      "id": "D-12",
+      "group": "Dialogue",
+      "rule": "The Handover's reference lines are matched: the same situations, as many variants",
+      "value": "ok",
+      "limit": "0 faults",
+      "ok": true,
+      "source": "GDD §14 the Handover is the reference: every situation its hand-written text gives a person of the voice, the tables give too, in as many variants"
+    }
+  ]
+}

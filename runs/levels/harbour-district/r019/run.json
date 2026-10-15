@@ -1,0 +1,165 @@
+{
+  "run": "r019",
+  "plan": "harbour-district",
+  "date": "2026-10-15T19:12:12.490Z",
+  "objective": "dialogue",
+  "proposals": "voice tables",
+  "handoffMode": "answered",
+  "loop": 2,
+  "outcome": "ACCEPTED",
+  "seeded": false,
+  "inputPlan": {
+    "version": "0.3.0",
+    "hash": "20df76a963187d6d5c1ef5eaa58fbc696dee50094ddd52002ec29c0566419e9b",
+    "rawHash": "16aafabc2c40b5f9f4a3542dfc861dd3792f0b4461f1c2ae64729f88ef718f24",
+    "source": "contracts/world/harbour-district.plan.json"
+  },
+  "inputBlock": {
+    "source": "contracts/world/civic-block.json",
+    "sha256": "7898d425e4270b1f79da210b93a881ae94ac2ec83101395ce1aea7a460dcd44b"
+  },
+  "inputPeople": {
+    "source": "out/people/<plan>.people.json (the promoted cast, expanded)",
+    "sha256": "021b693f0e760235dcfa7a5fdf6ce4bf2b2081cf782b83bbbb11579d6c8bab15"
+  },
+  "inputNames": {
+    "source": "contracts/people/<plan>.cast.json names (the district's name pool)",
+    "sha256": "37aabb943948f0adf2c2111051e733aed334b23b001e8e39374a0d6c1e390b4a"
+  },
+  "inputPeopleRules": {
+    "source": "contracts/people/people.rules.json",
+    "sha256": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8"
+  },
+  "inputRulebook": {
+    "source": "contracts/rules/rulebook.json",
+    "sha256": "25cfb4a190b589fd41a3271c5de9a11d9dc78303960fcd79ce658fe1436d1f5c"
+  },
+  "inputDialogueRules": {
+    "source": "contracts/dialogue/dialogue.rules.json",
+    "sha256": "6ca972d720da19ca7ee0747fb357fe4c03cf24746b61aab63c96a1c8b793bb13"
+  },
+  "inputHandoverText": {
+    "source": "contracts/missions/handover/text.json",
+    "sha256": "71ee63dc5113243dfe7381eddd7483ad56309846cda9bf79f582e74d9e59abfd"
+  },
+  "scope": "lexicon",
+  "inputKit": {
+    "source": "contracts/world/kit.json",
+    "sourceSha256": "af230e8d2e7195c40c23500f4f7e07a83500a03ca7bb747a8a1b611ec4fb0f6f",
+    "sha256": "522c88c975d3dc5310682ebe3fa3b38795a299ec43f207a1c7e444725e7fc40a",
+    "assets": 282
+  },
+  "inputLook": {
+    "source": "contracts/world/civic-look.json",
+    "sha256": "d5fe22dc4150a8ce0bcc926925e2e074b9ada177742bbefa976e47630b4f4fc8"
+  },
+  "continues": {
+    "plan": "harbour-district",
+    "run": "r018",
+    "outcome": "REJECTED",
+    "round": 3,
+    "version": "0.4.0-r018.3",
+    "runSha256": "9f20da47f9675bd30afd8b72c3cae5efde89fef0de08398f1a8cabea63469bf4",
+    "gdd": "v0.22.0",
+    "chunker": 5,
+    "file": "inherited.json",
+    "sha256": "123dbc7f0dc7cb064043c31a201621bb9b4468f334dbd7524cfa8d7e5aa89509",
+    "sameInputs": true
+  },
+  "gdd": {
+    "version": "v0.22.0",
+    "agent": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+    "human": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html"
+  },
+  "commit": "c01a2cfe1011316f77db7e1b40d753537031c809",
+  "dirty": true,
+  "live": true,
+  "maxUsd": 5,
+  "approvedBy": "Sky, 2026-10-16: cost waived (subs plan); dialogue lexicon, continue r018, relayed by Aster",
+  "toolsHash": "4c830224c1b2c3ae2b8741897871b59804b8c429ad375131a1377ffc46ccb8eb",
+  "corpusHash": "9ba32c64c8f2de1e470a6e7831a84bce6b8a6b49d6f4942f71918377e19e6d80",
+  "chunker": 5,
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "retrieval": "hybrid (SurrealDB)",
+  "cards": {
+    "dialogue-designer": {
+      "source": ".claude/agents/dialogue-designer.md",
+      "sourceHash": "f017f5d0f6e59272b7c7704b623c231fa8e613c62843b9c22c6f5410bef31362"
+    },
+    "simulation-engineer": {
+      "source": ".claude/agents/simulation-engineer.md",
+      "sourceHash": "8c57421ce7afc8e0e70fa5cd2936aed427b0e9fccac8f022492dd086a6fd468e"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "version": "0.4.0-r019.1",
+      "seeded": false,
+      "ran": [
+        "fable"
+      ],
+      "reused": [],
+      "skipped": [],
+      "checkerOk": true,
+      "failedChecks": [],
+      "problems": [],
+      "persons": 130,
+      "verdict": "pass",
+      "keelVerdict": "pass",
+      "criticRan": true,
+      "citeFaults": 0,
+      "assessFaults": 0,
+      "handoffs": [],
+      "handoffFaults": 0,
+      "faults": 0,
+      "uncitedFaults": 0,
+      "faultOwners": []
+    }
+  ],
+  "cost": {
+    "usd": 0.3195,
+    "calls": 2
+  },
+  "calls": [
+    {
+      "id": "01-dialogue-fable",
+      "objective": "dialogue-fable",
+      "role": "dialogue-designer",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.08340940000000001,
+      "seconds": 17,
+      "tokens": {
+        "input": 12730,
+        "cacheRead": 7494,
+        "output": 3040
+      },
+      "promptSha256": "87b3e506a894cc97c47af88cf4b48ed56ff9415ff5c83060702172a2553cb67a",
+      "schemaSha256": "54c67e3e7d4ab9698ccc1e2c6f0da62338f78926cb637af97c4180dc767f67a4",
+      "briefSha256": "f37961cc72ff4b147c9b854e020985d6f4a4c10a71b3cfacc09316d98e1cd86d",
+      "effort": "medium"
+    },
+    {
+      "id": "02-dialogue-critic",
+      "objective": "dialogue-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "status": "accepted",
+      "costUsd": 0.23606159999999998,
+      "seconds": 35,
+      "tokens": {
+        "input": 20491,
+        "cacheRead": 27611,
+        "output": 3240
+      },
+      "promptSha256": "5ec2781455371ed46cbd68def86d446ce3d39c686bc8c7ff3450f07f1667e00f",
+      "schemaSha256": "2584300a344cceb05fca4ace0f2ebebb4ecf71a2ea4a5a99b78acaad901064a3",
+      "briefSha256": "9915531f398f2db1af63baf61fedd6fcdae34638410308b064801203fae296ab",
+      "effort": "medium"
+    }
+  ],
+  "finalVersion": "0.4.0-r019.1"
+}

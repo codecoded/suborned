@@ -1,0 +1,30 @@
+[
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading, debrief: {approach} is filled with the approach verb (ask, pay, help, pressure). turned-how gives \"Sunita Ferrer turned by ask. Cost: $0.\" and \"said yes to pay.\" refused gives \"refused ask\" and \"turned down pay.\" not-yet gives \"took ask but wants more.\" These are wrong for ask and pay (and \"turned by help\" is odd), so any contact turned or refused that way reads badly.",
+    "fix": "Put the approach in a form that works for every verb, e.g. \"{who} turned. Approach: {approach}. Cost: {price}.\", \"{who} said no to the {approach} approach.\" or \"{who} answered {approach}\". Apply the same to refused and not-yet.",
+    "chunks": [
+      "7da11a383ddcab7cc682c542",
+      "c66f00b9af229bba908cd3dc"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Slot reading, debrief word: \"Word of {fact} went from {who} to {to}, a {tie}.\" puts a tie kind after \"a\". It reads for workmate, regular or rival, but for family it gives \"...to Dimitra Marchetti, a family.\" That is wrong for every word passed along a family tie.",
+    "fix": "Use the tie as a modifier, as the second line does: \"...to {to}, along a {tie} tie.\" or \"...to {to} ({tie} tie).\"",
+    "chunks": [
+      "d781564276ab9e1934f2fa26"
+    ]
+  },
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Temperament fit, reads: the loyal read \"Reports odd approaches.\" says a Loyal person reports only unusual approaches. The Temperament Spec says a Loyal person under a Menace campaign \"Reports any approach\", so the Scout's read misleads the player about the risk.",
+    "fix": "Reword to match the rule, e.g. \"Reports any approach.\" or \"Any approach goes in the report.\"",
+    "chunks": [
+      "c66f00b9af229bba908cd3dc"
+    ]
+  }
+]
