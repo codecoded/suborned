@@ -2,7 +2,7 @@
 // each; the common changes are: actions take their rulebook time and land at its end (the prototype landed them at once); Watch
 // reveals the routine only and Listen the need and temperament (Sky 2026-10-15); Inez is an Idealist (Sky 2026-10-15), so Pay is
 // refused and Pressure costs one step more; places are the civic block's (sim/data/handover.site.json); the guard walks 45 s
-// (mission.json windows.front-door); the mission is over at 8:00 (§07; the prototype ran to 9:50).
+// (mission.json windows.front-door); the mission is over at the close mission.json gives (§07 8:00; Sky moves it to 8:30; the prototype ran to 9:50).
 using System;
 using System.Collections.Generic;
 

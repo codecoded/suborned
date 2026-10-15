@@ -166,3 +166,13 @@ Places are the civic block's. The Scout listens from `beside-inez`, because the 
 - `play out/sim/s20.record.json` matches its record. A tampered checkpoint fails with "checkpoint 5 differs at tick 600".
 
 **Next (Aster's 3):** investigators and watcher logs, then between-missions events, as far as the Handover's debrief needs.
+
+## Round 3 (2026-10-15): Sky's balance rulings applied
+- **Watch is 20 s** (`values.watch-s`, was 52 [B]; Motive's `briefs/011/motive-balance.md`).
+- **`fight.traced` is off.** The final fight's shots add no Trail and no Alert, and the debrief doesn't count them as a shot fired: they are counted apart, as `finalFight.shots`. Shots before the fight count as before.
+- **The close comes from `mission.json`.** The site reads each timeline entry by its words, not its time, so Waymark's 8:00 → 8:30 reaches the engine at the next `bun run sim:site`. Today `mission.json` still reads 8:00. A script without `until` plays to that close.
+- **What changed in the 38 scenarios** (all green, each with identical checkpoints twice and on replay):
+  - S05, S22, S23, S24, S25 and N12b end 32 s earlier, which is Watch's 52 → 20 s. Every check still holds.
+  - N10 (loud): Trail 14 → 6, Alert 3 → 2, shots 6 → 2, debrief High → Raised. The fight's 4 shots no longer count.
+  - N11 and N11b (safe): Trail 19 → 5 and 12 → 4, Alert 3 → 0, debrief High → Calm. A quiet route's fight leaves it quiet.
+  - The other 29 are unchanged.

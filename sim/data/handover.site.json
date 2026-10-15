@@ -700,12 +700,12 @@
   "driverLast": 340,
   "valeExits": 350,
   "valeAtCar": 370,
-  "over": 480,
+  "over": 510,
   "guardWalkS": 45,
   "guardStayS": 60,
   "blockMoveS": 8,
   "blockHoldS": 150,
-  "src": "mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: §07 8:00 (the top-down test ran to 9:50; Suture M-1, the rulebook takes §07)"
+  "src": "mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline's closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)"
  },
  "purse": 100000,
  "purseSrc": "GDD §07: Purse $100,000",

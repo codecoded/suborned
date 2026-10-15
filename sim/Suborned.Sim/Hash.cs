@@ -48,7 +48,7 @@ namespace Suborned.Sim
             h.I(g.SecurityArrives).I(g.Lockdown).I(g.SecurityHealth).I(g.SecurityNextShot).Z(g.SecurityDown).Z(g.SecurityTracking);
             var sp = g.SecurityPose(); h.Z(sp.HasValue); if (sp.HasValue) h.P(sp.Value.pos);
             h.Z(g.InezWitnessedShooting).S(g.InezMethod).S(g.RouteKind).S(g.RouteGuard).S(g.RouteBot).S(g.RouteRival);
-            h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.NextVolley).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).Z(g.GuardAllyTracking).I(g.GuardAllyNextShot).I(g.FightHits);
+            h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.NextVolley).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).Z(g.GuardAllyTracking).I(g.GuardAllyNextShot).I(g.FightHits).I(g.FightShots);
             foreach (var x in g.Hostiles) h.S(x.Id).P(x.Pos(g.Tick)).I(x.Health).Z(x.Down).Z(x.Present);
             if (g.People2 != null && g.Start.Crowd)
                 foreach (var w in g.Walkers)
