@@ -1,0 +1,395 @@
+{
+ "brief": "012 cell, tech final",
+ "owner": "Forma",
+ "date": "2026-10-16",
+ "cost_usd": 0,
+ "generator": "Codex CLI image tool (ChatGPT plan, free); unseeded, prompt verbatim plus one margin sentence unless frame disabled",
+ "decisions": {
+  "lineup": "TF-lineup-white-v1 chosen (v2, v3 alternates)",
+  "portrait": "TF-portrait-tech-white-v2 chosen (v1, v3 alternates)"
+ },
+ "proxy": {
+  "tool": "Blender 5.2.2 LTS, background; scripts/tf_proxy.py, tf_run.py, tf_plan.py, tf_tiles.py, tf_sil.py, tf_final_metrics.py",
+  "metrics": "proxy/metrics.json, proxy/metrics-table.txt, proxy/plan-sections.json",
+  "note": "Deterministic: skinned proxy, no physics. Variants AD, FXn, FX10, BELL in metrics.json; ADd, ADd10, FX are earlier driver experiments; SLIM control is in metrics-table.txt."
+ },
+ "images": [
+  {
+   "id": "TF-pose-fight",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation motion test, one pose. One landscape sheet with two views of the same figure in the same pose, side by side, both full body head to toe on the same ground line: on the left a pure side view (profile), on the right a three-quarter front view from slightly above. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. Pose: a braced shooting stance with a small chrome pistol held in both hands at arm's length: feet wide apart in a staggered stance, the front knee bent, the rear leg straight, weight forward, shoulders turned, head level. The pistol is plain and unlit. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-pose-fight.jpg",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "d748e3bac306e2167b103bac7a26b003a12da404e0dc87365ad46b74db62d71a",
+   "sha256_png": "5017544e63466b73530791b3c40a4df936f67712c9cd25d8242504989487caa6",
+   "hook": "motion test: fight",
+   "secs": 54.1,
+   "at": "2026-10-16T01:42:42"
+  },
+  {
+   "id": "TF-pose-walk",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation motion test, one pose. One landscape sheet with two views of the same figure in the same pose, side by side, both full body head to toe on the same ground line: on the left a pure side view (profile), on the right a three-quarter front view from slightly above. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. Pose: walking, mid-stride, the moment both feet are on the ground: front leg straight with the heel down, rear leg pushing off on the toe, arms swinging opposite to the legs, relaxed upright posture. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-pose-walk.jpg",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "73868447d12c0a09649e05fe6de8e0b8c9156c3dc9362f0b1508b92af7c5ebd1",
+   "sha256_png": "faeeb20794767bc37f2c8c8d3d58ffd861852da7473c4c11de7da37d065b2044",
+   "hook": "motion test: walk",
+   "secs": 58.1,
+   "at": "2026-10-16T01:42:46"
+  },
+  {
+   "id": "TF-pose-run",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation motion test, one pose. One landscape sheet with two views of the same figure in the same pose, side by side, both full body head to toe on the same ground line: on the left a pure side view (profile), on the right a three-quarter front view from slightly above. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. Pose: running at a sprint, mid-stride in the air: the front knee driven high, the rear leg kicked back with the shin up, the torso leaning forward, elbows bent at a right angle and arms pumping, both feet off the ground. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-pose-run.jpg",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "81e25693a36ead7a87108ef62b4e01b6ce0b6f939c664448e0b99b7ab279099d",
+   "sha256_png": "def02ac87837bc39884e8299de11d214ad7686609862f9f5d7cbce1f70952a86",
+   "hook": "motion test: run",
+   "secs": 91.6,
+   "at": "2026-10-16T01:43:20"
+  },
+  {
+   "id": "TF-pose-crouch",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation motion test, one pose. One landscape sheet with two views of the same figure in the same pose, side by side, both full body head to toe on the same ground line: on the left a pure side view (profile), on the right a three-quarter front view from slightly above. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. Pose: crouched low in front of a small waist-high cream enamel junction box with chrome hinges and its door open, working on the wiring inside with both hands and a small chrome tool: a deep crouch, knees bent far and apart, heels near the ground, torso leaning forward, looking into the box. The junction box stands in both views, on the pavement. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-pose-crouch.jpg",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "2c0231ad8d294e57a4ac4b0efb79cde8069f82a63d1bd9345c22cb42d624b8d7",
+   "sha256_png": "53ad03368dd15e06bc5a50a8102fdf46354486c53b7c410fa486f98754a84207",
+   "hook": "motion test: crouch",
+   "secs": 102.2,
+   "at": "2026-10-16T01:43:30"
+  },
+  {
+   "id": "TF-strip-walk-side",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation key-pose strip for a game animator. A wide landscape sheet with four full-body figures in a row, pure side view (profile), all four facing the same way (to the right of the sheet). the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. The four frames show one walk cycle in four key poses, left to right: (1) contact, the right foot forward with the heel down and the left toe pushing off; (2) passing, the left leg swinging through beside the standing right leg with the left knee bent; (3) contact, the left foot forward with the heel down and the right toe pushing off; (4) passing, the right leg swinging through beside the standing left leg with the right knee bent. Arms swing opposite to the legs, upright relaxed posture. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. The same person in every frame, the same scale, all feet on one shared ground line, evenly spaced, never overlapping, a plain warm light-grey backdrop, no text and no numbers. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-strip-walk-side.jpg",
+   "size": [
+    1983,
+    793
+   ],
+   "sha256": "9ce64c34f929d3ccadf6802e8f4ec6c3c12a0adb8271ac34dc127046573aad57",
+   "sha256_png": "a934b947d62fc8fb6d8a16d07a6fb3234f2d2d4ff6bba67c540d91102f7a3b98",
+   "hook": "walk cycle strip, side",
+   "secs": 51.1,
+   "at": "2026-10-16T01:43:37"
+  },
+  {
+   "id": "TF-pose-kerb",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation motion test, one pose. One landscape sheet with two views of the same figure in the same pose, side by side, both full body head to toe on the same ground line: on the left a pure side view (profile), on the right a three-quarter front view from slightly above. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. Pose: stepping up onto a kerb: a low pale granite kerb about 18 cm high, a road surface below it and a paved pavement above. The lead foot is planted on the pavement with the knee raised and bent, the trailing foot still on the road with the heel lifting, the torso leaning slightly forward, arms loose. The kerb runs across both views. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-pose-kerb.jpg",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "433f91bf89d22dddd89f82d1ff5f7aaae1627f75ec6068ec6cbf5b7df18bcfa0",
+   "sha256_png": "82e3dfa1e944d108ded896130bfa15af33931b572ed52efb83705114f634b542",
+   "hook": "motion test: kerb",
+   "secs": 55.8,
+   "at": "2026-10-16T01:43:38"
+  },
+  {
+   "id": "TF-strip-run-side",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation key-pose strip for a game animator. A wide landscape sheet with four full-body figures in a row, pure side view (profile), all four facing the same way (to the right of the sheet). the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. The four frames show one run cycle in four key poses, left to right: (1) contact, the right foot landing under the body with the left leg kicked back; (2) the right leg pushing off the ground, the left knee driven high; (3) flight, both feet off the ground, the left knee high and the right leg extended behind; (4) the left foot landing with the right knee driven high. Torso leaning forward, elbows bent at a right angle, arms pumping opposite to the legs. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. The same person in every frame, the same scale, all feet on one shared ground line, evenly spaced, never overlapping, a plain warm light-grey backdrop, no text and no numbers. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-strip-run-side.jpg",
+   "size": [
+    1983,
+    793
+   ],
+   "sha256": "5f9c9267ec7e795326aafbd8b916221cec6b08bac810369d0ea1d24c1ab73f63",
+   "sha256_png": "52522aeb492c62a78c40cec328dd3e3416761896d27b0bbbbce5f27078c4d842",
+   "hook": "run cycle strip, side",
+   "secs": 52.9,
+   "at": "2026-10-16T01:44:13"
+  },
+  {
+   "id": "TF-strip-walk-front",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation key-pose strip for a game animator. A wide landscape sheet with four full-body figures in a row, three-quarter front view from slightly above, all four coming toward the viewer. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. The four frames show one walk cycle in four key poses, left to right: (1) contact, the right foot forward with the heel down and the left toe pushing off; (2) passing, the left leg swinging through beside the standing right leg with the left knee bent; (3) contact, the left foot forward with the heel down and the right toe pushing off; (4) passing, the right leg swinging through beside the standing left leg with the right knee bent. Arms swing opposite to the legs, upright relaxed posture. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. The same person in every frame, the same scale, all feet on one shared ground line, evenly spaced, never overlapping, a plain warm light-grey backdrop, no text and no numbers. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-strip-walk-front.jpg",
+   "size": [
+    1774,
+    887
+   ],
+   "sha256": "a2321e2927e9eb63c423cf1140a2e89be07e0951275cc4d439ebdf15de228939",
+   "sha256_png": "d9dcb1fe2807b6b0b38b0de9f652829ca50ed65c8f262d911744683c311f13b4",
+   "hook": "walk cycle strip, front",
+   "secs": 53.9,
+   "at": "2026-10-16T01:44:24"
+  },
+  {
+   "id": "TF-strip-run-front",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Animation key-pose strip for a game animator. A wide landscape sheet with four full-body figures in a row, three-quarter front view from slightly above, all four coming toward the viewer. the same person as in the reference image, exactly his face, short locs, beard, tall muscular build, and exactly the same outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping; the smoked visor with two flip-up chrome plates pushed up on his forehead; chrome gauntlets over black fingerless gloves; the wide split panelled trousers, pleated charcoal wide legs ending at mid-shin, each with a long bone-white diagonal panel on the outside of the leg that flares out toward the hem and thin pale-teal piping down the leg; black technical high-top trainers with bone-white soles, dark socks. The four frames show one run cycle in four key poses, left to right: (1) contact, the right foot landing under the body with the left leg kicked back; (2) the right leg pushing off the ground, the left knee driven high; (3) flight, both feet off the ground, the left knee high and the right leg extended behind; (4) the left foot landing with the right knee driven high. Torso leaning forward, elbows bent at a right angle, arms pumping opposite to the legs. Draw the trousers as a motion test for a game animator, as heavy matte technical fabric under real gravity: the panels swing with the legs, the hems follow the shins, cloth folds and bunches where the legs bend, two layers of cloth lie against each other and never pass through each other or through a leg. Do not hide the legs or tidy the trousers: show exactly where every panel, pleat and hem goes. The same person in every frame, the same scale, all feet on one shared ground line, evenly spaced, never overlapping, a plain warm light-grey backdrop, no text and no numbers. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-strip-run-front.jpg",
+   "size": [
+    1774,
+    887
+   ],
+   "sha256": "4121cbc491a90b9ca5124ee9632a7b73fb59c3692e90502a0c6ac99534261b9c",
+   "sha256_png": "11b69ba278556c4345c46b9208b2f8290624b3f2187c4a9f8ec4b0877323ccba",
+   "hook": "run cycle strip, front",
+   "secs": 84.4,
+   "at": "2026-10-16T01:45:02"
+  },
+  {
+   "id": "TF-lineup-white-v2",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, the four standing together in one row, left to right Scout, Fixer, Tech, Enforcer, same scale with their natural height differences, gentle three-quarter views. Image 1 is the current team lineup: keep the Scout, the Fixer and the Enforcer exactly as they are in image 1: same faces, hair, clothes, props, poses, positions, scale and finish. Replace only the third person with the Tech from image 2 in his new outfit (the Tech, a tall muscular man with short locs and a short beard, in his new outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping, the smoked visor with two flip-up chrome plates pushed up on his forehead, chrome gauntlets over black fingerless gloves, and the wide split panelled charcoal trousers ending mid-shin with a long bone-white diagonal panel on the outside of each leg and thin pale-teal piping, black technical high-top trainers with bone-white soles). He keeps exactly his face, locs, beard, skin tone and tall build from image 2, and stands relaxed in a gentle three-quarter view with his weight on one leg, in the same place in the row. The team stays white-on-charcoal: charcoal and ink black with bone-white panels, chrome and matte metal; the only colour anywhere is the Tech's thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-lineup-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the current A white team lineup; image 2 = the Tech's round 3 cosplay build sheet (face, hair, build and the whole new outfit).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-lineup-white-v2.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "c1c5040db4d2d37ea83e07cbbd6972cdc3ecbb7610a07d296b59e6bfb1ff63b9",
+   "sha256_png": "c1c5040db4d2d37ea83e07cbbd6972cdc3ecbb7610a07d296b59e6bfb1ff63b9",
+   "hook": "team lineup, Tech swapped",
+   "secs": 56.7,
+   "at": "2026-10-16T01:46:49"
+  },
+  {
+   "id": "TF-portrait-tech-white-v1",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character portrait, head and shoulders, one person facing the viewer in a gentle three-quarter view, for a game interface portrait. the Tech, a tall man with short locs, redrawn from image 1: keep exactly the face, hair, beard, skin tone, age and build of the person in image 1, and his outfit from image 1: the sleeveless charcoal wrap vest with a bone-white diagonal panel across the chest and thin pale-teal piping, a chrome gauntlet at the forearm. Expression: relaxed and amused, chin slightly raised, the smoked visor with its two flip-up chrome plates pushed up on his forehead so his eyes are visible. Image 2 is the existing HUD portrait of the Tech and image 3 the existing portrait of the Fixer: copy their exact framing, scale of the head in the frame, camera distance, soft light, grey backdrop and painted finish, so the new portrait sits in the same row as the other three. The palette is charcoal and ink black with bone-white panels, chrome and matte metal; the only colour is the thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-tech-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-fixer-white.png"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (face and outfit); image 2 = the existing HUD portrait of the Tech; image 3 = the existing HUD portrait of the Fixer (framing and finish).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-portrait-tech-white-v1.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "e05b56b87d4295d65e0d1330ddeee3000ecdf5a94c5f5377eba1585d288e804f",
+   "sha256_png": "e05b56b87d4295d65e0d1330ddeee3000ecdf5a94c5f5377eba1585d288e804f",
+   "hook": "Tech HUD portrait, new outfit",
+   "secs": 58.6,
+   "at": "2026-10-16T01:46:51"
+  },
+  {
+   "id": "TF-lineup-white-v3",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, the four standing together in one row, left to right Scout, Fixer, Tech, Enforcer, same scale with their natural height differences, gentle three-quarter views. Image 1 is the current team lineup: keep the Scout, the Fixer and the Enforcer exactly as they are in image 1: same faces, hair, clothes, props, poses, positions, scale and finish. Replace only the third person with the Tech from image 2 in his new outfit (the Tech, a tall muscular man with short locs and a short beard, in his new outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping, the smoked visor with two flip-up chrome plates pushed up on his forehead, chrome gauntlets over black fingerless gloves, and the wide split panelled charcoal trousers ending mid-shin with a long bone-white diagonal panel on the outside of each leg and thin pale-teal piping, black technical high-top trainers with bone-white soles). He keeps exactly his face, locs, beard, skin tone and tall build from image 2, and stands relaxed in a gentle three-quarter view with his weight on one leg, in the same place in the row. The team stays white-on-charcoal: charcoal and ink black with bone-white panels, chrome and matte metal; the only colour anywhere is the Tech's thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-lineup-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the current A white team lineup; image 2 = the Tech's round 3 cosplay build sheet (face, hair, build and the whole new outfit).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-lineup-white-v3.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "7f438c855bb1fb93e9f49649d75623efa51a68a7e979bf557e4ee4bfcb0655ae",
+   "sha256_png": "7f438c855bb1fb93e9f49649d75623efa51a68a7e979bf557e4ee4bfcb0655ae",
+   "hook": "team lineup, Tech swapped",
+   "secs": 98.9,
+   "at": "2026-10-16T01:47:31"
+  },
+  {
+   "id": "TF-lineup-white-v1",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, the four standing together in one row, left to right Scout, Fixer, Tech, Enforcer, same scale with their natural height differences, gentle three-quarter views. Image 1 is the current team lineup: keep the Scout, the Fixer and the Enforcer exactly as they are in image 1: same faces, hair, clothes, props, poses, positions, scale and finish. Replace only the third person with the Tech from image 2 in his new outfit (the Tech, a tall muscular man with short locs and a short beard, in his new outfit: the sleeveless charcoal wrap vest with bone-white diagonal panels and thin pale-teal piping, the smoked visor with two flip-up chrome plates pushed up on his forehead, chrome gauntlets over black fingerless gloves, and the wide split panelled charcoal trousers ending mid-shin with a long bone-white diagonal panel on the outside of each leg and thin pale-teal piping, black technical high-top trainers with bone-white soles). He keeps exactly his face, locs, beard, skin tone and tall build from image 2, and stands relaxed in a gentle three-quarter view with his weight on one leg, in the same place in the row. The team stays white-on-charcoal: charcoal and ink black with bone-white panels, chrome and matte metal; the only colour anywhere is the Tech's thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-lineup-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the current A white team lineup; image 2 = the Tech's round 3 cosplay build sheet (face, hair, build and the whole new outfit).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-lineup-white-v1.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "160bada7b731040c47545a6dcbdfc6ffb2191f29dc040578c4d427cc9a42e3b2",
+   "sha256_png": "160bada7b731040c47545a6dcbdfc6ffb2191f29dc040578c4d427cc9a42e3b2",
+   "hook": "team lineup, Tech swapped",
+   "secs": 99.7,
+   "at": "2026-10-16T01:47:32"
+  },
+  {
+   "id": "TF-portrait-tech-white-v3",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character portrait, head and shoulders, one person facing the viewer in a gentle three-quarter view, for a game interface portrait. the Tech, a tall man with short locs, redrawn from image 1: keep exactly the face, hair, beard, skin tone, age and build of the person in image 1, and his outfit from image 1: the sleeveless charcoal wrap vest with a bone-white diagonal panel across the chest and thin pale-teal piping, a chrome gauntlet at the forearm. Expression: relaxed and amused, chin slightly raised, the smoked visor with its two flip-up chrome plates pushed up on his forehead so his eyes are visible. Image 2 is the existing HUD portrait of the Tech and image 3 the existing portrait of the Fixer: copy their exact framing, scale of the head in the frame, camera distance, soft light, grey backdrop and painted finish, so the new portrait sits in the same row as the other three. The palette is charcoal and ink black with bone-white panels, chrome and matte metal; the only colour is the thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-tech-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-fixer-white.png"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (face and outfit); image 2 = the existing HUD portrait of the Tech; image 3 = the existing HUD portrait of the Fixer (framing and finish).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-portrait-tech-white-v3.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "629b558ee012b42b22b6d63b21e155130a5dce512a248a903b58c05732954f9a",
+   "sha256_png": "629b558ee012b42b22b6d63b21e155130a5dce512a248a903b58c05732954f9a",
+   "hook": "Tech HUD portrait, new outfit",
+   "secs": 52.7,
+   "at": "2026-10-16T01:47:44"
+  },
+  {
+   "id": "TF-portrait-tech-white-v2",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character portrait, head and shoulders, one person facing the viewer in a gentle three-quarter view, for a game interface portrait. the Tech, a tall man with short locs, redrawn from image 1: keep exactly the face, hair, beard, skin tone, age and build of the person in image 1, and his outfit from image 1: the sleeveless charcoal wrap vest with a bone-white diagonal panel across the chest and thin pale-teal piping, a chrome gauntlet at the forearm. Expression: relaxed and amused, chin slightly raised, the smoked visor with its two flip-up chrome plates pushed up on his forehead so his eyes are visible. Image 2 is the existing HUD portrait of the Tech and image 3 the existing portrait of the Fixer: copy their exact framing, scale of the head in the frame, camera distance, soft light, grey backdrop and painted finish, so the new portrait sits in the same row as the other three. The palette is charcoal and ink black with bone-white panels, chrome and matte metal; the only colour is the thin pale-teal piping. The clothes stay sharp, fitted, matte and technical, no deco motifs, no period tailoring. One shared finish for everyone: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-tech-white.png",
+    "/Users/sky/Projects/suborned/briefs/012/cell/A/A-codex-portrait-fixer-white.png"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (face and outfit); image 2 = the existing HUD portrait of the Tech; image 3 = the existing HUD portrait of the Fixer (framing and finish).",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-portrait-tech-white-v2.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "39acf668fe3cb8e3ae53da62aa3e0a0c95ba68dac4fec10f27316a9325d3282c",
+   "sha256_png": "39acf668fe3cb8e3ae53da62aa3e0a0c95ba68dac4fec10f27316a9325d3282c",
+   "hook": "Tech HUD portrait, new outfit",
+   "secs": 59.0,
+   "at": "2026-10-16T01:47:48"
+  },
+  {
+   "id": "TF-change-inner-hem",
+   "set": "TF",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Costume revision sheet, one plain warm light-grey landscape sheet, no text, no numbers. The same person as in the reference image, exactly his face, locs, beard, build and the same outfit, shown full body head to toe in three views side by side: FRONT, BACK, and a three-quarter front view, all standing relaxed with his feet only a hand's width apart (not in an A-pose). ONE change only to the trousers: the inner side of each trouser leg now hangs straight down from the knee to the hem, so the two inner hem edges are two clean vertical lines with a clear gap between the legs, and the hem width on the inner side is about a quarter narrower than in the reference; the outer side of each leg keeps its wide flare and its long bone-white diagonal panel and teal piping exactly as in the reference, and the hem stays at mid-shin at the same height. Everything else is identical to the reference: the sleeveless charcoal wrap vest with bone diagonal panels and pale-teal piping, the visor with flip plates pushed up on the forehead, chrome gauntlets, black high-top trainers. Polished matte digital character concept art, soft even studio light, crisp clean edges, plain warm light-grey seamless backdrop with a soft ground shadow, same finish as the reference. No text, no logos, no watermark, no numbers.",
+   "refs": [
+    "/Users/sky/Projects/suborned/briefs/012/cell/round3/cos-tech.jpg"
+   ],
+   "refnotes": "image 1 = the Tech's round 3 cosplay build sheet (front, back and detail views): the face, hair, build and the whole outfit to copy exactly.",
+   "seed": null,
+   "cost": 0,
+   "file": "tech-final/TF-change-inner-hem.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "c24f683dc72c19e1670faac389a702a2ebdb83127d744dc9402da0aa1a063209",
+   "sha256_png": "c24f683dc72c19e1670faac389a702a2ebdb83127d744dc9402da0aa1a063209",
+   "hook": "the one proposed change to the trousers",
+   "secs": 58.5,
+   "at": "2026-10-16T01:56:25"
+  }
+ ]
+}

@@ -1,0 +1,2525 @@
+{
+ "brief": "012 round 5",
+ "owner": "Forma",
+ "date": "2026-10-16",
+ "spent_usd": 0,
+ "model": "Codex image tool only (ChatGPT plan)",
+ "verdict_on_round4": "nah, too fruity (Sky via Aster)",
+ "pick": "c. Flight deck; runner-up b",
+ "analysis": {
+  "a": {
+   "label": "Round 5 a: Restrained",
+   "figures": {
+    "scout": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#7a7674",
+       "dE": 27.3,
+       "share_within_20": 0.0054,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#7a7674",
+       "dE": 32.9,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#435b5a",
+       "dE": 26.7,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 25.3,
+     "L_lower": 18.6,
+     "dominant": [
+      [
+       "#2c2928",
+       0.286
+      ],
+      [
+       "#3b3837",
+       0.248
+      ],
+      [
+       "#211e1d",
+       0.237
+      ],
+      [
+       "#504a47",
+       0.119
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#302d2c",
+       0.329
+      ],
+      [
+       "#403d3b",
+       0.271
+      ],
+      [
+       "#242120",
+       0.265
+      ],
+      [
+       "#4a5251",
+       0.085
+      ]
+     ]
+    },
+    "fixer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#7a7675",
+       "dE": 27.3,
+       "share_within_20": 0.0042,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#7a7675",
+       "dE": 33.3,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6a6665",
+       "dE": 28.6,
+       "share_within_20": 0.0002,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 22.8,
+     "L_lower": 21.7,
+     "dominant": [
+      [
+       "#302d2c",
+       0.345
+      ],
+      [
+       "#23211f",
+       0.233
+      ],
+      [
+       "#3d3b3a",
+       0.193
+      ],
+      [
+       "#4f2b2e",
+       0.111
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#2e2b2a",
+       0.36
+      ],
+      [
+       "#383534",
+       0.248
+      ],
+      [
+       "#242120",
+       0.126
+      ],
+      [
+       "#4d4847",
+       0.11
+      ]
+     ]
+    },
+    "tech": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#653925",
+       "dE": 25.4,
+       "share_within_20": 0.0014,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#787575",
+       "dE": 34.0,
+       "share_within_20": 0.0013,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#696666",
+       "dE": 28.2,
+       "share_within_20": 0.0023,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 25.7,
+     "L_lower": 18.3,
+     "dominant": [
+      [
+       "#312e2d",
+       0.337
+      ],
+      [
+       "#221f1e",
+       0.313
+      ],
+      [
+       "#413e3d",
+       0.17
+      ],
+      [
+       "#522f20",
+       0.082
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#2d2a29",
+       0.281
+      ],
+      [
+       "#373433",
+       0.26
+      ],
+      [
+       "#23201f",
+       0.248
+      ],
+      [
+       "#524b4a",
+       0.095
+      ]
+     ]
+    },
+    "enforcer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#67564c",
+       "dE": 26.8,
+       "share_within_20": 0.0008,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b5aba5",
+       "dE": 25.0,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6c6663",
+       "dE": 29.8,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 25.1,
+     "L_lower": 20.1,
+     "dominant": [
+      [
+       "#2b2726",
+       0.278
+      ],
+      [
+       "#201d1b",
+       0.253
+      ],
+      [
+       "#383432",
+       0.205
+      ],
+      [
+       "#4c4542",
+       0.127
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#211e1d",
+       0.246
+      ],
+      [
+       "#2b2826",
+       0.209
+      ],
+      [
+       "#423d3b",
+       0.155
+      ],
+      [
+       "#554c48",
+       0.141
+      ]
+     ]
+    }
+   },
+   "colour_pair_dE_50px": {
+    "scout-fixer": 1.6,
+    "scout-tech": 1.9,
+    "scout-enforcer": 2.2,
+    "fixer-tech": 0.5,
+    "fixer-enforcer": 1.9,
+    "tech-enforcer": 1.6
+   },
+   "min_colour_pair": 0.5,
+   "mean_colour_pair": 1.6,
+   "min_dE_to_signal": {
+    "cones": 25.4,
+    "guard": 25.0,
+    "rivals": 26.7
+   },
+   "worst_share_within_20": {
+    "cones": 0.0054,
+    "guard": 0.0013,
+    "rivals": 0.0023
+   },
+   "ground_contrast": {
+    "cream pavement": {
+     "scout": 60.6,
+     "fixer": 65.4,
+     "tech": 66.0,
+     "enforcer": 73.9
+    },
+    "lilac-grey asphalt": {
+     "scout": 40.0,
+     "fixer": 42.2,
+     "tech": 42.5,
+     "enforcer": 45.9
+    }
+   },
+   "mean_iou": 0.514,
+   "mean_profile_dist": 0.0512,
+   "min_profile_dist": 0.032,
+   "closest_pair": "03",
+   "strip": "strips/strip-a.png",
+   "strip_size": [
+    272,
+    117
+   ]
+  },
+  "b": {
+   "label": "Round 5 b: Monochrome",
+   "figures": {
+    "scout": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#766d65",
+       "dE": 26.8,
+       "share_within_20": 0.0077,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c7bcb3",
+       "dE": 24.3,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6a6764",
+       "dE": 30.3,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 40.1,
+     "L_lower": 17.8,
+     "dominant": [
+      [
+       "#2c2928",
+       0.319
+      ],
+      [
+       "#211f1e",
+       0.209
+      ],
+      [
+       "#393635",
+       0.208
+      ],
+      [
+       "#d9cfc8",
+       0.149
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#272423",
+       0.349
+      ],
+      [
+       "#343130",
+       0.335
+      ],
+      [
+       "#56504a",
+       0.099
+      ],
+      [
+       "#d0c6bf",
+       0.097
+      ]
+     ]
+    },
+    "fixer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#968c84",
+       "dE": 27.4,
+       "share_within_20": 0.0051,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b7aca4",
+       "dE": 24.3,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#696664",
+       "dE": 29.5,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 25.4,
+     "L_lower": 58.9,
+     "dominant": [
+      [
+       "#2a2725",
+       0.37
+      ],
+      [
+       "#d8d0cb",
+       0.225
+      ],
+      [
+       "#3b3735",
+       0.18
+      ],
+      [
+       "#c2b9b1",
+       0.119
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#2d2a28",
+       0.363
+      ],
+      [
+       "#d7cec9",
+       0.211
+      ],
+      [
+       "#413c39",
+       0.183
+      ],
+      [
+       "#675c58",
+       0.097
+      ]
+     ]
+    },
+    "tech": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#643823",
+       "dE": 25.7,
+       "share_within_20": 0.002,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c7bbb3",
+       "dE": 24.5,
+       "share_within_20": 0.0019,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#696766",
+       "dE": 28.8,
+       "share_within_20": 0.0004,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 27.2,
+     "L_lower": 20.8,
+     "dominant": [
+      [
+       "#2f2d2d",
+       0.383
+      ],
+      [
+       "#221f1e",
+       0.376
+      ],
+      [
+       "#d6cbc4",
+       0.088
+      ],
+      [
+       "#502e1d",
+       0.082
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#2b2928",
+       0.363
+      ],
+      [
+       "#201e1d",
+       0.255
+      ],
+      [
+       "#32302f",
+       0.166
+      ],
+      [
+       "#585453",
+       0.08
+      ]
+     ]
+    },
+    "enforcer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#847b75",
+       "dE": 26.3,
+       "share_within_20": 0.0024,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c3b6ad",
+       "dE": 24.0,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#5c5653",
+       "dE": 30.9,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 41.6,
+     "L_lower": 22.5,
+     "dominant": [
+      [
+       "#292624",
+       0.287
+      ],
+      [
+       "#1f1c1b",
+       0.219
+      ],
+      [
+       "#d6cac2",
+       0.212
+      ],
+      [
+       "#363230",
+       0.151
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#292625",
+       0.31
+      ],
+      [
+       "#201d1c",
+       0.204
+      ],
+      [
+       "#d4c9c2",
+       0.127
+      ],
+      [
+       "#383432",
+       0.124
+      ]
+     ]
+    }
+   },
+   "colour_pair_dE_50px": {
+    "scout-fixer": 2.7,
+    "scout-tech": 3.7,
+    "scout-enforcer": 1.6,
+    "fixer-tech": 7.3,
+    "fixer-enforcer": 2.8,
+    "tech-enforcer": 4.9
+   },
+   "min_colour_pair": 1.6,
+   "mean_colour_pair": 3.8,
+   "min_dE_to_signal": {
+    "cones": 25.7,
+    "guard": 24.0,
+    "rivals": 28.8
+   },
+   "worst_share_within_20": {
+    "cones": 0.0077,
+    "guard": 0.0019,
+    "rivals": 0.0004
+   },
+   "ground_contrast": {
+    "cream pavement": {
+     "scout": 67.9,
+     "fixer": 9.5,
+     "tech": 73.4,
+     "enforcer": 75.4
+    },
+    "lilac-grey asphalt": {
+     "scout": 43.4,
+     "fixer": 13.2,
+     "tech": 45.6,
+     "enforcer": 46.3
+    }
+   },
+   "mean_iou": 0.589,
+   "mean_profile_dist": 0.0562,
+   "min_profile_dist": 0.0422,
+   "closest_pair": "12",
+   "strip": "strips/strip-b.png",
+   "strip_size": [
+    272,
+    120
+   ]
+  },
+  "c": {
+   "label": "Round 5 c: Flight deck",
+   "figures": {
+    "scout": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#847b76",
+       "dE": 26.1,
+       "share_within_20": 0.0043,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b4aba6",
+       "dE": 25.4,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6c6663",
+       "dE": 29.8,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 27.2,
+     "L_lower": 18.2,
+     "dominant": [
+      [
+       "#201e1e",
+       0.344
+      ],
+      [
+       "#2c2a2a",
+       0.327
+      ],
+      [
+       "#3c3839",
+       0.13
+      ],
+      [
+       "#7d7571",
+       0.081
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#292626",
+       0.281
+      ],
+      [
+       "#1f1e1e",
+       0.238
+      ],
+      [
+       "#353232",
+       0.225
+      ],
+      [
+       "#4c4644",
+       0.103
+      ]
+     ]
+    },
+    "fixer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#83756c",
+       "dE": 25.0,
+       "share_within_20": 0.0045,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b9aca3",
+       "dE": 23.9,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6b6665",
+       "dE": 28.6,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 25.0,
+     "L_lower": 25.4,
+     "dominant": [
+      [
+       "#221f1e",
+       0.444
+      ],
+      [
+       "#26262d",
+       0.161
+      ],
+      [
+       "#7d726a",
+       0.126
+      ],
+      [
+       "#655851",
+       0.116
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#211f1e",
+       0.406
+      ],
+      [
+       "#26262d",
+       0.151
+      ],
+      [
+       "#746661",
+       0.144
+      ],
+      [
+       "#544947",
+       0.126
+      ]
+     ]
+    },
+    "tech": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#643823",
+       "dE": 25.7,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c4bbb6",
+       "dE": 25.7,
+       "share_within_20": 0.0006,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#7b7574",
+       "dE": 28.6,
+       "share_within_20": 0.0003,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 34.0,
+     "L_lower": 15.5,
+     "dominant": [
+      [
+       "#201e1f",
+       0.476
+      ],
+      [
+       "#2e2c2e",
+       0.182
+      ],
+      [
+       "#605a59",
+       0.098
+      ],
+      [
+       "#a29a96",
+       0.097
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#222021",
+       0.581
+      ],
+      [
+       "#443f3f",
+       0.142
+      ],
+      [
+       "#7b746f",
+       0.128
+      ],
+      [
+       "#c4bebc",
+       0.066
+      ]
+     ]
+    },
+    "enforcer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#736a66",
+       "dE": 26.5,
+       "share_within_20": 0.002,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b7aca5",
+       "dE": 24.6,
+       "share_within_20": 0.0004,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#373a42",
+       "dE": 28.1,
+       "share_within_20": 0.0006,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 28.2,
+     "L_lower": 22.1,
+     "dominant": [
+      [
+       "#242120",
+       0.254
+      ],
+      [
+       "#413c3a",
+       0.184
+      ],
+      [
+       "#1d1d22",
+       0.183
+      ],
+      [
+       "#2b2c32",
+       0.158
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#1e1d1f",
+       0.288
+      ],
+      [
+       "#322e2d",
+       0.2
+      ],
+      [
+       "#494341",
+       0.189
+      ],
+      [
+       "#645c5a",
+       0.171
+      ]
+     ]
+    }
+   },
+   "colour_pair_dE_50px": {
+    "scout-fixer": 3.5,
+    "scout-tech": 4.7,
+    "scout-enforcer": 2.3,
+    "fixer-tech": 4.0,
+    "fixer-enforcer": 3.6,
+    "tech-enforcer": 4.4
+   },
+   "min_colour_pair": 2.3,
+   "mean_colour_pair": 3.8,
+   "min_dE_to_signal": {
+    "cones": 25.0,
+    "guard": 23.9,
+    "rivals": 28.1
+   },
+   "worst_share_within_20": {
+    "cones": 0.0045,
+    "guard": 0.0006,
+    "rivals": 0.0006
+   },
+   "ground_contrast": {
+    "cream pavement": {
+     "scout": 75.4,
+     "fixer": 76.2,
+     "tech": 59.3,
+     "enforcer": 69.7
+    },
+    "lilac-grey asphalt": {
+     "scout": 46.3,
+     "fixer": 46.2,
+     "tech": 39.1,
+     "enforcer": 44.1
+    }
+   },
+   "mean_iou": 0.589,
+   "mean_profile_dist": 0.0533,
+   "min_profile_dist": 0.0322,
+   "closest_pair": "02",
+   "strip": "strips/strip-c.png",
+   "strip_size": [
+    272,
+    121
+   ]
+  },
+  "R4-L1": {
+   "label": "Round 4 L1 (reference, rejected)",
+   "figures": {
+    "scout": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#a6694b",
+       "dE": 15.3,
+       "share_within_20": 0.1289,
+       "share_within_10": 0.0002
+      },
+      "guard": {
+       "nearest_painted": "#c37c5a",
+       "dE": 20.2,
+       "share_within_20": 0.0053,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6c6663",
+       "dE": 29.8,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 65.9,
+     "L_lower": 60.8,
+     "dominant": [
+      [
+       "#e5e1df",
+       0.34
+      ],
+      [
+       "#c1bab5",
+       0.146
+      ],
+      [
+       "#a96c4f",
+       0.141
+      ],
+      [
+       "#322c26",
+       0.127
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#e1dcd9",
+       0.304
+      ],
+      [
+       "#b9b4ac",
+       0.179
+      ],
+      [
+       "#483f37",
+       0.138
+      ],
+      [
+       "#8c877a",
+       0.136
+      ]
+     ]
+    },
+    "fixer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#ca6887",
+       "dE": 21.1,
+       "share_within_20": 0.011,
+       "share_within_10": 0.0001
+      },
+      "guard": {
+       "nearest_painted": "#b6b1ae",
+       "dE": 26.4,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#ca6887",
+       "dE": 25.6,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 63.9,
+     "L_lower": 64.2,
+     "dominant": [
+      [
+       "#e4dfdd",
+       0.294
+      ],
+      [
+       "#817875",
+       0.219
+      ],
+      [
+       "#a8a2a0",
+       0.185
+      ],
+      [
+       "#ea81a4",
+       0.169
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#aeabaa",
+       0.239
+      ],
+      [
+       "#8a817e",
+       0.206
+      ],
+      [
+       "#e5dfde",
+       0.188
+      ],
+      [
+       "#e981a3",
+       0.172
+      ]
+     ]
+    },
+    "tech": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#683924",
+       "dE": 24.8,
+       "share_within_20": 0.0012,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b9b1ae",
+       "dE": 26.2,
+       "share_within_20": 0.0004,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6b6664",
+       "dE": 29.2,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 60.5,
+     "L_lower": 59.1,
+     "dominant": [
+      [
+       "#e4e0dd",
+       0.4
+      ],
+      [
+       "#6b6664",
+       0.179
+      ],
+      [
+       "#3d2d23",
+       0.168
+      ],
+      [
+       "#999491",
+       0.157
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#e3e0de",
+       0.281
+      ],
+      [
+       "#918e8b",
+       0.192
+      ],
+      [
+       "#6e6a68",
+       0.154
+      ],
+      [
+       "#b9b9b6",
+       0.144
+      ]
+     ]
+    },
+    "enforcer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#7b716d",
+       "dE": 25.8,
+       "share_within_20": 0.0126,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c5bdba",
+       "dE": 26.5,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#025c96",
+       "dE": 24.7,
+       "share_within_20": 0.0065,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 65.6,
+     "L_lower": 59.4,
+     "dominant": [
+      [
+       "#ded8d6",
+       0.266
+      ],
+      [
+       "#312c2b",
+       0.2
+      ],
+      [
+       "#ece8e6",
+       0.18
+      ],
+      [
+       "#6e645f",
+       0.157
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#e0dbd9",
+       0.309
+      ],
+      [
+       "#706c69",
+       0.219
+      ],
+      [
+       "#cac6c4",
+       0.209
+      ],
+      [
+       "#343130",
+       0.131
+      ]
+     ]
+    }
+   },
+   "colour_pair_dE_50px": {
+    "scout-fixer": 8.2,
+    "scout-tech": 5.0,
+    "scout-enforcer": 5.1,
+    "fixer-tech": 6.5,
+    "fixer-enforcer": 9.5,
+    "tech-enforcer": 4.8
+   },
+   "min_colour_pair": 4.8,
+   "mean_colour_pair": 6.5,
+   "min_dE_to_signal": {
+    "cones": 15.3,
+    "guard": 20.2,
+    "rivals": 24.7
+   },
+   "worst_share_within_20": {
+    "cones": 0.1289,
+    "guard": 0.0053,
+    "rivals": 0.0065
+   },
+   "ground_contrast": {
+    "cream pavement": {
+     "scout": 7.9,
+     "fixer": 18.3,
+     "tech": 8.0,
+     "enforcer": 8.5
+    },
+    "lilac-grey asphalt": {
+     "scout": 9.0,
+     "fixer": 4.5,
+     "tech": 8.3,
+     "enforcer": 15.3
+    }
+   },
+   "mean_iou": 0.578,
+   "mean_profile_dist": 0.0522,
+   "min_profile_dist": 0.0312,
+   "closest_pair": "02",
+   "strip": "strips/strip-R4-L1.png",
+   "strip_size": [
+    272,
+    119
+   ]
+  },
+  "R4-L4": {
+   "label": "Round 4 L4 (reference, rejected)",
+   "figures": {
+    "scout": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#a5694c",
+       "dE": 15.4,
+       "share_within_20": 0.0665,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#bbb3ab",
+       "dE": 24.7,
+       "share_within_20": 0.0002,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#756c66",
+       "dE": 31.5,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 59.1,
+     "L_lower": 57.5,
+     "dominant": [
+      [
+       "#e2ddd8",
+       0.294
+      ],
+      [
+       "#81a331",
+       0.239
+      ],
+      [
+       "#2f2a23",
+       0.155
+      ],
+      [
+       "#91887e",
+       0.132
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#7d9e32",
+       0.216
+      ],
+      [
+       "#958e82",
+       0.216
+      ],
+      [
+       "#d6d4ca",
+       0.205
+      ],
+      [
+       "#4f4835",
+       0.18
+      ]
+     ]
+    },
+    "fixer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#d36d85",
+       "dE": 19.5,
+       "share_within_20": 0.0304,
+       "share_within_10": 0.0001
+      },
+      "guard": {
+       "nearest_painted": "#c4bcb8",
+       "dE": 26.1,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#d36d85",
+       "dE": 28.1,
+       "share_within_20": 0.0,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 64.1,
+     "L_lower": 75.4,
+     "dominant": [
+      [
+       "#e9e4e2",
+       0.313
+      ],
+      [
+       "#f18ca5",
+       0.271
+      ],
+      [
+       "#d6cecc",
+       0.139
+      ],
+      [
+       "#7c716e",
+       0.11
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#e6e1df",
+       0.357
+      ],
+      [
+       "#f18da6",
+       0.225
+      ],
+      [
+       "#786a67",
+       0.134
+      ],
+      [
+       "#b2a8a7",
+       0.106
+      ]
+     ]
+    },
+    "tech": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#95553a",
+       "dE": 15.7,
+       "share_within_20": 0.051,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#b3aca9",
+       "dE": 26.3,
+       "share_within_20": 0.0002,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#6b6663",
+       "dE": 30.0,
+       "share_within_20": 0.0001,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 49.2,
+     "L_lower": 55.9,
+     "dominant": [
+      [
+       "#03684f",
+       0.249
+      ],
+      [
+       "#35332d",
+       0.218
+      ],
+      [
+       "#e8e3e1",
+       0.205
+      ],
+      [
+       "#76422b",
+       0.129
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#cbc7c4",
+       0.296
+      ],
+      [
+       "#0e6d55",
+       0.258
+      ],
+      [
+       "#73432e",
+       0.122
+      ],
+      [
+       "#84938b",
+       0.114
+      ]
+     ]
+    },
+    "enforcer": {
+     "signals": {
+      "cones": {
+       "nearest_painted": "#6c6663",
+       "dE": 27.6,
+       "share_within_20": 0.023,
+       "share_within_10": 0.0
+      },
+      "guard": {
+       "nearest_painted": "#c5bdb9",
+       "dE": 26.1,
+       "share_within_20": 0.0004,
+       "share_within_10": 0.0
+      },
+      "rivals": {
+       "nearest_painted": "#015888",
+       "dE": 25.3,
+       "share_within_20": 0.0177,
+       "share_within_10": 0.0
+      }
+     },
+     "L_upper": 54.4,
+     "L_lower": 44.0,
+     "dominant": [
+      [
+       "#e1dbd9",
+       0.317
+      ],
+      [
+       "#2b2726",
+       0.287
+      ],
+      [
+       "#0172ab",
+       0.114
+      ],
+      [
+       "#665d57",
+       0.107
+      ]
+     ],
+     "dominant_50px": [
+      [
+       "#2e2b29",
+       0.243
+      ],
+      [
+       "#d5d1d0",
+       0.203
+      ],
+      [
+       "#0b80b4",
+       0.159
+      ],
+      [
+       "#615b57",
+       0.157
+      ]
+     ]
+    }
+   },
+   "colour_pair_dE_50px": {
+    "scout-fixer": 14.9,
+    "scout-tech": 13.7,
+    "scout-enforcer": 15.3,
+    "fixer-tech": 15.5,
+    "fixer-enforcer": 13.4,
+    "tech-enforcer": 15.5
+   },
+   "min_colour_pair": 13.4,
+   "mean_colour_pair": 14.7,
+   "min_dE_to_signal": {
+    "cones": 15.4,
+    "guard": 24.7,
+    "rivals": 25.3
+   },
+   "worst_share_within_20": {
+    "cones": 0.0665,
+    "guard": 0.0004,
+    "rivals": 0.0177
+   },
+   "ground_contrast": {
+    "cream pavement": {
+     "scout": 25.4,
+     "fixer": 7.9,
+     "tech": 11.4,
+     "enforcer": 10.3
+    },
+    "lilac-grey asphalt": {
+     "scout": 11.5,
+     "fixer": 16.6,
+     "tech": 11.1,
+     "enforcer": 12.9
+    }
+   },
+   "mean_iou": 0.608,
+   "mean_profile_dist": 0.055,
+   "min_profile_dist": 0.041,
+   "closest_pair": "03",
+   "strip": "strips/strip-R4-L4.png",
+   "strip_size": [
+    272,
+    120
+   ]
+  }
+ },
+ "takes_check": {
+  "a-scout": {
+   "cones": {
+    "nearest_painted": "#6a6664",
+    "dE": 28.3,
+    "share_within_20": 0.0051
+   },
+   "guard": {
+    "nearest_painted": "#6a6664",
+    "dE": 37.1,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#4b6563",
+    "dE": 27.2,
+    "share_within_20": 0.0
+   }
+  },
+  "a-fixer": {
+   "cones": {
+    "nearest_painted": "#797675",
+    "dE": 27.5,
+    "share_within_20": 0.005
+   },
+   "guard": {
+    "nearest_painted": "#797675",
+    "dE": 33.3,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#6a6665",
+    "dE": 28.8,
+    "share_within_20": 0.0
+   }
+  },
+  "a-tech": {
+   "cones": {
+    "nearest_painted": "#787676",
+    "dE": 28.0,
+    "share_within_20": 0.0001
+   },
+   "guard": {
+    "nearest_painted": "#acb2bc",
+    "dE": 33.1,
+    "share_within_20": 0.001
+   },
+   "rivals": {
+    "nearest_painted": "#868b96",
+    "dE": 22.7,
+    "share_within_20": 0.0034
+   }
+  },
+  "a-enforcer": {
+   "cones": {
+    "nearest_painted": "#736359",
+    "dE": 25.5,
+    "share_within_20": 0.0013
+   },
+   "guard": {
+    "nearest_painted": "#b6aba5",
+    "dE": 24.8,
+    "share_within_20": 0.0004
+   },
+   "rivals": {
+    "nearest_painted": "#787574",
+    "dE": 28.9,
+    "share_within_20": 0.0
+   }
+  },
+  "b-scout": {
+   "cones": {
+    "nearest_painted": "#756c65",
+    "dE": 26.7,
+    "share_within_20": 0.0063
+   },
+   "guard": {
+    "nearest_painted": "#c6bdb4",
+    "dE": 24.6,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#5a5754",
+    "dE": 30.6,
+    "share_within_20": 0.0
+   }
+  },
+  "b-fixer": {
+   "cones": {
+    "nearest_painted": "#9c938b",
+    "dE": 28.4,
+    "share_within_20": 0.0069
+   },
+   "guard": {
+    "nearest_painted": "#b5aca4",
+    "dE": 24.6,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#595655",
+    "dE": 30.0,
+    "share_within_20": 0.0
+   }
+  },
+  "b-tech": {
+   "cones": {
+    "nearest_painted": "#633923",
+    "dE": 26.0,
+    "share_within_20": 0.0008
+   },
+   "guard": {
+    "nearest_painted": "#c7bcb4",
+    "dE": 24.6,
+    "share_within_20": 0.0022
+   },
+   "rivals": {
+    "nearest_painted": "#696767",
+    "dE": 28.4,
+    "share_within_20": 0.0003
+   }
+  },
+  "b-enforcer": {
+   "cones": {
+    "nearest_painted": "#756b65",
+    "dE": 26.4,
+    "share_within_20": 0.0021
+   },
+   "guard": {
+    "nearest_painted": "#c2b6ad",
+    "dE": 24.1,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#5b5653",
+    "dE": 30.9,
+    "share_within_20": 0.0
+   }
+  },
+  "c-scout": {
+   "cones": {
+    "nearest_painted": "#847b76",
+    "dE": 26.1,
+    "share_within_20": 0.0054
+   },
+   "guard": {
+    "nearest_painted": "#c3bbb6",
+    "dE": 25.8,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#6c6663",
+    "dE": 29.5,
+    "share_within_20": 0.0
+   }
+  },
+  "c-fixer": {
+   "cones": {
+    "nearest_painted": "#84766c",
+    "dE": 25.2,
+    "share_within_20": 0.0058
+   },
+   "guard": {
+    "nearest_painted": "#b4a69b",
+    "dE": 23.3,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#6c6663",
+    "dE": 29.7,
+    "share_within_20": 0.0
+   }
+  },
+  "c-tech": {
+   "cones": {
+    "nearest_painted": "#653923",
+    "dE": 25.7,
+    "share_within_20": 0.0001
+   },
+   "guard": {
+    "nearest_painted": "#b5aba7",
+    "dE": 25.5,
+    "share_within_20": 0.0003
+   },
+   "rivals": {
+    "nearest_painted": "#6a6665",
+    "dE": 28.4,
+    "share_within_20": 0.0008
+   }
+  },
+  "c-enforcer": {
+   "cones": {
+    "nearest_painted": "#716a67",
+    "dE": 27.0,
+    "share_within_20": 0.0012
+   },
+   "guard": {
+    "nearest_painted": "#bcb2ab",
+    "dE": 24.8,
+    "share_within_20": 0.0
+   },
+   "rivals": {
+    "nearest_painted": "#373b43",
+    "dE": 27.8,
+    "share_within_20": 0.0005
+   }
+  }
+ },
+ "images": [
+  {
+   "id": "R5-a-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: dusty warm taupe-sand (#8c7a68). Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in matte graphite with taupe-sand panels and gunmetal chevron seams over a charcoal technical-knit mock neck, hip-length, a belt with a big round gunmetal buckle, dark gauntlets with gunmetal cuffs, charcoal trousers, heavy dark matte boots with gunmetal fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-a-enforcer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "e9534d1facadc6633355135b8efb40937998039cd338218c43b821698b382157",
+   "sha256_png": "e9534d1facadc6633355135b8efb40937998039cd338218c43b821698b382157",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:23:46",
+   "secs": 60.8,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "a",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in matte graphite with taupe-sand panels and gunmetal chevron seams over a charcoal technical-knit mock neck, hip-length, a belt with a big round gunmetal buckle, dark gauntlets with gunmetal cuffs, charcoal trousers, heavy dark matte boots with gunmetal fittings",
+   "identity": "dusty warm taupe-sand (#8c7a68)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: deep wine (#6b3342). Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted deep-wine knit sleeves with round gunmetal ring cuffs, a sculpted gunmetal ring collar over a dark mock neck, slim graphite trousers, dark matte low boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim gunmetal ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-a-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "5ee4dba3305f6c9320abc02538560fa5b6d4d747d39fc14345c026e4656a614f",
+   "sha256_png": "5ee4dba3305f6c9320abc02538560fa5b6d4d747d39fc14345c026e4656a614f",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:23:38",
+   "secs": 55.3,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "a",
+   "role": "fixer",
+   "outfit": "a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted deep-wine knit sleeves with round gunmetal ring cuffs, a sculpted gunmetal ring collar over a dark mock neck, slim graphite trousers, dark matte low boots",
+   "identity": "deep wine (#6b3342)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: deep dusty pine-teal (#2f6e68), leaning green, never blue. Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded matte graphite zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a deep pine-teal block across the yoke and sleeves, a gunmetal ring-pull zip, charcoal fitted shorts over matte black technical tights to the ankle, a matte gunmetal buckle belt, dark matte low boots with gunmetal ring buckles, fingerless dark gloves, a tall graphite moulded pack shell. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a dark cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-a-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "06316abe20e0cb5bdee1db95c2a37ae5c993e7ca58fe5fde1d4c156b5a3d3560",
+   "sha256_png": "06316abe20e0cb5bdee1db95c2a37ae5c993e7ca58fe5fde1d4c156b5a3d3560",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:22:42",
+   "secs": 59.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "a",
+   "role": "scout",
+   "outfit": "a cropped moulded matte graphite zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a deep pine-teal block across the yoke and sleeves, a gunmetal ring-pull zip, charcoal fitted shorts over matte black technical tights to the ankle, a matte gunmetal buckle belt, dark matte low boots with gunmetal ring buckles, fingerless dark gloves, a tall graphite moulded pack shell",
+   "identity": "deep dusty pine-teal (#2f6e68), leaning green, never blue",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: pale dusty ice-blue-grey (#b4c4d4), matte, never saturated. Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded matte charcoal tunic with pale ice-blue-grey quilted panels ending at mid-thigh, a rigid moulded matte bell panel at the hip, slim gunmetal leggings, dark matte boots with ring buckles, bare arms with satin gunmetal gauntlets. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round gunmetal bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-a-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "917c5f0c356c32cba44de9fd011c0528c6964326726dddddd5e5c85932d825d7",
+   "sha256_png": "917c5f0c356c32cba44de9fd011c0528c6964326726dddddd5e5c85932d825d7",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:22:45",
+   "secs": 62.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "a",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded matte charcoal tunic with pale ice-blue-grey quilted panels ending at mid-thigh, a rigid moulded matte bell panel at the hip, slim gunmetal leggings, dark matte boots with ring buckles, bare arms with satin gunmetal gauntlets",
+   "identity": "pale dusty ice-blue-grey (#b4c4d4), matte, never saturated",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone vertical bar patch on the shoulder yoke. Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in matte bone with a charcoal vertical bar patch on the yoke, over a charcoal technical-knit mock neck, charcoal sleeves, hip-length, a belt with a big round gunmetal buckle, charcoal gauntlets with gunmetal cuffs, charcoal trousers, heavy charcoal matte boots with gunmetal fittings. Pale shoulders on a dark body. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-b-enforcer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "43bb7a06b8eff69c78f1e6110dcb2716ee6a2af5b75697d08b61df7db305fd44",
+   "sha256_png": "43bb7a06b8eff69c78f1e6110dcb2716ee6a2af5b75697d08b61df7db305fd44",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:23:49",
+   "secs": 62.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "b",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in matte bone with a charcoal vertical bar patch on the yoke, over a charcoal technical-knit mock neck, charcoal sleeves, hip-length, a belt with a big round gunmetal buckle, charcoal gauntlets with gunmetal cuffs, charcoal trousers, heavy charcoal matte boots with gunmetal fittings. Pale shoulders on a dark body",
+   "identity": "mark: a bone vertical bar patch on the shoulder yoke",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone ring band around the collar. Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted charcoal knit sleeves with round gunmetal ring cuffs, a sculpted charcoal collar with one bone ring band, slim matte bone trousers, charcoal matte low boots. Dark top over light trousers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim gunmetal ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-b-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "3a7ab2bc9ab71405207c3e5f7e7119ad278a29aa10daf75b8e3ff966bf2f34be",
+   "sha256_png": "3a7ab2bc9ab71405207c3e5f7e7119ad278a29aa10daf75b8e3ff966bf2f34be",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:23:42",
+   "secs": 60.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "b",
+   "role": "fixer",
+   "outfit": "a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted charcoal knit sleeves with round gunmetal ring cuffs, a sculpted charcoal collar with one bone ring band, slim matte bone trousers, charcoal matte low boots. Dark top over light trousers",
+   "identity": "mark: a bone ring band around the collar",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone chevron patch on the left shoulder of the jacket. Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded matte bone zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a single charcoal chevron patch on the left shoulder, charcoal fitted shorts over matte charcoal technical tights to the ankle, a matte gunmetal buckle belt, charcoal matte low boots with gunmetal ring buckles, fingerless charcoal gloves, a tall bone moulded pack shell. Light jacket and pack over a dark lower half. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a charcoal cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-b-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "cf06688bdb8df33bf3d8515180c8c0abf940129db5add0003288cee78df42896",
+   "sha256_png": "cf06688bdb8df33bf3d8515180c8c0abf940129db5add0003288cee78df42896",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:22:42",
+   "secs": 58.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "b",
+   "role": "scout",
+   "outfit": "a cropped moulded matte bone zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a single charcoal chevron patch on the left shoulder, charcoal fitted shorts over matte charcoal technical tights to the ankle, a matte gunmetal buckle belt, charcoal matte low boots with gunmetal ring buckles, fingerless charcoal gloves, a tall bone moulded pack shell. Light jacket and pack over a dark lower half",
+   "identity": "mark: a bone chevron patch on the left shoulder of the jacket",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone disc patch on the chest. Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded matte charcoal tunic ending at mid-thigh with a bone disc patch on the chest, a rigid moulded matte bone bell panel at the hip, slim charcoal leggings, charcoal matte boots with ring buckles, bare arms with satin gunmetal gauntlets. Dark, light, dark. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round gunmetal bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-b-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "2316f5a4606bf055dffbe4e1c3213cd677ac9d7406f8a62fd76bf5873f1c263e",
+   "sha256_png": "2316f5a4606bf055dffbe4e1c3213cd677ac9d7406f8a62fd76bf5873f1c263e",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:22:46",
+   "secs": 63.2,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "b",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded matte charcoal tunic ending at mid-thigh with a bone disc patch on the chest, a rigid moulded matte bone bell panel at the hip, slim charcoal leggings, charcoal matte boots with ring buckles, bare arms with satin gunmetal gauntlets. Dark, light, dark",
+   "identity": "mark: a bone disc patch on the chest",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish and the place of each person's large metal areas: brushed steel on the collar and shoulders, warm pewter running down the body, mirror chrome on the skirt and chest plates, dark smoked titanium over the whole torso. Metal covers about a third of each figure. This person's identity: dark smoked titanium over the whole torso. Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in dark smoked titanium with gunmetal chevron seams over a black technical-knit mock neck, hip-length, a belt with a big round titanium buckle, black gauntlets with titanium cuffs, ink-navy trousers, heavy black matte boots with titanium fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-c-enforcer.png",
+   "size": [
+    876,
+    1795
+   ],
+   "sha256": "99dd220a1dbea1c38ec1e267d0e42ebdb24b67a8ae72daebef7c25afddac64de",
+   "sha256_png": "99dd220a1dbea1c38ec1e267d0e42ebdb24b67a8ae72daebef7c25afddac64de",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:23:44",
+   "secs": 60.0,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "c",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in dark smoked titanium with gunmetal chevron seams over a black technical-knit mock neck, hip-length, a belt with a big round titanium buckle, black gauntlets with titanium cuffs, ink-navy trousers, heavy black matte boots with titanium fittings",
+   "identity": "dark smoked titanium over the whole torso",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish and the place of each person's large metal areas: brushed steel on the collar and shoulders, warm pewter running down the body, mirror chrome on the skirt and chest plates, dark smoked titanium over the whole torso. Metal covers about a third of each figure. This person's identity: warm pewter grey, running down the length of the body. Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless ink-navy hip-length column tunic with a circular cut-out at the waist, long fitted black knit sleeves with round pewter ring cuffs, a big sculpted warm-pewter ring collar, a long warm-pewter panel running down the outside of each slim black trouser leg from hip to ankle, black matte low boots with pewter fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim pewter ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-c-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "3e165f08690d1d6e49c1b0990378cc9f0215477d3acee2d2039b3c712f1edfea",
+   "sha256_png": "3e165f08690d1d6e49c1b0990378cc9f0215477d3acee2d2039b3c712f1edfea",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:23:44",
+   "secs": 58.2,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "c",
+   "role": "fixer",
+   "outfit": "a sleeveless ink-navy hip-length column tunic with a circular cut-out at the waist, long fitted black knit sleeves with round pewter ring cuffs, a big sculpted warm-pewter ring collar, a long warm-pewter panel running down the outside of each slim black trouser leg from hip to ankle, black matte low boots with pewter fittings",
+   "identity": "warm pewter grey, running down the length of the body",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish and the place of each person's large metal areas: brushed steel on the collar and shoulders, warm pewter running down the body, mirror chrome on the skirt and chest plates, dark smoked titanium over the whole torso. Metal covers about a third of each figure. This person's identity: cool brushed steel on the collar-hood, shoulders and pack. Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded ink-navy zip-front jacket with a sculpted brushed-steel stand-up collar-hood and brushed-steel shoulder plates, chevron seams, black fitted shorts over matte black technical tights to the ankle, a satin steel buckle belt, black matte low boots with steel ring buckles, fingerless black gloves, a tall brushed-steel moulded pack shell. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a black cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-c-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "2a194b4d77d43dd1b2203ff8043cf33273d50b74f24392960e01d43504ac158b",
+   "sha256_png": "2a194b4d77d43dd1b2203ff8043cf33273d50b74f24392960e01d43504ac158b",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:22:46",
+   "secs": 63.2,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "c",
+   "role": "scout",
+   "outfit": "a cropped moulded ink-navy zip-front jacket with a sculpted brushed-steel stand-up collar-hood and brushed-steel shoulder plates, chevron seams, black fitted shorts over matte black technical tights to the ankle, a satin steel buckle belt, black matte low boots with steel ring buckles, fingerless black gloves, a tall brushed-steel moulded pack shell",
+   "identity": "cool brushed steel on the collar-hood, shoulders and pack",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Its space-age character comes from form, not from colour: smooth sculpted moulded shapes, big ring collars, round porthole discs and bezels, rigid geometric panels and clean seams, as if designed for the crew of a long voyage between planets. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish and the place of each person's large metal areas: brushed steel on the collar and shoulders, warm pewter running down the body, mirror chrome on the skirt and chest plates, dark smoked titanium over the whole torso. Metal covers about a third of each figure. This person's identity: bright mirror chrome. Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded ink-navy tunic with a large mirror-chrome chest plate and mirror-chrome shoulder plates ending at mid-thigh, a rigid moulded mirror-chrome bell panel at the hip, slim black leggings, black matte boots with chrome ring buckles, bare arms with mirror-chrome gauntlets. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round chrome bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R5-c-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "edf9a6c53d2683609c7082a106848c0304a96c120ec04802421dad75007f7c84",
+   "sha256_png": "edf9a6c53d2683609c7082a106848c0304a96c120ec04802421dad75007f7c84",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:22:44",
+   "secs": 61.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "c",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded ink-navy tunic with a large mirror-chrome chest plate and mirror-chrome shoulder plates ending at mid-thigh, a rigid moulded mirror-chrome bell panel at the hip, slim black leggings, black matte boots with chrome ring buckles, bare arms with mirror-chrome gauntlets",
+   "identity": "bright mirror chrome",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-a",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (restrained: graphite, gunmetal and charcoal, matte, one muted deep colour each) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R5-lineup-a.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "5a43203d7384e5c229a7b64fb560ac9dc803fb12845dbff466cf3f4c3c3ebf7f",
+   "sha256_png": "5a43203d7384e5c229a7b64fb560ac9dc803fb12845dbff466cf3f4c3c3ebf7f",
+   "hook": "Restrained: graphite, gunmetal and charcoal, matte, one muted deep colour each",
+   "at": "2026-10-16T01:25:32",
+   "secs": 61.4,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-a-scout.png",
+    "takes/R5-a-fixer.png",
+    "takes/R5-a-tech.png",
+    "takes/R5-a-enforcer.png"
+   ],
+   "direction": "a",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-b",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (monochrome: bone and charcoal; value blocking and one mark each) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R5-lineup-b.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "c6b8f795f802fa4152e82c44b1be709a63c9b3841452e5de121494fe8edaf592",
+   "sha256_png": "c6b8f795f802fa4152e82c44b1be709a63c9b3841452e5de121494fe8edaf592",
+   "hook": "Monochrome: bone and charcoal; value blocking and one mark each",
+   "at": "2026-10-16T01:25:36",
+   "secs": 65.8,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-b-scout.png",
+    "takes/R5-b-fixer.png",
+    "takes/R5-b-tech.png",
+    "takes/R5-b-enforcer.png"
+   ],
+   "direction": "b",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-c",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (flight deck: ink fabric and brushed metal; the finish of the metal names the person) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R5-lineup-c.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "4d804c86f0e924dbd95b19d0f8fb710aafa4d6f580b263a745bc24e5b975fe33",
+   "sha256_png": "4d804c86f0e924dbd95b19d0f8fb710aafa4d6f580b263a745bc24e5b975fe33",
+   "hook": "Flight deck: ink fabric and brushed metal; the finish of the metal names the person",
+   "at": "2026-10-16T01:25:34",
+   "secs": 63.4,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-c-scout.png",
+    "takes/R5-c-fixer.png",
+    "takes/R5-c-tech.png",
+    "takes/R5-c-enforcer.png"
+   ],
+   "direction": "c",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  }
+ ],
+ "iteration_v1": [
+  {
+   "id": "R5-a-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: dusty warm taupe-sand (#8c7a68). Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in matte graphite with taupe-sand panels and gunmetal chevron seams over a charcoal technical-knit mock neck, hip-length, a belt with a big round gunmetal buckle, dark gauntlets with gunmetal cuffs, charcoal trousers, heavy dark matte boots with gunmetal fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-a-enforcer.png",
+   "size": [
+    1198,
+    1797
+   ],
+   "sha256": "83e9dc2550043546e5365e8d9d40db4883abecbc00f0b3beb93435ea66cfe83a",
+   "sha256_png": "83e9dc2550043546e5365e8d9d40db4883abecbc00f0b3beb93435ea66cfe83a",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:17:35",
+   "secs": 69.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "a",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in matte graphite with taupe-sand panels and gunmetal chevron seams over a charcoal technical-knit mock neck, hip-length, a belt with a big round gunmetal buckle, dark gauntlets with gunmetal cuffs, charcoal trousers, heavy dark matte boots with gunmetal fittings",
+   "identity": "dusty warm taupe-sand (#8c7a68)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: deep wine (#6b3342). Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted deep-wine knit sleeves with round gunmetal ring cuffs, a sculpted gunmetal ring collar over a dark mock neck, slim graphite trousers, dark matte low boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim gunmetal ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-a-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "67e946cd95fa0b2397c68a942d0d236bc2c4761a25ab63ccded978052e7bea0f",
+   "sha256_png": "67e946cd95fa0b2397c68a942d0d236bc2c4761a25ab63ccded978052e7bea0f",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:17:20",
+   "secs": 61.7,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "a",
+   "role": "fixer",
+   "outfit": "a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted deep-wine knit sleeves with round gunmetal ring cuffs, a sculpted gunmetal ring collar over a dark mock neck, slim graphite trousers, dark matte low boots",
+   "identity": "deep wine (#6b3342)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: dusty petrol teal (#3d6b70). Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded matte graphite zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a petrol-teal block across the yoke and sleeves, a gunmetal ring-pull zip, charcoal fitted shorts over matte black technical tights to the ankle, a matte gunmetal buckle belt, dark matte low boots with gunmetal ring buckles, fingerless dark gloves, a tall graphite moulded pack shell. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a dark cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-a-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "dfa2c9da9b97bed4e8606deca64c43677a80b6c58cfdec86899c5cea2a04a157",
+   "sha256_png": "dfa2c9da9b97bed4e8606deca64c43677a80b6c58cfdec86899c5cea2a04a157",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:16:18",
+   "secs": 59.6,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "a",
+   "role": "scout",
+   "outfit": "a cropped moulded matte graphite zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a petrol-teal block across the yoke and sleeves, a gunmetal ring-pull zip, charcoal fitted shorts over matte black technical tights to the ankle, a matte gunmetal buckle belt, dark matte low boots with gunmetal ring buckles, fingerless dark gloves, a tall graphite moulded pack shell",
+   "identity": "dusty petrol teal (#3d6b70)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-a-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: a dark technical base of graphite, gunmetal and charcoal, all matte (technical knit, bonded matte fabric, matte rubber, satin gunmetal hardware); and ONE muted, deep, desaturated, dusty identifying colour per person, used as one clear block of about a quarter of the figure; the rest of the figure stays dark. This person's identity: dusty slate blue (#5a7391). Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded matte charcoal tunic with slate-blue quilted panels ending at mid-thigh, a rigid moulded matte bell panel at the hip, slim gunmetal leggings, dark matte boots with ring buckles, bare arms with satin gunmetal gauntlets. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round gunmetal bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-a-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "8e2761bbae156321349e8b21d6f5dc95eee8c3e2d159896417fe6f3a3c616f88",
+   "sha256_png": "8e2761bbae156321349e8b21d6f5dc95eee8c3e2d159896417fe6f3a3c616f88",
+   "hook": "Restrained",
+   "at": "2026-10-16T01:16:25",
+   "secs": 66.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "a",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded matte charcoal tunic with slate-blue quilted panels ending at mid-thigh, a rigid moulded matte bell panel at the hip, slim gunmetal leggings, dark matte boots with ring buckles, bare arms with satin gunmetal gauntlets",
+   "identity": "dusty slate blue (#5a7391)",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone vertical bar patch on the shoulder yoke. Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in matte bone with a charcoal vertical bar patch on the yoke, over a charcoal technical-knit mock neck, charcoal sleeves, hip-length, a belt with a big round gunmetal buckle, charcoal gauntlets with gunmetal cuffs, charcoal trousers, heavy charcoal matte boots with gunmetal fittings. Pale shoulders on a dark body. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-b-enforcer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "7a71f9a9238025ad0f85cbf1b3e038970e8c5f8ac366935792e7e385470bf33f",
+   "sha256_png": "7a71f9a9238025ad0f85cbf1b3e038970e8c5f8ac366935792e7e385470bf33f",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:17:22",
+   "secs": 60.3,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "b",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in matte bone with a charcoal vertical bar patch on the yoke, over a charcoal technical-knit mock neck, charcoal sleeves, hip-length, a belt with a big round gunmetal buckle, charcoal gauntlets with gunmetal cuffs, charcoal trousers, heavy charcoal matte boots with gunmetal fittings. Pale shoulders on a dark body",
+   "identity": "mark: a bone vertical bar patch on the shoulder yoke",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone ring band around the collar. Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted charcoal knit sleeves with round gunmetal ring cuffs, a sculpted charcoal collar with one bone ring band, slim matte bone trousers, charcoal matte low boots. Dark top over light trousers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim gunmetal ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-b-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "4e349df7ab3ce98efde63bad4b1e74868e543c16e769562fa474b5c297f85cf9",
+   "sha256_png": "4e349df7ab3ce98efde63bad4b1e74868e543c16e769562fa474b5c297f85cf9",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:17:27",
+   "secs": 57.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "b",
+   "role": "fixer",
+   "outfit": "a sleeveless charcoal hip-length column tunic with a circular cut-out at the waist, long fitted charcoal knit sleeves with round gunmetal ring cuffs, a sculpted charcoal collar with one bone ring band, slim matte bone trousers, charcoal matte low boots. Dark top over light trousers",
+   "identity": "mark: a bone ring band around the collar",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone chevron patch on the left shoulder of the jacket. Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded matte bone zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a single charcoal chevron patch on the left shoulder, charcoal fitted shorts over matte charcoal technical tights to the ankle, a matte gunmetal buckle belt, charcoal matte low boots with gunmetal ring buckles, fingerless charcoal gloves, a tall bone moulded pack shell. Light jacket and pack over a dark lower half. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a charcoal cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-b-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "12d19d741599b52ed1c7c248ff709dd4b96dcfd865f940b3d8792c9b41d5725e",
+   "sha256_png": "12d19d741599b52ed1c7c248ff709dd4b96dcfd865f940b3d8792c9b41d5725e",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:16:29",
+   "secs": 70.6,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "b",
+   "role": "scout",
+   "outfit": "a cropped moulded matte bone zip-front jacket with a sculpted stand-up collar-hood, chevron seams, a single charcoal chevron patch on the left shoulder, charcoal fitted shorts over matte charcoal technical tights to the ankle, a matte gunmetal buckle belt, charcoal matte low boots with gunmetal ring buckles, fingerless charcoal gloves, a tall bone moulded pack shell. Light jacket and pack over a dark lower half",
+   "identity": "mark: a bone chevron patch on the left shoulder of the jacket",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-b-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: only two colours, a cool bone off-white (#e4e1da) and charcoal (#2b2d30), both matte, with satin gunmetal hardware; no other colour anywhere on the clothes. Identity comes from silhouette, from which parts are bone and which are charcoal, and from ONE small mark per person, a single geometric patch or band in the opposite value. This person's identity: mark: a bone disc patch on the chest. Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded matte charcoal tunic ending at mid-thigh with a bone disc patch on the chest, a rigid moulded matte bone bell panel at the hip, slim charcoal leggings, charcoal matte boots with ring buckles, bare arms with satin gunmetal gauntlets. Dark, light, dark. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round gunmetal bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-b-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "438225e8e433f53b29231ac1db4a83b66b70b846016fc1a33fb1a0d585421556",
+   "sha256_png": "438225e8e433f53b29231ac1db4a83b66b70b846016fc1a33fb1a0d585421556",
+   "hook": "Monochrome",
+   "at": "2026-10-16T01:16:22",
+   "secs": 63.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "b",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded matte charcoal tunic ending at mid-thigh with a bone disc patch on the chest, a rigid moulded matte bone bell panel at the hip, slim charcoal leggings, charcoal matte boots with ring buckles, bare arms with satin gunmetal gauntlets. Dark, light, dark",
+   "identity": "mark: a bone disc patch on the chest",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-enforcer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish of each person's metal: cool brushed steel, warm pewter, blued steel, dark smoked titanium. This person's identity: dark smoked titanium. Stance: planted square, both hands folded on the upright rifle, eyes level. Clothes: a sculpted moulded shoulder-yoke cuirass in dark smoked titanium with gunmetal chevron seams over a black technical-knit mock neck, hip-length, a belt with a big round titanium buckle, black gauntlets with titanium cuffs, ink-navy trousers, heavy black matte boots with titanium fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the door: massive moulded shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long rifle with a slim inlay held upright at rest like a staff, smoked glasses, a photograph tucked in the collar. Identity detail: a folded photograph in the collar. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the round buckle of his belt. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-c-enforcer.png",
+   "size": [
+    877,
+    1794
+   ],
+   "sha256": "b1f26260c2a088e0a69c4b89a47d84165137f5405e802d9b9aa044c95758172f",
+   "sha256_png": "b1f26260c2a088e0a69c4b89a47d84165137f5405e802d9b9aa044c95758172f",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:17:21",
+   "secs": 59.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "direction": "c",
+   "role": "enforcer",
+   "outfit": "a sculpted moulded shoulder-yoke cuirass in dark smoked titanium with gunmetal chevron seams over a black technical-knit mock neck, hip-length, a belt with a big round titanium buckle, black gauntlets with titanium cuffs, ink-navy trousers, heavy black matte boots with titanium fittings",
+   "identity": "dark smoked titanium",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-fixer",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish of each person's metal: cool brushed steel, warm pewter, blued steel, dark smoked titanium. This person's identity: warm pewter grey. Stance: upright and still, holding her case at her side, eyes level. Clothes: a sleeveless ink-navy hip-length column tunic with a circular cut-out at the waist, long fitted black knit sleeves with round pewter ring cuffs, a big sculpted warm-pewter ring collar, slim black trousers, black matte low boots with pewter fittings. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail through a ring collar. Signature item, theirs alone: her case with a round porthole window and a coiled handset cable, a small ring on the ponytail. Identity detail: a slim pewter ring on the ponytail. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; in the ring of her collar. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-c-fixer.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "9e2de7c9f27b485e76b0cd84b7a8242d7a76f5de1cdc2fc3a2e965c63fbd8b2f",
+   "sha256_png": "9e2de7c9f27b485e76b0cd84b7a8242d7a76f5de1cdc2fc3a2e965c63fbd8b2f",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:17:22",
+   "secs": 59.6,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "direction": "c",
+   "role": "fixer",
+   "outfit": "a sleeveless ink-navy hip-length column tunic with a circular cut-out at the waist, long fitted black knit sleeves with round pewter ring cuffs, a big sculpted warm-pewter ring collar, slim black trousers, black matte low boots with pewter fittings",
+   "identity": "warm pewter grey",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-scout",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish of each person's metal: cool brushed steel, warm pewter, blued steel, dark smoked titanium. This person's identity: cool brushed steel. Stance: weight on one leg, chin turned, eyes on something off to the side. Clothes: a cropped moulded ink-navy zip-front jacket with a sculpted brushed-steel stand-up collar-hood and brushed-steel shoulder plates, chevron seams, black fitted shorts over matte black technical tights to the ankle, a satin steel buckle belt, black matte low boots with steel ring buckles, fingerless black gloves, a tall brushed-steel moulded pack shell. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the pack-and-hood: a tall moulded pack above the shoulder behind a stand-up collar-hood, cropped jacket over shorts. Signature item, theirs alone: the tall moulded pack shell with a small porthole lamp on its side and a slim periscope mast folded along it, and an earpiece. Identity detail: an earpiece with a black cord. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the side of her pack shell. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-c-scout.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "a9f5640627e1e386ad57bfc091ead264ee91f418b9ecfc021bc49c8c008b0748",
+   "sha256_png": "a9f5640627e1e386ad57bfc091ead264ee91f418b9ecfc021bc49c8c008b0748",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:16:22",
+   "secs": 63.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "direction": "c",
+   "role": "scout",
+   "outfit": "a cropped moulded ink-navy zip-front jacket with a sculpted brushed-steel stand-up collar-hood and brushed-steel shoulder plates, chevron seams, black fitted shorts over matte black technical tights to the ankle, a satin steel buckle belt, black matte low boots with steel ring buckles, fingerless black gloves, a tall brushed-steel moulded pack shell",
+   "identity": "cool brushed steel",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-c-tech",
+   "set": "R5",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing, composed and alert like a professional on duty, plain mid-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in an earlier look: keep only the body shape, the old clothes are completely replaced). A team of serious, dangerous professionals who are very good at a hard trade, visitors from a nearby timeline that went further into the space age. Sleek, technical and modern, built from moulded shapes: sculpted stand-up collars, ring collars, porthole details, moulded yokes, gauntlets, bonded seams. Understated and severe: not cute, not toy-like, not a pop band, not a fashion shoot, not a superhero or rangers team, no candy or pastel colour, no neon, no glitter, no high-gloss vinyl or patent, no white boots. Not deco, no period tailoring, not military camouflage, not tactical gear, not khaki, olive, brown or canvas. Palette: deep ink-navy and black matte fabric with large moulded panels of brushed metal, the serious crew wear of a long-duration space voyage; no bright colour at all. Identity comes from the finish of each person's metal: cool brushed steel, warm pewter, blued steel, dark smoked titanium. This person's identity: blued steel with a faint blue cast. Stance: relaxed, one hand on his visor, eyes calm. Clothes: a sleeveless quilted bonded ink-navy tunic with blued-steel plates ending at mid-thigh, a rigid moulded blued-steel bell panel at the hip, slim black leggings, black matte boots with steel ring buckles, bare arms with blued-steel gauntlets. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers, tights or boots; any flared shape is a stiff moulded panel that holds its shape. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs, a visor on the brow. Signature item, theirs alone: his round porthole-style smoked visor with two flip-up disc plates, dark and calm, lit faint pale aqua only when he works, and the gauntlets with round bezels. Identity detail: round steel bezels on the gauntlets. No gold, no brass, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam; no bright saturated colour anywhere. Team motif, small and quiet: a small round porthole lamp, a chrome ring around a lens that glows a faint pale aqua (it lights when that person acts), worn somewhere different on each person; on the porthole visor. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/takes/R5-c-tech.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "d89af1707def11cef7b9ad53c387294a06380a8626def0f3a5cdd8389f903d13",
+   "sha256_png": "d89af1707def11cef7b9ad53c387294a06380a8626def0f3a5cdd8389f903d13",
+   "hook": "Flight deck",
+   "at": "2026-10-16T01:16:22",
+   "secs": 63.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from an earlier lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "direction": "c",
+   "role": "tech",
+   "outfit": "a sleeveless quilted bonded ink-navy tunic with blued-steel plates ending at mid-thigh, a rigid moulded blued-steel bell panel at the hip, slim black leggings, black matte boots with steel ring buckles, bare arms with blued-steel gauntlets",
+   "identity": "blued steel with a faint blue cast",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-a",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (restrained: graphite, gunmetal and charcoal, matte, one muted deep colour each) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/lineups/R5-lineup-a.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "2b6bf9f679d1e8d55f950eb00324ceab2f83449dc59be9056426d20b241317aa",
+   "sha256_png": "2b6bf9f679d1e8d55f950eb00324ceab2f83449dc59be9056426d20b241317aa",
+   "hook": "Restrained: graphite, gunmetal and charcoal, matte, one muted deep colour each",
+   "at": "2026-10-16T01:18:58",
+   "secs": 56.9,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-a-scout.png",
+    "takes/R5-a-fixer.png",
+    "takes/R5-a-tech.png",
+    "takes/R5-a-enforcer.png"
+   ],
+   "direction": "a",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-b",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (monochrome: bone and charcoal; value blocking and one mark each) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/lineups/R5-lineup-b.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "01e9834d256a1defd8853317e27899bf8142fb08236e3cc3c7c58f46871bb648",
+   "sha256_png": "01e9834d256a1defd8853317e27899bf8142fb08236e3cc3c7c58f46871bb648",
+   "hook": "Monochrome: bone and charcoal; value blocking and one mark each",
+   "at": "2026-10-16T01:19:07",
+   "secs": 66.4,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-b-scout.png",
+    "takes/R5-b-fixer.png",
+    "takes/R5-b-tech.png",
+    "takes/R5-b-enforcer.png"
+   ],
+   "direction": "b",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R5-lineup-c",
+   "set": "R5-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, colours, materials and signature items, nothing changed, nothing brightened. They are one serious team (flight deck: ink fabric and brushed metal; the finish of the metal names the person) with the small porthole lamp motif. Same scale with natural height differences (the Enforcer biggest), composed, alert poses, no theatrics. One shared finish for the whole team: matte digital character concept art, crisp clean edges, soft even studio light, natural skin, restrained and sober, no gloss except where metal is named, plain mid-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/v1/lineups/R5-lineup-c.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "d718e075a744622ec20675238794eaafdf6244dec48f385fcbc71c7dce96a502",
+   "sha256_png": "d718e075a744622ec20675238794eaafdf6244dec48f385fcbc71c7dce96a502",
+   "hook": "Flight deck: ink fabric and brushed metal; the finish of the metal names the person",
+   "at": "2026-10-16T01:19:44",
+   "secs": 102.8,
+   "refnotes": "images 1 to 4 = the round 5 takes of this direction: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "takes/R5-c-scout.png",
+    "takes/R5-c-fixer.png",
+    "takes/R5-c-tech.png",
+    "takes/R5-c-enforcer.png"
+   ],
+   "direction": "c",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  }
+ ]
+}

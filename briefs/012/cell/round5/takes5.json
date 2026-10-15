@@ -1,0 +1,206 @@
+{
+ "a-scout": {
+  "cones": {
+   "nearest_painted": "#6a6664",
+   "dE": 28.3,
+   "share_within_20": 0.0051
+  },
+  "guard": {
+   "nearest_painted": "#6a6664",
+   "dE": 37.1,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#4b6563",
+   "dE": 27.2,
+   "share_within_20": 0.0
+  }
+ },
+ "a-fixer": {
+  "cones": {
+   "nearest_painted": "#797675",
+   "dE": 27.5,
+   "share_within_20": 0.005
+  },
+  "guard": {
+   "nearest_painted": "#797675",
+   "dE": 33.3,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#6a6665",
+   "dE": 28.8,
+   "share_within_20": 0.0
+  }
+ },
+ "a-tech": {
+  "cones": {
+   "nearest_painted": "#787676",
+   "dE": 28.0,
+   "share_within_20": 0.0001
+  },
+  "guard": {
+   "nearest_painted": "#acb2bc",
+   "dE": 33.1,
+   "share_within_20": 0.001
+  },
+  "rivals": {
+   "nearest_painted": "#868b96",
+   "dE": 22.7,
+   "share_within_20": 0.0034
+  }
+ },
+ "a-enforcer": {
+  "cones": {
+   "nearest_painted": "#736359",
+   "dE": 25.5,
+   "share_within_20": 0.0013
+  },
+  "guard": {
+   "nearest_painted": "#b6aba5",
+   "dE": 24.8,
+   "share_within_20": 0.0004
+  },
+  "rivals": {
+   "nearest_painted": "#787574",
+   "dE": 28.9,
+   "share_within_20": 0.0
+  }
+ },
+ "b-scout": {
+  "cones": {
+   "nearest_painted": "#756c65",
+   "dE": 26.7,
+   "share_within_20": 0.0063
+  },
+  "guard": {
+   "nearest_painted": "#c6bdb4",
+   "dE": 24.6,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#5a5754",
+   "dE": 30.6,
+   "share_within_20": 0.0
+  }
+ },
+ "b-fixer": {
+  "cones": {
+   "nearest_painted": "#9c938b",
+   "dE": 28.4,
+   "share_within_20": 0.0069
+  },
+  "guard": {
+   "nearest_painted": "#b5aca4",
+   "dE": 24.6,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#595655",
+   "dE": 30.0,
+   "share_within_20": 0.0
+  }
+ },
+ "b-tech": {
+  "cones": {
+   "nearest_painted": "#633923",
+   "dE": 26.0,
+   "share_within_20": 0.0008
+  },
+  "guard": {
+   "nearest_painted": "#c7bcb4",
+   "dE": 24.6,
+   "share_within_20": 0.0022
+  },
+  "rivals": {
+   "nearest_painted": "#696767",
+   "dE": 28.4,
+   "share_within_20": 0.0003
+  }
+ },
+ "b-enforcer": {
+  "cones": {
+   "nearest_painted": "#756b65",
+   "dE": 26.4,
+   "share_within_20": 0.0021
+  },
+  "guard": {
+   "nearest_painted": "#c2b6ad",
+   "dE": 24.1,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#5b5653",
+   "dE": 30.9,
+   "share_within_20": 0.0
+  }
+ },
+ "c-scout": {
+  "cones": {
+   "nearest_painted": "#847b76",
+   "dE": 26.1,
+   "share_within_20": 0.0054
+  },
+  "guard": {
+   "nearest_painted": "#c3bbb6",
+   "dE": 25.8,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#6c6663",
+   "dE": 29.5,
+   "share_within_20": 0.0
+  }
+ },
+ "c-fixer": {
+  "cones": {
+   "nearest_painted": "#84766c",
+   "dE": 25.2,
+   "share_within_20": 0.0058
+  },
+  "guard": {
+   "nearest_painted": "#b4a69b",
+   "dE": 23.3,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#6c6663",
+   "dE": 29.7,
+   "share_within_20": 0.0
+  }
+ },
+ "c-tech": {
+  "cones": {
+   "nearest_painted": "#653923",
+   "dE": 25.7,
+   "share_within_20": 0.0001
+  },
+  "guard": {
+   "nearest_painted": "#b5aba7",
+   "dE": 25.5,
+   "share_within_20": 0.0003
+  },
+  "rivals": {
+   "nearest_painted": "#6a6665",
+   "dE": 28.4,
+   "share_within_20": 0.0008
+  }
+ },
+ "c-enforcer": {
+  "cones": {
+   "nearest_painted": "#716a67",
+   "dE": 27.0,
+   "share_within_20": 0.0012
+  },
+  "guard": {
+   "nearest_painted": "#bcb2ab",
+   "dE": 24.8,
+   "share_within_20": 0.0
+  },
+  "rivals": {
+   "nearest_painted": "#373b43",
+   "dE": 27.8,
+   "share_within_20": 0.0005
+  }
+ }
+}
