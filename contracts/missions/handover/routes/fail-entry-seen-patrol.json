@@ -19,5 +19,5 @@
   {"tick": 2684, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
   {"tick": 3072, "op": "enforcer", "do": "extract"}
  ],
- "until": 4800
+ "until": 5100
 }

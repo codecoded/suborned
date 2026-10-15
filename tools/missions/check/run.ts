@@ -49,8 +49,9 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
 
   const slack: Slack[] = [];
   for (const s of m.scripts.filter(x => o.slack !== false && x.kind === 'quiet' && x.primary && !x.pending && plays[x.id]?.outcome === 'success')) {
-    const sc = L.scripts[s.id]!, steps = stepsOf(sc);
-    log(`late from each of ${s.id}'s ${steps.length} steps, 1 s at a time to ${SLACK_MAX_S} s`);
+    // the plan's steps, up to the one that secures Vale (the route's closing event reads it); the final fight after it is fought, not planned
+    const sc = L.scripts[s.id]!, secured = s.closes ? plays[s.id]!.marks[s.closes.secured] : undefined, steps = stepsOf(sc).filter(t => secured === undefined || t <= secured);
+    log(`late from each of ${s.id}'s ${steps.length} planned steps, 1 s at a time to ${SLACK_MAX_S} s`);
     const rows = await Promise.all(steps.map(async tick => {
       for (let d = 1; d <= SLACK_MAX_S; d++) {
         const v = lateFrom(sc, tick, d), name = `${s.id}~late@${tick}+${d}s`;
@@ -93,7 +94,19 @@ export function record(c: Check, L: Loaded, note: string): string {
   return dir;
 }
 
-/** Replay a recorded check: the same engine commit, the recorded scripts, every play compared by its final hash and outcome. */
+/** The script a recorded play name stands for: `<script>`, `<script>~no-<role>`, `<script>~late@<tick>+<s>s` (vary.ts). */
+export function scriptOf(L: Loaded, name: string): Script {
+  const [id, v] = name.split('~') as [string, string | undefined], base = L.scripts[id];
+  if (!base) throw new Error(`recorded play ${name}: no script ${id}`);
+  if (!v) return base;
+  const no = v.match(/^no-([a-z-]+)$/), late = v.match(/^late@(\d+)\+(\d+)s$/);
+  if (no) return withoutContact(base, no[1]!);
+  if (late) return lateFrom(base, Number(late[1]), Number(late[2]));
+  throw new Error(`recorded play ${name}: unknown variation ${v}`);
+}
+
+/** Replay a recorded check: the same engine commit, the recorded scripts, every recorded play rebuilt from its name and compared
+ *  by its final hash and outcome; then the verdict judged again from the replayed plays (a tool changed since is drift, named). */
 export async function replay(dir: string, log: (m: string) => void = () => {}): Promise<{ ok: boolean; lines: string[] }> {
   const run = JSON.parse(readFileSync(join(dir, 'run.json'), 'utf8')), lines: string[] = [];
   const L = load(join(dir, 'routes'));
@@ -104,17 +117,21 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
     lines.push(now === h ? `ok    input ${f}` : `${tree ? 'drift' : 'FAIL '} input ${f} changed since the check (${h.slice(0, 12)} → ${now.slice(0, 12)})`);
   }
   lines.push(e.hash === run.engine.sourceSha256 ? `ok    engine ${String(run.engine.commit).slice(0, 12)} source ${e.hash.slice(0, 12)}` : `drift engine source ${e.hash.slice(0, 12)}, recorded ${String(run.engine.sourceSha256).slice(0, 12)}`);
-  const c = await check(L, e, log), rec = run.plays as Plays;
-  const names = [...new Set([...Object.keys(rec), ...Object.keys(c.plays)])].sort();
+  const rec = run.plays as Plays, names = Object.keys(rec).sort();
+  log(`replaying ${names.length} recorded plays on the engine at ${String(run.engine.commit).slice(0, 12)}`);
+  const jobs = names.map(name => ({ name, script: scriptOf(L, name) })), out = await playAll(jobs, e), now: Plays = {};
   let same = 0;
-  for (const n of names) {
-    const a = rec[n], b = c.plays[n];
-    if (a && b && a.finalHash === b.finalHash && a.outcome === b.outcome && a.fail === b.fail && a.tick === b.tick) same++;
-    else lines.push(`FAIL  play ${n}: recorded ${a ? `${a.outcome} ${a.fail} ${clock(a.tick)} ${a.finalHash}` : 'none'}, now ${b ? `${b.outcome} ${b.fail} ${clock(b.tick)} ${b.finalHash}` : 'none'}`);
-  }
+  jobs.forEach((j, i) => {
+    const a = rec[j.name]!, b = digest(out[i]!, sha(JSON.stringify(j.script)), !j.name.includes('~'));
+    now[j.name] = b;
+    if (a.finalHash === b.finalHash && a.outcome === b.outcome && a.fail === b.fail && a.tick === b.tick) same++;
+    else lines.push(`FAIL  play ${j.name}: recorded ${a.outcome} ${a.fail} ${clock(a.tick)} ${a.finalHash}, now ${b.outcome} ${b.fail} ${clock(b.tick)} ${b.finalHash}`);
+  });
   lines.push(`${same === names.length ? 'ok   ' : 'FAIL '} ${same}/${names.length} plays land on their recorded final hash`);
-  const verdictNow = c.report.ok ? 'SHIPS' : 'HOLDS';
-  lines.push(verdictNow === run.verdict ? `ok    verdict ${run.verdict}` : `FAIL  verdict ${verdictNow}, recorded ${run.verdict}`);
+  const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
+  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[]).ok ? 'SHIPS' : 'HOLDS';
+  if (verdictNow === run.verdict) lines.push(`ok    verdict ${run.verdict}${tool === run.tool ? '' : ' (judged by the current checker; its code changed since the check)'}`);
+  else lines.push(`${tool === run.tool ? 'FAIL ' : 'drift'} verdict ${verdictNow} by the current checker, recorded ${run.verdict}${tool === run.tool ? '' : ' (the checker\'s code changed since the check)'}`);
   return { ok: !lines.some(l => l.startsWith('FAIL')), lines };
 }
 
@@ -124,14 +141,14 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 export function html(c: Check, id: string): string {
   const r = c.report, td = (x: unknown) => `<td>${esc(String(x))}</td>`;
   const cond = r.conditions.map(x => `<tr class="${x.ok ? 'ok' : 'bad'}">${td(x.id)}${td(x.ok ? 'ok' : 'FAIL')}${td(x.rule)}${td(x.value)}<td class="d">${esc(x.detail).replace(/; /g, '<br>')}</td></tr>`).join('');
-  const rows = r.scripts.map(x => `<tr class="${x.ok ? 'ok' : 'bad'}">${[x.id, x.kind, x.route ?? '', x.expects, x.got, x.at, x.trail, x.alert, x.shots, `$${x.cash.toLocaleString('en-US')}`, x.replay ? 'identical' : 'DIFFERS'].map(td).join('')}</tr>`).join('');
-  const slack = r.slack.map(s => `<h3>${esc(s.script)}: every step can slip ${s.maxS} s</h3><table><tr><th>step</th><th>orders</th><th>slack</th><th>then</th></tr>${s.steps.map(x => `<tr>${td(clock(x.tick))}${td(x.orders)}${td(`${x.slackS} s`)}${td(x.breaksAs ?? '')}</tr>`).join('')}</table>`).join('');
+  const rows = r.scripts.map(x => `<tr class="${x.ok ? 'ok' : 'bad'}">${[x.id, x.kind, x.route ?? '', x.expects, x.got, x.at, x.trail, x.alert, x.shots, x.fight ? `${x.fight}, ${x.fightShots} shots` : '', `$${x.cash.toLocaleString('en-US')}`, x.replay ? 'identical' : 'DIFFERS'].map(td).join('')}</tr>`).join('');
+  const slack = r.slack.map(s => `<h3>${esc(s.script)}: every planned step can slip ${s.maxS} s</h3><table><tr><th>step</th><th>orders</th><th>slack</th><th>then</th></tr>${s.steps.map(x => `<tr>${td(clock(x.tick))}${td(x.orders)}${td(`${x.slackS} s`)}${td(x.breaksAs ?? '')}</tr>`).join('')}</table>`).join('');
   return `<!doctype html><meta charset="utf-8"><title>Mission check ${esc(c.mission)} ${id}</title>
 <style>body{font:14px/1.4 -apple-system,sans-serif;margin:24px;max-width:1200px}table{border-collapse:collapse;margin:8px 0 20px}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left;vertical-align:top}tr.bad td{background:#fde8e8}tr.ok td:nth-child(2){color:#17663a}.d{font-size:12px}code{font-size:12px}</style>
 <h1>Mission check: ${esc(c.mission)} · ${id} · ${r.ok ? 'SHIPS' : 'HOLDS'}</h1>
 <p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
 <h2>Conditions</h2><table><tr><th>id</th><th></th><th>rule</th><th>value</th><th>detail</th></tr>${cond}</table>
-<h2>Scripts</h2><table><tr><th>script</th><th>kind</th><th>route</th><th>expects</th><th>got</th><th>at</th><th>T</th><th>A</th><th>shots</th><th>cash</th><th>replay</th></tr>${rows}</table>
+<h2>Scripts</h2><table><tr><th>script</th><th>kind</th><th>route</th><th>expects</th><th>got</th><th>at</th><th>T</th><th>A</th><th>shots before the fight</th><th>final fight</th><th>cash</th><th>replay</th></tr>${rows}</table>
 <p>Pending (not played): ${esc(r.pending.join(', ') || 'none')}</p>
 <h2>How late each step can be</h2>${slack}
 <h2>Inputs</h2><table>${Object.entries(c.inputs).map(([f, h]) => `<tr>${td(f)}<td><code>${h}</code></td></tr>`).join('')}</table>`;

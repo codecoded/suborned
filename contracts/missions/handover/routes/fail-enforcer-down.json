@@ -7,5 +7,5 @@
   {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Office approach"},
   {"tick": 354, "op": "enforcer", "do": "fire", "target": "guard"}
  ],
- "until": 4800
+ "until": 5100
 }

@@ -1,0 +1,3203 @@
+{
+ "made": "bun briefs/011/vantage/study.ts",
+ "camera": {
+  "yaw": 30,
+  "pitch": 38,
+  "zoom": 14
+ },
+ "limit": 0.5,
+ "sources": {
+  "plan": "0.3.0",
+  "block": "03b4994c1d812b4ee893b494e9d28e7f6db0f1e72dbdac81f28a8ca9c4333a7e",
+  "mission": "contracts/missions/handover/mission.json"
+ },
+ "options": [
+  {
+   "id": "now",
+   "title": "now (as built, 2026-10-15)",
+   "v1": {
+    "value": "24/37",
+    "ok": false,
+    "detail": "13 hidden: Behind café 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; South walkway 0 % (100 % only through the fade) behind civic/civic-office/tower-public; Office approach 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-public, civic/office-public-entrance#4; Office entrance 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-public; crew Fixer 6 % (94 % only through the fade) behind bld/rocket-west/19/body; crew Tech 6 % (94 % only through the fade) behind bld/rocket-west/19/body; crew Scout 6 % (94 % only through the fade) behind bld/rocket-west/19/body; crew Enforcer 6 % (94 % only through the fade) behind bld/rocket-west/19/body; cabinet 0 % (100 % only through the fade) behind civic/civic-office/tower-public; patrol-b 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; patrol-reroute 0 % (100 % only through the fade) behind bld/rocket-west/19/body; camera entrance cone 13 %; patrol sweep 27 % behind civic/civic-office, civic/civic-office/tower-official, civic/civic-office/tower-public · 12 of them read only as a ghost when the fade's disc holds them · seen past architecture but under dressing (parasol, cypress, tree; the fade or the piece's job): Under parasol 11 % clear"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 63.7,
+    "escort: Service lane → Getaway bay": 54.8,
+    "Vale: Official entrance → Meet driver": 3.9
+   },
+   "ground": {
+    "records-square": 0.871,
+    "records-office": 0.689
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -159,
+      -223.2
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -159,
+      -219.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -165,
+      -206.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -173,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -145,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159,
+      -226.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -165.45,
+      -222.9
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.89,
+     "onlyFade": 0.11,
+     "by": [
+      "civic/cafe-table-0/parasol"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -153.88,
+      -222.08
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.11,
+     "onlyFade": 0.89,
+     "by": [
+      "civic/cafe-table-2/parasol"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -160,
+      -241
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -155.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -164.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -238.5
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.2
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -173.2,
+      -292.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -147,
+      -256.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office/tower-public"
+     ]
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -160,
+      -278.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-public",
+      "civic/office-public-entrance#4"
+     ]
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.3
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -281.75
+     ],
+     "z": 0.9299999999999999,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-public"
+     ]
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -163.7,
+      -308.1
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -179.67,
+      -231.17
+     ],
+     "z": 0.18,
+     "seen": 0.06,
+     "clear": 0.06,
+     "onlyFade": 0.94,
+     "by": [
+      "bld/rocket-west/19/body"
+     ]
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -179.67,
+      -232.37
+     ],
+     "z": 0.18,
+     "seen": 0.06,
+     "clear": 0.06,
+     "onlyFade": 0.94,
+     "by": [
+      "bld/rocket-west/19/body"
+     ]
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -179.67,
+      -233.57
+     ],
+     "z": 0.18,
+     "seen": 0.06,
+     "clear": 0.06,
+     "onlyFade": 0.94,
+     "by": [
+      "bld/rocket-west/19/body"
+     ]
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -179.67,
+      -234.77
+     ],
+     "z": 0,
+     "seen": 0.06,
+     "clear": 0.06,
+     "onlyFade": 0.94,
+     "by": [
+      "bld/rocket-west/19/body"
+     ]
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -147,
+      -255.4
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office/tower-public"
+     ]
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -159,
+      -221.8
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -161,
+      -314
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.5,
+     "onlyFade": 0,
+     "by": [
+      "street/lawn/orbit-gardens/tree-2607"
+     ]
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -266
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -184
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -164,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -144,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -188,
+      -250
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "bld/rocket-west/19/body"
+     ]
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -166.4,
+      -305.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -171.5,
+      -279.5
+     ],
+     "z": 0.18,
+     "seen": 0.13,
+     "clear": 0.13,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -170,
+      -304
+     ],
+     "z": 0.18,
+     "seen": 0.88,
+     "clear": 0.88,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -164,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 0.27,
+     "clear": 0.27,
+     "onlyFade": 0.73,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/civic-office/tower-public",
+      "civic/office-public-entrance#2",
+      "civic/office-public-entrance#3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "now+fix",
+   "title": "now, with the common fixes",
+   "v1": {
+    "value": "31/37",
+    "ok": false,
+    "detail": "6 hidden: Behind café 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; Office approach 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-public, civic/office-public-entrance#4; Office entrance 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-public; patrol-b 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; camera entrance cone 13 %; patrol sweep 27 % behind civic/civic-office, civic/civic-office/tower-official, civic/civic-office/tower-public · 5 of them read only as a ghost when the fade's disc holds them · seen past architecture but under dressing (parasol, cypress, tree; the fade or the piece's job): Under parasol 11 % clear"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 63.7,
+    "escort: Service lane → Getaway bay": 54.8,
+    "Vale: Official entrance → Meet driver": 3.9
+   },
+   "ground": {
+    "records-square": 0.871,
+    "records-office": 0.689
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -159,
+      -223.2
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -159,
+      -219.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -165,
+      -206.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -173,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -145,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159,
+      -226.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -165.45,
+      -222.9
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.89,
+     "onlyFade": 0.11,
+     "by": [
+      "civic/cafe-table-0/parasol"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -153.88,
+      -222.08
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.11,
+     "onlyFade": 0.89,
+     "by": [
+      "civic/cafe-table-2/parasol"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -160,
+      -241
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -155.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -164.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -238.5
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.2
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -173.2,
+      -292.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -153,
+      -256.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -160,
+      -278.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-public",
+      "civic/office-public-entrance#4"
+     ]
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.3
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -281.75
+     ],
+     "z": 0.9299999999999999,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-public"
+     ]
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -163.7,
+      -308.1
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -231.17
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -232.37
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -233.57
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -234.77
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -153,
+      -255.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -159,
+      -221.8
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -161,
+      -314
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.5,
+     "onlyFade": 0,
+     "by": [
+      "street/lawn/orbit-gardens/tree-2607"
+     ]
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -266
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -184
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -164,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -144,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -176,
+      -250
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -166.4,
+      -305.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -171.5,
+      -279.5
+     ],
+     "z": 0.18,
+     "seen": 0.13,
+     "clear": 0.13,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -170,
+      -304
+     ],
+     "z": 0.18,
+     "seen": 0.88,
+     "clear": 0.88,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -164,
+      -270.75
+     ],
+     "z": 0.18,
+     "seen": 0.27,
+     "clear": 0.27,
+     "onlyFade": 0.73,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/civic-office/tower-public",
+      "civic/office-public-entrance#2",
+      "civic/office-public-entrance#3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a",
+   "title": "(a) mirror the Office in its plot",
+   "v1": {
+    "value": "28/37",
+    "ok": false,
+    "detail": "9 hidden: Behind café 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; Official drop-off 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official, civic/office-official-entrance#0; Boarding pavilion 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official, civic/office-official-entrance#0; Official entrance 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; Meet Vale 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; Meet driver 0 % (100 % only through the fade) behind civic/civic-office; rival-park 0 % (100 % only through the fade) behind civic/civic-office; block-spot 0 % (100 % only through the fade) behind civic/civic-office; camera pickup cone 11 % · 8 of them read only as a ghost when the fade's disc holds them · seen past architecture but under dressing (parasol, cypress, tree; the fade or the piece's job): Under parasol 11 % clear; rival-entry 0 % clear"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 100.2,
+    "escort: Service lane → Getaway bay": 53.8,
+    "Vale: Official entrance → Meet driver": 3.9
+   },
+   "ground": {
+    "records-square": 0.846,
+    "records-office": 0.765
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -159,
+      -223.2
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -159,
+      -219.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -165,
+      -206.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -173,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -145,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159,
+      -226.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -165.45,
+      -222.9
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.89,
+     "onlyFade": 0.11,
+     "by": [
+      "civic/cafe-table-0/parasol"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -153.88,
+      -222.08
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.11,
+     "onlyFade": 0.89,
+     "by": [
+      "civic/cafe-table-2/parasol"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -160,
+      -241
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -155.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -164.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -238.5
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -161,
+      -275.8
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/office-official-entrance#0",
+      "civic/office-official-entrance#2"
+     ]
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -173.2,
+      -291.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -153,
+      -256.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -160,
+      -305.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -161,
+      -275.7
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/office-official-entrance#0",
+      "civic/office-official-entrance#2"
+     ]
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -302.25
+     ],
+     "z": 0.9299999999999999,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -277.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -160,
+      -277.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -163.7,
+      -275.9
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -231.17
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -232.37
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -233.57
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -234.77
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -153,
+      -255.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -159,
+      -221.8
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -161,
+      -270
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -318
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0,
+     "onlyFade": 0,
+     "by": [
+      "street/orbit-gardens/e2/tree-465"
+     ]
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -184
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -164,
+      -313.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -144,
+      -313.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -176,
+      -250
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -166.4,
+      -278.3
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -171.5,
+      -304.5
+     ],
+     "z": 0.18,
+     "seen": 0.51,
+     "clear": 0.51,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -170,
+      -280
+     ],
+     "z": 0.18,
+     "seen": 0.11,
+     "clear": 0.11,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -164,
+      -313.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.87,
+     "onlyFade": 0,
+     "by": [
+      "street/lawn/orbit-gardens/tree-2607",
+      "street/orbit-gardens/e2/tree-468"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b",
+   "title": "(b) front door and entrance onto the west face",
+   "v1": {
+    "value": "36/37",
+    "ok": false,
+    "detail": "1 hidden: Behind café 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground · 1 of them read only as a ghost when the fade's disc holds them · seen past architecture but under dressing (parasol, cypress, tree; the fade or the piece's job): Under parasol 11 % clear"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 79.6,
+    "escort: Service lane → Getaway bay": 63.4,
+    "Vale: Official entrance → Meet driver": 3.9
+   },
+   "ground": {
+    "records-square": 0.871,
+    "records-office": 0.68
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -159,
+      -223.2
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -159,
+      -219.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -165,
+      -206.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -173,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -145,
+      -218.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159,
+      -226.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -165.45,
+      -222.9
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.89,
+     "onlyFade": 0.11,
+     "by": [
+      "civic/cafe-table-0/parasol"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -153.88,
+      -222.08
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.11,
+     "onlyFade": 0.89,
+     "by": [
+      "civic/cafe-table-2/parasol"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -160,
+      -241
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -155.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -164.5,
+      -236.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -238.5
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.2
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -173.2,
+      -300.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -153,
+      -256.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -174.4,
+      -294
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -161,
+      -308.3
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -171.25,
+      -294
+     ],
+     "z": 0.9299999999999999,
+     "seen": 0.5,
+     "clear": 0.5,
+     "onlyFade": 0.5,
+     "by": [
+      "civic/office-public-entrance#4"
+     ]
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -160,
+      -306.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -163.7,
+      -308.1
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -231.17
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -232.37
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -233.57
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -234.77
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -174.5,
+      -276.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -159,
+      -221.8
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -161,
+      -314
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.5,
+     "onlyFade": 0,
+     "by": [
+      "street/lawn/orbit-gardens/tree-2607"
+     ]
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -266
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -184
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -174.8,
+      -298
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -174.8,
+      -282
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -176,
+      -250
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -166.4,
+      -305.7
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -174.5,
+      -283
+     ],
+     "z": 0.18,
+     "seen": 0.54,
+     "clear": 0.54,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -170,
+      -304
+     ],
+     "z": 0.18,
+     "seen": 0.88,
+     "clear": 0.88,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -174.8,
+      -298
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    }
+   ]
+  },
+  {
+   "id": "c",
+   "title": "(c) turn the civic site round in the plan",
+   "v1": {
+    "value": "16/37",
+    "ok": false,
+    "detail": "21 hidden: Courtyard 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; Café door 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; East side 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; Terrace gate 0 % (100 % only through the fade) behind civic/cafe; Between tables 33 % (78 % only through the fade) behind civic/cafe, civic/cafe/ground; Under parasol 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; Plaza east 0 % (100 % only through the fade) behind civic/cafe; Getaway bay 0 % (100 % only through the fade) behind bld/rocket-west/17/body; Official drop-off 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official, civic/office-official-entrance#0; Boarding pavilion 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official, civic/office-official-entrance#0; Official entrance 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; Meet Vale 0 % (100 % only through the fade) behind civic/civic-office, civic/civic-office/tower-official; Meet driver 0 % (100 % only through the fade) behind civic/civic-office; crew Fixer 17 % (83 % only through the fade) behind bld/rocket-west/17/body; crew Tech 17 % (83 % only through the fade) behind bld/rocket-west/17/body; crew Scout 17 % (83 % only through the fade) behind bld/rocket-west/17/body; crew Enforcer 11 % (89 % only through the fade) behind bld/rocket-west/17/body; beside-inez 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground; rival-park 0 % (100 % only through the fade) behind civic/civic-office; block-spot 0 % (100 % only through the fade) behind civic/civic-office; camera pickup cone 11 % · 20 of them read only as a ghost when the fade's disc holds them"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 63.7,
+    "escort: Service lane → Getaway bay": 54.8,
+    "Vale: Official entrance → Meet driver": 3.9
+   },
+   "ground": {
+    "records-square": 0.608,
+    "records-office": 0.816
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -159,
+      -290.8
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -159,
+      -294.3
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -165,
+      -307.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -173,
+      -295.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.83,
+     "onlyFade": 0.17,
+     "by": [
+      "civic/cafe-table-4/parasol"
+     ]
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -145,
+      -295.4
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe-table-6/parasol",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159,
+      -287.6
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe"
+     ]
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -165.45,
+      -291.1
+     ],
+     "z": 0.18,
+     "seen": 0.33,
+     "clear": 0.22,
+     "onlyFade": 0.78,
+     "by": [
+      "civic/cafe",
+      "civic/cafe-table-0/parasol",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -153.88,
+      -291.92
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe-table-2/parasol",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -160,
+      -273
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -155.5,
+      -277.5
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe"
+     ]
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -164.5,
+      -277.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -275.5
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "bld/rocket-west/17/body"
+     ]
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -161,
+      -205.8
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/office-official-entrance#0",
+      "civic/office-official-entrance#2"
+     ]
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -173.2,
+      -221.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -153,
+      -257.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -160,
+      -235.4
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -161,
+      -205.7
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official",
+      "civic/office-official-entrance#0",
+      "civic/office-official-entrance#2"
+     ]
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -232.25
+     ],
+     "z": 0.9299999999999999,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -160,
+      -207.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -160,
+      -207.75
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office",
+      "civic/civic-office/tower-official"
+     ]
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -163.7,
+      -205.9
+     ],
+     "z": 0,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -282.83
+     ],
+     "z": 0.18,
+     "seen": 0.17,
+     "clear": 0.17,
+     "onlyFade": 0.83,
+     "by": [
+      "bld/rocket-west/17/body"
+     ]
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -281.63
+     ],
+     "z": 0.18,
+     "seen": 0.17,
+     "clear": 0.17,
+     "onlyFade": 0.83,
+     "by": [
+      "bld/rocket-west/17/body"
+     ]
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -280.43
+     ],
+     "z": 0.18,
+     "seen": 0.17,
+     "clear": 0.17,
+     "onlyFade": 0.83,
+     "by": [
+      "bld/rocket-west/17/body"
+     ]
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -279.23
+     ],
+     "z": 0,
+     "seen": 0.11,
+     "clear": 0.11,
+     "onlyFade": 0.89,
+     "by": [
+      "bld/rocket-west/17/body"
+     ]
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -153,
+      -258.6
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -159,
+      -292.2
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -161,
+      -200
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -248
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -330
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -164,
+      -243.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -144,
+      -243.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -176,
+      -264
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -166.4,
+      -208.3
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/civic-office"
+     ]
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -171.5,
+      -234.5
+     ],
+     "z": 0.18,
+     "seen": 0.51,
+     "clear": 0.51,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -170,
+      -210
+     ],
+     "z": 0.18,
+     "seen": 0.11,
+     "clear": 0.11,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -164,
+      -243.25
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    }
+   ]
+  },
+  {
+   "id": "d",
+   "title": "(d) the paintings' layout: Office and café at the back of the square",
+   "v1": {
+    "value": "36/37",
+    "ok": false,
+    "detail": "1 hidden: Behind café 0 % (100 % only through the fade) behind civic/cafe, civic/cafe/ground · 1 of them read only as a ghost when the fade's disc holds them · seen past architecture but under dressing (parasol, cypress, tree; the fade or the piece's job): Between tables 6 % clear; Under parasol 44 % clear"
+   },
+   "walks": {
+    "guard: Office entrance → Café door": 22.6,
+    "escort: Service lane → Getaway bay": 16.5,
+    "Vale: Official entrance → Meet driver": 29.9
+   },
+   "ground": {
+    "records-square": 0.751,
+    "records-office": 0.951
+   },
+   "rows": [
+    {
+     "what": "Courtyard",
+     "kind": "person",
+     "plan": [
+      -156.2,
+      -247
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Café door",
+     "kind": "person",
+     "plan": [
+      -152.7,
+      -247
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Behind café",
+     "kind": "person",
+     "plan": [
+      -139.6,
+      -241
+     ],
+     "z": 0.18,
+     "seen": 0,
+     "clear": 0,
+     "onlyFade": 1,
+     "by": [
+      "civic/cafe",
+      "civic/cafe/ground"
+     ]
+    },
+    {
+     "what": "West side",
+     "kind": "person",
+     "plan": [
+      -151.6,
+      -233
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "East side",
+     "kind": "person",
+     "plan": [
+      -151.6,
+      -261
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Terrace gate",
+     "kind": "person",
+     "plan": [
+      -159.4,
+      -247
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Between tables",
+     "kind": "person",
+     "plan": [
+      -155.9,
+      -240.55
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.06,
+     "onlyFade": 0.94,
+     "by": [
+      "civic/cafe-table-1/parasol"
+     ]
+    },
+    {
+     "what": "Under parasol",
+     "kind": "person",
+     "plan": [
+      -155.08,
+      -252.12
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.44,
+     "onlyFade": 0.56,
+     "by": [
+      "civic/cafe-table-2/parasol",
+      "civic/cafe-table-3/parasol"
+     ]
+    },
+    {
+     "what": "Fountain",
+     "kind": "person",
+     "plan": [
+      -167,
+      -250.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza east",
+     "kind": "person",
+     "plan": [
+      -162.5,
+      -246
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Plaza west",
+     "kind": "person",
+     "plan": [
+      -171.5,
+      -246
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Getaway bay",
+     "kind": "person",
+     "plan": [
+      -178.2,
+      -238.5
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official drop-off",
+     "kind": "person",
+     "plan": [
+      -169,
+      -259.4
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Service lane",
+     "kind": "person",
+     "plan": [
+      -178.6,
+      -222
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "South walkway",
+     "kind": "person",
+     "plan": [
+      -146.6,
+      -261
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.5,
+     "onlyFade": 0.5,
+     "by": [
+      "civic/cafe-table-6/parasol"
+     ]
+    },
+    {
+     "what": "Office approach",
+     "kind": "person",
+     "plan": [
+      -166.5,
+      -234.9
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Boarding pavilion",
+     "kind": "person",
+     "plan": [
+      -169,
+      -258.4
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Office entrance",
+     "kind": "person",
+     "plan": [
+      -166.5,
+      -231.75
+     ],
+     "z": 0.9299999999999999,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Official entrance",
+     "kind": "person",
+     "plan": [
+      -166.5,
+      -231.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet Vale",
+     "kind": "person",
+     "plan": [
+      -166.5,
+      -231.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "Meet driver",
+     "kind": "person",
+     "plan": [
+      -172,
+      -259.4
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Fixer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -231.17
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Tech",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -232.37
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Scout",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -233.57
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "crew Enforcer",
+     "kind": "person",
+     "plan": [
+      -177.2,
+      -234.77
+     ],
+     "z": 0,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "cabinet",
+     "kind": "person",
+     "plan": [
+      -176.5,
+      -257.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "beside-inez",
+     "kind": "person",
+     "plan": [
+      -154.8,
+      -247
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-park",
+     "kind": "person",
+     "plan": [
+      -176,
+      -265.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "rival-entry",
+     "kind": "person",
+     "plan": [
+      -120,
+      -266
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "security-entry",
+     "kind": "person",
+     "plan": [
+      -162,
+      -184
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-a",
+     "kind": "person",
+     "plan": [
+      -170.5,
+      -242.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-b",
+     "kind": "person",
+     "plan": [
+      -152.5,
+      -242.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol-reroute",
+     "kind": "person",
+     "plan": [
+      -158,
+      -259
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "block-spot",
+     "kind": "person",
+     "plan": [
+      -175.5,
+      -255.5
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera entrance cone",
+     "kind": "cone",
+     "plan": [
+      -177,
+      -238
+     ],
+     "z": 0.18,
+     "seen": 0.69,
+     "clear": 0.69,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "camera pickup cone",
+     "kind": "cone",
+     "plan": [
+      -178.5,
+      -253
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 1,
+     "onlyFade": 0,
+     "by": []
+    },
+    {
+     "what": "patrol sweep",
+     "kind": "sweep",
+     "plan": [
+      -170.5,
+      -242.75
+     ],
+     "z": 0.18,
+     "seen": 1,
+     "clear": 0.83,
+     "onlyFade": 0.08,
+     "by": [
+      "civic/atom-fountain",
+      "civic/cafe-table-1/parasol"
+     ]
+    }
+   ]
+  }
+ ]
+}

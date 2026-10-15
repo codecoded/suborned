@@ -10,13 +10,15 @@ export const contactsOf = (s: Script, roles: readonly string[]) => [...new Set(s
 
 /** The script without a contact: its orders that target `role` are dropped. */
 export function withoutContact(s: Script, role: string): Script {
-  return { ...s, orders: s.orders.filter(o => o.target !== role || !['watch', 'listen', 'turn', 'call'].includes(o.do)), until: 4800 };
+  return { ...s, orders: s.orders.filter(o => o.target !== role || !['watch', 'listen', 'turn', 'call'].includes(o.do)) };
 }
 
 /** The distinct order ticks of a script: the steps a player can be late at. */
 export const stepsOf = (s: Script) => [...new Set(s.orders.map(o => o.tick))].sort((a, b) => a - b);
 
-/** The script with every order at or after `tick` given `seconds` later (10 ticks a second). */
+/** The script with every order at or after `tick` given `seconds` later (10 ticks a second); it plays to its own `until` or the
+ *  last order, whichever is later. */
 export function lateFrom(s: Script, tick: number, seconds: number): Script {
-  return { ...s, orders: s.orders.map((o): Order => (o.tick >= tick ? { ...o, tick: o.tick + seconds * 10 } : o)), until: 4800 };
+  const orders = s.orders.map((o): Order => (o.tick >= tick ? { ...o, tick: o.tick + seconds * 10 } : o));
+  return { ...s, orders, until: Math.max(s.until, ...orders.map(o => o.tick)) };
 }

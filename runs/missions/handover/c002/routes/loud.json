@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "The loud front (GDD §07 loud; Keel N10): Tech loops the camera and reroutes the patrol, the Enforcer shoots the guard (2 shots), enters, takes Vale out and fights the police at the getaway car (the final fight, loud: officers from the north street, the seal running, no allies). No contact.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": [4850, -2300]},
+  {"tick": 380, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 1000, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1450, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1510, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1510, "op": "enforcer", "do": "move", "to": "d:Office entrance"},
+  {"tick": 1576, "op": "enforcer", "do": "enter"},
+  {"tick": 1956, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 2165, "op": "enforcer", "do": "move", "to": [-467, -4997]},
+  {"tick": 2166, "op": "enforcer", "do": "move", "to": [-445, -4998]},
+  {"tick": 2167, "op": "enforcer", "do": "move", "to": [-423, -4999]},
+  {"tick": 2168, "op": "enforcer", "do": "move", "to": [-401, -4999]},
+  {"tick": 2169, "op": "enforcer", "do": "move", "to": [-400, -5000]},
+  {"tick": 2334, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 2335, "op": "enforcer", "do": "move", "to": [-400, -5000]},
+  {"tick": 2394, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 2454, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 2514, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 2515, "op": "enforcer", "do": "move", "to": [850, -4820]},
+  {"tick": 2565, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 5100
+}
