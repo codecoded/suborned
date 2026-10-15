@@ -139,7 +139,7 @@ namespace Suborned.Play
             views = new HostViews(this, viewRoot, frame);
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
-            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
+            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); ResetFeed(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
             Track();
             // open on the cell at the getaway bay with Inez's café door in frame
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
@@ -202,7 +202,7 @@ namespace Suborned.Play
         void Drain()
         {
             if (Game.Log.Count <= lastLog) return;
-            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); if (x.Code.StartsWith("shot.")) { Shot(x); continue; } Landed(x); SayLanded(x); }
+            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); if (x.Code.StartsWith("shot.")) { Shot(x); continue; } Landed(x); FeedEvent(x); SayLanded(x); }
             var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
         }
 
@@ -224,6 +224,7 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.Cease)) CeaseFire();
                 if (c.Down(kb, PlayAction.Stance)) CycleStance();
                 if (c.Down(kb, PlayAction.Hints)) ToggleHints();
+                if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeOldest();
                 if (kb.leftCtrlKey.wasPressedThisFrame || kb.leftCtrlKey.wasReleasedThisFrame || kb.rightCtrlKey.wasPressedThisFrame || kb.rightCtrlKey.wasReleasedThisFrame) UpdateAim();
                 for (int i = 0; i < 4; i++)
                 {
@@ -760,7 +761,10 @@ namespace Suborned.Play
                 case "mislead": return g.RivalsPresent ? yes : No("no-rivals", "no rivals here yet");
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
                 case "take": return g.Vale == ValeAt.Pickup ? yes : No("vale-not-at-car", "Vale is not at his car yet");
-                case "extract": return g.Vale == ValeAt.WithEnforcer ? yes : No("no-vale-yet", "you don't have Vale yet");
+                case "extract":
+                    if (g.Vale != ValeAt.WithEnforcer) return No("no-vale-yet", "you don't have Vale yet");
+                    { var left = g.WouldBeCaptured(); if (left.Count > 0) v.Outcome = $"win · leaves the {string.Join(" and the ", left)} (captured)"; }
+                    return yes;
                 case "fire": return op.Gun.W == null ? No("no-weapon", "carries no weapon (Arms)") : op.Running ? No("fire-running", "a running operative doesn't fire: walk or stop first")
                         : o.Target is "waitress" or "driver" ? No("civilian-target", $"{o.Target} is a civilian or a contact: a target only when forced (Ctrl)") : yes;
             }

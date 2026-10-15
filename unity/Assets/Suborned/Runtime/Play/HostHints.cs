@@ -137,7 +137,8 @@ namespace Suborned.Play
                     }
                 case "H11":
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
-                    for (int k = 0; k < 4; k++) { var op = g.Ops[k]; if (op.Down && !op.CarriedBy.HasValue) { ring = At("op/" + Op.Name((OpId)k)); return true; } }
+                    foreach (var name in g.WouldBeCaptured()) // Keel's query: downed and not within the car's reach (carried or not)
+                    { var op = g.Ops[(int)Op.Parse(name)]; if (!op.CarriedBy.HasValue) { ring = At("op/" + name); return true; } }
                     return false;
             }
             return false;

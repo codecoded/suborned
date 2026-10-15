@@ -9,7 +9,7 @@ namespace Suborned.Play
         Verb1, Verb2, Verb3, Verb4,
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
-        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints,
+        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -55,6 +55,7 @@ namespace Suborned.Play
             new() { action = PlayAction.Stance, keys = new[] { Key.V }, label = "V" },
             new() { action = PlayAction.Force, keys = new[] { Key.LeftCtrl, Key.RightCtrl }, label = "Ctrl" },
             new() { action = PlayAction.Hints, keys = new[] { Key.H }, label = "H" },
+            new() { action = PlayAction.Acknowledge, keys = new[] { Key.K }, label = "K" },
         };
         static readonly Binding[] defaults = Defaults();
 
