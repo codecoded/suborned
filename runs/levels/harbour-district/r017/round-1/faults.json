@@ -1,0 +1,10 @@
+[
+  {
+    "owner": "Fable",
+    "rule": "D-2",
+    "fault": "Every filled line fits: at most 80 characters, spoken lines 1–12 words, sentence ends, 2–4 variants: 6 fault(s); p-cafe-01 scout read/listen/: 13 words (Believes in doing right. Once the money worry is gone, they'll stand firm.); p-cafe-02 scout read/listen/: 13 words (Believes in doing right. Once the money worry is gone, they'll stand firm.); p-cafe-11 scout read/listen/: 13 words (Believes in doing right. Once the papers are in order, they'll stand firm.); p-garden-row-east-02 scout read/listen/: 13 words (Believes in doing right. Once the money worry is gone, they'll stand firm.); p-records-office-25 scout read/listen/: 13 words (Believes in doing right. Once the money worry is gone, they'll stand firm.); p-records-office-58 scout read/listen/: 13 words (Believes in doing right. Once the papers are in order, they'll stand firm.) [source: dialogue.rules.json limits (the Handover's text.test.ts: a line ≤ 80 characters, a spoken line 1–12 words, ends like a sentence, 2–4 variants); GDD §10 text is a light layer]",
+    "fix": "bring the tables inside the rule",
+    "chunks": [],
+    "synthesized": true
+  }
+]

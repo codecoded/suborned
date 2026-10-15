@@ -1,0 +1,11 @@
+[
+  {
+    "owner": "Fable",
+    "rule": "critic",
+    "fault": "Temperament fit, loyal read line 3: \"Reports any approach.\" The Temperament Spec says a Loyal person reports any approach only when the cell is a Menace. Under a Hero campaign the Loyal \"Can turn after repeated Help\". As a general statement the Scout's read misleads the player: this is the same flaw just fixed in the idealist read. Line 2 (\"Trust comes slowly.\") already gives the true read.",
+    "fix": "Drop the absolute, e.g. \"Won't be rushed. Help, and keep helping.\" or \"May report a stranger's offer.\"",
+    "chunks": [
+      "c66f00b9af229bba908cd3dc"
+    ]
+  }
+]

@@ -1,0 +1,2436 @@
+{
+ "schema": "suborned.block/4",
+ "id": "civic",
+ "frame": {
+  "name": "block",
+  "units": "m",
+  "x": "south (the Unity block at yaw 90)",
+  "y": "east",
+  "z": "up",
+  "z0": "height above the local ground: pavement top (plan 0.18), or the lay-by surface inside a bay (plan 0)",
+  "toPlan": "plan = origin + x * ax + y * ay, with origin (-130, -230), ax (0, -1), ay (1, 0): plan x = -130 + y, plan y = -230 - x"
+ },
+ "sourceRoot": "~/Projects/the-suborned/game/Assets/TheSuborned",
+ "sources": [
+  {
+   "path": "Data/World/handover-navigation.json",
+   "sha256": "e10e3eed7f83befbbd6cf2c61df1118dba35c9be57b47a1af66b2b88927cdbac"
+  },
+  {
+   "path": "Data/World/handover-destinations.json",
+   "sha256": "cc74fe03989bb2f5efaf140e638f823ef287a57da6e5199c19df26f209856036"
+  },
+  {
+   "path": "Editor/World/HandoverCafe.cs",
+   "sha256": "389c0cb5a3f6f705eacc62296342076c4047d364403a2be702376949f9b45840"
+  },
+  {
+   "path": "Editor/World/HandoverKit.cs",
+   "sha256": "c506460b58502719d418ba3458d06db6d6122d77a74c80231088eeac1fdd00ee"
+  }
+ ],
+ "adjustments": {
+  "file": "contracts/world/civic-block.adjust.json",
+  "sha256": "e2eeddc22f844123ba200ed812ec731cb15c39b0eec68ac6b1d1b812f3c9a52c",
+  "owner": "Vantage",
+  "applied": [
+   {
+    "op": "addBay",
+    "id": "officeBay",
+    "polygon": [
+     [77, -38.2],
+     [80, -38.2],
+     [80, -23.8],
+     [77, -23.8]
+    ],
+    "reason": "Vantage: the office bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -168.2..-153.8, y -310..-307. The Oct 9 source has no bay object (the ground is one flat floor), so the lay-by is stated here. Checker C-4."
+   },
+   {
+    "op": "addBay",
+    "id": "squareBay",
+    "polygon": [
+     [4, -50],
+     [13, -50],
+     [13, -47],
+     [4, -47]
+    ],
+    "reason": "Vantage: the square bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -180..-177, y -243..-234. Not in the Oct 9 source. Checker C-4."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "office-boarding-pavilion",
+     "name": "Official door canopy",
+     "category": "boarding-canopy",
+     "polygon": [
+      [75.5, -33],
+      [78.5, -33],
+      [78.5, -27],
+      [75.5, -27]
+     ],
+     "z": 4.05,
+     "height": 0.57
+    },
+    "reason": "Vantage, brief 008 B2 (L2; Sky's walk note 'parking bay goes into building'): the 15 x 3.827 pavilion at x 73.173..77 stood 2.327 x 6 m inside tower-official (x 69.5..75.5, y -33..-27). It is now a canopy carried on the tower's south face: back edge on the face (x 75.5, overlap 0), the tower's width (y -33..-27), 3 m out over the 1.5 m pavement and the kerb half of the lay-by (x 77..78.5). No posts: the pavement at the tower is 1.5 m and stays clear. z 4.05 is the soffit above the pavement (4.23 above the lay-by), top 4.62 as before; nothing of it stands on the ground. Why not the pavilion moved over the bay: a 15 m roof to x 80 hides the door from the play camera (yaw 30, pitch 38: at the door everything above 0.9 m), and its piers have no ground but the wide pavement or the lay-by. At 3 m a person at the door point (76.25, -30) is seen whole (hidden only above 2.0 m) and Vale is under cover from the door to the car door; 'Official drop-off' (78.2) and 'Boarding pavilion' (78.3) stay under it."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "square-boarding-pavilion",
+     "name": "Square bay canopy",
+     "category": "boarding-canopy",
+     "polygon": [
+      [4.3, -47],
+      [12.7, -47],
+      [12.7, -44.858],
+      [4.3, -44.858]
+     ],
+     "z": 0,
+     "height": 2.587
+    },
+    "reason": "Vantage: as the office bay canopy; footprint 8.4 x 2.143 and height 2.587 from the Oct 5 testbed manifest, on the pavement edge at y -47."
+   },
+   {
+    "op": "edit",
+    "id": "office-pavilion-support-0",
+    "move": [-2.3, 0],
+    "z": 0,
+    "height": 3.633,
+    "reason": "Out of the lay-by onto the pavement (x 77.3..79.3 -> 75..77), z -0.18 -> 0, height cut by the 0.18. Brief 008 B2: the canopy is now carried on the tower and this pier carries nothing; it is removed by the pending `remove` below. Until that op exists it stays here, clear of the tower (y -37.75..-35.75) and of the bay."
+   },
+   {
+    "op": "edit",
+    "id": "office-pavilion-support-1",
+    "move": [-2.3, 0],
+    "z": 0,
+    "height": 3.633,
+    "reason": "As office-pavilion-support-0 (y -26.25..-24.25). Until it is removed it still overlaps the civic-office-north bed by about 0.7 x 1.6 m, as it did before."
+   },
+   {
+    "op": "edit",
+    "id": "square-pavilion-support-0",
+    "move": [0, 1.16],
+    "z": 0,
+    "height": 1.955,
+    "reason": "Supports follow the canopy out of the lay-by (y -48.16..-47.04 -> -47..-45.88, inside the canopy footprint); z -0.18 was the lay-by level, now they stand on the pavement, height cut by the 0.18 so the top stays where the source had it."
+   },
+   {
+    "op": "edit",
+    "id": "square-pavilion-support-1",
+    "move": [0, 1.16],
+    "z": 0,
+    "height": 1.955,
+    "reason": "As square-pavilion-support-0."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "office-public-landing",
+     "name": "Public door landing",
+     "category": "entrance-landing",
+     "polygon": [
+      [51, -32.3],
+      [52.5, -32.3],
+      [52.5, -27.7],
+      [51, -27.7]
+     ],
+     "z": 0,
+     "height": 0.75
+    },
+    "reason": "Vantage, brief 008 B2 (L1, H4): steps are real geometry. The public door is on tower-public's north face (x 52.5), on the tower's axis y -30, which is also the axis of the Orbit Walk crossing (y -32.5..-27.5) and of the fountain. Landing 1.5 m deep (x 51..52.5), 4.6 m wide, top at 0.75: 'Office entrance' stands on it at (51.75, -30), 0.75 m off the face. Sizes are Vela's RecordsEntrance (pivot 52.5, -30; front north)."
+   },
+   {
+    "op": "addStructure",
+    "item": {
+     "id": "office-public-steps",
+     "name": "Public door steps",
+     "category": "entrance-steps",
+     "polygon": [
+      [49.2, -32.3],
+      [51, -32.3],
+      [51, -27.7],
+      [49.2, -27.7]
+     ],
+     "z": 0,
+     "height": 0.625,
+     "risers": 6,
+     "rise": 0.125,
+     "going": 0.36,
+     "foot": [49.2, -30],
+     "top": [51, -30],
+     "landing": "office-public-landing"
+    },
+    "reason": "Vantage, brief 008 B2 (L1, H4): the flight to the landing. 6 risers of 0.125 m (0.75 m), 5 treads of 0.36 m (1.8 m), foot at x 49.2, 3.3 m out from the face; height 0.625 is the top tread. 'Office approach' stands at the foot, (48.6, -30), 0.6 m before the first riser. How the sim takes the height is Keel's (H4)."
+   },
+   {
+    "op": "edit",
+    "id": "civic-entrance-west",
+    "move": [0, 0.5],
+    "reason": "Brief 008 B2: the two entrance beds sat about y -30.4, the door is on the tower axis y -30. RecordsEntrance's pier plinth reaches y -26.02 (x 51.47..52.73) and this bed reached y -26.302: 0.28 m overlap. Moved 0.5 m east: the bed starts at y -25.802, 0.22 m off the plinth, 1.2 m off the tower flank (y -27). Chosen over centring the door on y -30.4 (the arch would sit 0.4 m off the tower's axis: 0.4 and 1.2 m of face beside it, one pier in the tower's corner) and over narrowing the piers (a piece change for 0.02 m of clearance)."
+   },
+   {
+    "op": "edit",
+    "id": "civic-entrance-east",
+    "move": [0, 0.4],
+    "reason": "As civic-entrance-west, so the pair is centred on the door: this bed's edge at the pier line (x 51.47) goes from y -34.578 to -34.178, 0.20 m off the plinth (y -33.98). Corridor between the beds 8.30 m, centre y -29.95."
+   },
+   {
+    "op": "edit",
+    "id": "civic-office-north",
+    "move": [0, 1.4],
+    "reason": "Brief 008 B2: this bed reached y -27.219 at x 74.1..75.0, 0.22 m inside tower-official (y -33..-27, x to 75.5), and its east side lay under the official door's east pier (plinth y -26.98..-26.02, x 75.27..76.53). Moved 1.4 m east along the wing face: it starts at y -25.819, 0.2 m off the pier and 1.18 m off the tower; still 1.34 m off the wing face (x 72.5) and 1.26 m off the lay-by (x 77)."
+   },
+   {
+    "op": "towerFootprint",
+    "building": "civic-office",
+    "tower": "public",
+    "polygon": [
+     [52.5, -33],
+     [58.5, -33],
+     [58.5, -27],
+     [52.5, -27]
+    ],
+    "reason": "The block gives a tower only as `at`; its 6 x 6 m plan is a constant in tools/world/build.ts (PROV.tower). The checker and the walk grid therefore do not know the tower stands 3 m proud of the wing (wing face x 55.5), which is how the Oct 9 entrance point (54.65, -30.5) came to stand 2.15 m inside it. State the footprint in the block; W-4 and the walk blockers then use buildings and towers together."
+   },
+   {
+    "op": "towerFootprint",
+    "building": "civic-office",
+    "tower": "official",
+    "polygon": [
+     [69.5, -33],
+     [75.5, -33],
+     [75.5, -27],
+     [69.5, -27]
+    ],
+    "reason": "As public (wing face x 72.5). 'Official entrance' and 'Meet Vale' (73.25, -31) stand 2.25 m inside it today."
+   },
+   {
+    "op": "moveEntrance",
+    "id": "office-entrance",
+    "to": [51.75, -30],
+    "z": 0.75,
+    "on": "office-public-landing",
+    "face": "tower public, north face x 52.5",
+    "reason": "Brief 008 B2: entrances stand on the tower faces. On the landing, 0.75 m off the face (52.5 - 51.75), 0.75 m from the top riser (x 51), on the tower axis. Needs towerFootprint first: W-4 measures 1 m to the building ring and this point is 3.75 m from the wing face."
+   },
+   {
+    "op": "addEntrance",
+    "building": "civic-office",
+    "item": {
+     "id": "official-entrance",
+     "name": "Official entrance",
+     "at": [76.25, -30],
+     "z": 0
+    },
+    "face": "tower official, south face x 75.5",
+    "reason": "Flush door, no steps: 0.75 m off the face, 0.75 m from the lay-by (x 77), under the canopy. The block has no official entrance today; Vale's door is only a mission point."
+   },
+   {
+    "op": "remove",
+    "id": "office-pavilion-support-0",
+    "reason": "The canopy is carried on the tower; this 2 x 2 m pier (x 75..77, y -37.75..-35.75) carries nothing and stands on the kerb half of the 4.5 m pavement beside the lay-by."
+   },
+   {
+    "op": "remove",
+    "id": "office-pavilion-support-1",
+    "reason": "As support-0 (y -26.25..-24.25). Must go before RecordsEntrance_Official is placed: it overlaps that piece's east pier plinth (y -26.98..-26.02) by 0.23 m and the civic-office-north bed."
+   },
+   {
+    "op": "dressing",
+    "reason": "Copy the `dressing` key below into civic-block.json so the generator and Latch read zones and placements from the block, not from this file."
+   }
+  ]
+ },
+ "buildings": [
+  {
+   "id": "cafe",
+   "name": "Corner café",
+   "source": "corner-cafe",
+   "polygon": [
+    [-22, -40],
+    [-21, -40],
+    [-20, -40],
+    [-19, -40],
+    [-18, -40],
+    [-17, -40],
+    [-16, -40],
+    [-14.966, -39.898],
+    [-13.972, -39.597],
+    [-13.055, -39.107],
+    [-12.252, -38.448],
+    [-11.593, -37.645],
+    [-11.103, -36.728],
+    [-10.802, -35.734],
+    [-10.7, -34.7],
+    [-10.7, -33.75],
+    [-10.7, -32.8],
+    [-10.7, -31.85],
+    [-10.7, -30.9],
+    [-10.7, -29.95],
+    [-10.7, -29],
+    [-10.7, -28.05],
+    [-10.7, -27.1],
+    [-10.7, -26.15],
+    [-10.7, -25.2],
+    [-10.7, -24.25],
+    [-10.7, -23.3],
+    [-10.802, -22.266],
+    [-11.103, -21.272],
+    [-11.593, -20.355],
+    [-12.252, -19.552],
+    [-13.055, -18.893],
+    [-13.972, -18.403],
+    [-14.966, -18.102],
+    [-16, -18],
+    [-17, -18],
+    [-18, -18],
+    [-19, -18],
+    [-20, -18],
+    [-21, -18],
+    [-22, -18]
+   ],
+   "z": 0,
+   "height": 34.8,
+   "interior": {
+    "floor": 0.45,
+    "ceiling": 4.6,
+    "cornerArc": 5.3
+   },
+   "entrances": [
+    {
+     "id": "cafe-entrance",
+     "name": "Café entrance",
+     "at": [-10.3, -29]
+    }
+   ]
+  },
+  {
+   "id": "civic-office",
+   "name": "Records Office",
+   "source": "civic-office-site",
+   "polygon": [
+    [72.5, -19.5],
+    [72.5, -38.5],
+    [70.8, -40.5],
+    [58.9, -40.5],
+    [55.5, -36.5],
+    [55.5, -24.5],
+    [58.9, -19.5]
+   ],
+   "z": 0,
+   "height": 15.5,
+   "entrances": [
+    {
+     "id": "office-entrance",
+     "name": "Office entrance",
+     "at": [51.75, -30],
+     "z": 0.75,
+     "on": "office-public-landing",
+     "face": "tower public, north face x 52.5"
+    },
+    {
+     "id": "official-entrance",
+     "name": "Official entrance",
+     "at": [76.25, -30],
+     "z": 0
+    }
+   ],
+   "heights": {
+    "wings": 15.5,
+    "crown": 38,
+    "giantOrder": 12
+   },
+   "towers": [
+    {
+     "id": "public",
+     "at": [55.5, -30],
+     "height": 38,
+     "polygon": [
+      [52.5, -33],
+      [58.5, -33],
+      [58.5, -27],
+      [52.5, -27]
+     ]
+    },
+    {
+     "id": "official",
+     "at": [72.5, -30],
+     "height": 38,
+     "polygon": [
+      [69.5, -33],
+      [75.5, -33],
+      [75.5, -27],
+      [69.5, -27]
+     ]
+    }
+   ]
+  }
+ ],
+ "structures": [
+  {
+   "id": "square-pavilion-support-0",
+   "name": "square-pavilion-support-0",
+   "category": "pavilion-support",
+   "polygon": [
+    [11.16, -47],
+    [12.28, -47],
+    [12.28, -45.88],
+    [11.16, -45.88]
+   ],
+   "z": 0,
+   "height": 1.955
+  },
+  {
+   "id": "square-pavilion-support-1",
+   "name": "square-pavilion-support-1",
+   "category": "pavilion-support",
+   "polygon": [
+    [4.72, -47],
+    [5.84, -47],
+    [5.84, -45.88],
+    [4.72, -45.88]
+   ],
+   "z": 0,
+   "height": 1.955
+  },
+  {
+   "id": "civic-control-cabinet",
+   "name": "civic-control-cabinet",
+   "category": "service-cabinet",
+   "polygon": [
+    [24.946, -17.844],
+    [25.854, -17.844],
+    [25.854, -16.156],
+    [24.946, -16.156]
+   ],
+   "z": 0,
+   "height": 1.575
+  },
+  {
+   "id": "civic-service-cabinet-0",
+   "name": "civic-service-cabinet-0",
+   "category": "service-cabinet",
+   "polygon": [
+    [57.025, -45.613],
+    [58.375, -45.613],
+    [58.375, -44.887],
+    [57.025, -44.887]
+   ],
+   "z": 0,
+   "height": 1.26
+  },
+  {
+   "id": "civic-service-cabinet-1",
+   "name": "civic-service-cabinet-1",
+   "category": "service-cabinet",
+   "polygon": [
+    [69.025, -45.613],
+    [70.375, -45.613],
+    [70.375, -44.887],
+    [69.025, -44.887]
+   ],
+   "z": 0,
+   "height": 1.26
+  },
+  {
+   "id": "foreground-civic-robot",
+   "name": "Civic steward monument",
+   "category": "civic-monument",
+   "polygon": [
+    [26.16, -19],
+    [26.102, -18.709],
+    [25.937, -18.463],
+    [25.691, -18.298],
+    [25.4, -18.24],
+    [25.109, -18.298],
+    [24.863, -18.463],
+    [24.698, -18.709],
+    [24.64, -19],
+    [24.698, -19.291],
+    [24.863, -19.537],
+    [25.109, -19.702],
+    [25.4, -19.76],
+    [25.691, -19.702],
+    [25.937, -19.537],
+    [26.102, -19.291]
+   ],
+   "z": 0,
+   "height": 2.22
+  },
+  {
+   "id": "office-boarding-pavilion",
+   "name": "Official door canopy",
+   "category": "boarding-canopy",
+   "polygon": [
+    [75.5, -33],
+    [78.5, -33],
+    [78.5, -27],
+    [75.5, -27]
+   ],
+   "z": 4.05,
+   "height": 0.57
+  },
+  {
+   "id": "square-boarding-pavilion",
+   "name": "Square bay canopy",
+   "category": "boarding-canopy",
+   "polygon": [
+    [4.3, -47],
+    [12.7, -47],
+    [12.7, -44.858],
+    [4.3, -44.858]
+   ],
+   "z": 0,
+   "height": 2.587
+  },
+  {
+   "id": "office-public-landing",
+   "name": "Public door landing",
+   "category": "entrance-landing",
+   "polygon": [
+    [51, -32.3],
+    [52.5, -32.3],
+    [52.5, -27.7],
+    [51, -27.7]
+   ],
+   "z": 0,
+   "height": 0.75
+  },
+  {
+   "id": "office-public-steps",
+   "name": "Public door steps",
+   "category": "entrance-steps",
+   "polygon": [
+    [49.2, -32.3],
+    [51, -32.3],
+    [51, -27.7],
+    [49.2, -27.7]
+   ],
+   "z": 0,
+   "height": 0.625,
+   "risers": 6,
+   "rise": 0.125,
+   "going": 0.36,
+   "foot": [49.2, -30],
+   "top": [51, -30],
+   "landing": "office-public-landing"
+  }
+ ],
+ "objects": [
+  {
+   "id": "atom-fountain",
+   "kind": "fountain",
+   "polygon": [
+    [9.8, -30],
+    [9.737, -29.356],
+    [9.549, -28.737],
+    [9.244, -28.167],
+    [8.833, -27.667],
+    [8.333, -27.256],
+    [7.763, -26.951],
+    [7.144, -26.763],
+    [6.5, -26.7],
+    [5.856, -26.763],
+    [5.237, -26.951],
+    [4.667, -27.256],
+    [4.167, -27.667],
+    [3.756, -28.167],
+    [3.451, -28.737],
+    [3.263, -29.356],
+    [3.2, -30],
+    [3.263, -30.644],
+    [3.451, -31.263],
+    [3.756, -31.833],
+    [4.167, -32.333],
+    [4.667, -32.744],
+    [5.237, -33.049],
+    [5.856, -33.237],
+    [6.5, -33.3],
+    [7.144, -33.237],
+    [7.763, -33.049],
+    [8.333, -32.744],
+    [8.833, -32.333],
+    [9.244, -31.833],
+    [9.549, -31.263],
+    [9.737, -30.644]
+   ],
+   "z": 0,
+   "height": 4.2
+  },
+  {
+   "id": "fountain-garden-north-east",
+   "kind": "planter",
+   "polygon": [
+    [2.843, -23.973],
+    [2.664, -24.085],
+    [2.488, -24.203],
+    [2.316, -24.326],
+    [2.148, -24.454],
+    [1.983, -24.587],
+    [1.823, -24.725],
+    [1.667, -24.868],
+    [1.515, -25.015],
+    [1.368, -25.167],
+    [1.225, -25.323],
+    [1.087, -25.483],
+    [0.954, -25.648],
+    [0.826, -25.816],
+    [0.703, -25.988],
+    [0.585, -26.164],
+    [0.473, -26.343],
+    [0.383, -26.546],
+    [0.35, -26.765],
+    [0.374, -26.986],
+    [0.454, -27.193],
+    [0.585, -27.371],
+    [0.759, -27.51],
+    [0.962, -27.6],
+    [1.181, -27.633],
+    [1.402, -27.609],
+    [1.608, -27.529],
+    [1.787, -27.398],
+    [1.926, -27.225],
+    [2.011, -27.089],
+    [2.101, -26.955],
+    [2.194, -26.825],
+    [2.291, -26.697],
+    [2.392, -26.572],
+    [2.497, -26.451],
+    [2.605, -26.332],
+    [2.717, -26.217],
+    [2.832, -26.105],
+    [2.951, -25.997],
+    [3.072, -25.892],
+    [3.197, -25.791],
+    [3.325, -25.694],
+    [3.455, -25.601],
+    [3.589, -25.511],
+    [3.725, -25.426],
+    [3.898, -25.287],
+    [4.029, -25.108],
+    [4.109, -24.902],
+    [4.133, -24.681],
+    [4.1, -24.462],
+    [4.01, -24.259],
+    [3.871, -24.085],
+    [3.693, -23.954],
+    [3.486, -23.874],
+    [3.265, -23.85],
+    [3.046, -23.883]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "fountain-garden-north-west",
+   "kind": "planter",
+   "polygon": [
+    [0.473, -33.657],
+    [0.585, -33.836],
+    [0.703, -34.012],
+    [0.826, -34.184],
+    [0.954, -34.352],
+    [1.087, -34.517],
+    [1.225, -34.677],
+    [1.368, -34.833],
+    [1.515, -34.985],
+    [1.667, -35.132],
+    [1.823, -35.275],
+    [1.983, -35.413],
+    [2.148, -35.546],
+    [2.316, -35.674],
+    [2.488, -35.797],
+    [2.664, -35.915],
+    [2.843, -36.027],
+    [3.046, -36.117],
+    [3.265, -36.15],
+    [3.486, -36.126],
+    [3.693, -36.046],
+    [3.871, -35.915],
+    [4.01, -35.741],
+    [4.1, -35.538],
+    [4.133, -35.319],
+    [4.109, -35.098],
+    [4.029, -34.892],
+    [3.898, -34.713],
+    [3.725, -34.574],
+    [3.589, -34.489],
+    [3.455, -34.399],
+    [3.325, -34.306],
+    [3.197, -34.209],
+    [3.072, -34.108],
+    [2.951, -34.003],
+    [2.832, -33.895],
+    [2.717, -33.783],
+    [2.605, -33.668],
+    [2.497, -33.549],
+    [2.392, -33.428],
+    [2.291, -33.303],
+    [2.194, -33.175],
+    [2.101, -33.045],
+    [2.011, -32.911],
+    [1.926, -32.775],
+    [1.787, -32.602],
+    [1.608, -32.471],
+    [1.402, -32.391],
+    [1.181, -32.367],
+    [0.962, -32.4],
+    [0.759, -32.49],
+    [0.585, -32.629],
+    [0.454, -32.807],
+    [0.374, -33.014],
+    [0.35, -33.235],
+    [0.383, -33.454]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "fountain-garden-south-west",
+   "kind": "planter",
+   "polygon": [
+    [10.157, -36.027],
+    [10.336, -35.915],
+    [10.512, -35.797],
+    [10.684, -35.674],
+    [10.852, -35.546],
+    [11.017, -35.413],
+    [11.177, -35.275],
+    [11.333, -35.132],
+    [11.485, -34.985],
+    [11.632, -34.833],
+    [11.775, -34.677],
+    [11.913, -34.517],
+    [12.046, -34.352],
+    [12.174, -34.184],
+    [12.297, -34.012],
+    [12.415, -33.836],
+    [12.527, -33.657],
+    [12.617, -33.454],
+    [12.65, -33.235],
+    [12.626, -33.014],
+    [12.546, -32.807],
+    [12.415, -32.629],
+    [12.241, -32.49],
+    [12.038, -32.4],
+    [11.819, -32.367],
+    [11.598, -32.391],
+    [11.392, -32.471],
+    [11.213, -32.602],
+    [11.074, -32.775],
+    [10.989, -32.911],
+    [10.899, -33.045],
+    [10.806, -33.175],
+    [10.709, -33.303],
+    [10.608, -33.428],
+    [10.503, -33.549],
+    [10.395, -33.668],
+    [10.283, -33.783],
+    [10.168, -33.895],
+    [10.049, -34.003],
+    [9.928, -34.108],
+    [9.803, -34.209],
+    [9.675, -34.306],
+    [9.545, -34.399],
+    [9.411, -34.489],
+    [9.275, -34.574],
+    [9.102, -34.713],
+    [8.971, -34.892],
+    [8.891, -35.098],
+    [8.867, -35.319],
+    [8.9, -35.538],
+    [8.99, -35.741],
+    [9.129, -35.915],
+    [9.307, -36.046],
+    [9.514, -36.126],
+    [9.735, -36.15],
+    [9.954, -36.117]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "fountain-garden-south-east",
+   "kind": "planter",
+   "polygon": [
+    [12.527, -26.343],
+    [12.415, -26.164],
+    [12.297, -25.988],
+    [12.174, -25.816],
+    [12.046, -25.648],
+    [11.913, -25.483],
+    [11.775, -25.323],
+    [11.632, -25.167],
+    [11.485, -25.015],
+    [11.333, -24.868],
+    [11.177, -24.725],
+    [11.017, -24.587],
+    [10.852, -24.454],
+    [10.684, -24.326],
+    [10.512, -24.203],
+    [10.336, -24.085],
+    [10.157, -23.973],
+    [9.954, -23.883],
+    [9.735, -23.85],
+    [9.514, -23.874],
+    [9.307, -23.954],
+    [9.129, -24.085],
+    [8.99, -24.259],
+    [8.9, -24.462],
+    [8.867, -24.681],
+    [8.891, -24.902],
+    [8.971, -25.108],
+    [9.102, -25.287],
+    [9.275, -25.426],
+    [9.411, -25.511],
+    [9.545, -25.601],
+    [9.675, -25.694],
+    [9.803, -25.791],
+    [9.928, -25.892],
+    [10.049, -25.997],
+    [10.168, -26.105],
+    [10.283, -26.217],
+    [10.395, -26.332],
+    [10.503, -26.451],
+    [10.608, -26.572],
+    [10.709, -26.697],
+    [10.806, -26.825],
+    [10.899, -26.955],
+    [10.989, -27.089],
+    [11.074, -27.225],
+    [11.213, -27.398],
+    [11.392, -27.529],
+    [11.598, -27.609],
+    [11.819, -27.633],
+    [12.038, -27.6],
+    [12.241, -27.51],
+    [12.415, -27.371],
+    [12.546, -27.193],
+    [12.626, -26.986],
+    [12.65, -26.765],
+    [12.617, -26.546]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-entrance-west",
+   "kind": "planter",
+   "polygon": [
+    [50.15, -19.4],
+    [50.15, -23],
+    [50.171, -23.398],
+    [50.233, -23.792],
+    [50.337, -24.177],
+    [50.48, -24.549],
+    [50.725, -25.097],
+    [50.889, -25.364],
+    [51.116, -25.58],
+    [51.392, -25.729],
+    [51.697, -25.802],
+    [52.01, -25.793],
+    [52.31, -25.704],
+    [52.577, -25.54],
+    [52.792, -25.312],
+    [52.941, -25.037],
+    [53.014, -24.732],
+    [53.006, -24.419],
+    [52.916, -24.119],
+    [52.672, -23.571],
+    [52.619, -23.434],
+    [52.581, -23.292],
+    [52.558, -23.147],
+    [52.55, -23],
+    [52.55, -19.4],
+    [52.509, -19.089],
+    [52.389, -18.8],
+    [52.199, -18.551],
+    [51.95, -18.361],
+    [51.661, -18.241],
+    [51.35, -18.2],
+    [51.039, -18.241],
+    [50.75, -18.361],
+    [50.501, -18.551],
+    [50.311, -18.8],
+    [50.191, -19.089]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-entrance-east",
+   "kind": "planter",
+   "polygon": [
+    [50.103, -35.18],
+    [50.287, -37.473],
+    [50.29, -37.662],
+    [50.269, -37.851],
+    [50.225, -38.036],
+    [50.033, -38.657],
+    [49.989, -38.914],
+    [50.013, -39.174],
+    [50.104, -39.419],
+    [50.254, -39.632],
+    [50.455, -39.798],
+    [50.693, -39.908],
+    [50.95, -39.951],
+    [51.21, -39.927],
+    [51.455, -39.837],
+    [51.668, -39.686],
+    [51.834, -39.485],
+    [51.943, -39.248],
+    [52.135, -38.627],
+    [52.239, -38.196],
+    [52.288, -37.756],
+    [52.281, -37.313],
+    [52.097, -35.02],
+    [52.042, -34.765],
+    [51.923, -34.532],
+    [51.748, -34.339],
+    [51.529, -34.197],
+    [51.281, -34.116],
+    [51.02, -34.103],
+    [50.765, -34.158],
+    [50.532, -34.277],
+    [50.339, -34.452],
+    [50.197, -34.671],
+    [50.116, -34.919]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-facade-southwest",
+   "kind": "planter",
+   "polygon": [
+    [56.266, -20.305],
+    [54.411, -23.034],
+    [54.349, -23.156],
+    [54.321, -23.291],
+    [54.329, -23.428],
+    [54.372, -23.558],
+    [54.447, -23.672],
+    [54.55, -23.763],
+    [54.672, -23.825],
+    [54.806, -23.853],
+    [54.943, -23.845],
+    [55.073, -23.802],
+    [55.188, -23.727],
+    [55.279, -23.624],
+    [57.134, -20.895],
+    [57.196, -20.773],
+    [57.224, -20.639],
+    [57.216, -20.502],
+    [57.173, -20.372],
+    [57.097, -20.257],
+    [56.995, -20.166],
+    [56.873, -20.104],
+    [56.739, -20.076],
+    [56.602, -20.084],
+    [56.472, -20.127],
+    [56.357, -20.203]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-facade-southeast",
+   "kind": "planter",
+   "polygon": [
+    [53.635, -36.122],
+    [55.72, -38.808],
+    [55.817, -38.904],
+    [55.936, -38.972],
+    [56.069, -39.007],
+    [56.206, -39.006],
+    [56.338, -38.97],
+    [56.456, -38.901],
+    [56.553, -38.803],
+    [56.621, -38.684],
+    [56.655, -38.552],
+    [56.655, -38.415],
+    [56.619, -38.282],
+    [56.549, -38.164],
+    [54.465, -35.478],
+    [54.367, -35.382],
+    [54.248, -35.314],
+    [54.116, -35.279],
+    [53.979, -35.28],
+    [53.846, -35.316],
+    [53.728, -35.385],
+    [53.632, -35.483],
+    [53.564, -35.602],
+    [53.529, -35.734],
+    [53.53, -35.871],
+    [53.566, -36.004]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-office-west",
+   "kind": "planter",
+   "polygon": [
+    [69.7, -16.45],
+    [62.9, -16.45],
+    [62.432, -16.479],
+    [61.972, -16.567],
+    [60.906, -16.839],
+    [60.725, -16.912],
+    [60.568, -17.029],
+    [60.447, -17.183],
+    [60.37, -17.363],
+    [60.342, -17.557],
+    [60.365, -17.751],
+    [60.438, -17.933],
+    [60.555, -18.089],
+    [60.709, -18.21],
+    [60.889, -18.288],
+    [61.083, -18.315],
+    [61.278, -18.292],
+    [62.343, -18.02],
+    [62.619, -17.968],
+    [62.9, -17.95],
+    [69.7, -17.95],
+    [69.894, -17.924],
+    [70.075, -17.85],
+    [70.23, -17.73],
+    [70.35, -17.575],
+    [70.424, -17.394],
+    [70.45, -17.2],
+    [70.424, -17.006],
+    [70.35, -16.825],
+    [70.23, -16.67],
+    [70.075, -16.55],
+    [69.894, -16.476]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-office-north",
+   "kind": "planter",
+   "polygon": [
+    [74.255, -21.51],
+    [73.836, -24.985],
+    [73.839, -25.181],
+    [73.891, -25.369],
+    [73.991, -25.538],
+    [74.131, -25.675],
+    [74.302, -25.771],
+    [74.491, -25.819],
+    [74.687, -25.817],
+    [74.876, -25.765],
+    [75.044, -25.665],
+    [75.181, -25.525],
+    [75.277, -25.354],
+    [75.326, -25.165],
+    [75.745, -21.69],
+    [75.742, -21.494],
+    [75.69, -21.305],
+    [75.59, -21.137],
+    [75.45, -21],
+    [75.279, -20.904],
+    [75.09, -20.855],
+    [74.894, -20.858],
+    [74.705, -20.91],
+    [74.537, -21.01],
+    [74.4, -21.15],
+    [74.304, -21.321]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-dropoff-west",
+   "kind": "planter",
+   "polygon": [
+    [79.286, -43.06],
+    [79.398, -42.683],
+    [79.462, -42.294],
+    [79.476, -41.901],
+    [79.442, -41.509],
+    [79.359, -41.125],
+    [79.229, -40.753],
+    [79.09, -40.517],
+    [78.895, -40.324],
+    [78.656, -40.189],
+    [78.391, -40.12],
+    [78.117, -40.122],
+    [77.853, -40.195],
+    [77.616, -40.334],
+    [77.424, -40.529],
+    [77.289, -40.767],
+    [77.22, -41.033],
+    [77.222, -41.307],
+    [77.294, -41.571],
+    [77.338, -41.695],
+    [77.366, -41.823],
+    [77.377, -41.954],
+    [77.372, -42.085],
+    [77.351, -42.214],
+    [77.314, -42.34],
+    [77.254, -42.608],
+    [77.266, -42.881],
+    [77.348, -43.143],
+    [77.495, -43.374],
+    [77.697, -43.56],
+    [77.94, -43.686],
+    [78.208, -43.746],
+    [78.481, -43.734],
+    [78.743, -43.652],
+    [78.974, -43.505],
+    [79.16, -43.303]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-monument-west",
+   "kind": "planter",
+   "polygon": [
+    [24.575, -14.1],
+    [24.575, -15.1],
+    [24.593, -15.236],
+    [24.645, -15.362],
+    [24.729, -15.471],
+    [24.837, -15.555],
+    [24.964, -15.607],
+    [25.1, -15.625],
+    [25.236, -15.607],
+    [25.362, -15.555],
+    [25.471, -15.471],
+    [25.555, -15.362],
+    [25.607, -15.236],
+    [25.625, -15.1],
+    [25.625, -14.1],
+    [25.607, -13.964],
+    [25.555, -13.837],
+    [25.471, -13.729],
+    [25.362, -13.645],
+    [25.236, -13.593],
+    [25.1, -13.575],
+    [24.964, -13.593],
+    [24.837, -13.645],
+    [24.729, -13.729],
+    [24.645, -13.837],
+    [24.593, -13.964]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "civic-monument-east",
+   "kind": "planter",
+   "polygon": [
+    [24.9, -20.7],
+    [24.9, -21.35],
+    [24.917, -21.479],
+    [24.967, -21.6],
+    [25.046, -21.704],
+    [25.15, -21.783],
+    [25.271, -21.833],
+    [25.4, -21.85],
+    [25.529, -21.833],
+    [25.65, -21.783],
+    [25.754, -21.704],
+    [25.833, -21.6],
+    [25.883, -21.479],
+    [25.9, -21.35],
+    [25.9, -20.7],
+    [25.883, -20.571],
+    [25.833, -20.45],
+    [25.754, -20.346],
+    [25.65, -20.267],
+    [25.529, -20.217],
+    [25.4, -20.2],
+    [25.271, -20.217],
+    [25.15, -20.267],
+    [25.046, -20.346],
+    [24.967, -20.45],
+    [24.917, -20.571]
+   ],
+   "z": 0,
+   "height": 0.52
+  },
+  {
+   "id": "cafe-table-0",
+   "kind": "table",
+   "polygon": [
+    [-6.477, -37.6],
+    [-6.524, -37.361],
+    [-6.659, -37.159],
+    [-6.861, -37.024],
+    [-7.1, -36.977],
+    [-7.339, -37.024],
+    [-7.541, -37.159],
+    [-7.676, -37.361],
+    [-7.723, -37.6],
+    [-7.676, -37.839],
+    [-7.541, -38.041],
+    [-7.339, -38.176],
+    [-7.1, -38.223],
+    [-6.861, -38.176],
+    [-6.659, -38.041],
+    [-6.524, -37.839]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-1",
+   "kind": "table",
+   "polygon": [
+    [-6.477, -33.3],
+    [-6.524, -33.061],
+    [-6.659, -32.859],
+    [-6.861, -32.724],
+    [-7.1, -32.677],
+    [-7.339, -32.724],
+    [-7.541, -32.859],
+    [-7.676, -33.061],
+    [-7.723, -33.3],
+    [-7.676, -33.539],
+    [-7.541, -33.741],
+    [-7.339, -33.876],
+    [-7.1, -33.923],
+    [-6.861, -33.876],
+    [-6.659, -33.741],
+    [-6.524, -33.539]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-2",
+   "kind": "table",
+   "polygon": [
+    [-6.477, -24.7],
+    [-6.524, -24.461],
+    [-6.659, -24.259],
+    [-6.861, -24.124],
+    [-7.1, -24.077],
+    [-7.339, -24.124],
+    [-7.541, -24.259],
+    [-7.676, -24.461],
+    [-7.723, -24.7],
+    [-7.676, -24.939],
+    [-7.541, -25.141],
+    [-7.339, -25.276],
+    [-7.1, -25.323],
+    [-6.861, -25.276],
+    [-6.659, -25.141],
+    [-6.524, -24.939]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-3",
+   "kind": "table",
+   "polygon": [
+    [-6.477, -20.4],
+    [-6.524, -20.161],
+    [-6.659, -19.959],
+    [-6.861, -19.824],
+    [-7.1, -19.777],
+    [-7.339, -19.824],
+    [-7.541, -19.959],
+    [-7.676, -20.161],
+    [-7.723, -20.4],
+    [-7.676, -20.639],
+    [-7.541, -20.841],
+    [-7.339, -20.976],
+    [-7.1, -21.023],
+    [-6.861, -20.976],
+    [-6.659, -20.841],
+    [-6.524, -20.639]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-4",
+   "kind": "table",
+   "polygon": [
+    [-14.177, -42.9],
+    [-14.224, -42.661],
+    [-14.359, -42.459],
+    [-14.561, -42.324],
+    [-14.8, -42.277],
+    [-15.039, -42.324],
+    [-15.241, -42.459],
+    [-15.376, -42.661],
+    [-15.423, -42.9],
+    [-15.376, -43.139],
+    [-15.241, -43.341],
+    [-15.039, -43.476],
+    [-14.8, -43.523],
+    [-14.561, -43.476],
+    [-14.359, -43.341],
+    [-14.224, -43.139]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-5",
+   "kind": "table",
+   "polygon": [
+    [-18.977, -42.9],
+    [-19.024, -42.661],
+    [-19.159, -42.459],
+    [-19.361, -42.324],
+    [-19.6, -42.277],
+    [-19.839, -42.324],
+    [-20.041, -42.459],
+    [-20.176, -42.661],
+    [-20.223, -42.9],
+    [-20.176, -43.139],
+    [-20.041, -43.341],
+    [-19.839, -43.476],
+    [-19.6, -43.523],
+    [-19.361, -43.476],
+    [-19.159, -43.341],
+    [-19.024, -43.139]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-6",
+   "kind": "table",
+   "polygon": [
+    [-14.177, -15.1],
+    [-14.224, -14.861],
+    [-14.359, -14.659],
+    [-14.561, -14.524],
+    [-14.8, -14.477],
+    [-15.039, -14.524],
+    [-15.241, -14.659],
+    [-15.376, -14.861],
+    [-15.423, -15.1],
+    [-15.376, -15.339],
+    [-15.241, -15.541],
+    [-15.039, -15.676],
+    [-14.8, -15.723],
+    [-14.561, -15.676],
+    [-14.359, -15.541],
+    [-14.224, -15.339]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-table-7",
+   "kind": "table",
+   "polygon": [
+    [-18.977, -15.1],
+    [-19.024, -14.861],
+    [-19.159, -14.659],
+    [-19.361, -14.524],
+    [-19.6, -14.477],
+    [-19.839, -14.524],
+    [-20.041, -14.659],
+    [-20.176, -14.861],
+    [-20.223, -15.1],
+    [-20.176, -15.339],
+    [-20.041, -15.541],
+    [-19.839, -15.676],
+    [-19.6, -15.723],
+    [-19.361, -15.676],
+    [-19.159, -15.541],
+    [-19.024, -15.339]
+   ],
+   "z": 0,
+   "height": 1.04
+  },
+  {
+   "id": "cafe-palm-0",
+   "kind": "planter",
+   "polygon": [
+    [-9.55, -31.1],
+    [-9.584, -30.928],
+    [-9.682, -30.782],
+    [-9.828, -30.684],
+    [-10, -30.65],
+    [-10.172, -30.684],
+    [-10.318, -30.782],
+    [-10.416, -30.928],
+    [-10.45, -31.1],
+    [-10.416, -31.272],
+    [-10.318, -31.418],
+    [-10.172, -31.516],
+    [-10, -31.55],
+    [-9.828, -31.516],
+    [-9.682, -31.418],
+    [-9.584, -31.272]
+   ],
+   "z": 0,
+   "height": 1.6
+  },
+  {
+   "id": "cafe-palm-1",
+   "kind": "planter",
+   "polygon": [
+    [-9.55, -26.9],
+    [-9.584, -26.728],
+    [-9.682, -26.582],
+    [-9.828, -26.484],
+    [-10, -26.45],
+    [-10.172, -26.484],
+    [-10.318, -26.582],
+    [-10.416, -26.728],
+    [-10.45, -26.9],
+    [-10.416, -27.072],
+    [-10.318, -27.218],
+    [-10.172, -27.316],
+    [-10, -27.35],
+    [-9.828, -27.316],
+    [-9.682, -27.218],
+    [-9.584, -27.072]
+   ],
+   "z": 0,
+   "height": 1.6
+  },
+  {
+   "id": "cafe-palm-2",
+   "kind": "planter",
+   "polygon": [
+    [-8.55, -41.4],
+    [-8.584, -41.228],
+    [-8.682, -41.082],
+    [-8.828, -40.984],
+    [-9, -40.95],
+    [-9.172, -40.984],
+    [-9.318, -41.082],
+    [-9.416, -41.228],
+    [-9.45, -41.4],
+    [-9.416, -41.572],
+    [-9.318, -41.718],
+    [-9.172, -41.816],
+    [-9, -41.85],
+    [-8.828, -41.816],
+    [-8.682, -41.718],
+    [-8.584, -41.572]
+   ],
+   "z": 0,
+   "height": 1.6
+  },
+  {
+   "id": "cafe-palm-3",
+   "kind": "planter",
+   "polygon": [
+    [-8.55, -16.6],
+    [-8.584, -16.428],
+    [-8.682, -16.282],
+    [-8.828, -16.184],
+    [-9, -16.15],
+    [-9.172, -16.184],
+    [-9.318, -16.282],
+    [-9.416, -16.428],
+    [-9.45, -16.6],
+    [-9.416, -16.772],
+    [-9.318, -16.918],
+    [-9.172, -17.016],
+    [-9, -17.05],
+    [-8.828, -17.016],
+    [-8.682, -16.918],
+    [-8.584, -16.772]
+   ],
+   "z": 0,
+   "height": 1.6
+  },
+  {
+   "id": "cafe-palm-4",
+   "kind": "planter",
+   "polygon": [
+    [-16.75, -42.6],
+    [-16.784, -42.428],
+    [-16.882, -42.282],
+    [-17.028, -42.184],
+    [-17.2, -42.15],
+    [-17.372, -42.184],
+    [-17.518, -42.282],
+    [-17.616, -42.428],
+    [-17.65, -42.6],
+    [-17.616, -42.772],
+    [-17.518, -42.918],
+    [-17.372, -43.016],
+    [-17.2, -43.05],
+    [-17.028, -43.016],
+    [-16.882, -42.918],
+    [-16.784, -42.772]
+   ],
+   "z": 0,
+   "height": 1.6
+  },
+  {
+   "id": "cafe-palm-5",
+   "kind": "planter",
+   "polygon": [
+    [-16.75, -15.4],
+    [-16.784, -15.228],
+    [-16.882, -15.082],
+    [-17.028, -14.984],
+    [-17.2, -14.95],
+    [-17.372, -14.984],
+    [-17.518, -15.082],
+    [-17.616, -15.228],
+    [-17.65, -15.4],
+    [-17.616, -15.572],
+    [-17.518, -15.718],
+    [-17.372, -15.816],
+    [-17.2, -15.85],
+    [-17.028, -15.816],
+    [-16.882, -15.718],
+    [-16.784, -15.572]
+   ],
+   "z": 0,
+   "height": 1.6
+  }
+ ],
+ "bays": [
+  {
+   "id": "officeBay",
+   "polygon": [
+    [77, -38.2],
+    [80, -38.2],
+    [80, -23.8],
+    [77, -23.8]
+   ]
+  },
+  {
+   "id": "squareBay",
+   "polygon": [
+    [4, -50],
+    [13, -50],
+    [13, -47],
+    [4, -47]
+   ]
+  }
+ ],
+ "dressing": {
+  "schema": "suborned.block-dressing/0 (carried into civic-block.json by the `dressing` adjustment; the generator does not place from it yet)",
+  "frame": "Block frame, metres. yawDeg turns from +x (south) toward +y (east): a piece's local +X maps to (cos, sin). Pieces face local -Y, building on +Y. Pivots as each piece states.",
+  "checked": "Scratch nav check, 0.25 m grid, body 0.35 m, towers and Vela's ground solids as blockers: with everything below placed, all 300 walks between the 25 Handover points (21 destinations at their moved positions, 4 crew) keep their length to 0.05 m, with the terrace wall at x -4.8 and at x -4.3. Follow-up, 2026-10-14: run again on civic-block.json /4 (tower footprints), Vela's measured ground solids (out/decokit-008/measured.json: wall centred x -4.3, official pilasters) and mission.json as moved; the six cypresses and six pots change none of the 300 walks, nor does the whole dressing against the bare block. Crossing landings are flat and move no walk.",
+  "rules": [
+   "A keepClear zone bars the kinds it lists; kinds are planter, lamp, bollard, tree, parasol, band.",
+   "Every Handover point (mission.json destinations and crew): nothing that stands on the ground (planter, pot, tree, lamp, bollard) within 1.2 m. A canopy overhead (parasol, marquee) may cover a point (lead's ruling, 2026-10-14, B2 follow-up); its reason then says what the play camera loses of a person standing there (camera direction from a point: +0.866 x, -0.5 y, 1.28 m out per metre of height).",
+   "A crossing landing (crossings below: 1.8 m deep and 4 m wide inside the kerb at its point) bars planter, lamp, bollard and tree.",
+   "Bands are flat inlay (4 mm): they may pass under a Handover point or a walk. They may not enter a bay, crew-line-getaway, the steps or landing, or a planting bed.",
+   "Lamp rings (InlayArc_R2_W06, four per ring, R 2.3 outside) go only where `ring` is true and are centred on the pole.",
+   "Anything not placed here stays off the ground between the two buildings: ask Vantage."
+  ],
+  "keepClear": [
+   {
+    "id": "crew-line-getaway",
+    "polygon": [
+     [-2, -52],
+     [16, -52],
+     [16, -44],
+     [-2, -44]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol",
+     "band"
+    ],
+    "reason": "Crew start line (x 1.2..4.8, y -49.7) and the getaway bay with its canopy: the first thing the player reads and the last walk of the mission."
+   },
+   {
+    "id": "fountain-west-axis",
+    "polygon": [
+     [4.5, -44],
+     [8.5, -44],
+     [8.5, -33.3],
+     [4.5, -33.3]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Sightline and walk from the crew line to the fountain; 4 m wide on the fountain's centre x 6.5."
+   },
+   {
+    "id": "fountain-east-axis",
+    "polygon": [
+     [4.5, -26.7],
+     [8.5, -26.7],
+     [8.5, -8],
+     [4.5, -8]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The mirror axis to the east kerb: the crowd's way in from that street."
+   },
+   {
+    "id": "cafe-gate-spine",
+    "polygon": [
+     [-10.7, -31.6],
+     [3.2, -31.6],
+     [3.2, -26.4],
+     [-10.7, -26.4]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "Café door, through the 5.2 m terrace gate, to the pool: 'Café door', 'Courtyard', 'Steps' stand in it and the door must read at play zoom."
+   },
+   {
+    "id": "office-spine",
+    "polygon": [
+     [9.8, -32.5],
+     [49.2, -32.5],
+     [49.2, -27.5],
+     [9.8, -27.5]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Fountain to the foot of the public steps, over the Orbit Walk crossing x-orbit-axis (strip 4 m, y -32..-28): the long sightline that makes the Records Office door the block's far end."
+   },
+   {
+    "id": "pool-walk",
+    "ring": {
+     "centre": [6.5, -30],
+     "r0": 3.6,
+     "r1": 5.36
+    },
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Between the pool coping and the planter ring: 'Fountain', 'Plaza east', 'Plaza west' stand here."
+   },
+   {
+    "id": "court-walk",
+    "ring": {
+     "centre": [6.5, -30],
+     "r0": 7.9,
+     "r1": 9.8
+    },
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The Oct 9 patrol circle (R 8.85) and Vela's outer band (R 8.0..9.2)."
+   },
+   {
+    "id": "cafe-terrace",
+    "polygon": [
+     [-10.7, -34.7],
+     [-4.63, -34.7],
+     [-4.63, -23.3],
+     [-10.7, -23.3]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "Tables and parasols only, to the coping's inner face (x -4.63, wall as built). Service aisle on the ground: table set edge (x -6.063, set radius 1.037) to the coping, 1.43 m. Vela's 1.165 m is the parasol rim (x -5.795, 2.07 m up) to the coping: overhead, not the aisle. The 1.0 m given before was the ground aisle at the old wall line x -4.8 (inner face -5.13, set radius taken as 0.95). Both right; the wall does not move again. The Oct 9 waitress loop's outer leg (x -4.8) now runs 0.17 m from the coping's face: Pulse moves it to the aisle's middle, x -5.35."
+   },
+   {
+    "id": "public-door",
+    "polygon": [
+     [47.3, -32.56],
+     [52.5, -32.56],
+     [52.5, -27.44],
+     [47.3, -27.44]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "Landing, steps and 1.9 m of forecourt at their foot, cheek to cheek: 'Office approach' and 'Office entrance'."
+   },
+   {
+    "id": "official-door",
+    "polygon": [
+     [75.5, -34],
+     [77, -34],
+     [77, -26],
+     [75.5, -26]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol"
+    ],
+    "reason": "The 1.5 m pavement at the official door: Vale's 2.2 m to the car."
+   },
+   {
+    "id": "official-bay",
+    "polygon": [
+     [76.4, -38.2],
+     [80, -38.2],
+     [80, -23.8],
+     [76.4, -23.8]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree",
+     "parasol",
+     "band"
+    ],
+    "reason": "The lay-by and 0.6 m of pavement along it (car doors)."
+   },
+   {
+    "id": "service-lane",
+    "polygon": [
+     [48, -46],
+     [77, -46],
+     [77, -40.5],
+     [48, -40.5]
+    ],
+    "bars": [
+     "planter",
+     "lamp",
+     "bollard",
+     "tree"
+    ],
+    "reason": "The west side of the office: Tech's cabinets and the walk from 'Service lane' round to both doors."
+   }
+  ],
+  "pieces": [
+   {
+    "piece": "CafeBay",
+    "at": [-10.7, -29],
+    "yawDeg": 90,
+    "reason": "As built: front-centre of the ring's south face. Door flush at (-10.3, -29), no steps. Canopy to x -8.19 (soffit 4.2, top 4.68). Terrace wall as built (measured.json): centred x -4.3, coping x -4.63..-3.97, top 1.13; gate 5.203 m clear, y -31.601..-26.399; arcs R 11.7 about (-16, -34.7) and (-16, -23.3), stone ends at (-12.846, -46.306) and (-12.846, -11.694). Clears every Handover point and block object: 'Terrace gate' (-3.6, -29) stands in the gate, 0.7 m outside the wall line and 2.63 m from either jamb; 'Under parasol' and 'Between tables' are inside.",
+    "solids": [
+     {
+      "id": "wall-front-w",
+      "polygon": [
+       [-4.63, -34.7],
+       [-3.97, -34.7],
+       [-3.97, -31.601],
+       [-4.63, -31.601]
+      ],
+      "height": 1.132
+     },
+     {
+      "id": "wall-front-e",
+      "polygon": [
+       [-4.63, -26.399],
+       [-3.97, -26.399],
+       [-3.97, -23.3],
+       [-4.63, -23.3]
+      ],
+      "height": 1.132
+     },
+     {
+      "id": "wall-arc-w",
+      "polygon": [
+       [-3.97, -34.7],
+       [-4.041, -36.006],
+       [-4.254, -37.297],
+       [-4.605, -38.557],
+       [-5.091, -39.771],
+       [-5.706, -40.926],
+       [-6.443, -42.006],
+       [-7.293, -43.001],
+       [-8.245, -43.897],
+       [-9.29, -44.685],
+       [-10.414, -45.354],
+       [-11.603, -45.898],
+       [-12.845, -46.309],
+       [-13.018, -45.672],
+       [-11.845, -45.283],
+       [-10.72, -44.77],
+       [-9.658, -44.137],
+       [-8.671, -43.393],
+       [-7.77, -42.545],
+       [-6.967, -41.606],
+       [-6.271, -40.584],
+       [-5.69, -39.493],
+       [-5.23, -38.345],
+       [-4.898, -37.154],
+       [-4.697, -35.934],
+       [-4.63, -34.7]
+      ],
+      "height": 1.132
+     },
+     {
+      "id": "wall-arc-e",
+      "polygon": [
+       [-3.97, -23.3],
+       [-4.041, -21.994],
+       [-4.254, -20.703],
+       [-4.605, -19.443],
+       [-5.091, -18.229],
+       [-5.706, -17.074],
+       [-6.443, -15.994],
+       [-7.293, -14.999],
+       [-8.245, -14.103],
+       [-9.29, -13.315],
+       [-10.414, -12.646],
+       [-11.603, -12.102],
+       [-12.845, -11.691],
+       [-13.018, -12.328],
+       [-11.845, -12.717],
+       [-10.72, -13.23],
+       [-9.658, -13.863],
+       [-8.671, -14.607],
+       [-7.77, -15.455],
+       [-6.967, -16.394],
+       [-6.271, -17.416],
+       [-5.69, -18.507],
+       [-5.23, -19.655],
+       [-4.898, -20.846],
+       [-4.697, -22.066],
+       [-4.63, -23.3]
+      ],
+      "height": 1.132
+     }
+    ],
+    "solidsNote": "The terrace wall as built (measured.json, Vela): coping 0.66 m wide centred x -4.3 (the straight front, the gate y -31.601..-26.399 between its halves), then an arc of R 11.7 about each centre sweeping 74.8 degrees out to the stone ends, 12 chords a side. Ground solids, top z 1.132: the checker's walk blocks on them (brief 008 B3)."
+   },
+   {
+    "piece": "RecordsEntrance",
+    "at": [52.5, -30],
+    "yawDeg": -90,
+    "on": [
+     "office-public-landing",
+     "office-public-steps"
+    ],
+    "reason": "Front north, on tower-public's north face and axis.",
+    "solids": [
+     {
+      "id": "cheek-w",
+      "polygon": [
+       [49.1, -32.56],
+       [52.5, -32.56],
+       [52.5, -32.3],
+       [49.1, -32.3]
+      ]
+     },
+     {
+      "id": "cheek-e",
+      "polygon": [
+       [49.1, -27.7],
+       [52.5, -27.7],
+       [52.5, -27.44],
+       [49.1, -27.44]
+      ]
+     },
+     {
+      "id": "pier-w",
+      "polygon": [
+       [51.47, -33.98],
+       [52.73, -33.98],
+       [52.73, -33.02],
+       [51.47, -33.02]
+      ]
+     },
+     {
+      "id": "pier-e",
+      "polygon": [
+       [51.47, -26.98],
+       [52.73, -26.98],
+       [52.73, -26.02],
+       [51.47, -26.02]
+      ]
+     },
+     {
+      "id": "marquee",
+      "polygon": [
+       [50.2, -33.11],
+       [52.5, -33.11],
+       [52.5, -26.89],
+       [50.2, -26.89]
+      ],
+      "z": 4.05,
+      "height": 0.57,
+      "note": "overhead, not a blocker. The play camera (yaw 30) looks at this door from behind the 38 m tower: a person on the landing is hidden above 0.7 m, at the top riser above 1.35 m, at the foot not at all. The landing reads only through the architecture fade (brief 008: this front is an eye-level part); 'Office approach' at the foot reads without it"
+     }
+    ]
+   },
+   {
+    "piece": "RecordsEntrance_Official",
+    "at": [75.5, -30],
+    "yawDeg": 90,
+    "on": [
+     "office-boarding-pavilion"
+    ],
+    "reason": "Front south, on tower-official's south face and axis. As rebuilt flush (measured.json): sill at 0, no steps, rails or cheeks; door 2.9 m wide (y -31.45..-28.55); canopy x 75.437..78.5 (let 0.063 m into the face), y -33..-27, soffit 4.05, top 4.62: the office-boarding-pavilion envelope. Nothing at ground level stands more than 0.3 m off the face: 1.2 m of the 1.5 m pavement is clear.",
+    "solids": [
+     {
+      "id": "pilaster-w",
+      "polygon": [
+       [75.3, -32.7],
+       [75.8, -32.7],
+       [75.8, -32],
+       [75.3, -32]
+      ]
+     },
+     {
+      "id": "pilaster-e",
+      "polygon": [
+       [75.3, -28],
+       [75.8, -28],
+       [75.8, -27.3],
+       [75.3, -27.3]
+      ]
+     }
+    ]
+   }
+  ],
+  "parasols": {
+   "piece": "Parasol_Stripe",
+   "pivot": "pole at the table centre",
+   "on": [
+    {
+     "table": "cafe-table-0",
+     "at": [-7.1, -37.6]
+    },
+    {
+     "table": "cafe-table-1",
+     "at": [-7.1, -33.3]
+    },
+    {
+     "table": "cafe-table-2",
+     "at": [-7.1, -24.7]
+    },
+    {
+     "table": "cafe-table-3",
+     "at": [-7.1, -20.4]
+    },
+    {
+     "table": "cafe-table-4",
+     "at": [-14.8, -42.9]
+    },
+    {
+     "table": "cafe-table-5",
+     "at": [-19.6, -42.9]
+    },
+    {
+     "table": "cafe-table-6",
+     "at": [-14.8, -15.1]
+    }
+   ],
+   "open": [
+    {
+     "table": "cafe-table-7",
+     "reason": "The generator's mast-camera at (-18.5, -15.5) stands 1.17 m from the table centre, inside the disc."
+    }
+   ],
+   "reason": "Seven of eight. Table 2 carries one (lead's ruling, 2026-10-14, B2 follow-up): 'Under parasol' (-7.92, -23.88) is named for standing under it. The 1.2 m rule is for what stands on the ground, not a canopy overhead; the pole stands through the table top (1.16 m from the point), inside a table set whose edge was already 0.12 m from it, so nothing new takes ground. As the play camera sees it the canopy (R 1.305, rim 2.07 m) cuts a person on the point from 0.21 m to 1.79 m: this parasol has to ghost with the fade when someone stands there (Latch, Keel). Elsewhere the nearest Handover point to a disc is 'Between tables', 2.15 m from the poles of tables 0 and 1 (0.85 m outside each disc)."
+  },
+  "lamps": {
+   "piece": "PlazaSphereLamp_Play",
+   "pivot": "pole; arms reach local +X 0.7 m",
+   "yaw": "West lamps 240, east lamps 60: arms broadside to the play camera (yaw 30) and pointing away from the axis they flank.",
+   "at": [
+    {
+     "id": "lamp-terrace-w",
+     "at": [-3.7, -42.4],
+     "yawDeg": 240,
+     "ring": false,
+     "reason": "Outside the terrace wall's west arc (2.2 m off its outer face as built), lights the way to 'West side'. No ring: Vela has four (16 arcs) and here one would run 0.2 m off the terrace wall and touch the corner of crew-line-getaway."
+    },
+    {
+     "id": "lamp-terrace-e",
+     "at": [-3.7, -15.6],
+     "yawDeg": 60,
+     "ring": false,
+     "reason": "Mirror of lamp-terrace-w; no ring, to match."
+    },
+    {
+     "id": "lamp-court-w",
+     "at": [14.8, -41],
+     "yawDeg": 240,
+     "ring": true,
+     "reason": "South-west of the fountain, R 13.8. Ring x 12.5..17.1, y -43.3..-38.7: 0.7 m off crew-line-getaway, 2.3 m outside the outer band. Nearest mission walk 2.63 m."
+    },
+    {
+     "id": "lamp-court-e",
+     "at": [14.8, -19],
+     "yawDeg": 60,
+     "ring": true,
+     "reason": "Mirror of lamp-court-w. Nearest mission walk 4.04 m."
+    },
+    {
+     "id": "lamp-cross-sq-w",
+     "at": [27.9, -35.2],
+     "yawDeg": 240,
+     "ring": true,
+     "reason": "Square side of the Orbit Walk crossing, 3.2 m west of the strip's edge (y -32): the pair frames the way to the Records Office. Nearest mission walk 3.08 m."
+    },
+    {
+     "id": "lamp-cross-sq-e",
+     "at": [27.9, -24.8],
+     "yawDeg": 60,
+     "ring": true,
+     "reason": "Mirror; ring 1.46 m off civic-monument-east. Nearest mission walk 3.09 m."
+    },
+    {
+     "id": "lamp-fore-w",
+     "at": [46.6, -35.2],
+     "yawDeg": 240,
+     "ring": false,
+     "reason": "Office side of the crossing, 2.6 m before the stair foot. No ring: it would cross the forecourt bar (x 47.9). Nearest mission walk 1.04 m ('Service lane' to 'South walkway')."
+    },
+    {
+     "id": "lamp-fore-e",
+     "at": [46.6, -24.8],
+     "yawDeg": 60,
+     "ring": false,
+     "reason": "Mirror. Nearest mission walk 3.46 m."
+    }
+   ]
+  },
+  "bollards": {
+   "piece": "BollardSphere",
+   "pivot": "centre",
+   "at": [
+    {
+     "id": "bol-cross-1",
+     "at": [30.4, -36.1]
+    },
+    {
+     "id": "bol-cross-2",
+     "at": [30.4, -33.6]
+    },
+    {
+     "id": "bol-cross-3",
+     "at": [30.4, -26.4]
+    },
+    {
+     "id": "bol-cross-4",
+     "at": [30.4, -23.9]
+    },
+    {
+     "id": "bol-getaway-n",
+     "at": [-4.6, -49.5]
+    },
+    {
+     "id": "bol-getaway-s",
+     "at": [16.6, -49.5]
+    },
+    {
+     "id": "bol-east-n",
+     "at": [3.5, -8.5]
+    },
+    {
+     "id": "bol-east-s",
+     "at": [9.5, -8.5]
+    },
+    {
+     "id": "bol-bay-w",
+     "at": [78.5, -38.8]
+    },
+    {
+     "id": "bol-bay-e",
+     "at": [78.5, -23.2]
+    },
+    {
+     "id": "bol-terrace-w",
+     "at": [-14.4, -49.5]
+    },
+    {
+     "id": "bol-terrace-e",
+     "at": [-14.4, -8.5]
+    }
+   ],
+   "reason": "bol-cross: two pairs on the square's south kerb (plot edge x 31) either side of the crossing mouth, the inner ones 1.6 m outside the 4 m strip (y -32..-28) and 1.4 m off the landing x-orbit-axis-n, so the crossing reads as the one way across. bol-getaway, bol-east, bol-terrace: the ends of the kerb planter runs, 0.9 or 1 m beyond each, marking the open kerb lengths (crew and getaway x -4.6..16.6 west; fountain axis x 3.5..9.5 east). bol-bay: on the pavement at the returns of the official lay-by, 0.6 m beyond each end. None on the office kerb (x 44.6): every position there moved a walk from 'Service lane', 'Fountain' or 'Plaza east'."
+  },
+  "planterRuns": {
+   "pieces": "PlanterRun_4_A / _B / _C (4.3 x 0.68 m, 4 m pitch, neighbours differ); pivot = footprint centre; front faces the square",
+   "runs": [
+    {
+     "id": "run-west-cafe",
+     "line": [
+      [-13.5, -49.5],
+      [-5.5, -49.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [-11.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [-7.5, -49.5]
+      }
+     ]
+    },
+    {
+     "id": "run-west-south",
+     "line": [
+      [17.5, -49.5],
+      [29.5, -49.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [19.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [23.5, -49.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [27.5, -49.5]
+      }
+     ]
+    },
+    {
+     "id": "run-east-cafe",
+     "line": [
+      [-13.5, -8.5],
+      [2.5, -8.5]
+     ],
+     "yawDeg": 0,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [-11.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [-7.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [-3.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [0.5, -8.5]
+      }
+     ]
+    },
+    {
+     "id": "run-east-south",
+     "line": [
+      [10.5, -8.5],
+      [22.5, -8.5]
+     ],
+     "yawDeg": 0,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [12.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [16.5, -8.5]
+      },
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [20.5, -8.5]
+      }
+     ]
+    },
+    {
+     "id": "run-sq-south",
+     "line": [
+      [20.5, -46],
+      [20.5, -38]
+     ],
+     "yawDeg": 90,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_B",
+       "at": [20.5, -44]
+      },
+      {
+       "piece": "PlanterRun_4_C",
+       "at": [20.5, -40]
+      }
+     ],
+     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): the square's south-west quarter was bare paving between the fountain court and the south kerb, so the safe fight's ambush-3 (22, -42) stood in the open. Two modules east-west at x 20.5 (y -46.15..-37.85), 1.1 m high: waist cover the rivals take facing the getaway car (its south-face points shield toward it, 12-15 m off), and the cell answers from the car's own side. Under eye height (1.6 m), so no sightline the quiet routes use is cut (the guard at the door, the cameras, the patrol); 2.5 m clear of run-sq-west, 3 m off the kerb run, 10.6 m outside the court-walk ring; no keep-clear zone that bars planters."
+    },
+    {
+     "id": "run-sq-west",
+     "line": [
+      [13.5, -39.5],
+      [17.5, -39.5]
+     ],
+     "yawDeg": 180,
+     "modules": [
+      {
+       "piece": "PlanterRun_4_A",
+       "at": [15.5, -39.5]
+      }
+     ],
+     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): ambush-5 (14, -36) stands 9.6 m from the fountain, inside the court-walk ring that bars planters, with nothing between it and the car. One module north-south at y -39.5 (x 13.35..17.65), outside the ring (11.4 m from the pool centre at its nearest), 3 m from the post: its east-face point shields toward the car. With run-sq-south it reads as one L-shaped planted corner, the square's south-west answer to the café terrace's planting. 1.1 m: cover from fire, never from sight."
+    }
+   ],
+   "reason": "On the square's two street kerbs (plot edges y -50 and y -8), 0.16 m inside the edge: they close the square to the two streets and leave the ways in the crowd should use: on the west the café flank (north of x -14.4) and the crew and getaway kerb (x -4.6..16.6); on the east the café flank, the fountain axis (x 3.5..9.5) and the south corner (x 22.5..31). Twelve 4 m modules. None on the office plot or between the two plazas: a run on the forecourt's east side (x 44.9, y -21.5..-9.5) cut the walk from 'South walkway' to the official door, and the planter ring and the nine civic-* beds already hold the middle."
+  },
+  "cypress": {
+   "piece": "Cypress_Play",
+   "pivot": "trunk at the ground; 1.6 m across, 6.3 m high. `on` = the bed it is planted in (base on the bed's planting surface).",
+   "at": [
+    {
+     "id": "cyp-office-w",
+     "at": [51.2, -38],
+     "yawDeg": 0,
+     "on": "civic-entrance-east"
+    },
+    {
+     "id": "cyp-facade-w",
+     "at": [54.3, -36.1],
+     "yawDeg": 70,
+     "on": "civic-facade-southeast"
+    },
+    {
+     "id": "cyp-office-e",
+     "at": [51.2, -22],
+     "yawDeg": 140,
+     "on": "civic-entrance-west"
+    },
+    {
+     "id": "cyp-facade-e",
+     "at": [55, -23.1],
+     "yawDeg": 210,
+     "on": "civic-facade-southwest"
+    },
+    {
+     "id": "cyp-sq-nw",
+     "at": [-24.8, -48.8],
+     "yawDeg": 280
+    },
+    {
+     "id": "cyp-sq-ne",
+     "at": [-24.8, -9.2],
+     "yawDeg": 350
+    }
+   ],
+   "reason": "Office front: a pair each side of the public door, as the mission-block and records-office paintings show: the outer tree forward in the entrance bed (8 m off the axis), the inner one back against the wing in the facade bed (6.1 m and 6.9 m off: the two chamfers differ). All four stand in beds that are already there, so they take no ground and no walk passes; the facade pair overhangs its 1.05 m bed by 0.3 m a side and stands 0.38 m off the wing. From the play camera three of the four are behind the wing and read through the fade; cyp-office-w shows past the office's west corner. They are for the eye-level view at the Office door. Square: one at each north corner, 0.4 m inside both kerbs, 0.59 m and 0.98 m off the landings x-rocket-n and x-garden-n. They close the view either side of the café and their camera shadows (8 m, to the north-north-east) fall off the plot. None at the south corners: the crew's walk to 'Service lane' passes 1.0 m from the south-west spot and would run 8 m in the tree's camera shadow, and the planter run holds that kerb. No Handover point is hidden by any of the six. Yaws only vary the silhouette."
+  },
+  "topiary": {
+   "piece": "PottedTopiary_Play",
+   "pivot": "pot centre at the ground; 0.72 m across, 2.03 m high",
+   "at": [
+    {
+     "id": "top-office-w",
+     "at": [50.9, -33.45]
+    },
+    {
+     "id": "top-office-e",
+     "at": [50.9, -26.55]
+    },
+    {
+     "id": "top-official-w",
+     "at": [73, -33.5]
+    },
+    {
+     "id": "top-official-e",
+     "at": [73, -26.5]
+    },
+    {
+     "id": "top-terrace-w",
+     "at": [-3.5, -36.2]
+    },
+    {
+     "id": "top-terrace-e",
+     "at": [-3.5, -21.8]
+    }
+   ],
+   "reason": "Public door: in the dead-end pockets in front of the pier plinths, between each cheek wall and its bed (0.21 m off the plinth, 0.53 m off the cheek, 0.3 m or more off the bed), outside public-door: steps and landing stay clear. Official door: in the two inner corners where the tower meets the wing (0.14 m off both walls), behind the face line, so the 1.5 m pavement and official-door stay clear; the west pot shows from the play camera, the east one stands behind the tower. Terrace: outside the wall where the straight front turns into each arc, 4.6 m from the gate jambs and 0.21 m off the wall; nearest walk 1.19 m ('Courtyard' to the crew line). Pots at the gate jambs or at the wall's far ends were tried and moved 49 walks, the crew line's to 'West side' by 1.4 m and to 'Courtyard' and 'Café door' by 0.4 to 0.5 m. None at the café door: cafe-palm-0 and cafe-palm-1 flank it."
+  },
+  "crossings": {
+   "standard": "plan standards.streetscape.crossings: strip 4 m wide kerb to kerb, landing 1.8 m deep inside the kerb, stagger at most 3.5 m. `at` = the kerb point on the civic plot edge (block frame); `inward` = from the kerb into the plot; `partner` = the other landing: a civic one by id, or the district landing the generator dropped (SF-20), by its plot edge and kerb point.",
+   "flank": "The generator places nothing on a civic kerb: no bollards or beacons at these landings. bol-cross-1..4 flank x-orbit-axis-n; the office side has none (every bollard there moved a walk).",
+   "at": [
+    {
+     "id": "x-orbit-axis-n",
+     "at": [31, -30],
+     "inward": [-1, 0],
+     "plot": "records-square",
+     "road": "orbit-walk",
+     "partner": {
+      "id": "x-orbit-axis-s"
+     },
+     "reason": "First: the block's own crossing. Both kerbs are civic, so the generator made none. On the y -30 axis of the fountain, the crossing and the public door; strip y -32..-28 inside office-spine."
+    },
+    {
+     "id": "x-orbit-axis-s",
+     "at": [44, -30],
+     "inward": [1, 0],
+     "plot": "records-office",
+     "road": "orbit-walk",
+     "partner": {
+      "id": "x-orbit-axis-n"
+     },
+     "reason": "Its other landing: 5.2 m from the kerb to the foot of the steps (x 49.2), 2.8 m from the patch to 'Office approach'; lamp-fore-w and -e stand 3 m either side."
+    },
+    {
+     "id": "x-starline-w",
+     "at": [-26, -39],
+     "inward": [1, 0],
+     "plot": "records-square",
+     "road": "starline-street",
+     "partner": {
+      "edge": "lamplight-south-w/e1",
+      "kerb": [-38, -39]
+     },
+     "reason": "Mirror of the dropped landing (Lamplight Lane's west arm). On the 4 m pavement behind the café, 2.2 m off its back wall, 1 m short of its west corner. 2.15 m from 'Behind café': people waiting here are eyes on that point (Waymark, Pulse)."
+    },
+    {
+     "id": "x-starline-e",
+     "at": [-26, -21],
+     "inward": [1, 0],
+     "plot": "records-square",
+     "road": "starline-street",
+     "partner": {
+      "edge": "lamplight-south-e/e0",
+      "kerb": [-38, -21]
+     },
+     "reason": "Mirror of the dropped landing (east arm), 3 m short of the café's east corner; 12 m from 'Behind café'."
+    },
+    {
+     "id": "x-rocket-n",
+     "at": [-21.39, -50],
+     "inward": [0, 1],
+     "plot": "records-square",
+     "road": "rocket-lane",
+     "partner": {
+      "edge": "rocket-west/e1",
+      "kerb": [-21.39, -62]
+     },
+     "reason": "Mirror of the dropped landing, in the open kerb north of bol-terrace-w. 17.4 m north of crew-line-getaway, 23.4 m from the square bay. Rocket Lane is the first road of the getaway route (Waymark)."
+    },
+    {
+     "id": "x-garden-n",
+     "at": [-21, -8],
+     "inward": [0, -1],
+     "plot": "records-square",
+     "road": "garden-row",
+     "partner": {
+      "edge": "garden-row-east/e3",
+      "kerb": [-21, 4]
+     },
+     "reason": "Mirror of the dropped landing, in the open kerb north of bol-terrace-e (4.3 m from the nearest table set)."
+    },
+    {
+     "id": "x-garden-s",
+     "at": [26, -8],
+     "inward": [0, -1],
+     "plot": "records-square",
+     "road": "garden-row",
+     "partner": {
+      "edge": "garden-row-east/e3",
+      "kerb": [26, 4]
+     },
+     "reason": "Mirror of the dropped landing, in the open kerb south of run-east-south (1.35 m off its end); 7.2 m from 'South walkway'."
+    },
+    {
+     "id": "x-pylon-n",
+     "at": [49, 4],
+     "inward": [0, -1],
+     "plot": "records-office",
+     "road": "pylon-row",
+     "partner": {
+      "edge": "pylon-row-east/e3",
+      "kerb": [49, 16]
+     },
+     "reason": "Mirror of the dropped landing, on the office's east pavement; nothing within 18 m."
+    },
+    {
+     "id": "x-pylon-s",
+     "at": [75, 4],
+     "inward": [0, -1],
+     "plot": "records-office",
+     "road": "pylon-row",
+     "partner": {
+      "edge": "pylon-row-east/e3",
+      "kerb": [75, 16]
+     },
+     "reason": "Mirror of the dropped landing; 26 m from the official bay."
+    }
+   ],
+   "none": [
+    {
+     "edge": "orbit-gardens/e2",
+     "kerb": [92, -45],
+     "road": "apron-road",
+     "reason": "Lead's ruling, 2026-10-14 (brief 008 B3): not built. Its near edge is 1.9 m from the plot corner (y -50) where the standard asks 3 m past the corner tangent, and it lies on the official car's approach up Apron Road, 5.9 m before the lay-by. Stays dropped, like the two below."
+    },
+    {
+     "edge": "lamplight-south-w/e1",
+     "kerb": [-38, -52.43],
+     "road": "starline-street",
+     "reason": "Faces the mouth of Rocket Lane, 2.43 m past the square's corner (y -50). The nearest point a landing may stand on the civic kerb (2 m in from the corner, y -48) is 4.43 m along, over the 3.5 m stagger. Stays dropped."
+    },
+    {
+     "edge": "garden-row-east/e0",
+     "kerb": [31, 9],
+     "road": "orbit-walk",
+     "reason": "Faces the mouth of Pylon Row, 5 m past the office's corner (y 4). Nearest civic point (44, 2) is 7 m along. Stays dropped; Orbit Walk is crossed at y 21 and on the axis."
+    }
+   ],
+   "checked": "Each pair run through the generator's own tests (tools/world/gen/street/crossings.ts stripBlock and the `fits` arithmetic) in a scratch script: kerb to kerb 12.00 to 13.00 m against road widths 12 and 13 (x-apron-w 12.05), offset along the road 0 (x-apron-w 1.10), every strip clear of tram tracks and both bays. Landing patches: 0.35 m or more from any solid, 0.59 m or more from any dressing, 5.9 m or more from a bay, 17.4 m or more from crew-line-getaway."
+  },
+  "bands": {
+   "source": "out/decokit-008/paving-bands.json (Vela)",
+   "changes": [
+    {
+     "id": "forecourt-bar",
+     "to": {
+      "from": [47.9, -34],
+      "to": [47.9, -26]
+     },
+     "reason": "Re-centred on the door axis y -30 (was y -34.4..-26.4, centred -30.4). 'Office approach' (48.6, -30) stands 0.1 m south of it."
+    },
+    {
+     "id": "lamp-ring-0..3",
+     "to": [
+      "lamp-court-w",
+      "lamp-court-e",
+      "lamp-cross-sq-w",
+      "lamp-cross-sq-e"
+     ],
+     "reason": "Rings follow the lamps: the four suggested centres (R 12.4 diagonals) are replaced by the four lamps with ring true. Still 16 InlayArc_R2_W06."
+    },
+    {
+     "id": "spoke-west",
+     "to": {
+      "from": [6.5, -39.2],
+      "to": [6.5, -43.2]
+     },
+     "reason": "It ran to y -44.16, 0.16 m into crew-line-getaway; two whole 2 m modules end it at -43.2."
+    },
+    {
+     "id": "spine-north",
+     "reason": "Kept as drawn: it passes under 'Courtyard' and 'Steps', which the rule above allows (the file's own note says bands never cross a point; that note should go)."
+    }
+   ]
+  }
+ }
+}

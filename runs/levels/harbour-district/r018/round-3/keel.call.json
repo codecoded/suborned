@@ -1,0 +1,223 @@
+{
+  "id": "06-dialogue-critic",
+  "objective": "dialogue-critic",
+  "role": "simulation-engineer",
+  "model": "claude-opus-5-5",
+  "modelsUsed": [
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.299",
+  "costUsd": 0.199323,
+  "seconds": 27,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/simulation-engineer.md",
+    "sourceHash": "8c57421ce7afc8e0e70fa5cd2936aed427b0e9fccac8f022492dd086a6fd468e"
+  },
+  "brief": {
+    "source": "tools/levels/objectives/dialogue-critic.md",
+    "sourceHash": "9915531f398f2db1af63baf61fedd6fcdae34638410308b064801203fae296ab"
+  },
+  "promptSha256": "adef33b059d795a2bb30a5de57712788b426856dffb4e2c5c6b27625bdbce9d8",
+  "schemaSha256": "2584300a344cceb05fca4ace0f2ebebb4ecf71a2ea4a5a99b78acaad901064a3",
+  "effort": "medium",
+  "retrieval": {
+    "query": "GDD §04 temperament table: Idealist Mercenary Fearful Loyal, responds to, refuses, Hero, Menace; wrong approach works one step worse; Loyal reports any approach ‖ GDD §04 approaches Ask Pay Help Pressure: requires, price, leaves; needs list debt cash housing papers kin care protection advancement secret; ties family workmate regular debtor rival ‖ GDD §04 talker: questioned, a person gives up known facts if fear + resentment > bravery + loyalty; a brave helped contact lies; knowledge only witnessed or told ‖ GDD §09 generation: dialogue, portraits, voices from person data and state (brave, resentful, promoted), checked by tone and rating filters; risk sameness: history, not backstory; text is a light layer ‖ rulebook: each event needs, changes, witnesses; unknown is rejected; debrief lines carry their cause ‖ GDD §01 world: an alternate 1950s that discovered atomic power centuries ago, no thinking machines or networks, records are paper, calls are voice; optimistic surface, coercive underneath",
+    "queries": [
+      "GDD §04 temperament table: Idealist Mercenary Fearful Loyal, responds to, refuses, Hero, Menace; wrong approach works one step worse; Loyal reports any approach",
+      "GDD §04 approaches Ask Pay Help Pressure: requires, price, leaves; needs list debt cash housing papers kin care protection advancement secret; ties family workmate regular debtor rival",
+      "GDD §04 talker: questioned, a person gives up known facts if fear + resentment > bravery + loyalty; a brave helped contact lies; knowledge only witnessed or told",
+      "GDD §09 generation: dialogue, portraits, voices from person data and state (brave, resentful, promoted), checked by tone and rating filters; risk sameness: history, not backstory; text is a light layer",
+      "rulebook: each event needs, changes, witnesses; unknown is rejected; debrief lines carry their cause",
+      "GDD §01 world: an alternate 1950s that discovered atomic power centuries ago, no thinking machines or networks, records are paper, calls are voice; optimistic surface, coercive underneath"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "9ba32c64c8f2de1e470a6e7831a84bce6b8a6b49d6f4942f71918377e19e6d80",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "bm25": 1.871002435684204,
+        "key": "d781564276ab9e1934f2fa26",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › person and tiers",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+        "text": "people rules › person and tiers\n{\"is\":[\"routine\",\"need\",\"temperament\",\"memory\",\"secret\"],\"needsPerPerson\":1,\"memoryAtStart\":\"empty\",\"src\":\"§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory\",\"reason\":\"memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.\",\"readBy\":{\"fields\":{\"name\":\"§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\",\"temperament\":\"§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\",\"need\":\"§04 Help and Pressure require the need known (Listen); needs.list.metBy\",\"ties\":\"§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\",\"scales\":\"§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\",\"memory\":\"§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\",\"routine\":\"§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\",\"secret\":\"§04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\"},\"src\":\"GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\",\"proposed\":true,\"reason\":\"Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.\"}}\ntiers: {\"simulated\":{\"carries\":[\"name\",\"temperament\",\"need\",\"ties\",\"scales\",\"memory\",\"routine\",\"secret\"],\"src\":\"§09; life.json generator.tiers [G]\"},\"background\":{\"carries\":[\"routine\"],\"src\":\"life.json generator.tiers: walk, run and cheer only\",\"proposed\":true,\"reason\":\"background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to.\"}}",
+        "version": "suborned.people.rules/1",
+        "score": 0.11839985677672245,
+        "signals": [
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "keyword:3",
+          "semantic:4",
+          "keyword:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "bm25": 2.877967357635498,
+        "key": "b751d6ccbbc84f9d117eb45c",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › readBy",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+        "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+        "version": "suborned.people.rules/1",
+        "score": 0.10571975285718944,
+        "signals": [
+          "keyword:1",
+          "semantic:2",
+          "keyword:2",
+          "keyword:3",
+          "keyword:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.2704792022705078,
+        "key": "7da11a383ddcab7cc682c542",
+        "kind": "gdd-agent",
+        "lineEnd": 281,
+        "lineStart": 275,
+        "section": "§14 ROLES › Motive",
+        "source": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+        "sourceHash": "2681ea43c5701a8634639f8c5f31def20b42010bb3ad2c8ffce8270dc781affe",
+        "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing, bravery and resentment, Talkers, Heat and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+        "version": "v0.22.0",
+        "score": 0.0852486338111856,
+        "signals": [
+          "semantic:1",
+          "semantic:2",
+          "keyword:2",
+          "semantic:4",
+          "semantic:5",
+          "keyword:5"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "distance": 0.2674669304529459,
+        "key": "7e715458cf0b800aa97a93b4",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › talker",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+        "text": "people rules › talker\n{\"left\":[\"fear\",\"resentment\"],\"op\":\">\",\"right\":[\"bravery\",\"loyalty\"]}; facts given: fixer-face, cell-car, place-time",
+        "version": "suborned.people.rules/1",
+        "score": 0.07439730430408273,
+        "signals": [
+          "semantic:1",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "semantic:6"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "distance": 0.19763624668121338,
+        "key": "b244071a6c0c49c5b980debe",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › scales",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "dc413c4a1e6f198856ae45c7498171dfdbef69c96c6d2ac6a99f3fa5f048f1e8",
+        "text": "people rules › scales\nbravery: 0-3 (informant, helper, accomplice, fighter); §04 bravery [S]: Informant → Helper → Accomplice → Fighter, +1 step per job completed unexposed\nresentment: 0-2 (compliant, resentful, informer); §04 resentment [S]: Compliant → Resentful → Informer, +1 step per pressure or exposure\nfear: 0-3 (calm, uneasy, afraid, terrified); §04 talker test names fear; §04 Pressure leaves fear; §05 a threat adds fear\nloyalty: 0-3 (none, obliged, trusting, sworn); §04 talker test names loyalty; §04 standing: Hero turning is slower, dearer, loyal",
+        "version": "suborned.people.rules/1",
+        "score": 0.07291872214472835,
+        "signals": [
+          "semantic:1",
+          "semantic:2",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "Human GDD (wins on conflict)",
+        "distance": 0.19728810771036642,
+        "key": "c66f00b9af229bba908cd3dc",
+        "kind": "gdd-human",
+        "lineEnd": 281,
+        "lineStart": 269,
+        "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec",
+        "source": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html",
+        "sourceHash": "dcded369f4a98029c0ec934bb3cc53aba3a225111656b2fb4b56a8bc63946fc6",
+        "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec\nTemperament | Responds to | If you are Heroes | If you are a Menace |\nIdealist | Help. Refuses bribes. | Volunteers with no offer needed; gains bravery fast | Refuses, and may report you |\nMercenary | Pay | Overcharges you: \"heroes can afford it\" | Gives a discount, and sells you out to the highest bidder |\nFearful | Pressure | Hesitates and needs Help twice | Folds immediately, for free |\nLoyal (to an institution) | Only trust built over time | Can turn after repeated Help | Reports any approach |\nA Hero campaign and a Menace campaign turn different halves of the city , so a second playthrough has a different cast. That's the replay value.",
+        "version": "v0.22.0",
+        "score": 0.07287056489262372,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "keyword:2",
+          "semantic:3",
+          "semantic:4"
+        ]
+      },
+      {
+        "authority": "Human GDD (wins on conflict)",
+        "distance": 0.2061460018157959,
+        "key": "4e9abf8a6ce1ff9723bd285e",
+        "kind": "gdd-human",
+        "lineEnd": 300,
+        "lineStart": 289,
+        "section": "Knowledge makes consent cheap. Reputation decides who says yes. › What a person is made of Spec (1/2)",
+        "source": "GDD/the-suborned-gdd-v0.22.0-2026-10-15.html",
+        "sourceHash": "dcded369f4a98029c0ec934bb3cc53aba3a225111656b2fb4b56a8bc63946fc6",
+        "text": "Knowledge makes consent cheap. Reputation decides who says yes. › What a person is made of Spec\nEvery number about a person reads as a word, so the dossier never shows a bare score:\nBravery: informant · helper · accomplice · fighter. Resentment: compliant · resentful · informer.\nFear: calm · uneasy · afraid · terrified. Loyalty (to the cell): none · obliged · trusting · sworn. In the Talker test, loyalty means loyalty to the cell; loyalty to an employer or to the civic order is what the Loyal temperament is.\nAt the start everyone is at the bottom of every scale, except that an Idealist starts one step braver (helper) and a Fearful person starts uneasy, so they talk when questioned until someone helps them.\nOne clear need from a closed list: debt, cash, housing, papers, kin, care, protection, advancement or a secret. Each can be met by Help or Pressure. Once a need is met, a new one appears between missions, drawn from the person's own stream so it replays; a turned contact tells you it free in the debrief, and anyone else has to be listened to again.",
+        "version": "v0.22.0",
+        "score": 0.06161142976252085,
+        "signals": [
+          "semantic:1",
+          "keyword:2",
+          "semantic:3",
+          "keyword:3"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "distance": 0.19275342269221263,
+        "key": "a32fbb8970f4cdd4f23f1a19",
+        "kind": "gdd-agent",
+        "lineEnd": 79,
+        "lineStart": 79,
+        "section": "§04 PEOPLE › scales",
+        "source": "GDD/the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+        "sourceHash": "2681ea43c5701a8634639f8c5f31def20b42010bb3ad2c8ffce8270dc781affe",
+        "text": "§04 PEOPLE › scales\nscales [S]: every number reads as a word: bravery informant·helper·accomplice·fighter (0–3) · resentment compliant·resentful·informer (0–2) · fear calm·uneasy·afraid·terrified (0–3) · loyalty none·obliged·trusting·sworn (0–3). Loyalty in the talker test = loyalty to the cell, 0 at start; loyalty to an employer or the civic order is the Loyal temperament. Start: everyone 0, except Idealist bravery 1 (helper) and Fearful fear 1 (talks when questioned until helped).",
+        "version": "v0.22.0",
+        "score": 0.059936902520857746,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:3",
+          "keyword:3"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}

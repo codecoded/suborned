@@ -1,0 +1,1390 @@
+{
+ "schema": "suborned.civic-look/1",
+ "brief": "008 B3 (Splice): what the civic block takes from Vela's brief 008 B1/B2 output. Committed so generation never reads out/. Edit by re-importing from the sources named here, never by hand.",
+ "sources": {
+  "out/decokit-008/catalogue.proposal.json": "3f6c174d8f0ab4955ee0589573658909a49f6d55ee14d7d96386f4b52e6877bb",
+  "out/decokit-008/paving-bands.json": "3e92f39cc96ea19019be86fc02f98dbc69cd3f6da5156e3b0aa1e121c4c68a94",
+  "out/decokit-008/civic-colour-roles.json": "e78acb22272edfd74ca51d6a130cefcc2d6eb2913b935dcad62a4e84a0b1b96d",
+  "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
+  "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6",
+  "out/decokit-008/civic-overrides.json": "7f906f363782813ac1723a536af0317593efc1d86b97e9ff6f556f0034bb477f",
+  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1"
+ },
+ "pieces": [
+  "BollardSphere",
+  "Parasol_Stripe",
+  "CafeSet_Tulip_Play",
+  "PlazaSphereLamp_Play",
+  "Cypress_Play",
+  "PlanterRun_2_A",
+  "PlanterRun_2_B",
+  "PlanterRun_2_C",
+  "PlanterRun_4_A",
+  "PlanterRun_4_B",
+  "PlanterRun_4_C",
+  "PlanterRun_Corner_A",
+  "PlanterRun_Corner_B",
+  "PlanterRun_Corner_C",
+  "PlanterRun_End_A",
+  "PlanterRun_End_B",
+  "PlanterRun_End_C",
+  "BoardingPavilion_Square_v2",
+  "CafeBay",
+  "RecordsEntrance",
+  "RecordsEntrance_Official",
+  "InlayBand_06_2",
+  "InlayBand_12_2",
+  "InlayArc_R2_W06",
+  "InlayArc_R4_W06",
+  "InlayArc_R9_W12",
+  "PottedTopiary_Play",
+  "CafeTerrace",
+  "BedTuft_A",
+  "BedTuft_B",
+  "BedTuft_C"
+ ],
+ "swaps": {
+  "CafeSet_Tulip": "CafeSet_Tulip_Play",
+  "BoardingPavilion_Square": "BoardingPavilion_Square_v2"
+ },
+ "grounded": [
+  "BoardingPavilion_Square_v2"
+ ],
+ "scales": {
+  "PavilionPier_Square": 1.2
+ },
+ "place": {
+  "CafeBay": "civic/cafe/ground",
+  "RecordsEntrance": "civic/office-public-entrance",
+  "RecordsEntrance_Official": "civic/office-official-entrance",
+  "CafeTerrace": "civic/cafe/terrace"
+ },
+ "ground": {
+  "CafeBay": {
+   "building": "cafe",
+   "top": 4.7
+  }
+ },
+ "overhead": [
+  "Parasol_Stripe"
+ ],
+ "fade": [
+  "Parasol_Stripe",
+  "Cypress_Play",
+  "CafeBay",
+  "RecordsEntrance",
+  "RecordsEntrance_Official",
+  "BoardingPavilion_Square_v2",
+  "PavilionPier_Square"
+ ],
+ "companions": {
+  "CafeBay": [
+   "CafeTerrace"
+  ]
+ },
+ "frame": [
+  "CafeTerrace"
+ ],
+ "budget": {
+  "lod0Tris": 110000
+ },
+ "slab": {
+  "material": "DK_Pave_Civic",
+  "tile_m": 4,
+  "surfaces": [
+   "square",
+   "civic"
+  ],
+  "note": "plot surfaces of the fountain square, the café terrace and the office apron; world-space UVs"
+ },
+ "materials": {
+  "civic/atom-fountain": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam",
+   "DK_Lamp": "DK_Lamp_Deco",
+   "DK_Water": "DK_Pool_Civic"
+  },
+  "civic/cafe-palm-0": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-1": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-2": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-3": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-4": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/cafe-palm-5": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+   "DK_Enamel_Coral": "DK_Enamel_Ivory"
+  },
+  "civic/civic-control-cabinet": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/civic-service-cabinet-0": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/civic-service-cabinet-1": {
+   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
+  },
+  "civic/foreground-civic-robot": {
+   "DK_Signal_Amber": "DK_Glow_Seafoam",
+   "DK_Face_Amber": "DK_Face_Teal",
+   "DK_Enamel_Coral": "DK_Enamel_Coral17"
+  },
+  "civic/fountain-garden-north-east": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_CoralSoft",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-north-west": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_Flamingo",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-south-east": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_Flamingo",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/fountain-garden-south-west": {
+   "DK_Faience_Teal": "DK_Enamel_Seafoam",
+   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
+   "DK_Flower_Coral": "DK_Flower_CoralSoft",
+   "DK_Accent_Gold": "DK_Brass_Civic"
+  },
+  "civic/square-pavilion-support-0": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
+  },
+  "civic/square-pavilion-support-1": {
+   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
+  }
+ },
+ "beds": {
+  "kerb": {
+   "surface": "bed-kerb",
+   "material": "DK_Limestone"
+  },
+  "hedge": {
+   "surface": "bed-hedge",
+   "material": "DK_Leaf_CivicDark",
+   "inset": 0.22,
+   "rise": 0.22
+  },
+  "tufts": {
+   "pieces": [
+    "BedTuft_A",
+    "BedTuft_B",
+    "BedTuft_C"
+   ],
+   "drop": 0.04,
+   "rows": [
+    {
+     "inset": 0.5,
+     "step": 0.55
+    },
+    {
+     "inset": 1.05,
+     "step": 0.62,
+     "minFromRing": 0.9
+    }
+   ]
+  },
+  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG"
+ },
+ "bands": {
+  "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
+  "pieces": [
+   {
+    "id": "spine-north.0",
+    "band": "spine-north",
+    "piece": "InlayBand_12_2",
+    "at": [
+     -9.2,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "role": "café door to the fountain"
+   },
+   {
+    "id": "spine-north.1",
+    "band": "spine-north",
+    "piece": "InlayBand_12_2",
+    "at": [
+     -7.2,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "role": "café door to the fountain"
+   },
+   {
+    "id": "spine-north.2",
+    "band": "spine-north",
+    "piece": "InlayBand_12_2",
+    "at": [
+     -5.2,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "role": "café door to the fountain"
+   },
+   {
+    "id": "spine-north.3",
+    "band": "spine-north",
+    "piece": "InlayBand_12_2",
+    "at": [
+     -3.45,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "scaleX": 0.75,
+    "role": "café door to the fountain"
+   },
+   {
+    "id": "spine-inner.0",
+    "band": "spine-inner",
+    "piece": "InlayBand_06_2",
+    "at": [
+     -0.5,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "role": "narrowing toward the pool"
+   },
+   {
+    "id": "spine-inner.1",
+    "band": "spine-inner",
+    "piece": "InlayBand_06_2",
+    "at": [
+     1.2,
+     -29.5
+    ],
+    "yawDeg": 0,
+    "scaleX": 0.7,
+    "role": "narrowing toward the pool"
+   },
+   {
+    "id": "ring-inner.0",
+    "band": "ring-inner",
+    "piece": "InlayArc_R4_W06",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 0,
+    "role": "between the coping (3.6) and the planters (5.36): 0.4 m of slab inside, 0.76 m outside"
+   },
+   {
+    "id": "ring-inner.1",
+    "band": "ring-inner",
+    "piece": "InlayArc_R4_W06",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 90,
+    "role": "between the coping (3.6) and the planters (5.36): 0.4 m of slab inside, 0.76 m outside"
+   },
+   {
+    "id": "ring-inner.2",
+    "band": "ring-inner",
+    "piece": "InlayArc_R4_W06",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 180,
+    "role": "between the coping (3.6) and the planters (5.36): 0.4 m of slab inside, 0.76 m outside"
+   },
+   {
+    "id": "ring-inner.3",
+    "band": "ring-inner",
+    "piece": "InlayArc_R4_W06",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 270,
+    "role": "between the coping (3.6) and the planters (5.36): 0.4 m of slab inside, 0.76 m outside"
+   },
+   {
+    "id": "ring-outer.0",
+    "band": "ring-outer",
+    "piece": "InlayArc_R9_W12",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 0,
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+   },
+   {
+    "id": "ring-outer.1",
+    "band": "ring-outer",
+    "piece": "InlayArc_R9_W12",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 90,
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+   },
+   {
+    "id": "ring-outer.2",
+    "band": "ring-outer",
+    "piece": "InlayArc_R9_W12",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 180,
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+   },
+   {
+    "id": "ring-outer.3",
+    "band": "ring-outer",
+    "piece": "InlayArc_R9_W12",
+    "at": [
+     6.5,
+     -30
+    ],
+    "yawDeg": 270,
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+   },
+   {
+    "id": "spoke-west.0",
+    "band": "spoke-west",
+    "piece": "InlayBand_12_2",
+    "at": [
+     6.5,
+     -40.2
+    ],
+    "yawDeg": -90,
+    "role": "fountain ring to the square shelter"
+   },
+   {
+    "id": "spoke-west.1",
+    "band": "spoke-west",
+    "piece": "InlayBand_12_2",
+    "at": [
+     6.5,
+     -42.2
+    ],
+    "yawDeg": -90,
+    "role": "fountain ring to the square shelter"
+   },
+   {
+    "id": "forecourt-bar.0",
+    "band": "forecourt-bar",
+    "piece": "InlayBand_12_2",
+    "at": [
+     47.9,
+     -33
+    ],
+    "yawDeg": 90,
+    "role": "apron line before the entrance stairs, on the door axis"
+   },
+   {
+    "id": "forecourt-bar.1",
+    "band": "forecourt-bar",
+    "piece": "InlayBand_12_2",
+    "at": [
+     47.9,
+     -31
+    ],
+    "yawDeg": 90,
+    "role": "apron line before the entrance stairs, on the door axis"
+   },
+   {
+    "id": "forecourt-bar.2",
+    "band": "forecourt-bar",
+    "piece": "InlayBand_12_2",
+    "at": [
+     47.9,
+     -29
+    ],
+    "yawDeg": 90,
+    "role": "apron line before the entrance stairs, on the door axis"
+   },
+   {
+    "id": "forecourt-bar.3",
+    "band": "forecourt-bar",
+    "piece": "InlayBand_12_2",
+    "at": [
+     47.9,
+     -27
+    ],
+    "yawDeg": 90,
+    "role": "apron line before the entrance stairs, on the door axis"
+   },
+   {
+    "id": "lamp-ring-lamp-court-w.0",
+    "band": "lamp-ring-lamp-court-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -41
+    ],
+    "yawDeg": 0,
+    "role": "centred on lamp-court-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-w.1",
+    "band": "lamp-ring-lamp-court-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -41
+    ],
+    "yawDeg": 90,
+    "role": "centred on lamp-court-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-w.2",
+    "band": "lamp-ring-lamp-court-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -41
+    ],
+    "yawDeg": 180,
+    "role": "centred on lamp-court-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-w.3",
+    "band": "lamp-ring-lamp-court-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -41
+    ],
+    "yawDeg": 270,
+    "role": "centred on lamp-court-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-e.0",
+    "band": "lamp-ring-lamp-court-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -19
+    ],
+    "yawDeg": 0,
+    "role": "centred on lamp-court-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-e.1",
+    "band": "lamp-ring-lamp-court-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -19
+    ],
+    "yawDeg": 90,
+    "role": "centred on lamp-court-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-e.2",
+    "band": "lamp-ring-lamp-court-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -19
+    ],
+    "yawDeg": 180,
+    "role": "centred on lamp-court-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-court-e.3",
+    "band": "lamp-ring-lamp-court-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     14.8,
+     -19
+    ],
+    "yawDeg": 270,
+    "role": "centred on lamp-court-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-w.0",
+    "band": "lamp-ring-lamp-cross-sq-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -35.2
+    ],
+    "yawDeg": 0,
+    "role": "centred on lamp-cross-sq-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-w.1",
+    "band": "lamp-ring-lamp-cross-sq-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -35.2
+    ],
+    "yawDeg": 90,
+    "role": "centred on lamp-cross-sq-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-w.2",
+    "band": "lamp-ring-lamp-cross-sq-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -35.2
+    ],
+    "yawDeg": 180,
+    "role": "centred on lamp-cross-sq-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-w.3",
+    "band": "lamp-ring-lamp-cross-sq-w",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -35.2
+    ],
+    "yawDeg": 270,
+    "role": "centred on lamp-cross-sq-w (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-e.0",
+    "band": "lamp-ring-lamp-cross-sq-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -24.8
+    ],
+    "yawDeg": 0,
+    "role": "centred on lamp-cross-sq-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-e.1",
+    "band": "lamp-ring-lamp-cross-sq-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -24.8
+    ],
+    "yawDeg": 90,
+    "role": "centred on lamp-cross-sq-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-e.2",
+    "band": "lamp-ring-lamp-cross-sq-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -24.8
+    ],
+    "yawDeg": 180,
+    "role": "centred on lamp-cross-sq-e (ring true in the dressing)"
+   },
+   {
+    "id": "lamp-ring-lamp-cross-sq-e.3",
+    "band": "lamp-ring-lamp-cross-sq-e",
+    "piece": "InlayArc_R2_W06",
+    "at": [
+     27.9,
+     -24.8
+    ],
+    "yawDeg": 270,
+    "role": "centred on lamp-cross-sq-e (ring true in the dressing)"
+   }
+  ]
+ },
+ "palette": {
+  "signals": {
+   "cones": "#E03A2F",
+   "guard": "#F0A020",
+   "rivals": "#8A4FD0"
+  },
+  "minDE": 20,
+  "materials": [
+   {
+    "material": "DK_Accent_Gold",
+    "unlit": "#99784D",
+    "used_by": [
+     "OceanLiner",
+     "PlanterArc"
+    ]
+   },
+   {
+    "material": "DK_Banner_Comet",
+    "unlit": "#5D9D90",
+    "used_by": [
+     "PlazaSphereLamp"
+    ]
+   },
+   {
+    "material": "DK_Banner_Comet_Seafoam",
+    "unlit": "#8DBEB1",
+    "used_by": [
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Bark_Fibre",
+    "unlit": "#5F4B38",
+    "used_by": [
+     "Cypress_Play"
+    ]
+   },
+   {
+    "material": "DK_Bloom_Coral",
+    "unlit": "#FC9C84",
+    "used_by": [
+     "PlanterRun_2_A",
+     "PlanterRun_4_A",
+     "PlanterRun_Corner_A",
+     "PlanterRun_End_A",
+     "CafeTerrace",
+     "BedTuft_A"
+    ]
+   },
+   {
+    "material": "DK_Bloom_Cream",
+    "unlit": "#F6EBCB",
+    "used_by": [
+     "PlanterRun_2_A",
+     "PlanterRun_2_C",
+     "PlanterRun_4_A",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_A",
+     "PlanterRun_End_A",
+     "PlanterRun_End_C",
+     "CafeTerrace",
+     "BedTuft_A",
+     "BedTuft_C"
+    ]
+   },
+   {
+    "material": "DK_Bloom_Flamingo",
+    "unlit": "#E8609A",
+    "used_by": [
+     "PlanterRun_2_B",
+     "PlanterRun_4_B",
+     "PlanterRun_Corner_B",
+     "PlanterRun_End_B",
+     "CafeTerrace",
+     "BedTuft_B"
+    ]
+   },
+   {
+    "material": "DK_Bloom_Peach",
+    "unlit": "#FCC4AC",
+    "used_by": [
+     "PlanterRun_2_B",
+     "PlanterRun_2_C",
+     "PlanterRun_4_B",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_B",
+     "PlanterRun_End_B",
+     "PlanterRun_End_C",
+     "CafeTerrace",
+     "BedTuft_B",
+     "BedTuft_C"
+    ]
+   },
+   {
+    "material": "DK_Brass_Civic",
+    "unlit": "#99784D",
+    "used_by": [
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Chrome",
+    "unlit": "#EDEDED",
+    "used_by": [
+     "BollardSphere",
+     "Parasol_Stripe",
+     "CafeSet_Tulip_Play",
+     "PlazaSphereLamp_Play",
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Cloth_CoralSoft",
+    "unlit": "#FC9C84",
+    "used_by": [
+     "PlazaSphereLamp_Play"
+    ]
+   },
+   {
+    "material": "DK_Cloth_Cream",
+    "unlit": "#EFE8D6",
+    "used_by": [
+     "Parasol_Stripe"
+    ]
+   },
+   {
+    "material": "DK_Cloth_Seafoam",
+    "unlit": "#72B5A7",
+    "used_by": [
+     "Parasol_Stripe",
+     "PlazaSphereLamp_Play",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Crown_Gold",
+    "unlit": "#E3D681",
+    "used_by": [
+     "DecoBay_10",
+     "LinerDock@liner-berth",
+     "ParabolicArch",
+     "Skyport_Tower",
+     "Skyport_Tower_Portal",
+     "SpaceHQ_Portal",
+     "StreamBay_6",
+     "StreamBay_9",
+     "StreamBay_9W",
+     "StreamCorner_9",
+     "StreamEnd_6",
+     "StreamEnd_9",
+     "StreamEnd_9W",
+     "Tower_Atom@crescent-tower",
+     "Tower_Lantern@lantern-beacon",
+     "Tower_Needle",
+     "Tower_Needle@avenue-needle",
+     "Tower_Saucer@harbour-hotel",
+     "Tower_Starburst",
+     "Tower_Starburst@avenue-starburst",
+     "Tower_Terrace",
+     "Tower_Terrace@crescent-terrace"
+    ]
+   },
+   {
+    "material": "DK_Crown_Gold17",
+    "unlit": "#C9C08E",
+    "used_by": [
+     "Crown_Atom",
+     "Crown_Finial",
+     "Crown_Starburst"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Charcoal",
+    "unlit": "#2B2F33",
+    "used_by": [
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Coral17",
+    "unlit": "#F5849E",
+    "used_by": [
+     "CafeSet_Tulip_Play"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Ivory",
+    "unlit": "#EFE8D6",
+    "used_by": [
+     "CafeSet_Tulip_Play",
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Mint",
+    "unlit": "#A8D3BE",
+    "used_by": [
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Seafoam",
+    "unlit": "#72B5A7",
+    "used_by": [
+     "BollardSphere",
+     "CafeSet_Tulip_Play",
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Teal",
+    "unlit": "#1F6C67",
+    "used_by": [
+     "CafeSet_Tulip_Play",
+     "PlazaSphereLamp_Play",
+     "CafeBay",
+     "RecordsEntrance"
+    ]
+   },
+   {
+    "material": "DK_Face_Teal",
+    "unlit": "#3FC9A0",
+    "used_by": [
+     "RobotButler"
+    ]
+   },
+   {
+    "material": "DK_Flower_CoralSoft",
+    "unlit": "#97704E",
+    "used_by": [
+     "PlanterArc"
+    ]
+   },
+   {
+    "material": "DK_Flower_Flamingo",
+    "unlit": "#976470",
+    "used_by": [
+     "PlanterArc"
+    ]
+   },
+   {
+    "material": "DK_GlassDark",
+    "unlit": "#35585A",
+    "used_by": [
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Glow_Seafoam",
+    "unlit": "#3FC9A0",
+    "used_by": [
+     "RobotButler"
+    ]
+   },
+   {
+    "material": "DK_Gold",
+    "unlit": "#99784D",
+    "used_by": [
+     "AdColumn",
+     "ArcadeBay_3",
+     "BalconyBay_3",
+     "BalconyBay_4",
+     "BalconyBay_8",
+     "BladeSign_Cafe",
+     "BladeSign_Cinema",
+     "BladeSign_Hotel",
+     "CircusMonument",
+     "DecoCorner_10",
+     "DecoEnd_10",
+     "NeonStar_Wall",
+     "PortholeBay_3",
+     "PortholeBay_4",
+     "PortholeBay_7",
+     "PottedPalm_Small",
+     "RobotButler",
+     "SkyPad_Roof",
+     "StreamBay_2",
+     "StreamBay_3",
+     "StreamBay_3W",
+     "StreamBay_4",
+     "StreamCorner_2",
+     "StreamCorner_3",
+     "StreamCorner_4",
+     "StreamCorner_6",
+     "StreamEnd_2",
+     "StreamEnd_3",
+     "StreamEnd_3W",
+     "StreamEnd_4",
+     "TicketMachine"
+    ]
+   },
+   {
+    "material": "DK_Gold17",
+    "unlit": "#AD866F",
+    "used_by": [
+     "AtomFountain",
+     "ParadeGate_Block",
+     "SkyRailStation_Twin"
+    ]
+   },
+   {
+    "material": "DK_Inlay_Seafoam",
+    "unlit": "#72B5A7",
+    "used_by": [
+     "InlayBand_06_2",
+     "InlayBand_12_2",
+     "InlayArc_R2_W06",
+     "InlayArc_R4_W06",
+     "InlayArc_R9_W12"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Deco",
+    "unlit": "#FFF1C4",
+    "used_by": [
+     "PlazaSphereLamp_Play",
+     "BoardingPavilion_Square_v2",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Leaf_Civic",
+    "unlit": "#6A9B5C",
+    "used_by": [
+     "PlanterRun_2_A",
+     "PlanterRun_2_B",
+     "PlanterRun_2_C",
+     "PlanterRun_4_A",
+     "PlanterRun_4_B",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_A",
+     "PlanterRun_Corner_B",
+     "PlanterRun_Corner_C",
+     "PlanterRun_End_A",
+     "PlanterRun_End_B",
+     "PlanterRun_End_C",
+     "PottedTopiary_Play",
+     "CafeTerrace",
+     "BedTuft_A"
+    ]
+   },
+   {
+    "material": "DK_Leaf_CivicDark",
+    "unlit": "#46794C",
+    "used_by": [
+     "PlanterRun_2_A",
+     "PlanterRun_2_B",
+     "PlanterRun_2_C",
+     "PlanterRun_4_A",
+     "PlanterRun_4_B",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_A",
+     "PlanterRun_Corner_B",
+     "PlanterRun_Corner_C",
+     "PlanterRun_End_A",
+     "PlanterRun_End_B",
+     "PlanterRun_End_C",
+     "PottedTopiary_Play",
+     "CafeTerrace",
+     "BedTuft_B",
+     "BedTuft_C"
+    ]
+   },
+   {
+    "material": "DK_Leaf_CoreConifer",
+    "unlit": "#22382A",
+    "used_by": [
+     "Cypress_Play"
+    ]
+   },
+   {
+    "material": "DK_Leaf_Cypress",
+    "unlit": "#38573B",
+    "used_by": [
+     "Cypress_Play"
+    ]
+   },
+   {
+    "material": "DK_Leaf_CypressOlive",
+    "unlit": "#335121",
+    "used_by": [
+     "Cypress_Play"
+    ]
+   },
+   {
+    "material": "DK_Limestone",
+    "unlit": "#E7DECA",
+    "used_by": [
+     "CafeSet_Tulip_Play",
+     "PlanterRun_2_A",
+     "PlanterRun_2_B",
+     "PlanterRun_2_C",
+     "PlanterRun_4_A",
+     "PlanterRun_4_B",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_A",
+     "PlanterRun_Corner_B",
+     "PlanterRun_Corner_C",
+     "PlanterRun_End_A",
+     "PlanterRun_End_B",
+     "PlanterRun_End_C",
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official",
+     "PottedTopiary_Play",
+     "CafeTerrace"
+    ]
+   },
+   {
+    "material": "DK_Pave_Civic",
+    "unlit": "#E4DACA",
+    "used_by": [
+     "plot surfaces (paving)"
+    ]
+   },
+   {
+    "material": "DK_Pool_Civic",
+    "unlit": "#3A9AA6",
+    "used_by": [
+     "civic/atom-fountain (water slot, mapped from DK_Water)"
+    ]
+   },
+   {
+    "material": "DK_Steel",
+    "unlit": "#A9ABAE",
+    "used_by": [
+     "RecordsEntrance"
+    ]
+   }
+  ]
+ },
+ "roles": {
+  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity).",
+  "roles": {
+   "stone": {
+    "materials": [
+     "DK_Limestone",
+     "DK_Enamel_Ivory",
+     "DK_Pave_Civic (slabs)"
+    ],
+    "hex": [
+     "#E7DECA",
+     "#EFE8D6",
+     "#E4DACA mean"
+    ],
+    "facade_swatch": {
+     "civic_w": "#EEE9DA"
+    },
+    "role": "walls, piers, planters, kerbs, steps, paving, soffits, the facade fields of the café and the Office",
+    "painting": "records-office and inez-cutaway: ivory stone fields (shade reads tan in the paintings too: #AE9881 on gp-entrance's door pier); gp-entrance kerb face #E3CEB1 in sun",
+    "use": "walls, piers, planters, steps, paving, soffits"
+   },
+   "band": {
+    "materials": [
+     "DK_Enamel_Seafoam",
+     "DK_Enamel_Mint"
+    ],
+    "hex": [
+     "#72B5A7",
+     "#A8D3BE"
+    ],
+    "facade_swatch": {
+     "e_seafoam": "#72B5A7",
+     "e_seafoam_pale": "#9BCFC2"
+    },
+    "role": "canopy and marquee fascias, window surround, pier and pilaster caps, bands and fins on the facades, plinth bands, banner cloth, paving inlay (DK_Inlay_Seafoam, same hex)",
+    "painting": "records-office: the seafoam bands and fins of the tower; inez-cutaway: the café canopy fascia and the wrap-round band; gp-entrance: marquee top #A4B3A1 and fascia #778D84 in sun and shade",
+    "use": "canopy and marquee fascias, bands, shelter fascia, bollard band, banners (cloth), paving inlay (DK_Inlay_Seafoam, same hex)"
+   },
+   "deep": {
+    "materials": [
+     "DK_Enamel_Teal"
+    ],
+    "hex": [
+     "#1F6C67"
+    ],
+    "rule": "an accent of 0.3 m or less: the café blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+    "painting": "the paintings use it only as thin edge lines and the sign blades",
+    "use": "sign body, cushions, lamp sleeve, window reveal"
+   },
+   "metal": {
+    "materials": [
+     "DK_Chrome",
+     "DK_Steel"
+    ],
+    "role": "posts, balls, rails, globe, handles, blades",
+    "painting": "all three paintings: chrome balls, rails and the globe",
+    "use": "posts, balls, rails, globe, handles, blades"
+   },
+   "hairline": {
+    "materials": [
+     "DK_Brass_Civic"
+    ],
+    "hex": [
+     "#99784D"
+    ],
+    "facade_swatch": {
+     "gold": "#99784D",
+     "paletteOverride.gold_trim": "#99784D"
+    },
+    "old": {
+     "material": "DK_Accent_Gold",
+     "hex": "#D0C848"
+    },
+    "rule": "only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin, fascia or band; at most 6% of any elevation's area. #99784D is dE2000 21.3 from the guard colour: a gold of this hue that is any lighter than L 52 falls inside the gate, so this dark brass is the gold",
+    "painting": "gp-entrance: the door posts, #99784D in the shade of the marquee (lit brass is lighter; the unlit palette gate reads this value)",
+    "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"
+   },
+   "banner": {
+    "materials": [
+     "DK_Banner_Comet_Seafoam",
+     "DK_Cloth_Seafoam",
+     "DK_Cloth_CoralSoft",
+     "DK_Cloth_FlamingoSoft",
+     "DK_Cloth_PeachSoft"
+    ],
+    "hex": [
+     "#72B5A7",
+     "#72B5A7",
+     "#FC9C84",
+     "#E8609A",
+     "#FCC4AC"
+    ],
+    "old": {
+     "material": "DK_Banner_Comet + DK_Fabric_Banner",
+     "hex": "#048A7C (texture field)"
+    },
+    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents are 21.7 or more",
+    "painting": "gp-entrance: the pier banners, ivory comet on a teal field (#406464 as painted; seafoam here because the shaded Unity faces multiply it by about 0.18 in linear light)"
+   },
+   "flowers": {
+    "materials": [
+     "DK_Bloom_Coral",
+     "DK_Bloom_Flamingo",
+     "DK_Bloom_Peach",
+     "DK_Bloom_Cream"
+    ],
+    "hex": [
+     "#FC9C84",
+     "#E8609A",
+     "#FCC4AC",
+     "#F6EBCB"
+    ],
+    "rule": "planting variants A coral+cream, B flamingo+peach, C cream+peach; neighbours differ; the beds use the same three (BedTuft_A/B/C)",
+    "painting": "gp-entrance and mission-block: coral, flamingo and peach flowers in the beds"
+   },
+   "leaf": {
+    "materials": [
+     "DK_Leaf_Civic",
+     "DK_Leaf_CivicDark"
+    ],
+    "hex": [
+     "#6A9B5C",
+     "#46794C"
+    ],
+    "role": "cushions, tufts, hedge fill of the beds",
+    "painting": "gp-entrance: clipped hedges and conifers"
+   },
+   "bed": {
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Leaf_Civic"
+    ],
+    "hex": [
+     "#E7DECA",
+     "#46794C",
+     "#6A9B5C"
+    ],
+    "rule": "recipe in civic-beds.json: a limestone kerb, a clipped hedge fill, BedTuft_A/B/C on top; replaces the plain `park` colour (#A6E29C) on these masses",
+    "painting": "gp-entrance: low cream kerb, clipped hedge, flowers"
+   },
+   "pool": {
+    "materials": [
+     "DK_Pool_Civic"
+    ],
+    "hex": [
+     "#3A9AA6"
+    ],
+    "rule": "opaque enamel water (smoothness 0.8, no alpha) so the sky cannot wash it white; Latch maps AtomFountain's DK_Water slot to it for civic/atom-fountain only",
+    "painting": "gameplay-plan: the pool is a saturated turquoise under the spray (lit median #4C6C7C with sky and palm reflections)",
+    "dE": {
+     "cones": 51.3,
+     "guard": 44.8,
+     "rivals": 33.4
+    }
+   },
+   "glass": {
+    "materials": [
+     "DK_GlassDark"
+    ],
+    "hex": [
+     "#35585A"
+    ],
+    "rule": "clear dark teal, no blue curtain wall (facade.json glass_clear)",
+    "painting": "records-office: dark glazing",
+    "use": "glass"
+   },
+   "lamp": {
+    "materials": [
+     "DK_Lamp_Deco"
+    ],
+    "hex": [
+     "#FFF1C4"
+    ],
+    "rule": "DK_Lamp #FFE2A6 is dE 19.3 from the guard colour: the civic pieces use Lamp_Deco (24.6)"
+   }
+  },
+  "parts": {
+   "CafeBay": {
+    "stone": "piers, coping",
+    "band": "canopy fascia, base course (seafoam, was deep teal)",
+    "deep": "blade-sign body",
+    "hairline": "mullions, transom, sill, head, door frames, fascia lines (brass)",
+    "glass": "film over a charcoal sheet",
+    "lamp": "soffit downlights"
+   },
+   "CafeTerrace": {
+    "stone": "trough (DK_Limestone)",
+    "leaf": "cushions and hedge band",
+    "flowers": "variants A, B"
+   },
+   "RecordsEntrance": {
+    "stone": "piers, steps, cheeks, globe plinth",
+    "band": "marquee fascia and top, window surround, pier cap (seafoam), pier band and marquee rim (mint), banner cloth",
+    "deep": "an 8 cm reveal round the window",
+    "hairline": "door frames, window grid, marquee lines, banner rods (brass)",
+    "metal": "globe, stand, rails, blades, finials",
+    "lamp": "marquee lanterns"
+   },
+   "RecordsEntrance_Official": {
+    "stone": "pilasters, canopy soffit",
+    "band": "canopy fascia and top, pilaster cap, banner cloth",
+    "hairline": "door frames, canopy lines, banner rods (brass)",
+    "lamp": "canopy lanterns"
+   },
+   "BoardingPavilion_Square_v2": {
+    "stone": "roof (Enamel_Ivory)",
+    "band": "fascia",
+    "hairline": "fascia bead (brass)",
+    "metal": "posts",
+    "lamp": "underside strip"
+   },
+   "PlazaSphereLamp_Play": {
+    "deep": "sleeve",
+    "metal": "plinth, pole, sphere, arms",
+    "banner": "seafoam pennant + contract-coral pennant"
+   },
+   "Parasol_Stripe": {
+    "band": "alternate panels",
+    "stone": "alternate panels (DK_Cloth_Cream #EFE8D6)",
+    "metal": "pole, ribs, finial"
+   },
+   "BollardSphere": {
+    "metal": "post, sphere",
+    "band": "band"
+   },
+   "PlanterRun_*": {
+    "stone": "trough (DK_Limestone)",
+    "leaf": "cushions and hedge band",
+    "flowers": "by variant"
+   },
+   "BedTuft_*": {
+    "leaf": "hedge cushion",
+    "flowers": "by variant"
+   },
+   "Inlay*": {
+    "band": "DK_Inlay_Seafoam (glazed tile, #72B5A7), 4 mm proud"
+   },
+   "paving": {
+    "stone": "DK_Pave_Civic slabs on the plot surfaces of the square, the café terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"
+   }
+  },
+  "pool_water": {
+   "material": "DK_Pool_Civic",
+   "surface": "#3A9AA6",
+   "alpha": 1,
+   "smoothness": 0.8,
+   "kind": "opaque enamel",
+   "coping": "DK_Limestone with DK_Enamel_Seafoam lip",
+   "dE": {
+    "cones": 51.3,
+    "guard": 44.8,
+    "rivals": 33.4
+   },
+   "basis": "infer: harbour.water #3d8d93 (lagoon) pushed toward accent_turquoise #1cb9c6; the 26 Sep paintings' pool is a saturated turquoise, but its lit median reads #4C6C7C with sky and palm reflections, which is not a palette value",
+   "apply": "AtomFountain's water is one flat disc (R 3.0, z 0.34) in DK_Water, a glass of alpha 0.3 over the pale basin, which the sky turns white. Map that material slot to the kit material DK_Pool_Civic (out/decokit-008/Materials/DK_Pool_Civic.mat) on civic/atom-fountain only; the fountain's own files are unchanged (DK_Water stays for the other three pieces that use it). Not a facade key."
+  },
+  "facade_patch": {
+   "file": "unity/Assets/Suborned/Editor/World/facade.json (Latch applies; not touched here). Replaces the 14 Oct patch.",
+   "why": "First Unity build: the civic masses took the `records` area (ivory 7 / cream 3 families, a seafoam / deep teal / apricot enamel pair) and the ivory family's plinth swatch ivory_p = #D0C848. That gave salmon fins (apricot A), deep-teal bands and fins (deep teal), thick yellow-green base bands (ivory_p) and tan walls (cream_w). The civic masses now get their own area.",
+   "swatches_add": {
+    "civic_w": "#EEE9DA",
+    "e_seafoam_pale": "#9BCFC2"
+   },
+   "swatches_change": {
+    "ivory_p": {
+     "now": "#d0c848",
+     "to": "#72b5a7"
+    },
+    "gold": {
+     "now": "#d0c848",
+     "to": "#99784d"
+    }
+   },
+   "families_add": {
+    "civic": [
+     "civic_w",
+     "e_seafoam",
+     "roof_e"
+    ]
+   },
+   "areas_add": {
+    "civic": {
+     "families": {
+      "civic": 1
+     },
+     "enamel": [
+      "e_seafoam",
+      "e_seafoam_pale"
+     ]
+    }
+   },
+   "areas.records.enamel": {
+    "now": [
+     "e_seafoam",
+     "e_deepteal",
+     "e_seafoam",
+     "e_apricot"
+    ],
+    "to": [
+     "e_seafoam",
+     "e_seafoam_pale"
+    ],
+    "why": "the Records district around the block: no deep-teal fins or bands, no apricot (coral, flamingo and peach are for banners and flowers)"
+   },
+   "paletteOverride.gold_trim": {
+    "now": "#d0c848",
+    "to": "#99784d",
+    "district_wide": "75 sign boards use the gold_trim palette key"
+   },
+   "optional_district_wide": {
+    "e_sun": {
+     "now": "#d0c848",
+     "to": "#f4e27a",
+     "why": "e_sun is the sunshine enamel, not gold; the same hex as the old gold gave gold-looking roof spheres and boxes (roof trim takes the host's enamel pair, `roofItems.trim`: @A / @B) and yellow-green fins; #F4E27A is dE 21.1 from the guard"
+    },
+    "sand_p": {
+     "now": "#d0c848",
+     "to": "#f4e27a"
+    },
+    "t_hotel": {
+     "now": "#d0c848",
+     "to": "#f4e27a"
+    }
+   },
+   "gate": "every swatch above is at least dE2000 20 from cones #E03A2F, guard #F0A020 and rivals #8A4FD0 (facade_check in out/decokit-008/facade-patch.check.txt)"
+  }
+ }
+}

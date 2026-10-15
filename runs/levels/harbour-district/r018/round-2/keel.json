@@ -1,0 +1,48 @@
+{
+  "verdict": "fail",
+  "summary": "The checker report is clean (D-0 to D-12 ok), and last round's three faults are fixed: turned-how, refused and not-yet now use \"Approach: {approach}\" in their first line, the word line uses \"{tie} tie\", and the loyal read says \"Reports any approach.\" Four faults remain. One debrief line still breaks for ask and pay. One give-up line misreads for a face. The idealist read misstates the Hero rule. The usher's job is odd.",
+  "faults": [
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, debrief turned-how line 2: \"{who} said yes. It took {approach} for {price}.\" fills as \"It took ask for $0.\" and \"It took pay for $70,000.\" This is the same verb-in-slot problem as last round, now only in the second variant. \"It took help\" and \"It took pressure\" read, but ask and pay do not.",
+      "fix": "Reword so every verb reads, e.g. \"{who} said yes to the {approach} approach, for {price}.\" or \"{who} said yes. Approach: {approach}, at {price}.\"",
+      "chunks": [
+        "7da11a383ddcab7cc682c542"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, debrief give-up line 2: \"{who} told investigators {fact}.\" fills as \"told investigators the Fixer's face\". One cannot tell someone a face. The facts given are fixer-face, cell-car and place-time, so the line misreads for the most common fact.",
+      "fix": "Use a verb that takes all three facts, as line 1 does: \"{who} gave investigators {fact}. {left} against {right}.\" or \"...described {fact}...\".",
+      "chunks": [
+        "7e715458cf0b800aa97a93b4"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Temperament fit, idealist read: \"Help, not pay. That is the only way in.\" The Temperament Spec says an Idealist under a Hero campaign \"Volunteers with no offer needed\", so Help is not the only way in. The Scout's read would mislead the player, as the old loyal read did.",
+      "fix": "Drop the absolute, e.g. \"Help, not pay. Money insults them.\" or \"Won't be bought. Help works.\"",
+      "chunks": [
+        "c66f00b9af229bba908cd3dc"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Position job, usher: \"seat the queue\" fills \"I seat the queue.\" No one seats a queue: an usher shows people to their seats or keeps the queue in order. The line reads oddly for every usher.",
+      "fix": "Use e.g. \"show people to their seats\" or \"keep the queue moving\".",
+      "chunks": [
+        "d781564276ab9e1934f2fa26"
+      ]
+    }
+  ],
+  "sources": [
+    "c66f00b9af229bba908cd3dc",
+    "7da11a383ddcab7cc682c542",
+    "7e715458cf0b800aa97a93b4",
+    "d781564276ab9e1934f2fa26"
+  ]
+}

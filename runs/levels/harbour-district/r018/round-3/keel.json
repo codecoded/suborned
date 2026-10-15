@@ -1,0 +1,21 @@
+{
+  "verdict": "fail",
+  "summary": "All four faults from last round are fixed: turned-how line 2 now works for every approach, give-up line 2 says \"gave investigators {fact}\", the idealist read no longer claims Help is the only way in, and the usher now shows people to their seats. The checker report is clean. One new fault: the loyal read \"Reports any approach.\" states as always true what the Temperament Spec says only of a Menace campaign. The needs, positions, other reads, debrief and summons fill grammatically and fit their keys.",
+  "faults": [
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Temperament fit, loyal read line 3: \"Reports any approach.\" The Temperament Spec says a Loyal person reports any approach only when the cell is a Menace. Under a Hero campaign the Loyal \"Can turn after repeated Help\". As a general statement the Scout's read misleads the player: this is the same flaw just fixed in the idealist read. Line 2 (\"Trust comes slowly.\") already gives the true read.",
+      "fix": "Drop the absolute, e.g. \"Won't be rushed. Help, and keep helping.\" or \"May report a stranger's offer.\"",
+      "chunks": [
+        "c66f00b9af229bba908cd3dc"
+      ]
+    }
+  ],
+  "sources": [
+    "c66f00b9af229bba908cd3dc",
+    "7e715458cf0b800aa97a93b4",
+    "d781564276ab9e1934f2fa26",
+    "4e9abf8a6ce1ff9723bd285e"
+  ]
+}

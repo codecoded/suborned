@@ -21,6 +21,7 @@
     "test": "bun test",
     "check": "bun run typecheck && bun test && bun run plan",
     "people": "bun tools/people/cli.ts",
+    "dialogue": "bun tools/dialogue/cli.ts",
     "cover": "bun tools/cover/cli.ts",
     "people:view": "bun tools/people-view/cli.ts",
     "people:graph": "bun tools/people-graph/cli.ts",

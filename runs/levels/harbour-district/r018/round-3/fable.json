@@ -1,0 +1,404 @@
+{
+  "voices": {
+    "schema": "suborned.voices/1",
+    "scope": "lexicon",
+    "groups": [],
+    "scenes": [],
+    "lexicon": {
+      "needs": [
+        {
+          "need": "advancement",
+          "noun": "advancement",
+          "own": "my promotion",
+          "met": "the promotion is through"
+        },
+        {
+          "need": "care",
+          "noun": "medical care",
+          "own": "my medical care",
+          "met": "the care is arranged"
+        },
+        {
+          "need": "cash",
+          "noun": "money",
+          "own": "my money",
+          "met": "the money trouble is gone"
+        },
+        {
+          "need": "debt",
+          "noun": "debt",
+          "own": "my debt",
+          "met": "the debt is gone"
+        },
+        {
+          "need": "housing",
+          "noun": "housing",
+          "own": "my housing",
+          "met": "the housing is secure"
+        },
+        {
+          "need": "kin",
+          "noun": "family",
+          "own": "my family",
+          "met": "the family is safe"
+        },
+        {
+          "need": "papers",
+          "noun": "papers",
+          "own": "my papers",
+          "met": "the papers are in order"
+        },
+        {
+          "need": "protection",
+          "noun": "safety",
+          "own": "my safety",
+          "met": "the danger has passed"
+        }
+      ],
+      "positions": [
+        {
+          "position": "keeper",
+          "job": "keep the shop",
+          "noun": "the keeper"
+        },
+        {
+          "position": "server",
+          "job": "pour the coffee",
+          "noun": "the server"
+        },
+        {
+          "position": "assistant",
+          "job": "serve the counter",
+          "noun": "the assistant"
+        },
+        {
+          "position": "attendant",
+          "job": "tend the kiosk",
+          "noun": "the attendant"
+        },
+        {
+          "position": "usher",
+          "job": "show people to their seats",
+          "noun": "the usher"
+        },
+        {
+          "position": "porter",
+          "job": "carry the bags",
+          "noun": "the porter"
+        },
+        {
+          "position": "operator",
+          "job": "work the switchboard",
+          "noun": "the operator"
+        },
+        {
+          "position": "door",
+          "job": "mind the door",
+          "noun": "the door guard"
+        },
+        {
+          "position": "entertainer",
+          "job": "play the room",
+          "noun": "the entertainer"
+        },
+        {
+          "position": "cook",
+          "job": "run the stove",
+          "noun": "the cook"
+        },
+        {
+          "position": "hand",
+          "job": "work the floor",
+          "noun": "the hand"
+        },
+        {
+          "position": "projectionist",
+          "job": "run the projector",
+          "noun": "the projectionist"
+        },
+        {
+          "position": "docker",
+          "job": "load the crates",
+          "noun": "the docker"
+        },
+        {
+          "position": "resident",
+          "job": "live on this street",
+          "noun": "the resident"
+        },
+        {
+          "position": "visitor",
+          "job": "am only passing through",
+          "noun": "the visitor"
+        },
+        {
+          "position": "clerk",
+          "job": "stamp the forms",
+          "noun": "the clerk"
+        },
+        {
+          "position": "guard",
+          "job": "hold the post",
+          "noun": "the guard"
+        },
+        {
+          "position": "patrol-officer",
+          "job": "walk the beat",
+          "noun": "the patrol officer"
+        },
+        {
+          "position": "watcher",
+          "job": "watch the cameras",
+          "noun": "the watcher"
+        },
+        {
+          "position": "investigator",
+          "job": "pull the logs",
+          "noun": "the investigator"
+        },
+        {
+          "position": "official-driver",
+          "job": "drive the official car",
+          "noun": "the driver"
+        },
+        {
+          "position": "councillor",
+          "job": "sit on the council",
+          "noun": "the councillor"
+        }
+      ],
+      "reads": [
+        {
+          "temperament": "idealist",
+          "lines": [
+            "Trouble with {need}. Proud. Won't take a bribe.",
+            "Help works. Money insults them.",
+            "Once {met}, they stand firm."
+          ]
+        },
+        {
+          "temperament": "mercenary",
+          "lines": [
+            "Trouble with {need}. Has a price.",
+            "Sells their time to whoever pays.",
+            "Counts the cost of everything."
+          ]
+        },
+        {
+          "temperament": "fearful",
+          "lines": [
+            "Trouble with {need}. Jumpy at every footstep.",
+            "Folds under pressure.",
+            "Calms down once {met}."
+          ]
+        },
+        {
+          "temperament": "loyal",
+          "lines": [
+            "Trouble with {need}. Loyal to the order of things.",
+            "Sticks to the rules. Trust comes slowly.",
+            "Reports any approach."
+          ]
+        }
+      ],
+      "debrief": [
+        {
+          "id": "turned-how",
+          "lines": [
+            "{who} turned. Approach: {approach}. Cost: {price}.",
+            "{who} said yes. Approach: {approach}, at {price}."
+          ]
+        },
+        {
+          "id": "not-yet",
+          "lines": [
+            "{who} is not there yet. Approach: {approach}. Needs {orders-left}.",
+            "{who} wants more. Approach tried: {approach}. Still due: {orders-left}."
+          ]
+        },
+        {
+          "id": "kept",
+          "lines": [
+            "{who} was helped again. Need: {need}. Loyalty: {loyalty}.",
+            "{who} stays with us. Need {need}, loyalty {loyalty}."
+          ]
+        },
+        {
+          "id": "refused",
+          "lines": [
+            "{who} refused. Approach: {approach}. Read as {temperament}; on record.",
+            "{who} said no. Approach tried: {approach}. Seen as {temperament}."
+          ]
+        },
+        {
+          "id": "give-up",
+          "lines": [
+            "{who} gave up {fact}: {left} outweighed {right}.",
+            "{who} gave investigators {fact}. {left} against {right}."
+          ]
+        },
+        {
+          "id": "lie",
+          "lines": [
+            "{who} told investigators {gives}. Rank {bravery}, helped {helped}.",
+            "{who} gave {gives}. Held at {bravery}, helped {helped}."
+          ]
+        },
+        {
+          "id": "ladder",
+          "lines": [
+            "{who}: {move}; {scale} went from {from} to {to}.",
+            "{who}'s {scale} moved from {from} to {to} ({move})."
+          ]
+        },
+        {
+          "id": "informer",
+          "lines": [
+            "{who} is now at {resentment} and will talk to security.",
+            "{who} has reached {resentment}. Expect word to travel."
+          ]
+        },
+        {
+          "id": "sold",
+          "lines": [
+            "{who} sold the cell out. Standing here: {standing}.",
+            "{who} gave us up to the highest bidder. We stand as {standing}."
+          ]
+        },
+        {
+          "id": "need-replaced",
+          "lines": [
+            "{who}'s {old} need is met. New need: {new}, {told}.",
+            "{who}'s {old} need is settled. Now it is {new}, {told}."
+          ]
+        },
+        {
+          "id": "word",
+          "lines": [
+            "Word of {fact} went from {who} to {to}, along a {tie} tie.",
+            "{who} passed {fact} on to {to} ({tie} tie)."
+          ]
+        },
+        {
+          "id": "tie-lapsed",
+          "lines": [
+            "{who} and {with} lost their {kind} tie: {why}.",
+            "The {kind} tie between {who} and {with} lapsed: {why}."
+          ]
+        },
+        {
+          "id": "introduced",
+          "lines": [
+            "{who} brought in {friend} along a {tie} tie.",
+            "{friend} came through {who}, by a {tie} tie."
+          ]
+        }
+      ],
+      "summons": [
+        {
+          "key": "summon-busy",
+          "caller": [
+            "{other} is tied up just now. Try again soon.",
+            "I can't reach {other} at the moment."
+          ],
+          "summoned": [
+            "I can't get away right now. Try me later.",
+            "Not now. I'm tied up."
+          ]
+        },
+        {
+          "key": "summon-came-once",
+          "caller": [
+            "{other} already came once. Twice would be noticed.",
+            "{other} was here today. Another visit looks odd."
+          ],
+          "summoned": [
+            "I came once already. Again, and people talk.",
+            "Once was enough. They'd start asking."
+          ]
+        },
+        {
+          "key": "summon-alert",
+          "caller": [
+            "The alarm is up. {other} can't come now.",
+            "Too many watchers about. Not while it's like this."
+          ],
+          "summoned": [
+            "Watchers everywhere. I'm staying put.",
+            "Not with the alarm up."
+          ]
+        },
+        {
+          "key": "summon-saw-violence",
+          "caller": [
+            "{other} saw what happened here. No visit.",
+            "The shooting shook {other}. A visit is out."
+          ],
+          "summoned": [
+            "I saw what happened. I'm not coming.",
+            "After that, I'm keeping my head down."
+          ]
+        },
+        {
+          "key": "summon-too-far",
+          "caller": [
+            "{other} is too far to come in time.",
+            "It's a long way for {other}. They'd be missed."
+          ],
+          "summoned": [
+            "I'd be gone too long. Someone would notice.",
+            "It's too far to get there in time."
+          ]
+        },
+        {
+          "key": "summon-off-street",
+          "caller": [
+            "{other} isn't on the street. No way to reach them.",
+            "{other} is indoors. A visit can't happen."
+          ],
+          "summoned": [
+            "I'm inside, out of sight. I can't slip out.",
+            "I'm off the street just now."
+          ]
+        },
+        {
+          "key": "summon-no-visit",
+          "caller": [
+            "There'll be no visit from {other} this time.",
+            "{other} won't be coming. Don't ask me why."
+          ],
+          "summoned": [
+            "I won't come. That's all there is to it.",
+            "No visit today. Don't ask again."
+          ]
+        },
+        {
+          "key": "recalled",
+          "caller": [
+            "The alarm's up. Go back, {other}, before you're seen.",
+            "{other}, leave now. They're watching the street."
+          ],
+          "summoned": [
+            "I heard. I'm going back now.",
+            "Understood. I'm leaving before anyone looks."
+          ]
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Fixed turned-how line 2 to 'Approach: {approach}, at {price}.' so ask and pay read.",
+    "give-up line 2 uses 'gave investigators {fact}', which fits face, car and place-time.",
+    "Idealist read no longer says Help is the only way in; Hero Idealists volunteer.",
+    "Usher job is now 'show people to their seats'.",
+    "Question for Motive: debrief 'word' {to} and 'ladder' {to} share a name; please confirm.",
+    "Summons use only {other}; {other_noun} is not in the summons slot list.",
+    "The 'door' noun is 'the door guard', as in the Handover."
+  ],
+  "sources": [
+    "d781564276ab9e1934f2fa26",
+    "b751d6ccbbc84f9d117eb45c",
+    "c66f00b9af229bba908cd3dc",
+    "7e715458cf0b800aa97a93b4"
+  ]
+}

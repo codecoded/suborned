@@ -1,0 +1,42 @@
+{
+  "verdict": "fail",
+  "summary": "Five of the six faults from last round are fixed: the advancement met clause is now present tense, need-replaced, tie-lapsed and lie now read right, and the loyal read no longer assumes a post. The checker report is clean. The sixth, the mercenary money echo, is still there. Two new slot-reading faults appear in the sample: the ladder debrief starts a sentence in lower case, and a summons line says \"I'm on duty\" for lovers who hold no post. The protection read is also unclear.",
+  "faults": [
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, reads: the mercenary template \"Trouble with {need}. Money talks.\" with cash's noun \"money\" gives \"Trouble with money. Money talks.\" for every mercenary who needs cash (p-cafe-08, p-garden-row-east-03, p-records-office-04, p-records-office-31). This is last round's echo, still there. With protection's noun the reads give \"Trouble with protection.\", which reads like a protection racket, not someone who needs protecting.",
+      "fix": "Lead with the noun alone, as the Handover does (\"Money. Sells their time.\"). Or change the mercenary second sentence, e.g. \"Has a price.\". Make protection read rightly after the lead-in, e.g. noun \"no protection\" or \"threats\".",
+      "chunks": [
+        "4e9abf8a6ce1ff9723bd285e",
+        "c66f00b9af229bba908cd3dc"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, debrief ladder: \"{who}: {move}. {scale} went from {from} to {to}.\" fills {scale} with a lower-case scale name. That gives \"Sunita Ferrer: bravery +1. resentment went from compliant to informer.\", a sentence that starts in lower case.",
+      "fix": "Keep {scale} away from the start of a sentence, e.g. \"{who}: {move}; {scale} went from {from} to {to}.\" or \"{who}'s {scale} went from {from} to {to} ({move}).\"",
+      "chunks": [
+        "b244071a6c0c49c5b980debe",
+        "a32fbb8970f4cdd4f23f1a19"
+      ]
+    },
+    {
+      "owner": "Fable",
+      "rule": "critic",
+      "fault": "Slot reading, summons: summon-busy summoned \"Not now. I'm on duty.\" is shared by every lover who is summoned, including residents and visitors who hold no post and have no duty. The lover tie's summons applies to anyone who holds an affair secret. The Handover's line belonged to a guard. This is the same post-assumption fixed in the loyal read last round.",
+      "fix": "Use wording that fits anyone, e.g. \"Not now. I'm tied up.\" or \"Not now. I can't get away.\"",
+      "chunks": [
+        "b751d6ccbbc84f9d117eb45c"
+      ]
+    }
+  ],
+  "sources": [
+    "4e9abf8a6ce1ff9723bd285e",
+    "c66f00b9af229bba908cd3dc",
+    "b244071a6c0c49c5b980debe",
+    "a32fbb8970f4cdd4f23f1a19",
+    "b751d6ccbbc84f9d117eb45c"
+  ]
+}
