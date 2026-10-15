@@ -198,6 +198,13 @@ export const Rulebook = z.strictObject({
     costs: z.strictObject({ hit: Ref, down: Ref, drawSeenSecurity: Ref, drawSeenPeople: Ref, loudHold: Ref }),
     rule: text,
   }),
+  // Fight AI (Pulse, briefs/011/pulse-fight-ai.md): what a hostile does; every number a ref.
+  ai: ground({
+    cover: z.strictObject({ snap: Ref, qFull: Ref, qPartial: Ref, modPartial: Ref, retreat: Ref, stepCloser: Ref, stepGap: Ref, leave: Ref }),
+    engageLapse: Ref, reacquire: Ref, stopReach: Ref, overflow: Ref,
+    seek: z.strictObject({ rival: Ref, police: Ref, response: Ref, ally: Ref, guard: Ref }),
+    rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, rule: text,
+  }),
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
   cancel: ground({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),

@@ -7,6 +7,7 @@
 // MC-3 every §07 fail is reached by a script that is played (a pending script reaches nothing yet, and is listed).
 // MC-4 no single contact is essential: without each contact a quiet route still wins. The routes that need the contact are named,
 //      and a contact that leaves fewer than 2 quiet routes is named as the one those routes depend on (brief 011 B).
+// MC-6 T2 (§13): the fastest informed quiet win is not slower than the fastest loud win; the margin is reported.
 // MC-5 the fully informed player (each primary quiet route as scripted) secures Vale ≥ informedSpareS before that route's closing
 //      event (route A: inside before Vale exits at 5:50; route B: Vale taken before the 8:00 close). Each route's extraction time
 //      against the mission's close, and how late each of its steps can be before it stops winning, are reported beside it.
@@ -103,6 +104,15 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     id: 'MC-5', rule: `The fully informed player secures Vale ≥ ${spare} before each primary quiet route's closing event`, ok: informed.length >= 1 && informed.length === primaries.length && !short.length,
     value: informed.map(x => `route ${x.route} ${x.spareS >= 0 ? clock(x.spareS * 10) : 'never'} early`).join(', ') || 'no primary quiet route wins',
     detail: informed.map(x => `route ${x.route} (${x.script}): Vale secured at ${x.secured}, ${x.spareS >= 0 ? clock(x.spareS * 10) : '-'} before ${x.closes}${x.spareS < r.informedSpareS ? ' (UNDER the spare)' : ''}; at the getaway car ${x.extracted}, ${clock(x.closeSpareS * 10)} before the mission's ${r.closing.at} close; every planned step can slip ${x.slackS} s and still win`).join('; '),
+  });
+  // MC-6 (T2, §13; Motive's +30 s Enter at Alert 2): informed quiet play is not slower than the fastest loud win
+  const quietWins = quiet.filter(wins).map(s => ({ id: s.id, tick: plays[s.id]!.tick })).sort((a, b) => a.tick - b.tick);
+  const loudWins = live.filter(s => s.kind === 'loud' && plays[s.id]?.outcome === 'success').map(s => ({ id: s.id, tick: plays[s.id]!.tick })).sort((a, b) => a.tick - b.tick);
+  const fq = quietWins[0], fl = loudWins[0], margin = fq && fl ? fl.tick - fq.tick : undefined;
+  C.push({
+    id: 'MC-6', rule: 'The fastest informed quiet win is not slower than the fastest loud win (T2)', ok: margin !== undefined && margin >= 0,
+    value: fq && fl ? `${fq.id} ${clock(fq.tick)} vs ${fl.id} ${clock(fl.tick)}: ${margin! >= 0 ? `${(margin! / 10).toFixed(1)} s faster` : `${(-margin! / 10).toFixed(1)} s SLOWER`}` : 'no quiet or no loud win',
+    detail: [...quietWins.map(x => `${x.id} (quiet) ${clock(x.tick)}`), ...loudWins.map(x => `${x.id} (loud) ${clock(x.tick)}`)].join('; '),
   });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }

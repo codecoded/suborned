@@ -158,6 +158,29 @@ public class RulesTests
     }
 
     [Fact]
+    public void CoverMatchesPulsesVectors()
+    {
+        // briefs/011/pulse-fight-ai.md §8.1: a point at (0, 0) facing (0, 1000), arc 50° (cos 642)
+        var c = new CoverPoint { Id = "cv-001", At = new Pt(0, 0), Faces = new Pt(0, 1000), Cos = 642, Q = 700 };
+        Assert.True(CoverRules.Protects(c, new Pt(0, 1500), 0, 500));
+        Assert.True(CoverRules.Protects(c, new Pt(1000, 1500), 0, 500));
+        Assert.False(CoverRules.Protects(c, new Pt(1800, 1500), 0, 500));
+        Assert.False(CoverRules.Protects(c, new Pt(0, -1500), 0, 500));
+        Assert.False(CoverRules.Protects(c, new Pt(0, 499), 0, 500));
+        Assert.True(CoverRules.Protects(c, new Pt(0, 500), 0, 500));
+        var car = new CoverPoint { Id = "cv-002", At = new Pt(0, 0), Faces = new Pt(0, 1000), Cos = 642, Q = 700, From = 100, To = 200 };
+        Assert.Equal(new[] { false, true, true, false }, new[] { 99, 100, 199, 200 }.Select(t => CoverRules.Protects(car, new Pt(0, 1500), t, 500)).ToArray());
+        // §8.2: the modifier
+        int M(CoverPoint p, Pt body, Pt shooter) => CoverRules.Modifier(new[] { p }, body, shooter, 0, 70, 500, 600, 350, 500, 750);
+        var low = new CoverPoint { Id = "cv-003", At = new Pt(0, 0), Faces = new Pt(0, 1000), Cos = 642, Q = 400 };
+        Assert.Equal(500, M(c, new Pt(0, 0), new Pt(0, 2000)));
+        Assert.Equal(750, M(low, new Pt(0, 0), new Pt(0, 2000)));
+        Assert.Equal(1000, M(c, new Pt(0, 0), new Pt(0, -2000)));
+        Assert.Equal(1000, M(c, new Pt(120, 0), new Pt(0, 2000)));
+        Assert.Equal(1000, M(c, new Pt(0, 0), new Pt(0, 300)));
+    }
+
+    [Fact]
     public void AccuracyMatchesTheTypeScriptReference()
     {
         var r = New().R;

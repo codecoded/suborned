@@ -15,7 +15,9 @@
 // cast.ts) and `windows` (a route's timed window restated against the world, with the GDD's figure and the reason). Later still
 // (2026-10-15, brief 011 B; Suture O-6): `points` and `cameras`, the mission's own places the engine plays on (the Tech's cabinet,
 // the Listen spot, the rivals' and the response unit's ways in, the patrol's sweep, the pickup camera's blocking spot, the two
-// cameras), each with its reason; tools/sim/site.ts reads them into sim/data/handover.site.json.
+// cameras), each with its reason; tools/sim/site.ts reads them into sim/data/handover.site.json. Then (2026-10-15, engine 0.4.0):
+// the final fight's posts join `points` (ambush-*, police-*, guard-ally), `arms` carries §07's Arms 3, and `prep` restates §07's
+// route prep times against the rulebook (Watch 20 s).
 // A recorded run's pinned block carries its own /1 layer and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
@@ -109,6 +111,10 @@ export const Mission = z.strictObject({
   roles: z.array(role),
   /** Route windows restated against the world (/3, later). */
   windows: z.array(window).optional(),
+  /** The cell's issue of arms (GDD §07 "Arms 3"): read into the site. */
+  arms: z.strictObject({ sidearms: z.number().int().nonnegative(), src, note }).optional(),
+  /** §07's route prep times restated against the rulebook (the Scout's Watch and Listen): `from` names the rulebook values summed. */
+  prep: z.array(z.strictObject({ route: z.string().min(1), what: z.string().min(1), at, from: z.array(z.string().min(1)).min(1), gdd: z.string().min(1), src, note: z.string().min(1) })).optional(),
   /** The engine's places and cameras that are mission content (/3, later; Suture O-6). */
   points: z.array(sitePoint).optional(),
   cameras: z.array(camera).optional(),

@@ -1,0 +1,17 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "§07 fail 'Enforcer down' in the final fight, loud (Suture N10): the loud route to the entry, then the Enforcer carries Vale straight at the officers and the response unit while the cell stays holstered.",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {"op": "tech", "do": "move", "to": "cabinet", "run": true},
+  {"op": "enforcer", "do": "move", "to": [4850, -2300], "why": "beside the door, out of the guard's cone and both cameras", "run": true},
+  {"op": "tech", "do": "loop", "target": "entrance"},
+  {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute"},
+  {"op": "enforcer", "do": "fire", "target": "guard", "after": ["reroute", "enforcer"], "gap": 45, "label": "shot", "why": "once the patrol has gone: fire until the guard is down"},
+  {"op": "enforcer", "do": "move", "to": "d:Office entrance", "after": ["shot"], "gap": 4, "run": true},
+  {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter", "why": "Alert 2: the entry takes 68 s"},
+  {"op": "enforcer", "do": "move", "to": "police-1", "after": ["enter"], "why": "out with Vale, straight at the officers holding the café wall, alone: the cell does not draw"}
+ ]
+}

@@ -23,7 +23,8 @@ namespace Suborned.Sim
         static void Gun(H h, Gun g)
         {
             h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
-             .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit);
+             .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit)
+             .I(g.ShotByTick).S(g.St).I(g.Until).I(g.NoFoeSince).I(g.StepAt).I(g.UnprotSince).I(g.Class).I(g.LostTick).I(g.SightLostAt).S(g.Cover).S(g.LostTarget);
         }
 
         /// <summary>One person's state alone (what they are, know and remember), for "before and after" checks.</summary>
@@ -72,6 +73,8 @@ namespace Suborned.Sim
             h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).I(g.FightHits).I(g.FightShots).I(g.DownedByEnforcer).I(g.DownedByGuard).I(g.DownedByCell);
             foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); }
             foreach (var x in g.Captured) h.S(x);
+            foreach (var x in g.Hostiles) h.P(x.Home);
+            g.HashAi(h.I);
             if (g.People2 != null && g.Start.Crowd)
                 foreach (var w in g.Walkers)
                 {

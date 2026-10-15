@@ -2,6 +2,7 @@
 // script with identical checksums twice. Needs the .NET SDK (dotnet on PATH); without it the CLI tests are skipped, not failed.
 // Run: bun test tools/sim
 import { describe, expect, test } from 'bun:test';
+import { selectCover } from '../cover/select';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildSite, SITE_FILE, sourceOfSite } from './site';
@@ -40,6 +41,22 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
     expect(ra.replayIdentical).toBe(true);
     expect(rb.checkpoints).toEqual(ra.checkpoints);
     expect(ra.checks.every((c: { ok: boolean }) => c.ok)).toBe(true);
+  }, 180_000);
+
+  test('the engine takes the same cover as tools/cover/select.ts at every fight post (Pulse §8.3, on the site\'s own cover copy)', () => {
+    const site = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8'));
+    const at = (id: string): [number, number] => { const p = site.places[id]; const a = p.stand ?? p.at; return [a[0], a[1]]; };
+    const car = at(site.getaway.car), want: Record<string, { foe: string; advance: string }> = {};
+    for (const post of [...site.fight.ambush, ...site.fight.police, site.fight.guard] as string[]) {
+      const me = at(post);
+      want[post] = {
+        foe: selectCover(site.cover.points, { at: me, objective: car, foe: car }, new Set(), { seekCm: 800, missionS: 200 })?.id ?? '',
+        advance: selectCover(site.cover.points, { at: me, objective: car }, new Set(), { seekCm: 800, missionS: 200 })?.id ?? '',
+      };
+    }
+    const c = sim('cover-vectors');
+    expect(c.code, c.err).toBe(0);
+    expect(JSON.parse(c.out)).toEqual(want);
   }, 180_000);
 
   test('an order script plays to the outcome its scenario reached', () => {

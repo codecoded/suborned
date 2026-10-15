@@ -84,7 +84,7 @@ export function record(c: Check, L: Loaded, note: string): string {
   for (const [f, t] of Object.entries(L.texts)) writeFileSync(join(dir, 'routes', f), t);
   const run = {
     schema: 'suborned.mission.check/1', id, mission: c.mission, note, verdict: c.report.ok ? 'SHIPS' : 'HOLDS',
-    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash }, tool: c.tool, inputs: c.inputs, routes: c.scripts,
+    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash, inputs: c.engine.inputs }, tool: c.tool, inputs: c.inputs, routes: c.scripts,
     conditions: c.report.conditions, slack: c.slack, plays: c.plays,
   };
   // one play per line: the record stays readable and diffable without growing a line per field
@@ -110,7 +110,7 @@ export function scriptOf(L: Loaded, name: string): Script {
 export async function replay(dir: string, log: (m: string) => void = () => {}): Promise<{ ok: boolean; lines: string[] }> {
   const run = JSON.parse(readFileSync(join(dir, 'run.json'), 'utf8')), lines: string[] = [];
   const L = load(join(dir, 'routes'));
-  const e = run.engine.commit === 'tree' ? engineAt('tree') : engineAt(run.engine.commit);
+  const e = run.engine.commit === 'tree' ? engineAt('tree') : engineAt(run.engine.commit, run.engine.inputs ?? 'commit');
   for (const [f, h] of Object.entries(run.inputs as Record<string, string>)) {
     const tree = f.startsWith('tree:'), path = join(tree ? ROOT : e.dir, f.replace(/^tree:/, ''));
     const now = existsSync(path) ? sha(readFileSync(path)) : 'missing';

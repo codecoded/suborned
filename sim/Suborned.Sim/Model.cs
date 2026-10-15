@@ -47,6 +47,11 @@ namespace Suborned.Sim
         public string Target = ""; public int Acc, NextShot, LostAt = -1; // the target aimed at, its accumulator, the next shot, when the line broke
         public string ShotBy = "";                     // the last shooter who fired on this one (stance return answers them)
         public bool Fired, Engaged, Hit;               // has fired; in action (a new target costs aimNew, not react); hit once (its Trail paid)
+        public int ShotByTick = -1;                    // when ShotBy last fired on this one (Pulse §1.5: "whoever is shooting at me" for line-lapse)
+        // the fight AI's state (Pulse, briefs/011/pulse-fight-ai.md §2): one machine for every hostile body
+        public string St = "";                         // routine, alerted, advance, engage, hold, break, gone ("" for the cell and civilians)
+        public int Until, NoFoeSince = -1, StepAt = -100000, UnprotSince = -1, Class, LostTick = -1, SightLostAt = -1;
+        public string Cover = "", LostTarget = "";     // the cover point it holds; the target it last lost (its aim stays warm)
         public Gun(string id) { Id = id; }
     }
 

@@ -335,7 +335,7 @@ namespace Suborned.Sim
                 r.Is(g.PatrolChasing, "the patrol nearby breaks its sweep to pursue");
                 r.Wait(T(1));
                 var after = g.PatrolPose()!.Value.pos; var e = r.Op(Enf).Pos;
-                r.Is(G.D2(after, e) < G.D2(before, e), "the patrol moves toward the shooter in live time");
+                r.Is(G.D2(after, e) < G.D2(before, e) || g.PatrolTracking, "the patrol turns on the shooter: it closes in, or with him in reach it stops to engage (Pulse §3.6)");
                 r.Is(g.PatrolPose().HasValue && !g.PatrolDown, "the pursuing patrol keeps a visible cone");
             });
 
@@ -382,7 +382,9 @@ namespace Suborned.Sim
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, new Pt(1400, -3300))));
                 r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.Do(Fixer, "call", Inez);
-                while (!g.Over && !(g.GuardPose()!.Value.pos.X < 500 && G.Within(r.Op(Enf).Pos, g.GuardPose()!.Value.pos, 1400) && !g.GuardWatching(r.Op(Enf).Pos))) g.Step();
+                // wait for a shot from behind: in range, out of his cone, and a clear line (the atom fountain blocks sight since the cover's blockers, Pulse §5.4)
+                bool Shot() { var gp = g.GuardPose()!.Value.pos; return gp.X < 2500 && !G.Within(gp, r.At("d:Café door"), 1400) && G.Within(r.Op(Enf).Pos, gp, 1400) && !g.GuardWatching(r.Op(Enf).Pos) && g.S.Sight(r.Op(Enf).Pos, gp, g.R.Eye); }
+                while (!g.Over && g.GuardPose()!.Value.phase == "walking to café" && !Shot()) g.Step();
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Is(!g.InezWitnessedShooting && !g.PatrolChasing, "unwitnessed, and the patrol is away");
@@ -607,6 +609,8 @@ namespace Suborned.Sim
                 r.Eq(g.Result, Outcome.Success, "the loud route wins through the fight");
                 var d = Debrief.Of(g);
                 r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
+                r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
+                r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
                 r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
             });
 
@@ -626,6 +630,8 @@ namespace Suborned.Sim
                 r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
                 r.Is(g.DownedByGuard > 0, "the guard dropped at least one of them");
+                r.Is(g.FightWhy.Contains("rivals-break") && g.Hostiles.Exists(h => h.Gun.St == "break" || h.Gun.St == "gone"), "more than half the crew down, the rest break for their car (Pulse §3.1)");
+                r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("guard", StringComparison.Ordinal)), "the guard runs in to cover by his post (Pulse §3.4)");
                 var dd = Debrief.Of(g);
                 r.Is(dd.FightWhy.Contains("waitress-warns") && dd.FightWhy.Contains("guard-fights-them"), "the debrief says why: Inez's warning, the guard");
             });
@@ -649,6 +655,7 @@ namespace Suborned.Sim
                 r.Is(Array.TrueForAll(g.Ops, o => !o.Down), "nobody down");
                 r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "the prepared route wins");
+                r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("rival-", StringComparison.Ordinal)), "a rival steps to cover the data give (Pulse §2.3)");
             });
 
             Add("N12", "—", "People step their routines (§04, brief 010): at each tick everyone stands at the stop the people file gives, or walks between two stops, or is off the street.", r =>

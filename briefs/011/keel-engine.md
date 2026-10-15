@@ -214,3 +214,19 @@ Engine `suborned.sim/0.4.0`. Every value is in `contracts/rules/rulebook.json`, 
 - **Evidence:**
   - `dotnet test`: 212/212, on the committed site and on the working tree's site.
   - Old runs are unchanged with hashes stripped: 51 of 52 identical; N24 differs only in a check's printed hash.
+
+## Round 6 (2026-10-15): the fight AI and the cover (Pulse's briefs/011/pulse-fight-ai.md)
+- **Cover:** `tools/sim/site.ts` copies `contracts/world/civic-block.cover.json` into the site's `cover` (`from`, `sha256`, points, blockers). The site test keeps the copy fresh, so the engine still reads one site file. `Cover.cs` is `select.ts` in integers. The §8.1–2 vectors are xunit tests. §8.3 runs on the site's own cover: `suborned-sim cover-vectors` must equal `select.ts` (tools/sim/sim.test.ts), which holds whatever posts Waymark sets.
+- **Sight blockers (reported apart):** the cover file's 4 blockers (fountain, robot, piers) join the occluders. On all 61 scenarios, before and after with hashes stripped, only S19 changed: its shot line ran through the atom fountain. S19 is re-scripted to wait for a clear line.
+- **AI** (`GameAi.cs`, rulebook `ai` and Pulse's 20 values that the engine reads):
+  - One machine: routine, alerted, advance, engage, hold, break, gone. Targets come by class, with commitment, aimNew, and warm reacquire. Rivals step to cover and leave it when unprotected. Police hold their stand. Rivals break at more than half down, run for their car and are gone at 1 m; broken rivals no longer hold the car or count as combatants, and they cost no Trail.
+  - The response unit joins the loud fight at the nearest police stand, overflowing to the nearest free cover or a 1.2 m slot. The guard ally runs to cover by his post and shoots the rival nearest the Enforcer. An engaging guard stands down after 10 s. The patrol chases to the shot's origin, stops to engage, and resumes its sweep after 15 s.
+  - Shots resolve together at the end of the tick. Cover modifies a hit: 500 full, 750 partial, past point blank, standing still.
+- **Not yet:**
+  - the crowd's states (§4) and their 7 values;
+  - the response unit and the drawn rival crew firing while they walk (their routes are timed, not stopped);
+  - the guard's leash and his walk back to the door (he stands down where he is).
+- **Evidence:**
+  - `dotnet test` 213/213; `bun test tools/sim contracts/rules` 39/39; typecheck clean.
+  - The 61 scenarios against the post-blocker run: 47 identical with hashes stripped; the fights differ, as the AI intends.
+  - Perf in Release: S10 32k sim-s/s, N10 10k, N12 8.7k.

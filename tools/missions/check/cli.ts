@@ -1,5 +1,7 @@
-// usage: bun run missions:check [check] <mission> [--record "<note>"] [--engine HEAD|tree|<commit>]
+// usage: bun run missions:check [check] <mission> [--record "<note>"] [--engine HEAD|tree|<commit>] [--inputs commit|tree]
 //        bun run missions:check replay <mission> <cNNN>
+//        bun run missions:check compose <mission> [<script id>…] [--engine …] [--inputs …]
+// compose: rewrites each route script that has a plan (routes/plans/<id>.plan.json) from the plan, by playing the engine (compose.ts).
 // check: plays the mission's route scripts (contracts/missions/<mission>/routes) and their variations headless, prints the GDD §09
 // conditions, writes out/missions/<mission>/check.{json,html}; --record also writes runs/missions/<mission>/cNNN/. Exit 0 only if
 // the mission ships (every condition holds). replay: replays a recorded check; exit 0 only if every play lands on its recorded hash.
@@ -7,10 +9,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT, engineAt, hasDotnet } from './engine';
 import { check, html, load, record, replay, runsDir } from './run';
+import { compose, loadPlan, writeScript } from './compose';
 
 const args = process.argv.slice(2), flag = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args.splice(i, 2)[1] : undefined; };
-const note = flag('--record'), rev = flag('--engine') ?? 'HEAD';
-const cmd = args[0] === 'replay' || args[0] === 'check' ? args.shift()! : 'check';
+const note = flag('--record'), rev = flag('--engine') ?? 'HEAD', inputs = flag('--inputs') === 'tree' ? 'tree' : 'commit';
+const cmd = ['replay', 'check', 'compose'].includes(args[0] ?? '') ? args.shift()! : 'check';
 if (!hasDotnet()) { console.error('the mission checker needs the .NET SDK (dotnet on PATH; DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec on the Studio)'); process.exit(2); }
 const log = (m: string) => console.error(`· ${m}`);
 
@@ -23,8 +26,22 @@ if (cmd === 'replay') {
   process.exit(r.ok ? 0 : 1);
 }
 
+if (cmd === 'compose') {
+  const mission = args.shift() ?? 'handover', dir = join(ROOT, 'contracts/missions', mission, 'routes'), L = load(dir), e = engineAt(rev, inputs);
+  const ids = args.length ? args : L.manifest.scripts.filter(s => s.plan).map(s => s.id);
+  for (const id of ids) {
+    const s = L.manifest.scripts.find(x => x.id === id);
+    if (!s?.plan) { console.error(`${id}: no plan in routes.json`); process.exit(2); }
+    const plan = loadPlan(join(dir, 'plans', s.plan)), t0 = performance.now();
+    const { script } = await compose(plan, e, id, log);
+    writeScript(join(dir, s.file), plan.note, script);
+    console.log(`composed ${id}: ${script.orders.length} orders, last at tick ${script.orders.at(-1)!.tick} (${((performance.now() - t0) / 1000).toFixed(1)} s) → routes/${s.file}`);
+  }
+  process.exit(0);
+}
+
 const mission = args[0] ?? 'handover', L = load(join(ROOT, 'contracts/missions', mission, 'routes'));
-const t0 = performance.now(), c = await check(L, engineAt(rev), log);
+const t0 = performance.now(), c = await check(L, engineAt(rev, inputs), log);
 const out = join(ROOT, 'out/missions', mission);
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'check.json'), JSON.stringify({ ...c, engine: { ...c.engine, dir: undefined } }, null, 1) + '\n');
