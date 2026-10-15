@@ -28,7 +28,7 @@ describe('the Handover route manifest and scripts', () => {
     expect(by('quiet')).toEqual(['route-a', 'route-a-pressure', 'route-b', 'route-b-block']);
     expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in official car', 'rivals reach Vale', 'district seals', 'Enforcer down', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
     expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
-    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-enforcer-down']);
+    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale']);
     // the close: 8:30 (Sky 2026-10-15), mission.json's last timeline entry; route B closes on it
     expect(L.manifest.closing.at).toBe('8:30');
     expect(L.manifest.scripts.filter(s => s.closes).map(s => `${s.id} ${s.closes!.at} ${s.closes!.secured}`)).toEqual(['route-a 5:50 enter.in', 'route-b 8:30 take.done']);
@@ -65,7 +65,7 @@ describe('the §09 conditions, each with a failing example', () => {
   const good = (): Plays => {
     const p: Plays = {
       'route-a': win(3097, 3, { 'enter.in': 2329 }), 'route-a-pressure': win(3097, 6), 'route-b': win(4468, 2, { 'take.done': 4080 }), 'route-b-block': win(4468, 3),
-      loud: { ...win(3200, 6), shots: 2, fight: 'loud' }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
+      loud: { ...win(3200, 9), shots: 2, fight: 'loud' }, 'loud-fast': { ...win(3100, 9, { captured: 3100 }), shots: 2, fight: 'loud' }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
     };
     for (const s of L.manifest.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
     p['route-b'] = win(4698, 4, { 'take.done': 4080 }); // taken 6:48: 1:42 before the 8:30 close
@@ -82,7 +82,11 @@ describe('the §09 conditions, each with a failing example', () => {
     expect(ids(p)).toContain('MC-1');
     expect(good()['route-a']!.gunfire).toBeGreaterThan(0); // the good plays fire in the fight and still count as quiet
   });
-  test('MC-6: loud faster than every informed quiet win (T2)', () => { const p = good(); p.loud = { ...p.loud!, tick: 2000 }; expect(ids(p)).toEqual(['MC-6']); });
+  test('MC-6: loud faster than every informed quiet win (T2); a loud win that leaves someone captured is not raced', () => {
+    const p = good(); p.loud = { ...p.loud!, tick: 2000 }; expect(ids(p)).toEqual(['MC-6']);
+    const q = good(); q['loud-fast'] = { ...q['loud-fast']!, tick: 2000 }; expect(ids(q)).toEqual([]); // the capture variant is faster, and doesn't count
+  });
+  test('MC-2: a quiet variant (Pressure) as dear as loud fails, not only the primary routes', () => { const p = good(); p['route-a-pressure'] = { ...p['route-a-pressure']!, trail: 9 }; expect(ids(p)).toEqual(['MC-2']); });
   test('MC-2: the loud route no dearer than a quiet one', () => { const p = good(); p.loud = { ...p.loud!, trail: 3 }; expect(ids(p)).toContain('MC-2'); });
   test('MC-3: a fail no script reaches', () => { const p = good(); p['fail-district-seals'] = fail('enforcer-down'); expect(ids(p)).toContain('MC-3'); });
   test('MC-4: a contact without whom no quiet route wins', () => {
@@ -104,15 +108,16 @@ describe('the §09 conditions, each with a failing example', () => {
 });
 
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at HEAD)', () => {
-  test('route A and route B win quietly, the loud route costs more Trail, every fail is reached, and the check ships', async () => {
-    const c = await check(L, engineAt('HEAD', 'tree'), () => {}, { slack: false }); // the committed engine on the mission's own data (sim/data from mission.json)
+  test('route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships', async () => {
+    const c = await check(L, engineAt('HEAD'), () => {}, { slack: false }); // the committed engine with its rules and the mission's committed site
     expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
     expect([c.plays['route-a']!.gunfire, c.plays['route-b']!.gunfire]).toEqual([0, 0]);
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
+    expect(c.plays.loud!.trail).toBeGreaterThan(c.plays['route-a-pressure']!.trail); // MC-2 against every quiet variant (Motive's addendum)
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
-  test('the latest recorded check (c004, pinned to 80548b8) replays to its recorded hashes', async () => {
-    const r = await replay(join(runsDir('handover'), 'c004'));
+  test('the latest recorded check (c005, pinned to a103daf) replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c005'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);
   });

@@ -146,7 +146,20 @@
    "expects": {
     "outcome": "success"
    },
-   "src": "GDD §07 loud; Keel N10"
+   "src": "GDD §07 loud; Keel N10",
+   "note": "The reference loud: the cell fights the police at the car and the Fixer carries the downed Scout, so nobody is captured (Motive, briefs/011/motive-fights.md)."
+  },
+  {
+   "id": "loud-fast",
+   "file": "loud-fast.json",
+   "plan": "loud-fast.plan.json",
+   "kind": "loud",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 loud; Keel N10; Motive briefs/011/motive-fights.md",
+   "note": "The fastest loud win, leaving the downed Scout to be captured: a variant, not the reference (Motive)."
   },
   {
    "id": "fail-vale-dead",
@@ -261,16 +274,16 @@
    "note": "The loud branch's officers and the response unit down the Enforcer when he carries Vale at them alone."
   },
   {
-   "id": "fight-safe-enforcer-down",
-   "file": "fight-safe-enforcer-down.json",
+   "id": "fight-safe-rivals-reach-vale",
+   "file": "fight-safe-rivals-reach-vale.json",
    "kind": "fail",
    "expects": {
     "outcome": "failure",
-    "fail": "enforcer-down"
+    "fail": "rivals-reach-vale"
    },
-   "reaches": "enforcer-down",
+   "reaches": "rivals-reach-vale",
    "src": "GDD §07 final fight [S], safe; Suture N11",
-   "note": "The safe branch's ambush downs the Enforcer when he doesn't fight it. In the engine the rivals reach Vale only at the take or at the close, never inside the fight, so the fight reaches §07's 'Enforcer down', not 'rivals reach Vale' (to Keel, if the ambush should be able to take Vale)."
+   "note": "Since Keel's engine fec836f (Motive's addendum) a safe fight lost ends as §07's 'rivals reach Vale'."
   },
   {
    "id": "withdraw",

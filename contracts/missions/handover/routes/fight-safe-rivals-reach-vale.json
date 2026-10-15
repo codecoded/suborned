@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "§07 fail 'Enforcer down' in the final fight, safe (Suture N11): route B to the take, then the Enforcer walks Vale into the rivals' ambush and doesn't answer it.",
+ "note": "§07 fail 'rivals reach Vale' in the final fight, safe (Suture N11): route B to the take, then the Enforcer walks Vale into the rivals' ambush and nobody answers it.",
  "start": {},
  "orders": [
   {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
