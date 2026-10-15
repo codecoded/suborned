@@ -2031,6 +2031,23 @@
    ]
   }
  ],
+ "crossingRules": {
+  "sites": {
+   "arm": 12,
+   "island": 8,
+   "mall": 2,
+   "mid": 3
+  },
+  "twins": [
+   "market-street at -175,-401: a twin across a side road's mouth (22 m from the crossing it keeps)"
+  ],
+  "moved": [
+   "street/circus/tree-2596"
+  ],
+  "left": [
+   "arm/crown-road/nw/after: no free spot for the landing at kerb b (-320, 268) (nor within 4 m either way)"
+  ]
+ },
  "levels": [
   {
    "id": "level/street",

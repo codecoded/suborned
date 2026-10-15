@@ -67,11 +67,11 @@ describe('SF-21 on the live world', () => {
     expect(all.check.detail).toContain('482 fail: street/stop/T1/comet/l/phone-booth-13 (phone-booth box 1 x 1 x 2.5 m, face 1 x 2.5 m)'); // the first six are named, the rest counted
   });
 
-  test('brief 009: a crossing\'s arcs (237) and eyes (156) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
-    for (const [key, n] of [[GLOW, 0], [INLAY, 237], [ORB, 156]] as const) {
+  test('brief 009: a crossing\'s arcs (322), eyes (207) and lit strip modules (747, 3.9 m across) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
+    for (const [key, n] of [[GLOW, 747], [INLAY, 322], [ORB, 207]] as const) {
       const { w, check } = sf21(w => { for (const x of owned(w, [key])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
       expect(broadParts(w).length, key).toBe(n);
-      expect(check.ok, key).toBe(n === 0);
+      expect(check.ok, key).toBe(false);
     }
   });
 

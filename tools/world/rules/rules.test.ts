@@ -134,16 +134,22 @@ describe('extra world rules', () => {
       expect(ids(slab)).toContain('SF-20');
     });
 
-    test('a strip across a tram track fails; so does one across a bay', () => {
-      const track = failing(w => { const x = kerb(w); w.transit.tram[0]!.line = across(x) as V[]; });
-      expect(track['SF-20']).toMatch(/crossing\/.* strip crosses a tram track and the plan does not say a kerb crossing may/);
+    test('a strip across a tram track fails unless the plan lets its kind cross and a signal stops the tram; so does one across a bay', () => {
+      const onTrack = (w: W) => { const x = kerb(w); w.transit.tram[0]!.line = across(x) as V[]; return x; };
+      expect(failing(w => { onTrack(w); })['SF-20']).toBeUndefined(); // the plan lets a kerb crossing cross a track (SF-3, Sky 2026-10-15) and the signal stops the tram
+      expect(failing(w => { delete onTrack(w).control; })['SF-20']).toMatch(/crossing\/.* control is none, the plan gives .* roads signal/);
+      const bare: Plan = structuredClone(plan); bare.standards.streetscape.crossings.strip.control = {}; // a plan that gives no road class a control: a strip over a track has no signal to stop the tram
+      const unsignalled = Object.fromEntries(extraRules(ctxOf(bare, derive(bare), civ, (() => { const w = structuredClone(base.w) as W; for (const x of w.crossings!) delete x.control; onTrack(w); return { w, gen: base.gen }; })())).filter(c => !c.ok).map(c => [c.id, c.detail ?? '']));
+      expect(unsignalled['SF-20']).toMatch(/crossing\/.* strip crosses a tram track and the crossing has no signal control \(the signal stops the tram\)/);
+      const only = (track: string[]) => { const p2: Plan = structuredClone(plan); p2.standards.streetscape.crossings.strip.across.track = track; return Object.fromEntries(extraRules(ctxOf(p2, derive(p2), civ, { w: structuredClone(base.w), gen: base.gen })).filter(c => !c.ok).map(c => [c.id, c.detail ?? ''])); };
+      expect(only(['stop'])['SF-20']).toMatch(/crossing\/boulevard\/\d+ strip crosses a tram track and the plan does not say a kerb crossing may/); // the 7 Boulevard crossings over the tram line
       const bay = failing(w => { const x = kerb(w), m = mid(x.line[0], x.line[1]); w.ground.flats.push({ id: 'test/bay', surface: 'bay', level: 0, ring: [[m[0] - 1, m[1] - 1], [m[0] + 1, m[1] - 1], [m[0] + 1, m[1] + 1], [m[0] - 1, m[1] + 1]] }); });
       expect(bay['SF-20']).toMatch(/crossing\/.* strip crosses a bay and the plan does not say a kerb crossing may/);
     });
 
     test('the plan can say a kind may cross a track: the tram stop crossings are the way to the platform', () => {
       const p2: Plan = structuredClone(plan);
-      p2.standards.streetscape.crossings.strip.across.track = [];
+      p2.standards.streetscape.crossings.strip.across.track = ['kerb'];
       const f = Object.fromEntries(extraRules(ctxOf(p2, derive(p2), civ, { w: structuredClone(base.w), gen: base.gen })).filter(c => !c.ok).map(c => [c.id, c.detail ?? '']));
       expect(f['SF-20']).toMatch(/crossing\/stop\/.* strip crosses a tram track and the plan does not say a stop crossing may/);
     });
@@ -174,7 +180,7 @@ describe('extra world rules', () => {
       const nrm = (c: { line: [V, V] }): V => { const n: V = [-(c.line[1][1] - c.line[0][1]), c.line[1][0] - c.line[0][0]], l = Math.hypot(n[0], n[1]); return [n[0] / l, n[1] / l]; };
       const drop = (w: W, c: { items: string[] }, f: (id: string) => boolean) => { const gone = c.items.filter(f); w.street = w.street.filter(s => !gone.includes(s.id)); c.items = c.items.filter(id => !gone.includes(id)); };
       test('a part that names no crossing, or two; one the street does not have', () => {
-        fails(failing(w => { const [x, y] = w.crossings!.filter(c => c.kind === 'kerb'); y!.items.push(x!.items[0]!); }), /crossing\/.*\/dots\/l0 is a part of 2 crossings, needs 1/);
+        fails(failing(w => { const [x, y] = w.crossings!.filter(c => c.kind === 'kerb'); y!.items.push(x!.items[0]!); }), /crossing\/.*\/(field|dots)\/\w+ is a part of 2 crossings, needs 1/);
         fails(failing(w => { const x = kerb(w); w.street = w.street.filter(s => s.id !== x.items[0]); }), /crossing\/.* names a street item that is not one of its parts/);
         fails(failing(w => { const x = kerb(w); x.items.pop(); }), /is a part of 0 crossings, needs 1/);
         fails(parts((w, c) => { part(w, c, 'crossing-dots').crossing = 'crossing/nowhere/0'; }), /has a part that names another crossing/);
@@ -201,6 +207,21 @@ describe('extra world rules', () => {
         fails(parts((w, c) => { part(w, c, 'crossing-edge').surface = 'glow'; }), /\/edge\/l0 draws glow, not trim/);
         fails(parts((w, c) => { part(w, c, 'crossing-edge').size = [2, 0.3, 0.006]; }), /\/edge\/l0 is 2 × 0\.3 m, the plan's edge line modules are 2 or 1 × 0\.04/);
         fails(parts((w, c) => { const s = part(w, c, 'crossing-dots'), n = nrm(c); s.at = [s.at[0] + n[0] * 0.04, s.at[1] + n[1] * 0.04]; }), /\/dots\/l0 lies 1\.79 m off the middle of the strip, the plan's lines are at ±1\.75/);
+      });
+      test('the lit strip (Sky\'s d1): under the lights, one module row per free span, flat, in glow, centred, clear of the kerbs and refuges; none, a wrong one, a doubled one or a stray one fails', () => {
+        fails(parts((w, c) => { drop(w, c, id => /\/field\/\d+$/.test(id)); }), /has no lit strip under its lights/);
+        fails(parts((w, c) => { const f = c.items.filter(id => /\/field\/\d+$/.test(id)); drop(w, c, id => id === f[f.length - 1]); }), /has lit strip modules \[[\d,]*\] m, the strip and the plan's modules call for \[[\d,]*\]/);
+        fails(parts((w, c) => { part(w, c, 'crossing-field').surface = 'trim'; }), /\/field\/\d+ draws trim, not glow/);
+        fails(parts((w, c) => { part(w, c, 'crossing-field').size = [1.5, 3.9, 0.002]; }), /\/field\/\d+ is 1\.5 × 3\.9 m, the plan's lit strip modules are 2 or 1 × 3\.9/);
+        fails(parts((w, c) => { part(w, c, 'crossing-field').size = [2, 3.0, 0.002]; }), /\/field\/\d+ is 2 × 3 m, the plan's lit strip modules are 2 or 1 × 3\.9/);
+        fails(parts((w, c) => { part(w, c, 'crossing-field').z = 0.18; }), /\/field\/\d+ is at z 0\.18 over a surface at 0/);
+        fails(parts((w, c) => { const q = part(w, c, 'crossing-field'), n = nrm(c); q.at = [q.at[0] + n[0] * 0.04, q.at[1] + n[1] * 0.04]; }), /\/field\/\d+ lies 0\.04 m off the middle of the strip/);
+        fails(parts((w, c) => { part(w, c, 'crossing-field').yaw += Math.PI / 2; }), /\/field\/\d+ does not lie along the walk/);
+        fails(parts((w, c) => { const q = part(w, c, 'crossing-field'); w.street.push({ ...q, id: `${c.id}/field/99` }); c.items.push(`${c.id}/field/99`); }), /\/field\/99 overlaps|lit strip modules/);
+        fails(parts((w, c) => { const q = part(w, c, 'crossing-field'), n = nrm(c), u: V = [n[1], -n[0]]; q.at = [q.at[0] + u[0] * 30, q.at[1] + u[1] * 30]; }), /\/field\/\d+ reaches off the strip/); // along the walk, off the end of the strip
+        const p2: Plan = structuredClone(plan); delete (p2.standards.streetscape.crossings.strip.lights as { field?: unknown }).field; // a plan that gives no lit strip
+        const f = Object.fromEntries(extraRules(ctxOf(p2, derive(p2), civ, { w: structuredClone(base.w), gen: base.gen })).filter(k => !k.ok).map(k => [k.id, k.detail ?? '']));
+        expect(f['SF-20']).toMatch(/has \d+ lit strip pieces, the plan gives none/);
       });
       test('no light piece lies across the walk: turned a quarter it runs along the carriageway, within 30 degrees of its axis; turned 60 degrees it is off the walk, not the road', () => {
         fails(parts((w, c) => { part(w, c, 'crossing-dots').yaw += Math.PI / 2; }), /\/dots\/l0 lies 0 degrees from the carriageway's axis: a light piece runs along the walk, 30 degrees or more off the road/);

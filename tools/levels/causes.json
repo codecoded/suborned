@@ -1,0 +1,42 @@
+{
+ "note": "Standing drift causes by objective (people: tools/levels/people/drift.json, transit: tools/levels/drift.json, skyline: tools/levels/skyline/drift.json). `bun run causes` declares every cause listed here for the current code hash of each objective (idempotent); run it after any change to the code a verdict rests on, then `bun run verify`. A cause here is a fact about code that already moved a recorded rule's result: add one only with the change that moved it, naming the rules it moved (Splice, 2026-10-15).",
+ "people": [
+  {
+   "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+   "rules": [
+    "P-6",
+    "P-7",
+    "P-11"
+   ]
+  },
+  {
+   "cause": "brief 010 follow-up, café seating (Aster, 2026-10-15): the café's seats are the chairs of the café sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the café (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the café's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+   "rules": [
+    "P-7",
+    "P-11"
+   ]
+  },
+  {
+   "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+   "rules": [
+    "P-7",
+    "P-11"
+   ]
+  },
+  {
+   "cause": "Redline H1/M1 and Keel's rulebook point 8, 2026-10-15: a person carries position and needWeights (per mille, from the row), so P-12 counts 15 fields and P-3 holds both to the row; the people file's inputs carry the mission and plan hashes (and, from bun run people, the tools hash); P-9 makes a real second expansion and compares it with the people under test; M-2 expands the promoted cast itself",
+   "rules": [
+    "P-12"
+   ]
+  },
+  {
+   "cause": "W-5 walking clearance and the dressing's ground furniture (Datum and Vantage, 2026-10-15): the people's walk graph tests a step against the block's ground solids by their own edges, a body's clearance (standards.walking.body.r 0.65) away, and the standing points keep that clearance from every solid (it was 0.5); civic.ts adds the dressing's planter runs, pots, bollards and lamp bases to the solids (plan.civic.groundPieces), so a pinned block's standing points and walks differ where they stood within 0.65 m of a planter, pot, bollard or lamp, and a place's seeds start within `ends` of it",
+   "rules": [
+    "P-0",
+    "P-13"
+   ]
+  }
+ ],
+ "transit": [],
+ "skyline": []
+}
