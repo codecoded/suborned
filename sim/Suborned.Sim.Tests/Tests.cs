@@ -163,3 +163,15 @@ public class GeometryTests
         Assert.False(G.InCone(o, f, 1800, 900, 300, new Pt(1900, 0))); // beyond reach
     }
 }
+
+public class StreamTests
+{
+    [Fact]
+    public void TheNeedStreamIsTheTypeScriptOne()
+    {
+        // contracts/rules/rulebook.test.ts golden values: stream('p-cafe-11/need/1')() and replaceNeed for missions 1–3
+        Assert.Equal(1572639180u, new Streams.Mulberry("p-cafe-11/need/1").Next());
+        var items = new List<(string, int)> { ("cash", 2000), ("housing", 1000), ("papers", 1000), ("care", 500), ("advancement", 1000), ("secret", 500) };
+        Assert.Equal(new[] { "housing", "care", "housing" }, new[] { 1, 2, 3 }.Select(m => Streams.Draw($"p-cafe-11/need/{m}", items)).ToArray());
+    }
+}

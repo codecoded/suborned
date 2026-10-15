@@ -662,6 +662,62 @@ namespace Suborned.Sim
                 r.Is(g.Ledger.Exists(l => l.cause == "witnessed:debt-cleared:waitress"), "the ledger names the witnessed act");
             });
 
+            var drvKnown = Turned(Driver); drvKnown.Known[Driver] = new List<string> { "routine", "need", "temperament" };
+            Add("N16", "—", "Watchers log the cell (§05): the pickup camera logs the Fixer beside the driver; a watcher that logs an operative beside a contact exposes the contact's job (Motive's review #12), so the next mission's ladder moves resentment, not bravery.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Fixer, "d:Boarding pavilion"));
+                r.Wait(T(2));
+                r.Is(g.Sightings.Exists(s => s.Watcher == "camera:pickup" && s.Op == "fixer"), "the pickup camera logged the Fixer, with place and time");
+                r.Is(g.ExposedByWatcher.Contains(Driver), "logged beside the driver: the driver is exposed");
+                r.Do(Fixer, "call", Driver);
+                r.To(T(200));
+                var next = g.BetweenMissions(g.Investigate());
+                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Driver && l.Detail.StartsWith("job-exposed", StringComparison.Ordinal)), "the driver's job was exposed: resentment, not bravery");
+            }, drvKnown);
+
+            Add("N17", "—", "The investigation (§05, rulebook investigation): a pressured Inez is a Talker and gives up the Fixer's face to the investigators, with the cause in words (K7); a helped Inez lies, and in a neutral district that gives them nothing.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
+                var inv = g.Investigate();
+                var f = inv.Findings.Find(x => x.Who == Inez);
+                r.Is(f != null && f.Outcome == "gives" && f.Facts.Contains("fixer-face"), "questioned, Inez gives up the Fixer's face");
+                r.Is(f != null && f.Cause.Contains(">"), $"with the cause: {f?.Cause}");
+                r.Eq(inv.NamedCause, "named-witness:waitress", "a named witness: the investigation's cause");
+            });
+
+            Add("N17b", "—", "The investigation, the other way: a helped Inez (bravery helper, loyalty obliged) is no Talker and covers for the cell (people.rules talker.lie); in a neutral district she gives the investigators nothing.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
+                var inv = g.Investigate();
+                var f = inv.Findings.Find(x => x.Who == Inez);
+                r.Is(f != null && f.Outcome == "lies" && f.Facts.Count == 1 && f.Facts[0] == "nothing", "questioned, Inez lies: nothing");
+                r.Eq(inv.NamedCause, "", "nobody named the cell");
+            });
+
+            Add("N18", "—", "Between missions (rulebook phases): after route A, Inez's job was unexposed (bravery helper → accomplice); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her family and workmate ties (K5).", r =>
+            {
+                var g = r.G;
+                RouteA(r, reroute: true);
+                r.Send(Enf, "d:Getaway bay");
+                while (!g.Over && g.FightSprung == int.MaxValue / 4) g.Step();
+                r.FightItOut(); r.Do(Enf, "extract");
+                r.Eq(g.Result, Outcome.Success, "route A wins");
+                var next = Debrief.Of(g).Next;
+                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == "job-unexposed: bravery helper → accomplice"), "the job, unexposed: bravery helper → accomplice");
+                var need = next.Lines.Find(l => l.Line == "need-replaced" && l.Who == Inez);
+                r.Is(need != null && need.Detail.StartsWith("debt → ", StringComparison.Ordinal) && need.Detail.EndsWith("(told free: a contact)", StringComparison.Ordinal), $"her debt is replaced and told free ({need?.Detail})");
+                r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who == Inez), "obliged, she passes no word");
+                r.Is(next.Lines.Exists(l => l.Line == "introduced" && l.Who == Inez && l.Detail.Contains("(family)")), "she can introduce her family");
+                r.Is(!next.Ambush, "no ambush is scheduled");
+            });
+
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             var purse = new Start(); purse.Known[Inez] = known.Known[Inez]; purse.Known[Driver] = known.Known[Driver];
             purse.Temperament[Driver] = "idealist"; // §04's purse is for a driver one Help turns (Motive §3); the fixture cast's driver is a Mercenary
