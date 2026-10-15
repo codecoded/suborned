@@ -27,7 +27,7 @@ namespace Suborned.Play
     /// Engine exceptions stop the host at this boundary, never the Editor (Redline E1). Preview (one A* and four temperament evaluations) is
     /// called only when the hovered target, the agent or the verb changes.</summary>
     [DefaultExecutionOrder(-50)]
-    public sealed class HandoverHost : MonoBehaviour
+    public sealed partial class HandoverHost : MonoBehaviour
     {
         [Header("Baked by PlayInstall (Editor) from the plan, the export and the civic look")]
         public SiteFrame frame = new();
@@ -89,7 +89,7 @@ namespace Suborned.Play
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
-            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = ""; public bool Move;
+            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
             /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
             public bool Actionable => Order != null && !Move;
         }
@@ -129,6 +129,7 @@ namespace Suborned.Play
             Guard("load", () =>
             {
                 Bundle ??= SimBundle.Load();
+                Text ??= PlayText.Load();
                 Game = Engine.New(Bundle.Inputs, new Start());
                 if (Game.S.Root.Opt("cast")?.Opt("startsAt") is JNode st && st.Kind == JKind.Str) MissionStartsAt = st.Str();
             });
@@ -137,11 +138,13 @@ namespace Suborned.Play
             views = new HostViews(this, viewRoot, frame);
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
+            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4);
+            Track();
             // open on the cell at the getaway bay with Inez's café door in frame
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
             SessionPath = SessionFile();
             Save();
-            Status = "Paused (Space). F1–F4 or left click selects, left click the ground walks, hover a target for the price, right click acts.";
+            Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock; {controls.Label(PlayAction.Briefing)} shows the briefing again.";
         }
 
         /// <summary>Only the play camera draws to the screen: a review tool's camera (an open Flyby window makes one at depth 100, sometimes
@@ -182,13 +185,17 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) { views.Tick(); FollowUp(); }
-            if (Game.Log.Count > lastLog)
-            {
-                for (int i = lastLog; i < Game.Log.Count; i++) Landed(Game.Log[i]);
-                var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
-            }
+            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); }
+            Drain();
             return ok;
+        }
+
+        /// <summary>New lines in the engine's log (a step's, or an order's between steps): pops over their people, and the dialogue log.</summary>
+        void Drain()
+        {
+            if (Game.Log.Count <= lastLog) return;
+            for (int i = lastLog; i < Game.Log.Count; i++) { Landed(Game.Log[i]); SayLanded(Game.Log[i]); }
+            var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
         }
 
         double Now() { if (!sw.IsRunning) sw.Start(); return sw.Elapsed.TotalMilliseconds; }
@@ -201,13 +208,16 @@ namespace Suborned.Play
             bool shift = c.Held(kb, PlayAction.AddToGroup);
             if (kb != null)
             {
-                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; }
+                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) ShowBriefing = false; }
+                if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
+                if (c.Down(kb, PlayAction.DialogueLog)) LogOpen = !LogOpen;
+                if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
                 for (int i = 0; i < 4; i++)
                 {
                     if (c.Down(kb, PlayAction.Verb1 + i)) { if (Panel != null) PanelKey(i); else Pick(i); }
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
-                if (kb.escapeKey.wasPressedThisFrame && Panel != null) ClosePanel();
+                if (kb.escapeKey.wasPressedThisFrame) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; }
                 if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
@@ -363,19 +373,15 @@ namespace Suborned.Play
             Cancel();
         }
 
-        /// <summary>Right click on empty ground: drop the picked verb; with none picked, stop the selected agents' walks (an engine order: a move
-        /// to where each stands). An action already under way runs to its end.</summary>
+        /// <summary>Right click on empty ground: drop the picked verb; with none picked, stop the selected agents' walks (the engine's cancel order,
+        /// and the act they walked for is dropped). An act under way is cancelled with C or an ✕ only.</summary>
         public void Cancel()
         {
             if (Picked >= 0) { Picked = -1; intentKey = ""; Status = "verb cancelled"; Pop("cancelled", lastRight, null, Feedback.Info); return; }
-            int stopped = 0;
-            for (int n = 0; n < 4; n++)
-            {
-                var op = Game.Ops[n]; if (!Selected[n] || op.Walk == null || op.Inside) continue;
-                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = op.Pos }); stopped++;
-            }
-            Status = stopped > 0 ? $"stopped {stopped}" : "nothing to cancel";
-            Pop(stopped > 0 ? $"stopped {stopped}" : "nothing to cancel", lastRight, null, Feedback.Info);
+            // a right click on empty ground is easy to make by mistake: it stops walks only (an act is cancelled with C or an ✕, which say the cost)
+            int n = 0;
+            for (int k = 0; k < 4; k++) if (Selected[k] && doing[k].Phase is "walking" or "running") { CancelAgent(k, lastRight); n++; }
+            if (n == 0) { Status = "nothing to stop"; Pop($"nothing to stop ({controls.Label(PlayAction.Cancel)} cancels an act)", lastRight, null, Feedback.Info); }
         }
 
         /// <summary>The selection walks to the ground under a screen point; a group stands in a 0.9 m square.</summary>
@@ -474,17 +480,6 @@ namespace Suborned.Play
         /// <summary>The engine's refusal, said for the player: who, what to do about it.</summary>
         static string Title(string s) => s.Length == 0 ? s : char.ToUpperInvariant(s[0]) + s[1..];
 
-        public string Humanise(Order o, string why)
-        {
-            string who = o.Target switch { "waitress" => "Inez", "councillor" => "Vale", "" => "", var r => "the " + r };
-            string agent = o.Op.Length > 0 ? char.ToUpperInvariant(o.Op[0]) + o.Op[1..] : "";
-            if (why.StartsWith("stand within ")) return $"{agent} is too far from {(who.Length > 0 ? who : "it")} — {why.Replace("stand", "walk")}";
-            if (why.Contains("knowledge")) return $"{Title(o.Approach)} needs what the Scout learns about {who}: Watch (routine), then Listen (need) — {why}";
-            if (why.Contains("can't be walked")) return "can't walk there: a roof, a wall or a solid";
-            if (why.Contains(" is busy until ")) return $"{agent} is busy until {MissionClock(int.TryParse(why[(why.LastIndexOf(' ') + 1)..], out var t) ? t : Game.Tick)}";
-            return $"{agent}: {why}";
-        }
-
         Intent Verb(OpId by, int slot, Target t)
         {
             var g = Game; var R = g.R; string op = Op.Name(by); var id = Slots[(int)by][slot].Id;
@@ -526,7 +521,7 @@ namespace Suborned.Play
                     {
                         string target = t.Kind == "person" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "hostile" ? "hostiles" : "";
                         if (target.Length == 0) return null;
-                        var i = I("fire", target, "", $"Fire on {t.Label}"); i.Time = "now"; i.Trail = $"T +{R.ShotTrail}"; i.Alert = $"A +{R.PerShot}"; i.Outcome = "loud"; return i;
+                        var i = I("fire", target, "", $"Fire on {t.Label}"); i.Time = "until down"; i.Trail = $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
                     }
             }
             return null;
@@ -576,8 +571,10 @@ namespace Suborned.Play
                 if (r.ok) { if (o.Do != "move") Pop($"✓ {o.Op} {(o.Do == "turn" ? o.Approach : o.Do)}{(o.Target.Length > 0 ? " " + o.Target : "")}", screen, target, Feedback.Ok); }
                 else if (!quietRefusal) Pop(Humanise(o, r.why), screen, target, Feedback.Refused);
             }
+            if (!r.ok && !quietRefusal && o.Do != "move") SayRefused(o, r.why);
+            if (r.ok) { var keep = Status; Drain(); Status = keep; }
             Save();
-            views.Tick(); views.Frame(1f); intentKey = "";
+            views.Tick(); views.Frame(1f); intentKey = ""; Track();
             if (Game.Over && Ending.Length == 0) End();
             return r.ok;
         }
@@ -618,8 +615,8 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the action panel (GDD §10: click a person → action card with the full price)
 
-        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = ""; public bool Available; }
-        public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = ""; public readonly List<PanelRow> Rows = new(); }
+        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = "", Unlock = ""; public bool Available; }
+        public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = "", About = ""; public readonly List<PanelRow> Rows = new(); }
         /// <summary>The open panel, else null. Built once on opening (Preview is ~500 KB a call); the clock runs on unless controls.pauseWithPanel.</summary>
         public ActionPanel Panel { get; private set; }
         public int PanelHover { get; private set; } = -1;
@@ -629,6 +626,7 @@ namespace Suborned.Play
         public void OpenPanel(Target t, Vector2 screen)
         {
             var pn = new ActionPanel { T = t, Gui = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y), World = TargetWorld(t) };
+            if (Text != null && Text.TargetAbout.TryGetValue(TextKey(t), out var about)) pn.About = about;
             if (t.Kind == "crowd") pn.Note = "passer-by — not yet known to the cell";
             else Guard("panel", () =>
             {
@@ -639,15 +637,16 @@ namespace Suborned.Play
                 {
                     var rows = new List<PanelRow>();
                     if (k == (int)OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned)
-                    { var c = Call(t); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = "Call", Reason = Game.CanCall(t.Key) ? "" : "not now (the guard is not at the door, or too late)" }); }
+                    { var c = Call(t); Words(c, t); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = c.Name, Reason = Game.CanCall(t.Key) ? "" : "not now (the guard is not at the door, or too late)" }); }
                     else for (int i = 0; i < Slots[k].Length; i++)
                         {
                             var v = Verb((OpId)k, i, t); if (v == null) continue;
                             var aw = ActPlace((OpId)k, v.Order, t); // distance never hides an action: it adds the walk to the price
                             if (aw != null) v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then";
-                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = Slots[k][i].Label, Reason = Locked((OpId)k, v, t) });
+                            Words(v, t);
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Reason = Locked((OpId)k, v, t) });
                         }
-                    foreach (var r in rows) r.Available = r.Reason.Length == 0;
+                    foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = Text?.LockOf(r.Reason) != null ? Humanise(r.I.Order, r.Reason) : ""; }
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
                 if (pn.Rows.Count == 0) pn.Note = $"{string.Join(" and ", order.ConvertAll(k => AgentNames[k]))} can't act on {t.Label}" + (WhoCan(t) is var h && h.Contains("select the") ? " — " + h[(h.IndexOf("select the"))..] : "");
@@ -689,12 +688,25 @@ namespace Suborned.Play
             Pop($"{AgentNames[(int)Agent]} has no {VerbKey(slot)} here", null, Panel.World, Feedback.Info);
         }
 
+        /// <summary>A row's words: its name ("Pay Inez") and plain line, from the text's actions (Fable), by verb and target.</summary>
+        void Words(Intent v, Target t)
+        {
+            var o = v.Order; var key = o.Do == "turn" ? o.Approach : o.Do;
+            var (label, does) = Text != null ? Text.Action(key, TextKey(t)) : (key, "");
+            bool person = t.Kind == "person" && o.Do != "take";
+            v.Name = person ? $"{(label == "Listen" ? "Listen to" : label)} {Name(t.Key)}" : o.Do == "fire" ? $"{label} on {t.Label}" : label;
+            v.Does = does;
+        }
+
+        /// <summary>A target's key in the text's `targets` and `onTarget` (camera-entrance, car-getaway; a person by role).</summary>
+        public static string TextKey(Target t) => t.Kind switch { "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", _ => t.Key };
+
         /// <summary>Why a row cannot be given now, from the engine's own state (the engine still answers the order; its refusal shows as a pop).</summary>
         string Locked(OpId by, Intent v, Target t)
         {
             var g = Game; var op = g.Ops[(int)by]; var o = v.Order;
             if (op.Inside) return "inside the Office";
-            if (op.Busy != null) return $"busy until {MissionClock(op.BusyEnd)}";
+            if (op.Busy != null) return $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it";
             switch (o.Do)
             {
                 case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? "" : "not out on the street";
@@ -715,7 +727,7 @@ namespace Suborned.Play
                 case "enter": return g.Vale == ValeAt.Office ? "" : "Vale is not inside";
                 case "take": return g.Vale == ValeAt.Pickup ? "" : "Vale is not at his car yet";
                 case "extract": return g.Vale == ValeAt.WithEnforcer ? "" : "you don't have Vale yet";
-                case "fire": return g.Tick < g.EnforcerNextShot ? "reloading" : "";
+                case "fire": return op.Gun.W == null ? "carries no weapon" : op.Running ? "running: walk or stop to fire" : "";
             }
             return "";
         }
@@ -741,7 +753,7 @@ namespace Suborned.Play
                 case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
                 case "mislead": tp = g.RivalsPose()?.pos; reach = R.ActReachCm; break;
-                case "fire": tp = PosOf(t); reach = o.Target == "rivals" ? R.FireRivalsReachCm : R.FireReachCm; break;
+                case "fire": tp = PosOf(t); if (op.Gun.W == null) return null; reach = op.Gun.W.EffCm; break; // walk into the weapon's effective band
                 default: return null; // a call is made from wherever the Fixer stands
             }
             if (place.Length > 0)
@@ -788,12 +800,13 @@ namespace Suborned.Play
             pending[(int)by] = null;
             ActWalk w = null; Guard("walk", () => w = ActPlace(by, order, t));
             var tw = TargetWorld(t);
-            if (w == null) { Issue(order, screen, tw); return; }
+            if (w == null) { if (Issue(order, screen, tw)) SayOrder(by, order, null); return; }
             var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place } : new Order { Op = order.Op, Do = "move", Point = w.To };
             if (Issue(walk, screen, null))
             {
                 pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach };
                 pendingAt[(int)by] = tw;
+                SayOrder(by, order, w); Track();
                 Pop($"{AgentNames[(int)by]} walks {w.Cm / 100} m ({w.Seconds} s) to {(w.Place.Length > 0 ? PlaceName(w.Place) : t.Label)}, then {(order.Do == "turn" ? order.Approach : order.Do)}", screen, tw, Feedback.Ok);
             }
         }
@@ -810,7 +823,8 @@ namespace Suborned.Play
                 var o = pending[k]; if (o == null) continue;
                 var op = Game.Ops[k]; if (op.Walk != null || op.Busy != null || op.Inside) continue;
                 pending[k] = null;
-                Issue(new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach }, null, pendingAt[k]);
+                var act = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach };
+                if (Issue(act, null, pendingAt[k])) SayArrive((OpId)k, act);
             }
         }
 

@@ -53,6 +53,23 @@ namespace Suborned.Play
             path = pg.AddComponent<LineRenderer>(); path.sharedMaterial = select; path.useWorldSpace = true; path.widthMultiplier = 0.18f; path.positionCount = 0;
             path.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; path.receiveShadows = false; path.alignment = LineAlignment.TransformZ;
             pg.transform.rotation = Quaternion.Euler(90f, 0f, 0f); path.enabled = false;
+            for (int k = 0; k < 4; k++) // each agent walking to an act: the rest of the walk on the ground (the HUD puts the act's icon at its end)
+            {
+                var ag = new GameObject("act/" + k); ag.transform.SetParent(root, false); ag.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                var lr = ag.AddComponent<LineRenderer>(); lr.sharedMaterial = select; lr.useWorldSpace = true; lr.widthMultiplier = 0.1f; lr.positionCount = 0;
+                lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; lr.receiveShadows = false; lr.alignment = LineAlignment.TransformZ; lr.enabled = false;
+                acts[k] = lr;
+            }
+        }
+
+        readonly LineRenderer[] acts = new LineRenderer[4];
+
+        /// <summary>The rest of agent k's walk to an act (null or fewer than two points hides it).</summary>
+        public void ShowAct(int k, List<Vector3> pts)
+        {
+            var lr = acts[k]; if (!lr) return;
+            if (pts == null || pts.Count < 2) { if (lr.enabled) lr.enabled = false; return; }
+            lr.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) lr.SetPosition(i, pts[i]); lr.enabled = true;
         }
 
         public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : null;

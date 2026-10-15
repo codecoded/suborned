@@ -31,6 +31,7 @@ const sha = (b: Buffer | string) => createHash('sha256').update(b).digest('hex')
 const need = (r: { code: number; out: string; err: string }, what: string) => { if (r.code !== 0) { console.error(`${what} failed:\n${r.out}\n${r.err}`); process.exit(1); } return r.out; };
 
 const SCHEMAS = ['contracts/rules/rulebook.schema.ts', 'contracts/people/people.rules.schema.ts'];
+const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.map(depth)) : v && typeof v === 'object' ? 1 + Math.max(0, ...Object.values(v).map(depth)) : 0;
 const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader recurses per level
 const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json' } as const;
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
@@ -61,7 +62,6 @@ if (tree) {
   const site = read(INPUTS['handover.site.json']);
   if (site.schema !== 'suborned.sim.site/1' || site.mission !== 'handover') { console.error('the site is not suborned.sim.site/1 for the Handover'); process.exit(1); }
   if (read(INPUTS['handover.people.json']).schema !== 'suborned.sim.people/1') { console.error('handover.people.json is not suborned.sim.people/1'); process.exit(1); }
-  const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.map(depth)) : v && typeof v === 'object' ? 1 + Math.max(0, ...Object.values(v).map(depth)) : 0;
   for (const rel of Object.values(INPUTS)) { const d = depth(read(rel)); if (d > MAX_DEPTH) { console.error(`${rel} nests ${d} deep (> ${MAX_DEPTH})`); process.exit(1); } }
   console.log('bun: rulebook.json and people.rules.json parse with their schemas and every ref resolves; the site and people parse with their schema ids; nesting within bounds');
 }
@@ -99,7 +99,30 @@ mkdirSync(plugin, { recursive: true }); mkdirSync(stream, { recursive: true });
 cpSync(dll, join(plugin, 'Suborned.Sim.dll'));
 const inputs: Record<string, string> = {};
 for (const [name, rel] of Object.entries(INPUTS)) { const b = readFileSync(join(work, rel)); writeFileSync(join(stream, name), b); inputs[name] = sha(b); }
-const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
+// 4b. the mission's words (Fable, suborned.text/1): host content, not an engine input. From the same source as the inputs (the commit, or
+// the tree with --tree), validated by its own zod schema; absent, the host shows its placeholders and any stale copy is removed.
+const TEXT = 'contracts/missions/handover/text.json', TEXT_SCHEMA = 'contracts/missions/handover/text.schema.ts';
+let text = 'absent (the host shows its placeholders)';
+{
+  const at = (rel: string) => tree ? (existsSync(join(root, rel)) ? readFileSync(join(root, rel)) : null)
+    : (sh(['git', 'cat-file', '-e', `HEAD:${rel}`]).code === 0 ? Buffer.from(need(sh(['git', 'show', `HEAD:${rel}`]), `git show ${rel}`)) : null);
+  const body = at(TEXT), schema = at(TEXT_SCHEMA);
+  if (body && schema) {
+    const dir = join(work, 'text'); mkdirSync(join(dir, 'contracts/missions/handover'), { recursive: true });
+    writeFileSync(join(dir, TEXT_SCHEMA), schema);
+    // the schema imports the people rules and the rulebook ref from the same source tree
+    for (const dep of ['contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts']) {
+      const b = at(dep); if (!b) { console.error(`${TEXT_SCHEMA} needs ${dep}, which is missing`); process.exit(1); }
+      mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b);
+    }
+    const { TextFile } = await import(join(dir, TEXT_SCHEMA));
+    const r = TextFile.safeParse(JSON.parse(body.toString('utf8')));
+    if (!r.success) { console.error(`${TEXT} fails its schema:\n${r.error.message}`); process.exit(1); }
+    if (depth(JSON.parse(body.toString('utf8'))) > MAX_DEPTH) { console.error(`${TEXT} nests deeper than ${MAX_DEPTH}`); process.exit(1); }
+    writeFileSync(join(stream, 'text.json'), body); text = `text.json ${sha(body).slice(0, 12)} (suborned.text/1 parses)`;
+  } else rmSync(join(stream, 'text.json'), { force: true });
+}
+const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, text, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
 writeFileSync(join(stream, 'engine.json'), JSON.stringify(engine, null, 1) + '\n');
 writeFileSync(join(stream, 'headless.json'), JSON.stringify({ schema: 'suborned.sim.headless/1', engine: { commit, dllSha256: dllSha, inputs }, scenarios, routes }, null, 1) + '\n');
 
@@ -107,5 +130,6 @@ const bad = scenarios.filter(s => s.exit !== 0 || !s.replayIdentical);
 console.log(`engine ${label}: Suborned.Sim.dll sha256 ${dllSha.slice(0, 12)} (${readFileSync(dll).length} bytes), inputs ${Object.entries(inputs).map(([k, v]) => `${k} ${v.slice(0, 12)}`).join(', ')}`);
 console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scenarios pass with identical replay${bad.length ? `; failing: ${bad.map(b => b.id).join(' ')}` : ''}`);
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
+console.log(`mission text: ${text}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, 4 inputs)`);
 process.exit(bad.length ? 1 : 0);
