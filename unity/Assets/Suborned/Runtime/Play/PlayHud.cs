@@ -17,7 +17,14 @@ namespace Suborned.Play
     {
         // never kept over a domain reload (a kept style with its textures gone would draw nothing): built on the first OnGUI
         [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white;
-        [System.NonSerialized] GUIStyle txt, big, small, key, mid; float s;
+        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall; float s;
+        // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
+        [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "";
+        [System.NonSerialized] readonly string[] slotState = new string[4];
+        [System.NonSerialized] readonly (string a, string b)[] icons = new (string, string)[4];
+        [System.NonSerialized] int pillKey = int.MinValue, chipKey; [System.NonSerialized] HandoverHost.Intent chipFor; [System.NonSerialized] Vector2 chipSize;
+        static readonly string[] Nums = { "1", "2", "3", "4" };
+        static readonly string[] Roles = { "waitress", "driver", "guard", "councillor" };
         static readonly List<Rect> hits = new();
         static readonly Color Teal = new(0.09f, 0.35f, 0.33f, 0.96f), TealLit = new(0.16f, 0.52f, 0.48f, 1f), Cream = new(0.96f, 0.93f, 0.85f), Dim = new(0.62f, 0.72f, 0.69f);
         static readonly string[] Names = { "Scout", "Fixer", "Tech", "Enforcer" };
@@ -36,8 +43,10 @@ namespace Suborned.Play
                 txt = new GUIStyle(GUI.skin.label) { normal = { textColor = Cream }, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleLeft, richText = true, wordWrap = false, clipping = TextClipping.Overflow };
                 big = new GUIStyle(txt); small = new GUIStyle(txt) { fontStyle = FontStyle.Normal, normal = { textColor = Dim } };
                 key = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter }; mid = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter };
+                smallC = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter }; icon = new GUIStyle(mid); iconSmall = new GUIStyle(mid);
             }
             txt.fontSize = Mathf.RoundToInt(18 * s); big.fontSize = Mathf.RoundToInt(24 * s); small.fontSize = Mathf.RoundToInt(13 * s); key.fontSize = Mathf.RoundToInt(13 * s); mid.fontSize = Mathf.RoundToInt(15 * s);
+            smallC.fontSize = small.fontSize; icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
         }
 
         void Plate(Rect r, bool lit = false)
@@ -70,17 +79,18 @@ namespace Suborned.Play
                     var op = g.Ops[i]; string verb = op.Busy != null ? Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? "›" : "✓";
                     var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s);
                     if (host.Selected[i]) { GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height), plateLit); }
-                    GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), $"{i + 1}", mid);
+                    GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), Nums[i], mid);
                     GUI.Label(new Rect(r.x + 20 * s, r.y, 32 * s, r.height), verb, mid);
                 }
 
             // at most two icons over a cast person
+            if (pillKey != Key(g)) Refresh(g);
             if (cam && host.Views != null)
-                foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
+                for (int k = 0; k < 4; k++)
                 {
-                    var t = host.Views.Find(role); if (!t || !t.gameObject.activeSelf) continue;
+                    var t = host.Views.Find(Roles[k]); if (!t || !t.gameObject.activeSelf) continue;
                     var p = cam.WorldToScreenPoint(t.position + Vector3.up * 2.05f); if (p.z <= 0) continue;
-                    var (a, b) = Icons(g, role);
+                    var (a, b) = icons[k];
                     float w = 26 * s; var x = p.x - (b == null ? w / 2 : w + 1 * s); var y = Screen.height - p.y - w;
                     Icon(new Rect(x, y, w, w), a); if (b != null) Icon(new Rect(x + w + 2 * s, y, w, w), b);
                 }
@@ -89,8 +99,13 @@ namespace Suborned.Play
             var it = host.HoverIntent;
             if (it != null && host.Hover != null && host.Ending.Length == 0)
             {
-                string line = it.Move ? $"{it.Label}   ·   {it.Time}" : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
-                var size = txt.CalcSize(new GUIContent(line));
+                if (it != chipFor || chipKey != txt.fontSize)
+                {
+                    chipFor = it; chipKey = txt.fontSize;
+                    chipLine = it.Move ? $"{it.Label}   ·   {it.Time}" : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
+                    chipSize = txt.CalcSize(new GUIContent(chipLine));
+                }
+                string line = chipLine; var size = chipSize;
                 var r = new Rect(host.Mouse.x + 22 * s, host.Mouse.y + 6 * s, size.x + 24 * s, 34 * s);
                 if (r.xMax > Screen.width) r.x = host.Mouse.x - r.width - 10 * s;
                 Plate(r, !it.Move); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), line, txt);
@@ -98,17 +113,15 @@ namespace Suborned.Play
 
             // top right pill: clock · next event · $ · Trail · Alert pips
             {
-                int next = host.NextMark();
-                string clock = HandoverHost.MissionClock(g.Tick), nx = HandoverHost.MissionClock(next);
                 var r = new Rect(Screen.width - 600 * s, 16 * s, 584 * s, 44 * s); Plate(r); hits.Add(r);
                 float x = r.x + 14 * s;
-                GUI.Label(new Rect(x, r.y, 90 * s, r.height), clock, big); x += 86 * s;
-                GUI.Label(new Rect(x, r.y, 120 * s, r.height), $"▶▶ {nx}", txt); x += 104 * s;
-                GUI.Label(new Rect(x, r.y, 150 * s, r.height), $"${g.Cash:N0}", txt); x += 128 * s;
-                GUI.Label(new Rect(x, r.y, 70 * s, r.height), $"T {g.Trail}", txt); x += 64 * s;
+                GUI.Label(new Rect(x, r.y, 90 * s, r.height), pillClock, big); x += 86 * s;
+                GUI.Label(new Rect(x, r.y, 120 * s, r.height), pillNext, txt); x += 104 * s;
+                GUI.Label(new Rect(x, r.y, 150 * s, r.height), pillCash, txt); x += 128 * s;
+                GUI.Label(new Rect(x, r.y, 70 * s, r.height), pillTrail, txt); x += 64 * s;
                 GUI.Label(new Rect(x, r.y, 24 * s, r.height), "A", txt); Pips(x + 20 * s, r.y + 16 * s, g.Alert, 3, 12 * s); x += 80 * s;
-                GUI.Label(new Rect(x, r.y, 120 * s, r.height), host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}", txt);
-                GUI.Label(new Rect(r.x, r.yMax + 2 * s, r.width, 18 * s), $"{host.CityClock()} · Space pause · = − speed · N next event · F1 debug", small);
+                GUI.Label(new Rect(x, r.y, 120 * s, r.height), pillState, txt);
+                GUI.Label(new Rect(r.x, r.yMax + 2 * s, r.width, 18 * s), pillCity, small);
             }
 
             // roster: four slots, number, portrait, health pips, state
@@ -121,12 +134,11 @@ namespace Suborned.Play
                 if (host.Selected[i]) GUI.DrawTexture(r, plateLit);
                 if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Select((OpId)i, Event.current.shift);
                 var op = g.Ops[i];
-                GUI.Label(new Rect(r.x + 4 * s, r.y, 16 * s, 18 * s), $"{i + 1}", key);
+                GUI.Label(new Rect(r.x + 4 * s, r.y, 16 * s, 18 * s), Nums[i], key);
                 GUI.Label(new Rect(r.x, r.y + 12 * s, r.width, 30 * s), Names[i], mid);
                 int hp = i == 3 ? g.EnforcerHealth : 4, hpMax = i == 3 ? Mathf.Max(g.EnforcerHealth, g.R.EnforcerHealth) : 4;
                 Pips(r.x + 10 * s, r.y + 44 * s, hp, hpMax, 7 * s);
-                string state = op.Inside ? "inside" : op.Busy != null ? $"{Glyph(op.Busy.Do, op.Busy.Approach)} {HandoverHost.MissionClock(op.BusyEnd)}" : op.Walk != null ? "walking" : "ready";
-                GUI.Label(new Rect(r.x, r.y + 50 * s, r.width, 16 * s), state, new GUIStyle(small) { alignment = TextAnchor.MiddleCenter });
+                GUI.Label(new Rect(r.x, r.y + 50 * s, r.width, 16 * s), slotState[i], smallC);
             }
 
             // the Q/W/E/R hotbar for the agent, the lit key is what a right click gives
@@ -169,7 +181,24 @@ namespace Suborned.Play
 
         void Icon(Rect r, string text)
         {
-            GUI.DrawTexture(r, plate); GUI.Label(r, text, new GUIStyle(mid) { fontSize = Mathf.RoundToInt((text.Length > 2 ? 10 : 14) * s) });
+            GUI.DrawTexture(r, plate); GUI.Label(r, text, text.Length > 2 ? iconSmall : icon);
+        }
+
+        /// <summary>What the pill, the roster states and the cast icons show changes at most once a tick, on an order, or with pause and speed.</summary>
+        int Key(Game g) => unchecked(g.Tick * 31 + g.Orders.Count * 7919 + (host.Paused ? 1 : 0) + host.Speed * 3 + g.Log.Count * 104729);
+
+        void Refresh(Game g)
+        {
+            pillKey = Key(g);
+            pillClock = HandoverHost.MissionClock(g.Tick); pillNext = "▶▶ " + HandoverHost.MissionClock(host.NextMark());
+            pillCash = $"${g.Cash:N0}"; pillTrail = $"T {g.Trail}"; pillState = host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}";
+            pillCity = $"{host.CityClock()} · Space pause · = − speed · N next event · F1 debug";
+            for (int i = 0; i < 4; i++)
+            {
+                var op = g.Ops[i];
+                slotState[i] = op.Inside ? "inside" : op.Busy != null ? $"{Glyph(op.Busy.Do, op.Busy.Approach)} {HandoverHost.MissionClock(op.BusyEnd)}" : op.Walk != null ? "walking" : "ready";
+                icons[i] = Icons(g, Roles[i]);
+            }
         }
 
         void EndCard(Game g)

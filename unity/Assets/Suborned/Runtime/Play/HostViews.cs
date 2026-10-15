@@ -44,20 +44,24 @@ namespace Suborned.Play
                 Line("cone/" + c.Id, red);
             }
             Line("cone/guard", amber); Line("cone/rivals", violet);
-            for (int i = 0; i < g.Walkers.Count; i++) Person("crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, false);
-            for (int i = 0; i < MaxHostiles; i++) Person("hostile/" + i, host.securityColour);
+            crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
+            for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, false);
+            for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
             Ring("sel/0"); Ring("sel/1"); Ring("sel/2"); Ring("sel/3");
         }
 
         public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : null;
         const int MaxHostiles = 8;
+        static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" };
+        readonly Dictionary<string, string> coneKeys = new();
+        string[] crowdKeys = System.Array.Empty<string>(), hostileKeys = System.Array.Empty<string>(); // no string building per tick
         readonly Dictionary<Pt, int> stacked = new();
 
         /// <summary>Sets where each thing is after a tick (the frame eases from the previous one).</summary>
         public void Tick()
         {
             var g = host.Game; var s = g.S;
-            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set("op/" + Op.Name((OpId)i), op.Inside ? null : op.Pos); }
+            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside ? null : op.Pos); }
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
             Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.ValePos(), g.ValeP.Down);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
@@ -72,17 +76,17 @@ namespace Suborned.Play
             for (int i = 0; i < g.Walkers.Count; i++)
             {
                 var at = g.CrowdPos(g.Walkers[i]);
-                if (!at.HasValue) { Set("crowd/" + i, null); continue; }
+                if (!at.HasValue) { Set(crowdKeys[i], null); continue; }
                 int k = stacked.TryGetValue(at.Value, out var n) ? n + 1 : 0; stacked[at.Value] = k;
                 float r = 50f * Mathf.Sqrt(k), th = k * 2.399963f;
-                Set("crowd/" + i, at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th))));
+                Set(crowdKeys[i], at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th))));
             }
             // the final fight's hostiles (officers in the loud branch, the rival ambush in the safe one)
             for (int i = 0; i < MaxHostiles; i++)
             {
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
-                Set("hostile/" + i, h != null && h.Present && !h.Down ? h.Pos(g.Tick) : (Pt?)null);
-                if (h != null) Tint("hostile/" + i, h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
+                Set(hostileKeys[i], h != null && h.Present && !h.Down ? h.Pos(g.Tick) : (Pt?)null);
+                if (h != null) Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
             }
         }
 
@@ -105,7 +109,8 @@ namespace Suborned.Play
             foreach (var c in s.Cameras)
             {
                 bool live = c.Id == "entrance" ? !g.LoopOn : g.PickupCameraLive();
-                Cone("cone/" + c.Id, c.At, c.Facing, c.Reach, c.Half, live ? red : grey);
+                if (!coneKeys.TryGetValue(c.Id, out var ck)) coneKeys[c.Id] = ck = "cone/" + c.Id;
+                Cone(ck, c.At, c.Facing, c.Reach, c.Half, live ? red : grey);
             }
             var gp = g.GuardPose();
             if (gp.HasValue) { var (pos, f, phase) = gp.Value; bool door = phase == "door"; Cone("cone/guard", pos, f, door ? g.R.DoorReachCm : g.R.FacingReachCm, door ? g.R.DoorHalfCm : g.R.FacingHalfCm, amber); }
@@ -115,7 +120,7 @@ namespace Suborned.Play
             else Hide("cone/rivals");
             for (int i = 0; i < 4; i++)
             {
-                var r = things["sel/" + i].t; var op = things["op/" + Op.Name((OpId)i)];
+                var r = things[SelKeys[i]].t; var op = things[OpKeys[i]];
                 bool on = host.Selected[i] && op.shown;
                 if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on);
                 if (on) r.position = op.t.position + Vector3.up * 0.03f;
@@ -129,8 +134,7 @@ namespace Suborned.Play
             var w = frame.World(at.Value);
             bool wasShown = x.shown;
             things[key] = (x.t, wasShown ? x.to : w, w, true);
-            var body = x.t.Find("body");
-            if (body) x.t.localRotation = down ? Quaternion.Euler(90f, 0f, 0f) : Quaternion.identity; // down: laid flat
+            if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
         }
 
         void Person(string key, Color body, bool cell = false, bool collide = true)
