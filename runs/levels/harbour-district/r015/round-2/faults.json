@@ -1,0 +1,12 @@
+[
+  {
+    "owner": "Pulse",
+    "rule": "P-6",
+    "fault": "The Handover requirement line for the guard role (regularOf cafe) reads NOT MET: 'not every variant has preShift cafe'. guard-plain (weight 15, preShift none, positions [guard]) breaks it. The tie share is fine: 16 of 16 guards hold a regular tie into the café (100%). It conflicts with last round's fix, which asked for a no-café variant for the 01:30 watch, when the diner (6–24) is shut.",
+    "fix": "Remove guard-plain, or give it preShift cafe, so every guard variant carries the café stop. Leave the closed café on the night watch to Keel/Motive as a rule question: either the sim drops a stop while its unit is shut, or the checker requires only one cafe variant. Pulse's note 2 already raises it.",
+    "chunks": [
+      "409364487039824661a2c22a",
+      "549c8d6a16f8427fc8b18c58"
+    ]
+  }
+]
