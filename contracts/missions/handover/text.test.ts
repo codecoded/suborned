@@ -37,7 +37,7 @@ const push = (path: string, text: string, spoken = false) => strings.push({ path
   b.timeline.forEach((x, i) => push(`briefing.timeline[${i}]`, x.label));
   for (const [k, s] of Object.entries(b.cell)) push(`briefing.cell.${k}`, s);
   for (const [k, x] of Object.entries(t.targets)) push(`targets.${k}.about`, x.about);
-  for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); }
+  for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); if (a.withTarget) push(`actions.${k}.withTarget`, a.withTarget); if (a.then) push(`actions.${k}.then`, a.then); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); }
   for (const [k, x] of Object.entries(t.cancelCosts)) push(`cancelCosts.${k}`, x);
   const walk = (path: string, o: unknown) => { if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walk(`${path}.${k}`, v); };
   walk('activity', t.activity);
@@ -45,7 +45,7 @@ const push = (path: string, text: string, spoken = false) => strings.push({ path
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
-const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000');
+const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera');
 
 describe('the file', () => {
   test('parses as suborned.text/1 for the handover', () => {
@@ -60,8 +60,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {target}', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|target\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -273,7 +273,10 @@ describe('verbs and refusals', () => {
   test('every engine log code is spoken by an event or silent on purpose', () => {
     if (!haveSim) return;
     const codes = new Set<string>();
-    for (const src of simAll()) for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
+    for (const src of simAll()) {
+        for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
+        for (const m of src.matchAll(/Note\([^"()]*\?\s*"([a-z.\-]+)"\s*:\s*"([a-z.\-]+)"/g)) { codes.add(m[1]!); codes.add(m[2]!); } // Note(hit ? "shot.hit" : "shot.miss", …)
+      }
     for (const c of ['scout.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
     const spoken = new Set(Object.values(t.events).flatMap((e) => e.log ?? []));
     const covers = (code: string, set: Iterable<string>) => [...set].some((p) => (p.endsWith('.') ? code.startsWith(p) : code === p));
@@ -284,6 +287,42 @@ describe('verbs and refusals', () => {
     const literal = new Set([...codes]);
     const missing = [...spoken].filter((c) => !literal.has(c) && !c.endsWith('.'));
     expect(missing).toEqual([]);
+  });
+});
+
+describe('labels with a target', () => {
+  test('every verb that takes a target has a with-target label and a queued clause that carry {target}', () => {
+    const bad: string[] = [];
+    for (const [k, a] of Object.entries(t.actions)) {
+      const takes = Object.keys(a.onTarget ?? {}).length > 0 || ['fire', 'carry', 'move', 'run'].includes(k);
+      if (takes && (!a.withTarget || !a.then)) bad.push(`${k}: missing`);
+      for (const f of [a.withTarget, a.then]) if (f !== undefined && !f.includes('{target}')) bad.push(`${k}: ${f}`);
+      if (!takes && (a.withTarget || a.then)) bad.push(`${k}: takes no target`);
+    }
+    expect(bad).toEqual([]);
+  });
+  test('every target key an action names is one the file can say in a sentence', () => {
+    for (const a of Object.values(t.actions)) for (const r of Object.keys(a.onTarget ?? {})) expect(r in t.names.targets, r).toBe(true);
+    for (const k of Object.keys(t.targets)) expect(k in t.names.targets, k).toBe(true);
+  });
+});
+
+describe('the hostile AI', () => {
+  test('every AI state the engine has is spoken by ai-state or silent on purpose', () => {
+    if (!haveSim) return;
+    const model = simFile('Model.cs');
+    const states = model.match(/public string St = "";\s*\/\/ ([a-z, ]+)/)?.[1]?.split(',').map((x) => x.trim()).filter(Boolean) ?? [];
+    expect(states.length).toBeGreaterThanOrEqual(7);
+    const ai = simFile('GameAi.cs');
+    for (const m of ai.matchAll(/\.St = "([a-z]+)"/g)) expect(states, `St = ${m[1]}`).toContain(m[1]!);
+    const spoken = new Set(t.dialogue.filter((e) => e.event === 'ai-state').map((e) => e.outcome));
+    expect(states.filter((x) => !spoken.has(x) && !(x in t.silentStates))).toEqual([]);
+    expect([...spoken].filter((x) => !states.includes(x!))).toEqual([]);
+    expect(Object.keys(t.silentStates).filter((x) => spoken.has(x))).toEqual([]);
+  });
+  test('rivals, police, the guard ally and the patrol each speak every state that is spoken', () => {
+    const spokenStates = ['alerted', 'advance', 'engage', 'hold'];
+    for (const sp of t.events['ai-state']!.speakers) for (const st of spokenStates) expect(lookup(t, { event: 'ai-state', speaker: sp, outcome: st }), `${sp} ${st}`).toBeTruthy();
   });
 });
 

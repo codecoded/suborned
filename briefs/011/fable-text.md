@@ -1,6 +1,6 @@
 # The Handover's words (Fable, brief 011)
 
-Data: `contracts/missions/handover/text.json` (`suborned.text/1`), schema and lookups in `text.schema.ts`, checker in `text.test.ts`. Build-time only. 285 entries, 612 spoken lines, 76 refusal codes, 24 actions, 42 events.
+Data: `contracts/missions/handover/text.json` (`suborned.text/1`), schema and lookups in `text.schema.ts`, checker in `text.test.ts`. Build-time only. 315 entries, 672 spoken lines, 76 refusal codes, 24 actions, 50 events (updated for engine 0.4.0: hostile AI and the re-scripted Handover).
 
 ## Voice, character by character
 
@@ -69,3 +69,20 @@ Same mission, other voices: a Fearful Inez pressured ("Please. Don't. I'll do wh
 6. Not done: Hero and Menace band variants of the replies (the cells exist in the rulebook, the voice is the neutral one), the investigator's questioning lines, and the debrief lines for between-missions changes (`rulebook.debrief.lines`: turned-how, kept, informer, and so on), which belong to the debrief text, not the Handover's.
 
 `text.json` is the source from here on: edit it directly, then `bun test contracts/missions/handover/text.test.ts`. (I assembled it from scratch scripts in `out/fable/`, which are not shipped.)
+
+## Update: engine 0.4.0 (hostile AI) and with-target labels
+
+- **New engine codes, now spoken.** `ai.cover`, `ai.break`, `ai.gone`, `ai.join`, `guard.stands-down`, `patrol.resumes`, `patrol.sweep` each have an event (rivals, police, guard, patrol, with a Scout or Fixer reaction where it reads). `shot.hit` and `shot.miss` are silent on purpose (tracer and pips speak).
+- **AI states.** The engine does not log state changes, so the host speaks `ai-state` when a body's `Gun.St` changes, with the new state as `outcome`. Spoken states: `alerted`, `advance`, `engage`, `hold`, for rivals, police ("Hold this line."), the guard ally ("Drop your guns! Last warning.") and the patrol ("Halt. Halt. Halt."). `break` and `gone` are the `ai-break` / `ai-gone` events; `routine` and `down` are silent (`silentStates`). The drift test reads the state list from `Model.cs` and fails on a new state.
+- **With-target forms (for Latch).** Each action that takes a target has `withTarget` ("Listen to {target}", "Pay {target}", "Go in by {target}", "Put Vale in {target}") and `then`, the queued clause ("listens to {target}"), so a queued line reads "{agent} walks to {target}, then {then}". `{target}` is `names.targets[key]` ("Inez", "the driver", "the entrance camera"). Verbs with no target (draw, holster, cease, stance, panic, cancel, withdraw) have neither.
+- **Test.** The log-code scan now reads `Note(cond ? "a" : "b", …)` too. 46 tests green, typecheck clean.
+
+## Request for Keel (route through Aster): stable refusal codes
+
+Today `Game.Issue` returns `(ok, why)` with `why` free English, and `Hash.State` hashes `why`. Every consumer (the host's `Humanise()`, my `lockOf`) pattern-matches the prose, and any rewording silently breaks the match or changes a replay hash.
+
+Ask: return `(ok, code, why)`, where `code` is a stable kebab-case id and `why` stays for the log. Hash the code, not the prose. I have already named the 76 codes the Handover can produce, each with the engine text it matches today, in `locks` in `text.json` (`code`, `match`, `samples`). Suggested set, one per existing refusal:
+
+`mission-over` `engine-error` `unknown-verb` `agent-down` `enforcer-inside` `agent-busy` `guard-down` `guard-not-at-door` `person-down` `person-away` `no-place` `unwalkable` `no-walk` `run-carrying-vale` `run-carrying-downed` `run-tethered` `only-scout` `only-fixer` `only-tech` `only-enforcer` `too-far` `needs-routine` `needs-need` `no-act-need` `need-met` `refusal-remembered` `already-turned` `no-cash` `driver-too-late` `turn-needs-approach` `vale-not-contact` `not-a-contact` `car-gone` `car-busy` `call-too-late` `nothing-to-call` `loop-wrong-target` `loop-holds` `stand-at-cabinet` `patrol-down` `patrol-away` `no-rivals` `stand-near-rivals` `vale-not-inside` `stand-at-door` `vale-not-at-car` `stand-beside-vale` `no-vale-yet` `stand-at-getaway` `car-held` `no-weapon` `already-drawn` `not-drawn` `stance-unknown` `panic-not-cell` `panic-no-fight` `panic-nobody` `fire-running` `fire-carrying` `no-target` `fire-on-cell` `target-unknown` `civilian-target` `out-of-range` `no-clear-line` `carry-vale` `already-carrying` `carry-names-downed` `carry-self` `not-down` `already-carried` `nothing-to-cancel` `keeps-vale` `holstering` `stand-beside-op`
+
+Also: `needs-*` are today one string built from `Describe(c)`; give each condition kind its own code (`needs-routine`, `needs-need`, `no-act-need`, `need-met`, `refusal-remembered`, `already-turned`, `no-cash`), and carry the numbers a line needs (`m` for `too-far`, the worst-case `usd` for `no-cash`) as fields, not prose. `call-not-now` (the host's own wording) can become the engine's `guard-not-at-door` / `car-busy` / `call-too-late`. When the codes exist, `text.json` keeps `locks[].code` and `line`, and `match` goes; `text.test.ts` then checks the engine's code list against `locks` directly.
