@@ -77,7 +77,7 @@ Same mission, other voices: a Fearful Inez pressured ("Please. Don't. I'll do wh
 - **With-target forms (for Latch).** Each action that takes a target has `withTarget` ("Listen to {target}", "Pay {target}", "Go in by {target}", "Put Vale in {target}") and `then`, the queued clause ("listens to {target}"), so a queued line reads "{agent} walks to {target}, then {then}". `{target}` is `names.targets[key]` ("Inez", "the driver", "the entrance camera"). Verbs with no target (draw, holster, cease, stance, panic, cancel, withdraw) have neither.
 - **Test.** The log-code scan now reads `Note(cond ? "a" : "b", …)` too. 46 tests green, typecheck clean.
 
-## Request for Keel (route through Aster): stable refusal codes
+## Request for Keel: stable refusal codes (done: adopted in fec836f; see the last update below)
 
 Today `Game.Issue` returns `(ok, why)` with `why` free English, and `Hash.State` hashes `why`. Every consumer (the host's `Humanise()`, my `lockOf`) pattern-matches the prose, and any rewording silently breaks the match or changes a replay hash.
 
@@ -97,3 +97,11 @@ In `text.json`: `hints` (the layer's rules, and `items` H1–H11), `toasts`, `go
 - **Toast.** `toasts.run-seen`: "Security saw someone run and is looking into it (Alert 1)." (first `run.seen`, shown on the next order).
 - **Going-loud card.** `goingLoud.captured`: "Anyone downed is captured unless carried."
 - 50 tests green, typecheck clean.
+
+## Update: engine refusal codes, H11, the crowd
+
+- **Locks are keyed by code.** `locks` in `text.json` is now a record keyed by the engine's refusal code, each `{ line, verbs }`; `match` and `samples` are gone. Fill a line with `fillLock(text, answer, { who, op, clock })`: `{who}` and `{op}` come from the order, `{m}` is `Answer.m` (or `cm / 100`), `{usd}` is `Answer.usd`, `{tick}` is `Answer.tick` as a mission-clock m:ss. Numbers now ride in the lines: "Too far from Inez. Walk within 4 m first.", "Not enough cash for the worst case ($90,000).", "Scout is busy until 3:03.", "Too late to turn the driver: his last turn was 5:40."
+- **Eight codes are new to my list** (Keel's): `needs-temperament`, and `needs-tier`, `needs-reach`, `needs-need-is`, `needs-standing`, `needs-fit`, `needs-scale`, `needs-trail` for rulebook needs of other kinds. All have lines. I dropped `call-not-now`: it was the host's wording, not an engine code; the host's own `Locked()` reasons should become the engine's `guard-not-at-door`, `car-busy` or `call-too-late`.
+- **Tests check against the engine.** `text.json` locks must equal `Answer.Codes` (read from `Model.cs`) and `suborned-sim codes` (the test runs the built CLI when `dotnet` is present; `DOTNET_ROOT` defaults to `/opt/homebrew/opt/dotnet/libexec`). Every `No("code", …)` in the engine must be in the list. A line must use exactly the numbers the engine sends with its code: a line that shows `{tick}` where none is sent fails, and so does an ignored number.
+- **H11** now reads "A downed agent left behind is captured. Select another agent and right click them to carry them." (no key letter). A test now checks every key a line names (`N`, `F`, `Ctrl`, `Return`) against `HOW-TO-PLAY.md` and fails on any other, which would have caught the `(C)` (cancel).
+- **The crowd.** `crowd-state` (speaker: a passer-by; `outcome` is startled, fleeing, sheltered, returning, or `back` when `crowd.back` logs) and `saw-gunfire` (a witness who remembers a shot: a passer-by, Inez or the guard). The host should speak one passer-by near the cell per change, not the whole crowd. The people cast by role do not scatter, so they have no crowd lines. 323 entries, 694 lines; 54 tests green, typecheck clean.
