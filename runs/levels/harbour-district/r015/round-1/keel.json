@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "summary": "Last round's P-6 fault is fixed (16 of 16 guards hold a regular tie into the café) and every P-rule passes. One fault the checker cannot see: every guard's only routine has a café stop before the shift, including the night watch on 01:30–09:30, when the café (open 6–24) is closed. Names, the server's debt, the driver's cash, the no-Idealist guard rule and the mixes all check out. Open question, not a fault: no passage confirms the note that Help does not turn a fearful server.",
+  "faults": [
+    {
+      "owner": "Pulse",
+      "rule": "critic",
+      "fault": "The guard's only routine (guard-cafe-square, weight 100) puts a café stop before every guard shift, and the note says the night variant was removed. Guards also stand the watch shift 01:30-09:30 (watch count 2). Their café stop falls around 01:00, but the diner opens 6–24 and its shifts end at 00:00. The café is closed then and no staff are on shift, so the routine cannot happen in the unit's hours.",
+      "fix": "Add back a small-weight guard variant with preShift none for the 01:30 watch. Keep guard-cafe-square as the main variant so at least 50% of guards keep a regular tie into the café and the 9:30-17:30 door guard keeps the stop. If a variant cannot be tied to a shift, raise it with Keel/Motive.",
+      "chunks": [
+        "549c8d6a16f8427fc8b18c58",
+        "409364487039824661a2c22a"
+      ]
+    }
+  ],
+  "sources": [
+    "549c8d6a16f8427fc8b18c58",
+    "409364487039824661a2c22a",
+    "4a67b1589cfa065e189f98ae",
+    "e32f3b650d2131d749f9a84f",
+    "db59b7c04cfebaa32e41a5bc",
+    "b6b4241403570d5adfb9b83f"
+  ]
+}

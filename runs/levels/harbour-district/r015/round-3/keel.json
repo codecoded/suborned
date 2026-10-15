@@ -1,0 +1,13 @@
+{
+  "verdict": "pass",
+  "summary": "Pass. Last round's fault is fixed: guard-plain is gone, so every guard variant has the pre-shift café stop, and 16 of 16 guards hold a café regular tie. P-0 to P-13 pass and every Handover requirement reads met. Open questions, not faults: (1) the kiosk rows say 8 h shifts, as the life file does, but the scope's shifts last 6:40; (2) night-watch guards would stop at the café while it is shut (a rule for Keel/Motive); (3) no passage supports \"Help does not turn a fearful server\".",
+  "faults": [],
+  "sources": [
+    "549c8d6a16f8427fc8b18c58",
+    "409364487039824661a2c22a",
+    "b6b4241403570d5adfb9b83f",
+    "db59b7c04cfebaa32e41a5bc",
+    "4a67b1589cfa065e189f98ae",
+    "e32f3b650d2131d749f9a84f"
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "id": "01-people-pulse",
+  "objective": "people-pulse",
+  "role": "schedule-ai-designer",
+  "model": "claude-sonnet-5-5",
+  "modelsUsed": [
+    "claude-haiku-5-5",
+    "claude-sonnet-5-5"
+  ],
+  "tools": [
+    "StructuredOutput"
+  ],
+  "cliVersion": "2.1.299",
+  "costUsd": 0.2509911,
+  "seconds": 74,
+  "attempts": 1,
+  "card": {
+    "source": ".claude/agents/schedule-ai-designer.md",
+    "sourceHash": "77149723debc0acc5eb143787f10c8d517765f496d1d8068068d89cf4b231e73"
+  },
+  "brief": {
+    "source": "tools/levels/objectives/people-pulse.md",
+    "sourceHash": "eaa53d560ce7bfdf75146b06e60863962a7e2acdb0e2ffd23c13e730cc7dbb2c"
+  },
+  "promptSha256": "faf68c13ae94e86d56f0e39faa2ff945314f517304e18686c14d609a068f06b8",
+  "schemaSha256": "fd0c0cf037ee7daa5db3d873851e30362b7f275a2436aec82da2753dbe8622cd",
+  "effort": "medium",
+  "retrieval": {
+    "query": "cast table for the corner café and the Records Office: trade, opening hours, staff per shift and positions ‖ people rules: temperaments, needs and the approaches that meet them, tie kinds and limits, positions, names ‖ life.json routine skeletons worker resident, day bands, civic employers, tiers, walk speed ‖ civic block café Records Office entrances bays keep-clear zones; the Handover timeline destinations ‖ GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine ‖ people rules knowledge needs known keeper; mix cap per row and unit; ties that introduce; readBy fields ‖ The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf: 3/4 roles (limit all roles); guard: none of the 1 who fit (guard of records-office on shift 2:24-5:30 at Office entrance) has a regular tie to the staff of cafe: p-records-",
+    "queries": [
+      "cast table for the corner café and the Records Office: trade, opening hours, staff per shift and positions",
+      "people rules: temperaments, needs and the approaches that meet them, tie kinds and limits, positions, names",
+      "life.json routine skeletons worker resident, day bands, civic employers, tiers, walk speed",
+      "civic block café Records Office entrances bays keep-clear zones; the Handover timeline destinations",
+      "GDD §04 person routine need temperament memory; §09 people occupation temperament need relationships routine",
+      "people rules knowledge needs known keeper; mix cap per row and unit; ties that introduce; readBy fields",
+      "The Handover can cast every role it names (waitress, driver, guard, Vale's office), each with its need, approach and regularOf: 3/4 roles (limit all roles); guard: none of the 1 who fit (guard of records-office on shift 2:24-5:30 at Office entrance) has a regular tie to the staff of cafe: p-records-"
+    ],
+    "pinned": [],
+    "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+    "corpusHash": "13bd0949ab032d3a3cfc4a84949c98075947db677b7755e726f6ebff71089cad",
+    "embeddingModel": "BAAI/bge-small-en-v1.5",
+    "hits": [
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "distance": 0.25747737199337817,
+        "key": "4a67b1589cfa065e189f98ae",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › person and tiers",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372",
+        "text": "people rules › person and tiers\n{\"is\":[\"routine\",\"need\",\"temperament\",\"memory\"],\"needsPerPerson\":1,\"memoryAtStart\":\"empty\",\"src\":\"§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory\",\"reason\":\"memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.\",\"readBy\":{\"fields\":{\"name\":\"§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\",\"temperament\":\"§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\",\"need\":\"§04 Help and Pressure require the need known (Listen); needs.list.metBy\",\"ties\":\"§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\",\"scales\":\"§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\",\"memory\":\"§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\",\"routine\":\"§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\"},\"src\":\"GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\",\"proposed\":true,\"reason\":\"Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.\"}}\ntiers: {\"simulated\":{\"carries\":[\"name\",\"temperament\",\"need\",\"ties\",\"scales\",\"memory\",\"routine\"],\"src\":\"§09; life.json generator.tiers [G]\"},\"background\":{\"carries\":[\"routine\"],\"src\":\"life.json generator.tiers: walk, run and cheer only\",\"proposed\":true,\"reason\":\"background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to.\"}}",
+        "version": "suborned.people.rules/1",
+        "score": 0.12287110873508397,
+        "signals": [
+          "semantic:2",
+          "keyword:2",
+          "keyword:3",
+          "semantic:5",
+          "keyword:5",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "distance": 0.3650963088812633,
+        "key": "549c8d6a16f8427fc8b18c58",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › roles and employers",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372",
+        "text": "people rules › roles and employers\na person's temperament must be one its occupation (trade) or role allows. Every trade and role allows at least two, so no job reads as one kind of person (§09 risk: sameness).\nroles: resident (none) allows idealist, mercenary, fearful, loyal; visitor (none) allows idealist, mercenary, fearful, loyal; docker (hiring-hall) allows idealist, mercenary, fearful, loyal; clerk (records-office) allows idealist, mercenary, fearful, loyal; guard (records-office) allows loyal, mercenary; official-driver (records-office) allows idealist, mercenary, fearful, loyal; councillor (records-office) allows loyal, mercenary, fearful; watcher (civic) allows loyal, mercenary, fearful; patrol-officer (civic) allows loyal, mercenary; investigator (civic) allows loyal, mercenary\nemployers: {\"records-office\":{\"plot\":\"records-office\",\"block\":\"civic-office\",\"kind\":\"civic\",\"src\":\"life.json generator.civicEmployers; civic-block.json civic-office\"},\"cafe\":{\"block\":\"cafe\",\"kind\":\"trade\",\"trade\":\"diner\",\"src\":\"civic-block.json cafe (Corner café); plan standards.frontage.placement.corner: corners on two streets take an anchor trade (w ≥ 18), else a diner; the records mix lists diner\",\"proposed\":true,\"reason\":\"the café is none of the 39 trades by name. A 22 m corner unit takes a diner (the plan's corner rule; diner is an anchor in the records mix and opens 6–24, covering the 17:00 Handover). Datum or Vantage may name it otherwise.\"},\"civic\":{\"kind\":\"civic\",\"src\":\"§05 security, watchers, investigators\",\"proposed\":true,\"reason\":\"the city's own security, which the plan does not site. Its people are loyal to the civic order (institution kind civic).\"}}",
+        "version": "suborned.people.rules/1",
+        "score": 0.12163730400916183,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:2",
+          "keyword:3",
+          "keyword:4",
+          "semantic:5",
+          "semantic:7",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "City-life rules harbour-district (suborned.life/1); the life tool owns them",
+        "distance": 0.3629078269004822,
+        "key": "409364487039824661a2c22a",
+        "kind": "life",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "harbour-district life › civic employers, station workers, tiers",
+        "source": "contracts/world/harbour-district.life.json",
+        "sourceHash": "6f674b120a186d217da28be6ab310335c0b9383527eb9d647feeb309926fc6f9",
+        "text": "harbour-district life › civic employers, station workers, tiers\ncivic employers: [{\"plot\":\"records-office\",\"area\":\"records\",\"src\":\"plan civic block\",\"staff\":\"Splice sets from the civic block\",\"guard\":\"door routine, café stop pre-shift (GDD §05)\"}]\nstation workers: {\"src\":\"plan frontage.mixNote\",\"rule\":\"one kiosk worker per stop and per station, service hours 5:00-1:00, shift 8 h\"}\ntiers: {\"simulated\":\"persons the generator makes (routine + need + temperament + memory): the set near the player plus every person a plan or mission touches\",\"background\":\"walk, run and cheer only; tops the street up to the density target\",\"maxCombatants\":30,\"src\":\"GDD §06, §09; split and budget are Keel (brief 005 A)\"}\ncommuters: alighting per service per station x loadByBand; origin = beyond the sheet (plan gates); walk to home or work via the station banks",
+        "version": "plan 0.3.0",
+        "score": 0.12053184308704408,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "semantic:3",
+          "keyword:3",
+          "semantic:4",
+          "keyword:4",
+          "keyword:5",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "bm25": 1.1638360023498535,
+        "key": "e32f3b650d2131d749f9a84f",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › readBy",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372",
+        "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+        "version": "suborned.people.rules/1",
+        "score": 0.1191680017796571,
+        "signals": [
+          "keyword:2",
+          "keyword:3",
+          "semantic:5",
+          "keyword:5",
+          "semantic:6",
+          "keyword:6",
+          "semantic:7",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "Agent GDD (the human GDD wins on conflict)",
+        "bm25": 1.7928893566131592,
+        "key": "323891a57d922d217ee53289",
+        "kind": "gdd-agent",
+        "lineEnd": 156,
+        "lineStart": 149,
+        "section": "§09 GENERATION",
+        "source": "GDD/the-suborned-agent-gdd-v0.21.0-2026-10-15.md",
+        "sourceHash": "cf4e7e4cbc0a168d1f75c1206772fc218967718a3c936f38ae99f2734ac06683",
+        "text": "§09 GENERATION\nnothing hand-authored. Sky writes rules + generators. The simulation plays every generated mission before a player sees it. Build time only.\n| content | from | checked by |\n| people | occupation (from the trades on their block) × temperament × need × relationships × routine, fit to district schedules: the model writes cast tables per area × occupation (mixes, need weights, routine variants, tie patterns, name pools) through the levels pipeline (SurrealDB retrieval → Pulse → checker → Keel); seeded code expands them into people by plot and unit id (bun run people); accepted tables promoted to contracts/people/ with Sky's yes | people checker P-0…: reach their places in time; one clear need; only what people.rules.json allows; staff counts; ties; names; every field read by a rule; mission roles castable · same tables → same people |\n| missions | template (objective, target, closing event, fight trigger) + district people | mission checker |\n| dialogue, portraits, voices | person data + state (brave, resentful, promoted) | tone + rating filters; sampled review |\n| district plans | Datum (roads, transit, plots, gates, levels, megastructures, frontage program) + Vantage (block layouts) inside plan.standards | plan checker exit 0 (bun tools/plan/cli.ts) |\n| world | generator fills each plot from plan.standards, seeded by plot id: masses, towers, roofs, frontage trades, decks, stairs, lifts; 2–4 megastructures per district from the plan; each element dressed by a DecoKit piece (contracts/world/kit.json) or procedural to the same bar, seeded by id | plan checker (B, L, MS, F rules) · same plan → same world |\n| consequences | rules on mission log | replay → same result |",
+        "version": "v0.21.0",
+        "score": 0.0856829412877466,
+        "signals": [
+          "keyword:2",
+          "semantic:3",
+          "keyword:5",
+          "semantic:6",
+          "keyword:6",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "Mission handover (suborned.mission/3); GDD §07 is the authority for its timeline",
+        "bm25": 5.049315452575684,
+        "key": "c72cd79d01cbaf8d3f18e06d",
+        "kind": "mission",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "mission handover › events and stands",
+        "source": "contracts/missions/handover/mission.json",
+        "sourceHash": "a76297a34c2255d70819ee74410796c8b7974cbd847c7c4a1f3b012a612128f1",
+        "text": "mission handover › events and stands\nevents: records-handover at 5:30 in records: Records Office staff leave by the front and service doors toward T1/records and the Circus\nstands: Vale official car at Records Office north",
+        "version": "suborned.mission/3",
+        "score": 0.07718566156066156,
+        "signals": [
+          "keyword:1",
+          "semantic:4",
+          "keyword:4",
+          "semantic:7",
+          "keyword:7"
+        ]
+      },
+      {
+        "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+        "distance": 0.3564191460609436,
+        "key": "24f4e0bf2338a2a6ca0eab99",
+        "kind": "people-rules",
+        "lineEnd": 0,
+        "lineStart": 0,
+        "section": "people rules › positions",
+        "source": "contracts/people/people.rules.json",
+        "sourceHash": "aafc66aae1b4fe6850cc5bb43a9a8aa72698ed6023f87585239e882ff49c0372",
+        "text": "people rules › positions\nevery work unit has exactly one keeper; the rest of its staff take the other positions of its category. A mission casts by position and place (a server on shift at the café), never by name.\nfood: keeper, server, cook\nnightlife: keeper, server, door, entertainer\nretail: keeper, assistant\ntrade: keeper, hand\nservice: keeper, operator\nkiosk: keeper, attendant\ncinema: keeper, usher, projectionist\nlobby: keeper, porter\nmarket: keeper",
+        "version": "suborned.people.rules/1",
+        "score": 0.07473435026184386,
+        "signals": [
+          "semantic:1",
+          "keyword:1",
+          "keyword:2",
+          "keyword:6",
+          "semantic:7"
+        ]
+      },
+      {
+        "authority": "Human GDD (wins on conflict)",
+        "bm25": 2.0597853660583496,
+        "key": "bbcd20ac36f599076402aee3",
+        "kind": "gdd-human",
+        "lineEnd": 492,
+        "lineStart": 472,
+        "section": "Nothing hand-authored, everything checked (1/4)",
+        "source": "GDD/the-suborned-gdd-v0.21.0-2026-10-15.html",
+        "sourceHash": "393be3f8967c373f91e29003d81249813f8d73cc30e43b855975db57e2cb3bd5",
+        "text": "Nothing hand-authored, everything checked\nNo person, mission or line of dialogue is written by hand. Sky writes the rules and the generators. The simulation plays every generated mission before a player sees it.\nContent | Generated from | Checked by |\nPeople | Occupation × temperament × need × relationships × routine, fitted to district schedules. A model writes cast tables for each area and trade (the temperament mix, need weights, routine variants, tie patterns and name pools), retrieving the GDD, the plan and the city's rules from SurrealDB; the checker and Keel review them; seeded code then makes the individual people, so the same tables always give the same people | The people checker : every person reaches their places in time, has one clear need and only what the people rules allow; staff counts, ties and names hold; every mission role can be cast |\nMissions | Template (objective, target, closing event, fight trigger) filled with district people | The mission checker (below) |",
+        "version": "v0.21.0",
+        "score": 0.07383446496349721,
+        "signals": [
+          "keyword:2",
+          "keyword:5",
+          "semantic:6",
+          "keyword:6",
+          "keyword:7"
+        ]
+      }
+    ]
+  },
+  "pinning": {
+    "cited": 0,
+    "pinned": 0,
+    "truncated": false,
+    "dropped": []
+  }
+}
