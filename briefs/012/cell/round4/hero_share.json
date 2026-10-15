@@ -1,0 +1,26 @@
+{
+ "L1": {
+  "scout": 0.077,
+  "fixer": 0.16,
+  "tech": 0.071,
+  "enforcer": 0.063
+ },
+ "L2": {
+  "scout": 0.067,
+  "fixer": 0.048,
+  "tech": 0.062,
+  "enforcer": 0.058
+ },
+ "L3": {
+  "scout": 0.056,
+  "fixer": 0.096,
+  "tech": 0.063,
+  "enforcer": 0.083
+ },
+ "L4": {
+  "scout": 0.162,
+  "fixer": 0.229,
+  "tech": 0.198,
+  "enforcer": 0.175
+ }
+}

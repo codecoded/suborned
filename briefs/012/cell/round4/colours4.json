@@ -1,0 +1,242 @@
+{
+ "hero": {
+  "scout": {
+   "hex": "#7fd13b",
+   "cones": 70.4,
+   "guard": 38.0,
+   "rivals": 88.7,
+   "city_min": 12.3,
+   "city_nearest": "park #a6e29c",
+   "L": 76.3
+  },
+  "fixer": {
+   "hex": "#f48fc0",
+   "cones": 30.7,
+   "guard": 46.3,
+   "rivals": 29.7,
+   "city_min": 10.6,
+   "city_nearest": "flamingo #e8609a",
+   "L": 71.3
+  },
+  "tech": {
+   "hex": "#0b9a64",
+   "cones": 66.9,
+   "guard": 44.8,
+   "rivals": 49.4,
+   "city_min": 16.6,
+   "city_nearest": "seafoam #72b5a7",
+   "L": 56.2
+  },
+  "enforcer": {
+   "hex": "#12a0d8",
+   "cones": 56.5,
+   "guard": 54.4,
+   "rivals": 36.0,
+   "city_min": 13.2,
+   "city_nearest": "cobalt #2f84e8",
+   "L": 61.8
+  }
+ },
+ "base": {
+  "cool white #f2f4f6": {
+   "hex": "#f2f4f6",
+   "cones": 44.8,
+   "guard": 33.1,
+   "rivals": 43.9,
+   "city_min": 9.8,
+   "city_nearest": "cream #f9efdc"
+  },
+  "brushed silver #c8ccd0": {
+   "hex": "#c8ccd0",
+   "cones": 39.7,
+   "guard": 31.0,
+   "rivals": 35.4,
+   "city_min": 11.6,
+   "city_nearest": "asphalt #a5a2a8"
+  },
+  "charcoal #2b2d30": {
+   "hex": "#2b2d30",
+   "cones": 40.1,
+   "guard": 59.2,
+   "rivals": 31.4,
+   "city_min": 26.3,
+   "city_nearest": "civic teal #1f6c67"
+  },
+  "lamp aqua #8fe3e0": {
+   "hex": "#8fe3e0",
+   "cones": 59.4,
+   "guard": 42.3,
+   "rivals": 46.8,
+   "city_min": 10.4,
+   "city_nearest": "mint #8fe3c2"
+  }
+ },
+ "mutual": {
+  "scout-fixer": 71.8,
+  "scout-tech": 22.7,
+  "scout-enforcer": 55.9,
+  "fixer-tech": 68.6,
+  "fixer-enforcer": 51.1,
+  "tech-enforcer": 37.6
+ },
+ "painted": {
+  "scout": {
+   "R4-scout-1-mod-runner": {
+    "share": 0.0189,
+    "painted": "#7da837",
+    "cones": 59.8,
+    "guard": 32.9,
+    "rivals": 78.9,
+    "city_min": 17.8,
+    "target_dE": 11.1
+   },
+   "R4-scout-2-cut-out-fins": {
+    "share": 0.0177,
+    "painted": "#85a349",
+    "cones": 55.3,
+    "guard": 30.8,
+    "rivals": 73.8,
+    "city_min": 17.8,
+    "target_dE": 13.5
+   },
+   "R4-scout-3-quilted-dish": {
+    "share": 0.0139,
+    "painted": "#8daa37",
+    "cones": 56.9,
+    "guard": 29.7,
+    "rivals": 77.4,
+    "city_min": 17.9,
+    "target_dE": 11.5
+   },
+   "R4-scout-4-hero-block": {
+    "share": 0.0423,
+    "painted": "#85a53b",
+    "cones": 56.8,
+    "guard": 30.8,
+    "rivals": 76.5,
+    "city_min": 18.3,
+    "target_dE": 12.5
+   }
+  },
+  "fixer": {
+   "R4-fixer-1-ring-collar-column": {
+    "share": 0.0093,
+    "painted": "#e18da0",
+    "cones": 24.5,
+    "guard": 37.6,
+    "rivals": 31.7,
+    "city_min": 11.0,
+    "target_dE": 8.0
+   },
+   "R4-fixer-2-chevron-tunic": {
+    "share": 0.0208,
+    "painted": "#eb8eb3",
+    "cones": 28.4,
+    "guard": 43.3,
+    "rivals": 30.0,
+    "city_min": 10.0,
+    "target_dE": 3.0
+   },
+   "R4-fixer-3-yoke-disc": {
+    "share": 0.0364,
+    "painted": "#e682a3",
+    "cones": 25.2,
+    "guard": 42.3,
+    "rivals": 29.4,
+    "city_min": 7.5,
+    "target_dE": 6.0
+   },
+   "R4-fixer-4-hero-block": {
+    "share": 0.0471,
+    "painted": "#ef92ab",
+    "cones": 26.5,
+    "guard": 39.6,
+    "rivals": 32.5,
+    "city_min": 11.5,
+    "target_dE": 6.0
+   }
+  },
+  "tech": {
+   "R4-tech-1-quilted-tunic": {
+    "share": 0.0092,
+    "painted": "#055b45",
+    "cones": 58.7,
+    "guard": 54.1,
+    "rivals": 42.4,
+    "city_min": 9.7,
+    "target_dE": 22.8
+   },
+   "R4-tech-2-quilted-belt": {
+    "share": 0.0134,
+    "painted": "#036d51",
+    "cones": 60.4,
+    "guard": 50.0,
+    "rivals": 43.3,
+    "city_min": 9.2,
+    "target_dE": 16.8
+   },
+   "R4-tech-3-bell-shell": {
+    "share": 0.0129,
+    "painted": "#226952",
+    "cones": 57.0,
+    "guard": 49.2,
+    "rivals": 41.2,
+    "city_min": 7.6,
+    "target_dE": 18.4
+   },
+   "R4-tech-4-hero-block": {
+    "share": 0.0419,
+    "painted": "#056b50",
+    "cones": 60.1,
+    "guard": 50.3,
+    "rivals": 43.1,
+    "city_min": 8.9,
+    "target_dE": 17.5
+   }
+  },
+  "enforcer": {
+   "R4-enforcer-1-yoke-staff": {
+    "share": 0.0171,
+    "painted": "#0374ae",
+    "cones": 49.6,
+    "guard": 54.2,
+    "rivals": 27.1,
+    "city_min": 10.3,
+    "target_dE": 15.8
+   },
+   "R4-enforcer-2-yoke-across": {
+    "share": 0.0176,
+    "painted": "#0f7baf",
+    "cones": 51.0,
+    "guard": 52.5,
+    "rivals": 28.0,
+    "city_min": 9.7,
+    "target_dE": 12.9
+   },
+   "R4-enforcer-3-quilted-discs": {
+    "share": 0.0271,
+    "painted": "#066da8",
+    "cones": 48.8,
+    "guard": 55.4,
+    "rivals": 26.0,
+    "city_min": 11.9,
+    "target_dE": 18.8
+   },
+   "R4-enforcer-4-hero-block": {
+    "share": 0.0493,
+    "painted": "#0a81b6",
+    "cones": 51.8,
+    "guard": 52.0,
+    "rivals": 29.3,
+    "city_min": 9.2,
+    "target_dE": 10.6
+   }
+  }
+ },
+ "lamp_vs_hero": {
+  "scout": 30.3,
+  "fixer": 45.9,
+  "tech": 27.8,
+  "enforcer": 25.3
+ }
+}
