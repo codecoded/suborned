@@ -79,7 +79,7 @@ namespace Suborned.Sim
                 var mine = r.Shots().FindAll(x => x.by == Scout && x.target == GuardR);
                 r.Eq(string.Join(",", mine.ConvertAll(x => x.hit ? "hit" : "miss")), "hit,hit,miss,hit", "exactly three in four, in this order, every run");
                 r.Eq(mine[1].tick - mine[0].tick, g.R.Pistol.Every, "a pistol fires every 1.5 s");
-                r.Eq(g.Trail - trail, g.R.HitTrail + g.R.DownTrail, "the cost is on the victim: +2 T hit, +2 T down, not per shot");
+                r.Eq(g.Trail - trail, g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, "+2 T the shooting (once), +2 T hit, +2 T down: not per shot (Motive addendum Q1)");
                 r.Eq(g.Gunfire, 4, "four shots fired");
                 r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
             });
@@ -97,7 +97,13 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 1, "Alert 1");
                 r.Is(g.Incidents.Exists(i => i.Kind == "weapon-drawn" && i.Witnesses.Count > 0), "the incident with its witnesses (for the investigators)");
                 r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness holds the Fixer's face");
+                r.Eq(g.Standing, -1, "a gun shown on the street: one step toward Menace (Motive addendum Q5)");
                 r.Wait(T(3)); r.Eq(g.Trail - trail, g.R.WitnessTrail, "once a draw, not once a tick");
+                r.SendTo(Scout, r.Op(Fixer).Pos + new Pt(0, 100)); r.Until(() => r.Op(Scout).Walk == null, T(120));
+                int incidents = g.Incidents.FindAll(i => i.Kind == "weapon-drawn").Count;
+                r.Do(Fixer, "holster"); r.Wait(T(1)); r.Do(Fixer, "draw"); r.Do(Scout, "draw"); r.Wait(T(2));
+                r.Eq(g.Incidents.FindAll(i => i.Kind == "weapon-drawn").Count, incidents + 1, "two drawing together at one place: one incident (Motive addendum Q1)");
+                r.Eq(g.Trail - trail, 2 * g.R.WitnessTrail, "+1 T for it, not +2");
                 r.To(r.Send(Fixer, "d:Office approach"));
                 r.Eq(g.Alert, 2, "walking into the guard's cone with the weapon out: Alert 2");
                 r.Is(g.GuardEngaged, "the guard engages");
@@ -118,7 +124,8 @@ namespace Suborned.Sim
                 r.Eq(c.FightAfter, "loud", "the final fight turns loud");
                 r.Is(c.Officers >= g.R.LoudOfficers && c.ResponseOfficers == g.R.ResponseOfficers, $"{c.Officers} officers and the response unit's {c.ResponseOfficers}");
                 r.Is(c.GuardAllyLost, "the guard won't help");
-                r.Eq((c.TrailPerHit, c.TrailPerDown, c.HoldTicks), (2, 2, 5), "+2 T a person hit, +2 T a down; hold 0.5 s to commit");
+                r.Eq((c.TrailPerShooting, c.TrailPerHit, c.TrailPerDown, c.HoldTicks), (2, 2, 2, 5), "+2 T the shooting, +2 T a person hit, +2 T a down; hold 0.5 s to commit");
+                r.Is(c.DownedCaptured, "the loss line: anyone downed is captured unless carried (Motive addendum Q3)");
                 r.Fire(Enf, GuardR);
                 r.Until(() => g.Gunfire > 0, T(10));
                 r.Eq(g.Alert, c.AlertTo, "Alert as the card said");
@@ -142,6 +149,69 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
                 r.Is(r.Shots().Exists(x => x.by == Scout && x.target == GuardR) && r.Shots().Exists(x => x.by == Enf && x.target == GuardR), "the Scout and the Enforcer fired on him without a fire order");
                 r.Is(!r.Shots().Exists(x => x.by != GuardR && x.target == "patrol"), "at will is at combatants only: nobody fired on the patrol, which never engaged");
+            });
+
+            var pressure = new Start(); pressure.Known[Inez] = new List<string> { "routine", "need", "temperament" };
+            Add("N36", "—", "The safe fight lost (Motive addendum Q7): unprepared (Inez pressured, so no warning; the guard saw the Enforcer, so no ally), the Enforcer alone at the car goes down, and the fail is the rivals' goal: they take Vale.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Office approach", run: true)); // running past the door: the guard holds a memory, so no ally (Motive §1.1)
+                r.Is(g.GuardP.Has("saw-runner"), "the guard saw the Scout run");
+                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet"), r.Send(Scout, "d:Courtyard"))); r.Do(Tech, "loop", "entrance");
+                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer); r.Done(Tech);
+                r.SendTo(Enf, new Pt(4900, -1700)); r.To(r.Arrival(Enf));
+                while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+                r.Do(Fixer, "call", Inez);
+                r.To(r.Send(Enf, "d:Office entrance"));
+                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+                r.Do(Enf, "enter"); r.Do(Tech, "reroute", "patrol"); r.Done(Enf);
+                r.Is(!g.FightWarned, "pressured, Inez warns nobody");
+                r.Is(!g.GuardAlly, "the guard saw the cell: no ally");
+                r.Send(Enf, "d:Getaway bay");
+                r.FightItOut(120);
+                r.Eq(g.Result, Outcome.Failure, "the lone, unprepared Enforcer loses the safe fight");
+                r.Eq(g.FailCode, "rivals-reach-vale", "and the fail names what the rivals came for");
+            }, pressure);
+
+            Add("N37", "—", "The crowd scatters (Pulse §4): a weapon drawn among people on the square startles those in sight within witness range; after the startle they run to a refuge farther from it than they stood, shelter off the street, and walk back when it has been quiet.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Fixer, "d:Courtyard"));
+                var at = r.Op(Fixer).Pos;
+                var near = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(at, p.Value, g.R.Eye); });
+                r.Is(near.Count > 0, $"people in sight of the Fixer ({near.Count})");
+                r.Do(Fixer, "draw"); r.Wait(1);
+                r.Is(near.TrueForAll(w => w.St == "startled"), "each of them is startled");
+                var stood = new Dictionary<string, long>(); foreach (var w in near) stood[w.P.Id] = G.D2(w.At, at);
+                r.Wait(g.R.CrowdStartleTicks + 1);
+                r.Is(near.TrueForAll(w => w.St == "fleeing"), "after the startle they run");
+                bool away = true; foreach (var w in near) { var rf = g.S.Refuges.Find(x => x.id == w.Refuge); if (G.D2(rf.at, at) <= stood[w.P.Id] && g.S.Refuges.Exists(x => G.D2(x.at, at) > stood[w.P.Id] && G.Within(x.at, w.At, g.R.CrowdFleeMaxCm))) away = false; }
+                r.Is(away, "each to a refuge farther from the weapon than they stood");
+                r.Is(r.Until(() => near.TrueForAll(w => w.St == "sheltered"), T(60)), "they reach shelter");
+                r.Is(near.TrueForAll(w => !g.CrowdPos(w).HasValue), "off the street");
+                r.Do(Fixer, "holster");
+                r.Is(r.Until(() => near.TrueForAll(w => w.St == "" || w.St == "returning"), T(g.R.CrowdQuietS + 5)), "quiet for crowd.quiet, they come back");
+            });
+
+            Add("N38", "—", "A shot startles everyone within crowd.scatter, seen or not; a person on a watcher's sightline blocks it (Pulse §4: watchers only).", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Enf, "d:Office approach"));
+                var at = r.Op(Enf).Pos;
+                var within = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && G.Within(p.Value, at, g.R.CrowdScatterCm); });
+                r.Fire(Enf, GuardR); r.Until(() => g.Gunfire > 0, T(10)); r.Wait(1);
+                r.Is(within.TrueForAll(w => w.St != ""), $"everyone within 30 m is startled or already running ({within.Count})");
+                // a sightline through a person on the street is blocked; one that passes 1 m clear of everyone is not
+                var w0 = g.Walkers.Find(w => w.St == "" && g.CrowdPos(w).HasValue)!; var p0 = g.CrowdPos(w0)!.Value;
+                r.Is(g.CrowdBlocks(p0 + new Pt(-1000, 0), p0 + new Pt(1000, 0)), "a line through a person is blocked (crowd.occlude)");
+                int found = -1;
+                for (int dy = 100; dy <= 3000 && found < 0; dy += 100)
+                {
+                    bool clear = true;
+                    foreach (var w in g.Walkers) { var p = g.CrowdPos(w); if (p.HasValue && p.Value.X >= p0.X - 1100 && p.Value.X <= p0.X + 1100 && Math.Abs(p.Value.Y - (p0.Y + dy)) < 100) clear = false; }
+                    if (clear) found = dy;
+                }
+                r.Is(found > 0 && !g.CrowdBlocks(p0 + new Pt(-1000, found), p0 + new Pt(1000, found)), $"a line 1 m clear of everyone is not ({found} cm off)");
             });
 
             Add("N26", "—", "Downed and carried (motive-fights.md §2.2, §1.1): the guard downs the Scout, who holds fire; the Fixer lifts him in 3 s; the carrier can't run or fire; the Scout's orders are refused.", r =>

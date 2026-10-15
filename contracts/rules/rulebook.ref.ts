@@ -202,7 +202,7 @@ export function forgetIndex(memory: readonly Mem[]): number {
     for (let j = 0; j < memory.length; j++) if (ok(memory[j]!) && (i < 0 || memory[j]!.time < memory[i]!.time)) i = j;
     return i;
   };
-  const seen = pick((m) => m.act === 'saw-act' || m.act === 'saw-runner' || m.act === 'told');
+  const seen = pick((m) => m.act === 'saw-act' || m.act === 'saw-runner' || m.act === 'saw-gunfire' || m.act === 'told');
   return seen >= 0 ? seen : pick(() => true);
 }
 

@@ -8,29 +8,58 @@ namespace Suborned.Sim
 {
     public sealed partial class Game
     {
-        /// <summary>Give an order now (its tick must be the game's tick). Returns whether it was taken, and why not.</summary>
-        public (bool ok, string why) Issue(Order o)
+        /// <summary>Give an order now (its tick must be the game's tick). Returns whether it was taken and, if not, a stable refusal code
+        /// (Fable's `locks`, contracts/missions/handover/text.json), the engine's words for the log, and the numbers a line needs.
+        /// Deconstructs as (ok, why) or (ok, code, why).</summary>
+        public Answer Issue(Order o)
         {
             if (o.Tick != Tick) throw new InvalidOperationException($"order for tick {o.Tick} given at tick {Tick}");
-            string why;
-            try { why = Over ? "the mission is over" : Check(o); }
-            catch (Exception e) when (!(e is OutOfMemoryException)) { why = "engine error: " + e.GetType().Name + ": " + e.Message; }
+            string why; refusal = default;
+            try { why = Over ? No("mission-over", "the mission is over") : Check(o); }
+            catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             bool ok = why.Length == 0;
-            Orders.Add((o, ok, why));
+            var a = ok ? new Answer { ok = true, code = "", why = "" } : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            if (!ok && a.code == "uncoded") throw new InvalidOperationException($"a refusal without a code: {why}"); // every refusal says its code (Fable)
+            Orders.Add((o, ok, a.code, why));
             if (!ok) Note("order.rejected", $"{o.Op} {o.Do} {o.Target}{o.To}: {why}");
-            return (ok, why);
+            return a;
         }
         public bool Do(Order o) => Issue(o).ok;
+
+        (string? code, int m, int cm, long usd, int tick) refusal;
+        /// <summary>A refusal: its stable code and its numbers (m, cm, usd, tick; -1 when it has none), and the words for the log.</summary>
+        string No(string code, string why, int m = -1, int cm = -1, long usd = -1, int tick = -1)
+        {
+            if (Array.IndexOf(Answer.Codes, code) < 0) throw new InvalidOperationException($"refusal code '{code}' is not in Answer.Codes");
+            refusal = (code, m, cm, usd, tick); return why;
+        }
+        /// <summary>A rulebook need that does not hold, as its own code (Fable): the knowledge a Turn or Listen needs, the need it acts on,
+        /// a refusal remembered, a contact or not, and cash for the worst case (with the worst case in usd).</summary>
+        string NeedsNo(Cond c, PCtx x)
+        {
+            string why = $"needs {Describe(c)}";
+            switch (c.K)
+            {
+                case "known": return No("needs-" + c.S("what"), why);
+                case "requires": { var req = R.ApproachRequires(c.S("approach")); return No(req == "need" ? "needs-need" : req == "temperament" ? "needs-temperament" : "needs-routine", why); }
+                case "need-met-by": return No("no-act-need", why);
+                case "need-met": return No("need-met", why);
+                case "memory": return No("refusal-remembered", why);
+                case "turned": return No(c.B("is") ? "not-a-contact" : "already-turned", why);
+                case "cash-covers": return No("no-cash", why, usd: Quote(x.Ev, x.P).WorstUsd);
+                default: return No("needs-" + c.K, why);
+            }
+        }
 
         string Check(Order o)
         {
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (o.Do == "panic") return Panic(o);
             var op = OpOf(Sim.Op.Parse(o.Op));
-            if (op.Down) return $"the {o.Op} is down";
+            if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
-            if (op.Inside) return "the Enforcer is inside the Office";
-            if (op.Busy != null) return $"{o.Op} is busy until {op.BusyEnd}";
+            if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
+            if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             switch (o.Do)
             {
                 case "move": return Move(op, o);
@@ -49,7 +78,7 @@ namespace Suborned.Sim
                 case "enter": return Enter(op, o);
                 case "take": return Take(op, o);
                 case "extract": return Extract(op, o);
-                default: return $"verb '{o.Do}' is unknown (unknown = reject)";
+                default: return No("unknown-verb", $"verb '{o.Do}' is unknown (unknown = reject)");
             }
         }
 
@@ -67,10 +96,10 @@ namespace Suborned.Sim
             Pt to;
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
-            else return $"no place '{o.To}'";
-            if (!S.Grid.Free(to)) return "that ground can't be walked (a roof, a wall or a solid)";
+            else return No("no-place", $"no place '{o.To}'");
+            if (!S.Grid.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
-            var route = S.Grid.Route(op.Pos, to); if (route == null) return "no walk there";
+            var route = S.Grid.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
             op.Walk = new Path(route); op.WalkMm = 0;
             if (op.Walk.Length == 0) op.Walk = null;
             op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
@@ -88,20 +117,20 @@ namespace Suborned.Sim
         {
             pos = default;
             var at = PersonPos(p);
-            if (!at.HasValue) return p.Down ? $"{p.Role} is down" : $"{p.Role} is not out on the street";
+            if (!at.HasValue) return p.Down ? No("person-down", $"{p.Role} is down") : No("person-away", $"{p.Role} is not out on the street");
             pos = at.Value; return "";
         }
 
         string Scout(Op op, Order o)
         {
-            if (op.Id != OpId.Scout) return "only the Scout watches and listens (§03)";
+            if (op.Id != OpId.Scout) return No("only-scout", "only the Scout watches and listens (§03)");
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
             var ev = R.Ev("scout." + o.Do);
             int reach = actReach;
             foreach (var c in ev.Needs) if (c.K == "reach") reach = (int)R.Num(c.S("m")) * 100;
-            if (!G.Within(op.Pos, pos, reach)) return $"stand within {reach / 100} m of {p.Role}";
+            if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
             var x = Ctx(p, ev);
-            foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return $"needs {Describe(c)}";
+            foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
             var q = Quote(ev, p);
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = 0;
@@ -110,16 +139,16 @@ namespace Suborned.Sim
 
         string Turn(Op op, Order o)
         {
-            if (op.Id != OpId.Fixer) return "only the Fixer turns people (§03)";
-            if (o.Approach.Length == 0) return "turn needs an approach (ask, pay, help, pressure)";
+            if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer turns people (§03)");
+            if (o.Approach.Length == 0) return No("turn-needs-approach", "turn needs an approach (ask, pay, help, pressure)");
             var ev = R.Ev("turn." + o.Approach);
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
-            if (p == ValeP) return "Vale is the target, not a contact";
+            if (p == ValeP) return No("vale-not-contact", "Vale is the target, not a contact");
             var x = Ctx(p, ev);
             x.Reach = G.Within(op.Pos, pos, approachReach);
-            foreach (var c in ev.Needs) if (!Holds(c, x)) return c.K == "reach" ? $"stand within {approachReach / 100} m of {p.Role}" : $"needs {Describe(c)}";
+            foreach (var c in ev.Needs) if (!Holds(c, x)) return c.K == "reach" ? No("too-far", $"stand within {approachReach / 100} m of {p.Role}", m: approachReach / 100) : NeedsNo(c, x);
             var q = Quote(ev, p);
-            if (p == Driver && Tick + T((int)q.S) > T(driverLastS)) return "the driver can be turned only until 5:40 (§07 last chance to turn driver)";
+            if (p == Driver && Tick + T((int)q.S) > T(driverLastS)) return No("driver-too-late", "the driver can be turned only until 5:40 (§07 last chance to turn driver)", tick: T(driverLastS));
             Cash -= q.Usd; // the price is paid when the order is given; a refusal gives back exactly this (Redline E2)
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = q.Usd;
@@ -225,7 +254,7 @@ namespace Suborned.Sim
             if (p.Memory.Count <= R.MemoryCap) return;
             int drop = -1;
             for (int j = 0; j < p.Memory.Count; j++)
-                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
+                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "saw-gunfire" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
             if (drop < 0) for (int j = 0; j < p.Memory.Count; j++) if (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick) drop = j;
             p.Memory.RemoveAt(drop);
         }
@@ -413,14 +442,14 @@ namespace Suborned.Sim
 
         string Call(Op op, Order o)
         {
-            if (op.Id != OpId.Fixer) return "only the Fixer calls contacts (§03)";
+            if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer calls contacts (§03)");
             var p = PersonByRole(o.Target);
-            if (p.Down) return $"{p.Role} is down";
-            if (!p.Turned) return $"{p.Role} is not a contact";
+            if (p.Down) return No("person-down", $"{p.Role} is down");
+            if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
             if (p == Inez)
             {
-                if (GuardDown) return "the guard is down";
-                if (!GuardAtDoor) return "the guard is not at the door";
+                if (GuardDown) return No("guard-down", "the guard is down");
+                if (!GuardAtDoor) return No("guard-not-at-door", "the guard is not at the door");
                 LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT;
                 AddTrail(R.CallTrail, "call:waitress"); Remember(Inez, "job", "fixer", false);
                 Actions.Add("call:waitress"); Chain.Add("waitress-calls-guard");
@@ -429,47 +458,47 @@ namespace Suborned.Sim
             }
             if (p == Driver)
             {
-                if (Vale == ValeAt.Car) return "the official car is gone";
-                if (BlockMove != INF && Tick < BlockedUntil + blockMoveT) return "the car is still blocking or returning";
-                if (Tick >= T(driverLastS) - blockMoveT) return "too late: the car leaves for the pickup at 5:40";
+                if (Vale == ValeAt.Car) return No("car-gone", "the official car is gone");
+                if (BlockMove != INF && Tick < BlockedUntil + blockMoveT) return No("car-busy", "the car is still blocking or returning", tick: BlockedUntil + blockMoveT);
+                if (Tick >= T(driverLastS) - blockMoveT) return No("call-too-late", "too late: the car leaves for the pickup at 5:40", tick: T(driverLastS) - blockMoveT);
                 BlockMove = Tick; BlockedFrom = Tick + blockMoveT; BlockedUntil = Tick + blockMoveT + blockHoldT;
                 AddTrail(R.CallTrail, "call:driver"); Remember(Driver, "job", "fixer", false);
                 Actions.Add("call:driver"); Chain.Add("driver-blocks-camera");
                 Note("call.driver", "The driver starts moving the car across the pickup camera.");
                 return "";
             }
-            return $"{p.Role} has nothing to do on a call";
+            return No("nothing-to-call", $"{p.Role} has nothing to do on a call");
         }
 
         string Loop(Op op, Order o)
         {
-            if (op.Id != OpId.Tech) return "only the Tech loops cameras (§03)";
-            if (o.Target != "entrance") return "the Tech's cabinet loops the entrance camera";
-            if (LoopOn) return "the loop already holds";
-            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return "stand at the cabinet";
+            if (op.Id != OpId.Tech) return No("only-tech", "only the Tech loops cameras (§03)");
+            if (o.Target != "entrance") return No("loop-wrong-target", "the Tech's cabinet loops the entrance camera");
+            if (LoopOn) return No("loop-holds", "the loop already holds");
+            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
             Engage(op, o, R.LoopS); return "";
         }
         string Reroute(Op op, Order o)
         {
-            if (op.Id != OpId.Tech) return "only the Tech reroutes patrols (§03)";
-            if (PatrolDown) return "the patrol is down";
-            if (PatrolAwayUntil > Tick) return "the patrol is already away";
-            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return "stand at the cabinet";
+            if (op.Id != OpId.Tech) return No("only-tech", "only the Tech reroutes patrols (§03)");
+            if (PatrolDown) return No("patrol-down", "the patrol is down");
+            if (PatrolAwayUntil > Tick) return No("patrol-away", "the patrol is already away", tick: PatrolAwayUntil);
+            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
             Engage(op, o, R.RerouteS); return "";
         }
         string Mislead(Op op, Order o)
         {
-            if (op.Id != OpId.Scout) return "only the Scout misleads (§03)";
-            var r = RivalsPose(); if (!r.HasValue) return "no rivals here";
-            if (!G.Within(op.Pos, r.Value.pos, actReach)) return "stand near the rivals";
+            if (op.Id != OpId.Scout) return No("only-scout", "only the Scout misleads (§03)");
+            var r = RivalsPose(); if (!r.HasValue) return No("no-rivals", "no rivals here");
+            if (!G.Within(op.Pos, r.Value.pos, actReach)) return No("stand-near-rivals", "stand near the rivals", m: actReach / 100);
             Engage(op, o, R.MisleadS); return "";
         }
 
         string Enter(Op op, Order o)
         {
-            if (op.Id != OpId.Enforcer) return "only the Enforcer enters (§03)";
-            if (Vale != ValeAt.Office || EntryInProgress) return "Vale is not inside";
-            if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return "stand at the public door";
+            if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer enters (§03)");
+            if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", "Vale is not inside");
+            if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return No("stand-at-door", "stand at the public door", cm: R.AtReachCm);
             op.Walk = null;
             if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned."); return ""; }
             if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down."); return ""; }
@@ -484,10 +513,10 @@ namespace Suborned.Sim
         }
         string Take(Op op, Order o)
         {
-            if (op.Id != OpId.Enforcer) return "only the Enforcer takes Vale (§03)";
-            if (Vale != ValeAt.Pickup) return "Vale is not at his car";
+            if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes Vale (§03)");
+            if (Vale != ValeAt.Pickup) return No("vale-not-at-car", "Vale is not at his car");
             var vp = ValePos()!.Value;
-            if (!G.Within(op.Pos, vp, actReach)) return "stand beside Vale";
+            if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", "stand beside Vale", m: actReach / 100);
             op.Walk = null;
             if (!PickupService && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued."); return ""; }
             var rp = RivalsPose();
@@ -500,10 +529,10 @@ namespace Suborned.Sim
         }
         string Extract(Op op, Order o)
         {
-            if (op.Id != OpId.Enforcer) return "only the Enforcer brings Vale to the car";
-            if (Vale != ValeAt.WithEnforcer) return "the Enforcer does not have Vale";
-            if (!G.Within(op.Pos, S.At(S.GetawayCar), R.AtReachCm)) return "stand at the getaway car";
-            if (CarHeld()) return "the car is held: the fight isn't over (§07)";
+            if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer brings Vale to the car");
+            if (Vale != ValeAt.WithEnforcer) return No("no-vale-yet", "the Enforcer does not have Vale");
+            if (!G.Within(op.Pos, S.At(S.GetawayCar), R.AtReachCm)) return No("stand-at-getaway", "stand at the getaway car", cm: R.AtReachCm);
+            if (CarHeld()) return No("car-held", "the car is held: the fight isn't over (§07)");
             op.Walk = null;
             Vale = ValeAt.Car; Result = Outcome.Success; Chain.Add("vale-in-getaway-car");
             Note("success", "Vale is in the car. The crew escapes.");

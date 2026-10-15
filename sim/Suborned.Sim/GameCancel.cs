@@ -123,7 +123,7 @@ namespace Suborned.Sim
         string Cancel(Op op)
         {
             var a = ActivityOf(op.Id); string name = Sim.Op.Name(op.Id);
-            if (!a.CanCancel) return a.CancelText;
+            if (!a.CanCancel) return No(a.CancelCost == "down" ? "agent-down" : a.CancelCost == "keeps-vale" ? "keeps-vale" : a.CancelCost == "none" ? "holstering" : "nothing-to-cancel", a.CancelText);
             switch (a.Phase)
             {
                 case "acting":
@@ -142,7 +142,7 @@ namespace Suborned.Sim
                                 break;
                             case "take":
                                 Vale = ValeAt.Pickup;
-                                if (R.CancelTake == "vale-reports") ReportBy("councillor", ValePos() ?? op.Pos);
+                                if (R.CancelTake == "vale-reports") { ReportBy("councillor", ValePos() ?? op.Pos); Remember(ValeP, "aborted", "enforcer", false); } // a lead for the investigators (Motive addendum Q4)
                                 break;
                         }
                         Note("cancel." + o.Do, $"{name} stops: {o.Do}{(o.Target.Length > 0 ? " " + o.Target : "")} ({a.CancelCost}: {a.CancelText}).");
@@ -165,7 +165,7 @@ namespace Suborned.Sim
                     if (a.Verb == "carry") { var c = OpOf(op.Carrying!.Value); c.CarriedBy = null; op.Carrying = null; Note("cancel.carry", $"{name} lays the {Sim.Op.Name(c.Id)} down."); return ""; }
                     break;
             }
-            return "nothing to cancel";
+            return No("nothing-to-cancel", "nothing to cancel");
         }
 
         /// <summary>A reported incident by someone who is not a contact (rulebook alert.byIncident): the Office staff, or Vale.</summary>

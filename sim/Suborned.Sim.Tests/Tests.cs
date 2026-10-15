@@ -145,6 +145,30 @@ public class RulesTests
     }
 
     [Fact]
+    public void EveryRefusalHasAStableCodeAndTheHashReadsTheCodeNotTheWords()
+    {
+        var bad = new List<string>(); int refused = 0;
+        foreach (var sc in Scenarios.All)
+        {
+            var g = Scenarios.Run(Repo.Inputs, sc).G;
+            foreach (var (o, ok, code, why) in g.Orders)
+            {
+                if (ok) continue; refused++;
+                if (!Answer.Codes.Contains(code) || code == "engine-error") bad.Add($"{sc.Id}: {o} → {code} ({why})");
+            }
+        }
+        Assert.True(refused > 10, $"the scenarios refuse orders ({refused})");
+        Assert.Empty(bad);
+        var a = New(); var b = New();
+        var x = a.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "waitress" });
+        Assert.Equal(("too-far", false), (x.code, x.ok)); Assert.True(x.m > 0); // the number the line needs, as a field
+        var (ok2, code2, why2) = b.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "waitress" });
+        Assert.Equal(x.code, code2);
+        Assert.Equal(Hash.State(a), Hash.State(b));
+        Assert.Equal(Answer.Codes.Length, Answer.Codes.Distinct().Count());
+    }
+
+    [Fact]
     public void ArmsDecideWhoCarriesASidearm()
     {
         var none = new Start { Arms = 0 };

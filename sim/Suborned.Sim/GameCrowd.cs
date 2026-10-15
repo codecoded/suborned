@@ -13,6 +13,8 @@ namespace Suborned.Sim
         public Person P = null!;
         public string[] Place = Array.Empty<string>(); public int[] From = Array.Empty<int>(), To = Array.Empty<int>(); public bool[] Out = Array.Empty<bool>(); // ticks from mission 0:00
         /// <summary>A fresh copy for one game: the routine is shared, the person's state is not.</summary>
+        // in a fight (Pulse §4): "" routine, startled, fleeing, sheltered, returning; where they stand or run, and since when
+        public string St = ""; public int Until, RunStart; public Pt At; public Path? Run; public string Refuge = "";
         public Walker Fresh()
         {
             var p = new Person { Id = P.Id, Name = P.Name, Job = P.Job, Temperament = P.Temperament, Need = P.Need, Role = "" };
@@ -66,6 +68,13 @@ namespace Suborned.Sim
         /// <summary>Where a person of the crowd is at this tick, or null if they are not on the street.</summary>
         public Pt? CrowdPos(Walker w) => CrowdPos(w, Tick);
         public Pt? CrowdPos(Walker w, int tick)
+        {
+            if (w.P.Down) return null;
+            if (w.St.Length > 0 && tick == Tick) return ScatterPos(w);
+            return RoutinePos(w, tick);
+        }
+        /// <summary>Where the routine puts a person of the crowd at this tick (no fight).</summary>
+        Pt? RoutinePos(Walker w, int tick)
         {
             if (w.P.Down) return null;
             var c = People2!;

@@ -189,7 +189,7 @@ function coverOf() {
   return {
     from: COVER_FILE, sha256: createHash('sha256').update(text).digest('hex'),
     src: 'brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight',
-    points: c.points, blockers: c.blockers,
+    points: c.points, blockers: c.blockers, refuge: c.refuge.map((r: { id: string; at: number[]; kind: string }) => ({ id: r.id, at: r.at, kind: r.kind })),
   };
 }
 

@@ -4,6 +4,7 @@
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
 //   probe                                       distances and windows on the real block (for writing scenarios)
+//   codes                                       every refusal code an order can get (Fable's text.json locks read these)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 using System;
 using System.Collections.Generic;
@@ -51,6 +52,7 @@ static class Program
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
+                case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
         }

@@ -168,8 +168,10 @@ namespace Suborned.Sim
         // the fight AI (Pulse, briefs/011/pulse-fight-ai.md)
         public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
             SeekRivalCm, SeekPoliceCm, SeekResponseCm, SeekAllyCm, SeekGuardCm, RivalGoneCm, GuardReturnS, PatrolResumeS;
+        // the crowd in a fight (Pulse §4)
+        public readonly int CrowdScatterCm, CrowdStartleTicks, CrowdStartleFearfulTicks, CrowdRunSpeed, CrowdFleeMaxCm, CrowdQuietS, CrowdOccludeCm;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
-        public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
+        public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, GunfireTrail, DrawWindowS, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
         public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespCheckInS, RespRivalsUnseenS, CheckInS, SealS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase;
         // perception
@@ -186,7 +188,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "crowd", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -325,8 +327,8 @@ namespace Suborned.Sim
             HealthEnforcer = RI(hp["enforcer"]); HealthOp = RI(hp["op"]); HealthGuard = RI(hp["guard"]); HealthOfficer = RI(hp["officer"]); HealthRival = RI(hp["rival"]); HealthPatrol = RI(hp["patrol"]); HealthCivilian = RI(hp["civilian"]); ResponseOfficers = RI(hp["responseOfficers"]);
             foreach (var h in new[] { HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian }) if (h < 1) throw new FormatException("weapons.health: every health is at least 1");
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
-            var co = wp["costs"]; co.Only("hit", "down", "drawSeenSecurity", "drawSeenPeople", "loudHold");
-            HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
+            var co = wp["costs"]; co.Only("hit", "down", "gunfire", "drawWindow", "drawSeenSecurity", "drawSeenPeople", "loudHold");
+            HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); GunfireTrail = RI(co["gunfire"]); DrawWindowS = RI(co["drawWindow"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
             var ai = b["ai"]; ai.Only("cover", "engageLapse", "reacquire", "stopReach", "overflow", "seek", "rivalGone", "guardReturn", "patrolResume", "rule", "tag", "src", "proposed", "reason");
             var aic = ai["cover"]; aic.Only("snap", "qFull", "qPartial", "modPartial", "retreat", "stepCloser", "stepGap", "leave");
             CoverSnapCm = RI(aic["snap"]); CoverQFull = RI(aic["qFull"]); CoverQPartial = RI(aic["qPartial"]); ModCoverPartial = RI(aic["modPartial"]); CoverRetreatCm = RI(aic["retreat"]); CoverStepCloserCm = RI(aic["stepCloser"]); CoverStepGapS = RI(aic["stepGap"]); CoverLeaveS = RI(aic["leave"]);
@@ -336,6 +338,9 @@ namespace Suborned.Sim
             var sk = ai["seek"]; sk.Only("rival", "police", "response", "ally", "guard");
             SeekRivalCm = RI(sk["rival"]); SeekPoliceCm = RI(sk["police"]); SeekResponseCm = RI(sk["response"]); SeekAllyCm = RI(sk["ally"]); SeekGuardCm = RI(sk["guard"]);
             RivalGoneCm = RI(ai["rivalGone"]); GuardReturnS = RI(ai["guardReturn"]); PatrolResumeS = RI(ai["patrolResume"]);
+            var cr = b["crowd"]; cr.Only("scatter", "startle", "startleFearful", "run", "fleeMax", "quiet", "occlude", "rule", "tag", "src", "proposed", "reason");
+            CrowdScatterCm = RI(cr["scatter"]) * 100; CrowdStartleTicks = RI(cr["startle"]); CrowdStartleFearfulTicks = RI(cr["startleFearful"]); CrowdRunSpeed = RI(cr["run"]);
+            CrowdFleeMaxCm = RI(cr["fleeMax"]); CrowdQuietS = RI(cr["quiet"]); CrowdOccludeCm = RI(cr["occlude"]);
             var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "rule", "tag", "src", "proposed", "reason");
             foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
                 OneOf(ca[k], new[] { v });

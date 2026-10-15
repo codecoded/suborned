@@ -176,7 +176,7 @@ namespace Suborned.Sim
         /// <summary>Replay a finished game from its own start state and order log.</summary>
         public static Game Replay(Inputs i, Game played)
         {
-            var orders = new List<Order>(); foreach (var (o, _, _) in played.Orders) orders.Add(o);
+            var orders = new List<Order>(); foreach (var (o, _, _, _) in played.Orders) orders.Add(o);
             return Play(i, played.Start, orders, played.Tick);
         }
     }
