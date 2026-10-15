@@ -1,0 +1,2861 @@
+{
+ "brief": "012 round 3b",
+ "owner": "Forma",
+ "date": "2026-10-15",
+ "spent_total_usd": 1.8089,
+ "spent_round3b_usd": 0.0,
+ "ceiling_usd": 3.0,
+ "model": "Codex image tool only",
+ "counts": {
+  "images": 46,
+  "stage1_takes": 12,
+  "wardrobes_B": 8,
+  "wardrobes_fixer": 3,
+  "lineups": 4,
+  "sheets": 4,
+  "iteration": 15
+ },
+ "motifs": {
+  "M1": {
+   "name": "Visitor's pin",
+   "text": "a small chrome ring-with-a-bar pin (a circle with a short bar through it, the visitors' mark), worn in a different place on each: the Scout on her pack strap at the chest, the Fixer at her collar, the Tech on the edge of his visor, the Enforcer on his shoulder"
+  },
+  "M2": {
+   "name": "Chrome chevron",
+   "text": "a small chrome chevron badge (a single upward chevron) on the left upper arm or shoulder of each, made in each person's own material: sewn on the knit, a rubber patch on the nylon, riveted to the canvas, inlaid in the lacquer"
+  },
+  "M3": {
+   "name": "Lamp bead",
+   "text": "a small round chrome-rimmed lamp bead that glows soft pale aqua, worn somewhere different on each: the Scout's earpiece, the Fixer's case latch, the Tech's visor, the rifle's inlay for the Enforcer; the lamps light when that person acts"
+  }
+ },
+ "palettes": {
+  "targets": {
+   "scout": {
+    "dom": {
+     "hex": "#8a7f5a",
+     "cones": 32.9,
+     "guard": 25.1,
+     "rivals": 49.9,
+     "city_min": 22.4,
+     "city_nearest": "asphalt #a5a2a8",
+     "L": 53.3
+    },
+    "acc": {
+     "hex": "#3a3f45",
+     "cones": 38.3,
+     "guard": 55.6,
+     "rivals": 24.9,
+     "city_min": 22.5,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 26.4
+    }
+   },
+   "fixer": {
+    "dom": {
+     "hex": "#1f2f4f",
+     "cones": 45.8,
+     "guard": 66.2,
+     "rivals": 27.3,
+     "city_min": 29.3,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 19.6
+    },
+    "acc": {
+     "hex": "#b98a8f",
+     "cones": 23.1,
+     "guard": 32.2,
+     "rivals": 30.6,
+     "city_min": 15.7,
+     "city_nearest": "asphalt #a5a2a8",
+     "L": 62.1
+    }
+   },
+   "tech": {
+    "dom": {
+     "hex": "#3f4a2a",
+     "cones": 46.0,
+     "guard": 50.2,
+     "rivals": 56.2,
+     "city_min": 20.0,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 29.7
+    },
+    "acc": {
+     "hex": "#a9d9e0",
+     "cones": 51.1,
+     "guard": 39.3,
+     "rivals": 38.3,
+     "city_min": 14.5,
+     "city_nearest": "seafoam #72b5a7",
+     "L": 83.7
+    }
+   },
+   "enforcer": {
+    "dom": {
+     "hex": "#6b4226",
+     "cones": 25.3,
+     "guard": 42.5,
+     "rivals": 42.5,
+     "city_min": 35.7,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 32.2
+    },
+    "acc": {
+     "hex": "#e8e4da",
+     "cones": 42.2,
+     "guard": 28.2,
+     "rivals": 49.5,
+     "city_min": 4.6,
+     "city_nearest": "cream #f9efdc",
+     "L": 90.6
+    }
+   }
+  },
+  "mutual": {
+   "scout-fixer": 42.6,
+   "scout-tech": 23.1,
+   "scout-enforcer": 24.3,
+   "fixer-tech": 32.6,
+   "fixer-enforcer": 31.6,
+   "tech-enforcer": 23.9
+  },
+  "painted": {
+   "scout": [
+    {
+     "hex": "#38312e",
+     "share": 0.295,
+     "cones": 36.1,
+     "guard": 55.9,
+     "rivals": 36.2,
+     "city_min": 29.5
+    },
+    {
+     "hex": "#251f1d",
+     "share": 0.254,
+     "cones": 40.1,
+     "guard": 60.3,
+     "rivals": 39.2,
+     "city_min": 32.8
+    },
+    {
+     "hex": "#0f0b0a",
+     "share": 0.187,
+     "cones": 44.9,
+     "guard": 64.7,
+     "rivals": 42.3,
+     "city_min": 34.9
+    },
+    {
+     "hex": "#4d4744",
+     "share": 0.163,
+     "cones": 32.1,
+     "guard": 48.7,
+     "rivals": 32.7,
+     "city_min": 25.3
+    }
+   ],
+   "fixer": [
+    {
+     "hex": "#262734",
+     "share": 0.335,
+     "cones": 42.4,
+     "guard": 63.2,
+     "rivals": 32.1,
+     "city_min": 30.7
+    },
+    {
+     "hex": "#1e1d24",
+     "share": 0.242,
+     "cones": 43.1,
+     "guard": 63.7,
+     "rivals": 36.3,
+     "city_min": 32.6
+    },
+    {
+     "hex": "#333543",
+     "share": 0.211,
+     "cones": 40.1,
+     "guard": 60.2,
+     "rivals": 28.7,
+     "city_min": 27.7
+    },
+    {
+     "hex": "#100e0e",
+     "share": 0.114,
+     "cones": 44.8,
+     "guard": 64.5,
+     "rivals": 41.8,
+     "city_min": 34.0
+    }
+   ],
+   "tech": [
+    {
+     "hex": "#362f26",
+     "share": 0.345,
+     "cones": 37.3,
+     "guard": 55.5,
+     "rivals": 40.9,
+     "city_min": 28.6
+    },
+    {
+     "hex": "#484237",
+     "share": 0.233,
+     "cones": 34.5,
+     "guard": 49.8,
+     "rivals": 39.7,
+     "city_min": 24.6
+    },
+    {
+     "hex": "#251f19",
+     "share": 0.233,
+     "cones": 40.5,
+     "guard": 59.6,
+     "rivals": 41.9,
+     "city_min": 31.8
+    },
+    {
+     "hex": "#0f0c09",
+     "share": 0.118,
+     "cones": 45.0,
+     "guard": 64.4,
+     "rivals": 43.1,
+     "city_min": 34.0
+    }
+   ],
+   "enforcer": [
+    {
+     "hex": "#3f2e27",
+     "share": 0.388,
+     "cones": 34.1,
+     "guard": 55.1,
+     "rivals": 38.0,
+     "city_min": 34.6
+    },
+    {
+     "hex": "#2c1f19",
+     "share": 0.314,
+     "cones": 38.3,
+     "guard": 58.9,
+     "rivals": 40.7,
+     "city_min": 35.8
+    },
+    {
+     "hex": "#160e0a",
+     "share": 0.157,
+     "cones": 43.6,
+     "guard": 63.6,
+     "rivals": 42.6,
+     "city_min": 36.1
+    },
+    {
+     "hex": "#514640",
+     "share": 0.082,
+     "cones": 31.0,
+     "guard": 47.9,
+     "rivals": 34.2,
+     "city_min": 27.9
+    }
+   ]
+  },
+  "targets_A": {
+   "scout": {
+    "dom": {
+     "hex": "#3a3f45",
+     "cones": 38.3,
+     "guard": 55.6,
+     "rivals": 24.9,
+     "city_min": 22.5,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 26.4
+    },
+    "acc": {
+     "hex": "#b5c95a",
+     "cones": 57.3,
+     "guard": 27.6,
+     "rivals": 78.0,
+     "city_min": 13.0,
+     "city_nearest": "park #a6e29c",
+     "L": 77.5
+    }
+   },
+   "fixer": {
+    "dom": {
+     "hex": "#1f2f4f",
+     "cones": 45.8,
+     "guard": 66.2,
+     "rivals": 27.3,
+     "city_min": 29.3,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 19.6
+    },
+    "acc": {
+     "hex": "#b98a8f",
+     "cones": 23.1,
+     "guard": 32.2,
+     "rivals": 30.6,
+     "city_min": 15.7,
+     "city_nearest": "asphalt #a5a2a8",
+     "L": 62.1
+    }
+   },
+   "tech": {
+    "dom": {
+     "hex": "#5d5a3a",
+     "cones": 37.2,
+     "guard": 39.3,
+     "rivals": 50.5,
+     "city_min": 21.8,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 37.7
+    },
+    "acc": {
+     "hex": "#cfe6ee",
+     "cones": 49.9,
+     "guard": 37.2,
+     "rivals": 37.1,
+     "city_min": 16.1,
+     "city_nearest": "cream #f9efdc",
+     "L": 89.9
+    }
+   },
+   "enforcer": {
+    "dom": {
+     "hex": "#4a3326",
+     "cones": 31.7,
+     "guard": 52.2,
+     "rivals": 39.7,
+     "city_min": 34.9,
+     "city_nearest": "civic teal #1f6c67",
+     "L": 23.6
+    },
+    "acc": {
+     "hex": "#e8e4da",
+     "cones": 42.2,
+     "guard": 28.2,
+     "rivals": 49.5,
+     "city_min": 4.6,
+     "city_nearest": "cream #f9efdc",
+     "L": 90.6
+    }
+   }
+  },
+  "mutual_A": {
+   "scout-fixer": 12.6,
+   "scout-tech": 20.5,
+   "scout-enforcer": 16.6,
+   "fixer-tech": 35.0,
+   "fixer-enforcer": 24.2,
+   "tech-enforcer": 19.5
+  },
+  "painted_A": {
+   "scout": [
+    {
+     "hex": "#393532",
+     "share": 0.285,
+     "cones": 36.2,
+     "guard": 55.2,
+     "rivals": 36.0,
+     "city_min": 26.7
+    },
+    {
+     "hex": "#262220",
+     "share": 0.282,
+     "cones": 40.0,
+     "guard": 59.8,
+     "rivals": 38.8,
+     "city_min": 30.8
+    },
+    {
+     "hex": "#100d0b",
+     "share": 0.176,
+     "cones": 44.8,
+     "guard": 64.3,
+     "rivals": 42.5,
+     "city_min": 34.0
+    },
+    {
+     "hex": "#535049",
+     "share": 0.148,
+     "cones": 32.6,
+     "guard": 44.9,
+     "rivals": 35.7,
+     "city_min": 21.5
+    }
+   ],
+   "fixer": [
+    {
+     "hex": "#252632",
+     "share": 0.339,
+     "cones": 42.5,
+     "guard": 63.2,
+     "rivals": 32.5,
+     "city_min": 30.7
+    },
+    {
+     "hex": "#313341",
+     "share": 0.236,
+     "cones": 40.5,
+     "guard": 60.7,
+     "rivals": 29.1,
+     "city_min": 28.1
+    },
+    {
+     "hex": "#1d1c22",
+     "share": 0.213,
+     "cones": 43.2,
+     "guard": 63.6,
+     "rivals": 36.9,
+     "city_min": 32.7
+    },
+    {
+     "hex": "#0f0d0e",
+     "share": 0.107,
+     "cones": 45.1,
+     "guard": 64.9,
+     "rivals": 41.7,
+     "city_min": 35.7
+    }
+   ],
+   "tech": [
+    {
+     "hex": "#3f362a",
+     "share": 0.344,
+     "cones": 35.7,
+     "guard": 53.1,
+     "rivals": 41.3,
+     "city_min": 28.0
+    },
+    {
+     "hex": "#534a3c",
+     "share": 0.275,
+     "cones": 32.5,
+     "guard": 45.5,
+     "rivals": 39.8,
+     "city_min": 24.8
+    },
+    {
+     "hex": "#2b231c",
+     "share": 0.203,
+     "cones": 39.1,
+     "guard": 58.3,
+     "rivals": 41.4,
+     "city_min": 31.9
+    },
+    {
+     "hex": "#130f0c",
+     "share": 0.11,
+     "cones": 44.3,
+     "guard": 63.8,
+     "rivals": 42.6,
+     "city_min": 34.1
+    }
+   ],
+   "enforcer": [
+    {
+     "hex": "#392a22",
+     "share": 0.349,
+     "cones": 35.5,
+     "guard": 56.0,
+     "rivals": 39.5,
+     "city_min": 34.1
+    },
+    {
+     "hex": "#291d17",
+     "share": 0.277,
+     "cones": 39.0,
+     "guard": 59.5,
+     "rivals": 41.2,
+     "city_min": 35.7
+    },
+    {
+     "hex": "#483830",
+     "share": 0.18,
+     "cones": 32.3,
+     "guard": 52.3,
+     "rivals": 37.0,
+     "city_min": 32.1
+    },
+    {
+     "hex": "#160e0a",
+     "share": 0.14,
+     "cones": 43.6,
+     "guard": 63.6,
+     "rivals": 42.6,
+     "city_min": 36.1
+    }
+   ]
+  }
+ },
+ "analysis": {
+  "lineups": {
+   "L1-round3-uniform": {
+    "label": "Round 3 L1 (the uniform look, long coats)",
+    "garment": [
+     "#3b3733",
+     "#cbc1ba",
+     "#373432",
+     "#dbd2cc"
+    ],
+    "signature": [
+     [
+      [
+       "#3b3733",
+       0.256
+      ],
+      [
+       "#e3dbd6",
+       0.181
+      ],
+      [
+       "#cfc5be",
+       0.147
+      ],
+      [
+       "#615b53",
+       0.137
+      ]
+     ],
+     [
+      [
+       "#cbc1ba",
+       0.353
+      ],
+      [
+       "#d7cec7",
+       0.162
+      ],
+      [
+       "#3a3532",
+       0.125
+      ],
+      [
+       "#837b76",
+       0.11
+      ]
+     ],
+     [
+      [
+       "#373432",
+       0.313
+      ],
+      [
+       "#d9d0c9",
+       0.198
+      ],
+      [
+       "#6c3e28",
+       0.195
+      ],
+      [
+       "#cdc2ba",
+       0.166
+      ]
+     ],
+     [
+      [
+       "#dbd2cc",
+       0.264
+      ],
+      [
+       "#383535",
+       0.194
+      ],
+      [
+       "#d0c6bf",
+       0.169
+      ],
+      [
+       "#c4b9b3",
+       0.095
+      ]
+     ]
+    ],
+    "garment_dE": [
+     {
+      "hex": "#3b3733",
+      "cones": 35.9,
+      "guard": 54.5,
+      "rivals": 36.4,
+      "city_min": 26.1,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#cbc1ba",
+      "cones": 34.9,
+      "guard": 25.2,
+      "rivals": 42.0,
+      "city_min": 10.5,
+      "city_nearest": "peach #f9e2cc"
+     },
+     {
+      "hex": "#373432",
+      "cones": 36.6,
+      "guard": 55.7,
+      "rivals": 35.6,
+      "city_min": 26.5,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#dbd2cc",
+      "cones": 37.8,
+      "guard": 26.7,
+      "rivals": 44.2,
+      "city_min": 8.2,
+      "city_nearest": "peach #f9e2cc"
+     }
+    ],
+    "colour_pair_dE": {
+     "01": 3.4,
+     "02": 4.6,
+     "03": 3.1,
+     "12": 4.2,
+     "13": 2.8,
+     "23": 3.2
+    },
+    "min_colour_pair": 2.8,
+    "mean_colour_pair": 3.6,
+    "mean_iou": 0.565,
+    "max_iou": 0.735,
+    "mean_profile_dist": 0.0764,
+    "min_profile_dist": 0.0474,
+    "closest_pair": "23",
+    "profile_dist": {
+     "01": 0.0566,
+     "02": 0.0766,
+     "03": 0.0828,
+     "12": 0.0832,
+     "13": 0.1118,
+     "23": 0.0474
+    }
+   },
+   "U-uniform-animatable": {
+    "label": "L1 look made animatable (white on charcoal, hip-length)",
+    "garment": [
+     "#e1d9d4",
+     "#3b3532",
+     "#d5cbc6",
+     "#3a3533"
+    ],
+    "signature": [
+     [
+      [
+       "#e1d9d4",
+       0.204
+      ],
+      [
+       "#ccc1bb",
+       0.188
+      ],
+      [
+       "#3a3532",
+       0.187
+      ],
+      [
+       "#8d5e47",
+       0.137
+      ]
+     ],
+     [
+      [
+       "#3b3532",
+       0.218
+      ],
+      [
+       "#d7ceca",
+       0.191
+      ],
+      [
+       "#726763",
+       0.188
+      ],
+      [
+       "#cac0bb",
+       0.162
+      ]
+     ],
+     [
+      [
+       "#d5cbc6",
+       0.315
+      ],
+      [
+       "#393634",
+       0.214
+      ],
+      [
+       "#713e27",
+       0.112
+      ],
+      [
+       "#b9afaa",
+       0.106
+      ]
+     ],
+     [
+      [
+       "#3a3533",
+       0.236
+      ],
+      [
+       "#dad0cb",
+       0.19
+      ],
+      [
+       "#c9beb9",
+       0.164
+      ],
+      [
+       "#7a6f6a",
+       0.142
+      ]
+     ]
+    ],
+    "garment_dE": [
+     {
+      "hex": "#e1d9d4",
+      "cones": 39.0,
+      "guard": 27.6,
+      "rivals": 44.9,
+      "city_min": 7.7,
+      "city_nearest": "cream #f9efdc"
+     },
+     {
+      "hex": "#3b3532",
+      "cones": 35.5,
+      "guard": 55.0,
+      "rivals": 35.6,
+      "city_min": 28.1,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#d5cbc6",
+      "cones": 36.4,
+      "guard": 26.5,
+      "rivals": 42.6,
+      "city_min": 9.2,
+      "city_nearest": "peach #f9e2cc"
+     },
+     {
+      "hex": "#3a3533",
+      "cones": 35.8,
+      "guard": 55.3,
+      "rivals": 35.1,
+      "city_min": 27.7,
+      "city_nearest": "civic teal #1f6c67"
+     }
+    ],
+    "colour_pair_dE": {
+     "01": 4.0,
+     "02": 3.9,
+     "03": 3.7,
+     "12": 5.0,
+     "13": 1.3,
+     "23": 4.8
+    },
+    "min_colour_pair": 1.3,
+    "mean_colour_pair": 3.8,
+    "mean_iou": 0.589,
+    "max_iou": 0.693,
+    "mean_profile_dist": 0.069,
+    "min_profile_dist": 0.0417,
+    "closest_pair": "02",
+    "profile_dist": {
+     "01": 0.0626,
+     "02": 0.0417,
+     "03": 0.0721,
+     "12": 0.0656,
+     "13": 0.1038,
+     "23": 0.068
+    }
+   },
+   "WB1-pin": {
+    "label": "Wardrobes + Visitor's pin",
+    "garment": [
+     "#715d47",
+     "#323543",
+     "#3d392c",
+     "#40322c"
+    ],
+    "signature": [
+     [
+      [
+       "#715d47",
+       0.303
+      ],
+      [
+       "#3d3836",
+       0.25
+      ],
+      [
+       "#534231",
+       0.181
+      ],
+      [
+       "#5e5651",
+       0.105
+      ]
+     ],
+     [
+      [
+       "#323543",
+       0.328
+      ],
+      [
+       "#8b6564",
+       0.235
+      ],
+      [
+       "#515057",
+       0.132
+      ],
+      [
+       "#7a7677",
+       0.124
+      ]
+     ],
+     [
+      [
+       "#3d392c",
+       0.384
+      ],
+      [
+       "#524b40",
+       0.173
+      ],
+      [
+       "#413632",
+       0.125
+      ],
+      [
+       "#8f5034",
+       0.108
+      ]
+     ],
+     [
+      [
+       "#40322c",
+       0.308
+      ],
+      [
+       "#533325",
+       0.228
+      ],
+      [
+       "#4f413a",
+       0.151
+      ],
+      [
+       "#d3c1b3",
+       0.11
+      ]
+     ]
+    ],
+    "garment_dE": [
+     {
+      "hex": "#715d47",
+      "cones": 27.0,
+      "guard": 34.5,
+      "rivals": 40.5,
+      "city_min": 28.0,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#323543",
+      "cones": 40.4,
+      "guard": 60.3,
+      "rivals": 28.4,
+      "city_min": 27.3,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#3d392c",
+      "cones": 37.6,
+      "guard": 53.1,
+      "rivals": 43.1,
+      "city_min": 25.1,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#40322c",
+      "cones": 34.0,
+      "guard": 54.5,
+      "rivals": 37.0,
+      "city_min": 32.6,
+      "city_nearest": "civic teal #1f6c67"
+     }
+    ],
+    "colour_pair_dE": {
+     "01": 11.7,
+     "02": 6.7,
+     "03": 9.0,
+     "12": 12.9,
+     "13": 15.4,
+     "23": 8.7
+    },
+    "min_colour_pair": 6.7,
+    "mean_colour_pair": 10.7,
+    "mean_iou": 0.567,
+    "max_iou": 0.632,
+    "mean_profile_dist": 0.0659,
+    "min_profile_dist": 0.0311,
+    "closest_pair": "02",
+    "profile_dist": {
+     "01": 0.061,
+     "02": 0.0311,
+     "03": 0.0797,
+     "12": 0.0621,
+     "13": 0.0932,
+     "23": 0.068
+    }
+   },
+   "WB2-chevron": {
+    "label": "Wardrobes + chrome chevron",
+    "garment": [
+     "#3f3a39",
+     "#32353d",
+     "#38352c",
+     "#45342c"
+    ],
+    "signature": [
+     [
+      [
+       "#3f3a39",
+       0.36
+      ],
+      [
+       "#e8ac8e",
+       0.196
+      ],
+      [
+       "#69533f",
+       0.173
+      ],
+      [
+       "#4f3c2b",
+       0.119
+      ]
+     ],
+     [
+      [
+       "#32353d",
+       0.305
+      ],
+      [
+       "#736d6a",
+       0.246
+      ],
+      [
+       "#535154",
+       0.144
+      ],
+      [
+       "#3d3939",
+       0.121
+      ]
+     ],
+     [
+      [
+       "#38352c",
+       0.379
+      ],
+      [
+       "#434037",
+       0.239
+      ],
+      [
+       "#6d3b25",
+       0.133
+      ],
+      [
+       "#58544e",
+       0.09
+      ]
+     ],
+     [
+      [
+       "#45342c",
+       0.264
+      ],
+      [
+       "#d8c8bd",
+       0.22
+      ],
+      [
+       "#543324",
+       0.186
+      ],
+      [
+       "#61524a",
+       0.11
+      ]
+     ]
+    ],
+    "garment_dE": [
+     {
+      "hex": "#3f3a39",
+      "cones": 34.8,
+      "guard": 54.1,
+      "rivals": 33.6,
+      "city_min": 27.3,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#32353d",
+      "cones": 39.6,
+      "guard": 58.7,
+      "rivals": 29.2,
+      "city_min": 25.7,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#38352c",
+      "cones": 37.9,
+      "guard": 54.7,
+      "rivals": 41.2,
+      "city_min": 25.5,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#45342c",
+      "cones": 32.9,
+      "guard": 53.3,
+      "rivals": 37.5,
+      "city_min": 33.3,
+      "city_nearest": "civic teal #1f6c67"
+     }
+    ],
+    "colour_pair_dE": {
+     "01": 9.7,
+     "02": 11.1,
+     "03": 8.1,
+     "12": 8.5,
+     "13": 13.0,
+     "23": 12.6
+    },
+    "min_colour_pair": 8.1,
+    "mean_colour_pair": 10.5,
+    "mean_iou": 0.623,
+    "max_iou": 0.749,
+    "mean_profile_dist": 0.0518,
+    "min_profile_dist": 0.0329,
+    "closest_pair": "02",
+    "profile_dist": {
+     "01": 0.0512,
+     "02": 0.0329,
+     "03": 0.0534,
+     "12": 0.046,
+     "13": 0.0734,
+     "23": 0.0537
+    }
+   },
+   "WB3-lamp": {
+    "label": "Wardrobes + lamp bead",
+    "garment": [
+     "#766249",
+     "#7a716d",
+     "#383426",
+     "#40352f"
+    ],
+    "signature": [
+     [
+      [
+       "#766249",
+       0.319
+      ],
+      [
+       "#3e3835",
+       0.249
+      ],
+      [
+       "#584633",
+       0.189
+      ],
+      [
+       "#5d554e",
+       0.104
+      ]
+     ],
+     [
+      [
+       "#7a716d",
+       0.242
+      ],
+      [
+       "#2e3240",
+       0.229
+      ],
+      [
+       "#403836",
+       0.17
+      ],
+      [
+       "#605a59",
+       0.132
+      ]
+     ],
+     [
+      [
+       "#383426",
+       0.388
+      ],
+      [
+       "#9db3b5",
+       0.146
+      ],
+      [
+       "#433f2f",
+       0.14
+      ],
+      [
+       "#3d3b37",
+       0.109
+      ]
+     ],
+     [
+      [
+       "#40352f",
+       0.285
+      ],
+      [
+       "#493026",
+       0.173
+      ],
+      [
+       "#564a44",
+       0.15
+      ],
+      [
+       "#d5c6bc",
+       0.142
+      ]
+     ]
+    ],
+    "garment_dE": [
+     {
+      "hex": "#766249",
+      "cones": 27.2,
+      "guard": 32.4,
+      "rivals": 41.9,
+      "city_min": 27.6,
+      "city_nearest": "asphalt #a5a2a8"
+     },
+     {
+      "hex": "#7a716d",
+      "cones": 26.1,
+      "guard": 33.0,
+      "rivals": 30.1,
+      "city_min": 17.9,
+      "city_nearest": "asphalt #a5a2a8"
+     },
+     {
+      "hex": "#383426",
+      "cones": 38.8,
+      "guard": 54.4,
+      "rivals": 44.6,
+      "city_min": 26.1,
+      "city_nearest": "civic teal #1f6c67"
+     },
+     {
+      "hex": "#40352f",
+      "cones": 34.3,
+      "guard": 53.9,
+      "rivals": 36.9,
+      "city_min": 30.4,
+      "city_nearest": "civic teal #1f6c67"
+     }
+    ],
+    "colour_pair_dE": {
+     "01": 7.4,
+     "02": 10.6,
+     "03": 8.9,
+     "12": 11.8,
+     "13": 9.7,
+     "23": 9.6
+    },
+    "min_colour_pair": 7.4,
+    "mean_colour_pair": 9.7,
+    "mean_iou": 0.563,
+    "max_iou": 0.624,
+    "mean_profile_dist": 0.0842,
+    "min_profile_dist": 0.0546,
+    "closest_pair": "01",
+    "profile_dist": {
+     "01": 0.0546,
+     "02": 0.0829,
+     "03": 0.0781,
+     "12": 0.0876,
+     "13": 0.1148,
+     "23": 0.0871
+    }
+   }
+  },
+  "takes": {
+   "scout": [
+    "R3b-wB-scout-1-trail-runner",
+    "R3b-wB-scout-2-fin-glider"
+   ],
+   "fixer": [
+    "R3b-w-fixer-1-knit-tunic",
+    "R3b-w-fixer-2-leather-jacket",
+    "R3b-w-fixer-3-knit-jumpsuit"
+   ],
+   "tech": [
+    "R3b-wB-tech-1-canvas-wide",
+    "R3b-wB-tech-2-canvas-apron",
+    "R3b-wB-tech-3-tool-belt"
+   ],
+   "enforcer": [
+    "R3b-wB-enforcer-1-lacquer-staff",
+    "R3b-wB-enforcer-2-lacquer-yoke",
+    "R3b-wB-enforcer-3-ring-collar"
+   ]
+  }
+ },
+ "animation_notes": {
+  "scout-1-trail-runner": [
+   "pack (follow-through), hood, earpiece cord baked",
+   "none (cropped windshell and shorts are skinned)",
+   "+2 (pack 1, hood 1; mast rigid on pack)",
+   "bare legs: nothing to sim; cleanest rig of the four"
+  ],
+  "scout-2-fin-glider": [
+   "pack, two fin hinges (open/close), hood",
+   "none",
+   "+3 (pack 1, fins 2)",
+   "fins are rigid plates; the open/closed pose is an animation, not cloth"
+  ],
+  "fixer-1-knit-tunic": [
+   "ponytail chain, coiled cable chain, tunic hem front/back, case swing",
+   "low (knit hem at mid-thigh, slim legs; no slit)",
+   "+10 (ponytail 4, cable 3, hem 2, case 1)",
+   "the only mid-thigh hem in the set; if cut it falls to +8"
+  ],
+  "fixer-2-leather-jacket": [
+   "ponytail chain, coiled cable chain, case swing",
+   "none (hip-length leather jacket skinned)",
+   "+8 (ponytail 4, cable 3, case 1)",
+   "cheapest Fixer that keeps a garment over the hips"
+  ],
+  "fixer-3-knit-jumpsuit": [
+   "ponytail chain, coiled cable chain, case swing",
+   "none",
+   "+8 (ponytail 4, cable 3, case 1)",
+   "pure skinned column: easiest to animate and to cosplay"
+  ],
+  "tech-1-canvas-wide": [
+   "visor plates (2 hinges); trousers should not need secondary motion",
+   "MEDIUM, flagged: wide structured trousers (ankle-length); stiff box-pleat panels skinned to thigh and shin with correctives; check stride, crouch, sit",
+   "+6 (visor 2, trouser correctives 4)",
+   "the bell; fallback is the apron or the tool belt"
+  ],
+  "tech-2-canvas-apron": [
+   "visor plates, apron hinge, bandolier",
+   "low to medium: stiff apron panel hinged at the belt, needs a thigh collision proxy when running or crouching",
+   "+5 (visor 2, apron 1, bandolier 2)",
+   "drop the hinge (skin to hips and thighs) and it is +4"
+  ],
+  "tech-3-tool-belt": [
+   "visor plates, hanging tools (2 jiggle bones)",
+   "none (belt ring skinned; tools are rigid props)",
+   "+4 (visor 2, tools 2)",
+   "silhouette from bulk at the hips, no cloth"
+  ],
+  "enforcer-1-lacquer-staff": [
+   "rifle (socket), pauldrons as rigid children of the shoulders, optional 2 lag bones",
+   "none (hip-length jacket skinned)",
+   "+1 (rifle socket; optional +2)",
+   "staff pose is a two-hand grip: needs hand IK on the rifle"
+  ],
+  "enforcer-2-lacquer-yoke": [
+   "rifle held on the shoulders (prop bone on the chest), no secondary",
+   "none",
+   "+1 bone, +2 IK constraints on the wrists",
+   "arms are locked over the rifle: a special carry locomotion set; swap the rifle to the hands for fighting (animation event)"
+  ],
+  "enforcer-3-ring-collar": [
+   "rifle on the shoulder (socket), collar ring (optional 1 lag bone)",
+   "none",
+   "+2 (rifle 1, collar 1)",
+   "one-hand shoulder carry; the free arm animates normally"
+  ]
+ },
+ "carried_over": [
+  {
+   "id": "R3-2-scout-1-rooftop-runner",
+   "file": "takes/R3-2-scout-1-rooftop-runner.png",
+   "sha256": "0062c5d6698f2bbef5a142a2c25b3117dab72c2a32df0a0741b5c81f0af92659",
+   "note": "copied unchanged from round 3 (briefs/012/cell/round3/2_icons), see round 3 PROVENANCE.json for its prompt and refs"
+  },
+  {
+   "id": "R3-2-scout-4-courier-rider",
+   "file": "takes/R3-2-scout-4-courier-rider.png",
+   "sha256": "b6c24bb52088d9fc5ceb708cc678ae6f974cede3f3335c9694bf1cd1eadaee42",
+   "note": "copied unchanged from round 3 (briefs/012/cell/round3/2_icons), see round 3 PROVENANCE.json for its prompt and refs"
+  },
+  {
+   "id": "R3-2-scout-5-fin-pack-glider",
+   "file": "takes/R3-2-scout-5-fin-pack-glider.png",
+   "sha256": "3fbaf4646ba5630eaab82b97d174dea15a1737e19238f276274b51d02f25d781",
+   "note": "copied unchanged from round 3 (briefs/012/cell/round3/2_icons), see round 3 PROVENANCE.json for its prompt and refs"
+  }
+ ],
+ "images": [
+  {
+   "id": "R3b-enforcer-1-heavy-jacket-staff",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair and a close silver beard, smoked neutral-grey glasses (fourth figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a hip-length heavy jacket in charcoal and bone with huge chrome-edged pauldron-style shoulders and a high collar, fitted charcoal trousers, tall heavy chrome-buckled boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the door: massive shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long chrome rifle with ink-blue inlay held upright at rest like a staff. Personal accent colour: ink blue (#1f3a5f) as one clear panel or lining on a charcoal and bone-white base. Identity detail: gloved hands folded on the rifle. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-enforcer-1-heavy-jacket-staff.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "07dced73cf82eee0a6f920e92edaf6dc6c9988f2c87f549c19bb5204bdf3bc16",
+   "sha256_png": "07dced73cf82eee0a6f920e92edaf6dc6c9988f2c87f549c19bb5204bdf3bc16",
+   "hook": "Heavy jacket, rifle as a staff",
+   "at": "2026-10-15T19:59:07",
+   "secs": 68.1,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-enforcer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-enforcer-1-greatcoat.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length heavy jacket in charcoal and bone with huge chrome-edged pauldron-style shoulders and a high collar, fitted charcoal trousers, tall heavy chrome-buckled boots, gloves",
+   "silhouette": "the door: massive shoulders on a straight torso, the rifle upright like a staff",
+   "signature": "the long chrome rifle with ink-blue inlay held upright at rest like a staff",
+   "accent": "#1f3a5f",
+   "detail": "gloved hands folded on the rifle",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-enforcer-2-yoke",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair and a close silver beard, smoked neutral-grey glasses (fourth figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a hip-length armoured vest in bone and charcoal with big shoulder plates over a fitted short-sleeve base, bare forearms in chrome bracers, fitted trousers, tall heavy boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the yoke: a long rifle laid across the shoulders behind the neck with both wrists draped over it, elbows wide. Signature item, theirs alone: the long chrome rifle with ink-blue inlay carried across the shoulders. Personal accent colour: ink blue (#1f3a5f) as one clear panel or lining on a charcoal and bone-white base. Identity detail: smoked glasses pushed up into his hair. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-enforcer-2-yoke.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "8d0be6b26fca8886810ab93a0055d0bd3cb586c8f01992c4d5e06d9755ad6116",
+   "sha256_png": "8d0be6b26fca8886810ab93a0055d0bd3cb586c8f01992c4d5e06d9755ad6116",
+   "hook": "Armoured vest, rifle across the shoulders",
+   "at": "2026-10-15T20:00:40",
+   "secs": 93.2,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-enforcer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-enforcer-1-greatcoat.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length armoured vest in bone and charcoal with big shoulder plates over a fitted short-sleeve base, bare forearms in chrome bracers, fitted trousers, tall heavy boots",
+   "silhouette": "the yoke: a long rifle laid across the shoulders behind the neck with both wrists draped over it, elbows wide",
+   "signature": "the long chrome rifle with ink-blue inlay carried across the shoulders",
+   "accent": "#1f3a5f",
+   "detail": "smoked glasses pushed up into his hair",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-enforcer-3-marshal-short",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair and a close silver beard, smoked neutral-grey glasses (fourth figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a hip-length double-breasted bone jacket with big chrome epaulettes over a charcoal base, fitted trousers, tall heavy boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a broad T of epaulettes on a straight torso. Signature item, theirs alone: the long chrome rifle with ink-blue inlay slung across his chest. Personal accent colour: ink blue (#1f3a5f) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a single chrome whistle on a chain. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-enforcer-3-marshal-short.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "1b79af6ac03d508733de0fe6fa5258cfe55e52acffe0538ed55c258c6ed96c09",
+   "sha256_png": "1b79af6ac03d508733de0fe6fa5258cfe55e52acffe0538ed55c258c6ed96c09",
+   "hook": "Short marshal jacket",
+   "at": "2026-10-15T20:01:47",
+   "secs": 67.1,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-enforcer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-enforcer-1-greatcoat.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length double-breasted bone jacket with big chrome epaulettes over a charcoal base, fitted trousers, tall heavy boots, gloves",
+   "silhouette": "a broad T of epaulettes on a straight torso",
+   "signature": "the long chrome rifle with ink-blue inlay slung across his chest",
+   "accent": "#1f3a5f",
+   "detail": "a single chrome whistle on a chain",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-enforcer-4-hood-ring",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair and a close silver beard, smoked neutral-grey glasses (fourth figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a hip-length heavy jacket with a thick hood worn down as a ring collar, fitted trousers, tall heavy boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a thick ring collar and one long diagonal rifle. Signature item, theirs alone: the long chrome rifle with ink-blue inlay resting on one shoulder. Personal accent colour: ink blue (#1f3a5f) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a folded photograph tucked into the collar. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-enforcer-4-hood-ring.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "55fbebbf6bbddffbf1d52507f5533ca29b5c4ea6b420569a3596a311f38420fc",
+   "sha256_png": "55fbebbf6bbddffbf1d52507f5533ca29b5c4ea6b420569a3596a311f38420fc",
+   "hook": "Ring-collar jacket",
+   "at": "2026-10-15T20:02:55",
+   "secs": 68.2,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-enforcer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-enforcer-1-greatcoat.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length heavy jacket with a thick hood worn down as a ring collar, fitted trousers, tall heavy boots, gloves",
+   "silhouette": "a thick ring collar and one long diagonal rifle",
+   "signature": "the long chrome rifle with ink-blue inlay resting on one shoulder",
+   "accent": "#1f3a5f",
+   "detail": "a folded photograph tucked into the collar",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-fixer-1-jumpsuit-column",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail (second figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a slim fitted charcoal jumpsuit with a bone panel down the centre front and a sculpted high collar, slim straight legs, flat boots; the body itself is the column. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail. Signature item, theirs alone: her silver case with a coiled handset cable dangling from it. Personal accent colour: deep sienna brown (#74483a) as one clear panel or lining on a charcoal and bone-white base. Identity detail: one long chrome pin at the collar. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-fixer-1-jumpsuit-column.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "dc9564e0b77aa7430011bc0698f1ed4dc5960aeb22c87f3e5bcd0beaa7e080b4",
+   "sha256_png": "dc9564e0b77aa7430011bc0698f1ed4dc5960aeb22c87f3e5bcd0beaa7e080b4",
+   "hook": "Fitted jumpsuit column",
+   "at": "2026-10-15T19:59:04",
+   "secs": 65.5,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-fixer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-fixer-1-column-diplomat.png"
+   ],
+   "role": "fixer",
+   "outfit": "a slim fitted charcoal jumpsuit with a bone panel down the centre front and a sculpted high collar, slim straight legs, flat boots; the body itself is the column",
+   "silhouette": "the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail",
+   "signature": "her silver case with a coiled handset cable dangling from it",
+   "accent": "#74483a",
+   "detail": "one long chrome pin at the collar",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-fixer-2-thigh-tunic",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail (second figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a slim mid-thigh tunic in charcoal and bone with a short side slit and a sculpted stand collar, over slim straight trousers, flat boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a narrow column with a short tunic hem and a flat case at the hip. Signature item, theirs alone: her silver case with a coiled handset cable. Personal accent colour: deep sienna brown (#74483a) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a ring on a chain over her glove. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-fixer-2-thigh-tunic.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "39f38eaf7f4174a93145cd701d90e4198d2b1e7294df068b8effc4fefe569eaf",
+   "sha256_png": "39f38eaf7f4174a93145cd701d90e4198d2b1e7294df068b8effc4fefe569eaf",
+   "hook": "Thigh tunic over slim trousers",
+   "at": "2026-10-15T20:00:02",
+   "secs": 58.2,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-fixer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-fixer-1-column-diplomat.png"
+   ],
+   "role": "fixer",
+   "outfit": "a slim mid-thigh tunic in charcoal and bone with a short side slit and a sculpted stand collar, over slim straight trousers, flat boots",
+   "silhouette": "a narrow column with a short tunic hem and a flat case at the hip",
+   "signature": "her silver case with a coiled handset cable",
+   "accent": "#74483a",
+   "detail": "a ring on a chain over her glove",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-fixer-3-cropped-suit",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail (second figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a hip-length fitted jacket with a sharp stand collar and a single short peplum flick at the hip, over high-waisted slim trousers with a bone side panel, flat boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a narrow column with a sharp hip flick. Signature item, theirs alone: her silver case with a sienna inlaid panel and a coiled handset cable. Personal accent colour: deep sienna brown (#74483a) as one clear panel or lining on a charcoal and bone-white base. Identity detail: one chrome collar pin. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-fixer-3-cropped-suit.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "512ac49200ce5bc6578cb56b19a312a606c272f21604b67802587a42852c67e3",
+   "sha256_png": "512ac49200ce5bc6578cb56b19a312a606c272f21604b67802587a42852c67e3",
+   "hook": "Cropped suit",
+   "at": "2026-10-15T20:01:09",
+   "secs": 66.5,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-fixer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-fixer-1-column-diplomat.png"
+   ],
+   "role": "fixer",
+   "outfit": "a hip-length fitted jacket with a sharp stand collar and a single short peplum flick at the hip, over high-waisted slim trousers with a bone side panel, flat boots",
+   "silhouette": "a narrow column with a sharp hip flick",
+   "signature": "her silver case with a sienna inlaid panel and a coiled handset cable",
+   "accent": "#74483a",
+   "detail": "one chrome collar pin",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-fixer-4-overlay",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail (second figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a fitted sleeveless charcoal bodysuit over slim trousers with a hip-length asymmetric bone one-shoulder overlay and a chrome belt, one long fitted sleeve, flat boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a narrow column with one bold diagonal across the torso. Signature item, theirs alone: her silver case with a coiled handset cable. Personal accent colour: deep sienna brown (#74483a) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a slim earpiece. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-fixer-4-overlay.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "cfb36a134260b14ee1e866a7219ee8e60392e9b963346dbd9d38cd75697231cd",
+   "sha256_png": "cfb36a134260b14ee1e866a7219ee8e60392e9b963346dbd9d38cd75697231cd",
+   "hook": "One-shoulder overlay",
+   "at": "2026-10-15T20:02:24",
+   "secs": 75.0,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-fixer-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-fixer-1-column-diplomat.png"
+   ],
+   "role": "fixer",
+   "outfit": "a fitted sleeveless charcoal bodysuit over slim trousers with a hip-length asymmetric bone one-shoulder overlay and a chrome belt, one long fitted sleeve, flat boots",
+   "silhouette": "a narrow column with one bold diagonal across the torso",
+   "signature": "her silver case with a coiled handset cable",
+   "accent": "#74483a",
+   "detail": "a slim earpiece",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-lineup-U-uniform-animatable",
+   "set": "R3b-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, outfits, white-on-charcoal colours and signature items, nothing changed. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R3b-lineup-U-uniform-animatable.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "ba19b5ce88bb8e3d4464c0b48d5d5760e12ed7eef0ec03dc179254d178099bc5",
+   "sha256_png": "ba19b5ce88bb8e3d4464c0b48d5d5760e12ed7eef0ec03dc179254d178099bc5",
+   "hook": "The L1 uniform look made animatable (white on charcoal, hip-length hems): the comparison row",
+   "at": "2026-10-15T20:13:37",
+   "secs": 70.1,
+   "refnotes": "images 1 to 4 = the animation-ready white-on-charcoal takes (the uniform look, shorter hems).",
+   "refs": [
+    "takes/R3-2-scout-1-rooftop-runner.png",
+    "takes/R3b-fixer-1-jumpsuit-column.png",
+    "takes/R3b-tech-2-stiff-apron.png",
+    "takes/R3b-enforcer-1-heavy-jacket-staff.png"
+   ],
+   "takes": {
+    "scout": "R3-2-scout-1",
+    "fixer": "R3b-fixer-1",
+    "tech": "R3b-tech-2",
+    "enforcer": "R3b-enforcer-1"
+   },
+   "palette_set": "uniform",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-lineup-WB1",
+   "set": "R3b-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small chrome ring-with-a-bar pin (a circle with a short bar through it, the visitors' mark), worn in a different place on each: the Scout on her pack strap at the chest, the Fixer at her collar, the Tech on the edge of his visor, the Enforcer on his shoulder. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R3b-lineup-WB1.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "ec4774e8969610752621564f98c56ad4bf752ec5fdc686bdbef38117da5730b7",
+   "sha256_png": "ec4774e8969610752621564f98c56ad4bf752ec5fdc686bdbef38117da5730b7",
+   "hook": "Wardrobes with the Visitor's pin: trail runner, knit tunic, canvas apron, lacquer yoke",
+   "at": "2026-10-15T20:16:28",
+   "secs": 91.5,
+   "refnotes": "images 1 to 4 = the chosen palette B wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes_B/R3b-wB-scout-1-trail-runner.png",
+    "wardrobes/R3b-w-fixer-1-knit-tunic.png",
+    "wardrobes_B/R3b-wB-tech-2-canvas-apron.png",
+    "wardrobes_B/R3b-wB-enforcer-2-lacquer-yoke.png"
+   ],
+   "motif": "M1",
+   "motif_name": "Visitor's pin",
+   "takes": {
+    "scout": "scout-1",
+    "fixer": "fixer-1",
+    "tech": "tech-2",
+    "enforcer": "enforcer-2"
+   },
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-lineup-WB2",
+   "set": "R3b-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small chrome chevron badge (a single upward chevron) on the left upper arm or shoulder of each, made in each person's own material: sewn on the knit, a rubber patch on the nylon, riveted to the canvas, inlaid in the lacquer. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R3b-lineup-WB2.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "840777f10ff1cc098174ff9c6215c63da26a92a2bcfe442a5f6911fa5decd4f0",
+   "sha256_png": "840777f10ff1cc098174ff9c6215c63da26a92a2bcfe442a5f6911fa5decd4f0",
+   "hook": "Wardrobes with the chrome chevron: fin glider, leather jacket, tool belt, lacquer staff",
+   "at": "2026-10-15T20:16:10",
+   "secs": 73.6,
+   "refnotes": "images 1 to 4 = the chosen palette B wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes_B/R3b-wB-scout-2-fin-glider.png",
+    "wardrobes/R3b-w-fixer-2-leather-jacket.png",
+    "wardrobes_B/R3b-wB-tech-3-tool-belt.png",
+    "wardrobes_B/R3b-wB-enforcer-1-lacquer-staff.png"
+   ],
+   "motif": "M2",
+   "motif_name": "Chrome chevron",
+   "takes": {
+    "scout": "scout-2",
+    "fixer": "fixer-2",
+    "tech": "tech-3",
+    "enforcer": "enforcer-1"
+   },
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-lineup-WB3",
+   "set": "R3b-lineup",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small round chrome-rimmed lamp bead that glows soft pale aqua, worn somewhere different on each: the Scout's earpiece, the Fixer's case latch, the Tech's visor, the rifle's inlay for the Enforcer; the lamps light when that person acts. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark. The image must be a WIDE LANDSCAPE 3:2 picture with all four figures fully visible from head to toe, nothing cropped at the edges, with clear space between the figures and around them.",
+   "seed": null,
+   "cost": 0,
+   "file": "lineups/R3b-lineup-WB3.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "030ddc9e898cb35c67fae845ede74c8f6169a7f0830a7fcb332939df9ca89c67",
+   "sha256_png": "030ddc9e898cb35c67fae845ede74c8f6169a7f0830a7fcb332939df9ca89c67",
+   "hook": "Wardrobes with the lamp bead: trail runner, knit jumpsuit, structured canvas bell (flagged), ring collar",
+   "at": "2026-10-15T20:16:07",
+   "secs": 71.0,
+   "refnotes": "images 1 to 4 = the chosen palette B wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes_B/R3b-wB-scout-1-trail-runner.png",
+    "wardrobes/R3b-w-fixer-3-knit-jumpsuit.png",
+    "wardrobes_B/R3b-wB-tech-1-canvas-wide.png",
+    "wardrobes_B/R3b-wB-enforcer-3-ring-collar.png"
+   ],
+   "motif": "M3",
+   "motif_name": "Lamp bead",
+   "takes": {
+    "scout": "scout-1",
+    "fixer": "fixer-3",
+    "tech": "tech-1",
+    "enforcer": "enforcer-3"
+   },
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-sheetB-enforcer-2-lacquer-yoke",
+   "set": "R3b-sheet",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, WIDE LANDSCAPE 3:2. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the long chrome rifle with bone inlay carried across the shoulders; 2 = the lacquered chestnut-brown armoured vest with bone inlay and leather bracers; 3 = the heavy leather boots and belt. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "cosplay/R3b-sheetB-enforcer-2-lacquer-yoke.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "1a37dd5da9080da6a4b14c79ac539c2934a18d06f949c7350ee235d242a3dd6d",
+   "sha256_png": "1a37dd5da9080da6a4b14c79ac539c2934a18d06f949c7350ee235d242a3dd6d",
+   "hook": "Lacquer vest, rifle across the shoulders",
+   "at": "2026-10-15T20:17:14",
+   "secs": 67.1,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes_B/R3b-wB-enforcer-2-lacquer-yoke.png"
+   ],
+   "role": "enforcer",
+   "callouts": {
+    "c1": "the long chrome rifle with bone inlay carried across the shoulders",
+    "c2": "the lacquered chestnut-brown armoured vest with bone inlay and leather bracers",
+    "c3": "the heavy leather boots and belt"
+   },
+   "palette_set": "B",
+   "take": 2,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-sheetB-fixer-1-knit-tunic",
+   "set": "R3b-sheet",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, WIDE LANDSCAPE 3:2. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the silver lacquered case with its dusty-rose panel and coiled handset cable; 2 = the navy rib-knit mock-neck tunic with dusty-rose ribbed cuffs and hem band; 3 = the slim navy leather trousers, flat boots and chrome collar pin. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "cosplay/R3b-sheetB-fixer-1-knit-tunic.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "5bc7188fa5d5001e3e480b7b386ff41e86535bd6954507fe25403576f0459eab",
+   "sha256_png": "5bc7188fa5d5001e3e480b7b386ff41e86535bd6954507fe25403576f0459eab",
+   "hook": "Knit tunic and leather",
+   "at": "2026-10-15T20:17:36",
+   "secs": 67.8,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes/R3b-w-fixer-1-knit-tunic.png"
+   ],
+   "role": "fixer",
+   "callouts": {
+    "c1": "the silver lacquered case with its dusty-rose panel and coiled handset cable",
+    "c2": "the navy rib-knit mock-neck tunic with dusty-rose ribbed cuffs and hem band",
+    "c3": "the slim navy leather trousers, flat boots and chrome collar pin"
+   },
+   "palette_set": "B",
+   "take": 1,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-sheetB-scout-1-trail-runner",
+   "set": "R3b-sheet",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, WIDE LANDSCAPE 3:2. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the tall khaki pack with its chrome periscope mast and graphite straps; 2 = the cropped hooded khaki ripstop windshell with graphite panels; 3 = the mesh-panel khaki shorts and chunky khaki-and-graphite trail runners. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "cosplay/R3b-sheetB-scout-1-trail-runner.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "74cb59bf2ff965a2181a065fb609cae4bbfb54d91ce12dc10a885496d12706f0",
+   "sha256_png": "74cb59bf2ff965a2181a065fb609cae4bbfb54d91ce12dc10a885496d12706f0",
+   "hook": "Trail runner",
+   "at": "2026-10-15T20:18:23",
+   "secs": 68.4,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes_B/R3b-wB-scout-1-trail-runner.png"
+   ],
+   "role": "scout",
+   "callouts": {
+    "c1": "the tall khaki pack with its chrome periscope mast and graphite straps",
+    "c2": "the cropped hooded khaki ripstop windshell with graphite panels",
+    "c3": "the mesh-panel khaki shorts and chunky khaki-and-graphite trail runners"
+   },
+   "palette_set": "B",
+   "take": 1,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-sheetB-tech-2-canvas-apron",
+   "set": "R3b-sheet",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, WIDE LANDSCAPE 3:2. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the smoked visor with two flip-up chrome lens plates (lit pale aqua only when working); 2 = the stiff dark-moss waxed-canvas apron panel hinged at the belt; 3 = the leather tool bandolier, pale-aqua stitching and chrome bracers. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "cosplay/R3b-sheetB-tech-2-canvas-apron.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "fc4cc4dbf915eff501d643e599c15f634cc63702d6d1939b27551ce9bb1e1f80",
+   "sha256_png": "fc4cc4dbf915eff501d643e599c15f634cc63702d6d1939b27551ce9bb1e1f80",
+   "hook": "Stiff canvas apron",
+   "at": "2026-10-15T20:17:20",
+   "secs": 70.3,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes_B/R3b-wB-tech-2-canvas-apron.png"
+   ],
+   "role": "tech",
+   "callouts": {
+    "c1": "the smoked visor with two flip-up chrome lens plates (lit pale aqua only when working)",
+    "c2": "the stiff dark-moss waxed-canvas apron panel hinged at the belt",
+    "c3": "the leather tool bandolier, pale-aqua stitching and chrome bracers"
+   },
+   "palette_set": "B",
+   "take": 2,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-tech-1-structured-wide",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs, bare arms and a relaxed stance (third figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: structured wide-leg trousers built from stiffened panels with box pleats that hold their shape like folded sheet metal, a fitted sleeveless wrap-front top, flat boots; bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the bell, held stiff: a narrow torso over a rigid flared trouser. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Personal accent colour: pale aqua (#a9d9e0) as one clear panel or lining on a charcoal and bone-white base. Identity detail: chrome bracers on bare forearms. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-tech-1-structured-wide.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "23f8b57b1a58ea34203a71449326539808873e628c7c74ae97e13ec3f761eec3",
+   "sha256_png": "23f8b57b1a58ea34203a71449326539808873e628c7c74ae97e13ec3f761eec3",
+   "hook": "Structured wide trousers",
+   "at": "2026-10-15T19:59:06",
+   "secs": 67.0,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-tech-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-tech-2-hakama-mender.png"
+   ],
+   "role": "tech",
+   "outfit": "structured wide-leg trousers built from stiffened panels with box pleats that hold their shape like folded sheet metal, a fitted sleeveless wrap-front top, flat boots; bare arms with chrome bracers",
+   "silhouette": "the bell, held stiff: a narrow torso over a rigid flared trouser",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "#a9d9e0",
+   "detail": "chrome bracers on bare forearms",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-tech-2-stiff-apron",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs, bare arms and a relaxed stance (third figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a short stiff apron panel hinged at the belt and ending mid-thigh, over slim tapered trousers and a fitted sleeveless top, flat boots; bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: a narrow figure with a rigid hip panel: the shield apron. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Personal accent colour: pale aqua (#a9d9e0) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a tool-roll bandolier across his chest. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-tech-2-stiff-apron.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "890b5803fd9fd8b31991ae987ebb71bdf9fd22b7b56ddff0993bdaece75e9cbc",
+   "sha256_png": "890b5803fd9fd8b31991ae987ebb71bdf9fd22b7b56ddff0993bdaece75e9cbc",
+   "hook": "Stiff apron panel",
+   "at": "2026-10-15T20:00:13",
+   "secs": 67.2,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-tech-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-tech-2-hakama-mender.png"
+   ],
+   "role": "tech",
+   "outfit": "a short stiff apron panel hinged at the belt and ending mid-thigh, over slim tapered trousers and a fitted sleeveless top, flat boots; bare arms with chrome bracers",
+   "silhouette": "a narrow figure with a rigid hip panel: the shield apron",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "#a9d9e0",
+   "detail": "a tool-roll bandolier across his chest",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-tech-3-tool-belt-hips",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs, bare arms and a relaxed stance (third figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: a heavy wide chrome tool belt at the hips with rigid chrome tool holsters and hand tools sticking out all round, over a fitted sleeveless bodysuit and slim trousers, flat boots; bare arms. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the jingle: a ring of tool handles round the hips under a visor bar. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Personal accent colour: pale aqua (#a9d9e0) as one clear panel or lining on a charcoal and bone-white base. Identity detail: bracers and a ring of tools at the hips. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-tech-3-tool-belt-hips.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "7662fb8519157b3519a5117f444290cf638769a1580e118d0ff7070b19353200",
+   "sha256_png": "7662fb8519157b3519a5117f444290cf638769a1580e118d0ff7070b19353200",
+   "hook": "Tool-belt hips",
+   "at": "2026-10-15T20:01:12",
+   "secs": 59.2,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-tech-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-tech-2-hakama-mender.png"
+   ],
+   "role": "tech",
+   "outfit": "a heavy wide chrome tool belt at the hips with rigid chrome tool holsters and hand tools sticking out all round, over a fitted sleeveless bodysuit and slim trousers, flat boots; bare arms",
+   "silhouette": "the jingle: a ring of tool handles round the hips under a visor bar",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "#a9d9e0",
+   "detail": "bracers and a ring of tools at the hips",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-tech-4-bell-shorts",
+   "set": "R3b",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs, bare arms and a relaxed stance (third figure of image 2): keep exactly their face, hair, skin tone, age and body build (image 1 = the portrait; image 2 = the team lineup; image 3 = their previous design, whose signature item, accent and attitude carry over but whose clothes are replaced). New clothes, built for animation: rigid flared bell-shaped shorts ending mid-thigh over slim leggings, a fitted sleeveless top, flat boots; bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; the lower legs are bare trousers or boots only; any wide trousers are stiff structured panels that hold their shape like folded sheet metal. Silhouette you could name from a shadow: the bell at the hip: a rigid flare above slim legs. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Personal accent colour: pale aqua (#a9d9e0) as one clear panel or lining on a charcoal and bone-white base. Identity detail: a bracer with a small chrome dial. Team thread kept: white on charcoal (charcoal and bone-white panels), brushed chrome, matte technical fabric, sharp fitted layers, a visitor from a nearby timeline; no gold, no brass, no deco ornament, no period tailoring; nothing red, amber, orange or violet; no mask, no helmet, no cape. One shared finish, exactly the finish of image 2: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin and matte technical fabric with a subtle painted texture, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "takes/R3b-tech-4-bell-shorts.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "6479e386a8c309e552e8bdfc3b375f8af5bdf526bdb36b6939672551f6dd21b4",
+   "sha256_png": "6479e386a8c309e552e8bdfc3b375f8af5bdf526bdb36b6939672551f6dd21b4",
+   "hook": "Rigid bell shorts",
+   "at": "2026-10-15T20:02:18",
+   "secs": 65.7,
+   "refnotes": "image 1 = the A portrait (identity); image 2 = L1, the round 3 four-icons lineup (finish, body); image 3 = the round 3 take (signature item, accent).",
+   "refs": [
+    "out/concepts/cell-r2/raw/A-codex-portrait-tech-white.png",
+    "briefs/012/cell/round3/2_icons/lineups/R3-2-lineup-L1.png",
+    "briefs/012/cell/round3/2_icons/R3-2-tech-2-hakama-mender.png"
+   ],
+   "role": "tech",
+   "outfit": "rigid flared bell-shaped shorts ending mid-thigh over slim leggings, a fitted sleeveless top, flat boots; bare arms with chrome bracers",
+   "silhouette": "the bell at the hip: a rigid flare above slim legs",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "#a9d9e0",
+   "detail": "a bracer with a small chrome dial",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-enforcer-1-lacquer-staff",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = dark cocoa brown (#4a3326) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length waxed-wool cocoa jacket with large lacquered cocoa pauldrons inlaid with bone, a high collar, a heavy leather belt, fitted trousers, tall heavy leather boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the door: massive shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long chrome rifle with bone inlay held upright at rest like a staff. Identity detail: gloved hands folded on the rifle. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-enforcer-1-lacquer-staff.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "68df3d4333abd73beb21fdb8134e1c0c8b85b33042a752b011d408f552e1d5c4",
+   "sha256_png": "68df3d4333abd73beb21fdb8134e1c0c8b85b33042a752b011d408f552e1d5c4",
+   "hook": "Lacquer pauldrons, rifle as a staff",
+   "at": "2026-10-15T20:05:41",
+   "secs": 64.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length waxed-wool cocoa jacket with large lacquered cocoa pauldrons inlaid with bone, a high collar, a heavy leather belt, fitted trousers, tall heavy leather boots, gloves",
+   "silhouette": "the door: massive shoulders on a straight torso, the rifle upright like a staff",
+   "signature": "the long chrome rifle with bone inlay held upright at rest like a staff",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "dark cocoa brown (#4a3326)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "gloved hands folded on the rifle",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-enforcer-2-lacquer-yoke",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = dark cocoa brown (#4a3326) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length lacquered cocoa armoured vest with bone inlay over a short-sleeve waxed-wool base, bare forearms in heavy leather bracers, fitted trousers, tall heavy leather boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the yoke: a long rifle across the shoulders behind the neck, both wrists draped over it, elbows wide. Signature item, theirs alone: the long chrome rifle with bone inlay carried across the shoulders. Identity detail: smoked glasses pushed up into his hair. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-enforcer-2-lacquer-yoke.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "962b3ab14f533203abe9f38051ade321b0576d41be5a7c22cc9a187285bdacc4",
+   "sha256_png": "962b3ab14f533203abe9f38051ade321b0576d41be5a7c22cc9a187285bdacc4",
+   "hook": "Lacquer vest, rifle across the shoulders",
+   "at": "2026-10-15T20:07:03",
+   "secs": 67.1,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length lacquered cocoa armoured vest with bone inlay over a short-sleeve waxed-wool base, bare forearms in heavy leather bracers, fitted trousers, tall heavy leather boots",
+   "silhouette": "the yoke: a long rifle across the shoulders behind the neck, both wrists draped over it, elbows wide",
+   "signature": "the long chrome rifle with bone inlay carried across the shoulders",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "dark cocoa brown (#4a3326)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "smoked glasses pushed up into his hair",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-enforcer-3-ring-collar",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = dark cocoa brown (#4a3326) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length heavy leather jacket in cocoa with a thick wool ring collar and chrome epaulettes, fitted trousers, tall heavy boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a thick ring collar and one long diagonal rifle. Signature item, theirs alone: the long chrome rifle with bone inlay resting on one shoulder. Identity detail: a folded photograph tucked into the collar. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-enforcer-3-ring-collar.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "ccb1ae8ba9ac48a35b64c932e7ad2be60a8871a43c4a881e463ca07d0b92f5e4",
+   "sha256_png": "ccb1ae8ba9ac48a35b64c932e7ad2be60a8871a43c4a881e463ca07d0b92f5e4",
+   "hook": "Ring-collar leather jacket",
+   "at": "2026-10-15T20:08:09",
+   "secs": 65.8,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length heavy leather jacket in cocoa with a thick wool ring collar and chrome epaulettes, fitted trousers, tall heavy boots, gloves",
+   "silhouette": "a thick ring collar and one long diagonal rifle",
+   "signature": "the long chrome rifle with bone inlay resting on one shoulder",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "dark cocoa brown (#4a3326)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "a folded photograph tucked into the collar",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-fixer-1-knit-tunic",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = editorial minimalism and embassy-aide tailoring of her home timeline; materials = fine merino rib-knit, soft leather, lacquered chrome; palette = deep navy (#1f2f4f) as the dominant colour with dusty rose (#b98a8f) ribbed trim and inlay as the one accent; no white-on-charcoal. Clothes: a slim navy rib-knit mock-neck tunic ending at mid-thigh with dusty-rose ribbed cuffs and hem band, slim navy soft-leather trousers, flat leather boots, thin leather gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail. Signature item, theirs alone: her silver lacquered case with a dusty-rose inlaid panel and a coiled handset cable. Identity detail: one long chrome pin at the collar. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-fixer-1-knit-tunic.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "1e83dd270b2f372fce6aa8f1913d133095c272cf98ca75a3a2386e3470c3751f",
+   "sha256_png": "1e83dd270b2f372fce6aa8f1913d133095c272cf98ca75a3a2386e3470c3751f",
+   "hook": "Knit tunic and leather",
+   "at": "2026-10-15T20:03:31",
+   "secs": 64.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "role": "fixer",
+   "outfit": "a slim navy rib-knit mock-neck tunic ending at mid-thigh with dusty-rose ribbed cuffs and hem band, slim navy soft-leather trousers, flat leather boots, thin leather gloves",
+   "silhouette": "the exclamation mark: a narrow column, a flat block at the hip, a tall ponytail",
+   "signature": "her silver lacquered case with a dusty-rose inlaid panel and a coiled handset cable",
+   "accent": "dusty rose (#b98a8f) ribbed trim and inlay",
+   "palette": "deep navy (#1f2f4f)",
+   "materials": "fine merino rib-knit, soft leather, lacquered chrome",
+   "lineage": "editorial minimalism and embassy-aide tailoring of her home timeline",
+   "detail": "one long chrome pin at the collar",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-fixer-2-leather-jacket",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = editorial minimalism and embassy-aide tailoring of her home timeline; materials = fine merino rib-knit, soft leather, lacquered chrome; palette = deep navy (#1f2f4f) as the dominant colour with dusty rose (#b98a8f) ribbed trim and inlay as the one accent; no white-on-charcoal. Clothes: a hip-length fitted navy leather jacket with a sculpted collar over a dusty-rose rib-knit mock-neck, slim navy wool trousers, flat boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a narrow column with a sharp hip-length jacket. Signature item, theirs alone: her silver lacquered case with a coiled handset cable. Identity detail: a ring on a chain over her glove. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-fixer-2-leather-jacket.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "cbcd3181a39eb8d447fc26228e030be3fcd20beb7199718cb92d5c7b94e4f672",
+   "sha256_png": "cbcd3181a39eb8d447fc26228e030be3fcd20beb7199718cb92d5c7b94e4f672",
+   "hook": "Leather jacket column",
+   "at": "2026-10-15T20:09:01",
+   "secs": 61.8,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "role": "fixer",
+   "outfit": "a hip-length fitted navy leather jacket with a sculpted collar over a dusty-rose rib-knit mock-neck, slim navy wool trousers, flat boots",
+   "silhouette": "a narrow column with a sharp hip-length jacket",
+   "signature": "her silver lacquered case with a coiled handset cable",
+   "accent": "dusty rose (#b98a8f) ribbed trim and inlay",
+   "palette": "deep navy (#1f2f4f)",
+   "materials": "fine merino rib-knit, soft leather, lacquered chrome",
+   "lineage": "editorial minimalism and embassy-aide tailoring of her home timeline",
+   "detail": "a ring on a chain over her glove",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-fixer-3-knit-jumpsuit",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Fixer, a woman with a long black ponytail, slim and tall: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = editorial minimalism and embassy-aide tailoring of her home timeline; materials = fine merino rib-knit, soft leather, lacquered chrome; palette = deep navy (#1f2f4f) as the dominant colour with dusty rose (#b98a8f) ribbed trim and inlay as the one accent; no white-on-charcoal. Clothes: a fitted fine-knit navy jumpsuit with a dusty-rose ribbed collar band and a leather belt, slim straight legs, flat boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a single narrow column, a flat case block at the hip, a tall ponytail. Signature item, theirs alone: her silver lacquered case with a coiled handset cable. Identity detail: a slim earpiece. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-fixer-3-knit-jumpsuit.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "fd90d90bd08c2344c4128a68554b84a2c7e660119060a387f2c0a3ef2f95b816",
+   "sha256_png": "fd90d90bd08c2344c4128a68554b84a2c7e660119060a387f2c0a3ef2f95b816",
+   "hook": "Knit jumpsuit",
+   "at": "2026-10-15T20:09:10",
+   "secs": 61.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-fixer.png",
+    "refs/body-fixer.png"
+   ],
+   "role": "fixer",
+   "outfit": "a fitted fine-knit navy jumpsuit with a dusty-rose ribbed collar band and a leather belt, slim straight legs, flat boots",
+   "silhouette": "a single narrow column, a flat case block at the hip, a tall ponytail",
+   "signature": "her silver lacquered case with a coiled handset cable",
+   "accent": "dusty rose (#b98a8f) ribbed trim and inlay",
+   "palette": "deep navy (#1f2f4f)",
+   "materials": "fine merino rib-knit, soft leather, lacquered chrome",
+   "lineage": "editorial minimalism and embassy-aide tailoring of her home timeline",
+   "detail": "a slim earpiece",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-scout-1-trail-runner",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = trail-running and rooftop-parkour subculture of her home timeline; materials = ripstop nylon, mesh panels, rubberised zips, reflective tape; palette = graphite charcoal nylon (#3a3f45) as the dominant colour with lime (#b5c95a) reflective piping and trim as the one accent; no white-on-charcoal. Clothes: a cropped hooded windshell in graphite ripstop with lime reflective piping, fitted graphite mesh-panel shorts, bare legs, chunky graphite-and-lime trail runners, a tall rectangular graphite pack frame with lime straps. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the pack-and-hood: a tall rectangular pack above the shoulder, bare legs. Signature item, theirs alone: the pack with a telescoping chrome periscope mast folded along its side. Identity detail: an earpiece with a lime cord. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-scout-1-trail-runner.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "80cdc8707ea66efd63d4e2a75354005bb5c942985abe935c4eedd14a78f05ffb",
+   "sha256_png": "80cdc8707ea66efd63d4e2a75354005bb5c942985abe935c4eedd14a78f05ffb",
+   "hook": "Trail runner",
+   "at": "2026-10-15T20:06:59",
+   "secs": 63.2,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "role": "scout",
+   "outfit": "a cropped hooded windshell in graphite ripstop with lime reflective piping, fitted graphite mesh-panel shorts, bare legs, chunky graphite-and-lime trail runners, a tall rectangular graphite pack frame with lime straps",
+   "silhouette": "the pack-and-hood: a tall rectangular pack above the shoulder, bare legs",
+   "signature": "the pack with a telescoping chrome periscope mast folded along its side",
+   "accent": "lime (#b5c95a) reflective piping and trim",
+   "palette": "graphite charcoal nylon (#3a3f45)",
+   "materials": "ripstop nylon, mesh panels, rubberised zips, reflective tape",
+   "lineage": "trail-running and rooftop-parkour subculture of her home timeline",
+   "detail": "an earpiece with a lime cord",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-scout-2-fin-glider",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = trail-running and rooftop-parkour subculture of her home timeline; materials = ripstop nylon, mesh panels, rubberised zips, reflective tape; palette = graphite charcoal nylon (#3a3f45) as the dominant colour with lime (#b5c95a) reflective piping and trim as the one accent; no white-on-charcoal. Clothes: a cropped graphite jacket and fitted shorts with lime piping, bare legs, grippy graphite sock-boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: twin folded fins rising behind the shoulders like a closed fan. Signature item, theirs alone: a pack with two folded chrome-edged graphite fins above the shoulders. Identity detail: a wrist compass. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-scout-2-fin-glider.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "d0169185801ee37dee2e5d72d7c26931881c529309270f9a994e5afab7de4154",
+   "sha256_png": "d0169185801ee37dee2e5d72d7c26931881c529309270f9a994e5afab7de4154",
+   "hook": "Fin-pack glider",
+   "at": "2026-10-15T20:07:59",
+   "secs": 60.4,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "role": "scout",
+   "outfit": "a cropped graphite jacket and fitted shorts with lime piping, bare legs, grippy graphite sock-boots",
+   "silhouette": "twin folded fins rising behind the shoulders like a closed fan",
+   "signature": "a pack with two folded chrome-edged graphite fins above the shoulders",
+   "accent": "lime (#b5c95a) reflective piping and trim",
+   "palette": "graphite charcoal nylon (#3a3f45)",
+   "materials": "ripstop nylon, mesh panels, rubberised zips, reflective tape",
+   "lineage": "trail-running and rooftop-parkour subculture of her home timeline",
+   "detail": "a wrist compass",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-tech-1-canvas-wide",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = olive-drab green (#5d5a3a) as the dominant colour with ice blue-white (#cfe6ee) webbing and stitching as the one accent; no white-on-charcoal. Clothes: stiff structured waxed-canvas wide-leg trousers with box pleats that hold their shape, olive-drab with ice webbing, a sleeveless leather-trimmed wrap-front top, flat boots, bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the bell, held stiff: a narrow torso over rigid flared trousers. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: chrome bracers on bare forearms. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-tech-1-canvas-wide.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "4e29a0cd51fb4c12c1f9878ba565dbb7a9c7cc85e3a51e3e8e376a4949010f75",
+   "sha256_png": "4e29a0cd51fb4c12c1f9878ba565dbb7a9c7cc85e3a51e3e8e376a4949010f75",
+   "hook": "Structured canvas trousers",
+   "at": "2026-10-15T20:04:36",
+   "secs": 64.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "stiff structured waxed-canvas wide-leg trousers with box pleats that hold their shape, olive-drab with ice webbing, a sleeveless leather-trimmed wrap-front top, flat boots, bare arms with chrome bracers",
+   "silhouette": "the bell, held stiff: a narrow torso over rigid flared trousers",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "ice blue-white (#cfe6ee) webbing and stitching",
+   "palette": "olive-drab green (#5d5a3a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "chrome bracers on bare forearms",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-tech-2-canvas-apron",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = olive-drab green (#5d5a3a) as the dominant colour with ice blue-white (#cfe6ee) webbing and stitching as the one accent; no white-on-charcoal. Clothes: a short stiff waxed-canvas apron panel hinged at the belt ending mid-thigh over slim olive-drab canvas trousers, a sleeveless henley, a leather tool bandolier with ice stitching, flat boots, bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a narrow figure with a rigid hip panel. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: a leather tool bandolier. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-tech-2-canvas-apron.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "a10315e75bc55f8576aa1dfc82fe10104c7c93148021597f2af0a0133d5992df",
+   "sha256_png": "a10315e75bc55f8576aa1dfc82fe10104c7c93148021597f2af0a0133d5992df",
+   "hook": "Stiff canvas apron",
+   "at": "2026-10-15T20:07:03",
+   "secs": 66.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "a short stiff waxed-canvas apron panel hinged at the belt ending mid-thigh over slim olive-drab canvas trousers, a sleeveless henley, a leather tool bandolier with ice stitching, flat boots, bare arms with chrome bracers",
+   "silhouette": "a narrow figure with a rigid hip panel",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "ice blue-white (#cfe6ee) webbing and stitching",
+   "palette": "olive-drab green (#5d5a3a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "a leather tool bandolier",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-w-tech-3-tool-belt",
+   "set": "R3b-w",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = olive-drab green (#5d5a3a) as the dominant colour with ice blue-white (#cfe6ee) webbing and stitching as the one accent; no white-on-charcoal. Clothes: a heavy wide leather tool belt with rigid chrome tool holsters and hand tools sticking out all round, a sleeveless olive-drab waxed-canvas work vest, slim canvas trousers, flat boots, bare arms. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the jingle: a ring of tool handles round the hips under a visor bar. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: bracers and a ring of tools. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes/R3b-w-tech-3-tool-belt.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "839a5a3a755984bd79591e421b14748cde309d6a2b12d8f80c3df903b6442d5f",
+   "sha256_png": "839a5a3a755984bd79591e421b14748cde309d6a2b12d8f80c3df903b6442d5f",
+   "hook": "Tool-belt hips",
+   "at": "2026-10-15T20:08:09",
+   "secs": 66.1,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "a heavy wide leather tool belt with rigid chrome tool holsters and hand tools sticking out all round, a sleeveless olive-drab waxed-canvas work vest, slim canvas trousers, flat boots, bare arms",
+   "silhouette": "the jingle: a ring of tool handles round the hips under a visor bar",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "ice blue-white (#cfe6ee) webbing and stitching",
+   "palette": "olive-drab green (#5d5a3a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "bracers and a ring of tools",
+   "motif": null,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-enforcer-1-lacquer-staff",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = chestnut brown (#6b4226) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length waxed-wool chestnut brown jacket with large lacquered chestnut brown pauldrons inlaid with bone, a high collar, a heavy leather belt, fitted trousers, tall heavy leather boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the door: massive shoulders on a straight torso, the rifle upright like a staff. Signature item, theirs alone: the long chrome rifle with bone inlay held upright at rest like a staff. Identity detail: gloved hands folded on the rifle. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-enforcer-1-lacquer-staff.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "d038fc46570ce1e909910175bd03c68de230860e319b6e43b3c2cb3c63d638ac",
+   "sha256_png": "d038fc46570ce1e909910175bd03c68de230860e319b6e43b3c2cb3c63d638ac",
+   "hook": "Lacquer pauldrons, rifle as a staff",
+   "at": "2026-10-15T20:12:35",
+   "secs": 63.2,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length waxed-wool chestnut brown jacket with large lacquered chestnut brown pauldrons inlaid with bone, a high collar, a heavy leather belt, fitted trousers, tall heavy leather boots, gloves",
+   "silhouette": "the door: massive shoulders on a straight torso, the rifle upright like a staff",
+   "signature": "the long chrome rifle with bone inlay held upright at rest like a staff",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "chestnut brown (#6b4226)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "gloved hands folded on the rifle",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-enforcer-2-lacquer-yoke",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = chestnut brown (#6b4226) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length lacquered chestnut brown armoured vest with bone inlay over a short-sleeve waxed-wool base, bare forearms in heavy leather bracers, fitted trousers, tall heavy leather boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the yoke: a long rifle across the shoulders behind the neck, both wrists draped over it, elbows wide. Signature item, theirs alone: the long chrome rifle with bone inlay carried across the shoulders. Identity detail: smoked glasses pushed up into his hair. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-enforcer-2-lacquer-yoke.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "bcd2b02a59e6f91ce3a4ec91877d74bb483156e80dac4a730b765f5601cf751d",
+   "sha256_png": "bcd2b02a59e6f91ce3a4ec91877d74bb483156e80dac4a730b765f5601cf751d",
+   "hook": "Lacquer vest, rifle across the shoulders",
+   "at": "2026-10-15T20:13:42",
+   "secs": 67.6,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length lacquered chestnut brown armoured vest with bone inlay over a short-sleeve waxed-wool base, bare forearms in heavy leather bracers, fitted trousers, tall heavy leather boots",
+   "silhouette": "the yoke: a long rifle across the shoulders behind the neck, both wrists draped over it, elbows wide",
+   "signature": "the long chrome rifle with bone inlay carried across the shoulders",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "chestnut brown (#6b4226)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "smoked glasses pushed up into his hair",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-enforcer-3-ring-collar",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Enforcer, a big older man with silver hair, a close silver beard and smoked neutral-grey glasses: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = dockside guild-marshal and duelist-guard culture of his home timeline; materials = lacquered armour plates, waxed wool, heavy leather; palette = chestnut brown (#6b4226) as the dominant colour with bone white (#e8e4da) inlay as the one accent; no white-on-charcoal. Clothes: a hip-length heavy leather jacket in chestnut brown with a thick wool ring collar and chrome epaulettes, fitted trousers, tall heavy boots, gloves. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a thick ring collar and one long diagonal rifle. Signature item, theirs alone: the long chrome rifle with bone inlay resting on one shoulder. Identity detail: a folded photograph tucked into the collar. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-enforcer-3-ring-collar.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "4af13d4d573e4a8ed2fb499272b085eed73a4f6d1aa49c9a7c7ba390910b94f8",
+   "sha256_png": "4af13d4d573e4a8ed2fb499272b085eed73a4f6d1aa49c9a7c7ba390910b94f8",
+   "hook": "Ring-collar leather jacket",
+   "at": "2026-10-15T20:14:49",
+   "secs": 64.5,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-enforcer.png",
+    "refs/body-enforcer.png"
+   ],
+   "role": "enforcer",
+   "outfit": "a hip-length heavy leather jacket in chestnut brown with a thick wool ring collar and chrome epaulettes, fitted trousers, tall heavy boots, gloves",
+   "silhouette": "a thick ring collar and one long diagonal rifle",
+   "signature": "the long chrome rifle with bone inlay resting on one shoulder",
+   "accent": "bone white (#e8e4da) inlay",
+   "palette": "chestnut brown (#6b4226)",
+   "materials": "lacquered armour plates, waxed wool, heavy leather",
+   "lineage": "dockside guild-marshal and duelist-guard culture of his home timeline",
+   "detail": "a folded photograph tucked into the collar",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-scout-1-trail-runner",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = trail-running and rooftop-parkour subculture of her home timeline; materials = ripstop nylon, mesh panels, rubberised zips, reflective tape; palette = khaki coyote-tan (#8a7f5a) as the dominant colour with graphite (#3a3f45) panels, zips and straps as the one accent; no white-on-charcoal. Clothes: a cropped hooded windshell in khaki coyote-tan ripstop with graphite panels and graphite zips, fitted khaki mesh-panel shorts with graphite side panels, bare legs, chunky khaki-and-graphite trail runners, a tall rectangular khaki pack frame with graphite straps. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the pack-and-hood: a tall rectangular pack above the shoulder, bare legs. Signature item, theirs alone: the pack with a telescoping chrome periscope mast folded along its side. Identity detail: an earpiece with a graphite cord. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-scout-1-trail-runner.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "74bd4f0d8d30b5fb44728291ef205415bc380382ed863fe9cbda0a706f20da61",
+   "sha256_png": "74bd4f0d8d30b5fb44728291ef205415bc380382ed863fe9cbda0a706f20da61",
+   "hook": "Trail runner",
+   "at": "2026-10-15T20:12:35",
+   "secs": 63.9,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "role": "scout",
+   "outfit": "a cropped hooded windshell in khaki coyote-tan ripstop with graphite panels and graphite zips, fitted khaki mesh-panel shorts with graphite side panels, bare legs, chunky khaki-and-graphite trail runners, a tall rectangular khaki pack frame with graphite straps",
+   "silhouette": "the pack-and-hood: a tall rectangular pack above the shoulder, bare legs",
+   "signature": "the pack with a telescoping chrome periscope mast folded along its side",
+   "accent": "graphite (#3a3f45) panels, zips and straps",
+   "palette": "khaki coyote-tan (#8a7f5a)",
+   "materials": "ripstop nylon, mesh panels, rubberised zips, reflective tape",
+   "lineage": "trail-running and rooftop-parkour subculture of her home timeline",
+   "detail": "an earpiece with a graphite cord",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-scout-2-fin-glider",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Scout, a young woman with a black undercut, an earpiece and a lean athletic build: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = trail-running and rooftop-parkour subculture of her home timeline; materials = ripstop nylon, mesh panels, rubberised zips, reflective tape; palette = khaki coyote-tan (#8a7f5a) as the dominant colour with graphite (#3a3f45) panels, zips and straps as the one accent; no white-on-charcoal. Clothes: a cropped khaki ripstop jacket with graphite panels and fitted khaki shorts, bare legs, grippy khaki-and-graphite sock-boots. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: twin folded fins rising behind the shoulders like a closed fan. Signature item, theirs alone: a pack with two folded chrome-edged khaki fins above the shoulders. Identity detail: a wrist compass. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-scout-2-fin-glider.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "6a35baf027f888f1d1644819618f577f990ff4218920a83cffc0713c329bc4e0",
+   "sha256_png": "6a35baf027f888f1d1644819618f577f990ff4218920a83cffc0713c329bc4e0",
+   "hook": "Fin-pack glider",
+   "at": "2026-10-15T20:13:37",
+   "secs": 61.0,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-scout.png",
+    "refs/body-scout.png"
+   ],
+   "role": "scout",
+   "outfit": "a cropped khaki ripstop jacket with graphite panels and fitted khaki shorts, bare legs, grippy khaki-and-graphite sock-boots",
+   "silhouette": "twin folded fins rising behind the shoulders like a closed fan",
+   "signature": "a pack with two folded chrome-edged khaki fins above the shoulders",
+   "accent": "graphite (#3a3f45) panels, zips and straps",
+   "palette": "khaki coyote-tan (#8a7f5a)",
+   "materials": "ripstop nylon, mesh panels, rubberised zips, reflective tape",
+   "lineage": "trail-running and rooftop-parkour subculture of her home timeline",
+   "detail": "a wrist compass",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-tech-1-canvas-wide",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = dark moss green (#3f4a2a) as the dominant colour with pale aqua (#a9d9e0) webbing and stitching as the one accent; no white-on-charcoal. Clothes: stiff structured waxed-canvas wide-leg trousers with box pleats that hold their shape, dark moss green with pale-aqua webbing, a sleeveless leather-trimmed wrap-front top, flat boots, bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the bell, held stiff: a narrow torso over rigid flared trousers. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: chrome bracers on bare forearms. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-tech-1-canvas-wide.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "b9304755f3d969112881815153866a8eb58ec760a7239400c8ff6cec98abba1f",
+   "sha256_png": "b9304755f3d969112881815153866a8eb58ec760a7239400c8ff6cec98abba1f",
+   "hook": "Structured canvas trousers",
+   "at": "2026-10-15T20:12:39",
+   "secs": 67.7,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "stiff structured waxed-canvas wide-leg trousers with box pleats that hold their shape, dark moss green with pale-aqua webbing, a sleeveless leather-trimmed wrap-front top, flat boots, bare arms with chrome bracers",
+   "silhouette": "the bell, held stiff: a narrow torso over rigid flared trousers",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "pale aqua (#a9d9e0) webbing and stitching",
+   "palette": "dark moss green (#3f4a2a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "chrome bracers on bare forearms",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-tech-2-canvas-apron",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = dark moss green (#3f4a2a) as the dominant colour with pale aqua (#a9d9e0) webbing and stitching as the one accent; no white-on-charcoal. Clothes: a short stiff waxed-canvas apron panel hinged at the belt ending mid-thigh over slim dark moss green canvas trousers, a sleeveless henley, a leather tool bandolier with pale-aqua stitching, flat boots, bare arms with chrome bracers. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: a narrow figure with a rigid hip panel. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: a leather tool bandolier. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-tech-2-canvas-apron.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "03fcaa2af81d8cc4f394b02fed46471178733b29b36a9437a330b0994dc3ed59",
+   "sha256_png": "03fcaa2af81d8cc4f394b02fed46471178733b29b36a9437a330b0994dc3ed59",
+   "hook": "Stiff canvas apron",
+   "at": "2026-10-15T20:13:44",
+   "secs": 65.0,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "a short stiff waxed-canvas apron panel hinged at the belt ending mid-thigh over slim dark moss green canvas trousers, a sleeveless henley, a leather tool bandolier with pale-aqua stitching, flat boots, bare arms with chrome bracers",
+   "silhouette": "a narrow figure with a rigid hip panel",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "pale aqua (#a9d9e0) webbing and stitching",
+   "palette": "dark moss green (#3f4a2a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "a leather tool bandolier",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "R3b-wB-tech-3-tool-belt",
+   "set": "R3b-wB",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, full body head to toe, one person standing in an expressive pose with attitude, plain warm light-grey seamless backdrop with a soft ground shadow. Redraw the Tech, a tall lean man with short locs and bare arms: keep exactly their face, hair, skin tone, age and body build and height (image 1 = their face; image 2 = their body in the old uniform look: keep only the body shape, the old clothes are completely replaced). They are dressed in their own wardrobe, unlike the rest of the team: fashion lineage = clockmaker and machinist workshop culture of his home timeline; materials = waxed canvas, leather, enamel, chrome; palette = dark moss green (#3f4a2a) as the dominant colour with pale aqua (#a9d9e0) webbing and stitching as the one accent; no white-on-charcoal. Clothes: a heavy wide leather tool belt with rigid chrome tool holsters and hand tools sticking out all round, a sleeveless dark moss green waxed-canvas work vest, slim canvas trousers, flat boots, bare arms. ANIMATION RULES, all strict: every garment ends at the hip or mid-thigh at the very longest; no coat, tunic, dress or skirt below mid-thigh; no cape, no tails, no trailing or loose cloth; below the hem the legs wear slim trousers, structured trousers or boots; any wide trousers are stiff structured panels that hold their shape. Silhouette you could name from a shadow: the jingle: a ring of tool handles round the hips under a visor bar. Signature item, theirs alone: his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works. Identity detail: bracers and a ring of tools. No gold, no brass, no deco ornament, no cape, no mask, no helmet; nothing red, amber, orange or violet; not cream and not seafoam. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "wardrobes_B/R3b-wB-tech-3-tool-belt.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "45784a0f097fca47de1565d6f6cdf509f6abdc2922b50338905d46c264c72dad",
+   "sha256_png": "45784a0f097fca47de1565d6f6cdf509f6abdc2922b50338905d46c264c72dad",
+   "hook": "Tool-belt hips",
+   "at": "2026-10-15T20:14:39",
+   "secs": 62.7,
+   "refnotes": "image 1 = head crop of the A portrait (face identity only); image 2 = their body from the L1 lineup (body shape only; outfit to be replaced).",
+   "refs": [
+    "refs/head-tech.png",
+    "refs/body-tech.png"
+   ],
+   "role": "tech",
+   "outfit": "a heavy wide leather tool belt with rigid chrome tool holsters and hand tools sticking out all round, a sleeveless dark moss green waxed-canvas work vest, slim canvas trousers, flat boots, bare arms",
+   "silhouette": "the jingle: a ring of tool handles round the hips under a visor bar",
+   "signature": "his visor: a smoked visor with two flip-up chrome lens plates, dark and calm, lit soft pale aqua only when he works",
+   "accent": "pale aqua (#a9d9e0) webbing and stitching",
+   "palette": "dark moss green (#3f4a2a)",
+   "materials": "waxed canvas, leather, enamel, chrome",
+   "lineage": "clockmaker and machinist workshop culture of his home timeline",
+   "detail": "bracers and a ring of tools",
+   "motif": null,
+   "palette_set": "B",
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-R3b-sheet-enforcer-2-lacquer-yoke",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, landscape. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the long chrome rifle with bone inlay carried across the shoulders; 2 = the lacquered cocoa armoured vest with bone inlay and leather bracers; 3 = the heavy leather boots and belt. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-R3b-sheet-enforcer-2-lacquer-yoke.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "0f6ed24525477d3a67c4d526cd5bb93c57b51eae937611984467b159c7cbe487",
+   "sha256_png": "0f6ed24525477d3a67c4d526cd5bb93c57b51eae937611984467b159c7cbe487",
+   "hook": "Lacquer vest, rifle across the shoulders",
+   "at": "2026-10-15T20:12:03",
+   "secs": 67.2,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes/R3b-w-enforcer-2-lacquer-yoke.png"
+   ],
+   "role": "enforcer",
+   "callouts": {
+    "c1": "the long chrome rifle with bone inlay carried across the shoulders",
+    "c2": "the lacquered cocoa armoured vest with bone inlay and leather bracers",
+    "c3": "the heavy leather boots and belt"
+   },
+   "take": 2,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-R3b-sheet-fixer-1-knit-tunic",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, landscape. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the silver lacquered case with its dusty-rose panel and coiled handset cable; 2 = the navy rib-knit mock-neck tunic with dusty-rose ribbed cuffs and hem band; 3 = the slim navy leather trousers, flat boots and chrome collar pin. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-R3b-sheet-fixer-1-knit-tunic.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "caa56da7c26f1f98f5637aafc08b31442439587b77cdcf565287b4bba5482ec6",
+   "sha256_png": "caa56da7c26f1f98f5637aafc08b31442439587b77cdcf565287b4bba5482ec6",
+   "hook": "Knit tunic and leather",
+   "at": "2026-10-15T20:13:19",
+   "secs": 60.7,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes/R3b-w-fixer-1-knit-tunic.png"
+   ],
+   "role": "fixer",
+   "callouts": {
+    "c1": "the silver lacquered case with its dusty-rose panel and coiled handset cable",
+    "c2": "the navy rib-knit mock-neck tunic with dusty-rose ribbed cuffs and hem band",
+    "c3": "the slim navy leather trousers, flat boots and chrome collar pin"
+   },
+   "take": 1,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-R3b-sheet-scout-1-trail-runner",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, landscape. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the tall graphite pack with its chrome periscope mast and lime straps; 2 = the cropped hooded ripstop windshell with lime reflective piping; 3 = the mesh-panel shorts and chunky graphite-and-lime trail runners. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-R3b-sheet-scout-1-trail-runner.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "61ea09a8ff981a0a07a2270e1d4283672cfcc1ec01a757ed2f36e465b199bd3f",
+   "sha256_png": "61ea09a8ff981a0a07a2270e1d4283672cfcc1ec01a757ed2f36e465b199bd3f",
+   "hook": "Trail runner",
+   "at": "2026-10-15T20:12:18",
+   "secs": 70.1,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes/R3b-w-scout-1-trail-runner.png"
+   ],
+   "role": "scout",
+   "callouts": {
+    "c1": "the tall graphite pack with its chrome periscope mast and lime straps",
+    "c2": "the cropped hooded ripstop windshell with lime reflective piping",
+    "c3": "the mesh-panel shorts and chunky graphite-and-lime trail runners"
+   },
+   "take": 1,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-R3b-sheet-tech-2-canvas-apron",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Cosplay build sheet, for someone who wants to make this costume. One plain warm light-grey sheet, landscape. The same person as in the reference image shown full body, head to toe, in a FRONT view on the left and a BACK view in the middle (invent the back of the outfit logically, same pieces, same materials), standing straight with arms slightly away from the body (the rifle, if any, stays on the shoulders). On the right, three close-up detail insets in a column, each joined by a thin leader line to its place on a figure and marked with a small numbered circle (only the digits 1, 2, 3, no other text): 1 = the smoked visor with two flip-up chrome lens plates (lit pale aqua only when working); 2 = the stiff waxed-canvas apron panel hinged at the belt; 3 = the leather tool bandolier, ice stitching and chrome bracers. Keep exactly the face, hair, build, wardrobe, colours, materials and signature item of the reference. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-R3b-sheet-tech-2-canvas-apron.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "ca9e3a4a67636ee3b65b7c9f61ec52fd3dbe714e50b1698c3199767efcfa52a6",
+   "sha256_png": "ca9e3a4a67636ee3b65b7c9f61ec52fd3dbe714e50b1698c3199767efcfa52a6",
+   "hook": "Stiff canvas apron",
+   "at": "2026-10-15T20:12:48",
+   "secs": 110.3,
+   "refnotes": "image 1 = the chosen wardrobe take.",
+   "refs": [
+    "wardrobes/R3b-w-tech-2-canvas-apron.png"
+   ],
+   "role": "tech",
+   "callouts": {
+    "c1": "the smoked visor with two flip-up chrome lens plates (lit pale aqua only when working)",
+    "c2": "the stiff waxed-canvas apron panel hinged at the belt",
+    "c3": "the leather tool bandolier, ice stitching and chrome bracers"
+   },
+   "take": 2,
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-portrait-R3b-lineup-W1",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small chrome ring-with-a-bar pin (a circle with a short bar through it, the visitors' mark), worn in a different place on each: the Scout on her pack strap at the chest, the Fixer at her collar, the Tech on the edge of his visor, the Enforcer on his shoulder. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude, a little space between figures so each silhouette stays separate. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-portrait-R3b-lineup-W1.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "d53f0b19c613883edbf0b04d50c3c748c2806c9944a20b030ce6cf370581ae4f",
+   "sha256_png": "d53f0b19c613883edbf0b04d50c3c748c2806c9944a20b030ce6cf370581ae4f",
+   "hook": "Wardrobes I with the Visitor's pin: trail runner, knit tunic, canvas apron, lacquer yoke",
+   "at": "2026-10-15T20:11:08",
+   "secs": 84.3,
+   "refnotes": "images 1 to 4 = the chosen wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes/R3b-w-scout-1-trail-runner.png",
+    "wardrobes/R3b-w-fixer-1-knit-tunic.png",
+    "wardrobes/R3b-w-tech-2-canvas-apron.png",
+    "wardrobes/R3b-w-enforcer-2-lacquer-yoke.png"
+   ],
+   "motif": "M1",
+   "motif_name": "Visitor's pin",
+   "takes": {
+    "scout": "scout-1",
+    "fixer": "fixer-1",
+    "tech": "tech-2",
+    "enforcer": "enforcer-2"
+   },
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-portrait-R3b-lineup-W2",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small chrome chevron badge (a single upward chevron) on the left upper arm or shoulder of each, made in each person's own material: sewn on the knit, a rubber patch on the nylon, riveted to the canvas, inlaid in the lacquer. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude, a little space between figures so each silhouette stays separate. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-portrait-R3b-lineup-W2.png",
+   "size": [
+    1536,
+    1024
+   ],
+   "sha256": "29db7f980c211224884b647f35747e35b6311d05e8b1a6fc7e4b18df3cbb0c4a",
+   "sha256_png": "29db7f980c211224884b647f35747e35b6311d05e8b1a6fc7e4b18df3cbb0c4a",
+   "hook": "Wardrobes II with the chrome chevron: fin glider, leather jacket, tool belt, lacquer staff",
+   "at": "2026-10-15T20:10:58",
+   "secs": 74.4,
+   "refnotes": "images 1 to 4 = the chosen wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes/R3b-w-scout-2-fin-glider.png",
+    "wardrobes/R3b-w-fixer-2-leather-jacket.png",
+    "wardrobes/R3b-w-tech-3-tool-belt.png",
+    "wardrobes/R3b-w-enforcer-1-lacquer-staff.png"
+   ],
+   "motif": "M2",
+   "motif_name": "Chrome chevron",
+   "takes": {
+    "scout": "scout-2",
+    "fixer": "fixer-2",
+    "tech": "tech-3",
+    "enforcer": "enforcer-1"
+   },
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  },
+  {
+   "id": "iter-paletteA-portrait-R3b-lineup-W3",
+   "set": "iteration",
+   "model": "codex",
+   "model_id": "codex image tool (ChatGPT plan, free)",
+   "prompt": "Character concept art, a 4-person team lineup, full body head to toe, standing together in one row, left to right: the Scout (image 1), the Fixer (image 2), the Tech (image 3), the Enforcer (image 4). Redraw the four exactly as in their reference images: same faces, hair, builds, wardrobes, colours, materials and signature items, nothing changed: four people dressed very differently, who would never shop in the same place, held together only by one small shared motif. Team motif, small but visible on each: a small round chrome-rimmed lamp bead that glows soft pale aqua, worn somewhere different on each: the Scout's earpiece, the Fixer's case latch, the Tech's visor, the rifle's inlay for the Enforcer; the lamps light when that person acts. Same scale with natural height differences (the Enforcer biggest), relaxed poses with attitude, a little space between figures so each silhouette stays separate. One shared finish for the whole team: polished matte digital character concept art, soft even studio light, crisp clean edges, natural skin, plain warm light-grey seamless backdrop with a soft ground shadow. No text, no logos, no watermark.",
+   "seed": null,
+   "cost": 0,
+   "file": "_iteration/iter-paletteA-portrait-R3b-lineup-W3.png",
+   "size": [
+    1024,
+    1536
+   ],
+   "sha256": "7549d52a74ba5613b71b4a3253158fd026defd51a32735068e9345f2b525fdb9",
+   "sha256_png": "7549d52a74ba5613b71b4a3253158fd026defd51a32735068e9345f2b525fdb9",
+   "hook": "Wardrobes III with the lamp bead: trail runner, knit jumpsuit, structured canvas bell (flagged), ring collar",
+   "at": "2026-10-15T20:10:56",
+   "secs": 72.6,
+   "refnotes": "images 1 to 4 = the chosen wardrobe takes: Scout, Fixer, Tech, Enforcer (in order).",
+   "refs": [
+    "wardrobes/R3b-w-scout-1-trail-runner.png",
+    "wardrobes/R3b-w-fixer-3-knit-jumpsuit.png",
+    "wardrobes/R3b-w-tech-1-canvas-wide.png",
+    "wardrobes/R3b-w-enforcer-3-ring-collar.png"
+   ],
+   "motif": "M3",
+   "motif_name": "Lamp bead",
+   "takes": {
+    "scout": "scout-1",
+    "fixer": "fixer-3",
+    "tech": "tech-1",
+    "enforcer": "enforcer-3"
+   },
+   "note": "Codex image tool: prompt verbatim, unseeded, no per-image cost."
+  }
+ ]
+}

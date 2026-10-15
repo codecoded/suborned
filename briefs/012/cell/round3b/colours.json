@@ -1,0 +1,458 @@
+{
+ "targets": {
+  "scout": {
+   "dom": {
+    "hex": "#8a7f5a",
+    "cones": 32.9,
+    "guard": 25.1,
+    "rivals": 49.9,
+    "city_min": 22.4,
+    "city_nearest": "asphalt #a5a2a8",
+    "L": 53.3
+   },
+   "acc": {
+    "hex": "#3a3f45",
+    "cones": 38.3,
+    "guard": 55.6,
+    "rivals": 24.9,
+    "city_min": 22.5,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 26.4
+   }
+  },
+  "fixer": {
+   "dom": {
+    "hex": "#1f2f4f",
+    "cones": 45.8,
+    "guard": 66.2,
+    "rivals": 27.3,
+    "city_min": 29.3,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 19.6
+   },
+   "acc": {
+    "hex": "#b98a8f",
+    "cones": 23.1,
+    "guard": 32.2,
+    "rivals": 30.6,
+    "city_min": 15.7,
+    "city_nearest": "asphalt #a5a2a8",
+    "L": 62.1
+   }
+  },
+  "tech": {
+   "dom": {
+    "hex": "#3f4a2a",
+    "cones": 46.0,
+    "guard": 50.2,
+    "rivals": 56.2,
+    "city_min": 20.0,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 29.7
+   },
+   "acc": {
+    "hex": "#a9d9e0",
+    "cones": 51.1,
+    "guard": 39.3,
+    "rivals": 38.3,
+    "city_min": 14.5,
+    "city_nearest": "seafoam #72b5a7",
+    "L": 83.7
+   }
+  },
+  "enforcer": {
+   "dom": {
+    "hex": "#6b4226",
+    "cones": 25.3,
+    "guard": 42.5,
+    "rivals": 42.5,
+    "city_min": 35.7,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 32.2
+   },
+   "acc": {
+    "hex": "#e8e4da",
+    "cones": 42.2,
+    "guard": 28.2,
+    "rivals": 49.5,
+    "city_min": 4.6,
+    "city_nearest": "cream #f9efdc",
+    "L": 90.6
+   }
+  }
+ },
+ "mutual": {
+  "scout-fixer": 42.6,
+  "scout-tech": 23.1,
+  "scout-enforcer": 24.3,
+  "fixer-tech": 32.6,
+  "fixer-enforcer": 31.6,
+  "tech-enforcer": 23.9
+ },
+ "painted": {
+  "scout": [
+   {
+    "hex": "#38312e",
+    "share": 0.295,
+    "cones": 36.1,
+    "guard": 55.9,
+    "rivals": 36.2,
+    "city_min": 29.5
+   },
+   {
+    "hex": "#251f1d",
+    "share": 0.254,
+    "cones": 40.1,
+    "guard": 60.3,
+    "rivals": 39.2,
+    "city_min": 32.8
+   },
+   {
+    "hex": "#0f0b0a",
+    "share": 0.187,
+    "cones": 44.9,
+    "guard": 64.7,
+    "rivals": 42.3,
+    "city_min": 34.9
+   },
+   {
+    "hex": "#4d4744",
+    "share": 0.163,
+    "cones": 32.1,
+    "guard": 48.7,
+    "rivals": 32.7,
+    "city_min": 25.3
+   }
+  ],
+  "fixer": [
+   {
+    "hex": "#262734",
+    "share": 0.335,
+    "cones": 42.4,
+    "guard": 63.2,
+    "rivals": 32.1,
+    "city_min": 30.7
+   },
+   {
+    "hex": "#1e1d24",
+    "share": 0.242,
+    "cones": 43.1,
+    "guard": 63.7,
+    "rivals": 36.3,
+    "city_min": 32.6
+   },
+   {
+    "hex": "#333543",
+    "share": 0.211,
+    "cones": 40.1,
+    "guard": 60.2,
+    "rivals": 28.7,
+    "city_min": 27.7
+   },
+   {
+    "hex": "#100e0e",
+    "share": 0.114,
+    "cones": 44.8,
+    "guard": 64.5,
+    "rivals": 41.8,
+    "city_min": 34.0
+   }
+  ],
+  "tech": [
+   {
+    "hex": "#362f26",
+    "share": 0.345,
+    "cones": 37.3,
+    "guard": 55.5,
+    "rivals": 40.9,
+    "city_min": 28.6
+   },
+   {
+    "hex": "#484237",
+    "share": 0.233,
+    "cones": 34.5,
+    "guard": 49.8,
+    "rivals": 39.7,
+    "city_min": 24.6
+   },
+   {
+    "hex": "#251f19",
+    "share": 0.233,
+    "cones": 40.5,
+    "guard": 59.6,
+    "rivals": 41.9,
+    "city_min": 31.8
+   },
+   {
+    "hex": "#0f0c09",
+    "share": 0.118,
+    "cones": 45.0,
+    "guard": 64.4,
+    "rivals": 43.1,
+    "city_min": 34.0
+   }
+  ],
+  "enforcer": [
+   {
+    "hex": "#3f2e27",
+    "share": 0.388,
+    "cones": 34.1,
+    "guard": 55.1,
+    "rivals": 38.0,
+    "city_min": 34.6
+   },
+   {
+    "hex": "#2c1f19",
+    "share": 0.314,
+    "cones": 38.3,
+    "guard": 58.9,
+    "rivals": 40.7,
+    "city_min": 35.8
+   },
+   {
+    "hex": "#160e0a",
+    "share": 0.157,
+    "cones": 43.6,
+    "guard": 63.6,
+    "rivals": 42.6,
+    "city_min": 36.1
+   },
+   {
+    "hex": "#514640",
+    "share": 0.082,
+    "cones": 31.0,
+    "guard": 47.9,
+    "rivals": 34.2,
+    "city_min": 27.9
+   }
+  ]
+ },
+ "targets_A": {
+  "scout": {
+   "dom": {
+    "hex": "#3a3f45",
+    "cones": 38.3,
+    "guard": 55.6,
+    "rivals": 24.9,
+    "city_min": 22.5,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 26.4
+   },
+   "acc": {
+    "hex": "#b5c95a",
+    "cones": 57.3,
+    "guard": 27.6,
+    "rivals": 78.0,
+    "city_min": 13.0,
+    "city_nearest": "park #a6e29c",
+    "L": 77.5
+   }
+  },
+  "fixer": {
+   "dom": {
+    "hex": "#1f2f4f",
+    "cones": 45.8,
+    "guard": 66.2,
+    "rivals": 27.3,
+    "city_min": 29.3,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 19.6
+   },
+   "acc": {
+    "hex": "#b98a8f",
+    "cones": 23.1,
+    "guard": 32.2,
+    "rivals": 30.6,
+    "city_min": 15.7,
+    "city_nearest": "asphalt #a5a2a8",
+    "L": 62.1
+   }
+  },
+  "tech": {
+   "dom": {
+    "hex": "#5d5a3a",
+    "cones": 37.2,
+    "guard": 39.3,
+    "rivals": 50.5,
+    "city_min": 21.8,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 37.7
+   },
+   "acc": {
+    "hex": "#cfe6ee",
+    "cones": 49.9,
+    "guard": 37.2,
+    "rivals": 37.1,
+    "city_min": 16.1,
+    "city_nearest": "cream #f9efdc",
+    "L": 89.9
+   }
+  },
+  "enforcer": {
+   "dom": {
+    "hex": "#4a3326",
+    "cones": 31.7,
+    "guard": 52.2,
+    "rivals": 39.7,
+    "city_min": 34.9,
+    "city_nearest": "civic teal #1f6c67",
+    "L": 23.6
+   },
+   "acc": {
+    "hex": "#e8e4da",
+    "cones": 42.2,
+    "guard": 28.2,
+    "rivals": 49.5,
+    "city_min": 4.6,
+    "city_nearest": "cream #f9efdc",
+    "L": 90.6
+   }
+  }
+ },
+ "mutual_A": {
+  "scout-fixer": 12.6,
+  "scout-tech": 20.5,
+  "scout-enforcer": 16.6,
+  "fixer-tech": 35.0,
+  "fixer-enforcer": 24.2,
+  "tech-enforcer": 19.5
+ },
+ "painted_A": {
+  "scout": [
+   {
+    "hex": "#393532",
+    "share": 0.285,
+    "cones": 36.2,
+    "guard": 55.2,
+    "rivals": 36.0,
+    "city_min": 26.7
+   },
+   {
+    "hex": "#262220",
+    "share": 0.282,
+    "cones": 40.0,
+    "guard": 59.8,
+    "rivals": 38.8,
+    "city_min": 30.8
+   },
+   {
+    "hex": "#100d0b",
+    "share": 0.176,
+    "cones": 44.8,
+    "guard": 64.3,
+    "rivals": 42.5,
+    "city_min": 34.0
+   },
+   {
+    "hex": "#535049",
+    "share": 0.148,
+    "cones": 32.6,
+    "guard": 44.9,
+    "rivals": 35.7,
+    "city_min": 21.5
+   }
+  ],
+  "fixer": [
+   {
+    "hex": "#252632",
+    "share": 0.339,
+    "cones": 42.5,
+    "guard": 63.2,
+    "rivals": 32.5,
+    "city_min": 30.7
+   },
+   {
+    "hex": "#313341",
+    "share": 0.236,
+    "cones": 40.5,
+    "guard": 60.7,
+    "rivals": 29.1,
+    "city_min": 28.1
+   },
+   {
+    "hex": "#1d1c22",
+    "share": 0.213,
+    "cones": 43.2,
+    "guard": 63.6,
+    "rivals": 36.9,
+    "city_min": 32.7
+   },
+   {
+    "hex": "#0f0d0e",
+    "share": 0.107,
+    "cones": 45.1,
+    "guard": 64.9,
+    "rivals": 41.7,
+    "city_min": 35.7
+   }
+  ],
+  "tech": [
+   {
+    "hex": "#3f362a",
+    "share": 0.344,
+    "cones": 35.7,
+    "guard": 53.1,
+    "rivals": 41.3,
+    "city_min": 28.0
+   },
+   {
+    "hex": "#534a3c",
+    "share": 0.275,
+    "cones": 32.5,
+    "guard": 45.5,
+    "rivals": 39.8,
+    "city_min": 24.8
+   },
+   {
+    "hex": "#2b231c",
+    "share": 0.203,
+    "cones": 39.1,
+    "guard": 58.3,
+    "rivals": 41.4,
+    "city_min": 31.9
+   },
+   {
+    "hex": "#130f0c",
+    "share": 0.11,
+    "cones": 44.3,
+    "guard": 63.8,
+    "rivals": 42.6,
+    "city_min": 34.1
+   }
+  ],
+  "enforcer": [
+   {
+    "hex": "#392a22",
+    "share": 0.349,
+    "cones": 35.5,
+    "guard": 56.0,
+    "rivals": 39.5,
+    "city_min": 34.1
+   },
+   {
+    "hex": "#291d17",
+    "share": 0.277,
+    "cones": 39.0,
+    "guard": 59.5,
+    "rivals": 41.2,
+    "city_min": 35.7
+   },
+   {
+    "hex": "#483830",
+    "share": 0.18,
+    "cones": 32.3,
+    "guard": 52.3,
+    "rivals": 37.0,
+    "city_min": 32.1
+   },
+   {
+    "hex": "#160e0a",
+    "share": 0.14,
+    "cones": 43.6,
+    "guard": 63.6,
+    "rivals": 42.6,
+    "city_min": 36.1
+   }
+  ]
+ }
+}
