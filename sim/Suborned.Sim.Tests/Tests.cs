@@ -187,6 +187,35 @@ public class RulesTests
     }
 
     [Fact]
+    public void TheCallQueryAndIssueAgree()
+    {
+        // every scenario's call orders, and a call on every role at every 10 s of a few runs: the query before the click is Issue's answer
+        int checkedCalls = 0;
+        foreach (var id in new[] { "S10", "N39", "N39c", "N39d", "S21", "N39b", "S07" })
+        {
+            var sc = Scenarios.Find(id)!;
+            var played = Scenarios.Run(Repo.Inputs, sc).G;
+            var g = Engine.New(Repo.Inputs, sc.Start); int k = 0;
+            while (g.Tick <= played.Tick && !g.Over)
+            {
+                if (g.Tick % 600 == 0)
+                    foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
+                    {
+                        var copy = g.Tick == 0 ? Engine.New(Repo.Inputs, sc.Start) : Engine.Play(Repo.Inputs, sc.Start, played.Orders.Take(k).Select(x => x.order).ToList(), g.Tick);
+                        var q = copy.CallQuery(role); ulong before = Hash.State(copy);
+                        Assert.Equal(before, Hash.State(copy)); // read-only
+                        var a = copy.Issue(new Order { Tick = copy.Tick, Op = "fixer", Do = "call", Target = role });
+                        Assert.True(q.ok == a.ok && q.code == a.code && q.tick == a.tick, $"{id} {Report.Clock(g.Tick)} call {role}: query {q.code} vs issue {a.code}");
+                        checkedCalls++;
+                    }
+                while (k < played.Orders.Count && played.Orders[k].order.Tick == g.Tick) { var o = played.Orders[k++].order; if (o.Do == "call") { var q = g.CallQuery(o.Target); var a = g.Issue(o); Assert.Equal((q.ok, q.code), (a.ok, a.code)); checkedCalls++; } else g.Issue(o); }
+                g.Step();
+            }
+        }
+        Assert.True(checkedCalls > 40, $"calls checked ({checkedCalls})");
+    }
+
+    [Fact]
     public void ArmsDecideWhoCarriesASidearm()
     {
         var none = new Start { Arms = 0 };

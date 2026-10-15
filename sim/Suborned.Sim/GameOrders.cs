@@ -18,7 +18,7 @@ namespace Suborned.Sim
             try { why = Over ? No("mission-over", "the mission is over") : Check(o); }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             bool ok = why.Length == 0;
-            var a = ok ? new Answer { ok = true, code = "", why = "" } : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            var a = ok ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 } : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
             if (!ok && a.code == "uncoded") throw new InvalidOperationException($"a refusal without a code: {why}"); // every refusal says its code (Fable)
             Orders.Add((o, ok, a.code, why));
             if (!ok) Note("order.rejected", $"{o.Op} {o.Do} {o.Target}{o.To}: {why}");
@@ -472,10 +472,31 @@ namespace Suborned.Sim
             return (null, "");
         }
 
-        string Call(Op op, Order o)
+        /// <summary>The call card, before the click (Latch): would the Fixer's call on this role be taken now, and if not, its refusal code,
+        /// words and numbers, exactly as Issue would answer it. Read-only: it changes nothing.</summary>
+        public Answer CallQuery(string role)
+        {
+            var saved = refusal; refusal = default; string why;
+            try
+            {
+                var op = OpOf(OpId.Fixer);
+                why = Over ? No("mission-over", "the mission is over")
+                    : op.Down ? No("agent-down", "the fixer is down")
+                    : op.Busy != null ? No("agent-busy", $"fixer is busy until {op.BusyEnd}", tick: op.BusyEnd)
+                    : CallRefusal(op, role);
+            }
+            catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
+            var a = why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 }
+                : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            refusal = saved;
+            return a;
+        }
+
+        /// <summary>Why the Fixer's call on a role is refused now, or "" (the checks of Call, without its effects).</summary>
+        string CallRefusal(Op op, string role)
         {
             if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer calls contacts (§03)");
-            var p = PersonByRole(o.Target);
+            var p = PersonByRole(role);
             if (p.Down) return No("person-down", $"{p.Role} is down");
             if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
             if (p == Driver) // the driver's call is his role job, the camera block (unchanged)
@@ -483,22 +504,36 @@ namespace Suborned.Sim
                 if (Vale == ValeAt.Car) return No("car-gone", "the official car is gone");
                 if (BlockMove != INF && Tick < BlockedUntil + blockMoveT) return No("car-busy", "the car is still blocking or returning", tick: BlockedUntil + blockMoveT);
                 if (Tick >= T(driverLastS) - blockMoveT) return No("call-too-late", "too late: the car leaves for the pickup at 5:40", tick: T(driverLastS) - blockMoveT);
+                return "";
+            }
+            if (p.Lover != null)
+            {
+                var (code, why) = SummonRefusal(p, out int walk);
+                return code != null ? No(code, why, tick: code == "summon-too-far" ? walk : -1) : "";
+            }
+            return No("nothing-to-call", $"{p.Role} has nothing to do on a call");
+        }
+
+        string Call(Op op, Order o)
+        {
+            var no = CallRefusal(op, o.Target); if (no.Length > 0) return no;
+            var p = PersonByRole(o.Target);
+            if (p == Driver) // the driver's call is his role job, the camera block (unchanged)
+            {
                 BlockMove = Tick; BlockedFrom = Tick + blockMoveT; BlockedUntil = Tick + blockMoveT + blockHoldT;
                 AddTrail(R.CallTrail, "call:driver"); Remember(Driver, "job", "fixer", false);
                 Actions.Add("call:driver"); Chain.Add("driver-blocks-camera");
                 Note("call.driver", "The driver starts moving the car across the pickup camera.");
                 return "";
             }
-            if (p.Lover != null) return Summon(p);
-            return No("nothing-to-call", $"{p.Role} has nothing to do on a call");
+            return Summon(p); // CallRefusal let it through: the lover comes
         }
 
         /// <summary>The summons (rulebook summon; Motive, motive-lovers.md §1.3): a turned contact's call sends for their lover, read from the
         /// city's ties. He walks the grid to her at walking pace, stays summon.stay and walks back; refused at no cost, with its code.</summary>
         string Summon(Person p)
         {
-            var (code, why) = SummonRefusal(p, out int walk);
-            if (code != null) return No(code, why, tick: code == "summon-too-far" ? walk : -1);
+            SummonRefusal(p, out int walk);
             var lover = p.Lover!;
             var from = GuardPose()!.Value.pos; var to = PersonPos(p)!.Value;
             guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(to) ?? to)!);
