@@ -1,0 +1,105 @@
+{
+ "id": "intel_panel",
+ "sprite": "panel_dark",
+ "width": 318,
+ "position": {
+  "anchor": "top-right",
+  "right": 14,
+  "top": 108
+ },
+ "collapsed": {
+  "sprite": "panel_strip",
+  "height": 34
+ },
+ "open": {
+  "header": 32,
+  "row": 62,
+  "footer": 28
+ },
+ "children": [
+  {
+   "id": "title",
+   "text": "INTEL",
+   "text_style": "section-label"
+  },
+  {
+   "id": "subtitle",
+   "text_style": "panel-sub",
+   "text": "what the cell knows"
+  },
+  {
+   "id": "chevron",
+   "atlas_icon": "chev_up|chev_down",
+   "size": 14
+  },
+  {
+   "id": "row",
+   "rect": "x 28, y = header + i*62 + 6",
+   "children": [
+    {
+     "id": "name",
+     "text_style": "intel-name"
+    },
+    {
+     "id": "job",
+     "text_style": "intel-job"
+    },
+    {
+     "id": "need",
+     "sprite": "disc_dark_24",
+     "glyph": "debt|cash|housing|..",
+     "pos": [
+      26,
+      19,
+      24,
+      24
+     ],
+     "mark": "mark_ok|mark_sus|mark_unk"
+    },
+    {
+     "id": "temperament",
+     "sprite": "disc_dark_24",
+     "glyph": "idealist|mercenary|fearful|loyal",
+     "pos": [
+      56,
+      19,
+      24,
+      24
+     ]
+    },
+    {
+     "id": "turned",
+     "sprite": "mark_ok|dashed ring",
+     "pos": [
+      88,
+      22,
+      17,
+      17
+     ]
+    },
+    {
+     "id": "next_action",
+     "atlas_icon": "<verb>",
+     "icon_pos": [
+      118,
+      24,
+      15,
+      15
+     ],
+     "text_style": "intel-next",
+     "text_pos": [
+      130,
+      22,
+      170,
+      16
+     ]
+    }
+   ]
+  },
+  {
+   "id": "legend",
+   "rect": "y = bottom - 12",
+   "text_style": "panel-sub"
+  }
+ ]
+}

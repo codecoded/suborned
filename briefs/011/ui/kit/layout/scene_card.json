@@ -1,0 +1,206 @@
+{
+ "id": "scene_card",
+ "sprite": "panel_card",
+ "width": 384,
+ "height": "36 + (12 live) + sum(line heights) + 8 + 36 expanded; 62 folded",
+ "gap_px": 6,
+ "position": {
+  "anchor": "bottom-right",
+  "right": 14,
+  "above": "feed_bar",
+  "gap": 4
+ },
+ "stack": "newest on top; 3 visible; '+N more' chip",
+ "children": [
+  {
+   "id": "header",
+   "rect": [
+    3.5,
+    3.5,
+    377,
+    25
+   ],
+   "fill": "kind tint (class kind-*)",
+   "radius": 7
+  },
+  {
+   "id": "kind_icon",
+   "sprite": "disc_light_24",
+   "size": 21,
+   "rect": [
+    10,
+    6,
+    21,
+    21
+   ],
+   "atlas_icon": "<kind glyph>"
+  },
+  {
+   "id": "verb_icon",
+   "atlas_icon": "<verb>",
+   "size": 15,
+   "rect": [
+    34,
+    10,
+    15,
+    15
+   ],
+   "tint": "cream"
+  },
+  {
+   "id": "title",
+   "text_style": "feed-title",
+   "rect": [
+    50,
+    9,
+    150,
+    16
+   ]
+  },
+  {
+   "id": "where",
+   "text_style": "feed-where",
+   "ellipsis": true
+  },
+  {
+   "id": "clock",
+   "text_style": "feed-clock",
+   "align": "right",
+   "rect": [
+    300,
+    9,
+    72,
+    16
+   ]
+  },
+  {
+   "id": "new",
+   "sprite": "pill_new",
+   "rect": [
+    260,
+    9,
+    34,
+    15
+   ],
+   "visible_if": "new"
+  },
+  {
+   "id": "unread_dot",
+   "sprite": "dot_unread",
+   "rect": [
+    372,
+    2,
+    12,
+    12
+   ],
+   "visible_if": "unread"
+  },
+  {
+   "id": "progress",
+   "rect": [
+    14,
+    37,
+    284,
+    8
+   ],
+   "visible_if": "live"
+  },
+  {
+   "id": "remaining",
+   "text_style": "feed-live",
+   "align": "right",
+   "visible_if": "live"
+  },
+  {
+   "id": "line",
+   "repeat": "3-6",
+   "row_height": "17 per wrapped line + 5 (min 22)",
+   "children": [
+    {
+     "id": "chip",
+     "sprite": "cameo_<role>|npc_<role>|signal_<guard|rival>",
+     "rect": [
+      14,
+      0,
+      22,
+      22
+     ]
+    },
+    {
+     "id": "speaker",
+     "text_style": "feed-name | feed-name-cell"
+    },
+    {
+     "id": "text",
+     "text_style": "feed-line | feed-line-npc",
+     "wrap_width": 286
+    }
+   ]
+  },
+  {
+   "id": "typing",
+   "visible_if": "live",
+   "note": "three dots, 3 px radius, 11 px pitch"
+  },
+  {
+   "id": "footer",
+   "rect": "x 8, w 368, h 30, bottom 6",
+   "fill": "footer-result (footer-live while live)",
+   "outline": "footer-result-line",
+   "radius": 7,
+   "children": [
+    {
+     "id": "check",
+     "sprite": "disc 16 deep-teal + atlas check cream",
+     "rect": [
+      8,
+      7,
+      16,
+      16
+     ]
+    },
+    {
+     "id": "result",
+     "text_style": "feed-result",
+     "rect": [
+      32,
+      7,
+      230,
+      16
+     ],
+     "ellipsis": true
+    },
+    {
+     "id": "ack",
+     "sprite": "btn_ack_normal",
+     "states": [
+      "hover",
+      "pressed"
+     ],
+     "rect": [
+      303,
+      3,
+      61,
+      24
+     ],
+     "children": [
+      {
+       "id": "tick",
+       "atlas_icon": "check",
+       "size": 12,
+       "tint": "deep-teal"
+      },
+      {
+       "id": "key",
+       "sprite": "plate_light",
+       "text_style": "keycap",
+       "text": "K"
+      }
+     ],
+     "visible_if": "unread"
+    }
+   ]
+  }
+ ],
+ "hot": "white 3.2 + turquoise 1.6 outline when hovered or targeted by a click-to-pan"
+}

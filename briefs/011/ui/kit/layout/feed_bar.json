@@ -1,0 +1,60 @@
+{
+ "id": "feed_bar",
+ "sprite": "panel_strip",
+ "size": [
+  384,
+  32
+ ],
+ "position": {
+  "anchor": "bottom-right",
+  "right": 14,
+  "bottom": 14
+ },
+ "children": [
+  {
+   "id": "title",
+   "text": "SCENES",
+   "text_style": "feed-bar",
+   "rect": [
+    24,
+    9,
+    60,
+    14
+   ]
+  },
+  {
+   "id": "count",
+   "sprite": "pill_white",
+   "text_style": "feed-filter",
+   "text": "N new",
+   "rect": [
+    82,
+    7,
+    "auto",
+    18
+   ]
+  },
+  {
+   "id": "keys",
+   "text_style": "feed-bar-sub",
+   "text": "K ack · L history",
+   "align": "right",
+   "rect": [
+    210,
+    9,
+    134,
+    14
+   ]
+  },
+  {
+   "id": "chevron",
+   "atlas_icon": "chev_up|chev_down",
+   "rect": [
+    358,
+    9,
+    14,
+    14
+   ]
+  }
+ ]
+}

@@ -1,0 +1,66 @@
+{
+ "id": "status_pill",
+ "sprite": "pill_status",
+ "height": 44,
+ "position": {
+  "anchor": "top-right",
+  "right": 14,
+  "top": 12
+ },
+ "padding_from_content_rect": {
+  "left": 19,
+  "top": 7,
+  "right": 18,
+  "bottom": 7
+ },
+ "width": "content + padding (about 574)",
+ "children": [
+  {
+   "id": "clock",
+   "text_style": "clock"
+  },
+  {
+   "id": "next_icon",
+   "atlas_icon": "nextevent",
+   "size": 17,
+   "tint": "turquoise-light"
+  },
+  {
+   "id": "next_label",
+   "text_style": "pill-label",
+   "text": "{event} · "
+  },
+  {
+   "id": "next_time",
+   "text_style": "pill-value"
+  },
+  {
+   "id": "cash_icon",
+   "atlas_icon": "p_cash",
+   "size": 17
+  },
+  {
+   "id": "cash",
+   "text_style": "pill-value"
+  },
+  {
+   "id": "trail_icon",
+   "atlas_icon": "p_trail",
+   "size": 17
+  },
+  {
+   "id": "trail",
+   "text_style": "pill-value"
+  },
+  {
+   "id": "alert_lamps",
+   "count": 3,
+   "lamp_diameter_px": 12.4,
+   "pitch_px": 17,
+   "off": "#0a1c1e fill, #78968f outline 1.4",
+   "on": "cream core #fffcf0 with 90 alpha halo",
+   "rays": "3 short rays on the lamp that just lit"
+  }
+ ],
+ "separators": "1 px #d2e6e2 at 35%, 18 px tall, 12 px gap"
+}

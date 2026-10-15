@@ -1,0 +1,38 @@
+{
+ "id": "ticker",
+ "sprite": "panel_strip",
+ "size": [
+  341,
+  34
+ ],
+ "position": {
+  "relative_to": "roster_column",
+  "x": 12,
+  "y": "column.bottom + 8 = 508"
+ },
+ "children": [
+  {
+   "id": "chip",
+   "sprite": "cameo_<role>_normal",
+   "size": 28,
+   "rect": [
+    14,
+    3,
+    28,
+    28
+   ]
+  },
+  {
+   "id": "text",
+   "rect": [
+    48,
+    8,
+    280,
+    18
+   ],
+   "text_style": "ticker",
+   "ellipsis": true
+  }
+ ],
+ "behaviour": "the cell's own order acknowledgement and arrive line; fades after about 4 s; not interactive"
+}

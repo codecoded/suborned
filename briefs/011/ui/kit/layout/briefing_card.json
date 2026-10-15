@@ -1,0 +1,108 @@
+{
+ "id": "briefing_card",
+ "sprite": "panel_dark_modal",
+ "size": [
+  700,
+  548
+ ],
+ "position": {
+  "anchor": "top-center",
+  "x_offset": 40,
+  "y": 150
+ },
+ "padding": [
+  24,
+  30,
+  24,
+  30
+ ],
+ "modal": true,
+ "children": [
+  {
+   "id": "tab",
+   "sprite": "panel_tab_small",
+   "size": [
+    170,
+    28
+   ],
+   "text": "MISSION BRIEFING",
+   "text_style": "hint-tab"
+  },
+  {
+   "id": "title",
+   "text_style": "briefing-title",
+   "text": "The Handover"
+  },
+  {
+   "id": "sub",
+   "text_style": "briefing-sub",
+   "text": "Harbour District · 17:24"
+  },
+  {
+   "id": "objective",
+   "icon": "take",
+   "label_style": "section-label",
+   "text_style": "briefing-body"
+  },
+  {
+   "id": "target",
+   "icon": "p_unknown",
+   "label_style": "section-label",
+   "text_style": "briefing-body"
+  },
+  {
+   "id": "win_lose",
+   "columns": 2,
+   "box_fill": "#183c3a",
+   "box_radius": 8,
+   "box_height": 94,
+   "marks": [
+    "mark_ok",
+    "mark_no"
+   ],
+   "text_style": "briefing-small"
+  },
+  {
+   "id": "facts",
+   "row": [
+    "p_time",
+    "p_cash",
+    "p_alert",
+    "fire"
+   ],
+   "text_style": "briefing-fact",
+   "gap": 22
+  },
+  {
+   "id": "approaches",
+   "columns": 2,
+   "sprite": "panel_card",
+   "height": 106,
+   "title_style": "card-title",
+   "body_style": "card-body"
+  },
+  {
+   "id": "begin",
+   "sprite": "btn_text_normal",
+   "size": [
+    190,
+    40
+   ],
+   "text": "Begin",
+   "text_style": "button-label",
+   "keycap": "Space",
+   "anchor": "bottom-right",
+   "offset": [
+    -30,
+    -16
+   ]
+  },
+  {
+   "id": "foot",
+   "text_style": "briefing-small",
+   "text": "Time stops until you begin. Space pauses at any time.",
+   "color": "text-dim",
+   "anchor": "bottom-left"
+  }
+ ]
+}

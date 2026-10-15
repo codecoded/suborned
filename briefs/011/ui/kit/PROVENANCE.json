@@ -1,0 +1,1093 @@
+{
+ "brief": "011 C Step 2: the sliceable HUD kit (rounds 6 and 6b)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "No new image generation. Art is the Codex sheets listed under sources (all free, generated in rounds 5, 5b and 6; prompts, seconds and sha256 in their own PROVENANCE.json); sprites are cut, sliced, state-varied and drawn in code (out/concepts/ui-011-kit/build1.py, build2.py, build3.py, post.py). Cost 0.",
+ "decisions": {
+  "finish": "r04 cab cluster",
+  "dock": "left column, corner as a setting (roster_row), bottom kept as a third",
+  "default": "compact strips, Tab for all",
+  "ack_key": "K, history L"
+ },
+ "sources": {
+  "panel_kit_pn_cab": [
+   {
+    "key": "pn_cab",
+    "file": "pn_cab.png",
+    "seconds": 46,
+    "sha256": "6f23b2e07c6443e281a3fe49182f1152ad6d16738108f6d04afa7bd4b24f978f",
+    "size": [
+     1536,
+     1024
+    ],
+    "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a polished chrome beaded edge, tiny chrome screws and a seafoam enamel stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 60 px of magenta between them and from the edge, all flush rectangles with softly rounded corners, nothing sticking out. PIECE 1, top left: the DARK PANEL, about 640 px wide and 400 px tall: dark ink-teal satin enamel, a polished chrome beaded edge all round, four tiny chrome screws at its corners, interior one flat even satin dark teal, completely empty. PIECE 2, top right: the IVORY CARD, about 520 px wide and 400 px tall: ivory enamel with a thin polished chrome edge and soft rounded corners, a deep teal enamel header band across its top quarter with a fine chrome line under the band, the body one flat even ivory, completely empty. PIECE 3, bottom left: the SLIM STRIP, about 880 px wide and 110 px tall: a long slim dark ink-teal satin strip with a chrome beaded edge and rounded ends, completely empty. PIECE 4, bottom right: the TAB, a small stadium-shaped cream enamel plate about 300 px wide and 90 px tall with a polished chrome rim and a glossy face, completely empty.",
+    "at": "2026-10-15T20:32:46+0700",
+    "use": "text panel kit in the r04 cab finish: dark panel, ivory card with a teal header, slim strip, tab; nine-sliced in code for every panel in the HUD"
+   }
+  ],
+  "roster_row_pill_chip_k4_cab": [
+   {
+    "key": "k4_cab",
+    "file": "k4_cab.png",
+    "seconds": 56,
+    "sha256": "7af007107776ce530931b79d090c4e5a2eb670179a22231b95630d1a17a58f33",
+    "size": [
+     1536,
+     1024
+    ],
+    "refs": [],
+    "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat landscape 3:2 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a chrome beaded edge, tiny chrome screws, and a seafoam enamel stripe. Draw exactly FOUR separate pieces, each fully opaque, at least 50 px of magenta between them. PIECE 1, at the top, centred: the ROSTER FRAME, one compact panel about 930 px wide and only 250 px tall (about 3.7:1), holding four equal SQUARE portrait windows side by side, each about 190 px square and filling about 76% of the panel's height, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a perfectly round window like a gauge with a thick polished chrome bezel ring and a thin inner ring of cream enamel. The panel's silhouette is a flush rectangle with softly shaped ends: nothing rises above or hangs below it, no crown, no crest, no slots under the windows; its character is carried by the end caps, the edge trim, the bezels and the enamel only. PIECE 2, bottom left: the VERB PLATE, a slim flush panel about 640 px wide and 130 px tall holding four identical empty buttons in a row, each a round chrome knob button with a knurled edge and a deep teal face; all four buttons identical and unlit, their faces blank (a pictogram will be added). PIECE 3, bottom right: the STATUS PILL, a slim flush panel about 640 px wide and 100 px tall in the same frame language, whose interior is one long recessed dark ink-teal display window, empty. PIECE 4, bottom centre: the PRICE CHIP, a small slim tag about 540 px wide and 90 px tall with a small pointer tail at its lower left, in the same frame language, whose interior is one recessed dark ink-teal window, empty.",
+    "use": "panel kit sheet, compact set: k4_cab",
+    "at": "2026-10-15T18:35:39+0700"
+   }
+  ],
+  "roster_column_col4_cab": [
+   {
+    "key": "col4_cab",
+    "file": "col4_cab.png",
+    "seconds": 47,
+    "sha256": "595620f3427ced6e4c28784e05c0837ed8c1e37e78fd05cb975163c1acb294e0",
+    "size": [
+     937,
+     1678
+    ],
+    "refs": [],
+    "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat portrait 2:3 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a chrome beaded edge, tiny chrome screws, and a seafoam enamel stripe. Draw exactly ONE piece, centred on the canvas, fully opaque, with at least 60 px of magenta all round: the ROSTER COLUMN, a tall narrow compact panel about 330 px wide and 1180 px tall (about 1:3.6), holding FOUR equal SQUARE portrait windows stacked top to bottom, each about 250 px square and filling about 76% of the panel's width, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a perfectly round window like a gauge with a thick polished chrome bezel ring and a thin inner ring of cream enamel. The panel is a flush rectangle with softly shaped ends: nothing sticks out sideways, no crown, no slots; the character is carried by the end caps, edge trim, bezels and enamel only.",
+    "at": "2026-10-15T19:23:49+0700",
+    "use": "tall roster column in the train-cab finish"
+   }
+  ],
+  "hurt_portraits": [
+   {
+    "key": "hurt_fixer",
+    "file": "hurt_fixer.png",
+    "seconds": 47,
+    "sha256": "4b2151b0f8b15965f9f762cef0a0ef852b11b739bc1d7cadb1f3469580eb377a",
+    "size": [
+     1024,
+     1536
+    ],
+    "refs": [
+     "A-codex-portrait-fixer-white.png"
+    ],
+    "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+    "at": "2026-10-15T19:24:38+0700",
+    "use": "hurt-state portrait edited from Forma's normal portrait"
+   },
+   {
+    "key": "hurt_scout",
+    "file": "hurt_scout.png",
+    "seconds": 66,
+    "sha256": "9955c44e135bb85287e4e03526265ba85f1e3911a0565c2e3f820a6faee71165",
+    "size": [
+     1024,
+     1536
+    ],
+    "refs": [
+     "A-codex-portrait-scout-white.png"
+    ],
+    "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+    "at": "2026-10-15T19:24:55+0700",
+    "use": "hurt-state portrait edited from Forma's normal portrait"
+   },
+   {
+    "key": "hurt_tech",
+    "file": "hurt_tech.png",
+    "seconds": 63,
+    "sha256": "035436fdc9f5f5a53c27d310abcfd98382a21ffefaea26a7ee640a0fd35320a7",
+    "size": [
+     1024,
+     1536
+    ],
+    "refs": [
+     "A-codex-portrait-tech-white.png"
+    ],
+    "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+    "at": "2026-10-15T19:25:42+0700",
+    "use": "hurt-state portrait edited from Forma's normal portrait"
+   },
+   {
+    "key": "hurt_enforcer",
+    "file": "hurt_enforcer.png",
+    "seconds": 63,
+    "sha256": "db414982cd75253d9f73344f0b81c82fae25cdb6b80082245e759959c1726d38",
+    "size": [
+     1024,
+     1536
+    ],
+    "refs": [
+     "A-codex-portrait-enforcer-white.png"
+    ],
+    "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+    "at": "2026-10-15T19:25:58+0700",
+    "use": "hurt-state portrait edited from Forma's normal portrait"
+   }
+  ]
+ },
+ "portrait_refs": {
+  "A-codex-portrait-scout-white.png": {
+   "path": "briefs/012/cell/A/A-codex-portrait-scout-white.png",
+   "sha256": "57f960f8972048dc1285098bf4f4f2f8085e1fecf853271ef4063bf6c062f0a5"
+  },
+  "A-codex-portrait-fixer-white.png": {
+   "path": "briefs/012/cell/A/A-codex-portrait-fixer-white.png",
+   "sha256": "9e67af4e43ef7d0b8ec1bfa7924872dfff850d91c174d15d50768ad00549f03b"
+  },
+  "A-codex-portrait-tech-white.png": {
+   "path": "briefs/012/cell/A/A-codex-portrait-tech-white.png",
+   "sha256": "4862d7b342809336ad8264c200f296a2159bf1ff9afe1b2329158669cffbecf6"
+  },
+  "A-codex-portrait-enforcer-white.png": {
+   "path": "briefs/012/cell/A/A-codex-portrait-enforcer-white.png",
+   "sha256": "99f83e2b90550ad70b1a5d53d8757a36a4fc30792ee99dcff347e44d29eccf88"
+  }
+ },
+ "portraits_note": "Forma's white set for now. Portrait files are named portrait_<role>_<state>; swap by replacing those files (same size, same crop; the crop is head-and-shoulders, head centre x 0.5, y 0.42, zoom 1.12). Hurt portraits are the round 5b image-tool edits of Forma's portraits. Forma's round 4 L4 redesign can drop in.",
+ "fonts": "Jost (display, OFL 1.1, instanced to Medium/SemiBold/Bold from the variable font with fontTools) and Barlow (body, OFL 1.1). The round 6 mock-ups used Futura and Avenir Next (not shippable): sizes were adjusted (Barlow body +0.5 to +1 px) but metrics differ, so text widths differ slightly from the concept frames. The OFL texts are in fonts/.",
+ "signal_check": {
+  "colours": "layout.json colors_delta_e: every named colour is at least dE 21.3 from cone red, guard amber and rival violet (brass 21.3, card-ivory 23.6; the card ivory is a sprite, not a flat colour)",
+  "pixels": "pixel_dE_note: for every exported @2x sprite, the share of opaque pixels within dE 20 of a signal colour. All panel, button, marker and overlay art is at 0.3% or less after a final pass that pulls any pixel closer than dE 22 toward neutral (post.py). Exempt by design: signal_* and mark_no (they are the signals), and the portraits and cameos (skin, hair and costume of people; 1 to 16% of a portrait's pixels sit within dE 20 of amber or red, as people do).",
+  "per_sprite_percent_within_dE20": {
+   "badges/mark_half@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/mark_no@2x.png": {
+    "cones": 27.89,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 27.89
+   },
+   "badges/mark_ok@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/mark_sus@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/mark_unk@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/npc_councillor@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.06,
+    "any": 0.06
+   },
+   "badges/npc_driver@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.06,
+    "any": 0.06
+   },
+   "badges/npc_passer@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.06,
+    "any": 0.06
+   },
+   "badges/npc_waitress@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.06,
+    "any": 0.06
+   },
+   "badges/npc_watcher@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.06,
+    "any": 0.06
+   },
+   "badges/signal_camera@2x.png": {
+    "cones": 14.15,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 14.15
+   },
+   "badges/signal_guard@2x.png": {
+    "cones": 0.0,
+    "guard": 32.51,
+    "rivals": 0.0,
+    "any": 32.51
+   },
+   "badges/signal_police@2x.png": {
+    "cones": 0.0,
+    "guard": 29.66,
+    "rivals": 0.0,
+    "any": 29.66
+   },
+   "badges/signal_rival@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 23.62,
+    "any": 23.62
+   },
+   "badges/signal_unit@2x.png": {
+    "cones": 0.0,
+    "guard": 31.67,
+    "rivals": 0.0,
+    "any": 31.67
+   },
+   "badges/stance_free@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/stance_hold@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "badges/stance_return@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_ack_hover@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_ack_normal@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_ack_pressed@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_close_disabled@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_close_hover@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_close_normal@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_close_pressed@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_text_disabled@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_text_hover@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_text_normal@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_text_pressed@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_cooldown_fill@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_disabled@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_hover@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_normal@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_pressed@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "buttons/btn_verb_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_dark_24@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_dark_24_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_dark_30@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_light_22@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_light_24@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/disc_light_24_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/dot_unread@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/pill_new@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/pill_white@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/pip_empty@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/pip_full@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/plate_dark@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/plate_light@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "markers/plate_light_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/crosshair@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/ring_fill@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/ring_ground_hint@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/ring_ground_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/ring_track@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "overlays/stripes_warn@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/chip_price@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_card@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_dark@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_dark_modal@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_slot@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_strip@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_tab@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/panel_tab_small@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/pill_status@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "panels/plate_verbs@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/cameo_enforcer_hurt@2x.png": {
+    "cones": 8.07,
+    "guard": 0.63,
+    "rivals": 0.0,
+    "any": 8.6
+   },
+   "portraits/cameo_enforcer_normal@2x.png": {
+    "cones": 6.4,
+    "guard": 3.77,
+    "rivals": 0.0,
+    "any": 9.57
+   },
+   "portraits/cameo_fixer_hurt@2x.png": {
+    "cones": 6.17,
+    "guard": 3.9,
+    "rivals": 0.0,
+    "any": 10.07
+   },
+   "portraits/cameo_fixer_normal@2x.png": {
+    "cones": 3.87,
+    "guard": 10.47,
+    "rivals": 0.0,
+    "any": 13.9
+   },
+   "portraits/cameo_scout_hurt@2x.png": {
+    "cones": 5.8,
+    "guard": 5.73,
+    "rivals": 0.0,
+    "any": 10.93
+   },
+   "portraits/cameo_scout_normal@2x.png": {
+    "cones": 3.9,
+    "guard": 9.57,
+    "rivals": 0.0,
+    "any": 12.93
+   },
+   "portraits/cameo_tech_hurt@2x.png": {
+    "cones": 1.27,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 1.27
+   },
+   "portraits/cameo_tech_normal@2x.png": {
+    "cones": 0.7,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.7
+   },
+   "portraits/portrait_enforcer_dim@2x.png": {
+    "cones": 4.75,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 4.75
+   },
+   "portraits/portrait_enforcer_down@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_enforcer_hurt@2x.png": {
+    "cones": 8.13,
+    "guard": 0.69,
+    "rivals": 0.0,
+    "any": 8.69
+   },
+   "portraits/portrait_enforcer_normal@2x.png": {
+    "cones": 6.63,
+    "guard": 3.95,
+    "rivals": 0.0,
+    "any": 9.97
+   },
+   "portraits/portrait_fixer_dim@2x.png": {
+    "cones": 1.42,
+    "guard": 0.02,
+    "rivals": 0.0,
+    "any": 1.44
+   },
+   "portraits/portrait_fixer_down@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_fixer_hurt@2x.png": {
+    "cones": 6.82,
+    "guard": 4.91,
+    "rivals": 0.0,
+    "any": 11.74
+   },
+   "portraits/portrait_fixer_normal@2x.png": {
+    "cones": 4.24,
+    "guard": 12.68,
+    "rivals": 0.0,
+    "any": 16.48
+   },
+   "portraits/portrait_mask@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_ring_busy@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_ring_selected@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_scout_dim@2x.png": {
+    "cones": 0.89,
+    "guard": 0.31,
+    "rivals": 0.0,
+    "any": 1.2
+   },
+   "portraits/portrait_scout_down@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_scout_hurt@2x.png": {
+    "cones": 5.99,
+    "guard": 5.8,
+    "rivals": 0.0,
+    "any": 11.22
+   },
+   "portraits/portrait_scout_normal@2x.png": {
+    "cones": 3.81,
+    "guard": 10.16,
+    "rivals": 0.0,
+    "any": 13.34
+   },
+   "portraits/portrait_scrim@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_shade@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_tech_dim@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_tech_down@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 0.0
+   },
+   "portraits/portrait_tech_hurt@2x.png": {
+    "cones": 3.17,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 3.17
+   },
+   "portraits/portrait_tech_normal@2x.png": {
+    "cones": 2.65,
+    "guard": 0.0,
+    "rivals": 0.0,
+    "any": 2.65
+   },
+   "roster/roster_column@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.12,
+    "any": 0.12
+   },
+   "roster/roster_row@2x.png": {
+    "cones": 0.0,
+    "guard": 0.0,
+    "rivals": 0.04,
+    "any": 0.04
+   }
+  }
+ },
+ "known_differences_from_the_concept_frames": [
+  "verb plate is the plain strip (rounded ends, chrome bead) with the knobs as separate sprites; the concept's plate had cream end caps baked with its knobs",
+  "the roster column is 109 x 416 px (38.5% of the screen height) with 66 px windows; the round 6 anatomy sheet and notes said 119 x 453 and 42%, which was the 72 px-window size from an earlier pass. Strips start at x = 125",
+  "panels are sliced from small reference sprites; the dark panel's chrome and screw detail repeat at the corners only, so very large panels (briefing) show a plain interior, as the concept did",
+  "text is not baked into any sprite; numerals and labels are text"
+ ],
+ "assembly_test": "preview-assembly.jpg is a frame rebuilt only from the exported PNGs, layout.json numbers and the OFL fonts (assemble.py), as proof the kit is complete for the left-column roster, strips, verb plate, pill, objective line, ticker and a live scene card.",
+ "files": {
+  "badges/mark_half@1x.png": "d9c5ca0ac3510bcf409c6e0fbed2d565e3f49f44f88a13aec5c8aea67e47178a",
+  "badges/mark_half@2x.png": "229ed457aa3d98ac71c5c1fa208baeda653e97131b3aaefadef56f156735ed43",
+  "badges/mark_no@1x.png": "ee33af8d4260628738a17804551ad5e958fe028d52eb5b9b2de9854ac53b587c",
+  "badges/mark_no@2x.png": "82afbd224112760817ce243a595526678fd1d08775e8e2ce552e2cb16c588574",
+  "badges/mark_ok@1x.png": "91ab948dc03fb60854c52dff2382f5107f4d18cec915137e30e681a062d9ebb2",
+  "badges/mark_ok@2x.png": "156b9a60f934cd006b7478907134dc90206a617ef5309674cfca13d4f764403c",
+  "badges/mark_sus@1x.png": "edfeb52121624cd5a8e615a47c88cb0a617df0d05f68cc53121b5464c9d5d65f",
+  "badges/mark_sus@2x.png": "0e136bcf840d020a79ac2337475b4fa89985ed94b60733de62e511b1690d08bb",
+  "badges/mark_unk@1x.png": "523ecc7074dcee61637f72a39b75eb2ea530b9e9728c9b40a8b3930f8e018ef7",
+  "badges/mark_unk@2x.png": "e12f7945249917e9cac87d93465cfdb5920fe524d03eb0487b37eb082da71c1a",
+  "badges/npc_councillor@1x.png": "3c45ebc76fae9d0cb09d670bd863796ab7827af484638a162625e3669a95bbb4",
+  "badges/npc_councillor@2x.png": "e8c8b8991ad83b78887ac0eec45accd8104eadf387046a648f0181c66ae8c460",
+  "badges/npc_driver@1x.png": "3cb68e661696f4da88faf1b8ef5e22e6695feb49b1e4d112adeff4e2b861e4fc",
+  "badges/npc_driver@2x.png": "1fa588e1ced088bd5dc267e9f6561f58d30965b3a336bd5e638c170abf424b2f",
+  "badges/npc_passer@1x.png": "1b8decd790595a420aaa11650239931faf6d682d8cd05fbf5de88c3c66c2af26",
+  "badges/npc_passer@2x.png": "790ef994d319763dc7e7ab9b55b32fd4b14a7d46daeba5854b73cff7e16956df",
+  "badges/npc_waitress@1x.png": "7efc28c67b5b55db583ba54ef3d383fd44558e9de970a3cf11c205635e204c61",
+  "badges/npc_waitress@2x.png": "75fbb08447b00ca0d3ef10e43d2a3771073681dadeb3e9808131ecf55d862efe",
+  "badges/npc_watcher@1x.png": "680b7406a7ed83e27f03c516ffbc0d2f1d5f9a9e11ae04525c3f05e3c04afcaa",
+  "badges/npc_watcher@2x.png": "d70d29401189554557fbc19369927ac753ef44135cfa0b5faf83e4f278e7f377",
+  "badges/signal_camera@1x.png": "d4ac5e324963ae06cff1be56f8aa7f52667764aa1b628db828ac580c41c39071",
+  "badges/signal_camera@2x.png": "e4ec41992e6c8e8a447743baf6824176f0846f9676fcd38a15910f57f3e41f65",
+  "badges/signal_guard@1x.png": "86097259fe2ba65b651b1a132e3a503fb42578ea1e7d0448d61c3607578a47c5",
+  "badges/signal_guard@2x.png": "a580533d797b8fa216da5d349ea67a26e7e6f8d82fd129d96b85429f07cdcb73",
+  "badges/signal_police@1x.png": "af682df5e8ca680986614478f3a5c1410fa8c67d72d7e54d682aef3d5466fb7e",
+  "badges/signal_police@2x.png": "471ffeabb35a45213727efe7fec7355f860020f70bedda951df5744d26ca515b",
+  "badges/signal_rival@1x.png": "60aff74a531949b360d787db167703090874f21314b77346c36751ff3b1ae548",
+  "badges/signal_rival@2x.png": "dc2424fb55df50c5854633a904ae4c3c6b27ecf6a36d50b7b09b2b7d4a45d95b",
+  "badges/signal_unit@1x.png": "63d94f4c5664c43f53f3411a11fa2fb07f389aa1831a44c1e67f97d69123f7b6",
+  "badges/signal_unit@2x.png": "18d2f04b235eadf11d98b385333052e2449f3bd127f492ffe60a78b054d02408",
+  "badges/stance_free@1x.png": "594d6d6b4ad0791adce3efe79bf32db370baeadcf60c2b04b6ebd5af0f7e1405",
+  "badges/stance_free@2x.png": "6f579d33fd18991fa6556184f152ca1d1ed6d76799b02e2ee09008a15b15749a",
+  "badges/stance_hold@1x.png": "64b3de2374439d1cd29ee0f00ec2757a6008b049f733ad41b836d91cb2fd508c",
+  "badges/stance_hold@2x.png": "ab242ca1d78e80791dfe505842406847c1d7f1fa131a23b96183ada5392aa459",
+  "badges/stance_return@1x.png": "77e0464192ccaf7965fe8a0f61cb407f56361084996ada3eac2e9e59ec278529",
+  "badges/stance_return@2x.png": "de567550070345b7f24cf9c814eb15cefa6323c28309e7178f03f7328f478a66",
+  "buttons/btn_ack_hover@1x.png": "1d22ae9abe00f6c43fe4b1dafcf11a1e20a087ab80a50730448fffc0634b707b",
+  "buttons/btn_ack_hover@2x.png": "43865cd3e4b308f7b37c8191214a504e548efea87e5262ae23118bf7f9dcf917",
+  "buttons/btn_ack_normal@1x.png": "145ae48eee5b4fdc516fab09370d52001f18e5a21682016b480788016106c4ef",
+  "buttons/btn_ack_normal@2x.png": "7f6c96bbf46fb6cfca5dcf7f2a60af0e39fa2624792a82b706f9342eda5c486f",
+  "buttons/btn_ack_pressed@1x.png": "d3bd708159f8f76886c87fb9595bd422b84888948cc580822f5ca5224b314555",
+  "buttons/btn_ack_pressed@2x.png": "fa9c66daf9db8893083e7ea7917d7e02a0d52bc4388414fcf2e75f6a6e22ac98",
+  "buttons/btn_close_disabled@1x.png": "86eba700c088bd83cc1862b32c22aae88e09a2ed4cd2b0ad28039d15b6335561",
+  "buttons/btn_close_disabled@2x.png": "939f4852553b7e780773df5746ce92ff136d498d06f3e556bef0f38b383b248e",
+  "buttons/btn_close_hover@1x.png": "3eda94cd4ea0013e2e41fafb6e33a5762c297a96d941d88b40fe3e262c888ea2",
+  "buttons/btn_close_hover@2x.png": "ee8dd0c698e5e826d5d5923661ffd18b41d3fb831a527bea6dae832d6fbc04bc",
+  "buttons/btn_close_normal@1x.png": "3c4ec1445ca9c095675285de0e6c7f60de7eca0068291a76d1b944539daec7e8",
+  "buttons/btn_close_normal@2x.png": "6b64f1497074df2651c875531da7d4f55fbdf478e89f5b319c9b1c40bf4a193a",
+  "buttons/btn_close_pressed@1x.png": "8d8179dde81e508a422444b099c27ba385818bd33be0ded3382e1552659307d7",
+  "buttons/btn_close_pressed@2x.png": "cc75e2c450f84996f0baf1f291f0ea18f42128ef314460c54631190e8bec87a1",
+  "buttons/btn_text_disabled@1x.png": "e0b0116cbca9356f6ed16d53cbca980ac312963db5fa9745491bd9b502f8c99f",
+  "buttons/btn_text_disabled@2x.png": "f7d8e41b52693fb2bbf0b1c56de961b2dbc487f4dc9bbfaf8f94af4b0df48fd3",
+  "buttons/btn_text_hover@1x.png": "a39c7d66d75ba657fef552b850c2b611f7b847d3fe509673c7f45ae1fcf993ae",
+  "buttons/btn_text_hover@2x.png": "87007677a3ce88c77cae11861571fe8b7ae4d5d1cb7198df13597f023b691242",
+  "buttons/btn_text_normal@1x.png": "df4164cabae57588ee43c92f8ebdd0cd0a1c782f3daa3c2aa020ec07bbcd1e00",
+  "buttons/btn_text_normal@2x.png": "1b6fe9a9928901fbb4cab16e7e907817f8ef6d52bcff9884186e303c3b4fdec0",
+  "buttons/btn_text_pressed@1x.png": "6c701514064fdd18cb88a5b09f231dbdafcc33807b7dd0bebc7275323551ba95",
+  "buttons/btn_text_pressed@2x.png": "0ec3b6b1d899c90b2a3894fa2e88358991e15d38478a3331e0322241b3237d1b",
+  "buttons/btn_verb_cooldown_fill@1x.png": "805c0a4b48df859e2c08c85d313307b76433b47b2f32ad1eaa89cab3883c5358",
+  "buttons/btn_verb_cooldown_fill@2x.png": "6a671f202c67a0bac8c45c06fbe264f79ea747dc849daf12c194770d35a237b9",
+  "buttons/btn_verb_disabled@1x.png": "32d95e4207c5ca89d27e1283be4fa38646ce56d71a0235e4ea1df0b7cbf1097a",
+  "buttons/btn_verb_disabled@2x.png": "6536b3e0fa62c6db3cab1fc107263c9bc1ae0aad41bf229a6ddfc247d2bec9c6",
+  "buttons/btn_verb_hover@1x.png": "3a4a0b40a7b8dae28bbe9909772f8367952decd14b8be3239dbc8578e00b15c7",
+  "buttons/btn_verb_hover@2x.png": "a04f8cf4daece5e3f6c0ea73a2210ee8d70436f76e6ca223b07a73a6c8bcccbc",
+  "buttons/btn_verb_normal@1x.png": "1902f9f9053b6fe75e037c6ad84f49fe532e55365bee2d4dba5ac0c396e8e1c5",
+  "buttons/btn_verb_normal@2x.png": "7ab0e2a0d0317be2c0388e6f4eed1b8b925bde50215a8e5f88f63db8f21aca04",
+  "buttons/btn_verb_pressed@1x.png": "8307bb1a466013c2fd9819ee1e1edaa290b047412956cfe3ecf29ebd2adc697f",
+  "buttons/btn_verb_pressed@2x.png": "abbac31aef133054a8a2663b1f4601f8d471b9c6bfe275736e54b91dd9d1b83f",
+  "buttons/btn_verb_selected@1x.png": "5f307a74264c9fc60a37bae7b8ac6576c0a57e9e13245c3055f5ec859ee1efce",
+  "buttons/btn_verb_selected@2x.png": "acb6d2c1c8c940298372766188673a2bfd9f204056f874de09492b4c5611a296",
+  "fonts/Barlow-Medium.ttf": "f8906f762cb73dca441da034bc363b2d8e2e68bc10d5c05e58717646c20cc4b4",
+  "fonts/Barlow-Regular.ttf": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea",
+  "fonts/Barlow-SemiBold.ttf": "86577cb32f8abe3673db53ca0f4221e6856751a4f6730c867e00f720f8bb1fc5",
+  "fonts/Jost-Bold.ttf": "cb3d769d31a07d2a1bf0325b43f2aa223b147c2baf3a8ea4fd037d1de5a5083e",
+  "fonts/Jost-Medium.ttf": "de6e9ecad75e4dc1fc7dde242599e2d6e5c3a1d3de679a173aa4ebe2d71af104",
+  "fonts/Jost-SemiBold.ttf": "b8404cfc49e98e37ea53afd1fe9cc390ede999819f1fb178f0469c5f8a7e2ad1",
+  "fonts/Jost[wght].ttf": "6343b70971000b04c5d401c96ae08ce371086135e999d5e1e1413039c0213076",
+  "fonts/OFL-Barlow.txt": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+  "fonts/OFL-Jost.txt": "1af3438a4d5f0ed2bdbc5751a5a67ebf6d537334161184b7fbb68503ef0ea0c5",
+  "icons/icons_atlas@1x.png": "9bf545a1474136eea3c41b35ce8c7cf2b2c65925ad15860d2fe1ac61d015e612",
+  "icons/icons_atlas@2x.png": "baf8a2fb876a6cef6bd69f4745320aa1c3fa1c4723293f97c27e728287560f75",
+  "icons/singles/advancement@1x.png": "5e78aa8b38cde4f898a10f42e2a47286ec46f14b1e44fa5e597797eb0e12cefb",
+  "icons/singles/advancement@2x.png": "49a5eb78067fd6be1884efca53c1dd861907b0c69a64bbec772ba4d95a472990",
+  "icons/singles/ask@1x.png": "4560e8bacd712c347bf81e391b3b2ac6923b3202d05494bdf3cf17fc355a22ef",
+  "icons/singles/ask@2x.png": "4be197b3995f37b2f7e44e5a33846b12e3d892a9150e09ba59cfc5674a61c0a7",
+  "icons/singles/asked@1x.png": "f4d4fb3f4485ec3d8e2795fb50dc82d07443c9ee23975ca965f72f3ad66b0714",
+  "icons/singles/asked@2x.png": "7f8b4768e1f4f5048aa2ee6e41027039c370a655c0201ab2861fa284a124aee2",
+  "icons/singles/call@1x.png": "13680bc8ce21297ee0dde04c04d056d0714010d0bc8c717551c29a090ad9fe13",
+  "icons/singles/call@2x.png": "ce6d5a8feb8ee3f14837b1781c45a8a09c7e150f212df147a47990439e2d0271",
+  "icons/singles/care@1x.png": "3e4171d4a6316385d15adde841ddc121f836da3b3467f4e69ade1763edbe8a77",
+  "icons/singles/care@2x.png": "7d262cb1092061ccbf75629341b08ff876d7f57aada9e70e15753f9ca21f84db",
+  "icons/singles/cash@1x.png": "adb491f3d00e8591e9dcc02977031641ef6c5fd9b96e96166666053d1b9141c5",
+  "icons/singles/cash@2x.png": "611d8c7fd6fbf9ab8568539b5ba15a09a1e31b3fcb17f28b2bc0b5de5dff1e7c",
+  "icons/singles/check@1x.png": "2027047696d086850fa85d33cc657f174f8be4337d9baca5c1593c8713649ed9",
+  "icons/singles/check@2x.png": "3b9c78a7f1984fe6b693f921579b51be1e647242d50794295efdf6fc07709505",
+  "icons/singles/chev_down@1x.png": "32ed142bff20c350ebc540e9539ec9bfe69e2aaac0b436525cd6c2d570491ced",
+  "icons/singles/chev_down@2x.png": "bfd5f12b8ce963525cbed87328c34714047d0534ca33419fc328f2619ccae9a7",
+  "icons/singles/chev_up@1x.png": "cd8fac43ba6dbe17f03231767a98e47284bb60b22f965cead1a4ce26c3c31082",
+  "icons/singles/chev_up@2x.png": "77dd2fef8c955b3dca1200a9c51ac996e53f246ee42bf5a8e1ae1f33582e9db7",
+  "icons/singles/close_x@1x.png": "ab9e800e9b8db885cff00ce4a08e9781ff1eb293662bbe529006654263bfa64b",
+  "icons/singles/close_x@2x.png": "a0fe0fa8da6665ebdb83e60c8908e5358c4ca4633bad56b3c74771ec5e5a1558",
+  "icons/singles/debt@1x.png": "ae4995a62fffe9e6f862dcbdaec2d9e7c2058f9d5b27894a16f9c966950cc89f",
+  "icons/singles/debt@2x.png": "ef7c7bee6e002cc2562152befa380a7591703900d15e9bc4c2efc859d3f39a9d",
+  "icons/singles/dot@1x.png": "1a26295bb4353a29f96b2409e7c883b2980c89659ae5841f3eaf446ab1cf537c",
+  "icons/singles/dot@2x.png": "0092c0c1054c7e81f763f9ef8bcb5b45de1894415967e06a331e3e9f5febccf0",
+  "icons/singles/enter@1x.png": "af35a06c8e92a1903fdade8388966c25661227f6dbe48683c0c7717541c121fb",
+  "icons/singles/enter@2x.png": "14684f59c6a781a1e665918f89d692fcfcab738d3738e5370e1c923e6996f472",
+  "icons/singles/fearful@1x.png": "e6160d57c3bff480eee9c4d1e256e21d6474ef2114709f76cac2f8d36db8e1f8",
+  "icons/singles/fearful@2x.png": "299d318c5af9a816e5a37f9e53c329229d5d82b96e402318da754ef184dd5510",
+  "icons/singles/fire@1x.png": "cfaacdbfc57473dcf3958f6ce8eea0f998d2acb269715e6db7491e974be0374d",
+  "icons/singles/fire@2x.png": "4daf11c01b796b5410863eb22743df906478a97cd54dda4395e0e9552daa9d3e",
+  "icons/singles/help@1x.png": "fcd4d9da41ef6ebcefa891b543afe8a8e66b73787513342fe85de4a44b67ad55",
+  "icons/singles/help@2x.png": "617af2c1a255dbaf85dcce2e90e0fac19facc0d57e88b58b577c6d30927225a0",
+  "icons/singles/housing@1x.png": "28b64830edca5895670ff3e2f4b956dd2d43c00877ace3fc12c020eab1712bb0",
+  "icons/singles/housing@2x.png": "7443c33fdc4b429056ec2404d7953ac390365326b66fc8568bd3c919fe722feb",
+  "icons/singles/idealist@1x.png": "24bb5551b7a26c4907d8c9ae156bdf2e8cd2acc4943f8713e350cb166eec367d",
+  "icons/singles/idealist@2x.png": "ddb072f6d3b6184713e5bd109facb80e06ed9e70cf399d213f39058a1b915bec",
+  "icons/singles/kin@1x.png": "d74f6fec59738b45b7ed2c4b8745ab0f8f7a4ded35f5f3bd5e50ff49b0aee49d",
+  "icons/singles/kin@2x.png": "0d2e19f3a957dce0993ea0be5f581d68bca02a96f60132465928b17d05d341a6",
+  "icons/singles/listen@1x.png": "61121a2a1562eccc213c67ea469c173849e03734d69db05dcb31c7168551636a",
+  "icons/singles/listen@2x.png": "8907ffd1bb0ca789c633a0602d22e2b6e44eb21b94876fc8fdbff882f067272d",
+  "icons/singles/lock@1x.png": "ad97d42ceb7a1778ee677693e44b6e9537c160fd007c7b5dcb21be645acd88bf",
+  "icons/singles/lock@2x.png": "27e194a560a76664b4c3810cb31f5c7fafc6ec456f7a2da82ea090cf74f99068",
+  "icons/singles/loop@1x.png": "43ccb10cb952e0c37c79da17ee0002f4d014855b33d77f3feff124064826fb47",
+  "icons/singles/loop@2x.png": "2737b8190077282d1446ca32ca858a921b1ca4272b0b34466bab4d2bf4335d16",
+  "icons/singles/loyal@1x.png": "36b0d67c3821694e277b96784e815c449ebe465fc5d152e35021069432e56f49",
+  "icons/singles/loyal@2x.png": "88998c91542f927273d0b980d620d908f0d764171c313074a41e0b3d1dd58a3d",
+  "icons/singles/mercenary@1x.png": "b778adcc9460df73605d5f5bb5205ed0ffa5e2c47c34344fd61ef0c6997128c3",
+  "icons/singles/mercenary@2x.png": "1fccab7435eabe67024b6813e94f832259ad86ce6a3f02fff4dd89cf694ca81d",
+  "icons/singles/mislead@1x.png": "ce92630cb4302da1d3b218f2169cc2f83416655b212bf7be0bda330eff5f8e35",
+  "icons/singles/mislead@2x.png": "ee16f6968ea0f113376b33374c631d36b9204ecd140babe477f885c30f8e5fbe",
+  "icons/singles/nextevent@1x.png": "3cba09a243a2b4be512e79cc1bf9c5f5797b7a309b39170e5adf5edc3ae11095",
+  "icons/singles/nextevent@2x.png": "8723959e0a7348a6de3cd327f9142106b6dda9e5a3bfc01e5f9b37aa1e78ebbc",
+  "icons/singles/p_alert@1x.png": "2da8768e68589953d21111a803ccb84cd57e69888438ff45256551e06850fd91",
+  "icons/singles/p_alert@2x.png": "047356ae3fa4e7abdec9c7c221a8649ddb53e3427344d6990704f791dcbb0918",
+  "icons/singles/p_cash@1x.png": "a25a86324acda6e9e512c48239668257ec110308b4415b918e8916423d640f11",
+  "icons/singles/p_cash@2x.png": "6650d431fe0b7d496dc88cb6c160a9705a967315d08e4ac83cdac23c9c667d6a",
+  "icons/singles/p_time@1x.png": "31d9e3460966318a00798201ac8c55d15b3b33cf9976ef05f9f2aab9db11ed81",
+  "icons/singles/p_time@2x.png": "8334c3dbe18ff4e23410a33a6b184fc1c55417093172d99bacb5ac9657a24432",
+  "icons/singles/p_trail@1x.png": "2ca5673fe7d847abc1cfd54cf28b50f7f0b24965261037c42af2844e987310ef",
+  "icons/singles/p_trail@2x.png": "d954d98e6519f5910af7a75a6b750f4ae1d6edd7b0686f5c9bc52443cc8cafb8",
+  "icons/singles/p_unknown@1x.png": "c74638888f74e9ff3f05beb9878abcf50d716cd5ad2e8e4012fbb3b5b7025b43",
+  "icons/singles/p_unknown@2x.png": "225c9b37ef3305f2a78b07d0d5312e13fd137dbe234712dec075cb6dca227975",
+  "icons/singles/papers@1x.png": "78845fa4d1a01d0aabffffad5be63a3a6877184094dcbe3450a39e3fae604610",
+  "icons/singles/papers@2x.png": "31e418369ba0c7209d94e0bc7270986c3bfaef89ac2bb0f3b28516ba63a73f4b",
+  "icons/singles/pause@1x.png": "eba32e997dcfb946ea967ab9f6274abb073f9b827b38dc1747bbd7c8aecbf1e1",
+  "icons/singles/pause@2x.png": "7f312040195901ac9944552996accff2b9a7b6727ec7728ff2ceb6b953cb5b9b",
+  "icons/singles/pay@1x.png": "ded38d371df24f0a1807284f67698d5f344de4d264819d904532e91b33395f49",
+  "icons/singles/pay@2x.png": "ab2e6f7cc34a719997567f566675287566b8a92608e3e035b78715b50c2fed84",
+  "icons/singles/pressure@1x.png": "8a9a08b3241cdc1a13ab5ca1b7a594547294874628143dad80c6710ed8e10a4f",
+  "icons/singles/pressure@2x.png": "58f4857d7f72d7a8e1796e073e09f7c5083edc6def129178aa162d743781f5bf",
+  "icons/singles/protection@1x.png": "732cf3f8a98fc42ecdc876c016e2fe8154515e9229362c07f14770816acee138",
+  "icons/singles/protection@2x.png": "ddfde2fcd2ea11f99099406754a812c757cda7db7da5e6e1dfb8bed7dd357474",
+  "icons/singles/refused@1x.png": "fe38bd51393fac305c0128842589c65983aa17b323ce1f8bcf06f52d9b7f4ca0",
+  "icons/singles/refused@2x.png": "7a8e8e5230676bb93a2313dba99c7d1f47354e83f27b383781efc55c7ac13239",
+  "icons/singles/reroute@1x.png": "20c15849d7cbb485942d6022a987f8ec2b55001bd609a0e8c6001385f9cfd048",
+  "icons/singles/reroute@2x.png": "869c7860faa8d1fbc5ee367bad8fd7c92873bf2b22c75f4f593ad6f69fe11c6c",
+  "icons/singles/s_calling@1x.png": "27183f19872b6e0fbe282c1b04181e091aba94756d9700c6f8c87c06e0d59527",
+  "icons/singles/s_calling@2x.png": "787721dd8e8a47d2c774d6f1c31b5e8da1921c04562f39fe3052c4a497527cd9",
+  "icons/singles/s_carrying@1x.png": "7053fc1150f50c7a740746ddb9892d378ce5b565b7dbf21e0e7d494c82a6c85f",
+  "icons/singles/s_carrying@2x.png": "6a7809e26a5d464be829d900d0740cc3c63778dd0f1072e81d5c8dc54a272cd9",
+  "icons/singles/s_downed@1x.png": "794b95fe43e2f1075c6480f2437dd1682c6f968fef4774bc735d5b1b84cedb74",
+  "icons/singles/s_downed@2x.png": "26036e632da208dafb6fb0a56f1e4fae9e89adddcf51c9fcdef20777b905f3aa",
+  "icons/singles/s_hurt@1x.png": "20e32010493889eac3fd322b33b0641580325b679e0f8f5320e867551b4b4e09",
+  "icons/singles/s_hurt@2x.png": "ed8c727c2fc0aa2cba5e00c4a124a81dd82218fbe69c25c2955ebb3c7e39e959",
+  "icons/singles/s_inside@1x.png": "3b4f1ec3060600168301973a91523bbb2df1e3caf055bd33fb8cf9b04d537652",
+  "icons/singles/s_inside@2x.png": "1b9cc3bc0b648617e54a46c8dcdc218a34a306a3a0d0a59dbca67bf754859147",
+  "icons/singles/s_listening@1x.png": "b33d539cec2bb05b0cc05d57394ae5192a9142a6b4ea9ddd7fec689af65b12a7",
+  "icons/singles/s_listening@2x.png": "5c5bb8a91c6f4f10bd48b8417050733969dda88d11ea03a4dd94f9ddac26e525",
+  "icons/singles/s_looping@1x.png": "84f7d49c2887735ec7a5974bd68b0cbcabff5c940485f89d53b90b7cc87f4ed6",
+  "icons/singles/s_looping@2x.png": "e51d49f014b24d3750ae5c67a128c4c92734e667ffebe125abc489e521ef56a3",
+  "icons/singles/s_moving@1x.png": "bc51d7d5a157e030b37d6c34ba7bb9b06521b3b038032beed79af0fd7562097c",
+  "icons/singles/s_moving@2x.png": "c2536e2e4db88de4e577bdbf0f90eabf2b416f5d7dae11856ac6295606b32117",
+  "icons/singles/s_ready@1x.png": "a51d534926628f4737de597b5a273678d4f560bbe904f16d5b1dfaecc2c50c86",
+  "icons/singles/s_ready@2x.png": "ef9fec5760b9c319c9de7187b46737926d7bd1663383cb99348cec60784a6f35",
+  "icons/singles/s_watching@1x.png": "29fa65925d0a133e3938e4c996a2227bf35ccd6ce57dcec0159db3ab6b8e90cb",
+  "icons/singles/s_watching@2x.png": "39dd0c4faeb29847c45cddd7d290bb8c0fc70c5dbf03d0e77c78c376c49c2334",
+  "icons/singles/sawyou@1x.png": "84de028af60dad820da713bb8933ff4a0e0ed3882bd261d4f1dfaa2e77fdb5f0",
+  "icons/singles/sawyou@2x.png": "e08c0943c2261a090e9651e865fbe6ccfb0de5dccc2dff7efa72de50f476bad1",
+  "icons/singles/secret@1x.png": "1f66931eb8199132d0ab612f03825c01c0492c86c5cd5e33f1730b374c322164",
+  "icons/singles/secret@2x.png": "69a413971e3300606b68869281040454565bf4cd3b38108242f5fce1e00ba075",
+  "icons/singles/suspected@1x.png": "7b15e1326ba9f4956f2b2c2d29d9c33f43aca162c26b94b08b5bc14a85176f8c",
+  "icons/singles/suspected@2x.png": "1949d0e00417322663a4aa6e7c2a4e656ad4afabd7489e642146be5c17e9551a",
+  "icons/singles/take@1x.png": "87f068b78d97c993bb5de3faef03ebbd52fec2e84d322f932ddf593a8eb38ba8",
+  "icons/singles/take@2x.png": "46714f294e5bac781d566b365bf8e3cad2939dffbd432b19ee3b7cec7f0d73ed",
+  "icons/singles/talker@1x.png": "644641ff6b50590f06f23c1ab56bd9a3674e029f4d519530478b9f1f39f1f968",
+  "icons/singles/talker@2x.png": "d32a36cf76f35ef86bc4a2392ef8f64b54e1a94985a03c151515da46b84dee8c",
+  "icons/singles/turned@1x.png": "b5a087c9cfadb75db5a3f7897dcb425ef6e1049d9a4b7d2ba024e227b2d0c59f",
+  "icons/singles/turned@2x.png": "8a797b90ceb709d88c98650f5d00283f4f1be011d05049f523f4e4a8d7bc4b8d",
+  "icons/singles/unknown@1x.png": "5dcb04f74933065f27deea319884d12edceee844f8be863ffd59f2833b27762b",
+  "icons/singles/unknown@2x.png": "9f7c38e7c1ce0dfac5fe8268c81f2483ff932e32d7c8888479a863c71e1a8761",
+  "icons/singles/watch@1x.png": "1c1a44add179212a82e55d791732cedca2eadc1e0ea00821b83618e1975d930d",
+  "icons/singles/watch@2x.png": "7fb061ede4d11cfc732e7ed873fba5c9ad73d974c816b3d66a23f9c50ea8b3cc",
+  "layout/action_panel.json": "fd743cd495ac5a379e1f51db22283cd45739d6bc6aaf253b78764ac9d3cfc168",
+  "layout/briefing_card.json": "5ec2b15b7c2baa09bc407dab10cc20e12384de02e72beacc0794d376df4f5e47",
+  "layout/debrief_card.json": "dc17f3288f0bbd5e0cf4dfb130b4430b69957bd8f3e26e215140a7199824ba7e",
+  "layout/feed_bar.json": "560e2beaac15eb2ff32be4b317c46adb0a8fb70c54933d2b7aaa4653674eb6df",
+  "layout/fight_chip.json": "5459cf1912caa4b535d6d744852404eb6a2d6b9c00f04c29337b83d6af7e256a",
+  "layout/going_loud_card.json": "5ce94ff19d709b3a6f6a28ceddd949392b49b96c4047e683a0dcada15478c60e",
+  "layout/hint_plate.json": "8047ce59663ea5360e6d7e605c2e538b0efe5b7a0e975ce519ddb2682936601e",
+  "layout/history_panel.json": "102c03bc3118a933420c7442e6649c4fea05954fa4144aa622c18172e06a6704",
+  "layout/intel_panel.json": "537308a42bba061e0639c2457a5029b30e747afa4dd1ff1990e930135cbe81a1",
+  "layout/objective_line.json": "05d4ea8343afe72bc942d2fd2d52355bc8935fb6e754798d4028fa355e25513a",
+  "layout/overhead_marks.json": "828224960db7e77d55c71290c89d850eb143ceada533f79ad306848a02b7fffe",
+  "layout/price_chip.json": "0becef6e59bb75a9cacd6fea5866750d5a527a144b275e747531e7b5d8adf2c3",
+  "layout/roster_column.json": "2b35b88631264654d2221478722dcae9f0211d10155eae32016181635d66879b",
+  "layout/roster_row.json": "6ccf4c4408b357dfadf1bccd0eded112ccfaeb5027d57d9c1267f6093a46cb32",
+  "layout/scene_card.json": "909ef1df8a7682ebe466ed369b5d5f5c509811bd89b10e8bad46ca74d5c8eb94",
+  "layout/slot_strip.json": "02a64dd353897485a28809f8e9bc22bdcd00cfab7c8931cfee46df5503185f52",
+  "layout/status_pill.json": "e546e58d457b144a3383377d0eb4aa67458ee3522ceea8c74974f907d5e5d4f6",
+  "layout/ticker.json": "cdf30663d1cbb727b65feec9a181cf2efc21bc6cb804395ccf4e5af6fcf1fa9e",
+  "layout/tooltip_cancel.json": "dad74e1cdaeaf038ff70ee73a989e5ed20a0ad0b45809d18f8f67e515d6efe54",
+  "layout/verb_plate.json": "464aefca7b71887dd0549a7c5805306a7f133471d50e4cb28fd6d5f28fa79cbb",
+  "layout.json": "790ea4e0f54645b4689a9f761bad58d490367eb1b2199002e80b6756437f34fb",
+  "markers/disc_dark_24@1x.png": "b1eba8bf28867d6a67695683990876de62540b96df26a2ae998f9ac6edbb8ad8",
+  "markers/disc_dark_24@2x.png": "fff8329212b8e7f299c8b3e3f57307ec0fcb893dc08a1b1f4c325707b87b256d",
+  "markers/disc_dark_24_selected@1x.png": "64f7375c274bbaeb41d38f61abac7333585b6a64cb792e9f95aa5b70b45e1767",
+  "markers/disc_dark_24_selected@2x.png": "c0f0a1b4e5837447933dc612e67414e00234945697b23e9e638312014f50394d",
+  "markers/disc_dark_30@1x.png": "0c9690b151f05a515f22a7d515d3bbef85ddd49dfc267b3c1d1e4fb67f3383d4",
+  "markers/disc_dark_30@2x.png": "cff5cbe2fa969f62073b03472196ebf93d5d8843e00e8d5713c9507dd42e0c0a",
+  "markers/disc_light_22@1x.png": "c2d98ac14580350001d2806295e78af822527bcfb70be58efe02d76fb9619103",
+  "markers/disc_light_22@2x.png": "14762626d04af7ce6f203072d6204eb61968d01b1680d9cc23db31872237f67e",
+  "markers/disc_light_24@1x.png": "7d78cdc069fe8e1ffde681021675ba52eb2c456753c08072842bad3662b73c66",
+  "markers/disc_light_24@2x.png": "f7b8bc410749d1cec3d6591dd5d71990eef60f313de0016413aaf678ce9d84c2",
+  "markers/disc_light_24_selected@1x.png": "6fa6be9627bf02d8115bee84f75297c61a4deea8b68f3da0066cb5da421cba22",
+  "markers/disc_light_24_selected@2x.png": "a3c6bd6ad0da552c3a8a988ee69d670d0df95ebdec46e2f4b9419f86fdc28ff0",
+  "markers/dot_unread@1x.png": "e8f17fddc986ef106875b905ae81daaa039b9f843b404b8e1b73650875ddaa1c",
+  "markers/dot_unread@2x.png": "c40a48377f3cde334eb92d17a39ba0357ecb970203cd5d7c5caa15db048905be",
+  "markers/pill_new@1x.png": "af4213d3c9af6ff549fc60daf58af0ef380048dac0736c314aaee5961b0d559d",
+  "markers/pill_new@2x.png": "84ed465a8b6378657d0a253f389249207bc34390446527e8fe44d6f211e8293e",
+  "markers/pill_white@1x.png": "4a24fb2e8622d790e5db008e1eaea21cb3f459a0fcf974574a10696ea86068ac",
+  "markers/pill_white@2x.png": "c7a931745969593921bf55f7a06691486554cda01dab8432a9d2288e6d66af28",
+  "markers/pip_empty@1x.png": "82fde2f4151670463f87ea2228ac896d79276b559c24b6bfedef4d1fe63c6f59",
+  "markers/pip_empty@2x.png": "d30f36d3926d822843914333c518eb4c571c3a003e1ad0f1b852de8081238ca0",
+  "markers/pip_full@1x.png": "68505eb89a6ebc69d8f7a5170256536409f876e0c23b7ee5b49ae5ba79f7b75c",
+  "markers/pip_full@2x.png": "52f482a2f9f90bb5de2ab87242af494bb38c5808d42a91e6046b5736c9807116",
+  "markers/plate_dark@1x.png": "8a18bc8611c2aecee4cb41c13cc152f2bf8b8cd9950101433642674f2ff336da",
+  "markers/plate_dark@2x.png": "215e567726ddac6d518350deba70705629ec7a4401365bc3af6ab1de3eddd0e0",
+  "markers/plate_light@1x.png": "81566b95bbb4e66b4998250b2ea21357862c30c0126e6edc2f60f9247832e425",
+  "markers/plate_light@2x.png": "a1eda8543e8c40075aee47f15a074f0943ce72fa06aff2a6fae13611bfd5f477",
+  "markers/plate_light_selected@1x.png": "c6b2e0459165612918d57132213696297d3c3406c36535aa4b837d680a2a686a",
+  "markers/plate_light_selected@2x.png": "f109ab28a1bcba5be39947927a67d06364d19127a2c48acc6f4a8adf1c714b2c",
+  "overlays/crosshair@1x.png": "d3087fccad752afb05f0a266d924a6ac813a9569d6931b54971b784acfd00e56",
+  "overlays/crosshair@2x.png": "335bc9a8e84ef76245acef6b95ec91b8b42723f2f6edadfcb2c99e299cd8ab13",
+  "overlays/ring_fill@1x.png": "0190d2fbe268aa071bc6a2afab564253de728da428fc0ecf89f997e4428c7651",
+  "overlays/ring_fill@2x.png": "00c737013158a63282d844c9f07a6cf10c3bf2ec41df1ec97b77983bc6efd394",
+  "overlays/ring_ground_hint@1x.png": "457ce003ae0faceae2fd6638e86e693fdcd1ad0d0bed1ea1164dcdec6107a048",
+  "overlays/ring_ground_hint@2x.png": "2a31db353aa183fea25ca05975b19d7df47cd9a851d45b2e6898b7f76e78c738",
+  "overlays/ring_ground_selected@1x.png": "22755323e74e56cc8b5fd61f51ac38d050e8c3e0123e3d3eac51f6ade0cb226f",
+  "overlays/ring_ground_selected@2x.png": "f5459f7efb06b8fd5694505aa1d336d62214215c69a22866474186d10413a98f",
+  "overlays/ring_track@1x.png": "97e0179207e193746b38c69bf0213eade4286b1edf399251fb3857c6cb479a68",
+  "overlays/ring_track@2x.png": "cdfba3d35b9c0ad686e73202250c1d792968e063d4636ac178febbc468e243c7",
+  "overlays/stripes_warn@1x.png": "96a5125f0d2fb7519b81705f0a1912528258ceb8964b05699779a5ef1ab69bb0",
+  "overlays/stripes_warn@2x.png": "13cf0225b09b0755a00141fe471cf90cd9c732039ab52ecaf3147c0d6da76c55",
+  "panels/chip_price@1x.png": "7ccf4b8c49dd7a41325baf41c72f967f5069a0f32a7e176b4c81f61a410dda57",
+  "panels/chip_price@2x.png": "a08451d042c725f052c45f5d9c2f3c382cc2da24273e7d3c49e9f3729dffa1f0",
+  "panels/panel_card@1x.png": "12ad4fb04e1b2fab5939d780ae8c2b3f171f9d6406e0ddd1b39488147318f8ef",
+  "panels/panel_card@2x.png": "f2f44689d9e3da369efad3176d2dda86ae024f7fc80a45edf08e550b29af8466",
+  "panels/panel_dark@1x.png": "d3840417511a821b7deed1b9ff204d0f2f121f81da8ebfac229955786ba6c49b",
+  "panels/panel_dark@2x.png": "40b04632a439fc7b8fa9ba0162196791bb58bee2b07d1e0ff7aa5788bc9a1db4",
+  "panels/panel_dark_modal@1x.png": "a16693574418b45765b65f14701b44943e1ef060bc6a22374ce3ca093b4e7158",
+  "panels/panel_dark_modal@2x.png": "d46e756ae66c738ccfb80de7a728d7b8aa09a36d036f3f0da39b59ed84ac32e2",
+  "panels/panel_slot@1x.png": "d79c2e15d6b7000b74be24282e6727aa984eb3ad39b6cad09232549f954292d1",
+  "panels/panel_slot@2x.png": "cde2dc115167efa22f9423e0d91a38a4abe307ff12205e945fa2489d8bcbe992",
+  "panels/panel_strip@1x.png": "a07c49cf3f3d0fa0d439d94b16d947486abe42a78928f3bf99f5756c7b7718cd",
+  "panels/panel_strip@2x.png": "f8821da17adf9736c4280093cb9010739cd1917055545001898b0846f6379c15",
+  "panels/panel_tab@1x.png": "df4164cabae57588ee43c92f8ebdd0cd0a1c782f3daa3c2aa020ec07bbcd1e00",
+  "panels/panel_tab@2x.png": "1b6fe9a9928901fbb4cab16e7e907817f8ef6d52bcff9884186e303c3b4fdec0",
+  "panels/panel_tab_small@1x.png": "e0f76bf61ee808a7e6dacf025d8014d08c008de46854cd7f8b4363a5e58e0d1d",
+  "panels/panel_tab_small@2x.png": "70142d8395fb7fa0ee3bcc66ccddc8c388c591516b18d07c1c7cd482ba8a7ff2",
+  "panels/pill_status@1x.png": "3c15b36f8605e3ba9f4b14245490a6b3b9652151a4ad594c75165b30297d3e54",
+  "panels/pill_status@2x.png": "9bd83bff3f6737b46231d9ae89d936a7e0399281f2681c4054ff50ed445311d0",
+  "panels/plate_verbs@1x.png": "b197bb67b4943cccb205a4729ce845e4e8e98e1a1f88364b05c511b0233aa75c",
+  "panels/plate_verbs@2x.png": "5d0b7bbf02f635788c0bd43a78e2ae1f014e1135fde5e80ab3cefd400598c464",
+  "portraits/cameo_enforcer_hurt@1x.png": "f9acf9c41312132bb40c06f016328730afbb06bd26a92131e1ab7f81a2899e51",
+  "portraits/cameo_enforcer_hurt@2x.png": "20facce83fb011c80524877d12ee1ad9eb06772b43f281ec7ccb7311b88a5a27",
+  "portraits/cameo_enforcer_normal@1x.png": "0aaa29b2cf0b0576e66c86e01ace923ddbcbc1b49b13ccdf5c0105afd8e84bb7",
+  "portraits/cameo_enforcer_normal@2x.png": "1b04f7c87de5f23c2afa7341019d36ba8e8f2a57a48b3143f1c5968b67801ad5",
+  "portraits/cameo_fixer_hurt@1x.png": "dc0cec820a804d5b0df814daa1462e9ba3a0ed5d3fff8c9d15bd4b387f8c83b6",
+  "portraits/cameo_fixer_hurt@2x.png": "c0e75435c3bdf0d4923124a691b541736568cf78c6cfdf334b42cba24f25ba5f",
+  "portraits/cameo_fixer_normal@1x.png": "8b049fe3f62bac2cf6c4b2c5e26408f63195ce987c1e55118d36f3b3cb55d25c",
+  "portraits/cameo_fixer_normal@2x.png": "c60a616f355816afa840eb72a0df325777c57309f4ec1c354c88b9fb19e64ec6",
+  "portraits/cameo_scout_hurt@1x.png": "63ed7618c41c304b2d2a3b1dd23ac97e92619992af331ee0b6c9fe27402d802c",
+  "portraits/cameo_scout_hurt@2x.png": "6a4534fb6eeebc766571897beef03aade3902d798c5f85a00d08ceead3cd53eb",
+  "portraits/cameo_scout_normal@1x.png": "69d9c3ea64e66c234374c5c50e4d877c27f3947691b4dab55fdbf58fd959bf4d",
+  "portraits/cameo_scout_normal@2x.png": "6af0c1ff5c30b1ffecb3c7f728f4cf2d53a42e7e302a419431f5dc6bdcc2de68",
+  "portraits/cameo_tech_hurt@1x.png": "25059d28257fa69e846fc552cf3906facb367edc087f848a6ba053fcd2efe834",
+  "portraits/cameo_tech_hurt@2x.png": "24f830ff66d7e3013ab6106ca04809484fc5fca066c3efe7aaeaa11fcd8fd8a5",
+  "portraits/cameo_tech_normal@1x.png": "11e4be79a122133b576d49ebff4a59cd0fcd38ebc02622a52592cc9a98e31fac",
+  "portraits/cameo_tech_normal@2x.png": "01f2739f91488a2feea50e569cb1b9efdbefa01b3fbb39ff8520735637f21255",
+  "portraits/portrait_enforcer_dim@1x.png": "20d8ec04cfadff368751d414ac1b16d7ed3b73dfbae5f60da04c753773d82edd",
+  "portraits/portrait_enforcer_dim@2x.png": "89b68d0ff826296b8c22bf139e91e3204cb71e73217abe8a8eca52fa8ef65b42",
+  "portraits/portrait_enforcer_dim@4x.png": "29df4d0bd823169d7bd685531585c5359f2d3c07bae36dc926e7872928e21e6f",
+  "portraits/portrait_enforcer_down@1x.png": "86171a243df4ebafb8f82d48b8d194f93b81be76e64b2855dee68558167aa5bb",
+  "portraits/portrait_enforcer_down@2x.png": "d11a33cb8e582ceae3f196ffacea3a69e2ac1d7163d98ffe8170dad71ef4a46c",
+  "portraits/portrait_enforcer_down@4x.png": "8ea4d4fe8045d70ee6fd981ba94b4c68e62e27b11a9ec81c8bc3982a02111a9e",
+  "portraits/portrait_enforcer_hurt@1x.png": "ef5eadcf22ce41297b3eeaab19913ff8af4f9ccf9bc9d0456b0a3f98c149d655",
+  "portraits/portrait_enforcer_hurt@2x.png": "62edbe63001ac3624d1ef33a226df0652eb1e8b99cd907307cc464fc12e41806",
+  "portraits/portrait_enforcer_hurt@4x.png": "630570aa32cf5772efd09c0cb37a21722b7f86d8a9e6918f8dd38538e6415417",
+  "portraits/portrait_enforcer_normal@1x.png": "0abb686ba4bfd1bdd7bbca4d5dfb2d97b61866e693900e71d23e9db7b18987e4",
+  "portraits/portrait_enforcer_normal@2x.png": "72395fdd402b2de6229581a584d372d5bd8f23ac4ba47a5270d3a5372bcf6de5",
+  "portraits/portrait_enforcer_normal@4x.png": "b3598ae1642503575c15de74c0173c32e399fe891324966a86b7509d87943a00",
+  "portraits/portrait_fixer_dim@1x.png": "ffbf5b97561fde7493eb146205da1a42def3af694b54990a1671d1dabc51b8d7",
+  "portraits/portrait_fixer_dim@2x.png": "1023f3b1b2cdff4d2040e98fdf690c837cfa3bb8239672a8cef38196c0b705ce",
+  "portraits/portrait_fixer_dim@4x.png": "e2803a2a0ffb35e2dfc72e12b97ffdd94aaea951eb7e2cd6398b27206d418844",
+  "portraits/portrait_fixer_down@1x.png": "5423522066984763d17b73375ec31bc1f07176d0d4262c14bf49193e6182d24f",
+  "portraits/portrait_fixer_down@2x.png": "cce7f5be2912daa80948dad350b3cad7df93801e5e1985e8ac4a9b7828b2aaea",
+  "portraits/portrait_fixer_down@4x.png": "3e40f44a9be0dab93e6308d9bbd26a7be2a2bb4de5e9d5968a89cad5e878926c",
+  "portraits/portrait_fixer_hurt@1x.png": "e3f00ee8b95ca27102a578ac377c9cc20af9c5c52c25a8d1324a817fd7d89751",
+  "portraits/portrait_fixer_hurt@2x.png": "d70513ec0dba791d83a9373f5afd1f6f7f5f33750278f50804313a9e138493bb",
+  "portraits/portrait_fixer_hurt@4x.png": "145f94066098dad8ef47d08a47de663614b918a8bdb823db5407a5d3a13a2473",
+  "portraits/portrait_fixer_normal@1x.png": "d95f979a787e95db5553a6d366984e44b927541bfce5fcd7215b36b2cc80d971",
+  "portraits/portrait_fixer_normal@2x.png": "7b2df9428623dd313327f2ea3e1bed7a994f9619f87670be542fe7547b009838",
+  "portraits/portrait_fixer_normal@4x.png": "5807fab025ab86b49572efb374f9d77bb40b87dd4ea98b7d17f31543ff353389",
+  "portraits/portrait_mask@1x.png": "2425ae513eee2bdfd9eff0eff42edc20c55dd83073b50c0b880d24a2f47cacc6",
+  "portraits/portrait_mask@2x.png": "c71a7e8ec6c8d68445c310e8980772175ce8127e040d401c907070e3332609bc",
+  "portraits/portrait_ring_busy@1x.png": "b748a1726831733e83089428d76c23507da350a15d8d95ff703591034d119487",
+  "portraits/portrait_ring_busy@2x.png": "46c9c5f3fd60b212a6f5373184107544289f38ae39517e43b967bef8b32f8c25",
+  "portraits/portrait_ring_selected@1x.png": "13816b7288cf2fd2b22e28ad492d775dbedab9abde8e8315b488b521848ae791",
+  "portraits/portrait_ring_selected@2x.png": "55a17232e74e9e80b1096605fa5d97a3dfb79c0a70028e98397542c44f22d7be",
+  "portraits/portrait_scout_dim@1x.png": "6ea1e97e2001406de586ad4f23cd0abfa0484a2fb85efd88dd375bf964800701",
+  "portraits/portrait_scout_dim@2x.png": "aef67438620da70864873af723e7187c7ece212555eadc351c546a1722dbdcfd",
+  "portraits/portrait_scout_dim@4x.png": "1a74203b38bea4c11e0fd597c5b109d726c17108f111fc2b5966927291a02b55",
+  "portraits/portrait_scout_down@1x.png": "40d29ffc19db2f5151dc39c3a8ba8a7e952e0354377afff579931da6bcf00849",
+  "portraits/portrait_scout_down@2x.png": "85ceb2f743a9a0c084457e3dd6f6796af59438bb00ab560ec6f4ebeddb087c12",
+  "portraits/portrait_scout_down@4x.png": "95284794c7c45b78f731e0f43eeb257651898976d61fbd89ad262529a8df61f1",
+  "portraits/portrait_scout_hurt@1x.png": "32aa326de5baee01c0c55fa7bdca72bc82aec033674d0c3cf631a7e2a1089ab6",
+  "portraits/portrait_scout_hurt@2x.png": "210c512a98290218fdbc04081d84240346333e3c5ffe5c0b23b4b5e7c9e082ba",
+  "portraits/portrait_scout_hurt@4x.png": "245243aeea0cf9be06875f177d36b34d50eaa28ee7ef2bb2d50c441b1437ebad",
+  "portraits/portrait_scout_normal@1x.png": "3ed27eb1d5bd202adb82ef466b0e5a73ff2a0a6f08a45d1a6e42d6dff381eb94",
+  "portraits/portrait_scout_normal@2x.png": "2f3416ff9ec3c0c505c53973cd5e54672b53e1fc69496f1104edf216dea735fe",
+  "portraits/portrait_scout_normal@4x.png": "3d340a0b86530b4ed31ddff31ab9ad7638a5f6c5f30c098055bd2bb2bbb771f0",
+  "portraits/portrait_scrim@1x.png": "19ea42497cc33752c4cb696330b7b914b95b9737da7eaf6ef83d7ac74a418edd",
+  "portraits/portrait_scrim@2x.png": "3019b115ae26ed4a080135a122effa3625d9833c944db55455eac3a218f9bc20",
+  "portraits/portrait_shade@1x.png": "a56c957a154798076689980776de1419b335c088f5d113176912feeb91160eaf",
+  "portraits/portrait_shade@2x.png": "6c5693e28dd0e83f73f7c8388bc5e7712a8e16bcd0c93bc1dd758153155bf47a",
+  "portraits/portrait_tech_dim@1x.png": "1f73331039c28bf87cb00194b2cfbd5d2e0bbf2c497e760c615293d835a46d9b",
+  "portraits/portrait_tech_dim@2x.png": "4b8ce1e8cd9d5e297495817565edc011f0fb8dd43dc502bfb0b8a4394595d156",
+  "portraits/portrait_tech_dim@4x.png": "e6f0e856cf64b88cdc747c78e0fea46bfa0e04ad2cf7ea7302aeb195ea34a773",
+  "portraits/portrait_tech_down@1x.png": "bcefa70654c98daa722e20f9fd314d852dd0632bb4e7ead30a856dff4a4a96a1",
+  "portraits/portrait_tech_down@2x.png": "3c80d89f4f494af31bcda99d54e539620a16ba2b25c9f6f8cdf8ccf71d7df6bb",
+  "portraits/portrait_tech_down@4x.png": "73c828d22ce9a63f43b6df8066dfbd7b24674cc591127e18cca8cd085bc80770",
+  "portraits/portrait_tech_hurt@1x.png": "049e0c1b2595859bf61ae126b86ae8b3fb372b107dc5f142d2baad1fc47d3cdd",
+  "portraits/portrait_tech_hurt@2x.png": "667ccb697d3083d404adf7e560b6e5a5e455f89f1824efeac2d6112453117e1e",
+  "portraits/portrait_tech_hurt@4x.png": "35ef8aa17a30dd9cddad25aa96d3db44a91198a20ea536cd478d6f9304313ccf",
+  "portraits/portrait_tech_normal@1x.png": "3bc11ab42f806767320e1106037108421b154b4caa50b2b626efcef53dac98c1",
+  "portraits/portrait_tech_normal@2x.png": "3b066fddf831c55fc3104c6658a4a00b369221d0bbd99075972e7a57d91a6ce3",
+  "portraits/portrait_tech_normal@4x.png": "a68c2276663aaf1d409706c208d1e25e3536e4daeb301c33de43942d872f5070",
+  "preview-assembly.jpg": "8fc39fe77d3cb101ea69bc90eea4bd9d899bd04c69fda685dc5f5817f43dd7fc",
+  "preview-sheet.jpg": "4f77d1de3489abbc501033c787a4337f3b2019037bbe258d4d956397141b8059",
+  "roster/roster_column@1x.png": "79ab51614a76077823440bd9ae0eb2e474417f67c119aea82345ffd7f98dd72a",
+  "roster/roster_column@2x.png": "2e14c8d4e56b958b8553fb7775ebdbe1d22d1562d3925206e917c71266b0787e",
+  "roster/roster_row@1x.png": "771a03295a39c9408d5520d458f1b6024a1eca0967fca2e3d4a2b92183805d60",
+  "roster/roster_row@2x.png": "a6f4b021aff7c064319949b588a8107f5686448a68906f8525f6cd0b3da2d050",
+  "sprites.json": "c626f1e36eadec2b9feb3accec46e3ca46475676764a8ea75fd4e74c7a6e9ea5"
+ }
+}
