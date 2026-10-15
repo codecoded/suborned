@@ -1,0 +1,267 @@
+{
+ "candidates": {
+  "teal-black #12403f": {
+   "cones": 50.8,
+   "guard": 60.1,
+   "rivals": 34.0
+  },
+  "teal-black lighter #1d5a58": {
+   "cones": 50.9,
+   "guard": 53.1,
+   "rivals": 33.0
+  },
+  "burnt sienna #a0522d": {
+   "cones": 14.2,
+   "guard": 30.7,
+   "rivals": 42.0
+  },
+  "sienna as painted-ish #8a4a30": {
+   "cones": 17.6,
+   "guard": 36.5,
+   "rivals": 39.5
+  },
+  "coral contract #fc9c84": {
+   "cones": 21.7,
+   "guard": 22.9,
+   "rivals": 44.1
+  },
+  "bone #e8e4da": {
+   "cones": 42.2,
+   "guard": 28.2,
+   "rivals": 49.5
+  },
+  "charcoal #2b2d30": {
+   "cones": 40.1,
+   "guard": 59.2,
+   "rivals": 31.4
+  },
+  "seafoam deep teal #1f6c67": {
+   "cones": 52.7,
+   "guard": 49.0,
+   "rivals": 34.8
+  },
+  "violet #6b4f8f (old violet_set)": {
+   "cones": 37.2,
+   "guard": 59.1,
+   "rivals": 11.9
+  }
+ },
+ "painted": {
+  "teal": [
+   {
+    "hex": "#242221",
+    "share": 0.198,
+    "cones": 40.6,
+    "guard": 60.1,
+    "rivals": 38.4
+   },
+   {
+    "hex": "#181716",
+    "share": 0.169,
+    "cones": 43.3,
+    "guard": 62.7,
+    "rivals": 40.9
+   },
+   {
+    "hex": "#35302d",
+    "share": 0.137,
+    "cones": 36.9,
+    "guard": 56.3,
+    "rivals": 36.7
+   },
+   {
+    "hex": "#ad917f",
+    "share": 0.104,
+    "cones": 24.8,
+    "guard": 21.7,
+    "rivals": 39.4
+   },
+   {
+    "hex": "#0b0a09",
+    "share": 0.104,
+    "cones": 45.5,
+    "guard": 64.9,
+    "rivals": 42.7
+   },
+   {
+    "hex": "#c5b1a3",
+    "share": 0.069,
+    "cones": 31.1,
+    "guard": 22.0,
+    "rivals": 42.3
+   },
+   {
+    "hex": "#4c4a47",
+    "share": 0.068,
+    "cones": 33.0,
+    "guard": 48.1,
+    "rivals": 33.2
+   },
+   {
+    "hex": "#77706a",
+    "share": 0.06,
+    "cones": 27.0,
+    "guard": 33.0,
+    "rivals": 31.9
+   },
+   {
+    "hex": "#9e6c51",
+    "share": 0.046,
+    "cones": 17.5,
+    "guard": 25.7,
+    "rivals": 39.3
+   },
+   {
+    "hex": "#663f2c",
+    "share": 0.045,
+    "cones": 25.4,
+    "guard": 45.3,
+    "rivals": 39.3
+   }
+  ],
+  "sienna": [
+   {
+    "hex": "#26201d",
+    "share": 0.254,
+    "cones": 39.9,
+    "guard": 59.9,
+    "rivals": 39.6
+   },
+   {
+    "hex": "#3b2f2b",
+    "share": 0.186,
+    "cones": 35.2,
+    "guard": 55.8,
+    "rivals": 36.6
+   },
+   {
+    "hex": "#120f0d",
+    "share": 0.17,
+    "cones": 44.4,
+    "guard": 64.0,
+    "rivals": 42.3
+   },
+   {
+    "hex": "#5e463a",
+    "share": 0.092,
+    "cones": 27.6,
+    "guard": 45.2,
+    "rivals": 36.3
+   },
+   {
+    "hex": "#b8a598",
+    "share": 0.084,
+    "cones": 29.2,
+    "guard": 22.4,
+    "rivals": 40.1
+   },
+   {
+    "hex": "#836353",
+    "share": 0.076,
+    "cones": 21.3,
+    "guard": 32.0,
+    "rivals": 35.4
+   },
+   {
+    "hex": "#be8868",
+    "share": 0.064,
+    "cones": 20.3,
+    "guard": 18.4,
+    "rivals": 43.0
+   },
+   {
+    "hex": "#92857d",
+    "share": 0.053,
+    "cones": 25.9,
+    "guard": 27.3,
+    "rivals": 33.7
+   },
+   {
+    "hex": "#e5ded7",
+    "share": 0.015,
+    "cones": 40.1,
+    "guard": 27.7,
+    "rivals": 46.7
+   },
+   {
+    "hex": "#efebe7",
+    "share": 0.005,
+    "cones": 42.4,
+    "guard": 29.9,
+    "rivals": 47.5
+   }
+  ],
+  "white": [
+   {
+    "hex": "#282523",
+    "share": 0.194,
+    "cones": 39.7,
+    "guard": 59.2,
+    "rivals": 38.4
+   },
+   {
+    "hex": "#1b1917",
+    "share": 0.159,
+    "cones": 42.7,
+    "guard": 62.0,
+    "rivals": 41.1
+   },
+   {
+    "hex": "#37312d",
+    "share": 0.123,
+    "cones": 36.4,
+    "guard": 55.8,
+    "rivals": 37.0
+   },
+   {
+    "hex": "#dcd7d2",
+    "share": 0.105,
+    "cones": 39.2,
+    "guard": 27.7,
+    "rivals": 44.8
+   },
+   {
+    "hex": "#0d0b0a",
+    "share": 0.084,
+    "cones": 45.2,
+    "guard": 64.7,
+    "rivals": 42.5
+   },
+   {
+    "hex": "#937665",
+    "share": 0.073,
+    "cones": 21.7,
+    "guard": 26.6,
+    "rivals": 36.4
+   },
+   {
+    "hex": "#554339",
+    "share": 0.073,
+    "cones": 29.8,
+    "guard": 47.6,
+    "rivals": 36.2
+   },
+   {
+    "hex": "#6f5d53",
+    "share": 0.069,
+    "cones": 25.5,
+    "guard": 36.8,
+    "rivals": 33.6
+   },
+   {
+    "hex": "#a1978f",
+    "share": 0.065,
+    "cones": 28.6,
+    "guard": 25.4,
+    "rivals": 36.3
+   },
+   {
+    "hex": "#c79679",
+    "share": 0.054,
+    "cones": 23.2,
+    "guard": 17.6,
+    "rivals": 43.6
+   }
+  ]
+ }
+}
