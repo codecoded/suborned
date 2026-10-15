@@ -245,6 +245,13 @@ namespace Suborned.Play
             }
             GUI.Label(new Rect(hb.xMax + 10 * s, hb.y, 420 * s, kh), $"{Names[(int)host.Agent]}: {(host.LitSlot >= 0 && host.LitSlot < slots.Length ? slots[host.LitSlot].Label : "")}", txt);
 
+            // the scene feed (bottom right; lifted above the roster when the roster reaches the corner)
+            {
+                float fw = 360 * s; float fx = Screen.width - fw - 16 * s; float fb = Screen.height - 16 * s;
+                if (roster.xMax + 10 * s > fx && dock != RosterDock.Left) fb = roster.y - (column ? 0 : kh + 20 * s);
+                FeedGui(new Rect(fx, 0, fw, fb));
+            }
+
             // the dialogue log, docked beside the roster (bottom left)
             DialogueLog(dock == RosterDock.Corner ? new Rect(roster.xMax + 10 * s, 0, Mathf.Min(520 * s, Screen.width - roster.xMax - 640 * s), roster.yMax)
                 : new Rect(16 * s, 0, column ? 520 * s : Mathf.Min(520 * s, roster.x - 32 * s), Screen.height - 16 * s));
@@ -410,6 +417,59 @@ namespace Suborned.Play
             {
                 float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24;
                 GUI.DrawTexture(new Rect(cc.x + rad * Mathf.Cos(a) - dot / 2, cc.y - rad * Mathf.Sin(a) - dot / 2, dot, dot), k < on ? pipOn : pipOff);
+            }
+        }
+
+        /// <summary>The scene feed (placeholder look until Glyph's round 6b): a header (unread count, the history toggle), the newest cards above
+        /// it. A card: who and what, a progress bar while the act runs, the last lines said, and the footer with what came of it. Click a card:
+        /// acknowledge it and pan to its place; K acknowledges the oldest finished card. Only the cards and the header take clicks.</summary>
+        void FeedGui(Rect area)
+        {
+            float w = area.width, pad = 8 * s, head = 24 * s; var feed = host.Feed;
+            var hr = new Rect(area.x, area.yMax - head, w, head); Plate(hr); hits.Add(hr);
+            int unread = host.Unread, live = 0; foreach (var c in feed) if (c.Live) live++;
+            GUI.Label(new Rect(hr.x + pad, hr.y, w - 2 * pad, head), $"Feed  ·  {unread} new{(live > 0 ? $"  ·  {live} under way" : "")}  ·  {host.controls.Label(PlayAction.Acknowledge)} ok  ·  {(host.FeedHistoryOpen ? "▾" : "▸")} history ({host.FeedHistory.Count})", small);
+            if (GUI.Button(hr, GUIContent.none, GUIStyle.none)) host.FeedHistoryOpen = !host.FeedHistoryOpen;
+            float y = hr.y - 4 * s;
+            // the newest four cards, newest nearest the header
+            int shown = 0;
+            for (int i = feed.Count - 1; i >= 0 && shown < 4; i--, shown++)
+            {
+                var c = feed[i]; float iw = w - 2 * pad;
+                var lines = new List<string>();
+                for (int j = Mathf.Max(0, c.Lines.Count - 2); j < c.Lines.Count; j++) lines.Add($"<b>{c.Lines[j].who}:</b> {c.Lines[j].text}");
+                float h = 22 * s + (c.Live && c.Progress >= 0 ? 10 * s : 0) + 6 * s;
+                foreach (var l in lines) h += wrapBright.CalcHeight(new GUIContent(l), iw);
+                if (c.Footer.Length > 0) h += smallWrap.CalcHeight(new GUIContent(c.Footer), iw) + 2 * s;
+                var r = new Rect(area.x, y - h, w, h); y = r.y - 4 * s;
+                bool hover = r.Contains(Event.current.mousePosition);
+                GUI.DrawTexture(r, c.Tone == HandoverHost.Feedback.Refused && !c.Live ? refusedPlate : hover ? plateLit : plate); hits.Add(r);
+                if (!c.Live && !c.Read) GUI.DrawTexture(new Rect(r.x, r.y, 4 * s, r.height), c.Tone == HandoverHost.Feedback.Ok ? pipOn : edge); // unread
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.Acknowledge(c, true);
+                float yy = r.y + 3 * s;
+                if (c.Agent >= 0) { var cr = new Rect(r.x + pad, yy + 1 * s, 18 * s, 18 * s); GUI.DrawTexture(cr, chipAgent); GUI.Label(cr, $"<color=#1a2a28>{Nums[c.Agent]}</color>", iconSmall); }
+                GUI.Label(new Rect(r.x + pad + (c.Agent >= 0 ? 24 * s : 0), yy, iw, 20 * s), $"<b>{c.Title}</b>{(c.Live ? "  …" : "")}", smallBright); yy += 22 * s;
+                if (c.Live && c.Progress >= 0)
+                {
+                    var bar = new Rect(r.x + pad, yy, iw - 50 * s, 5 * s); GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * c.Progress / 1000f, bar.height), barOn);
+                    if (c.TicksLeft >= 0) GUI.Label(new Rect(bar.xMax + 6 * s, yy - 7 * s, 46 * s, 18 * s), $"{(c.TicksLeft + Game.Hz - 1) / Game.Hz} s", small);
+                    yy += 10 * s;
+                }
+                foreach (var l in lines) { float lh = wrapBright.CalcHeight(new GUIContent(l), iw); GUI.Label(new Rect(r.x + pad, yy, iw, lh), l, wrapBright); yy += lh; }
+                if (c.Footer.Length > 0) GUI.Label(new Rect(r.x + pad, yy + 2 * s, iw, r.yMax - yy), c.Footer, smallWrap);
+            }
+            if (feed.Count > 4) { var mr = new Rect(area.x, y - 20 * s, w, 20 * s); GUI.Label(mr, $"+{feed.Count - 4} more", smallC); y = mr.y; }
+            if (host.FeedHistoryOpen && host.FeedHistory.Count > 0)
+            {
+                int n = Mathf.Min(8, host.FeedHistory.Count); float lh = 20 * s;
+                var r = new Rect(area.x, y - n * lh - 8 * s, w, n * lh + 8 * s); Plate(r); hits.Add(r);
+                for (int i = 0; i < n; i++)
+                {
+                    var c = host.FeedHistory[host.FeedHistory.Count - n + i];
+                    var lr = new Rect(r.x + pad, r.y + 4 * s + i * lh, w - 2 * pad, lh);
+                    GUI.Label(lr, $"{HandoverHost.MissionClock(c.Started)}  {c.Title}{(c.Footer.Length > 0 ? " — " + c.Footer : "")}", small);
+                    if (GUI.Button(lr, GUIContent.none, GUIStyle.none) && host.PlaceNow(c) is Vector3 at) host.LookAt(at);
+                }
             }
         }
 

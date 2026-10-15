@@ -74,6 +74,7 @@ namespace Suborned.Play
                 }
                 else views.ShowAct(k, null);
             }
+            FeedTrack();
         }
 
         string Name(string key) => key switch { "" => "", "hostiles" => "the hostiles", _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key };
@@ -119,6 +120,7 @@ namespace Suborned.Play
             var d = doing[k]; var op = Game.Ops[k]; string who = AgentNames[k], cost = d.CancelText, what = d.CancelVerb.Length > 0 ? d.CancelVerb : "it";
             bool dropped = pending[k] != null; pending[k] = null; pendingAt[k] = null;
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k));
+            if (a != null && a.CanCancel) FeedCancelled(k, cost);
             bool sent = a != null && a.CanCancel && Issue(new Order { Op = Op.Name((OpId)k), Do = "cancel" }, null, null, true);
             if (sent || dropped)
             {
@@ -152,6 +154,7 @@ namespace Suborned.Play
             if (string.IsNullOrEmpty(text)) return;
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
+            FeedSay(speaker, text); FeedCity(speaker, text);
             while (Talk.Count > 200) Talk.RemoveAt(0);
         }
 
