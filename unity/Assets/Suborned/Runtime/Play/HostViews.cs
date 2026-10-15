@@ -45,14 +45,28 @@ namespace Suborned.Play
             }
             Line("cone/guard", amber); Line("cone/rivals", violet);
             crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
-            for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, false);
+            for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, true); // hoverable: "passer-by"
             for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
             Ring("sel/0"); Ring("sel/1"); Ring("sel/2"); Ring("sel/3");
+            Ring("dest/0"); Ring("dest/1"); Ring("dest/2"); Ring("dest/3"); // where each walking agent will stop (the snapped point)
+            var pg = new GameObject("path"); pg.transform.SetParent(root, false);
+            path = pg.AddComponent<LineRenderer>(); path.sharedMaterial = select; path.useWorldSpace = true; path.widthMultiplier = 0.18f; path.positionCount = 0;
+            path.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; path.receiveShadows = false; path.alignment = LineAlignment.TransformZ;
+            pg.transform.rotation = Quaternion.Euler(90f, 0f, 0f); path.enabled = false;
         }
 
         public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : null;
+        LineRenderer path;
+
+        /// <summary>The walk an action panel row would take (null hides it).</summary>
+        public void ShowPath(List<Vector3> pts)
+        {
+            if (!path) return;
+            if (pts == null || pts.Count < 2) { path.enabled = false; return; }
+            path.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) path.SetPosition(i, pts[i]); path.enabled = true;
+        }
         const int MaxHostiles = 8;
-        static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" };
+        static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" }, DestKeys = { "dest/0", "dest/1", "dest/2", "dest/3" };
         readonly Dictionary<string, string> coneKeys = new();
         string[] crowdKeys = System.Array.Empty<string>(), hostileKeys = System.Array.Empty<string>(); // no string building per tick
         readonly Dictionary<Pt, int> stacked = new();
@@ -124,6 +138,9 @@ namespace Suborned.Play
                 bool on = host.Selected[i] && op.shown;
                 if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on);
                 if (on) r.position = op.t.position + Vector3.up * 0.03f;
+                var d = things[DestKeys[i]].t; var walk = g.Ops[i].Walk; bool dest = walk != null && op.shown;
+                if (d.gameObject.activeSelf != dest) d.gameObject.SetActive(dest);
+                if (dest) { d.position = frame.World(walk.End) + Vector3.up * 0.03f; d.localScale = new Vector3(0.6f, 0.01f, 0.6f); }
             }
         }
 

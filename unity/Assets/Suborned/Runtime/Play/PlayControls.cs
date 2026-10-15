@@ -52,6 +52,8 @@ namespace Suborned.Play
         public float edgePixels = 12f;
         [UnityEngine.Tooltip("Where the roster and the verb hotbar sit (Glyph's placements: bottom, left column, corner).")]
         public RosterDock dock = RosterDock.Bottom;
+        [UnityEngine.Tooltip("Pause the clock while the action panel is open (off: real time, Sky's lean).")]
+        public bool pauseWithPanel = false;
         [UnityEngine.Tooltip("Two presses or clicks within this many seconds count as a double (centre on the agent, run).")]
         public float doubleSeconds = 0.35f;
 

@@ -16,8 +16,9 @@ namespace Suborned.Play
     public sealed class PlayHud : MonoBehaviour
     {
         // never kept over a domain reload (a kept style with its textures gone would draw nothing): built on the first OnGUI
-        [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white;
-        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall; float s;
+        [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white, ring, refusedPlate, okPlate, cursorAct;
+        [System.NonSerialized] bool cursorIsAct;
+        [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold; float s;
         // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
         [System.NonSerialized] string pillClock = "", pillNext = "", pillCash = "", pillTrail = "", pillState = "", pillCity = "", chipLine = "";
         [System.NonSerialized] readonly string[] slotState = new string[4];
@@ -35,18 +36,34 @@ namespace Suborned.Play
 
         static Texture2D Tex(Color c) { var t = new Texture2D(1, 1); t.SetPixel(0, 0, c); t.Apply(); return t; }
 
+        /// <summary>A ring texture (placeholder until Glyph's kit): a circle outline, optionally with a centre dot (the action cursor).</summary>
+        static Texture2D Ring(int n, int w, Color c, bool dot = false)
+        {
+            var t = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp }; float r = n / 2f - 1f;
+            for (int y = 0; y < n; y++) for (int x = 0; x < n; x++)
+                {
+                    float d = Mathf.Sqrt((x - n / 2f + 0.5f) * (x - n / 2f + 0.5f) + (y - n / 2f + 0.5f) * (y - n / 2f + 0.5f));
+                    bool on = Mathf.Abs(d - (r - w / 2f)) <= w / 2f || (dot && d <= 2.5f);
+                    t.SetPixel(x, y, on ? c : new Color(0, 0, 0, 0));
+                }
+            t.Apply(); return t;
+        }
+
         void Styles()
         {
             if (txt == null || plate == null)
             {
                 plate = Tex(Teal); plateLit = Tex(TealLit); edge = Tex(Cream); pipOn = Tex(Cream); pipOff = Tex(new Color(1, 1, 1, 0.22f)); white = Tex(Color.white);
+                refusedPlate = Tex(new Color(0.42f, 0.16f, 0.14f, 0.95f)); okPlate = Tex(new Color(0.12f, 0.42f, 0.32f, 0.95f));
+                ring = Ring(64, 3, Cream); cursorAct = Ring(32, 3, Cream, true);
                 txt = new GUIStyle(GUI.skin.label) { normal = { textColor = Cream }, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleLeft, richText = true, wordWrap = false, clipping = TextClipping.Overflow };
                 big = new GUIStyle(txt); small = new GUIStyle(txt) { fontStyle = FontStyle.Normal, normal = { textColor = Dim } };
                 key = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter }; mid = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter };
                 smallC = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter }; icon = new GUIStyle(mid); iconSmall = new GUIStyle(mid);
+                smallBright = new GUIStyle(small) { normal = { textColor = Cream } }; txtSmallBold = new GUIStyle(txt);
             }
             txt.fontSize = Mathf.RoundToInt(18 * s); big.fontSize = Mathf.RoundToInt(24 * s); small.fontSize = Mathf.RoundToInt(13 * s); key.fontSize = Mathf.RoundToInt(13 * s); mid.fontSize = Mathf.RoundToInt(15 * s);
-            smallC.fontSize = small.fontSize; icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
+            smallC.fontSize = small.fontSize; smallBright.fontSize = Mathf.RoundToInt(14 * s); txtSmallBold.fontSize = Mathf.RoundToInt(15 * s); icon.fontSize = Mathf.RoundToInt(14 * s); iconSmall.fontSize = Mathf.RoundToInt(10 * s);
         }
 
         void Plate(Rect r, bool lit = false)
@@ -76,7 +93,7 @@ namespace Suborned.Play
                 {
                     var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
                     var p = cam.WorldToScreenPoint(t.position + Vector3.down * 0.15f); if (p.z <= 0) continue;
-                    var op = g.Ops[i]; string verb = op.Busy != null ? Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? "›" : "✓";
+                    var op = g.Ops[i]; string verb = op.Busy != null ? Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
                     var r = new Rect(p.x - 26 * s, Screen.height - p.y + 2 * s, 52 * s, 20 * s);
                     if (host.Selected[i]) { GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height), plateLit); }
                     GUI.Label(new Rect(r.x + 4 * s, r.y, 18 * s, r.height), Nums[i], mid);
@@ -97,18 +114,19 @@ namespace Suborned.Play
 
             // the price chip at the cursor
             var it = host.HoverIntent;
-            if (it != null && host.Hover != null && host.Ending.Length == 0)
+            if (it != null && host.Hover != null && host.Ending.Length == 0 && host.Panel == null)
             {
                 if (it != chipFor || chipKey != txt.fontSize)
                 {
                     chipFor = it; chipKey = txt.fontSize;
-                    chipLine = it.Move ? $"{it.Label}   ·   {it.Time}" : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
+                    chipLine = !it.Actionable ? (it.Hint.Length > 0 ? it.Hint : it.Label) + (host.Hover.Kind == "crowd" ? "" : "   ·   right click: actions")
+                        : $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}{(host.Picked < 0 ? "   ·   right click: actions" : "")}";
                     chipSize = txt.CalcSize(new GUIContent(chipLine));
                 }
                 string line = chipLine; var size = chipSize;
                 var r = new Rect(host.Mouse.x + 22 * s, host.Mouse.y + 6 * s, size.x + 24 * s, 34 * s);
                 if (r.xMax > Screen.width) r.x = host.Mouse.x - r.width - 10 * s;
-                Plate(r, !it.Move); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), line, txt);
+                Plate(r, it.Actionable); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), line, it.Actionable ? txt : small);
             }
 
             // top right pill: clock · next event · $ · Trail · Alert pips
@@ -174,7 +192,90 @@ namespace Suborned.Play
             // status line
             GUI.Label(new Rect(16 * s, Screen.height - 34 * s, Mathf.Max(400 * s, Screen.width / 2f - 360 * s), 24 * s), host.Status, small);
 
+            HoverRing(cam);
+            Pulses(cam);
+            if (host.Panel != null) PanelGui(g);
+            Pops(cam);
+
             if (host.Ending.Length > 0) EndCard(g);
+        }
+
+        /// <summary>A ring at the feet of what the mouse is on, when the cell can act on it, and the action cursor; nothing on scenery or passers-by.</summary>
+        void HoverRing(Camera cam)
+        {
+            var t = host.Hover; bool act = t != null && t.Kind != "crowd" && t.Kind != "op" && host.Ending.Length == 0;
+            if (act != cursorIsAct) { Cursor.SetCursor(act ? cursorAct : null, act ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIsAct = act; }
+            if (!act || !cam) return;
+            var w = host.TargetWorld(t); if (!w.HasValue) return;
+            var p = cam.WorldToScreenPoint(w.Value); if (p.z <= 0) return;
+            float rw = 64 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; // the ground circle at pitch 38
+            GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring);
+        }
+
+        /// <summary>A taken order or a landing pulses on its target: a ring that grows and fades over 0.7 s.</summary>
+        void Pulses(Camera cam)
+        {
+            if (!cam) return; float now = Time.unscaledTime;
+            foreach (var (w, kind, born) in host.Pulses)
+            {
+                float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue;
+                var p = cam.WorldToScreenPoint(w); if (p.z <= 0) continue;
+                float rw = (50 + 90 * a) * s * 14f / cam.orthographicSize, rh = rw * 0.62f;
+                var c = GUI.color; GUI.color = new Color(kind == HandoverHost.Feedback.Refused ? 1f : 0.85f, kind == HandoverHost.Feedback.Refused ? 0.55f : 1f, 0.85f, 1f - a);
+                GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); GUI.color = c;
+            }
+        }
+
+        /// <summary>Pops: the answer to a click, at the cursor or over its target, for about 2.5 s (refusals red-brown, taken green, info teal).</summary>
+        void Pops(Camera cam)
+        {
+            float now = Time.unscaledTime; float y0 = 0f;
+            for (int i = host.Pops.Count - 1; i >= 0; i--)
+            {
+                var pp = host.Pops[i]; if (now > pp.Until) continue;
+                Vector2 at;
+                if (pp.World.HasValue && cam) { var p = cam.WorldToScreenPoint(pp.World.Value + Vector3.up * 2.6f); if (p.z <= 0) continue; at = new Vector2(p.x, Screen.height - p.y); }
+                else if (pp.Screen.HasValue) at = pp.Screen.Value + new Vector2(18 * s, -40 * s);
+                else continue;
+                var size = small.CalcSize(new GUIContent(pp.Text)); size.x = Mathf.Min(size.x, 420 * s);
+                var r = new Rect(Mathf.Clamp(at.x - size.x / 2, 8, Screen.width - size.x - 24 * s), at.y - y0, size.x + 16 * s, 24 * s);
+                float fade = Mathf.Clamp01((pp.Until - now) / 0.4f);
+                var c = GUI.color; GUI.color = new Color(1, 1, 1, fade);
+                GUI.DrawTexture(r, pp.Kind == HandoverHost.Feedback.Refused ? refusedPlate : pp.Kind == HandoverHost.Feedback.Ok ? okPlate : plate);
+                GUI.Label(new Rect(r.x + 8 * s, r.y, r.width - 12 * s, r.height), pp.Text, smallBright);
+                GUI.color = c;
+                if (!pp.World.HasValue) y0 += 26 * s;
+            }
+        }
+
+        /// <summary>The action panel at the cursor (≤ 280 px at 1080p): every action on the target, by agent, the selected agent's first; available
+        /// rows first, locked rows dimmed with their reason; click a row to give it (to that row's agent); hover a row to see the walk.</summary>
+        void PanelGui(Game g)
+        {
+            var pn = host.Panel; float w = 280 * s, head = 26 * s, rh = 40 * s;
+            float h = head + (pn.Note.Length > 0 ? 26 * s : 0) + rh * pn.Rows.Count + 6 * s;
+            var r = new Rect(Mathf.Min(pn.Gui.x + 12 * s, Screen.width - w - 8 * s), Mathf.Clamp(pn.Gui.y - 12 * s, 8 * s, Screen.height - h - 8 * s), w, h);
+            Plate(r); hits.Add(r);
+            GUI.Label(new Rect(r.x + 10 * s, r.y + 2 * s, w - 20 * s, head), pn.T.Label, txt);
+            float y = r.y + head;
+            if (pn.Note.Length > 0) { GUI.Label(new Rect(r.x + 10 * s, y, w - 20 * s, 24 * s), pn.Note, small); y += 26 * s; }
+            int hover = -1;
+            for (int i = 0; i < pn.Rows.Count; i++)
+            {
+                var row = pn.Rows[i]; var rr = new Rect(r.x + 4 * s, y + i * rh, w - 8 * s, rh - 2 * s);
+                bool mine = host.Selected[(int)row.By];
+                if (rr.Contains(Event.current.mousePosition)) { hover = i; GUI.DrawTexture(rr, plateLit); }
+                else if (mine) GUI.DrawTexture(new Rect(rr.x, rr.y, 3 * s, rr.height), edge);
+                if (GUI.Button(rr, GUIContent.none, GUIStyle.none)) host.PanelDo(i);
+                var c = GUI.color; if (!row.Available) GUI.color = new Color(1, 1, 1, 0.5f);
+                GUI.Label(new Rect(rr.x + 8 * s, rr.y + 1 * s, 30 * s, 20 * s), host.AgentKeyLabel((int)row.By), key);
+                GUI.Label(new Rect(rr.x + 38 * s, rr.y, rr.width - 44 * s, 20 * s), $"{Names[(int)row.By]} · {row.Verb}{(row.Slot >= 0 && mine ? $"  [{host.VerbKey(row.Slot)}]" : "")}", txtSmallBold);
+                var it = row.I;
+                string line = !row.Available ? row.Reason : it.Move ? it.Time : $"{it.Usd} · {it.Time} · {it.Trail} · {it.Alert}{(it.Outcome.Length > 0 ? $" · {it.Outcome}" : "")}";
+                GUI.Label(new Rect(rr.x + 38 * s, rr.y + 18 * s, rr.width - 44 * s, 20 * s), line, small);
+                GUI.color = c;
+            }
+            if (Event.current.type == EventType.Repaint) host.SetPanelHover(hover);
         }
 
         static string Glyph(string verb, string approach) => verb switch
@@ -211,7 +312,7 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++)
             {
                 var op = g.Ops[i];
-                slotState[i] = op.Inside ? "inside" : op.Busy != null ? $"{Glyph(op.Busy.Do, op.Busy.Approach)} {HandoverHost.MissionClock(op.BusyEnd)}" : op.Walk != null ? "walking" : "ready";
+                slotState[i] = op.Inside ? "inside" : op.Busy != null ? $"{Glyph(op.Busy.Do, op.Busy.Approach)} {HandoverHost.MissionClock(op.BusyEnd)}" : op.Walk != null ? (op.Running ? "running" : "walking") : "ready";
                 icons[i] = Icons(g, Roles[i]);
             }
         }
