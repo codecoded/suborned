@@ -22,6 +22,8 @@ export type Role = {
   id: string; what: string; employer: string; position?: string; role?: string;
   at?: string; near?: number; shift: { from: string; to: string }; pin?: string;
   need?: string; approach?: string; regularOf?: string;
+  /** the secret the person must hold (people.rules.json `secrets`, Motive's lovers brief: `affair` comes with a lover tie) */
+  secret?: string;
   /** play: a tie of `kind` held by the person to someone who fits `role` in this role's window, or (`cast`) to the one cast in it */
   tiedTo?: { kind: string; role: string; cast?: boolean }[];
   /** play: after the window, the routine's next stop (off the work place) stands at destination `at`, begun by mission time `by` */
@@ -38,13 +40,15 @@ export type Castable = {
   work: { employer: string; position?: string; role?: string; place: string; shift: { from: number; to: number } } | null;
   routine: { stops: { place: string; doing: string; from: number; to: number }[] };
   /** read only when castRoles is given `rules`; a missing one fails the condition that reads it */
-  temperament?: string; need?: string; ties?: { kind: string; with: string }[];
+  temperament?: string; need?: string; ties?: { kind: string; with: string }[]; secret?: string | null;
 };
 /** What a role's conditions read of contracts/people/people.rules.json: each temperament's refusals, each need's approaches. */
-export type CastRules = { temperaments: Record<string, { refuses: readonly string[] }>; needs: Record<string, { metBy: readonly string[] }> };
+export type CastRules = { temperaments: Record<string, { refuses: readonly string[] }>; needs: Record<string, { metBy: readonly string[] }>; secrets?: Record<string, unknown> };
 export type Cast = { role: string; ok: boolean; who: string[]; pinned?: string; name?: string; why: string };
 /** castRoles options. `play`: read the roles' playability conditions (tiedTo, leavesTo, waitsFor, alone); M-2 sets it. */
-export type CastOptions = { play?: boolean };
+/** `summon`: the lover summons' limits from the rulebook (summon-walk-max-s), and the walk in seconds between two mission destinations
+ *  (the mission's measured windows); a role with a lover tie is checked against them, and fails loudly without them. */
+export type CastOptions = { play?: boolean; summon?: { maxWalkS?: number; walkS?: (from: string, to: string) => number | undefined } };
 export type Where = {
   /** a mission point (block frame) in the plan frame */
   toPlan: (p: V) => V;
@@ -102,6 +106,7 @@ function conditions(r: Role, persons: Castable[], rules: CastRules): Cond[] {
     const a = r.approach, t = (p: Castable) => (p.temperament ? rules.temperaments[p.temperament] : undefined);
     out.push({ name: `a temperament that does not refuse ${a}`, ok: p => !!t(p) && !t(p)!.refuses.includes(a), has: p => `${p.id} ${p.temperament ?? 'no temperament'}${t(p) ? '' : ' (unknown)'}` });
   }
+  if (r.secret) out.push({ name: `secret ${r.secret}`, ok: p => p.secret === r.secret, has: p => `${p.id} ${p.secret ?? 'no secret'}` });
   if (r.regularOf) {
     const e = r.regularOf, ids = new Set(persons.filter(p => p.work?.employer === e).map(p => p.id));
     out.push({ name: `a regular tie to the staff of ${e}`, ok: p => hasRegularTie(p, ids), has: p => `${p.id} none` });
@@ -111,6 +116,8 @@ function conditions(r: Role, persons: Castable[], rules: CastRules): Cond[] {
 /** A role that cannot hold under the rules: an unknown need, or an approach that does not act on the need. */
 function unsound(r: Role, rules: CastRules): string | undefined {
   if (r.need && !rules.needs[r.need]) return `need ${r.need} is not in the rules' needs`;
+  if (r.secret && !rules.secrets) return `secret ${r.secret}: the people rules have no secrets list`;
+  if (r.secret && !(r.secret in rules.secrets!)) return `secret ${r.secret} is not in the rules' secrets`;
   if (r.need && r.approach && !rules.needs[r.need]!.metBy.includes(r.approach)) return `${r.approach} does not act on need ${r.need} (metBy ${rules.needs[r.need]!.metBy.join(', ')})`;
   return undefined;
 }
@@ -188,7 +195,7 @@ export function castRoles(persons: Castable[], m: CastMission, where: Where, rul
     taken.add(pinned); pins.set(r.id, pinned);
     const me = persons.find(p => p.id === pinned)!;
     if (play) for (const t of r.tiedTo ?? []) if (t.cast && !pins.has(t.role)) owed.set(t.role, [...(owed.get(t.role) ?? []), { from: me, fromRole: r.id, kind: t.kind }]);
-    const met = rules ? [r.need && `need ${r.need}`, r.approach && `${r.approach} not refused`, r.regularOf && `regular of ${r.regularOf}`, ...(play ? [...(r.tiedTo ?? []).map(t => `${t.kind} tie to ${t.role}`), ...(owed.get(r.id) ?? []).map(o => `${o.kind} tie from ${o.fromRole}`), r.leavesTo && `reaches ${r.leavesTo.at}`] : [])].filter(Boolean) : [];
+    const met = rules ? [r.need && `need ${r.need}`, r.approach && `${r.approach} not refused`, r.regularOf && `regular of ${r.regularOf}`, r.secret && `secret ${r.secret}`, ...(play ? [...(r.tiedTo ?? []).map(t => `${t.kind} tie to ${t.role}`), ...(owed.get(r.id) ?? []).map(o => `${o.kind} tie from ${o.fromRole}`), r.leavesTo && `reaches ${r.leavesTo.at}`] : [])].filter(Boolean) : [];
     return { role: r.id, ok: true, who, pinned, name: me.name, why: `${pinned} of ${who.length} on shift ${win}${place}${met.length ? `, ${met.join(', ')}` : ''}${r.pin ? ' (pinned in the mission)' : ' (first by id)'}` };
   });
   if (!play) return out;
@@ -201,6 +208,18 @@ export function castRoles(persons: Castable[], m: CastMission, where: Where, rul
       const times = [t0, ...same.flatMap(p => p.routine.stops.flatMap(s => [s.from, s.to])).filter(t => t > t0 && t < t1)];
       const worst = times.map(t => ({ t, ids: there(t) })).reduce((a, b) => (b.ids.length > a.ids.length ? b : a), { t: t0, ids: [] as string[] });
       if (worst.ids.length > 1) fail.push(`at most one ${kind(r)} at ${r.at} in ${win}: ${worst.ids.length} at ${hms(worst.t)} (${worst.ids.join(', ')})`);
+    }
+    // the lover summons (Motive's lovers brief): the caller's call reaches the cast lover in his role's window, within the summons walk
+    for (const t of play ? (r.tiedTo ?? []).filter(x => x.kind === 'lover') : []) {
+      const tr = byRole.get(t.role), them = tr && pins.get(tr.id), me = c.pinned && persons.find(x => x.id === c.pinned);
+      if (!opts.summon) { fail.push(`a lover summons to ${t.role}: no summons rule given (rulebook summon-walk-max-s, the mission's walks)`); continue; }
+      if (opts.summon.maxWalkS === undefined) { fail.push(`a lover summons to ${t.role}: the rulebook has no summon-walk-max-s`); continue; }
+      if (!tr || !them || !me) continue; // the cast itself already failed, and said why
+      const w = !opts.summon.walkS ? null : r.at && tr.at ? opts.summon.walkS(tr.at, r.at) : undefined; // null: the caller checks the walk (the site casts before the engine can walk its grid)
+      if (w === undefined) fail.push(`a lover summons to ${t.role}: no measured walk from ${tr.at ?? '?'} to ${r.at ?? '?'} (the engine's: dotnet and its probe)`);
+      else if (w !== null && w > opts.summon.maxWalkS) fail.push(`a lover summons to ${t.role} ${them}: ${w} s from ${tr.at} to ${r.at}, over the summons' ${opts.summon.maxWalkS} s`);
+      const [s0, s1] = windowOf(m, tr);
+      if (me.work && !inPlace(me.routine.stops, me.work.place, s0, s1)) fail.push(`${c.pinned} is not at ${r.at ?? me.work.place} for all of ${t.role}'s window ${tr.shift.from}-${tr.shift.to}, so the call can't reach ${them}`);
     }
     if (r.waitsFor && c.pinned) {
       const tr = byRole.get(r.waitsFor), them = tr && pins.get(tr.id), p = persons.find(x => x.id === c.pinned)!;

@@ -21,13 +21,22 @@ namespace Suborned.Sim
         public readonly int[] Sc = new int[4];
         public readonly List<Mem> Memory = new List<Mem>();
         public bool Turned, NeedMet, Down;
-        public bool KRoutine, KNeed, KTemperament; // the cell's knowledge of this person
+        public bool KRoutine, KNeed, KTemperament, KSecret; // the cell's knowledge of this person
+        public string Secret = "";                 // people.rules secrets: affair, record, or none (Motive, motive-lovers.md)
+        public Person? Lover;                       // the other end of a lover tie, when both are cast
+        public int Summoned;                        // times this person came to a lover's call this shift
         public readonly SortedSet<string> KnownRefused = new SortedSet<string>(StringComparer.Ordinal); // approaches the cell saw this person refuse: the card's ✗
         public string Suspected = "";              // a need the briefing names (§07 cast: Inez in debt, the driver needs cash): shown as suspected, unlocks nothing
         public string Place = ""; // the place they stand at for the mission (memory's place)
-        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : what == "refused" ? KnownRefused.Count > 0 : throw new FormatException($"knowledge '{what}'");
-        public void Learn(string what) { if (what == "routine") KRoutine = true; else if (what == "need") KNeed = true; else if (what == "temperament") KTemperament = true; else throw new FormatException($"knowledge '{what}'"); }
-        public void Forget(string what) { if (what == "routine") KRoutine = false; else if (what == "need") KNeed = false; else if (what == "temperament") KTemperament = false; }
+        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : what == "refused" ? KnownRefused.Count > 0 : what == "secret" ? KSecret && Secret.Length > 0 : throw new FormatException($"knowledge '{what}'");
+        /// <summary>Learn a fact. A secret learned on one lover is learned on both, with the tie (people.rules secrets.affair).</summary>
+        public void Learn(string what)
+        {
+            if (what == "routine") KRoutine = true; else if (what == "need") KNeed = true; else if (what == "temperament") KTemperament = true;
+            else if (what == "secret") { if (Secret.Length == 0) return; KSecret = true; if (Secret == "affair" && Lover != null) Lover.KSecret = true; }
+            else throw new FormatException($"knowledge '{what}'");
+        }
+        public void Forget(string what) { if (what == "routine") KRoutine = false; else if (what == "need") KNeed = false; else if (what == "temperament") KTemperament = false; else if (what == "secret") KSecret = false; }
         public int Count(string act) { int n = 0; foreach (var m in Memory) if (m.Act == act) n++; return n; }
         public bool Has(string act) { foreach (var m in Memory) if (m.Act == act) return true; return false; }
     }
@@ -143,6 +152,7 @@ namespace Suborned.Sim
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
             "stand-beside-op",
+            "no-leverage", "summon-off-street", "summon-busy", "summon-too-far", "summon-alert", "summon-saw-violence", "summon-came-once", "summon-no-visit",
             "needs-tier", "needs-reach", "needs-need-is", "needs-standing", "needs-fit", "needs-scale", "needs-trail",
         };
     }
@@ -161,5 +171,6 @@ namespace Suborned.Sim
         public int AlertIfReported;          // the Alert a report would raise it to
         public int Witnesses;                // risk: people within witness range of the target now, who would see a traceable act (+1 T)
         public int WalkS;                    // seconds the acting operative walks to stand within reach, 0 if already there
+        public bool Leverage;                // Pressure on a known secret: "exposure: their secret" (Motive, motive-lovers.md §2.2)
     }
 }

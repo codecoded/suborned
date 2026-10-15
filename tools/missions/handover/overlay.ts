@@ -20,6 +20,8 @@ import { lineDist, inPoly, type V } from '../../plan/geom';
 import type { Overlay, Route } from '../../plan/overlay';
 import { currentPeople } from '../../people/current';
 import { castRoles, type Castable, type CastMission, type CastRules } from './cast';
+import { summonOpts } from './summon';
+import { derive } from '../../plan/plan';
 import { generated } from '../../plan/world-ctx';
 import { blockersFor, visibility, v1 } from './visibility';
 
@@ -29,7 +31,7 @@ export type PeopleIn = { plan: { id: string; version: string }; places: { id: st
 /** What M-2 reads of the people rules: each temperament's refusals and each need's approaches. */
 export const castRules = (file = resolve(ROOT, 'contracts/people/people.rules.json')): CastRules => {
   const r = JSON.parse(readFileSync(file, 'utf8'));
-  return { temperaments: r.temperaments, needs: r.needs.list };
+  return { temperaments: r.temperaments, needs: r.needs.list, ...(r.secrets ? { secrets: r.secrets.list } : {}) };
 };
 /** Where `bun run people` writes the people for the Unity people layer. M-2 does not read it. */
 export const peopleFile = (plan: { id: string }) => resolve(ROOT, `out/people/${plan.id}.people.json`);
@@ -54,7 +56,7 @@ function castCheck(plan: any, civ: { bays: { id: string; poly: V[] }[] }, m: Cas
     toPlan: toPlanFn(plan.civic), placeAt: id => place.get(id)?.at as V | undefined,
     polyOf: id => { const p = place.get(id); return p?.kind === 'bay' ? civ.bays.find(b => b.id === p.name)?.poly : undefined; },
     plotOf: id => place.get(id)?.plot,
-  }, castRules(), { play: true });
+  }, castRules(), { play: true, summon: summonOpts(plan, derive(plan), civ as any, m as any) });
   const bad = c.filter(x => !x.ok);
   return { ...rule, value: c.map(x => `${x.role} ${x.pinned ?? '-'}`).join(', '), ok: !bad.length, detail: (bad.length ? bad : c).map(x => `${x.role}: ${x.why}`).join('; ') };
 }

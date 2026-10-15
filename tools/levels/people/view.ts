@@ -20,17 +20,18 @@ export function scopeView(w: World): string {
   const homes = s.homes.map(h => ({ row: `${h.area}/resident`, plot: h.plot, residents: h.residents }));
   return `Scope ${s.id}: areas ${s.areas.join(', ')}; plots ${s.plots.map(p => `${p.id} (${p.use})`).join(', ')}; stops ${s.stops.map(x => `${x.name} (${x.mode})`).join(', ')}.\n`
     + `Rows to write, one per area × occupation (JSON): ${j(units)}\nResidents, a sample of ${8} per plot is simulated (JSON): ${j(homes)}\n`
-    + `The Handover starts ${w.mission.clock.startsAt}; its roles, read from the mission (JSON; each is cast from the people your rows make, and must be playable): ${j(w.mission.roles.map(r => ({ id: r.id, employer: r.employer, ...(r.position ? { position: r.position } : { role: r.role }), at: r.at, window: `${r.shift.from}-${r.shift.to}`, need: r.need, approach: r.approach, regularOf: r.regularOf, tiedTo: r.tiedTo, leavesTo: r.leavesTo, waitsFor: r.waitsFor, alone: r.alone })))}`;
+    + `The Handover starts ${w.mission.clock.startsAt}; its roles, read from the mission (JSON; each is cast from the people your rows make, and must be playable): ${j(w.mission.roles.map(r => ({ id: r.id, employer: r.employer, ...(r.position ? { position: r.position } : { role: r.role }), at: r.at, window: `${r.shift.from}-${r.shift.to}`, need: r.need, approach: r.approach, regularOf: r.regularOf, secret: (r as { secret?: string }).secret, tiedTo: r.tiedTo, leavesTo: r.leavesTo, waitsFor: r.waitsFor, alone: r.alone })))}`;
 }
 
 export function rulesView(w: World): string {
   const r = w.rules;
   const tem = Object.fromEntries(Object.entries(r.temperaments).map(([k, t]) => [k, { respondsTo: t.respondsTo, start: t.start }]));
-  const needs = Object.fromEntries(Object.entries(r.needs.list).map(([k, n]) => [k, { metBy: n.metBy, requires: n.requires }]));
-  const ties = Object.fromEntries(Object.entries(r.ties.kinds).map(([k, t]) => [k, { direction: t.direction, max: t.maxPerPerson, between: t.between }]));
+  const needs = Object.fromEntries(Object.entries(r.needs.list).filter(([k]) => !(r.secrets && k === 'secret')).map(([k, n]) => [k, { metBy: n.metBy, requires: n.requires }]));
+  const ties = Object.fromEntries(Object.entries(r.ties.kinds).map(([k, t]) => [k, { direction: t.direction, max: t.maxPerPerson, between: t.between, ...(t.secret ? { secret: true } : {}), ...(t.maxShare ? { maxShare: t.maxShare } : {}), ...(t.formsAlong ? { formsAlong: t.formsAlong } : {}) }]));
+  const secrets = r.secrets ? `Secrets, 0 or 1 per person (JSON; the need \`secret\` is retired into the \`record\` share): ${j(Object.fromEntries(Object.entries(r.secrets.list).map(([k, x]) => [k, { requires: x.requires }])))}\n` : '';
   const allow = Object.fromEntries(Object.keys(r.temperamentsBy.roles).map(k => [k, allowedTemperaments(r, k)]));
   const n = r.names;
-  return `Temperaments (JSON): ${j(tem)}\nNeeds (JSON): ${j(needs)}\nTie kinds, per person ${r.ties.perPerson.min}-${r.ties.perPerson.max} (JSON): ${j(ties)}\n`
+  return `Temperaments (JSON): ${j(tem)}\nNeeds (JSON): ${j(needs)}\nTie kinds, per person ${r.ties.perPerson.min}-${r.ties.perPerson.max} (JSON): ${j(ties)}\n${secrets}`
     + `Roles and the temperaments they allow (JSON): ${j(allow)}\nTrades allow every temperament except where the rules say (pawnbroker, credit-bureau: no idealist).\n`
     + `Names: ${n.minGiven}+ given and ${n.minFamily}+ family names, ${n.minOrigins}+ origins from ${n.origins.join(', ')}, none over ${n.maxOriginShare * 100}% of a pool; pattern ${n.form.pattern}; avoid ${n.avoid.join(', ')}; ${n.noEraDate}`;
 }

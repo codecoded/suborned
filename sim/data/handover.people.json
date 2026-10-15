@@ -194,7 +194,7 @@
    "home": 1,
    "work": 1,
    "start": [1,0,0,0],
-   "ties": [["workmate","p-cafe-09"],["family","p-records-office-11"]],
+   "ties": [["workmate","p-cafe-09"],["family","p-records-office-11"],["lover","p-records-office-07"]],
    "stops": [["home-rocket-west",-62670,-20850,0],["cafe-entrance",-19470,-7470,1],["cafe-entrance",-7470,-5670,1],["cafe-entrance",-5670,2130,1],["cafe-table-0-seat-0",2250,4950,1],["home-rocket-west",5070,23730,0]]
   },
   {
@@ -626,7 +626,7 @@
    "home": 1,
    "work": 1,
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-05"],["regular","p-cafe-16"],["workmate","p-records-office-65"],["family","p-cafe-09"],["workmate","p-records-office-01"]],
+   "ties": [["regular","p-cafe-05"],["regular","p-cafe-16"],["workmate","p-records-office-65"],["family","p-cafe-09"],["workmate","p-records-office-01"],["lover","p-cafe-11"]],
    "stops": [["home-rocket-west",-62670,-29790,0],["cafe-table-1-seat-0",-29490,-28590,1],["office-entrance",-28470,-13410,1],["office-entrance",-13410,-11610,1],["office-entrance",-11610,330,1],["cafe-table-3-seat-0",450,3150,1],["home-rocket-west",3270,23730,0]]
   },
   {

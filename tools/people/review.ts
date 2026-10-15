@@ -40,6 +40,14 @@ export function requirements(c: Ctx, people: People): Req[] {
       out.push({ id: `${r.id}-regular-of-${r.regularOf}`, need: `the ${pos} row carries preShift cafe, and at least ${Math.round(REGULAR_SHARE_MIN * 100)}% of ${pos}s hold a regular tie into ${r.regularOf}`, ok: pre && share >= REGULAR_SHARE_MIN, detail: `${pre ? 'every variant has' : 'not every variant has'} preShift cafe; ${ties} of ${mine.length} hold a regular tie into ${r.regularOf} (${Math.round(share * 100)}%)${unserved ? `; ${unserved} pre-shift stops fall when no ${r.regularOf} staff is on shift, so no tie can aim there` : ''}` });
     }
   }
+  // the lover tie a role asks for (Sky's canon, brief 011): the people of the role's kind who hold one to the other role's kind, and the affair that comes with it
+  for (const r of roles) for (const t of r.tiedTo ?? []) if (t.kind === 'lover') {
+    const tr = roles.find(x => x.id === t.role); if (!tr) continue;
+    const pos = r.position ?? r.role!, tpos = tr.position ?? tr.role!, kind = (x: { employer: string; position?: string; role?: string }, p: Person) => !!p.work && p.work.employer === x.employer && (p.work.position ?? p.work.role) === (x.position ?? x.role);
+    const mine = P.filter(p => kind(r, p)), tied = mine.filter(p => p.ties.some(l => l.kind === 'lover' && P.some(q => q.id === l.with && kind(tr, q)))), row = c.cast.rows.find(x => scope.units.some(u => u.employer === tr.employer && u.area === x.area && u.trade === x.occupation));
+    const pattern = (row?.ties ?? []).some(l => l.kind === 'lover') || c.cast.rows.some(x => x.ties.some(l => l.kind === 'lover' && l.with === pos));
+    out.push({ id: `${r.id}-lover-${t.role}`, need: `a row carries a lover pattern between the ${pos}s of ${r.employer} and the ${tpos}s of ${tr.employer} (the ${r.id} is the ${tpos}'s lover), and both hold the affair`, ok: pattern && tied.length > 0 && tied.every(p => p.secret === 'affair'), detail: `${tied.length} of ${mine.length} ${pos}s hold a lover tie to a ${tpos}${pattern ? '' : '; no cast row names a lover pattern'}` });
+  }
   const keepers = new Set(roles.map(r => r.employer));
   for (const k of people.knowledge?.needsKnown ?? []) {
     const p = P.find(x => x.id === k.keeper)!;

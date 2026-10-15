@@ -14,9 +14,10 @@ import { root } from '../rag/config';
 import { sha256 } from '../gen/sha';
 import { checkPeople } from '../people/check';
 import { cafeOpenAt } from '../people/day';
-import { expand, inShift, type Ctx } from '../people/expand';
+import { expand, inShift, stopsAtWork, type Ctx } from '../people/expand';
 import { readTexts, world, type World } from '../people/inputs';
 import { castForNames } from '../people/roles';
+import { withSecrets } from '../people/secrets';
 import { requirements, stepWord, type Req } from '../people/review';
 import { isTalker, type Rules } from '../people/rules';
 import { atCafeSide } from '../people/scope';
@@ -32,12 +33,13 @@ export const PURSE_USD = 100000;
 const hm = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(Math.round(m) % 60).padStart(2, '0')}`;
 const shiftText = (s: { from: number; to: number } | undefined) => (s ? `${hm(s.from)}-${hm(s.to)}` : '');
 const SCALES = ['bravery', 'resentment', 'fear', 'loyalty'] as const;
-const TIE_ORDER = ['family', 'workmate', 'regular', 'debtor', 'rival'];
+const TIE_ORDER = ['family', 'lover', 'workmate', 'regular', 'debtor', 'rival'];
 
-export type VTie = { kind: string; with: string; at?: string };
+/** `by: 'them'`: a lover tie is met on the other person's routine (they stop by at this person's work), not this person's own. */
+export type VTie = { kind: string; with: string; at?: string; by?: 'them' };
 export type VPerson = {
   id: string; name: string; unit: string; area: string; trade: string; position: string; post: string | null; workPlace: string | null; shift: [number, number] | null; home: { plot: string; place: string };
-  tem: string; need: string; needWeights: Record<string, number>; inst: string | null;
+  tem: string; need: string; needWeights: Record<string, number>; inst: string | null; secret: string | null;
   start: Record<(typeof SCALES)[number], number>; steps: Record<(typeof SCALES)[number], string>; talker: boolean; talkerSums: [number, number];
   ties: VTie[]; tiedBy: { kind: string; from: string }[]; variant: string; stops: [string, string, number, number][];
   knows: string[]; knownBy: string[]; role?: string; notes: string[]; fit: string;
@@ -46,7 +48,7 @@ export type VPerson = {
 export type VRole = {
   id: string; what: string; employer: string; position: string; ok: boolean; why: string; pinned?: string; candidates: string[]; need?: string; approach?: string; regularOf?: string;
   window: { missionFrom: string; missionTo: string; dayFrom: number; dayTo: number; place?: string; near?: number }; leavesTo?: { at: string; by: string }; alone?: boolean; waitsFor?: string;
-  tied: { text: string; ok: boolean }[]; reqs: Req[]; src: string; note: string;
+  tied: { text: string; ok: boolean }[]; reqs: Req[]; src: string; note: string; secret?: string;
 };
 export type Notice = { id: string; level: 'fail' | 'warn' | 'info'; title: string; detail: string; people?: string[]; src?: string };
 export type View = {
@@ -59,10 +61,10 @@ export type View = {
   rules: {
     steps: Record<string, string[]>; temperaments: Record<string, { name: string; respondsTo: string[]; refuses: string[]; reportsApproach: boolean; hero: string; menace: string }>;
     needs: Record<string, { metBy: string[]; help: string; requires: string }>; approaches: Record<string, { requires: string; usd: number; timeS: number; trail: number; leaves: string }>;
-    ties: Record<string, { direction: string; introduces: boolean; between: string }>; rulebook: boolean;
+    ties: Record<string, { direction: string; introduces: boolean; between: string; secret?: boolean }>; secrets: Record<string, { requires: string; learnedBy: string[] }>; rulebook: boolean;
   };
   units: { id: string; name: string; trade: string; staff: number; hours: [number, number]; shifts: [number, number][]; watch: [number, number][]; people: number }[];
-  rows: { key: string; why: string; positions: string; temperaments: { k: string; w: number }[]; needs: { k: string; w: number }[]; people: number }[];
+  rows: { key: string; why: string; positions: string; temperaments: { k: string; w: number }[]; needs: { k: string; w: number }[]; secrets: { k: string; w: number }[]; lovers: string[]; people: number }[];
   castNotes: string[];
   mission: { startsAt: string; startMin: number; end: number };
   places: Record<string, { name: string; kind: string; s: [number, number] | null }>;
@@ -92,7 +94,7 @@ const unitOf = (p: Person) => p.work?.unit ?? 'resident';
 /** What a person of one cast is, as the diff reads it: every field a person carries, as text. */
 function flat(p: Person, rules: Rules): Record<string, string> {
   const o: Record<string, string> = {
-    name: p.name, unit: unitOf(p), position: p.position, post: p.work?.post ?? '', place: p.work?.place ?? '', shift: shiftText(p.work?.shift), home: p.home.plot, temperament: p.temperament, need: p.need, institution: p.institution ?? '',
+    name: p.name, unit: unitOf(p), position: p.position, post: p.work?.post ?? '', place: p.work?.place ?? '', shift: shiftText(p.work?.shift), home: p.home.plot, temperament: p.temperament, need: p.need, institution: p.institution ?? '', secret: p.secret ?? '',
   };
   for (const s of SCALES) o[s] = `${stepWord(rules, s, p.start[s])} (${p.start[s]})`;
   o.ties = [...p.ties].sort((a, b) => (a.kind + a.with < b.kind + b.with ? -1 : 1)).map(t => `${t.kind}:${t.with}`).join(', ');
@@ -121,6 +123,8 @@ function rowDiff(a: Cast['rows'][number] | undefined, b: Cast['rows'][number] | 
   const ta = [...tk(a).entries()].map(([k, v]) => `${k.replace(/#\d+$/, '')} ${v}`).sort(), tb = [...tk(b).entries()].map(([k, v]) => `${k.replace(/#\d+$/, '')} ${v}`).sort();
   for (const t of ta) if (!tb.includes(t)) lines.push(`tie dropped: ${t}`);
   for (const t of tb) if (!ta.includes(t)) lines.push(`tie added: ${t}`);
+  const sk = (r: Cast['rows'][number]) => new Map((r.secrets ?? []).map(s => [s.secret, s.share]));
+  cmp('secret share', sk(a), sk(b));
   const rk = (r: Cast['rows'][number]) => new Map(r.routines.map(v => [v.id, JSON.stringify(v)]));
   for (const k of [...new Set([...rk(a).keys(), ...rk(b).keys()])].sort()) if (rk(a).get(k) !== rk(b).get(k)) lines.push(`routine ${k}: ${rk(a).has(k) ? (rk(b).has(k) ? 'changed' : 'removed') : 'added'}`);
   return { status: lines.length ? 'changed' : 'same', lines };
@@ -179,12 +183,18 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
         const s = p.routine.stops.find(x => x.doing !== 'home' && x.place !== 'beyond' && (x.place === q.work!.place || (q.work!.unit === cafeUnit && atCafeSide(scope, x.place, x.doing, ['pre-shift', 'evening']))) && (inShift(q.work!.shift, x.from) || inShift(q.work!.shift, Math.max(x.from, x.to - 1))));
         if (s) v.at = `${s.doing} ${hm(s.from)}-${hm(s.to)}`;
       }
+      // a lover tie is met on either routine (rule P-14): this person's stop at the other's work while they work, else the other's at this person's
+      if (t.kind === 'lover' && q) {
+        const meet = (x: Person, y: Person) => x.routine.stops.find(s => s.doing !== 'home' && s.place !== 'beyond' && stopsAtWork(scope, [s], y));
+        const mine = meet(p, q), theirs = mine ? undefined : meet(q, p), s = mine ?? theirs;
+        if (s) { v.at = `${s.doing} ${hm(s.from)}-${hm(s.to)}`; if (theirs) v.by = 'them'; }
+      }
       return v;
     }).sort((x, y) => TIE_ORDER.indexOf(x.kind) - TIE_ORDER.indexOf(y.kind) || byId(x.with, y.with));
     const sum = (ks: readonly (typeof SCALES)[number][]) => ks.reduce((n, k) => n + p.start[k], 0);
     return {
       id: p.id, name: p.name, unit: unitOf(p), area: p.work?.area ?? rowKey(p, w).split('/')[0]!, trade: p.work?.trade ?? 'resident', position: p.position, post: p.work?.post ?? null, workPlace: p.work?.place ?? null,
-      shift: p.work ? [p.work.shift.from, p.work.shift.to] : null, home: p.home, tem: p.temperament, need: p.need, needWeights: p.needWeights, inst: p.institution,
+      shift: p.work ? [p.work.shift.from, p.work.shift.to] : null, home: p.home, tem: p.temperament, need: p.need, needWeights: p.needWeights, inst: p.institution, secret: p.secret ?? null,
       start: p.start, steps: Object.fromEntries(SCALES.map(s => [s, stepWord(rules, s, p.start[s])])) as VPerson['steps'], talker: isTalker(rules, p.start), talkerSums: [sum(rules.talker.test.left), sum(rules.talker.test.right)],
       ties, tiedBy: (tiedBy.get(p.id) ?? []).sort((x, y) => byId(x.from, y.from)), variant: p.routine.variant, stops: p.routine.stops.map(s => [s.place, s.doing, s.from, s.to] as [string, string, number, number]),
       knows: know.get(p.id) ?? [], knownBy: (knownBy.get(p.id) ?? []).sort(byId), ...(roleOf.has(p.id) ? { role: roleOf.get(p.id)! } : {}), notes: [...ns, ...(shutNotes.get(p.id) ?? [])], fit: key,
@@ -202,11 +212,12 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
       const ties = p?.ties.filter(x => x.kind === t.kind) ?? [], hit = ties.find(x => x.with === op?.id) ?? ties.find(x => by.get(x.with)?.work && casting.mission.roles.find(q => q.id === t.role && (q.position ? by.get(x.with)!.work!.position === q.position : by.get(x.with)!.work!.role === q.role) && q.employer === by.get(x.with)!.work!.employer));
       tied.push({ ok: !!hit, text: `${t.kind} tie to the ${t.role}${hit ? `: ${by.get(hit.with)!.name} (${hit.with})` : ': none'}${t.cast ? ' (the one cast in that role)' : ''}` });
     }
+    if (p && (r as { secret?: string }).secret) tied.push({ ok: full?.secret === (r as { secret?: string }).secret, text: `secret ${(r as { secret?: string }).secret}: ${full?.secret ?? 'none'}` });
     if (p && r.leavesTo) tied.push({ ok: c.ok, text: `leaves for ${r.leavesTo.at} by ${r.leavesTo.by}: his next stop after the window is there` });
     return {
       id: r.id, what: r.what, employer: r.employer, position: pos, ok: c.ok, why: c.why, ...(c.pinned ? { pinned: c.pinned } : {}), candidates: c.who, ...(r.need ? { need: r.need } : {}), ...(r.approach ? { approach: r.approach } : {}), ...(r.regularOf ? { regularOf: r.regularOf } : {}),
       window: { missionFrom: r.shift.from, missionTo: r.shift.to, dayFrom: d0, dayTo: d1, ...(r.at ? { place: r.at } : {}), ...(r.near !== undefined ? { near: r.near } : {}) },
-      ...(r.leavesTo ? { leavesTo: r.leavesTo } : {}), ...(r.alone ? { alone: true } : {}), ...(r.waitsFor ? { waitsFor: r.waitsFor } : {}), tied,
+      ...(r.leavesTo ? { leavesTo: r.leavesTo } : {}), ...(r.alone ? { alone: true } : {}), ...(r.waitsFor ? { waitsFor: r.waitsFor } : {}), tied, ...((r as { secret?: string }).secret ? { secret: (r as { secret?: string }).secret } : {}),
       reqs: reqs.filter(q => q.id.startsWith(`${r.id}-`)), src: (r as { src?: string }).src ?? '', note: (r as { note?: string }).note ?? '',
     };
   });
@@ -219,7 +230,7 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
   };
 
   // the tie graph: nodes by ties held and received, edges by kind, a seeded layout
-  const kinds = rules.ties.kinds as Record<string, { direction: string; introduces: boolean; between: string }>;
+  const kinds = rules.ties.kinds as Record<string, { direction: string; introduces: boolean; between: string; secret?: boolean }>;
   const edges: View['graph']['edges'] = [], seen = new Set<string>();
   for (const p of persons) for (const t of p.ties) {
     const dir = kinds[t.kind]?.direction !== 'both', k = dir ? `${t.kind}>${p.id}>${t.with}` : `${t.kind}|${[p.id, t.with].sort().join('|')}`;
@@ -229,7 +240,7 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
   }
   const deg = new Map<string, number>(); for (const e of edges) { deg.set(e.a, (deg.get(e.a) ?? 0) + 1); deg.set(e.b, (deg.get(e.b) ?? 0) + 1); }
   const groups = ['cafe', 'records-office', ...scope.units.map(u => u.id).filter(u => u !== 'cafe' && u !== 'records-office'), 'resident'];
-  const EW: Record<string, number> = { workmate: 1, family: 1.4, regular: 0.6, debtor: 0.5, rival: 0.3 };
+  const EW: Record<string, number> = { workmate: 1, family: 1.4, regular: 0.6, debtor: 0.5, rival: 0.3, lover: 1.2 };
   const pos = layout(persons.map(p => ({ id: p.id, group: groups.indexOf(p.unit) })), edges.map(e => ({ a: e.a, b: e.b, w: EW[e.kind] ?? 0.5 })));
   // components over every tie, either way
   const parent = new Map(persons.map(p => [p.id, p.id])); const find = (x: string): string => (parent.get(x) === x ? x : (parent.set(x, find(parent.get(x)!)), parent.get(x)!));
@@ -264,6 +275,12 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
       detail: `${helps.map(c => `${c.r.id} ${c.p.name} (${c.p.tem}): ${c.row.orders} Help${c.row.orders === 1 ? '' : 's'} = ${usdText(c.row.total.usd)}`).join('; ')}. GDD §04: "help + driver = $80,000 fits [the $100,000 purse]"; the cast makes the second route dearer than the design says. M-2 passes because a wrong approach still works (only a refusal fails).`, src: 'GDD §04 purse; rulebook values worse-help-orders' });
   }
   for (const r of roles) { const p = r.pinned ? pById.get(r.pinned) : undefined; if (p?.talker) say({ id: `talker-${r.id}`, level: 'info', people: [p.id], title: `The ${r.id} (${p.name}) is a Talker from the start`, detail: `fear + resentment = ${p.talkerSums[0]} > bravery + loyalty = ${p.talkerSums[1]}: questioned, they give up what they know (rules talker).`, src: 'people.rules.json talker' }); }
+  {
+    // lovers (brief 011): the pairs, who they are and where they meet; and the Handover's waitress, who needs one
+    const pairs = persons.filter(p => p.ties.some(t => t.kind === 'lover') && p.ties.find(t => t.kind === 'lover')!.with > p.id);
+    if (pairs.length) say({ id: 'lovers', level: 'info', people: pairs.flatMap(p => [p.id, p.ties.find(t => t.kind === 'lover')!.with]).slice(0, 8), title: `${pairs.length} lover pair${pairs.length === 1 ? '' : 's'} (${P.filter(p => p.ties.some(t => t.kind === 'lover')).length} of ${P.length} people; the rules allow ${Math.round(((kinds.lover as { maxShare?: number } | undefined)?.maxShare ?? 1) * 100)}%)`,
+      detail: `${pairs.slice(0, 6).map(p => { const q = pById.get(p.ties.find(t => t.kind === 'lover')!.with)!, t = p.ties.find(x => x.kind === 'lover')!; return `${p.name} (${p.position}) and ${q.name} (${q.position})${t.at ? `, met at their ${t.at}${t.by ? ' (they stop by)' : ''}` : ''}`; }).join(' · ')}. Nobody in the city is told a lover tie; the cell learns it with the affair (Listen, or a Watch that ends with the two together), and a turned contact's call summons the lover.`, src: 'people.rules.json ties.kinds.lover, secrets; briefs/011/motive-lovers.md' });
+  }
   if (shut.length) {
     const ids = [...new Set(shut)].sort(byId);
     say({ id: 'shut-cafe', level: 'warn', people: ids, title: `${ids.length} ${ids.length === 1 ? 'person has' : 'people have'} a stop at the café while it is shut`,
@@ -314,9 +331,11 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
   if (moved.length) say({ id: 'drift', level: 'warn', title: `Run ${src.run!.id} was pinned to other ${moved.join(', ')} than the repository has now`, detail: `This page expands the cast on the inputs now, as \`bun run people\` would. The run's own verdict (and its recorded checks) stand on its pinned inputs; the checks above are on the current ones.` });
 
   const units = scope.units.map(u => ({ id: u.id, name: u.name, trade: u.trade, staff: u.staffPerShift, hours: u.hours as [number, number], shifts: u.shifts.map(s => [s.from, s.to] as [number, number]), watch: (u.watch ?? []).map(s => [s.from, s.to] as [number, number]), people: persons.filter(p => p.unit === u.id).length }));
-  const rowsOut = a.src.cast.rows.map(r => ({
+  // the tables as the rulebook reads them: the need `secret` is the row's record share (tools/people/secrets.ts)
+  const rowsOut = withSecrets(a.src.cast, rules).rows.map(r => ({
     key: `${r.area}/${r.occupation}`, why: r.why, positions: r.positions.map(p => `${p.position} ${p.weight}${p.count ? ` ×${p.count}` : ''}`).join(', '),
     temperaments: r.temperaments.map(t => ({ k: t.temperament, w: t.weight })), needs: r.needs.map(n => ({ k: n.need + (n.positions ? `[${n.positions.join('/')}]` : ''), w: n.weight })),
+    secrets: (r.secrets ?? []).map(s => ({ k: s.secret, w: s.share })), lovers: r.ties.filter(t => t.kind === 'lover').map(t => `${t.share}${t.with ? ` with a ${t.with}` : ''}${t.at ? ` at ${t.at}` : ''}${t.positions ? ` [${t.positions.join('/')}]` : ''}${t.posts ? ` at the ${t.posts.join('/')}` : ''}`),
     people: P.filter(p => rowKey(p, w) === `${r.area}/${r.occupation}`).length,
   }));
 
@@ -329,7 +348,8 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
       temperaments: Object.fromEntries(Object.entries(rules.temperaments).map(([k, t]) => [k, { name: t.name, respondsTo: [...t.respondsTo], refuses: [...t.refuses], reportsApproach: t.reportsApproach, hero: t.hero, menace: t.menace }])),
       needs: Object.fromEntries(Object.entries(rules.needs.list).map(([k, n]) => [k, { metBy: [...n.metBy], help: (n as { help: string }).help, requires: n.requires }])),
       approaches: Object.fromEntries((['ask', 'pay', 'help', 'pressure'] as const).map(k => [k, { ...rules.approaches[k] }])),
-      ties: Object.fromEntries(Object.entries(kinds).map(([k, t]) => [k, { direction: t.direction, introduces: t.introduces, between: t.between }])), rulebook: !!rb,
+      ties: Object.fromEntries(Object.entries(kinds).map(([k, t]) => [k, { direction: t.direction, introduces: t.introduces, between: t.between, ...(t.secret ? { secret: true } : {}) }])), rulebook: !!rb,
+      secrets: Object.fromEntries(Object.entries(rules.secrets?.list ?? {}).map(([k, s]) => [k, { requires: s.requires, learnedBy: [...s.learnedBy] }])),
     },
     units, rows: rowsOut, castNotes: src.run?.notes ?? [], mission: { startsAt: mission.clock.startsAt, startMin, end: Math.max(...roles.map(r => r.window.dayTo)) },
     places, persons, fits, roles, counts, graph, map, notices, gaps: a.gaps, genNotes: a.notes, toolsHash: tools,
@@ -361,7 +381,8 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
       const da = dimOf(Q), db = dimOf(P), dims: NonNullable<View['compare']>['dims'] = {};
       for (const d of Object.keys(db) as (keyof typeof db)[]) dims[d] = [...new Set([...Object.keys(da[d]), ...Object.keys(db[d])])].sort().map(k => ({ k, a: da[d][k] ?? 0, b: db[d][k] ?? 0 }));
       const rkeys = [...new Set([...other.cast.rows, ...src.cast.rows].map(r => `${r.area}/${r.occupation}`))].sort();
-      const rows = rkeys.map(key => ({ key, ...rowDiff(other!.cast.rows.find(r => `${r.area}/${r.occupation}` === key), src.cast.rows.find(r => `${r.area}/${r.occupation}` === key)) }));
+      const oc = withSecrets(other.cast, rules).rows, sc = withSecrets(src.cast, rules).rows;
+      const rows = rkeys.map(key => ({ key, ...rowDiff(oc.find(r => `${r.area}/${r.occupation}` === key), sc.find(r => `${r.area}/${r.occupation}` === key)) }));
       const nm = (c: Cast, k: 'given' | 'family') => new Set(c.names[k].map(x => x.name));
       const kept = [...nm(src.cast, 'given')].filter(x => nm(other!.cast, 'given').has(x)).length + [...nm(src.cast, 'family')].filter(x => nm(other!.cast, 'family').has(x)).length;
       view.compare = {

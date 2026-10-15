@@ -470,7 +470,7 @@ namespace Suborned.Sim
                     AddTrail(R.WitnessTrail, $"witnessed:weapon-drawn:{name}"); MoveStanding(R.Traceable["weapon-drawn"] * R.StandingStep, "witnessed:weapon-drawn");
                 }
                 RaiseAlert(R.DrawSeenPeople, $"drawn-seen:people:{name}");
-                foreach (var (p, _) in ws) Remember(p, "saw-act", name, true);
+                foreach (var (p, _) in ws) Remember(p, "saw-weapon-drawn", name, true);
                 Note("witness.weapon-drawn", $"{ws.Count} see the {name}'s weapon drawn.");
             }
         }
@@ -495,7 +495,7 @@ namespace Suborned.Sim
                 case "guard":
                     if (GuardDown) return;
                     { var pose = GuardPose()!.Value; if (pose.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.pos; heldFacing = pose.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; } }
-                    GuardEngaged = true; Remember(GuardP, "saw-act", name, true);
+                    GuardEngaged = true; Remember(GuardP, "saw-weapon-drawn", name, true);
                     CallSecurity(R.RespSeenS, "The guard calls in a drawn weapon.");
                     return;
                 case "patrol":

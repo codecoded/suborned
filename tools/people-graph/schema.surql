@@ -28,6 +28,15 @@ DEFINE FIELD IF NOT EXISTS between ON tie_kind TYPE string;
 DEFINE FIELD IF NOT EXISTS introduces ON tie_kind TYPE bool;
 DEFINE FIELD IF NOT EXISTS max_per_person ON tie_kind TYPE int;
 DEFINE FIELD IF NOT EXISTS max_incoming ON tie_kind TYPE option<int>;
+-- the lover tie (brief 011): always secret, held by at most max_share of the people, drawn first along the kinds in forms_along
+DEFINE FIELD IF NOT EXISTS secret ON tie_kind TYPE option<bool>;
+DEFINE FIELD IF NOT EXISTS max_share ON tie_kind TYPE option<number>;
+DEFINE FIELD IF NOT EXISTS forms_along ON tie_kind TYPE option<array<string>>;
+
+-- the secrets the rules list (brief 011): 0 or 1 per person; `affair` is held by both lovers
+DEFINE TABLE IF NOT EXISTS secret SCHEMAFULL;
+DEFINE FIELD IF NOT EXISTS requires ON secret TYPE string;
+DEFINE FIELD IF NOT EXISTS learned_by ON secret TYPE array<string>;
 
 -- ---- nodes
 DEFINE TABLE IF NOT EXISTS place SCHEMAFULL;
@@ -76,6 +85,7 @@ DEFINE FIELD IF NOT EXISTS memory ON person TYPE array<string> ASSERT array::len
 DEFINE FIELD IF NOT EXISTS look ON person TYPE string;
 DEFINE FIELD IF NOT EXISTS routine_variant ON person TYPE string;
 DEFINE FIELD IF NOT EXISTS home_plot ON person TYPE string;
+DEFINE FIELD IF NOT EXISTS secret ON person TYPE option<record<secret>>;
 
 DEFINE TABLE IF NOT EXISTS role SCHEMAFULL;
 DEFINE FIELD IF NOT EXISTS seq ON role TYPE int;
@@ -89,6 +99,7 @@ DEFINE FIELD IF NOT EXISTS window_from ON role TYPE string;
 DEFINE FIELD IF NOT EXISTS window_to ON role TYPE string;
 DEFINE FIELD IF NOT EXISTS need ON role TYPE option<record<need>>;
 DEFINE FIELD IF NOT EXISTS approach ON role TYPE option<string>;
+DEFINE FIELD IF NOT EXISTS secret ON role TYPE option<record<secret>>;
 DEFINE FIELD IF NOT EXISTS regular_of ON role TYPE option<string>;
 DEFINE FIELD IF NOT EXISTS tied_to ON role TYPE option<array<object>> FLEXIBLE;
 DEFINE FIELD IF NOT EXISTS leaves_to ON role TYPE option<object> FLEXIBLE;
@@ -106,6 +117,7 @@ DEFINE TABLE IF NOT EXISTS tie TYPE RELATION IN person OUT person ENFORCED SCHEM
 DEFINE FIELD IF NOT EXISTS kind ON tie TYPE record<tie_kind>;
 DEFINE FIELD IF NOT EXISTS introduces ON tie TYPE bool;
 DEFINE FIELD IF NOT EXISTS mutual ON tie TYPE bool;
+DEFINE FIELD IF NOT EXISTS secret ON tie TYPE option<bool>;
 DEFINE FIELD IF NOT EXISTS at ON tie TYPE option<string>;
 DEFINE INDEX IF NOT EXISTS tie_kind_idx ON tie FIELDS kind;
 

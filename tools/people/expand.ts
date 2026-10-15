@@ -12,6 +12,7 @@ import { Holds, seatPicker, type Fit, type Pick, type Table } from './seats';
 import type { Walker } from './walk';
 import { fold, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
 import { deriveKnowledge } from './knowledge';
+import { withSecrets } from './secrets';
 import { pinnedByRole, type Casting } from './roles';
 
 export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting };
@@ -20,8 +21,19 @@ const KEEPER = 'keeper';
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
 /** The aimed tie patterns of a row (a tie that names a position or a stop: `with`, `at`) that the person `id` of `position` carries, by pattern index. Each pattern has its own coin,
  *  so the day (which stops the variant makes) and the ties (who is tied to whom) are decided from the same draws, in any order. */
-export const aimedOf = (row: Row | undefined, id: string, position: string | undefined) => (row?.ties ?? []).flatMap((t, i) =>
-  (t.with || t.at) && (!t.positions || t.positions.includes(position ?? '')) && rng(`${id}/ties-carry/${i}`).f() < t.share ? [t] : []);
+export const aimedOf = (row: Row | undefined, id: string, position: string | undefined, post?: string) => (row?.ties ?? []).flatMap((t, i) =>
+  (t.with || t.at) && (!t.positions || t.positions.includes(position ?? '')) && (!t.posts || (!!post && (t.posts as readonly string[]).includes(post))) && rng(`${id}/ties-carry/${i}`).f() < t.share ? [t] : []);
+
+type CafeScope = { cafeUnit: string; cafeSide: string[] };
+/** Does any of the stops `xs` stand at the work place of `y` (or the café's customers' side, for the café's staff) while `y` is on shift? The test a regular tie and a lover tie hold
+ *  (P-7, P-14): a visit is a stop of the day at the other's work unit while they work. */
+export const stopsAtWork = (scope: CafeScope, xs: readonly Stop[], y: Person, visits: readonly string[] = ['pre-shift', 'evening']) =>
+  !!y.work && xs.some(s => (s.place === y.work!.place || (y.work!.unit === scope.cafeUnit && atCafeSide(scope, s.place, s.doing, visits))) && (inShift(y.work!.shift, s.from) || inShift(y.work!.shift, Math.max(s.from, s.to - 1))));
+/** Two people meet on their routines when either one's stops (away from home) stand at the other's work while the other works (the lover tie, brief 011; workmates meet at work). */
+export const routineMeet = (scope: CafeScope, a: Person, b: Person) => {
+  const away = (p: Person) => p.routine.stops.filter(s => s.doing !== 'home' && s.place !== 'beyond');
+  return stopsAtWork(scope, away(a), b) || stopsAtWork(scope, away(b), a);
+};
 export const inShift = (s: { from: number; to: number }, t: number) => (s.from <= s.to ? t >= s.from && t < s.to : t >= s.from || t < s.to);
 
 const wt = <T>(r: Rng, xs: readonly T[], w: (t: T) => number) => r.weighted(xs, w);
@@ -55,7 +67,7 @@ export function needWeightsOf(row: Row | undefined, position: string | undefined
 }
 
 export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[] } {
-  const { scope, rules, cast } = c, gaps: string[] = [], notes: string[] = [], persons: Person[] = [], names = new Set<string>();
+  const { scope, rules } = c, cast = withSecrets(c.cast, rules), gaps: string[] = [], notes: string[] = [], persons: Person[] = [], names = new Set<string>();
   const homeWeights = scope.homes.map(h => ({ h, weight: h.residents }));
 
   const make = (id: string, row: Row, u: Unit | undefined, shift: { from: number; to: number } | undefined, position: string, post: Post, residentOf?: { plot: string; place: string }) => {
@@ -65,7 +77,7 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
     // a tie that names a stop (`at`) is a promise about the day: a person who carries one is drawn only among the variants that make that stop, where the stop can be made (the
     // café is open then); the table need not know which variant is for whom. With none that do, any variant is drawn and the tie is reported if it cannot be made.
     if (u && shift) {
-      const need = aimedOf(row, id, position).flatMap(t => (t.at && stopFeasible(scope, shift, t.at) ? [t.at as AimStop] : []));
+      const need = aimedOf(row, id, position, post).flatMap(t => (t.at && stopFeasible(scope, shift, t.at) ? [t.at as AimStop] : []));
       const fit = variants.filter(x => need.every(at => variantMakes(x, at)));
       if (need.length && fit.length) variants = fit;
     }
@@ -144,7 +156,7 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
   // A stop no place can take is not made (seats.ts): a meal is eaten on site, an evening or a stop before the shift is not made, and the loss is a note, not a fault.
   const holds = new Holds(), picker = seatPicker(scope.tables, scope.stands, holds, notes);
   const byId = new Map(persons.map(p => [p.id, p]));
-  const seatOrder = [...persons.filter(p => aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position).some(t => t.at)), ...persons.filter(p => !aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position).some(t => t.at))];
+  const seatOrder = [...persons.filter(p => aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position, p.work?.post).some(t => t.at)), ...persons.filter(p => !aimedOf(rowOf(cast, p.work?.area ?? '', p.work?.trade ?? ''), p.id, p.position, p.work?.post).some(t => t.at))];
   for (const p of seatOrder) byId.get(p.id)!.routine = { ...p.routine, stops: fold(cycles.get(p.id)!(picker(p.id))) };
   const rowFor = (p: Person) => (p.work ? rowOf(cast, p.work.area, p.work.trade) : rowOf(cast, scope.homes.find(h => h.plot === p.home.plot)?.area ?? scope.areas[0]!, 'resident'));
   const positionOf = (p: Person) => (p.work ? (p.work.position ?? p.work.role) : 'resident');
@@ -165,13 +177,13 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
     }
   }
   // ---- ties (before needs: some needs require a tie)
-  const T = rules.ties.kinds, max = rules.ties.perPerson.max;
+  const T = rules.ties.kinds as Record<string, NonNullable<Rules['ties']['kinds'][keyof Rules['ties']['kinds']]> | undefined>, max = rules.ties.perPerson.max;
   const incoming = new Map<string, number>(), count = (p: Person, k: string) => p.ties.filter(t => t.kind === k).length;
   const linked = (a: Person, b: Person, k: string) => a.ties.some(t => t.kind === k && t.with === b.id) || b.ties.some(t => t.kind === k && t.with === a.id);
   const stops = (p: Person) => p.routine.stops.filter(s => s.doing !== 'home' && s.place !== 'beyond');
   const covers = (q: Person, place: string, s: Stop, visits?: readonly string[]) => !!q.work && (q.work.place === place || (q.work.unit === scope.cafeUnit && atCafeSide(scope, place, s.doing, visits))) && stops(q).some(x => x.doing === 'work' && x.place === q.work!.place) && (inShift(q.work.shift, s.from) || inShift(q.work.shift, Math.max(s.from, s.to - 1)));
   const tryTie = (a: Person, kind: string, r: Rng, o: { with?: string; at?: 'pre-shift' | 'evening' } = {}): boolean => {
-    const spec = T[kind as keyof typeof T]; if (!spec) return false;
+    const spec = T[kind]; if (!spec) return false;
     if (a.ties.length >= max || count(a, kind) >= spec.maxPerPerson) return false;
     const ok = (b: Person) => b.id !== a.id && !linked(a, b, kind) && (!o.with || positionOf(b) === o.with);
     let pool: Person[];
@@ -192,6 +204,15 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
         } else { pool = at(aim); if (!pool.length || !aim.length) pool = at(away); }
         break;
       }
+      case 'routine-meet': {
+        // a lover is met on the routines (brief 011): one's away stops stand at the other's work while they work. The cast row's stop (Tie.at) is the carrier's own; the staff on
+        // shift when they arrive come first. Never a family partner (a public one), and drawn first from the ties the generator made (a lover forms along a regular, then a workmate)
+        const mine = o.at ? stops(a).filter(s => s.doing === o.at) : stops(a);
+        pool = persons.filter(b => ok(b) && !linked(a, b, 'family') && (stopsAtWork(scope, mine, b) || (!o.at && stopsAtWork(scope, stops(b), a))));
+        if (o.at) { const early = pool.filter(b => mine.some(s => inShift(b.work!.shift, s.from))); if (early.length) pool = early; }
+        for (const k of spec.formsAlong ?? []) { const along = pool.filter(b => linked(a, b, k)); if (along.length) { pool = along; break; } }
+        break;
+      }
       default: pool = kind === 'family' ? persons.filter(b => ok(b) && b.home.plot === a.home.plot && b.home.plot !== 'beyond') : persons.filter(ok);
     }
     if (spec.direction === 'both') pool = pool.filter(b => b.ties.length < max && count(b, kind) < spec.maxPerPerson);
@@ -207,7 +228,8 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
   const aimed = (t: { with?: string; at?: string }) => !!(t.with || t.at);
   for (const a of persons) {
     const row = rowFor(a), r = rng(`${a.id}/ties-aimed`);
-    for (const t of aimedOf(row, a.id, positionOf(a))) {
+    for (const t of aimedOf(row, a.id, positionOf(a), a.work?.post)) {
+      if (t.kind === 'lover') continue; // lovers are made after the regular and workmate ties they form along (below)
       if (!(t.kind in T) || tryTie(a, t.kind, r, { with: t.with, at: t.at })) continue;
       // a tie the day could carry and nobody could be tied to is the table's to know (P-0), said plainly; a stop the day cannot make (the café is shut at 01:30) is no fault
       const mine = a.work ? stopFeasible(scope, a.work.shift, (t.at ?? 'pre-shift') as AimStop) : false, has = a.routine.stops.some(s => s.doing === (t.at ?? 'pre-shift'));
@@ -217,7 +239,27 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
   }
   for (const a of persons) {
     const row = rowFor(a), r = rng(`${a.id}/ties`);
-    for (const t of row?.ties ?? []) if (!aimed(t) && t.kind in T && (!t.positions || t.positions.includes(positionOf(a) ?? '')) && r.f() < t.share) tryTie(a, t.kind, r);
+    for (const t of row?.ties ?? []) if (!aimed(t) && t.kind !== 'lover' && t.kind in T && (!t.positions || t.positions.includes(positionOf(a) ?? '')) && (!t.posts || (!!a.work && (t.posts as readonly string[]).includes(a.work.post))) && r.f() < t.share) tryTie(a, t.kind, r);
+  }
+  // lovers (brief 011): after the ties they form along. A pattern that names a person (the door guard's server) is made first, then the rest; never more than the rules' share of the
+  // district's simulated people hold one (maxShare), and a pair that cannot be made is a gap only for a pattern that named a person (the cast's promise), never an ambient one.
+  if (T.lover) {
+    const cap = Math.floor((T.lover.maxShare ?? 1) * persons.length), holders = () => persons.reduce((n, p) => n + (count(p, 'lover') ? 1 : 0), 0);
+    const want = (a: Person, pass: (t: Row['ties'][number]) => boolean) => (rowFor(a)?.ties ?? []).flatMap((t, i) => t.kind === 'lover' && pass(t) && (!t.positions || t.positions.includes(positionOf(a) ?? '')) &&
+      (!t.posts || (!!a.work && (t.posts as readonly string[]).includes(a.work.post))) && rng(`${a.id}/ties-carry/${i}`).f() < t.share ? [t] : []);
+    for (const named of [true, false]) {
+      for (const a of persons) {
+        const r = rng(`${a.id}/ties-lover${named ? '-named' : ''}`);
+        for (const t of want(a, t => aimed(t) === named)) {
+          if (count(a, 'lover')) continue;
+          if (holders() + 2 > cap) { if (named) gaps.push(`${a.id}: carries a lover tie, but ${holders()} of ${persons.length} people already hold one (the rules' share ${T.lover.maxShare})`); continue; }
+          if (tryTie(a, 'lover', r, { with: t.with, at: t.at })) continue;
+          // the same rule as any aimed tie: a stop the day cannot make (the night watch at 01:30) is no fault; one it could make and nobody could be tied to is the table's to know
+          const feasible = t.at ? !!a.work && stopFeasible(scope, a.work.shift, t.at as AimStop) : true;
+          if (named && feasible) gaps.push(`${a.id}: carries a lover tie ${t.with ? `with a ${t.with} ` : ''}${t.at ? `at ${t.at}` : ''}, but ${t.at && !a.routine.stops.some(x => x.doing === t.at) ? `its day (${a.routine.variant}) has no such stop` : `no one ${t.with ? 'of that position ' : ''}whose work its routine meets could be tied to it`}`);
+        }
+      }
+    }
   }
   for (const a of persons) { // everyone has at least the rules' minimum
     const r = rng(`${a.id}/ties-min`);
@@ -233,6 +275,8 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
     if (want.length) a.need = wt(r, want, x => x.weight).need;
     else gaps.push(`${a.id}: none of the needs its row offers a ${pos} (${needsOf(row, pos).map(n => n.need).join(', ') || 'none'}) can be met by an approach a ${a.temperament} answers to (${(rules.temperaments[a.temperament as keyof Rules['temperaments']]?.respondsTo ?? []).join('/')})`);
     a.institution = a.temperament === 'loyal' ? (a.work ? a.work.employer : 'civic') : null;
+    // the secret (brief 011): an affair for everyone with a lover tie; otherwise a record, by the share the row names (the old need `secret`'s weight, migrated); else none
+    if (rules.secrets) { const rec = row?.secrets?.find(x => x.secret === 'record'); a.secret = count(a, 'lover') ? 'affair' : rec && rng(`${a.id}/secret`).f() < rec.share ? 'record' : null; }
   }
   const pick = (r: Rng, xs: { name: string }[]) => r.pick(xs).name;
   const pins = rules.names.pinned;

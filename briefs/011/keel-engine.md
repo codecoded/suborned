@@ -254,3 +254,24 @@ Engine `suborned.sim/0.4.0`. Every value is in `contracts/rules/rulebook.json`, 
   - N37 and N38 are new.
   - Against the pre-crowd run, every outcome, tick, Trail and Alert is unchanged; logs gain `crowd.*`, and N11b gains one sighting span.
 - **Evidence:** `dotnet test` 223/223; `bun test tools/sim contracts/rules` 39/39; typecheck clean. Perf in Release: S10 26k sim-s/s, N10 5.5k, N12 8.9k.
+
+## Round 8 (2026-10-15): Inez and the guard are lovers (Motive, briefs/011/motive-lovers.md)
+- **people.rules.json:**
+  - `ties.kinds.lover` (mutual, secret, no introductions) and `betweenKinds.routine-meet`;
+  - `secrets` (affair, record), and `person.is` and `tiers.simulated.carries` gain `secret`;
+  - the schema follows.
+  - The need `secret` is not retired yet: that is Pulse's, with the cast tables.
+- **Data:** the test fixture ties p-cafe-11 and p-records-office-07 as lovers with the secret `affair`. `tools/sim/site.ts` writes each cast role's `secret` and `lover` from the people file's ties.
+- **Rulebook:**
+  - a `summon` section (stay 60 s, walkMax 90 s, alertMax 1, perShift 1, together 4 m);
+  - Listen learns the secret, and a Watch that ends with the lovers within 4 m learns it too (new condition `lover-within`);
+  - `turn.pressure` needs `leverage` (the need it acts on, or the secret known); a known secret removes the wrong-approach line and the report;
+  - new memory acts `saw-violence` and `saw-weapon-drawn`.
+- **Engine:**
+  - The waitress's hard-coded lure is gone. A turned contact's call summons their lover, read from the cast's ties. The visit walks the grid at walking pace (46.2 s on the Handover's block), stays 60 s and walks back. Alert 2 ends it and he runs back.
+  - Refusals cost nothing and carry codes: `summon-busy`, `-came-once`, `-alert`, `-saw-violence`, `-too-far`, `-off-street`, `-no-visit`, plus `no-leverage`.
+  - A secret learned on one lover is learned on both. `Quote.Leverage` marks the exposure line. The card's "reports" reads the event's own report rows.
+  - The test start state gains `untie`.
+- **Moved:** S25 and N17 (Pressure +3 T, was +4); N14's card check; route-a-pressure 8 → 7 T. The visit is 46.2 s each way, not the mission's 47 s, so a few ticks shift (N11, S19) and some log texts change; outcomes are unchanged.
+- **New scenarios:** N39 (the window is the tie), N39b (no tie, no pull), N39c (busy, came once), N39d (Alert 2 ends the visit), N40 (Watch together, then Pressure on the Loyal guard). A new unit test covers each refusal.
+- **Evidence:** `dotnet test` 242/242; 70 scenarios.

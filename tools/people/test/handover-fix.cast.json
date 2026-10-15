@@ -325,6 +325,18 @@
      "at": "evening"
     },
     {
+     "kind": "lover",
+     "share": 1,
+     "positions": [
+      "guard"
+     ],
+     "posts": [
+      "door"
+     ],
+     "with": "server",
+     "at": "evening"
+    },
+    {
      "kind": "workmate",
      "share": 1,
      "positions": [

@@ -27,16 +27,16 @@ Times are minutes of the day clock (`fn::hhmm(m)` writes one as hh:mm). Position
 
 | Node | Holds |
 |---|---|
-| `person` | every field the people file carries: `name`, `tier`, `position`, `temperament` and `need` (links to the lookups), `need_weights` (the row's offer, per mille), `institution`, `start` (bravery, resentment, fear, loyalty), `memory` (empty), `look`, `routine_variant`, `home_plot`. Record id = the person id (`person:⟨p-cafe-12⟩`). The rest of a person is an edge (below); `PERSON_FIELDS` in `model.ts` says where each field lands, and a test fails if the people schema gains one it does not place. |
+| `person` | every field the people file carries: `name`, `tier`, `position`, `temperament` and `need` (links to the lookups), `need_weights` (the row's offer, per mille), `institution`, `start` (bravery, resentment, fear, loyalty), `memory` (empty), `look`, `routine_variant`, `home_plot`. Record id = the person id (`person:⟨p-cafe-12⟩`). The rest of a person is an edge (below); `PERSON_FIELDS` in `model.ts` says where each field lands, and a test fails if the people schema gains one it does not place., `secret` (link to the `secret` lookup: `affair`, held by both lovers, or `record`) |
 | `unit` | `name`, `plot`, `area`, `trade`, `employer`, `staff_per_shift`, `hours`, and its `door`, `official`, `bay` places |
 | `place` | `kind` (door, bay, stop, seat, stand, home, beyond), `name`, `at`, `area`, `plot`, the `unit` it belongs to (a door, bay or the café's chairs and standing points), the chair `set` it is on, and for homes `residents` / `simulated` |
 | `role` | the four Handover roles (`seq` = mission order): what the mission asks (`need`, `approach`, `regular_of`, `tied_to`, `leaves_to`, `waits_for`, `alone`, window) and how they were cast (`cast_ok`, `cast_mode`, `cast_why`) |
 | `shift` | a unit's shift (`unit`, `from_min`, `to_min`, `wraps`) |
-| `need`, `temperament`, `tie_kind` | lookups from `people.rules.json`: what meets a need, what a temperament responds to and refuses and where it starts, a tie kind's direction, limits and `introduces` |
+| `need`, `temperament`, `tie_kind`, `secret` | lookups from `people.rules.json`: what meets a need, what a temperament responds to and refuses and where it starts, a tie kind's direction, limits and `introduces` |
 
 | Edge (RELATE) | From → to | Fields |
 |---|---|---|
-| `tie` | person → person | `kind` (→ `tie_kind`), `introduces` (the kind's rule), `mutual`, `at` |
+| `tie` | person → person | `kind` (→ `tie_kind`), `introduces` (the kind's rule), `mutual`, `secret` (the kind's rule: the lover tie), `at` |
 | `works_at` | person → unit | `position` (or the civic role), `civic`, `post`, `place`, `shift`, `shift_from`, `shift_to`, `employer` |
 | `lives_at` | person → place | (`place:beyond` for a person who lives off the sheet) |
 | `stops_at` | person → place | `seq`, `doing` (home, commute, work, meal, pre-shift, evening, errand), `from_min`, `to_min`: one edge per stop of the routine |
@@ -50,6 +50,8 @@ Times are minutes of the day clock (`fn::hhmm(m)` writes one as hh:mm). Position
 
 **Direction.** A two-way kind (family, workmate, rival) is stored once per pair, `in` = the lower person id, `mutual: true`; the JSON carries it on both people. A directed kind is one edge from its source: `regular` is customer → staff, `debtor` is debtor → creditor. Introductions run either way along a tie (a turned contact can introduce the people a tie joins them to; the rules' reason names Inez introducing café contacts, her regulars as well as her workmates), so queries traverse `<->`.
 
+**Lovers and secrets (brief 011).** `lover` is a tie kind like the others (mutual, `secret: true`, `max_share`, `forms_along`), so "the 2-hop neighbourhood" still crosses it; `tie.secret` copies the kind's flag so a traversal can leave out ties the city is never told. `person.secret` links the `secret` lookup the rules list (none when the rules list none, as in a pinned older rulebook). `tie.at` of a lover tie is the stop either of the two makes at the other's work. The `lovers` query lists the pairs with both ends' secrets; the schema version is 2.
+
 **`tie.at`** is derived, not authored: for a regular tie, the stop of the customer's day (pre-shift, then evening, then any other) that stands at the staff person's work place, or the café's customers' side, while they are on shift (the P-7 test). The cast row's own `at` is not in the people file.
 
 **Not in the graph**: background people (they are counts per home plot, on the `home` places), memory (empty at the start), and the embeddings.
@@ -61,6 +63,7 @@ Each file is a complete script. Its header says what it asks and names its param
 | Query | Asks |
 |---|---|
 | `who-can-introduce <a> <b>` | the shortest chain of introducing ties (family, workmate, regular) from a to b, hop by hop, with the tie kinds; `hops` is none when there is no chain |
+| `lovers` | each lover pair once (the lower id first), both ends' positions and secrets, and the stop they meet on; empty when no cast table makes a pair |
 | `regulars-of <place> [at hh:mm]` | the people with a regular tie to staff of the place's unit, whom they are regulars of, their stops at the unit's places (at the time, if given) |
 | `who-is-near <place> hh:mm [radius]` | every stop overlapping the time at a place within the radius (default 13 m, the witness reach, GDD §05), nearest first |
 | `guards-who-are-cafe-regulars [position] [unit]` | the guards with a regular tie to café staff, and which staff |

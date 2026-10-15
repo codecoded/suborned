@@ -12,7 +12,7 @@ namespace Suborned.Sim
     }
     public sealed class CastRole
     {
-        public string Role = "", Id = "", Name = "", Temperament = "", Need = "";
+        public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
     }
 
     public sealed class Site
@@ -31,7 +31,7 @@ namespace Suborned.Sim
             SecEntry, SecVia, SecTo, GetawayCar, FightEntry, FightGuard, PatrolA, PatrolB, PatrolReroute;
         public readonly Pt GuardFacing, CafeFacing, PatrolFacing, PatrolRerouteFacing;
         public readonly string[] FightAmbush, FightPolice;
-        public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, GuardWalkS, GuardStayS, BlockMoveS, BlockHoldS;
+        public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
         public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
         public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
@@ -83,10 +83,10 @@ namespace Suborned.Sim
             var ge = r["getaway"]; ge.Only("car", "src"); GetawayCar = P(ge["car"]);
             var fi = r["fight"]; fi.Only("ambush", "police", "entry", "guard", "src");
             FightAmbush = fi["ambush"].Items.Select(P).ToArray(); FightPolice = fi["police"].Items.Select(P).ToArray(); FightEntry = P(fi["entry"]); FightGuard = P(fi["guard"]);
-            var sc = r["schedule"]; sc.Only("rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "guardWalkS", "guardStayS", "blockMoveS", "blockHoldS", "src");
+            var sc = r["schedule"]; sc.Only("rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
             int Sec(string k, int lo) { int v = sc[k].Int(); if (v < lo || v > 3600) throw new FormatException($"{sc.Path}.{k} = {v} is outside {lo}..3600"); Schedule[k] = v; return v; }
             RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);
-            GuardWalkS = Sec("guardWalkS", 1); GuardStayS = Sec("guardStayS", 1); BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
+            BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
             var cv = r["cover"]; cv.Only("from", "sha256", "src", "points", "blockers", "refuge");
@@ -120,8 +120,8 @@ namespace Suborned.Sim
             var cast = r["cast"]; cast.Only("waitress", "driver", "guard", "councillor", "from", "sha256", "startsAt", "fixture", "src");
             foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
             {
-                var v = cast[role]; v.Only("id", "name", "temperament", "need");
-                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Temperament = v["temperament"].Str(), Need = v["need"].Str() });
+                var v = cast[role]; v.Only("id", "name", "temperament", "need", "secret", "lover");
+                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Temperament = v["temperament"].Str(), Need = v["need"].Str(), Secret = v.Opt("secret")?.Str() ?? "", Lover = v.Opt("lover")?.Str() ?? "" });
             }
         }
 

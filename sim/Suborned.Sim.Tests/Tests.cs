@@ -169,6 +169,24 @@ public class RulesTests
     }
 
     [Fact]
+    public void TheSummonsIsRefusedForEachReasonAtNoCost()
+    {
+        Start Inez() { var s = new Start(); s.Turned.Add("waitress"); return s; }
+        (bool ok, string code, int trail) Call(Game g) { var a = g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "call", Target = "waitress" }); return (a.ok, a.code, g.Trail); }
+        var alert = New(Inez()); alert.Alert = 2;                                     // a search: he won't leave (summon.alertMax 1)
+        Assert.Equal((false, "summon-alert", 0), Call(alert));
+        var saw = New(Inez()); saw.GuardP.Memory.Add(new Mem { Act = "saw-gunfire", By = "enforcer", Place = "d:Office entrance" });
+        Assert.Equal((false, "summon-saw-violence", 0), Call(saw));                 // he saw what you did
+        var down = New(Inez()); down.GuardDown = true;
+        Assert.Equal((false, "summon-busy", 0), Call(down));
+        var i = Repo.Inputs; // a city where he lives too far: summon.walkMax 30 s against his 46 s walk
+        var far = Engine.FromTexts(i.Rulebook.Replace("\"summon-walk-max-s\": { \"v\": 90,", "\"summon-walk-max-s\": { \"v\": 30,"), i.PeopleRules, i.Site, i.People);
+        var g = Engine.New(far, Inez()); var a = g.Issue(new Order { Tick = 0, Op = "fixer", Do = "call", Target = "waitress" });
+        Assert.Equal("summon-too-far", a.code); Assert.True(a.tick > 300, $"the walk rides as a field ({a.tick} ticks)");
+        var ok = New(Inez()); Assert.Equal((true, "", 1), Call(ok));                  // the call: +1 T (cell.call.trail)
+    }
+
+    [Fact]
     public void ArmsDecideWhoCarriesASidearm()
     {
         var none = new Start { Arms = 0 };

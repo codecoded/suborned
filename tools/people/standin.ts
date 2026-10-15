@@ -38,10 +38,11 @@ const POSTS: Record<string, Record<string, ['door' | 'inside' | 'bay', number]>>
 const DESK = ['clerk', 'official-driver', 'councillor'];
 const CIVIC: Record<string, ['door' | 'inside' | 'bay', number]> = { clerk: ['inside', 17], guard: ['door', 1.5], 'official-driver': ['bay', 1], councillor: ['inside', 0.5] };
 
-export function standInCast(scope: Scope, rules: Rules): Cast {
+/** `lovers`: the table also carries the door guard's lover pattern and the guards' evening café stop (Sky's canon, brief 011), so a mission whose waitress asks for a lover tie can be cast; absent, the stand-in is the lover-free table the mission tests start from. */
+export function standInCast(scope: Scope, rules: Rules, o: { lovers?: boolean } = {}): Cast {
   const needs = Object.keys(rules.needs.list).map(need => ({ need, weight: 1 })), tm = Object.keys(rules.temperaments);
   const ties = [{ kind: 'workmate', share: 0.6 }, { kind: 'regular', share: 0.3 }, { kind: 'family', share: 0.2 }, { kind: 'debtor', share: 0.1 }, { kind: 'rival', share: 0.1 }];
-  const worker = (id: string, commute: 'walk' | 'tram', meal: 'on-site' | 'square' | 'none', preShift: 'none' | 'cafe', weight: number, positions?: string[]) => ({ id, skeleton: 'worker' as const, weight, leaveBeforeMin: [5, 25], commute, meal, preShift, evening: 'home' as const, ...(positions ? { positions } : {}) });
+  const worker = (id: string, commute: 'walk' | 'tram', meal: 'on-site' | 'square' | 'none', preShift: 'none' | 'cafe', weight: number, positions?: string[], evening: 'home' | 'square' = 'home') => ({ id, skeleton: 'worker' as const, weight, leaveBeforeMin: [5, 25], commute, meal, preShift, evening, ...(positions ? { positions } : {}) });
   const rows: Row[] = [];
   const seen = new Set<string>();
   for (const u of scope.units as Unit[]) {
@@ -50,12 +51,14 @@ export function standInCast(scope: Scope, rules: Rules): Cast {
       ? Object.entries(CIVIC).filter(([r]) => rules.temperamentsBy.roles[r]?.employer === u.employer).map(([position, [post, weight]]) => ({ position, weight, post }))
       : [...Object.entries(POSTS[u.category] ?? {}).filter(([p]) => positionsOf(rules, u.category).includes(p)).map(([position, [post, weight]]) => ({ position, weight, post })), ...(positionsOf(rules, u.category).includes('keeper') ? [{ position: 'keeper', weight: 1, post: 'door' as const }] : [])];
     const routines = u.kind === 'civic'
-      ? [worker('office-hours', 'walk', 'on-site', 'none', 5, DESK), worker('door-guard', 'walk', 'on-site', 'cafe', 1, ['guard']), worker('from-the-tram', 'tram', 'square', 'none', 3, DESK), worker('guard-from-the-tram', 'tram', 'on-site', 'cafe', 1, ['guard'])]
+      ? [worker('office-hours', 'walk', 'on-site', 'none', 5, DESK), worker('door-guard', 'walk', 'on-site', 'cafe', 1, ['guard'], o.lovers ? 'square' : 'home'), worker('from-the-tram', 'tram', 'square', 'none', 3, DESK), worker('guard-from-the-tram', 'tram', 'on-site', 'cafe', 1, ['guard'], o.lovers ? 'square' : 'home')]
       : [worker('local', 'walk', 'on-site', 'none', 4), worker('from-the-tram', 'tram', 'square', 'none', 2)];
     // Motive §3 (brief 010): the café server weights debt, the official driver cash; the guards' regular ties run into the café.
     const lean = (position: string, need: string) => positions.some(p => p.position === position) && needs.some(n => n.need === need) ? [{ need, weight: 6, positions: [position] }] : [];
     const rowNeeds = [...needs, ...lean('server', 'debt'), ...lean('official-driver', 'cash')];
-    const rowTies = u.kind === 'civic' ? ties.map(t => (t.kind === 'regular' ? { ...t, share: 0.9 } : t)) : ties;
+    // Sky's canon (brief 011): the door guard and a café server are lovers; the rulebook with the lover tie gets the table's own aimed pattern, one older has none
+    const lovers = o.lovers && u.kind === 'civic' && 'lover' in rules.ties.kinds ? [{ kind: 'lover', share: 0.5, positions: ['guard'], posts: ['door' as const], with: 'server', at: 'evening' as const }] : [];
+    const rowTies = u.kind === 'civic' ? [...ties.map(t => (t.kind === 'regular' ? { ...t, share: 0.9 } : t)), ...lovers] : ties;
     rows.push({ area: u.area, occupation: u.trade, why: `${u.name}: ${u.staffPerShift} staff per shift over ${u.shifts.length} shift(s) (life.json)`, positions, temperaments: tm.map(temperament => ({ temperament, weight: 1 })), needs: rowNeeds, ties: rowTies, routines });
   }
   for (const a of [...new Set(scope.homes.map(h => h.area))]) {

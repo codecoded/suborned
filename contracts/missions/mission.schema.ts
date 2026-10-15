@@ -47,6 +47,7 @@ const role = z.strictObject({
   need: id.optional().describe('the one need the person must have (people.rules.json needs.list; unknown fails M-2)'),
   approach: z.enum(APPROACHES).optional().describe('the planned approach: the person\'s temperament must not refuse it, and it must act on `need`'),
   regularOf: id.optional().describe('an employer the person is a regular of: a regular tie to its staff'),
+  secret: id.optional().describe('the secret the person must hold (people.rules.json secrets: affair comes with a lover tie); unknown fails M-2'),
   tiedTo: z.array(z.strictObject({ kind: id, role: id, cast: z.boolean().optional() })).optional()
     .describe('M-2 play: the person holds a tie of `kind` to someone who fits `role` in this role\'s window, or (`cast`) to the one cast in it'),
   leavesTo: z.strictObject({ at: z.string().min(1), by: at }).optional()
@@ -67,17 +68,16 @@ const sitePoint = z.strictObject({
 /** A camera (§05 fixed visible cones): mount, the destination it looks at, reach and cone half-width at the reach, m. */
 const camera = z.strictObject({ id, at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1) });
 
-/** A route's timed window, restated against the world: the GDD's figure, the measured walk, and the result. */
+/** A route's timed window, read from the rules: the lover summons (rulebook `summon`: his walk on the grid at walking pace, his stay
+ *  `stay`, the walk at most `walkMax`). The mission names who walks between which destinations; it restates no number the rules hold. */
 const window = z.strictObject({
   id, route: z.string().min(1), what: z.string().min(1),
   role: id.describe('the role the window moves (its `shift` is the entry window)'),
-  walk: z.strictObject({ from: z.string().min(1), to: z.string().min(1), m: z.number().positive(), speed: z.number().positive(), s: z.number().int().positive() })
-    .describe('the walk on the people walk graph between two destinations, m at life.json walkSpeed m/s, s rounded'),
-  stayS: z.number().int().nonnegative(), windowS: z.number().int().positive().describe('walk out + stay + walk back'),
+  rule: z.literal('summon').describe('rulebook section the window reads: stay, walkMax'),
+  walk: z.strictObject({ from: z.string().min(1), to: z.string().min(1) }).describe('the walk the summoned lover makes, on the walk grid at walking pace, both ways'),
   gdd: z.string().min(1).describe('the GDD\'s figure, verbatim'),
-  src, note: z.string().min(1).describe('why the window moved'),
-}).refine(w => w.walk.s === Math.round(w.walk.m / w.walk.speed), { path: ['walk', 's'], error: 'walk.s is walk.m / walk.speed, rounded' })
-  .refine(w => w.windowS === 2 * w.walk.s + w.stayS, { path: ['windowS'], error: 'windowS is the walk out, the stay and the walk back' });
+  src, note: z.string().min(1).describe('why the window reads as it does'),
+});
 
 const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1) });
 

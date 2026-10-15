@@ -79,7 +79,8 @@ describe('the schema', () => {
     expect(nodes('tie_kind').map(n => n.id).sort()).toEqual(Object.keys(r.rules.ties.kinds).sort());
     expect(nodes('need').map(n => n.id).sort()).toEqual(Object.keys(r.rules.needs.list).sort());
     expect(nodes('temperament').map(n => n.id).sort()).toEqual(Object.keys(r.rules.temperaments).sort());
-    for (const n of nodes('tie_kind')) expect(n.fields.introduces).toBe(r.rules.ties.kinds[n.id as keyof typeof r.rules.ties.kinds].introduces);
+    for (const n of nodes('tie_kind')) expect(n.fields.introduces).toBe(r.rules.ties.kinds[n.id as keyof typeof r.rules.ties.kinds]!.introduces);
+    expect(nodes('secret').map(n => n.id).sort()).toEqual(Object.keys(r.rules.secrets?.list ?? {}).sort());
   });
 });
 
@@ -101,7 +102,7 @@ describe('the model is the JSON', () => {
     }
     for (const e of edges('tie')) {
       const kind = id(e.fields.kind as Rec) as keyof typeof T;
-      expect(e.fields.introduces).toBe(T[kind].introduces); expect(e.fields.mutual).toBe(T[kind].direction === 'both');
+      expect(e.fields.introduces).toBe(T[kind]!.introduces); expect(e.fields.mutual).toBe(T[kind]!.direction === 'both');
       if (e.fields.mutual) expect(e.from.id < e.to.id).toBe(true);
     }
     const entries = p.people.persons.reduce((n, q) => n + q.ties.length, 0), mutual = edges('tie').filter(e => e.fields.mutual).length;
@@ -111,7 +112,7 @@ describe('the model is the JSON', () => {
     const regs = edges('tie').filter(e => id(e.fields.kind as Rec) === 'regular');
     expect(regs.length).toBeGreaterThan(0);
     for (const e of regs) expect(['pre-shift', 'evening', 'meal', 'errand', 'commute', 'work']).toContain(e.fields.at as string);
-    for (const e of edges('tie').filter(x => id(x.fields.kind as Rec) !== 'regular')) expect(e.fields.at).toBeUndefined();
+    for (const e of edges('tie').filter(x => !['regular', 'lover'].includes(id(x.fields.kind as Rec)))) expect(e.fields.at).toBeUndefined();
     const byId = new Map(p.people.persons.map(q => [q.id, q]));
     expect(regularAt(byId.get(regs[0]!.from.id)!, byId.get(regs[0]!.to.id)!, p.extras)).toBe(regs[0]!.fields.at as string);
   });
@@ -267,7 +268,8 @@ describe('the hash, the database and the source', () => {
     const run = runCast('harbour-district', 'r015'), src = castSource('harbour-district', { run: 'r015' });
     expect(run.outcome).toBe('ACCEPTED'); expect(run.label).toMatch(/^run r015 round \d+ \(ACCEPTED\)$/); expect(src.kind).toBe('run'); expect(src.problems).toEqual([]);
     const q = await prepare({ run: 'r015' });
-    expect(q.checks).toMatchObject({ ok: true, failed: [], gaps: [] });
+    // r015's tables carry no lover pattern, so under the lovers' canon (brief 011) the waitress role cannot be cast: P-6 is the one rule that fails, until a repair run writes the pair
+    expect(q.checks.gaps).toEqual([]); expect(q.checks.failed.every(x => x.startsWith('P-6 '))).toBe(true);
     expect(q.db).not.toBe(p.db);
   });
   test('the Surrealist endpoint is printed without credentials', () => {
@@ -277,10 +279,49 @@ describe('the hash, the database and the source', () => {
   });
 });
 
+describe('lovers and secrets (brief 011)', () => {
+  // the Handover-fix cast makes the door guard's lover pair; the promoted cast (r013) makes none, and its people carry a record or nothing
+  let f: Prepared, fr: ref.Ref;
+  beforeAll(async () => { f = await prepare({ cast: 'tools/people/test/handover-fix.cast.json' }); fr = { people: f.people, rules: f.w.rules, extras: f.extras }; });
+  const fedges = (t: string) => f.model.edges.filter(e => e.table === t);
+  test('the secret lookup is the rules\' list, and a person\'s secret is a link to it (none: omitted)', () => {
+    expect(f.model.nodes.filter(n => n.table === 'secret').map(n => n.id).sort()).toEqual(['affair', 'record']);
+    for (const q of f.people.persons) {
+      const n = f.model.nodes.find(x => x.table === 'person' && x.id === q.id)!.fields;
+      if (q.secret) expect(id(n.secret as Rec)).toBe(q.secret); else expect(n.secret).toBeUndefined();
+    }
+  });
+  test('each lover tie is one mutual edge flagged secret, between the two who hold the affair, with the stop it is met on', () => {
+    const L = fedges('tie').filter(e => id(e.fields.kind as Rec) === 'lover');
+    expect(L.length).toBeGreaterThanOrEqual(1);
+    const byId = new Map(f.people.persons.map(q => [q.id, q]));
+    for (const e of L) {
+      expect(e.fields.mutual).toBe(true); expect(e.fields.secret).toBe(true); expect(e.fields.introduces).toBe(false);
+      expect(e.from.id < e.to.id).toBe(true);
+      expect(byId.get(e.from.id)!.secret).toBe('affair'); expect(byId.get(e.to.id)!.secret).toBe('affair');
+      expect(['pre-shift', 'evening', 'meal', 'errand', 'commute', 'work']).toContain(e.fields.at as string);
+    }
+    expect(f.model.counts.ties.lover).toBe(L.length);
+  });
+  test('the lovers reference is the edges, pair for pair', () => {
+    const want = ref.lovers(fr), got = fedges('tie').filter(e => id(e.fields.kind as Rec) === 'lover').map(e => [e.from.id, e.to.id]).sort();
+    expect(want.map(x => [x.a, x.b])).toEqual(got);
+    expect(want.every(x => x.a_secret === 'affair' && x.b_secret === 'affair')).toBe(true);
+  });
+  test('the Handover\'s waitress role links her secret, and she is cast with the door guard as her lover', () => {
+    const w = f.model.nodes.find(n => n.table === 'role' && n.id === 'waitress')!.fields;
+    if (f.extras.roles.find(x => x.id === 'waitress')?.secret) expect(id(w.secret as Rec)).toBe('affair');
+  });
+  test('the promoted cast makes no lovers (the table names none), and the reference says so', () => {
+    expect(ref.lovers(r)).toEqual([]);
+    expect(edges('tie').filter(e => id(e.fields.kind as Rec) === 'lover')).toHaveLength(0);
+  });
+});
+
 describe('the canned queries', () => {
   const names = queryNames();
   test('the queries the job asks for are there', () => {
-    for (const n of ['who-can-introduce', 'regulars-of', 'who-is-near', 'guards-who-are-cafe-regulars', 'needs-known-by-keeper', 'role-fit', 'neighbourhood', 'graph-view']) expect(names).toContain(n);
+    for (const n of ['who-can-introduce', 'regulars-of', 'who-is-near', 'guards-who-are-cafe-regulars', 'needs-known-by-keeper', 'role-fit', 'neighbourhood', 'graph-view', 'lovers']) expect(names).toContain(n);
   });
   test('every file reads: a name, an about line, params that are set by a LET line, and a defaults that run as pasted', () => {
     for (const n of names) {

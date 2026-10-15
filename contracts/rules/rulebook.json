@@ -139,6 +139,11 @@
   "carry-s": { "v": 3, "unit": "s", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md §2.4, §2.10: carry a downed operative", "proposed": true, "reason": "lifting a downed operative takes 3 s; then the carrier walks only and doesn't fire (§06 downed: carry or captured)." },
   "gunfire-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q1; §02 Trail: gunfire is a traceable act", "proposed": true, "reason": "a shooting is a case: the first shot at each target costs +2 T, hit or miss (shots heard on a civic square open a file); the final fight stays untraced. Loud goes to 9 T, above Pressure (8)." },
   "draw-incident-s": { "v": 5, "unit": "s", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q1: drawn weapons at one place are one incident", "proposed": true, "reason": "Keel: the cell drawing on one order, or one beat apart (c003: the Scout and the Fixer 0.9 s apart), is one sight; a second draw 5 s or more later, or beyond witness range of the first, is a new act. Place is the witness range (witness-range-m)." },
+  "lover-stay-s": { "v": 60, "unit": "s", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4; §07 route A: stays 60 s", "proposed": true, "reason": "one value for every lover in every mission; the mission reads it, never restates it." },
+  "summon-walk-max-s": { "v": 90, "unit": "s", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "keeps a summons local, about one block (≤ 126 m at 1.4 m/s); the Handover's walk fits; bounds the absence at ≤ 4 min, so no generated mission gets an endless lure." },
+  "summon-alert-max": { "v": 1, "unit": "alert", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "he answers through an inquiry (Alert 1) but not a search (Alert 2: security staff stay at their posts): the lure is for a quiet run." },
+  "summons-per-shift": { "v": 1, "unit": "count", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.4", "proposed": true, "reason": "he can't be missed twice; it also stops call-spam lure loops." },
+  "together-m": { "v": 4, "unit": "m", "tag": "S", "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door §1.2", "proposed": true, "reason": "watching them together: the mission's near and approach-reach-m, 4 m." },
   "point-blank-m": { "v": 5, "unit": "m", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "can't miss at arm's length: 1000 ‰ inside 5 m." },
   "pistol-damage": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md; §06 pistol 1 dmg" },
   "pistol-every-ticks": { "v": 15, "unit": "ticks", "tag": "S", "src": "Sky 2026-10-15, briefs/011/motive-fights.md", "proposed": true, "reason": "Syndicate-fast: a shot every 1.5 s. The [B] 6 s was a turn-length proxy from the top-down test." },
@@ -275,7 +280,7 @@
  "memory": {
   "entry": ["act", "by", "place", "time", "witnessed"],
   "cap": "v:memory-cap",
-  "whenFull": "drop the oldest saw-act, saw-runner, saw-gunfire or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9)",
+  "whenFull": "drop the oldest saw-act, saw-runner, saw-gunfire, saw-violence, saw-weapon-drawn or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9)",
   "faceFacts": { "fixer": "fixer-face" },
   "acts": {
    "ask": { "facts": ["place-time"] },
@@ -289,7 +294,9 @@
    "told": { "facts": "as-told" },
    "saw-runner": { "facts": ["place-time"] },
    "aborted": { "facts": ["place-time"] },
-   "saw-gunfire": { "facts": ["place-time"] }
+   "saw-gunfire": { "facts": ["place-time"] },
+   "saw-violence": { "facts": ["place-time"] },
+   "saw-weapon-drawn": { "facts": ["place-time"] }
   },
   "reads": { "helped": "help", "refused": "refusal" },
   "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`.",
@@ -388,6 +395,18 @@
   "src": "Pulse, briefs/011/pulse-fight-ai.md §4; §06 citizen actions; §05 crowds block guard and camera sightlines",
   "proposed": true,
   "reason": "Pulse's spec; the cast by role keep their places so the mission's contacts stay where its rules need them (Keel)."
+ },
+ "summon": {
+  "stay": "v:lover-stay-s",
+  "walkMax": "v:summon-walk-max-s",
+  "alertMax": "v:summon-alert-max",
+  "perShift": "v:summons-per-shift",
+  "together": "v:together-m",
+  "rule": "The summons (Motive, briefs/011/motive-lovers.md §1.3): a turned contact who is called sends for their lover (people.rules ties.kinds.lover), read from the city's ties, never from the mission. The lover leaves where he is, walks the grid to the caller at walking pace (cell.speed), stays `stay` and walks back. Refused, at no cost and with its code, when he is off the street, busy (down, held, engaged in a fight, or already away), more than `walkMax` away, Alert is above `alertMax`, he holds a memory of the cell's gunfire, violence or drawn weapon, or he has come `perShift` times this shift. Alert reaching above `alertMax` ends the visit: he runs back at security's pace. The visit is no act of the cell: the call keeps cell.call.trail. A contact's role job (the driver's camera block) is the call's other use. `together`: a Watch that ends with two lovers within it teaches the cell their affair (people.rules secrets).",
+  "tag": "S",
+  "src": "Motive, briefs/011/motive-lovers.md (2026-10-15); Sky via Aster: Inez and the door guard are lovers, and her call pulls him off the door",
+  "proposed": true,
+  "reason": "systems over scripts: any turned contact with an eligible lover is a lure, in every generated mission (Motive §1.3). Keel models the visit for a lover with a post (the guard), as the Handover needs; another lover is refused until a routine can be left."
  },
  "cancel": {
   "move": "stop",
@@ -489,23 +508,24 @@
    "by": "scout",
    "phase": "mission",
    "tag": "B",
-   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky 2026-10-15: Watch reveals routine only (preview.knownBy)",
+   "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky 2026-10-15: Watch reveals routine only (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: a Watch that ends with two lovers together reveals their affair",
    "needs": [{ "k": "tier", "is": "simulated" }],
    "price": [{ "line": "base", "s": "v:watch-s" }],
    "outcomes": [
     { "id": "watched", "when": [], "changes": [{ "do": "learn", "what": ["routine"], "of": "subject" }] }
-   ]
+   ],
+   "also": [{ "when": [{ "k": "lover-within", "m": "v:together-m" }], "changes": [{ "do": "learn", "what": ["secret"], "of": "subject" }] }]
   },
   {
    "id": "scout.listen",
    "by": "scout",
    "phase": "mission",
    "tag": "B",
-   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky 2026-10-15: Listen reveals need and temperament (preview.knownBy)",
+   "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky 2026-10-15: Listen reveals need and temperament (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: and the secret (an affair teaches the tie and the secret on both lovers)",
    "needs": [{ "k": "tier", "is": "simulated" }, { "k": "known", "what": "routine" }, { "k": "reach", "m": "v:listen-reach-m" }],
    "price": [{ "line": "base", "s": "v:listen-s" }],
    "outcomes": [
-    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need"], "of": "subject" }] }
+    { "id": "heard", "when": [], "changes": [{ "do": "learn", "what": ["need", "secret"], "of": "subject" }] }
    ]
   },
   {
@@ -599,24 +619,23 @@
    "by": "fixer",
    "phase": "mission",
    "tag": "B",
-   "src": "§04 approaches [B]: Pressure, need known, $0, 35 s, +3 T, fear, resentment grows, can identify Fixer; Sky Q4 one step worse",
+   "src": "§04 approaches [B]: Pressure, need known, $0, 35 s, +3 T, fear, resentment grows, can identify Fixer; Sky Q4 one step worse; Motive, briefs/011/motive-lovers.md (2026-10-15) §2.2: a known secret is Pressure's leverage (needs no pressable need, no wrong-approach step, a Loyal person pressed by exposure doesn't report it)",
    "needs": [
     { "k": "tier", "is": "simulated" },
     { "k": "turned", "is": false },
-    { "k": "requires", "approach": "pressure" },
-    { "k": "need-met-by", "approach": "pressure" },
+    { "k": "leverage", "approach": "pressure" },
     { "k": "reach", "m": "v:approach-reach-m" }
    ],
    "price": [
     { "line": "base", "usd": "p:approaches.pressure.usd", "s": "p:approaches.pressure.timeS", "trail": "p:approaches.pressure.trail" },
     { "line": "refused-before", "when": [{ "k": "memory", "act": "refusal", "has": true }], "trail": "v:refusal-trail" },
-    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }], "trail": "v:worse-pressure-trail" }
+    { "line": "wrong-approach", "when": [{ "k": "fit", "is": ["worse"] }, { "k": "known", "what": "secret", "is": false }], "trail": "v:worse-pressure-trail" }
    ],
    "outcomes": [
     { "id": "refused", "when": [{ "k": "fit", "is": ["refused"] }], "changes": [{ "do": "charge", "parts": ["s", "trail"] }, { "do": "remember", "act": "refusal" }, { "do": "learn", "what": ["refused"], "of": "subject" }, { "do": "debrief", "line": "refused" }] },
     { "id": "turned", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "pressure" }, { "do": "turn" }, { "do": "remember", "act": "pressure" }, { "do": "debrief", "line": "turned-how" }] }
    ],
-   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
+   "also": [{ "when": [{ "k": "reports" }, { "k": "known", "what": "secret", "is": false }], "changes": [{ "do": "report" }] }],
    "witnesses": [{ "act": "threat" }]
   },
   {

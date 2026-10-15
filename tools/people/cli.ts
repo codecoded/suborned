@@ -1,4 +1,4 @@
-// usage: bun run people [--scope civic-block] [--cast <cast.json>] [--plan <plan.json>] [--rules <file>] [--out <file>] [--review [<file>]]
+// usage: bun run people [--scope civic-block] [--cast <cast.json>] [--plan <plan.json>] [--rules <file>] [--mission <file>] [--out <file>] [--review [<file>]]
 // Cast tables + plan + civic block + life.json + people rules → out/people/<plan id>.people.json (the promoted cast only; --cast writes beside it), then the checker (P-rules); exit 1 on any fault.
 // Without --cast the cast tables are the promoted cast of the plan, contracts/people/<plan id>.cast.json (an accepted people run, promoted by Sky;
 // tools/people/promoted.ts holds it to its record and its run first, exit 1 if it drifted). The stand-in cast (tools/people/standin.ts) is a test
@@ -19,10 +19,10 @@ import { reviewHtml } from './review';
 
 const argv = process.argv.slice(2), opt = (k: string) => { const i = argv.indexOf(k); return i < 0 ? undefined : argv[i + 1]; };
 // --review [<file>]: also write the review page (default out/review/010-cast.html)
-const KNOWN = ['--scope', '--cast', '--plan', '--rules', '--out', '--review'];
+const KNOWN = ['--scope', '--cast', '--plan', '--rules', '--mission', '--out', '--review'];
 for (const a of argv.filter(x => x.startsWith('--'))) if (!KNOWN.includes(a)) { console.error(`unknown option ${a}; known: ${KNOWN.join(' ')}`); process.exit(2); }
 const planFile = opt('--plan') ?? 'contracts/world/harbour-district.plan.json';
-const texts = await readTexts(planFile, { rules: opt('--rules') }), w = world(texts, opt('--scope') ?? 'civic-block');
+const texts = await readTexts(planFile, { rules: opt('--rules'), mission: opt('--mission') }), w = world(texts, opt('--scope') ?? 'civic-block');
 let castFile = opt('--cast'), label: string;
 if (castFile) label = `cast ${castFile}`;
 else {

@@ -106,6 +106,16 @@ export function tiesOf(r: Ref, p: Person): string[] {
   return sorted(out);
 }
 
+/** lovers: each lover pair once (a = the lower id), both ends' positions and secrets. */
+export function lovers(r: Ref): { a: string; b: string; a_position: string; b_position: string; a_secret?: string; b_secret?: string }[] {
+  const m = byId(r), out: { a: string; b: string; a_position: string; b_position: string; a_secret?: string; b_secret?: string }[] = [];
+  for (const p of r.people.persons) for (const t of p.ties) if (t.kind === 'lover' && p.id < t.with) {
+    const q = m.get(t.with)!;
+    out.push({ a: p.id, b: q.id, a_position: p.position, b_position: q.position, ...(p.secret ? { a_secret: p.secret } : {}), ...(q.secret ? { b_secret: q.secret } : {}) });
+  }
+  return out.sort((x, y) => cmp(x.a, y.a));
+}
+
 /** neighbourhood: the people 1 and 2 ties away over every kind, either direction. */
 export function neighbourhood(r: Ref, id: string): { hop1: string[]; hop2: string[] } {
   const d = distances(adjacency(r, 'all'), id);
