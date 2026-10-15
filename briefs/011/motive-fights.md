@@ -493,3 +493,195 @@ Two variants were tried and rejected:
 - **Motive:**
   - tune the numbers against Suture's frontier;
   - set the Heat threshold with the §06 fight event (from `motive-balance.md`).
+
+---
+
+## Addendum (2026-10-15, evening): Aster's eight questions after engine 0.4.0 and check c003
+
+**How I checked.**
+- I played Waymark's committed route scripts (commit 80548b8) on a Release build of that commit, pinned in `out/motive/engine/h80548b8/`. Nothing in the repo's `sim/` or `contracts/` was touched.
+- Three variant scripts are in `briefs/011/motive-fights/`:
+  - `route-a-lone.script.json` and `route-a-pressure-lone.script.json`: the support operatives sent away before the fight;
+  - `loud-carry.script.json`: the Fixer carries the downed Scout.
+- Values for Keel are marked **[S] → Keel**.
+
+| # | question | recommendation, in one line |
+|---|---|---|
+| 1 | Pressure ties loud on Trail (8 each) | **Raise loud, keep Pressure:** a shooting costs +2 T once, and drawn weapons at one place are one incident. Loud goes to 9. |
+| 2 | Rivals kill a lone Enforcer fast | **Keep.** Prepared, he survives alone; unprepared, he doesn't. No tuning. |
+| 3 | Loud wins with the Scout captured | **Texture, not a problem:** the capture is the script's choice. Carrying the Scout wins at 4:00 with nobody left behind. Make the reference loud carry. |
+| 4 | Cancel costs | **Accept all four as Keel proposes.** No "put Vale down" in the Handover. |
+| 5 | Drawn weapon seen by people: standing | **Menace, one step**, like a witnessed threat |
+| 6 | Guard ally downed → missed check-in calls security | **Keep the call**, but untraced: no Trail or Alert, the fight stays safe, and the chain doesn't read "guard-shot" |
+| 7 | The safe fight can only end in "Enforcer down" | **The shape is intended** (§07: always fought). Name the fail by the rivals' goal: "rivals take Vale". |
+| 8 | Hint triggers | **11 rows below.** One hint at a time; each names a tool, never the answer. |
+
+### 1. Pressure ties loud on Trail
+The two ledgers, on engine 0.4.0:
+
+| | ledger | T |
+|---|---|---|
+| **route A + Pressure** | loop 1 · threat witnessed 1 · Pressure on an Idealist 4 (§04 [B] 3, plus 1 for the wrong approach) · call 1 · reroute 1 | 8 |
+| **loud** | loop 1 · reroute 1 · weapon drawn, seen, Scout 1 · weapon drawn, seen, Fixer 1 · guard hit 2 · guard down 2 | 8 |
+
+**Keep Pressure's price:**
+- **It is a [B] number.** Pressure's +3 T is §04's Inez table.
+- **The +1 is a lesson.** It comes from the wrong approach (Pressure on an Idealist), which is exactly what the card's "?" teaches.
+- **Its other costs are larger, and they come later:**
+  - Inez becomes afraid and resentful, so she is a Talker under questioning;
+  - she can identify the Fixer;
+  - standing moves toward Menace;
+  - she gives no warning in the safe fight. The safe fight was clean on Help and cost three operatives hits on Pressure in c003.
+- **Pressure is meant to be the fast, ugly, quiet option.** It is quiet, so it must stay under loud, but it never has to be cheap.
+
+**Loud should cost more. Two changes, both [S] → Keel:**
+1. **`gunfire-trail` 2: a shooting is a case.** The first shot of each gunfire incident costs +2 T, whether it hits or not.
+   - §02 lists gunfire itself among traceable acts. My per-person rule left a miss costing nothing, which was wrong: shots heard on a civic square open a file.
+   - The final fight stays untraced.
+2. **Drawn weapons at one place are one incident.** Several operatives drawing within one incident's place and time count once, as the `alert.rule` already says for shots ("one act at one place and time").
+   - c003's loud counts the Scout and the Fixer separately, at ticks 1220 and 1229.
+   - That rule fixes a double count, not a balance.
+
+**Result:**
+- Loud is 1 + 1 + 1 + 2 + 2 + 2 = **9 T**: above Pressure (8), route A (5) and route B (4).
+- Any civilian who sees it adds +1 and Alert 3.
+- **For Waymark:** MC-2 should test loud against *every* quiet variant, not only the primary routes. Make the Pressure note a condition.
+
+### 2. Rivals kill a lone Enforcer quickly
+- **Where the 56 % comes from:** effective band 750 × untrained 750 = 562 ‰.
+- **Five pistols at that rate land about 1.9 hits a second,** and the Enforcer's 6 health lasts about 3 s of their combined fire once all five are on him. Aim, advance and cover stretch that to the 10–27 s seen.
+- **The engine is harder than my calculator** because rivals now step to cover (Pulse's AI); my table had cover in only one row.
+
+The engine, with the support sent away before the fight:
+
+| script | prepared? | result |
+|---|---|---|
+| route A, lone Enforcer | Inez warns. No guard ally: he saw the Enforcer run (`run.seen` at 2:05). | **wins** at 3:46.6 on 3/6 health; rivals break after 3 down |
+| route A + Pressure, lone Enforcer | no warning, no guard | **Enforcer down** 26.9 s after the ambush |
+
+- **That is the shape I proposed:** a prepared Enforcer survives alone, and an unprepared one dies.
+- **Keep the numbers. "Don't go in alone" is the lesson.** It is also why Sky armed the whole cell. Hint H9 (below) says it before the walk.
+- **Don't tune accuracy:** 56 % is what the chip shows, and the deaths are readable.
+- **Worth noting for Waymark:** route A runs the Enforcer past the guard, which costs the guard ally. The checker's own route shows "speed costs attention" working.
+
+### 3. The loud win leaves the Scout captured
+- **The capture isn't forced.**
+  - The Scout goes down at 3:33.5, and the fight is over at 3:38.7.
+  - The script extracts at 3:53.1 without carrying him.
+- **Carrying him wins:** with the Fixer (on 1 health) walking 12 m to the Scout, carrying him (3 s) and walking to the car, the run **wins at 4:00.0, nobody captured** (`loud-carry.script.json`). That is still T 8, A 2.
+- **So the capture is a 7-second choice: texture.** It is the strongest "live with it" in the mission:
+  - a captured operative knows the cell's faces and car (§06: captured → rescue mission);
+  - the debrief names it.
+- **Recommend:**
+  - Waymark's reference loud carries the Scout. T2's margin then grows to 29 s against Pressure (3:31) and 23 s against route A (3:37). The fastest loud *with* a capture stays as a variant.
+  - The going-loud card's loss line adds: "anyone downed is captured unless carried".
+
+### 4. Cancel costs
+**Accept Keel's four as proposed.** The engine has one rule: an act lands at its end. Cancelling keeps that rule, and what remains is what people saw.
+- **Aborted approach:** memory with the Fixer's face; not a refusal; the money comes back; no Trail. Agreed.
+  - It teaches nothing (no outcome, no temperament), so it can't be used to probe.
+  - It costs the time and a face, which matters if a Trail opens later.
+- **Cancelling Enter:** he comes back out and the staff report it as one incident. Agreed.
+  - The incident raises Alert by the incident ladder (first → 1, second → 2). A second try at Alert 2 then pays the +30 s.
+- **Cancelling Take:** Vale is let go and reports it as one incident. Agreed.
+  - Add: Vale holds a memory of the take. He is pinned and simulated, so an investigator who questions him finds a lead.
+- **"Put Vale down": no rule for the Handover.**
+  - Holding Vale is the commitment. The answer to "I need two hands" is the cell covering him, which is the lesson of Q2.
+  - A put-down Vale raises questions the Handover doesn't need: does he run, can rivals take him, does he count as taken?
+  - If wanted later: **[L] "hand Vale over"** to an adjacent operative (3 s), keeping §03's "the Enforcer carries" as a default rather than a law.
+
+### 5. A drawn weapon seen by people: standing
+- **Menace, one step: `weapon-drawn.standing` "menace" [S] → Keel.**
+  - **Source:** §04 Menace lists "public threats". A gun shown on a street is the plainest public threat.
+  - **Reason:** it mirrors `threat` ("menace"), one step per incident like every witnessed act.
+- **Merging matters here too (Q1):** one move per incident, not one per operative.
+
+### 6. A downed guard ally misses his check-in
+**Keep the call: the fiction holds.** His post really is empty, and it gives the player a reason to protect an ally they earned. But make it untraced, consistent with the safe fight:
+- **Allowed:** the empty post calls security (+20 s, then the 2:25 seal).
+- **Not allowed:** it adds no Trail and no Alert, doesn't turn the fight loud, and doesn't put the cell in the guard's check-in story.
+- **The debrief chain** reads `guard-down-by-rivals`, not `guard-shot`. Today `GuardHit` writes "guard-shot" whoever shot him, so the debrief would blame the cell.
+- **[S] → Keel:** a guard downed by hostiles in the final fight gets `chain: guard-down-by-rivals`, with `MissingNotice` kept and no ledger lines.
+- **In practice** the response comes 38 s after he falls. A safe fight that doesn't drag on is over by then, so this is pressure, not a trap.
+
+### 7. The safe fight can only end in "Enforcer down"
+**The shape is intended.**
+- §07 says the final fight is always fought, and its length and cost are how preparation is measured: the warning, the guard, the driver's block, the false tip, the cell at the car.
+- The walk is always fought because the rivals are waiting for the extraction; there's no slipping past them.
+- What the player chooses is *how prepared* they arrive, which is pillar 2's "see the window coming".
+
+**One change, for readability (T6, "why these enemies?").**
+- **The goal:** the rivals want Vale, not the Enforcer, so a safe fight that is lost should say so.
+- **The rule:** when the Enforcer goes down in the safe fight, the fail is **"rivals take Vale"**, the §07 fail that already exists. It replaces "Enforcer down".
+- **For Keel:** the outcome is the same; only the fail code and its line change, in the safe branch.
+- **Why the branches read differently:**
+  - in the loud fight, police take the Enforcer down;
+  - in the safe fight, rivals take Vale off him.
+- **Optional, [L]:** rivals who see Vale unheld try to reach him. That waits for "hand Vale over" (Q4).
+
+### 8. Hint triggers for the Handover's training layer (Glyph round 6; Fable words them)
+**Rules for the layer:**
+- **One at a time,** in the priority order below.
+- **Each fires once per run,** and H hides the layer for good.
+- **Idle gate:** a hint shows only after the cell has given no order for **8 s**, so it never interrupts a player who is acting.
+- **It vanishes** the moment its "gone when" act happens, or when its trigger stops holding.
+- **Content:** each hint names an agent, a verb and a person or place, and rings that target. It never names an approach, a time or a sequence. Prices and "?" stay the player's to read.
+- **Reads:** all triggers come from engine state that already exists: the knowledge flags, `Activities()`, the log codes, `Quote`.
+
+| # | trigger (game state) | hint says (gist; Fable words it) | rings | gone when |
+|---|---|---|---|---|
+| H1 | briefing closed, nothing learned about anyone, no Watch or Listen given | The door has a guard. Someone near him might be useful; the **Scout** finds out by **Watching** people. | the café terrace (the place, not Inez) | any Watch or Listen order |
+| H2 | a person's routine is known (Watch done), their need and temperament are not | Watching tells you where and when. To learn what someone needs and who they are, the **Scout Listens**, standing close. | the watched person | Listen ordered on them |
+| H3 | a person's need is known, they're not turned, and no approach has been given | The **Fixer** can turn them. Hover each approach to read its price before you commit. | the Fixer's portrait | any Turn order |
+| H4 | the entrance camera is live, the Tech is idle, and 0:45 has passed | A camera watches the public door. The **Tech** can **Loop** it from the control cabinet. | the cabinet | a Loop order |
+| H5 | a contact is turned and has never been called | Turned people act when you **call** them. Select the Fixer and right-click them to see what they can do. | the contact | a Call order |
+| H6 | an approach was refused | They refused, and they'll remember. Learn who someone is before you choose how to ask. | the refused person | the next order to the Scout or the Fixer |
+| H7 | the patrol's cone will cover the public door within the next 15 s, and the Enforcer stands within 10 m of it, not inside | The patrol sweeps this door on a cycle. **Next Event (N)** shows when it comes round. | the patrol's cone | Enter, Reroute, or the Enforcer moving away |
+| H8 | 3:10 has passed (the rivals have parked) and nobody has acted on them | Another crew is watching Vale's pickup. The **Scout** can send them chasing a **false tip**. | the rival car | a Mislead order, or the Enforcer holding Vale |
+| H9 | 4:00 has passed, route A isn't under way (no contact turned, no Enter), and the driver is unknown | Vale leaves by car at 5:50. His **driver** waits at the pickup: another way to him. | the driver | any order on the driver, or a contact turned |
+| H10 | the Enforcer holds Vale, and no other armed operative stands within 15 m of the getaway car | Taking Vale to the car will be contested. Who is there to cover him? | the getaway bay | an armed operative within 15 m of the car, or a draw |
+| H11 | an operative is downed, the final fight is on or over, and nobody is carrying them | A downed agent left behind is captured. **C** carries them; bring them to the car before you leave. | the downed operative | a Carry order, or the extract |
+
+**Feedback after the fact, not hints.**
+- **The first run seen by security** (`run.seen`) shows a one-line toast: "Running is noticed: security looks into it (Alert 1)". It goes on the next order.
+- **The first drawn weapon** is covered by the going-loud card itself.
+
+**Why none of these solves the puzzle:**
+- H3 says "turn", not *Help*.
+- H5 says "call", not *what Inez does*.
+- H7 points at the clock, not the gap.
+- H9 points at the second route only once the player is stuck on the first.
+- H10 asks a question.
+
+Each introduces one verb once (§07: "every verb introduced once"), and the player still composes the plan.
+
+**Pass check for Suture (T3-style):** with hints on, ≥ 5 of 6 new players finish a quiet route, and none can say "the game told me the plan".
+
+### Evidence
+```
+git archive 80548b8 sim contracts/rules contracts/people/people.rules.json contracts/missions | tar -x -C out/motive/engine/h80548b8
+DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec dotnet build out/motive/engine/h80548b8/sim/cli -c Release
+D=out/motive/engine/h80548b8/sim/cli/bin/Release/net10.0/suborned-sim.dll   (run from that folder)
+play contracts/missions/handover/routes/loud.json --json              # success 3:53.1, T 8 (ledger above), Scout captured
+play contracts/missions/handover/routes/route-a-pressure.json --json  # success 3:31.0, T 8 (ledger above)
+play contracts/missions/handover/routes/route-a.json --json           # success 3:37.1, T 5
+play briefs/011/motive-fights/loud-carry.script.json --json           # success 4:00.0, T 8, A 2, captured []
+play briefs/011/motive-fights/route-a-lone.script.json --json         # success 3:46.6, Enforcer 3/6
+play briefs/011/motive-fights/route-a-pressure-lone.script.json --json  # failure enforcer-down 3:36.9 (ambush 3:10.0)
+```
+
+### For Keel, through Aster (all [S], proposed)
+- `gunfire-trail` 2: once per gunfire incident, on its first shot. Not in the final fight.
+- `weapon-drawn`: one incident per place and time across operatives; `standing` "menace".
+- A guard downed by hostiles in the final fight: chain `guard-down-by-rivals`, the check-in call kept, no ledger lines.
+- The safe fight lost with the Enforcer down: fail code `rivals-reach-vale` and its line.
+- The going-loud card's loss line: "anyone downed is captured unless carried".
+
+### Next owners
+- **Waymark:**
+  - make the reference loud carry the Scout (4:00);
+  - make MC-2 compare loud against every quiet variant;
+  - re-record c003 after Keel's changes. Expected: loud 9 T.
+- **Fable:** word H1–H11 and the toast, within Glyph's 110 characters.
+- **Glyph and Latch:** the 8 s idle gate, priority, fire-once and H.
+- **Suture:** the hint pass check.
