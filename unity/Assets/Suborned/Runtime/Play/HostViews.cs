@@ -62,7 +62,39 @@ namespace Suborned.Play
             }
         }
 
-        readonly LineRenderer[] acts = new LineRenderer[4];
+        readonly LineRenderer[] acts = new LineRenderer[4], ranges = new LineRenderer[4];
+        readonly List<(LineRenderer lr, float born)> tracers = new();
+        readonly Dictionary<Color, Material> tracerMats = new();
+        int nextTracer;
+
+        LineRenderer NewLine(string name, Material m, float width)
+        {
+            var go = new GameObject(name); go.transform.SetParent(root, false);
+            var lr = go.AddComponent<LineRenderer>(); lr.sharedMaterial = m; lr.useWorldSpace = true; lr.widthMultiplier = width; lr.positionCount = 0;
+            lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; lr.receiveShadows = false; lr.enabled = false;
+            return lr;
+        }
+
+        /// <summary>One shot: a thin line from the muzzle to where it ends, for 0.15 s (placeholder for Glyph's tracers).</summary>
+        public void Tracer(Vector3 from, Vector3 to, Color c)
+        {
+            if (!tracerMats.TryGetValue(c, out var m)) tracerMats[c] = m = Unlit(c);
+            if (tracers.Count < 16) tracers.Add((NewLine("tracer/" + tracers.Count, m, 0.06f), 0f));
+            int i = nextTracer++ % tracers.Count; var lr = tracers[i].lr;
+            lr.sharedMaterial = m; lr.positionCount = 2; lr.SetPosition(0, from); lr.SetPosition(1, to); lr.enabled = true;
+            tracers[i] = (lr, Time.unscaledTime);
+        }
+
+        /// <summary>The weapon's effective range round agent k when its weapon is drawn and it is selected (radius in m; 0 hides).</summary>
+        public void ShowRange(int k, Vector3 centre, float radius)
+        {
+            var lr = ranges[k];
+            if (!lr) { lr = ranges[k] = NewLine("range/" + k, select, 0.05f); lr.loop = true; }
+            if (radius <= 0f) { if (lr.enabled) lr.enabled = false; return; }
+            const int n = 64; lr.positionCount = n;
+            for (int i = 0; i < n; i++) { float a = i * Mathf.PI * 2f / n; lr.SetPosition(i, centre + new Vector3(Mathf.Cos(a) * radius, 0.06f, Mathf.Sin(a) * radius)); }
+            lr.enabled = true;
+        }
 
         /// <summary>The rest of agent k's walk to an act (null or fewer than two points hides it).</summary>
         public void ShowAct(int k, List<Vector3> pts)
@@ -92,7 +124,7 @@ namespace Suborned.Play
         public void Tick()
         {
             var g = host.Game; var s = g.S;
-            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside ? null : op.Pos); }
+            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside ? null : op.Pos, op.Down); }
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
             Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.ValePos(), g.ValeP.Down);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
@@ -116,7 +148,7 @@ namespace Suborned.Play
             for (int i = 0; i < MaxHostiles; i++)
             {
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
-                Set(hostileKeys[i], h != null && h.Present && !h.Down ? h.Pos(g.Tick) : (Pt?)null);
+                Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
                 if (h != null) Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
             }
         }
@@ -130,6 +162,8 @@ namespace Suborned.Play
         /// <summary>Per frame: eases positions, draws the cones and the selection rings.</summary>
         public void Frame(float alpha)
         {
+            float now = Time.unscaledTime;
+            foreach (var (lr, born) in tracers) if (lr.enabled && now - born > 0.15f) lr.enabled = false;
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;

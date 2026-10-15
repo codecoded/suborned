@@ -172,8 +172,13 @@ namespace Suborned.Play
         }
 
         /// <summary>A world or end event (the text's `events`): up to `most` of its speakers who have a line say it.</summary>
+        readonly Dictionary<string, int> beatAt = new();
+
         void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most)
         {
+            // a city event that repeats (a drawn weapon seen each tick, gunfire) speaks at most once every 15 s
+            if (e.Kind == "world" && beatAt.TryGetValue(e.Id, out var last) && Game.Tick - last < 15 * Game.Hz) return;
+            beatAt[e.Id] = Game.Tick;
             int said = 0;
             foreach (var sp in e.Speakers)
             {
@@ -273,6 +278,8 @@ namespace Suborned.Play
                 if (Text.Events.TryGetValue("cliffhanger", out var c)) WorldBeat(c, "unnamed", "", Feedback.Info, 2); // `named` waits on Sky
                 return;
             }
+            // an agent hit down speaks for themself (the event lists all four; the first with a line would always be the Scout)
+            foreach (var ag in OpKeys) if (code == ag + ".down" && ag != "enforcer") { Beat("agent-down", null, ag, kind: Feedback.Refused); return; }
             if (code.StartsWith("fail.") && Text.Events.TryGetValue("fail", out var fl)) { WorldBeat(fl, code[5..], "", Feedback.Refused, 2); return; }
             bool spoke = false;
             foreach (var e in Text.Events.Values)

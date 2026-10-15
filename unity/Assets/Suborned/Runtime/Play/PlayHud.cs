@@ -16,8 +16,8 @@ namespace Suborned.Play
     public sealed class PlayHud : MonoBehaviour
     {
         // never kept over a domain reload (a kept style with its textures gone would draw nothing): built on the first OnGUI
-        [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white, ring, refusedPlate, okPlate, cursorAct;
-        [System.NonSerialized] bool cursorIsAct;
+        [System.NonSerialized] HandoverHost host; [System.NonSerialized] Texture2D plate, plateLit, edge, pipOn, pipOff, white, ring, refusedPlate, okPlate, cursorAct, cursorAim, cursorNoLine;
+        [System.NonSerialized] int cursorIs; // 0 default, 1 act, 2 crosshair, 3 crosshair with no line
         [System.NonSerialized] GUIStyle txt, big, small, key, mid, smallC, icon, iconSmall, smallBright, txtSmallBold, smallWrap, wrapBright, wrapBold, wrapRefused; float s;
         [System.NonSerialized] Texture2D barOn, barOff, chipAgent, refusedText;
         // per-frame strings are rebuilt only when what they show changes (Sky's freeze review: the HUD allocated ~1,800 blocks a frame)
@@ -50,6 +50,19 @@ namespace Suborned.Play
             t.Apply(); return t;
         }
 
+        /// <summary>The crosshair cursor (placeholder for Glyph's): a ring with four ticks and a gap at the centre.</summary>
+        static Texture2D Crosshair(int n, Color c)
+        {
+            var t = Ring(n, 2, c);
+            for (int i = 0; i < n; i++)
+            {
+                bool tick = (i < n / 2 - 4 || i > n / 2 + 3) && (i < 4 || i > n - 5 || (i > n / 2 - 11 && i < n / 2 + 10));
+                if (!tick) continue;
+                t.SetPixel(i, n / 2, c); t.SetPixel(i, n / 2 - 1, c); t.SetPixel(n / 2, i, c); t.SetPixel(n / 2 - 1, i, c);
+            }
+            t.Apply(); return t;
+        }
+
         void Styles()
         {
             if (txt == null || plate == null)
@@ -57,6 +70,7 @@ namespace Suborned.Play
                 plate = Tex(Teal); plateLit = Tex(TealLit); edge = Tex(Cream); pipOn = Tex(Cream); pipOff = Tex(new Color(1, 1, 1, 0.22f)); white = Tex(Color.white);
                 refusedPlate = Tex(new Color(0.42f, 0.16f, 0.14f, 0.95f)); okPlate = Tex(new Color(0.12f, 0.42f, 0.32f, 0.95f));
                 ring = Ring(64, 3, Cream); cursorAct = Ring(32, 3, Cream, true);
+                cursorAim = Crosshair(32, Cream); cursorNoLine = Crosshair(32, new Color(1f, 0.6f, 0.5f));
                 txt = new GUIStyle(GUI.skin.label) { normal = { textColor = Cream }, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleLeft, richText = true, wordWrap = false, clipping = TextClipping.Overflow };
                 big = new GUIStyle(txt); small = new GUIStyle(txt) { fontStyle = FontStyle.Normal, normal = { textColor = Dim } };
                 key = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter }; mid = new GUIStyle(txt) { alignment = TextAnchor.MiddleCenter };
@@ -117,9 +131,19 @@ namespace Suborned.Play
                     Icon(new Rect(x, y, w, w), a); if (b != null) Icon(new Rect(x + w + 2 * s, y, w, w), b);
                 }
 
+            // the crosshair chip, or the walk-or-run chip on empty ground, at the cursor
+            string alt = host.Ending.Length == 0 && host.Panel == null && host.Loud == null ? host.AimLine ?? (host.Hover == null ? host.MoveChip : null) : null;
+            if (alt != null)
+            {
+                var size = txt.CalcSize(new GUIContent(alt));
+                var r = new Rect(host.Mouse.x + 22 * s, host.Mouse.y + 6 * s, size.x + 24 * s, 34 * s);
+                if (r.xMax > Screen.width) r.x = host.Mouse.x - r.width - 10 * s;
+                bool warn = host.AimLine != null && (host.AimLine.StartsWith("CIVILIAN") || host.AimLine.StartsWith("Vale"));
+                GUI.DrawTexture(r, warn ? refusedPlate : plate); GUI.Label(new Rect(r.x + 12 * s, r.y, size.x, r.height), alt, host.AimLine != null ? txt : smallBright);
+            }
             // the price chip at the cursor
             var it = host.HoverIntent;
-            if (it != null && host.Hover != null && host.Ending.Length == 0 && host.Panel == null)
+            if (alt == null && it != null && host.Hover != null && host.Ending.Length == 0 && host.Panel == null)
             {
                 if (it != chipFor || chipKey != txt.fontSize)
                 {
@@ -136,10 +160,10 @@ namespace Suborned.Play
 
             // top right pill: clock · next event · $ · Trail · Alert pips
             {
-                var r = new Rect(Screen.width - 600 * s, 16 * s, 584 * s, 44 * s); Plate(r); hits.Add(r);
+                var r = new Rect(Screen.width - 760 * s, 16 * s, 744 * s, 44 * s); Plate(r); hits.Add(r);
                 float x = r.x + 14 * s;
                 GUI.Label(new Rect(x, r.y, 90 * s, r.height), pillClock, big); x += 86 * s;
-                GUI.Label(new Rect(x, r.y, 120 * s, r.height), pillNext, txt); x += 104 * s;
+                GUI.Label(new Rect(x, r.y, 270 * s, r.height), pillNext, txtSmallBold); x += 264 * s;
                 GUI.Label(new Rect(x, r.y, 150 * s, r.height), pillCash, txt); x += 128 * s;
                 GUI.Label(new Rect(x, r.y, 70 * s, r.height), pillTrail, txt); x += 64 * s;
                 GUI.Label(new Rect(x, r.y, 24 * s, r.height), "A", txt); Pips(x + 20 * s, r.y + 16 * s, g.Alert, 3, 12 * s); x += 80 * s;
@@ -166,6 +190,12 @@ namespace Suborned.Play
             {
                 var r = column ? new Rect(roster.x + 5 * s, roster.y + 4 * s + i * slotH, slotW - 4 * s, slotH - 8 * s) : new Rect(roster.x + 5 * s + i * slotW, roster.y + 4 * s, slotW - 4 * s, slotH - 8 * s);
                 if (host.Selected[i]) GUI.DrawTexture(r, plateLit);
+                if (host.HintNow != null && host.HintNow.Portrait == i) // the hint rings this portrait
+                {
+                    float b = 3 * s; var cc = GUI.color; GUI.color = new Color(1f, 0.85f, 0.45f, 0.6f + 0.4f * Mathf.Sin(Time.unscaledTime * 5f));
+                    GUI.DrawTexture(new Rect(r.x, r.y, r.width, b), white); GUI.DrawTexture(new Rect(r.x, r.yMax - b, r.width, b), white);
+                    GUI.DrawTexture(new Rect(r.x, r.y, b, r.height), white); GUI.DrawTexture(new Rect(r.xMax - b, r.y, b, r.height), white); GUI.color = cc;
+                }
                 var op = g.Ops[i]; var d = host.DoingOf(i);
                 var x = new Rect(r.xMax - 26 * s, r.y + 28 * s, 22 * s, 22 * s); // the cancel ✕
                 bool canX = d.CanCancel && host.Ending.Length == 0;
@@ -173,6 +203,8 @@ namespace Suborned.Play
                 if (canX && GUI.Button(x, GUIContent.none, GUIStyle.none)) host.CancelAgent(i, null);
                 else if (GUI.Button(r, GUIContent.none, GUIStyle.none)) host.PortraitClick(i, Event.current.shift);
                 GUI.Label(new Rect(r.x + 4 * s, r.y + 2 * s, 28 * s, 20 * s), host.AgentKeyLabel(i), key);
+                if (op.Gun.W != null) // the stance (hold, return, at will) under the key; a dot when the weapon is drawn
+                    GUI.Label(new Rect(r.x + 2 * s, r.y + 15 * s, 32 * s, 14 * s), $"{(op.Gun.Drawn && op.Gun.HolsterAt < 0 ? "•" : "")}{(op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R")}", iconSmall);
                 GUI.Label(new Rect(r.x + 32 * s, r.y + 1 * s, 100 * s, 22 * s), Names[i], txtSmallBold);
                 int hp = op.Gun.Health, hpMax = Mathf.Max(op.Gun.Max, op.Gun.Health);
                 Pips(r.xMax - 6 * s - hpMax * 7 * s * 1.6f, r.y + 9 * s, hp, hpMax, 7 * s);
@@ -187,7 +219,9 @@ namespace Suborned.Play
                     GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * d.Progress / 1000f, bar.height), barOn);
                     GUI.Label(new Rect(bar.xMax + 4 * s, r.y + 49 * s, 46 * s, 18 * s), slotState[i], small);
                 }
-                string under = d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone : "";
+                string under = op.Down ? "down: another agent carries them (right click)" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
+                    : op.Gun.W != null && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
+                if (op.Down) { var cc = GUI.color; GUI.color = new Color(0, 0, 0, 0.45f); GUI.DrawTexture(r, white); GUI.color = cc; }
                 if (under.Length > 0) GUI.Label(new Rect(r.x + 6 * s, r.y + 66 * s, r.width - 10 * s, 18 * s), under, small);
             }
             if (tip != null)
@@ -227,11 +261,14 @@ namespace Suborned.Play
             GUI.Label(new Rect(16 * s, 12 * s, Mathf.Max(400 * s, Screen.width - 660 * s), 22 * s), host.Status, small);
 
             Activities(cam);
+            FightMarks(cam);
             HoverRing(cam);
             Pulses(cam);
             if (host.Panel != null) PanelGui(g);
+            if (host.Loud != null) LoudCardGui(g);
             Pops(cam);
 
+            HintGui(cam);
             if (host.ShowBriefing && host.Ending.Length == 0) Briefing(g);
             if (host.Ending.Length > 0) EndCard(g);
         }
@@ -275,6 +312,104 @@ namespace Suborned.Play
                     var er = new Rect(e.x - 16 * s, Screen.height - e.y - 12 * s, 32 * s, 24 * s);
                     GUI.DrawTexture(er, plateLit); GUI.Label(er, d.QueuedGlyph, iconSmall);
                 }
+            }
+        }
+
+        /// <summary>The hint (Glyph round 6 frame 02's place: top centre, "NEXT STEP", an ✕, H): its line, and a ring pulsing on its target in
+        /// the street. Below it, a toast (the run-seen line) for a few seconds.</summary>
+        void HintGui(Camera cam)
+        {
+            var h = host.HintNow; float w = 620 * s, pad = 12 * s, y = 70 * s;
+            if (h != null && host.Ending.Length == 0 && !host.ShowBriefing)
+            {
+                float th = wrapBright.CalcHeight(new GUIContent(h.Line), w - 2 * pad - 40 * s);
+                var r = new Rect(Screen.width / 2f - w / 2, y, w, th + 34 * s); Plate(r); hits.Add(r);
+                GUI.Label(new Rect(r.x + pad, r.y + 4 * s, 200 * s, 18 * s), "NEXT STEP", small);
+                GUI.Label(new Rect(r.x + pad, r.y + 24 * s, w - 2 * pad - 40 * s, th), h.Line, wrapBright);
+                var x = new Rect(r.xMax - 30 * s, r.y + 6 * s, 22 * s, 22 * s); GUI.DrawTexture(x, plateLit); GUI.Label(x, "✕", mid);
+                if (GUI.Button(x, GUIContent.none, GUIStyle.none)) host.DismissHint();
+                GUI.Label(new Rect(r.xMax - 30 * s, r.y + 30 * s, 22 * s, 16 * s), host.controls.Label(PlayAction.Hints), key);
+                y = r.yMax + 8 * s;
+                if (cam && h.Ring.HasValue)
+                {
+                    var p = cam.WorldToScreenPoint(h.Ring.Value); if (p.z > 0)
+                    {
+                        float k = 1f + 0.15f * Mathf.Sin(Time.unscaledTime * 4f), rw = 90 * s * k * 14f / cam.orthographicSize, rh = rw * 0.62f;
+                        var cc = GUI.color; GUI.color = new Color(1f, 0.85f, 0.45f, 0.95f);
+                        GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); GUI.color = cc;
+                    }
+                }
+            }
+            if (host.Toast != null && Time.unscaledTime < host.ToastUntil)
+            {
+                var size = smallBright.CalcSize(new GUIContent(host.Toast));
+                var r = new Rect(Screen.width / 2f - size.x / 2 - 12 * s, y, size.x + 24 * s, 28 * s);
+                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 12 * s, r.y, r.width, r.height), host.Toast, smallBright);
+            }
+        }
+
+        /// <summary>In a fight: health pips over everyone fighting (the cell when a fight is on, drawn or hurt; anyone who has fired or aims;
+        /// the fight's hostiles), and a DOWN plate with the carry hint over a downed agent.</summary>
+        void FightMarks(Camera cam)
+        {
+            if (!cam || host.Views == null || Event.current.type != EventType.Repaint) return;
+            foreach (var (id, gun) in host.Fighters())
+            {
+                var w = host.WorldOf(id); if (!w.HasValue) continue;
+                var p = cam.WorldToScreenPoint(w.Value + Vector3.up * 2.05f); if (p.z <= 0) continue;
+                float d = 5 * s; int max = Mathf.Max(gun.Max, gun.Health); float width = max * d * 1.6f;
+                var bg = new Rect(p.x - width / 2 - 3 * s, Screen.height - p.y - 3 * s, width + 4 * s, d + 6 * s);
+                GUI.DrawTexture(bg, id is "scout" or "fixer" or "tech" or "enforcer" ? plate : refusedPlate);
+                Pips(bg.x + 3 * s, bg.y + 3 * s, gun.Health, max, d);
+            }
+            var g = host.Game;
+            for (int i = 0; i < 4; i++)
+            {
+                if (!g.Ops[i].Down) continue;
+                var t = host.Views.Find("op/" + Op.Name((OpId)i)); if (!t || !t.gameObject.activeSelf) continue;
+                var p = cam.WorldToScreenPoint(t.position + Vector3.up * 1.0f); if (p.z <= 0) continue;
+                string line = $"{Names[i]} DOWN · select another agent, right click: carry";
+                var size = smallBright.CalcSize(new GUIContent(line));
+                var r = new Rect(p.x - size.x / 2 - 8 * s, Screen.height - p.y - 12 * s, size.x + 16 * s, 24 * s);
+                GUI.DrawTexture(r, refusedPlate); GUI.Label(new Rect(r.x + 8 * s, r.y, r.width, r.height), line, smallBright);
+            }
+        }
+
+        /// <summary>The going-loud card at the cursor (motive-fights.md §2.6): what this order sets off, read from the engine (Game.GoingLoud),
+        /// with the commit ring that fills while the same input is held. The clock keeps running.</summary>
+        void LoudCardGui(Game g)
+        {
+            var gate = host.Loud; var c = gate.Card; float w = 440 * s, pad = 12 * s;
+            var lines = new List<string> { $"<b>GOING LOUD</b>  ·  {gate.What}" };
+            lines.Add($"Now: Alert → {c.AlertTo}{(c.Civilians > 0 ? $" ({c.Civilians} civilian{(c.Civilians > 1 ? "s" : "")} see it)" : "")}");
+            var who = new List<string>();
+            if (c.PoliceInS >= 0) who.Add($"police in {c.PoliceInS} s (reported: {c.ReportedBy})");
+            if (c.Seal >= 0) who.Add($"district sealed at {HandoverHost.MissionClock(c.Seal)}");
+            if (c.RivalsInS >= 0) who.Add(c.RivalsInS == 0 ? "the rivals come now" : $"the rivals in {c.RivalsInS} s");
+            if (c.PatrolBreaks) who.Add("the patrol breaks to you");
+            if (who.Count > 0) lines.Add("Who comes: " + string.Join(" · ", who));
+            var lose = new List<string>();
+            if (c.FightAfter == "loud") lose.Add($"the final fight turns loud ({c.Officers} officers + {c.ResponseOfficers} response)");
+            if (c.GuardAllyLost) lose.Add("the guard won't help");
+            if (c.WarningLost) lose.Add("Inez's warning");
+            if (lose.Count > 0) lines.Add("You lose: " + string.Join(" · ", lose));
+            lines.Add($"Costs: +{c.TrailPerHit} T per person hit, +{c.TrailPerDown} T more per person down");
+            if (host.Text != null && host.Text.LoudCaptured.Length > 0) lines.Add(host.Text.LoudCaptured);
+            string src = gate.Source switch { "F" => host.controls.Label(PlayAction.Draw), "right" => "the right button", "both" => "both buttons", _ => "the button" };
+            lines.Add($"Hold {src} to commit · release or Esc to back off · the clock runs");
+            float h = pad * 2; var hs = new float[lines.Count];
+            for (int i = 0; i < lines.Count; i++) { hs[i] = wrapBright.CalcHeight(new GUIContent(lines[i]), w - 2 * pad - 50 * s) + 2 * s; h += hs[i]; }
+            var r = new Rect(Mathf.Min(gate.Gui.x + 24 * s, Screen.width - w - 8 * s), Mathf.Clamp(gate.Gui.y - h - 16 * s, 8 * s, Screen.height - h - 8 * s), w, h);
+            GUI.DrawTexture(r, refusedPlate); hits.Add(r);
+            if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && r.Contains(Event.current.mousePosition)) { host.GateHoldByCard(); Event.current.Use(); }
+            float y = r.y + pad;
+            for (int i = 0; i < lines.Count; i++) { GUI.Label(new Rect(r.x + pad, y, w - 2 * pad - 50 * s, hs[i]), lines[i], i == 0 ? wrapBold : wrapBright); y += hs[i]; }
+            // the commit ring: 24 dots, filled as the hold runs
+            var cc = new Vector2(r.xMax - 30 * s, r.y + 30 * s); float rad = 16 * s, dot = 4 * s; int on = Mathf.RoundToInt(host.GateProgress * 24);
+            for (int k = 0; k < 24; k++)
+            {
+                float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24;
+                GUI.DrawTexture(new Rect(cc.x + rad * Mathf.Cos(a) - dot / 2, cc.y - rad * Mathf.Sin(a) - dot / 2, dot, dot), k < on ? pipOn : pipOff);
             }
         }
 
@@ -341,7 +476,8 @@ namespace Suborned.Play
         void HoverRing(Camera cam)
         {
             var t = host.Hover; bool act = t != null && t.Kind != "crowd" && t.Kind != "op" && host.Ending.Length == 0;
-            if (act != cursorIsAct) { Cursor.SetCursor(act ? cursorAct : null, act ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIsAct = act; }
+            int want = host.AimLine != null ? (host.AimNoLine ? 3 : 2) : act ? 1 : 0;
+            if (want != cursorIs) { var tex = want == 3 ? cursorNoLine : want == 2 ? cursorAim : want == 1 ? cursorAct : null; Cursor.SetCursor(tex, tex ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIs = want; }
             if (!act || !cam) return;
             var w = host.TargetWorld(t); if (!w.HasValue) return;
             var p = cam.WorldToScreenPoint(w.Value); if (p.z <= 0) return;
@@ -463,7 +599,7 @@ namespace Suborned.Play
         void Refresh(Game g)
         {
             pillKey = Key(g);
-            pillClock = HandoverHost.MissionClock(g.Tick); pillNext = "▶▶ " + HandoverHost.MissionClock(host.NextMark());
+            pillClock = HandoverHost.MissionClock(g.Tick); pillNext = NextOnTimeline(g);
             pillCash = $"${g.Cash:N0}"; pillTrail = $"T {g.Trail}"; pillState = host.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{host.Speed}";
             var c = host.controls;
             pillCity = $"{host.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Briefing)} briefing · {c.Label(PlayAction.DialogueLog)} log · {c.Label(PlayAction.Cancel)} cancel · N next";
@@ -475,6 +611,20 @@ namespace Suborned.Play
                 slotState[i] = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : "";
                 icons[i] = Icons(g, Roles[i]);
             }
+        }
+
+        /// <summary>The briefing's timeline (Fable's): the next mark after now, "▸ 5:30 Handover chime"; a mark the cell can't know yet shows
+        /// "?" until it has happened. Without the text, the engine's next scheduled change.</summary>
+        string NextOnTimeline(Game g)
+        {
+            var tl = host.Text?.Timeline;
+            if (tl == null || tl.Count == 0) return "▶▶ " + HandoverHost.MissionClock(host.NextMark());
+            foreach (var (at, label, known) in tl)
+            {
+                var p = at.Split(':'); int tick = (int.Parse(p[0]) * 60 + int.Parse(p[1])) * Game.Hz;
+                if (tick > g.Tick) return $"▸ {at} {(known ? label : "?")}";
+            }
+            return "▸ the close";
         }
 
         void EndCard(Game g)

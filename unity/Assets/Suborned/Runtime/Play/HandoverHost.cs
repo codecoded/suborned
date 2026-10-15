@@ -138,7 +138,7 @@ namespace Suborned.Play
             views = new HostViews(this, viewRoot, frame);
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
-            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4);
+            Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); beatAt.Clear();
             Track();
             // open on the cell at the getaway bay with Inez's café door in frame
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
@@ -178,6 +178,12 @@ namespace Suborned.Play
             frames++;
             if (Game.Over && Ending.Length == 0) End();
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            for (int k = 0; k < 4; k++)
+            {
+                var t = views.Find("op/" + Op.Name((OpId)k));
+                views.ShowRange(k, t ? t.position : Vector3.zero, Selected[k] && Armed(k) && Drawn(k) && t && t.gameObject.activeSelf ? Game.Ops[k].Gun.W.EffCm / 100f : 0f);
+            }
+            if (moveChipDirty && Time.unscaledTime - moveChipTime >= 0.2f) UpdateMoveChip(lastHover, true);
         }
 
         bool StepOnce()
@@ -185,7 +191,7 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); }
+            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
             Drain();
             return ok;
         }
@@ -194,7 +200,7 @@ namespace Suborned.Play
         void Drain()
         {
             if (Game.Log.Count <= lastLog) return;
-            for (int i = lastLog; i < Game.Log.Count; i++) { Landed(Game.Log[i]); SayLanded(Game.Log[i]); }
+            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); if (x.Code.StartsWith("shot.")) { Shot(x); continue; } Landed(x); SayLanded(x); }
             var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
         }
 
@@ -212,12 +218,17 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
                 if (c.Down(kb, PlayAction.DialogueLog)) LogOpen = !LogOpen;
                 if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
+                if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
+                if (c.Down(kb, PlayAction.Cease)) CeaseFire();
+                if (c.Down(kb, PlayAction.Stance)) CycleStance();
+                if (c.Down(kb, PlayAction.Hints)) ToggleHints();
+                if (kb.leftCtrlKey.wasPressedThisFrame || kb.leftCtrlKey.wasReleasedThisFrame || kb.rightCtrlKey.wasPressedThisFrame || kb.rightCtrlKey.wasReleasedThisFrame) UpdateAim();
                 for (int i = 0; i < 4; i++)
                 {
                     if (c.Down(kb, PlayAction.Verb1 + i)) { if (Panel != null) PanelKey(i); else Pick(i); }
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
-                if (kb.escapeKey.wasPressedThisFrame) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; }
+                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; }
                 if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
@@ -227,8 +238,13 @@ namespace Suborned.Play
                 if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
                 if (pan != Vector2.zero && cam) Pan(pan * panSpeed * Time.unscaledDeltaTime);
             }
+            GateFrame(kb, mouse);
             if (mouse == null || !cam) return;
             var p = mouse.position.ReadValue();
+            // both buttons together: panic (once a fight is on); the drag and the right click's own act give way
+            if ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed))
+            { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
+            Sweep(p, mouse.rightButton.isPressed);
             if (mouse.middleButton.isPressed) { var d = mouse.delta.ReadValue(); Pan(-d * (2f * cam.orthographicSize / Screen.height)); }
             if (c.edgeScroll && Application.isFocused)
             {
@@ -328,9 +344,11 @@ namespace Suborned.Play
             lastHover = screen; Mouse = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y); // GUI space: origin top left
             var t = TargetAt(screen);
             string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}";
-            if (key == intentKey) return;
+            if (key == intentKey) { if (t == null) UpdateMoveChip(screen, false); return; }
             intentKey = key; Hover = t;
             HoverIntent = t == null ? null : IntentFor(t);
+            UpdateAim();
+            if (t == null) UpdateMoveChip(screen, false); else MoveChip = null;
         }
 
         /// <summary>Left click: on an agent, select (Shift adds); anywhere else, the selection walks there (roads cross anywhere). A second
@@ -361,6 +379,10 @@ namespace Suborned.Play
             lastRight = screen;
             if (Game == null || Fault != null || !cam) return;
             var t = TargetAt(screen);
+            if (t != null && t.Kind == "op") { if (CarryDowned(t, screen)) return; t = null; }
+            bool ctrl = controls.Held(Keyboard.current, PlayAction.Force);
+            if (t != null && ShotAt(t, ctrl, out var fireAt, out var force)) { if (Panel != null) ClosePanel(); FireSelected(fireAt, force, screen, "right"); sweeping = true; return; }
+            if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { Pop("never fire on Vale: the mission fails", screen, TargetWorld(t), Feedback.Refused); return; }
             if (t != null && t.Kind != "op")
             {
                 PointerHover(screen);
@@ -389,7 +411,7 @@ namespace Suborned.Play
         {
             for (int n = 0; n < 4; n++) if (Selected[n]) pending[n] = null; // a new walk replaces the order an agent was walking for
             if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) return;
-            var at = frame.Engine(w); int k = 0;
+            var at = frame.Engine(w); int k = 0; bool said = false;
             for (int n = 0; n < 4; n++)
             {
                 if (!Selected[n]) continue;
@@ -398,7 +420,8 @@ namespace Suborned.Play
                 var want = new Pt(at.X + (k % 2) * 90, at.Y + (k / 2) * 90); k++;
                 Pt? to = Game.S.Grid.Free(want) ? want : Game.S.Grid.NearestFree(want);
                 if (!to.HasValue || G.Dist(to.Value, want) > 300) { Pop("can't walk there: nothing walkable within 3 m", screen, null, Feedback.Refused); continue; }
-                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null);
+                if (Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null) && !said)
+                { said = true; Beat("ack", run ? "run" : "move", Op.Name((OpId)n)); } // the first agent answers (the others would only repeat it)
             }
         }
 
@@ -424,12 +447,17 @@ namespace Suborned.Play
             for (var x = t; x && x != viewRoot; x = x.parent)
             {
                 var n = x.name;
-                if (n.StartsWith("op/")) return new Target { Kind = "op", Key = n[3..], Label = n[3..] };
+                if (n.StartsWith("op/")) return new Target { Kind = "op", Key = n[3..], Label = Game.Ops[(int)Op.Parse(n[3..])].Down ? $"the downed {n[3..]}" : n[3..] };
                 if (n is "waitress" or "driver" or "guard" or "councillor") return new Target { Kind = "person", Key = n, Label = n == "councillor" ? "Vale" : n == "waitress" ? "Inez" : $"the {n}" };
                 if (n == "patrol") return new Target { Kind = "patrol", Key = "patrol", Label = "the patrol" };
                 if (n.StartsWith("rivals/")) return new Target { Kind = "rivals", Key = "rivals", Label = "the rival crew" };
                 if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = "the response unit" };
-                if (n.StartsWith("hostile/")) return new Target { Kind = "hostile", Key = "hostiles", Label = "a hostile" };
+                if (n.StartsWith("hostile/"))
+                {
+                    int i = int.Parse(n[8..]); if (i >= Game.Hostiles.Count || Game.Hostiles[i].Down) return null;
+                    var id = Game.Hostiles[i].Id;
+                    return new Target { Kind = "hostile", Key = id, Label = id.StartsWith("rival") ? $"a rival ({id})" : $"an officer ({id})" };
+                }
                 if (n.StartsWith("crowd/")) return new Target { Kind = "crowd", Key = n, Label = "a passer-by" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
@@ -519,7 +547,7 @@ namespace Suborned.Play
                     return null;
                 case "fire":
                     {
-                        string target = t.Kind == "person" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "hostile" ? "hostiles" : "";
+                        string target = t.Kind == "person" ? (t.Key == "councillor" ? "" : t.Key) : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "hostile" ? t.Key : "";
                         if (target.Length == 0) return null;
                         var i = I("fire", target, "", $"Fire on {t.Label}"); i.Time = "until down"; i.Trail = $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
                     }
@@ -572,7 +600,7 @@ namespace Suborned.Play
                 else if (!quietRefusal) Pop(Humanise(o, r.why), screen, target, Feedback.Refused);
             }
             if (!r.ok && !quietRefusal && o.Do != "move") SayRefused(o, r.why);
-            if (r.ok) { var keep = Status; Drain(); Status = keep; }
+            if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); }
             Save();
             views.Tick(); views.Frame(1f); intentKey = ""; Track();
             if (Game.Over && Ending.Length == 0) End();
@@ -727,7 +755,8 @@ namespace Suborned.Play
                 case "enter": return g.Vale == ValeAt.Office ? "" : "Vale is not inside";
                 case "take": return g.Vale == ValeAt.Pickup ? "" : "Vale is not at his car yet";
                 case "extract": return g.Vale == ValeAt.WithEnforcer ? "" : "you don't have Vale yet";
-                case "fire": return op.Gun.W == null ? "carries no weapon" : op.Running ? "running: walk or stop to fire" : "";
+                case "fire": return op.Gun.W == null ? "carries no weapon (Arms)" : op.Running ? "a running operative doesn't fire: walk or stop first"
+                        : o.Target is "waitress" or "driver" ? $"{o.Target} is a civilian or a contact: a target only when forced (Ctrl)" : "";
             }
             return "";
         }
@@ -754,6 +783,7 @@ namespace Suborned.Play
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
                 case "mislead": tp = g.RivalsPose()?.pos; reach = R.ActReachCm; break;
                 case "fire": tp = PosOf(t); if (op.Gun.W == null) return null; reach = op.Gun.W.EffCm; break; // walk into the weapon's effective band
+                case "carry": tp = g.Ops[(int)Op.Parse(o.Target)].Pos; reach = R.ActReachCm; break;
                 default: return null; // a call is made from wherever the Fixer stands
             }
             if (place.Length > 0)
@@ -783,7 +813,7 @@ namespace Suborned.Play
         Pt? PosOf(Target t) => t.Kind switch
         {
             "person" => Game.PersonPos(Game.PersonByRole(t.Key)), "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
-            "security" => Game.SecurityPose()?.pos, "hostile" => TargetWorld(t) is Vector3 w ? frame.Engine(w) : (Pt?)null, _ => null,
+            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, _ => null,
         };
 
         int ReachOf(string ev)
@@ -848,7 +878,7 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, _ => null };
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }
 

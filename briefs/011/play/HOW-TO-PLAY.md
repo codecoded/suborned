@@ -28,6 +28,17 @@ Sky's scheme of 2026-10-15 ("everything but rotation"). The camera keeps yaw 30.
 | **✕ on a roster slot, or on the ring over an agent** | the same cancel for that agent. Hovering the ✕ shows what it costs ("Cancel Watch — The time is spent and nothing lands."). |
 | **L** (or click the log's header) | open or collapse the **dialogue log** (bottom left). Collapsed, it shows the latest line. |
 | **B** | the briefing |
+| **hover empty ground** | with an agent selected, the chip shows the walk and the run there: "Scout: walk 8 s · run 4 s · unseen by security · 2 people near", or who would see the run and the Alert it costs, or why they can't run |
+| **F** | **draw or holster** the selection's weapons (every agent is armed: pistols, the Enforcer a carbine). A thin ring shows each drawn, selected agent's effective range. |
+| **hover a target with weapons drawn** | the cursor becomes a crosshair, and the chip shows the shot: "The guard · hits 4 in 7 · down in 7.0 s · 12 m effective · +2 T hit · +2 T down" (the engine's accuracy and hit counter; "✕ no clear line", "out of range", "in cover"). In the final fight the Trail reads "untraced". |
+| **right click a combatant** | **fire until down**, every armed selected agent in range and in line. A final-fight hostile always; the guard, the patrol, the rival crew or the response unit when a weapon is drawn. **Hold the right button and sweep** onto another combatant to move the fire to it. |
+| **Ctrl + right click** | force fire on a civilian or a contact (Inez, the driver). Vale can never be targeted. |
+| **the going-loud card** | the first order that would make the run loud (a draw someone sees, a shot before a fight is on) opens a card at the cursor: Alert after it, police and the seal, the rivals, the patrol, what you lose (the final fight turns loud, the guard won't help, Inez's warning, anyone downed is captured unless carried) and the Trail per person. **Keep holding the same input (F or the right button) for 0.5 s** to commit; release or Esc backs off. The clock keeps running (Space still pauses). |
+| **X** | cease fire (weapons stay drawn) |
+| **V** | stance for the selection: hold fire → return fire → fire at will. The roster shows it under the F-key (H, R, A; a dot when drawn). |
+| **both mouse buttons together** | **panic**: every armed agent draws and fires at will. Only once a fight is on. |
+| **right click a downed agent** | with another agent selected: that agent walks over and carries them; walk them to the car |
+| **H** | hints on or off, for good (kept between sessions) |
 | **every order answers** | a refusal pops what is wrong and what unlocks it, at the cursor and over the target, and goes in the dialogue log; a taken order pops ✓, pulses a ring on the target, and the agent answers in the log. An agent too far away walks to the act's place first (the Tech to the cabinet, the Enforcer to the door), then acts. |
 | **1 2 3 4** | pick a different verb. The hotbar above the roster shows them and lights the one a right click will give. |
 | **F1 F2 F3 F4** or a **roster portrait** | select Scout, Fixer, Tech or Enforcer (Shift adds). Press twice quickly, or double-click the portrait, to centre the camera on them. |
@@ -51,12 +62,14 @@ The roster and hotbar can sit at the bottom, in a left column or in the corner: 
 If the picked verb doesn't fit the target, a right click walks the agent there.
 
 ## What you see
-- **Top right:** the mission clock, the next scheduled event, cash, Trail, Alert (three pips), and PAUSE or the speed. Under it, the objective ("Take Vale alive to the getaway car · closes 8:30").
+- **Top right:** the mission clock, the next mark on the briefing's timeline ("▸ 5:30 Handover chime"; a mark the cell can't know yet shows "?"), cash, Trail, Alert (three pips), and PAUSE or the speed. Under it, the objective ("Take Vale alive to the getaway car · closes 8:30").
 - **Top left:** the last thing that happened.
 - **Bottom:** the roster. Each slot: F-key, name, health pips, and **what the agent is doing now**: an icon and a line ("Watching Inez", "Walking to the cabinet", "Holding the loop", "Waiting for orders"), a progress bar with the seconds left, the act queued after a walk ("then: Listen to Inez") or what happens when it lands, and an ✕ to cancel. The 1–4 hotbar sits above it.
 - **Bottom left:** the dialogue log. Each order plays its beats in order: the agent's answer when ordered, again on arrival, then what lands (the Scout's read, the person's reply and the Fixer's reaction, the Tech's "Looped. I'm tied here."). The city speaks too: the rivals arriving, the chime, the guard at the café, the win and the fail. Lines are picked deterministically, so a replayed run reads the same.
 - **Over each busy agent:** the act's icon in a ring of progress dots; hover it for the ✕. Walking to an act, a line runs on the ground to where the act happens, with the act's icon at its end.
 - **Under each agent:** a number on the pavement and what they are doing.
+- **Top centre:** a training hint ("NEXT STEP") after 8 s with no order: one at a time, each once a run, gone when you do what it suggests; its target pulses in the street (or on a portrait). ✕ drops it; H turns hints off. Below it, once, a toast when security first sees someone run.
+- **In a fight:** a tracer per shot (cell cream, security amber, rivals violet; a miss runs past and ends on the ground), a pulse on a hit, health pips over everyone fighting, a downed agent laid flat with "DOWN · right click: carry", and the roster slot greyed.
 - **Over Inez, the driver, the guard and Vale:** at most two signs. "?" means temperament unknown. "$?" means need suspected (from the briefing), and "$" means need known. ✓ means turned. ◆door marks the guard on the door. ★ marks Vale.
 - **On the ground:** red cone outlines are cameras (grey when looped). The amber outline is the guard's sight, and the violet one is the rivals' sight.
 - **The city's people** walk their routines (the engine's crowd). Anyone on the street can witness what you do.
@@ -85,5 +98,5 @@ At the end, `<file>.end.txt` says whether Unity's own replay of the session matc
 - The cell starts under the roofed getaway bay, so pan the camera or press F1–F4 twice to centre on an agent.
 - The Fixer's call has no verb key: right click the turned contact.
 - If Unity isn't the front app, the clock waits (the project's `runInBackground` is off).
-- The final fight is fought with the Fire verb (2 for the Enforcer) on the hostiles, and they hit back. The real-time fight controls (F draw, X cease, V stance, the going-loud card) come next.
+- Tracers, the crosshair and the cards are placeholders for Glyph's art. The hint H7 (the patrol coming round to the door) is approximated as the patrol on its sweep within 20 m of the door.
 - Background people walk on the engine's grid, between the routine stops from Pulse's fix cast. That fixture stands in until a cast passes M-2.
