@@ -295,7 +295,9 @@ namespace Suborned.Sim
         void PatrolChase()
         {
             if (!PatrolChasing || PatrolDown || PatrolAwayUntil > Tick || Tick % Hz != 0) return;
-            var e = OpOf(chaseOp); var target = e.Inside ? S.Stand(S.SecTo) : e.Pos;
+            if (PatrolGun.Target.Length > 0 && !patrolReturning) return; // engaging: it stops (Pulse §3.6)
+            var target = patrolReturning ? SweepPos(Tick) : patrolOrigin; // to the shot's origin; resuming, back to its sweep
+            if (patrolReturning && G.Within(chasePos, target, 100)) { PatrolChasing = false; patrolReturning = false; PatrolGun.NoFoeSince = -1; Note("patrol.sweep", "The patrol is back on its sweep."); return; }
             var t = S.Grid.NearestFree(target); var from = S.Grid.NearestFree(chasePos);
             if (!t.HasValue || !from.HasValue) return;
             var route = S.Grid.Route(from.Value, t.Value); if (route == null) return;
@@ -399,6 +401,7 @@ namespace Suborned.Sim
         public (Pt pos, Pt facing)? SecOfficerPose(int k)
         {
             if (Tick < SecurityArrives || SecGuns[k].Down) return null;
+            if (secJoined[k]) { var h = HostileOf(SecGuns[k].Id)!; var p = h.Pos(Tick); return (p, Car - p == new Pt(0, 0) ? new Pt(100, 0) : Car - p); } // joined the loud fight: faces the car
             long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm, end = Math.Max(0, securityPath.Length - k * SecFileMm);
             if (mm < 0) mm = 0;
             if (mm >= end) return (securityPath.At(end), Back(securityPath));
@@ -488,7 +491,7 @@ namespace Suborned.Sim
             if (PatrolDown || PatrolAwayUntil > Tick || PatrolChasing) return;
             var pos = PatrolPose()!.Value.pos;
             if (!G.Within(pos, at, R.PatrolBreakCm)) return;
-            chasePos = pos; PatrolChasing = true; chaseOp = who;
+            chasePos = pos; PatrolChasing = true; chaseOp = who; patrolOrigin = at; patrolReturning = false; PatrolGun.NoFoeSince = -1;
             Note("patrol.breaks", "The patrol breaks its route and turns toward the gunfire.");
         }
 

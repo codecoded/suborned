@@ -5,7 +5,7 @@
  "start": {},
  "orders": [
   {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Boarding pavilion"},
-  {"tick": 3700, "op": "enforcer", "do": "fire", "target": "councillor"}
+  {"tick": 3700, "op": "enforcer", "do": "fire", "target": "councillor", "force": true}
  ],
  "until": 5100
 }

@@ -120,43 +120,43 @@ namespace Suborned.Sim
             return HostileOf(id)?.Moving(Tick) ?? false;
         }
 
-        /// <summary>A target standing still beside cover (rulebook weapons.mod.cover). The cover points are Pulse's build-time data for the
-        /// site (motive-fights.md §2.7); until they land, nobody stands beside cover.</summary>
-        bool BesideCover(string id, Pt at) => false;
+        /// <summary>The cover modifier on a shot at `t` standing at `at` from a shooter at `from` (Pulse §2.3, rulebook ai.cover): standing
+        /// still beside a cover point that shields it, past point blank: weapons.mod.cover for full cover, ai.cover.modPartial for partial.</summary>
+        int CoverMod(string t, Pt at, Pt from)
+        {
+            if (S.Cover.Count == 0 || Moving(t)) return 1000;
+            return CoverRules.Modifier(S.Cover, at, from, Tick / Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
+        }
 
         static long Dist(Pt a, Pt b) => G.Isqrt(G.D2(a, b));
         bool Ready(Gun g) => g.Drawn && g.HolsterAt < 0 && Tick >= g.DrawReady;
 
         // ---------------------------------------------------------------- the tick
 
+        /// <summary>One tick of fighting (Pulse §1): the cell, then the guard as an ally, then security (by id: the response unit, the
+        /// officers, an engaging guard, the patrol), then the rivals (by id). Every body decides from the start-of-tick state; the shots are
+        /// applied together at the end (accumulators at the decision, then damage, then down).</summary>
         void Combat()
         {
+            pending.Clear();
             foreach (var op in Ops) { var g = op.Gun; if (g.HolsterAt >= 0 && Tick >= g.HolsterAt) { g.Drawn = false; g.HolsterAt = -1; } }
-            foreach (var op in Ops) { CellShooter(op); if (Over) return; }
-            // the city: the guard, the patrol, the response unit's officers, the rival crew; then the final fight's hostiles
-            if (GuardAlly) { if (FightSprung != INF) AllyShooter(); }
-            else if (GuardEngaged && !GuardDown) HostileShooter("guard", GuardGun, PosOf("guard"), GuardWatching, false);
-            if (Over) return;
-            PatrolTracking = false;
-            if (PatrolChasing && !PatrolDown && PatrolAwayUntil <= Tick) { HostileShooter("patrol", PatrolGun, PosOf("patrol"), PatrolWatching, false); PatrolTracking = PatrolGun.Target.Length > 0; }
-            if (Over) return;
-            SecurityTracking = false;
-            for (int k = 0; k < SecGuns.Length; k++)
-            {
-                int kk = k; HostileShooter(SecGuns[k].Id, SecGuns[k], SecOfficerPose(k)?.pos, p => SecOfficerWatching(kk, p), false);
-                SecurityTracking |= SecGuns[k].Target.Length > 0;
-                if (Over) return;
-            }
-            RivalsTracking = false;
-            if (RivalsDrawn && RivalsPresent) { HostileShooter("rivals", RivalsGun, PosOf("rivals"), RivalsWatching, false); RivalsTracking = RivalsGun.Target.Length > 0; }
-            if (Over) return;
-            foreach (var h in Hostiles)
-            {
-                if (!h.Present) continue;
-                var at = h.Pos(Tick); var w = h.Gun.W!;
-                HostileShooter(h.Id, h.Gun, at, p => G.Within(at, p, w.MaxCm) && Sees(at, p), true);
-                if (Over) return;
-            }
+            foreach (var op in Ops) CellShooter(op);
+            if (GuardAlly && FightSprung != INF) AllyBody();
+            var security = new List<string>();
+            for (int k = 0; k < SecGuns.Length; k++) if (!IsFightHostile(SecGuns[k].Id)) security.Add(SecGuns[k].Id);
+            foreach (var h in Hostiles) if (!h.Id.StartsWith("rival-", StringComparison.Ordinal)) security.Add(h.Id);
+            if (!GuardAlly) security.Add("guard");
+            security.Add("patrol");
+            security.Sort(StringComparer.Ordinal);
+            foreach (var id in security) CityBody(id);
+            var rivals = new List<string> { "rivals" };
+            foreach (var h in Hostiles) if (h.Id.StartsWith("rival-", StringComparison.Ordinal)) rivals.Add(h.Id);
+            rivals.Sort(StringComparer.Ordinal);
+            foreach (var id in rivals) CityBody(id);
+            PatrolTracking = PatrolGun.Target.Length > 0 && !IsFightHostile("patrol");
+            SecurityTracking = false; for (int k = 0; k < SecGuns.Length; k++) SecurityTracking |= SecGuns[k].Target.Length > 0;
+            RivalsTracking = RivalsGun.Target.Length > 0;
+            Resolve();
         }
 
         /// <summary>An operative shoots: its standing fire order, else what its stance allows. Not while running, carrying, inside or doing
@@ -221,55 +221,10 @@ namespace Suborned.Sim
         bool Combatant(string id)
         {
             var g = GunOf(id); if (g == null || g.Down || !PosOf(id).HasValue) return false;
-            if (IsFightHostile(id)) return HostileOf(id)!.Present;
+            if (IsFightHostile(id)) { var h = HostileOf(id)!; return h.Present && h.Gun.St != "break" && h.Gun.St != "gone"; }
             if (id == "guard" && GuardAlly) return false;
             if (IsOpId(id) || IsCivilianTarget(id)) return false;
             return IsOpId(g.Target) || g.Fired;
-        }
-
-        /// <summary>A hostile shoots (motive-fights.md §2.7 target priority): 1, whoever is shooting at it; 2, whoever holds Vale; 3, the
-        /// nearest operative with a weapon out; 4, the nearest operative. Before the final fight only a foe is a target: an operative with a
-        /// weapon out, who has fired, or who holds Vale. A first sight costs react; a new target, aimNew.</summary>
-        void HostileShooter(string id, Gun g, Pt? posN, Func<Pt, bool> sees, bool anyOp)
-        {
-            if (g.Down || g.W == null || !posN.HasValue) { g.Target = ""; return; }
-            var pos = posN.Value;
-            string t = PickTarget(id, pos, sees, anyOp);
-            if (t.Length == 0) { g.Target = ""; return; }
-            Aim(g, t, true);
-            if (Tick >= g.NextShot) { var at = PosOf(t)!.Value; Shoot(id, g, pos, t, at, Dist(pos, at), Moving(id), false); }
-        }
-        string PickTarget(string id, Pt pos, Func<Pt, bool> sees, bool anyOp)
-        {
-            string p1 = "", p3 = "", p4 = ""; long d1 = long.MaxValue, d3 = long.MaxValue, d4 = long.MaxValue; bool vale = false;
-            foreach (var op in Ops)
-            {
-                if (op.Down || op.Inside) continue;
-                bool foe = anyOp || op.Gun.Drawn || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
-                if (!foe || !sees(op.Pos)) continue;
-                long d = G.D2(pos, op.Pos); string name = Sim.Op.Name(op.Id);
-                if (op.Gun.Target == id && op.Gun.Fired && d < d1) { d1 = d; p1 = name; }
-                if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) vale = true;
-                if (op.Gun.Drawn && d < d3) { d3 = d; p3 = name; }
-                if (d < d4) { d4 = d; p4 = name; }
-            }
-            if (anyOp && GuardAlly && !GuardDown && GuardGun.Target == id) // the guard ally shooting at this hostile
-            {
-                var ga = PosOf("guard"); if (ga.HasValue && sees(ga.Value)) { long d = G.D2(pos, ga.Value); if (d < d1) { d1 = d; p1 = "guard"; } }
-            }
-            return p1.Length > 0 ? p1 : vale ? "enforcer" : p3.Length > 0 ? p3 : p4;
-        }
-
-        /// <summary>The guard as the cell's ally in the safe fight: he shoots the nearest rival he can see.</summary>
-        void AllyShooter()
-        {
-            var g = GuardGun; if (GuardDown) return;
-            var pos = PosOf("guard"); if (!pos.HasValue) return;
-            var h = NearestHostile(pos.Value, g.W!.MaxCm);
-            if (h == null) { g.Target = ""; return; }
-            Aim(g, h.Id, false);
-            var at = h.Pos(Tick);
-            if (Tick >= g.NextShot) Shoot("guard", g, pos.Value, h.Id, at, Dist(pos.Value, at), GuardAllyMoving, false);
         }
 
         /// <summary>Take a target: a new one resets the accumulator to acc.start and waits aimNew, or react on a hostile's first sight.</summary>
@@ -282,20 +237,34 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- a shot
 
+        sealed class PendingShot { public string By = "", T = ""; public Gun G = null!; public Pt At; public long D; public int Acc; public bool Hit; }
+        readonly List<PendingShot> pending = new List<PendingShot>();
+
+        /// <summary>A body fires: the accumulator moves now (it is the shooter's), the shot lands with the others at the end of the tick.</summary>
         void Shoot(string by, Gun g, Pt from, string t, Pt at, long d, bool moving, bool vale)
         {
-            var tg = GunOf(t)!;
-            int acc = R.Accuracy(g.W!, d, moving, BesideCover(t, at), vale, !g.Trained);
+            int acc = R.Accuracy(g.W!, d, moving, CoverMod(t, at, from), vale, !g.Trained);
             g.Acc += acc; bool hit = g.Acc >= 1000; if (hit) g.Acc -= 1000;
             g.NextShot = Tick + g.W!.Every; g.Fired = g.Engaged = true;
-            tg.ShotBy = by;
-            if (IsOpId(t)) CellFiredOn = true;
-            Note(hit ? "shot.hit" : "shot.miss", $"{by} fires on {t} at {d / 100} m ({acc} ‰): {(hit ? "hit" : "miss")}.");
-            bool cell = IsOpId(by), untraced = cell && IsFightHostile(t) && !R.FightTraced;
-            if (cell) CellGunfire(OpOf(Sim.Op.Parse(by)), t, at, untraced);
-            else if (!IsFightHostile(by) && !(by == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + by); // any gunfire (§05)
-            if (Over) return;
-            if (hit && !tg.Down) Damage(t, tg, g.W.Damage, by, cell, untraced);
+            pending.Add(new PendingShot { By = by, T = t, G = g, At = at, D = d, Acc = acc, Hit = hit });
+        }
+
+        void Resolve()
+        {
+            foreach (var s in pending)
+            {
+                if (Over) return;
+                var tg = GunOf(s.T)!;
+                tg.ShotBy = s.By; tg.ShotByTick = Tick;
+                if (IsOpId(s.T)) CellFiredOn = true;
+                Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
+                bool cell = IsOpId(s.By), untraced = cell && IsFightHostile(s.T) && !R.FightTraced;
+                if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
+                else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
+                if (Over) return;
+                if (s.Hit && !tg.Down) Damage(s.T, tg, s.G.W!.Damage, s.By, cell, untraced);
+            }
+            pending.Clear();
         }
 
         /// <summary>What the cell's shot sets off. Untraced in the final fight (fight.traced off, Sky 2026-10-15): the shots are counted apart
@@ -408,7 +377,12 @@ namespace Suborned.Sim
             if (h != null)
             {
                 string who = by == "enforcer" ? "The Enforcer" : by == "guard" ? "The guard" : "The " + by;
-                if (down) { if (by == "enforcer") DownedByEnforcer++; else if (by == "guard") DownedByGuard++; else DownedByCell++; Note("fight.down", $"{who} drops {t}."); }
+                if (down)
+                {
+                    if (by == "enforcer") DownedByEnforcer++; else if (by == "guard") DownedByGuard++; else DownedByCell++;
+                    Note("fight.down", $"{who} drops {t}."); ReleaseCover(tg); Stop(h);
+                    if (IsRival(t)) RivalDown();
+                }
                 else Note("fight.hit", $"{who} hits {t}.");
             }
         }
@@ -508,7 +482,7 @@ namespace Suborned.Sim
                     CallSecurity(R.RespSeenS, "The guard calls in a drawn weapon.");
                     return;
                 case "patrol":
-                    if (!PatrolChasing && !PatrolDown && PatrolAwayUntil <= Tick) { chasePos = PatrolPose()!.Value.pos; PatrolChasing = true; chaseOp = op.Id; Note("patrol.breaks", "The patrol breaks its route and turns on the drawn weapon."); }
+                    if (!PatrolChasing && !PatrolDown && PatrolAwayUntil <= Tick) { chasePos = PatrolPose()!.Value.pos; PatrolChasing = true; chaseOp = op.Id; patrolOrigin = op.Pos; patrolReturning = false; PatrolGun.NoFoeSince = -1; Note("patrol.breaks", "The patrol breaks its route and turns on the drawn weapon."); }
                     CallSecurity(R.RespSeenS, "The patrol reports a drawn weapon.");
                     return;
                 case "camera:entrance": case "camera:pickup":

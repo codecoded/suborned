@@ -106,12 +106,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     return [st.polygon.reduce((a: number, p: V) => a + p[0], 0) / st.polygon.length, st.polygon.reduce((a: number, p: V) => a + p[1], 0) / st.polygon.length];
   };
   for (const pt of mission.points as { id: string; at?: V; structure?: string; src: string; reason: string }[]) put(pt.id, pt.at ?? centreOf(pt.structure!), pt.src, pt.reason);
-  // the final fight (§07 [S]): where the rivals lie in wait round the getaway car, where the police stop, where the guard fights from
-  const ambush: V[] = [[20, -56], [-4, -58], [22, -42], [-6, -44], [14, -36]];
-  ambush.forEach((a, i) => put(`ambush-${i + 1}`, a, 'GDD §07 safe: rivals ambush extraction', i === 0 ? 'five spots 12–16 m round the getaway car on the open square, each with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe).' : 'as ambush-1.'));
-  const police: V[] = [[-4, -50], [-8, -56], [-2, -42], [-10, -46]];
-  police.forEach((a, i) => put(`police-${i + 1}`, a, 'GDD §07 loud: police from west street, 2–4 officers', i === 0 ? 'four stops between the north street (the response unit\'s entry) and the getaway car, 13–19 m short of it; the officers take the first n (fight.loud).' : 'as police-1.'));
-  put('guard-ally', [18, -46], 'GDD §07 safe: the guard (never saw you) fights them', 'on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots.');
+  // the final fight (§07 [S]): its posts are mission.json points too (ambush-*, police-*, guard-ally; Waymark moved them off the road onto cover)
+  const ambush = (mission.points as { id: string }[]).filter((p) => /^ambush-\d+$/.test(p.id)), police = (mission.points as { id: string }[]).filter((p) => /^police-\d+$/.test(p.id));
   for (const [id, p] of Object.entries(places)) if (!free([p.at[0]! / 100, p.at[1]! / 100])) (p as Place & { stand?: number[] }).stand = P(nearestFree([p.at[0]! / 100, p.at[1]! / 100]));
 
   // ---- cameras (O-6): mount, facing, reach and half-width, all cm; a point is watched inside the cone on a clear sightline
@@ -171,16 +167,30 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
     getaway: { car: 'd:Getaway bay', src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
-    fight: { ambush: ambush.map((_, i) => `ambush-${i + 1}`), police: police.map((_, i) => `police-${i + 1}`), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },
+    fight: { ambush: ambush.map((p) => p.id), police: police.map((p) => p.id), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },
     schedule,
     purse: 100000,
     purseSrc: 'GDD §07: Purse $100,000',
-    arms: 3,
-    armsSrc: 'Sky 2026-10-15 Q1, briefs/011/motive-fights.md §2.1: the Handover issues three sidearms, so all four are armed (the Enforcer\'s carbine is the cell\'s); GDD v0.22.0 §07 "all four armed (Arms 3)". Waymark to carry it in mission.json',
+    arms: mission.arms.sidearms,
+    armsSrc: `mission.json arms: ${mission.arms.src}`,
     cast,
+    cover: coverOf(),
   };
   const json = pretty(site) + '\n';
   return { json, site };
+}
+
+/** The cover the engine's fight AI reads (brief 011, Pulse's briefs/011/pulse-fight-ai.md §5): a copy of contracts/world/civic-block.cover.json's points and sight
+ *  blockers, with the file's sha256, so the engine reads one site file and a stale copy fails the site test. The file itself is Pulse's (`bun run cover`). */
+export const COVER_FILE = 'contracts/world/civic-block.cover.json';
+function coverOf() {
+  const text = readFileSync(join(import.meta.dir, '../..', COVER_FILE), 'utf8'), c = JSON.parse(text);
+  if (c.schema !== 'suborned.cover/1') throw new Error(`${COVER_FILE} is not suborned.cover/1`);
+  return {
+    from: COVER_FILE, sha256: createHash('sha256').update(text).digest('hex'),
+    src: 'brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight',
+    points: c.points, blockers: c.blockers,
+  };
 }
 
 /** JSON with one key per line, and arrays of numbers (points, polygons) kept on one line. */

@@ -106,7 +106,7 @@ namespace Suborned.Sim
                     if (!inEff)
                     {
                         var to = G.S.Grid.NearestFree(np);
-                        if (to.HasValue && (e.Walk == null || e.Walk.End != to.Value)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = to.Value });
+                        if (to.HasValue && (e.Walk == null || !G.Within(e.Walk.End, to.Value, 200))) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = to.Value }); // re-aim the walk only when the target has moved 2 m
                     }
                     else if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); // in reach: stand and shoot
                 }

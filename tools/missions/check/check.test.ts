@@ -65,7 +65,7 @@ describe('the §09 conditions, each with a failing example', () => {
   const good = (): Plays => {
     const p: Plays = {
       'route-a': win(3097, 3, { 'enter.in': 2329 }), 'route-a-pressure': win(3097, 6), 'route-b': win(4468, 2, { 'take.done': 4080 }), 'route-b-block': win(4468, 3),
-      loud: { ...win(2565, 6), shots: 2, fight: 'loud' }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
+      loud: { ...win(3200, 6), shots: 2, fight: 'loud' }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
     };
     for (const s of L.manifest.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
     p['route-b'] = win(4698, 4, { 'take.done': 4080 }); // taken 6:48: 1:42 before the 8:30 close
@@ -82,6 +82,7 @@ describe('the §09 conditions, each with a failing example', () => {
     expect(ids(p)).toContain('MC-1');
     expect(good()['route-a']!.gunfire).toBeGreaterThan(0); // the good plays fire in the fight and still count as quiet
   });
+  test('MC-6: loud faster than every informed quiet win (T2)', () => { const p = good(); p.loud = { ...p.loud!, tick: 2000 }; expect(ids(p)).toEqual(['MC-6']); });
   test('MC-2: the loud route no dearer than a quiet one', () => { const p = good(); p.loud = { ...p.loud!, trail: 3 }; expect(ids(p)).toContain('MC-2'); });
   test('MC-3: a fail no script reaches', () => { const p = good(); p['fail-district-seals'] = fail('enforcer-down'); expect(ids(p)).toContain('MC-3'); });
   test('MC-4: a contact without whom no quiet route wins', () => {
@@ -104,14 +105,14 @@ describe('the §09 conditions, each with a failing example', () => {
 
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at HEAD)', () => {
   test('route A and route B win quietly, the loud route costs more Trail, every fail is reached, and the check ships', async () => {
-    const c = await check(L, engineAt('HEAD'), () => {}, { slack: false });
+    const c = await check(L, engineAt('HEAD', 'tree'), () => {}, { slack: false }); // the committed engine on the mission's own data (sim/data from mission.json)
     expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
     expect([c.plays['route-a']!.gunfire, c.plays['route-b']!.gunfire]).toEqual([0, 0]);
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
-  test('the latest recorded check (c002, the committed engine 6ab4ac8) replays to its recorded hashes', async () => {
-    const r = await replay(join(runsDir('handover'), 'c002'));
+  test('the latest recorded check (c003, engine 0.4.0 on the mission\'s own data) replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c003'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);
   });

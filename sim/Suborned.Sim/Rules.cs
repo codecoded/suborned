@@ -165,6 +165,9 @@ namespace Suborned.Sim
         public readonly Weapon Pistol, Carbine;
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
         public readonly string CancelTurn, CancelEnter, CancelTake;
+        // the fight AI (Pulse, briefs/011/pulse-fight-ai.md)
+        public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
+            SeekRivalCm, SeekPoliceCm, SeekResponseCm, SeekAllyCm, SeekGuardCm, RivalGoneCm, GuardReturnS, PatrolResumeS;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
         public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
@@ -183,7 +186,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -324,6 +327,15 @@ namespace Suborned.Sim
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
             var co = wp["costs"]; co.Only("hit", "down", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
+            var ai = b["ai"]; ai.Only("cover", "engageLapse", "reacquire", "stopReach", "overflow", "seek", "rivalGone", "guardReturn", "patrolResume", "rule", "tag", "src", "proposed", "reason");
+            var aic = ai["cover"]; aic.Only("snap", "qFull", "qPartial", "modPartial", "retreat", "stepCloser", "stepGap", "leave");
+            CoverSnapCm = RI(aic["snap"]); CoverQFull = RI(aic["qFull"]); CoverQPartial = RI(aic["qPartial"]); ModCoverPartial = RI(aic["modPartial"]); CoverRetreatCm = RI(aic["retreat"]); CoverStepCloserCm = RI(aic["stepCloser"]); CoverStepGapS = RI(aic["stepGap"]); CoverLeaveS = RI(aic["leave"]);
+            if (!(CoverQPartial <= CoverQFull)) throw new FormatException("ai.cover: qPartial ≤ qFull");
+            EngageLapseS = RI(ai["engageLapse"]); ReacquireS = RI(ai["reacquire"]); StopReachPerMille = RI(ai["stopReach"]); OverflowCm = RI(ai["overflow"]);
+            if (StopReachPerMille < 1 || StopReachPerMille > 1000) throw new FormatException("ai.stopReach is per mille of the effective reach, 1..1000");
+            var sk = ai["seek"]; sk.Only("rival", "police", "response", "ally", "guard");
+            SeekRivalCm = RI(sk["rival"]); SeekPoliceCm = RI(sk["police"]); SeekResponseCm = RI(sk["response"]); SeekAllyCm = RI(sk["ally"]); SeekGuardCm = RI(sk["guard"]);
+            RivalGoneCm = RI(ai["rivalGone"]); GuardReturnS = RI(ai["guardReturn"]); PatrolResumeS = RI(ai["patrolResume"]);
             var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "rule", "tag", "src", "proposed", "reason");
             foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
                 OneOf(ca[k], new[] { v });
@@ -380,12 +392,14 @@ namespace Suborned.Sim
 
         /// <summary>A shot's accuracy in per mille (rulebook weapons): the band's (point blank, effective, long; 0 beyond max), times each
         /// modifier that applies, in this order, each rounded down: moving, cover, vale, untrained. rulebook.ref.ts accuracy() is the same.</summary>
-        public int Accuracy(Weapon w, long distanceCm, bool moving, bool cover, bool vale, bool untrained)
+        public int Accuracy(Weapon w, long distanceCm, bool moving, bool cover, bool vale, bool untrained) => Accuracy(w, distanceCm, moving, cover ? ModCover : 1000, vale, untrained);
+        /// <summary>As above, with the cover modifier given in per mille (full, partial or 1000 none: Pulse's cover points).</summary>
+        public int Accuracy(Weapon w, long distanceCm, bool moving, int coverMod, bool vale, bool untrained)
         {
             if (distanceCm > w.MaxCm) return 0;
             long a = distanceCm <= PointBlankCm ? AccPoint : distanceCm <= w.EffCm ? AccEff : AccLong;
             if (moving) a = a * ModMoving / 1000;
-            if (cover) a = a * ModCover / 1000;
+            a = a * coverMod / 1000;
             if (vale) a = a * ModVale / 1000;
             if (untrained) a = a * ModUntrained / 1000;
             return (int)a;

@@ -120,7 +120,7 @@ describe('the Handover fix', () => {
     const c = m2(promGen.people);
     expect(c.ok).toBe(false);
     expect(c.detail).toMatch(/driver: none of the 7/);
-    expect(c.detail).toMatch(/at most one guard of records-office at Office entrance in 2:24-5:30: 11 at 17:26:54/);
+    expect(c.detail).toMatch(/at most one guard of records-office at Office entrance in 1:52-5:30: 11 at 17:26:22/);
     expect(c.detail).toMatch(/councillor: none of the 11 who fit .* has a routine that reaches Meet driver by 6:10/);
   });
 

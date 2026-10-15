@@ -119,12 +119,12 @@
    "role": "guard",
    "at": "Office entrance",
    "near": 4,
-   "shift": { "from": "2:24", "to": "5:30" },
+   "shift": { "from": "1:52", "to": "5:30" },
    "regularOf": "cafe",
    "tiedTo": [{ "kind": "regular", "role": "waitress" }],
    "alone": true,
    "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; fail 'entry seen by guard'; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3; Suture 2026-10-15 §3",
-   "note": "The entry window (windows front-door): from 2:24, the earliest call (§07 Scout listens to Inez 1:34, then Help, people.rules.json approaches.help.timeS 50 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
+   "note": "The entry window (windows front-door): from 1:52, the earliest call (prep A: Watch and Listen 1:02 since Sky's Watch 20 s, then Help, people.rules.json approaches.help.timeS 50 s; it was 2:24 on Watch 52 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
   },
   {
    "id": "councillor",
@@ -143,20 +143,45 @@
    "route": "A",
    "what": "Fixer calls Inez: the door guard walks to the café, stays, and walks back; the Enforcer enters while he is away",
    "role": "guard",
-   "walk": { "from": "Office entrance", "to": "Café door", "m": 62.4, "speed": 1.4, "s": 45 },
+   "walk": { "from": "Office entrance", "to": "Café door", "m": 65.9, "speed": 1.4, "s": 47 },
    "stayS": 60,
-   "windowS": 150,
+   "windowS": 154,
    "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
    "src": "GDD §07 route A; walk: tools/people/walk.ts on the plan between the two destinations (Suture 2026-10-15 §3: 62.4 m); speed life.json pedestrians.walkSpeed 1.4 m/s",
-   "note": "Restated 2026-10-15 (Waymark): the café door is now 62.4 m from the Office entrance on the walk graph, 45 s at walking pace, not §07's 30 s (30 s would need 2.08 m/s). The stay is §07's 60 s, so the window is 2:30, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
+   "note": "Restated 2026-10-15 (Waymark): the café door is 65.9 m from the Office entrance on the walk graph (62.4 m before Splice's walk clearance followed the plan's standards.walking.body.r), 47 s at walking pace, not §07's 30 s. The stay is §07's 60 s, so the window is 2:34, not 2:00. CLAUDE.md: the Handover's timings may move with the world. No other schedule time moves: the timeline is §07's."
+  }
+ ],
+ "arms": {
+  "sidearms": 3,
+  "src": "GDD v0.22.0 §07: Full cell, all four armed (Arms 3); Sky 2026-10-15 Q1 (briefs/011/motive-fights.md §2.1)",
+  "note": "The Handover issues three sidearms, so all four are armed: the Enforcer's carbine is the cell's own. tools/sim/site.ts reads it into the site (arms)."
+ },
+ "prep": [
+  {
+   "route": "A",
+   "what": "the Scout has watched and listened to Inez: her routine, need and temperament known",
+   "at": "1:02",
+   "from": ["watch-s", "listen-s"],
+   "gdd": "listens to Inez (1:34)",
+   "src": "GDD §07 route A; rulebook values watch-s 20 (Sky 2026-10-15) and listen-s 42",
+   "note": "Retimed with Sky's Watch ruling (20 s, was 52): Watch then Listen is 1:02 of the Scout's time, not 1:34; the walk to her is the route's own. GDD §07 text owed. The guard's entry window opens when the Fixer's Help can first land after it (roles.guard)."
+  },
+  {
+   "route": "B",
+   "what": "the Scout has watched and listened to the driver: his need (cash) known",
+   "at": "1:02",
+   "from": ["watch-s", "listen-s"],
+   "gdd": "driver needs cash (48 s)",
+   "src": "GDD §07 route B; rulebook values watch-s 20 and listen-s 42; Sky 2026-10-15: only Listen reveals a need",
+   "note": "Retimed: the need now comes from Listen (Sky's ruling), after Watch, so 20 + 42 s of the Scout's time; §07's 48 s was a Watch alone. GDD §07 text owed."
   }
  ],
  "points": [
   {
    "id": "cabinet",
-   "structure": "civic-control-cabinet",
-   "src": "civic-block.json structures civic-control-cabinet (centre)",
-   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, in the square 28 m from the public door and outside every cone, as the top-down test's cabinet stood about 31 units from the door."
+   "at": [23.9, -17.0],
+   "src": "civic-block.json structures civic-control-cabinet (x 24.95-25.85, y -17.84 to -16.16); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
+   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, in the square 28 m from the public door and outside every cone, as the top-down test's cabinet stood about 31 units from the door. The point stands 1.05 m off its west face, centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
   },
   {
    "id": "beside-inez",
@@ -205,6 +230,66 @@
    "at": [75.7, -36.4],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
    "reason": "on the sightline from the pickup camera to the official car, 40% of the way from the camera, on the pavement between the Office and the bay."
+  },
+  {
+   "id": "ambush-1",
+   "at": [21.75, -44.25],
+   "src": "GDD §07 safe: rivals ambush extraction; cover: Vantage's planter run run-sq-south (contracts/world/civic-block.cover.json)",
+   "reason": "Moved 2026-10-15 (Waymark) from (20, -56) on rocket-lane, the road, where nothing shields it from the car: onto the square behind run-sq-south's first planter, 13.8 m from the getaway car, the planter between them. The five ambush spots stand 12-18 m round the car with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe)."
+  },
+  {
+   "id": "ambush-2",
+   "at": [-5.75, -37.75],
+   "src": "GDD §07 safe: rivals ambush extraction; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
+   "reason": "Moved 2026-10-15 (Waymark) from (-4, -58) on rocket-lane: behind the café terrace's west wall arc, 17.7 m from the car, the wall between them."
+  },
+  {
+   "id": "ambush-3",
+   "at": [22, -42],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1, beside Vantage's planter run run-sq-south."
+  },
+  {
+   "id": "ambush-4",
+   "at": [-6, -44],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1; by the café's west wall arc."
+  },
+  {
+   "id": "ambush-5",
+   "at": [14, -36],
+   "src": "GDD §07 safe: rivals ambush extraction",
+   "reason": "as ambush-1; by run-sq-west."
+  },
+  {
+   "id": "police-1",
+   "at": [-7.75, -41.25],
+   "src": "GDD §07 loud: police from the north street, 2-4 officers; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
+   "reason": "Moved 2026-10-15 (Waymark) from (-4, -50), on the open square with no shelter (no free spot for a planter there: the getaway keep-clear zone and the terrace wall): to the café's west wall arc, the first cover on the officers' way in from the north street, 17.7 m from the car. The four stops stand between the north street (the response unit's entry) and the getaway car; the officers take the first n (fight.loud)."
+  },
+  {
+   "id": "police-2",
+   "at": [-10.25, -43.25],
+   "src": "GDD §07 loud: police from the north street, 2-4 officers; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
+   "reason": "Moved 2026-10-15 (Waymark) from (-8, -56) on rocket-lane: to the west end of the same wall arc, 19.4 m from the car."
+  },
+  {
+   "id": "police-3",
+   "at": [-2, -42],
+   "src": "GDD §07 loud: police from the north street, 2-4 officers",
+   "reason": "as police-1."
+  },
+  {
+   "id": "police-4",
+   "at": [-10, -46],
+   "src": "GDD §07 loud: police from the north street, 2-4 officers",
+   "reason": "as police-1."
+  },
+  {
+   "id": "guard-ally",
+   "at": [18, -46],
+   "src": "GDD §07 safe: the guard (never saw you) fights them",
+   "reason": "on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots."
   }
  ],
  "cameras": [
@@ -265,7 +350,7 @@
   },
   {
    "name": "Under parasol",
-   "at": [-7.92, -23.88],
+   "at": [-8.5, -23.5],
    "surface": "ground"
   },
   {

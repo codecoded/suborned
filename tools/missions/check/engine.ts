@@ -33,22 +33,33 @@ export function engineHash(dir = ROOT): string {
   }
   return h.digest('hex');
 }
-const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) throw new Error(`git ${a.join(' ')}: ${r.stderr}`); return r.stdout.toString().trim(); };
+const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) { if (a[0] === 'show') return ''; throw new Error(`git ${a.join(' ')}: ${r.stderr}`); } return r.stdout.toString().trim(); };
 /** The files the engine reads, relative to its root (sim/Suborned.Sim/Debrief.cs Engine.Load): the rules and every sim/data file. */
 export function engineInputs(dir: string): string[] {
   return ['contracts/rules/rulebook.json', 'contracts/people/people.rules.json', ...readdirSync(join(dir, 'sim/data')).filter(f => f.endsWith('.json')).sort().map(f => `sim/data/${f}`)];
 }
 /** The engine a check runs: `rev` a commit (or HEAD), resolved to its full sha, or 'tree' for the working tree. */
-export type EngineAt = { rev: string; commit: string; dir: string; hash: string };
-export function engineAt(rev = 'HEAD'): EngineAt {
-  if (rev === 'tree') return { rev, commit: 'tree', dir: ROOT, hash: engineHash() };
-  const commit = git('rev-parse', `${rev}^{commit}`), dir = join(ROOT, 'out/missions/engine', commit.slice(0, 12));
+/** `inputs`: where the mission's data the engine reads (sim/data: the site and its people) comes from: the engine's commit (default),
+ *  or the working tree (the mission's own data, not yet committed, on a committed engine and its committed rules). */
+export type EngineAt = { rev: string; commit: string; dir: string; hash: string; inputs: 'commit' | 'tree' };
+export function engineAt(rev = 'HEAD', inputs: 'commit' | 'tree' = 'commit'): EngineAt {
+  if (rev === 'tree') return { rev, commit: 'tree', dir: ROOT, hash: engineHash(), inputs: 'tree' };
+  const commit = git('rev-parse', `${rev}^{commit}`), dir = join(ROOT, 'out/missions/engine', `${commit.slice(0, 12)}${inputs === 'tree' ? '+tree' : ''}`);
   if (!existsSync(join(dir, 'sim/cli/cli.csproj'))) {
     mkdirSync(dir, { recursive: true });
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} sim/Suborned.Sim sim/cli sim/data contracts/rules contracts/people/people.rules.json | tar -x -C '${dir}'`], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
     if (tar.exitCode !== 0) throw new Error(`git archive ${commit}: ${tar.stderr}`);
   }
-  return { rev, commit, dir, hash: engineHash(dir) };
+  // the mission's own data from the tree (the site and its people, made from mission.json); the rules stay the commit's
+  // (a key the commit's own site lacks is a newer engine's, e.g. `cover`: it is left out, since the commit's engine rejects unknown keys)
+  if (inputs === 'tree') for (const f of engineInputs(ROOT).filter(f => f.startsWith('sim/data/'))) {
+    mkdirSync(join(dir, f, '..'), { recursive: true });
+    const tree = readFileSync(join(ROOT, f), 'utf8'), own = git('show', `${commit}:${f}`);
+    if (!own) { writeFileSync(join(dir, f), tree); continue; }
+    const keep = new Set(Object.keys(JSON.parse(own))), t = JSON.parse(tree);
+    writeFileSync(join(dir, f), Object.keys(t).every(k => keep.has(k)) ? tree : JSON.stringify(Object.fromEntries(Object.entries(t).filter(([k]) => keep.has(k)))));
+  }
+  return { rev, commit, dir, hash: engineHash(dir), inputs };
 }
 
 const built = new Map<string, string>();

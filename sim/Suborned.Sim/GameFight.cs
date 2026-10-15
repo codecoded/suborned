@@ -10,7 +10,7 @@ namespace Suborned.Sim
 {
     public sealed class Hostile
     {
-        public string Id = ""; public Pt At; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!;
+        public string Id = ""; public Pt At, Home; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!; // Home: its stand (police)
         public bool Down => Gun.Down; public int Health => Gun.Health;
         public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
         public bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;
@@ -44,8 +44,8 @@ namespace Suborned.Sim
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
                     var route = S.Grid.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
-                    var gun = NewGun($"officer-{i + 1}", R.Pistol, true, R.HealthOfficer); gun.Engaged = true; // dispatched to a fight: no surprise
-                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
+                    var gun = NewGun($"officer-{i + 1}", R.Pistol, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
+                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Home = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
                 Lockdown = Math.Min(Lockdown, Tick + T(R.SealS));
                 Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from the north street. The seal clock is running.");
@@ -56,7 +56,11 @@ namespace Suborned.Sim
                 if (Driver.Turned && !Driver.Down) { n -= R.SafeMinus; FightWhy.Add("driver-blocks-rival-car"); }
                 if (misledOnce) { n -= R.SafeMinus; FightWhy.Add("earlier-false-tip"); }
                 var spots = S.FightAmbush;
-                for (int i = 0; i < n && i < spots.Length; i++) Hostiles.Add(new Hostile { Id = $"rival-{i + 1}", At = S.Stand(spots[i]), Gun = NewGun($"rival-{i + 1}", R.Pistol, false, R.HealthRival) });
+                for (int i = 0; i < n && i < spots.Length; i++)
+                {
+                    var gun = NewGun($"rival-{i + 1}", R.Pistol, false, R.HealthRival); gun.St = "routine"; // lurking (Pulse §3.1)
+                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(spots[i]), Home = S.Stand(spots[i]), Speed = rivSpeed, Gun = gun });
+                }
                 FightWarned = Inez.Turned && !Inez.Down && Inez.Has(R.HelpedAct);
                 if (FightWarned) FightWhy.Add("waitress-warns");
                 GuardAlly = !GuardDown && GuardGun.Health == GuardGun.Max && !GuardEngaged && !SawCell(GuardP);
@@ -73,24 +77,26 @@ namespace Suborned.Sim
         void FightStep()
         {
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
+            JoinResponse();
             var e = Enforcer; var car = S.At(S.GetawayCar);
             if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm))
             {
                 FightSprung = Tick;
                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing)
-                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.NextShot = Tick + R.AimNewTicks + (FightWarned ? T(R.SafeWarnS) : 0); }
+                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + R.AimNewTicks + (FightWarned ? T(R.SafeWarnS) : 0); }
                 Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
                 if (GuardAlly)
                 {
                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);
-                    var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.FightGuard));
-                    guardAllyPath = new Path(route ?? new[] { from, S.Stand(S.FightGuard) }); guardAllyStart = Tick;
+                    var stop = AllyStop(); // his post, or the cover beside it (Pulse §3.4)
+                    var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(stop) ?? stop);
+                    guardAllyPath = new Path(route ?? new[] { from, stop }); guardAllyStart = Tick;
                     GuardHeld = true; heldPhase = "fighting the rivals"; heldPos = from; GuardAwayUntil = INF;
                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");
                 }
             }
-            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down) anyUp = true;
-            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down. The car can go."); return; }
+            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
             // the guard runs in against the rivals (safe); his shots are in Combat()
             if (GuardAlly && guardAllyPath != null && !GuardDown)
             {
@@ -105,7 +111,7 @@ namespace Suborned.Sim
             Hostile? best = null; long bd = long.MaxValue;
             foreach (var h in Hostiles)
             {
-                if (!h.Present || h.Down) continue;
+                if (!h.Present || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 var p = h.Pos(Tick); long d = G.D2(from, p);
                 if (d <= (long)reach * reach && d < bd && Sees(from, p)) { bd = d; best = h; }
             }
@@ -117,7 +123,7 @@ namespace Suborned.Sim
         {
             if (FightBranch.Length == 0) return false;
             var car = S.At(S.GetawayCar); int hold = R.HoldCm;
-            foreach (var h in Hostiles) if (!h.Down && (h.Present || FightBranch == "safe") && G.Within(h.Pos(Tick), car, hold)) return true;
+            foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone" && (h.Present || FightBranch == "safe") && G.Within(h.Pos(Tick), car, hold)) return true; // a broken rival no longer holds it (Pulse §2.1)
             return false;
         }
 

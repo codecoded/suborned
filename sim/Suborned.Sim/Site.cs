@@ -34,12 +34,14 @@ namespace Suborned.Sim
         public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, GuardWalkS, GuardStayS, BlockMoveS, BlockHoldS;
         public readonly long Purse;
         public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
+        public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
+        public readonly string CoverSha = "";
 
         public Site(string json)
         {
             Root = JNode.Parse(json, "site");
             var r = Root;
-            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast");
+            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover");
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             if (r["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
             r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
@@ -86,6 +88,28 @@ namespace Suborned.Sim
             GuardWalkS = Sec("guardWalkS", 1); GuardStayS = Sec("guardStayS", 1); BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
+            var cv = r["cover"]; cv.Only("from", "sha256", "src", "points", "blockers");
+            CoverSha = cv["sha256"].Str(); if (CoverSha.Length != 64) throw new FormatException($"{cv.Path}.sha256 is not a sha256");
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var c in cv["points"].Items)
+            {
+                c.Only("id", "at", "faces", "arc", "cos", "h", "against", "q", "kind", "of", "present");
+                var pt = new CoverPoint { Id = c["id"].Str(), At = Pt.Of(c["at"]), Faces = Pt.Of(c["faces"]), Cos = c["cos"].Int(), Q = c["q"].Int(), H = c["h"].Int(), Kind = c["kind"].Str(), Of = c["of"].Str() };
+                c["arc"].Int(); var ag = c["against"].Str(); if (ag != "fire" && ag != "fire+sight") throw new FormatException($"{c.Path}.against '{ag}'");
+                if (!seen.Add(pt.Id)) throw new FormatException($"{c.Path}: cover point {pt.Id} repeats");
+                if (pt.Cos < 0 || pt.Cos > 1000 || pt.Q < 0 || pt.Q > 1000) throw new FormatException($"{c.Path}: cos and q are per mille");
+                long f2 = (long)pt.Faces.X * pt.Faces.X + (long)pt.Faces.Y * pt.Faces.Y; if (f2 < 997L * 997 || f2 > 1003L * 1003) throw new FormatException($"{c.Path}.faces is not a per-mille unit vector");
+                if (c.Opt("present") is JNode pr) { var it = pr.Items; if (it.Count != 2) throw new FormatException($"{pr.Path}: [from, to)"); pt.From = it[0].Int(); pt.To = it[1].Int(); if (pt.From < 0 || pt.To <= pt.From) throw new FormatException($"{pr.Path}: from < to"); }
+                if (!Grid.Free(pt.At)) throw new FormatException($"{c.Path}: cover point {pt.Id} stands on blocked ground");
+                Cover.Add(pt);
+            }
+            foreach (var o in cv["blockers"].Items) // the cover objects at eye height and up block sight (Pulse §5.4)
+            {
+                o.Only("id", "z", "h", "poly");
+                var poly = new List<Pt>(); foreach (var p in o["poly"].Items) poly.Add(Pt.Of(p));
+                if (poly.Count < 3) throw new FormatException($"{o.Path}: a blocker needs 3 points");
+                Occluders.Add(new Occluder("cover:" + o["id"].Str(), o["z"].Int(), o["h"].Int(), poly.ToArray()));
+            }
             Arms = r["arms"].Int(); if (Arms < 0 || Arms > 100) throw new FormatException("site arms is out of range"); r["armsSrc"].Str();
             var cast = r["cast"]; cast.Only("waitress", "driver", "guard", "councillor", "from", "sha256", "startsAt", "fixture", "src");
             foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })

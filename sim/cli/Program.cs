@@ -4,6 +4,7 @@
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
 //   probe                                       distances and windows on the real block (for writing scenarios)
+//   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,23 @@ using Suborned.Sim;
 
 static class Program
 {
+    /// <summary>Pulse §8.3 on the site's own cover: for each fight post (stand), the point selectCover gives with the getaway car as the foe and
+    /// advancing to it (seek 800 cm, mission second 200, when every car is present); "" for none. tools/sim/sim.test.ts compares select.ts.</summary>
+    static string CoverVectors(Engine.Inputs i)
+    {
+        var g = Engine.New(i); var s = g.S; var r = g.R; var car = s.Stand(s.GetawayCar);
+        var w = new JWriter().Obj();
+        var posts = new List<string>(s.FightAmbush); posts.AddRange(s.FightPolice); posts.Add(s.FightGuard);
+        foreach (var p in posts)
+        {
+            var me = s.Stand(p); var none = new HashSet<string>();
+            var foe = CoverRules.Select(s.Cover, me, car, car, none, 800, 200, r.PointBlankCm, r.CoverQPartial, r.CoverRetreatCm, r.CoverStepCloserCm);
+            var adv = CoverRules.Select(s.Cover, me, car, null, none, 800, 200, r.PointBlankCm, r.CoverQPartial, r.CoverRetreatCm, r.CoverStepCloserCm);
+            w.Open(p).Prop("foe", foe?.Id ?? "").Prop("advance", adv?.Id ?? "").EndObj();
+        }
+        return w.EndObj().ToString();
+    }
+
     static int Main(string[] args)
     {
         try
@@ -32,6 +50,7 @@ static class Program
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
+                case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
         }

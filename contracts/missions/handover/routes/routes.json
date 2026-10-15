@@ -81,6 +81,7 @@
   {
    "id": "route-a",
    "file": "route-a.json",
+   "plan": "route-a.plan.json",
    "kind": "quiet",
    "route": "A",
    "primary": true,
@@ -97,6 +98,7 @@
   {
    "id": "route-a-pressure",
    "file": "route-a-pressure.json",
+   "plan": "route-a-pressure.plan.json",
    "kind": "quiet",
    "route": "A",
    "expects": {
@@ -108,6 +110,7 @@
   {
    "id": "route-b",
    "file": "route-b.json",
+   "plan": "route-b.plan.json",
    "kind": "quiet",
    "route": "B",
    "primary": true,
@@ -124,6 +127,7 @@
   {
    "id": "route-b-block",
    "file": "route-b-block.json",
+   "plan": "route-b-block.plan.json",
    "kind": "quiet",
    "route": "B",
    "expects": {
@@ -135,6 +139,7 @@
   {
    "id": "loud",
    "file": "loud.json",
+   "plan": "loud.plan.json",
    "kind": "loud",
    "route": "A",
    "primary": true,
@@ -245,6 +250,7 @@
   {
    "id": "fight-loud-enforcer-down",
    "file": "fight-loud-enforcer-down.json",
+   "plan": "fight-loud-enforcer-down.plan.json",
    "kind": "fail",
    "expects": {
     "outcome": "failure",
@@ -252,7 +258,7 @@
    },
    "reaches": "enforcer-down",
    "src": "GDD §07 final fight [S], loud; Suture N10",
-   "note": "The loud branch's police down the Enforcer when he doesn't fight them."
+   "note": "The loud branch's officers and the response unit down the Enforcer when he carries Vale at them alone."
   },
   {
    "id": "fight-safe-enforcer-down",
