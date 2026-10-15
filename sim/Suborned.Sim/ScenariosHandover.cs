@@ -102,7 +102,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Between tables")); // 7.3 m from the café door, behind where the guard will stand
                 r.Do(Fixer, "call", Inez);
-                r.Wait(T(45)); // mission.json windows.front-door: the walk is 45 s (the prototype's 30)
+                r.Wait(T(g.S.GuardWalkS)); // mission.json windows.front-door: the walk (45 s, then 47; the prototype's 30)
                 r.Eq(g.GuardPose()!.Value.phase, "at café", "the guard is at the café");
                 r.Is(g.GuardReachedCafe, "the guard reached Inez");
                 r.Fire(Enf, GuardR);
@@ -129,7 +129,7 @@ namespace Suborned.Sim
                 r.Done(Fixer);
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
-                r.To(g.LureTick + T(45));
+                r.To(g.LureTick + T(g.S.GuardWalkS));
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 r.Is(g.InezWitnessedShooting, "Inez witnesses the shooting");
@@ -157,7 +157,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Plaza east"));
                 r.Do(Fixer, "call", Inez);
-                r.Wait(T(45 + 60 + 15 - 2)); // walk, stay, 15 s back (the prototype's 30 + 60 + 15), less the draw and the aim
+                r.Wait(T(g.S.GuardWalkS + g.S.GuardStayS + 15 - 2)); // walk, stay, 15 s back (the prototype's 30 + 60 + 15), less the draw and the aim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Is(g.GuardPose()!.Value.phase != "returning to door", $"seeing the weapon, or hit, on his walk back the guard stops where he is ({g.GuardPose()!.Value.phase})");
@@ -849,6 +849,7 @@ namespace Suborned.Sim
             }, known);
 
             FightCases();
+            CancelCases();
         }
     }
 }

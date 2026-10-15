@@ -200,3 +200,17 @@ Engine `suborned.sim/0.4.0`. Every value is in `contracts/rules/rulebook.json`, 
   - `bun test contracts/rules tools/sim` 38/38; `bun run typecheck` clean.
   - Identical to HEAD except hashes: N08, N09, N09b, N12, N12b, N14–N17b, S01, S02, S23–S25, S27, S28.
   - Perf: S10 37k sim-s/s, N10 19k, N12 12k.
+
+## Round 5 (2026-10-15): cancel and the activity read (Sky's playtest)
+- **Order:** `{"op": …, "do": "cancel"}`. It stops what `Game.ActivityOf(op)` shows: an act in progress first, then a walk or run, a fire order, a draw, a loop held, and last a downed operative carried. The rulebook's `cancel` section names each verb's cost (closed sets; unknown = reject). Proposed, for Motive:
+  - Watch and Listen part-done: the time is lost, nothing is learned.
+  - An approach is `aborted`. The price, held at the order and paid only in the outcome's charge (Redline E2), comes back. There is no Trail. The person remembers an `aborted` approach with the Fixer's face: no refusal, so the approach can be retried.
+  - A loop held `ends` (the camera comes back). A part-done Loop, Reroute, Mislead or lift is `lost`.
+  - Enter: `staff-report`. He comes back out at the public door without Vale, and one reported incident is counted.
+  - Take: `vale-reports`. Vale is let go at his car, and one reported incident is counted.
+  - Carry: `put-down` where the carrier stands. Extract is instant. Holding Vale is no cancel.
+- **Read:** `Game.ActivityOf(OpId)` and `Game.Activities()` return an `Activity` with Verb, Target, Phase, Progress (per mille), TicksLeft, OnDone, Queued (always "": the engine keeps no queue), CanCancel, CancelCost and CancelText. They are pure.
+- **Scenarios:** N27–N35 cancel each verb mid-way. Each one runs twice and replays from its orders, and checks the state before and after (`Hash.Person`).
+- **Evidence:**
+  - `dotnet test`: 212/212, on the committed site and on the working tree's site.
+  - Old runs are unchanged with hashes stripped: 51 of 52 identical; N24 differs only in a check's printed hash.

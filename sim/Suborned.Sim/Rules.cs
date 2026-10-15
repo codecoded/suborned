@@ -163,6 +163,8 @@ namespace Suborned.Sim
         public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
+        // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
+        public readonly string CancelTurn, CancelEnter, CancelTake;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
         public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
@@ -181,7 +183,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "cancel", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -322,6 +324,11 @@ namespace Suborned.Sim
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
             var co = wp["costs"]; co.Only("hit", "down", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
+            var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "rule", "tag", "src", "proposed", "reason");
+            foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
+                OneOf(ca[k], new[] { v });
+            CancelTurn = OneOf(ca["turn"], new[] { "aborted", "lost" }); CancelEnter = OneOf(ca["enter"], new[] { "staff-report", "quiet" }); CancelTake = OneOf(ca["take"], new[] { "vale-reports", "quiet" });
+            if (!MemoryActs.Contains("aborted") && CancelTurn == "aborted") throw new FormatException("cancel.turn aborted needs memory.acts.aborted");
             var pe = b["perception"]; pe.Only("near", "eye", "door", "facing", "security", "rivals", "patrol", "rule", "tag", "src");
             NearCm = RI(pe["near"]) * 100; Eye = RI(pe["eye"]);
             pe["door"].Only("reach", "half"); DoorReachCm = RI(pe["door"]["reach"]) * 100; DoorHalfCm = RI(pe["door"]["half"]) * 100;

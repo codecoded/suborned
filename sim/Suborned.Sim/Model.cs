@@ -56,6 +56,7 @@ namespace Suborned.Sim
         public Path? Walk; public long WalkMm;           // a move in progress
         public int WalkSpeed; public bool Running;       // its pace in cm/s (= mm a tick), and whether it is a run (Sky 2026-10-15: double-click runs)
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
+        public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
         public Gun Gun = null!;                          // health, weapon, fire order and stance (rulebook weapons)
@@ -77,6 +78,7 @@ namespace Suborned.Sim
     /// security-n, rivals, hostiles or a hostile's id, and with "force": true only, waitress, driver, councillor; fires until the target is
     /// down) · cease · stance ("stance": hold, return, free) · carry (target: a downed operative) · panic (op "cell", once a fight is on).
     /// New keys are written only when set, so every older order reads and hashes as before.
+    /// cancel (Sky 2026-10-15 playtest): stops what the operative is doing now (Game.ActivityOf), at the rulebook cancel line's cost.
     /// </summary>
     public sealed class Order
     {

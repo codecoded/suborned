@@ -26,6 +26,17 @@ namespace Suborned.Sim
              .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit);
         }
 
+        /// <summary>One person's state alone (what they are, know and remember), for "before and after" checks.</summary>
+        public static ulong Person(Person p)
+        {
+            var h = new H();
+            h.S(p.Role).S(p.Id).S(p.Temperament).S(p.Need).Z(p.Turned).Z(p.NeedMet).Z(p.Down).Z(p.KRoutine).Z(p.KNeed).Z(p.KTemperament);
+            foreach (var v in p.Sc) h.I(v);
+            foreach (var x in p.KnownRefused) h.S(x);
+            foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
+            return h.V;
+        }
+
         public static ulong State(Game g)
         {
             var h = new H();
