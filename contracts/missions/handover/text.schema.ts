@@ -13,6 +13,8 @@
 //              the line says what unlocks it and carries {who} {op} {m} {usd} {tick}; `fillLock` is the reference for filling them
 //   events     the situations that can speak: what triggers each (an order, the engine's log code, the clock) and who may speak
 //   exchange   the order in which an order's events play, for the collapsible dialogue
+//   scenes     short conversations for the update feed: overheard (Watch, Listen), approach (Ask, Pay, Help, Pressure), the call, the city;
+//              beats are written lines or refs into `dialogue`, with a result line saying what the player now knows or has
 //   dialogue   the lines: event × verb × speaker × outcome × temperament, 2–4 variants each; `lookup` and `pickLine` are the
 //              reference for how the host finds and picks one (deterministic: same seed and same run, same words)
 //
@@ -38,6 +40,9 @@ export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] a
 export const FAILS = ['abduction-seen-camera', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
   'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
 export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
+/** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
+export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
+export const SCENE_SPEAKERS = [...SPEAKERS, ...SCENE_ONLY] as const;
 export const MAX_LINE = 80;
 export const MAX_WORDS = 12;
 
@@ -85,6 +90,23 @@ export const Hint = z.strictObject({
   rings: z.string().min(1),
   goneWhen: z.string().min(1),
 });
+
+const SceneSpeaker = z.enum(SCENE_SPEAKERS);
+const Beat = z.union([
+  z.strictObject({ speaker: SceneSpeaker, line: Line }),
+  z.strictObject({ speaker: SceneSpeaker, ref: z.enum(['ack', 'arrive', 'reply', 'done', 'confirm']).describe('a line picked from `dialogue` for this scene\'s verb, outcome and temperament') }),
+]);
+export const SceneVariant = z.strictObject({ beats: z.array(Beat).min(3).max(6) });
+export const Scene = z.strictObject({
+  kind: z.enum(['overheard', 'approach', 'call', 'city']),
+  verb: Verb.optional(), about: z.enum(PEOPLE).optional(), outcome: z.string().optional(), temperament: Temperament.optional(),
+  event: code.optional().describe('city: the world event it plays with'),
+  sight: z.enum(['always', 'in-sight']).optional().describe('city: shown always, or only when an agent is within sight'),
+  learns: z.array(z.enum(['routine', 'need', 'temperament', 'secret'])).optional(),
+  result: Line.describe('one plain line of what the player now knows or has; placeholders {who} {need} {temperament} {usd} {alert}'),
+  variants: z.array(SceneVariant).min(2).max(4),
+});
+export type Scene = z.infer<typeof Scene>;
 
 export const Target = z.strictObject({ name: z.string().min(1).max(32), about: Line });
 
@@ -157,6 +179,7 @@ export const TextFile = z.strictObject({
   silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
+  scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1) }),
 });
 export type TextFile = z.infer<typeof TextFile>;
 
@@ -218,3 +241,45 @@ export function pickLine(t: Pick<TextFile, 'dialogue'>, seed: string, q: Query, 
 
 /** The words in a spoken line. */
 export const wordCount = (s: string): number => s.trim().split(/\s+/).filter(Boolean).length;
+
+// ---------------------------------------------------------------- scenes
+
+export type SceneQuery = { kind: string; verb?: string; about?: string; outcome?: string; temperament?: string; event?: string };
+export const sceneKey = (q: SceneQuery & { sight?: string }): string => [q.kind, q.verb, q.about, q.outcome, q.temperament, q.event, q.sight].filter((x) => x !== undefined).join('/');
+
+/** The scene for a query: every field a scene names must equal the query's; the one naming the most fields wins; file order breaks a tie. */
+export function lookupScene(t: Pick<TextFile, 'scenes'>, q: SceneQuery): Scene | undefined {
+  let best: Scene | undefined, bestScore = -1;
+  for (const sc of t.scenes.items) {
+    if (sc.kind !== q.kind) continue;
+    let score = 0, ok = true;
+    for (const f of ['verb', 'about', 'outcome', 'temperament', 'event'] as const) {
+      const have = sc[f];
+      if (have === undefined) continue;
+      if (have !== q[f]) { ok = false; break; }
+      score++;
+    }
+    if (ok && score > bestScore) { best = sc; bestScore = score; }
+  }
+  return best;
+}
+
+export type PlayedScene = { beats: { speaker: string; text: string }[]; result: string; sight?: string };
+
+/** Every city scene for a world event (one may be heard anywhere, another seen only within sight): the host plays each whose `sight` holds. */
+export const scenesFor = (t: Pick<TextFile, 'scenes'>, kind: string, event: string): Scene[] => t.scenes.items.filter((sc) => sc.kind === kind && sc.event === event);
+
+/** One scene played: the variant is pickIndex(seed, sceneKey, n, variants), each `ref` beat is pickLine() of its dialogue entry with the same seed and n.
+ *  The result keeps its placeholders for the host to fill from engine state. A ref with no dialogue line is a hole (the checker rejects it). */
+export function playScene(t: Pick<TextFile, 'scenes' | 'dialogue'>, sc: Scene, seed: string, n: number): PlayedScene {
+  const v = sc.variants[pickIndex(seed, sceneKey(sc), n, sc.variants.length)]!;
+  const beats = v.beats.map((b) => {
+    if ('line' in b) return { speaker: b.speaker, text: b.line };
+    const q: Query = b.ref === 'done' ? { event: 'done', verb: 'turn', speaker: b.speaker, outcome: sc.outcome }
+      : b.ref === 'reply' ? { event: 'reply', verb: sc.verb, speaker: b.speaker, outcome: sc.outcome, temperament: sc.temperament }
+        : b.ref === 'confirm' ? { event: 'confirm', verb: 'call', speaker: b.speaker, temperament: sc.temperament }
+          : { event: b.ref, verb: sc.verb, speaker: b.speaker };
+    return { speaker: b.speaker, text: pickLine(t, seed, q, n) ?? '' };
+  });
+  return { beats, result: sc.result, sight: sc.sight };
+}
