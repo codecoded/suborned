@@ -117,26 +117,26 @@ describe('the Handover\'s cover file', () => {
     expect(made.cover.points.filter(p => p.of === 'car/getaway').every(p => p.present![0] === 0 && p.present![1] === site.schedule.over)).toBe(true);
     expect(made.cover.points.filter(p => p.of === 'car/rivals').every(p => p.present![0] === site.schedule.rivalsArrive)).toBe(true);
   });
-  // The finding (spec §6), as the world stands after Vantage's two planter runs (run-sq-south, run-sq-west): the posts on the lane and police-1 still have none.
+  // The finding (spec §6), as the world stands after Vantage's two planter runs and Waymark's move of the posts off the lane and onto the café wall's arc: every post has cover.
   // When the world or the posts change, this test changes with them.
-  test('the safe fight\'s ambush-1 and ambush-2 and the loud fight\'s police-1 and police-2 have no cover that shields them from the car; CV-2 passes; the cell side is answered everywhere', () => {
+  test('every ambush and police post has cover that shields it from the car, the cell side is answered everywhere, and CV-2 passes', () => {
     const by = Object.fromEntries(made.cover.areas.map(a => [a.id, a]));
-    expect(by['getaway-safe']!.hostileCover.filter(h => !h.points.length).map(h => h.post)).toEqual(['ambush-1', 'ambush-2']);
-    expect(by['getaway-loud']!.hostileCover.filter(h => !h.points.length).map(h => h.post)).toEqual(['police-1', 'police-2']);
+    expect(by['getaway-safe']!.hostileCover.map(h => [h.post, h.points.length > 0])).toEqual([['ambush-1', true], ['ambush-2', true], ['ambush-3', true], ['ambush-4', true], ['ambush-5', true]]);
+    expect(by['getaway-loud']!.hostileCover.map(h => [h.post, h.points.length > 0])).toEqual([['police-1', true], ['police-2', true], ['police-3', true], ['police-4', true]]);
     for (const a of made.cover.areas) expect(a.cellCover.every(h => h.points.length > 0)).toBe(true);
     const cv2 = rules().find(c => c.id === 'CV-2')!;
     expect(cv2.ok, cv2.detail).toBe(true);
-    expect(cv2.value).toBe('getaway-safe hostile 3/5, cell 5/5; getaway-loud hostile 2/4, cell 4/4');
+    expect(cv2.value).toBe('getaway-safe hostile 5/5, cell 5/5; getaway-loud hostile 4/4, cell 4/4');
     expect(made.cover.points.filter(p => p.of.startsWith('civic/run-sq-')).map(p => p.of).sort()).toEqual(['civic/run-sq-south/0', 'civic/run-sq-south/0', 'civic/run-sq-south/1', 'civic/run-sq-south/1', 'civic/run-sq-west/0', 'civic/run-sq-west/0']);
   });
-  test('the report names the nearest shielding cover and a planter run that would shield each post, clear of the keep-clear zones', () => {
-    const fs = findings(made.cover, plan, block, site);
-    expect(fs.map(f => f.post)).toEqual(['ambush-1', 'ambush-2', 'police-1', 'police-2']);
-    for (const f of fs) { expect(f.nearest).toBeDefined(); expect(f.nearest!.distM).toBeGreaterThan(6); }
-    for (const f of fs.filter(x => x.proposal)) expect(f.proposal!.thenShielded).toBe(true);
-    expect(fs.filter(f => f.proposal).length).toBeGreaterThanOrEqual(2);
-    // who the post is on decides whose question it is: the square's furniture is the block's (Vantage), a post on the lane is the mission's to move
-    expect(Object.fromEntries(fs.map(f => [f.post, f.on.split(' ').slice(0, 2).join(' ')]))).toEqual({ 'ambush-1': 'road rocket-lane', 'ambush-2': 'road rocket-lane', 'police-1': 'plot records-square', 'police-2': 'road rocket-lane' });
+  test('the report is empty when no post lacks cover; for a post that does it names the nearest shielding cover and a planter run that would shield it', () => {
+    expect(findings(made.cover, plan, block, site)).toEqual([]);
+    const bare = clone(made.cover), ambush2 = bare.areas[0]!.hostileCover.find(h => h.post === 'ambush-2')!; ambush2.points = []; // as if the wall were not there
+    const fs = findings(bare, plan, block, site);
+    expect(fs.map(f => f.post)).toEqual(['ambush-2']);
+    expect(fs[0]!.on).toMatch(/^plot records-square/);
+    expect(fs[0]!.nearest).toBeDefined();
+    if (fs[0]!.proposal) expect(fs[0]!.proposal.thenShielded).toBe(true);
   });
   test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the fountain, the robot, the pavilion piers', () => {
     expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/atom-fountain', 'civic/foreground-civic-robot', 'civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
@@ -147,11 +147,10 @@ describe('the Handover\'s cover file', () => {
     const pts = made.cover.points, car = placeAt('d:Getaway bay')!, pick = (id: string, foe: boolean) => selectCover(pts, { at: placeAt(id)!, objective: car, ...(foe ? { foe: car } : {}) }, new Set())?.id ?? null;
     const got = Object.fromEntries(['ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally'].map(id => [id, [pick(id, true), pick(id, false)]]));
     expect(got).toEqual({
-      'ambush-1': [null, 'cv-090'], 'ambush-2': [null, null], 'ambush-3': ['cv-083', 'cv-083'], 'ambush-4': ['cv-044', 'cv-046'], 'ambush-5': ['cv-085', 'cv-085'],
-      'police-1': [null, null], 'police-2': [null, 'cv-088'], 'police-3': ['cv-047', 'cv-100'], 'police-4': ['cv-042', 'cv-043'], 'guard-ally': ['cv-081', 'cv-080'],
+      'ambush-1': ['cv-079', 'cv-079'], 'ambush-2': ['cv-046', 'cv-046'], 'ambush-3': ['cv-081', 'cv-081'], 'ambush-4': ['cv-043', 'cv-045'], 'ambush-5': ['cv-082', 'cv-082'],
+      'police-1': ['cv-043', 'cv-043'], 'police-2': ['cv-041', 'cv-041'], 'police-3': ['cv-046', 'cv-098'], 'police-4': ['cv-041', 'cv-042'], 'guard-ally': ['cv-079', 'cv-078'],
     });
-    expect(selectCover(pts, { at: placeAt('police-1')!, objective: car, foe: car }, new Set(), { seekCm: 1200 })?.id).toBe('cv-044');
-    expect(selectCover(pts, { at: placeAt('ambush-1')!, objective: car, foe: car }, new Set(), { seekCm: 1200 })?.id).toBe('cv-081'); // the lane's post reaches Vantage's run at 12 m
+    expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-046']))?.id).not.toBe('cv-046'); // two bodies never take one point
     expect(pts.filter(p => p.of === 'car/getaway').map(p => p.id)).toEqual(['cv-001', 'cv-002', 'cv-003', 'cv-004', 'cv-005', 'cv-006']);
   });
   test('a hostile at ambush-4 runs to the café wall, and two of them take two points', () => {
@@ -193,10 +192,14 @@ describe('the rules, each with a failing example', () => {
 
 describe('the proposed rulebook values (briefs/011/pulse-fight-ai.values.json)', () => {
   const doc = JSON.parse(read('briefs/011/pulse-fight-ai.values.json')), spec = read('briefs/011/pulse-fight-ai.md'), rulebook = JSON.parse(read('contracts/rules/rulebook.json')).values;
-  test('each entry has a value, a unit, a tag, a source and a reason, and none is in the rulebook yet', () => {
+  test('each entry has a value, a unit, a tag, a source and a reason; the ones Keel has adopted into the rulebook carry the same value', () => {
     const ids = Object.keys(doc.values);
     expect(ids.length).toBe(28);
-    for (const id of ids) { const e = doc.values[id]; expect(typeof e.v === 'number' && e.unit && e.tag === 'S' && e.src && e.reason, id).toBeTruthy(); expect(rulebook[id], `${id} is already in the rulebook`).toBeUndefined(); }
+    for (const id of ids) {
+      const e = doc.values[id]; expect(typeof e.v === 'number' && e.unit && e.tag === 'S' && e.src && e.reason, id).toBeTruthy();
+      if (rulebook[id]) expect(rulebook[id].v, `${id}: the rulebook has ${rulebook[id].v}, the proposal ${e.v}`).toBe(e.v);
+    }
+    expect(ids.filter(id => rulebook[id]).length).toBeGreaterThanOrEqual(20); // not yet adopted: the guard's leash and the crowd's values
   });
   test('the spec says what each is for (its id, or its group, is named)', () => {
     for (const id of Object.keys(doc.values)) {
