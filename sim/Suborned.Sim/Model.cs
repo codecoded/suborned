@@ -38,6 +38,7 @@ namespace Suborned.Sim
     {
         public OpId Id; public Pt Pos;
         public Path? Walk; public long WalkMm;           // a move in progress
+        public int WalkSpeed; public bool Running;       // its pace in cm/s (= mm a tick), and whether it is a run (Sky 2026-10-15: double-click runs)
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
@@ -50,12 +51,13 @@ namespace Suborned.Sim
     /// {"tick": 120, "op": "scout", "do": "move", "to": "d:Courtyard"} · {"tick": 690, "op": "fixer", "do": "turn", "approach": "help", "target": "waitress"}
     /// Verbs: move (to: a place id or [x, y] cm) · watch, listen (target: a role) · turn (approach, target) · call (target: a turned role)
     /// · loop (target: a camera) · reroute (target: "patrol") · mislead (target: "rivals") · fire (target: guard, waitress, driver,
-    /// councillor, patrol, security, rivals) · enter · take · extract · withdraw.
+    /// councillor, patrol, security, rivals, hostiles) · enter · take · extract · withdraw.
+    /// "run": true on a move (opt-in, Sky 2026-10-15: double-click runs) walks it at the rulebook's run speed; absent, it walks as before.
     /// </summary>
     public sealed class Order
     {
-        public int Tick; public string Op = "", Do = "", Target = "", Approach = "", To = ""; public Pt? Point;
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to" };
+        public int Tick; public string Op = "", Do = "", Target = "", Approach = "", To = ""; public Pt? Point; public bool Run;
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
@@ -64,6 +66,7 @@ namespace Suborned.Sim
             o.Target = n.Opt("target")?.Str() ?? "";
             o.Approach = n.Opt("approach")?.Str() ?? "";
             if (n.Opt("to") is JNode to) { if (to.Kind == JKind.Str) o.To = to.Str(); else o.Point = Pt.Of(to); }
+            if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move") throw new FormatException($"{n.Path}: run is for a move (no other verb walks)"); }
             return o;
         }
         public void Write(JWriter w)
@@ -75,6 +78,7 @@ namespace Suborned.Sim
             if (Approach.Length > 0) w.Prop("approach", Approach);
             if (To.Length > 0) w.Prop("to", To);
             if (Point.HasValue) w.Key("to").Raw($"[{Point.Value.X.ToString(CultureInfo.InvariantCulture)},{Point.Value.Y.ToString(CultureInfo.InvariantCulture)}]");
+            if (Run) w.Prop("run", true); // written only when true, so a walk's order (and every old script) reads and hashes as before
             w.EndObj();
         }
         public override string ToString() { var w = new JWriter(); Write(w); return w.ToString(); }

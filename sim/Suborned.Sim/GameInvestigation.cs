@@ -87,14 +87,14 @@ namespace Suborned.Sim
                     bool sees = w == 0 ? CameraWatching("entrance", op.Pos) : w == 1 ? CameraWatching("pickup", op.Pos) : PatrolWatching(op.Pos);
                     string key = id + "/" + Sim.Op.Name(op.Id);
                     if (!sees) { openSighting.Remove(key); continue; }
-                    if (openSighting.TryGetValue(key, out var s) && s.To == Tick - Hz) { s.To = Tick; continue; }
-                    var n = new Sighting { Watcher = id, Op = Sim.Op.Name(op.Id), From = Tick, To = Tick, At = op.Pos };
-                    Sightings.Add(n); openSighting[key] = n;
-                    foreach (var c in People) // a logged operative beside a contact ties the contact to the cell (rulebook exposure)
+                    foreach (var c in People) // a logged operative beside a contact, at any second of the sighting, ties the contact to the cell (rulebook exposure)
                     {
                         if (!c.Turned || c.Down) continue;
                         var cp = PersonPos(c); if (cp.HasValue && G.Within(cp.Value, op.Pos, R.ApproachReachCm)) ExposedByWatcher.Add(c.Role);
                     }
+                    if (openSighting.TryGetValue(key, out var s) && s.To == Tick - Hz) { s.To = Tick; continue; }
+                    var n = new Sighting { Watcher = id, Op = Sim.Op.Name(op.Id), From = Tick, To = Tick, At = op.Pos };
+                    Sightings.Add(n); openSighting[key] = n;
                     if (R.BandOf(Standing) == Band.Menace) // §05: in a Menace district a sighting counts as a witness report
                     {
                         Reported++;

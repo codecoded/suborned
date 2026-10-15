@@ -160,7 +160,7 @@ namespace Suborned.Sim
         public readonly int StandingStart, StandingStep, HeroAt, MenaceAt;
         public readonly int WitnessRangeCm, WitnessTrail, ApproachReachCm, ListenReachCm, TrailOpen;
         // cell
-        public readonly int CellSpeed, ActReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, TakeS, TakeTrailUnturned, ShotEveryS, FireReachCm, FireRivalsReachCm, ShotTrail, Hits, EnforcerHealth;
+        public readonly int CellSpeed, RunSpeed, CarryRunSpeed, ActReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, TakeS, TakeTrailUnturned, ShotEveryS, FireReachCm, FireRivalsReachCm, ShotTrail, Hits, EnforcerHealth;
         // security
         public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespCheckInS, RespRivalsUnseenS, CheckInS, SealS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase, AimS, GuardFireS, PatrolFireS, SecurityFireS, RivalsFireS;
         // perception
@@ -290,8 +290,8 @@ namespace Suborned.Sim
             b["debrief"].Only("lines", "rule", "tag", "src");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
-            var c = b["cell"]; c.Only("speed", "reach", "loop", "reroute", "mislead", "call", "enter", "take", "fire", "rule", "tag", "src");
-            CellSpeed = RI(c["speed"]); ActReachCm = RI(c["reach"]) * 100;
+            var c = b["cell"]; c.Only("speed", "runSpeed", "carryRunSpeed", "reach", "loop", "reroute", "mislead", "call", "enter", "take", "fire", "rule", "tag", "src");
+            CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); CarryRunSpeed = RI(c["carryRunSpeed"]); ActReachCm = RI(c["reach"]) * 100;
             c["loop"].Only("s", "trail", "tether"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
             c["reroute"].Only("s", "trail", "away"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
             c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);

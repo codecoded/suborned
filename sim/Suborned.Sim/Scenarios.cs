@@ -34,10 +34,10 @@ namespace Suborned.Sim
         }
         public bool Try(string op, string verb, string target = "", string approach = "") => G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target, Approach = approach }).ok;
         /// <summary>Send an operative to a place; returns the tick they arrive.</summary>
-        public int Send(string op, string place)
+        public int Send(string op, string place, bool run = false)
         {
-            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", To = place });
-            Is(ok, $"{op} can walk to {place}{(ok ? "" : ": " + why)}");
+            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", To = place, Run = run });
+            Is(ok, $"{op} can {(run ? "run" : "walk")} to {place}{(ok ? "" : ": " + why)}");
             return Arrival(op);
         }
         public int SendTo(string op, Pt at)
@@ -49,7 +49,7 @@ namespace Suborned.Sim
         public int Arrival(string op)
         {
             var o = G.OpOf(Sim.Op.Parse(op)); if (o.Walk == null) return G.Tick;
-            int speed = G.R.CellSpeed; long left = o.Walk.Length - o.WalkMm;
+            int speed = o.WalkSpeed > 0 ? o.WalkSpeed : G.R.CellSpeed; long left = o.Walk.Length - o.WalkMm;
             return G.Tick + (int)((left + speed - 1) / speed);
         }
         public void To(int tick) => G.RunTo(tick);
