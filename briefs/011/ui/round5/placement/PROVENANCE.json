@@ -1,0 +1,1271 @@
+{
+ "brief": "011 C round 5b: HUD placement (left column, corner cluster, faded column)",
+ "owner": "Glyph",
+ "date": "2026-10-15",
+ "tool": "Codex CLI image tool via out/concepts/ui-011-r5b/gen5.py; cost 0; no Runware or other paid service",
+ "portraits": "Forma's unified portraits briefs/012/cell/A/A-codex-portrait-<role>-white.png, copied to refs/ with sha256; the head-and-shoulders crops are in code (forma.py). Forma supplied no hurt state: the four hurt portraits are Codex edits of her portraits (same person, framing and background) listed under generations.",
+ "refs": {
+  "A-codex-portrait-enforcer-white.png": "99f83e2b90550ad70b1a5d53d8757a36a4fc30792ee99dcff347e44d29eccf88",
+  "A-codex-portrait-fixer-white.png": "9e67af4e43ef7d0b8ec1bfa7924872dfff850d91c174d15d50768ad00549f03b",
+  "A-codex-portrait-scout-white.png": "57f960f8972048dc1285098bf4f4f2f8085e1fecf853271ef4063bf6c062f0a5",
+  "A-codex-portrait-tech-white.png": "4862d7b342809336ad8264c200f296a2159bf1ff9afe1b2329158669cffbecf6"
+ },
+ "reused_from_round_5": "the panel kit sheets k1_deco and k4_cab (roster row, verb plate, status pill, price chip) are the round 5 generations, sha256 in briefs/011/ui/round5/PROVENANCE.json; the column frames are new generations in the same prompts' finish.",
+ "reused_generations": [
+  {
+   "key": "k1_deco",
+   "file": "k1_deco.png",
+   "sha256": "fe4ecc5cfec9bec319afb6c927d130ebe4eb5101865f8e118f67b50163b98a93",
+   "seconds": 51
+  },
+  {
+   "key": "k4_cab",
+   "file": "k4_cab.png",
+   "sha256": "7af007107776ce530931b79d090c4e5a2eb670179a22231b95630d1a17a58f33",
+   "seconds": 56
+  }
+ ],
+ "method": "as round 5: image-tool panels keyed and filled with portraits, text, markers and states in code, over the real Handover plates (cafe-front-172430 for 0:58, service-lane-1730 for the fight). Panel pixels are pulled to at least dE 22 from the three signal colours (round 5 note).",
+ "labels": "verb keys 1-4 with agent keys shown F1-F4 (a suggestion: 1-4 cannot both pick agents and verbs); one frame per finish with Q/W/E/R verb labels and 1-4 agent numerals.",
+ "measure": "placement_drawn_pct = share of the 1920x1080 frame the placed panels actually cover (roster/column + verb plate); union_bbox_pct = share of the rectangle that encloses them; hud_pixels_over_the_person = HUD pixels inside a person's 28x64 px box; inside_a_panel_bounding_box = that box meets any panel's bounding rectangle. Also checked: 54 named people points across the 7 plates (inez, guards, drivers, Vale, the cell): 0 sit inside any placement's panels.",
+ "generations": [
+  {
+   "key": "col4_cab",
+   "file": "col4_cab.png",
+   "seconds": 47,
+   "sha256": "595620f3427ced6e4c28784e05c0837ed8c1e37e78fd05cb975163c1acb294e0",
+   "size": [
+    937,
+    1678
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat portrait 2:3 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a TRAIN-CAB INSTRUMENT CLUSTER: a dark ink-teal satin panel with a chrome beaded edge, tiny chrome screws, and a seafoam enamel stripe. Draw exactly ONE piece, centred on the canvas, fully opaque, with at least 60 px of magenta all round: the ROSTER COLUMN, a tall narrow compact panel about 330 px wide and 1180 px tall (about 1:3.6), holding FOUR equal SQUARE portrait windows stacked top to bottom, each about 250 px square and filling about 76% of the panel's width, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a perfectly round window like a gauge with a thick polished chrome bezel ring and a thin inner ring of cream enamel. The panel is a flush rectangle with softly shaped ends: nothing sticks out sideways, no crown, no slots; the character is carried by the end caps, edge trim, bezels and enamel only.",
+   "at": "2026-10-15T19:23:49+0700",
+   "use": "tall roster column in the train-cab finish"
+  },
+  {
+   "key": "col1_deco",
+   "file": "col1_deco.png",
+   "seconds": 49,
+   "sha256": "c705d4202faba6ff757f918212d9335312adc3936ff892e50ee7a1c3338cf547",
+   "size": [
+    937,
+    1678
+   ],
+   "refs": [],
+   "prompt": "Game interface concept art for a polished, shipped real-time tactics game, one flat portrait 2:3 image. World: an optimistic atompunk city in an alternate history, a 1950s world that discovered atomic power centuries ago, so its culture and style are 1950s but its technology is centuries ahead: clockwork, enamel and chrome instruments; never a touchscreen, hologram, glass blur or sci-fi neon. FINISH: professional AAA game HUD craftsmanship: crafted bevels, real enamel sheen with soft specular highlights, polished chrome trim with bright reflections, subtle depth, ambient occlusion and soft inner shadows, crisp edges, readable at 1080p; physical-object realism like a premium 3D-rendered control panel seen straight from the front. Palette: cream #f7f4ec and ivory #eee9da enamel, seafoam #72b5a7, deep teal #1f6c67, ink teal #17302f, polished chrome, a thin brass hairline only (never a large brass surface); turquoise #1cb9c6 only as a tiny indicator light. No red, no amber, no violet, no orange anywhere. Canvas rule: the whole canvas is one flat, perfectly even, solid magenta #ff00ff with no scene, no shadow, no gradient and no vignette; magenta never appears inside a piece. No text, no letters, no numerals, no logos anywhere on any piece. ROSTER STYLE: a DECO-MODERNE CONSOLE: cream enamel body with a stepped ziggurat top edge, a seafoam enamel band, polished chrome stringcourse lines and corner trim, a thin brass hairline inlay. Draw exactly ONE piece, centred on the canvas, fully opaque, with at least 60 px of magenta all round: the ROSTER COLUMN, a tall narrow compact panel about 330 px wide and 1180 px tall (about 1:3.6), holding FOUR equal SQUARE portrait windows stacked top to bottom, each about 250 px square and filling about 76% of the panel's width, so the frame around them is SLIM; every window is filled with one flat bright lime green #00ff00 (the portrait goes there; lime appears nowhere else), each a rectangular window with a chrome bezel and a slightly bevelled inner edge. The panel is a flush rectangle with softly shaped ends: nothing sticks out sideways, no crown, no slots; the character is carried by the end caps, edge trim, bezels and enamel only.",
+   "at": "2026-10-15T19:23:51+0700",
+   "use": "tall roster column in the deco-moderne finish"
+  },
+  {
+   "key": "hurt_fixer",
+   "file": "hurt_fixer.png",
+   "seconds": 47,
+   "sha256": "4b2151b0f8b15965f9f762cef0a0ef852b11b739bc1d7cadb1f3469580eb377a",
+   "size": [
+    1024,
+    1536
+   ],
+   "refs": [
+    "A-codex-portrait-fixer-white.png"
+   ],
+   "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+   "at": "2026-10-15T19:24:38+0700",
+   "use": "hurt-state portrait edited from Forma's normal portrait"
+  },
+  {
+   "key": "hurt_scout",
+   "file": "hurt_scout.png",
+   "seconds": 66,
+   "sha256": "9955c44e135bb85287e4e03526265ba85f1e3911a0565c2e3f820a6faee71165",
+   "size": [
+    1024,
+    1536
+   ],
+   "refs": [
+    "A-codex-portrait-scout-white.png"
+   ],
+   "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+   "at": "2026-10-15T19:24:55+0700",
+   "use": "hurt-state portrait edited from Forma's normal portrait"
+  },
+  {
+   "key": "hurt_tech",
+   "file": "hurt_tech.png",
+   "seconds": 63,
+   "sha256": "035436fdc9f5f5a53c27d310abcfd98382a21ffefaea26a7ee640a0fd35320a7",
+   "size": [
+    1024,
+    1536
+   ],
+   "refs": [
+    "A-codex-portrait-tech-white.png"
+   ],
+   "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+   "at": "2026-10-15T19:25:42+0700",
+   "use": "hurt-state portrait edited from Forma's normal portrait"
+  },
+  {
+   "key": "hurt_enforcer",
+   "file": "hurt_enforcer.png",
+   "seconds": 63,
+   "sha256": "db414982cd75253d9f73344f0b81c82fae25cdb6b80082245e759959c1726d38",
+   "size": [
+    1024,
+    1536
+   ],
+   "refs": [
+    "A-codex-portrait-enforcer-white.png"
+   ],
+   "prompt": "Game character portrait. The attached reference image is the character: keep the SAME person, face, hair, costume, colours and trim, the same framing, crop, pose and camera distance, and the same flat light grey background. Change only the state: the character is HURT after a scuffle: hair and clothes dishevelled, scuffs and dust on the costume, a bruise on the cheekbone or jaw, a tired pained expression, the head slightly bowed or turned away, the straps and trim slightly out of place. No blood and no red: only dust, grey scuffs and dark bruises. No text, no frame, no border.",
+   "at": "2026-10-15T19:25:58+0700",
+   "use": "hurt-state portrait edited from Forma's normal portrait"
+  }
+ ],
+ "frames": [
+  {
+   "file": "cab-a-left-column.jpg",
+   "finish": "cab",
+   "placement": "a",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "b70da893351a90f1d6322d60617d87ce58f3413c9cf6009662dbd1c4085113c0",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      322,
+      109,
+      416
+     ],
+     "verbs": [
+      131,
+      454,
+      229,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     322,
+     348,
+     416
+    ],
+    "placement_drawn_pct": 2.74,
+    "union_bbox_pct": 6.98,
+    "pill_pct": 1.0,
+    "chip_pct": 0.87,
+    "panel_heights_pct": {
+     "column": 38.5,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 109,
+     "verbs": 229
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-a-left-column-fight.jpg",
+   "finish": "cab",
+   "placement": "a",
+   "beat": "b2",
+   "variant": "fight",
+   "sha256": "808be7527f9731684c48df513009f5ada6f626e94c705e4f7402ff73f8b9b954",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      322,
+      109,
+      416
+     ],
+     "verbs": [
+      131,
+      644,
+      229,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     322,
+     348,
+     416
+    ],
+    "placement_drawn_pct": 2.74,
+    "union_bbox_pct": 6.98,
+    "pill_pct": 0.98,
+    "chip_pct": 0.77,
+    "panel_heights_pct": {
+     "column": 38.5,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 109,
+     "verbs": 229
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1700,
+       690
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1618,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       1640,
+       770
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1480,
+       712
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-b-corner-cluster.jpg",
+   "finish": "cab",
+   "placement": "b",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "f772322a0401f0c64ee66f6b2b11364c6aa674f4e8785ba80d5fcbfc6f55b0fe",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      14,
+      974,
+      398,
+      92
+     ],
+     "verbs": [
+      18,
+      904,
+      254,
+      60
+     ]
+    },
+    "union_bbox": [
+     14,
+     904,
+     398,
+     162
+    ],
+    "placement_drawn_pct": 2.45,
+    "union_bbox_pct": 3.11,
+    "pill_pct": 1.0,
+    "chip_pct": 0.87,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 398,
+     "verbs": 254
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-b-corner-cluster-fight.jpg",
+   "finish": "cab",
+   "placement": "b",
+   "beat": "b2",
+   "variant": "fight",
+   "sha256": "759dfca8568e197ad7a905ddf840a28370e9738e6e6b2ec6830b5220e8de939e",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      14,
+      974,
+      398,
+      92
+     ],
+     "verbs": [
+      18,
+      904,
+      254,
+      60
+     ]
+    },
+    "union_bbox": [
+     14,
+     904,
+     398,
+     162
+    ],
+    "placement_drawn_pct": 2.45,
+    "union_bbox_pct": 3.11,
+    "pill_pct": 0.98,
+    "chip_pct": 0.77,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 398,
+     "verbs": 254
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1700,
+       690
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1618,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       1640,
+       770
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1480,
+       712
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-c-left-column-faded.jpg",
+   "finish": "cab",
+   "placement": "c",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "85ca1041b223e98352f88ecdfb21479734a0b91c6f8a64ba79d7765bd5a08f50",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      322,
+      109,
+      416
+     ],
+     "verbs": [
+      131,
+      454,
+      229,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     322,
+     348,
+     416
+    ],
+    "placement_drawn_pct": 2.74,
+    "union_bbox_pct": 6.98,
+    "pill_pct": 1.0,
+    "chip_pct": 0.87,
+    "panel_heights_pct": {
+     "column": 38.5,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 109,
+     "verbs": 229
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       64,
+       548
+      ],
+      "hud_pixels_over_the_person": 1792,
+      "inside_a_panel_bounding_box": true
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-a-left-column-qwer.jpg",
+   "finish": "cab",
+   "placement": "a",
+   "beat": "b0",
+   "variant": "qwer",
+   "sha256": "bbd11daceb12b7971bdfd536e813b10bd72707da6128def1b443b844e094a631",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      322,
+      109,
+      416
+     ],
+     "verbs": [
+      131,
+      454,
+      229,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     322,
+     348,
+     416
+    ],
+    "placement_drawn_pct": 2.74,
+    "union_bbox_pct": 6.98,
+    "pill_pct": 1.0,
+    "chip_pct": 0.87,
+    "panel_heights_pct": {
+     "column": 38.5,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 109,
+     "verbs": 229
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "cab-0-baseline-bottom-centre.jpg",
+   "finish": "cab",
+   "placement": "0",
+   "beat": "b0",
+   "variant": "baseline",
+   "sha256": "90503f559ad508942fb48cb4d9a39b35e2dcf86cba7e3e995b1162468c4ba05c",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      761,
+      974,
+      398,
+      92
+     ],
+     "verbs": [
+      833,
+      904,
+      254,
+      60
+     ]
+    },
+    "union_bbox": [
+     761,
+     904,
+     398,
+     162
+    ],
+    "placement_drawn_pct": 2.45,
+    "union_bbox_pct": 3.11,
+    "pill_pct": 1.0,
+    "chip_pct": 0.87,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 398,
+     "verbs": 254
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-a-left-column.jpg",
+   "finish": "deco",
+   "placement": "a",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "ef70e5d5a0f273fd2c0aec01b0e4fdec9df2371c1258c35aa45dc7cda2187baa",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      331,
+      103,
+      397
+     ],
+     "verbs": [
+      125,
+      464,
+      223,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     331,
+     336,
+     397
+    ],
+    "placement_drawn_pct": 2.49,
+    "union_bbox_pct": 6.43,
+    "pill_pct": 1.01,
+    "chip_pct": 0.89,
+    "panel_heights_pct": {
+     "column": 36.8,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 103,
+     "verbs": 223
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-a-left-column-fight.jpg",
+   "finish": "deco",
+   "placement": "a",
+   "beat": "b2",
+   "variant": "fight",
+   "sha256": "3c62192f04997b18816c7fecebdb05edd5de5207cdeffe1a5fc9d95c8e99242c",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      331,
+      103,
+      397
+     ],
+     "verbs": [
+      125,
+      633,
+      223,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     331,
+     336,
+     397
+    ],
+    "placement_drawn_pct": 2.49,
+    "union_bbox_pct": 6.43,
+    "pill_pct": 0.99,
+    "chip_pct": 0.79,
+    "panel_heights_pct": {
+     "column": 36.8,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 103,
+     "verbs": 223
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1700,
+       690
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1618,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       1640,
+       770
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1480,
+       712
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-b-corner-cluster.jpg",
+   "finish": "deco",
+   "placement": "b",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "a0bdbe0c5f5027f3c1da472e83d02c111432d2245eeb6f17f89135e51f649a89",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      14,
+      974,
+      389,
+      92
+     ],
+     "verbs": [
+      18,
+      904,
+      248,
+      60
+     ]
+    },
+    "union_bbox": [
+     14,
+     904,
+     389,
+     162
+    ],
+    "placement_drawn_pct": 2.4,
+    "union_bbox_pct": 3.04,
+    "pill_pct": 1.01,
+    "chip_pct": 0.89,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 389,
+     "verbs": 248
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-b-corner-cluster-fight.jpg",
+   "finish": "deco",
+   "placement": "b",
+   "beat": "b2",
+   "variant": "fight",
+   "sha256": "2099a57bf0cb15f0f2209a27725a8b2578a8e858e8ea97d198ec3f767bcb909c",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      14,
+      974,
+      389,
+      92
+     ],
+     "verbs": [
+      18,
+      904,
+      248,
+      60
+     ]
+    },
+    "union_bbox": [
+     14,
+     904,
+     389,
+     162
+    ],
+    "placement_drawn_pct": 2.4,
+    "union_bbox_pct": 3.04,
+    "pill_pct": 0.99,
+    "chip_pct": 0.79,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 389,
+     "verbs": 248
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1700,
+       690
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1618,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       1640,
+       770
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1480,
+       712
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-c-left-column-faded.jpg",
+   "finish": "deco",
+   "placement": "c",
+   "beat": "b0",
+   "variant": "default",
+   "sha256": "16e25234a17d326363ce1a2a7356761ccb7d329bb4352ac79108a6bba628f2a7",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      331,
+      103,
+      397
+     ],
+     "verbs": [
+      125,
+      464,
+      223,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     331,
+     336,
+     397
+    ],
+    "placement_drawn_pct": 2.49,
+    "union_bbox_pct": 6.43,
+    "pill_pct": 1.01,
+    "chip_pct": 0.89,
+    "panel_heights_pct": {
+     "column": 36.8,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 103,
+     "verbs": 223
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       64,
+       548
+      ],
+      "hud_pixels_over_the_person": 1792,
+      "inside_a_panel_bounding_box": true
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-a-left-column-qwer.jpg",
+   "finish": "deco",
+   "placement": "a",
+   "beat": "b0",
+   "variant": "qwer",
+   "sha256": "9dfb7a233514ce2c978d2ef4c3cdab78c83bb343bf1574be133c45cd4d3422ae",
+   "geometry": {
+    "pieces": {
+     "column": [
+      12,
+      331,
+      103,
+      397
+     ],
+     "verbs": [
+      125,
+      464,
+      223,
+      54
+     ]
+    },
+    "union_bbox": [
+     12,
+     331,
+     336,
+     397
+    ],
+    "placement_drawn_pct": 2.49,
+    "union_bbox_pct": 6.43,
+    "pill_pct": 1.01,
+    "chip_pct": 0.89,
+    "panel_heights_pct": {
+     "column": 36.8,
+     "verbs": 5.0
+    },
+    "panel_widths_px": {
+     "column": 103,
+     "verbs": 223
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  },
+  {
+   "file": "deco-0-baseline-bottom-centre.jpg",
+   "finish": "deco",
+   "placement": "0",
+   "beat": "b0",
+   "variant": "baseline",
+   "sha256": "9c31e9e098443352e784215461b687a65c979957c5aeae44205c6a46e9d2cbdf",
+   "geometry": {
+    "pieces": {
+     "roster": [
+      765,
+      974,
+      389,
+      92
+     ],
+     "verbs": [
+      836,
+      904,
+      248,
+      60
+     ]
+    },
+    "union_bbox": [
+     765,
+     904,
+     389,
+     162
+    ],
+    "placement_drawn_pct": 2.4,
+    "union_bbox_pct": 3.04,
+    "pill_pct": 1.01,
+    "chip_pct": 0.89,
+    "panel_heights_pct": {
+     "roster": 8.5,
+     "verbs": 5.6
+    },
+    "panel_widths_px": {
+     "roster": 389,
+     "verbs": 248
+    },
+    "people": {
+     "scout": {
+      "feet": [
+       1225,
+       640
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "fixer": {
+      "feet": [
+       1030,
+       600
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "tech": {
+      "feet": [
+       700,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "enforcer": {
+      "feet": [
+       1130,
+       745
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     },
+     "inez": {
+      "feet": [
+       960,
+       534
+      ],
+      "hud_pixels_over_the_person": 0,
+      "inside_a_panel_bounding_box": false
+     }
+    }
+   }
+  }
+ ]
+}
