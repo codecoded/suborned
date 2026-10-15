@@ -323,7 +323,30 @@ describe('§05 witnesses and Alert: one incident counts once', () => {
 
   test('Alert: 1st reported incident → inquiry, 2nd → search, violence seen → lockdown; standing bands at ±3', () => {
     expect(rb.alert.byIncident.map((r) => num(rb, people, r))).toEqual([1, 2]);
-    expect([num(rb, people, rb.alert.perShot), num(rb, people, rb.alert.violenceSeen)]).toEqual([1, 3]); // §06 [B] +1 A a shot
+    expect([num(rb, people, rb.alert.gunfire), num(rb, people, rb.alert.violenceSeen)]).toEqual([2, 3]); // §05 [B] any gunfire → 2 (Sky 2026-10-15, motive-fights.md)
     expect([R.bandOf(rb, people, 0), R.bandOf(rb, people, 3), R.bandOf(rb, people, -3), R.bandOf(rb, people, 2)]).toEqual(['neutral', 'hero', 'menace', 'neutral']);
+  });
+});
+
+describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-15, briefs/011/motive-fights.md)', () => {
+  test('bands and modifiers: a pistol at 12 m hits 3 in 4, walking 3 in 8, walking at a target beside cover 3 in 16', () => {
+    expect(R.accuracy(rb, people, 'pistol', 12, [])).toBe(750);
+    expect(R.accuracy(rb, people, 'pistol', 4, ['untrained'])).toBe(750);
+    expect(R.accuracy(rb, people, 'pistol', 12, ['moving'])).toBe(375);
+    expect(R.accuracy(rb, people, 'pistol', 12, ['moving', 'cover'])).toBe(187);
+    expect(R.accuracy(rb, people, 'pistol', 20, [])).toBe(400);
+    expect(R.accuracy(rb, people, 'pistol', 26, [])).toBe(0);
+    expect(R.accuracy(rb, people, 'carbine', 18, [])).toBe(750);
+  });
+  test('hit counting is deterministic: exactly 3 in 4 at 75 %, the first shot a hit; 2 in 5 at 40 %, the first a miss', () => {
+    expect(R.hits(rb, people, 750, 4)).toEqual([true, true, false, true]);
+    expect(R.hits(rb, people, 750, 400).filter(Boolean).length).toBe(300);
+    expect(R.hits(rb, people, 400, 5)).toEqual([false, true, false, true, false]);
+  });
+  test('health per kind and the costs of a hit and a down', () => {
+    const h = rb.weapons.health, n = (r: string) => num(rb, people, r);
+    expect([h.enforcer, h.op, h.guard, h.officer, h.rival, h.patrol, h.civilian, h.responseOfficers].map(n)).toEqual([6, 4, 3, 3, 3, 4, 2, 2]);
+    expect([rb.weapons.costs.hit, rb.weapons.costs.down, rb.alert.gunfire, rb.weapons.costs.drawSeenSecurity, rb.weapons.costs.drawSeenPeople].map(n)).toEqual([2, 2, 2, 2, 1]);
+    expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([280, 30, 5]);
   });
 });

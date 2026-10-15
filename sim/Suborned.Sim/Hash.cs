@@ -20,6 +20,12 @@ namespace Suborned.Sim
             public H P(Pt p) => I(p.X).I(p.Y);
         }
 
+        static void Gun(H h, Gun g)
+        {
+            h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
+             .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit);
+        }
+
         public static ulong State(Game g)
         {
             var h = new H();
@@ -29,6 +35,7 @@ namespace Suborned.Sim
                 h.I((int)op.Id).P(op.Pos).Z(op.Walk != null).I(op.WalkMm).Z(op.Inside);
                 if (op.Running && op.Walk != null) h.S("run").I(op.WalkSpeed); // only a run adds bytes: a walk hashes as it always did
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
+                Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }
             foreach (var p in g.People)
             {
@@ -38,19 +45,22 @@ namespace Suborned.Sim
                 h.I(p.Memory.Count);
                 foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
             }
-            h.I(g.EnforcerHealth).I(g.EnforcerNextShot).Z(g.LoopOn);
-            h.I(g.LureTick).I(g.GuardAwayUntil).I(g.GuardHealth).I(g.GuardNextShot).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
+            h.Z(g.LoopOn).Z(g.CellFiredOn);
+            Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
+            foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
+            h.I(g.LureTick).I(g.GuardAwayUntil).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
             var gp = g.GuardPose(); h.Z(gp.HasValue); if (gp.HasValue) h.P(gp.Value.pos);
             h.I(g.BlockMove).I(g.BlockedFrom).I(g.BlockedUntil).P(g.CarPos());
             h.I((int)g.Vale).Z(g.PickupService).Z(g.EntryInProgress); var vp = g.ValePos(); h.Z(vp.HasValue); if (vp.HasValue) h.P(vp.Value);
-            h.Z(g.PatrolDown).Z(g.PatrolChasing).Z(g.PatrolTracking).I(g.PatrolHealth).I(g.PatrolAwayUntil).I(g.PatrolNextShot); var pp = g.PatrolPose(); h.Z(pp.HasValue); if (pp.HasValue) h.P(pp.Value.pos);
-            h.I(g.RivalAt).Z(g.RivalsArrived).Z(g.RivalsDrawn).Z(g.RivalsTracking).I(g.RivalsDelayedUntil).I(g.RivalsDrawnTick).I(g.RivalsHealth).I(g.RivalsNextShot).S(g.RivalsDelayMethod);
+            h.Z(g.PatrolDown).Z(g.PatrolChasing).Z(g.PatrolTracking).I(g.PatrolAwayUntil); var pp = g.PatrolPose(); h.Z(pp.HasValue); if (pp.HasValue) h.P(pp.Value.pos);
+            h.I(g.RivalAt).Z(g.RivalsArrived).Z(g.RivalsDrawn).Z(g.RivalsTracking).I(g.RivalsDelayedUntil).I(g.RivalsDrawnTick).S(g.RivalsDelayMethod);
             var rp = g.RivalsPose(); h.Z(rp.HasValue); if (rp.HasValue) h.P(rp.Value.pos);
-            h.I(g.SecurityArrives).I(g.Lockdown).I(g.SecurityHealth).I(g.SecurityNextShot).Z(g.SecurityDown).Z(g.SecurityTracking);
+            h.I(g.SecurityArrives).I(g.Lockdown).Z(g.SecurityDown).Z(g.SecurityTracking);
             var sp = g.SecurityPose(); h.Z(sp.HasValue); if (sp.HasValue) h.P(sp.Value.pos);
             h.Z(g.InezWitnessedShooting).S(g.InezMethod).S(g.RouteKind).S(g.RouteGuard).S(g.RouteBot).S(g.RouteRival);
-            h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.NextVolley).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).Z(g.GuardAllyTracking).I(g.GuardAllyNextShot).I(g.FightHits).I(g.FightShots);
-            foreach (var x in g.Hostiles) h.S(x.Id).P(x.Pos(g.Tick)).I(x.Health).Z(x.Down).Z(x.Present);
+            h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).I(g.FightHits).I(g.FightShots).I(g.DownedByEnforcer).I(g.DownedByGuard).I(g.DownedByCell);
+            foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); }
+            foreach (var x in g.Captured) h.S(x);
             if (g.People2 != null && g.Start.Crowd)
                 foreach (var w in g.Walkers)
                 {

@@ -34,6 +34,22 @@ namespace Suborned.Sim
 
     public enum OpId { Scout = 0, Fixer = 1, Tech = 2, Enforcer = 3 }
 
+    /// <summary>Anyone who can be shot, and what they shoot with (rulebook weapons; Sky 2026-10-15, briefs/011/motive-fights.md): health, the
+    /// weapon and its state, the standing fire order or stance, and the integer accumulator that makes hits deterministic (no dice).</summary>
+    public sealed class Gun
+    {
+        public readonly string Id;                     // an operative, "guard", "patrol", "security-1", "rivals", a role, a hostile's id
+        public Weapon? W; public bool Trained;         // null: unarmed (an operative without Arms, a civilian)
+        public int Health, Max; public bool Down;
+        public bool Drawn; public int DrawReady, HolsterAt = -1, DrawTick = -1; // drawing until DrawReady; holstering until HolsterAt
+        public string Stance = "return";              // hold, return, free (an operative's)
+        public string Order = ""; public bool Force;   // a standing fire order: until the target is down, cease, or another order
+        public string Target = ""; public int Acc, NextShot, LostAt = -1; // the target aimed at, its accumulator, the next shot, when the line broke
+        public string ShotBy = "";                     // the last shooter who fired on this one (stance return answers them)
+        public bool Fired, Engaged, Hit;               // has fired; in action (a new target costs aimNew, not react); hit once (its Trail paid)
+        public Gun(string id) { Id = id; }
+    }
+
     public sealed class Op
     {
         public OpId Id; public Pt Pos;
@@ -42,6 +58,11 @@ namespace Suborned.Sim
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
+        public Gun Gun = null!;                          // health, weapon, fire order and stance (rulebook weapons)
+        public OpId? Carrying, CarriedBy;                // carrying a downed operative, or being carried (rulebook cell.carry)
+        public bool RunAlerted;                          // this run was seen by security: its found fault is counted (rulebook cell.runAlert, once a run)
+        public readonly HashSet<string> RunSeen = new HashSet<string>(StringComparer.Ordinal); // who remembers this run (once each)
+        public bool Down => Gun.Down;
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
         public static OpId Parse(string s) => s == "scout" ? OpId.Scout : s == "fixer" ? OpId.Fixer : s == "tech" ? OpId.Tech : s == "enforcer" ? OpId.Enforcer : throw new FormatException($"operative '{s}' is unknown (scout, fixer, tech, enforcer)");
     }
@@ -50,14 +71,17 @@ namespace Suborned.Sim
     /// One order, as the GDD controls give it (§10: select/move, engage, fire, call; the §03 verbs). JSON:
     /// {"tick": 120, "op": "scout", "do": "move", "to": "d:Courtyard"} · {"tick": 690, "op": "fixer", "do": "turn", "approach": "help", "target": "waitress"}
     /// Verbs: move (to: a place id or [x, y] cm) · watch, listen (target: a role) · turn (approach, target) · call (target: a turned role)
-    /// · loop (target: a camera) · reroute (target: "patrol") · mislead (target: "rivals") · fire (target: guard, waitress, driver,
-    /// councillor, patrol, security, rivals, hostiles) · enter · take · extract · withdraw.
+    /// · loop (target: a camera) · reroute (target: "patrol") · mislead (target: "rivals") · enter · take · extract · withdraw.
     /// "run": true on a move (opt-in, Sky 2026-10-15: double-click runs) walks it at the rulebook's run speed; absent, it walks as before.
+    /// Shoot-outs (Sky 2026-10-15, briefs/011/motive-fights.md §2.4): draw · holster · fire (target: guard, patrol, security or
+    /// security-n, rivals, hostiles or a hostile's id, and with "force": true only, waitress, driver, councillor; fires until the target is
+    /// down) · cease · stance ("stance": hold, return, free) · carry (target: a downed operative) · panic (op "cell", once a fight is on).
+    /// New keys are written only when set, so every older order reads and hashes as before.
     /// </summary>
     public sealed class Order
     {
-        public int Tick; public string Op = "", Do = "", Target = "", Approach = "", To = ""; public Pt? Point; public bool Run;
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run" };
+        public int Tick; public string Op = "", Do = "", Target = "", Approach = "", To = "", Stance = ""; public Pt? Point; public bool Run, Force;
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
@@ -67,6 +91,8 @@ namespace Suborned.Sim
             o.Approach = n.Opt("approach")?.Str() ?? "";
             if (n.Opt("to") is JNode to) { if (to.Kind == JKind.Str) o.To = to.Str(); else o.Point = Pt.Of(to); }
             if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move") throw new FormatException($"{n.Path}: run is for a move (no other verb walks)"); }
+            if (n.Opt("stance") is JNode st) { o.Stance = st.Str(); if (o.Do != "stance") throw new FormatException($"{n.Path}: stance is for the stance order"); }
+            if (n.Opt("force") is JNode fo) { o.Force = fo.Bool(); if (o.Force && o.Do != "fire") throw new FormatException($"{n.Path}: force is for a fire order (the Ctrl case)"); }
             return o;
         }
         public void Write(JWriter w)
@@ -79,6 +105,8 @@ namespace Suborned.Sim
             if (To.Length > 0) w.Prop("to", To);
             if (Point.HasValue) w.Key("to").Raw($"[{Point.Value.X.ToString(CultureInfo.InvariantCulture)},{Point.Value.Y.ToString(CultureInfo.InvariantCulture)}]");
             if (Run) w.Prop("run", true); // written only when true, so a walk's order (and every old script) reads and hashes as before
+            if (Stance.Length > 0) w.Prop("stance", Stance);
+            if (Force) w.Prop("force", true);
             w.EndObj();
         }
         public override string ToString() { var w = new JWriter(); Write(w); return w.ToString(); }

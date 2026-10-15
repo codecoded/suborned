@@ -175,6 +175,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     schedule,
     purse: 100000,
     purseSrc: 'GDD §07: Purse $100,000',
+    arms: 3,
+    armsSrc: 'Sky 2026-10-15 Q1, briefs/011/motive-fights.md §2.1: the Handover issues three sidearms, so all four are armed (the Enforcer\'s carbine is the cell\'s); GDD v0.22.0 §07 "all four armed (Arms 3)". Waymark to carry it in mission.json',
     cast,
   };
   const json = pretty(site) + '\n';

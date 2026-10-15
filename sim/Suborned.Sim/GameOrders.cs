@@ -25,7 +25,9 @@ namespace Suborned.Sim
         string Check(Order o)
         {
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (o.Do == "panic") return Panic(o);
             var op = OpOf(Sim.Op.Parse(o.Op));
+            if (op.Down) return $"the {o.Op} is down";
             if (op.Inside) return "the Enforcer is inside the Office";
             if (op.Busy != null) return $"{o.Op} is busy until {op.BusyEnd}";
             switch (o.Do)
@@ -38,6 +40,11 @@ namespace Suborned.Sim
                 case "reroute": return Reroute(op, o);
                 case "mislead": return Mislead(op, o);
                 case "fire": return Fire(op, o);
+                case "draw": return Draw(op, o);
+                case "holster": return Holster(op, o);
+                case "cease": return Cease(op, o);
+                case "stance": return Stance(op, o);
+                case "carry": return Carry(op, o);
                 case "enter": return Enter(op, o);
                 case "take": return Take(op, o);
                 case "extract": return Extract(op, o);
@@ -61,25 +68,18 @@ namespace Suborned.Sim
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return $"no place '{o.To}'";
             if (!S.Grid.Free(to)) return "that ground can't be walked (a roof, a wall or a solid)";
+            if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
             var route = S.Grid.Route(op.Pos, to); if (route == null) return "no walk there";
             op.Walk = new Path(route); op.WalkMm = 0;
             if (op.Walk.Length == 0) op.Walk = null;
             op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
+            if (o.Run) { op.RunAlerted = false; op.RunSeen.Clear(); if (op.Gun.Order.Length > 0) { op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} runs: the fire order ends."); } }
             Note("order.move", $"{Sim.Op.Name(op.Id)} {(o.Run ? "runs" : "heads")} for {(o.To.Length > 0 ? o.To : to.ToString())}.");
             return "";
         }
 
-        /// <summary>A move's pace: walking (cell.speed), running (cell.runSpeed), or, for an Enforcer carrying Vale, cell.carryRunSpeed.</summary>
-        int PaceOf(Op op, bool run)
-        {
-            if (!run) return opSpeed;
-            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) return R.CarryRunSpeed;
-            return R.RunSpeed;
-        }
-
-        /// <summary>The attention a run draws, a tick at a time. TODO(Motive, briefs/011/motive-fights.md): running's costs — witnesses
-        /// noticing a runner, camera and patrol logs of a running operative, Alert — land here once the proposal is ruled. Today: none.</summary>
-        void RunAttention(Op op) { }
+        /// <summary>A move's pace: walking (cell.speed) or running (cell.runSpeed). Who may not run is RunRefusal's (GameCombat.cs).</summary>
+        int PaceOf(Op op, bool run) => run ? R.RunSpeed : opSpeed;
 
         // ---------------------------------------------------------------- the person events (rulebook scout.*, turn.*)
 
@@ -148,6 +148,14 @@ namespace Suborned.Sim
                 case "enter":
                     op.Inside = false; op.Pos = S.Stand(S.ValeService); EntryInProgress = false; Vale = ValeAt.WithEnforcer;
                     Note("enter.out", "Vale and the Enforcer come out at the service lane."); StartFight(); break;
+                case "carry":
+                    {
+                        var other = OpOf(Sim.Op.Parse(o.Target));
+                        if (!other.Down || other.CarriedBy.HasValue) { Note("carry.missed", $"There is nobody to lift at the {o.Target}'s place."); break; }
+                        op.Carrying = other.Id; other.CarriedBy = op.Id;
+                        Note("carry.lifted", $"The {Sim.Op.Name(op.Id)} lifts the {o.Target}. Walk them to the car.");
+                        break;
+                    }
                 case "take":
                     Vale = ValeAt.WithEnforcer;
                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
@@ -216,7 +224,7 @@ namespace Suborned.Sim
             if (p.Memory.Count <= R.MemoryCap) return;
             int drop = -1;
             for (int j = 0; j < p.Memory.Count; j++)
-                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
+                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
             if (drop < 0) for (int j = 0; j < p.Memory.Count; j++) if (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick) drop = j;
             p.Memory.RemoveAt(drop);
         }
@@ -437,7 +445,7 @@ namespace Suborned.Sim
             if (op.Id != OpId.Tech) return "only the Tech loops cameras (§03)";
             if (o.Target != "entrance") return "the Tech's cabinet loops the entrance camera";
             if (LoopOn) return "the loop already holds";
-            if (!G.Within(op.Pos, S.At("cabinet"), actReach)) return "stand at the cabinet";
+            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return "stand at the cabinet";
             Engage(op, o, R.LoopS); return "";
         }
         string Reroute(Op op, Order o)
@@ -445,7 +453,7 @@ namespace Suborned.Sim
             if (op.Id != OpId.Tech) return "only the Tech reroutes patrols (§03)";
             if (PatrolDown) return "the patrol is down";
             if (PatrolAwayUntil > Tick) return "the patrol is already away";
-            if (!G.Within(op.Pos, S.At("cabinet"), actReach)) return "stand at the cabinet";
+            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return "stand at the cabinet";
             Engage(op, o, R.RerouteS); return "";
         }
         string Mislead(Op op, Order o)
@@ -460,15 +468,17 @@ namespace Suborned.Sim
         {
             if (op.Id != OpId.Enforcer) return "only the Enforcer enters (§03)";
             if (Vale != ValeAt.Office || EntryInProgress) return "Vale is not inside";
-            if (!G.Within(op.Pos, S.At(S.GuardPost), actReach)) return "stand at the public door";
+            if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return "stand at the public door";
             op.Walk = null;
             if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned."); return ""; }
             if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down."); return ""; }
             if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down."); return ""; }
             RouteKind = "front"; RouteGuard = GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap";
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
-            Engage(op, o, R.EnterS);
-            Note("enter.in", "The Enforcer is inside. Watch the service lane.");
+            bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
+            op.Gun.Order = ""; op.Gun.Target = "";
+            Engage(op, o, R.EnterS + (alarm ? R.EnterAlarmS : 0));
+            Note("enter.in", alarm ? "The Enforcer is inside. The alarm is up: the staff are hiding Vale. Watch the service lane." : "The Enforcer is inside. Watch the service lane.");
             return "";
         }
         string Take(Op op, Order o)
@@ -480,7 +490,7 @@ namespace Suborned.Sim
             op.Walk = null;
             if (!PickupService && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued."); return ""; }
             var rp = RivalsPose();
-            if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, R.FireRivalsReachCm))))
+            if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, RivalsGun.W!.EffCm)))) // drawn rivals within their weapon's effective reach
             { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first."); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
             Vale = ValeAt.Taking;
@@ -491,114 +501,13 @@ namespace Suborned.Sim
         {
             if (op.Id != OpId.Enforcer) return "only the Enforcer brings Vale to the car";
             if (Vale != ValeAt.WithEnforcer) return "the Enforcer does not have Vale";
-            if (!G.Within(op.Pos, S.At(S.GetawayCar), actReach)) return "stand at the getaway car";
+            if (!G.Within(op.Pos, S.At(S.GetawayCar), R.AtReachCm)) return "stand at the getaway car";
             if (CarHeld()) return "the car is held: the fight isn't over (§07)";
             op.Walk = null;
             Vale = ValeAt.Car; Result = Outcome.Success; Chain.Add("vale-in-getaway-car");
             Note("success", "Vale is in the car. The crew escapes.");
+            Captures();
             return "";
-        }
-
-        string Fire(Op op, Order o)
-        {
-            if (op.Id != OpId.Enforcer) return "only the Enforcer fires (§03)";
-            if (Tick < EnforcerNextShot) return $"the next shot is ready at {EnforcerNextShot}";
-            if (o.Target == "hostiles")
-            {
-                var h = NearestHostile(op.Pos, R.FireReachCm);
-                if (h == null) return "no hostile in range with a clear line";
-                op.Walk = null; Actions.Add("fire:hostiles"); Note("fire.hostiles", $"The Enforcer fires on {h.Id}.");
-                FireHostile(h); return "";
-            }
-            Pt? target = o.Target switch
-            {
-                "guard" => GuardPose()?.pos, "waitress" => Inez.Down ? null : PersonPos(Inez), "driver" => DriverPos(),
-                "councillor" => Vale == ValeAt.Car ? null : ValePos(), "patrol" => PatrolDown ? null : PatrolPose()?.pos,
-                "security" => SecurityPose()?.pos, "rivals" => RivalsPose()?.pos, _ => null,
-            };
-            if (!target.HasValue) return $"no {o.Target} to fire at";
-            int reach = (o.Target == "rivals" ? R.FireRivalsReachCm : R.FireReachCm);
-            if (!G.Within(op.Pos, target.Value, reach)) return $"out of range ({reach / 100} m)";
-            if (!Sees(op.Pos, target.Value)) return "no clear line";
-            op.Walk = null;
-            Actions.Add("fire:" + o.Target);
-            Note("fire." + o.Target, $"The Enforcer fires on the {o.Target}.");
-            switch (o.Target)
-            {
-                case "guard": FireGuard(op, target.Value); break;
-                case "waitress": FireCivilian(Inez, "Inez is shot at the café. Witnesses call security."); break;
-                case "driver":
-                    carStoppedAt = CarPos(); FireCivilian(Driver, "The official driver is shot. Security rushes to the pickup.");
-                    if (Vale != ValeAt.Office) Fail("driver-shot", "The driver is shot during handover. Security pulls Vale away.");
-                    break;
-                case "councillor":
-                    RegisterGunfire("councillor"); RaiseAlert(R.ViolenceSeen, "violence-seen:councillor"); Vale = ValeAt.Dead; ValeP.Down = true;
-                    Fail("vale-dead", "Vale is dead. The live capture objective has failed."); break;
-                case "security":
-                    RegisterGunfire("security");
-                    if (--SecurityHealth <= 0) { SecurityDown = true; Chain.Add("response-unit-down"); Note("security.down", "The response unit is down. The wider cordon is still closing."); }
-                    break;
-                case "patrol":
-                    RegisterGunfire("patrol"); CallSecurity(R.RespSeenS, "Gunfire at the patrol is reported.");
-                    if (--PatrolHealth <= 0) { patrolDownAt = target.Value; PatrolDown = true; PatrolChasing = false; Chain.Add("patrol-down"); Note("patrol.down", "The patrol goes down. Its distress signal is already out."); }
-                    break;
-                case "rivals":
-                    RegisterGunfire("rivals");
-                    CallSecurity(CameraWatching("pickup", op.Pos) ? R.RespSeenS : R.RespRivalsUnseenS, "The firefight with the rivals is reported.");
-                    if (--RivalsHealth <= 0)
-                    {
-                        RivalsHealth = R.Hits; RivalsDelayedUntil = Tick + T(R.RivalsRetreatS); RivalsDelayMethod = "fire";
-                        Chain.Add("rivals-driven-back"); Note("rivals.retreat", "The rivals retreat for now.");
-                    }
-                    break;
-            }
-            return "";
-        }
-
-        void FireGuard(Op op, Pt guardAt)
-        {
-            var pose = GuardPose()!.Value;
-            bool seen = GuardWatching(op.Pos), bot = PatrolWatching(op.Pos), cam = CameraWatching("entrance", op.Pos);
-            var seenGuard = WitnessesWithPos(pose.pos, GuardP);
-            foreach (var w in WitnessesWithPos(op.Pos, GuardP)) if (!seenGuard.Exists(x => x.p == w.p)) seenGuard.Add(w);
-            AddIncident("gunfire", "gunfire:guard", pose.pos, seenGuard);
-            var civilians = WitnessesOf(pose.pos, GuardP).FindAll(c => c.Civilian);   // §05: violence seen by a civilian → 3 at once
-            bool inezSees = civilians.Contains(Inez), civSees = civilians.Count > 0;
-            RegisterGunfire("guard");
-            GuardHealth--;
-            foreach (var c in civilians) ViolenceSeen("guard", c);
-            if (inezSees) { InezWitnessedShooting = true; Note("witness.waitress", "Inez sees the guard shot beside her café. She is now a witness."); }
-            else if (civSees) Note("witness.crowd", $"{civilians.Count} on the street see the guard shot.");
-            CallSecurity(civSees ? R.RespWitnessS : seen || bot || cam ? R.RespSeenS : R.RespUnseenS,
-                inezSees ? "Inez reports the shooting." : civSees ? "A witness reports the shooting." : seen ? "The guard calls in the shooting." : bot ? "The patrol reports gunfire." : cam ? "The entrance camera reports gunfire." : "Shots are heard in the district.");
-            if (GuardHealth > 0)
-            {
-                if (pose.phase != "door") { GuardHeld = true; heldPos = pose.pos; heldFacing = pose.facing; heldPhase = "wounded"; GuardAwayUntil = INF; }
-                if (seen) { GuardEngaged = true; GuardNextShot = Tick + T(R.AimS); }
-                Note("guard.hit", seen ? "The guard is hit but fires back." : "The guard is hit. He cannot see the Enforcer yet.");
-            }
-            else
-            {
-                GuardDown = true; GuardP.Down = true; GuardEngaged = false; MissingNotice = Tick + T(R.CheckInS);
-                Chain.Add("guard-shot"); Note("guard.down", "The guard falls. His missed check-in will draw more attention.");
-            }
-        }
-
-        void FireCivilian(Person p, string text)
-        {
-            var g = GuardPose(); var at = PersonPos(p);
-            if (at.HasValue) { var ws = WitnessesWithPos(at.Value, p); AddIncident("violence", "violence:" + p.Role, at.Value, ws); foreach (var (c, _) in ws) Remember(c, "saw-act", "enforcer", true); }
-            RegisterGunfire(p.Role);
-            RaiseAlert(R.ViolenceSeen, $"violence-seen:{p.Role}");
-            if (incidents.Add("seen:" + p.Role)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{p.Role}"); MoveStanding(-R.StandingStep, $"violence-seen:{p.Role}"); }
-            p.Down = true; p.Turned = false;
-            if (g.HasValue && g.Value.phase != "door" && !GuardHeld)
-            {
-                GuardHeld = true; heldPos = g.Value.pos; heldFacing = g.Value.facing; heldPhase = "searching for the shooter"; GuardAwayUntil = INF;
-                if (GuardWatching(Enforcer.Pos)) { GuardEngaged = true; GuardNextShot = Tick + T(R.AimS); }
-            }
-            CallSecurity(R.RespCivilianS, text);
-            Chain.Add(p.Role + "-shot");
         }
     }
 }

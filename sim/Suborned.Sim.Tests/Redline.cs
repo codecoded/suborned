@@ -36,6 +36,11 @@ public class RedlineTests
         Rejects(rb, pr, Sub(st, "\"schema\": \"suborned.sim.site/1\",", "\"schema\": \"suborned.sim.site/1\",\n \"stray\": 1,"), "an unknown key at the site's root");
         Rejects(rb, pr, Regex.Replace(st, "\"purse\": 100000,", "\"purse\": 100000.5,"), "a float purse");
         Rejects(Sub(rb, "\"watch-s\": { \"v\": 20,", "\"watch-s\": { \"v\": 0,"), pr, st, "a 0 s action (E3)");
+        Rejects(Sub(rb, "\"pointBlank\": \"v:point-blank-m\",", "\"pointBlank\": \"v:point-blank-m\", \"spread\": \"v:point-blank-m\","), pr, st, "an unknown key in the weapons section (Sky 2026-10-15 fights)");
+        Rejects(Sub(rb, "\"pistol-eff-m\": { \"v\": 15,", "\"pistol-eff-m\": { \"v\": 26,"), pr, st, "a pistol's effective band beyond its max");
+        Rejects(Sub(rb, "\"health-guard\": { \"v\": 3,", "\"health-guard\": { \"v\": 0,"), pr, st, "a health of 0");
+        Rejects(Sub(rb, "\"draw-ticks\": { \"v\": 10,", "\"draw-ticks\": { \"v\": 0,"), pr, st, "a 0-tick draw (unit ticks ≥ 1)");
+        Rejects(rb, pr, Sub(st, "\"arms\": 3,", "\"arms\": -1,"), "negative Arms");
         Rejects(Sub(rb, "{ \"id\": \"not-yet\", \"when\": [],", "{ \"id\": \"not-yet\", \"when\": [{ \"k\": \"cash-covers\" }],"), pr, st, "cash-covers in an outcome (it recursed until the stack overflowed)");
     }
 

@@ -98,7 +98,11 @@ namespace Suborned.Sim
         /// <summary>Everyone on the street who could witness: the cast by their role, then the crowd by id (Start.Crowd, Suture's T4 arm).</summary>
         IEnumerable<(Person p, Pt at)> OnTheStreet()
         {
-            foreach (var p in People) { var at = PersonPos(p); if (at.HasValue) yield return (p, at.Value); }
+            foreach (var p in People)
+            {
+                if (p == ValeP && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) continue; // the captive is no witness: he is the act
+                var at = PersonPos(p); if (at.HasValue) yield return (p, at.Value);
+            }
             if (People2 == null || !Start.Crowd) yield break;
             foreach (var w in Walkers) { var at = CrowdPos(w); if (at.HasValue) yield return (w.P, at.Value); }
         }

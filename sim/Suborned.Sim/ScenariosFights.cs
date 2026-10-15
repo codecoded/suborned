@@ -1,0 +1,169 @@
+// Running and real-time shoot-outs (Sky 2026-10-15: Motive's briefs/011/motive-fights.md approved, all five answers as recommended):
+// a run seen by people and by security, runs refused, hits counted not rolled, a drawn weapon as an act, the going-loud card, panic,
+// and carrying a downed operative.
+using System;
+using System.Collections.Generic;
+
+namespace Suborned.Sim
+{
+    public static partial class Scenarios
+    {
+        static int SawRunner(Game g)
+        {
+            int n = 0;
+            foreach (var p in g.People) n += p.Count("saw-runner");
+            foreach (var w in g.Walkers) n += w.P.Count("saw-runner");
+            return n;
+        }
+        /// <summary>A point in front of the guard at his door, within point blank (3 m along his facing), on free ground.</summary>
+        static Pt FrontOfGuard(Run r) => r.Stand("d:Office entrance") + new Pt(-300, 0);
+
+        static void FightCases()
+        {
+            Add("N20", "—", "A running witness (motive-fights.md §1.1): the Scout runs past the Office; people in range remember where and when (no Trail); security that sees the run counts one found fault, Alert 1, once a run; the guard who saw it is no ally in a safe fight.", r =>
+            {
+                var g = r.G;
+                int trail = g.Trail;
+                var q = g.QuoteMove(Scout, r.Stand("d:Office approach"));
+                r.Is(q.RunS * 2 <= q.WalkS + 1 && q.RunS > 0, $"the chip: run {q.RunS} s against walk {q.WalkS} s (2.8 m/s against 1.4)");
+                r.Is(q.RunSeenBy.Count > 0 && q.AlertIfRun == 1, $"the chip names who would see the run ({string.Join(", ", q.RunSeenBy)}) and Alert → 1");
+                r.To(r.Send(Scout, "d:Office approach", run: true));
+                r.Eq(g.Trail, trail, "running is no traceable act: no Trail");
+                r.Eq(g.Alert, 1, "security saw a runner: a found fault, Alert 1");
+                r.Eq(g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)).Count, 1, "once a run, however many watchers saw it");
+                r.Is(SawRunner(g) > 0, $"people remember the runner, place and time ({SawRunner(g)})");
+                r.Is(g.GuardP.Has("saw-runner"), "the guard saw him: he holds a memory, so he won't fight at the cell's side (§07 never saw you)");
+            });
+
+            Add("N20b", "—", "Running is free once the run is loud (motive-fights.md §1.1): after gunfire nobody counts a runner.", r =>
+            {
+                var g = r.G;
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down: the run is loud");
+                int seen = SawRunner(g), ledger = g.Ledger.Count;
+                r.Is(g.QuoteMove(Scout, r.Stand("d:Office approach")).RunFree, "the chip says running is free");
+                r.To(r.Send(Scout, "d:Office approach", run: true));
+                r.Eq(SawRunner(g), seen, "no one counts the runner");
+                r.Is(!g.Ledger.GetRange(ledger, g.Ledger.Count - ledger).Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "and no found fault");
+            });
+
+            Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): the Tech tethered to a loop, an operative in the middle of an action; walking stays open.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Tech, "cabinet")); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "move", To = "d:Courtyard", Run = true });
+                r.Is(!ok && why.Contains("tethered"), $"the Tech can't run while the loop holds: {why}");
+                r.Eq(g.QuoteMove(Tech, r.Stand("d:Courtyard")).RunRefused, why, "the chip says so before the double-click");
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez);
+                (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Office approach", Run = true });
+                r.Is(!ok && why.Contains("busy"), $"mid-action, no run: {why}");
+                r.Done(Scout);
+                r.Send(Scout, "d:Office approach", run: true);
+                r.Is(r.Op(Scout).Running, "the action done, the Scout runs");
+                r.Send(Tech, "d:Courtyard");
+                r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running, "the Tech may still walk away (and the loop ends at the tether)");
+            });
+
+            Add("N22", "—", "Hits are counted, not rolled (motive-fights.md §2.2): the untrained Scout's pistol at point blank is 750 ‰, so exactly three hits in four, the third shot the miss; the guard's 3 health falls on the fourth shot. +2 T for the hit, +2 for the down.", r =>
+            {
+                var g = r.G;
+                r.Eq(g.R.Accuracy(g.R.Pistol, 300, false, false, false, true), 750, "point blank × untrained: 750 ‰");
+                r.Eq(g.R.Accuracy(g.R.Pistol, 1200, true, false, false, false), 375, "effective, walking: 375 ‰");
+                r.Eq(g.R.Accuracy(g.R.Carbine, 1800, false, false, true, false), 562, "the Enforcer holding Vale fires one-handed: 562 ‰");
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, FrontOfGuard(r))));
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                int trail = g.Trail;
+                r.Fire(Scout, GuardR);
+                r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
+                var mine = r.Shots().FindAll(x => x.by == Scout && x.target == GuardR);
+                r.Eq(string.Join(",", mine.ConvertAll(x => x.hit ? "hit" : "miss")), "hit,hit,miss,hit", "exactly three in four, in this order, every run");
+                r.Eq(mine[1].tick - mine[0].tick, g.R.Pistol.Every, "a pistol fires every 1.5 s");
+                r.Eq(g.Trail - trail, g.R.HitTrail + g.R.DownTrail, "the cost is on the victim: +2 T hit, +2 T down, not per shot");
+                r.Eq(g.Gunfire, 4, "four shots fired");
+                r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
+            });
+
+            Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Fixer, "d:Courtyard"));
+                var card = g.GoingLoud(new Order { Tick = g.Tick, Op = Fixer, Do = "draw" });
+                r.Is(!card.Loud && card.Why == "unseen-draw", $"no security sees him: drawing isn't going loud ({card.Why})");
+                int trail = g.Trail;
+                r.Do(Fixer, "draw"); r.Wait(1);
+                r.Eq(g.Trail - trail, g.R.WitnessTrail, "one witnessed incident: +1 T");
+                r.Eq(g.Alert, card.AlertTo, $"Alert as the card said ({card.AlertTo})");
+                r.Eq(g.Alert, 1, "Alert 1");
+                r.Is(g.Incidents.Exists(i => i.Kind == "weapon-drawn" && i.Witnesses.Count > 0), "the incident with its witnesses (for the investigators)");
+                r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness holds the Fixer's face");
+                r.Wait(T(3)); r.Eq(g.Trail - trail, g.R.WitnessTrail, "once a draw, not once a tick");
+                r.To(r.Send(Fixer, "d:Office approach"));
+                r.Eq(g.Alert, 2, "walking into the guard's cone with the weapon out: Alert 2");
+                r.Is(g.GuardEngaged, "the guard engages");
+                r.Is(g.SecurityArrives < int.MaxValue / 4, "and calls it in");
+            });
+
+            Add("N24", "—", "Going loud (motive-fights.md §2.6; Sky Q4: commit by holding, no pause): the card says what a shot would set off, changes nothing, and the run then does what it said.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Enf, "d:Office approach"));
+                ulong before = Hash.State(g);
+                var c = g.GoingLoud(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = GuardR });
+                r.Eq(Hash.State(g), before, "reading the card changes nothing");
+                r.Is(c.Loud && c.Why == "fire", "a shot before any fight goes loud");
+                r.Is(c.AlertTo >= 2, $"Alert → {c.AlertTo} ({c.Civilians} civilians watching)");
+                r.Eq(c.PoliceInS, c.Civilians > 0 ? g.R.RespWitnessS : g.R.RespSeenS, "police from the north street, by who reports it");
+                r.Eq(c.Seal, c.SecurityArrives + T(g.R.SealS), "the seal follows their arrival");
+                r.Eq(c.FightAfter, "loud", "the final fight turns loud");
+                r.Is(c.Officers >= g.R.LoudOfficers && c.ResponseOfficers == g.R.ResponseOfficers, $"{c.Officers} officers and the response unit's {c.ResponseOfficers}");
+                r.Is(c.GuardAllyLost, "the guard won't help");
+                r.Eq((c.TrailPerHit, c.TrailPerDown, c.HoldTicks), (2, 2, 5), "+2 T a person hit, +2 T a down; hold 0.5 s to commit");
+                r.Fire(Enf, GuardR);
+                r.Until(() => g.Gunfire > 0, T(10));
+                r.Eq(g.Alert, c.AlertTo, "Alert as the card said");
+                r.Is(g.SecurityArrives >= c.SecurityArrives && g.SecurityArrives <= c.SecurityArrives + g.R.DrawTicks + g.R.AimNewTicks, "the response as the card said, within the draw and the aim");
+                var after = g.GoingLoud(new Order { Tick = g.Tick, Op = Scout, Do = "fire", Target = GuardR });
+                r.Is(!after.Loud, $"once loud, no card ({after.Why}{after.Refused})");
+            });
+
+            Add("N25", "—", "Panic (motive-fights.md §2.4): refused with no fight on; once the guard fires on the cell, every armed operative draws and fires at will.", r =>
+            {
+                var g = r.G;
+                r.Refused("cell", "panic", "", "no fight: panic is refused");
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, FrontOfGuard(r)), r.SendTo(Enf, BesideDoor)));
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Scout, "draw");
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "hold" }).ok, "the Scout holds fire");
+                r.Is(r.Until(() => g.CellFiredOn, T(10)), "the guard sees the weapon and fires on the Scout: a fight is on");
+                r.Is(!r.Shots().Exists(x => x.by == Scout), "holding, the Scout hasn't fired");
+                r.Do("cell", "panic");
+                r.Is(Array.TrueForAll(g.Ops, o => o.Gun.W == null || (o.Gun.Drawn && o.Gun.Stance == "free")), "every armed operative draws and fires at will");
+                r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
+                r.Is(r.Shots().Exists(x => x.by == Scout && x.target == GuardR) && r.Shots().Exists(x => x.by == Enf && x.target == GuardR), "the Scout and the Enforcer fired on him without a fire order");
+                r.Is(!r.Shots().Exists(x => x.by != GuardR && x.target == "patrol"), "at will is at combatants only: nobody fired on the patrol, which never engaged");
+            });
+
+            Add("N26", "—", "Downed and carried (motive-fights.md §2.2, §1.1): the guard downs the Scout, who holds fire; the Fixer lifts him in 3 s; the carrier can't run or fire; the Scout's orders are refused.", r =>
+            {
+                var g = r.G;
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, FrontOfGuard(r))));
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Scout, "draw"); g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "hold" });
+                r.Send(Fixer, "d:Office approach");
+                r.Is(r.Until(() => r.Op(Scout).Down, T(30)), "the Scout is down");
+                r.Refused(Scout, "move", "", "a downed operative takes no orders");
+                r.To(r.SendTo(Fixer, r.Op(Scout).Pos));
+                r.Do(Fixer, "carry", Scout);
+                r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.CarryS), "lifting takes 3 s");
+                r.Done(Fixer);
+                r.Eq(r.Op(Fixer).Carrying, (OpId?)OpId.Scout, "the Fixer carries the Scout");
+                var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", To = "d:Getaway bay", Run = true });
+                r.Is(!ok && why.Contains("carrying"), $"carrying, no run: {why}");
+                r.Refused(Fixer, "fire", GuardR, "carrying, no fire");
+                r.Send(Fixer, "d:Getaway bay"); r.Wait(T(5));
+                r.Eq(r.Op(Scout).Pos, r.Op(Fixer).Pos, "the carried Scout goes where the Fixer goes");
+            });
+        }
+    }
+}

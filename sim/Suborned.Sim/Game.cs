@@ -21,10 +21,12 @@ namespace Suborned.Sim
         public long? Cash;
         public bool FinalFight = true;  // §07: the final fight is always fought; the top-down test's 28 had none
         public bool Crowd = true;       // §05 witnesses among the city's people; Suture's T4 arm switches it off
+        public int? Arms;               // the mission's Arms (site arms) unless a scenario fixes it: one sidearm per weapons.sidearmArms
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms");
+            if (n.Opt("arms") is JNode ar) { s.Arms = ar.Int(); if (s.Arms < 0 || s.Arms > 100) throw new FormatException($"{ar.Path}: arms 0..100"); }
             if (n.Opt("finalFight") is JNode ff) s.FinalFight = ff.Bool();
             if (n.Opt("crowd") is JNode cr) s.Crowd = cr.Bool();
             if (n.Opt("rivalsAt") is JNode r) s.RivalsAtS = r.Int();
@@ -44,6 +46,7 @@ namespace Suborned.Sim
             if (Cash.HasValue) w.Prop("cash", Cash.Value);
             if (!FinalFight) w.Prop("finalFight", false);
             if (!Crowd) w.Prop("crowd", false);
+            if (Arms.HasValue) w.Prop("arms", Arms.Value);
             return w.EndObj().ToString();
         }
     }
@@ -76,10 +79,11 @@ namespace Suborned.Sim
         public List<string> IncidentKeys() { var l = new List<string>(incidents); l.Sort(StringComparer.Ordinal); return l; }
 
         // the cell
-        public int EnforcerHealth, EnforcerNextShot;
+        public int EnforcerHealth => Enforcer.Gun.Health;
         public bool LoopOn;
         // the guard (§05 guard on door routine; mission.json windows.front-door)
-        public int LureTick = -1, GuardAwayUntil, GuardHealth, GuardNextShot, MissingNotice = INF;
+        public int LureTick = -1, GuardAwayUntil, MissingNotice = INF;
+        public int GuardHealth => GuardGun.Health;
         public bool GuardHeld, GuardEngaged, GuardReachedCafe, GuardDown;
         Pt heldPos, heldFacing; string heldPhase = "";
         readonly Path guardOut, guardBack;
@@ -91,14 +95,17 @@ namespace Suborned.Sim
         public ValeAt Vale = ValeAt.Office; public bool PickupService, EntryInProgress;
         Path? valePath;
         // the patrol (§05 patrol sweep)
-        public bool PatrolDown, PatrolChasing, PatrolTracking; public int PatrolHealth, PatrolAwayUntil, PatrolNextShot;
-        Pt chasePos, patrolDownAt;
+        public bool PatrolDown, PatrolChasing, PatrolTracking; public int PatrolAwayUntil;
+        public int PatrolHealth => PatrolGun.Health;
+        Pt chasePos, patrolDownAt; OpId chaseOp = OpId.Enforcer;
         // the rivals (§05 rivals)
-        public int RivalAt; public bool RivalsArrived, RivalsDrawn, RivalsTracking; public int RivalsDelayedUntil, RivalsDrawnTick, RivalsHealth, RivalsNextShot;
+        public int RivalAt; public bool RivalsArrived, RivalsDrawn, RivalsTracking; public int RivalsDelayedUntil, RivalsDrawnTick;
+        public int RivalsHealth => RivalsGun.Health;
         public string RivalsDelayMethod = "";
         Path? rivalsPath, rivalsRestartPath;
         // the response unit (§05 response unit on report; district seals after it arrives)
-        public int SecurityArrives = INF, Lockdown = INF, SecurityHealth, SecurityNextShot; public bool SecurityDown, SecurityTracking;
+        public int SecurityArrives = INF, Lockdown = INF; public bool SecurityDown, SecurityTracking;
+        public int SecurityHealth { get { int n = 0; foreach (var g in SecGuns) n += g.Health; return n; } }
         readonly Path securityPath;
         // the debrief's facts
         public bool InezWitnessedShooting; public string InezMethod = "";
@@ -125,10 +132,20 @@ namespace Suborned.Sim
             Cash = Start.Cash ?? S.Purse;
             Standing = R.StandingStart;
             string[] crew = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
-            for (int i = 0; i < 4; i++) Ops[i] = new Op { Id = (OpId)i, Pos = S.Stand(crew[i]) };
-            EnforcerHealth = R.EnforcerHealth;
-            int hits = R.Hits;
-            GuardHealth = PatrolHealth = RivalsHealth = SecurityHealth = hits;
+            // Arms (Sky 2026-10-15 Q1): the Enforcer's carbine is the cell's; each sidearm takes weapons.sidearmArms, issued Scout, Fixer, Tech
+            int sidearms = (Start.Arms ?? S.Arms) / R.SidearmArms;
+            for (int i = 0; i < 4; i++)
+            {
+                var id = (OpId)i; bool enf = id == OpId.Enforcer;
+                var gun = new Gun(Sim.Op.Name(id)) { W = enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = enf ? R.HealthEnforcer : R.HealthOp };
+                gun.Max = gun.Health;
+                Ops[i] = new Op { Id = id, Pos = S.Stand(crew[i]), Gun = gun };
+            }
+            GuardGun = NewGun("guard", R.Pistol, true, R.HealthGuard);
+            PatrolGun = NewGun("patrol", R.Pistol, true, R.HealthPatrol);
+            RivalsGun = NewGun("rivals", R.Pistol, false, R.HealthRival);
+            SecGuns = new Gun[R.ResponseOfficers];
+            for (int k = 0; k < SecGuns.Length; k++) SecGuns[k] = NewGun($"security-{k + 1}", R.Pistol, true, R.HealthOfficer);
 
             string[] places = { S.GuardCafe, S.CarDriver, S.GuardPost, S.ValeExit };
             string[] roles = { "waitress", "driver", "guard", "councillor" };
@@ -139,6 +156,7 @@ namespace Suborned.Sim
                 var t = R.Temp(p.Temperament); R.CheckNeed(p.Need);
                 for (int k = 0; k < 4; k++) p.Sc[k] = t.Start[k];
                 People.Add(p);
+                civGuns[roles[i]] = NewGun(roles[i], null, false, R.HealthCivilian);
             }
             Inez.Suspected = Inez.Need; Driver.Suspected = Driver.Need; // Sky 2026-10-15: "in debt" shows as suspected from 0:00, from the briefing
             foreach (var role in Start.Turned) PersonByRole(role).Turned = true;
@@ -199,6 +217,7 @@ namespace Suborned.Sim
                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
             }
+            foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
             if (!Over) Tether();
             if (!Over) Watchers();
             if (!Over) PatrolChase();
@@ -207,8 +226,9 @@ namespace Suborned.Sim
                 Note("guard.check-in", "The guard misses his check-in. Security now knows the post is empty.");
                 CallSecurity(R.RespCheckInS, "The empty guard post is reported.");
             }
-            if (!Over) Shooters();
+            if (!Over) DrawnSeen();
             if (!Over) FightStep();
+            if (!Over) Combat();
             if (!Over && Tick >= Lockdown && Vale != ValeAt.Car) Fail("sealed", "Security seals the district before Vale reaches the getaway car.");
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
                 Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
@@ -266,48 +286,20 @@ namespace Suborned.Sim
         void Tether()
         {
             var tech = OpOf(OpId.Tech);
-            if (LoopOn && !G.Within(tech.Pos, S.At("cabinet"), R.TetherCm))
+            if (LoopOn && (tech.Down || !G.Within(tech.Pos, S.At("cabinet"), R.TetherCm)))
             {
-                LoopOn = false; Note("loop.ends", "The Tech leaves the cabinet. The camera feed returns.");
+                LoopOn = false; Note("loop.ends", tech.Down ? "The Tech is down. The camera feed returns." : "The Tech leaves the cabinet. The camera feed returns.");
             }
         }
 
         void PatrolChase()
         {
             if (!PatrolChasing || PatrolDown || PatrolAwayUntil > Tick || Tick % Hz != 0) return;
-            var e = Enforcer; var target = e.Inside ? S.Stand(S.SecTo) : e.Pos;
+            var e = OpOf(chaseOp); var target = e.Inside ? S.Stand(S.SecTo) : e.Pos;
             var t = S.Grid.NearestFree(target); var from = S.Grid.NearestFree(chasePos);
             if (!t.HasValue || !from.HasValue) return;
             var route = S.Grid.Route(from.Value, t.Value); if (route == null) return;
             chasePos = new Path(route).At(chaseSpeed * Hz); // a second's chase, as the top-down test moved it
-        }
-
-        void Shooters()
-        {
-            var e = Enforcer; if (e.Inside) { PatrolTracking = SecurityTracking = RivalsTracking = false; return; }
-            int aim = T(R.AimS);
-            if (GuardEngaged && !GuardDown && GuardWatching(e.Pos) && Tick >= GuardNextShot)
-            {
-                GuardNextShot = Tick + T(R.GuardFireS);
-                HitEnforcer("guard", "The guard hits the Enforcer."); if (Over) return;
-            }
-            bool bot = PatrolChasing && PatrolWatching(e.Pos);
-            if (bot && !PatrolTracking) { PatrolTracking = true; PatrolNextShot = Tick + aim; Note("patrol.locks", "The patrol locks onto the Enforcer."); }
-            else if (!bot) PatrolTracking = false;
-            if (bot && Tick >= PatrolNextShot) { PatrolNextShot = Tick + T(R.PatrolFireS); HitEnforcer("patrol", "The patrol fires on the Enforcer."); if (Over) return; }
-            bool sec = SecurityWatching(e.Pos);
-            if (sec && !SecurityTracking) { SecurityTracking = true; SecurityNextShot = Tick + aim; Note("security.aims", "Security spots the Enforcer and raises its weapons."); }
-            else if (!sec) SecurityTracking = false;
-            if (sec && Tick >= SecurityNextShot) { SecurityNextShot = Tick + T(R.SecurityFireS); HitEnforcer("security", "Security fires on the Enforcer."); if (Over) return; }
-            bool riv = RivalsWatching(e.Pos);
-            if (riv && !RivalsTracking) { RivalsTracking = true; RivalsNextShot = Tick + aim; Note("rivals.aim", "The rival crew spots the Enforcer and takes aim."); }
-            else if (!riv) RivalsTracking = false;
-            if (riv && Tick >= RivalsNextShot) { RivalsNextShot = Tick + T(R.RivalsFireS); HitEnforcer("rivals", "The rival crew fires on the Enforcer."); }
-        }
-        void HitEnforcer(string by, string text)
-        {
-            EnforcerHealth--; Note("enforcer.hit." + by, $"{text} {EnforcerHealth} health left.");
-            if (EnforcerHealth <= 0) Fail("enforcer-down", "The Enforcer is down.");
         }
 
         // ---------------------------------------------------------------- where things are
@@ -396,11 +388,20 @@ namespace Suborned.Sim
             return mm >= path.Length ? (path.End, Back(path)) : (path.At(mm), path.Heading(mm));
         }
 
+        /// <summary>The response unit: its lead officer still up, and where the unit faces (its officers walk in file, `SecFileMm` apart).</summary>
         public (Pt pos, Pt facing)? SecurityPose()
         {
             if (SecurityDown || Tick < SecurityArrives) return null;
-            long mm = (long)(Tick - SecurityArrives) * secSpeed;
-            if (mm >= securityPath.Length) return (securityPath.End, Back(securityPath));
+            for (int k = 0; k < SecGuns.Length; k++) if (!SecGuns[k].Down) return SecOfficerPose(k);
+            return null;
+        }
+        const long SecFileMm = 1500; // the officers' spacing in file: placement only (no rule reads it), until Pulse's hostile spec places them
+        public (Pt pos, Pt facing)? SecOfficerPose(int k)
+        {
+            if (Tick < SecurityArrives || SecGuns[k].Down) return null;
+            long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm, end = Math.Max(0, securityPath.Length - k * SecFileMm);
+            if (mm < 0) mm = 0;
+            if (mm >= end) return (securityPath.At(end), Back(securityPath));
             return (securityPath.At(mm), securityPath.Heading(mm));
         }
 
@@ -448,7 +449,12 @@ namespace Suborned.Sim
         }
         public bool SecurityWatching(Pt p)
         {
-            var s = SecurityPose(); if (!s.HasValue) return false;
+            for (int k = 0; k < SecGuns.Length; k++) if (SecOfficerWatching(k, p)) return true;
+            return false;
+        }
+        bool SecOfficerWatching(int k, Pt p)
+        {
+            var s = SecOfficerPose(k); if (!s.HasValue) return false;
             return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p);
         }
         public bool RivalsWatching(Pt p)
@@ -467,20 +473,6 @@ namespace Suborned.Sim
             SecurityArrives = arrival; Lockdown = arrival + T(R.SealS);
             Note("security.called", $"{text} Security is coming from the north street.");
         }
-        void RegisterGunfire(string target)
-        {
-            Gunfire++; AddTrail(R.ShotTrail, "gunfire:" + target);
-            RaiseAlert(Math.Min(3, Alert + R.PerShot), "gunfire:" + target);
-            EnforcerNextShot = Tick + T(R.ShotEveryS);
-            incidents.Add("fire:" + target);
-            if (target != "guard" && target != "waitress" && target != "driver")
-            {
-                var ws = WitnessesWithPos(Enforcer.Pos, null);
-                AddIncident("gunfire", "gunfire:" + target, Enforcer.Pos, ws);
-                foreach (var (c, _) in ws) Remember(c, "saw-act", "enforcer", true);
-            }
-            DrawRivals(); WakePatrol();
-        }
         void DrawRivals()
         {
             if (RivalsDrawn) return;
@@ -491,20 +483,20 @@ namespace Suborned.Sim
             rivalsPath = new Path(S.Grid.Route(S.Grid.NearestFree(start) ?? start, S.Stand(S.RivalsFront)) ?? new[] { start, S.Stand(S.RivalsFront) });
             Note("rivals.drawn", "The rivals hear gunfire and head for the Office.");
         }
-        void WakePatrol()
+        void WakePatrol(Pt at, OpId who)
         {
             if (PatrolDown || PatrolAwayUntil > Tick || PatrolChasing) return;
             var pos = PatrolPose()!.Value.pos;
-            if (!G.Within(pos, Enforcer.Pos, R.PatrolBreakCm)) return;
-            chasePos = pos; PatrolChasing = true;
+            if (!G.Within(pos, at, R.PatrolBreakCm)) return;
+            chasePos = pos; PatrolChasing = true; chaseOp = who;
             Note("patrol.breaks", "The patrol breaks its route and turns toward the gunfire.");
         }
 
         /// <summary>A civilian who sees violence (§05: 3 at once; rulebook witness.sees, traceable violence): one incident, once.</summary>
-        void ViolenceSeen(string incident, Person witness)
+        void ViolenceSeen(string incident, Person witness, string by)
         {
             RaiseAlert(R.ViolenceSeen, $"violence-seen:{incident}:{(witness.Role.Length > 0 ? witness.Role : witness.Id)}");
-            Remember(witness, "saw-act", "enforcer", true);
+            Remember(witness, "saw-act", by, true);
             if (witness.Turned) LadderMove(witness, "saw-violence");
             if (!incidents.Add("seen:" + incident)) return;
             AddTrail(R.WitnessTrail, $"witnessed:{incident}");

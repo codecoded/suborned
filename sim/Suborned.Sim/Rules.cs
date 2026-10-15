@@ -156,17 +156,21 @@ namespace Suborned.Sim
         public readonly HashSet<string> DebriefLines = new HashSet<string>(StringComparer.Ordinal);
         public readonly string HelpedAct, RefusedAct;
         public readonly int MemoryCap;
-        public readonly int[] AlertByIncident; public readonly int PerShot, ViolenceSeen;
+        public readonly int[] AlertByIncident; public readonly int GunfireAlert, ViolenceSeen;
         public readonly int StandingStart, StandingStep, HeroAt, MenaceAt;
         public readonly int WitnessRangeCm, WitnessTrail, ApproachReachCm, ListenReachCm, TrailOpen;
         // cell
-        public readonly int CellSpeed, RunSpeed, CarryRunSpeed, ActReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, TakeS, TakeTrailUnturned, ShotEveryS, FireReachCm, FireRivalsReachCm, ShotTrail, Hits, EnforcerHealth;
+        public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, CarryS;
+        // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
+        public readonly Weapon Pistol, Carbine;
+        public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
+        public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
-        public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespCheckInS, RespRivalsUnseenS, CheckInS, SealS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase, AimS, GuardFireS, PatrolFireS, SecurityFireS, RivalsFireS;
+        public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespCheckInS, RespRivalsUnseenS, CheckInS, SealS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase;
         // perception
         public readonly int NearCm, Eye, DoorReachCm, DoorHalfCm, FacingReachCm, FacingHalfCm, SecReachCm, SecHalfCm, RivReachCm, RivHalfCm, PatrolDepthCm, PatrolHalfBase, PatrolHalfPerMille;
         // the final fight
-        public readonly int SafeHostiles, SafeMinus, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, VolleyS, HoldCm; public readonly bool FightTraced;
+        public readonly int SafeHostiles, SafeMinus, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, HoldCm; public readonly bool FightTraced;
         // the investigation and between missions
         public readonly int InvestigatorsBase, InvestigatorsPerAlert, InvestigatorHops, WordHops, WordQuietLoyalty, IntroductionsPerContact, NeedWeightScale;
         public readonly Dictionary<string, string> StreamKeys = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -177,7 +181,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "perception", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -237,7 +241,7 @@ namespace Suborned.Sim
                 {
                     "s" => (1L, 3600L), "usd" => (-1_000_000_000L, 1_000_000_000L), "m" => (0L, 1000L), "cm" => (0L, 100_000L), "cm-per-s" => (1L, 10_000L),
                     "trail" => (0L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (0L, 10L), "scale-steps" => (-10L, 10L),
-                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L),
+                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L),
                     _ => throw new FormatException($"{v.Path}.unit '{unit}' is unknown"),
                 };
                 if (x < lo || x > hi) throw new FormatException($"{v.Path} = {x} is outside {lo}..{hi} for unit {unit}");
@@ -249,10 +253,10 @@ namespace Suborned.Sim
             // ---- sections, strictly, into fields
             var s = b["standing"]; s.Only("start", "step", "hero", "menace", "rule", "tag", "src", "proposed", "reason");
             StandingStart = RI(s["start"]); StandingStep = RI(s["step"]); HeroAt = RI(s["hero"]); MenaceAt = RI(s["menace"]);
-            var al = b["alert"]; al.Only("levels", "byIncident", "perShot", "violenceSeen", "rule", "tag", "src");
+            var al = b["alert"]; al.Only("levels", "byIncident", "gunfire", "violenceSeen", "rule", "tag", "src");
             var by = al["byIncident"].Items; AlertByIncident = new int[by.Count]; for (int i = 0; i < by.Count; i++) AlertByIncident[i] = RI(by[i]);
             if (AlertByIncident.Length == 0) throw new FormatException("alert.byIncident is empty");
-            PerShot = RI(al["perShot"]); ViolenceSeen = RI(al["violenceSeen"]);
+            GunfireAlert = RI(al["gunfire"]); ViolenceSeen = RI(al["violenceSeen"]);
             var fit = b["fit"]; fit.Only("from", "approaches", "standing", "rule", "tag", "src", "proposed", "reason");
             fit["from"].Only("suits", "refused", "otherwise");
             foreach (var kv in fit["approaches"].Entries) { kv.Value.Only("fit", "tag", "src", "proposed", "reason"); Known(approaches, kv.Key, "approach", kv.Value.Path); fitApproach[kv.Key] = ParseFit(kv.Value["fit"]); }
@@ -290,25 +294,34 @@ namespace Suborned.Sim
             b["debrief"].Only("lines", "rule", "tag", "src");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
-            var c = b["cell"]; c.Only("speed", "runSpeed", "carryRunSpeed", "reach", "loop", "reroute", "mislead", "call", "enter", "take", "fire", "rule", "tag", "src");
-            CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); CarryRunSpeed = RI(c["carryRunSpeed"]); ActReachCm = RI(c["reach"]) * 100;
+            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "rule", "tag", "src");
+            CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); RunAlert = RI(c["runAlert"]); ActReachCm = RI(c["reach"]) * 100; AtReachCm = RI(c["atReach"]);
             c["loop"].Only("s", "trail", "tether"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
             c["reroute"].Only("s", "trail", "away"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
             c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);
             c["call"].Only("trail"); CallTrail = RI(c["call"]["trail"]);
-            c["enter"].Only("s"); EnterS = RI(c["enter"]["s"]);
+            c["enter"].Only("s", "alarm"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
+            c["carry"].Only("s"); CarryS = RI(c["carry"]["s"]);
             c["take"].Only("s", "trailUnturned"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]);
-            var fi = c["fire"]; fi.Only("every", "reach", "reachRivals", "trail", "hits", "enforcerHealth");
-            ShotEveryS = RI(fi["every"]); FireReachCm = RI(fi["reach"]) * 100; FireRivalsReachCm = RI(fi["reachRivals"]) * 100; ShotTrail = RI(fi["trail"]); Hits = RI(fi["hits"]); EnforcerHealth = RI(fi["enforcerHealth"]);
-            if (Hits < 1 || EnforcerHealth < 1) throw new FormatException("cell.fire: hits and enforcerHealth must be at least 1");
-            var se = b["security"]; se.Only("response", "checkIn", "seal", "speed", "rivals", "patrol", "aim", "fireEvery", "rule", "tag", "src");
+            var se = b["security"]; se.Only("response", "checkIn", "seal", "speed", "rivals", "patrol", "rule", "tag", "src");
             var re = se["response"]; re.Only("witness", "seen", "unseen", "civilian", "checkIn", "rivalsUnseen");
             RespWitnessS = RI(re["witness"]); RespSeenS = RI(re["seen"]); RespUnseenS = RI(re["unseen"]); RespCivilianS = RI(re["civilian"]); RespCheckInS = RI(re["checkIn"]); RespRivalsUnseenS = RI(re["rivalsUnseen"]);
             CheckInS = RI(se["checkIn"]); SealS = RI(se["seal"]); SecuritySpeed = RI(se["speed"]);
             se["rivals"].Only("speed", "drawn", "retreat"); RivalsSpeed = RI(se["rivals"]["speed"]); RivalsDrawnS = RI(se["rivals"]["drawn"]); RivalsRetreatS = RI(se["rivals"]["retreat"]);
             se["patrol"].Only("breakTo", "period", "chase"); PatrolBreakCm = RI(se["patrol"]["breakTo"]) * 100; PatrolPeriodS = RI(se["patrol"]["period"]); PatrolChase = RI(se["patrol"]["chase"]);
-            AimS = RI(se["aim"]);
-            se["fireEvery"].Only("guard", "patrol", "security", "rivals"); GuardFireS = RI(se["fireEvery"]["guard"]); PatrolFireS = RI(se["fireEvery"]["patrol"]); SecurityFireS = RI(se["fireEvery"]["security"]); RivalsFireS = RI(se["fireEvery"]["rivals"]);
+            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "acc", "mod", "draw", "holster", "aimNew", "react", "lineLapse", "sidearmArms", "health", "costs", "rule", "tag", "src", "proposed", "reason");
+            PointBlankCm = RI(wp["pointBlank"]) * 100;
+            Pistol = LoadWeapon(wp["pistol"], "pistol", PointBlankCm); Carbine = LoadWeapon(wp["carbine"], "carbine", PointBlankCm);
+            wp["acc"].Only("point", "eff", "long", "start"); AccPoint = RI(wp["acc"]["point"]); AccEff = RI(wp["acc"]["eff"]); AccLong = RI(wp["acc"]["long"]); AccStart = RI(wp["acc"]["start"]);
+            wp["mod"].Only("moving", "cover", "vale", "untrained"); ModMoving = RI(wp["mod"]["moving"]); ModCover = RI(wp["mod"]["cover"]); ModVale = RI(wp["mod"]["vale"]); ModUntrained = RI(wp["mod"]["untrained"]);
+            DrawTicks = RI(wp["draw"]); HolsterTicks = RI(wp["holster"]); AimNewTicks = RI(wp["aimNew"]); ReactS = RI(wp["react"]); LineLapseS = RI(wp["lineLapse"]); SidearmArms = RI(wp["sidearmArms"]);
+            if (SidearmArms < 1) throw new FormatException("weapons.sidearmArms must be at least 1");
+            var hp = wp["health"]; hp.Only("enforcer", "op", "guard", "officer", "rival", "patrol", "civilian", "responseOfficers");
+            HealthEnforcer = RI(hp["enforcer"]); HealthOp = RI(hp["op"]); HealthGuard = RI(hp["guard"]); HealthOfficer = RI(hp["officer"]); HealthRival = RI(hp["rival"]); HealthPatrol = RI(hp["patrol"]); HealthCivilian = RI(hp["civilian"]); ResponseOfficers = RI(hp["responseOfficers"]);
+            foreach (var h in new[] { HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian }) if (h < 1) throw new FormatException("weapons.health: every health is at least 1");
+            if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
+            var co = wp["costs"]; co.Only("hit", "down", "drawSeenSecurity", "drawSeenPeople", "loudHold");
+            HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
             var pe = b["perception"]; pe.Only("near", "eye", "door", "facing", "security", "rivals", "patrol", "rule", "tag", "src");
             NearCm = RI(pe["near"]) * 100; Eye = RI(pe["eye"]);
             pe["door"].Only("reach", "half"); DoorReachCm = RI(pe["door"]["reach"]) * 100; DoorHalfCm = RI(pe["door"]["half"]) * 100;
@@ -316,10 +329,10 @@ namespace Suborned.Sim
             pe["security"].Only("reach", "half"); SecReachCm = RI(pe["security"]["reach"]) * 100; SecHalfCm = RI(pe["security"]["half"]) * 100;
             pe["rivals"].Only("reach", "half"); RivReachCm = RI(pe["rivals"]["reach"]) * 100; RivHalfCm = RI(pe["rivals"]["half"]) * 100;
             pe["patrol"].Only("depth", "halfBase", "halfPerMille"); PatrolDepthCm = RI(pe["patrol"]["depth"]) * 100; PatrolHalfBase = RI(pe["patrol"]["halfBase"]); PatrolHalfPerMille = RI(pe["patrol"]["halfPerMille"]);
-            var fg = b["fight"]; fg.Only("safe", "loud", "volley", "hold", "traced", "tracedReason", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "traced", "tracedReason", "rule", "tag", "src");
             fg["safe"].Only("hostiles", "minus", "warn", "ambush"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeMinus = RI(fg["safe"]["minus"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100;
             fg["loud"].Only("officers", "alert", "civilian"); LoudOfficers = RI(fg["loud"]["officers"]); LoudAlert = RI(fg["loud"]["alert"]); LoudCivilian = RI(fg["loud"]["civilian"]);
-            VolleyS = RI(fg["volley"]); HoldCm = RI(fg["hold"]) * 100; FightTraced = fg["traced"].Bool();
+            HoldCm = RI(fg["hold"]) * 100; FightTraced = fg["traced"].Bool();
             var inv = b["investigation"]; inv.Only("base", "perAlert", "hops", "rule", "tag", "src", "proposed", "reason");
             InvestigatorsBase = RI(inv["base"]); InvestigatorsPerAlert = RI(inv["perAlert"]); InvestigatorHops = RI(inv["hops"]);
             WordHops = VI("word-hops"); WordQuietLoyalty = VI("word-quiet-loyalty"); IntroductionsPerContact = VI("introductions-per-contact"); NeedWeightScale = VI("need-weight-scale");
@@ -348,6 +361,29 @@ namespace Suborned.Sim
         static string OneOf(JNode n, string[] allowed) { var v = n.Str(); if (Array.IndexOf(allowed, v) < 0) throw new FormatException($"{n.Path} = '{v}' is not one of {string.Join(", ", allowed)}"); return v; }
         static Fit ParseFit(JNode n) => OneOf(n, Fits) switch { "suits" => Fit.Suits, "worse" => Fit.Worse, _ => Fit.Refused };
         static int[] Scales(List<string> names) { var o = new int[names.Count]; for (int i = 0; i < o.Length; i++) o[i] = ScaleIndex(names[i]); return o; }
+        Weapon LoadWeapon(JNode n, string id, int pointBlankCm)
+        {
+            n.Only("damage", "every", "eff", "max");
+            var w = new Weapon(id, RI(n["damage"]), RI(n["every"]), RI(n["eff"]) * 100, RI(n["max"]) * 100);
+            if (w.Damage < 1) throw new FormatException($"{n.Path}.damage must be at least 1");
+            if (!(pointBlankCm <= w.EffCm && w.EffCm <= w.MaxCm)) throw new FormatException($"{n.Path}: point blank ≤ eff ≤ max");
+            return w;
+        }
+        public Weapon WeaponOf(string id) => id == "pistol" ? Pistol : id == "carbine" ? Carbine : throw new FormatException($"weapon '{id}' is unknown (pistol, carbine)");
+
+        /// <summary>A shot's accuracy in per mille (rulebook weapons): the band's (point blank, effective, long; 0 beyond max), times each
+        /// modifier that applies, in this order, each rounded down: moving, cover, vale, untrained. rulebook.ref.ts accuracy() is the same.</summary>
+        public int Accuracy(Weapon w, long distanceCm, bool moving, bool cover, bool vale, bool untrained)
+        {
+            if (distanceCm > w.MaxCm) return 0;
+            long a = distanceCm <= PointBlankCm ? AccPoint : distanceCm <= w.EffCm ? AccEff : AccLong;
+            if (moving) a = a * ModMoving / 1000;
+            if (cover) a = a * ModCover / 1000;
+            if (vale) a = a * ModVale / 1000;
+            if (untrained) a = a * ModUntrained / 1000;
+            return (int)a;
+        }
+
         int RI(JNode n) { if (n.Kind != JKind.Str) throw new FormatException($"{n.Path} is not a ref"); return (int)Num(n.Str()); }
 
         void ValidateEvent(Event ev)
@@ -502,5 +538,12 @@ namespace Suborned.Sim
         }
         public static int ScaleIndex(string s) { int i = Array.IndexOf(ScaleNames, s); if (i < 0) throw new FormatException($"scale '{s}' is unknown"); return i; }
         public int Clamp(int scale, int v) => Math.Max(ScaleMin[scale], Math.Min(ScaleMax[scale], v));
+    }
+
+    /// <summary>A weapon (rulebook weapons.pistol, weapons.carbine): damage a hit, ticks between shots, effective and max reach in cm.</summary>
+    public sealed class Weapon
+    {
+        public readonly string Id; public readonly int Damage, Every, EffCm, MaxCm;
+        public Weapon(string id, int damage, int every, int effCm, int maxCm) { Id = id; Damage = damage; Every = every; EffCm = effCm; MaxCm = maxCm; }
     }
 }
