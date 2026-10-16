@@ -14,7 +14,7 @@ namespace Suborned.Play
     /// IMGUI view draws everything. F11 switches views (PlayControls.view). Only the cards, the strips, the plates and the bar take clicks;
     /// the rest passes them to the world.</summary>
     [RequireComponent(typeof(HandoverHost))]
-    public sealed class HudToolkit : MonoBehaviour
+    public sealed partial class HudToolkit : MonoBehaviour
     {
         static HudToolkit live;
         /// <summary>The kit view is drawing (the IMGUI view then skips the pieces it has).</summary>
@@ -112,6 +112,7 @@ namespace Suborned.Play
         {
             public VisualElement Root, Cameo, Icon, Suggested, KeyPlate, Lock, Price, Outcome, OutcomeMark, LevRow, Walk, Locked;
             public Label Title, Key, Body, Usd, Time, Trail, Alert, OutcomeText, WalkText, LockReason, Unlock; public int Index;
+            public VisualElement Extra; public readonly List<(VisualElement row, VisualElement icon, Label text)> ExtraRows = new(); // brief 013: a way's rows
         }
         VisualElement panel, panelCameo, panelBadge, panelDiscs, panelNeed, panelNeedMark, panelTemp, panelSecret; ScrollView panelCards; Label panelTitle, panelSub, panelAbout, panelNote;
         readonly List<ActCard> actCards = new(); int panelHover = -1;
@@ -222,7 +223,7 @@ namespace Suborned.Play
             var kp = E(keyRow, "s-plate_light", w: float.NaN, h: 19); tipKey = L(kp, "keycap"); tipKey.style.paddingLeft = 6; tipKey.style.paddingRight = 6;
             var kt = L(keyRow, "tooltip-key"); kt.text = "cancels the selected agent's act"; kt.style.marginLeft = 6;
             Show(tooltip, false);
-            BuildPanel(); BuildStep3();
+            BuildPanel(); BuildStep3(); BuildTakedown();
             // the feed (feed_bar, scene_card): bottom right 14; cards above the bar, newest on top
             feed = E(root); feed.style.position = Position.Absolute; feed.style.right = 14; feed.style.bottom = 14; feed.style.width = 384; feed.style.flexDirection = FlexDirection.ColumnReverse;
             var bar = E(feed, "s-panel_strip", pick: true); bar.style.height = 32; bar.style.flexShrink = 0;
@@ -254,6 +255,7 @@ namespace Suborned.Play
             panelNote = L(panel, "panel-sub"); panelNote.style.whiteSpace = WhiteSpace.Normal; panelNote.style.marginLeft = 14; panelNote.style.marginRight = 14; panelNote.style.marginBottom = 6;
             panelCards = new ScrollView(ScrollViewMode.Vertical) { pickingMode = PickingMode.Ignore, focusable = false }; panelCards.verticalScrollerVisibility = ScrollerVisibility.Hidden; panelCards.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             panelCards.style.maxHeight = 1080 - 28 - 90; panelCards.style.marginLeft = 8; panelCards.style.marginRight = 8; panel.Add(panelCards);
+            BuildBefore();
             Show(panel, false);
         }
 
@@ -286,6 +288,13 @@ namespace Suborned.Play
             c.Outcome = orow;
             c.LevRow = E(body); c.LevRow.style.flexDirection = FlexDirection.Row; c.LevRow.style.alignItems = Align.Center; c.LevRow.style.marginTop = 3;
             Icon(E(c.LevRow, null, w: 14, h: 14), "secret", Ink); var lv = L(c.LevRow, "card-outcome"); lv.text = "Leans on their secret"; lv.style.marginLeft = 6;
+            c.Extra = E(body); c.Extra.style.marginTop = 4;
+            for (int i = 0; i < 5; i++)
+            {
+                var r = E(c.Extra); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.FlexStart; r.style.marginTop = 3;
+                var ic = E(r, null, w: 13, h: 13); ic.style.marginRight = 6; ic.style.marginTop = 1; ic.style.flexShrink = 0;
+                var tx = L(r, "card-body"); tx.style.whiteSpace = WhiteSpace.Normal; tx.style.flexShrink = 1; c.ExtraRows.Add((r, ic, tx));
+            }
             c.Locked = E(body); c.Locked.style.marginTop = 6;
             c.LockReason = L(c.Locked, "card-body-locked"); c.LockReason.style.whiteSpace = WhiteSpace.Normal;
             c.Unlock = L(c.Locked, "card-body-locked"); c.Unlock.style.whiteSpace = WhiteSpace.Normal; c.Unlock.style.marginTop = 2;
@@ -303,6 +312,7 @@ namespace Suborned.Play
             Show(panelDiscs, m.PanelPerson);
             if (m.PanelPerson) { Icon(panelNeed.Q("glyph"), m.PanelNeed, Cream); Bg(panelNeedMark, $"badges/mark_{m.PanelNeedMark}"); Icon(panelTemp.Q("glyph"), m.PanelTemp, Cream); Show(panelSecret, m.PanelSecret); }
             Text(panelNote, m.PanelNote); Show(panelNote, m.PanelNote.Length > 0);
+            BeforeFrame();
             var cards = m.PanelCards;
             while (actCards.Count < cards.Count) NewActCard();
             for (int i = 0; i < actCards.Count; i++)
@@ -320,6 +330,8 @@ namespace Suborned.Play
                 Show(u.OutcomeMark, c.Outcome.Length > 0); if (c.Outcome.Length > 0) Bg(u.OutcomeMark, $"badges/mark_{c.OutcomeMark}");
                 Show(u.Walk, c.Walk.Length > 0); Text(u.WalkText, c.Walk);
                 Show(u.LevRow, c.Leverage && c.Available);
+                Show(u.Extra, c.Extra.Count > 0);
+                for (int k = 0; k < u.ExtraRows.Count; k++) { var (er, ei, et) = u.ExtraRows[k]; Show(er, k < c.Extra.Count); if (k < c.Extra.Count) { Icon(ei, c.Extra[k].icon, Ink); Text(et, c.Extra[k].text); } }
                 Show(u.Locked, !c.Available); Text(u.LockReason, c.Reason.Length > 0 ? "Locked: " + c.Reason : ""); Text(u.Unlock, c.Unlock.Length > 0 ? "To unlock: " + c.Unlock : ""); Show(u.Unlock, c.Unlock.Length > 0);
                 // locked: dimmed (the kit: 38% darker card); hover: the hot outline (white 3.2 + turquoise inner)
                 u.Root.style.opacity = c.Available ? 1f : 0.62f;
@@ -642,7 +654,7 @@ namespace Suborned.Play
                 Class(st.Root, "selected", s.Selected);
                 Border(st.Root, s.Selected ? 1.8f : 0f, s.Selected ? Turq : Color.clear); // selected: the turquoise inner line only
                 Text(st.Role, s.Name.ToUpperInvariant()); Text(st.State, "·  " + s.StateTag);
-                foreach (var cls in new[] { "t-slot-state-ready", "t-slot-state-busy", "t-slot-state-hurt", "t-slot-state-down" }) Class(st.State, cls, cls == "t-slot-state-" + (s.StateTag == "RUNNING" ? "busy" : s.StateTag.ToLowerInvariant()));
+                foreach (var cls in new[] { "t-slot-state-ready", "t-slot-state-busy", "t-slot-state-hurt", "t-slot-state-down" }) Class(st.State, cls, cls == "t-slot-state-" + (s.StateTag is "RUNNING" or "CARRYING" ? "busy" : s.StateTag.ToLowerInvariant()));
                 Show(st.Stance, m.Fight && s.Armed); if (m.Fight && s.Armed) Bg(st.Stance, $"badges/stance_{(s.Stance == "H" ? "hold" : s.Stance == "A" ? "free" : "return")}");
                 bool busy = s.Busy && !s.Down && !s.Compact;
                 Show(st.Icon, busy); if (busy) Icon(st.Icon, s.Icon, Cream);
@@ -652,7 +664,7 @@ namespace Suborned.Play
                 Show(st.Cancel, s.CanCancel && !s.Compact);
                 Show(st.Queued, s.Queued.Length > 0 && !s.Compact); Show(st.QueuedIcon, s.Queued.Length > 0 && !s.Compact); Text(st.Queued, s.Queued);
                 Show(st.Ready, !busy && !s.Compact); Text(st.Ready, s.Down ? "Down" : s.Hurt ? "Hurt, still fighting" : "Ready");
-                Show(st.Hint, !busy && !s.Compact && s.Queued.Length == 0 && s.HintLine.Length > 0); Text(st.Hint, s.HintLine);
+                Show(st.Hint, (!busy || s.Pace.Length > 0 && s.Progress < 0) && !s.Compact && s.Queued.Length == 0 && (s.HintLine.Length > 0 || s.Pace.Length > 0)); Text(st.Hint, s.Pace.Length > 0 ? s.Pace : s.HintLine); // carrying: the pace on line 2 (Glyph §4)
             }
             for (int i = 0; i < 4; i++)
             {
@@ -674,7 +686,7 @@ namespace Suborned.Play
                 if (t != null && a > 0.01f) { Text(tickerText, t.Text); Bg(tickerChip, $"portraits/cameo_{t.Speaker}_normal"); }
             }
             Feed();
-            PanelFrame(); Step3Frame();
+            PanelFrame(); Step3Frame(); TakedownFrame();
         }
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).

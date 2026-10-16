@@ -77,7 +77,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- verbs: four slots an agent, Q W E R
 
-        public sealed class Slot { public string Id, Label, Glyph; public Slot(string id, string label, string glyph) { Id = id; Label = label; Glyph = glyph; } }
+        public sealed class Slot { public string Id, Label, Glyph; public bool Dim; public Slot(string id, string label, string glyph, bool dim = false) { Id = id; Label = label; Glyph = glyph; Dim = dim; } }
         /// <summary>The agents' verbs (§03): Scout watches, listens, misleads; Fixer turns (and calls a turned contact: right click it); Tech loops and
         /// reroutes; Enforcer acts (enter at the door, take Vale at his car, put him in the getaway car) and fires.</summary>
         public static readonly Slot[][] Slots =
@@ -85,7 +85,7 @@ namespace Suborned.Play
             new[] { new Slot("watch", "Watch", "eye"), new Slot("listen", "Listen", "ear"), new Slot("mislead", "False tip", "tip") },
             new[] { new Slot("ask", "Ask", "ask"), new Slot("pay", "Pay", "$"), new Slot("help", "Help", "help"), new Slot("pressure", "Pressure", "press") },
             new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route") },
-            new[] { new Slot("act", "Enter / Take / Car", "act"), new Slot("fire", "Fire", "fire") },
+            new[] { new Slot("act", "Enter / Take / Car", "act"), new Slot("fire", "Fire", "fire"), new Slot("takedown", "Takedown", "takedown") }, // brief 013: Takedown on the first empty knob (Glyph §1)
         };
         [Tooltip("Key bindings and HUD settings: one table (remap here; a settings screen later edits the same object).")]
         public PlayControls controls = new();
@@ -95,7 +95,7 @@ namespace Suborned.Play
         public Rect? BoxScreen { get; private set; }
         Vector2 dragFrom, lastGround, lastRight; bool dragging; float lastGroundAt = -10f, lastAgentKeyAt = -10f; int lastAgentKey = -1;
 
-        public sealed class Target { public string Kind = "", Key = "", Label = ""; } // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
+        public sealed class Target { public string Kind = "", Key = "", Label = "", Id = ""; } // Id: the person a crowd capsule or body is (engine id or role), a stash id // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
@@ -104,6 +104,9 @@ namespace Suborned.Play
             public long Orders = 1; public bool Leverage; public int WalkS;
             /// <summary>"seen by" where the act is done (the engine's SeenQuote in words): "" no one, "?" an unknown watcher could, else who.</summary>
             public string Seen = "";
+            /// <summary>Brief 013: a takedown's way and the engine's quote (the card's full price); extra card rows (icon, text); the chip's lead icon
+            /// and seen mark ("ok", "unk", "no").</summary>
+            public string How = "", Lead = "", SeenMark = ""; public TakedownQuote Td; public readonly List<(string icon, string text)> Rows = new();
             /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
             public bool Actionable => Order != null && !Move;
         }
@@ -196,6 +199,7 @@ namespace Suborned.Play
             if (Game.Over && Ending.Length == 0) End();
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
             ShowSight();
+            Guard("street marks", StreetMarks);
             for (int k = 0; k < 4; k++)
             {
                 var t = views.Find("op/" + Op.Name((OpId)k));
@@ -241,6 +245,7 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.Stance)) CycleStance();
                 if (c.Down(kb, PlayAction.Hints)) { if (shift) RelearnHints(); else ToggleHints(); } // Shift+H: the retired control hints come back
                 if (c.Down(kb, PlayAction.Intel)) IntelOpen = !IntelOpen;
+                if (c.Down(kb, PlayAction.Response)) ResponseOpen = !ResponseOpen;
                 if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
                 if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
                 if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
@@ -250,7 +255,7 @@ namespace Suborned.Play
                     if (c.Down(kb, PlayAction.Verb1 + i)) { if (Panel != null) PanelKey(i); else Pick(i); }
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
-                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; }
+                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (Picked >= 0) { Picked = -1; intentKey = ""; } }
                 if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
@@ -381,9 +386,12 @@ namespace Suborned.Play
 
         public void Pick(int slot)
         {
-            if (slot >= Slots[(int)Agent].Length) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
+            var plate = PlateOf(Agent);
+            if (slot >= plate.Length || plate[slot].Dim) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
+            if (plate[slot].Id is "drop" or "stash") { PlateAct(plate[slot].Id); return; } // carrying: Put down and Hide act at once (Glyph §4)
+            if (plate[slot].Id == "takedown") { Way = Picked == slot && Way == "knockout" ? "kill" : "knockout"; } // 4 again flips; kill is never the default (Glyph §1)
             Picked = slot; intentKey = "";
-            Status = $"{VerbKey(slot)}: {Slots[(int)Agent][slot].Label} — right click a target";
+            Status = $"{VerbKey(slot)}: {plate[slot].Label}{(plate[slot].Id == "takedown" ? $" ({(Way == "kill" ? "Kill" : "Knock out")})" : "")} — right click a target";
         }
 
         /// <summary>The mouse over the world (pixels, origin bottom left): what is under it, and what a right click would do there, priced once per change.</summary>
@@ -435,7 +443,7 @@ namespace Suborned.Play
             {
                 PointerHover(screen);
                 var i = HoverIntent;
-                if (Picked >= 0 && i != null && i.Actionable) { Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once
+                if (Picked >= 0 && i != null && i.Actionable) { if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once (a seen takedown asks for the hold first)
                 OpenPanel(t, screen);                                                                       // else the action panel (Sky: "expecting an actions panel to pop out")
                 return;
             }
@@ -483,7 +491,7 @@ namespace Suborned.Play
             {
                 if (!hit.collider.transform.IsChildOf(viewRoot)) continue;
                 var t = TargetOf(hit.collider.transform); if (t == null) continue;
-                int r = t.Kind == "op" ? (agents ? 0 : 3) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" ? (agents ? 1 : 0) : t.Kind == "crowd" ? (agents ? 3 : 2) : (agents ? 2 : 1);
+                int r = t.Kind == "op" ? (agents ? 0 : 3) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" ? (agents ? 1 : 0) : t.Kind == "crowd" ? (agents ? 3 : 2) : (agents ? 2 : 1);
                 if (r < rank || (r == rank && hit.distance < dist)) { best = t; rank = r; dist = hit.distance; }
             }
             return best;
@@ -495,7 +503,7 @@ namespace Suborned.Play
             {
                 var n = x.name;
                 if (n.StartsWith("op/")) return new Target { Kind = "op", Key = n[3..], Label = Game.Ops[(int)Op.Parse(n[3..])].Down ? $"the downed {n[3..]}" : n[3..] };
-                if (n is "waitress" or "driver" or "guard" or "councillor") return new Target { Kind = "person", Key = n, Label = Name(n) };
+                if (n is "waitress" or "driver" or "guard" or "councillor") return new Target { Kind = "person", Key = n, Label = Name(n), Id = n };
                 if (n == "patrol") return new Target { Kind = "patrol", Key = "patrol", Label = "the patrol" };
                 if (n.StartsWith("rivals/")) return new Target { Kind = "rivals", Key = "rivals", Label = "the rival crew" };
                 if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = "the response unit" };
@@ -505,12 +513,15 @@ namespace Suborned.Play
                     var id = Game.Hostiles[i].Id;
                     return new Target { Kind = "hostile", Key = id, Label = id.StartsWith("rival") ? "a rival" : "an officer" };
                 }
-                if (n.StartsWith("crowd/")) return new Target { Kind = "crowd", Key = n, Label = "a passer-by" };
+                if (n.StartsWith("crowd/")) { int ci = int.Parse(n[6..]); var cp = ci < Game.Walkers.Count ? Game.Walkers[ci].P : null; return new Target { Kind = "crowd", Key = n, Label = "a passer-by", Id = cp?.Id ?? "" }; }
+                if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]); return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; }
+                if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
+                if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
                 if (n == "marker/cabinet") return new Target { Kind = "cabinet", Key = "cabinet", Label = "the control cabinet" };
-                if (n.StartsWith("camera/")) return new Target { Kind = "camera", Key = n[7..], Label = $"the {n[7..]} camera" };
+                if (n.StartsWith("camera/")) return new Target { Kind = "camera", Key = n[7..], Label = CameraName(n[7..]) };
             }
             return null;
         }
@@ -519,15 +530,18 @@ namespace Suborned.Play
         Intent IntentFor(Target t)
         {
             if (t.Kind == "op") return null;
-            if (t.Kind == "crowd") return new Intent { Label = "a passer-by" }; // takes no orders: a hover says nothing (Fable A8)
+            if (t.Kind == "unit") return new Intent { Label = t.Label };
+            if (t.Kind == "crowd" && Agent != OpId.Enforcer) return new Intent { Label = "a passer-by" }; // takes no orders but the Enforcer's takedown (brief 013): a hover says nothing (Fable A8)
+            if (t.Kind is "body" or "stash") { Intent b = null; Guard("price", () => { var l = BodyIntents(Agent, t); b = l.Count > 0 ? l[0] : new Intent { Label = t.Label, Hint = WhoCan(t) }; }); return b; }
             Intent got = null;
             Guard("price", () =>
             {
-                var slots = Slots[(int)Agent];
+                var slots = PlateOf(Agent);
                 if (Agent == OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned) { got = Call(t); return; }
                 if (Picked >= 0) got = Verb(Agent, Picked, t);
                 // the default never fires on a person who is not a hostile: shooting is picked on purpose (2 = Fire)
-                for (int i = 0; got == null && i < slots.Length; i++) if (!(Slots[(int)Agent][i].Id == "fire" && t.Kind == "person")) got = Verb(Agent, i, t);
+                // and never takes anyone down unless Takedown is armed (brief 013: a kill is never a default)
+                for (int i = 0; got == null && i < slots.Length; i++) if (!(slots[i].Id == "fire" && t.Kind == "person") && slots[i].Id != "takedown") got = Verb(Agent, i, t);
                 got ??= new Intent { Label = t.Label, Hint = WhoCan(t) };
             });
             return got;
@@ -565,7 +579,7 @@ namespace Suborned.Play
 
         Intent Verb(OpId by, int slot, Target t)
         {
-            var g = Game; var R = g.R; string op = Op.Name(by); var id = Slots[(int)by][slot].Id;
+            var g = Game; var R = g.R; string op = Op.Name(by); var plate = PlateOf(by); if (slot < 0 || slot >= plate.Length || plate[slot].Dim) return null; var id = plate[slot].Id;
             Intent I(string verb, string target, string approach, string label) => new Intent { Slot = slot, Label = label, Order = new Order { Op = op, Do = verb, Target = target, Approach = approach } };
             switch (id)
             {
@@ -595,8 +609,8 @@ namespace Suborned.Play
                         return i;
                     }
                 case "loop":
-                    if (!(t.Kind == "cabinet" || (t.Kind == "camera" && t.Key == "entrance"))) return null;
-                    { var i = I("loop", "entrance", "", "Loop the entrance camera"); i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = "tethered"; return i; }
+                    if (!(t.Kind == "cabinet" || (t.Kind == "camera" && Loopable(t.Key)))) return null;
+                    return LoopIntent(slot, t.Kind == "camera" ? t.Key : "entrance");
                 case "reroute":
                     if (t.Kind is not ("cabinet" or "patrol")) return null;
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
@@ -605,6 +619,8 @@ namespace Suborned.Play
                     if (t.Kind == "person" && t.Key == "councillor") { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; }
                     if (t.Kind == "car" && t.Key == "getaway") { var i = I("extract", "", "", "Vale into the car"); i.Time = "now"; i.Outcome = "win"; return i; }
                     return null;
+                case "takedown": return TakedownIntent(slot, t, Way);
+                case "drop": case "stash": { var l = BodyIntents(by, t, id); return l.Count > 0 ? l[0] : null; }
                 case "fire":
                     {
                         string target = t.Kind == "person" ? (t.Key == "councillor" ? "" : t.Key) : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "hostile" ? t.Key : "";
@@ -706,8 +722,8 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the action panel (GDD §10: click a person → action card with the full price)
 
-        public sealed class PanelRow { public OpId By; public int Slot; public Intent I; public string Verb = "", Reason = "", Unlock = ""; public bool Available; public Answer Lock; }
-        public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = "", About = ""; public readonly List<PanelRow> Rows = new(); }
+        public sealed class PanelRow { public OpId By; public int Slot, Key = -1; public Intent I; public string Verb = "", Reason = "", Unlock = ""; public bool Available; public Answer Lock; }
+        public sealed class ActionPanel { public Target T; public Vector2 Gui; public Vector3? World; public string Note = "", About = ""; public readonly List<PanelRow> Rows = new(); /** brief 013: the takedown card's "Before you act" rows (icon, text) */ public readonly List<(string icon, string text)> Before = new(); }
         /// <summary>The open panel, else null. Built once on opening (Preview is ~500 KB a call); the clock runs on unless controls.pauseWithPanel.</summary>
         public ActionPanel Panel { get; private set; }
         public int PanelHover { get; private set; } = -1;
@@ -729,19 +745,30 @@ namespace Suborned.Play
                     var rows = new List<PanelRow>();
                     if (k == (int)OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && Game.PersonByRole(t.Key).Turned)
                     { var c = Call(t); Words(c, t); var cl = CallLock(t.Key); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = c.Name, Lock = cl, Reason = cl.ok ? "" : cl.why }); }
-                    else for (int i = 0; i < Slots[k].Length; i++)
+                    else
+                    {
+                        var plate = PlateOf((OpId)k); var vs = new List<(int slot, Intent v)>();
+                        for (int i = 0; i < plate.Length; i++)
                         {
-                            var v = Verb((OpId)k, i, t); if (v == null) continue;
+                            if (plate[i].Dim || plate[i].Id is "drop" or "stash") continue; // the carry knobs are the body rows below
+                            if (plate[i].Id == "takedown") { foreach (var how in new[] { "knockout", "kill" }) if (TakedownIntent(i, t, how) is Intent tv) vs.Add((i, tv)); continue; } // both ways, priced (Glyph §2)
+                            var v = Verb((OpId)k, i, t); if (v != null) vs.Add((i, v));
+                        }
+                        foreach (var bv in BodyIntents((OpId)k, t)) vs.Add((-1, bv)); // carry, put down, hide, tie: rows, never knobs (Glyph §1)
+                        foreach (var (i, v) in vs)
+                        {
                             var aw = ActPlace((OpId)k, v.Order, t); // distance never hides an action: it adds the walk to the price
                             if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then"; v.WalkS = aw.Seconds; }
                             Words(v, t);
                             var lk = Locked((OpId)k, v, t);
                             rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.why });
                         }
+                    }
                     foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
                 if (pn.Rows.Count == 0) pn.Note = WhoCan(t, order);
+                KeyRows(pn); Before(pn);
             });
             Panel = pn; PanelHover = -1; views.ShowPath(null);
         }
@@ -769,6 +796,7 @@ namespace Suborned.Play
             var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
             if (!r.Available) { Pop(r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}", at, Panel.World, Feedback.Refused); return; }
             ClosePanel();
+            if (SeenGate(r.I, t, at, "left")) return;
             Give(r.By, r.I.Order, t, at);
         }
 
@@ -776,7 +804,7 @@ namespace Suborned.Play
         void PanelKey(int slot)
         {
             if (Panel == null) return;
-            for (int i = 0; i < Panel.Rows.Count; i++) if (Panel.Rows[i].By == Agent && Panel.Rows[i].Slot == slot) { PanelDo(i); return; }
+            for (int i = 0; i < Panel.Rows.Count; i++) if (Panel.Rows[i].By == Agent && Panel.Rows[i].Key == slot) { PanelDo(i); return; }
             Pop($"Nothing for the {AgentNames[(int)Agent]} there.", null, Panel.World, Feedback.Info);
         }
 
@@ -784,6 +812,7 @@ namespace Suborned.Play
         void Words(Intent v, Target t)
         {
             var o = v.Order; var key = o.Do == "turn" ? o.Approach : o.Do;
+            if (TakedownWords(v, t)) return;
             // an approach's own line for this person names their debt or secret: only once the cell knows them (§04), else the generic line
             var (label, does) = Text != null ? Text.Action(key, o.Do == "turn" && !KnownPerson(t) ? null : TextKey(t)) : (key, "");
             bool person = t.Kind == "person" && o.Do != "take";
@@ -792,7 +821,12 @@ namespace Suborned.Play
         }
 
         /// <summary>A target's key in the text's `targets` and `onTarget` (camera-entrance, car-getaway; a person by role).</summary>
-        public static string TextKey(Target t) => t.Kind switch { "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", _ => t.Key };
+        public string TextKey(Target t) => t.Kind switch
+        {
+            "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", "crowd" => "crowd",
+            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Kind == "door" ? "stash-door" : "stash-bin",
+            "body" => Game.PersonById(t.Key) is Person bp && bp.Role.Length > 0 ? bp.Role : "crowd", _ => t.Key,
+        };
 
         /// <summary>Why a row cannot be given now, from the engine's own state (the engine still answers the order; its refusal shows as a pop).</summary>
         Answer Locked(OpId by, Intent v, Target t)
@@ -822,6 +856,10 @@ namespace Suborned.Play
                         return yes;
                     }
                 case "loop": return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
+                case "takedown": return v.Td != null && v.Td.Refused.Length > 0 ? No(v.Td.RefusedCode, v.Td.Refused) : op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
+                case "stash": return op.CarryBody.Length == 0 ? No("not-carrying", "carry the body to the stash first") : StashFree(o.Target) <= 0 ? No("stash-full", "full") : yes;
+                case "drop": return op.CarryBody.Length == 0 ? No("not-carrying", "carrying nobody") : yes;
+                case "restrain": case "carry" when !IsOpName(o.Target): return op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
                 case "mislead": return g.RivalsPresent ? yes : No("no-rivals", "no rivals here yet");
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
@@ -871,7 +909,10 @@ namespace Suborned.Play
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
                 case "mislead": tp = g.RivalsPose()?.pos; reach = R.ActReachCm; break;
                 case "fire": tp = PosOf(t); if (op.Gun.W == null) return null; reach = op.Gun.W.EffCm; break; // walk into the weapon's effective band
-                case "carry": tp = g.Ops[(int)Op.Parse(o.Target)].Pos; reach = R.ActReachCm; break;
+                case "carry" when IsOpName(o.Target): tp = g.Ops[(int)Op.Parse(o.Target)].Pos; reach = R.ActReachCm; break;
+                case "carry": case "restrain": { var b = g.BodyById(o.Target); if (b == null) return null; tp = g.BodyPos(b); reach = R.ActReachCm; break; }
+                case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? null : g.PosOfPerson(p); reach = R.TakedownReachCm; break; }
+                case "stash": { var st = g.S.Stashes.Find(x => x.Id == o.Target); if (st == null) return null; tp = st.Stand; reach = R.AtReachCm; break; }
                 default: return null; // a call is made from wherever the Fixer stands
             }
             if (place.Length > 0)
@@ -901,7 +942,9 @@ namespace Suborned.Play
         Pt? PosOf(Target t) => t.Kind switch
         {
             "person" => Game.PersonPos(Game.PersonByRole(t.Key)), "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
-            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key), _ => null,
+            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
+            "crowd" => Game.PersonById(t.Id) is Person cp ? Game.PosOfPerson(cp) : null, "body" => Game.BodyById(t.Key) is Body b ? Game.BodyPos(b) : null,
+            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, _ => null,
         };
 
         int ReachOf(string ev)
@@ -914,7 +957,7 @@ namespace Suborned.Play
         /// mission's places, else the point within reach) and the order follows on arrival. Every step is an engine order at its own tick.</summary>
         void Give(OpId by, Order o, Target t, Vector2? screen)
         {
-            var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point };
+            var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How };
             pending[(int)by] = null;
             ActWalk w = null; Guard("walk", () => w = ActPlace(by, order, t));
             var tw = TargetWorld(t);
@@ -922,7 +965,7 @@ namespace Suborned.Play
             var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place } : new Order { Op = order.Op, Do = "move", Point = w.To };
             if (Issue(walk, screen, null))
             {
-                pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach };
+                pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach, How = order.How };
                 pendingAt[(int)by] = tw;
                 pendingFrom[(int)by] = Game.Tick;
                 SayOrder(by, order, w); Track();
@@ -941,7 +984,7 @@ namespace Suborned.Play
                 var o = pending[k]; if (o == null) continue;
                 var op = Game.Ops[k]; if (op.Walk != null || op.Busy != null || op.Inside) continue;
                 pending[k] = null;
-                var act = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach };
+                var act = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How };
                 if (Issue(act, null, pendingAt[k]) && Game.Tick - pendingFrom[k] >= 5 * Game.Hz) SayArrive((OpId)k, act); // a short walk: the ack said it (Fable §4)
             }
         }
@@ -966,7 +1009,7 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, _ => null };
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }
 

@@ -109,6 +109,8 @@ namespace Suborned.World
                     Bottom = J.F(s, "bottom"), Top = J.F(s, "top"), Width = J.F(s, "width"), Riser = J.F(s, "riser"),
                 }),
             });
+            if (J.Get(o, "takedown") is { } td)
+                w.Entrances = Each(td, "entrances", x => new EntranceDto { Id = Id(x), Building = J.S(x, "building"), Name = J.S(x, "name"), Kind = J.S(x, "kind"), At = J.P(x, "at"), Z = J.F(x, "z") });
             w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
             w.Civic = Each(o, "civic", Mass);
             w.Landmarks = Each(o, "landmarks", l => new LandmarkDto

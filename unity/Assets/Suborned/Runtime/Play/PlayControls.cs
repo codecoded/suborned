@@ -9,7 +9,7 @@ namespace Suborned.Play
         Verb1, Verb2, Verb3, Verb4,
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
-        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView, Intel, Peek,
+        Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView, Intel, Peek, Response,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -63,6 +63,7 @@ namespace Suborned.Play
             new() { action = PlayAction.HudView, keys = new[] { Key.F11 }, label = "F11" },
             new() { action = PlayAction.Intel, keys = new[] { Key.I }, label = "I" },
             new() { action = PlayAction.Peek, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" },
+            new() { action = PlayAction.Response, keys = new[] { Key.R }, label = "R" }, // brief 013: the response pill's list (Glyph §8)
         };
         static readonly Binding[] defaults = Defaults();
 

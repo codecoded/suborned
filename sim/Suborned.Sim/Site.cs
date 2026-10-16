@@ -90,9 +90,12 @@ namespace Suborned.Sim
             foreach (var x in n["stashes"].Items)
             {
                 x.Only("id", "kind", "of", "at", "stand", "holds", "item", "bare", "src");
-                var st = new StashPlace { Id = x["id"].Str(), Kind = x["kind"].Str(), Of = x["of"].Str(), At = Pt.Of(x["at"]), Stand = Stand(x), Holds = x["holds"].Int() };
+                var st = new StashPlace { Id = x["id"].Str(), Kind = x["kind"].Str(), Of = x["of"].Str(), At = Pt.Of(x["at"]), Stand = Stand(x) };
                 if (st.Kind != "container" && st.Kind != "door") throw new FormatException($"{x.Path}.kind '{st.Kind}' (container, door)");
-                if (st.Holds < 1) throw new FormatException($"{x.Path}.holds is at least 1");
+                // a container holds what its entry says (at least 1); a door holds the rulebook's takedown.stash.doorHolds (Game.HoldsOf), so a
+                // door's own `holds` is optional and not read (Aster 2026-10-16, brief 013 E6)
+                if (st.Kind == "container" || x.Has("holds")) st.Holds = x["holds"].Int();
+                if (st.Kind == "container" && st.Holds < 1) throw new FormatException($"{x.Path}.holds is at least 1");
                 if (!ids.Add(st.Id)) throw new FormatException($"{x.Path}: stash {st.Id} repeats");
                 Stashes.Add(st);
             }

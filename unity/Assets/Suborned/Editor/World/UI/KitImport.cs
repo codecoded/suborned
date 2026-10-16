@@ -44,6 +44,15 @@ namespace Suborned.World.UI
             }
             foreach (var dir in new[] { "panels", "buttons", "badges", "markers", "overlays", "portraits", "roster", "icons/singles" })
                 foreach (var f in Directory.GetFiles(Path.Combine(KitDir, dir), "*@2x.png")) { var rel = Path.GetRelativePath(KitDir, f); Copy(rel); pngs.Add(rel); }
+            // brief 013 E: Glyph's takedown glyphs (briefs/013/glyph-takedown-hud, monoline, white, tinted like the atlas) join the singles
+            var extra = Path.GetFullPath(Path.Combine(KitDir, "..", "..", "..", "013", "glyph-takedown-hud"));
+            if (Directory.Exists(extra))
+                foreach (var f in Directory.GetFiles(extra, "*@2x.png"))
+                {
+                    var rel = Path.Combine("icons", "singles", Path.GetFileName(f)); var dst = Path.Combine(full, rel); var b = File.ReadAllBytes(f);
+                    if (File.Exists(dst) && File.ReadAllBytes(dst).AsSpan().SequenceEqual(b)) same++; else { File.WriteAllBytes(dst, b); copied++; }
+                    if (!pngs.Contains(rel)) pngs.Add(rel);
+                }
             foreach (var f in new[] { "Jost-Medium.ttf", "Jost-SemiBold.ttf", "Jost-Bold.ttf", "Barlow-Regular.ttf", "Barlow-Medium.ttf", "Barlow-SemiBold.ttf", "OFL-Jost.txt", "OFL-Barlow.txt" })
                 Copy(Path.Combine("fonts", f));
             Copy("layout.json"); Copy("sprites.json");

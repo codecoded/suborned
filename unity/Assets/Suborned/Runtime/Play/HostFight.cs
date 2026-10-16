@@ -19,7 +19,7 @@ namespace Suborned.Play
     {
         // ---------------------------------------------------------------- the going-loud gate
 
-        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; }
+        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Target Target; public OpId By; }
         /// <summary>The going-loud card while it is held open, else null.</summary>
         public Gate Loud { get; private set; }
         public float GateProgress => Loud == null ? 0f : Mathf.Clamp01((Time.unscaledTime - Loud.Start) / HoldSeconds);
@@ -78,6 +78,7 @@ namespace Suborned.Play
             if (!held) { Status = "Going loud: backed off"; Loud = null; return; } // the card closing is the answer (Fable B9)
             if (GateProgress < 1f) return;
             var g = Loud; Loud = null;
+            if (g.Takedown) { Give(g.By, g.Orders[0], g.Target, null); Status = "Committed: the takedown is seen."; return; } // walk-then-act like any order
             Send(new List<Order>(g.Orders), null, g.At);
             FeedLoud(g.Card, g.What);
             if (Text != null && Text.Events.TryGetValue("going-loud", out var e)) WorldBeat(e, null, "", Feedback.Refused, 1);
@@ -292,6 +293,7 @@ namespace Suborned.Play
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
                 : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {q.Seen.AlertIfSeen})" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
+            if (Game.Ops[k].CarryBody.Length > 0) MoveChip = CarryChip(k, to.Value) ?? MoveChip; // brief 013: carrying, the chip is the carry's (Glyph §4)
         }
 
         // ---------------------------------------------------------------- shots, read from the engine's log

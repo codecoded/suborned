@@ -31,6 +31,7 @@ namespace Suborned.Sim
         public readonly SortedSet<string> Noticed = new SortedSet<string>(StringComparer.Ordinal); // who reacted (people by id, watchers by id)
         public readonly SortedSet<string> Heard = new SortedSet<string>(StringComparer.Ordinal);
         public readonly SortedSet<string> Opened = new SortedSet<string>(StringComparer.Ordinal);  // stashes the search opened
+        public readonly SortedSet<string> Told = new SortedSet<string>(StringComparer.Ordinal);    // who heard of it from a tie (one hop: never retold)
         public Incident? Lead;                                                                     // the investigation's lead for it
     }
 
@@ -38,7 +39,7 @@ namespace Suborned.Sim
     public sealed class Rep
     {
         public int Seq, Act; public string Kind = "", By = "", Stash = ""; public Person? P; public Walker? W; public Pt Place; public int Sev, LandAt;
-        public string Phase = "";   // react, check, walk, call, radio, watcher
+        public string Phase = "";   // react, check, walk, call, radio, watcher; a tell (Kind "tell"): walk, flee, call
         public int PhaseUntil;      // check: when the check ends
     }
 
@@ -409,9 +410,12 @@ namespace Suborned.Sim
                 case "report": StartReport(a, p, KindOf(a, b, what, false), wp, what == "body" && !kin ? "walk" : "run", b); break; // kin run without hesitation (Pulse row 2)
                 case "check": StartReport(a, p, "down", wp, "check", b); break;
                 case "flee":
-                    if (w != null && (w.St == "" || w.St == "returning")) { w.St = "startled"; w.At = wp; w.Run = null; w.RunStart = Tick; w.Pace = 0; lastShooterFor[p.Id] = ActAt(a, b); w.Until = Tick + (p.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks); }
-                    Tell(a, p, wp); break;
-                default: Tell(a, p, wp); break; // quiet, avoid
+                    {
+                        bool fled = false;
+                        if (w != null && (w.St == "" || w.St == "returning")) { fled = true; w.St = "startled"; w.At = wp; w.Run = null; w.RunStart = Tick; w.Pace = 0; lastShooterFor[p.Id] = ActAt(a, b); w.Until = Tick + (p.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks); }
+                        TellOrPhone(a, p, w, wp, fled); break;
+                    }
+                default: TellOrPhone(a, p, w, wp, false); break; // quiet, avoid
             }
             if (b != null && b.Restrained && !b.Dead && (verb == "report" || verb == "check" || verb == "radio") && b.FreeAt < 0) b.FreeAt = Tick + T(R.WitnessReactS) + T(R.FreeS); // Pulse §2.1 free
         }
@@ -420,7 +424,7 @@ namespace Suborned.Sim
         int SevOf(string kind) => kind switch
         {
             "seen" => R.AlertSeen, "carry" => R.AlertCarry, "dead" => R.AlertDead, "down" => R.AlertDown, "woken" => R.AlertWoken,
-            "noise" => R.AlertNoise, "mark" => R.AlertMark, "missing" => R.AlertMissing, _ => R.AlertDown,
+            "noise" => R.AlertNoise, "mark" => R.AlertMark, "missing" => R.AlertMissing, "tell" => 0, _ => R.AlertDown, // a tell never lands at the desk
         };
 
         /// <summary>A scream (Pulse §2.1 shout): heard within witness.scream with no line. A hearer with a line within witness range has
@@ -481,7 +485,7 @@ namespace Suborned.Sim
             var r = new Rep { Seq = repSeq++, Act = a.Id, Kind = kind, By = by, P = p, W = p == null ? null : WalkerOf(p), Place = place, Sev = SevOf(kind), LandAt = landAt, Phase = phase, Stash = stash };
             Reps.Add(r);
         }
-        int Pending(TdAct a) { int n = 0; foreach (var r in Reps) if (r.Act == a.Id && r.Phase != "stopped" && r.Phase != "landed" && r.P != null) n++; return n; }
+        int Pending(TdAct a) { int n = 0; foreach (var r in Reps) if (r.Act == a.Id && r.Kind != "tell" && r.Phase != "stopped" && r.Phase != "landed" && r.P != null) n++; return n; } // a tell is no report: not in the cap
 
         /// <summary>The nearest report point by the grid walk (ties on id): the site's staffed doors and its call boxes. Returns its stand and
         /// the walk there, or null if none can be walked to.</summary>
@@ -534,7 +538,8 @@ namespace Suborned.Sim
             int land = start + walk + T(R.CallS);
             if (w != null && rp != null) { w.St = "reporting"; w.At = from; w.Run = rp.Value.path; w.RunStart = start; w.Pace = pace; w.Refuge = rp.Value.id; }
             AddRep(a, kind, p.Id, p, place, land, "walk", stash);
-            Note("report.started", $"{Who(p)} {(pace > opSpeed ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
+            if (kind == "tell") Note("witness.to-phone", $"{Who(p)} walks to {(rp?.id ?? "a phone")} to tell someone (calls {Sim.Report.Clock(land)}).");
+            else Note("report.started", $"{Who(p)} {(pace > opSpeed ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
         }
 
         /// <summary>One tick of the reports: a reporter taken down or carried drops his report; a checker who reaches the body learns its
@@ -548,7 +553,15 @@ namespace Suborned.Sim
             {
                 var r = Reps[i];
                 if (r.Phase == "stopped" || r.Phase == "landed") continue;
-                if (r.P != null && r.P.Down && r.Kind != "woken") { r.Phase = "stopped"; Note("report.stopped", $"{Who(r.P)}'s report never lands."); continue; }
+                if (r.P != null && (r.P.Down || (r.P == ValeP && ValeHeld)) && r.Kind != "woken") { r.Phase = "stopped"; if (r.Kind == "tell") Note("witness.tell-stopped", $"{Who(r.P)} never reaches the phone."); else Note("report.stopped", $"{Who(r.P)}'s report never lands."); continue; }
+                if (r.Phase == "flee") // a fleeing teller phones from the refuge she reaches, if it is a staffed door; any other shelter has no phone
+                {
+                    var fw = r.W!;
+                    if (fw.St == "startled" || fw.St == "fleeing") continue;
+                    if (fw.St == "sheltered" && S.Refuges.Exists(x => x.id == fw.Refuge && x.kind == "door")) { r.Phase = "call"; r.LandAt = Tick + T(R.CallS); }
+                    else { r.Phase = "stopped"; Note("witness.tell-stopped", $"{Who(r.P!)} shelters with no phone and tells no one."); }
+                    continue;
+                }
                 if (r.Phase == "check" && Tick >= r.PhaseUntil)
                 {
                     var b = BodyOf(Acts[r.Act].P);
@@ -565,12 +578,15 @@ namespace Suborned.Sim
             Rep? next;
             while ((next = NextLanding()) != null)
             {
+                bool atPhone = next.Phase == "walk" || next.Phase == "call"; // walked to a report point and called from it (or phoned from a refuge door)
                 next.Phase = "landed";
                 var a = Acts[next.Act];
+                var phoneAt = next.W != null ? (next.W.Run?.End ?? next.W.At) : (Pt?)null;
                 if (next.W != null && (next.W.St == "calling" || next.W.St == "reporting")) Return(next.W, next.W.Run?.End ?? next.W.At);
+                if (next.Kind == "tell") { Tell(a, next.P!, phoneAt ?? PosOfPerson(next.P!) ?? next.Place, true); continue; } // at the phone: a call to a tie, no report
                 if (next.P != null) Remember(next.P, "reported", "", false);
                 LandAct(a, next.Kind, next.By, next.P, next.Place, next.Sev, next.Stash);
-                if (next.P != null && next.Kind != "woken" && next.Kind != "mark") Tell(a, next.P, PosOfPerson(next.P) ?? next.Place);
+                if (next.P != null && next.Kind != "woken" && next.Kind != "mark") { var from = PosOfPerson(next.P) ?? phoneAt ?? next.Place; Tell(a, next.P, from, atPhone || AtPhone(from)); }
                 if (Over) return;
             }
         }
@@ -616,12 +632,32 @@ namespace Suborned.Sim
             AddTrail(R.HitTrail + R.DownTrail + (a.Kill ? R.KillTrail : 0), "takedown:" + a.How + ":" + a.Victim);
         }
 
-        /// <summary>Telling a tie (Pulse §3.4): the first tie of the kinds in witness.tells, by id, who is indoors at a unit (a phone) or on
-        /// the street within witness.tell: a told entry, facts only, one hop. A told Loyal person reports it from where they are.</summary>
-        void Tell(TdAct a, Person p, Pt from)
+        /// <summary>Telling a tie (Pulse §3.4; Aster 2026-10-16, brief 013 E1: calls are voice, GDD §01): the first tie of the kinds in
+        /// witness.tells, by id, who can hear the teller now: on the street within witness.tell (face to face), or, only when the teller is
+        /// at a phone (a report point: a staffed door's desk or a call box), indoors at a unit (a phone). A told entry, facts only; one hop
+        /// (a told person never retells it). A told Loyal person reports it from where they are. True if someone was told.</summary>
+        bool Tell(TdAct a, Person p, Pt from, bool atPhone)
         {
-            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts)) return;
-            if (IsCellPerson(p) && !IsKin(p, a.P)) return; // a person who owes the cell passes nothing on
+            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts)) return false;
+            if (a.Told.Contains(p.Id)) return false; // one hop: what you were told you keep (rulebook memory: a told entry is never retold)
+            if (IsCellPerson(p) && !IsKin(p, a.P)) return false; // a person who owes the cell passes nothing on
+            var (q, kind, indoors) = TieToTell(a, ts, from, atPhone);
+            if (q == null) return false;
+            var facts = FactsOfWitnessed(p);
+            q.Memory.Add(new Mem { Act = "told", By = p.Id, Place = q.Place, Tick = Tick, Witnessed = false, Told = string.Join("|", facts) });
+            a.Noticed.Add(q.Id); a.Told.Add(q.Id);
+            Note("witness.told", $"{Who(p)} tells {Who(q)} ({kind}{(indoors ? ", by phone" : "")}).");
+            if (q.Temperament == "loyal" && !IsCellPerson(q))
+            {
+                var qw = WalkerOf(q); var qp = PosOfPerson(q);
+                if (indoors) AddRep(a, "down", q.Id, q, a.Scene, Tick + T(R.CallS) + T(R.CallS), "radio"); // hears the call, then calls the desk
+                else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, opSpeed, Tick + T(R.WitnessReactS), a.Scene, "");
+            }
+            return true;
+        }
+        /// <summary>The tie a teller at `from` reaches now (Tell's order): face to face on the street within witness.tell; indoors only from a phone.</summary>
+        (Person? q, string kind, bool indoors) TieToTell(TdAct a, List<(string kind, string with)> ts, Pt from, bool atPhone)
+        {
             foreach (var kind in R.TellTies)
             {
                 var ids = new List<string>(); foreach (var (k, wid) in ts) if (k == kind) ids.Add(wid);
@@ -631,20 +667,34 @@ namespace Suborned.Sim
                     var q = PersonById(id); if (q == null || q.Down || q == a.P || a.Noticed.Contains(q.Id)) continue;
                     var qw = WalkerOf(q); var qp = PosOfPerson(q);
                     bool indoors = qw != null && Indoors(qw);
-                    if (!indoors && !(qp.HasValue && G.Within(qp.Value, from, R.TellCm))) continue;
-                    var facts = FactsOfWitnessed(p);
-                    q.Memory.Add(new Mem { Act = "told", By = p.Id, Place = q.Place, Tick = Tick, Witnessed = false, Told = string.Join("|", facts) });
-                    a.Noticed.Add(q.Id);
-                    Note("witness.told", $"{Who(p)} tells {Who(q)} ({kind}).");
-                    if (q.Temperament == "loyal" && !IsCellPerson(q))
-                    {
-                        if (indoors) AddRep(a, "down", q.Id, q, a.Scene, Tick + T(R.CallS) + T(R.CallS), "radio"); // hears the call, then calls the desk
-                        else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, opSpeed, Tick + T(R.WitnessReactS), a.Scene, "");
-                    }
-                    return;
+                    if (indoors ? !atPhone : !(qp.HasValue && G.Within(qp.Value, from, R.TellCm))) continue;
+                    return (q, kind, indoors);
                 }
             }
+            return (null, "", false);
         }
+        /// <summary>Whoever quiets, avoids or flees tells a tie (Pulse §3.4): face to face if one is within witness.tell, or from the phone
+        /// they stand at; else, if a tie is indoors (a phone away), they go to a phone first (Aster 2026-10-16, brief 013 E1), the same walk
+        /// as a report and stopped the same way (taken down before the call, nobody is told): walking from where they stand, or, fleeing,
+        /// from the refuge they run to if it is a staffed door. Nobody to tell, no walk.</summary>
+        void TellOrPhone(TdAct a, Person p, Walker? w, Pt from, bool fled)
+        {
+            bool atPhone = AtPhone(from);
+            if (Tell(a, p, from, atPhone) || atPhone) return;
+            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts) || a.Told.Contains(p.Id) || (IsCellPerson(p) && !IsKin(p, a.P))) return;
+            if (TieToTell(a, ts, from, true).q == null) return; // nobody indoors to call either
+            if (fled && w != null) { AddRep(a, "tell", p.Id, p, from, INF, "flee"); return; }
+            WalkToPhone(a, p, w, "tell", from, opSpeed, Tick + T(R.WitnessReactS), from, "");
+        }
+        /// <summary>Is `at` at a phone: within near of a report point (a staffed door, a call box)?</summary>
+        bool AtPhone(Pt at)
+        {
+            foreach (var (_, ra, kind) in S.Refuges) if (kind == "door" && G.Within(ra, at, near)) return true;
+            foreach (var (_, ca) in S.CallBoxes) if (G.Within(ca, at, near)) return true;
+            return false;
+        }
+        /// <summary>Vale is in the cell's hands (being taken, held, in the car): he calls no one.</summary>
+        bool ValeHeld => Vale == ValeAt.Taking || Vale == ValeAt.WithEnforcer || Vale == ValeAt.Car;
         /// <summary>The person's routine has them inside a unit now (a stop not on the street, not beyond the sheet).</summary>
         bool Indoors(Walker w)
         {
@@ -858,6 +908,7 @@ namespace Suborned.Sim
             {
                 h.I(a.Id).S(a.Victim).S(a.How).P(a.At).P(a.Scene).I(a.Tick).Z(a.Aware).I(a.Alert).Z(a.Landed).Z(a.Witnessed).Z(a.TrailPaid).Z(a.StandingPaid).Z(a.ActTrail).Z(a.Confirmed).Z(a.SecuritySaw).Z(a.MarkMissed).Z(a.Woke).Z(a.Statement);
                 foreach (var x in a.Noticed) h.S(x); h.I(-1); foreach (var x in a.Heard) h.S(x); h.I(-1); foreach (var x in a.Opened) h.S(x); h.I(-1);
+                if (a.Told.Count > 0) { h.S("told"); foreach (var x in a.Told) h.S(x); h.I(-1); } // only a run with a tell adds bytes
             }
             foreach (var b in Bodies) { h.S(b.Id).I(b.Act).Z(b.Dead).Z(b.Seizing).Z(b.Restrained).P(BodyPos(b)).I(b.Carrier.HasValue ? (int)b.Carrier.Value : -1).S(b.Stash).I(b.DownTick).I(b.WakeAt).I(b.NextCallOut).I(b.FreeAt); }
             foreach (var r in Reps) h.I(r.Seq).I(r.Act).S(r.Kind).S(r.By).P(r.Place).I(r.Sev).I(r.LandAt).S(r.Phase).I(r.PhaseUntil).S(r.Stash);

@@ -69,7 +69,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 var d = doing[k]; var c = actCard[k]; var op = Game.Ops[k];
-                if (d.Phase == "acting" && FeedActs.Contains(d.Verb) && (c == null || !c.Live))
+                if (d.Phase == "acting" && FeedActs.Contains(d.Verb) && !(d.Verb == "carry" && !IsOpName(op.Busy?.Target ?? "")) && (c == null || !c.Live)) // a body lifted has Fable's own card (carry.body)
                 {
                     string target = op.Busy?.Target ?? "", approach = op.Busy?.Approach ?? "", verb = d.Verb == "turn" ? approach : d.Verb;
                     var label = Text?.Action(verb, target).label ?? verb;
@@ -270,14 +270,18 @@ namespace Suborned.Play
                     if (r == Seen.Played) return;
                     if (r == Seen.Hidden) hidden = true;
                 }
-            if (hidden) return;
-            if (SeenAt.TryGetValue(l.Code, out var placeEv) && EventPlace(placeEv).at is Pt pa && !CellSees(pa)) return;
+            if (hidden) { quiet = l; return; }
+            if (SeenAt.TryGetValue(l.Code, out var placeEv) && EventPlace(placeEv).at is Pt pa && !CellSees(pa)) { quiet = l; return; }
+            // brief 013: Fable's cards (text.json cards.items) for the codes no scene covers, with their sight and needs rules
+            if (TextCard(l, out var cardHidden)) { if (cardHidden) quiet = l; return; }
             if (!FeedEvents.TryGetValue(l.Code, out var ev)) return;
             var c = NewCard(ev.kind, ev.title, ev.kind == "fight" ? "fire" : ev.kind == "warning" ? "!" : "·", "", null, ev.place);
             c.Event = l.Code; c.Footer = EventResult(l); c.Tone = ev.kind is "warning" or "fight" ? Feedback.Refused : Feedback.Info;
             lastEvent = c;
         }
         FeedCard lastEvent;
+        /// <summary>The last log line whose card or scene the cell can't see: its spoken lines stay quiet too (Fable: a line follows its card's sight).</summary>
+        LogLine? quiet;
 
         /// <summary>A fallback card's result, in the player's words (Fable's table D): the numbers from the engine, never its sentence.</summary>
         string EventResult(LogLine l)
@@ -318,9 +322,18 @@ namespace Suborned.Play
         {
             if (Text == null) return Seen.None;
             var r = Seen.None;
-            foreach (var sc in Text.ScenesFor("city", ev))
+            // brief 013: a witness's scene is found by event, then outcome (the engine's verb); a missing person's by who is missing (Fable)
+            var list = Text.ScenesFor("city", ev);
+            if (l.HasValue && ev is "witness-reacts" or "person-missed")
             {
-                var (at, key, where) = EventPlace(ev);
+                var who = ev == "person-missed" ? MissingOf(l.Value) : null;
+                var one = Text.LookupScene(new PlayText.SceneQuery { Kind = "city", Event = ev, Outcome = ev == "witness-reacts" ? ReactOutcome(l.Value) : null, About = who });
+                list = one == null ? new List<PlayText.Scene>() : new List<PlayText.Scene> { one };
+                if (one == null) return Seen.None;
+            }
+            foreach (var sc in list)
+            {
+                var (at, key, where) = EventPlace(ev, l);
                 if (sc.Sight == "in-sight" && !(at.HasValue && CellSees(at.Value))) { r = Seen.Hidden; continue; }
                 var c = NewCard("city", SceneTitles.TryGetValue(ev, out var st) ? st : Title(ev.Replace('-', ' ')), "·", where, at.HasValue ? frame.World(at.Value) : null, key);
                 c.Event = ev; c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c);
@@ -330,8 +343,12 @@ namespace Suborned.Play
             return r;
         }
 
-        (Pt? at, string key, string where) EventPlace(string ev) => ev switch
+        /// <summary>person.missed: "X expected Y at …": the role of Y, else null.</summary>
+        static string MissingOf(LogLine l) { int i = l.Text.IndexOf(" expected ", StringComparison.Ordinal); if (i < 0) return null; var rest = l.Text[(i + 10)..]; foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) if (rest.StartsWith(r, StringComparison.Ordinal)) return r; return null; }
+
+        (Pt? at, string key, string where) EventPlace(string ev, LogLine? l = null) => ev switch
         {
+            "witness-reacts" or "person-missed" when l.HasValue && WhoIn(l.Value) is Person wp => (Game.PosOfPerson(wp), wp.Role.Length > 0 ? wp.Role : CrowdKey(wp), ""),
             "rivals-arrive" => (Game.RivalsPose()?.pos ?? (Game.S.HasPlace("rival-park") ? Game.S.At("rival-park") : (Pt?)null), "rivals/0", "the pickup"),
             "guard-at-cafe" => (Game.GuardPose()?.pos, "guard", "café"),
             "chime" => (Game.S.At(Game.S.GuardPost), "marker/door", "the Office"),

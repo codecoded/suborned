@@ -16,7 +16,27 @@ namespace Suborned.Play
     /// the schema's `lookup` and `pickIndex` (fnv1a32 over UTF-16 code units, as JS charCodeAt), so the same run shows the same words.</summary>
     public sealed class PlayText
     {
-        public sealed class ActionText { public string Label = "", Does = ""; public readonly Dictionary<string, string> OnTarget = new(); }
+        public sealed class ActionText
+        {
+            public string Label = "", Does = ""; public readonly Dictionary<string, string> OnTarget = new();
+            /// <summary>A verb's ways (brief 013: the takedown's knockout and kill), each its own label and line.</summary>
+            public readonly Dictionary<string, (string label, string does)> Ways = new();
+        }
+        /// <summary>A feed card for an engine log code no scene covers (text.json `cards.items`; brief 013 Fable): its kind, title, the sight rule
+        /// (in-sight: only when an agent can see `at`), what the cell must know first (`needs` routine), and its result: one line, or lines by
+        /// a pick key the host chooses from the engine's state. A key ending in "." covers every code with that prefix (stash.container, stash.door).</summary>
+        public sealed class CardText { public string Code = "", Kind = "city", Title = "", Sight = "", At = "", Needs = "", Result = ""; public readonly Dictionary<string, string> Results = new(); }
+        public readonly Dictionary<string, CardText> Cards = new();
+        /// <summary>The end card's route sentences by debrief id (text.json debrief.route).</summary>
+        public readonly Dictionary<string, string> Route = new();
+        /// <summary>The card for a log code: exact, else the longest prefix key ("stash." for stash.door), else null.</summary>
+        public CardText CardFor(string code)
+        {
+            if (Cards.TryGetValue(code, out var c)) return c;
+            CardText best = null;
+            foreach (var kv in Cards) if (kv.Key.EndsWith(".") && code.StartsWith(kv.Key, StringComparison.Ordinal) && (best == null || kv.Key.Length > best.Code.Length)) best = kv.Value;
+            return best;
+        }
         public sealed class LockText { public string Code = "", Line = ""; public readonly List<Regex> Match = new(); }
         public sealed class EventText { public string Id = "", Kind = "", Clock = ""; public readonly List<string> Log = new(), Speakers = new(); }
         public sealed class Entry { public string Event = "", Verb, Speaker = "", Outcome, Temperament, About; public readonly List<string> Lines = new(); }
@@ -90,6 +110,7 @@ namespace Suborned.Play
                 {
                     var a = new ActionText { Label = S(kv.Value, "label") ?? kv.Key, Does = S(kv.Value, "does") ?? "" };
                     if (kv.Value.Opt("onTarget") is JNode ot) foreach (var o in ot.Entries) a.OnTarget[o.Key] = o.Value.Str();
+                    if (kv.Value.Opt("ways") is JNode wy) foreach (var w in wy.Entries) a.Ways[w.Key] = (S(w.Value, "label") ?? w.Key, S(w.Value, "does") ?? "");
                     Actions[kv.Key] = a;
                 }
             if (n.Opt("locks") is JNode lo && lo.Kind == JKind.Obj) // suborned.text/1 since a103daf: code → { line, verbs }, keyed by Answer.code
@@ -128,6 +149,14 @@ namespace Suborned.Play
                     foreach (var v in it["variants"].Items) { var beats = new List<SceneBeat>(); foreach (var bt in v["beats"].Items) beats.Add(new SceneBeat { Speaker = S(bt, "speaker") ?? "", Line = S(bt, "line"), Ref = S(bt, "ref") }); sc.Variants.Add(beats); }
                     Scenes.Add(sc);
                 }
+            if (n.Opt("cards")?.Opt("items") is JNode ci)
+                foreach (var kv in ci.Entries)
+                {
+                    var v = kv.Value; var c = new CardText { Code = kv.Key, Kind = S(v, "kind") ?? "city", Title = S(v, "title") ?? "", Sight = S(v, "sight") ?? "", At = S(v, "at") ?? "", Needs = S(v, "needs") ?? "" };
+                    if (v.Opt("result") is JNode r) { if (r.Kind == JKind.Str) c.Result = r.Str(); else foreach (var e in r.Entries) c.Results[e.Key] = e.Value.Str(); }
+                    Cards[kv.Key] = c;
+                }
+            if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();

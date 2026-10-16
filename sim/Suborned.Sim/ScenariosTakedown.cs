@@ -178,7 +178,8 @@ namespace Suborned.Sim
                 r.Is(cam != null, "the pickup camera records it");
                 int period = T(g.R.CameraScanS), phase = (int)(Streams.Fnv1a32("camera:pickup") % (uint)period);
                 r.Is(cam != null && (cam.LandAt - T(g.R.PostCallS) - phase) % period == 0 && cam.LandAt - T(g.R.PostCallS) >= a.Tick && cam.LandAt - T(g.R.PostCallS) < a.Tick + period, "its watcher reads the screen at the next scan, then calls it in");
-                r.Is(a.Noticed.Contains(g.Driver.Id) && !g.Reps.Exists(x => x.P == g.Driver), "the driver saw it and keeps quiet (a Mercenary at Alert 0)");
+                r.Is(a.Noticed.Contains(g.Driver.Id) && !g.Reps.Exists(x => x.P == g.Driver && x.Kind != "tell"), "the driver saw it and keeps quiet (a Mercenary at Alert 0): no report");
+                r.Is(g.Reps.Exists(x => x.P == g.Driver && x.Kind == "tell" && x.Phase == "walk"), "he goes to a phone to tell a workmate indoors (brief 013 E1: no tie within speaking range)");
                 r.Is(g.Driver.Has("saw-takedown") && g.FactsOf(g.Driver).Contains("enforcer-face"), "he holds the Enforcer's face (Sky D3)");
                 r.To(cam!.LandAt);
                 r.Eq(g.Alert, 3, "the camera's report lands: Alert 3");

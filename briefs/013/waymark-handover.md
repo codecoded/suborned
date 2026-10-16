@@ -1,4 +1,28 @@
-# 013 D · The Handover with takedowns (Waymark, 2026-10-16, rev 4)
+# 013 D · The Handover with takedowns (Waymark, 2026-10-16, rev 5)
+
+## Rev 5 (after 306b15e): pinned, re-recorded, driver route closed
+
+- **c012, pinned to 306b15e** (the committed brief 013 engine, source `410b81e232ef`): SHIPS, MC-0 to MC-9, 3,010 plays. `check.test.ts` now replays c012 instead of c006 (94793d7).
+- **c011, on the tree** with Keel's later fixes (source `2774bd4b61d3`): SHIPS, MC-0 to MC-9, 3,010 plays.
+  - Compared play by play with c010, all 3,010 plays have the same outcome, fail, end tick, $, Trail, Alert, shots, fight, open cases and takedown time. The route table in §2 stands as written.
+  - Every start and final hash changed, because the engine's state changed. Only one mark moved: in `careless-body-found`, `witness.told` comes at 5:30.1, not 5:12.1 (telling at a distance now needs a phone). It still fails `sealed` at the same tick.
+  - The debrief tags are the new ones: route-g and route-g-fast open on `guard-knocked-out`, and route-g-kill on `guard-killed`. Loud keeps `guard-shot-away-from-waitress`, which is right, because loud shoots him.
+- **The driver takedown is not viable on r016, by the city's own rules.** It is not a route, and I don't plan to force one. Every time you can take guard 74 (the pickup guard) is closed by a rule the city keeps:
+
+| take guard 74 | what closes it | played (tree engine) |
+|---|---|---|
+| before 5:30 | **Check-ins.** 74 misses his 5:30 mark, which is a second incident after 29's 4:00 mark. Two incidents raise Alert 2 and send a unit. The unit's search opens the service-door stash and finds 29. | `driver-74-at-4m52`: Alert 2, seal starts 6:40, `enforcer-down` 6:50 |
+| 5:30 to 5:46 | **Witnesses.** The outgoing shift (guards 30, 36, 39, 46 and others) is still at the official entrance and sees the takedown. They radio it in, and it lands at Alert 3 with a lockdown. | `driver-74-at-5m31`: Alert 3 at 5:36, `enforcer-down` |
+| from 5:50 | **Ties.** Vale is on the street and sees it. He tells his workmate, guard 65, face to face, so no phone is needed and Keel's distance fix doesn't apply. 65 reports, and it lands at 6:14 (Alert 2), then Alert 3. | `driver-74-at-5m55`: 28 T, Alert 3, no win by the 8:30 close |
+
+  - Keel's `mixed-3460` (taking 74 at 5:46, between the second and third windows) also ends with no win, at Alert 3 and 28 T. I played it. I didn't search the 4 s before Vale steps out at 5:50.
+  - The scripts are in `briefs/013/waymark-driver/`. The first is mine (the c010 early timing). The other two are Keel's `out/keel/driver/mixed-3310` and `mixed`.
+  - Each replays with `dotnet out/missions/engine/tree/bin/suborned-sim.dll play <script> --json`, and `replayIdentical` is true.
+  - If you want the driver, turn him: route B already does that (7:40, 4 T, Alert 0). The §5.1 rule questions for Motive and Pulse are optional now, not blockers. From §6, the debrief tag is fixed. The repeated dispatch looks fixed too: in `driver-74-at-5m31`, four reports land at 5:36 and there is one `alarm.dispatches`.
+- **Rev 5 evidence:**
+  - `bun test tools/missions`: 46/46. The c012 replay test gets a 420 s limit, since its 3,010 plays take about 150 s.
+  - `bun tools/missions/check/cli.ts replay handover c012`: REPLAY OK.
+  - `bun run verify`: VERIFY OK, typecheck clean.
 
 - **Brief:** `briefs/013-takedowns.md` part D.
 - **Rules:** `briefs/013/motive-takedowns.md` (rev 4, §0.2), `pulse-witnesses.md`, `vantage-quiet-places.md`.
@@ -112,7 +136,7 @@ The re-authored loud shoots just after the 2:30 mark, has the Scout and Fixer re
 
 ## 7 · Open issues
 
-- **HEAD-engine test.** `check.test.ts` "played headless (Keel's engine at HEAD)" fails until Keel's engine is committed, because HEAD rejects `how`. After the commit, record the check against that commit and pin the test to it.
+- ~~HEAD-engine test~~: closed in rev 5. HEAD is 306b15e, and the replay test is pinned to c012.
 - **`bun run verify` fails, but not on missions.** It fails on runs r012–r014 (the people checker's code changed: `tools/people`, `contracts/people`) and on the dialogue runs r017–r019. Both are for their owners (Keel or Pulse for the people runs, Fable for the dialogue runs). The plan checks and typecheck pass in it.
 - The driver-route plan I tried is kept at `out/waymark013/route-d-late.plan.json`, not in the manifest.
 

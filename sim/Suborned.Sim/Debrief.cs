@@ -46,9 +46,11 @@ namespace Suborned.Sim
             {
                 relevant.Add("loop");
                 if (g.RouteGuard == "shot") relevant.Add("fire:guard");
-                else { relevant.Add("turn." + (g.InezMethod.Length > 0 ? g.InezMethod : "help") + ":waitress"); relevant.Add("call:waitress"); }
+                else if (g.RouteGuard == "waitress") { relevant.Add("turn." + (g.InezMethod.Length > 0 ? g.InezMethod : "help") + ":waitress"); relevant.Add("call:waitress"); }
                 if (g.RouteBot == "rerouted") relevant.Add("reroute");
-                d.Route.Add(g.RouteGuard == "shot" ? (g.InezWitnessedShooting ? "guard-shot-beside-waitress" : "guard-shot-away-from-waitress") : "waitress-pulls-guard-away");
+                d.Route.Add(g.RouteGuard == "shot" ? (g.InezWitnessedShooting ? "guard-shot-beside-waitress" : "guard-shot-away-from-waitress")
+                    : g.RouteGuard == "knocked-out" ? "guard-knocked-out" : g.RouteGuard == "killed" ? "guard-killed" // a takedown (brief 013 E4), not a shooting
+                    : "waitress-pulls-guard-away");
                 d.Route.Add("entrance-camera-looped");
                 d.Route.Add(g.RouteBot == "rerouted" ? "patrol-diverted" : "entry-timed-between-sweeps");
                 d.Route.Add("vale-taken-through-office"); d.Route.Add("vale-reaches-getaway-car");

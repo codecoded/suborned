@@ -948,6 +948,7 @@ namespace Suborned.Sim
             SightCases();
             TakedownCases(); // brief 013
             TakedownFixes(); // brief 013 D
+            TakedownE(); // brief 013 E
         }
     }
 }

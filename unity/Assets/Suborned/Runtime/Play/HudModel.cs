@@ -9,14 +9,14 @@ namespace Suborned.Play
     /// without touching the host or the engine bindings. No Unity objects in here: world positions are Vector3 (a view projects them), and
     /// strings are built once per change (Refresh, on a tick, an order, a log line, pause or speed), or per frame for what follows the
     /// cursor and the camera (Frame). Clicks are not here: a view calls the host's own methods, as the IMGUI buttons do.</summary>
-    public sealed class HudModel
+    public sealed partial class HudModel
     {
         public sealed class Slot
         {
             public string Key = "", Name = "", Stance = "", Glyph = "", Label = "", Left = "", Under = "", CancelTip = "", Phase = "";
             public bool Selected, HintRing, Armed, Drawn, Down, Busy, CanCancel; public int Hp, HpMax, Progress = -1;
             // for the kit view (Glyph's slot strip): role, the atlas icon, the state tag, the ready/hurt/down line, the queued act, the cancel tooltip
-            public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = ""; public bool Hurt, Show, Compact;
+            public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = "", Pace = ""; public bool Hurt, Show, Compact;
         }
         public sealed class AgentMark { public Vector3? World; public string Num = "", Verb = ""; public bool Selected; }
         public sealed class CastIcon { public Vector3? World; public string A = "", B; }
@@ -32,6 +32,8 @@ namespace Suborned.Play
             // the kit's card: icon, the four price parts, the outcome and its mark, the walk, the lock reason and what unlocks it
             public string Icon = "", Usd = "", Time = "", Trail = "", Alert = "", Outcome = "", OutcomeMark = "unk", Walk = "", Reason = "", Unlock = "", Role = "", Name = "";
             public bool Available, Mine, Leverage, Suggested;
+            /// <summary>Brief 013: the card's own rows under the price (a takedown way's found, never found, wakes; a loop's blinds).</summary>
+            public readonly List<(string icon, string text)> Extra = new();
         }
         public string PanelRole = "", PanelTarget = "", PanelBadge = "", PanelSub = "", PanelNeed = "", PanelNeedMark = "", PanelTemp = ""; public bool PanelPerson, PanelSecret;
         // the price chip's parts (the kit's chip_price: verb icon, $ · time · Trail · Alert, the outcome mark)
@@ -134,7 +136,9 @@ namespace Suborned.Play
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
-                s.StateTag = op.Down ? "DOWN" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
+                s.StateTag = op.Down ? "DOWN" : op.CarryBody.Length > 0 && d.Phase != "walking" && d.Phase != "acting" ? "CARRYING" : op.CarryBody.Length > 0 ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
+                s.Pace = op.CarryBody.Length > 0 ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
+                if (op.CarryBody.Length > 0) s.Icon = "s_carrying";
                 s.Queued = d.Queued.StartsWith("then: ") ? "then " + d.Queued[6..] : d.Queued;
                 // state, never a control (Fable C2, C4; the controls are taught once, by the hints)
                 s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
@@ -153,8 +157,8 @@ namespace Suborned.Play
             }
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
-            var slots = HandoverHost.Slots[(int)h.Agent];
-            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length; VerbGlyph[i] = VerbHas[i] ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = VerbHas[i] ? AtlasIcon(slots[i].Id, slots[i].Id, "") : ""; VerbName[i] = VerbHas[i] ? slots[i].Label : ""; }
+            var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
+            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim; VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? AtlasIcon(slots[i].Id, slots[i].Id, "") : ""; VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -182,16 +186,19 @@ namespace Suborned.Play
                 Chip = ChipKind.Price;
                 var o = it.Order; ChipIcon = AtlasIcon(o.Do, o.Approach, ""); ChipUsd = it.Usd; ChipTime = it.Time; ChipTrail = it.Trail.Replace("T ", ""); ChipAlert = it.Alert.Replace("A ", "");
                 ChipMark = MarkOf(it.Outcome); ChipSeen = it.Seen;
+                if (it.Lead.Length > 0) ChipIcon = it.Lead; if (it.SeenMark.Length > 0) { ChipMark = it.SeenMark; ChipSeen = ""; } // the takedown chip: the way leads, the seen answer ends it (Glyph §1)
                 ChipText = $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
             }
             else Chip = ChipKind.None;
             Pops = h.Pops; Pulses = h.Pulses; Unknowns = h.Unknowns;
+            Street(h);
             // the action panel
             PanelOpen = h.Panel != null;
             if (PanelOpen && cardsFor != h.Panel)
             {
                 var pn = h.Panel; cardsFor = pn; PanelCards.Clear();
                 PanelTitle = pn.T.Label; PanelAbout = pn.About; PanelNote = pn.Note; PanelAt = pn.Gui;
+                PanelBefore.Clear(); PanelBefore.AddRange(pn.Before);
                 int first = System.Array.IndexOf(h.Selected, true); PanelRole = first >= 0 ? Op.Name((OpId)first) : "scout"; PanelTarget = pn.T.Label;
                 // the header: who the target is, and what the cell knows of them (as Intel: need, temperament, the secret once known)
                 PanelPerson = pn.T.Kind == "person"; PanelBadge = Badge(pn.T); PanelSub = pn.T.Label; PanelNeed = PanelNeedMark = PanelTemp = ""; PanelSecret = false;
@@ -211,12 +218,14 @@ namespace Suborned.Play
                         Key = h.AgentKeyLabel((int)row.By), Title = $"{Names[(int)row.By]} · {row.Verb}", Does = i2.Does, Available = row.Available,
                         Price = i2.Move ? i2.Time : $"{(i2.Walk.Length > 0 ? i2.Walk + " " : "")}{i2.Usd} · {i2.Time} · {i2.Trail} · {i2.Alert}{(i2.Outcome.Length > 0 ? $" · {i2.Outcome}" : "")}",
                         Lock = row.Available ? "" : $"Locked: {row.Reason}{(row.Unlock.Length > 0 ? $"\n{row.Unlock}" : "")}",
-                        Verb = row.Slot >= 0 ? h.VerbKey(row.Slot) : "",
+                        Verb = row.Key >= 0 ? h.VerbKey(row.Key) : "",
                         Icon = AtlasIcon(row.I.Order.Do, row.I.Order.Approach, ""), Usd = i2.Usd, Time = i2.Time, Trail = i2.Trail.Replace("T ", ""), Alert = i2.Alert.Replace("A ", ""),
                         Outcome = OutcomeWords(row.I, pn.T.Key), OutcomeMark = i2.Order?.Do == "turn" && i2.Orders > 1 && i2.Outcome == "turned" ? "half" : MarkOf(i2.Outcome),
                         Walk = i2.WalkS > 0 ? $"walk {i2.WalkS} s" : "", Reason = row.Available ? "" : row.Reason, Unlock = row.Available ? "" : row.Unlock, Role = Op.Name(row.By),
                         Name = row.Verb, Leverage = i2.Leverage, Suggested = hintVerb != null && hintVerb != "turn" && i2.Order != null && i2.Order.Do == hintVerb,
                     });
+                    PanelCards[PanelCards.Count - 1].Extra.AddRange(i2.Rows);
+                    if (i2.Lead.Length > 0) PanelCards[PanelCards.Count - 1].Icon = i2.Lead;
                 }
             }
             if (!PanelOpen) cardsFor = null;
@@ -257,6 +266,15 @@ namespace Suborned.Play
         {
             var gate = h.Loud; var c = gate.Card;
             LoudLines.Add($"<b>GOING LOUD</b>  ·  {gate.What}");
+            if (gate.Takedown) // brief 013: a takedown a known watcher sees (Glyph §1): the same card, its own numbers
+            {
+                LoudLines.Add($"Seen: Alert → {c.AlertTo}");
+                if (c.PoliceInS >= 0) LoudLines.Add($"Who comes: police in ~{c.PoliceInS} s");
+                LoudLines.Add("The body can't be hidden from who saw it.");
+                string s0 = gate.Source switch { "right" => "the right button", _ => "the button" };
+                LoudLines.Add($"Hold {s0} to commit · release or Esc to back off · the clock runs");
+                return;
+            }
             LoudLines.Add($"Now: Alert → {c.AlertTo}{(c.Civilians > 0 ? $" ({c.Civilians} civilian{(c.Civilians > 1 ? "s" : "")} see it)" : "")}");
             var who = new List<string>();
             if (c.PoliceInS >= 0) who.Add($"police in {c.PoliceInS} s (reported: {c.ReportedBy})");
@@ -315,7 +333,7 @@ namespace Suborned.Play
                 string sec = d.PublicSecurity switch { "calm" => "Security is calm.", "raised" => "Security is raised.", "high" => "Security is on high alert.", _ => "" };
                 string inv = d.InvestigationState switch { "little" => "Investigators: none yet.", "early" => "Investigators have a few leads.", "active" => "An investigation is open" + (Cause(d.InvestigationCause) is string cz ? $": {cz}." : "."), _ => "" };
                 EndLines.Add($"{sec} {inv}".Trim());
-                var route = d.Route.ConvertAll(RouteWords).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
+                var route = d.Route.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
             }
@@ -387,6 +405,7 @@ namespace Suborned.Play
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
             "watch" or "listen" or "mislead" or "loop" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
             "act" => "enter", "extract" => "take", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
+            "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             _ => phase == "holding" ? "s_looping" : "s_ready",
         };
 

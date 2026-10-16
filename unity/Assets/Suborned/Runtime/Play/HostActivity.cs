@@ -46,7 +46,7 @@ namespace Suborned.Play
                 d.QueuedGlyph = q == null ? "" : Glyph(q.Do, q.Approach);
                 d.Glyph = Glyph(a.Verb, op.Busy?.Approach ?? "");
                 d.ActAt = q != null ? pendingAt[k] : null;
-                string who = a.Phase == "holding" && a.Verb == "carry" ? Cap(a.Target) : Name(a.Target);
+                string who = a.Phase == "holding" && a.Verb == "carry" && IsOpName(a.Target) ? "the " + Cap(a.Target) : Name(a.Target);
                 string textVerb = a.Verb == "turn" ? op.Busy?.Approach ?? "" : a.Verb;
                 string said = Text?.Doing(a.Phase == "acting" && a.Verb == "holster" ? "holstering" : a.Phase, a.Phase is "acting" or "holding" ? textVerb : "", who);
                 d.Label = op.Inside && a.Phase == "idle" ? "Inside the Office" : said != null ? said + (a.Phase is "walking" or "running" && q != null ? $" to {ActPlaceName(k, q)}" : "") : a.Phase switch
@@ -80,7 +80,9 @@ namespace Suborned.Play
 
         string Name(string key) => key switch
         {
-            "" => "", "hostiles" => "the hostiles", _ when key.StartsWith("camera:") => $"the {key[7..]} camera",
+            "" => "", "hostiles" => "the hostiles", _ when key.StartsWith("camera:") => CameraName(key[7..]),
+            _ when Game != null && !IsOpName(key) && key is not ("waitress" or "driver" or "guard" or "councillor") && Game.PersonById(key) is Person cp => PersonName(cp), // a passer-by (brief 013)
+            _ when Game != null && Game.S.Stashes.Find(x => x.Id == key) is StashPlace sp => StashName(sp),
             _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key,
         };
 
@@ -115,7 +117,7 @@ namespace Suborned.Play
         public static string Glyph(string verb, string approach) => verb switch
         {
             "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "reroute" => "route",
-            "mislead" => "tip", "enter" => "in", "take" => "take", "extract" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "" => "", _ => verb,
+            "mislead" => "tip", "enter" => "in", "take" => "take", "extract" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "takedown" => "takedown", "restrain" => "restrain", "stash" => "stash", "drop" => "drop", "" => "", _ => verb,
         };
 
         /// <summary>Cancel costs that lose nothing (the text's cancelCosts keys): a walk stopped, a weapon holstered or a fire ceased, nothing under way.</summary>
@@ -246,6 +248,7 @@ namespace Suborned.Play
         {
             ["loop.on"] = ("loop", "tech"), ["patrol.rerouted"] = ("reroute", "tech"), ["rivals.misled"] = ("mislead", "scout"),
             ["enter.out"] = ("enter", "enforcer"), ["take.done"] = ("take", "enforcer"),
+            ["takedown.out"] = ("takedown", "enforcer"), ["takedown.dead"] = ("takedown", "enforcer"),
         };
 
         /// <summary>The engine's log speaks, in the text's beats: what the Scout learned (`read`), a person's answer and the Fixer's reaction
@@ -255,6 +258,7 @@ namespace Suborned.Play
         void SayLanded(LogLine l)
         {
             if (Text == null) return;
+            if (quiet.HasValue && quiet.Value.Tick == l.Tick && quiet.Value.Code == l.Code && quiet.Value.Text == l.Text) return; // its card is out of sight: so are its lines
             string code = l.Code, role = RoleIn(l);
             if (code.StartsWith("crowd.")) return; // the crowd speaks by its states (CityBeats): one passer-by near the cell, not the log's counts
             if (code.StartsWith("scout.") && role != null)

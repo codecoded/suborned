@@ -249,6 +249,17 @@
 .i-turned { background-image: url("icons/singles/turned@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-unknown { background-image: url("icons/singles/unknown@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-watch { background-image: url("icons/singles/watch@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-body_dead { background-image: url("icons/singles/body_dead@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-body_out { background-image: url("icons/singles/body_out@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-door_held { background-image: url("icons/singles/door_held@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-drop { background-image: url("icons/singles/drop@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-radio { background-image: url("icons/singles/radio@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-restrain { background-image: url("icons/singles/restrain@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-stash { background-image: url("icons/singles/stash@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-takedown { background-image: url("icons/singles/takedown@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-units { background-image: url("icons/singles/units@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-way_kill { background-image: url("icons/singles/way_kill@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-way_knock { background-image: url("icons/singles/way_knock@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .btn_verb:hover { background-image: url("buttons/btn_verb_hover@2x.png"); }
 .btn_verb:active { background-image: url("buttons/btn_verb_pressed@2x.png"); }
 .btn_verb.selected { background-image: url("buttons/btn_verb_selected@2x.png"); }

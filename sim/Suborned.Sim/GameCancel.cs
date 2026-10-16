@@ -40,6 +40,7 @@ namespace Suborned.Sim
                 a.TicksLeft = Math.Max(0, op.BusyEnd - Tick); a.Progress = (int)Math.Min(1000L, (long)(Tick - op.BusyStart) * 1000 / span);
                 a.OnDone = OnDone(op, o);
                 a.CanCancel = true; (a.CancelCost, a.CancelText) = CancelLine(op, o.Do);
+                if (o.Do == "enter" && o.How == "out") { a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "both doors are held: he waits inside until one is free"; } // a cancelled Enter, waiting
                 return a;
             }
             if (op.Walk != null)
@@ -112,7 +113,7 @@ namespace Suborned.Sim
                 case "loop": return o.Target == "entrance" ? "the entrance camera loops" : $"the {o.Target} camera loops";
                 case "reroute": return "the patrol leaves its sweep";
                 case "mislead": return "the rivals follow a false tip";
-                case "enter": return "out at the service lane with Vale";
+                case "enter": return o.How == "out" ? "out by a door no unit holds, without Vale" : "out at the service lane with Vale";
                 case "take": return "Vale is with the Enforcer";
                 case "carry": return IsOpId(o.Target) ? $"lifts the {o.Target}" : $"lifts {o.Target}";
                 case "takedown": return o.How == "kill" ? "dead" : "out";
@@ -131,7 +132,7 @@ namespace Suborned.Sim
                 case "turn": return R.CancelTurn == "aborted" ? ("aborted", $"the money held comes back; the {op.Busy!.Target} remembers an aborted approach and the Fixer's face") : ("lost", "the money held comes back; nothing is remembered");
                 case "loop": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
                 case "takedown": return ("released", "the victim is let go: he saw it, and reports it as a woken victim would");
-                case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", "back out at the public door without Vale; the staff report the intruder (a reported incident)") : ("quiet", "back out at the public door without Vale");
+                case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", $"back out {CancelledEnterOut()} without Vale; the staff report the intruder (a reported incident)") : ("quiet", $"back out {CancelledEnterOut()} without Vale");
                 case "take": return R.CancelTake == "vale-reports" ? ("vale-reports", "Vale is let go at his car and reports the attempt (a reported incident)") : ("quiet", "Vale is let go at his car");
                 default: return ("lost", "nothing lands");
             }
@@ -155,7 +156,8 @@ namespace Suborned.Sim
                                 if (R.CancelTurn == "aborted") Remember(PersonByRole(o.Target), "aborted", "fixer", false);
                                 break;
                             case "enter":
-                                op.Inside = false; op.Pos = S.Stand(S.GuardPost); EntryInProgress = false;
+                                EntryInProgress = false;
+                                ExitWithoutVale(op, true);
                                 if (R.CancelEnter == "staff-report") ReportBy("office-staff", S.Stand(S.GuardPost));
                                 break;
                             case "takedown": // brief 013 (rulebook cancel.takedown released): let go, he saw the Enforcer and reports it
@@ -197,6 +199,24 @@ namespace Suborned.Sim
             }
             return No("nothing-to-cancel", "nothing to cancel");
         }
+
+        /// <summary>A cancelled Enter comes out without Vale (rev 4 R4.1, rulebook response: no exit through a held door; Aster 2026-10-16,
+        /// brief 013 E3): by the public door unless a unit holds it, else by the service door; both held, he waits inside (an Enter that
+        /// cannot be cancelled) and comes out the tick one is free. Re-tried each tick from Land.</summary>
+        internal void ExitWithoutVale(Op op, bool first)
+        {
+            bool frontHeld = DoorHeld(EnterDoor), serviceHeld = DoorHeld(ExitDoor);
+            if (frontHeld && serviceHeld)
+            {
+                op.Inside = true; op.Busy = new Order { Tick = Tick, Op = Sim.Op.Name(op.Id), Do = "enter", How = "out" }; op.BusyEnd = Tick + 1;
+                if (first) { op.BusyStart = Tick; Note("cancel.enter-waits", "Both doors are held: the Enforcer waits inside, without Vale."); }
+                return;
+            }
+            op.Inside = false; op.Pos = frontHeld ? S.Stand(S.ValeService) : S.Stand(S.GuardPost);
+            if (frontHeld || !first) Note("cancel.enter-out", frontHeld ? "The public door is held: the Enforcer comes out at the service lane without Vale." : "A door is free: the Enforcer comes out at the public door without Vale.");
+        }
+        /// <summary>Where a cancelled Enter would come out now, in the engine's words (the cancel line).</summary>
+        string CancelledEnterOut() => !DoorHeld(EnterDoor) ? "at the public door" : !DoorHeld(ExitDoor) ? "at the service lane (the public door is held)" : "when a door is free (both are held: he waits inside)";
 
         /// <summary>A reported incident by someone who is not a contact (rulebook alert.byIncident): the Office staff, or Vale.</summary>
         void ReportBy(string who, Pt at)

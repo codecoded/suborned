@@ -1,0 +1,22 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route G's knockout done at 5:31, as the clerks leave by the public door, instead of at 2:31 on an empty square (the loop held, the patrol rerouted to be away). Dozens see it: +1 witness Trail and a step toward Menace at sight; the Loyal and Idealist clerks report it from the door 8 s later (Alert 3, the doors lock, the act's +4 T); the Enforcer is already inside and comes out at 6:15 into a loud fight: 3 officers, the response unit, the dial's robots and reinforcements; the cell is down by 6:25 and the district seals at 8:40 with Vale still in the Enforcer's hands (the seal is 145 s after the unit is on the street; the 8:30 close does not end a carry under way). The careful twin is route-g.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":136,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":346,"op":"scout","do":"watch","target":"guard"},
+  {"tick":546,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":2860,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":3240,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":3310,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":3370,"op":"enforcer","do":"enter"},
+  {"tick":3370,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":3750,"op":"enforcer","do":"move","to":"d:Getaway bay"}
+ ],
+ "until": 6000
+}

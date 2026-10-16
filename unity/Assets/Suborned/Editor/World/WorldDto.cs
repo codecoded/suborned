@@ -29,11 +29,17 @@ namespace Suborned.World
         public FabricDto Fabric = new(); // grammar §2a colour life: balcony awnings, banners, flag masts
         public HorizonDto Horizon; // null when the export has none (the sample)
         public List<CrossingDto> Crossings; // null when the export has none (a plan without streetscape.crossings.strip)
+        /// <summary>Brief 013: the takedown places' entrances (`takedown.entrances`); the builder draws the `service` ones as doors.
+        /// Empty when the export has no takedown section (the sample).</summary>
+        public List<EntranceDto> Entrances = new();
         /// <summary>SHA-256 (lower-case hex) of the export file's bytes, the ones this was parsed from.</summary>
         public string Sha256;
         /// <summary>Elements per layer as the exporter declares them (`counts`); null when the export has none (the sample).</summary>
         public Dictionary<string, int> Counts;
     }
+
+    /// <summary>A door of a civic building (brief 013, `takedown.entrances`): public, official or service; `at` stands just outside its wall.</summary>
+    public sealed class EntranceDto { public string Id, Building, Name, Kind; public Vector2 At; public float Z; }
 
     /// <summary>Play camera: yaw (compass degrees, 90 = looking east), pitch above horizontal, zoom = orthographic size,
     /// focus in plan.</summary>

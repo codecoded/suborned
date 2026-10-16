@@ -1,0 +1,218 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {},
+ "orders": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "tick": 0
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7625,
+    -2880
+   ],
+   "tick": 0
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8250,
+    -3100
+   ],
+   "tick": 0
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "crew:fixer",
+   "tick": 0
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "pickup",
+   "tick": 136
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "driver",
+   "tick": 518
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8250,
+    -3100
+   ],
+   "tick": 718
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "p-records-office-29",
+   "how": "kill",
+   "tick": 1510
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7690,
+    -3370
+   ],
+   "tick": 1540
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "driver",
+   "how": "kill",
+   "tick": 1570
+  },
+  {
+   "op": "enforcer",
+   "do": "carry",
+   "target": "driver",
+   "tick": 1630
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6325,
+    -4125
+   ],
+   "tick": 1660
+  },
+  {
+   "op": "enforcer",
+   "do": "stash",
+   "target": "stash/office-service-door/door",
+   "tick": 1775
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7625,
+    -2880
+   ],
+   "run": true,
+   "tick": 1875
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "tick": 1900
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "tick": 1900
+  },
+  {
+   "op": "enforcer",
+   "do": "carry",
+   "target": "p-records-office-29",
+   "tick": 1921
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6325,
+    -4125
+   ],
+   "tick": 1951
+  },
+  {
+   "op": "enforcer",
+   "do": "stash",
+   "target": "stash/office-service-door/door",
+   "tick": 2043
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6278,
+    -4175
+   ],
+   "tick": 2143
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "crew:scout",
+   "tick": 2340
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7625,
+    -2880
+   ],
+   "tick": 2400
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "p-records-office-74",
+   "how": "knockout",
+   "tick": 3550
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7700,
+    -3100
+   ],
+   "tick": 3610
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "tick": 3700
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2400,
+    -6000
+   ],
+   "tick": 4080
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "tick": 4080
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "tick": 4500
+  },
+  {
+   "op": "enforcer",
+   "do": "extract",
+   "tick": 4650
+  }
+ ],
+ "until": 5100,
+ "note": "Keel scratch (brief 013 E2): Waymark early timing for guard 29 and the driver, guard 74 knocked out after the shift change (late timing)"
+}

@@ -330,7 +330,10 @@ namespace Suborned.Sim
                         else u.St = "hold";
                         break;
                     case "search":
-                        if (u.ToOpen.Count > 0 && Tick >= u.NextOpen) { OpenStash(u, u.ToOpen[0]); u.ToOpen.RemoveAt(0); u.NextOpen = Tick + T(R.SearchStashS); }
+                        // the stash comes off the list before it is opened: a body inside lands its incident, which may send this very unit on
+                        // to a new scene (CoverScene clears its list and turns it to walk; Keel 2026-10-16, an ArgumentOutOfRange at 7:58.5
+                        // on a driver-route variant). Then the search is over here.
+                        if (u.ToOpen.Count > 0 && Tick >= u.NextOpen) { var sid = u.ToOpen[0]; u.ToOpen.RemoveAt(0); u.NextOpen = Tick + T(R.SearchStashS); OpenStash(u, sid); if (u.St != "search") break; }
                         if (Tick >= u.Until && u.ToOpen.Count == 0) u.St = "hold";
                         break;
                 }

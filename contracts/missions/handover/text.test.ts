@@ -763,7 +763,8 @@ describe('the end card\'s words (debrief ids)', () => {
   test('every id sim Debrief.cs can give has a sentence: route, assets, investigation causes', () => {
     if (!haveSim) return;
     const src = simFile('Debrief.cs');
-    const ids = new Set([...src.matchAll(/"([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]!));
+    const states = new Set(['knocked-out']); // engine state values Debrief.cs compares against (g.RouteGuard), not debrief ids
+    const ids = new Set([...src.matchAll(/"([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]!).filter((i) => !states.has(i)));
     const have = new Set([...Object.keys(d.route), ...Object.keys(d.assets), ...Object.keys(d.causes)]);
     expect([...ids].filter((i) => !have.has(i))).toEqual([]);
     // an id here that the engine cannot give is dead text

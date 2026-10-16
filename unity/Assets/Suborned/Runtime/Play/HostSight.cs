@@ -77,7 +77,18 @@ namespace Suborned.Play
                 FocusWatcher = w; var f = Game.ConeFan(w); if (f != null) shownFans.Add(f);
             });
             views.ShowFans(shownFans);
+            // the mast's heads, numbered at their rims (Glyph §9): the farthest point of each head's polygon
+            MastHeads.Clear();
+            foreach (var f in shownFans)
+            {
+                if (f.More.Length == 0) continue;
+                MastHeads.Add(Far(f, f.Points)); foreach (var m in f.More) MastHeads.Add(Far(f, m));
+            }
         }
+
+        /// <summary>The mast heads' rim points (world), for their number plates; empty unless a mast's cone shows.</summary>
+        public readonly List<Vector3> MastHeads = new();
+        Vector3 Far(Fan f, Pt[] pts) { long best = -1; Pt at = f.At; foreach (var p in pts) { long d = G.D2(p, f.At); if (d > best) { best = d; at = p; } } return frame.World(at) + Vector3.up * 0.3f; }
 
         /// <summary>After each step: the watchers noticing an agent whose sight the cell doesn't know (the "?").</summary>
         void Notice()

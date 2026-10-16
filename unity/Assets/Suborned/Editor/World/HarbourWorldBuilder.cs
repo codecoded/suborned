@@ -123,6 +123,7 @@ namespace Suborned.World
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
             Debug.Log($"World: civic monument plinths {facade.Plinths}");
+            if (world.Entrances.Count > 0) ServiceDoors.Build(nodes, Nodes.Group(root, "takedown"), world); // brief 013: the service doors (export takedown.entrances)
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);

@@ -139,12 +139,13 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at 
     expect(c.plays.loud!.trail).toBeGreaterThan(c.plays['route-a-pressure']!.trail); // MC-2 against every quiet variant (Motive's addendum)
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
-  // The latest check pinned to a commit. Checks recorded on the working tree (c007, c008: the r016 cast, Keel's engine uncommitted)
+  // The latest check pinned to a commit. Checks recorded on the working tree (c007-c011: the r016 cast, Keel's engine uncommitted)
   // replay only while the tree holds, and any uncommitted rule edit breaks them (c007 broke on the rulebook's sight section), so a
-  // test pins a committed record: when the r016 engine is committed, record the check against that commit and point this at it.
-  test('the latest commit-pinned check (c006, pinned to 94793d7) replays to its recorded hashes', async () => {
-    const r = await replay(join(runsDir('handover'), 'c006'));
+  // test pins a committed record: c012, brief 013 as committed in 306b15e (rev 4 engine, route G). On the next engine commit, record
+  // the check against that commit and point this at it.
+  test('the latest commit-pinned check (c012, pinned to 306b15e) replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c012'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);
-  });
+  }, 420_000); // 3,010 plays (with route G's variations): about 150 s on the Air, against c006's 2,131
 });

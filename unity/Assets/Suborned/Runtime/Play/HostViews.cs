@@ -43,6 +43,14 @@ namespace Suborned.Play
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
             }
+            // brief 013: the stashes (a bin, a service door) are click targets: a box round each, named stash/<id>
+            foreach (var st in s.Stashes)
+            {
+                var go = new GameObject("stash/" + st.Id); go.transform.SetParent(root, false);
+                var at = frame.World(st.At) + Vector3.up * 0.8f; go.transform.position = at;
+                var col = go.AddComponent<BoxCollider>(); col.size = st.Kind == "door" ? new Vector3(2.2f, 2.6f, 2.2f) : new Vector3(2.6f, 1.8f, 2.6f);
+                things["stash/" + st.Id] = (go.transform, at, at, true);
+            }
             crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
             for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, true); // hoverable: "passer-by"
             for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
@@ -146,6 +154,8 @@ namespace Suborned.Play
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
                 var want = cower ? new Vector3(1.2f, 0.75f, 1.2f) : Vector3.one; if (ct.localScale != want) ct.localScale = want;
             }
+            Bodies(g);
+            Units(g);
             // the final fight's hostiles (officers in the loud branch, the rival ambush in the safe one)
             for (int i = 0; i < MaxHostiles; i++)
             {
@@ -153,6 +163,64 @@ namespace Suborned.Play
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
                 if (h != null) Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
             }
+        }
+
+        // ---------------------------------------------------------------- brief 013: bodies and the response's units
+
+        /// <summary>A person's view key in orders and views: the cast by role, the crowd by id.</summary>
+        public static string KeyOf(Person p) => p.Role.Length > 0 ? p.Role : p.Id;
+        readonly Dictionary<Person, int> walkerIndex = new();
+        static readonly Dictionary<string, string> CastKeys = new() { ["waitress"] = "waitress", ["driver"] = "driver", ["guard"] = "guard", ["councillor"] = "councillor" };
+
+        /// <summary>Every body the engine keeps (Game.Bodies): lying where it fell (laid flat), on its carrier's shoulder, or hidden in a stash
+        /// (not drawn: the stash marker counts it). The person's own view (cast or crowd) gives way to the body while they are down. Kills
+        /// are shown (Sky 2026-10-16): the body lies on the ground until it is moved.</summary>
+        void Bodies(Game g)
+        {
+            if (walkerIndex.Count == 0) for (int i = 0; i < g.Walkers.Count; i++) walkerIndex[g.Walkers[i].P] = i;
+            foreach (var b in g.Bodies)
+            {
+                var p = b.P; var key = "body/" + KeyOf(p);
+                if (!things.ContainsKey(key))
+                {
+                    var col = p.Role switch { "waitress" => host.waitressColour, "" => host.JobColour(p.Job), _ => host.civicColour };
+                    Person(key, col);
+                }
+                bool down = p.Down || b.Seizing;
+                if (down) // the person's own view hides; the body draws
+                {
+                    if (CastKeys.TryGetValue(p.Role, out var ck)) Set(ck, null);
+                    else if (walkerIndex.TryGetValue(p, out var wi)) Set(crowdKeys[wi], null);
+                }
+                if (!down || !b.Open) { Set(key, null); continue; }
+                if (b.Seizing) { Set(key, b.At, false); continue; }                  // the struggle: still on their feet
+                if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); continue; } // over the carrier's shoulder
+                Set(key, b.At, true, Radius);                                            // where they fell, or were put down
+            }
+        }
+
+        static readonly Color RobotColour = new(0.78f, 0.8f, 0.82f);
+        /// <summary>The response dial's units (Game.Units, not the legacy officers or the patrol, which have their own views): robots as squat
+        /// drums, officers as people, where UnitPose puts them; null off the street.</summary>
+        void Units(Game g)
+        {
+            foreach (var u in g.Units)
+            {
+                if (u.Legacy || u.Patrol) continue;
+                var key = "unit/" + u.Id;
+                if (!things.ContainsKey(key)) { if (u.Robot) Drum(key, RobotColour); else Person(key, host.securityColour); }
+                var pose = g.UnitPose(u); Set(key, pose?.pos);
+            }
+        }
+
+        void Drum(string key, Color c)
+        {
+            var go = new GameObject(key); go.transform.SetParent(root, false);
+            Part(go.transform, "body", cylinder, Lit(c), new Vector3(0, 0.6f, 0), new Vector3(0.75f, 0.6f, 0.75f));
+            Part(go.transform, "head", sphere, Unlit(host.coneColour), new Vector3(0, 1.28f, 0), Vector3.one * 0.22f); // the lamp: a signal, unlit
+            var col = go.AddComponent<CapsuleCollider>(); col.height = 1.4f; col.radius = 0.45f; col.center = new Vector3(0, 0.7f, 0);
+            go.SetActive(false);
+            things[key] = (go.transform, Vector3.zero, Vector3.zero, false);
         }
 
         void Tint(string key, Color c)
@@ -170,7 +238,7 @@ namespace Suborned.Play
             {
                 var (t, from, to, shown) = kv.Value;
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
-                if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/")) t.position = Vector3.Lerp(from, to, alpha);
+                if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
             }
             var g = host.Game;
             for (int i = 0; i < 4; i++)
@@ -185,11 +253,11 @@ namespace Suborned.Play
             }
         }
 
-        void Set(string key, Pt? at, bool down = false)
+        void Set(string key, Pt? at, bool down = false, float lift = 0f)
         {
             var x = things[key];
             if (!at.HasValue) { things[key] = (x.t, x.to, x.to, false); return; }
-            var w = frame.World(at.Value);
+            var w = frame.World(at.Value) + Vector3.up * lift;
             bool wasShown = x.shown;
             things[key] = (x.t, wasShown ? x.to : w, w, true);
             if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
@@ -299,21 +367,34 @@ namespace Suborned.Play
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
             d.Hub = frame.World(f.At);
+            // a mast (brief 013): one polygon a head; heads 2 and 3 are the fan's More, drawn the same way from the same pole
+            var polys = new List<(List<Vector3> ring, string[] stop)> { (d.Ring, f.Stop) };
+            for (int h = 0; h < f.More.Length; h++) { var r2 = new List<Vector3>(); foreach (var q in f.More[h]) r2.Add(frame.World(q)); polys.Add((r2, h < f.MoreStop.Length ? f.MoreStop[h] : System.Array.Empty<string>())); }
             // the fill: a fan of triangles from the watcher (the engine's polygon is star-shaped round it: its rays start there)
             verts.Clear(); tris.Clear();
-            if (n >= 3)
+            foreach (var (ring, _) in polys)
             {
+                int m = ring.Count; if (m < 3) continue; int b0 = verts.Count;
                 verts.Add(d.Hub + Vector3.up * FillY);
-                for (int i = 0; i < n; i++) verts.Add(d.Ring[i] + Vector3.up * FillY);
-                for (int i = 0; i < n; i++) { tris.Add(0); tris.Add(1 + i); tris.Add(1 + (i + 1) % n); }
+                for (int i = 0; i < m; i++) verts.Add(ring[i] + Vector3.up * FillY);
+                for (int i = 0; i < m; i++) { tris.Add(b0); tris.Add(b0 + 1 + i); tris.Add(b0 + 1 + (i + 1) % m); }
             }
             d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
             // the rim: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue
             verts.Clear(); tris.Clear(); float dash = 0f;
+            foreach (var (ring, stop) in polys) { n = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && n >= 3) Hatch(ring); }
+            d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
+            n = d.Ring.Count;
+            ScanEdges(d, f, n);
+        }
+
+        void RimOf(FanDraw d, Fan f, List<Vector3> Ring, string[] Stop, ref float dash)
+        {
+            int n = Ring.Count;
             for (int i = 0; i < n && n >= 3; i++)
             {
-                int j = (i + 1) % n; Vector3 a = d.Ring[i] + Vector3.up * RimY, b = d.Ring[j] + Vector3.up * RimY;
-                bool far = f.Stop.Length == n && f.Stop[i] == "reach" && f.Stop[j] == "reach";
+                int j = (i + 1) % n; Vector3 a = Ring[i] + Vector3.up * RimY, b = Ring[j] + Vector3.up * RimY;
+                bool far = Stop.Length == n && Stop[i] == "reach" && Stop[j] == "reach";
                 if (!far) { Quad(a, b, RimW); continue; }
                 var outward = Flat((a + b) * 0.5f - d.Hub).normalized;
                 float len = Vector3.Distance(a, b);
@@ -332,9 +413,11 @@ namespace Suborned.Play
                         dash = (dash + len) % 0.7f; break;
                 }
             }
-            if (!f.Live && n >= 3) Hatch(d.Ring); // a camera that sees nothing now (looped): grey and hatched (Glyph §3.4)
-            d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
-            // the camera's scan sweeps between its outermost reach points
+        }
+
+        /// <summary>The camera's scan sweeps between its outermost reach points (head 1's).</summary>
+        void ScanEdges(FanDraw d, Fan f, int n)
+        {
             d.A0 = d.A1 = 0f;
             if (f.Kind == "camera" && n >= 3)
             {

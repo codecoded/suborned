@@ -187,6 +187,7 @@ namespace Suborned.Sim
                     RivalsDelayedUntil = Tick + T(R.MisleadAwayS); RivalsDelayMethod = "mislead"; MisledOnce();
                     AddTrail(R.MisleadTrail, "mislead"); Actions.Add("mislead"); Chain.Add("rivals-false-tip");
                     Note("rivals.misled", "A false tip sends the rival crew away. They may return."); break;
+                case "enter" when o.How == "out": ExitWithoutVale(op, false); break; // a cancelled Enter waiting inside for a free door
                 case "enter":
                     {
                         // rev 4 R4.1: no exit through a held door. The service door held, out by the public door; both held, he waits inside
@@ -618,7 +619,7 @@ namespace Suborned.Sim
             if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned."); return ""; }
             if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down."); return ""; }
             if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down."); return ""; }
-            RouteKind = "front"; RouteGuard = GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap";
+            RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap"; // a takedown is no shooting (brief 013 E4)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
             bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
             op.Gun.Order = ""; op.Gun.Target = "";
