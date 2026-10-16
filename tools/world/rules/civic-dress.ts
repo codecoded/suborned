@@ -16,17 +16,11 @@ import { adoptedBy } from '../gen/kitrefs';
 import { landingsOf, overlaps } from '../gen/street/crossings';
 import { deltaE2000 } from './deltae';
 
-const MISSION = resolve(import.meta.dir, '../../../contracts/missions/handover/mission.json');
 const SOURCE = 'civic-block.json dressing.rules (keepClear, Handover 1.2 m, landings) · lead\'s ruling 2026-10-14 (a canopy overhead may cover a point) · brief 008 B3';
 const HANDOVER_CLEAR = 1.2;
 
-/** The Handover points (mission.json destinations and crew), plan frame. None where the mission file is absent. */
-export function handoverPoints(toPlan: (p: V) => V, file = MISSION): { name: string; p: V }[] {
-  try {
-    const m = JSON.parse(readFileSync(file, 'utf8')) as { destinations: { name: string; at: V }[]; crew: { name: string; at: V }[] };
-    return [...m.destinations, ...m.crew].map(x => ({ name: x.name, p: toPlan(x.at) }));
-  } catch { return []; }
-}
+export { handoverPoints } from '../civic/handover';
+import { handoverPoints } from '../civic/handover';
 
 /** The shortest distance from p to a ring (0 inside it). */
 const toRing = (p: V, ring: V[]): number => (inPoly(p, ring) ? 0 : Math.min(...ring.map((a, i) => segDist(p, a, ring[(i + 1) % ring.length]!))));

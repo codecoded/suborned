@@ -1,6 +1,6 @@
 // Street furniture, trees, lamps, tram stop kits, station entrances and watchers: per street edge from
 // standards.streetscape, with the catalogue's counts and spacings. Nothing is placed item by item.
-import type { Connector, Crossing, Flag, Frontage, Mass, StreetItem } from '../../../contracts/world/world.schema';
+import type { Connector, Crossing, Flag, Frontage, Mass, StreetItem, Takedown } from '../../../contracts/world/world.schema';
 import type { V } from '../../plan/geom';
 import type { Ctx } from './common';
 import { type Rect, bbox, growRect } from './geo';
@@ -14,10 +14,11 @@ import { bindPart } from './street/partkit';
 import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
 import { Layer } from './street/kit';
 import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks } from './street/public';
+import { dressQuiet } from './street/quiet';
 import { dressRoads } from './street/roads';
 import { dressTransit } from './street/transit';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -36,7 +37,8 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   if (ctx.S.crossings.strip) bankFeet(ctx, L, o.connectors.filter(k => k.kind === 'stairTower'));
   const civicIds = ctx.S.crossings.strip ? civicLandings(ctx, L) : [];
   const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L, civicIds) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}) };
+  const takedown = dressQuiet(ctx, L); // brief 013: after the crossings, so a stash, a post or a call box takes what the furniture and the crossings left
+  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

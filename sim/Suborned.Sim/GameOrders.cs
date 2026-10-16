@@ -79,6 +79,10 @@ namespace Suborned.Sim
                 case "enter": return Enter(op, o);
                 case "take": return Take(op, o);
                 case "extract": return Extract(op, o);
+                case "takedown": return Takedown(op, o);   // brief 013 (GameTakedown.cs)
+                case "drop": return Drop(op, o);
+                case "stash": return Stash(op, o);
+                case "restrain": return Restrain(op, o);
                 default: return No("unknown-verb", $"verb '{o.Do}' is unknown (unknown = reject)");
             }
         }
@@ -110,7 +114,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>A move's pace: walking (cell.speed) or running (cell.runSpeed). Who may not run is RunRefusal's (GameCombat.cs).</summary>
-        int PaceOf(Op op, bool run) => run ? R.RunSpeed : opSpeed;
+        int PaceOf(Op op, bool run) => run ? R.RunSpeed : op.CarryBody.Length > 0 && op.Id != OpId.Enforcer ? R.CarryUntrainedSpeed : opSpeed; // brief 013: only the Enforcer carries a body at a walk
 
         // ---------------------------------------------------------------- the person events (rulebook scout.*, turn.*)
 
@@ -125,6 +129,8 @@ namespace Suborned.Sim
         string Scout(Op op, Order o)
         {
             if (op.Id != OpId.Scout) return No("only-scout", "only the Scout watches and listens (§03)");
+            if (o.Do == "watch" && !IsPersonRoleName(o.Target)) return WatchWatcher(op, o); // a camera or the patrol (rulebook sight)
+            if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
             var ev = R.Ev("scout." + o.Do);
             int reach = actReach;
@@ -161,14 +167,19 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
-                case "watch": case "listen": LandPersonEvent(op, o, R.Ev("scout." + o.Do), PersonByRole(o.Target)); break;
+                case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(o); break; // a camera or the patrol (rulebook sight)
+                case "watch": case "listen":
+                    LandPersonEvent(op, o, R.Ev("scout." + o.Do), PersonByRole(o.Target));
+                    if (o.Do == "watch" && o.Target == "guard") WatchedWatcher("guard", R.SightWatchS); // the guard's Watch teaches his sight too
+                    break;
                 case "turn": LandPersonEvent(op, o, R.Ev("turn." + o.Approach), PersonByRole(o.Target)); break;
                 case "loop":
-                    LoopOn = true; AddTrail(R.LoopTrail, "loop"); Actions.Add("loop");
+                    LoopOn = true; LoopCam = o.Target; AddTrail(R.LoopTrail, "loop"); Actions.Add(o.Target == "entrance" ? "loop" : "loop:" + o.Target);
                     Note("loop.on", "One feed repeats. The Tech is tied to the cabinet."); break;
                 case "reroute":
                     if (PatrolDown) break;
                     PatrolAwayUntil = Tick + T(R.RerouteAwayS); PatrolChasing = false; PatrolTracking = false;
+                    if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
                     Note("patrol.rerouted", "The patrol follows false orders and leaves the entrance sweep."); break;
                 case "mislead":
@@ -177,8 +188,20 @@ namespace Suborned.Sim
                     AddTrail(R.MisleadTrail, "mislead"); Actions.Add("mislead"); Chain.Add("rivals-false-tip");
                     Note("rivals.misled", "A false tip sends the rival crew away. They may return."); break;
                 case "enter":
-                    op.Inside = false; op.Pos = S.Stand(S.ValeService); EntryInProgress = false; Vale = ValeAt.WithEnforcer;
-                    Note("enter.out", "Vale and the Enforcer come out at the service lane."); StartFight(); break;
+                    {
+                        // rev 4 R4.1: no exit through a held door. The service door held, out by the public door; both held, he waits inside
+                        bool serviceHeld = DoorHeld(ExitDoor), frontHeld = serviceHeld && DoorHeld(EnterDoor);
+                        if (frontHeld)
+                        {
+                            if (!Log.Exists(l => l.Tick == Tick - 1 && l.Code == "enter.in")) Note("enter.in", "Both doors are held: the Enforcer waits inside with Vale.");
+                            op.Busy = o; op.BusyEnd = Tick + 1; break; // re-tried each tick until a door frees
+                        }
+                        op.Inside = false; op.Pos = serviceHeld ? S.Stand(S.GuardPost) : S.Stand(S.ValeService); EntryInProgress = false; Vale = ValeAt.WithEnforcer;
+                        Note("enter.out", serviceHeld ? "The service door is held: Vale and the Enforcer come out at the public door." : "Vale and the Enforcer come out at the service lane."); StartFight(); break;
+                    }
+                case "takedown": LandTakedown(op, o); break;
+                case "drop": case "stash": case "restrain": LandBodyOrder(op, o); break;
+                case "carry" when !IsOpId(o.Target): LandBodyOrder(op, o); break;
                 case "carry":
                     {
                         var other = OpOf(Sim.Op.Parse(o.Target));
@@ -255,10 +278,14 @@ namespace Suborned.Sim
             if (p.Memory.Count <= R.MemoryCap) return;
             int drop = -1;
             for (int j = 0; j < p.Memory.Count; j++)
-                if ((p.Memory[j].Act == "saw-act" || p.Memory[j].Act == "saw-runner" || p.Memory[j].Act == "saw-gunfire" || p.Memory[j].Act == "saw-violence" || p.Memory[j].Act == "saw-weapon-drawn" || p.Memory[j].Act == "told") && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
+                if (Sighting(p.Memory[j].Act) && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
             if (drop < 0) for (int j = 0; j < p.Memory.Count; j++) if (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick) drop = j;
             p.Memory.RemoveAt(drop);
         }
+
+        /// <summary>rulebook memory.whenFull: what a person saw (or was told) goes before what was done to them.</summary>
+        static bool Sighting(string act) => act == "saw-act" || act == "saw-runner" || act == "saw-gunfire" || act == "saw-violence" || act == "saw-weapon-drawn" || act == "told"
+            || act == "saw-takedown" || act == "saw-carry" || act == "found-body" || act == "heard-alarm"; // brief 013's sightings
 
         /// <summary>A report (rulebook reports): an incident for Alert — the nth reported incident raises it to at least byIncident[n−1].</summary>
         void Report(Person p)
@@ -419,6 +446,8 @@ namespace Suborned.Sim
                 var stand = S.Grid.NearestFree(at.Value); var route = stand.HasValue ? S.Grid.Route(op.Pos, stand.Value) : null;
                 if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + opSpeed * Hz - 1) / (opSpeed * Hz)); }
             }
+            // seen by (rulebook sight.unknown): where the operative stands for the act, its own place when already within reach, else the person's
+            if (at.HasValue) q.Seen = SeenAt(G.Within(op.Pos, at.Value, approachReach) ? op.Pos : at.Value);
             return q;
         }
 
@@ -549,10 +578,17 @@ namespace Suborned.Sim
         string Loop(Op op, Order o)
         {
             if (op.Id != OpId.Tech) return No("only-tech", "only the Tech loops cameras (§03)");
-            if (o.Target != "entrance") return No("loop-wrong-target", "the Tech's cabinet loops the entrance camera");
+            if (!LoopTarget(o.Target)) return No("loop-wrong-target", "the Tech's cabinet loops the entrance camera, the pickup camera and the city's own cameras (the Records Square mast)");
             if (LoopOn) return No("loop-holds", "the loop already holds");
             if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
             Engage(op, o, R.LoopS); return "";
+        }
+        /// <summary>A camera the cabinet loops (rulebook cell.loop.targets): a site camera named in the list, or any of the city's own
+        /// cameras when the list holds "world". One loop at a time.</summary>
+        bool LoopTarget(string id)
+        {
+            var cam = S.Cameras.Find(c => c.Id == id); if (cam == null) return false;
+            return R.LoopTargets.Contains(id) || (cam.World && R.LoopTargets.Contains("world"));
         }
         string Reroute(Op op, Order o)
         {
@@ -573,6 +609,9 @@ namespace Suborned.Sim
         string Enter(Op op, Order o)
         {
             if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer enters (§03)");
+            if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
+            if (Alert >= 3 && DialNow.DoorsLock) return No("doors-locked", "lockdown: the Office doors are locked (brief 013, the dial)");
+            if (DoorHeld(EnterDoor)) return No("door-held", "a unit holds the scene at this door: nobody goes in (rev 4: a found body)");
             if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", "Vale is not inside");
             if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return No("stand-at-door", "stand at the public door", cm: R.AtReachCm);
             op.Walk = null;
@@ -590,17 +629,19 @@ namespace Suborned.Sim
         string Take(Op op, Order o)
         {
             if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes Vale (§03)");
+            if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
             if (Vale != ValeAt.Pickup) return No("vale-not-at-car", "Vale is not at his car");
             var vp = ValePos()!.Value;
             if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", "stand beside Vale", m: actReach / 100);
             op.Walk = null;
-            if (!PickupService && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued."); return ""; }
+            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued."); return ""; }
             var rp = RivalsPose();
             if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, RivalsGun.W!.EffCm)))) // drawn rivals within their weapon's effective reach
             { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first."); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
             Vale = ValeAt.Taking;
             Engage(op, o, R.TakeS);
+            TakeScan(); // a Take seen is a takedown seen (brief 013 D; rev 4: its struggle, unless inside his own car)
             return "";
         }
         string Extract(Op op, Order o)

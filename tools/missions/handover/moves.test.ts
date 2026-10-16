@@ -13,7 +13,8 @@ const plan = await json('contracts/world/harbour-district.plan.json'), block = a
 const mission = Mission.parse(await json('contracts/missions/handover/mission.json'));
 /** Mission door point → block entrance id. 'Meet Vale' is where Vale comes out: the official door. */
 const DOORS: Record<string, string> = { 'Café door': 'cafe-entrance', 'Office entrance': 'office-entrance', 'Official entrance': 'official-entrance', 'Meet Vale': 'official-entrance' };
-const entrances = new Map<string, P>(block.buildings.flatMap((b: any) => (b.entrances ?? []).map((e: any) => [e.id, e.at])));
+const entrances = new Map<string, P>(block.buildings.flatMap((b: any) => (b.entrances ?? []).filter((e: any) => e.kind !== 'service').map((e: any) => [e.id, e.at]))); // the doors a visitor or the councillor uses
+const services = block.buildings.flatMap((b: any) => (b.entrances ?? []).filter((e: any) => e.kind === 'service').map((e: any) => e.id));
 const at = (name: string) => mission.destinations.find(d => d.name === name)?.at;
 const dist = (a: P, b: P) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
@@ -25,6 +26,11 @@ test('every Handover door point stands on the civic block entrance it names', ()
 test('every civic block entrance has a Handover door point, and every walk origin is one', () => {
   expect([...entrances.keys()].filter(id => !Object.values(DOORS).includes(id))).toEqual([]);
   expect((plan.standards.walking.from as string[]).filter(n => !(n in DOORS))).toEqual([]);
+});
+
+test('the service doors (brief 013: kind service, the Office\'s in the lane and the café\'s kitchen door) are stashes, not Handover door points: the mission names none until Waymark gives the informed routes one', () => {
+  expect(services).toEqual(['cafe-kitchen-door', 'office-service-door']);
+  expect([...mission.destinations].filter(d => /service door|kitchen/i.test(d.name))).toEqual([]);
 });
 
 test('Office approach waits at the foot of the public door steps: on their axis, within 1 m before the first riser', () => {

@@ -1,4 +1,4 @@
-// suborned.world/2 (v2 adds roofs, frontages, connectors, street, ground.plots, deck groups and megastructure prims; plot slabs moved from buildings to ground.plots; optional `crossings`, present when the plan carries streetscape.crossings.strip, whose parts are street items of the crossing-* kinds and signal-orb, brief 009): the derived world, written by `bun run world` (tools/world/export.ts) to out/world/<plan id>.world.json.
+// suborned.world/2 (v2 adds roofs, frontages, connectors, street, ground.plots, deck groups and megastructure prims; plot slabs moved from buildings to ground.plots; optional `crossings`, present when the plan carries streetscape.crossings.strip, whose parts are street items of the crossing-* kinds and signal-orb, brief 009; optional `takedown` and a street item's optional `stash`, present when the civic block has a service door, brief 013): the derived world, written by `bun run world` (tools/world/export.ts) to out/world/<plan id>.world.json.
 // Frame: x east, y north, metres; Unity = (x, height, y). Heights are metres above the carriageway datum (0).
 // Read by unity/Assets/Suborned/Editor/World/WorldReader.cs. Example: unity/Assets/Suborned/Editor/World/Samples/sample.world.json.
 // Every element has a stable id; rings are simple polygons; nothing here is placed by hand.
@@ -32,6 +32,7 @@ export type World = {
   levels: Level[]; // standards.levels.list: street, deck, concourse; decks carry their columns
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size
+  takedown?: Takedown; // brief 013 (Vantage C, Pulse, Motive §8): where a body can be hidden, where a witness can report, where the response starts; derived by tools/world/gen/street/quiet.ts, present when the civic block is
   landmarks: Landmark[];
   signatures: SignatureOut[]; // plan signatures[] (SpaceHQ): the kit piece on its ground, no plot building on `ground`
   gates: Mass[];
@@ -183,6 +184,8 @@ export type StreetItem = {
   /** Parts of a crossing only: whether Unity casts a shadow from the item. The signal orb's body does (the piece's other parts never); every other part is flush paving or light and casts none. */
   castShadows?: boolean;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached
+  /** Brief 013: the item is a closed container that can hold a body out of every sightline (`holds` at a time), resolved from its kit piece's `tags.stash` (contracts/world/kit.json; a candidate piece too, so the world is right before Vela adopts it). Only `dumpster` today. Absent = it hides nothing. */
+  stash?: { holds: number };
 };
 
 /** The horizon band (contracts/world/harbour-district.grammar.md §9), derived from the plan's id and sheet: polar rings of distant kit pieces round `centre`,
@@ -203,3 +206,32 @@ export type Horizon = { centre: V; haze: string; sea: { surface: string; centre:
 
 /** A plan signature structure standing on its ground (brief 007 A): `kit` = the piece placed at its centre (the regenerated `variant` when it is adopted, else the base piece and `pending` names the variant still to regenerate); `tip` = base + piece height. */
 export type SignatureOut = { id: string; kind: 'signature' | 'tower' | 'skybridge' | 'station' | 'portal'; source: Source; kit?: KitRef & { at: V }; ground?: [number, number, number, number]; base: number; tip: number; pending?: string; why?: string }; // kind: signature (SpaceHQ, with `ground`), tower (a site's regenerated piece, base = podium top), skybridge, station (SkyRailStation_Twin / _Decks, pivot on the line), portal (the Parade gate block)
+
+/** What the takedown, report and response rules read from the world (brief 013; Vantage's quiet places, Pulse's report points and response origins, Motive §8). Everything is derived from the plan, the civic block and the street the generator made: no
+ *  position here is placed for a mission (tools/world/gen/street/quiet.ts, tools/world/civic/quiet.ts). Plan frame like the rest of the export (x east, y north); the sim site converts it to block frame centimetres. `stand` = the free ground cell nearest the thing on the
+ *  engine's walk grid (tools/plan/walk-grid.ts), where a walker stands to use it. Rules R-HIDE, R-STASH, R-REPORT and R-DOCK (tools/world/rules/quiet.ts) hold it. */
+export type Takedown = {
+  /** The walk grid the reach is measured on: the civic block's window in block frame (x south, y east), m, and its cell, m. */
+  grid: { x0: number; x1: number; y0: number; y1: number; cell: number };
+  /** Reach (m, on the grid walk) the rules hold: every walkable lattice sample within `report` of a report point (R-REPORT, rulebook `report-reach-m`, proposed) and within `origin` of a response origin (R-DOCK, `dock-reach-m`, proposed); the lattice spacing, m. */
+  reach: { report: number; origin: number; lattice: number };
+  /** Every door of the civic block with what it is for: public, official or service (civic-block.json `kind`). */
+  entrances: TakedownDoor[];
+  /** Where a body can be put out of sight: a service door (a timed off-screen action) and the container beside it (a street item with `stash`). */
+  stashes: Stash[];
+  /** Where a witness reports (Pulse §3.1): the doors of staffed units (public and official), the street's own phone booths in the window and the call boxes the rule placed. A police post is an origin, not a report point. */
+  report: ReportPoint[];
+  /** Where the response starts: the robot docks in the window (the watcher sites' civic-robot-dock) and the police posts (and the Records Office doors, which are posts). */
+  origins: Origin[];
+  /** What the rules measured, for the report: the sample count and the walk (m) to the nearest point, with the doors alone (the baseline) and with everything placed. */
+  coverage: { report: Coverage; origin: Coverage };
+  /** Watchers the world stands in the window that the sim may or may not read (camera mismatch, brief 013 C): mast cameras and civic robots, their reach and the heads' facings (plan radians). */
+  watchers: WatcherNote[];
+};
+export type TakedownDoor = { id: string; building: string; name: string; kind: 'public' | 'official' | 'service'; at: V; z: number; stand: V };
+/** `door` = a service door (the body goes off screen, a timed action), `container` = a street item with `stash` (the body goes in it, seen as a carry). `of` = the service door it serves. `bare` on a door: why no container stands beside it (R-STASH accepts that reason, nothing else). */
+export type Stash = { id: string; kind: 'container' | 'door'; at: V; stand: V; holds: number; of?: string; item?: string; ring?: V[]; bare?: string };
+export type ReportPoint = { id: string; kind: 'door' | 'call-box'; at: V; stand: V; item?: string; door?: string };
+export type Origin = { id: string; kind: 'dock' | 'post'; at: V; stand: V; item?: string; door?: string };
+export type Coverage = { samples: number; worstM: number; medianM: number; within: number; baselineWithin: number; baselineWorstM: number };
+export type WatcherNote = { id: string; kind: string; at: V; facings: number[]; range: number; coneDeg: number; item: string };

@@ -5,19 +5,20 @@
 // are Waymark's to adopt into mission.json (Suture O-6); until then they live here. Deterministic: the same inputs give the same
 // bytes. The file names its sources but holds no hash of them: an edit to the plan or the mission that leaves this ground as it
 // was leaves the file, and every replay's start hash, as they were; tools/sim/sim.test.ts fails on any edit that changes it.
-// Run: bun run sim:site (writes the file); bun test tools/sim (checks it).
+// Run: bun run sim:site (writes the file, the people extract and the takedown places, tools/sim/takedown.ts); bun test tools/sim (checks them).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { derive } from '../plan/plan';
 import { civic, toPlanFn } from '../plan/civic';
 import { blockersOf } from '../plan/walk';
-import { Solids } from '../plan/walk-solids';
-import { type V, dist, inPoly } from '../plan/geom';
+import { CELL, WINDOW, walkGrid } from '../plan/walk-grid';
+import type { V } from '../plan/geom';
 import { castRoles } from '../missions/handover/cast';
 import { castRules } from '../missions/handover/overlay';
 import { summonRules } from '../missions/handover/summon';
 import { createHash } from 'node:crypto';
 import { buildPeople, PEOPLE_OUT } from './people';
+import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -27,8 +28,6 @@ export const PROMOTED_PEOPLE = 'out/people/harbour-district.people.json';
 export type Source = { people: string; fixture?: string };
 const PLAN = 'contracts/world/harbour-district.plan.json';
 const MISSION = 'contracts/missions/handover/mission.json';
-const CELL = 0.5; // m
-const WINDOW = { x0: -52, x1: 112, y0: -66, y1: 16 }; // block frame, m: the square, the café, the Office, Apron Road and the street mouths
 
 const cm = (m: number) => Math.round(m * 100);
 const P = (p: V) => [cm(p[0]), cm(p[1])];
@@ -41,37 +40,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   const blockText = read(plan.civic.block), block = JSON.parse(blockText);
   const missionText = read(MISSION), mission = JSON.parse(missionText);
   const d = derive(plan), civ = civic(plan.civic, block), toPlan = toPlanFn(plan.civic);
-  const { polys, rounds } = blockersOf(plan, d, civ);
-  const solids = new Solids(civ.solids);
-
-  // ---- the walk grid: a cell is free when its centre is outside every blocker and BODY clear of every ground solid
-  const nx = Math.round((WINDOW.x1 - WINDOW.x0) / CELL), ny = Math.round((WINDOW.y1 - WINDOW.y0) / CELL);
-  const centre = (i: number, j: number): V => [WINDOW.x0 + (i + 0.5) * CELL, WINDOW.y0 + (j + 0.5) * CELL];
-  const boxed = polys.map((b) => ({ b, x0: Math.min(...b.map((v) => v[0])), x1: Math.max(...b.map((v) => v[0])), y0: Math.min(...b.map((v) => v[1])), y1: Math.max(...b.map((v) => v[1])) }));
-  const blockedAt = (q: V) => {
-    const p = toPlan(q);
-    if (boxed.some((k) => p[0] >= k.x0 && p[0] <= k.x1 && p[1] >= k.y0 && p[1] <= k.y1 && inPoly(p, k.b))) return true;
-    if (rounds.some((l) => dist(p, l.c) < l.r)) return true;
-    return !solids.clear(p, p, solids.near(p[0], p[0], p[1], p[1]));
-  };
-  const rows: string[] = [];
-  for (let i = 0; i < nx; i++) { let r = ''; for (let j = 0; j < ny; j++) r += blockedAt(centre(i, j)) ? '#' : '.'; rows.push(r); }
-  const free = (q: V) => { const i = Math.floor((q[0] - WINDOW.x0) / CELL), j = Math.floor((q[1] - WINDOW.y0) / CELL); return i >= 0 && j >= 0 && i < nx && j < ny && rows[i]![j] === '.'; };
-  /** The nearest free cell centre to q (ties: lowest i, then j), for a point that stands on a face or beside a solid. */
-  const nearestFree = (q: V): V => {
-    const ci = Math.floor((q[0] - WINDOW.x0) / CELL), cj = Math.floor((q[1] - WINDOW.y0) / CELL);
-    let best: V | undefined, bd = Infinity;
-    for (let r = 0; r <= 12; r++) {
-      for (let i = ci - r; i <= ci + r; i++) for (let j = cj - r; j <= cj + r; j++) {
-        if (i < 0 || j < 0 || i >= nx || j >= ny || rows[i]![j] !== '.') continue;
-        const c = centre(i, j), dd = dist(c, q);
-        if (dd < bd) { bd = dd; best = c; }
-      }
-      if (best && bd <= (r + 0.5) * CELL) break;
-    }
-    if (!best) throw new Error(`no free ground within 6 m of ${q}`);
-    return best;
-  };
+  const { polys } = blockersOf(plan, d, civ);
+  const G = walkGrid(plan, d, civ, WINDOW, CELL), { solids, nx, ny, rows, free, nearestFree } = G;
 
   // ---- sight: the civic buildings and their towers at their heights, and the built plots around the square
   const toBlock = (p: V): V => { // invert plan = o + bx·ax + by·ay
@@ -201,7 +171,7 @@ function coverOf() {
 }
 
 /** JSON with one key per line, and arrays of numbers (points, polygons) kept on one line. */
-function pretty(v: unknown, ind = ''): string {
+export function pretty(v: unknown, ind = ''): string {
   const flat = (x: unknown): boolean => typeof x === 'number' || (Array.isArray(x) && x.every(flat));
   if (Array.isArray(v)) {
     if (v.every(flat)) return JSON.stringify(v);
@@ -229,5 +199,7 @@ if (import.meta.main) {
   writeFileSync(join(root, SITE_FILE), json);
   const people = buildPeople(src);
   writeFileSync(join(root, PEOPLE_OUT), people);
-  console.log(`wrote ${SITE_FILE} (${json.length} bytes) and ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''}`);
+  const take = buildTakedown().json; // brief 013: stashes, report points, origins and watchers, derived from the world; a second file, so the site (and every replay's input hash) stays as the engine reads it
+  writeFileSync(join(root, TAKEDOWN_FILE), take);
+  console.log(`wrote ${SITE_FILE} (${json.length} bytes), ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''} and ${TAKEDOWN_FILE} (${take.length} bytes)`);
 }

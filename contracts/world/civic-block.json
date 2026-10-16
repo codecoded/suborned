@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "e2eeddc22f844123ba200ed812ec731cb15c39b0eec68ac6b1d1b812f3c9a52c",
+  "sha256": "45a2c53bef621ca523f35f19242be32d6609725e3e3795819fd729117b384aac",
   "owner": "Vantage",
   "applied": [
    {
@@ -219,6 +219,7 @@
     "item": {
      "id": "official-entrance",
      "name": "Official entrance",
+     "kind": "official",
      "at": [76.25, -30],
      "z": 0
     },
@@ -234,6 +235,32 @@
     "op": "remove",
     "id": "office-pavilion-support-1",
     "reason": "As support-0 (y -26.25..-24.25). Must go before RecordsEntrance_Official is placed: it overlaps that piece's east pier plinth (y -26.98..-26.02) by 0.23 m and the civic-office-north bed."
+   },
+   {
+    "op": "addEntrance",
+    "building": "civic-office",
+    "item": {
+     "id": "office-service-door",
+     "name": "Office service door",
+     "kind": "service",
+     "at": [63, -41.1],
+     "z": 0
+    },
+    "face": "wing west, y -40.5 (x 58.9..70.8), onto the service lane",
+    "reason": "Brief 013 C (Vantage, briefs/013/vantage-quiet-places.md D1; Sky's answer 5 in briefs/013-takedowns.md, 'a service door and a Dumpster in the service lane: ok'). GDD §07 route A says Vale 'exits service door' and the block had no such door; the quiet-place rule needs one: a body carried through a service door is a timed off-screen action, the exterior-only stash. 0.6 m off the wing face (y -40.5, the lane side), 4 m clear of the wing's corners (x 58.9 and 70.8), and on the same side of the Office as the Service lane point (62.5, -43.2) 2.1 m away, so the carry from the guard's post is 26 m and from the pickup 18 m (Vantage's survey, 15..40 s). `kind` is new on entrances: public (the door a visitor uses), official (the councillor's door), service (staff and goods; no refuge for the crowd, no walk origin for the cast, a stash for the checker). The container beside it is the world generator's, by rule (tools/world/civic/quiet.ts)."
+   },
+   {
+    "op": "addEntrance",
+    "building": "cafe",
+    "item": {
+     "id": "cafe-kitchen-door",
+     "name": "Café kitchen door",
+     "kind": "service",
+     "at": [-22.4, -26],
+     "z": 0
+    },
+    "face": "back wall, x -22 (y -40..-18), onto the strip behind the café",
+    "reason": "Brief 013 C (Vantage D2; Sky's answer 5). The café has a front door only; its kitchen needs a back door onto the strip behind it (the 'Behind café' point, -23.4 -35, is the Scout's seat there). 0.4 m off the back wall (x -22), 8 y from the point so the Scout's seat keeps its 1.2 m, unwatched all mission on the r016 cast (Pulse §7), 24.5 s from Inez's café door (Vantage's survey). Same `kind: service` as the Office's."
    },
    {
     "op": "dressing",
@@ -300,7 +327,15 @@
     {
      "id": "cafe-entrance",
      "name": "Café entrance",
+     "kind": "public",
      "at": [-10.3, -29]
+    },
+    {
+     "id": "cafe-kitchen-door",
+     "name": "Café kitchen door",
+     "kind": "service",
+     "at": [-22.4, -26],
+     "z": 0
     }
    ]
   },
@@ -323,6 +358,7 @@
     {
      "id": "office-entrance",
      "name": "Office entrance",
+     "kind": "public",
      "at": [51.75, -30],
      "z": 0.75,
      "on": "office-public-landing",
@@ -331,7 +367,15 @@
     {
      "id": "official-entrance",
      "name": "Official entrance",
+     "kind": "official",
      "at": [76.25, -30],
+     "z": 0
+    },
+    {
+     "id": "office-service-door",
+     "name": "Office service door",
+     "kind": "service",
+     "at": [63, -41.1],
      "z": 0
     }
    ],

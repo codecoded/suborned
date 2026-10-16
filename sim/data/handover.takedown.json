@@ -1,0 +1,311 @@
+{
+ "schema": "suborned.sim.takedown/1",
+ "mission": "handover",
+ "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json, whose grid this file shares). A `stand` is a free cell of that grid.",
+ "from": [
+  "contracts/world/harbour-district.plan.json",
+  "contracts/world/civic-block.json",
+  "contracts/world/kit.json",
+  "tools/world/gen/street/quiet.ts (the rules that place them)",
+  "tools/world/rules/quiet.ts (R-HIDE, R-STASH, R-REPORT, R-DOCK)"
+ ],
+ "grid": {
+  "x0": -5200,
+  "y0": -6600,
+  "cell": 50
+ },
+ "reach": {
+  "reportCm": 4000,
+  "originCm": 4000,
+  "latticeCm": 200,
+  "src": "Pulse briefs/013/pulse-witnesses.values.json report-reach-m, dock-reach-m (proposed, 40 m): the walk on the site grid from a lattice sample to the nearest point"
+ },
+ "entrances": [
+  {
+   "id": "cafe-entrance",
+   "building": "cafe",
+   "name": "Café entrance",
+   "kind": "public",
+   "at": [-1030,-2900],
+   "stand": [-1025,-2875]
+  },
+  {
+   "id": "office-entrance",
+   "building": "civic-office",
+   "name": "Office entrance",
+   "kind": "public",
+   "at": [5175,-3000],
+   "stand": [5175,-2975]
+  },
+  {
+   "id": "official-entrance",
+   "building": "civic-office",
+   "name": "Official entrance",
+   "kind": "official",
+   "at": [7625,-3000],
+   "stand": [7625,-2975]
+  },
+  {
+   "id": "cafe-kitchen-door",
+   "building": "cafe",
+   "name": "Café kitchen door",
+   "kind": "service",
+   "at": [-2240,-2600],
+   "stand": [-2225,-2575]
+  },
+  {
+   "id": "office-service-door",
+   "building": "civic-office",
+   "name": "Office service door",
+   "kind": "service",
+   "at": [6300,-4110],
+   "stand": [6325,-4125]
+  }
+ ],
+ "stashes": [
+  {
+   "id": "stash/cafe-kitchen-door/door",
+   "kind": "door",
+   "of": "cafe-kitchen-door",
+   "at": [-2240,-2600],
+   "stand": [-2225,-2575],
+   "holds": 3,
+   "bare": "no container: neither against the wall beside Café kitchen door nor in a kerb zone within 10 m of it does a Dumpster (2.1 x 1.186 m) pass the street rules (SF-1 clear walking zone, SF-2 crossings and doors, SF-14 quay)",
+   "src": "civic-block.json entrance with kind service: a body put through it is a timed off-screen action (Motive 013 §2.4, 10 s)"
+  },
+  {
+   "id": "stash/office-service-door/door",
+   "kind": "door",
+   "of": "office-service-door",
+   "at": [6300,-4110],
+   "stand": [6325,-4125],
+   "holds": 3,
+   "src": "civic-block.json entrance with kind service: a body put through it is a timed off-screen action (Motive 013 §2.4, 10 s)"
+  },
+  {
+   "id": "stash/office-service-door/container",
+   "kind": "container",
+   "of": "office-service-door",
+   "at": [6035,-4119],
+   "stand": [6025,-4275],
+   "holds": 1,
+   "item": "street/civic/stash/office-service-door",
+   "src": "a street item whose kit piece is tagged stash in kit.json (Dumpster, holds 1): a body put in it is a carry on the street (Motive 013 §2.4, 5 s)"
+  }
+ ],
+ "reportPoints": [
+  {
+   "id": "door:cafe-entrance",
+   "kind": "door",
+   "at": [-1030,-2900],
+   "stand": [-1025,-2875],
+   "door": "cafe-entrance"
+  },
+  {
+   "id": "door:office-entrance",
+   "kind": "door",
+   "at": [5175,-3000],
+   "stand": [5175,-2975],
+   "door": "office-entrance"
+  },
+  {
+   "id": "door:official-entrance",
+   "kind": "door",
+   "at": [7625,-3000],
+   "stand": [7625,-2975],
+   "door": "official-entrance"
+  },
+  {
+   "id": "street/orbit-gardens/e2/phone-booth-472",
+   "kind": "call-box",
+   "at": [9300,400],
+   "stand": [9325,425],
+   "item": "street/orbit-gardens/e2/phone-booth-472"
+  },
+  {
+   "id": "street/rocket-west/e1/phone-booth-548",
+   "kind": "call-box",
+   "at": [11100,-6300],
+   "stand": [11075,-6175],
+   "item": "street/rocket-west/e1/phone-booth-548"
+  },
+  {
+   "id": "street/civic/call-box-0",
+   "kind": "call-box",
+   "at": [3000,-600],
+   "stand": [3025,-575],
+   "item": "street/civic/call-box-0"
+  },
+  {
+   "id": "street/civic/call-box-1",
+   "kind": "call-box",
+   "at": [-2500,-2600],
+   "stand": [-2475,-2575],
+   "item": "street/civic/call-box-1"
+  },
+  {
+   "id": "street/civic/call-box-2",
+   "kind": "call-box",
+   "at": [3000,-5600],
+   "stand": [3025,-5575],
+   "item": "street/civic/call-box-2"
+  },
+  {
+   "id": "street/civic/call-box-3",
+   "kind": "call-box",
+   "at": [-2500,-400],
+   "stand": [-2475,-375],
+   "item": "street/civic/call-box-3"
+  }
+ ],
+ "origins": [
+  {
+   "id": "street/records-square/civic-robot-dock-315",
+   "kind": "dock",
+   "at": [-1850,-1750],
+   "stand": [-1825,-1725],
+   "item": "street/records-square/civic-robot-dock-315"
+  },
+  {
+   "id": "door:office-entrance",
+   "kind": "post",
+   "at": [5175,-3000],
+   "stand": [5175,-2975],
+   "door": "office-entrance"
+  },
+  {
+   "id": "door:official-entrance",
+   "kind": "post",
+   "at": [7625,-3000],
+   "stand": [7625,-2975],
+   "door": "official-entrance"
+  },
+  {
+   "id": "street/civic/police-post-0",
+   "kind": "post",
+   "at": [-200,-4900],
+   "stand": [-175,-4875],
+   "item": "street/civic/police-post-0"
+  },
+  {
+   "id": "street/civic/police-post-1",
+   "kind": "post",
+   "at": [7900,600],
+   "stand": [7925,625],
+   "item": "street/civic/police-post-1"
+  },
+  {
+   "id": "street/civic/police-post-2",
+   "kind": "post",
+   "at": [3000,-2000],
+   "stand": [3025,-1975],
+   "item": "street/civic/police-post-2"
+  },
+  {
+   "id": "street/civic/police-post-3",
+   "kind": "post",
+   "at": [11000,-4900],
+   "stand": [11025,-4875],
+   "item": "street/civic/police-post-3"
+  },
+  {
+   "id": "street/civic/police-post-4",
+   "kind": "post",
+   "at": [-2500,-1200],
+   "stand": [-2475,-1175],
+   "item": "street/civic/police-post-4"
+  }
+ ],
+ "coverage": {
+  "report": {
+   "samples": 2480,
+   "worstM": 39.8,
+   "medianM": 18.4,
+   "within": 1000,
+   "baselineWithin": 808,
+   "baselineWorstM": 59
+  },
+  "origin": {
+   "samples": 2480,
+   "worstM": 39.8,
+   "medianM": 19.4,
+   "within": 1000,
+   "baselineWithin": 773,
+   "baselineWorstM": 59
+  }
+ },
+ "solids": [
+  {
+   "id": "street/civic/call-box-0",
+   "poly": [[2950,-550],[2950,-650],[3050,-650],[3050,-550]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/call-box-1",
+   "poly": [[-2450,-2650],[-2450,-2550],[-2550,-2550],[-2550,-2650]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/call-box-2",
+   "poly": [[2950,-5550],[2950,-5650],[3050,-5650],[3050,-5550]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/call-box-3",
+   "poly": [[-2450,-450],[-2450,-350],[-2550,-350],[-2550,-450]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/police-post-0",
+   "poly": [[-150,-4850],[-250,-4850],[-250,-4950],[-150,-4950]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-1",
+   "poly": [[7850,650],[7850,550],[7950,550],[7950,650]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-2",
+   "poly": [[2950,-1950],[2950,-2050],[3050,-2050],[3050,-1950]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-3",
+   "poly": [[11050,-4850],[10950,-4850],[10950,-4950],[11050,-4950]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-4",
+   "poly": [[-2450,-1250],[-2450,-1150],[-2550,-1150],[-2550,-1250]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/stash/office-service-door",
+   "poly": [[6140,-4060],[5930,-4060],[5930,-4179],[6140,-4179]],
+   "h": 151
+  }
+ ],
+ "solidsSrc": "the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid does not hold them: holding them would change the grid, and with it every walk and every replay",
+ "watchers": [
+  {
+   "id": "street/records-square/mast-camera-314",
+   "kind": "mast-camera",
+   "at": [-1850,-1550],
+   "facings": [[0,1000],[-866,-500],[866,-500]],
+   "range": 3000,
+   "coneDeg": 70,
+   "inSim": false
+  },
+  {
+   "id": "street/records-square/civic-robot-dock-315",
+   "kind": "civic-robot-dock",
+   "at": [-1850,-1750],
+   "facings": [[0,1000]],
+   "range": 1300,
+   "coneDeg": 120,
+   "inSim": false
+  }
+ ],
+ "watchersSrc": "the watchers the world stands in the window (plan streetscape.watchers.sites). The engine reads none of them yet: its cameras are mission.json cameras (entrance, pickup). briefs/013 C open issue 3; whose reading is right is Aster's call"
+}

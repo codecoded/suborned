@@ -1,0 +1,137 @@
+{
+ "schema": "suborned.response.behaviour.proposal/2",
+ "author": "Pulse, brief 013 third pass, 2026-10-16",
+ "note": "The behaviour layer on Motive's ONE dial. The dial itself (counts, dispatch, reinforcement, caps, seal per security level S0-S4; S = district securityBase + open cases/2 (cap +2) + mission securityBonus) is `response.levels` in motive-takedowns.md 5.3 and is copied here only as `dial` for reference: Motive's file wins. The second-pass profiles, watch level and per-mission modifiers are removed. Nothing here is in the rulebook. Every number is [S].",
+ "dial": {
+  "source": "briefs/013/motive-takedowns.md 5.3",
+  "S": {
+   "0": {
+    "name": "lax",
+    "dispatchS": 20,
+    "a1Robots": 1,
+    "a2Units": 1,
+    "a2Robots": 0,
+    "reinforceS": null,
+    "unitCap": 1,
+    "sealS": 180,
+    "a3Units": 1,
+    "doorsLock": false
+   },
+   "1": {
+    "name": "routine",
+    "dispatchS": 12,
+    "a1Robots": 1,
+    "a2Units": 1,
+    "a2Robots": 0,
+    "reinforceS": 60,
+    "unitCap": 2,
+    "sealS": 145,
+    "a3Units": 1,
+    "doorsLock": false
+   },
+   "2": {
+    "name": "watchful",
+    "dispatchS": 10,
+    "a1Robots": 2,
+    "a2Units": 1,
+    "a2Robots": 2,
+    "reinforceS": 40,
+    "unitCap": 3,
+    "sealS": 145,
+    "a3Units": 1,
+    "doorsLock": true
+   },
+   "3": {
+    "name": "guarded",
+    "dispatchS": 8,
+    "a1Robots": 2,
+    "a2Units": 2,
+    "a2Robots": 2,
+    "reinforceS": 30,
+    "unitCap": 4,
+    "sealS": 120,
+    "a3Units": 1,
+    "doorsLock": true
+   },
+   "4": {
+    "name": "swarm",
+    "dispatchS": 6,
+    "a1Robots": 3,
+    "a2Units": 2,
+    "a2Robots": 4,
+    "reinforceS": 20,
+    "unitCap": 6,
+    "sealS": 90,
+    "a3Units": 2,
+    "doorsLock": true
+   }
+  },
+  "unit": "a unit is 2 officers (health 3, 220 cm/s); a robot is a patrol unit (health 4, pistol, trained, counts against the 30 cap)",
+  "seal": "starts only at a confirmation at Alert >= 2 (gunfire: from arrival)"
+ },
+ "classes": {
+  "patrol": {
+   "kind": "robot",
+   "armed": true,
+   "speedCmS": "robot-alarm-cm-s (default 85)",
+   "health": 4,
+   "origin": "sweep (its current position) for the existing patrol; docks for further robots"
+  },
+  "robot": {
+   "kind": "robot",
+   "armed": true,
+   "speedCmS": "robot-alarm-cm-s",
+   "health": 4,
+   "origin": "dock"
+  },
+  "officer": {
+   "kind": "police",
+   "armed": true,
+   "speedCmS": 220,
+   "health": 3,
+   "origin": "post, else the district mouth (legacy site)"
+  },
+  "warden": {
+   "kind": "robot",
+   "armed": false,
+   "optional": true,
+   "enabled": false,
+   "speedCmS": 120,
+   "combatant": false,
+   "does": "converge, hold a point, watch, ring the desk, never fight; off unless Motive and Sky choose it (Call 3)"
+  }
+ },
+ "destinations": {
+  "order": [
+   "D0 the scene",
+   "the missing person's duties and ties now (post, bound vehicle, expected stand of lover, family, workmate): Motive 5.2",
+   "the raiser's ties' expected places now, up to alarm-spread: Sky's words",
+   "at Alert 3, the units the dial adds post at district mouths"
+  ],
+  "dedupe": "within witness-range-m (13 m) collapse into the first",
+  "assignment": "destination by destination in order, the free unit of an allowed class with the smallest travel time in ticks, ties on unit id; reinforcements go to the destination with the fewest units, ties in list order; one A* per unit at assignment; re-run only at the next landed alarm or Alert step"
+ },
+ "launch": {
+  "dispatch": "dial.dispatchS after the landing; a patrol robot's wire robot-wire-s 4",
+  "gapS": "launch-gap-s 1.5",
+  "order": "assignment order"
+ },
+ "arrival": {
+  "checkS": 10,
+  "then": "robots and patrol hold the point (a watcher's cone); officers search 60 s, at Alert >= 2 opening every stash within 30 m, 10 s each, nearest first",
+  "standDown": "60 s after the last alarm at Alert 1; 180 s at Alert 2; never within the mission at Alert 3"
+ },
+ "optionalLevers": {
+  "robot-alarm-cm-s": "85 default; 120 or 150 makes the same S arrive sooner",
+  "hero-block": "per Hero step +3 s dispatch and -10% speed; default off",
+  "warden": "unarmed civic robot class; default off"
+ },
+ "readability": {
+  "dockFlash": "the alert glyph on the landing",
+  "stream": "one unit every launch-gap-s",
+  "forecast": "hover on ground: 'response here: robots n s, police m s' from distance fields built at load; equals the outcome except the sweep position and busy units",
+  "chips": "first unit of each class always; others on hover or select; at most 12 with chips; dock and post stock as pips",
+  "orderCard": "Motive 5.3: 'Alert 2 - police in ~n s - +1 unit every 40 s'"
+ },
+ "cost": "a unit is a stored route and a position lookup per tick; 40 units under 10 microseconds a tick; one A* (0.6 ms) per assignment"
+}

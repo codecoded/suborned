@@ -5,12 +5,16 @@
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
 //   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), the first-run toasts, the going-loud card's words
-//   targets    one line on each thing the cell can right click: who or what it is, in what the cell may know at the start
+//   targets    each thing the cell can right click, in tiers of knowledge: `about` is what the cell was TOLD at the start (always shown);
+//              `watched` what a Scout Watch teaches (a person's routine, a camera's or the patrol's sight), `routine` the patrol's rounds,
+//              `heard` what a Scout Listen teaches (need, temperament); a tier shows only once the cell has learned it (GDD §04)
 //   actions    every verb the action panel can show: label, who gives it, one plain line with its trade-off, and a line for the
 //              same verb on a particular target
 //   cancelCosts · activity   what cancelling an order costs or keeps; what each agent is doing now, in words for the roster
 //   locks      one line for every refusal code the engine gives (Game.Issue returns Answer { ok, code, why, m, cm, usd, tick });
 //              the line says what unlocks it and carries {who} {op} {m} {usd} {tick}; `fillLock` is the reference for filling them
+//   cards      the feed cards for engine events no scene covers (title, result in the player's words, variants by engine state)
+//   debrief    the end card's words: headline, tally, security, investigation, causes, the route and the assets, by the debrief's ids
 //   events     the situations that can speak: what triggers each (an order, the engine's log code, the clock) and who may speak
 //   exchange   the order in which an order's events play, for the collapsible dialogue
 //   scenes     short conversations for the update feed: overheard (Watch, Listen), approach (Ask, Pay, Help, Pressure), the call, the city;
@@ -28,10 +32,12 @@ import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
+/** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. */
+export const WATCHED = ['camera-entrance', 'camera-pickup', 'patrol'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
-  'extract', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'move', 'run', 'cancel', 'withdraw'] as const;
+  'extract', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). */
 export const DIALOGUE_VERBS = [...VERBS, 'turn'] as const;
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
@@ -63,6 +69,8 @@ export const Action = z.strictObject({
   withTarget: Line.optional().describe('the row or card label once a target is chosen, e.g. "Listen to {target}"; {target} is names.targets[key]. Absent = the verb takes no target'),
   then: Line.optional().describe('the queued clause after a walk, e.g. "listens to {target}": "{agent} walks to {target}, then {then}"'),
   onTarget: z.record(z.string(), Line).optional().describe('the same verb on one target (a target key from `targets`), when the plain line can say more'),
+  ways: z.record(code, z.strictObject({ label: z.string().min(1).max(24), does: Line })).optional()
+    .describe('brief 013: an order with a choice (Order.How: takedown knockout or kill): the panel row for each way and its price in words'),
 });
 
 export const Lock = z.strictObject({
@@ -74,7 +82,8 @@ export const Lock = z.strictObject({
 export const Activity = z.strictObject({
   idle: Line, down: Line, walking: Line, running: Line, drawing: Line, holstering: Line, firing: Line,
   holding: z.strictObject({ loop: Line, carry: Line, take: Line }),
-  acting: z.strictObject({ watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line }),
+  acting: z.strictObject({ watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
+    takedown: Line, drop: Line, stash: Line, restrain: Line, body: Line.describe('any other work with a body (the rulebook cancel verb `body`: lift, drop, stash or tie)') }),
 });
 
 /** A training hint line fits Glyph's 110 characters (briefs/011/motive-fights.md §8). */
@@ -99,6 +108,7 @@ const Beat = z.union([
 export const SceneVariant = z.strictObject({ beats: z.array(Beat).min(3).max(6) });
 export const Scene = z.strictObject({
   kind: z.enum(['overheard', 'approach', 'call', 'city']),
+  title: z.string().min(1).max(40).optional().describe('the card\'s title; required on city scenes (the event as the player would name it)'),
   verb: Verb.optional(), about: z.enum(PEOPLE).optional(), outcome: z.string().optional(), temperament: Temperament.optional(),
   event: code.optional().describe('city: the world event it plays with'),
   sight: z.enum(['always', 'in-sight']).optional().describe('city: shown always, or only when an agent is within sight'),
@@ -108,7 +118,47 @@ export const Scene = z.strictObject({
 });
 export type Scene = z.infer<typeof Scene>;
 
-export const Target = z.strictObject({ name: z.string().min(1).max(32), about: Line });
+/** `watched` and `routine` are shown after the card's "Learned: " (so ≤ 70). `heard` carries {need} and {temperament}. */
+const Learned = Line.max(70);
+export const Target = z.strictObject({
+  name: z.string().min(1).max(32),
+  about: Line.describe('what the cell was told at the start (the briefing, rumour): shown always; never a fact only a Watch or Listen teaches'),
+  watched: Learned.optional().describe('after a completed Scout Watch: a person\'s routine; a camera\'s or the patrol\'s sight'),
+  routine: Learned.optional().describe('the patrol only: its rounds, once the Watches total sight.watch.routine seconds'),
+  heard: Line.optional().describe('after a completed Scout Listen: what the person needs and who they are ({need} {temperament})'),
+});
+
+/** A feed card for an engine log code no scene covers (Game.Note). The result is the player's words with the engine's numbers, never its sentence.
+ *  Placeholders: {who} the watcher or person as names.targets says it ("the guard"), {agent} "the Scout", {alert}, {n}, {clock}. The host
+ *  capitalises the first letter after filling. A result that is a record is picked by the engine state `pick` names. */
+export const CARD_KINDS = ['city', 'warning', 'fight'] as const;
+/** Where an in-sight card looks (brief 013): the engine position the sight check uses. The log carries no position; the host reads it from the game. */
+export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol'] as const;
+export const Card = z.strictObject({
+  kind: z.enum(CARD_KINDS),
+  title: z.string().min(1).max(40),
+  sight: z.enum(['in-sight']).optional().describe('the cell hears of it only if an agent is within 13 m with a clear line (as a city scene)'),
+  at: z.enum(CARD_AT).optional().describe('with `sight`: the place the check looks at: victim (the downed person), stash (the bin or door), reporter (who is making the report), scene (where the report sent the response), person (who is acting), guard, unit (the response member), door (the Office door), patrol'),
+  needs: z.enum(['routine']).optional().describe('the card shows only once the cell holds the routine of the person it is about (a completed Watch); until then the city\'s answer (report.landed) speaks alone'),
+  result: z.union([Line, z.record(code, Line)]).optional(),
+  pick: z.string().optional().describe('when `result` is a record: the engine state that chooses the key'),
+});
+
+/** The end card's words by the debrief's ids (sim Debrief.cs). Placeholders: {clock} {usd} {trail} {n} {hits} {who} {cause} {list}. */
+export const Debrief = z.strictObject({
+  rule: z.string().min(1),
+  headline: z.strictObject({ win: Line, withdraw: Line, fail: Line }).describe('a failure with a text in briefing.fails uses that line\'s first sentence instead'),
+  result: z.strictObject({ win: Line }),
+  tally: Line,
+  security: z.strictObject({ calm: Line, raised: Line, high: Line }),
+  investigation: z.strictObject({ little: Line, early: Line, active: Line, activeBecause: Line }),
+  causes: z.record(code, Line).describe('Debrief.InvestigationCause (and the engine\'s named-witness:<role>, whose {who} is the role as names.targets says it)'),
+  fight: z.strictObject({ loud: Line, safe: Line }),
+  kept: Line,
+  route: z.record(code, Line),
+  assets: z.record(code, Line),
+  between: z.record(code, Line).describe('brief 013: the between-missions lines a takedown leaves (rulebook debrief.lines: volunteer, statement, missing, grief, worry, area-watch, case), keyed by the rulebook id; each line carries every field the rulebook lists for it'),
+});
 
 export const EventDef = z.strictObject({
   kind: z.enum(['order', 'reply', 'read', 'world', 'end']),
@@ -126,7 +176,7 @@ export const Entry = z.strictObject({
   speaker: Speaker,
   outcome: z.string().optional().describe('reply: turned · refused · not-yet · kept · suspicious. fail: the fail code. cliffhanger: named · unnamed'),
   temperament: Temperament.optional(),
-  about: z.enum(PEOPLE).optional().describe('read: whom the Scout is reading'),
+  about: z.enum([...PEOPLE, ...WATCHED]).optional().describe('read: whom or what the Scout is reading (a person, a camera or the patrol)'),
   pending: z.string().optional().describe('the line waits on a decision; the host ships the `unnamed` alternative until it is made'),
   lines: z.array(z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/)).min(2).max(4),
 });
@@ -174,6 +224,8 @@ export const TextFile = z.strictObject({
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),
+  cards: z.strictObject({ rule: z.string().min(1), items: z.record(z.string().regex(/^[a-z][a-z0-9.-]*$/), Card) }),
+  debrief: Debrief,
   events: z.record(code, EventDef),
   exchange: z.record(Verb, z.array(code)).describe('verb → the events an order plays through, in order; the collapsed view shows the last'),
   silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
@@ -182,6 +234,25 @@ export const TextFile = z.strictObject({
   scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1) }),
 });
 export type TextFile = z.infer<typeof TextFile>;
+
+/** The values a card or debrief line may carry; `fillCard` is the reference for filling them. */
+export type CardVals = { who?: string; agent?: string; alert?: number; n?: number; clock?: string; usd?: number; trail?: number; hits?: number; cause?: string; list?: string;
+  /** brief 013's between-missions fields (the rulebook's debrief.lines): the words the host fills from the debrief */
+  fact?: string; facts?: string; place?: string; of?: string; move?: string; fear?: string; guards?: number; cameras?: number; missions?: number; kind?: string; closes?: string };
+export function fillCard(line: string, v: CardVals): string {
+  const out = line.replace(/\{who\}/g, v.who ?? 'someone').replace(/\{agent\}/g, v.agent ?? 'an agent').replace(/\{alert\}/g, String(v.alert ?? '?'))
+    .replace(/\{n\}/g, String(v.n ?? '?')).replace(/\{clock\}/g, v.clock ?? '?').replace(/\{usd\}/g, v.usd === undefined ? '?' : '$' + v.usd.toLocaleString('en-US'))
+    .replace(/\{trail\}/g, String(v.trail ?? '?')).replace(/\{hits\}/g, String(v.hits ?? '?')).replace(/\{cause\}/g, v.cause ?? '?').replace(/\{list\}/g, v.list ?? '')
+    .replace(/\{fact\}/g, v.fact ?? '?').replace(/\{facts\}/g, v.facts ?? '?').replace(/\{place\}/g, v.place ?? 'somewhere').replace(/\{of\}/g, v.of ?? 'someone')
+    .replace(/\{move\}/g, v.move ?? '?').replace(/\{fear\}/g, v.fear ?? '?').replace(/\{guards\}/g, String(v.guards ?? '?')).replace(/\{cameras\}/g, String(v.cameras ?? '?'))
+    .replace(/\{missions\}/g, String(v.missions ?? '?')).replace(/\{kind\}/g, v.kind ?? '?').replace(/\{closes\}/g, v.closes ?? '?');
+  return out.charAt(0).toUpperCase() + out.slice(1);
+}
+/** The result line of a card: a record result is chosen by `variant`. */
+export function cardResult(t: Pick<TextFile, 'cards'>, code: string, variant?: string): string | undefined {
+  const r = t.cards.items[code]?.result;
+  return typeof r === 'string' || r === undefined ? r : variant === undefined ? undefined : r[variant];
+}
 
 // ---------------------------------------------------------------- the reference lookups (Latch ports these; the checker runs them)
 

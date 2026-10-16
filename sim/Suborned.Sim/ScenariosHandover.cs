@@ -19,6 +19,7 @@ namespace Suborned.Sim
         // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit)
         static readonly Pt LanePostA = new Pt(6250, -5300), LanePostB = new Pt(6000, -5300);
         static Start NoFight() { var s = new Start(); s.FinalFight = false; return s; }
+        static Start Level(int level) { var s = new Start(); s.Security = level; return s; } // brief 013: the response dial's level, fixed
         static Start Turned(params string[] roles) { var s = new Start(); s.Turned.AddRange(roles); return s; }
         static int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }
 
@@ -315,14 +316,18 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "security.called" && l.Text.Contains("patrol reports")), "the log says the patrol reported it");
             });
 
-            Add("S14", "226", "The guard down: his missed check-in (+18 s) is logged; the response arrives with a cone; escape is still open.", r =>
+            // Changed (brief 013, Sky answer 4; Motive §5.1): the 18 s check-in is retired. The guard checks in every 90 s from the start of
+            // his shift at the post (−28,470 s in the people file: marks at 1:00, 2:30, 4:00 …), and a downed guard misses the next mark.
+            Add("S14", "226", "The guard down: he misses his next check-in mark (every 90 s from his shift's start), and it is logged; the response arrives with a cone; escape is still open.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office approach")));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
-                r.Eq(g.MissingNotice, g.Tick + T(18), "the check-in is missed 18 s later");
-                r.To(g.MissingNotice);
+                int mark = g.NextMarkOf(g.GuardP, g.Tick);
+                r.Is(mark > g.Tick && mark <= g.Tick + T(g.R.CheckInPeriodS) && (mark - T(60)) % T(g.R.CheckInPeriodS) == 0, "his next mark is within 90 s, on his shift's 90 s marks (1:00, 2:30, …)");
+                r.To(mark);
+                r.Eq(g.MissingNotice, mark, "the check-in is missed at the mark");
                 r.Is(g.Log.Exists(l => l.Code == "guard.check-in"), "the log: he misses his check-in");
                 r.To(g.SecurityArrives);
                 r.Is(g.SecurityPose().HasValue, "the response unit reaches the street");
@@ -330,7 +335,7 @@ namespace Suborned.Sim
                 r.Eq(g.Result, Outcome.None, "the player can still escape during the response");
             });
 
-            Add("S15", "242", "An unseen shot: +45 s; the guard can't fire outside his cone; the missed check-in brings it to +20 s.", r =>
+            Add("S15", "242", "An unseen shot: +45 s; the guard can't fire outside his cone; his missed check-in mark lands at the desk and brings the unit sooner (the level's dispatch after the mark; brief 013 retires the 18 s + 20 s).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
@@ -341,8 +346,11 @@ namespace Suborned.Sim
                 r.Eq(g.SecurityArrives, g.Tick + T(45), "an unseen shot draws a slower response");
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 r.Eq(g.EnforcerHealth, g.R.HealthEnforcer, "the guard cannot fire outside his cone");
-                r.To(g.MissingNotice);
-                r.Eq(g.SecurityArrives, g.Tick + T(20), "the missed check-in speeds up the response");
+                int mark = g.NextMarkOf(g.GuardP, g.Tick), shot = g.SecurityArrives;
+                r.To(mark);
+                r.Eq(g.MissingNotice, mark, "the check-in is missed at his next mark");
+                r.Eq(g.SecurityArrives, Math.Min(shot, mark + T(g.DialNow.DispatchS)), "the missed mark lands at once: the unit rolls the level's dispatch later, if that is sooner");
+                r.Is(g.SecurityArrives < shot, "here it is sooner than the shot's 45 s");
             });
 
             Add("S16", "259", "Gunfire brings the rivals in 16 s; a patrol within 30 m breaks off to chase, cone visible.", r =>
@@ -412,12 +420,14 @@ namespace Suborned.Sim
                 int arrive = g.SecurityArrives;
                 r.Eq(arrive, g.Tick + T(45), "an unseen shot: the response in 45 s");
                 r.Until(() => g.GuardDown, T(30));
-                // Changed (Sky 2026-10-15 fights): the guard drops in 2 s, so his missed check-in calls the unit sooner; the run is loud, so
-                // running is free: the Enforcer runs to the north street
+                // Changed (Sky 2026-10-15 fights): the guard drops in 2 s; the run is loud, so running is free: the Enforcer runs to the north
+                // street. (Brief 013: his missed check-in is at his next 90 s mark, after the shot's 45 s here, so it no longer calls them sooner.)
                 var (ran, _) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = new Pt(-3400, -3400), Run = true });
                 r.Is(ran, "the Enforcer runs (free: the run is loud)");
                 int there = r.Arrival(Enf);
-                r.To(g.MissingNotice); arrive = g.SecurityArrives; // his missed check-in calls them sooner (the prototype's shot and check-in did too)
+                arrive = g.SecurityArrives;
+                r.Is(g.NextMarkOf(g.GuardP, g.Tick) >= arrive, "his next check-in mark comes after the unit (the shot calls it)");
+                r.To(arrive);
                 r.Is(there <= arrive, "the Enforcer reaches the north street before the unit");
                 r.Is(r.Until(() => g.SecurityWatching(r.Op(Enf).Pos), T(20)), "the arriving unit sees across the street");
                 int sighted = g.Tick;
@@ -620,11 +630,13 @@ namespace Suborned.Sim
                 r.Eq(g.FailCode, "", "no fail cause");
             });
 
-            Add("N10", "—", "Final fight, loud (§07): after shots the police come from the north street, 2–4 officers, the seal clock running, no allies; the Enforcer fights them off at the car.", r =>
+            Add("N10", "—", "Final fight, loud (§07), at security level 1: after shots the police come from the north street, 2–4 officers, the seal clock running, no allies; the Enforcer fights them off at the car.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                // brief 013 (Motive §5.1): the guard checks in every 90 s; a shot just after a mark leaves the shot's own report to call the unit
+                int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
                 r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
                 r.Is(g.GuardDown, "the guard is down: a loud run");
                 r.To(r.Send(Enf, "d:Office entrance"));
@@ -645,7 +657,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
                 r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
                 r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
-            });
+            }, Level(1)); // brief 013: the loud fight's mechanics at level 1 (routine, today's response); N52 is the dial at each level
 
             Add("N11", "—", "Final fight, safe (§07): route A, quiet, then the rival crew ambushes the extraction; the helped Inez warns 10 s early and the guard, who never saw the cell, fights them.", r =>
             {
@@ -933,6 +945,9 @@ namespace Suborned.Sim
 
             FightCases();
             CancelCases();
+            SightCases();
+            TakedownCases(); // brief 013
+            TakedownFixes(); // brief 013 D
         }
     }
 }

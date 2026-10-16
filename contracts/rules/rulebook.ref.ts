@@ -207,7 +207,7 @@ export function forgetIndex(memory: readonly Mem[]): number {
     for (let j = 0; j < memory.length; j++) if (ok(memory[j]!) && (i < 0 || memory[j]!.time < memory[i]!.time)) i = j;
     return i;
   };
-  const seen = pick((m) => ['saw-act', 'saw-runner', 'saw-gunfire', 'saw-violence', 'saw-weapon-drawn', 'told'].includes(m.act));
+  const seen = pick((m) => ['saw-act', 'saw-runner', 'saw-gunfire', 'saw-violence', 'saw-weapon-drawn', 'saw-takedown', 'saw-carry', 'found-body', 'heard-alarm', 'told'].includes(m.act));
   return seen >= 0 ? seen : pick(() => true);
 }
 
@@ -216,7 +216,7 @@ export function answer(rb: Rulebook, people: PeopleRules, s: Subject, band: Band
   const ev = event(rb, 'investigator.question');
   const r = resolve(rb, people, ev, { subject: s, band, knows: new Set(), trail });
   const facts = [...factsOf(rb, s)].sort((a, b) => people.talker.facts.indexOf(a as never) - people.talker.facts.indexOf(b as never));
-  const gives = r.outcome === 'gives' ? facts : r.outcome === 'lies' ? [people.talker.lie.gives[band === 'hero' ? 'hero' : 'otherwise']] : [];
+  const gives = r.outcome === 'gives' || r.outcome === 'volunteers' ? facts : r.outcome === 'lies' ? [people.talker.lie.gives[band === 'hero' ? 'hero' : 'otherwise']] : []; // volunteers: a reporter gives what they hold without the Talker test (brief 013)
   return { outcome: r.outcome, gives };
 }
 

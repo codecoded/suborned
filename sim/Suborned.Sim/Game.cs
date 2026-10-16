@@ -23,11 +23,16 @@ namespace Suborned.Sim
         public bool Crowd = true;       // §05 witnesses among the city's people; Suture's T4 arm switches it off
         public int? Arms;               // the mission's Arms (site arms) unless a scenario fixes it: one sidearm per weapons.sidearmArms
         public readonly List<string> Untie = new List<string>(); // roles whose lover tie (and affair) a test cuts: "with no tie, the call doesn't pull him"
+        public int? Security;           // brief 013: the security level 0..4 a scenario fixes (else the district's base + the mission's bonus)
+        /// <summary>For a behaviour-only comparison across brief 013 (suborned-sim hashes --legacy-start): leave the security level out of the
+        /// canonical start, as the start states before it had none. Never set in play.</summary>
+        public static bool LegacyCanonical;
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security");
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
+            if (n.Opt("security") is JNode sl) { s.Security = sl.Int(); if (s.Security < 0 || s.Security > 4) throw new FormatException($"{sl.Path}: security level 0..4"); }
             if (n.Opt("arms") is JNode ar) { s.Arms = ar.Int(); if (s.Arms < 0 || s.Arms > 100) throw new FormatException($"{ar.Path}: arms 0..100"); }
             if (n.Opt("finalFight") is JNode ff) s.FinalFight = ff.Bool();
             if (n.Opt("crowd") is JNode cr) s.Crowd = cr.Bool();
@@ -50,6 +55,7 @@ namespace Suborned.Sim
             if (!Crowd) w.Prop("crowd", false);
             if (Arms.HasValue) w.Prop("arms", Arms.Value);
             if (Untie.Count > 0) { w.OpenArr("untie"); foreach (var x in Untie) w.Str(x); w.EndArr(); }
+            if (Security.HasValue && !LegacyCanonical) w.Prop("security", Security.Value);
             return w.EndObj().ToString();
         }
     }
@@ -84,6 +90,7 @@ namespace Suborned.Sim
         // the cell
         public int EnforcerHealth => Enforcer.Gun.Health;
         public bool LoopOn;
+        public string LoopCam = "entrance"; // the camera the loop holds: the entrance pole, or a world camera (brief 013: the Records Square mast)
         // the guard (§05 guard on door routine; mission.json windows.front-door)
         public int LureTick = -1, GuardAwayUntil, MissingNotice = INF;
         public int VisitWalkTicks => walkT; // the summoned lover's walk, from the grid route at walking pace (rulebook summon)
@@ -110,7 +117,7 @@ namespace Suborned.Sim
         // the response unit (§05 response unit on report; district seals after it arrives)
         public int SecurityArrives = INF, Lockdown = INF; public bool SecurityDown, SecurityTracking;
         public int SecurityHealth { get { int n = 0; foreach (var g in SecGuns) n += g.Health; return n; } }
-        readonly Path securityPath;
+        Path securityPath; // the response unit's walk: the north street to the Office front (§05), or to a silent alarm's scene (brief 013)
         // the debrief's facts
         public bool InezWitnessedShooting; public string InezMethod = "";
         public string RouteKind = "", RouteGuard = "", RouteBot = "", RouteRival = "";
@@ -174,7 +181,12 @@ namespace Suborned.Sim
             foreach (var p in People) if ((p.Secret == "affair") != (p.Lover != null)) throw new FormatException($"cast {p.Role}: an affair is a lover tie (people.rules secrets.affair requires lover-tie)");
             Inez.Suspected = Inez.Need; Driver.Suspected = Driver.Need; // Sky 2026-10-15: "in debt" shows as suspected from 0:00, from the briefing
             foreach (var role in Start.Turned) PersonByRole(role).Turned = true;
-            foreach (var kv in Start.Known) foreach (var w in kv.Value) PersonByRole(kv.Key).Learn(w);
+            foreach (var kv in Start.Known)
+                foreach (var w in kv.Value)
+                {
+                    if (w == "sight" || !IsPersonRoleName(kv.Key)) ToldWatcher(kv.Key, w); // told of a watcher (rulebook sight): the briefing, a previous mission
+                    else PersonByRole(kv.Key).Learn(w);
+                }
             RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
 
             blockPath = new Path(new[] { S.At(S.CarPickup), S.At(S.CarBlock) });
@@ -232,15 +244,11 @@ namespace Suborned.Sim
             if (!Over) Tether();
             if (!Over) Watchers();
             if (!Over) PatrolChase();
-            if (!Over && Tick == MissingNotice)
-            {
-                Note("guard.check-in", "The guard misses his check-in. Security now knows the post is empty.");
-                CallSecurity(R.RespCheckInS, "The empty guard post is reported.");
-            }
             if (!Over) DrawnSeen();
             if (!Over) FightStep();
             if (!Over) Combat();
             if (!Over) CrowdStep();
+            if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
             if (!Over && Tick >= Lockdown && Vale != ValeAt.Car) Fail("sealed", "Security seals the district before Vale reaches the getaway car.");
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
                 Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
@@ -291,9 +299,12 @@ namespace Suborned.Sim
         }
         void ValeTimeline()
         {
-            if (Tick == T(valeExitsS) && Vale == ValeAt.Office && !EntryInProgress && !Driver.Down)
+            // the car waits for its driver: shot (security pulls Vale away, as before), or taken down and the city knows it, Vale stays in;
+            // a driver taken down quietly isn't known, so Vale comes out to an empty car (brief 013, Sky answer 6)
+            bool driverKnownDown = civGuns["driver"].Down || (Driver.Down && BodyOf(Driver) is Body db && Acts[db.Act].Landed);
+            if (Tick == T(valeExitsS) && Vale == ValeAt.Office && !EntryInProgress && !driverKnownDown)
             {
-                Vale = ValeAt.Leaving; PickupService = Driver.Turned;
+                Vale = ValeAt.Leaving; PickupService = Driver.Turned && carToService != null; // the service lane only if the car went there (a downed driver drove nowhere)
                 var to = PickupService ? S.Stand(S.ValeService) : S.Stand(S.ValeCar);
                 valePath = new Path(S.Grid.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
                 Note("vale.exits", PickupService ? "Vale comes out and walks round to the service lane, where his car is pulling in." : "Vale steps out of the official entrance and walks to his car.");
@@ -387,6 +398,7 @@ namespace Suborned.Sim
         public (Pt pos, Pt facing)? PatrolPose()
         {
             if (PatrolDown) return (patrolDownAt, new Pt(0, 0));
+            if (PatrolUnit() is Unit pu && UnitPose(pu) is var up && up.HasValue) return up.Value; // brief 013: answering an alarm
             if (PatrolAwayUntil > Tick) return (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing);
             if (PatrolChasing) return (chasePos, Enforcer.Pos - chasePos);
             return (SweepPos(Tick), S.PatrolFacing);
@@ -439,12 +451,14 @@ namespace Suborned.Sim
         bool Sees(Pt from, Pt to) => S.Sight(from, to, eye);
         public bool CameraWatching(string id, Pt p, bool crowd = true)
         {
-            if (id == "entrance" && LoopOn) return false;
+            if (id == LoopCam && LoopOn) return false;
             if (id == "pickup" && !PickupCameraLive()) return false;
-            foreach (var c in S.Cameras) if (c.Id == id) return G.InCone(c.At, c.Facing, c.Reach, c.Half, 0, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
+            foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
             throw new FormatException($"site has no camera '{id}'");
         }
-        public bool PickupCameraLive() => (Driver.Turned && Tick >= T(driverLastS)) || Tick < BlockedFrom || Tick >= BlockedUntil;
+        /// <summary>In any head's cone of the camera (a mast carries several).</summary>
+        static bool InHeads(Camera c, Pt p) { foreach (var f in c.Facings) if (G.InCone(c.At, f, c.Reach, c.Half, 0, p)) return true; return false; }
+        public bool PickupCameraLive() => (Driver.Turned && Tick >= T(driverLastS) && carToService != null) || Tick < BlockedFrom || Tick >= BlockedUntil; // after 5:40 the turned driver's car is gone from in front of it (if he drove it)
         /// <summary>The guard's cone; crowd: people on the street block it (Pulse §4: watchers), false for his own aim (§1.6).</summary>
         public bool GuardWatching(Pt p, bool crowd = true)
         {
@@ -456,6 +470,7 @@ namespace Suborned.Sim
         public bool PatrolWatching(Pt p, bool crowd = true)
         {
             if (PatrolDown || PatrolAwayUntil > Tick) return false;
+            if (PatrolUnit() is Unit pu) return UnitSees(pu, p, crowd); // brief 013: on an alarm it looks where it walks and holds
             var (pos, f) = PatrolPose()!.Value;
             if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
             return InSweepCone(pos, f, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
@@ -493,12 +508,17 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- security, rivals, patrol answering gunfire
 
-        void CallSecurity(int delayS, string text)
+        /// <summary>A report of gunfire (or a downed guard's missed mark) calls the response unit: it arrives by the reporter's delay
+        /// (level 1's arrivals, shifted by the level's dispatch), the district seals the level's seal after it arrives, and the level's
+        /// robots, reinforcements and cordon follow (brief 013, the dial). landing: the report lands now (the dispatch alone).</summary>
+        void CallSecurity(int delayS, string text, Pt? scene = null, bool landing = false)
         {
-            int arrival = Tick + T(delayS);
+            int arrival = landing ? Tick + T(DialNow.DispatchS) : GunfireArrival(delayS);
             if (arrival >= SecurityArrives) return;
-            SecurityArrives = arrival; Lockdown = arrival + T(R.SealS);
+            bool first = SecurityArrives == INF;
+            SecurityArrives = arrival; Lockdown = arrival + T(SealS);
             Note("security.called", $"{text} Security is coming from the north street.");
+            if (first) GunfireAlarm(arrival, scene ?? S.Stand(S.SecTo));
         }
         void DrawRivals()
         {

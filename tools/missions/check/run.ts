@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { join } from 'node:path';
 import { Routes } from '../../../contracts/missions/routes.schema';
 import { ROOT, engineAt, engineInputs, playAll, type EngineAt, type Script } from './engine';
-import { digest, judge, clock, type Plays, type Report, type Slack } from './judge';
+import { digest, judge, clock, caseTrailEqOf, type Plays, type Report, type Slack } from './judge';
 import { contactsOf, lateFrom, stepsOf, withoutContact } from './vary';
 
 const sha = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
@@ -69,10 +69,13 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
   // what the engine read (at its commit), and the working tree's mission file the site was made from
   const inputs = { ...Object.fromEntries(engineInputs(e.dir).map(f => [f, sha(readFileSync(join(e.dir, f)))])), [`tree:contracts/missions/${L.mission}/mission.json`]: sha(readFileSync(join(ROOT, 'contracts/missions', L.mission, 'mission.json'))) };
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
-  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), plays, slack, report: judge(L.manifest, L.scripts, plays, slack) };
+  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir) }) };
 }
 
 // ---------------------------------------------------------------- record and replay
+
+/** `case-trail-eq` from the rulebook the engine read (0 if it has none: a check recorded before rev 4). */
+export const caseTrailEqAt = (dir: string) => { const f = join(dir, 'contracts/rules/rulebook.json'); return existsSync(f) ? caseTrailEqOf(JSON.parse(readFileSync(f, 'utf8'))) : 0; };
 
 export const runsDir = (mission: string) => join(ROOT, 'runs/missions', mission);
 const nextId = (mission: string) => { const d = runsDir(mission); const n = existsSync(d) ? readdirSync(d).filter(x => /^c\d{3}$/.test(x)).length : 0; return `c${String(n + 1).padStart(3, '0')}`; };
@@ -129,7 +132,7 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
   });
   lines.push(`${same === names.length ? 'ok   ' : 'FAIL '} ${same}/${names.length} plays land on their recorded final hash`);
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
-  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[]).ok ? 'SHIPS' : 'HOLDS';
+  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[], { caseTrailEq: caseTrailEqAt(e.dir) }).ok ? 'SHIPS' : 'HOLDS';
   if (verdictNow === run.verdict) lines.push(`ok    verdict ${run.verdict}${tool === run.tool ? '' : ' (judged by the current checker; its code changed since the check)'}`);
   else lines.push(`${tool === run.tool ? 'FAIL ' : 'drift'} verdict ${verdictNow} by the current checker, recorded ${run.verdict}${tool === run.tool ? '' : ' (the checker\'s code changed since the check)'}`);
   return { ok: !lines.some(l => l.startsWith('FAIL')), lines };

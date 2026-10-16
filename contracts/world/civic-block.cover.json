@@ -3,9 +3,9 @@
  "mission": "handover",
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
-  "block": "7898d425e4270b1f79da210b93a881ae94ac2ec83101395ce1aea7a460dcd44b",
+  "block": "c9c788bf8b792c2e8f22066c2ac89f6accca8762533223ad294206c62c02907f",
   "site": "98aea32ee1cbc06b9b7657a30b10eb9dd4bc3dc9bf17499dba1bd34909a5917e",
-  "kit": "af230e8d2e7195c40c23500f4f7e07a83500a03ca7bb747a8a1b611ec4fb0f6f",
+  "kit": "a98124c60d78309eb7c56f28923f0d146faf62e493ab69c2d3fc9bebe36ae7d9",
   "plan": "16aafabc2c40b5f9f4a3542dfc861dd3792f0b4461f1c2ae64729f88ef718f24"
  },
  "rules": {

@@ -34,6 +34,20 @@ export function withKit<T>(file: string | undefined, fn: () => T): T {
   pinned = file;
   try { return fn(); } finally { pinned = before; }
 }
+const everything = new Map<string, KitAsset[]>();
+/** A piece of the catalogue by id whatever its status (candidate, adopted, rejected): the generator measures a candidate it is about to place a stand-in for, and reads its tags (a Dumpster's `stash`), but never draws it. */
+export function catalogued(id: string): KitAsset | undefined {
+  const file = pinned ?? KIT;
+  let assets = everything.get(file);
+  if (!assets) { assets = (JSON.parse(readFileSync(file, 'utf8')) as Kit).assets; everything.set(file, assets); }
+  return assets.find(a => a.id === id);
+}
+/** The first catalogue piece, whatever its status, whose `use` names this street kind (catalogue order). */
+export function cataloguedFor(use: string): KitAsset | undefined {
+  const file = pinned ?? KIT;
+  catalogued('');
+  return everything.get(file)!.find(a => a.tags.use.includes(use));
+}
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
 
 /** Metres within which two items of one kind must not use the same piece. */
@@ -51,6 +65,7 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'bin': return { h, hTol: 0.25, along: 1.3, depth: 0.6 };
     case 'hydrant': return { h, along: 0.6, depth: 0.6 };
     case 'phone-booth': return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.1, depth: d * 1.1 }; // the item's own footprint (plan K6 capsule 1 × 1 m): a wider piece is not a phone booth here
+    case 'dumpster': return { h, hTol: 0.25, along: w * 1.1, depth: d * 1.2 }; // brief 013: the stash container beside a service door; only an adopted Dumpster (status adopted) is ever drawn
     case 'ticket-machine': return { h, along: 1.1, depth: 0.8 };
     case 'pole-camera': return { h, along: 0.8, depth: kerb };
     case 'canopy-camera': return { h, hTol: 0.5, along: 0.6, depth: 0.6 };

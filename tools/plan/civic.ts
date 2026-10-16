@@ -3,6 +3,9 @@
 // without a stated footprint (`polygon`, /4) is a point `at`: the checker then knows no tower plan, as when the run was made.
 import { type Rect, type V, rectPoly } from './geom';
 
+/** What an entrance is for (block/4): public = the door a visitor uses, official = the councillor's door, service = staff and goods. */
+export type EntranceKind = 'public' | 'official' | 'service';
+
 /** An entrance tower: where it stands and, from block/4, its plan (`poly`, plan frame). */
 export type Tower = { id: string; at: V; height: number; poly?: V[] };
 
@@ -11,8 +14,11 @@ export type Civic = {
   structures: { id: string; name: string; category: string; poly: V[]; height: number; z: number }[];
   objects: { id: string; kind: string; poly: V[]; height: number; z: number }[];
   bays: { id: string; poly: V[] }[];
-  entrances: { id: string; name: string; building: string; p: V }[];
-  /** Where walks start: the building entrances (an overlay may replace them). */
+  /** The doors people use: public and official (block/4 `kind`, absent = public). The consumers of "the door" (the cast's places, the crowd's refuges, the people tools) read this list only. */
+  entrances: { id: string; name: string; building: string; p: V; z: number; kind: EntranceKind }[];
+  /** The service doors (brief 013: `kind: 'service'`, staff and goods): stashes for the checker and the engine, a walk origin so the checker proves them reachable, but not a place the cast or the crowd uses. */
+  serviceDoors: { id: string; name: string; building: string; p: V; z: number; kind: 'service' }[];
+  /** Where walks start: every door, service doors included (an overlay may replace them). */
   walkFrom: { name: string; p: V }[];
   blocks: { id: string; outer: V[]; core: V[] }[];
   crossing: V[];
@@ -56,15 +62,16 @@ export function civic(spec: any, block: any): Civic {
   const blockRect = (r: Rect) => rectPoly(r).map(toPlan);
   const w = spec.walk;
   const ground = block.dressing ? furniture(spec, block.dressing, toPlan) : [];
-  const entrances = block.buildings.flatMap((b: any) => (b.entrances ?? []).map((e: any) => ({ id: e.id as string, name: e.name as string, building: b.id as string, p: toPlan(e.at) })));
+  const doors = block.buildings.flatMap((b: any) => (b.entrances ?? []).map((e: any) => ({ id: e.id as string, name: e.name as string, building: b.id as string, p: toPlan(e.at), z: (e.z ?? 0) as number, kind: (e.kind ?? 'public') as EntranceKind })));
+  const entrances = doors.filter((e: any) => e.kind !== 'service'), serviceDoors = doors.filter((e: any) => e.kind === 'service');
 
   return {
     buildings: block.buildings.map(({ polygon, towers, entrances: _e, ...b }: any) => ({ ...b, poly: polygon.map(toPlan), ...(towers ? { towers: towers.map(({ polygon, ...x }: any) => ({ ...x, at: toPlan(x.at), ...(polygon ? { poly: polygon.map(toPlan) } : {}) })) } : {}) })),
     structures: block.structures.map(({ polygon, ...s }: any) => ({ ...s, poly: polygon.map(toPlan) })),
     objects: block.objects.map(({ polygon, ...x }: any) => ({ ...x, poly: polygon.map(toPlan) })),
     bays: block.bays.map((b: any) => ({ id: b.id, poly: b.polygon.map(toPlan) })),
-    entrances,
-    walkFrom: entrances.map((e: any) => ({ name: e.name, p: e.p })),
+    entrances, serviceDoors,
+    walkFrom: doors.map((e: any) => ({ name: e.name, p: e.p })),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),
     crossing: blockRect(spec.crossing),
     ...(block.dressing ? {

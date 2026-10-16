@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildSite, SITE_FILE, sourceOfSite } from './site';
 import { buildPeople, PEOPLE_OUT } from './people';
+import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
 const root = join(import.meta.dir, '..', '..');
 const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
@@ -29,6 +30,30 @@ describe('sim/data/handover.site.json', () => {
     const c = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).cast;
     expect(Object.keys(c)).toEqual(expect.arrayContaining(['waitress', 'driver', 'guard', 'councillor', 'from', 'sha256', 'startsAt']));
     if (c.from !== 'out/people/harbour-district.people.json') expect(typeof c.fixture).toBe('string');
+  });
+});
+
+describe('sim/data/handover.takedown.json (brief 013 C: stash containers, service doors, report points, response origins)', () => {
+  const file = () => JSON.parse(readFileSync(join(root, TAKEDOWN_FILE), 'utf8'));
+  test('is what tools/sim/takedown.ts makes from the world today (bun run sim:site)', () => {
+    expect(readFileSync(join(root, TAKEDOWN_FILE), 'utf8')).toBe(buildTakedown().json);
+  }, 120_000);
+  test('shares the site\'s grid, and every stand is a free cell of it', () => {
+    const site = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')), t = file(), g = site.grid;
+    expect(t.grid).toEqual({ x0: g.x0, y0: g.y0, cell: g.cell });
+    const free = (p: number[]) => { const i = Math.floor((p[0]! - g.x0) / g.cell), j = Math.floor((p[1]! - g.y0) / g.cell); return site.grid.rows[i]?.[j] === '.'; };
+    for (const e of [...t.entrances, ...t.stashes, ...t.reportPoints, ...t.origins]) expect(free(e.stand), `${e.id} stand ${e.stand}`).toBe(true);
+  });
+  test('names the two service doors, the Office\'s container with its footprint, the café\'s reason, the Office doors as posts, and keeps the site\'s places out of it', () => {
+    const t = file();
+    expect(t.entrances.filter((e: { kind: string }) => e.kind === 'service').map((e: { id: string }) => e.id)).toEqual(['cafe-kitchen-door', 'office-service-door']);
+    expect(t.stashes.filter((s: { kind: string }) => s.kind === 'container').map((s: { of: string; holds: number }) => `${s.of} ${s.holds}`)).toEqual(['office-service-door 1']);
+    expect(t.stashes.find((s: { id: string }) => s.id === 'stash/cafe-kitchen-door/door').bare).toMatch(/no container/);
+    const rb = JSON.parse(readFileSync(join(root, 'contracts/rules/rulebook.json'), 'utf8')); // a service door holds the rulebook's stash-door-holds, the number the engine takes for a door (GameTakedown.HoldsOf)
+    expect(t.stashes.filter((s: { kind: string }) => s.kind === 'door').map((s: { holds: number }) => s.holds)).toEqual([rb.values['stash-door-holds'].v, rb.values['stash-door-holds'].v]);
+    expect(t.solids.map((s: { id: string }) => s.id)).toContain('street/civic/stash/office-service-door');
+    expect(t.origins.filter((o: { kind: string; door?: string }) => o.kind === 'post' && o.door).map((o: { door: string }) => o.door)).toEqual(['office-entrance', 'official-entrance']);
+    expect(t.watchers.every((w: { inSim: boolean }) => w.inSim === false)).toBe(true); // the engine reads none of the world's watchers (briefs/013 C open issue 3)
   });
 });
 

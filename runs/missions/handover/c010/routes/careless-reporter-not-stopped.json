@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route B, with the idle Enforcer killing guard 73 from behind on the square at 4:00 and dropping him in the open on the way north instead of hiding him. On this cast nobody passes before the 5:30 chime; at 6:47 clerk 34 (Loyal, 73's workmate) finds him and runs 14 s to the call box, and nobody stops him (the Enforcer is taking Vale in the service lane). His report lands at 7:01 (a person lying; Alert 2 once a unit confirms a dead body): the Take is already done, so the run still wins, but at Alert 2 with +6 T, a found killing (Menace) and grief for 73's ties, against route B's 4 T at Alert 0. The careful twin is route-b.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"enforcer","do":"move","to":[601,-3534]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":515,"op":"scout","do":"watch","target":"driver"},
+  {"tick":715,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":715,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":737,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1157,"op":"scout","do":"move","to":[8250,-3100]},
+  {"tick":1215,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2340,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":2400,"op":"enforcer","do":"takedown","target":"p-records-office-73","how":"kill"},
+  {"tick":2430,"op":"enforcer","do":"carry","target":"p-records-office-73"},
+  {"tick":2460,"op":"enforcer","do":"move","to":[4201,1066]},
+  {"tick":2910,"op":"enforcer","do":"drop"},
+  {"tick":2920,"op":"enforcer","do":"move","to":"d:Service lane","run":true},
+  {"tick":3700,"op":"enforcer","do":"take"},
+  {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":4394,"op":"cell","do":"panic"},
+  {"tick":4475,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4604,"op":"enforcer","do":"extract"}
+ ],
+ "until": 5100
+}

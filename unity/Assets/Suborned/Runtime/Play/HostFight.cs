@@ -286,8 +286,11 @@ namespace Suborned.Play
             if (!to.HasValue || G.Dist(to.Value, at) > 300) { MoveChip = "can't walk there"; return; }
             MoveQuote q = null; if (!Guard("move quote", () => q = Game.QuoteMove(Op.Name((OpId)k), to.Value))) return;
             if (q.WalkS == 0 && q.RunS == 0 && q.RunRefused.Length > 0) { MoveChip = q.RunRefused == "no walk there" ? "can't walk there" : q.RunRefused; return; }
-            string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s (free: nobody counts a runner now)"
-                : $"run {q.RunS} s{(q.RunSeenBy.Count > 0 ? $" · seen by {string.Join(", ", q.RunSeenBy)} (Alert {q.AlertIfRun})" : " · unseen by security")}{(q.RunPeople > 0 ? $" · {q.RunPeople} people near" : "")}";
+            // "seen by" is the engine's SeenQuote (rulebook sight.unknown): a known watcher's true answer, "?" for one the Scout hasn't watched that
+            // could; never RunSeenBy, which knows every watcher (Sky 2026-10-16: sight is the Scout's skill)
+            var seen = SeenWords(q.Seen);
+            string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
+                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {q.Seen.AlertIfSeen})" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
         }
 

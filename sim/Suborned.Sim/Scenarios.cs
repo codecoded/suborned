@@ -142,6 +142,18 @@ namespace Suborned.Sim
                 if (!G.CarHeld() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
             }
         }
+        /// <summary>A takedown order now (brief 013): knockout or kill, on a person's role or id; checks it was taken.</summary>
+        public bool Takedown(string target, string how)
+        {
+            var a = G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "takedown", Target = target, How = how });
+            return Is(a.ok, $"enforcer takedown ({how}) {target} taken at {Report.Clock(G.Tick)}{(a.ok ? "" : ": " + a.why)}");
+        }
+        /// <summary>A body order now (carry, drop, stash, restrain) by an operative; checks it was taken.</summary>
+        public bool Body(string op, string verb, string target = "")
+        {
+            var a = G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target });
+            return Is(a.ok, $"{op} {verb} {target} taken at {Report.Clock(G.Tick)}{(a.ok ? "" : ": " + a.why)}".Replace("  ", " "));
+        }
         public Pt At(string place) => G.S.At(place);
         public Pt Stand(string place) => G.S.Stand(place);
         public Op Op(string op) => G.OpOf(Sim.Op.Parse(op));
@@ -163,7 +175,9 @@ namespace Suborned.Sim
         {
             var s = new Scenario { Id = id, Proto = proto, Intent = intent, Body = body, Start = start ?? new Start() };
             // The 28 are the top-down test's: it had no final fight and no crowd. N10, N11 and N12 test those; the 28 keep their own world.
-            if (id.StartsWith("S", StringComparison.Ordinal)) { s.Start.FinalFight = false; s.Start.Crowd = false; }
+            // Brief 013: they also keep the top-down test's response, security level 1 (routine: today's dispatch and seal, no robots at Alert 2);
+            // the mission's own level (the civic district's 2) is the N cases' and the route scripts'.
+            if (id.StartsWith("S", StringComparison.Ordinal)) { s.Start.FinalFight = false; s.Start.Crowd = false; s.Start.Security ??= 1; }
             all!.Add(s); return s;
         }
         static int T(int s) => Game.T(s);

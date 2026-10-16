@@ -283,7 +283,9 @@ describe('K3–K5, K9 and Sky Q6 between missions', () => {
   });
 
   test('ties: family and rival never lapse; introductions only along ties people.rules says introduce; a turned keeper tips needs', () => {
-    const lapsing = rb.events.flatMap((e) => e.needs).filter((c) => c.k === 'tie').flatMap((c) => (c.k === 'tie' ? c.kinds : []));
+    // brief 013's events read ties too (grief, worry, a missed tie); only tie.lapses lapses one
+    const lapsing = rb.events.filter((e) => e.id === 'tie.lapses').flatMap((e) => e.needs).filter((c) => c.k === 'tie').flatMap((c) => (c.k === 'tie' ? c.kinds : []));
+    expect(lapsing.length).toBeGreaterThan(0);
     expect(lapsing.filter((k) => k === 'family' || k === 'rival')).toEqual([]);
     expect(R.event(rb, 'contact.introduces').needs).toContainEqual({ k: 'introduces-along' });
     expect(R.event(rb, 'keeper.tips').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['need'], of: 'needs-known' }]);
@@ -348,5 +350,120 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect([h.enforcer, h.op, h.guard, h.officer, h.rival, h.patrol, h.civilian, h.responseOfficers].map(n)).toEqual([6, 4, 3, 3, 3, 4, 2, 2]);
     expect([rb.weapons.costs.hit, rb.weapons.costs.down, rb.alert.gunfire, rb.weapons.costs.drawSeenSecurity, rb.weapons.costs.drawSeenPeople].map(n)).toEqual([2, 2, 2, 2, 1]);
     expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([280, 30, 5]);
+  });
+});
+
+describe('sight: cones are the Scout\'s skill (Sky 2026-10-16)', () => {
+  test('a watcher is watched with the Watch a person gets, from 18 m; a watched routine takes two Watches; the hunters are known on arrival', () => {
+    const n = (r: string) => num(rb, people, r);
+    expect(rb.sight).toBeDefined(); // the live rulebook has it (the schema lets runs pinned before it parse)
+    const sight = rb.sight!;
+    expect(sight.watch.s === R.event(rb, 'scout.watch').price![0]!.s).toBe(true); // the same Watch, the same time
+    expect([sight.watch.s, sight.watch.reach, sight.watch.routine].map(n)).toEqual([20, 18, 40]);
+    expect(n(sight.watch.routine) % n(sight.watch.s)).toBe(0); // a whole number of Watches
+    expect(Object.entries(sight.kinds).map(([k, v]) => `${k}:${v.learn}/${v.routine}`))
+      .toEqual(['camera:watch/fixed', 'guard:watch/person', 'patrol:watch/watched', 'security:arrival/none', 'rivals:arrival/none']);
+    expect(sight.unknown).toBe(rb.preview.unknown); // the card's "?" is the temperament's "?"
+    const bad = structuredClone(raw); bad.sight.kinds.camera.learn = 'told';
+    expect(Rulebook.safeParse(bad).success).toBe(false);
+    const missing = structuredClone(raw); delete missing.sight.kinds.rivals;
+    expect(Rulebook.safeParse(missing).success).toBe(false);
+  });
+});
+
+describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-10-16; Motive, briefs/013/motive-takedowns.md)', () => {
+  const n = (r: string) => num(rb, people, r);
+  const td = rb.takedown!, wi = rb.witness!, rs = rb.response!, cp = rb.campaign!;
+
+  test('the live rulebook has the sections (optional only for runs pinned before them); the 18 s check-in is retired', () => {
+    expect(rb.cell.loop.targets).toBeDefined(); expect(rb.cell.take.struggle).toBeDefined(); // optional in the schema only so dialogue r017-r019's pinned rulebook parses
+    expect([td, wi, rs, cp].every((x) => x !== undefined)).toBe(true);
+    expect(rb.values['check-in-s']).toBeUndefined();
+    expect(rb.values['response-check-in-s']).toBeUndefined();
+    expect(rb.security.checkIn).toBeUndefined();
+    expect(rb.security.response.checkIn).toBeUndefined();
+    expect(n(rs.checkIn)).toBe(90); // Sky answer 4: every staff post, every 90 s from the shift's start
+  });
+
+  test('the takedown: Motive §7.1, read by ref', () => {
+    expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
+    expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device
+    expect([td.carry.untrained, td.carry.drop, td.stash.container, td.stash.door].map(n)).toEqual([70, 1, 5, 10]);
+    expect(n(td.carry.untrained) * 2).toBe(n(rb.cell.speed)); // half the walk; only the Enforcer carries at a walk
+    expect([n(td.service.period), n(td.service.dwell)]).toEqual([900, 20]);
+    // the act's Trail: a knockout is a hit and a down (+4), a kill +2 more (+6): a quiet takedown is 2 T cheaper than shooting
+    expect(n(rb.weapons.costs.hit) + n(rb.weapons.costs.down)).toBe(4);
+    expect(n(rb.weapons.costs.hit) + n(rb.weapons.costs.down) + n(td.trail.kill)).toBe(6);
+    expect([n(td.koAlertMax), n(td.foundKillStanding)]).toEqual([1, -1]); // Sky merged call 2; Sky answer 1
+  });
+
+  test('what a landed report says, and its Alert (Motive §2.3): a knockout never above 1 by itself; silent acts reach Alert only by a report', () => {
+    const a = wi.alert;
+    expect([a.seen, a.carry, a.down, a.dead, a.woken, a.noise, a.mark, a.missing].map(n)).toEqual([3, 2, 1, 2, 1, 1, 1, 1]);
+    expect(a.seen).toBe(rb.alert.violenceSeen); // a seen takedown is the lockdown a seen shooting is, when the report lands
+    for (const k of [a.down, a.woken, a.noise, a.mark, a.missing]) expect(n(k)).toBeLessThanOrEqual(n(td.koAlertMax));
+    expect([wi.react, wi.call, wi.postCall, wi.robot, wi.cameraScan].map(n)).toEqual([2, 6, 3, 4, 20]);
+    expect([n(wi.mercenaryAlert), n(wi.terrifiedFear), n(wi.screamFear), n(wi.cap), n(wi.scream), n(wi.tell)]).toEqual([2, 3, 2, 4, 20, 20]);
+    expect(wi.kin).toEqual(['lover', 'family']); // Motive rev 4 R4.2: kin (the witness row) is lover or family; workmate is not kin
+    expect(wi.close).toEqual(['lover', 'family', 'workmate']); // whose absence or loss a person feels: expectations, the alarm's places, grief
+    expect(rb.values['stash-door-holds'].v).toBe(3); expect(rb.values['take-struggle-s'].v).toBe(5); expect(rb.values['case-trail-eq'].v).toBe(3); // rev 4 R4.6
+    expect(wi.tells[0]).toBe('lover');
+  });
+
+  test('the Enforcer\'s face is a fact (Sky D3), scoped to the new acts: older entries by the Enforcer still give place and time only', () => {
+    expect(people.talker.facts).toContain('enforcer-face');
+    expect(rb.memory.faceFacts).toEqual({ fixer: 'fixer-face' });
+    const withFace = Object.entries(rb.memory.acts).filter(([, v]) => Array.isArray(v.facts) && v.facts.includes('enforcer-face')).map(([k]) => k);
+    expect(withFace.sort()).toEqual(['attacked-aware', 'saw-takedown']);
+    const saw = person('loyal', 'debt', { memory: [{ act: 'saw-takedown', by: 'enforcer', place: 'office-entrance', time: 1, witnessed: true }] });
+    expect([...R.factsOf(rb, saw)].sort()).toEqual(['enforcer-face', 'place-time']);
+    const ran = person('loyal', 'debt', { memory: [{ act: 'saw-runner', by: 'enforcer', place: 'office-entrance', time: 1, witnessed: true }] });
+    expect([...R.factsOf(rb, ran)]).toEqual(['place-time']);
+  });
+
+  test('a reporter volunteers what they hold when questioned, without the Talker test (Pulse §2.4)', () => {
+    const reporter = person('loyal', 'debt', { memory: [{ act: 'found-body', by: '', place: 'office-entrance', time: 1, witnessed: true }, { act: 'reported', by: '', place: 'office-entrance', time: 2, witnessed: false }] });
+    expect(R.answer(rb, people, reporter, 'neutral')).toEqual({ outcome: 'volunteers', gives: ['place-time'] });
+    const quiet = person('loyal', 'debt', { memory: [{ act: 'found-body', by: '', place: 'office-entrance', time: 1, witnessed: true }] });
+    expect(R.answer(rb, people, quiet, 'neutral').outcome).toBe('nothing'); // a Loyal finder who didn't report isn't a Talker
+  });
+
+  test('the response dial is Motive\'s §5.3 table as data: five levels, a dispatch that shortens as the swarm grows', () => {
+    const table = rs.levels.map((l) => [l.name, n(l.dispatch), n(l.a1Robots), n(l.a2Units), n(l.a2Robots), l.reinforce ? n(l.reinforce) : null, n(l.unitCap), n(l.seal), n(l.a3Units), l.doorsLock]);
+    expect(table).toEqual([
+      ['lax', 20, 1, 1, 0, null, 1, 180, 0, false],
+      ['routine', 12, 1, 1, 0, null, 1, 145, 0, false], // Motive rev 3: exactly today's response
+      ['watchful', 10, 2, 1, 2, 40, 3, 145, 1, true],
+      ['guarded', 8, 2, 2, 2, 30, 4, 120, 1, true],
+      ['swarm', 6, 3, 2, 4, 20, 6, 90, 2, true],
+    ]);
+    expect(rs.levels[1]!.seal).toBe('v:seal-s'); // level 1 is today's response: the gunfire delays are its arrivals
+    expect(n(rs.levels[1]!.dispatch)).toBe(n(rb.security.response.witness)); // a civilian witness's 12 s = a report landing at once + level 1's dispatch
+    for (let i = 1; i < 5; i++) expect(n(rs.levels[i]!.dispatch)).toBeLessThan(n(rs.levels[i - 1]!.dispatch));
+    expect([n(rs.world.report), n(rs.world.dock)]).toEqual([40, 40]); // R-REPORT, R-DOCK (Splice's world rules)
+    expect([n(rs.robotSpeed), n(rs.robotWire), n(rs.robotReach), n(rs.launchGap), n(rs.check), n(rs.spread), n(rs.cap)]).toEqual([85, 4, 60, 15, 10, 3, 30]);
+    for (const l of rs.levels.slice(0, 2)) expect([l.reinforce, n(l.a3Units)]).toEqual([undefined, 0]); // levels 0 and 1: no swarm (Motive rev 3)
+    expect([n(rs.search.s), n(rs.search.m), n(rs.search.stash), n(rs.standDown.inquiry), n(rs.standDown.search)]).toEqual([60, 30, 10, 60, 180]);
+    expect(n(rs.robotSpeed)).toBe(n(rb.security.patrol.chase)); // Pulse's lever defaults to the patrol's own speed: nothing changes until tuned
+    expect([n(rs.suspicion.s), n(rs.suspicion.meet)]).toEqual([20, 6]);
+    expect(Object.values(rs.suspicion.pm).map(n)).toEqual([1000, 1000, 1000, 1000]); // Aster: flat 20 s by default, the temperament scale built
+  });
+
+  test('the campaign: Sky\'s missing-person numbers', () => {
+    expect([cp.missing.trail, cp.missing.tiesFear, cp.areaWatch.step, cp.areaWatch.missions, cp.cases.perLevel, cp.cases.cap, cp.cases.close].map(n)).toEqual([2, 1, 1, 3, 2, 2, 3]);
+    expect(rb.phases['between-missions'].slice(-5)).toEqual(['bodies.surface', 'body.grieved', 'missing.worried', 'area.hardens', 'cases.count']);
+  });
+
+  test('unknown = reject: a fifth level missing, a lock that is no boolean, a kin tie people.rules lacks, an unknown cancel line', () => {
+    const four = structuredClone(raw); four.response.levels.pop();
+    expect(Rulebook.safeParse(four).success).toBe(false);
+    const lock = structuredClone(raw); lock.response.levels[2].doorsLock = 'yes';
+    expect(Rulebook.safeParse(lock).success).toBe(false);
+    const kin = structuredClone(raw); kin.witness.kin.push('neighbour');
+    expect(checkRulebook(Rulebook.parse(kin), people).join()).toContain('tie kind neighbour');
+    const cancel = structuredClone(raw); cancel.cancel.takedown = 'quiet';
+    expect(Rulebook.safeParse(cancel).success).toBe(false);
+    const extra = structuredClone(raw); extra.takedown.stun = 'v:ko-s';
+    expect(Rulebook.safeParse(extra).success).toBe(false);
   });
 });

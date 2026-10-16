@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { resolve } from 'node:path';
 import { root } from '../../rag/config';
-import { declaredFor, parseRules, RULE_ID, withCause, type Ledger } from '../ledger';
+import { carryForward, declaredFor, parseRules, RULE_ID, withCause, type Ledger } from '../ledger';
 import { codeLine, type CodeFacts } from '../replay-code';
 import type { Code } from '../plugin';
 
@@ -44,6 +44,28 @@ describe('declared causes', () => {
   });
   test('a bare string is a cause written before rules were named: it covers none', () => {
     expect(declaredFor(ledger({ [NOW]: ['old cause'] }), NOW)).toEqual([cause([], 'old cause')]);
+  });
+});
+
+describe('carrying causes forward', () => {
+  const MID = 'c'.repeat(64);
+  test('a new hash gets every cause declared for an earlier hash, rules merged, and the new cause comes last', () => {
+    const l = ledger({ [THEN]: [cause(['P-6'], 'first'), cause([], 'second')], [MID]: [cause(['P-7'], 'first'), cause(['P-11'], 'third'), 'bare cause'] });
+    expect(carryForward(l, NOW)).toBe(4);
+    withCause(l, NOW, 'fourth', ['P-12']);
+    expect(declaredFor(l, NOW)).toEqual([cause(['P-6', 'P-7'], 'first'), cause([], 'second'), cause(['P-11'], 'third'), cause([], 'bare cause'), cause(['P-12'], 'fourth')]);
+    expect(declaredFor(l, THEN)).toEqual([cause(['P-6'], 'first'), cause([], 'second')]); // the earlier hashes keep their own lists
+  });
+  test('carrying twice, or into a hash that already has some of them, adds nothing twice', () => {
+    const l = ledger({ [THEN]: [cause(['P-6'], 'first')], [NOW]: [cause(['P-9'], 'first'), cause([], 'own')] });
+    expect(carryForward(l, NOW)).toBe(0);
+    expect(declaredFor(l, NOW)).toEqual([cause(['P-9', 'P-6'], 'first'), cause([], 'own')]);
+    expect(carryForward(l, NOW)).toBe(0);
+  });
+  test('a ledger with no earlier hash carries nothing and writes no empty entry', () => {
+    const l = ledger({});
+    expect(carryForward(l, NOW)).toBe(0);
+    expect(l.declared[NOW]).toBeUndefined();
   });
 });
 

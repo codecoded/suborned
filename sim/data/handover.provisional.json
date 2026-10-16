@@ -1,0 +1,15 @@
+{
+ "schema": "suborned.sim.provisional/1",
+ "mission": "handover",
+ "note": "Brief 013 B (Keel, 2026-10-16): the security level the Handover runs at, until the district plan (plan.areas[*].securityBase, Datum) and mission.json (securityBonus, Waymark) carry it. The world's takedown facts (stashes, call boxes, robot docks, police posts) came here first from Vantage's survey; since Splice's export (sim/data/handover.takedown.json, tools/sim/takedown.ts) carries them, they are read from there and this file holds the level only.",
+ "security": {
+  "base": 2,
+  "bonus": 0,
+  "src": "briefs/013/motive-takedowns.md §5.3 (Sky 2026-10-16 merged call 3): the civic district's base level is 2 (watchful), the Handover's own bonus 0, no open cases. Replaced by plan.areas[*].securityBase (Datum) and mission.json securityBonus (Waymark)."
+ },
+ "stashes": [],
+ "callBoxes": [],
+ "docks": [],
+ "posts": [],
+ "srcEmpty": "stashes, call boxes, docks and posts: sim/data/handover.takedown.json (Splice, 2026-10-16)."
+}

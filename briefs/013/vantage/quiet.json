@@ -1,0 +1,1923 @@
+{
+ "note": "brief 013 C, Vantage: quiet-place survey (bun briefs/013/vantage/quiet.ts). Block frame metres (x south, y east). walkS at op-speed-cm-s, withLiftS adds carry-s; shares are the fraction of the patrol sweep (or of the path) that sees; play = share of a 1.75 m figure past architecture at the play camera (past) and behind fade-only blockers (ghost).",
+ "summary": {
+  "sizeFitOnly": [
+   "Streetlamp",
+   "PhoneBooth",
+   "CoffeeCart",
+   "CrateStack",
+   "AlleyBridge",
+   "AlleyWall_6",
+   "AlleyWall_9",
+   "AlleyWall_10",
+   "AlleyWall_6D",
+   "AlleyStair_9"
+  ],
+  "cells": 7725,
+  "quietPre": 4849,
+  "quietPost": 1867,
+  "walkers": 126,
+  "onStreet": {
+   "pre": 9,
+   "post": 77
+  },
+  "worldCams": [
+   {
+    "id": "street/records-square/mast-camera-314",
+    "kind": "mast-camera",
+    "at": [
+     -1850,
+     -1550
+    ]
+   }
+  ],
+  "holders": [
+   {
+    "id": "Dumpster",
+    "status": "candidate",
+    "category": "Alleys",
+    "size": [
+     2.1,
+     1.5128,
+     1.1863
+    ],
+    "fits": true,
+    "stash": "closed container, lid: holds 1 (proposed stash tag)"
+   }
+  ],
+  "placed": {
+   "Dumpster": 0
+  }
+ },
+ "spots": [
+  {
+   "id": "guard",
+   "at": [
+    51.75,
+    -30
+   ],
+   "watchers": [
+    {
+     "id": "camera:entrance",
+     "share": 1,
+     "window": "0:00-8:30"
+    },
+    {
+     "id": "patrol (sweep)",
+     "share": 0.66,
+     "window": "0:00-8:30"
+    }
+   ],
+   "crowd": {
+    "preS": 47,
+    "postS": 1932,
+    "people": 44,
+    "first": "4:13",
+    "busyPreS": 47,
+    "quietPre": [
+     "0:00-4:13",
+     "4:35-5:05"
+    ],
+    "who": [
+     "p-records-office-74 guard",
+     "p-records-office-73 guard",
+     "p-records-office-03 clerk",
+     "p-records-office-04 clerk",
+     "p-records-office-06 clerk",
+     "p-records-office-14 clerk",
+     "p-records-office-15 clerk",
+     "p-records-office-16 clerk",
+     "p-records-office-18 clerk",
+     "p-records-office-19 clerk",
+     "p-records-office-23 clerk",
+     "p-records-office-24 clerk",
+     "p-records-office-25 clerk",
+     "p-records-office-26 clerk",
+     "p-records-office-28 clerk",
+     "p-records-office-32 clerk",
+     "p-records-office-33 clerk",
+     "p-records-office-34 clerk",
+     "p-records-office-35 clerk",
+     "p-records-office-37 clerk",
+     "p-records-office-38 clerk",
+     "p-records-office-41 clerk",
+     "p-records-office-42 clerk",
+     "p-records-office-43 clerk",
+     "p-records-office-45 clerk",
+     "p-records-office-47 clerk",
+     "p-records-office-48 clerk",
+     "p-records-office-49 clerk",
+     "p-records-office-50 clerk",
+     "p-records-office-52 clerk",
+     "p-records-office-55 clerk",
+     "p-records-office-56 clerk",
+     "p-records-office-58 clerk",
+     "p-records-office-59 clerk",
+     "p-records-office-60 clerk",
+     "p-records-office-62 clerk",
+     "p-records-office-63 clerk",
+     "p-records-office-71 clerk",
+     "p-records-office-72 clerk",
+     "p-records-office-46 guard",
+     "p-records-office-29 guard",
+     "p-records-office-61 guard",
+     "p-records-office-68 guard",
+     "p-records-office-39 guard"
+    ]
+   }
+  },
+  {
+   "id": "pickup",
+   "at": [
+    78.1,
+    -33.7
+   ],
+   "watchers": [
+    {
+     "id": "camera:pickup",
+     "share": 1,
+     "window": "0:00-8:30"
+    }
+   ],
+   "crowd": {
+    "preS": 355,
+    "postS": 394,
+    "people": 11,
+    "first": "0:00",
+    "busyPreS": 330,
+    "quietPre": [],
+    "who": [
+     "p-records-office-29 guard",
+     "p-records-office-74 guard",
+     "p-records-office-30 guard",
+     "p-records-office-36 guard",
+     "p-records-office-39 guard",
+     "p-records-office-46 guard",
+     "p-records-office-57 guard",
+     "p-records-office-61 guard",
+     "p-records-office-65 guard",
+     "p-records-office-67 guard",
+     "p-records-office-68 guard"
+    ]
+   }
+  },
+  {
+   "id": "cafe",
+   "at": [
+    -10.3,
+    -29
+   ],
+   "watchers": [],
+   "crowd": {
+    "preS": 1724,
+    "postS": 1026,
+    "people": 12,
+    "first": "0:00",
+    "busyPreS": 330,
+    "quietPre": [],
+    "who": [
+     "p-cafe-11 server",
+     "p-cafe-12 server",
+     "p-cafe-15 server",
+     "p-cafe-16 server",
+     "p-records-office-73 guard",
+     "p-records-office-74 guard",
+     "p-records-office-64 guard",
+     "p-records-office-46 guard",
+     "p-records-office-29 guard",
+     "p-records-office-61 guard",
+     "p-records-office-68 guard",
+     "p-records-office-39 guard"
+    ]
+   }
+  }
+ ],
+ "rows": [
+  {
+   "id": "K1",
+   "cls": "kit",
+   "name": "service cabinet 0 (lane)",
+   "exists": true,
+   "at": [
+    57.75,
+    -43.75
+   ],
+   "note": "UtilityCabinet 1.29 x 1.28 x 0.64 m: too small to hold a body; a screen only below 1.26 m",
+   "watchers": [
+    {
+     "id": "patrol (sweep)",
+     "share": 0.17,
+     "window": "0:00-8:30"
+    }
+   ],
+   "crowd": {
+    "preS": 47,
+    "postS": 878,
+    "people": 39,
+    "first": "4:18",
+    "busyPreS": 47,
+    "quietPre": [
+     "0:00-4:18",
+     "5:05-5:30"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 21.7,
+     "walkS": 15.5,
+     "withLiftS": 18.5,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.61,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.23,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 1,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 26.5,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 24.4,
+     "walkS": 17.4,
+     "withLiftS": 20.4,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.24,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.53,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.29,
+       "peak": 0.34
+      }
+     ],
+     "patrol": {
+      "actS": 28.4,
+      "clearShare": 0.66,
+      "longestClearStartS": 66
+     }
+    },
+    "cafe": {
+     "m": 72,
+     "walkS": 51.4,
+     "withLiftS": 54.4,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.19,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.17,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.1,
+       "peak": 0.17
+      }
+     ],
+     "patrol": {
+      "actS": 62.4,
+      "clearShare": 0.79,
+      "longestClearStartS": 79
+     }
+    }
+   }
+  },
+  {
+   "id": "K2",
+   "cls": "kit",
+   "name": "service cabinet 1 (lane)",
+   "exists": true,
+   "at": [
+    69.75,
+    -43.75
+   ],
+   "note": "as K1",
+   "watchers": [],
+   "crowd": {
+    "preS": 44,
+    "postS": 300,
+    "people": 8,
+    "first": "4:40",
+    "busyPreS": 44,
+    "quietPre": [
+     "0:00-4:40"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 33.5,
+     "walkS": 24,
+     "withLiftS": 27,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.4,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.15,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.85,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 35,
+      "clearShare": 0.26,
+      "longestClearStartS": 26
+     }
+    },
+    "pickup": {
+     "m": 13.1,
+     "walkS": 9.3,
+     "withLiftS": 12.3,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.48,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.96,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 20.3,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    },
+    "cafe": {
+     "m": 83.8,
+     "walkS": 59.8,
+     "withLiftS": 62.8,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.17,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.2,
+       "peak": 0.34
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 70.8,
+      "clearShare": 0.65,
+      "longestClearStartS": 65
+     }
+    }
+   }
+  },
+  {
+   "id": "K3",
+   "cls": "kit",
+   "name": "control cabinet (square)",
+   "exists": true,
+   "at": [
+    23.9,
+    -17
+   ],
+   "note": "the Tech's cabinet; as K1, and in the open square",
+   "watchers": [],
+   "crowd": {
+    "preS": 8,
+    "postS": 119,
+    "people": 4,
+    "first": "4:33",
+    "busyPreS": 8,
+    "quietPre": [
+     "0:00-4:33",
+     "4:41-5:30"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 34.5,
+     "walkS": 24.6,
+     "withLiftS": 27.6,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.79,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.34,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 35.6,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 69.7,
+     "walkS": 49.8,
+     "withLiftS": 52.8,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.09,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.15,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.31,
+       "peak": 0.37
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.34,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 60.8,
+      "clearShare": 0.57,
+      "longestClearStartS": 57
+     }
+    },
+    "cafe": {
+     "m": 37.8,
+     "walkS": 27,
+     "withLiftS": 30,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.36,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 38,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "K4",
+   "cls": "kit",
+   "name": "recycling bins bin-543",
+   "exists": true,
+   "at": [
+    55.4,
+    -61.8
+   ],
+   "note": "RecyclingBins 1.06 x 0.89 x 0.42 m: too small; Rocket Lane west pavement",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 0,
+    "people": 0,
+    "first": null,
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "bld/rocket-west/17/body",
+     "bld/rocket-west/18/body"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 34.9,
+     "walkS": 24.9,
+     "withLiftS": 27.9,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.4,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.14,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.4,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 35.9,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 36.8,
+     "walkS": 26.3,
+     "withLiftS": 29.3,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.35,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.07,
+       "peak": 0.15
+      }
+     ],
+     "patrol": {
+      "actS": 37.3,
+      "clearShare": 0.86,
+      "longestClearStartS": 86
+     }
+    },
+    "cafe": {
+     "m": 75.3,
+     "walkS": 53.8,
+     "withLiftS": 56.8,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.19,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.01,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 64.8,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "K5",
+   "cls": "kit",
+   "name": "recycling bins bin-545",
+   "exists": true,
+   "at": [
+    7.4,
+    -61.8
+   ],
+   "note": "RecyclingBins 1.06 x 0.89 x 0.42 m: too small; Rocket Lane west pavement",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 0,
+    "people": 0,
+    "first": null,
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "bld/rocket-west/19/body",
+     "bld/rocket-west/20/body"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 55.6,
+     "walkS": 39.7,
+     "withLiftS": 42.7,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.09,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.15,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.21,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 50.7,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 82.1,
+     "walkS": 58.6,
+     "withLiftS": 61.6,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.07,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.05,
+       "peak": 0.22
+      }
+     ],
+     "patrol": {
+      "actS": 69.6,
+      "clearShare": 0.78,
+      "longestClearStartS": 78
+     }
+    },
+    "cafe": {
+     "m": 40.1,
+     "walkS": 28.6,
+     "withLiftS": 31.6,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.37,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 39.6,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "K6",
+   "cls": "kit",
+   "name": "recycling bins bin-549",
+   "exists": true,
+   "at": [
+    46,
+    -61.8
+   ],
+   "note": "RecyclingBins 1.06 x 0.89 x 0.42 m: too small; Rocket Lane west pavement",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 961,
+    "people": 31,
+    "first": "6:54",
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 0,
+    "by": [
+     "bld/rocket-west/17/body",
+     "bld/rocket-west/18/body",
+     "street/rocket-west/e1/tree-528"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 34.2,
+     "walkS": 24.4,
+     "withLiftS": 27.4,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.14,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.38,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 35.4,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 43.5,
+     "walkS": 31.1,
+     "withLiftS": 34.1,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.14,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.3,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.1,
+       "peak": 0.24
+      }
+     ],
+     "patrol": {
+      "actS": 42.1,
+      "clearShare": 0.78,
+      "longestClearStartS": 78
+     }
+    },
+    "cafe": {
+     "m": 67.5,
+     "walkS": 48.2,
+     "withLiftS": 51.2,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.21,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.01,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 59.2,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "R1",
+   "cls": "recess",
+   "name": "behind the café (mid)",
+   "exists": true,
+   "at": [
+    -23.4,
+    -35
+   ],
+   "note": "the 4 m strip between the café back (x -22) and Starline Street",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 0,
+    "people": 0,
+    "first": null,
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "civic/cafe",
+     "civic/cafe/ground"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 86.8,
+     "walkS": 62,
+     "withLiftS": 65,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.05,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.3,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.13,
+       "peak": 0.66
+      },
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.2,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 73,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 112.4,
+     "walkS": 80.3,
+     "withLiftS": 83.3,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.05,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.09,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.1,
+       "peak": 0.34
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.04,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 91.3,
+      "clearShare": 0.66,
+      "longestClearStartS": 66
+     }
+    },
+    "cafe": {
+     "m": 27.2,
+     "walkS": 19.4,
+     "withLiftS": 22.4,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.33,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 30.4,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "R2",
+   "cls": "recess",
+   "name": "service lane, north mouth",
+   "exists": true,
+   "at": [
+    49,
+    -44.5
+   ],
+   "note": "keep-clear zone service-lane (x 48-77, y -46 to -40.5), at the forecourt end",
+   "watchers": [],
+   "crowd": {
+    "preS": 45,
+    "postS": 2636,
+    "people": 39,
+    "first": "4:03",
+    "busyPreS": 45,
+    "quietPre": [
+     "0:00-4:03",
+     "4:48-5:30"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 16.7,
+     "walkS": 11.9,
+     "withLiftS": 14.9,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.53,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.29,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.79,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 22.9,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 33.2,
+     "walkS": 23.7,
+     "withLiftS": 26.7,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.39,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.34,
+       "peak": 0.34
+      }
+     ],
+     "patrol": {
+      "actS": 34.7,
+      "clearShare": 0.66,
+      "longestClearStartS": 66
+     }
+    },
+    "cafe": {
+     "m": 63.6,
+     "walkS": 45.4,
+     "withLiftS": 48.4,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.22,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.18,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 56.4,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "R3",
+   "cls": "recess",
+   "name": "service lane, middle",
+   "exists": true,
+   "at": [
+    63,
+    -44
+   ],
+   "note": "between the two service cabinets, against the Office's west wing",
+   "watchers": [
+    {
+     "id": "patrol (sweep)",
+     "share": 0.32,
+     "window": "0:00-8:30"
+    }
+   ],
+   "crowd": {
+    "preS": 40,
+    "postS": 276,
+    "people": 8,
+    "first": "4:28",
+    "busyPreS": 40,
+    "quietPre": [
+     "0:00-4:28",
+     "5:08-5:30"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 26.8,
+     "walkS": 19.1,
+     "withLiftS": 22.1,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.5,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.19,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 1,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 30.1,
+      "clearShare": 0.21,
+      "longestClearStartS": 21
+     }
+    },
+    "pickup": {
+     "m": 19.2,
+     "walkS": 13.7,
+     "withLiftS": 16.7,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.31,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.67,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.1,
+       "peak": 0.34
+      }
+     ],
+     "patrol": {
+      "actS": 24.7,
+      "clearShare": 0.62,
+      "longestClearStartS": 62
+     }
+    },
+    "cafe": {
+     "m": 77.2,
+     "walkS": 55.1,
+     "withLiftS": 58.1,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.17,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.18,
+       "peak": 0.32
+      }
+     ],
+     "patrol": {
+      "actS": 66.1,
+      "clearShare": 0.63,
+      "longestClearStartS": 63
+     }
+    }
+   }
+  },
+  {
+   "id": "R4",
+   "cls": "recess",
+   "name": "service lane, south end",
+   "exists": true,
+   "at": [
+    74,
+    -43.5
+   ],
+   "note": "by the official tower's west corner, behind the pickup camera",
+   "watchers": [
+    {
+     "id": "driver (pickup)",
+     "share": 1,
+     "window": "0:00-5:50"
+    }
+   ],
+   "crowd": {
+    "preS": 40,
+    "postS": 273,
+    "people": 8,
+    "first": "4:48",
+    "busyPreS": 40,
+    "quietPre": [
+     "0:00-4:48"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 37.7,
+     "walkS": 26.9,
+     "withLiftS": 29.9,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.36,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.13,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.75,
+       "peak": 0.66
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.12,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 37.9,
+      "clearShare": 0.26,
+      "longestClearStartS": 26
+     }
+    },
+    "pickup": {
+     "m": 10.6,
+     "walkS": 7.6,
+     "withLiftS": 10.6,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.45,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 1,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 18.6,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    },
+    "cafe": {
+     "m": 88,
+     "walkS": 62.8,
+     "withLiftS": 65.8,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.15,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.19,
+       "peak": 0.34
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.06,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 73.8,
+      "clearShare": 0.65,
+      "longestClearStartS": 65
+     }
+    }
+   }
+  },
+  {
+   "id": "R5",
+   "cls": "recess",
+   "name": "office east side",
+   "exists": true,
+   "at": [
+    63.75,
+    -18.75
+   ],
+   "note": "the Office's east face over the bed civic-office-west",
+   "watchers": [
+    {
+     "id": "patrol (sweep)",
+     "share": 0.41,
+     "window": "0:00-8:30"
+    }
+   ],
+   "crowd": {
+    "preS": 0,
+    "postS": 127,
+    "people": 3,
+    "first": "5:48",
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "civic/civic-office"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 29,
+     "walkS": 20.7,
+     "withLiftS": 23.7,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.46,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.17,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 1,
+       "peak": 0.93
+      }
+     ],
+     "patrol": {
+      "actS": 31.7,
+      "clearShare": 0,
+      "longestClearStartS": 0
+     }
+    },
+    "pickup": {
+     "m": 26.6,
+     "walkS": 19,
+     "withLiftS": 22,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.33,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.48,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.04,
+       "peak": 0.41
+      }
+     ],
+     "patrol": {
+      "actS": 30,
+      "clearShare": 0.54,
+      "longestClearStartS": 54
+     }
+    },
+    "cafe": {
+     "m": 76.6,
+     "walkS": 54.7,
+     "withLiftS": 57.7,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.16,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.31,
+       "peak": 0.93
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 65.7,
+      "clearShare": 0.06,
+      "longestClearStartS": 6
+     }
+    }
+   }
+  },
+  {
+   "id": "R6",
+   "cls": "recess",
+   "name": "official tower pocket (west)",
+   "exists": true,
+   "at": [
+    72.75,
+    -34.75
+   ],
+   "note": "inner corner where the official tower meets the wing (topiary top-official-w)",
+   "watchers": [
+    {
+     "id": "driver (pickup)",
+     "share": 1,
+     "window": "0:00-5:50"
+    }
+   ],
+   "crowd": {
+    "preS": 15,
+    "postS": 104,
+    "people": 8,
+    "first": "5:10",
+    "busyPreS": 15,
+    "quietPre": [
+     "0:00-5:10"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 41.1,
+     "walkS": 29.3,
+     "withLiftS": 32.3,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.33,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.12,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.55,
+       "peak": 0.66
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.18,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 40.3,
+      "clearShare": 0.28,
+      "longestClearStartS": 28
+     }
+    },
+    "pickup": {
+     "m": 5.5,
+     "walkS": 3.9,
+     "withLiftS": 6.9,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.73,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 1,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 14.9,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    },
+    "cafe": {
+     "m": 90.9,
+     "walkS": 64.9,
+     "withLiftS": 67.9,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.14,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.15,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.14,
+       "peak": 0.37
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.08,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 75.9,
+      "clearShare": 0.64,
+      "longestClearStartS": 64
+     }
+    }
+   }
+  },
+  {
+   "id": "R7",
+   "cls": "recess",
+   "name": "café east end",
+   "exists": true,
+   "at": [
+    -18.75,
+    -16.25
+   ],
+   "note": "the café's east arc behind tables 6 and 7, by the robot dock and the mast camera",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 68,
+    "people": 3,
+    "first": "8:02",
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "civic/cafe",
+     "civic/cafe/ground"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 78.9,
+     "walkS": 56.4,
+     "withLiftS": 59.4,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.07,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.35,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.15,
+       "peak": 0.66
+      },
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.22,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 67.4,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 109.2,
+     "walkS": 78,
+     "withLiftS": 81,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.05,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.1,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.11,
+       "peak": 0.37
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.12,
+       "peak": 1
+      },
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.17,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 89,
+      "clearShare": 0.64,
+      "longestClearStartS": 64
+     }
+    },
+    "cafe": {
+     "m": 18.6,
+     "walkS": 13.3,
+     "withLiftS": 16.3,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.47,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 24.3,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  },
+  {
+   "id": "D1",
+   "cls": "door",
+   "name": "Office service door (proposed)",
+   "exists": false,
+   "at": [
+    63,
+    -41.1
+   ],
+   "note": "not in the block: GDD §07 route A's 'exits service door with Vale'; west wing face into the service lane",
+   "watchers": [],
+   "crowd": {
+    "preS": 40,
+    "postS": 266,
+    "people": 8,
+    "first": "4:27",
+    "busyPreS": 40,
+    "quietPre": [
+     "0:00-4:27",
+     "5:07-5:30"
+    ]
+   },
+   "play": {
+    "past": 1,
+    "ghost": 0,
+    "by": []
+   },
+   "carry": {
+    "guard": {
+     "m": 26.4,
+     "walkS": 18.8,
+     "withLiftS": 21.8,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.51,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.19,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.91,
+       "peak": 0.66
+      }
+     ],
+     "patrol": {
+      "actS": 29.8,
+      "clearShare": 0.27,
+      "longestClearStartS": 27
+     }
+    },
+    "pickup": {
+     "m": 18.1,
+     "walkS": 13,
+     "withLiftS": 16,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.32,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.62,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 24,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    },
+    "cafe": {
+     "m": 76.8,
+     "walkS": 54.9,
+     "withLiftS": 57.9,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.18,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.18,
+       "peak": 0.37
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.01,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 65.9,
+      "clearShare": 0.64,
+      "longestClearStartS": 64
+     }
+    }
+   }
+  },
+  {
+   "id": "D2",
+   "cls": "door",
+   "name": "café kitchen door (proposed)",
+   "exists": false,
+   "at": [
+    -22.4,
+    -26
+   ],
+   "note": "not in the block: the café's back (north) face, onto 'Behind café'",
+   "watchers": [],
+   "crowd": {
+    "preS": 0,
+    "postS": 0,
+    "people": 0,
+    "first": null,
+    "busyPreS": 0,
+    "quietPre": [
+     "0:00-5:30"
+    ]
+   },
+   "play": {
+    "past": 0,
+    "ghost": 1,
+    "by": [
+     "civic/cafe",
+     "civic/cafe/ground"
+    ]
+   },
+   "carry": {
+    "guard": {
+     "m": 90,
+     "walkS": 64.3,
+     "withLiftS": 67.3,
+     "seenOnTheWay": [
+      {
+       "id": "camera:entrance",
+       "ofPath": 0.06,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.29,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.13,
+       "peak": 0.66
+      },
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.19,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 75.3,
+      "clearShare": 0.29,
+      "longestClearStartS": 29
+     }
+    },
+    "pickup": {
+     "m": 120.5,
+     "walkS": 86.1,
+     "withLiftS": 89.1,
+     "seenOnTheWay": [
+      {
+       "id": "camera:pickup",
+       "ofPath": 0.05,
+       "peak": 1
+      },
+      {
+       "id": "driver (pickup)",
+       "ofPath": 0.09,
+       "peak": 1
+      },
+      {
+       "id": "patrol (sweep)",
+       "ofPath": 0.1,
+       "peak": 0.37
+      },
+      {
+       "id": "camera:entrance",
+       "ofPath": 0,
+       "peak": 1
+      },
+      {
+       "id": "guard (at the door)",
+       "ofPath": 0.11,
+       "peak": 1
+      },
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.16,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 97.1,
+      "clearShare": 0.64,
+      "longestClearStartS": 64
+     }
+    },
+    "cafe": {
+     "m": 30.1,
+     "walkS": 21.5,
+     "withLiftS": 24.5,
+     "seenOnTheWay": [
+      {
+       "id": "Inez (café door)",
+       "ofPath": 0.3,
+       "peak": 1
+      }
+     ],
+     "patrol": {
+      "actS": 32.5,
+      "clearShare": 1,
+      "longestClearStartS": 100
+     }
+    }
+   }
+  }
+ ]
+}

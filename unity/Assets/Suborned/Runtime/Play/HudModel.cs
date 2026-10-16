@@ -35,7 +35,9 @@ namespace Suborned.Play
         }
         public string PanelRole = "", PanelTarget = "", PanelBadge = "", PanelSub = "", PanelNeed = "", PanelNeedMark = "", PanelTemp = ""; public bool PanelPerson, PanelSecret;
         // the price chip's parts (the kit's chip_price: verb icon, $ · time · Trail · Alert, the outcome mark)
-        public string ChipIcon = "", ChipUsd = "", ChipTime = "", ChipTrail = "", ChipAlert = "", ChipMark = "unk";
+        public string ChipIcon = "", ChipUsd = "", ChipTime = "", ChipTrail = "", ChipAlert = "", ChipMark = "unk", ChipSeen = "";
+        /// <summary>Over the watchers noticing an agent whose sight the cell doesn't know: a "?" (world points).</summary>
+        public IReadOnlyList<Vector3> Unknowns = System.Array.Empty<Vector3>();
         // the briefing as the kit's card lays it out
         public string BriefTitle = "", BriefSub = "", BriefSituation = "", BriefObjective = "", BriefWin = "", BriefClock = "", BriefPurse = "", BeginKey = "", RestartKey = "";
         public readonly List<string> BriefFails = new(); public readonly List<(string title, string body)> BriefWays = new();
@@ -179,11 +181,11 @@ namespace Suborned.Play
                 // act … select the Fixer", no "right click: actions")
                 Chip = ChipKind.Price;
                 var o = it.Order; ChipIcon = AtlasIcon(o.Do, o.Approach, ""); ChipUsd = it.Usd; ChipTime = it.Time; ChipTrail = it.Trail.Replace("T ", ""); ChipAlert = it.Alert.Replace("A ", "");
-                ChipMark = MarkOf(it.Outcome);
+                ChipMark = MarkOf(it.Outcome); ChipSeen = it.Seen;
                 ChipText = $"{it.Label}   {it.Usd}   ·   {it.Time}   ·   {it.Trail}   ·   {it.Alert}{(it.Outcome.Length > 0 ? $"   ·   {it.Outcome}" : "")}";
             }
             else Chip = ChipKind.None;
-            Pops = h.Pops; Pulses = h.Pulses;
+            Pops = h.Pops; Pulses = h.Pulses; Unknowns = h.Unknowns;
             // the action panel
             PanelOpen = h.Panel != null;
             if (PanelOpen && cardsFor != h.Panel)
@@ -360,7 +362,7 @@ namespace Suborned.Play
                         "turned" => i.Orders > 1 ? "Works, one step worse" : "Works", "kept" => "Works", "refused" => "They would refuse", "not-yet" => "Not yet: one more try",
                         _ => "? until the Scout learns who they are",
                     };
-                case "watch": return "Learns their routine";
+                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Learns their routine";
                 case "listen": return "Learns their need and temperament";
                 case "loop": return "Loops the camera; the Tech stays at the cabinet";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";

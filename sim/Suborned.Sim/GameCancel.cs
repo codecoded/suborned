@@ -69,8 +69,14 @@ namespace Suborned.Sim
             if (g.HolsterAt >= 0) { a.Verb = "holster"; a.Phase = "acting"; a.TicksLeft = Math.Max(0, g.HolsterAt - Tick); a.OnDone = "weapon away"; a.CancelCost = "none"; a.CancelText = "holstering finishes in a moment"; return a; }
             if (id == OpId.Tech && LoopOn)
             {
-                a.Verb = "loop"; a.Target = "entrance"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "holds while the Tech stays at the cabinet";
+                a.Verb = "loop"; a.Target = LoopCam; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "holds while the Tech stays at the cabinet";
                 a.CanCancel = true; a.CancelCost = "ends"; a.CancelText = "the loop ends and the camera comes back";
+                return a;
+            }
+            if (op.CarryBody.Length > 0) // brief 013: a body carried
+            {
+                a.Verb = "carry"; a.Target = op.CarryBody; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "a stash hides it; open ground does not";
+                a.CanCancel = true; a.CancelCost = "put-down"; a.CancelText = "the body is laid down here";
                 return a;
             }
             if (op.Carrying.HasValue)
@@ -93,15 +99,26 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
-                case "watch": return "learns the routine";
+                case "watch":
+                    {
+                        if (o.Target == "guard") return "learns the routine and his sight";
+                        if (IsPersonRoleName(o.Target)) return "learns the routine";
+                        var k = Known(o.Target);
+                        bool routine = k != null && !k.Routine && k.RoutineNeedsS > 0 && k.WatchedS + R.SightWatchS >= k.RoutineNeedsS;
+                        return routine ? "learns the sight and the routine" : "learns the sight";
+                    }
                 case "listen": return "learns the need and temperament";
                 case "turn": return op.BusyQuote?.Outcome ?? "?";
-                case "loop": return "the entrance camera loops";
+                case "loop": return o.Target == "entrance" ? "the entrance camera loops" : $"the {o.Target} camera loops";
                 case "reroute": return "the patrol leaves its sweep";
                 case "mislead": return "the rivals follow a false tip";
                 case "enter": return "out at the service lane with Vale";
                 case "take": return "Vale is with the Enforcer";
-                case "carry": return $"lifts the {o.Target}";
+                case "carry": return IsOpId(o.Target) ? $"lifts the {o.Target}" : $"lifts {o.Target}";
+                case "takedown": return o.How == "kill" ? "dead" : "out";
+                case "drop": return "laid down";
+                case "stash": return "hidden";
+                case "restrain": return "tied";
                 default: return "";
             }
         }
@@ -112,7 +129,8 @@ namespace Suborned.Sim
             {
                 case "watch": case "listen": return ("lost", "the time is spent; nothing is learned");
                 case "turn": return R.CancelTurn == "aborted" ? ("aborted", $"the money held comes back; the {op.Busy!.Target} remembers an aborted approach and the Fixer's face") : ("lost", "the money held comes back; nothing is remembered");
-                case "loop": case "reroute": case "mislead": case "carry": return ("lost", "the time is spent; nothing lands");
+                case "loop": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
+                case "takedown": return ("released", "the victim is let go: he saw it, and reports it as a woken victim would");
                 case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", "back out at the public door without Vale; the staff report the intruder (a reported incident)") : ("quiet", "back out at the public door without Vale");
                 case "take": return R.CancelTake == "vale-reports" ? ("vale-reports", "Vale is let go at his car and reports the attempt (a reported incident)") : ("quiet", "Vale is let go at his car");
                 default: return ("lost", "nothing lands");
@@ -140,9 +158,20 @@ namespace Suborned.Sim
                                 op.Inside = false; op.Pos = S.Stand(S.GuardPost); EntryInProgress = false;
                                 if (R.CancelEnter == "staff-report") ReportBy("office-staff", S.Stand(S.GuardPost));
                                 break;
+                            case "takedown": // brief 013 (rulebook cancel.takedown released): let go, he saw the Enforcer and reports it
+                                if (BodyById(o.Target) is Body tb && tb.Seizing) { var ta = ActOf(tb); ta.Aware = true; tb.Seizing = false; Remember(tb.P, "attacked-aware", "enforcer", false); Wake(tb, false); }
+                                break;
                             case "take":
                                 Vale = ValeAt.Pickup;
-                                if (R.CancelTake == "vale-reports") { ReportBy("councillor", ValePos() ?? op.Pos); Remember(ValeP, "aborted", "enforcer", false); } // a lead for the investigators (Motive addendum Q4)
+                                if (R.CancelTake == "vale-reports")
+                                {
+                                    // a Take already seen is an incident: Vale's own report is one more report of it (one incident counts once
+                                    // toward Alert, brief 013 D), a victim's report as a woken victim's; unseen, it is the reported incident it was
+                                    var ta = Acts.Find(x => x.Take);
+                                    if (ta != null) LandAct(ta, "woken", "councillor", ValeP, ValePos() ?? op.Pos, SevOf("woken"), "");
+                                    else ReportBy("councillor", ValePos() ?? op.Pos);
+                                    Remember(ValeP, "aborted", "enforcer", false); // a lead for the investigators (Motive addendum Q4)
+                                }
                                 break;
                         }
                         Note("cancel." + o.Do, $"{name} stops: {o.Do}{(o.Target.Length > 0 ? " " + o.Target : "")} ({a.CancelCost}: {a.CancelText}).");
@@ -162,6 +191,7 @@ namespace Suborned.Sim
                     return "";
                 case "holding":
                     if (a.Verb == "loop") { LoopOn = false; Note("loop.ends", "The Tech lets the loop go. The camera feed returns."); return ""; }
+                    if (a.Verb == "carry" && op.CarryBody.Length > 0) { PutDown(op, "cancel"); return ""; }
                     if (a.Verb == "carry") { var c = OpOf(op.Carrying!.Value); c.CarriedBy = null; op.Carrying = null; Note("cancel.carry", $"{name} lays the {Sim.Op.Name(c.Id)} down."); return ""; }
                     break;
             }

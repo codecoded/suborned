@@ -40,5 +40,22 @@ export function withCause(ledger: Ledger, hash: string, cause: string, rules: st
   return list;
 }
 
+/**
+ * The causes declared for every other code hash, added to `hash`'s own (a cause already there keeps its place and gains the union of the rules). A cause says why some rule's result moved from an earlier code
+ * state, and a recorded run made under any earlier state still needs it, so a new declaration carries the whole standing list forward instead of starting from the one new cause. Returns how many were added.
+ */
+export function carryForward(ledger: Ledger, hash: string): number {
+  const list = declaredFor(ledger, hash), before = list.length;
+  for (const [h, causes] of Object.entries(ledger.declared)) {
+    if (h === hash) continue;
+    for (const c of causes.map(normal)) {
+      const same = list.find(x => x.cause === c.cause);
+      if (same) same.rules = [...new Set([...same.rules, ...c.rules])]; else list.push({ cause: c.cause, rules: [...c.rules] });
+    }
+  }
+  if (list.length) ledger.declared[hash] = list;
+  return list.length - before;
+}
+
 /** `SK-1, F-7` for a cause that covers rules; `no rule` for one that covers none. */
 export const rulesText = (c: Cause): string => (c.rules.length ? c.rules.join(', ') : 'no rule');

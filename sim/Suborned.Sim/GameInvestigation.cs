@@ -22,6 +22,10 @@ namespace Suborned.Sim
     {
         public readonly List<BetweenLine> Lines = new List<BetweenLine>(); public bool Ambush; public readonly List<string> AmbushBy = new List<string>();
         public readonly List<Person> Contacts = new List<Person>();
+        // brief 013 (Sky 2026-10-16; Motive §2.5, §2.6): what the takedowns leave the campaign. No campaign layer runs yet: these are outputs.
+        public int CampaignTrail, CampaignStanding, OpenCases, NextLevel;
+        public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)
+        public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();
     }
 
     /// <summary>The seeded streams (rulebook streams): FNV-1a 32 and mulberry32, integer draws; the same as contracts/rules/rulebook.ref.ts.</summary>
@@ -78,13 +82,14 @@ namespace Suborned.Sim
         void Watchers()
         {
             if (Tick % Hz != 0) return;
-            for (int w = 0; w < 3; w++)
+            var world = new List<string>(); foreach (var c in S.Cameras) if (c.World) world.Add(c.Id); // the city's own cameras (brief 013), after the mission's
+            for (int w = 0; w < 3 + world.Count; w++)
             {
-                string id = w == 0 ? "camera:entrance" : w == 1 ? "camera:pickup" : "patrol";
+                string id = w == 0 ? "camera:entrance" : w == 1 ? "camera:pickup" : w == 2 ? "patrol" : "camera:" + world[w - 3];
                 foreach (var op in Ops)
                 {
                     if (op.Inside) continue;
-                    bool sees = w == 0 ? CameraWatching("entrance", op.Pos) : w == 1 ? CameraWatching("pickup", op.Pos) : PatrolWatching(op.Pos);
+                    bool sees = w == 0 ? CameraWatching("entrance", op.Pos) : w == 1 ? CameraWatching("pickup", op.Pos) : w == 2 ? PatrolWatching(op.Pos) : CameraWatching(world[w - 3], op.Pos);
                     string key = id + "/" + Sim.Op.Name(op.Id);
                     if (!sees) { openSighting.Remove(key); continue; }
                     foreach (var c in People) // a logged operative beside a contact, at any second of the sighting, ties the contact to the cell (rulebook exposure)
@@ -136,7 +141,7 @@ namespace Suborned.Sim
                 if (who.Count == 1) spent.Add(lead.seq);
                 var p = who[0].p; asked.Add(p);
                 var f = Question(p, lead.what); f.Hop = hop;
-                if (f.Outcome == "gives")
+                if (f.Outcome == "gives" || f.Outcome == "volunteers") // volunteers: a reporter (brief 013)
                 {
                     foreach (var m in p.Memory) // each fact's place and time becomes a lead (one step up the chain, §02)
                     {
@@ -161,6 +166,7 @@ namespace Suborned.Sim
             var outcome = FirstOutcome(ev, Ctx(p, ev)).Id; // holds-nothing, gives, lies, nothing: the rulebook's event decides
             var f = new Finding { Who = p.Role.Length > 0 ? p.Role : p.Id, Outcome = outcome, Lead = lead };
             if (outcome == "gives") { foreach (var fact in FactsOf(p)) f.Facts.Add(fact); f.Cause = TalkerCause(p); }
+            else if (outcome == "volunteers") foreach (var fact in FactsOf(p)) f.Facts.Add(fact); // a reporter gives what they hold, no Talker test (brief 013)
             else if (outcome == "lies") f.Facts.Add(R.BandOf(Standing) == Band.Hero ? R.LieGivesHero : R.LieGivesOtherwise);
             return f;
         }
@@ -175,7 +181,7 @@ namespace Suborned.Sim
         {
             var o = new List<string>();
             void add(string f) { if (!o.Contains(f)) o.Add(f); }
-            foreach (var m in p.Memory) { if (m.Act == "told") continue; add("place-time"); if (R.FaceFact.TryGetValue(m.By, out var ff)) add(ff); }
+            foreach (var m in p.Memory) { if (m.Act == "told") continue; add("place-time"); foreach (var af in R.ActFacts[m.Act]) add(af); if (R.FaceFact.TryGetValue(m.By, out var ff)) add(ff); } // the act's facts (brief 013: enforcer-face), then the face of who did it
             foreach (var m in p.Memory) if (m.Act == "told" && m.Told != null) foreach (var f in m.Told.Split('|')) if (f.Length > 0) add(f);
             o.Sort((a, b) => R.Facts.IndexOf(a).CompareTo(R.Facts.IndexOf(b)));
             return o;
@@ -277,14 +283,71 @@ namespace Suborned.Sim
                     foreach (var (kind, with) in ts) if (R.TieIntroduces.TryGetValue(kind, out var intro) && intro && byId.TryGetValue(with, out var q) && !q.Turned && !q.Has(R.RefusedAct)) can.Add(with + " (" + kind + ")");
                     if (can.Count > 0) line("introduced", p, "can introduce " + string.Join(", ", can) + ", up to " + fmt(R.IntroductionsPerContact) + " (the player's pick)");
                 }
+            Takedowns(b, C, byId, line, fmt);
             foreach (var p in everyone) if (p.Turned) b.Contacts.Add(C(p));
             return b;
+        }
+
+        /// <summary>Brief 013's between-missions events, in the phase order (bodies.surface, body.grieved, missing.worried, area.hardens,
+        /// cases.count): a hidden killing is a missing person, an open or found one a found killing; a knockout still down comes home and
+        /// gives a statement; ties grieve or worry; the block hardens; the cases set the district's next level. On copies, as the rest.</summary>
+        void Takedowns(Between b, Func<Person, Person> C, Dictionary<string, Person> byId, Action<string, Person, string> line, Func<int, string> fmt)
+        {
+            if (!Acts.Exists(x => !x.Take)) { b.NextLevel = S.SecurityLevel; return; } // a Take seen is an incident, never a body
+            var found = new List<TdAct>(); var missing = new List<TdAct>();
+            foreach (var a in Acts)
+            {
+                if (a.Take) continue;
+                var body = BodyOf(a.P);
+                string where = a.Scene.ToString();
+                if (a.Kill)
+                {
+                    bool hidden = body != null && !body.Open && !a.Confirmed;
+                    if (hidden) { missing.Add(a); b.CampaignTrail += R.MissingTrail; line("missing", a.P, $"{(body!.Stash)}: {fmt(R.MissingTrail)} T, no Menace; the case stays open until the body is found"); }
+                    else
+                    {
+                        found.Add(a);
+                        if (!a.ActTrail) { b.CampaignTrail += R.HitTrail + R.DownTrail + R.KillTrail; line("case", a.P, $"found after the mission where he lay: {fmt(R.HitTrail + R.DownTrail + R.KillTrail)} T"); }
+                        if (!a.StandingPaid) { b.CampaignStanding += R.FoundKillStanding; }
+                    }
+                    continue;
+                }
+                if (body != null && body.P.Down && !a.Statement) // a knockout still down at the end: he comes home and gives a statement (Motive §3.2)
+                {
+                    var c = C(a.P);
+                    c.Sc[Rules.Fear] = R.Clamp(Rules.Fear, c.Sc[Rules.Fear] + 1); if (a.Aware) c.Sc[Rules.Resentment] = R.Clamp(Rules.Resentment, c.Sc[Rules.Resentment] + 1);
+                    if (!a.ActTrail) b.CampaignTrail += R.HitTrail + R.DownTrail;
+                    line("statement", a.P, $"comes home: place and time{(a.Aware ? " and the Enforcer's face" : "")}; {fmt(a.ActTrail ? 0 : R.HitTrail + R.DownTrail)} T");
+                }
+            }
+            // ties: grief for a found killing (a turned contact takes the saw-violence move; everyone else fear +1), worry for a missing person
+            void ties(TdAct a, string what)
+            {
+                if (People2 == null || !People2.Ties.TryGetValue(a.P.Id, out var ts)) return;
+                var ids = new List<string>(); foreach (var (k, id) in ts) if (R.CloseTies.Contains(k) && !ids.Contains(id)) ids.Add(id);
+                ids.Sort(StringComparer.Ordinal);
+                foreach (var id in ids)
+                {
+                    if (!byId.TryGetValue(id, out var q)) continue;
+                    var c = C(q);
+                    if (what == "grief" && q.Turned) { foreach (var (k, by) in R.Ladders["saw-violence"]) c.Sc[k] = R.Clamp(k, c.Sc[k] + by); line("grief", q, $"{Who(a.P)}: saw-violence"); }
+                    else { c.Sc[Rules.Fear] = R.Clamp(Rules.Fear, c.Sc[Rules.Fear] + R.MissingTiesFear); line(what, q, $"{Who(a.P)}: fear +{fmt(R.MissingTiesFear)}"); }
+                }
+            }
+            foreach (var a in found) ties(a, "grief");
+            foreach (var a in missing) ties(a, "worry");
+            foreach (var a in found) { b.AreaWatch.Add((a.Scene.ToString(), R.AreaWatchStep, R.AreaWatchStep, R.AreaWatchMissions)); b.Cases.Add((Who(a.P), "found-killing", a.Scene.ToString(), R.CaseCloseMissions)); }
+            foreach (var a in missing) { b.AreaWatch.Add((a.Scene.ToString(), R.AreaWatchStep, R.AreaWatchStep, R.AreaWatchMissions)); b.Cases.Add((Who(a.P), "missing", a.Scene.ToString(), -1)); }
+            foreach (var w in b.AreaWatch) b.Lines.Add(new BetweenLine { Line = "area-watch", Who = "", Detail = $"{w.place}: +{fmt(w.guards)} guard, +{fmt(w.cameras)} camera for {fmt(w.missions)} missions" });
+            b.OpenCases = b.Cases.Count;
+            b.NextLevel = Math.Min(4, Math.Min(S.SecurityBase + R.CaseLevelCap, S.SecurityBase + b.OpenCases / R.CasesPerLevel));
+            foreach (var c in b.Cases) b.Lines.Add(new BetweenLine { Line = "case", Who = c.who, Detail = c.kind == "missing" ? "missing: open until the body is found" : $"found killing: closes after {fmt(c.missions)} missions" });
         }
 
         List<string> FactsOfWitnessed(Person p)
         {
             var o = new List<string>();
-            foreach (var m in p.Memory) { if (m.Act == "told") continue; if (!o.Contains("place-time")) o.Add("place-time"); if (R.FaceFact.TryGetValue(m.By, out var f) && !o.Contains(f)) o.Add(f); }
+            foreach (var m in p.Memory) { if (m.Act == "told") continue; if (!o.Contains("place-time")) o.Add("place-time"); foreach (var af in R.ActFacts[m.Act]) if (!o.Contains(af)) o.Add(af); if (R.FaceFact.TryGetValue(m.By, out var f) && !o.Contains(f)) o.Add(f); }
             return o;
         }
 

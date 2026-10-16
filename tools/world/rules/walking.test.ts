@@ -22,11 +22,11 @@ test('W-5 passes on the live block: 500-odd walks between the doors, the Handove
   expect(r.detail).toMatch(/^\d+ walks between 3\d points; \d+ narrow places inside the standard's exceptions/);
 });
 
-test('the points the walks run between: the three doors, the Handover points that are not doors, the crossing landings the dressing names; the seating area is the café terrace until the block says', () => {
+test('the points the walks run between: the three doors and the two service doors, the Handover points that are not doors, the crossing landings the dressing names; the seating area is the café terrace until the block says', () => {
   const ctx = ctxOf(plan, derive(plan), base.civ, { w: base.w, gen: base.gen });
   const pts = blockPoints(ctx);
-  expect(pts.length).toBe(32);
-  for (const door of base.civ.entrances) expect(pts.some(p => p.name === door.name)).toBe(true);
+  expect(pts.length).toBe(34); // 32 and the two service doors (brief 013)
+  for (const door of [...base.civ.entrances, ...base.civ.serviceDoors]) expect(pts.some(p => p.name === door.name)).toBe(true);
   expect(pts.filter(p => /^landing /.test(p.name)).length).toBe(9);
   expect(seatingAreas(ctx)).toHaveLength(1); // cafe-terrace
   const none = ctxOf(plan, derive(plan), { ...base.civ, dressing: { ...(base.civ.dressing as object), seating: ['no-such-zone'] } } as never, { w: base.w, gen: base.gen });
@@ -40,7 +40,9 @@ test('without the seating allowance the narrow places inside the café terrace p
   const civ = { ...base.civ, dressing: { ...(base.civ.dressing as object), seating: ['no-such-zone'] } };
   const open = w5(strict, civ as never)!;
   expect(open.ok).toBe(false);
-  expect(open.detail).toMatch(/^4 fail: Office entrance → Behind café passes 1\.87 m for 0\.8 m of the walk, past the 0 m a constrained gap may run between CafeBay\/wall-front-w and cafe-table-1 /); // the 1.85 m Datum measured between the tables and the terrace wall
+  expect(open.detail).toMatch(/^4 fail: /); // the 1.85 m Datum measured between the tables and the terrace wall, on both sides of the terrace: the same four gaps
+  expect(open.detail).toMatch(/Office entrance → Behind café passes 1\.87 m for 0\.8 m of the walk, past the 0 m a constrained gap may run between CafeBay\/wall-front-w and cafe-table-1 /);
+  expect(open.detail).toMatch(/Office entrance → Café kitchen door passes 1\.87 m for 0\.8 m of the walk, past the 0 m a constrained gap may run between cafe-table-2 and CafeBay\/wall-front-e /); // the kitchen door's walks (brief 013) cross the same gap
 });
 
 test('a plan that states no body has no W-5; nor has a block with no ground solids', () => {

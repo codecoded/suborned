@@ -24,8 +24,8 @@ namespace Suborned.Sim
             // §08: little → early → active by Trail (0 / 1–2 / 3+); a named cause takes precedence: a civilian shot, a witness of violence, the
             // Fixer's face given up to the investigators (rulebook investigation), the staged distraction; then the count
             (d.InvestigationState, d.InvestigationCause) =
-                g.Inez.Down ? ("active", "waitress-shot") :
-                g.Driver.Down ? ("active", "driver-shot") :
+                g.GunOf("waitress")!.Down ? ("active", "waitress-shot") :
+                g.GunOf("driver")!.Down ? ("active", "driver-shot") :
                 g.InezWitnessedShooting ? ("active", "waitress-witnessed-shooting") :
                 g.InezMethod == "pressure" ? ("active", "waitress-can-identify-fixer") :
                 d.Inv.NamedCause.Length > 0 ? ("active", d.Inv.NamedCause) :
@@ -92,7 +92,9 @@ namespace Suborned.Sim
                 w.EndObj();
             }
             w.EndArr().EndObj();
-            w.Open("nextMission").Prop("ambush", Next.Ambush); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
+            w.Open("nextMission").Prop("ambush", Next.Ambush);
+            if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before
+                w.Prop("campaignTrail", Next.CampaignTrail).Prop("campaignStanding", Next.CampaignStanding).Prop("openCases", Next.OpenCases).Prop("nextLevel", Next.NextLevel); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
             w.OpenArr("lines"); foreach (var l in Next.Lines) w.Obj().Prop("line", l.Line).Prop("who", l.Who).Prop("detail", l.Detail).EndObj(); w.EndArr();
             w.OpenArr("contacts");
             foreach (var c in Next.Contacts)
@@ -113,36 +115,43 @@ namespace Suborned.Sim
     /// <summary>Loading and playing: the engine's inputs from the repo, a script played to its end, a replay from its orders.</summary>
     public static class Engine
     {
-        public const string RulebookFile = "contracts/rules/rulebook.json", PeopleRulesFile = "contracts/people/people.rules.json", SiteFile = "sim/data/handover.site.json", PeopleFile = "sim/data/handover.people.json";
+        public const string RulebookFile = "contracts/rules/rulebook.json", PeopleRulesFile = "contracts/people/people.rules.json", SiteFile = "sim/data/handover.site.json", PeopleFile = "sim/data/handover.people.json",
+            ProvisionalFile = "sim/data/handover.provisional.json", // brief 013: the security level until the plan and mission carry it
+            TakedownFile = "sim/data/handover.takedown.json";       // brief 013: stashes, report points, docks and posts (Splice, tools/sim/takedown.ts)
 
         public sealed class Inputs
         {
-            public string Rulebook = "", PeopleRules = "", Site = "", People = ""; public Rules Rules = null!; public Site SiteData = null!; public Crowd? Crowd;
+            public string Rulebook = "", PeopleRules = "", Site = "", People = "", Provisional = "", Takedown = ""; public Rules Rules = null!; public Site SiteData = null!; public Crowd? Crowd;
             /// <summary>The inputs' hash over their canonical text (no BOM, LF line ends: Redline E4), so a Windows checkout replays a Mac record.</summary>
-            public ulong Hash { get { unchecked { return Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7) ^ (Sim.Hash.Of(People) * 11); } } }
+            public ulong Hash { get { unchecked { var h = Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7) ^ (Sim.Hash.Of(People) * 11); if (Provisional.Length > 0) h ^= Sim.Hash.Of(Provisional) * 13; if (Takedown.Length > 0) h ^= Sim.Hash.Of(Takedown) * 17; return h; } } } // a host without brief 013's files hashes as before, and its record says so
         }
         static Inputs? cache; static string? cacheRoot;
         public static Inputs Load(string root)
         {
             if (cache != null && cacheRoot == root) return cache;
             string rd(string f) => System.IO.File.ReadAllText(System.IO.Path.Combine(root, f));
-            var i = FromTexts(rd(RulebookFile), rd(PeopleRulesFile), rd(SiteFile), rd(PeopleFile));
+            string? opt(string f) => System.IO.File.Exists(System.IO.Path.Combine(root, f)) ? rd(f) : null;
+            var i = FromTexts(rd(RulebookFile), rd(PeopleRulesFile), rd(SiteFile), rd(PeopleFile), opt(ProvisionalFile), opt(TakedownFile));
             cache = i; cacheRoot = root; return i;
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.4.0";
+        public const string Version = "suborned.sim/0.5.0"; // 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
-        public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null)
+        public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null)
         {
             rulebook = JNode.Canon(rulebook); peopleRules = JNode.Canon(peopleRules); site = JNode.Canon(site); people = people == null ? null : JNode.Canon(people);
-            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site, People = people ?? "" };
+            provisional = provisional == null ? null : JNode.Canon(provisional); takedown = takedown == null ? null : JNode.Canon(takedown);
+            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site, People = people ?? "", Provisional = provisional ?? "", Takedown = takedown ?? "" };
             i.Rules = new Rules(rulebook, peopleRules); i.SiteData = new Site(site);
+            if (provisional != null) i.SiteData.AddProvisional(provisional);
+            if (takedown != null) i.SiteData.AddTakedownWorld(takedown);
             if (people != null)
             {
                 var cast = new List<string>(); foreach (var c in i.SiteData.Cast) cast.Add(c.Id);
                 i.Crowd = new Crowd(people, i.Rules, cast);
+                i.Crowd.Warm(i.SiteData); // every routine leg's walk, once, at load: no tick pays for it
             }
             return i;
         }

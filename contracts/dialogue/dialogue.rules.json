@@ -233,9 +233,18 @@
    "tie": "workmate",
    "friend": "Dimitra Marchetti",
    "with": "Dimitra Marchetti",
-   "kind": "regular",
+   "kind": "found killing",
    "why": "the café closed",
-   "temperament": "mercenary"
+   "temperament": "mercenary",
+   "facts": "place, time and the Enforcer's face",
+   "trail": "12",
+   "place": "the service lane",
+   "of": "Dimitra Marchetti",
+   "fear": "fear +1",
+   "guards": "2",
+   "cameras": "2",
+   "missions": "3",
+   "closes": "when the body is found"
   }
  },
  "listen": {

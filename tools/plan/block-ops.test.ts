@@ -21,12 +21,15 @@ describe('the committed block', () => {
     expect(block.schema).toBe('suborned.block/4');
     expect(office(block).towers.map((t: any) => [t.id, t.polygon])).toEqual([
       ['public', [[52.5, -33], [58.5, -33], [58.5, -27], [52.5, -27]]], ['official', [[69.5, -33], [75.5, -33], [75.5, -27], [69.5, -27]]]]);
-    expect(office(block).entrances).toMatchObject([{ id: 'office-entrance', at: [51.75, -30], z: 0.75 }, { id: 'official-entrance', at: [76.25, -30], z: 0 }]);
+    expect(office(block).entrances).toMatchObject([
+      { id: 'office-entrance', kind: 'public', at: [51.75, -30], z: 0.75 }, { id: 'official-entrance', kind: 'official', at: [76.25, -30], z: 0 },
+      { id: 'office-service-door', kind: 'service', at: [63, -41.1], z: 0 }]); // brief 013: the service door in the lane, with its kind
+    expect(block.buildings.find((x: any) => x.id === 'cafe').entrances).toMatchObject([{ id: 'cafe-entrance', kind: 'public' }, { id: 'cafe-kitchen-door', kind: 'service', at: [-22.4, -26] }]);
     expect(block.structures.map((s: any) => s.id).filter((id: string) => id.startsWith('office-pavilion-support'))).toEqual([]);
     expect(block.dressing).toEqual(adjust.dressing);
     expect(adjust.pending.ops).toEqual([]); // each op moved out of pending, its reason kept
     expect(block.adjustments.applied.filter((a: any) => ['towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'dressing'].includes(a.op)).map((a: any) => a.op))
-      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'dressing']);
+      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'addEntrance', 'addEntrance', 'dressing']);
     expect(block.adjustments.applied.every((a: any) => a.reason.length > 20)).toBe(true);
   });
 
@@ -79,6 +82,7 @@ describe.skipIf(!sources)('bun tools/plan/block.ts --adjust (needs the Oct 9 sou
     expect(bad({ op: 'remove', id: 'no-such-pier' }).err).toContain('no such item');
     expect(bad({ op: 'addEntrance', building: 'civic-office', item: { id: 'office-entrance', name: 'x', at: [0, 0] } }).err).toContain('exists');
     expect(bad({ op: 'addEntrance', building: 'civic-hall', item: { id: 'x', name: 'x', at: [0, 0] } }).err).toContain('no building civic-hall');
+    expect(bad({ op: 'addEntrance', building: 'civic-office', item: { id: 'back-door', name: 'x', kind: 'trade', at: [0, 0] } }).err).toContain('kind trade is none of public, official, service');
     expect(bad({ op: 'twist', id: 'x' }).err).toContain('unknown adjustment op');
     expect(bad({ op: 'remove', id: 'square-pavilion-support-0', reason: ' ' }).err).toContain('without a reason');
     expect(run(a => { delete a.dressing; }).err).toContain('no `dressing` key');

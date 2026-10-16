@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -1968,6 +1968,66 @@
    "edge": "starline-green/e2",
    "sight": "open",
    "source": "procedural"
+  },
+  {
+   "id": "street/civic/stash/office-service-door",
+   "kind": "dumpster",
+   "at": [
+    -171.193,
+    -290.35
+   ],
+   "yaw": 1.5708,
+   "z": 0.18,
+   "size": [
+    2.1,
+    1.186,
+    1.513
+   ],
+   "surface": "enamel",
+   "edge": "civic/civic-office",
+   "sight": "blocks",
+   "stash": {
+    "holds": 1
+   },
+   "source": "procedural"
+  },
+  {
+   "id": "street/civic/police-post-0",
+   "kind": "police-post",
+   "at": [
+    -179,
+    -228
+   ],
+   "yaw": 1.5708,
+   "z": 0.18,
+   "size": [
+    1,
+    1,
+    2.8
+   ],
+   "surface": "enamel",
+   "edge": "civic/rocket-lane",
+   "sight": "blocks",
+   "source": "procedural"
+  },
+  {
+   "id": "street/civic/call-box-0",
+   "kind": "phone-booth",
+   "at": [
+    -136,
+    -260
+   ],
+   "yaw": 3.1416,
+   "z": 0.18,
+   "size": [
+    1,
+    1,
+    2.5
+   ],
+   "surface": "booth",
+   "edge": "civic/orbit-walk",
+   "sight": "glazed",
+   "source": "procedural"
   }
  ],
  "crossings": [
@@ -2152,6 +2212,436 @@
    }
   }
  ],
+ "takedown": {
+  "grid": {
+   "x0": -52,
+   "x1": 112,
+   "y0": -66,
+   "y1": 16,
+   "cell": 0.5
+  },
+  "reach": {
+   "report": 40,
+   "origin": 40,
+   "lattice": 2
+  },
+  "entrances": [
+   {
+    "id": "cafe-entrance",
+    "building": "cafe",
+    "name": "Café entrance",
+    "kind": "public",
+    "at": [
+     -159,
+     -219.7
+    ],
+    "z": 0,
+    "stand": [
+     -158.75,
+     -219.75
+    ]
+   },
+   {
+    "id": "office-entrance",
+    "building": "civic-office",
+    "name": "Office entrance",
+    "kind": "public",
+    "at": [
+     -160,
+     -281.75
+    ],
+    "z": 0.75,
+    "stand": [
+     -159.75,
+     -281.75
+    ]
+   },
+   {
+    "id": "official-entrance",
+    "building": "civic-office",
+    "name": "Official entrance",
+    "kind": "official",
+    "at": [
+     -160,
+     -306.25
+    ],
+    "z": 0,
+    "stand": [
+     -159.75,
+     -306.25
+    ]
+   },
+   {
+    "id": "cafe-kitchen-door",
+    "building": "cafe",
+    "name": "Café kitchen door",
+    "kind": "service",
+    "at": [
+     -156,
+     -207.6
+    ],
+    "z": 0,
+    "stand": [
+     -155.75,
+     -207.75
+    ]
+   },
+   {
+    "id": "office-service-door",
+    "building": "civic-office",
+    "name": "Office service door",
+    "kind": "service",
+    "at": [
+     -171.1,
+     -293
+    ],
+    "z": 0,
+    "stand": [
+     -171.25,
+     -293.25
+    ]
+   }
+  ],
+  "stashes": [
+   {
+    "id": "stash/cafe-kitchen-door/door",
+    "kind": "door",
+    "at": [
+     -156,
+     -207.6
+    ],
+    "stand": [
+     -155.75,
+     -207.75
+    ],
+    "holds": 3,
+    "of": "cafe-kitchen-door",
+    "bare": "no container: neither against the wall beside Café kitchen door nor in a kerb zone within 10 m of it does a Dumpster (2.1 x 1.186 m) pass the street rules (SF-1 clear walking zone, SF-2 crossings and doors, SF-14 quay)"
+   },
+   {
+    "id": "stash/office-service-door/door",
+    "kind": "door",
+    "at": [
+     -171.1,
+     -293
+    ],
+    "stand": [
+     -171.25,
+     -293.25
+    ],
+    "holds": 3,
+    "of": "office-service-door"
+   },
+   {
+    "id": "stash/office-service-door/container",
+    "kind": "container",
+    "at": [
+     -171.193,
+     -290.35
+    ],
+    "stand": [
+     -172.75,
+     -290.25
+    ],
+    "holds": 1,
+    "of": "office-service-door",
+    "item": "street/civic/stash/office-service-door",
+    "ring": [
+     [
+      -170.6,
+      -291.4
+     ],
+     [
+      -170.6,
+      -289.3
+     ],
+     [
+      -171.786,
+      -289.3
+     ],
+     [
+      -171.786,
+      -291.4
+     ]
+    ]
+   }
+  ],
+  "report": [
+   {
+    "id": "door:cafe-entrance",
+    "kind": "door",
+    "at": [
+     -159,
+     -219.7
+    ],
+    "stand": [
+     -158.75,
+     -219.75
+    ],
+    "door": "cafe-entrance"
+   },
+   {
+    "id": "door:office-entrance",
+    "kind": "door",
+    "at": [
+     -160,
+     -281.75
+    ],
+    "stand": [
+     -159.75,
+     -281.75
+    ],
+    "door": "office-entrance"
+   },
+   {
+    "id": "door:official-entrance",
+    "kind": "door",
+    "at": [
+     -160,
+     -306.25
+    ],
+    "stand": [
+     -159.75,
+     -306.25
+    ],
+    "door": "official-entrance"
+   },
+   {
+    "id": "street/orbit-gardens/e2/phone-booth-472",
+    "kind": "call-box",
+    "at": [
+     -126,
+     -323
+    ],
+    "stand": [
+     -125.75,
+     -323.25
+    ],
+    "item": "street/orbit-gardens/e2/phone-booth-472"
+   },
+   {
+    "id": "street/rocket-west/e1/phone-booth-548",
+    "kind": "call-box",
+    "at": [
+     -193,
+     -341
+    ],
+    "stand": [
+     -191.75,
+     -340.75
+    ],
+    "item": "street/rocket-west/e1/phone-booth-548"
+   },
+   {
+    "id": "street/civic/call-box-0",
+    "kind": "call-box",
+    "at": [
+     -136,
+     -260
+    ],
+    "stand": [
+     -135.75,
+     -260.25
+    ],
+    "item": "street/civic/call-box-0"
+   },
+   {
+    "id": "street/civic/call-box-1",
+    "kind": "call-box",
+    "at": [
+     -156,
+     -205
+    ],
+    "stand": [
+     -155.75,
+     -205.25
+    ],
+    "item": "street/civic/call-box-1"
+   },
+   {
+    "id": "street/civic/call-box-2",
+    "kind": "call-box",
+    "at": [
+     -186,
+     -260
+    ],
+    "stand": [
+     -185.75,
+     -260.25
+    ],
+    "item": "street/civic/call-box-2"
+   },
+   {
+    "id": "street/civic/call-box-3",
+    "kind": "call-box",
+    "at": [
+     -134,
+     -205
+    ],
+    "stand": [
+     -133.75,
+     -205.25
+    ],
+    "item": "street/civic/call-box-3"
+   }
+  ],
+  "origins": [
+   {
+    "id": "street/records-square/civic-robot-dock-315",
+    "kind": "dock",
+    "at": [
+     -147.5,
+     -211.5
+    ],
+    "stand": [
+     -147.25,
+     -211.75
+    ],
+    "item": "street/records-square/civic-robot-dock-315"
+   },
+   {
+    "id": "door:office-entrance",
+    "kind": "post",
+    "at": [
+     -160,
+     -281.75
+    ],
+    "stand": [
+     -159.75,
+     -281.75
+    ],
+    "door": "office-entrance"
+   },
+   {
+    "id": "door:official-entrance",
+    "kind": "post",
+    "at": [
+     -160,
+     -306.25
+    ],
+    "stand": [
+     -159.75,
+     -306.25
+    ],
+    "door": "official-entrance"
+   },
+   {
+    "id": "street/civic/police-post-0",
+    "kind": "post",
+    "at": [
+     -179,
+     -228
+    ],
+    "stand": [
+     -178.75,
+     -228.25
+    ],
+    "item": "street/civic/police-post-0"
+   },
+   {
+    "id": "street/civic/police-post-1",
+    "kind": "post",
+    "at": [
+     -124,
+     -309
+    ],
+    "stand": [
+     -123.75,
+     -309.25
+    ],
+    "item": "street/civic/police-post-1"
+   },
+   {
+    "id": "street/civic/police-post-2",
+    "kind": "post",
+    "at": [
+     -150,
+     -260
+    ],
+    "stand": [
+     -149.75,
+     -260.25
+    ],
+    "item": "street/civic/police-post-2"
+   },
+   {
+    "id": "street/civic/police-post-3",
+    "kind": "post",
+    "at": [
+     -179,
+     -340
+    ],
+    "stand": [
+     -178.75,
+     -340.25
+    ],
+    "item": "street/civic/police-post-3"
+   },
+   {
+    "id": "street/civic/police-post-4",
+    "kind": "post",
+    "at": [
+     -142,
+     -205
+    ],
+    "stand": [
+     -141.75,
+     -205.25
+    ],
+    "item": "street/civic/police-post-4"
+   }
+  ],
+  "coverage": {
+   "report": {
+    "samples": 2480,
+    "worstM": 39.8,
+    "medianM": 18.4,
+    "within": 1000,
+    "baselineWithin": 808,
+    "baselineWorstM": 59
+   },
+   "origin": {
+    "samples": 2480,
+    "worstM": 39.8,
+    "medianM": 19.4,
+    "within": 1000,
+    "baselineWithin": 773,
+    "baselineWorstM": 59
+   }
+  },
+  "watchers": [
+   {
+    "id": "street/records-square/mast-camera-314",
+    "kind": "mast-camera",
+    "at": [
+     -145.5,
+     -211.5
+    ],
+    "facings": [
+     0,
+     2.0944,
+     4.1888
+    ],
+    "range": 30,
+    "coneDeg": 70,
+    "item": "street/records-square/mast-camera-314"
+   },
+   {
+    "id": "street/records-square/civic-robot-dock-315",
+    "kind": "civic-robot-dock",
+    "at": [
+     -147.5,
+     -211.5
+    ],
+    "facings": [
+     0
+    ],
+    "range": 13,
+    "coneDeg": 120,
+    "item": "street/records-square/civic-robot-dock-315"
+   }
+  ]
+ },
  "landmarks": [
   {
    "id": "landmark/sphere",

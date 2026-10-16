@@ -132,6 +132,7 @@ namespace Suborned.Sim
                 r.Do(Enf, "cancel");
                 r.Eq(g.Vale, ValeAt.Pickup, "Vale is let go at his car");
                 r.Eq(g.Alert, 1, "he reports it: Alert 1");
+                r.Is(!g.Acts.Exists(x => x.Take), "the Take was inside his car (the driver turned, rev 4): nobody saw it, so his report is the one incident");
                 r.Is(g.ValeP.Has("aborted"), "and remembers it: a lead for the investigators (Motive addendum Q4)");
                 r.Do(Enf, "take"); r.Done(Enf);
                 r.Eq(g.Vale, ValeAt.WithEnforcer, "taken again");

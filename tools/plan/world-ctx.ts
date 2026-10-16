@@ -24,7 +24,7 @@ const walk = (dir: string): string[] => readdirSync(dir).flatMap(f => { const p 
  * since is not what a world made now was made with.
  */
 const SOURCE = (() => {
-  const h = createHash('sha1'), src = [...walk(resolve(root, 'tools/world')), ...['geom', 'plan', 'civic', 'transit', 'block', 'graph', 'street-zones'].map(n => resolve(root, `tools/plan/${n}.ts`))].sort();
+  const h = createHash('sha1'), src = [...walk(resolve(root, 'tools/world')), ...['geom', 'plan', 'civic', 'transit', 'block', 'graph', 'street-zones', 'walk-grid', 'walk', 'walk-solids'].map(n => resolve(root, `tools/plan/${n}.ts`))].sort();
   for (const f of src) { h.update(f); h.update(readFileSync(f)); }
   return h.digest('hex');
 })();

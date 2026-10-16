@@ -8,6 +8,15 @@
 // MC-4 no single contact is essential: without each contact a quiet route still wins. The routes that need the contact are named,
 //      and a contact that leaves fewer than 2 quiet routes is named as the one those routes depend on (brief 011 B).
 // MC-6 T2 (§13): the fastest informed quiet win is not slower than the fastest loud win; the margin is reported.
+// MC-7 careless violence is worse (brief 013 D): every careless script fails, or wins only at Alert ≥ 2 and dearer in total Trail
+//      than its careful twin (a takedown seen, found or reported is never a cheap quiet win).
+// MC-8 takedown routes are viable with a real time cost (brief 013 D): at least one quiet route whose orders take someone down wins
+//      at Alert ≤ 1, and each such win spends Enforcer time on the takedown (the act, the lift, the carry, the stash: > 0 s).
+// MC-9 turning people stays competitive (brief 013 D): no takedown win dominates every turning win, i.e. for each takedown win some
+//      win that turns a contact is faster, or cheaper in total Trail.
+// Trail is compared in total (brief 013): the mission's own Trail plus what the debrief carries into the campaign (a knockout's
+// statement, a missing person's file), plus `case-trail-eq` T for each open case it leaves (rulebook, rev 4 R4.4), so a body hidden
+// until the debrief is not cheaper than it is.
 // MC-5 the fully informed player (each primary quiet route as scripted) secures Vale ≥ informedSpareS before that route's closing
 //      event (route A: inside before Vale exits at 5:50; route B: Vale taken before the 8:00 close). Each route's extraction time
 //      against the mission's close, and how late each of its steps can be before it stops winning, are reported beside it.
@@ -23,16 +32,28 @@ export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' |
   shots: number;
   /** the final fight's branch, if one began */
   fight?: 'safe' | 'loud';
+  /** brief 013: Trail the debrief carries into the campaign (a knockout's statement, a missing person), Standing now, open cases */
+  campaignTrail?: number; standing?: number; openCases?: number;
+  /** brief 013: seconds the takedown work held the Enforcer, from the first takedown.starts to the last of its act, lift, carry, stash or drop */
+  takedownS?: number;
 };
+/** Trail in total: the mission's and what the debrief carries into the campaign (brief 013). */
+export const totalTrailOf = (d: Digest, caseTrailEq = 0) => d.trail + (d.campaignTrail ?? 0) + (d.openCases ?? 0) * caseTrailEq;
+/** The rulebook's price of an open case for the checker's totals (rev 4 R4.4, `case-trail-eq`, under campaign.cases.trailEq). */
+export const caseTrailEqOf = (rulebook: { values?: Record<string, { v?: unknown }> }) => { const v = rulebook.values?.['case-trail-eq']?.v; return typeof v === 'number' ? v : 0; };
+const TD_END = /^(takedown\.(out|dead)|carry\.(body|down)|stash\.)/;
 /** `marks`: keep the event marks (a base script's; a variation needs only its outcome and hash). */
 export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => {
   const marks: Record<string, number> = {};
   if (keepMarks) for (const l of p.log) if (!(l.code in marks) && !l.code.startsWith('order.')) marks[l.code] = l.tick;
   const fightAt = p.log.find(l => l.code === 'fight.safe' || l.code === 'fight.loud');
   const shots = p.log.filter(l => l.code.startsWith('fire.') && l.code !== 'fire.hostiles' && (!fightAt || l.tick < fightAt.tick)).length;
+  const nm = p.debrief?.nextMission, tdFrom = p.log.find(l => l.code === 'takedown.starts')?.tick, tdTo = p.log.filter(l => TD_END.test(l.code)).at(-1)?.tick;
   return {
     outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical,
     rejected: p.orders.filter(o => !o.ok).length, scriptSha, marks, shots, ...(fightAt ? { fight: fightAt.code === 'fight.safe' ? 'safe' as const : 'loud' as const } : {}),
+    ...(nm?.campaignTrail ? { campaignTrail: nm.campaignTrail } : {}), ...(p.standing ? { standing: p.standing } : {}), ...(nm?.openCases ? { openCases: nm.openCases } : {}),
+    ...(tdFrom !== undefined && tdTo !== undefined && tdTo >= tdFrom ? { takedownS: (tdTo - tdFrom) / 10 } : {}),
   };
 };
 /** Every play the checker made, by name: `<script>`, `<script>~no-<role>`, `<script>~late@<tick>+<s>s`. */
@@ -55,7 +76,8 @@ const got = (d: Digest) => (d.outcome === 'failure' ? `failure ${d.fail}` : d.ou
 const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.expects.fail}` : s.expects.outcome);
 const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && d.replayIdentical;
 
-export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[]): Report {
+export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number } = {}): Report {
+  const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
   const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: got(d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
   const C: Condition[] = [];
@@ -69,13 +91,14 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
 
   const loud = live.find(s => s.kind === 'loud' && s.primary), ld = loud && plays[loud.id];
   // every quiet win, variants too (Motive, briefs/011/motive-fights.md: Pressure on an Idealist must not cost as much as going loud)
-  const primaries = quiet.filter(s => s.primary), quietAll = quiet.filter(wins), maxQuiet = Math.max(...quietAll.map(s => plays[s.id]!.trail));
-  const dear = quietAll.filter(s => ld && plays[s.id]!.trail >= ld.trail);
+  const primaries = quiet.filter(s => s.primary), quietAll = quiet.filter(wins), maxQuiet = Math.max(...quietAll.map(s => totalTrail(plays[s.id]!)));
+  const dear = quietAll.filter(s => ld && totalTrail(plays[s.id]!) >= totalTrail(ld));
+  const T = (id: string) => { const d = plays[id]!; return [d.trail, ...(d.campaignTrail ? [d.campaignTrail] : []), ...(d.openCases && eq ? [`${d.openCases * eq} (case)`] : [])].join('+'); };
   C.push({
-    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every quiet win (variants too)', ok: !!ld && ld.outcome === 'success' && ld.shots > 0 && quietAll.length > 0 && ld.trail > maxQuiet,
-    value: ld ? `loud ${ld.trail} T vs quiet ${quietAll.map(s => `${s.id} ${plays[s.id]!.trail}`).join(', ')}` : 'no loud script',
+    id: 'MC-2', rule: 'The loud route exists, wins, and costs more T than every quiet win (variants too)', ok: !!ld && ld.outcome === 'success' && ld.shots > 0 && quietAll.length > 0 && totalTrail(ld) > maxQuiet,
+    value: ld ? `loud ${T(loud!.id)} T vs quiet ${quietAll.map(s => `${s.id} ${T(s.id)}`).join(', ')} (mission+campaign+cases at ${eq} T)` : 'no loud script',
     detail: [...live.filter(s => s.kind === 'loud').map(s => `${s.id}: ${got(plays[s.id]!)}, ${plays[s.id]!.trail} T, ${plays[s.id]!.shots} shots before the fight, A ${plays[s.id]!.alert}`),
-      ...dear.map(s => `${s.id} (quiet) costs ${plays[s.id]!.trail} T, not less than the loud route's ${ld!.trail}`)].join('; '),
+      ...dear.map(s => `${s.id} (quiet) costs ${totalTrail(plays[s.id]!)} T, not less than the loud route's ${totalTrail(ld!)}`)].join('; '),
   });
 
   const reached = (f: Routes['fails'][number]) => live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id);
@@ -116,6 +139,30 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     id: 'MC-6', rule: 'The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2)', ok: margin !== undefined && margin >= 0,
     value: fq && fl ? `${fq.id} ${clock(fq.tick)} vs ${fl.id} ${clock(fl.tick)}: ${margin! >= 0 ? `${(margin! / 10).toFixed(1)} s faster` : `${(-margin! / 10).toFixed(1)} s SLOWER`}` : 'no quiet or no loud win',
     detail: [...quietWins.map(x => `${x.id} (quiet) ${clock(x.tick)}`), ...loudAll.map(x => `${x.id} (loud) ${clock(x.tick)}${x.captured ? ', leaves an operative captured: not raced' : ''}`)].join('; '),
+  });
+  // MC-7, MC-8, MC-9 (brief 013 D): takedowns
+  const careless = live.filter(s => s.kind === 'careless');
+  const worse = careless.map(s => {
+    const d = plays[s.id]!, tw = plays[s.twin!], dear = !!tw && totalTrail(d) > totalTrail(tw);
+    const ok = d.outcome === 'failure' || (d.outcome === 'success' && d.alert >= 2 && dear) || (d.outcome !== 'success' && d.alert >= 2);
+    return { s, d, ok, why: d.outcome === 'failure' ? `fails: ${d.fail}` : `${got(d)} at Alert ${d.alert}, ${totalTrail(d)} T against ${s.twin}'s ${tw ? totalTrail(tw) : '?'} T at Alert ${tw?.alert ?? '?'}` };
+  });
+  C.push({
+    id: 'MC-7', rule: 'Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 and dearer in total Trail than its careful twin', ok: careless.length > 0 && worse.every(x => x.ok),
+    value: `${worse.filter(x => x.ok).length}/${careless.length}`, detail: worse.map(x => `${x.s.id}: ${x.why}${x.ok ? '' : ' (NOT WORSE)'}`).join('; ') || 'no careless script',
+  });
+  const takes = (s: RouteScript) => scripts[s.id]?.orders.some(o => o.do === 'takedown') ?? false, turns = (s: RouteScript) => scripts[s.id]?.orders.some(o => o.do === 'turn') ?? false;
+  const td = quiet.filter(s => takes(s) && wins(s) && plays[s.id]!.alert <= 1), tdAll = quiet.filter(takes);
+  C.push({
+    id: 'MC-8', rule: 'Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it', ok: td.length > 0 && td.every(s => (plays[s.id]!.takedownS ?? 0) > 0),
+    value: td.map(s => `${s.id} ${clock(plays[s.id]!.tick)}, ${plays[s.id]!.takedownS ?? 0} s of takedown`).join(', ') || 'none',
+    detail: tdAll.map(s => { const d = plays[s.id]!; return `${s.id} (route ${s.route}): ${got(d)} at ${clock(d.tick)}, ${T(s.id)} T, A ${d.alert}, $${(d.cash).toLocaleString('en-US')} left, takedown work ${d.takedownS ?? 0} s${d.openCases ? `, ${d.openCases} open case` : ''}`; }).join('; '),
+  });
+  const turnWins = quiet.filter(s => turns(s) && wins(s)), dominated = td.filter(s => turnWins.length > 0 && turnWins.every(t => plays[t.id]!.tick >= plays[s.id]!.tick && totalTrail(plays[t.id]!) >= totalTrail(plays[s.id]!)));
+  C.push({
+    id: 'MC-9', rule: 'Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win', ok: turnWins.length > 0 && !dominated.length,
+    value: dominated.length ? `dominant: ${dominated.map(s => s.id).join(', ')}` : `${td.length} takedown win${td.length === 1 ? '' : 's'}, none dominant over ${turnWins.length} turning wins`,
+    detail: td.map(s => { const d = plays[s.id]!, f = turnWins.filter(t => plays[t.id]!.tick < d.tick).map(t => t.id), c = turnWins.filter(t => totalTrail(plays[t.id]!) < totalTrail(d)).map(t => t.id); return `${s.id} (${clock(d.tick)}, ${totalTrail(d)} T): faster ${f.join(', ') || 'none'}; cheaper ${c.join(', ') || 'none'}`; }).join('; '),
   });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }

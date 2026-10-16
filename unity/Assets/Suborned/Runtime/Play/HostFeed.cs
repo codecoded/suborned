@@ -155,6 +155,12 @@ namespace Suborned.Play
             var g = Game; string who = Name(c.Target);
             switch (c.Verb)
             {
+                case "watch" when Game.WatcherKind(c.Target).Length > 0:
+                    {
+                        var k = g.Known(c.Target); if (k == null || !k.Sight) return "Nothing new.";
+                        c.Tone = Feedback.Ok;
+                        return $"Learned: what {who} sees{(k.Routine && k.RoutineNeedsS > 0 ? ", and its rounds" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its rounds)" : "")}.";
+                    }
                 case "watch": { var p = g.PersonByRole(c.Target); return p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
                 case "listen": { var p = g.PersonByRole(c.Target); return !p.KNeed && !p.KTemperament ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is tied to the cabinet." : "The loop didn't hold.";

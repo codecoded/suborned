@@ -117,6 +117,7 @@ namespace Suborned.Play
         readonly List<ActCard> actCards = new(); int panelHover = -1;
         VisualElement intel, intelStrip, intelOpen, intelChevron;
         // step 3: the hint, the chips at the cursor, the going-loud card, the briefing, the end card, the history
+        VisualElement chipSeenIcon; Label chipSeen; readonly List<VisualElement> unknownMarks = new();
         VisualElement hint, toast, chip, chipPrice, chipIcon, chipMark, loud, loudRing, brief, end, endDetail, history, historyRows; Label hintBody, hintKey, toastText, chipText, chipUsd, chipTime, chipTrail, chipAlert;
         Label loudTitle, loudSub, loudHold, briefTitle, briefSub, briefObjective, briefTarget, briefWin, briefLose, briefClose, briefPurse, briefAlert, briefArms, briefBeginKey, endTitle, endLine, endReplayKey;
         readonly List<Label> loudRows = new(), endLines = new(); readonly List<VisualElement> loudDots = new(); readonly (Label title, Label body)[] briefWays = new (Label, Label)[2];
@@ -373,6 +374,7 @@ namespace Suborned.Play
             chipPrice = E(chip); chipPrice.style.flexDirection = FlexDirection.Row; chipPrice.style.alignItems = Align.Center;
             Label Part(string icon) { var ic = E(chipPrice, null, w: 17, h: 17); Icon(ic, icon, Cream); ic.style.marginRight = 5; var l = L(chipPrice, "chip-value"); l.style.marginRight = 16; return l; }
             chipUsd = Part("p_cash"); chipTime = Part("p_time"); chipTrail = Part("p_trail"); chipAlert = Part("p_alert");
+            chipSeenIcon = E(chipPrice, null, w: 17, h: 17); Icon(chipSeenIcon, "watch", Cream); chipSeenIcon.style.marginRight = 5; chipSeen = L(chipPrice, "chip-value"); chipSeen.style.marginRight = 16; // seen by: ? or who
             chipMark = E(chip, null, w: 17, h: 17);
             chipText = L(chip, "fight-chip");
             // the going-loud card (going_loud_card): 430 wide, near the cursor; the hold ring fills while the input is held
@@ -449,11 +451,22 @@ namespace Suborned.Play
             {
                 bool price = m.Chip == HudModel.ChipKind.Price;
                 Show(chipIcon, price); Show(chipPrice, price); Show(chipMark, price); Show(chipText, !price);
-                if (price) { Icon(chipIcon, m.ChipIcon, new Color(1f, 0.988f, 0.925f)); Text(chipUsd, m.ChipUsd); Text(chipTime, m.ChipTime); Text(chipTrail, m.ChipTrail); Text(chipAlert, m.ChipAlert); Bg(chipMark, $"badges/mark_{m.ChipMark}"); }
+                if (price) { Icon(chipIcon, m.ChipIcon, new Color(1f, 0.988f, 0.925f)); Text(chipUsd, m.ChipUsd); Text(chipTime, m.ChipTime); Text(chipTrail, m.ChipTrail); Text(chipAlert, m.ChipAlert); Bg(chipMark, $"badges/mark_{m.ChipMark}"); Show(chipSeenIcon, m.ChipSeen.Length > 0); Show(chipSeen, m.ChipSeen.Length > 0); Text(chipSeen, m.ChipSeen); }
                 else { Text(chipText, m.ChipText); chipText.style.color = m.Chip == HudModel.ChipKind.AimWarn ? new Color(1f, 0.75f, 0.68f) : Cream; }
                 var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);
                 float cw = chip.resolvedStyle.width; if (float.IsNaN(cw)) cw = 300;
                 chip.style.left = p.x + 14 + cw > W - 14 ? p.x - cw - 14 : p.x + 14; chip.style.top = p.y - 48;
+            }
+            // "?" over each watcher noticing an agent whose sight the cell doesn't know (Game.Detection, Known false)
+            var view = host.View;
+            while (unknownMarks.Count < m.Unknowns.Count) { var u = E(root, "s-disc_dark_30", 0, 0, 30, 30); Icon(E(u, null, 6, 6, 18, 18), "p_unknown", Cream); unknownMarks.Add(u); }
+            for (int i = 0; i < unknownMarks.Count; i++)
+            {
+                bool on = i < m.Unknowns.Count && view; Vector3 sp = default;
+                if (on) { sp = view.WorldToScreenPoint(m.Unknowns[i]); on = sp.z > 0; }
+                Show(unknownMarks[i], on); if (!on) continue;
+                var pp = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(sp.x, Screen.height - sp.y));
+                unknownMarks[i].style.left = pp.x - 15; unknownMarks[i].style.top = pp.y - 15;
             }
             // the going-loud card
             Show(loud, m.LoudOpen);

@@ -15,6 +15,7 @@ namespace Suborned.Sim
         /// <summary>A fresh copy for one game: the routine is shared, the person's state is not.</summary>
         // in a fight (Pulse §4): "" routine, startled, fleeing, sheltered, returning; where they stand or run, and since when
         public string St = ""; public int Until, RunStart; public Pt At; public Path? Run; public string Refuge = "";
+        public int Pace; // brief 013: the pace of a report's walk or a check (mm a tick); 0 for the crowd machine's own states
         public Walker Fresh()
         {
             var p = new Person { Id = P.Id, Name = P.Name, Job = P.Job, Temperament = P.Temperament, Need = P.Need, Role = "" };
@@ -31,6 +32,30 @@ namespace Suborned.Sim
         /// <summary>Everyone's ties, home and work, the cast's too (between missions: word along ties, need replacement's requires).</summary>
         public readonly Dictionary<string, List<(string kind, string with)>> Ties = new Dictionary<string, List<(string, string)>>(StringComparer.Ordinal);
         public readonly Dictionary<string, bool> HasHome = new Dictionary<string, bool>(StringComparer.Ordinal), HasWork = new Dictionary<string, bool>(StringComparer.Ordinal);
+        /// <summary>Everyone's stops, the cast's too, in ticks (brief 013: check-in marks read a post's shift, suspicion reads shared stops).</summary>
+        /// <summary>Every routine leg's walk (place → place), built once at load (Warm), read-only after: a leg's route never depends on when
+        /// it is walked, so building them up front changes no run, and the chime (58 clerks starting new legs on one tick) costs no frame.</summary>
+        public readonly Dictionary<string, Path> Legs = new Dictionary<string, Path>(StringComparer.Ordinal);
+        public void Warm(Site site)
+        {
+            foreach (var w in Walkers)
+                for (int i = 0; i + 1 < w.Place.Length; i++)
+                {
+                    var a = w.Place[i]; var b = w.Place[i + 1]; if (a == "beyond" || b == "beyond") continue;
+                    var key = a + "→" + b; if (Legs.ContainsKey(key)) continue;
+                    Legs[key] = Leg(site, Places[a], Places[b]);
+                }
+        }
+        internal static Path Leg(Site site, Pt pa, Pt pb)
+        {
+            var fa = site.Grid.NearestFree(pa) ?? pa; var fb = site.Grid.NearestFree(pb) ?? pb;
+            var pts = new List<Pt> { pa };
+            var route = site.Grid.Route(fa, fb);
+            if (route != null) pts.AddRange(route); else pts.Add(fb);
+            pts.Add(pb);
+            return new Path(pts.ToArray());
+        }
+        public readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> Stops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
         public Crowd(string json, Rules rules, ICollection<string> cast)
         {
             var n = JNode.Parse(json, "people");
@@ -43,7 +68,10 @@ namespace Suborned.Sim
                 p.Only("id", "name", "job", "temperament", "need", "home", "work", "start", "ties", "stops");
                 var ties = new List<(string, string)>(); foreach (var t in p["ties"].Items) ties.Add((t.Items[0].Str(), t.Items[1].Str()));
                 Ties[p["id"].Str()] = ties; HasHome[p["id"].Str()] = p["home"].Int() == 1; HasWork[p["id"].Str()] = p["work"].Int() == 1;
-                var id = p["id"].Str(); if (cast.Contains(id)) continue;
+                var id = p["id"].Str();
+                var all = new List<(string, int, int, bool)>(); foreach (var sx in p["stops"].Items) { var x = sx.Items; all.Add((x[0].Str(), x[1].Int() * Game.Hz, x[2].Int() * Game.Hz, x[3].Int() == 1)); }
+                Stops[id] = all;
+                if (cast.Contains(id)) continue;
                 var person = new Person { Id = id, Name = p["name"].Str(), Job = p["job"].Str(), Temperament = p["temperament"].Str(), Need = p["need"].Str() };
                 rules.Temp(person.Temperament); rules.CheckNeed(person.Need);
                 var st = p["start"].Ints(); for (int k = 0; k < 4; k++) person.Sc[k] = st[k];
@@ -94,14 +122,10 @@ namespace Suborned.Sim
         Path CrowdPath(string a, string b)
         {
             var key = a + "→" + b;
-            if (crowdPaths.TryGetValue(key, out var p)) return p;
-            var c = People2!; Pt pa = c.Places[a], pb = c.Places[b];
-            var fa = S.Grid.NearestFree(pa) ?? pa; var fb = S.Grid.NearestFree(pb) ?? pb;
-            var pts = new List<Pt> { pa };
-            var route = S.Grid.Route(fa, fb);
-            if (route != null) pts.AddRange(route); else pts.Add(fb);
-            pts.Add(pb);
-            p = new Path(pts.ToArray()); crowdPaths[key] = p; return p;
+            var c = People2!;
+            if (c.Legs.TryGetValue(key, out var p)) return p; // built at load (Crowd.Warm)
+            if (crowdPaths.TryGetValue(key, out p)) return p;
+            p = Crowd.Leg(S, c.Places[a], c.Places[b]); crowdPaths[key] = p; return p;
         }
 
         /// <summary>Everyone on the street who could witness: the cast by their role, then the crowd by id (Start.Crowd, Suture's T4 arm).</summary>

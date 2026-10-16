@@ -16,13 +16,13 @@ export const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NO
 export const hasDotnet = () => !!Bun.which('dotnet');
 
 /** An order in the engine's format (suborned.sim.script/1, sim/Suborned.Sim/Script.cs). */
-export type Order = { tick: number; op?: 'scout' | 'fixer' | 'tech' | 'enforcer'; do: string; to?: string | number[]; target?: string; approach?: string };
+export type Order = { tick: number; op?: 'scout' | 'fixer' | 'tech' | 'enforcer'; do: string; to?: string | number[]; target?: string; approach?: string; how?: 'knockout' | 'kill' };
 export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; note?: string; start: Record<string, unknown>; orders: Order[]; until: number };
 /** What a play reports (sim/Suborned.Sim/Script.cs Report.Json); the checker keeps all of it in memory and records a digest. */
 export type Play = {
   id: string; outcome: 'success' | 'failure' | 'withdrawn' | 'none'; fail: string; tick: number; cash: number; trail: number; alert: number; gunfire: number; standing: number;
   startHash: string; finalHash: string; replayIdentical: boolean; checkpoints: { tick: number; hash: string }[];
-  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string };
+  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number } };
 };
 
 /** sha256 of the engine's source (library and CLI, .cs and .csproj, by path) under `dir` (the repo root or a pinned copy). */

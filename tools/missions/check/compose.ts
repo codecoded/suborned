@@ -25,7 +25,7 @@ const at = z.string().regex(/^\d{1,2}:[0-5]\d(\.\d)?$/);
 export const Step = z.strictObject({
   op: z.enum(['scout', 'fixer', 'tech', 'enforcer', 'cell']).optional(), do: z.string().min(1),
   to: z.union([z.string().min(1), z.tuple([z.number().int(), z.number().int()])]).optional(), target: z.string().min(1).optional(), approach: z.string().min(1).optional(),
-  run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(),
+  run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(), how: z.enum(['knockout', 'kill']).optional(),
   label: z.string().min(1).optional(), after: z.array(z.string().min(1)).optional(), gap: z.number().nonnegative().optional(),
   at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.string().min(1).optional(), why: z.string().min(1).optional(),
 });
@@ -39,7 +39,7 @@ export type Plan = z.infer<typeof Plan>;
 const ticks = (s: string) => { const [m, r] = s.split(':'), [sec, d] = r!.split('.'); return (Number(m) * 60 + Number(sec)) * 10 + Number(d ?? 0); };
 const orderOf = (s: Step, tick: number): Order => {
   const o: Record<string, unknown> = { tick };
-  for (const k of ['op', 'do', 'to', 'target', 'approach', 'run', 'stance', 'force'] as const) if (s[k] !== undefined) o[k] = s[k];
+  for (const k of ['op', 'do', 'to', 'target', 'approach', 'run', 'stance', 'force', 'how'] as const) if (s[k] !== undefined) o[k] = s[k];
   return o as Order;
 };
 

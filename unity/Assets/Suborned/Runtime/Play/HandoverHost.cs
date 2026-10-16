@@ -32,6 +32,8 @@ namespace Suborned.Play
         [Header("Baked by PlayInstall (Editor) from the plan, the export and the civic look")]
         public SiteFrame frame = new();
         public Material litTemplate, unlitTemplate;
+        [Tooltip("Transparent unlit, both faces: the sight fans' fill (PlayInstall makes it, so a player build carries the variant).")]
+        public Material fanTemplate;
         public Color cellColour = new(0.25f, 0.27f, 0.29f), cellHeadColour = new(0.93f, 0.9f, 0.82f), headColour = new(0.95f, 0.92f, 0.84f);
         public Color waitressColour = new(0.93f, 0.52f, 0.45f), civicColour = new(0.2f, 0.55f, 0.55f), securityColour = new(0.45f, 0.48f, 0.52f);
         public Color rivalBodyColour = new(0.4f, 0.36f, 0.5f), carColour = new(0.55f, 0.58f, 0.6f), getawayColour = new(0.85f, 0.83f, 0.78f);
@@ -100,6 +102,8 @@ namespace Suborned.Play
             public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
             /// <summary>For the kit's card: orders a turn takes (more than one = "one step worse"), a Pressure on a known secret, the walk first (s).</summary>
             public long Orders = 1; public bool Leverage; public int WalkS;
+            /// <summary>"seen by" where the act is done (the engine's SeenQuote in words): "" no one, "?" an unknown watcher could, else who.</summary>
+            public string Seen = "";
             /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
             public bool Actionable => Order != null && !Move;
         }
@@ -151,7 +155,7 @@ namespace Suborned.Play
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
             Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); ResetFeed(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
-            Track();
+            Track(); Notice(); lastWatchOrders = -1;
             // open on the cell at the getaway bay with Inez's café door in frame
             var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
             SessionPath = SessionFile();
@@ -191,6 +195,7 @@ namespace Suborned.Play
             frames++;
             if (Game.Over && Ending.Length == 0) End();
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            ShowSight();
             for (int k = 0; k < 4; k++)
             {
                 var t = views.Find("op/" + Op.Name((OpId)k));
@@ -204,7 +209,7 @@ namespace Suborned.Play
             double t0 = Now();
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
-            if (ok) { views.Tick(); FollowUp(); Track(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
+            if (ok) { views.Tick(); FollowUp(); Track(); Notice(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; }
             Drain();
             return ok;
         }
@@ -564,6 +569,11 @@ namespace Suborned.Play
             Intent I(string verb, string target, string approach, string label) => new Intent { Slot = slot, Label = label, Order = new Order { Op = op, Do = verb, Target = target, Approach = approach } };
             switch (id)
             {
+                case "watch" when t.Kind is "camera" or "patrol": // a watcher: the Scout learns its sight (rulebook sight.watch: within reach, on a clear line)
+                    {
+                        var w = t.Kind == "camera" ? "camera:" + t.Key : "patrol";
+                        var i = I("watch", w, "", $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "its sight"; return i;
+                    }
                 case "watch": case "listen":
                     if (t.Kind != "person") return null;
                     {
@@ -581,7 +591,7 @@ namespace Suborned.Play
                         i.Usd = q.WorstUsd > q.Usd ? $"${q.Usd:N0}–{q.WorstUsd:N0}" : $"${q.Usd:N0}";
                         i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Orders = q.Orders; i.Leverage = q.Leverage; // the walk is the card's own (Walk, WalkS)
                         i.Alert = q.Reports == "no" ? "A 0" : q.Reports == "yes" ? $"A →{q.AlertIfReported}" : $"A ?→{q.AlertIfReported}";
-                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome;
+                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome; i.Seen = SeenWords(q.Seen);
                         return i;
                     }
                 case "loop":
@@ -794,6 +804,12 @@ namespace Suborned.Play
             if (op.Busy != null) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
             switch (o.Do)
             {
+                case "watch" when Game.WatcherKind(o.Target) is "camera" or "patrol":
+                    {
+                        var k = g.Known(o.Target);
+                        if (k != null && k.Sight && (k.Routine || k.RoutineNeedsS == 0)) return No("watcher-known", "the cell knows its sight already");
+                        return g.ConeFan(o.Target) != null ? yes : No("watcher-away", "not out on the street");
+                    }
                 case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? yes : No("person-away", "not out on the street");
                 case "turn":
                     {
@@ -849,6 +865,7 @@ namespace Suborned.Play
                 case "loop": case "reroute": place = "cabinet"; break;
                 case "enter": place = s.GuardPost; break;
                 case "extract": place = s.GetawayCar; break;
+                case "watch" when t.Kind is "camera" or "patrol": tp = PosOf(t); reach = R.SightReachCm; break; // within the watch reach of the watcher (a clear line is the engine's check)
                 case "watch": case "listen": tp = PosOf(t); reach = ReachOf("scout." + o.Do); break;
                 case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
@@ -884,7 +901,7 @@ namespace Suborned.Play
         Pt? PosOf(Target t) => t.Kind switch
         {
             "person" => Game.PersonPos(Game.PersonByRole(t.Key)), "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
-            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, _ => null,
+            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key), _ => null,
         };
 
         int ReachOf(string ev)

@@ -20,6 +20,7 @@ namespace Suborned.Sim
             public H P(Pt p) => I(p.X).I(p.Y);
         }
 
+        public static void HashGun(H h, Gun g) => Gun(h, g);
         static void Gun(H h, Gun g)
         {
             h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
@@ -59,6 +60,7 @@ namespace Suborned.Sim
                 foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
             }
             h.Z(g.LoopOn).Z(g.CellFiredOn);
+            if (g.LoopCam != "entrance") h.S(g.LoopCam); // only a loop on another camera adds bytes
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
             h.I(g.LureTick).I(g.GuardAwayUntil).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
@@ -81,6 +83,7 @@ namespace Suborned.Sim
                 {
                     var at = g.CrowdPos(w); h.Z(at.HasValue); if (at.HasValue) h.P(at.Value);
                     if (w.St.Length > 0) h.S(w.St).I(w.Until).I(w.RunStart).P(w.At).S(w.Refuge); // only a scattered person adds bytes
+                    if (w.Pace != 0) h.I(w.Pace); // brief 013: only a reporter's walk adds bytes
                     h.I(w.P.Memory.Count); foreach (var m in w.P.Memory) h.S(m.Act).S(m.By).I(m.Tick); foreach (var v in w.P.Sc) h.I(v);
                 }
             // what the debrief reads, and the record of the run (Redline E4): every flag, incident, ledger row, debrief line, chain link,
@@ -97,6 +100,8 @@ namespace Suborned.Sim
             foreach (var i in g.Incidents) { h.I(i.Tick).S(i.Kind).S(i.Cause).P(i.At).I(i.Witnesses.Count); foreach (var (p, at) in i.Witnesses) h.S(p.Id).P(at); }
             foreach (var s in g.Sightings) h.S(s.Watcher).S(s.Op).I(s.From).I(s.To).P(s.At);
             foreach (var x in g.ExposedByWatcher) h.S(x);
+            g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
+            g.HashTakedown(h); // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }
     }

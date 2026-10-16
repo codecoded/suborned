@@ -73,7 +73,7 @@ namespace Suborned.Sim
             foreach (var op in Ops)
             {
                 if (op.Down || op.Inside) continue;
-                bool foe = anyOp || op.Gun.Drawn || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
+                bool foe = anyOp || op.Gun.Drawn || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || markedFoes.Contains(Sim.Op.Name(op.Id)); // brief 013: security saw them do violence
                 if (!foe || G.D2(pos, op.Pos) > eff || !sees(op.Pos)) continue;
                 l.Add((Sim.Op.Name(op.Id), op.Pos));
             }

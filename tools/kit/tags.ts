@@ -1,9 +1,10 @@
 // Generator tags per asset: what it is for, its scale range, and (wave 2) form and trade. Wave 1 = first adopted set (brief 006 A).
-import type { KitReach, KitTags } from '../../contracts/world/kit.schema';
+import type { KitReach, KitStash, KitTags } from '../../contracts/world/kit.schema';
 
 export const WAVE1 = new Set(['SphereStation', 'Skyport_Tower', 'CircusMonument', 'ParabolicArch', 'SkyPad_Roof', 'Streetlamp', 'Bollard', 'Bench', 'Hydrant', 'RecyclingBins', 'PhoneBooth', 'TicketMachine', 'PlazaSphereLamp', 'CCTVPole', 'DomeCamera', 'CoconutPalm', 'FanPalm', 'Cypress', 'BladeSign_Cafe', 'BladeSign_Hotel', 'BladeSign_Cinema', 'NeonStar_Wall', 'AdColumn']);
 
 const USE: Record<string, string[]> = {
+  Dumpster: ['alley', 'dumpster'], // the world places it as the street item `dumpster` beside a service door (tools/world/civic/quiet.ts)
   Streetlamp: ['lamp'], PlazaSphereLamp: ['lamp'], Bollard: ['bollard'], Bench: ['bench'], Hydrant: ['hydrant'], RecyclingBins: ['bin'], PhoneBooth: ['phone-booth'], TicketMachine: ['ticket-machine'],
   CCTVPole: ['pole-camera'], DomeCamera: ['canopy-camera'], CoconutPalm: ['tree', 'tub-palm'], FanPalm: ['tub-palm'], Cypress: ['tree'], AdColumn: ['advertising-column'],
   BladeSign_Cafe: ['blade-sign'], BladeSign_Hotel: ['blade-sign'], BladeSign_Cinema: ['blade-sign'], NeonStar_Wall: ['wall-sign'],
@@ -28,6 +29,8 @@ const SCALE: Record<string, [number, number]> = {
   SignalEye: [1, 1], KerbStud: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], CrossEdgeLine_2: [1, 1], CrossEdgeLine_1: [1, 1], CrossInlayArc_R24_W08: [1, 1], LightField_2: [1, 1], LightField_1: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1
   SphereStation: [0.4, 1.5], Skyport_Tower: [0.4, 1.5], CircusMonument: [0.4, 1.5],
 };
+/** Pieces that can hold a body (brief 013): a closed container big enough to lie a person in. Only the Dumpster today; adopting a piece is Vela's call, tagging it is not. */
+const STASH: Record<string, KitStash> = { Dumpster: { holds: 1 } };
 const SQUASH: Record<string, number> = { Streetlamp: 0.7, CCTVPole: 0.5 }; // trees and palms scale uniformly (squash 1)
 /** Where the working end reaches from the pivot: the streetlamp's pole is at the pivot, its head 1.25 m out along local -X. */
 const REACH: Record<string, KitReach> = { Streetlamp: { axis: '-x', m: 1.25 } };
@@ -44,6 +47,6 @@ export function tagsOf(name: string, category: string): KitTags {
   return {
     use: USE[name] ?? PLAIN_USE[name] ?? [USE_BY_CATEGORY[category] ?? category.toLowerCase()],
     ...(TRADE[name] ? { trade: TRADE[name] } : {}), ...(form && ['Facades', 'Skyline'].includes(category) ? { form } : {}),
-    ...(REACH[name] ? { reach: REACH[name] } : {}), scale: SCALE[name] ?? [0.9, 1.1], squash: SQUASH[name] ?? 1, wave: WAVE1.has(name) ? 1 : 2,
+    ...(REACH[name] ? { reach: REACH[name] } : {}), ...(STASH[name] ? { stash: STASH[name] } : {}), scale: SCALE[name] ?? [0.9, 1.1], squash: SQUASH[name] ?? 1, wave: WAVE1.has(name) ? 1 : 2,
   };
 }

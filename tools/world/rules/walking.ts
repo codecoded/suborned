@@ -13,9 +13,9 @@ import { handoverPoints } from './civic-dress';
 
 const SOURCE = 'standards.walking.body (r, clearWidth, constrained, aisle, ends) and walking.rules W-5 · DfT Inclusive Mobility (2021) §3.1: 2.0 m so two wheelchairs pass, 1.5 m where constrained · Manual for Streets (2007) · Datum 2026-10-15';
 
-/** The points the block's walks run between: its doors, the Handover points (a point that is a door is the door), and the crossing landings the block's dressing names. */
+/** The points the block's walks run between: its doors (service doors included), the Handover points (a point that is a door is the door), and the crossing landings the block's dressing names. */
 export function blockPoints(c: WCtx, mission?: string): Pt[] {
-  const toPlan = toPlanFn(c.plan.civic), out: Pt[] = c.civ.entrances.map(e => ({ name: e.name, p: e.p }));
+  const toPlan = toPlanFn(c.plan.civic), out: Pt[] = [...c.civ.entrances, ...c.civ.serviceDoors].map(e => ({ name: e.name, p: e.p })); // the service doors too (brief 013): a stash nobody can walk to is no stash
   for (const h of mission ? handoverPoints(toPlan, mission) : handoverPoints(toPlan)) if (!out.some(o => dist(o.p, h.p) < 0.3)) out.push({ name: h.name, p: h.p });
   const dr = c.civ.dressing as { crossings?: { at: { id: string }[] } } | undefined;
   for (const l of dr?.crossings?.at ?? []) { const it = landingsOf(c.w).find(s => s.id.endsWith(`/crossing-${l.id}`)); if (it) out.push({ name: `landing ${l.id}`, p: it.at }); }

@@ -51,6 +51,10 @@ export function coverage(w: World, gen?: Generated): void {
   const by: Record<string, [number, number]> = {};
   for (const s of w.street) { const e = (by[s.kind] ??= [0, 0]); e[s.source === 'kit' ? 0 : 1]++; }
   console.log('street by kind (kit/procedural): ' + Object.entries(by).sort((a, b) => b[1][0] + b[1][1] - a[1][0] - a[1][1]).map(([k, [a, b]]) => `${k} ${a}/${b}`).join(', '));
+  if (w.takedown) { // brief 013: the stash, report and response places of the civic block
+    const t = w.takedown, n = (f: (x: { kind: string }) => boolean, a: { kind: string }[]) => a.filter(f).length;
+    console.log(`takedown (civic block window ${t.grid.x1 - t.grid.x0} x ${t.grid.y1 - t.grid.y0} m): ${n(x => x.kind === 'service', t.entrances)} service doors, ${n(x => x.kind === 'container', t.stashes)} containers (${t.stashes.filter(s => s.bare).map(s => s.of).join(', ') || 'no door'} bare); report points ${t.report.length} (${n(x => x.kind === 'call-box', t.report)} call boxes, within ${t.reach.report} m: ${t.coverage.report.within / 10}% from ${t.coverage.report.baselineWithin / 10}% by the doors alone, worst ${t.coverage.report.worstM} m); origins ${t.origins.length} (${n(x => x.kind === 'post', t.origins)} posts, ${n(x => x.kind === 'dock', t.origins)} docks, within ${t.reach.origin} m: ${t.coverage.origin.within / 10}% from ${t.coverage.origin.baselineWithin / 10}%); watchers ${t.watchers.length} the sim does not read`);
+  }
   const used: Record<string, number> = {};
   for (const f of w.facades) used[f.kit.id] = (used[f.kit.id] ?? 0) + 1;
   for (const x of [...w.street.map(s => s.kit?.id), ...w.frontages.map(f => f.signKit?.id), ...w.landmarks.flatMap(l => [l.kit?.id, ...(l.kits ?? []).map(k => k.id)]), ...w.roofs.map(r => r.kit?.id), ...w.megastructures.map(m => m.gateway?.id)]) if (x) used[x] = (used[x] ?? 0) + 1;

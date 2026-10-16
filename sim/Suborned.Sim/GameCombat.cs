@@ -43,6 +43,9 @@ namespace Suborned.Sim
         public int RunPeople;             // people within witness range of the route now ("~": people move)
         public int AlertIfRun;            // Alert after the run if security sees it
         public bool RunFree;              // a fight is on or the run is loud: nobody counts a runner
+        /// <summary>What the chip shows for "seen by" along the route now (rulebook sight.unknown; Sky 2026-10-16): known watchers' true
+        /// answer, "?" for an unknown watcher that could see it. RunSeenBy above is the engine's truth for every watcher: the HUD shows Seen.</summary>
+        public SeenQuote Seen = new SeenQuote();
     }
 
     public sealed partial class Game
@@ -60,7 +63,11 @@ namespace Suborned.Sim
         Gun NewGun(string id, Weapon? w, bool trained, int health) => new Gun(id) { W = w, Trained = trained, Health = health, Max = health };
 
         static bool IsOpId(string id) => id == "scout" || id == "fixer" || id == "tech" || id == "enforcer";
-        static bool IsCivilianTarget(string id) => id == "waitress" || id == "driver" || id == "councillor";
+        /// <summary>The simulated person a target id names, if they are a civilian (people.rules: not the city's security), cast or crowd, by
+        /// role or id; null for an operative, the guard, the patrol, the rivals, an officer or a robot. One rule for every person (brief 013,
+        /// Sky 2026-10-16: no named target list): a civilian is shot at only when forced (the Ctrl case).</summary>
+        Person? CivilianOf(string id) => IsOpId(id) ? null : PersonById(id) is Person p && p.Civilian ? p : null;
+        bool IsCivilian(string id) => CivilianOf(id) != null;
         bool IsFightHostile(string id) { foreach (var h in Hostiles) if (h.Id == id) return true; return false; }
         Hostile? HostileOf(string id) { foreach (var h in Hostiles) if (h.Id == id) return h; return null; }
         int SecIndex(string id) { for (int k = 0; k < SecGuns.Length; k++) if (SecGuns[k].Id == id) return k; return -1; }
@@ -85,7 +92,10 @@ namespace Suborned.Sim
             switch (id) { case "guard": return GuardGun; case "patrol": return PatrolGun; case "rivals": return RivalsGun; }
             if (civGuns.TryGetValue(id, out var c)) return c;
             int k = SecIndex(id); if (k >= 0) return SecGuns[k];
-            return HostileOf(id)?.Gun;
+            if (UnitOf(id) is Unit u) return u.Gun;
+            var h = HostileOf(id); if (h != null) return h.Gun;
+            if (CivilianOf(id) is Person p && WalkerOf(p) != null) { var g = NewGun(p.Id, null, false, R.HealthCivilian); civGuns[p.Id] = g; extraCivGuns.Add(p.Id); return g; } // a person of the crowd, the first time a shot names them
+            return null;
         }
 
         /// <summary>Where a shooter or target stands now, or null when it is not out on the street to be shot at.</summary>
@@ -100,7 +110,9 @@ namespace Suborned.Sim
                 case "waitress": case "driver": case "councillor": return PersonPos(PersonByRole(id));
             }
             int k = SecIndex(id); if (k >= 0) return SecOfficerPose(k)?.pos;
-            var h = HostileOf(id); return h != null && h.Present && !h.Down ? h.Pos(Tick) : (Pt?)null;
+            if (UnitOf(id) is Unit u) return UnitPose(u)?.pos;
+            var h = HostileOf(id); if (h != null) return h.Present && !h.Down ? h.Pos(Tick) : (Pt?)null;
+            return CivilianOf(id) is Person p ? PosOfPerson(p) : null;
         }
 
         bool Moving(string id)
@@ -120,6 +132,7 @@ namespace Suborned.Sim
             }
             int k = SecIndex(id);
             if (k >= 0) { long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm; return mm < Math.Max(0, securityPath.Length - k * SecFileMm); }
+            if (UnitOf(id) is Unit u) return u.St == "walk" || u.St == "back";
             return HostileOf(id)?.Moving(Tick) ?? false;
         }
 
@@ -152,6 +165,7 @@ namespace Suborned.Sim
             security.Add("patrol");
             security.Sort(StringComparer.Ordinal);
             foreach (var id in security) CityBody(id);
+            UnitsCombat(); // brief 013: the response's robots and police
             var rivals = new List<string> { "rivals" };
             foreach (var h in Hostiles) if (h.Id.StartsWith("rival-", StringComparison.Ordinal)) rivals.Add(h.Id);
             rivals.Sort(StringComparer.Ordinal);
@@ -177,7 +191,7 @@ namespace Suborned.Sim
                     g.Order = ""; g.Force = false; g.Target = ""; g.LostAt = -1;
                 }
             }
-            if (op.Busy != null || op.Running || op.Carrying.HasValue || !Ready(g)) return;
+            if (op.Busy != null || op.Running || op.Carrying.HasValue || op.CarryBody.Length > 0 || !Ready(g)) return;
             string t = g.Order.Length > 0 ? g.Order : StanceTarget(op);
             if (t.Length == 0) { g.Target = ""; return; }
             var at = PosOf(t)!.Value; long d = Dist(op.Pos, at);
@@ -220,13 +234,14 @@ namespace Suborned.Sim
             foreach (var g in SecGuns) yield return g.Id;
             yield return "rivals";
             foreach (var h in Hostiles) yield return h.Id;
+            foreach (var u in Units) if (!u.Legacy && !u.Patrol) yield return u.Id;
         }
         bool Combatant(string id)
         {
             var g = GunOf(id); if (g == null || g.Down || !PosOf(id).HasValue) return false;
             if (IsFightHostile(id)) { var h = HostileOf(id)!; return h.Present && h.Gun.St != "break" && h.Gun.St != "gone"; }
             if (id == "guard" && GuardAlly) return false;
-            if (IsOpId(id) || IsCivilianTarget(id)) return false;
+            if (IsOpId(id) || IsCivilian(id)) return false;
             return IsOpId(g.Target) || g.Fired;
         }
 
@@ -280,13 +295,13 @@ namespace Suborned.Sim
             if (untraced) { FightShots++; WakePatrol(op.Pos, op.Id); return; }
             Gunfire++;
             RaiseAlert(R.GunfireAlert, "gunfire:" + t);
-            Person? victim = IsCivilianTarget(t) ? PersonByRole(t) : t == "guard" ? GuardP : null;
+            Person? victim = CivilianOf(t) ?? (t == "guard" ? GuardP : null);
             // one incident per target (rulebook alert: every shot of one fight with one target is one incident); later shots add new witnesses
             if (!fireIncident.TryGetValue(t, out var inc))
             {
                 incidents.Add("fire:" + t);
                 AddTrail(R.GunfireTrail, "gunfire:" + t); // a shooting is a case: once, at its first shot, hit or miss (Motive addendum Q1)
-                inc = AddIncident(IsCivilianTarget(t) ? "violence" : "gunfire", (IsCivilianTarget(t) ? "violence:" : "gunfire:") + t, IsPersonTarget(t) ? at : op.Pos);
+                inc = AddIncident(IsCivilian(t) ? "violence" : "gunfire", (IsCivilian(t) ? "violence:" : "gunfire:") + t, IsPersonTarget(t) ? at : op.Pos);
                 fireIncident[t] = inc;
             }
             var seen = WitnessesWithPos(op.Pos, victim);
@@ -307,24 +322,25 @@ namespace Suborned.Sim
                     if (c == Inez && !InezWitnessedShooting) { InezWitnessedShooting = true; Note("witness.waitress", $"Inez sees the {t} shot at near her café. She is now a witness."); }
                     else if (c != Inez) Note("witness.crowd", $"{c.Name} sees the {t} shot at.");
                 }
-            if (IsCivilianTarget(t)) CivilianShotAt(PersonByRole(t), op);
+            if (CivilianOf(t) is Person shotAt) CivilianShotAt(shotAt, op);
             DrawRivals(); WakePatrol(op.Pos, op.Id);
             var (delay, text) = Reporter(t, op.Pos, civSees > 0);
-            if (delay >= 0) CallSecurity(delay, text);
+            if (delay >= 0) CallSecurity(delay, text, IsPersonTarget(t) ? at : op.Pos);
         }
 
         /// <summary>Who reports the cell's gunfire, and so how soon the response unit comes (rulebook security.response).</summary>
         (int delay, string text) Reporter(string t, Pt shooter, bool civSees)
         {
-            if (IsCivilianTarget(t)) return (R.RespCivilianS, t == "waitress" ? "Inez is shot at the café. Witnesses call security." : t == "driver" ? "The official driver is shot at. Security rushes to the pickup." : "Shots at the councillor are reported.");
+            if (IsCivilian(t)) return (R.RespCivilianS, t == "waitress" ? "Inez is shot at the café. Witnesses call security." : t == "driver" ? "The official driver is shot at. Security rushes to the pickup." : t == "councillor" ? "Shots at the councillor are reported." : "A shooting in the street is reported.");
             if (t == "patrol") return (R.RespSeenS, "Gunfire at the patrol is reported.");
             if (t == "rivals") return CameraWatching("pickup", shooter) ? (R.RespSeenS, "The firefight with the rivals is reported.") : (R.RespRivalsUnseenS, "The firefight with the rivals is reported.");
-            if (SecIndex(t) >= 0 || IsFightHostile(t)) return (-1, "");
+            if (SecIndex(t) >= 0 || IsFightHostile(t) || UnitOf(t) != null) return (-1, "");
             if (civSees) return (R.RespWitnessS, InezWitnessedShooting ? "Inez reports the shooting." : "A witness reports the shooting.");
             bool guard = t == "guard" ? GuardWatching(shooter) : false;
             if (guard) return (R.RespSeenS, "The guard calls in the shooting.");
             if (PatrolWatching(shooter)) return (R.RespSeenS, "The patrol reports gunfire.");
             if (CameraWatching("entrance", shooter)) return (R.RespSeenS, "The entrance camera reports gunfire.");
+            foreach (var c in S.Cameras) if (c.World && CameraWatching(c.Id, shooter)) return (R.RespSeenS, "A street camera reports gunfire.");
             return (R.RespUnseenS, "Shots are heard in the district.");
         }
 
@@ -332,8 +348,9 @@ namespace Suborned.Sim
         /// door, stops to search for the shooter.</summary>
         void CivilianShotAt(Person p, Op op)
         {
-            RaiseAlert(R.ViolenceSeen, $"violence-seen:{p.Role}");
-            if (incidents.Add("seen:" + p.Role)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{p.Role}"); MoveStanding(-R.StandingStep, $"violence-seen:{p.Role}"); }
+            string who = Who(p);
+            RaiseAlert(R.ViolenceSeen, $"violence-seen:{who}");
+            if (incidents.Add("seen:" + who)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{who}"); MoveStanding(-R.StandingStep, $"violence-seen:{who}"); }
             var g = GuardPose();
             if (g.HasValue && g.Value.phase != "door" && !GuardHeld)
             {
@@ -370,6 +387,8 @@ namespace Suborned.Sim
                     return;
                 case "waitress": case "driver": case "councillor": CivilianHit(PersonByRole(t), down); return;
             }
+            if (UnitOf(t) is Unit hu) { Note(down ? "response.down" : "response.hit", down ? $"{t} is down." : $"{t} is hit."); if (down) hu.St = "gone"; return; }
+            if (CivilianOf(t) is Person cp) { CivilianHit(cp, down); return; }
             int k = SecIndex(t);
             if (k >= 0)
             {
@@ -407,6 +426,7 @@ namespace Suborned.Sim
             if (op.Busy != null) { Cash += op.BusyPaid; op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; } // an action cut short: the price comes back, as a refusal's does
             op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Target = "";
             if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
+            if (op.CarryBody.Length > 0) PutDown(op, name + " down");
             Note(name + ".down", $"The {name} is down. Carry them to the car, or they are captured.");
         }
 
@@ -414,7 +434,7 @@ namespace Suborned.Sim
         {
             if (down)
             {
-                GuardDown = true; GuardP.Down = true; GuardEngaged = false; MissingNotice = Tick + T(R.CheckInS);
+                GuardDown = true; GuardP.Down = true; GuardEngaged = false; // his next check-in mark misses (brief 013: response.checkIn)
                 bool rivals = IsFightHostile(by); // downed by the rivals in the safe fight: the post is still empty, but no act of the cell (Motive addendum Q6)
                 Chain.Add(rivals ? "guard-down-by-rivals" : "guard-shot"); Note("guard.down", rivals ? "The rivals drop the guard. His missed check-in will still be noticed." : "The guard falls. His missed check-in will draw more attention.");
                 return;
@@ -437,8 +457,9 @@ namespace Suborned.Sim
             }
             if (p == Driver) carStoppedAt = CarPos();
             p.Down = true; p.Turned = false;
-            Chain.Add(p.Role + "-shot");
-            Note("civilian.down", $"{p.Name} ({p.Role}) is down.");
+            if (WalkerOf(p) is Walker cw) { cw.St = ""; cw.Run = null; cw.Pace = 0; }
+            Chain.Add(Who(p) + "-shot");
+            Note("civilian.down", $"{p.Name} ({Who(p)}) is down.");
             if (p == Driver && Vale != ValeAt.Office) Fail("driver-shot", "The driver is shot during handover. Security pulls Vale away.");
         }
 
@@ -454,7 +475,7 @@ namespace Suborned.Sim
             {
                 var g = op.Gun; if (!g.Drawn || g.Down || op.Inside) continue;
                 string name = Sim.Op.Name(op.Id);
-                foreach (var w in SecurityWatchers)
+                foreach (var w in new List<string>(SecurityWatchers))
                     if (!drawSeen.Contains($"{w}/{name}/{g.DrawTick}") && WatcherSees(w, op.Pos)) { drawSeen.Add($"{w}/{name}/{g.DrawTick}"); SecuritySawDraw(w, op); if (Over) return; }
                 string pk = $"people/{name}/{g.DrawTick}";
                 if (drawSeen.Contains(pk)) continue;
@@ -474,14 +495,17 @@ namespace Suborned.Sim
                 Note("witness.weapon-drawn", $"{ws.Count} see the {name}'s weapon drawn.");
             }
         }
-        static readonly string[] SecurityWatchers = { "guard", "patrol", "camera:entrance", "camera:pickup", "security" };
+        static readonly string[] SecurityWatchersFixed = { "guard", "patrol", "camera:entrance", "camera:pickup", "security" };
+        /// <summary>The city's eyes that call in what they see: the fixed five, then the response's robots and police (brief 013) by id.</summary>
+        IEnumerable<string> SecurityWatchers { get { foreach (var w in SecurityWatchersFixed) yield return w; foreach (var c in S.Cameras) if (c.World) yield return "camera:" + c.Id; foreach (var u in Units) if (!u.Legacy && !u.Patrol && u.OnStreet(Tick) && !u.Gun.Down) yield return u.Id; } }
         bool WatcherSees(string w, Pt p) => w switch
         {
             "guard" => !GuardAlly && GuardWatching(p),
             "patrol" => PatrolWatching(p),
             "camera:entrance" => CameraWatching("entrance", p),
             "camera:pickup" => CameraWatching("pickup", p),
-            _ => SecurityWatching(p),
+            "security" => SecurityWatching(p),
+            _ => UnitOf(w) is Unit u ? UnitSees(u, p) : w.StartsWith("camera:", StringComparison.Ordinal) && CameraWatching(w.Substring(7), p),
         };
         string? SecurityWatcherOf(Pt p) { foreach (var w in SecurityWatchers) if (WatcherSees(w, p)) return w; return null; }
 
@@ -504,6 +528,9 @@ namespace Suborned.Sim
                     return;
                 case "camera:entrance": case "camera:pickup":
                     CallSecurity(R.RespSeenS, "The watchers on the camera report a drawn weapon.");
+                    return;
+                default:
+                    if (w.StartsWith("camera:", StringComparison.Ordinal)) CallSecurity(R.RespSeenS, "The watchers on the camera report a drawn weapon."); // a city camera (the mast)
                     return;
             }
         }
@@ -605,12 +632,12 @@ namespace Suborned.Sim
             var g = op.Gun;
             if (g.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
             if (op.Running) return No("fire-running", "a running operative doesn't fire: walk or stop first");
-            if (op.Carrying.HasValue) return No("fire-carrying", "carrying, the operative doesn't fire");
+            if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("fire-carrying", "carrying, the operative doesn't fire");
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
             var tg = GunOf(t); if (tg == null) return No("target-unknown", $"target '{o.Target}' is unknown (unknown = reject)");
-            if (IsCivilianTarget(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when forced (Ctrl)");
+            if (IsCivilian(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when forced (Ctrl)");
             var at = PosOf(t);
             if (!at.HasValue || tg.Down) return No("no-target", $"no {o.Target} to fire at");
             if (!G.Within(op.Pos, at.Value, g.W.MaxCm)) return No("out-of-range", $"out of range ({g.W.MaxCm / 100} m)", m: g.W.MaxCm / 100);
@@ -625,8 +652,8 @@ namespace Suborned.Sim
         string Carry(Op op, Order o)
         {
             if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("carry-vale", "the Enforcer is carrying Vale");
-            if (op.Carrying.HasValue) return No("already-carrying", "already carrying");
-            if (!IsOpId(o.Target)) return No("carry-names-downed", "carry names a downed operative");
+            if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
+            if (!IsOpId(o.Target)) return PersonById(o.Target) != null ? CarryBody(op, o) : No("carry-names-downed", "carry names a downed operative or a body");
             var other = OpOf(Sim.Op.Parse(o.Target));
             if (other == op) return No("carry-self", "nobody carries themself");
             if (!other.Down) return No("not-down", $"{o.Target} is not down");
@@ -682,24 +709,24 @@ namespace Suborned.Sim
             {
                 string t = FireTarget(op, o.Target); var at = t.Length > 0 ? PosOf(t) : null;
                 if (t.Length == 0 || !at.HasValue || IsOpId(t) || GunOf(t) == null) { c.Refused = $"no {o.Target} to fire at"; return c; }
-                if (IsCivilianTarget(t) && !o.Force) { c.Refused = $"{t} is a civilian or a contact: a target only when forced (Ctrl)"; return c; }
+                if (IsCivilian(t) && !o.Force) { c.Refused = $"{t} is a civilian or a contact: a target only when forced (Ctrl)"; return c; }
                 c.Why = "fire";
-                Person? victim = IsCivilianTarget(t) ? PersonByRole(t) : t == "guard" ? GuardP : null;
+                Person? victim = CivilianOf(t) ?? (t == "guard" ? GuardP : null);
                 if (IsPersonTarget(t)) foreach (var p in WitnessesOf(at.Value, victim)) if (p.Civilian) civ++;
                 var (d, _) = Reporter(t, op.Pos, civ > 0); delay = d;
-                reported = IsCivilianTarget(t) ? "civilian" : t == "rivals" ? (d == R.RespRivalsUnseenS ? "rivals-unseen" : "seen") : d < 0 ? "none" : d == R.RespWitnessS && civ > 0 ? "witness" : d == R.RespUnseenS ? "unseen" : "seen";
-                c.AlertTo = Math.Max(Alert, civ > 0 || IsCivilianTarget(t) ? R.ViolenceSeen : R.GunfireAlert);
+                reported = IsCivilian(t) ? "civilian" : t == "rivals" ? (d == R.RespRivalsUnseenS ? "rivals-unseen" : "seen") : d < 0 ? "none" : d == R.RespWitnessS && civ > 0 ? "witness" : d == R.RespUnseenS ? "unseen" : "seen";
+                c.AlertTo = Math.Max(Alert, civ > 0 || IsCivilian(t) ? R.ViolenceSeen : R.GunfireAlert);
                 c.RivalsInS = RivalsDrawn || RivalsArrived ? 0 : Math.Max(0, Math.Min(RivalAt, Tick + T(R.RivalsDrawnS)) - Tick) / Hz;
                 var pp = PatrolPose();
                 c.PatrolBreaks = !PatrolDown && PatrolAwayUntil <= Tick && !PatrolChasing && pp.HasValue && G.Within(pp.Value.pos, op.Pos, R.PatrolBreakCm);
             }
             c.Loud = true; c.Civilians = civ; c.ReportedBy = reported; c.DownedCaptured = true;
-            if (delay >= 0) { c.PoliceInS = delay; c.SecurityArrives = Math.Min(SecurityArrives, Tick + T(delay)); c.Seal = c.SecurityArrives + T(R.SealS); }
+            if (delay >= 0) { int arr = GunfireArrival(delay); c.PoliceInS = (arr - Tick) / Hz; c.SecurityArrives = Math.Min(SecurityArrives, arr); c.Seal = c.SecurityArrives + T(SealS); }
             else if (SecurityArrives != INF) { c.SecurityArrives = SecurityArrives; c.Seal = Lockdown; }
             if (Start.FinalFight && FightBranch.Length == 0)
             {
                 c.FightAfter = "loud";
-                c.Officers = R.LoudOfficers + (c.AlertTo >= 3 ? R.LoudAlert : 0) + (o.Do == "fire" && IsCivilianTarget(FireTarget(op, o.Target)) ? R.LoudCivilian : 0);
+                c.Officers = R.LoudOfficers + (c.AlertTo >= 3 ? R.LoudAlert : 0) + (o.Do == "fire" && IsCivilian(FireTarget(op, o.Target)) ? R.LoudCivilian : 0);
                 c.GuardAllyLost = !GuardDown && !SawCell(GuardP) && !GuardEngaged;
                 c.WarningLost = Inez.Turned && !Inez.Down && Inez.Has(R.HelpedAct);
             }
@@ -716,6 +743,7 @@ namespace Suborned.Sim
             var path = new Path(route);
             q.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));
             q.RunS = (int)((path.Length + R.RunSpeed * Hz - 1) / (R.RunSpeed * Hz));
+            { var at = new List<Pt>(); for (long mm = 0; ; mm += 1000) { at.Add(path.At(Math.Min(mm, path.Length))); if (mm >= path.Length) break; } q.Seen = SeenAt(at); } // the same samples as below
             q.RunFree = RunFree(op); q.AlertIfRun = Alert;
             if (q.RunFree) return q;
             var people = new HashSet<string>(StringComparer.Ordinal);
@@ -736,7 +764,7 @@ namespace Suborned.Sim
         {
             if (op.Down) return No("agent-down", $"the {Sim.Op.Name(op.Id)} is down");
             if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("run-carrying-vale", "carrying Vale, the Enforcer walks: a man being taken walks");
-            if (op.Carrying.HasValue) return No("run-carrying-downed", "carrying a downed operative, the operative walks");
+            if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("run-carrying-downed", "carrying, the operative walks");
             if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.Busy != null) return No("agent-busy", $"{Sim.Op.Name(op.Id)} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             return "";

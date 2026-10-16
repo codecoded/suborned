@@ -9,11 +9,17 @@ namespace Suborned.Sim
     public sealed class Camera
     {
         public string Id = ""; public Pt At, Facing; public int Reach, Half;
+        /// <summary>Every head's facing (a mast carries several; the mission's poles one, Facing). World: built by the world's rules
+        /// (sim/data/handover.takedown.json watchers), so the Tech's cabinet can loop it; the mission's poles are the mission's.</summary>
+        public Pt[] Facings = Array.Empty<Pt>(); public bool World;
     }
     public sealed class CastRole
     {
         public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
     }
+
+    /// <summary>A place that hides a body (brief 013; Vantage §2.1): a closed container on the street (holds Holds) or a service door (any number).</summary>
+    public sealed class StashPlace { public string Id = "", Kind = "", Of = ""; public Pt At, Stand; public int Holds; } // At: the piece or the door; Stand: the free cell the operative stands on
 
     public sealed class Site
     {
@@ -37,6 +43,91 @@ namespace Suborned.Sim
         public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
         public readonly string CoverSha = "";
         public readonly List<(string id, Pt at, string kind)> Refuges = new List<(string, Pt, string)>(); // where the crowd runs (Pulse §4)
+
+        // brief 013: stashes, report points, robot docks and police posts (sim/data/handover.takedown.json, Splice's export from the world's
+        // rules), and the security level (sim/data/handover.provisional.json until the plan and mission carry it)
+        public readonly List<StashPlace> Stashes = new List<StashPlace>();
+        /// <summary>The buildings' entrances (the takedown file's `entrances`): id, building, kind (public, official, service), the door, its stand.</summary>
+        public readonly List<(string id, string building, string kind, Pt at, Pt stand)> Entrances = new List<(string, string, string, Pt, Pt)>();
+        public readonly List<(string id, Pt at)> CallBoxes = new List<(string, Pt)>(), Docks = new List<(string, Pt)>(), Posts = new List<(string, Pt)>();
+        public int SecurityBase = 1, SecurityBonus; // no provisional data: level 1 (routine), today's numbers
+        public bool HasProvisional;
+
+        /// <summary>Read the provisional world facts (suborned.sim.provisional/1), checked at load like the site (Redline E1).</summary>
+        public void AddProvisional(string json)
+        {
+            var n = JNode.Parse(json, "provisional");
+            n.Only("schema", "mission", "note", "security", "stashes", "callBoxes", "docks", "posts", "srcEmpty");
+            if (n["schema"].Str() != "suborned.sim.provisional/1") throw new FormatException("provisional schema is not suborned.sim.provisional/1");
+            if (n["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
+            var sec = n["security"]; sec.Only("base", "bonus", "src"); SecurityBase = sec["base"].Int(); SecurityBonus = sec["bonus"].Int();
+            if (SecurityBase < 0 || SecurityBase > 4 || SecurityBase + SecurityBonus < 0 || SecurityBase + SecurityBonus > 4) throw new FormatException("provisional security: base + bonus is a level 0..4");
+            foreach (var key in new[] { "stashes", "callBoxes", "docks", "posts" }) if (n[key].Items.Count > 0) throw new FormatException($"provisional.{key}: the world's export carries them now (handover.takedown.json)");
+            HasProvisional = true;
+        }
+
+        /// <summary>Read the world's takedown facts (suborned.sim.takedown/1, tools/sim/takedown.ts from the plan, the civic block and the kit):
+        /// the stashes, the report points (staffed doors and call boxes) and the response's origins (robot docks and police posts). Its
+        /// solids and the world's watchers are not read: the site grid does not hold the solids (they would move every walk), and the
+        /// engine's cameras are the mission's (briefs/013 C open issue 3).</summary>
+        public void AddTakedownWorld(string json)
+        {
+            var n = JNode.Parse(json, "takedown");
+            n.Only("schema", "mission", "frame", "from", "grid", "reach", "entrances", "stashes", "reportPoints", "origins", "coverage", "solids", "solidsSrc", "watchers", "watchersSrc");
+            if (n["schema"].Str() != "suborned.sim.takedown/1") throw new FormatException("takedown schema is not suborned.sim.takedown/1");
+            if (n["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
+            var gr = n["grid"]; gr.Only("x0", "y0", "cell");
+            if (gr["x0"].Int() != Grid.X0 || gr["y0"].Int() != Grid.Y0 || gr["cell"].Int() != Grid.Cell) throw new FormatException("takedown.grid is not the site's grid");
+            Pt Stand(JNode x) { var p = Pt.Of(x["stand"]); if (!Grid.Free(p)) throw new FormatException($"{x.Path}.stand is not free ground"); return p; }
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var x in n["entrances"].Items) // the buildings' doors (rev 4 R4.1: the doors a found body's scene holds)
+            {
+                x.Only("id", "building", "name", "kind", "at", "stand", "src");
+                var e = (id: x["id"].Str(), building: x["building"].Str(), kind: x["kind"].Str(), at: Pt.Of(x["at"]), stand: Stand(x));
+                if (Entrances.Exists(y => y.id == e.id)) throw new FormatException($"{x.Path}: entrance {e.id} repeats");
+                Entrances.Add(e);
+            }
+            foreach (var x in n["stashes"].Items)
+            {
+                x.Only("id", "kind", "of", "at", "stand", "holds", "item", "bare", "src");
+                var st = new StashPlace { Id = x["id"].Str(), Kind = x["kind"].Str(), Of = x["of"].Str(), At = Pt.Of(x["at"]), Stand = Stand(x), Holds = x["holds"].Int() };
+                if (st.Kind != "container" && st.Kind != "door") throw new FormatException($"{x.Path}.kind '{st.Kind}' (container, door)");
+                if (st.Holds < 1) throw new FormatException($"{x.Path}.holds is at least 1");
+                if (!ids.Add(st.Id)) throw new FormatException($"{x.Path}: stash {st.Id} repeats");
+                Stashes.Add(st);
+            }
+            foreach (var x in n["reportPoints"].Items)
+            {
+                x.Only("id", "kind", "at", "stand", "door", "item", "src");
+                var k = x["kind"].Str(); var at = Stand(x);
+                if (k == "call-box") CallBoxes.Add((x["id"].Str(), at));
+                else if (k == "door") { var id = x["id"].Str(); if (!Refuges.Exists(r => r.id == id && r.kind == "door")) throw new FormatException($"{x.Path}: door {id} is no staffed door of the site"); }
+                else throw new FormatException($"{x.Path}.kind '{k}' (door, call-box)");
+            }
+            foreach (var x in n["origins"].Items)
+            {
+                x.Only("id", "kind", "at", "stand", "door", "item", "src");
+                var k = x["kind"].Str(); var at = Stand(x);
+                if (k == "dock") Docks.Add((x["id"].Str(), at)); else if (k == "post") Posts.Add((x["id"].Str(), at));
+                else throw new FormatException($"{x.Path}.kind '{k}' (dock, post)");
+            }
+            foreach (var x in n["watchers"].Items)
+            {
+                x.Only("id", "kind", "at", "facings", "range", "coneDeg", "inSim", "src");
+                if (x["kind"].Str() != "mast-camera") continue; // the robot dock is an origin (above), not a watcher
+                var wid = x["id"].Str(); var seg = wid.Substring(wid.LastIndexOf('/') + 1).Replace("-camera", ""); // street/records-square/mast-camera-314 → mast-314
+                var fs = new List<Pt>(); foreach (var f in x["facings"].Items) { var v = Pt.Of(f); if (v == new Pt(0, 0)) throw new FormatException($"{f.Path}: a facing can't be zero"); fs.Add(v); }
+                int range = x["range"].Int(), deg = x["coneDeg"].Int();
+                if (fs.Count == 0 || range <= 0 || range > 100_000 || deg < 2 || deg > 178) throw new FormatException($"{x.Path}: a camera needs facings, a range and a cone 2..178°");
+                if (Cameras.Exists(c => c.Id == seg)) throw new FormatException($"{x.Path}: camera {seg} repeats");
+                Cameras.Add(new Camera { Id = seg, At = Pt.Of(x["at"]), Facing = fs[0], Facings = fs.ToArray(), Reach = range, Half = (int)((long)range * TanHalf[deg / 2] / 10000), World = true });
+            }
+            HasTakedownWorld = true;
+        }
+        /// <summary>tan of whole degrees 0..89, ×10000, rounded: a cone's half-width at its reach, in integers (no libm at load).</summary>
+        static readonly int[] TanHalf = { 0, 175, 349, 524, 699, 875, 1051, 1228, 1405, 1584, 1763, 1944, 2126, 2309, 2493, 2679, 2867, 3057, 3249, 3443, 3640, 3839, 4040, 4245, 4452, 4663, 4877, 5095, 5317, 5543, 5774, 6009, 6249, 6494, 6745, 7002, 7265, 7536, 7813, 8098, 8391, 8693, 9004, 9325, 9657, 10000, 10355, 10724, 11106, 11504, 11918, 12349, 12799, 13270, 13764, 14281, 14826, 15399, 16003, 16643, 17321, 18040, 18807, 19626, 20503, 21445, 22460, 23559, 24751, 26051, 27475, 29042, 30777, 32709, 34874, 37321, 40108, 43315, 47046, 51446, 56713, 63138, 71154, 81443, 95144, 114301, 143007, 190811, 286363, 572900 };
+        public bool HasTakedownWorld;
+        public int SecurityLevel => Math.Max(0, Math.Min(4, SecurityBase + SecurityBonus));
 
         public Site(string json)
         {
@@ -66,6 +157,7 @@ namespace Suborned.Sim
             {
                 c.Only("id", "at", "facing", "reach", "half", "src", "reason");
                 var cam = new Camera { Id = c["id"].Str(), At = Pt.Of(c["at"]), Facing = Pt.Of(c["facing"]), Reach = c["reach"].Int(), Half = c["half"].Int() };
+                cam.Facings = new[] { cam.Facing };
                 if (cam.Facing == new Pt(0, 0) || cam.Reach <= 0 || cam.Reach > 100_000 || cam.Half < 0) throw new FormatException($"{c.Path}: a camera needs a facing and a reach");
                 Cameras.Add(cam);
             }

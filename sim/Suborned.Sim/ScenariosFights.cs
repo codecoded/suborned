@@ -119,8 +119,9 @@ namespace Suborned.Sim
                 r.Eq(Hash.State(g), before, "reading the card changes nothing");
                 r.Is(c.Loud && c.Why == "fire", "a shot before any fight goes loud");
                 r.Is(c.AlertTo >= 2, $"Alert → {c.AlertTo} ({c.Civilians} civilians watching)");
-                r.Eq(c.PoliceInS, c.Civilians > 0 ? g.R.RespWitnessS : g.R.RespSeenS, "police from the north street, by who reports it");
-                r.Eq(c.Seal, c.SecurityArrives + T(g.R.SealS), "the seal follows their arrival");
+                // brief 013: the delays are level 1's arrivals; at the mission's level the unit rolls that level's dispatch instead (the Handover: 2, 10 s)
+                r.Eq(c.PoliceInS, (c.Civilians > 0 ? g.R.RespWitnessS : g.R.RespSeenS) + g.DialNow.DispatchS - g.R.Dial[1].DispatchS, "police from the north street, by who reports it, at the level's dispatch");
+                r.Eq(c.Seal, c.SecurityArrives + T(g.SealS), "the seal follows their arrival");
                 r.Eq(c.FightAfter, "loud", "the final fight turns loud");
                 r.Is(c.Officers >= g.R.LoudOfficers && c.ResponseOfficers == g.R.ResponseOfficers, $"{c.Officers} officers and the response unit's {c.ResponseOfficers}");
                 r.Is(c.GuardAllyLost, "the guard won't help");

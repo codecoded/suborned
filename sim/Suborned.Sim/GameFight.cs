@@ -38,7 +38,8 @@ namespace Suborned.Sim
             {
                 int n = R.LoudOfficers;
                 if (Alert >= 3) { n += R.LoudAlert; FightWhy.Add("alert-3"); }
-                if (Inez.Down || Driver.Down) { n += R.LoudCivilian; FightWhy.Add("civilian-shot"); }
+                bool civShot = false; foreach (var kv in civGuns) if (kv.Value.Down) civShot = true; // a civilian shot (a takedown is no shot)
+                if (civShot) { n += R.LoudCivilian; FightWhy.Add("civilian-shot"); }
                 var entry = S.Stand(S.FightEntry);
                 var stands = S.FightPolice;
                 for (int i = 0; i < n && i < stands.Length; i++)
@@ -47,7 +48,7 @@ namespace Suborned.Sim
                     var gun = NewGun($"officer-{i + 1}", R.Pistol, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
                     Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Home = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
-                Lockdown = Math.Min(Lockdown, Tick + T(R.SealS));
+                Lockdown = Math.Min(Lockdown, Tick + T(SealS));
                 Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from the north street. The seal clock is running.");
             }
             else

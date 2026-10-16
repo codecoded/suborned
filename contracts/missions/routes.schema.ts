@@ -1,7 +1,8 @@
 // suborned.mission.routes/1: a mission's route scripts and what each must show, contracts/missions/<id>/routes/routes.json (brief 011 B).
 // Each script is an order script in the engine's own format (suborned.sim.script/1, sim/Suborned.Sim/Script.cs: a start state, timed
 // orders, `until`), played headless by the mission checker (tools/missions/check). This file says what every script is for:
-// - kind: quiet (a route that wins with no shot), loud (wins with gunfire), fail (reaches one §07 fail), outcome (withdraw);
+// - kind: quiet (a route that wins with no shot), loud (wins with gunfire), fail (reaches one §07 fail), outcome (withdraw),
+//   careless (brief 013: a takedown done carelessly, seen or found or reported; `twin` names the careful script it is compared with);
 // - route: which of the mission's routes it plays (quiet routes are counted by route, not by script: a variant is the same route);
 // - primary: the route's reference script (the one the §09 conditions compare and vary);
 // - expects: the outcome and fail code the engine must report (sim/Suborned.Sim/Game*.cs Fail codes);
@@ -19,7 +20,7 @@ const src = z.string().min(1);
 export const RouteScript = z.strictObject({
   id, file: z.string().regex(/^[a-z0-9-]+\.json$/),
   plan: z.string().regex(/^[a-z0-9-]+\.plan\.json$/).optional().describe('routes/plans/<file>: the plan the script is composed from (bun run missions:check compose)'),
-  kind: z.enum(['quiet', 'loud', 'fail', 'outcome']),
+  kind: z.enum(['quiet', 'loud', 'fail', 'outcome', 'careless']),
   route: z.string().min(1).optional().describe('the route it plays: A, B, …; quiet and loud scripts name one'),
   primary: z.boolean().optional(),
   /** The route's closing event (§09 template: the event after which the route can no longer take Vale) and the engine log code that
@@ -27,10 +28,12 @@ export const RouteScript = z.strictObject({
   closes: z.strictObject({ at, what: z.string().min(1), secured: z.string().min(1) }).optional(),
   expects: z.strictObject({ outcome: z.enum(['success', 'failure', 'withdrawn']), fail: id.optional() }),
   reaches: id.optional().describe('the `fails` entry a fail script reaches'),
+  twin: id.optional().describe('a careless script: the careful script it is the careless version of (brief 013 D, MC-7)'),
   pending: z.string().min(1).optional(),
   src, note: z.string().min(1).optional(),
 }).refine(s => s.kind !== 'fail' || (s.expects.outcome === 'failure' && !!s.expects.fail && !!s.reaches), { error: 'a fail script expects a failure with its code and names the fail it reaches' })
-  .refine(s => !['quiet', 'loud'].includes(s.kind) || (!!s.route && s.expects.outcome === 'success'), { error: 'a quiet or loud script names its route and expects a win' });
+  .refine(s => !['quiet', 'loud'].includes(s.kind) || (!!s.route && s.expects.outcome === 'success'), { error: 'a quiet or loud script names its route and expects a win' })
+  .refine(s => (s.kind === 'careless') === !!s.twin, { error: 'a careless script, and only a careless script, names its careful twin' });
 
 export const Routes = z.strictObject({
   schema: z.literal('suborned.mission.routes/1'),
@@ -44,6 +47,7 @@ export const Routes = z.strictObject({
 })
   .refine(r => new Set(r.scripts.map(s => s.id)).size === r.scripts.length, { path: ['scripts'], error: 'script ids are unique' })
   .refine(r => r.scripts.every(s => !s.reaches || r.fails.some(f => f.id === s.reaches && f.codes.includes(s.expects.fail!))), { path: ['scripts'], error: 'a fail script reaches a listed fail by one of its codes' })
+  .refine(r => r.scripts.every(s => !s.twin || r.scripts.some(t => t.id === s.twin && t.kind === 'quiet')), { path: ['scripts'], error: 'a careless script\'s twin is a quiet script of the manifest' })
   .refine(r => [...new Set(r.scripts.filter(s => s.kind === 'quiet').map(s => s.route))].every(rt => r.scripts.filter(s => s.kind === 'quiet' && s.route === rt && s.primary).length === 1), { path: ['scripts'], error: 'each quiet route has one primary script' })
   .refine(r => r.scripts.filter(s => s.kind === 'loud' && s.primary).length === 1, { path: ['scripts'], error: 'one primary loud script' })
   .refine(r => r.scripts.every(s => !(s.kind === 'quiet' && s.primary) || !!s.closes), { path: ['scripts'], error: 'a primary quiet route names its closing event' });

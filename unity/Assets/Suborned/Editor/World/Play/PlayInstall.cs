@@ -84,7 +84,7 @@ namespace Suborned.World.Play
                     if (job != null && !jobBlocks.ContainsKey(job)) jobBlocks[job] = J.S(J.Get(p, "look"), "block");
                 }
             host.jobs = jobBlocks.Keys.ToArray(); host.jobColours = jobBlocks.Values.Select(Block).ToArray();
-            host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit");
+            host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
             EditorSceneManager.MarkSceneDirty(go.scene);
             Debug.Log($"Play: installed the Handover host (`{RootName}`): frame origin {f.origin}, heights {f.nx}x{f.ny} at {f.cell} m (max {f.heights.Max():F2} m)");
             return host;
@@ -102,6 +102,26 @@ namespace Suborned.World.Play
             m = new Material(Shader.Find(shader) ?? throw new InvalidDataException($"Play: shader {shader} missing")) { name = name, enableInstancing = true };
             if (shader.EndsWith("/Lit")) m.SetFloat("_Smoothness", 0.35f);
             AssetDatabase.CreateAsset(m, path);
+            return m;
+        }
+
+        /// <summary>The sight fans' fill: URP Unlit set transparent (alpha blend, no depth write) and two-sided, as an asset so its variant ships.</summary>
+        static Material FanTemplate()
+        {
+            var path = $"{MatDir}/PlayFan.mat";
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (!m)
+            {
+                if (!AssetDatabase.IsValidFolder(MatDir)) AssetDatabase.CreateFolder("Assets/Suborned/Materials", "Play");
+                m = new Material(Shader.Find("Universal Render Pipeline/Unlit") ?? throw new InvalidDataException("Play: shader Universal Render Pipeline/Unlit missing")) { name = "PlayFan" };
+                AssetDatabase.CreateAsset(m, path);
+            }
+            m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", 0f); m.SetFloat("_Cull", 0f); m.SetFloat("_ZWrite", 0f);
+            m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One); m.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); m.SetOverrideTag("RenderType", "Transparent"); m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            m.SetColor("_BaseColor", new Color(1f, 1f, 1f, 0.3f));
+            EditorUtility.SetDirty(m); AssetDatabase.SaveAssetIfDirty(m);
             return m;
         }
 

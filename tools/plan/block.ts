@@ -17,6 +17,8 @@ const OUT = resolve(root, opt('--out') ?? 'contracts/world/civic-block.json');
 const ADJUST = resolve(root, opt('--adjust') ?? 'contracts/world/civic-block.adjust.json');
 
 type P = [number, number];
+/** What an entrance is for (brief 013): public = the door a visitor uses, official = the councillor's door, service = staff and goods (a stash; no refuge, no walk origin for the cast). */
+const ENTRANCE_KINDS = ['public', 'official', 'service'];
 type Item = { id: string; name?: string; kind?: string; category?: string; polygon: P[]; z: number; height: number; [k: string]: unknown };
 
 // ---- constants transcribed from the Oct 9 editor code (not data files; the numbers are not in the nav json) ----
@@ -60,10 +62,10 @@ const officePoly = poly(officeSolid), [ox0, ox1, oy0, oy1] = bbox(officePoly), f
 // ids stay 'cafe' / 'civic-office' (the checker and Latch's builder key on them); `source` is the nav id.
 const door = (name: string): { at: P } => { const d = doors.find((x: any) => x.name === name); if (!d) throw new Error(`source has no door ${name}`); return { at: [r3(d.x), r3(d.y)] }; };
 const buildings = [
-  { id: 'cafe', name: 'Corner café', source: 'corner-cafe', polygon: poly(cafeSolid), z: 0, height: CAFE.height, interior: { floor: CAFE.terrace, ceiling: CAFE.ceiling, cornerArc: CAFE.cornerArc }, entrances: [{ id: 'cafe-entrance', name: 'Café entrance', ...door('Café door') }] },
+  { id: 'cafe', name: 'Corner café', source: 'corner-cafe', polygon: poly(cafeSolid), z: 0, height: CAFE.height, interior: { floor: CAFE.terrace, ceiling: CAFE.ceiling, cornerArc: CAFE.cornerArc }, entrances: [{ id: 'cafe-entrance', name: 'Café entrance', kind: 'public', ...door('Café door') }] },
   {
     id: 'civic-office', name: 'Records Office', source: 'civic-office-site', polygon: officePoly, z: 0, height: OFFICE.wings,
-    entrances: [{ id: 'office-entrance', name: 'Office entrance', ...door('Office entrance') }],
+    entrances: [{ id: 'office-entrance', name: 'Office entrance', kind: 'public', ...door('Office entrance') }],
     heights: { wings: OFFICE.wings, crown: OFFICE.crown, giantOrder: OFFICE.giantOrder },
     // entrance towers sit on the two long faces (public west, official east); the sources give no tower footprint: `towerFootprint` states it
     towers: [{ id: 'public', at: [r3(ox0), faceY], height: OFFICE.crown }, { id: 'official', at: [r3(ox1), faceY], height: OFFICE.crown }],
@@ -117,8 +119,9 @@ for (const a of adj.adjustments) {
     if (!e) throw new Error(`adjustment moveEntrance ${a.id}: no such entrance (stale adjustment?)`);
     Object.assign(e, { at: [r3(a.to![0]), r3(a.to![1])], ...(a.z !== undefined ? { z: a.z } : {}), ...(a.on ? { on: a.on } : {}), ...(a.face ? { face: a.face } : {}) });
   } else if (a.op === 'addEntrance') {
-    const b = building(a), e = a.item as unknown as { id: string };
+    const b = building(a), e = a.item as unknown as { id: string; kind?: string };
     if ((b.entrances as { id: string }[]).some(x => x.id === e.id)) throw new Error(`adjustment addEntrance: ${e.id} exists`);
+    if (e.kind !== undefined && !ENTRANCE_KINDS.includes(e.kind)) throw new Error(`adjustment addEntrance ${e.id}: kind ${e.kind} is none of ${ENTRANCE_KINDS.join(', ')}`);
     (b.entrances as unknown[]).push(a.item);
   } else if (a.op === 'dressing') {
     if (!adj.dressing) throw new Error('adjustment dressing: the adjust file has no `dressing` key');

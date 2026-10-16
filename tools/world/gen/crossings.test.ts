@@ -213,12 +213,13 @@ test('opt-in: a plan without strip exports no crossings and all 196 single patch
 
 test('with the standard on, nothing but crossings (their slabs gone, their parts added) and the bollards and beacons that flank them changes', () => {
   const was = new Map(old.street.map(s => [s.id, s])), moves = new Set(['crossing', 'bollard', 'beacon', ...kindsOf]), moved = new Set(w.crossingRules!.moved); // furniture a coverage site took out of a landing's way (its trees and lamps)
-  for (const s of w.street) { const o = was.get(s.id); if (o) expect(JSON.stringify(s), s.id).toBe(JSON.stringify(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
-  for (const o of old.street) if (!items.has(o.id)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
-  const keep = (x: { street: { kind: string }[] }) => x.street.filter(s => !moves.has(s.kind)).length;
+  const civicQuiet = (id: string) => id.startsWith('street/civic/'); // brief 013: the stash container, call boxes and police posts the civic block's rules stand AFTER the crossings, on what they leave, so they follow the standard
+  for (const s of w.street) { if (civicQuiet(s.id)) continue; const o = was.get(s.id); if (o) expect(JSON.stringify(s), s.id).toBe(JSON.stringify(o)); else expect(moves.has(s.kind), s.id).toBe(true); }
+  for (const o of old.street) if (!items.has(o.id) && !civicQuiet(o.id)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
+  const keep = (x: { street: { id: string; kind: string }[] }) => x.street.filter(s => !moves.has(s.kind) && !civicQuiet(s.id)).length;
   expect(keep(w) + moved.size).toBe(keep(old));
   expect(moved.size).toBe(6);
-  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts')) expect(JSON.stringify((w as any)[k]), k).toBe(JSON.stringify((old as any)[k])); // every other layer is the same
+  for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown')) expect(JSON.stringify((w as any)[k]), k).toBe(JSON.stringify((old as any)[k])); // every other layer is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
 });
 
 test('every kerb crossing is a signal crossing on every road class; a stop or a bank crossing has no control (and no orb)', () => {

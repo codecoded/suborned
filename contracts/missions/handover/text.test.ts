@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, fillLock, lineKey, lookup, lookupScene, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -36,8 +36,14 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, s] of Object.entries(b.fails)) push(`briefing.fails.${k}`, s);
   b.timeline.forEach((x, i) => push(`briefing.timeline[${i}]`, x.label));
   for (const [k, s] of Object.entries(b.cell)) push(`briefing.cell.${k}`, s);
-  for (const [k, x] of Object.entries(t.targets)) push(`targets.${k}.about`, x.about);
-  for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); if (a.withTarget) push(`actions.${k}.withTarget`, a.withTarget); if (a.then) push(`actions.${k}.then`, a.then); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); }
+  for (const [k, x] of Object.entries(t.targets)) {
+    push(`targets.${k}.about`, x.about);
+    if (x.watched) push(`targets.${k}.watched`, 'Learned: ' + x.watched); if (x.routine) push(`targets.${k}.routine`, 'Learned: ' + x.routine); if (x.heard) push(`targets.${k}.heard`, x.heard);
+  }
+  for (const [k, c] of Object.entries(t.cards.items)) { push(`cards.${k}.title`, c.title); for (const [v, r] of typeof c.result === 'string' ? [['', c.result] as const] : Object.entries(c.result ?? {})) push(`cards.${k}.result.${v}`, r); }
+  { const d = t.debrief; const walkd = (path: string, o: unknown) => { if (path === 'debrief.rule') return; if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walkd(`${path}.${k}`, v); }; walkd('debrief', d); }
+  t.scenes.items.forEach((sc, i) => { if (sc.title) push(`scenes[${i}].title`, sc.title); });
+  for (const [k, a] of Object.entries(t.actions)) { push(`actions.${k}.does`, a.does); if (a.withTarget) push(`actions.${k}.withTarget`, a.withTarget); if (a.then) push(`actions.${k}.then`, a.then); for (const [r, s] of Object.entries(a.onTarget ?? {})) push(`actions.${k}.onTarget.${r}`, s); for (const [w, x] of Object.entries(a.ways ?? {})) { push(`actions.${k}.ways.${w}.label`, x.label); push(`actions.${k}.ways.${w}.does`, x.does); } }
   t.scenes.items.forEach((sc, i) => {
     push(`scenes[${i}].result ${sceneKey(sc)}`, sc.result);
     sc.variants.forEach((v, j) => v.beats.forEach((b, k) => { if ('line' in b) push(`scenes[${i}].variants[${j}].beats[${k}] ${sceneKey(sc)}`, b.line, true); }));
@@ -52,7 +58,10 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
-const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30').replace(/\{need\}/g, 'protection').replace(/\{temperament\}/g, 'Mercenary').replace(/\{alert\}/g, '3');
+const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30').replace(/\{need\}/g, 'protection').replace(/\{temperament\}/g, 'Mercenary').replace(/\{alert\}/g, '3').replace(/\{agent\}/g, 'the Enforcer').replace(/\{n\}/g, '12').replace(/\{clock\}/g, '10:30').replace(/\{trail\}/g, '30').replace(/\{hits\}/g, '12').replace(/\{cause\}/g, "the guard's trip to the café looks staged").replace(/\{list\}/g, 'Inez, who can introduce you at the café.')
+  // brief 013's between-missions fields: the widest the host fills each (the same widths as contracts/dialogue debriefFill, with a short place name)
+  .replace(/\{fact\}/g, "the Fixer's face").replace(/\{facts\}/g, "place, time and the Enforcer's face").replace(/\{place\}/g, 'the service lane').replace(/\{of\}/g, 'Dimitra Marchetti').replace(/\{move\}/g, 'bravery +1')
+  .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found');
 
 describe('the file', () => {
   test('parses as suborned.text/1 for the handover', () => {
@@ -67,8 +76,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -197,6 +206,16 @@ describe('verbs and refusals', () => {
     // the approaches
     const approaches = Object.values(t.actions).filter((a) => a.engine.do === 'turn').map((a) => a.engine.approach).sort();
     expect(approaches).toEqual(['ask', 'help', 'pay', 'pressure']);
+  });
+  test('brief 013: the takedown has a way for each `how` the engine takes (knockout, kill), and the body orders are for any agent but the takedown is the Enforcer\'s', () => {
+    if (haveSim && existsSync(join(SIM, 'GameTakedown.cs'))) {
+      const src = simFile('GameTakedown.cs');
+      const hows = [...src.slice(src.indexOf('string Takedown(Op op, Order o)')).matchAll(/o\.How != "([a-z]+)"/g)].map((m) => m[1]!).sort();
+      expect(hows).toEqual(['kill', 'knockout']);
+      expect(Object.keys(t.actions.takedown!.ways ?? {}).sort()).toEqual(hows);
+    }
+    expect(t.actions.takedown!.by).toEqual(['enforcer']);
+    for (const v of ['drop', 'stash', 'restrain', 'carry'] as const) expect(t.actions[v]!.by.slice().sort(), v).toEqual([...AGENTS].sort());
   });
   test('each action\'s target lines name targets the file describes, and its agents exist', () => {
     for (const [k, a] of Object.entries(t.actions)) {
@@ -634,6 +653,157 @@ describe('the dialogue', () => {
     const need: [string, string][] = [['rivals-arrive', 'rivals'], ['drawn-seen', 'guard'], ['run-seen', 'guard'], ['run-seen', 'patrol'], ['alarm', 'security'], ['going-loud', 'enforcer'],
       ['fight-loud', 'security'], ['fight-safe', 'rivals'], ['fight-warned', 'waitress'], ['win', 'fixer'], ['win', 'councillor'], ['cliffhanger', 'councillor'], ['guard-at-cafe', 'waitress']];
     for (const [event, speaker] of need) expect(lookup(t, { event, speaker, outcome: event === 'cliffhanger' ? 'unnamed' : undefined, temperament: event === 'cliffhanger' ? 'loyal' : undefined }), `${event}/${speaker}`).toBeTruthy();
+  });
+});
+
+describe('what the cell was told, what it watched, what it heard (targets)', () => {
+  const persons = ['waitress', 'driver', 'guard', 'councillor'] as const;
+  test('every person has a told line, what a Watch teaches and what a Listen teaches; the Listen line carries the need and temperament unless it is Inez\'s', () => {
+    for (const k of persons) {
+      const x = t.targets[k]!;
+      expect(x.about.length, k).toBeGreaterThan(0); expect(x.watched, k).toBeTruthy(); expect(x.heard, k).toBeTruthy();
+      if (k !== 'waitress') expect(x.heard!).toMatch(/\{need\}.*\{temperament\}/);
+      else expect(x.heard!).toContain('{temperament}');
+    }
+  });
+  test('the told lines hold nothing only a Watch or Listen teaches (GDD §04: knowledge is witnessed or told)', () => {
+    expect(t.targets.waitress!.about).not.toMatch(/debt|secret|lover|seeing|affair/i);
+    for (const k of ['camera-entrance', 'camera-pickup']) expect(t.targets[k]!.about, k).not.toMatch(/\bsees?\b|cone|cover|point|face/i);
+    expect(t.targets.patrol!.about).not.toMatch(/cone|door|reach|round/i);
+    for (const k of persons) expect(t.targets[k]!.about, k).not.toMatch(/\{/);
+  });
+  test('each thing a Scout can Watch besides a person has a watched line (≤ 70, it follows "Learned: "), the patrol also its rounds', () => {
+    for (const k of WATCHED) { expect(t.targets[k]!.watched, k).toBeTruthy(); expect(t.targets[k]!.watched!.length).toBeLessThanOrEqual(70); }
+    expect(t.targets.patrol!.routine).toBeTruthy();
+    for (const k of Object.keys(t.targets)) if (!(WATCHED as readonly string[]).includes(k) && !persons.includes(k as (typeof persons)[number])) { expect(t.targets[k]!.watched, k).toBeUndefined(); expect(t.targets[k]!.heard, k).toBeUndefined(); }
+  });
+  test('the Scout reads a camera and the patrol when it watches them (the patrol twice: its sight, then its rounds), and Watch has a card line for each', () => {
+    for (const k of ['camera-entrance', 'camera-pickup']) expect(lookup(t, { event: 'read', verb: 'watch', speaker: 'scout', about: k })?.about as string, k).toBe(k);
+    for (const o of ['sight', 'routine']) { const e = lookup(t, { event: 'read', verb: 'watch', speaker: 'scout', about: 'patrol', outcome: o }); expect(e?.outcome, o).toBe(o); expect(e?.about as string).toBe('patrol'); }
+    for (const k of WATCHED) expect(t.actions.watch!.onTarget![k], k).toBeTruthy();
+  });
+  test('the refusals a Watch of a camera or the patrol can get are Watch refusals (cones are the Scout\'s skill)', () => {
+    for (const c of ['no-clear-line', 'patrol-down', 'target-unknown', 'too-far']) expect(t.locks[c]!.verbs, c).toContain('watch');
+    expect(t.locks['target-unknown']!.verbs).toContain('listen');
+    expect(t.locks['patrol-down']!.line).toMatch(/watch/i);
+    expect(t.locks['no-clear-line']!.line).toContain('{who}');
+  });
+});
+
+describe('feed cards for engine events no scene covers', () => {
+  const items = t.cards.items;
+  const logCodes = (): Set<string> => {
+    const codes = new Set<string>();
+    for (const src of simAll()) for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
+    for (const c of ['scout.down', 'fixer.down', 'tech.down']) codes.add(c);
+    return codes;
+  };
+  test('every card is for a code the engine logs; a record result names how the host picks its key', () => {
+    if (!haveSim) return;
+    const codes = logCodes();
+    expect(Object.keys(items).filter((c) => !codes.has(c))).toEqual([]);
+    for (const [c, x] of Object.entries(items)) if (x.result && typeof x.result !== 'string') { expect(x.pick, c).toBeTruthy(); expect(Object.keys(x.result).length, c).toBeGreaterThanOrEqual(2); }
+    for (const [c, x] of Object.entries(items)) if (typeof x.result === 'string' || x.result === undefined) expect(x.pick, c).toBeUndefined();
+  });
+  test('every code the host makes a fallback card of has its words here (Unity HostFeed.FeedEvents)', () => {
+    const f = 'unity/Assets/Suborned/Runtime/Play/HostFeed.cs';
+    if (!existsSync(join(root, f))) return;
+    const src = read(f); const a = src.indexOf('FeedEvents = new()'); if (a < 0) return;
+    const body = src.slice(a, src.indexOf('};', a));
+    const codes = [...body.matchAll(/\["([a-z.\-]+)"\]\s*=\s*\("/g)].map((m) => m[1]!);
+    expect(codes.length).toBeGreaterThan(15);
+    expect(codes.filter((c) => !(c in items))).toEqual([]);
+  });
+  test('titles name the event as the player would and are not ids; results carry the engine\'s numbers, never its sentence', () => {
+    for (const [c, x] of Object.entries(items)) {
+      expect(x.title, c).not.toMatch(/[a-z]+-[a-z]+|\./);
+      for (const r of typeof x.result === 'string' ? [x.result] : Object.values(x.result ?? {})) { expect(r, c).not.toMatch(/found fault|\btick\b|operative|engine/i); expect(r).toMatch(/^[A-Z{]/); }
+    }
+    for (const c of ['run.seen', 'report']) { expect(items[c]!.result as string).toContain('{who}'); expect(items[c]!.result as string).toContain('{alert}'); }
+    expect(items['fight.loud']!.result as string).toMatch(/\{n\}.*\{clock\}/);
+    expect(items['fight.safe']!.result as string).toContain('{n}');
+    expect(items.captured!.result as string).toContain('{agent}');
+  });
+  test('cards a person would only know in sight say so, as their scenes do', () => {
+    expect(items['rivals.arrive']!.sight).toBe('in-sight'); expect(items['guard.at-cafe']!.sight).toBe('in-sight');
+    // the two cards of the city scenes (their place is the scene's); and brief 013's cards, which name where the check looks (`at`). Nothing else is in sight only.
+    const SCENE_CARDS = ['rivals.arrive', 'guard.at-cafe'];
+    const SEEN_AT: Record<string, string> = { 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
+      'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol',
+      'patrol.stands-down': 'patrol', 'stash.serviced': 'stash', 'stash.opened': 'stash' };
+    for (const [c, x] of Object.entries(items)) {
+      if (x.sight) expect([...SCENE_CARDS, ...Object.keys(SEEN_AT)], c).toContain(c);
+      expect(x.at !== undefined, `${c}: \`at\` goes with \`sight\``).toBe(x.sight !== undefined && !SCENE_CARDS.includes(c));
+    }
+    for (const [c, at] of Object.entries(SEEN_AT)) { expect(items[c]?.sight, c).toBe('in-sight'); expect(items[c]?.at as string | undefined, c).toBe(at); }
+  });
+  test('brief 013: the cell\'s own acts and the city\'s answers to an Alert have no sight rule; what happens at a place does (the told/learned rule)', () => {
+    // the cell\'s own acts: the agent is there. The city\'s answers: the Alert pill and the street show them, so a card says that it came, never who made the report or why.
+    for (const c of ['takedown.starts', 'takedown.fails', 'takedown.dead', 'takedown.out', 'takedown.seen', 'carry.body', 'carry.down', 'stash.', 'restrain.done', 'report.landed', 'seal.starts', 'alarm.dispatches', 'response.reinforces']) expect(items[c]?.sight, c).toBeUndefined();
+    // a cause only a Watch can teach: the card waits for the routine
+    expect(items['post.missed']!.needs).toBe('routine');
+    expect(Object.entries(items).filter(([, x]) => x.needs).map(([c]) => c)).toEqual(['post.missed']);
+    // the city\'s answers never name the reporter or the cause
+    for (const c of ['report.landed', 'alarm.dispatches', 'response.reinforces', 'seal.starts']) for (const r of typeof items[c]!.result === 'string' ? [items[c]!.result as string] : Object.values(items[c]!.result as Record<string, string>)) expect(r, c).not.toMatch(/\{who\}|reported|saw|because/i);
+    // every code of a stash is one card keyed by the prefix the engine builds
+    expect(Object.keys(items['stash.']!.result as object).sort()).toEqual(['container', 'door']);
+  });
+  test('cardResult and fillCard fill the placeholders and capitalise the start', () => {
+    expect(fillCard(cardResult(t, 'run.seen')!, { who: 'the entrance camera', agent: 'the Scout', alert: 1 })).toBe('The entrance camera saw the Scout run. Alert 1.');
+    expect(fillCard(cardResult(t, 'fight.loud')!, { n: 5, clock: '7:10' })).toBe('5 officers, from the north street. The district seals at 7:10.');
+    expect(cardResult(t, 'vale.exits', 'service')).toBe('Walking to the service lane.'); expect(cardResult(t, 'vale.exits')).toBeUndefined();
+  });
+  test('every city scene has a title the player can read', () => {
+    for (const sc of t.scenes.items.filter((x) => x.kind === 'city')) { expect(sc.title, sceneKey(sc)).toBeTruthy(); expect(sc.title).not.toMatch(/-/); }
+  });
+});
+
+describe('the end card\'s words (debrief ids)', () => {
+  const d = t.debrief;
+  test('every id sim Debrief.cs can give has a sentence: route, assets, investigation causes', () => {
+    if (!haveSim) return;
+    const src = simFile('Debrief.cs');
+    const ids = new Set([...src.matchAll(/"([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]!));
+    const have = new Set([...Object.keys(d.route), ...Object.keys(d.assets), ...Object.keys(d.causes)]);
+    expect([...ids].filter((i) => !have.has(i))).toEqual([]);
+    // an id here that the engine cannot give is dead text
+    expect([...have].filter((i) => !ids.has(i) && i !== 'named-witness')).toEqual([]);
+    expect(simAll().join('\n')).toContain('"named-witness:"');
+    expect(d.causes['named-witness']).toContain('{who}');
+  });
+  test('the three public-security states, the three investigation states and both final fights are worded', () => {
+    expect(Object.keys(d.security).sort()).toEqual(['calm', 'high', 'raised']);
+    expect(Object.keys(d.investigation).sort()).toEqual(['active', 'activeBecause', 'early', 'little']);
+    expect(d.investigation.activeBecause).toContain('{cause}');
+    expect(d.fight.loud).toMatch(/\{n\}.*\{hits\}/); expect(d.fight.safe).toMatch(/\{n\}.*\{hits\}/);
+    expect(d.tally).toMatch(/\{clock\}.*\{usd\}.*\{trail\}/);
+  });
+  test('no end-card line shows an id, a hash, a path or the engine\'s words', () => {
+    const own = strings.filter((s) => s.path.startsWith('debrief.')).filter((s) => !s.path.startsWith('debrief.rule'));
+    expect(own.length).toBeGreaterThan(30);
+    expect(own.filter((s) => /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|out\/play|\btick\b|operative|engine/i.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
+  });
+  test('every route and asset line is one plain sentence; the kept line lists them', () => {
+    for (const [k, v] of [...Object.entries(d.route), ...Object.entries(d.assets)]) expect(v, k).toMatch(/^[A-Z][^.!?]*[.!?]$/);
+    expect(d.kept).toContain('{list}');
+  });
+  test('brief 013: a line for each between-missions id a takedown adds (rulebook debrief.lines), carrying every field the rulebook lists for it and no other', () => {
+    const lines = json('contracts/rules/rulebook.json').debrief.lines as Record<string, { fields: string[] }>;
+    const mine = ['volunteer', 'statement', 'missing', 'grief', 'worry', 'area-watch', 'case'];
+    expect(Object.keys(d.between)).toEqual(mine);
+    for (const id of mine) {
+      expect(lines[id], `${id} is a rulebook debrief line`).toBeTruthy();
+      const slots = [...d.between[id]!.matchAll(/\{([a-z]+)\}/g)].map((m) => m[1]!);
+      expect([...new Set(slots)].sort(), id).toEqual([...lines[id]!.fields].sort());
+    }
+    expect(fillCard(d.between['missing']!, { who: 'Sunita Ferrer', place: 'the service lane', trail: 6 })).toBe('Sunita Ferrer is missing near the service lane. Case open, Trail 6.');
+    // a line states the fact and its cause plainly: no gore, no verdict on a person
+    for (const id of mine) expect(d.between[id], id).not.toMatch(/blood|corpse|murder|killer|victim/i);
+  });
+  test('the headline for a win, a withdrawal and a bare failure; a fail with words in the briefing takes its first sentence', () => {
+    expect(d.headline.win).toBe('Vale is in the car');
+    for (const f of FAILS) if (f !== 'engine-error') expect(t.briefing.fails[f], f).toBeTruthy();
+    expect(fillCard(d.tally, { clock: '7:12', usd: 62000, trail: 3 })).toBe('Done at 7:12 · $62,000 spent · Trail 3');
   });
 });
 

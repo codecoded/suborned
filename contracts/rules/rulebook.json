@@ -43,6 +43,8 @@
  },
  "values": {
   "watch-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-15 (Motive's balance, briefs/011/motive-balance.md): Watch 20 s; §04 Pay requires routine known (Watch); the top-down test's watchCafe was 52 s [B]", "proposed": true, "reason": "Motive balance (brief 011, Suture E-8, T2): at 52 s the informed route A calls at 2:42 and loud (3:38) beats it. At 20 s the call is at 2:10, inside the 2:13-2:47 sweep gap, and route A finishes at 3:33, 5 s before the best loud. Watch keeps its place in the chain (Watch, then Listen, then Help) and Sky's Pay lesson stays on the main path: after Watch the Pay card shows '?' and $90,000 worst case. Sky's steer to more real-time also argues for shorter prep timers." },
+  "watch-sight-reach-m": { "v": 18, "unit": "m", "tag": "S", "src": "Sky 2026-10-16: view cones are the Scout's skill (Glyph, briefs/011/ui/review-2026-10-16 §3.4: a watcher within 18 m on a clear line)", "proposed": true, "reason": "the GDD gives no reach for watching a watcher. A camera or a patrol is watched from across the street, not from beside it as a person is (act-reach-m 6 m): 18 m is a walking guard's sight (facing-reach-m), so the Scout can watch from outside most cones but not from anywhere." },
+  "watch-routine-s": { "v": 40, "unit": "s", "tag": "S", "src": "Sky 2026-10-16: a timed Watch also teaches the watcher's routine (stage 2; Aster's brief to Keel)", "proposed": true, "reason": "the GDD gives no time. Two Watches (2 × watch-s) of a watcher with a cycle (the patrol's sweep) teach when it turns and when it sees the door: the price of a timing plan is Scout time, set against Reroute (45 s and 1 Trail) that it can replace. Motive prices it." },
   "listen-s": { "v": 42, "unit": "s", "tag": "B", "src": "§04 Help requires need known (Listen 42 s); top-down test listenInez" },
   "listen-reach-m": { "v": 3, "unit": "m", "tag": "B", "src": "top-down test listenInez reach 3" },
   "approach-reach-m": { "v": 4, "unit": "m", "tag": "B", "src": "top-down test askInez, offerInez, turnInez, pressureInez reach 4" },
@@ -103,9 +105,7 @@
   "response-seen-s": { "v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the guard, a camera or the patrol reports gunfire, response +18 s" },
   "response-unseen-s": { "v": 45, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): unseen gunfire, response +45 s" },
   "response-civilian-s": { "v": 8, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a civilian shot (Inez, the driver), response +8 s" },
-  "response-check-in-s": { "v": 20, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the empty post reported, response +20 s" },
   "response-rivals-unseen-s": { "v": 35, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a firefight with the rivals out of the pickup camera, response +35 s" },
-  "check-in-s": { "v": 18, "unit": "s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): a downed guard misses his check-in 18 s later" },
   "seal-s": { "v": 145, "unit": "s", "tag": "B", "src": "§05 security [B]: district seals 2:25 after the response unit arrives" },
   "security-speed-cm-s": { "v": 220, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the response unit runs 55 units in 25 s" },
   "rivals-speed-cm-s": { "v": 160, "unit": "cm-per-s", "tag": "B", "src": "the top-down test (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs, sha256 0b3a7add…): the rivals cover about 51 units in 32 s" },
@@ -209,7 +209,108 @@
   "crowd-flee-max-cm": { "v": 4000, "unit": "cm", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "the refuge a person runs to is within 40 m", "proposed": true },
   "crowd-quiet-s": { "v": 30, "unit": "s", "tag": "S", "src": "brief 011 fight AI §4; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "people come back 30 s after the last shot", "proposed": true },
   "crowd-occlude-cm": { "v": 30, "unit": "cm", "tag": "S", "src": "GDD §05 crowds block guard and camera sightlines; Pulse, briefs/011/pulse-fight-ai.md §4 (Motive owns the number)", "reason": "a person on the street blocks a watcher's sightline that passes within 30 cm of them (a body 60 cm across, head height above the eye); hostiles' own sight ignores people, and a shot never hits one", "proposed": true },
-  "eye-cm": { "v": 160, "unit": "cm", "tag": "S", "src": "§05 levels: sightlines run in 3D", "proposed": true, "reason": "one eye height for everyone, so an occluder blocks a sightline when it spans that height; the top-down test had no heights." }
+  "eye-cm": { "v": 160, "unit": "cm", "tag": "S", "src": "§05 levels: sightlines run in 3D", "proposed": true, "reason": "one eye height for everyone, so an occluder blocks a sightline when it spans that height; the top-down test had no heights." },
+  "ko-s": { "v": 6, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 (brief 013): knockout possible; briefs/013/motive-takedowns.md §1.1", "proposed": true, "reason": "a knockout takes twice a kill's time: the kill's only edge in the act itself" },
+  "kill-s": { "v": 3, "unit": "s", "tag": "S", "src": "brief 013; briefs/013/motive-takedowns.md §1.1; Vantage assumed 3 s", "proposed": true, "reason": "the kill's one edge: it is faster; everything after it is worse or riskier" },
+  "struggle-s": { "v": 3, "unit": "s", "tag": "S", "src": "briefs/013/motive-takedowns.md §1.3", "proposed": true, "reason": "an unarmed target who sees the Enforcer coming fights back: 3 s more, and screams" },
+  "kill-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3, §06 per person", "proposed": true, "reason": "a kill is the hit 2 + the down 2 a shot person costs, + 2: a found killing is a homicide case" },
+  "ko-alert-max": { "v": 1, "unit": "alert", "tag": "S", "src": "Sky 2026-10-16, merged call 2; briefs/013/motive-takedowns.md §0.2", "proposed": true, "reason": "a knockout found, confirmed or reported by its woken victim never raises Alert above 1 by itself: an inquiry; it is the knockout's whole reason to exist" },
+  "found-kill-standing": { "v": -1, "unit": "standing", "tag": "S", "src": "Sky 2026-10-16 answer 1; briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "a found killing moves Standing toward Menace though nobody saw the kill: the one unwitnessed act that moves Standing; one tunable value (Sky: easy to change)" },
+  "wake-s": { "v": 120, "unit": "s", "tag": "S", "src": "Sky: two minutes; briefs/013/motive-takedowns.md §3.1", "proposed": true, "reason": "a knocked-out person wakes two minutes later; the card shows 'wakes m:ss'" },
+  "stagger-s": { "v": 4, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §5", "proposed": true, "reason": "a woken person stands 4 s before they can walk to a phone" },
+  "restrain-s": { "v": 8, "unit": "s", "tag": "S", "src": "Sky (hidden, restrained or turned); briefs/013/motive-takedowns.md §3.3", "proposed": true, "reason": "any operative ties a knocked-out person in 8 s: they can't move or call out, but on open ground they are still seen" },
+  "free-s": { "v": 3, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §2.1, §5", "proposed": true, "reason": "a finder unties a restrained victim in 3 s; the victim then reports at once" },
+  "carry-untrained-cm-s": { "v": 70, "unit": "cm-per-s", "tag": "S", "src": "Aster; briefs/013/motive-takedowns.md §4.1", "proposed": true, "reason": "the Scout, the Fixer and the Tech carry at half the walk; only the Enforcer carries at walking pace" },
+  "drop-s": { "v": 1, "unit": "s", "tag": "S", "src": "briefs/013/motive-takedowns.md §4.1", "proposed": true, "reason": "putting a body down on open ground" },
+  "stash-container-s": { "v": 5, "unit": "s", "tag": "S", "src": "Vantage's assumption; briefs/013/motive-takedowns.md §2.4", "proposed": true, "reason": "a body into a closed container (the Dumpster), on the street: seen as a carry while it lasts" },
+  "stash-door-s": { "v": 10, "unit": "s", "tag": "S", "src": "Vantage §2.1; briefs/013/motive-takedowns.md §2.4", "proposed": true, "reason": "a body through a service door: a timed off-screen action (exteriors only)" },
+  "call-out-s": { "v": 10, "unit": "s", "tag": "S", "src": "briefs/013/motive-takedowns.md §3.3; briefs/013/pulse-witnesses.md §5 (on)", "proposed": true, "reason": "a hidden, unrestrained, woken victim calls out every 10 s, heard within scream-m: a stash by a thoroughfare leaks unless he is restrained too" },
+  "service-bin-period-s": { "v": 900, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §4.1; briefs/013/motive-takedowns.md §2.4 (Sky call 9: in the mission only)", "proposed": true, "reason": "a sanitation round empties each container once in 15 minutes, its phase from the container's id; a body inside is found when it is opened" },
+  "service-bin-dwell-s": { "v": 20, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §4.1", "proposed": true, "reason": "the round robot stands 20 s at a container" },
+  "call-s": { "v": 6, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.2", "proposed": true, "reason": "a civilian at a door or call box dials, is answered by the desk and speaks the place: 6 s" },
+  "post-call-s": { "v": 3, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.2", "proposed": true, "reason": "staff with a radio or a post telephone call straight in: 3 s" },
+  "robot-report-s": { "v": 4, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.2", "proposed": true, "reason": "a robot with a body in its cone rings the desk on its own set: a fixed 4 s (clockwork)" },
+  "camera-scan-s": { "v": 20, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.2", "proposed": true, "reason": "a person watches a bank of camera screens and reads each every 20 s; a live camera's sighting reaches the desk at its next scan (phase from the camera's id) plus post-call-s" },
+  "report-cap": { "v": 4, "unit": "count", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.2", "proposed": true, "reason": "at most 4 reporters of one incident in transit (the 4 earliest): bounds state and cost; stopping the first still leaves the next" },
+  "scream-m": { "v": 20, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §0a.9; briefs/013/motive-takedowns.md §1.3", "proposed": true, "reason": "a scream or a call-out is heard 20 m round with no line needed" },
+  "scream-fear": { "v": 2, "unit": "scale-steps", "tag": "S", "src": "briefs/013/pulse-witnesses.md §2.3", "proposed": true, "reason": "a witness of an act or a carry with fear at least 2 (afraid) screams; fear 1 flees silently" },
+  "terrified-fear": { "v": 3, "unit": "scale-steps", "tag": "S", "src": "briefs/013/pulse-witnesses.md §2.3", "proposed": true, "reason": "fear 3 (terrified) never reports: they flee" },
+  "mercenary-report-alert": { "v": 2, "unit": "alert", "tag": "S", "src": "Sky 2026-10-16 merged call 4; briefs/013/pulse-witnesses.md §2.3", "proposed": true, "reason": "a Mercenary keeps quiet until Alert 2, when the city is awake and pays for words" },
+  "body-check-ticks": { "v": 5, "unit": "ticks", "tag": "S", "src": "briefs/013/pulse-witnesses.md §2.2", "proposed": true, "reason": "a body is looked for every 5th tick, the phase from its id: noticing is at most 0.5 s late, at a fifth of the cost" },
+  "body-check-s": { "v": 2, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §2.1", "proposed": true, "reason": "an Idealist who finds a body walks to within near-m and stands 2 s to learn whether it is dead or out" },
+  "tell-m": { "v": 20, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.4", "proposed": true, "reason": "a person tells one tie by voice: a tie indoors at a unit (by telephone) or on the street within 20 m (a shout)" },
+  "report-alert-down": { "v": 1, "unit": "alert", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "a report of a person lying, state unknown, or a noise from a container: an inquiry" },
+  "report-alert-dead": { "v": 2, "unit": "alert", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "a report of a dead body: a search" },
+  "report-alert-carry": { "v": 2, "unit": "alert", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "a carry seen by a person: a search when the report lands" },
+  "report-alert-assault": { "v": 1, "unit": "alert", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3, §3.2 (Sky merged call 2)", "proposed": true, "reason": "a woken victim's own report is an inquiry: a knockout is never above Alert 1" },
+  "dial0-dispatch-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): a landed report puts the response on the street this long after" },
+  "dial0-a1-robots": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): robots an Alert 1 alarm sends" },
+  "dial0-a2-units": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): units of two officers an Alert 2 alarm sends" },
+  "dial0-a2-robots": { "v": 0, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): robots an Alert 2 alarm sends" },
+  "dial0-unit-cap": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): units on the block at most (Alert 3's extra units on top)" },
+  "dial0-seal-s": { "v": 180, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): the district seals this long after a confirmation at Alert 2 or more (gunfire: after the unit's arrival)" },
+  "dial0-a3-units": { "v": 0, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S0 (lax): units Alert 3 adds, to the district mouths (the cordon) Motive rev 3 §0.1 item 5 (2026-10-16): levels 0 and 1 add nothing at Alert 3 and no reinforcement; level 1 is exactly today's response, the anchor recorded runs replay against; the swarm starts at level 2. The loud fight's own +1 officer at Alert 3 (fight.loud.alert) stays." },
+  "dial1-dispatch-s": { "v": 12, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): a landed report puts the response on the street this long after (today's 12 s: the gunfire delays are this level's)" },
+  "dial1-a1-robots": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): robots an Alert 1 alarm sends" },
+  "dial1-a2-units": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): units of two officers an Alert 2 alarm sends" },
+  "dial1-a2-robots": { "v": 0, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): robots an Alert 2 alarm sends" },
+  "dial1-unit-cap": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): units on the block at most (Alert 3's extra units on top) Motive rev 3 §0.1 item 5 (2026-10-16): levels 0 and 1 add nothing at Alert 3 and no reinforcement; level 1 is exactly today's response, the anchor recorded runs replay against; the swarm starts at level 2. The loud fight's own +1 officer at Alert 3 (fight.loud.alert) stays." },
+  "dial1-a3-units": { "v": 0, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S1 (routine): units Alert 3 adds, to the district mouths (the cordon) Motive rev 3 §0.1 item 5 (2026-10-16): levels 0 and 1 add nothing at Alert 3 and no reinforcement; level 1 is exactly today's response, the anchor recorded runs replay against; the swarm starts at level 2. The loud fight's own +1 officer at Alert 3 (fight.loud.alert) stays." },
+  "dial2-dispatch-s": { "v": 10, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): a landed report puts the response on the street this long after" },
+  "dial2-a1-robots": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): robots an Alert 1 alarm sends" },
+  "dial2-a2-units": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): units of two officers an Alert 2 alarm sends" },
+  "dial2-a2-robots": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): robots an Alert 2 alarm sends" },
+  "dial2-reinforce-s": { "v": 40, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): one more unit every this many seconds while Alert is 2 or more" },
+  "dial2-unit-cap": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): units on the block at most (Alert 3's extra units on top)" },
+  "dial2-seal-s": { "v": 145, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): the district seals this long after a confirmation at Alert 2 or more (gunfire: after the unit's arrival)" },
+  "dial2-a3-units": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S2 (watchful): units Alert 3 adds, to the district mouths (the cordon)" },
+  "dial3-dispatch-s": { "v": 8, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): a landed report puts the response on the street this long after" },
+  "dial3-a1-robots": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): robots an Alert 1 alarm sends" },
+  "dial3-a2-units": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): units of two officers an Alert 2 alarm sends" },
+  "dial3-a2-robots": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): robots an Alert 2 alarm sends" },
+  "dial3-reinforce-s": { "v": 30, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): one more unit every this many seconds while Alert is 2 or more" },
+  "dial3-unit-cap": { "v": 4, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): units on the block at most (Alert 3's extra units on top)" },
+  "dial3-seal-s": { "v": 120, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): the district seals this long after a confirmation at Alert 2 or more (gunfire: after the unit's arrival)" },
+  "dial3-a3-units": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S3 (guarded): units Alert 3 adds, to the district mouths (the cordon)" },
+  "dial4-dispatch-s": { "v": 6, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): a landed report puts the response on the street this long after" },
+  "dial4-a1-robots": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): robots an Alert 1 alarm sends" },
+  "dial4-a2-units": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): units of two officers an Alert 2 alarm sends" },
+  "dial4-a2-robots": { "v": 4, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): robots an Alert 2 alarm sends" },
+  "dial4-reinforce-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): one more unit every this many seconds while Alert is 2 or more" },
+  "dial4-unit-cap": { "v": 6, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): units on the block at most (Alert 3's extra units on top)" },
+  "dial4-seal-s": { "v": 90, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): the district seals this long after a confirmation at Alert 2 or more (gunfire: after the unit's arrival)" },
+  "dial4-a3-units": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16 merged call 3 (the dial is data); briefs/013/motive-takedowns.md §5.3", "proposed": true, "reason": "security level S4 (swarm): units Alert 3 adds, to the district mouths (the cordon)" },
+  "robot-alarm-cm-s": { "v": 85, "unit": "cm-per-s", "tag": "S", "src": "Aster 2026-10-16 (Pulse's lever 3); briefs/013/pulse-witnesses.md §13.2", "proposed": true, "reason": "how fast robots converge on an alarm: the patrol's chase speed, so nothing changes; a second dial lever (120 or 150 swarms faster)" },
+  "robot-wire-s": { "v": 4, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §12.2", "proposed": true, "reason": "the desk radios the patrol robot: it breaks its sweep this long after a landing, not the dispatch" },
+  "robot-reach-m": { "v": 60, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §12.2 (robot-reach-m); Motive rev 3 §0.1 item 8 and Aster 2026-10-16: it bounds where an alarm's robots go", "proposed": true, "reason": "a robot takes an alarm's place only within 60 m of where it starts (its dock, or the patrol's place on its sweep); farther places are for officers. It bounds assignment, not sight: what a robot sees is its cone." },
+  "dock-reach-m": { "v": 40, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.1, §8.3; Splice's world rules (sim/data/handover.takedown.json reach), adopted by Aster 2026-10-16", "proposed": true, "reason": "R-DOCK: every walkable cell within 40 m of a robot dock or a police post on the grid walk, so the dial's arrivals can be delivered; more docks and posts mean the same level arrives sooner." },
+  "report-reach-m": { "v": 40, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.1, §8.3; Splice's world rules (sim/data/handover.takedown.json reach), adopted by Aster 2026-10-16", "proposed": true, "reason": "R-REPORT (the world's rule, tools/world/rules/quiet.ts): every walkable street cell within 40 m of a report point (a staffed door or a call box) on the grid walk; on the Handover grid the doors alone reach 84%, the call boxes the rest. More points make fewer quiet places: this is the tuning value." },
+  "launch-gap-ticks": { "v": 15, "unit": "ticks", "tag": "S", "src": "briefs/013/pulse-witnesses.md §13.2 (launch-gap-s 1.5)", "proposed": true, "reason": "units leave their origin one every 1.5 s, so a swarm streams out and can be counted" },
+  "check-s": { "v": 10, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §12.2", "proposed": true, "reason": "a unit checks the place 10 s on arrival before it holds (robots) or searches (officers)" },
+  "search-s": { "v": 60, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §3.5; briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "an unfounded report: the unit searches the neighbourhood 60 s; at Alert 2 or more it opens stashes" },
+  "search-stash-m": { "v": 30, "unit": "m", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3 (= patrol-break-m: one block face)", "proposed": true, "reason": "the search opens every stash within 30 m of the reported place, nearest first" },
+  "search-stash-s": { "v": 10, "unit": "s", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.3", "proposed": true, "reason": "one stash opened" },
+  "stand-down-inquiry-s": { "v": 60, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §13 (pulse-response-profiles.json arrival.standDown)", "proposed": true, "reason": "units go back 60 s after the last alarm at Alert 1" },
+  "stash-door-holds": { "v": 3, "unit": "count", "tag": "S", "src": "briefs/013/motive-takedowns.md rev 4 R4.3 (Motive; Aster 2026-10-16)", "proposed": true, "reason": "a service door opens on a storeroom that holds a few: 3 is what the hardest quiet route needs (guard 74, guard 29 and the driver through one door); the cap stops one door answering every body. A container holds what its site entry says (the Dumpster 1)." },
+  "take-struggle-s": { "v": 5, "unit": "s", "tag": "S", "src": "briefs/013/motive-takedowns.md rev 4 R4.2 (Motive; Sky 2026-10-16)", "proposed": true, "reason": "Vale resists only when seized: a Take anywhere but inside his own car with its driver turned reads as an act for its first 5 s (the takedown's struggle 3 s and the seizure); the rest of the Take does not." },
+  "case-trail-eq": { "v": 3, "unit": "trail", "tag": "S", "src": "briefs/013/motive-takedowns.md rev 4 R4.4 (Motive; Aster 2026-10-16)", "proposed": true, "reason": "the mission checker's price of an open case, beside nextMission.campaignTrail (MC-9): a found body would add 4 T, discounted 1 because it may never be found. For the checker only: the engine reads it nowhere, and Heat stays Trail + Menace." },
+  "stand-down-search-s": { "v": 180, "unit": "s", "tag": "S", "src": "briefs/013/pulse-witnesses.md §13", "proposed": true, "reason": "units go back 180 s after the last alarm at Alert 2; never within the mission at Alert 3" },
+  "alarm-spread": { "v": 3, "unit": "count", "tag": "S", "src": "briefs/013/pulse-witnesses.md §12.1; Aster 2026-10-16 (both tiers)", "proposed": true, "reason": "at most 3 places per tier of ties join an alarm's destination list" },
+  "combatant-cap": { "v": 30, "unit": "count", "tag": "S", "src": "GDD §06: at most 30 simulated combatants", "proposed": true, "reason": "reinforcements and robots stop at the cap" },
+  "check-in-period-s": { "v": 90, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 answer 4; briefs/013/motive-takedowns.md §5.1", "proposed": true, "reason": "every staff post checks in by voice every 90 s from the start of the shift at the post, and the shift's end is a mark: a missed mark is a report that lands at the mark. Replaces check-in-s 18 [B] (the top-down test's 18 s after the guard fell) and response-check-in-s 20 [B]" },
+  "suspicion-s": { "v": 20, "unit": "s", "tag": "S", "src": "Sky 2026-10-16 answer 6; briefs/013/motive-takedowns.md §5.2", "proposed": true, "reason": "a person who expects a tie at a shared stop raises the alarm after 20 s at the place without them" },
+  "meet-m": { "v": 6, "unit": "m", "tag": "S", "src": "briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "a person is at a meeting place within 6 m of its stand" },
+  "suspicion-fearful-pm": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Aster 2026-10-16 (Pulse's difference 1, built, default flat); briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "OPTIONAL temperament scale on suspicion-s; default 1000, a flat 20 s (Motive). 500 would make a Fearful waiter suspicious at 10 s" },
+  "suspicion-loyal-pm": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Aster 2026-10-16 (Pulse's difference 1, built, default flat); briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "OPTIONAL temperament scale on suspicion-s; default 1000, a flat 20 s (Motive). the base: 20 s" },
+  "suspicion-idealist-pm": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Aster 2026-10-16 (Pulse's difference 1, built, default flat); briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "OPTIONAL temperament scale on suspicion-s; default 1000, a flat 20 s (Motive). 1500 would make it 30 s" },
+  "suspicion-mercenary-pm": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Aster 2026-10-16 (Pulse's difference 1, built, default flat); briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "OPTIONAL temperament scale on suspicion-s; default 1000, a flat 20 s (Motive). 2250 would make it 45 s" },
+  "missing-trail": { "v": 2, "unit": "trail", "tag": "S", "src": "Sky 2026-10-16 (the missing-person numbers); briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "a hidden killing never found is a missing-person file, not a homicide: +2 T and no Menace" },
+  "missing-ties-fear": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "Sky 2026-10-16; briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "a missing person's family, lover and workmate ties worry: fear +1 (no resentment: nobody knows anything); a found killing's ties grieve the same way unless turned" },
+  "area-watch-step": { "v": 1, "unit": "count", "tag": "S", "src": "Sky 2026-10-16; briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "a found killing or a missing person: +1 posted guard and +1 camera on the block where he was last seen, next mission" },
+  "area-watch-missions": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-16; briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "the hardening lasts 3 missions" },
+  "cases-per-level": { "v": 2, "unit": "count", "tag": "S", "src": "Sky 2026-10-16; briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "every 2 open cases raise the district's security level by 1" },
+  "case-level-cap": { "v": 2, "unit": "count", "tag": "S", "src": "briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "cases never raise the level more than 2 above the district's base" },
+  "case-close-missions": { "v": 3, "unit": "count", "tag": "S", "src": "Sky 2026-10-16; briefs/013/motive-takedowns.md §2.6", "proposed": true, "reason": "a found killing's case closes after 3 missions; a missing person's stays open until the body is found" }
  },
  "standing": {
   "start": "v:standing-start",
@@ -280,7 +381,7 @@
  "memory": {
   "entry": ["act", "by", "place", "time", "witnessed"],
   "cap": "v:memory-cap",
-  "whenFull": "drop the oldest saw-act, saw-runner, saw-gunfire, saw-violence, saw-weapon-drawn or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9)",
+  "whenFull": "drop the oldest saw-act, saw-runner, saw-gunfire, saw-violence, saw-weapon-drawn, saw-takedown, saw-carry, found-body, heard-alarm or told entry (lowest time, then first written); only when none is held, the oldest entry: people forget what they saw before what was done to them (Motive's review #9; brief 013 adds the new sightings)",
   "faceFacts": { "fixer": "fixer-face" },
   "acts": {
    "ask": { "facts": ["place-time"] },
@@ -296,10 +397,18 @@
    "aborted": { "facts": ["place-time"] },
    "saw-gunfire": { "facts": ["place-time"] },
    "saw-violence": { "facts": ["place-time"] },
-   "saw-weapon-drawn": { "facts": ["place-time"] }
+   "saw-weapon-drawn": { "facts": ["place-time"] },
+   "saw-takedown": { "facts": ["place-time", "enforcer-face"] },
+   "attacked": { "facts": ["place-time"] },
+   "attacked-aware": { "facts": ["place-time", "enforcer-face"] },
+   "saw-carry": { "facts": ["place-time"] },
+   "found-body": { "facts": ["place-time"] },
+   "heard-alarm": { "facts": ["place-time"] },
+   "reported": { "facts": ["place-time"] },
+   "missed-expected": { "facts": ["place-time"] }
   },
   "reads": { "helped": "help", "refused": "refusal" },
-  "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`.",
+  "rule": "A memory entry is {act, by, place, time, witnessed} (Motive K1). `by` is the face of the operative who did the act: a face is only an id (Adams 2017), and only the Fixer's face is a fact (people.rules talker.facts; §03 the face witnesses remember), so an entry whose `by` is a key of faceFacts also yields that fact. `witnessed` = a third person saw the act. Only a `remember` change writes memory, only acts listed here, only on simulated people (people.rules tiers; Sky Q5). A told entry carries the fact it was told and is never retold (one hop). The facts a person holds are the union over their entries; people.rules talker.lie's `helped` is an entry of act `help`; a remembered refusal is an entry of act `refusal`. An entry yields its act's facts as listed here, plus the face fact of `by` (faceFacts). Brief 013 (Sky D3): the Enforcer's face is a fact, scoped to the new acts: a witness of a takedown (saw-takedown) and a victim who saw him coming (attacked-aware) hold enforcer-face; older entries by the Enforcer (a run, a shot, a drawn weapon) keep yielding place and time only, so every recorded run's debrief stands.",
   "tag": "S",
   "src": "§04 person = routine + need + temperament + memory; §04 knowledge [S]; Motive K1; people.rules person.memoryAtStart empty"
  },
@@ -316,7 +425,8 @@
   "threat": { "standing": "menace", "tag": "S", "src": "§02 Trail: threats; §04 standing, Menace: public threats" },
   "gunfire": { "standing": "menace", "tag": "B", "src": "§02 Trail: gunfire; §04 Menace: shoot in crowds; §06 prototype [B]. Made by the fight events (next entries)." },
   "weapon-drawn": { "standing": "menace", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q5: a drawn weapon seen by people moves standing one step toward Menace per incident; §04 Menace: public threats", "proposed": true, "reason": "a gun shown on a street is the plainest public threat; it mirrors threat, one step per incident (drawings at one place and time are one incident: weapons.costs.drawWindow)." },
-  "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." }
+  "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." },
+  "takedown": { "standing": "menace", "tag": "S", "src": "brief 013 (Sky 2026-10-16): a takedown or a carry seen by a person; briefs/013/motive-takedowns.md §1.4", "proposed": true, "reason": "violence on a person is §04 Menace: one step per incident, at sight, whoever sees it (a turned witness included); one takedown is one incident however many see it or its carry" }
  },
  "cell": {
   "speed": "v:op-speed-cm-s",
@@ -324,25 +434,23 @@
   "runAlert": "v:run-alert",
   "reach": "v:act-reach-m",
   "atReach": "v:at-reach-cm",
-  "loop": { "s": "v:loop-s", "trail": "v:loop-trail", "tether": "v:tether-m" },
+  "loop": { "s": "v:loop-s", "trail": "v:loop-trail", "tether": "v:tether-m", "targets": ["entrance", "pickup", "world"] },
   "reroute": { "s": "v:reroute-s", "trail": "v:reroute-trail", "away": "v:reroute-away-s" },
   "mislead": { "s": "v:mislead-s", "trail": "v:mislead-trail", "away": "v:false-tip-s" },
   "call": { "trail": "v:call-trail" },
   "enter": { "s": "v:enter-s", "alarm": "v:enter-alarm-s" },
   "carry": { "s": "v:carry-s" },
-  "take": { "s": "v:take-s", "trailUnturned": "v:take-trail-unturned" },
-  "rule": "The cell's verbs other than Turn, Watch and Listen (§03): how long each takes, how near the operative must stand, the Trail it leaves. An act on a device or a door (Loop and Reroute at the cabinet, Enter at the public door, Extract at the getaway car) is done at it, within `atReach`; acts on people keep `reach` (Sky 2026-10-15 playtest). Carry: an operative lifts a downed one in `carry`, then walks only and doesn't fire; a downed operative not brought to the getaway car is captured. An order takes its time and lands at its end; a Call lands at once (the top-down test's spill: the guard walks from the call). Running (Sky 2026-10-15, briefs/011/motive-fights.md): a move with run at runSpeed; refused while carrying Vale or a downed operative, while the Tech holds a loop, or while doing an action; a runner is noticed where an act would be: people remember where and when (and the Fixer's face), security that sees it counts a found fault (runAlert, once per run). Running is free while a fight is on. Enter takes enter.alarm longer once Alert ≥ 2 (the staff hide Vale).",
+  "take": { "s": "v:take-s", "trailUnturned": "v:take-trail-unturned", "struggle": "v:take-struggle-s" },
+  "rule": "The cell's verbs other than Turn, Watch and Listen (§03): how long each takes, how near the operative must stand, the Trail it leaves. An act on a device or a door (Loop and Reroute at the cabinet, Enter at the public door, Extract at the getaway car) is done at it, within `atReach`; acts on people keep `reach` (Sky 2026-10-15 playtest). Carry: an operative lifts a downed one in `carry`, then walks only and doesn't fire; a downed operative not brought to the getaway car is captured. An order takes its time and lands at its end; a Call lands at once (the top-down test's spill: the guard walks from the call). Running (Sky 2026-10-15, briefs/011/motive-fights.md): a move with run at runSpeed; refused while carrying Vale or a downed operative, while the Tech holds a loop, or while doing an action; a runner is noticed where an act would be: people remember where and when (and the Fixer's face), security that sees it counts a found fault (runAlert, once per run). Running is free while a fight is on. Enter takes enter.alarm longer once Alert ≥ 2 (the staff hide Vale). Loop: the cabinet loops one camera at a time, one of `loop.targets` (a camera of the site by id, or `world`: the city's own cameras, the Records Square mast); the pickup camera joined the list on Sky's answer 6 (2026-10-16: \"if the tech takes out the camera, then taking out the guard and driver is possible\"; Waymark, briefs/013/waymark-handover.md §5.1).",
   "tag": "B",
   "src": "§03 cell; §07 route timings; the top-down test; Sky 2026-10-15, briefs/011/motive-fights.md"
  },
  "security": {
-  "response": { "witness": "v:response-witness-s", "seen": "v:response-seen-s", "unseen": "v:response-unseen-s", "civilian": "v:response-civilian-s", "checkIn": "v:response-check-in-s", "rivalsUnseen": "v:response-rivals-unseen-s" },
-  "checkIn": "v:check-in-s",
-  "seal": "v:seal-s",
+  "response": { "witness": "v:response-witness-s", "seen": "v:response-seen-s", "unseen": "v:response-unseen-s", "civilian": "v:response-civilian-s", "rivalsUnseen": "v:response-rivals-unseen-s" },
   "speed": "v:security-speed-cm-s",
   "rivals": { "speed": "v:rivals-speed-cm-s", "drawn": "v:rivals-drawn-s", "retreat": "v:rivals-retreat-s" },
   "patrol": { "breakTo": "v:patrol-break-m", "period": "v:patrol-period-s", "chase": "v:patrol-chase-cm-s" },
-  "rule": "Who answers gunfire and how fast. A report calls the response unit (`weapons.health.responseOfficers` officers); the earliest arrival wins and the district seals `seal` after it arrives. The delay is by who reported: a civilian witness, a guard, camera or patrol that saw it, nobody (unseen), a civilian shot, the guard's missed check-in. Gunfire draws the rivals within `rivals.drawn` and the patrol within `patrol.breakTo`. A hostile who first sees the cell outside a fight reacts in `weapons.react`, then fires at its weapon's cadence (Sky 2026-10-15, briefs/011/motive-fights.md: replaces aim 3 s and the per-unit fire rates).",
+  "rule": "Who answers gunfire and how fast. A report calls the response unit (`weapons.health.responseOfficers` officers); the earliest arrival wins and the district seals after it arrives (the seal is the security level's, `response.levels`). The delay is by who reported: a civilian witness, a guard, camera or patrol that saw it, nobody (unseen), a civilian shot. These delays are the arrivals at security level 1 (routine, today's 12 s dispatch): at another level a report lands the same seconds after the shot and the unit rolls that level's dispatch later, so the arrival moves by the dispatch's difference. A downed guard is missed at his next check-in mark (`response.checkIn`; brief 013 retires the 18 s check-in). Gunfire draws the rivals within `rivals.drawn` and the patrol within `patrol.breakTo`. A hostile who first sees the cell outside a fight reacts in `weapons.react`, then fires at its weapon's cadence (Sky 2026-10-15, briefs/011/motive-fights.md: replaces aim 3 s and the per-unit fire rates).",
   "tag": "B",
   "src": "§05 security [B], rivals [B]; §06 prototype [B]; the top-down test (Suture M-3: the rulebook carries them, src the prototype)"
  },
@@ -423,7 +531,9 @@
   "take": "vale-reports",
   "carry": "lost",
   "carrying": "put-down",
-  "rule": "A cancel order stops what one operative is doing now, the activity the HUD shows: an act in progress first, then a walk or run, then a fire order, then a draw, then a loop held, then a downed operative carried. Each verb's line says what cancelling it costs or keeps. stop: the operative stands where they are. holster: a draw not yet done goes back. cease: the fire order ends, the weapon stays drawn. lost: the act's time is spent and nothing lands (Watch and Listen learn nothing; a Loop, Reroute, Mislead or lift not finished does nothing; their Trail is charged only when they land). aborted: the approach stops mid-conversation; the money held for it comes back (the engine holds the price at the order and pays it only in the outcome's charge, Redline E2), no Trail, and the person remembers an aborted approach (memory act `aborted`, with the Fixer's face): it is no refusal, so the approach may be tried again, but it is a fact an investigator can get. ends: the loop stops and the camera comes back. staff-report: the Enforcer comes back out at the public door without Vale; the Office staff report the intruder, one reported incident (alert.byIncident). vale-reports: Vale is let go at his car and reports the attempt, one reported incident, and he remembers the aborted take (memory act `aborted`, the Enforcer's face), so an investigator who questions him finds a lead (Motive addendum Q4). put-down: the carried operative is laid down where the carrier stands. Extract is instant and has nothing to cancel. Putting Vale down is no cancel: the Enforcer keeps him (a rule of its own if Sky wants one). The verbs whose line may change take one of: turn aborted or lost; enter staff-report or quiet; take vale-reports or quiet.",
+  "takedown": "released",
+  "body": "lost",
+  "rule": "A cancel order stops what one operative is doing now, the activity the HUD shows: an act in progress first, then a walk or run, then a fire order, then a draw, then a loop held, then a downed operative carried. Each verb's line says what cancelling it costs or keeps. stop: the operative stands where they are. holster: a draw not yet done goes back. cease: the fire order ends, the weapon stays drawn. lost: the act's time is spent and nothing lands (Watch and Listen learn nothing; a Loop, Reroute, Mislead or lift not finished does nothing; their Trail is charged only when they land). aborted: the approach stops mid-conversation; the money held for it comes back (the engine holds the price at the order and pays it only in the outcome's charge, Redline E2), no Trail, and the person remembers an aborted approach (memory act `aborted`, with the Fixer's face): it is no refusal, so the approach may be tried again, but it is a fact an investigator can get. ends: the loop stops and the camera comes back. staff-report: the Enforcer comes back out at the public door without Vale; the Office staff report the intruder, one reported incident (alert.byIncident). vale-reports: Vale is let go at his car and reports the attempt, one reported incident, and he remembers the aborted take (memory act `aborted`, the Enforcer's face), so an investigator who questions him finds a lead (Motive addendum Q4). put-down: the carried operative is laid down where the carrier stands. Extract is instant and has nothing to cancel. Putting Vale down is no cancel: the Enforcer keeps him (a rule of its own if Sky wants one). The verbs whose line may change take one of: turn aborted or lost; enter staff-report or quiet; take vale-reports or quiet. Brief 013: a takedown cancelled before it lands lets the victim go (`takedown` released): he saw the Enforcer and reports it as a woken victim would; lifting, dropping, stashing or tying a body cancelled spends the time and lands nothing (`body` lost); a body carried is laid down where the carrier stands (`carrying` put-down).",
   "tag": "S",
   "src": "Sky 2026-10-15 playtest: \"there's nothing showing me what the cell player is doing when they're busy, nor is there a way to cancel their action\" (Aster)",
   "proposed": true,
@@ -440,6 +550,79 @@
   "rule": "A watcher sees a point inside its cone (ahead within reach, and to the side within half × ahead ÷ reach) or within `near` whatever its facing, along a sightline no occluder crosses at eye height (§05 levels: 3D). A camera's cone is its site's; a guard at his door, a walking guard, a chasing patrol, the response unit and the rivals use these. The sweeping patrol's cone widens with depth.",
   "tag": "B",
   "src": "§05 cameras, watchers, levels; the top-down test's cones"
+ },
+ "sight": {
+  "watch": { "s": "v:watch-s", "reach": "v:watch-sight-reach-m", "routine": "v:watch-routine-s" },
+  "kinds": {
+   "camera": { "learn": "watch", "routine": "fixed" },
+   "guard": { "learn": "watch", "routine": "person" },
+   "patrol": { "learn": "watch", "routine": "watched" },
+   "security": { "learn": "arrival", "routine": "none" },
+   "rivals": { "learn": "arrival", "routine": "none" }
+  },
+  "unknown": "?",
+  "rule": "What the cell knows of each watcher's sight (Sky 2026-10-16: cones are the Scout's skill). A watcher's sight is its perception cone clipped by what blocks sight; the cell knows it only once learned, and learned knowledge stays with the cell (a downed Scout keeps it). learn watch: a completed Scout Watch of the watcher teaches its sight: a camera or the patrol is watched within watch.reach on a clear line (watch.s, the same Watch as a person's); the guard is watched as the person he is (scout.watch: routine), and that Watch teaches his sight too. learn arrival: the response unit and drawn rivals come for the cell, and their sight is known from the moment they are on the street. Knowledge is witnessed (watched) or told (the start state: the briefing, a previous mission). routine fixed: a camera does not move, so its routine is known with its sight; person: the guard's routine is his person routine (scout.watch); watched: the patrol's routine (when its sweep turns and when it sees the door) is known once the cell's completed Watches of it total watch.routine seconds; none: no routine. Knowledge changes only what the cards show, never an outcome: a quote's 'seen by' shows each known watcher's true answer, and `unknown` for a watcher the cell doesn't know that stands within its kind's farthest sight of the act or route on a clear line (its facing is what the cell doesn't know), as the action card shows '?' until the temperament is known (§04, Sky Q3). Detection needs no knowledge: a watcher that sees an operative now has noticed them, known or not.",
+  "tag": "S",
+  "src": "Sky 2026-10-16 (Aster): view cones are the Scout's skill; Glyph, briefs/011/ui/review-2026-10-16 §3.4; §03 Scout: Watch; §04 preview '?' (Sky Q3); §05 cameras, watchers",
+  "proposed": true,
+  "reason": "the GDD has every cone always on (§05 cameras: fixed visible cones). Sky approved the Scout's skill on 2026-10-16; the reach, the routine's time and the known-on-arrival rule are Keel's starting values, for Motive to price and Sky's GDD edit."
+ },
+ "takedown": {
+  "ko": "v:ko-s", "kill": "v:kill-s", "struggle": "v:struggle-s", "reach": "v:at-reach-cm",
+  "trail": { "kill": "v:kill-trail" }, "koAlertMax": "v:ko-alert-max", "foundKillStanding": "v:found-kill-standing",
+  "wake": "v:wake-s", "stagger": "v:stagger-s", "restrain": "v:restrain-s", "free": "v:free-s", "callOut": "v:call-out-s",
+  "carry": { "untrained": "v:carry-untrained-cm-s", "drop": "v:drop-s" },
+  "stash": { "container": "v:stash-container-s", "door": "v:stash-door-s", "doorHolds": "v:stash-door-holds" },
+  "service": { "period": "v:service-bin-period-s", "dwell": "v:service-bin-dwell-s" },
+  "rule": "The Enforcer's takedown (brief 013, Sky 2026-10-16: anyone can be targeted; one rule set for every simulated person, no named target list). The Enforcer alone, standing within `reach` of a person on the street, knocks them out (`ko`) or kills them (`kill`); silent: none of the gunfire rules apply, no money. Vale may be killed (the mission fails, §07) but not knocked out (use Take); the patrol and cameras are no targets (Reroute and Loop are their verbs). A target who had the Enforcer in his cone when the order was given, heard him running within witness range, or witnessed one of the cell's acts this mission (a takedown, a carry, a drawn weapon: Motive rev 3, until a stop has a facing) is aware: unarmed, he struggles (`struggle` more), screams (heard within witness.scream) and holds the Enforcer's face; armed (a person with a weapon: the door guard), the takedown fails, he draws and engages (Alert at least weapons.costs.drawSeenSecurity at sight). The victim lies where he fell until moved: a body. A knocked-out victim wakes after `wake`, staggers `stagger`, then reports the assault whatever his temperament (a cell contact says nothing); a dead one never wakes or talks. Any operative carries a body (cell.carry lift, then walk only: the Enforcer at cell.speed, the others at carry.untrained; no run, no fire) and puts it down in carry.drop; restrains a living one in `restrain` (no move, no call-out, still seen on open ground; a finder frees him in `free`, then he reports); stashes it, standing at the stash, into a container (`stash.container`, on the street, seen as a carry) or through a service door (`stash.door`, off-screen; a door holds `stash.doorHolds` bodies, a storeroom: rev 4 R4.3; a container what its site entry says). Only a stash hides a body (two hide levels, open and shut; Sky merged call 6). A woken, unrestrained victim in a stash calls out every `callOut`, heard within witness.scream. A container is emptied by a round every `service.period`, its phase from its id, standing `service.dwell`: a body inside is found then (in the mission only; Sky merged call 9). Every number of the takedown, the price and its forecast are on the order's card before it is given.",
+  "tag": "S",
+  "src": "brief 013 (Sky 2026-10-16 decisions and answers); briefs/013/motive-takedowns.md §1-§4, §7; briefs/013/pulse-witnesses.md §2, §4, §5; briefs/013/vantage-quiet-places.md §2",
+  "proposed": true,
+  "reason": "the GDD has no takedown: Sky approved Motive's rules on 2026-10-16; the numbers are Motive's starting values, for playtest and the GDD edit."
+ },
+ "witness": {
+  "react": "v:react-s", "call": "v:call-s", "postCall": "v:post-call-s", "robot": "v:robot-report-s", "cameraScan": "v:camera-scan-s",
+  "cap": "v:report-cap", "scream": "v:scream-m", "screamFear": "v:scream-fear", "terrifiedFear": "v:terrified-fear", "mercenaryAlert": "v:mercenary-report-alert",
+  "check": { "ticks": "v:body-check-ticks", "s": "v:body-check-s" }, "tell": "v:tell-m",
+  "alert": { "seen": "v:alert-lockdown", "carry": "v:report-alert-carry", "down": "v:report-alert-down", "dead": "v:report-alert-dead", "woken": "v:report-alert-assault", "noise": "v:report-alert-down", "mark": "v:alert-inquiry", "missing": "v:alert-inquiry" },
+  "staff": ["guard", "patrol-officer", "watcher", "investigator"],
+  "kin": ["lover", "family"],
+  "close": ["lover", "family", "workmate"],
+  "tells": ["lover", "family", "workmate", "regular"],
+  "rule": "What a person does when the city's silent violence reaches them (Pulse's decision list; Motive's numbers). Who notices: a takedown or a carry, everyone on the street within witness range on a clear line at any tick of it; an open body, the same, checked every `check.ticks` (phase from the body's id); a live camera, the guard, the patrol and the response's units in their cones; a shut body nobody. The rows, first that holds, evaluated when the person notices: staff (a job in `staff`, or the door guard): radio from where he stands, landing react + postCall (the armed guard, the patrol and the response's units seeing an act or a carry engage instead: Alert at least weapons.costs.drawSeenSecurity at sight); kin of the victim (a tie in `kin`): report at once, whatever the temperament (fear `terrifiedFear`: flee); cell (turned, or loyalty at least values.word-quiet-loyalty): quiet; an Informer (resentment at its max): report; terrified (fear at least `terrifiedFear`): flee, never report; then by temperament: Loyal reports; Idealist reports, after walking to a body to learn its state (`check`); Mercenary reports only once Alert is at least `mercenaryAlert`; Fearful flees an act or carry and avoids a body. A reporter walks the grid to the nearest report point (a staffed door: the site's door refuges; a call box), at walking pace for a body and running pace (crowd.run) for an act or a carry, and calls (`call`): the report lands at the desk; a live camera's lands at its next scan (`cameraScan`, phase from its id) + postCall; a robot's after `robot`. At most `cap` reporters of one incident are in transit; one taken down, killed or carried before his report lands drops it. Whoever quiets, avoids or flees, and every reporter, tells one tie (first kind in `tells`) who is indoors at a unit or on the street within `tell`: a told entry, facts only, one hop; a told Loyal person reports it from where they are. Alert rises when a report lands, never at sight (Sky merged call 1), to `alert` by what it says: a takedown seen `seen`, a carry seen `carry`, a person lying (or a noise from a stash) `down`, a dead body (staff know, an Idealist checks) `dead`, a woken victim `woken`, a missed check-in `mark`, a missing expected person `missing`; a knockout never above takedown.koAlertMax by itself; one takedown is one incident (Alert to the highest of its landed and confirmed reports; the nth reported incident at least alert.byIncident[n-1]). Witness Trail (+values.witness-trail) and Standing (traceable takedown) move once per incident at sight; a turned witness (loyalty at least values.word-quiet-loyalty) adds no Trail, and Standing still moves (Sky merged call 5). A screaming witness (fear at least `screamFear`), kin and an aware victim are heard within `scream` with no line: hearers with a line within witness range become witnesses; the rest hold heard-alarm. A reporter volunteers place and time when questioned (investigator.question, outcome volunteers). Rev 4 (Motive R4.2; Sky 2026-10-16): before every row, an accomplice of the act (a person turned to enable this very act: for the Take and its escort, the turned driver) is never its witness, whatever the tie; `kin` is lover or family only (workmate is not kin; `close`, lover, family and workmate, is whose absence or loss a person feels: expectations, the alarm's places, grief and worry). The Take: at Vale's own car with its driver turned it happens inside the car, off-screen, with no witness window (and nothing for the pickup camera to see); any other Take reads as an act for its first cell.take.struggle s, seen as a takedown by everyone within witness range on a clear line and every watcher that sees him (a live pickup camera still fails it at the order, §07). Escorted on foot, Vale looks wrong only to his kin within witness range on a clear line, or to anyone within values.near-m on a clear line who sees the grip: a carry seen. The Take and its escort are one incident, opened at the first sighting (an unseen Take opens none); witness Trail and Standing move at sight; no assault Trail is charged (the Take keeps cell.take.trailUnturned); Vale let go by a cancel reports on the same incident if it was seen.",
+  "tag": "S",
+  "src": "briefs/013/pulse-witnesses.md §2, §3 (Pulse, third pass, aligned to Motive rev 2); briefs/013/motive-takedowns.md §1.4, §2.3; Sky 2026-10-16 merged calls 1, 2, 4, 5",
+  "proposed": true,
+  "reason": "the GDD's §05 has witnesses only for traceable acts and 'violence seen by a civilian → 3 at once'; Sky approved silent acts reaching Alert through people who walk to a phone (call 1), so a witness's temperament, the report window and its counters matter."
+ },
+ "response": {
+  "levels": [
+   {"name": "lax", "dispatch": "v:dial0-dispatch-s", "a1Robots": "v:dial0-a1-robots", "a2Units": "v:dial0-a2-units", "a2Robots": "v:dial0-a2-robots", "unitCap": "v:dial0-unit-cap", "seal": "v:dial0-seal-s", "a3Units": "v:dial0-a3-units", "doorsLock": false},
+   {"name": "routine", "dispatch": "v:dial1-dispatch-s", "a1Robots": "v:dial1-a1-robots", "a2Units": "v:dial1-a2-units", "a2Robots": "v:dial1-a2-robots", "unitCap": "v:dial1-unit-cap", "seal": "v:seal-s", "a3Units": "v:dial1-a3-units", "doorsLock": false},
+   {"name": "watchful", "dispatch": "v:dial2-dispatch-s", "a1Robots": "v:dial2-a1-robots", "a2Units": "v:dial2-a2-units", "a2Robots": "v:dial2-a2-robots", "reinforce": "v:dial2-reinforce-s", "unitCap": "v:dial2-unit-cap", "seal": "v:dial2-seal-s", "a3Units": "v:dial2-a3-units", "doorsLock": true},
+   {"name": "guarded", "dispatch": "v:dial3-dispatch-s", "a1Robots": "v:dial3-a1-robots", "a2Units": "v:dial3-a2-units", "a2Robots": "v:dial3-a2-robots", "reinforce": "v:dial3-reinforce-s", "unitCap": "v:dial3-unit-cap", "seal": "v:dial3-seal-s", "a3Units": "v:dial3-a3-units", "doorsLock": true},
+   {"name": "swarm", "dispatch": "v:dial4-dispatch-s", "a1Robots": "v:dial4-a1-robots", "a2Units": "v:dial4-a2-units", "a2Robots": "v:dial4-a2-robots", "reinforce": "v:dial4-reinforce-s", "unitCap": "v:dial4-unit-cap", "seal": "v:dial4-seal-s", "a3Units": "v:dial4-a3-units", "doorsLock": true}
+  ],
+  "robotSpeed": "v:robot-alarm-cm-s", "robotWire": "v:robot-wire-s", "robotReach": "v:robot-reach-m", "world": { "report": "v:report-reach-m", "dock": "v:dock-reach-m" }, "launchGap": "v:launch-gap-ticks", "check": "v:check-s",
+  "search": { "s": "v:search-s", "m": "v:search-stash-m", "stash": "v:search-stash-s" },
+  "standDown": { "inquiry": "v:stand-down-inquiry-s", "search": "v:stand-down-search-s" },
+  "spread": "v:alarm-spread", "cap": "v:combatant-cap", "checkIn": "v:check-in-period-s",
+  "suspicion": { "s": "v:suspicion-s", "meet": "v:meet-m", "pm": { "fearful": "v:suspicion-fearful-pm", "loyal": "v:suspicion-loyal-pm", "idealist": "v:suspicion-idealist-pm", "mercenary": "v:suspicion-mercenary-pm" } },
+  "rule": "The response is a dial (Sky 2026-10-16: 'it's easy to swarm the play area with robots'; merged call 3): `levels` indexed by the security level S = the district's base + its open cases (campaign) + the mission's bonus, from the mission's data; the Handover's is 2. A landed alarm (a report of a silent act, a missed check-in, a missing person; gunfire, whose report lands its security.response delay less level 1's dispatch after the shot) puts the response on the street the level's `dispatch` later: at Alert 1 `a1Robots` robots; at Alert 2 or more `a2Units` units of weapons.health.responseOfficers officers (the response unit first) and `a2Robots` robots, then one more unit every `reinforce` up to `unitCap`; Alert 3 adds `a3Units` units to the district mouths (the cordon) and, where `doorsLock`, the doors lock (no Enter). A found body holds the scene (rev 4, Motive R4.1; Sky 2026-10-16): a landed report that a person lies there (down, dead, a takedown seen), the body still there and open, or a woken victim's own report where he woke, brings a unit of officers at any Alert (not bound by robot reach; not one of the dial's counted units; at Alert 2 the response unit is it), the level's dispatch after the landing. The scene holds the entrance the body lies at (within values.near-m) and every entrance within witness range of it on a clear line: from an officer's arrival (its check and its `search.s` sweep, opening stashes only at Alert 2 or more) until the unit stands down (the timers below), a held entrance refuses Enter (`door-held`) and any exit through it; an Enter under way finishes and comes out by a door not held (the service door, else the public door), or waits inside while both are held. A missed check-in is an empty post, no body: it holds nothing. Counts are kept, not repeated: a later alarm tops them up. One incident is one dispatch (brief 013 D, Aster 2026-10-16): the first landed report of an incident dispatches; a later report of it that raises the Alert tops that dispatch up to the new Alert's counts, from the destinations the first set; any other later report of it sends nothing (a unit already out may be sent on to a scene no unit covers). A robot is a patrol unit (weapons.health.patrol, a pistol, trained) walking at `robotSpeed`; the patrol robot is the first robot when it is on its sweep and answers after `robotWire`; the others and the officers start at the site's docks and posts, else at the response unit's entry; they leave one every `launchGap` ticks. Robots and units stop at `cap` combatants (§06). Destinations, in order, duplicates within witness range dropped: the scene; the missing person's post and the stands his lover, family and workmates are meant to be at now, and his car (up to `spread`); the alarm-raiser's ties likewise (up to `spread`); at Alert 3 the mouths. Robots take them in order, the nearest free robot first, ties on id, each only a place within `robotReach` of where it starts (its dock, or the patrol's place on its sweep): farther places are for officers; units go to the scene, then to the place with the fewest units. A unit within witness range of the scene with a clear line verifies: a body there is confirmed (the act's Trail, a kill's Standing, Alert to the confirmed level; the seal starts only on a confirmation at Alert 2 or more, the level's `seal` after the later of the confirmation and the response unit on the street (the seal is the unit's cordon, as for gunfire; Motive rev 3); a knocked-out victim is brought round and gives his statement); no body is unfounded (Alert stays, no seal). Arriving, a unit checks `check`, then robots hold the point (a watcher) and officers search `search.s`: at Alert 2 or more they open every stash within `search.m` of the scene, nearest first, `search.stash` each; a report from a stash itself (a noise, a round) opens that stash at any Alert. Units stand down `standDown.inquiry` after the last alarm at Alert 1 and `standDown.search` at Alert 2, never at Alert 3. The world places report points and the response's origins by rule, so that every walkable cell is within `world.report` of a report point and within `world.dock` of a dock or post (R-REPORT, R-DOCK, checked by the world's tools; the engine reads the places the world exports). Every staff post checks in by voice every `checkIn` from the start of the shift at the post and at its end: a missed mark is a report that lands at the mark at the post. A person who expects a tie at a stop they share (lover, family, workmate; from the people file's routines, never authored) and is at the place without them, while the tie's routine puts them there and the tie is down, held or stashed, raises the alarm after `suspicion.s` (times `suspicion.pm` by temperament, per mille; default a flat 20 s): a missing-person report from where they stand; a turned waiter says nothing; a person being taken reports nothing.",
+  "tag": "S",
+  "src": "briefs/013/motive-takedowns.md §5 (the dial, check-ins, suspicion); briefs/013/pulse-witnesses.md §11-§13 and pulse-response-profiles.json (behaviour); Sky 2026-10-16 answers 4 and 6, merged call 3; Aster 2026-10-16 (both destination tiers, flat suspicion, robot speed)",
+  "proposed": true,
+  "reason": "the GDD's §05 response is one unit from one street. Sky asked for the response's size and speed as data per district and mission; until the world places robot docks and police posts (Splice) every robot but the patrol and every officer starts at the response unit's entry, so the dial's arrival times are upper bounds."
+ },
+ "campaign": {
+  "missing": { "trail": "v:missing-trail", "tiesFear": "v:missing-ties-fear" },
+  "areaWatch": { "step": "v:area-watch-step", "missions": "v:area-watch-missions" },
+  "cases": { "perLevel": "v:cases-per-level", "cap": "v:case-level-cap", "close": "v:case-close-missions", "trailEq": "v:case-trail-eq" },
+  "rule": "What a takedown leaves the campaign, worked out at the mission's end for the debrief (no campaign layer runs yet). A killing never found in the mission is a missing person: missing.trail (no homicide), no Standing, his family, lover and workmate ties fear +missing.tiesFear (worry), the block where he was last seen gets areaWatch.step posted guard and camera for areaWatch.missions missions, and a case opens that stays open until the body is found. A found killing: takedown.trail.kill with the act's Trail, Standing takedown.foundKillStanding on confirmation, his ties grieve (a turned contact takes the saw-violence move, everyone else fear +missing.tiesFear), the area watch as above, and a case that closes after cases.close missions. A knockout hidden or restrained to the end comes home and gives a statement: the act's Trail and his facts as leads; his own fear +1 (resentment +1 if he saw it coming). The district's security level is its base + floor(open cases / cases.perLevel), at most cases.cap above the base.",
+  "tag": "S",
+  "src": "Sky 2026-10-16 answer 2 and the missing-person numbers; briefs/013/motive-takedowns.md §2.5, §2.6; briefs/013/pulse-witnesses.md §14",
+  "proposed": true,
+  "reason": "the GDD's §08 has no missing persons; Sky's numbers (2026-10-16), for the debrief until the campaign layer reads them."
  },
  "fight": {
   "safe": { "hostiles": "v:fight-safe-hostiles", "minus": "v:fight-modifier", "warn": "v:fight-warn-s", "ambush": "v:fight-ambush-m" },
@@ -477,7 +660,7 @@
  },
  "phases": {
   "mission-start": ["keeper.tips"],
-  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "contact.introduces"],
+  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "contact.introduces", "bodies.surface", "body.grieved", "missing.worried", "area.hardens", "cases.count"],
   "iterate": "within a phase, events in the order listed; within an event, subjects by person id in ordinal order (C# string.CompareOrdinal, JS <)",
   "tag": "S",
   "src": "§04 between missions; §08 debrief [B] → next mission; §11 exact replay"
@@ -496,7 +679,14 @@
    "need-replaced": { "fields": ["who", "old", "new", "told"], "src": "§04 needs (Sky Q2)" },
    "word": { "fields": ["who", "fact", "to", "tie"], "src": "Motive K3: listed in the debrief" },
    "tie-lapsed": { "fields": ["who", "with", "kind", "why"], "src": "Motive K4" },
-   "introduced": { "fields": ["who", "friend", "tie"], "src": "§04 between missions: introduces a friend; Motive K5" }
+   "introduced": { "fields": ["who", "friend", "tie"], "src": "§04 between missions: introduces a friend; Motive K5" },
+   "volunteer": { "fields": ["who", "fact"], "src": "briefs/013/pulse-witnesses.md §2.4: a reporter gives place and time without the Talker test" },
+   "statement": { "fields": ["who", "facts", "trail"], "src": "briefs/013/motive-takedowns.md §3.2: a knockout comes home and gives a statement" },
+   "missing": { "fields": ["who", "place", "trail"], "src": "Sky 2026-10-16 answer 2: a hidden body is a missing person" },
+   "grief": { "fields": ["who", "of", "move"], "src": "briefs/013/motive-takedowns.md §2.5" },
+   "worry": { "fields": ["who", "of", "fear"], "src": "briefs/013/motive-takedowns.md §2.6" },
+   "area-watch": { "fields": ["place", "guards", "cameras", "missions"], "src": "Sky 2026-10-16: more guards and cameras in that area next time" },
+   "case": { "fields": ["who", "kind", "closes"], "src": "briefs/013/motive-takedowns.md §2.6: cases and the district level" }
   },
   "rule": "Every change between missions and every give-up is a debrief line with its cause (§08 [B]: the debrief reports each with cause). The fields are data; Fable writes the words, Glyph lays them out.",
   "tag": "B",
@@ -679,6 +869,7 @@
    "price": [{ "line": "base", "s": "v:question-s" }],
    "outcomes": [
     { "id": "holds-nothing", "when": [{ "k": "holds-fact", "is": false }], "changes": [{ "do": "spend-hop" }] },
+    { "id": "volunteers", "when": [{ "k": "memory", "act": "reported", "has": true }], "changes": [{ "do": "lead", "from": "facts" }, { "do": "debrief", "line": "volunteer" }] },
     { "id": "gives", "when": [{ "k": "talker", "is": true }], "changes": [{ "do": "lead", "from": "facts" }, { "do": "debrief", "line": "give-up" }] },
     { "id": "lies", "when": [{ "k": "lies", "is": true }], "changes": [{ "do": "lead", "from": "lie" }, { "do": "debrief", "line": "lie" }] },
     { "id": "nothing", "when": [], "changes": [{ "do": "spend-hop" }] }
@@ -831,6 +1022,585 @@
    "order": "the player picks the friend in the debrief, from the contact's ties whose kind introduces; no pick, no introduction. The pick is an order, so a replay holds it",
    "proposed": true,
    "reason": "the GDD says a friend is introduced but not what that gives. Here an introduction makes the friend known (routine, need and temperament: a Watch and a Listen saved, 94 s on the Handover's numbers), and turning them is still the player's order at the full price. Turning them for free would skip the price §04 is built on."
+  },
+  {
+   "id": "takedown.act",
+   "by": "enforcer",
+   "phase": "mission",
+   "tag": "S",
+   "src": "brief 013 (Sky 2026-10-16: anyone can be targeted); briefs/013/motive-takedowns.md §1",
+   "needs": [
+    {
+     "k": "tier",
+     "is": "simulated"
+    },
+    {
+     "k": "cell",
+     "is": false
+    }
+   ],
+   "price": [
+    {
+     "line": "base",
+     "s": "v:ko-s"
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "down",
+     "when": [],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "attacked"
+      }
+     ]
+    }
+   ],
+   "witnesses": [
+    {
+     "act": "takedown"
+    }
+   ],
+   "how": [
+    "the order: {do: takedown, op: enforcer, target: a person's id or role, how: knockout | kill}; refused unless the Enforcer stands within takedown.reach (cm) of the target, is not busy, inside or carrying; Vale only by kill (knockout: use Take)",
+    "time: takedown.ko or takedown.kill, + takedown.struggle when the target is aware and unarmed; an aware armed target makes it fail into a fight",
+    "aware: the target had the Enforcer in its facing cone (perception.facing; the guard at his door his door cone) when the order was given, or the Enforcer was running within witness range; a person standing at a stop has no facing yet (Pulse), so is surprised",
+    "the victim is seized at the order (off the street, a body at once) and lies where he fell when it lands: out (wakes after takedown.wake) or dead; memory attacked, or attacked-aware with the Enforcer's face",
+    "the card shows the time and the full price before the order is given"
+   ],
+   "proposed": true,
+   "reason": "Sky approved the takedown on 2026-10-16; the event's price line is the knockout's base, the kill's time is takedown.kill (a price line can't read the order's how)."
+  },
+  {
+   "id": "takedown.witnessed",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §1.4; Sky merged calls 1 and 5",
+   "needs": [
+    {
+     "k": "act",
+     "in": [
+      "takedown"
+     ]
+    },
+    {
+     "k": "within",
+     "m": "v:witness-range-m",
+     "sightline": "3d"
+    },
+    {
+     "k": "cell",
+     "is": false
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "quiet",
+     "when": [
+      {
+       "k": "scale",
+       "scale": "loyalty",
+       "op": ">=",
+       "than": "v:word-quiet-loyalty"
+      }
+     ],
+     "changes": [
+      {
+       "do": "standing",
+       "step": "v:standing-step",
+       "per": "incident"
+      },
+      {
+       "do": "remember",
+       "act": "saw-takedown"
+      }
+     ]
+    },
+    {
+     "id": "seen",
+     "when": [],
+     "changes": [
+      {
+       "do": "trail",
+       "add": "v:witness-trail",
+       "per": "incident"
+      },
+      {
+       "do": "standing",
+       "step": "v:standing-step",
+       "per": "incident"
+      },
+      {
+       "do": "remember",
+       "act": "saw-takedown"
+      }
+     ]
+    }
+   ],
+   "also": [
+    {
+     "when": [
+      {
+       "k": "turned",
+       "is": true
+      }
+     ],
+     "changes": [
+      {
+       "do": "move",
+       "on": "saw-violence"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "at sight, no Alert: the witness reacts by witness.rule, and a report lands later (Alert witness.alert.seen)",
+    "a carry seen is the same event with memory saw-carry, its report witness.alert.carry"
+   ],
+   "proposed": true,
+   "reason": "Sky merged call 1: silent acts raise Alert when a report lands; witness Trail and Standing move at sight, once per incident; a turned witness adds no Trail (call 5)."
+  },
+  {
+   "id": "body.found",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "briefs/013/pulse-witnesses.md §2; briefs/013/motive-takedowns.md §2.2",
+   "needs": [
+    {
+     "k": "tier",
+     "is": "simulated"
+    },
+    {
+     "k": "within",
+     "m": "v:witness-range-m",
+     "sightline": "3d"
+    },
+    {
+     "k": "cell",
+     "is": false
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "quiet",
+     "when": [
+      {
+       "k": "scale",
+       "scale": "loyalty",
+       "op": ">=",
+       "than": "v:word-quiet-loyalty"
+      }
+     ],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "found-body"
+      }
+     ]
+    },
+    {
+     "id": "flees",
+     "when": [
+      {
+       "k": "scale",
+       "scale": "fear",
+       "op": ">=",
+       "than": "v:terrified-fear"
+      }
+     ],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "found-body"
+      }
+     ]
+    },
+    {
+     "id": "reports",
+     "when": [
+      {
+       "k": "temperament",
+       "in": [
+        "loyal",
+        "idealist"
+       ]
+      }
+     ],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "found-body"
+      },
+      {
+       "do": "report"
+      }
+     ]
+    },
+    {
+     "id": "keeps",
+     "when": [],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "found-body"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "the full decision list is witness.rule (staff radio, kin report at once, an Informer reports, a Mercenary reports at Alert witness.mercenaryAlert); these outcomes are its temperament rows",
+    "an open body is looked for every witness.check.ticks; a shut one never"
+   ],
+   "proposed": true,
+   "reason": "Sky 2026-10-16: civilians can see bodies; Pulse's decision list, Motive's numbers."
+  },
+  {
+   "id": "report.lands",
+   "by": "city",
+   "phase": "mission",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.3; briefs/013/pulse-witnesses.md §3.3",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "lands",
+     "when": [],
+     "changes": [
+      {
+       "do": "alert",
+       "atLeast": "v:alert-inquiry",
+       "per": "incident"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "Alert to witness.alert by what the report says, a knockout at most takedown.koAlertMax by itself, the incident's highest; the nth reported incident at least alert.byIncident[n-1]",
+    "a seen takedown's report and a woken victim's own charge the act's Trail when they land",
+    "the response by response.levels at the Alert it leaves"
+   ],
+   "proposed": true,
+   "reason": "Sky merged call 1."
+  },
+  {
+   "id": "report.verifies",
+   "by": "city",
+   "phase": "mission",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.3; briefs/013/pulse-witnesses.md §3.5",
+   "needs": [
+    {
+     "k": "within",
+     "m": "v:witness-range-m",
+     "sightline": "3d"
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "confirmed",
+     "when": [],
+     "changes": [
+      {
+       "do": "trail",
+       "add": "v:kill-trail",
+       "per": "incident"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a response unit within witness range of the scene on a clear line: an open body there is confirmed (the act's Trail: weapons.costs.hit + weapons.costs.down, + takedown.trail.kill for a kill; takedown.foundKillStanding for a kill; Alert to the confirmed level; the seal at a confirmation at Alert 2 or more), else unfounded (no seal; the search)"
+   ],
+   "proposed": true,
+   "reason": "the seal starts only on a confirmation at Alert 2 or more (Sky merged call 1, Motive §2.3)."
+  },
+  {
+   "id": "victim.wakes",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §3; briefs/013/pulse-witnesses.md §5",
+   "needs": [
+    {
+     "k": "cell",
+     "is": false
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "reports",
+     "when": [],
+     "changes": [
+      {
+       "do": "report"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "after takedown.wake and takedown.stagger a free victim reports the assault whatever his temperament (witness.alert.woken); a cell contact (loyalty at least word-quiet-loyalty) says nothing; stashed he calls out; restrained he waits for a finder"
+   ],
+   "proposed": true,
+   "reason": "Motive §3.2."
+  },
+  {
+   "id": "post.missed",
+   "by": "city",
+   "phase": "mission",
+   "tag": "S",
+   "src": "Sky answer 4; briefs/013/motive-takedowns.md §5.1",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "missed",
+     "when": [],
+     "changes": [
+      {
+       "do": "alert",
+       "atLeast": "v:alert-inquiry",
+       "per": "incident"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "marks every response.checkIn from the start of a staff person's shift at a post (a door refuge's place in his routine), and the shift's end; down, held or stashed at a mark: the report lands at the mark at the post"
+   ],
+   "proposed": true,
+   "reason": "retires the 18 s check-in [B]: the Scout can learn the marks."
+  },
+  {
+   "id": "person.missed",
+   "by": "person",
+   "phase": "mission",
+   "tag": "S",
+   "src": "Sky answer 6; briefs/013/motive-takedowns.md §5.2; briefs/013/pulse-witnesses.md §11",
+   "needs": [
+    {
+     "k": "tie",
+     "kinds": [
+      "lover",
+      "family",
+      "workmate"
+     ]
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "alarm",
+     "when": [],
+     "changes": [
+      {
+       "do": "remember",
+       "act": "missed-expected"
+      },
+      {
+       "do": "report"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "response.suspicion: an expectation is two people tied lover, family or workmate who share a stop at one place in their routines (both ways, never authored); missing when the waiter is at the place and the other is down, held or stashed while his routine puts him there"
+   ],
+   "proposed": true,
+   "reason": "Sky: a person who expects someone and finds them missing grows suspicious."
+  },
+  {
+   "id": "alarm.dispatches",
+   "by": "city",
+   "phase": "mission",
+   "tag": "S",
+   "src": "Sky answer 6; briefs/013/motive-takedowns.md §5.3; briefs/013/pulse-witnesses.md §12",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "sent",
+     "when": [],
+     "changes": [
+      {
+       "do": "alert",
+       "atLeast": "v:alert-inquiry",
+       "per": "incident"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "response.rule: the destination list and the assignment, re-run only at a landed alarm or an Alert step"
+   ],
+   "proposed": true,
+   "reason": "Sky: an alarm sends robots and police to the scene and to where the connections are meant to be."
+  },
+  {
+   "id": "bodies.surface",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.6, §3.2",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "surfaced",
+     "when": [],
+     "changes": [
+      {
+       "do": "trail",
+       "add": "v:missing-trail",
+       "per": "incident"
+      },
+      {
+       "do": "debrief",
+       "line": "missing"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a hidden killing never found in the mission is a missing person (campaign.missing.trail); a knockout hidden or restrained to the end comes home and gives a statement (the act's Trail, debrief line statement)"
+   ],
+   "proposed": true,
+   "reason": "Sky answer 2: no auto-find; a hidden body is a missing person."
+  },
+  {
+   "id": "body.grieved",
+   "by": "person",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.5",
+   "needs": [
+    {
+     "k": "tie",
+     "kinds": [
+      "lover",
+      "family",
+      "workmate"
+     ]
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "contact",
+     "when": [
+      {
+       "k": "turned",
+       "is": true
+      }
+     ],
+     "changes": [
+      {
+       "do": "move",
+       "on": "saw-violence"
+      },
+      {
+       "do": "debrief",
+       "line": "grief"
+      }
+     ]
+    },
+    {
+     "id": "grieves",
+     "when": [],
+     "changes": [
+      {
+       "do": "debrief",
+       "line": "grief"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a found killing's ties: a turned contact takes the saw-violence move; everyone else fear +campaign.missing.tiesFear"
+   ],
+   "proposed": true,
+   "reason": "Motive §2.5."
+  },
+  {
+   "id": "missing.worried",
+   "by": "person",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.6",
+   "needs": [
+    {
+     "k": "tie",
+     "kinds": [
+      "lover",
+      "family",
+      "workmate"
+     ]
+    }
+   ],
+   "outcomes": [
+    {
+     "id": "worried",
+     "when": [],
+     "changes": [
+      {
+       "do": "debrief",
+       "line": "worry"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a missing person's ties: fear +campaign.missing.tiesFear, no resentment"
+   ],
+   "proposed": true,
+   "reason": "Sky's missing-person numbers."
+  },
+  {
+   "id": "area.hardens",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "Sky answer 2; briefs/013/motive-takedowns.md §2.6",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "hardens",
+     "when": [],
+     "changes": [
+      {
+       "do": "debrief",
+       "line": "area-watch"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a found killing or a missing person: campaign.areaWatch.step posted guard and camera on the block where he was last seen, for campaign.areaWatch.missions missions (tools/life and the world place them; never by hand)"
+   ],
+   "proposed": true,
+   "reason": "Sky: more guards and more cameras in that area next time."
+  },
+  {
+   "id": "cases.count",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "briefs/013/motive-takedowns.md §2.6",
+   "needs": [],
+   "outcomes": [
+    {
+     "id": "counted",
+     "when": [],
+     "changes": [
+      {
+       "do": "debrief",
+       "line": "case"
+      }
+     ]
+    }
+   ],
+   "how": [
+    "a found killing opens a case that closes after campaign.cases.close missions; a missing person's stays open; the district's level is its base + floor(open cases / campaign.cases.perLevel), at most campaign.cases.cap above"
+   ],
+   "proposed": true,
+   "reason": "Sky's missing-person numbers."
   }
  ]
 }

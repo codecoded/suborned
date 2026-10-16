@@ -1,0 +1,183 @@
+
+fail-district-seals.json  Failure (sealed) at 5:32  final fight -  replay hash matches
+  decisions before the fight: 6 order moments, 1.1 a minute; longest stretch with no order: 2:32-5:32 (180 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 91.4 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    0       0       0       0        332     100     100               0:00-5:32 (332 s): nothing (idle to the end)
+  fixer    0       0       0       0        332     100     100               0:00-5:32 (332 s): nothing (idle to the end)
+  tech     28.3    107     187     0        9.7     2.9     2.9               0:28-0:38 (9.7 s): loop entrance after a clock time (no event)
+  enforcer 98.4    0       0       126.8    106.8   32.2    32.2              0:38-2:25 (106.8 s): fire guard after patrol.rerouted, fire.guard
+
+fail-enforcer-down.json  Failure (enforcer-down) at 1:37  final fight -  replay hash matches
+  decisions before the fight: 2 order moments, 1.2 a minute; longest stretch with no order: 0:35-1:37 (62 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 100 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    0       0       0       0        97.4    100     100               0:00-1:37 (97.4 s): nothing (idle to the end)
+  fixer    0       0       0       0        97.4    100     100               0:00-1:37 (97.4 s): nothing (idle to the end)
+  tech     0       0       0       0        97.4    100     100               0:00-1:37 (97.4 s): nothing (idle to the end)
+  enforcer 36.1    0       0       61.3     0       0       0                 -
+
+fail-entry-seen-camera.json  Failure (entry-seen-camera) at 4:42  final fight -  replay hash matches
+  decisions before the fight: 7 order moments, 1.5 a minute; longest stretch with no order: 3:43-4:42 (59.6 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 85.4 %
+  dead air before the fight (nobody walks, acts or fights): 91.8 s = 32.4 %; stretches ≥ 5 s: 0:17-0:28 (11.1 s, ended by an order on a clock time); 0:48-1:20 (32 s, ended by an order on a clock time); 3:54-4:42 (48.7 s, ended by fail.entry-seen-camera)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    18.2    62      0       0        202.7   71.7    71.7              2:03-4:42 (159.6 s): nothing (idle to the end)
+  fixer    16.8    100     0       0        166.1   58.7    58.7              0:00-1:21 (81.3 s): move d:Courtyard after a clock time (no event)
+  tech     0       0       0       0        282.9   100     100               0:00-4:42 (282.9 s): nothing (idle to the end)
+  enforcer 52.2    0       0       0        230.7   81.5    81.5              2:02-3:43 (100.7 s): move d:Office entrance after turn.help.turned, call.waitress
+
+fail-entry-seen-guard.json  Failure (entry-seen-guard) at 3:52  final fight -  replay hash matches
+  decisions before the fight: 6 order moments, 1.5 a minute; longest stretch with no order: 2:53-3:52 (59.6 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 65.9 %
+  dead air before the fight (nobody walks, acts or fights): 48.7 s = 20.9 %; stretches ≥ 5 s: 3:04-3:52 (48.7 s, ended by fail.entry-seen-guard)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    18.2    62      0       0        152.7   65.6    65.6              2:03-3:52 (109.6 s): nothing (idle to the end)
+  fixer    16.8    50      0       0        166.1   71.3    71.3              0:00-1:21 (81.3 s): move d:Courtyard after a clock time (no event)
+  tech     28.3    62      142.6   0        0       0       0                 -
+  enforcer 52.2    0       0       0        180.7   77.6    77.6              0:00-1:21 (81.3 s): move after a clock time (no event)
+
+fail-entry-seen-patrol.json  Failure (entry-seen-patrol) at 4:40  final fight -  replay hash matches
+  decisions before the fight: 7 order moments, 1.5 a minute; longest stretch with no order: 3:43-4:40 (57.1 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 71.6 %
+  dead air before the fight (nobody walks, acts or fights): 46.2 s = 16.5 %; stretches ≥ 5 s: 3:54-4:40 (46.2 s, ended by fail.entry-seen-patrol)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    18.2    62      0       0        200.2   71.4    71.4              2:03-4:40 (157.1 s): nothing (idle to the end)
+  fixer    16.8    100     0       0        163.6   58.3    58.3              0:00-1:21 (81.3 s): move d:Courtyard after a clock time (no event)
+  tech     28.3    62      190.1   0        0       0       0                 -
+  enforcer 52.2    0       0       0        228.2   81.4    81.4              2:02-3:43 (100.7 s): move d:Office entrance after turn.help.turned, call.waitress
+
+fail-rivals-reach-vale.json  Failure (rivals-reach-vale) at 6:10  final fight -  replay hash matches
+  decisions before the fight: 5 order moments, 0.8 a minute; longest stretch with no order: 2:51-6:10 (198.9 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 84.9 %
+  dead air before the fight (nobody walks, acts or fights): 195.2 s = 52.8 %; stretches ≥ 5 s: 2:54-6:10 (195.2 s, ended by vale.at-car, fail.rivals-reach-vale)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    59.5    62      0       0        248.5   67.2    67.2              2:54-6:10 (195.2 s): nothing (idle to the end)
+  fixer    59.1    50      0       0        260.9   70.5    70.5              2:51-6:10 (198.9 s): nothing (idle to the end)
+  tech     0       0       0       0        370     100     100               0:00-6:10 (370 s): nothing (idle to the end)
+  enforcer 41.5    0       0       0        328.5   88.8    88.8              0:41-6:10 (328.5 s): nothing (idle to the end)
+
+fail-take-seen-camera.json  Failure (abduction-seen-camera) at 6:10  final fight -  replay hash matches
+  decisions before the fight: 2 order moments, 0.3 a minute; longest stretch with no order: 0:00-5:20 (320 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 84.7 %
+  dead air before the fight (nobody walks, acts or fights): 265.3 s = 71.7 %; stretches ≥ 5 s: 1:00-5:20 (259.3 s, ended by an order on a clock time); 6:04-6:10 (6 s, ended by vale.at-car, fail.abduction-seen-camera)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    60.7    44      0       0        265.3   71.7    71.7              1:00-5:20 (259.3 s): mislead rivals after a clock time (no event)
+  fixer    0       0       0       0        370     100     100               0:00-6:10 (370 s): nothing (idle to the end)
+  tech     0       0       0       0        370     100     100               0:00-6:10 (370 s): nothing (idle to the end)
+  enforcer 56.6    0       0       0        313.4   84.7    84.7              0:56-6:10 (313.4 s): nothing (idle to the end)
+
+fail-vale-dead.json  Failure (vale-dead) at 6:12  final fight -  replay hash matches
+  decisions before the fight: 2 order moments, 0.3 a minute; longest stretch with no order: 0:00-6:10 (370 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 100 %
+  dead air before the fight (nobody walks, acts or fights): 313.4 s = 84.2 %; stretches ≥ 5 s: 0:56-6:10 (313.4 s, ended by vale.at-car, fire.councillor)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    0       0       0       0        372     100     100               0:00-6:12 (372 s): nothing (idle to the end)
+  fixer    0       0       0       0        372     100     100               0:00-6:12 (372 s): nothing (idle to the end)
+  tech     0       0       0       0        372     100     100               0:00-6:12 (372 s): nothing (idle to the end)
+  enforcer 56.6    0       0       2        313.4   84.2    84.2              0:56-6:10 (313.4 s): fire councillor after vale.at-car, fire.councillor
+
+fail-vale-leaves.json  Failure (vale-leaves) at 8:30  final fight -  replay hash matches
+  decisions before the fight: 2 order moments, 0.2 a minute; longest stretch with no order: 4:10-8:30 (260 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 100 %
+  dead air before the fight (nobody walks, acts or fights): 405.3 s = 79.5 %; stretches ≥ 5 s: 1:00-4:10 (189.3 s, ended by an order on a clock time); 4:54-8:30 (216 s, ended by fail.vale-leaves)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    60.7    44      0       0        405.3   79.5    79.5              4:54-8:30 (216 s): nothing (idle to the end)
+  fixer    0       0       0       0        510     100     100               0:00-8:30 (510 s): nothing (idle to the end)
+  tech     0       0       0       0        510     100     100               0:00-8:30 (510 s): nothing (idle to the end)
+  enforcer 0       0       0       0        510     100     100               0:00-8:30 (510 s): nothing (idle to the end)
+
+fight-loud-enforcer-down.json  Failure (enforcer-down) at 3:57  final fight 3:15  replay hash matches
+  decisions before the fight: 6 order moments, 1.8 a minute; longest stretch with no order: 2:07-3:15 (68 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 90.2 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    0       0       0       0        207.5   87.4    100               0:00-3:27 (207.5 s): (no order: the fight drew it) after scout.hit.fight, scout.down
+  fixer    0       0       0       0        201.8   85      100               0:00-3:21 (201.8 s): (no order: the fight drew it) after fixer.hit.fight, fixer.down
+  tech     13.6    107     116.7   0        0       0       0                 -
+  enforcer 63.8    68      0       4        101.5   42.8    51.9              0:19-2:00 (101.5 s): fire guard after patrol.rerouted, fire.guard
+
+fight-safe-rivals-reach-vale.json  Failure (rivals-reach-vale) at 7:30  final fight 6:48  replay hash matches
+  decisions before the fight: 7 order moments, 1 a minute; longest stretch with no order: 2:51-5:20 (148.9 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 86.3 %
+  dead air before the fight (nobody walks, acts or fights): 151.2 s = 37.1 %; stretches ≥ 5 s: 2:54-5:20 (145.2 s, ended by an order on a clock time); 6:04-6:10 (6 s, ended by vale.at-car)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    59.5    106     0       0        285.4   63.3    59.4              2:54-5:20 (145.2 s): mislead rivals after a clock time (no event)
+  fixer    59.1    50      0       0        341.8   75.8    73.3              2:51-7:30 (279.8 s): nothing (idle to the end)
+  tech     0       0       0       0        442.5   98.1    100               0:00-7:22 (442.5 s): (no order: the fight drew it) after tech.hit.fight, tech.down
+  enforcer 80.3    38      4.1     0        328.5   72.9    80.5              0:41-6:10 (328.5 s): take after vale.at-car
+
+loud-fast.json  Success at 3:53  final fight 3:15  replay hash matches
+  decisions before the fight: 6 order moments, 1.8 a minute; longest stretch with no order: 2:07-3:15 (68 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 51.9 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    11.4    0       0       81.5     120.6   51.7    61.7              0:00-2:00 (120.6 s): move after patrol.rerouted, fire.guard
+  fixer    5       0       0       107.5    120.6   51.7    61.7              0:00-2:00 (120.6 s): move after patrol.rerouted, fire.guard
+  tech     40.6    107     6.8     33.9     44.8    19.2    22.9              2:30-3:15 (44.8 s): draw after enter.out, fight.loud, ai.join, ai.cover, ai.join
+  enforcer 59.6    68      0       4        101.5   43.5    51.9              0:19-2:00 (101.5 s): fire guard after patrol.rerouted, fire.guard
+
+loud.json  Success at 3:53  final fight 3:15  replay hash matches
+  decisions before the fight: 6 order moments, 1.8 a minute; longest stretch with no order: 2:07-3:15 (68 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 51.9 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    11.4    0       0       81.5     120.6   51.7    61.7              0:00-2:00 (120.6 s): move after patrol.rerouted, fire.guard
+  fixer    13      3       8.6     87.9     120.6   51.7    61.7              0:00-2:00 (120.6 s): move after patrol.rerouted, fire.guard
+  tech     40.6    107     6.8     33.9     44.8    19.2    22.9              2:30-3:15 (44.8 s): draw after enter.out, fight.loud, ai.join, ai.cover, ai.join
+  enforcer 59.6    68      0       4        101.5   43.5    51.9              0:19-2:00 (101.5 s): fire guard after patrol.rerouted, fire.guard
+
+route-a-pressure.json  Success at 3:31  final fight 2:38  replay hash matches
+  decisions before the fight: 9 order moments, 3.4 a minute; longest stretch with no order: 0:29-1:11 (42 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 6.7 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    27.3    62      0       21       100.7   47.7    43.7              2:04-3:10 (65.7 s): panic after rivals.arrive, fight.ambush
+  fixer    25.2    35      0       21       129.8   61.5    62                2:03-3:10 (66.4 s): panic after rivals.arrive, fight.ambush
+  tech     41      107     0       21       42      19.9    6.7               2:28-3:10 (42 s): panic after rivals.arrive, fight.ambush
+  enforcer 91.5    38      7.1     0.6      73.8    35      46.5              0:41-1:46 (65.5 s): move d:Office entrance after turn.pressure.turned, call.waitress
+
+route-a.json  Success at 4:27  final fight 3:34  replay hash matches
+  decisions before the fight: 10 order moments, 2.8 a minute; longest stretch with no order: 2:01-2:51 (50 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 28.8 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    27.3    62      0       21       156.8   58.7    58.4              1:11-2:51 (100 s): move crew:scout after turn.help.turned, call.waitress
+  fixer    25.2    100     0       21       120.9   45.3    41.7              0:08-1:11 (63.4 s): turn waitress after scout.listen.heard
+  tech     41      107     56.1    21       42      15.7    4.9               3:24-4:06 (42 s): panic after fight.ambush
+  enforcer 90.9    38      7.1     0.6      130.5   48.9    60.8              0:41-2:51 (130.5 s): move d:Office entrance after turn.help.turned, call.waitress
+
+route-b-block.json  Success at 7:40  final fight 6:48  replay hash matches
+  decisions before the fight: 9 order moments, 1.3 a minute; longest stretch with no order: 3:54-6:10 (136 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 73.3 %
+  dead air before the fight (nobody walks, acts or fights): 84.5 s = 20.7 %; stretches ≥ 5 s: 3:00-3:10 (9.4 s, ended by rivals.arrive); 4:54-6:10 (75.1 s, ended by vale.at-car)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    120.4   106     0       21       213     46.3    44.5              4:54-7:19 (144.5 s): panic after fight.ambush, ai.cover, fight.guard
+  fixer    118.2   50      0       21       271.2   58.9    58.8              3:00-7:19 (258.8 s): panic after fight.ambush, ai.cover, fight.guard
+  tech     0       0       0       21       439.4   95.4    100               0:00-7:19 (439.4 s): panic after fight.ambush, ai.cover, fight.guard
+  enforcer 86.2    38      7.1     0.6      328.5   71.4    80.5              0:41-6:10 (328.5 s): take after vale.at-car
+
+route-b.json  Success at 7:40  final fight 6:48  replay hash matches
+  decisions before the fight: 9 order moments, 1.3 a minute; longest stretch with no order: 3:54-6:10 (136 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 73.3 %
+  dead air before the fight (nobody walks, acts or fights): 84.5 s = 20.7 %; stretches ≥ 5 s: 3:00-3:10 (9.4 s, ended by rivals.arrive); 4:54-6:10 (75.1 s, ended by vale.at-car)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    120.4   106     0       21       213     46.3    44.5              4:54-7:19 (144.5 s): panic after fight.ambush, ai.cover, fight.guard
+  fixer    118.2   50      0       21       271.2   58.9    58.8              3:00-7:19 (258.8 s): panic after fight.ambush, ai.cover, fight.guard
+  tech     0       0       0       21       439.4   95.4    100               0:00-7:19 (439.4 s): panic after fight.ambush, ai.cover, fight.guard
+  enforcer 86.2    38      7.1     0.6      328.5   71.4    80.5              0:41-6:10 (328.5 s): take after vale.at-car
+
+withdraw.json  Withdrawn at 0:30  final fight -  replay hash matches
+  decisions before the fight: 0 order moments, 0 a minute; longest stretch with no order: 0:00-0:00 (0 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 100 %
+  dead air before the fight (nobody walks, acts or fights): 30 s = 100 %; stretches ≥ 5 s: 0:00-0:30 (30 s, ended by withdraw)
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    0       0       0       0        30      100     100               0:00-0:30 (30 s): nothing (idle to the end)
+  fixer    0       0       0       0        30      100     100               0:00-0:30 (30 s): nothing (idle to the end)
+  tech     0       0       0       0        30      100     100               0:00-0:30 (30 s): nothing (idle to the end)
+  enforcer 0       0       0       0        30      100     100               0:00-0:30 (30 s): nothing (idle to the end)
+
+mean over the 6 winning routes (loud-fast.json, loud.json, route-a-pressure.json, route-a.json, route-b-block.json, route-b.json); the fail scripts are minimal fixtures, not play:
+  scout idle 50.4 % (pre-fight 52.4 %) · fixer idle 54.7 % (pre-fight 57.5 %) · tech idle 44.1 % (pre-fight 42.9 %) · enforcer idle 52.3 % (pre-fight 62 %) · one-thread 47.7 % · dead air 6.9 % of pre-fight time

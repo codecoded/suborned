@@ -78,7 +78,11 @@ namespace Suborned.Play
             FeedTrack();
         }
 
-        string Name(string key) => key switch { "" => "", "hostiles" => "the hostiles", _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key };
+        string Name(string key) => key switch
+        {
+            "" => "", "hostiles" => "the hostiles", _ when key.StartsWith("camera:") => $"the {key[7..]} camera",
+            _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key,
+        };
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {

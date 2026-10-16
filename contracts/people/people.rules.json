@@ -272,8 +272,8 @@
     "test": { "left": ["fear", "resentment"], "op": ">", "right": ["bravery", "loyalty"] },
     "deterministic": true,
     "gives": "known-facts",
-    "facts": ["fixer-face", "cell-car", "place-time"],
-    "src": "§04 talker [S]: questioned, a person gives up known facts if fear + resentment > bravery + loyalty (deterministic). Facts: saw Fixer's face, knows cell car, saw where/when",
+    "facts": ["fixer-face", "enforcer-face", "cell-car", "place-time"],
+    "src": "§04 talker [S]: questioned, a person gives up known facts if fear + resentment > bravery + loyalty (deterministic). Facts: saw Fixer's face, saw the Enforcer's face (Sky 2026-10-16 D3, brief 013: a witness of a takedown, or a victim who saw him coming), knows cell car, saw where/when",
     "lie": {
       "when": { "talker": false, "helped": true, "braveryAtLeast": 1 },
       "gives": { "hero": "false-lead", "otherwise": "nothing" },

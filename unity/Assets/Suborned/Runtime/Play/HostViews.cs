@@ -7,16 +7,18 @@ namespace Suborned.Play
 {
     /// <summary>What the host draws from the engine each frame (brief 011 D, graybox): the cell's four operatives, the four cast roles, the
     /// patrol, the rivals, the response unit, the official and getaway cars, and the markers a click can hit (the public door, the Tech's
-    /// cabinet, the two cameras). People are capsules as the people layer draws them (1.75 m, ivory head); signals are unlit lines on the ground
-    /// (§10: cones red, guard amber, rivals violet): the cameras' cones, the guard's and the rivals' sight. Positions are the engine's, eased
-    /// between its 10 Hz ticks. Nothing here feeds back into the engine.</summary>
+    /// cabinet, the two cameras). People are capsules as the people layer draws them (1.75 m, ivory head). Sight is the Scout's skill (Sky
+    /// 2026-10-16; Glyph's review §3.4): no cone is drawn by default; the host asks for the fans it wants (ShowFans) and each is drawn as the
+    /// engine's own sight polygon (Game.ConeFan): a flat fill at 30 %, a crisp rim, the far edge (the fan's reach points) in its kind's cue
+    /// (camera, patrol and officers dashed red, the camera with a scan edge and two fading ghosts; the guard amber with chevrons; the rivals
+    /// violet with diamonds), unlit; grey when the watcher sees nothing now. Positions are the engine's, eased between its 10 Hz ticks.
+    /// Nothing here feeds back into the engine.</summary>
     public sealed class HostViews
     {
         public const float Tall = 1.75f, Radius = 0.28f, HeadD = 0.3f;
         readonly Transform root; readonly SiteFrame frame; readonly HandoverHost host;
-        readonly Material head, ring, select, red, amber, violet, grey;
+        readonly Material head, ring, select;
         readonly Dictionary<string, (Transform t, Vector3 from, Vector3 to, bool shown)> things = new();
-        readonly Dictionary<string, LineRenderer> lines = new();
         static Mesh capsule, sphere, cylinder, cube;
 
         public HostViews(HandoverHost host, Transform root, SiteFrame frame)
@@ -24,7 +26,6 @@ namespace Suborned.Play
             this.host = host; this.root = root; this.frame = frame;
             capsule ??= Prim(PrimitiveType.Capsule); sphere ??= Prim(PrimitiveType.Sphere); cylinder ??= Prim(PrimitiveType.Cylinder); cube ??= Prim(PrimitiveType.Cube);
             head = Lit(host.headColour); ring = Unlit(Color.white); select = Unlit(host.selectColour);
-            red = Unlit(host.coneColour); amber = Unlit(host.guardColour); violet = Unlit(host.rivalColour); grey = Unlit(new Color(0.55f, 0.55f, 0.55f));
             var g = host.Game; var s = g.S;
             for (int i = 0; i < 4; i++) Person("op/" + Op.Name((OpId)i), host.cellColour, true);
             Person("waitress", host.waitressColour); Person("driver", host.civicColour); Person("guard", host.civicColour); Person("councillor", host.civicColour);
@@ -41,9 +42,7 @@ namespace Suborned.Play
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
-                Line("cone/" + c.Id, red);
             }
-            Line("cone/guard", amber); Line("cone/rivals", violet);
             crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
             for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, true); // hoverable: "passer-by"
             for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
@@ -116,7 +115,6 @@ namespace Suborned.Play
         }
         const int MaxHostiles = 8;
         static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" }, DestKeys = { "dest/0", "dest/1", "dest/2", "dest/3" };
-        readonly Dictionary<string, string> coneKeys = new();
         string[] crowdKeys = System.Array.Empty<string>(), hostileKeys = System.Array.Empty<string>(); // no string building per tick
         readonly Dictionary<Pt, int> stacked = new();
 
@@ -174,19 +172,7 @@ namespace Suborned.Play
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
                 if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/")) t.position = Vector3.Lerp(from, to, alpha);
             }
-            var g = host.Game; var s = g.S;
-            foreach (var c in s.Cameras)
-            {
-                bool live = c.Id == "entrance" ? !g.LoopOn : g.PickupCameraLive();
-                if (!coneKeys.TryGetValue(c.Id, out var ck)) coneKeys[c.Id] = ck = "cone/" + c.Id;
-                Cone(ck, c.At, c.Facing, c.Reach, c.Half, live ? red : grey);
-            }
-            var gp = g.GuardPose();
-            if (gp.HasValue) { var (pos, f, phase) = gp.Value; bool door = phase == "door"; Cone("cone/guard", pos, f, door ? g.R.DoorReachCm : g.R.FacingReachCm, door ? g.R.DoorHalfCm : g.R.FacingHalfCm, amber); }
-            else Hide("cone/guard");
-            var rp = g.RivalsPose();
-            if (rp.HasValue && g.RivalsDrawn) Cone("cone/rivals", rp.Value.pos, rp.Value.facing, g.R.RivReachCm, g.R.RivHalfCm, violet);
-            else Hide("cone/rivals");
+            var g = host.Game;
             for (int i = 0; i < 4; i++)
             {
                 var r = things[SelKeys[i]].t; var op = things[OpKeys[i]];
@@ -243,24 +229,197 @@ namespace Suborned.Play
             things[key] = (t, Vector3.zero, Vector3.zero, false);
         }
 
-        void Line(string key, Material m)
+        // ---------------------------------------------------------------- sight fans (the Scout's skill)
+
+        sealed class FanDraw
         {
-            var go = new GameObject(key); go.transform.SetParent(root, false);
-            var lr = go.AddComponent<LineRenderer>(); lr.sharedMaterial = m; lr.useWorldSpace = true; lr.loop = true; lr.positionCount = 3;
-            lr.widthMultiplier = 0.14f; lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; lr.receiveShadows = false; lr.alignment = LineAlignment.TransformZ;
-            go.transform.rotation = Quaternion.Euler(90f, 0f, 0f); // lie flat on the ground
-            lines[key] = lr;
+            public GameObject Go; public Mesh Fill, Rim; public MeshRenderer FillR, RimR; public Fan For; public bool Live; public string Kind = "";
+            public readonly LineRenderer[] Scan = new LineRenderer[3]; public float A0, A1; public Vector3 Hub; public readonly List<Vector3> Ring = new();
+        }
+        readonly List<FanDraw> fans = new();
+        readonly Dictionary<(Color, float), Material> fanMats = new();
+        readonly List<Vector3> verts = new(); readonly List<int> tris = new();
+        const float FillAlpha = 0.3f, RimW = 0.06f, FillY = 0.05f, RimY = 0.07f;
+        static readonly Color Grey = new(0.55f, 0.55f, 0.55f);
+
+        /// <summary>The fans to draw this frame (the host's choice: the focused watcher's, or every learned one while Alt is held); the rest hide.
+        /// Each mesh is rebuilt only when the engine hands back a different Fan (its cache keeps one per pose) or its Live flag flips.</summary>
+        public void ShowFans(IReadOnlyList<Fan> list)
+        {
+            int n = list?.Count ?? 0;
+            for (int i = 0; i < n; i++)
+            {
+                var f = list[i]; if (fans.Count <= i) fans.Add(NewFan(i));
+                var d = fans[i];
+                if (!d.Go.activeSelf) d.Go.SetActive(true);
+                if (!ReferenceEquals(d.For, f) || d.Live != f.Live) Build(d, f);
+                Scan(d);
+            }
+            for (int i = n; i < fans.Count; i++) if (fans[i].Go.activeSelf) { fans[i].Go.SetActive(false); fans[i].For = null; }
         }
 
-        /// <summary>A sight cone as the engine tests it (Geo.InCone): ahead up to reach, half `half` wide at its end.</summary>
-        void Cone(string key, Pt at, Pt facing, int reach, int half, Material m)
+        FanDraw NewFan(int i)
         {
-            var lr = lines[key]; if (!lr.enabled) lr.enabled = true;
-            if (lr.sharedMaterial != m) lr.sharedMaterial = m;
-            var o = frame.World(at) + Vector3.up * 0.06f; var f = frame.Dir(facing); var side = new Vector3(-f.z, 0f, f.x);
-            lr.SetPosition(0, o); lr.SetPosition(1, o + f * (reach / 100f) + side * (half / 100f)); lr.SetPosition(2, o + f * (reach / 100f) - side * (half / 100f));
+            var d = new FanDraw { Go = new GameObject("fan/" + i) }; d.Go.transform.SetParent(root, false);
+            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim");
+            for (int k = 0; k < 3; k++)
+            {
+                var lr = d.Scan[k] = NewLine("scan" + k, select, k == 0 ? RimW * 0.8f : RimW * 1.6f); lr.transform.SetParent(d.Go.transform, false);
+                lr.alignment = LineAlignment.TransformZ; lr.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            }
+            return d;
         }
-        void Hide(string key) { if (lines[key].enabled) lines[key].enabled = false; }
+
+        static (Mesh, MeshRenderer) MeshPart(Transform parent, string name)
+        {
+            var go = new GameObject(name); go.transform.SetParent(parent, false);
+            var mesh = new Mesh { name = name }; mesh.MarkDynamic();
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var r = go.AddComponent<MeshRenderer>(); r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; r.receiveShadows = false;
+            return (mesh, r);
+        }
+
+        /// <summary>A signal material: the fan template (transparent unlit, both faces) at an alpha, or the opaque unlit template at alpha 1.</summary>
+        Material FanMat(Color c, float alpha)
+        {
+            if (fanMats.TryGetValue((c, alpha), out var m)) return m;
+            var tpl = alpha < 1f && host.fanTemplate ? host.fanTemplate : host.unlitTemplate;
+            m = new Material(tpl); m.SetColor("_BaseColor", new Color(c.r, c.g, c.b, alpha)); if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f);
+            return fanMats[(c, alpha)] = m;
+        }
+
+        Color KindColour(string kind) => kind switch { "guard" => host.guardColour, "rivals" => host.rivalColour, _ => host.coneColour }; // §10: cones red, guard amber, rivals violet
+
+        void Build(FanDraw d, Fan f)
+        {
+            d.For = f; d.Live = f.Live; d.Kind = f.Kind;
+            var c = f.Live ? KindColour(f.Kind) : Grey;
+            d.FillR.sharedMaterial = FanMat(c, FillAlpha); d.RimR.sharedMaterial = FanMat(c, 1f);
+            d.Scan[0].sharedMaterial = FanMat(c, 1f); d.Scan[1].sharedMaterial = FanMat(c, 0.45f); d.Scan[2].sharedMaterial = FanMat(c, 0.22f);
+            var pts = f.Points; int n = pts.Length;
+            d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
+            d.Hub = frame.World(f.At);
+            // the fill: a fan of triangles from the watcher (the engine's polygon is star-shaped round it: its rays start there)
+            verts.Clear(); tris.Clear();
+            if (n >= 3)
+            {
+                verts.Add(d.Hub + Vector3.up * FillY);
+                for (int i = 0; i < n; i++) verts.Add(d.Ring[i] + Vector3.up * FillY);
+                for (int i = 0; i < n; i++) { tris.Add(0); tris.Add(1 + i); tris.Add(1 + (i + 1) % n); }
+            }
+            d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
+            // the rim: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue
+            verts.Clear(); tris.Clear(); float dash = 0f;
+            for (int i = 0; i < n && n >= 3; i++)
+            {
+                int j = (i + 1) % n; Vector3 a = d.Ring[i] + Vector3.up * RimY, b = d.Ring[j] + Vector3.up * RimY;
+                bool far = f.Stop.Length == n && f.Stop[i] == "reach" && f.Stop[j] == "reach";
+                if (!far) { Quad(a, b, RimW); continue; }
+                var outward = Flat((a + b) * 0.5f - d.Hub).normalized;
+                float len = Vector3.Distance(a, b);
+                switch (f.Kind)
+                {
+                    case "guard":   // chevrons marching the way he faces, on a hairline
+                        Quad(a, b, RimW * 0.5f);
+                        for (; dash < len; dash += 0.7f) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f);
+                        dash -= len; break;
+                    case "rivals":  // diamond ticks
+                        Quad(a, b, RimW * 0.5f);
+                        for (; dash < len; dash += 0.8f) Diamond(Vector3.Lerp(a, b, dash / len), outward, 0.3f);
+                        dash -= len; break;
+                    default:        // camera, patrol, officers: a dashed far edge (0.4 m on, 0.3 m off), the phase carried along the arc
+                        for (float t = -dash; t < len; t += 0.7f) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + 0.4f); if (s1 > s0) Quad(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), RimW); }
+                        dash = (dash + len) % 0.7f; break;
+                }
+            }
+            if (!f.Live && n >= 3) Hatch(d.Ring); // a camera that sees nothing now (looped): grey and hatched (Glyph §3.4)
+            d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
+            // the camera's scan sweeps between its outermost reach points
+            d.A0 = d.A1 = 0f;
+            if (f.Kind == "camera" && n >= 3)
+            {
+                var fwd = Flat(frame.Dir(f.Facing)); float lo = float.MaxValue, hi = float.MinValue;
+                for (int i = 0; i < n; i++) if (f.Stop.Length == n && f.Stop[i] == "reach") { float a = Vector3.SignedAngle(fwd, Flat(d.Ring[i] - d.Hub), Vector3.up); lo = Mathf.Min(lo, a); hi = Mathf.Max(hi, a); }
+                if (lo < hi) { d.A0 = lo; d.A1 = hi; }
+            }
+        }
+
+        /// <summary>The camera's scan edge and its two fading ghosts: from the lens to where the fan ends along a sweeping bearing.</summary>
+        void Scan(FanDraw d)
+        {
+            bool on = d.Kind == "camera" && d.Live && d.A1 > d.A0;
+            for (int k = 0; k < 3; k++)
+            {
+                var lr = d.Scan[k];
+                if (!on) { if (lr.enabled) lr.enabled = false; continue; }
+                float t = Time.unscaledTime * 0.9f - k * 0.18f, s = 0.5f + 0.5f * Mathf.Sin(t);
+                var fwd = Flat(frame.Dir(d.For.Facing)); var dir = Quaternion.AngleAxis(Mathf.Lerp(d.A0, d.A1, s), Vector3.up) * fwd;
+                if (!Exit(d, dir, out var end)) { lr.enabled = false; continue; }
+                lr.positionCount = 2; lr.SetPosition(0, d.Hub + Vector3.up * (RimY + 0.005f)); lr.SetPosition(1, end + Vector3.up * (RimY + 0.005f)); lr.enabled = true;
+            }
+        }
+
+        /// <summary>Where a ray from the watcher leaves its fan (the farthest crossing of the polygon's edges, on the ground plane).</summary>
+        static bool Exit(FanDraw d, Vector3 dir, out Vector3 end)
+        {
+            float best = -1f; end = d.Hub; var o = new Vector2(d.Hub.x, d.Hub.z); var r = new Vector2(dir.x, dir.z); int n = d.Ring.Count;
+            for (int i = 0; i < n; i++)
+            {
+                var a = new Vector2(d.Ring[i].x, d.Ring[i].z); var b = new Vector2(d.Ring[(i + 1) % n].x, d.Ring[(i + 1) % n].z); var e = b - a;
+                float den = r.x * e.y - r.y * e.x; if (Mathf.Abs(den) < 1e-6f) continue;
+                var w = a - o; float t = (w.x * e.y - w.y * e.x) / den, u = (w.x * r.y - w.y * r.x) / den;
+                if (t > 0.05f && u >= 0f && u <= 1f && t > best) { best = t; end = Vector3.Lerp(d.Ring[i], d.Ring[(i + 1) % n], u); }
+            }
+            return best > 0f;
+        }
+
+        static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
+        readonly List<float> hatchCuts = new();
+        /// <summary>Diagonal hatching across the fan (0.9 m apart, hairline): each line of x − z = c is cut by the polygon's edges and drawn
+        /// between pairs of crossings (even-odd), so it stays inside the notched shape.</summary>
+        void Hatch(List<Vector3> ring)
+        {
+            int n = ring.Count; float lo = float.MaxValue, hi = float.MinValue, y = 0f;
+            for (int i = 0; i < n; i++) { float c = ring[i].x - ring[i].z; lo = Mathf.Min(lo, c); hi = Mathf.Max(hi, c); y += ring[i].y / n; }
+            y += RimY;
+            for (float c = Mathf.Ceil(lo / 0.9f) * 0.9f; c < hi; c += 0.9f)
+            {
+                hatchCuts.Clear();
+                for (int i = 0; i < n; i++)
+                {
+                    var a = ring[i]; var b = ring[(i + 1) % n]; float ca = a.x - a.z - c, cb = b.x - b.z - c;
+                    if ((ca < 0f) == (cb < 0f)) continue;
+                    hatchCuts.Add(Mathf.Lerp(a.x + a.z, b.x + b.z, ca / (ca - cb))); // position along the line (x + z)
+                }
+                hatchCuts.Sort();
+                for (int k = 0; k + 1 < hatchCuts.Count; k += 2)
+                {
+                    float s0 = hatchCuts[k], s1 = hatchCuts[k + 1];
+                    Quad(new Vector3((s0 + c) * 0.5f, y, (s0 - c) * 0.5f), new Vector3((s1 + c) * 0.5f, y, (s1 - c) * 0.5f), RimW * 0.5f);
+                }
+            }
+        }
+
+        void Quad(Vector3 a, Vector3 b, float w)
+        {
+            var side = Vector3.Cross(Vector3.up, Flat(b - a)).normalized * (w * 0.5f); int k = verts.Count;
+            verts.Add(a - side); verts.Add(a + side); verts.Add(b + side); verts.Add(b - side);
+            tris.Add(k); tris.Add(k + 1); tris.Add(k + 2); tris.Add(k); tris.Add(k + 2); tris.Add(k + 3);
+        }
+
+        void Chevron(Vector3 p, Vector3 o, float s)
+        {
+            var side = Vector3.Cross(Vector3.up, o) * (s * 0.6f); var tip = p + o * (s * 0.5f); var back = p - o * (s * 0.3f);
+            Quad(back + side, tip, RimW); Quad(back - side, tip, RimW);
+        }
+
+        void Diamond(Vector3 p, Vector3 o, float s)
+        {
+            var side = Vector3.Cross(Vector3.up, o) * (s * 0.35f); int k = verts.Count;
+            verts.Add(p + o * (s * 0.5f)); verts.Add(p + side); verts.Add(p - o * (s * 0.5f)); verts.Add(p - side);
+            tris.Add(k); tris.Add(k + 1); tris.Add(k + 2); tris.Add(k); tris.Add(k + 2); tris.Add(k + 3);
+        }
 
         static Transform Part(Transform parent, string name, Mesh mesh, Material mat, Vector3 pos, Vector3 scale)
         {

@@ -19,6 +19,10 @@ namespace Suborned.Sim
                 case "startled": return w.At;
                 case "fleeing": return w.Run == null ? w.At : w.Run.At((long)(Tick - w.RunStart) * R.CrowdRunSpeed);
                 case "returning": return w.Run == null ? w.At : w.Run.At((long)(Tick - w.RunStart) * opSpeed);
+                // brief 013: a witness on the way to a phone or to look at a body, a victim staggering; at the phone they are off the street
+                case "reporting": case "checking": return w.Run == null || Tick < w.RunStart ? w.At : w.Run.At((long)(Tick - w.RunStart) * w.Pace);
+                case "woken": return w.Run == null || Tick < w.RunStart ? w.At : w.Run.At((long)(Tick - w.RunStart) * w.Pace);
+                case "calling": return S.CallBoxes.Exists(c => c.id == w.Refuge) ? w.At : (Pt?)null; // at a call box on the street (stoppable, Pulse §3.2); a staffed door's phone is inside
                 default: return null; // sheltered: off the street
             }
         }

@@ -2,5 +2,42 @@
  "recorded": {
   "4c830224c1b2c3ae": "dialogue run r017 (c01a2cf, dirty); dialogue run r018 (c01a2cf, dirty); dialogue run r019 (c01a2cf, dirty)"
  },
- "declared": {}
+ "declared": {
+  "bd1d1feac3e90c793bd7478f1a259e2e0ee7bf85a95c96a8ecb54f52adfa5e44": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   }
+  ],
+  "3f789a023b32ab37e3d07ead599db3527603bd098036f323bb8a493b6bd28e53": [
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   }
+  ],
+  "9974d7a2ec6215042ef3ab7add1d0116ada9efc54fe448f0fac09a2f9aafce0a": [
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   }
+  ],
+  "84bb70f3be0de94651ddfc3d8e0eda58d769aa54488acc1e9d32002f86556017": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Keel, Fable, Splice, 2026-10-16): contracts/rules rulebook.schema.ts and rulebook.ref.ts gained lockdown levels, witness.close, take.struggle, stash.doorHolds and campaign.cases.trailEq (Keel); cell.loop.targets and cell.take.struggle are optional in the schema so dialogue r017-r019's pinned rulebook parses (it predates them; rulebook.test.ts holds the live rulebook to having them; before this the replay stopped on a ZodError); text.schema.ts gained the door-held text (Fable); contracts/dialogue/dialogue.rules.json lexicon widths. No dialogue rule reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   }
+  ]
+ }
 }

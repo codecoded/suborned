@@ -8,7 +8,7 @@ import { Grid } from '../../../plan/street-geo';
 import { FLAT, beamBlock, footprintOf, quayBlock, ringGap, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
 
 /** The look surface a kind draws in (default `trim`). A crossing landing slab (only a plan without streetscape.crossings.strip has them now), a phone booth and a palm tub have their own, so the trim colour (brass, 14 Oct) does not decide them: each colour is one look.json value. */
-const SURF: Record<string, string> = { tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel', crossing: 'crossing', 'phone-booth': BOOTH, 'tub-palm': TUB };
+const SURF: Record<string, string> = { dumpster: 'enamel', 'police-post': 'enamel', tree: 'park', planter: 'park', 'tram-shelter': 'enamel', newsstand: 'enamel', 'kiosk-food': 'enamel', 'kiosk-flowers': 'enamel', 'kiosk-tickets': 'enamel', 'station-entrance': 'enamel', 'advertising-column': 'enamel', mailbox: 'enamel', 'vending-robot': 'enamel', 'civic-robot-dock': 'enamel', crossing: 'crossing', 'phone-booth': BOOTH, 'tub-palm': TUB };
 const sightOf = (s: unknown): StreetItem['sight'] => (String(s).startsWith('blocks') ? 'blocks' : String(s).startsWith('glazed') ? 'glazed' : 'open');
 
 /** Tree keep-clear (streetscape.trees.keepClear): a tree stays 3 m from a lamp and 2 m from a hydrant, centre to centre. */
@@ -70,8 +70,8 @@ export class Layer {
     this.items = this.items.filter(x => !gone.has(x.id));
   }
 
-  /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
-  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
+  /** Whether `add` would place an item of this kind here: the tests `add` makes before it places (free of neighbours and solids, out of the clear walking zone and the tram's space, 2 m off crossings and doors, off the quay). No change to the layer. */
+  fits(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean } = {}): boolean {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
     if (!o.force && !this.free(at, r, o.ground ?? true, kind)) return false;
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
@@ -82,6 +82,14 @@ export class Layer {
       if (kind === 'tree' && !o.force && beamBlock(this.ctx, at, ring, o.variant, z)) return false;
       if (!o.force && kind !== 'lamp' && kind !== 'mooring-cleat' && quayBlock(this.ctx, samples9(ring))) return false; // the quay edge is the water's (SF-14)
     }
+    return true;
+  }
+
+  /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
+  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
+    const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
+    if (!this.fits(kind, at, yaw, z, edge, o)) return false;
+    const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
     if (kind === 'crossing') this.crossings.push(ring);
     const staffed = c?.staffed && typeof c.staffed === 'object' ? { trade: o.trade ?? c.staffed.trade, occupation: c.staffed.occupation, hours: (Array.isArray(c.staffed.hours) ? c.staffed.hours : 'service') as [number, number] | 'service' } : undefined;
     if (o.uncounted) this.uncounted++;

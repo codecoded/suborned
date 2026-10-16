@@ -120,6 +120,8 @@ namespace Suborned.Sim
             if (Math.Max(a.X, b.X) < x0 || Math.Min(a.X, b.X) > x1 || Math.Max(a.Y, b.Y) < y0 || Math.Min(a.Y, b.Y) > y1) return false;
             return G.SegHitsPoly(a, b, Poly);
         }
+        /// <summary>The footprint's box meets the box [minX, maxX] × [minY, maxY] (a cheap first test).</summary>
+        public bool BoxMeets(int minX, int minY, int maxX, int maxY) => !(maxX < x0 || minX > x1 || maxY < y0 || minY > y1);
         public bool Contains(Pt p) => p.X >= x0 && p.X <= x1 && p.Y >= y0 && p.Y <= y1 && G.InPoly(p, Poly);
     }
 }

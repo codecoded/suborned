@@ -6,6 +6,10 @@
 //   probe                                       distances and windows on the real block (for writing scenarios)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
+//   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
+//   hashes [--start-text <t>] [--legacy-start]  every scenario's and route script's checkpoint hashes as JSON; --legacy-start leaves a fixed
+//                                               security level out of the start state (a behaviour-only comparison across brief 013); --start-text replaces the inputs
+//                                               hash in the start state (a behaviour-only comparison across an input edit: Keel, cones 2026-10-16)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -52,6 +56,8 @@ static class Program
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
+                case "fans": return Fans(inputs, args.Length > 1 && args[1] != "--crowd" ? int.Parse(args[1], CultureInfo.InvariantCulture) : 0, Array.IndexOf(args, "--crowd") > 0);
+                case "hashes": { int k = Array.IndexOf(args, "--start-text"); Start.LegacyCanonical = Array.IndexOf(args, "--legacy-start") > 0; Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0; }
                 case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
@@ -84,6 +90,57 @@ static class Program
             Console.WriteLine($"  start {Hash.Hex(g.StartHash)}  final {Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)}  checkpoints {g.Checkpoints.Count}  replay {(same ? "identical" : "DIFFERS")}");
         }
         return passed && same ? 0 : 1;
+    }
+
+    /// <summary>Every scenario's and recorded route script's checkpoints, with the start state's text given (default: the inputs hash).</summary>
+    static string Hashes(Engine.Inputs i, string root, string? startText)
+    {
+        string st = startText ?? i.Hash.ToString(CultureInfo.InvariantCulture);
+        var w = new JWriter().Obj().Prop("inputs", i.Hash.ToString(CultureInfo.InvariantCulture)).Prop("startText", st);
+        void put(string id, Game g) { w.OpenArr(id); foreach (var (t, h) in g.Checkpoints) w.Str(t.ToString(CultureInfo.InvariantCulture) + ":" + Hash.Hex(h)); w.Str("result:" + g.Result + ":" + g.FailCode); w.EndArr(); }
+        foreach (var sc in Scenarios.All)
+        {
+            var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd)); sc.Body(r); r.G.Finish(); put(sc.Id, r.G);
+        }
+        var files = new List<string>();
+        foreach (var d in new[] { "contracts/missions/handover/routes", "briefs/011/motive-fights" })
+            if (Directory.Exists(System.IO.Path.Combine(root, d))) foreach (var f in Directory.GetFiles(System.IO.Path.Combine(root, d), "*.json")) files.Add(f);
+        files.Sort(StringComparer.Ordinal);
+        foreach (var f in files)
+        {
+            var txt = File.ReadAllText(f); if (!txt.Contains("suborned.sim.script/1")) continue;
+            var sc = Script.Parse(txt); var g = new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd);
+            // Engine.Play with the given start text
+            var list = new List<(int idx, Order o)>(); for (int k = 0; k < sc.Orders.Count; k++) list.Add((k, sc.Orders[k]));
+            list.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.idx.CompareTo(b.idx));
+            int until = sc.Until <= 0 ? Game.T(i.SiteData.Over) : sc.Until;
+            foreach (var (_, o) in list) { if (o.Tick > until) break; g.RunTo(o.Tick); if (g.Over && g.Tick != o.Tick) break; if (g.Tick == o.Tick) g.Issue(o); }
+            g.RunTo(until); g.Finish();
+            put(System.IO.Path.GetRelativePath(root, f), g);
+        }
+        return w.EndObj().ToString();
+    }
+
+    /// <summary>The fans of an idle run at a tick, as JSON, and what building and reading them cost (Keel, cones 2026-10-16).</summary>
+    static int Fans(Engine.Inputs i, int tick, bool crowd)
+    {
+        var g = Engine.New(i); g.RunTo(tick);
+        var w = new JWriter().Obj().Prop("tick", g.Tick).Prop("crowd", crowd).OpenArr("fans");
+        foreach (var id in g.WatcherIds())
+        {
+            var f = g.ConeFan(id, crowd); if (f == null) continue;
+            w.Obj().Prop("watcher", f.Watcher).Prop("kind", f.Kind).Prop("live", f.Live).Prop("reach", f.Reach).Prop("points", f.Points.Length);
+            w.Key("poly").Raw("[" + string.Join(",", Array.ConvertAll(f.Points, p => $"[{p.X},{p.Y}]")) + "]");
+            w.Key("stop").Raw("[" + string.Join(",", Array.ConvertAll(f.Stop, x => "\"" + x + "\"")) + "]");
+            w.EndObj();
+        }
+        w.EndArr();
+        // cost: a cold build of every fan (a fresh game each time, so nothing is cached), and a warm read (cached by pose)
+        double coldMs = 0; for (int k = 0; k < 50; k++) { var h = Engine.New(i); h.RunTo(tick); var c = Stopwatch.StartNew(); foreach (var id in h.WatcherIds()) h.ConeFan(id, crowd); c.Stop(); coldMs += c.Elapsed.TotalMilliseconds; }
+        var warm = Stopwatch.StartNew(); for (int k = 0; k < 10000; k++) foreach (var id in g.WatcherIds()) g.ConeFan(id, crowd); warm.Stop();
+        w.Key("coldMsAllFans").Raw((coldMs / 50).ToString("0.0000", CultureInfo.InvariantCulture)).Key("warmUsAllFans").Raw((warm.Elapsed.TotalMilliseconds * 1000 / 10000).ToString("0.000", CultureInfo.InvariantCulture));
+        Console.WriteLine(w.EndObj().ToString());
+        return 0;
     }
 
     static bool Same(Game a, Game b)

@@ -1,0 +1,25 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Route G, fast (brief 013 D; Motive 013 §6.1 G-fast): route G with the patrol rerouted as soon as the loop holds and the guard knocked out the moment the patrol leaves (2:01). Half a minute earlier, but his 2:30 mark is missed while the Enforcer is still inside: the gamble Motive names (robots on the forecourt as he comes out), which the dial's 60 m robot reach and the patrol's reroute answer on this block.",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {"op": "tech", "do": "move", "to": "cabinet", "run": true, "why": "to the control cabinet"},
+  {"op": "enforcer", "do": "move", "to": [4850, -2300], "why": "beside the Office approach, out of the guard's door cone"},
+  {"op": "scout", "do": "move", "to": "d:Office approach", "why": "to where the guard can be watched"},
+  {"op": "fixer", "do": "move", "to": "crew:fixer", "why": "no one to turn on this route: the Fixer waits armed at the getaway car"},
+  {"op": "scout", "do": "watch", "target": "guard", "why": "the guard's sight and his check-in marks (1:00, 2:30, 4:00): the takedown card reads 'sees it coming: no' and 'next mark' from this"},
+  {"op": "tech", "do": "loop", "target": "entrance", "label": "loop", "why": "the entrance camera sees the guard's post all mission"},
+  {"op": "scout", "do": "move", "to": "crew:scout", "why": "the watch done, to the getaway car"},
+  {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute", "why": "as soon as the loop holds"},
+  {"op": "enforcer", "do": "move", "to": [5175, -2880], "why": "beside the guard, outside his door cone (he faces the square): from here he doesn't see it coming", "after": ["reroute"]},
+  {"op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout", "when": "patrol.rerouted", "label": "td", "why": "the moment the patrol leaves the door's sweep (2:01); the next mark is 2:30"},
+  {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter"},
+  {"op": "tech", "do": "move", "to": "crew:tech", "after": ["enter"], "why": "the loop is no longer needed once the Enforcer is inside"},
+  {"op": "enforcer", "do": "move", "to": [2400, -6000], "after": ["enter"], "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"},
+  {"op": "cell", "do": "panic", "after": ["enter"], "why": "the ambush: the armed cell fires at will"},
+  {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.over", "label": "out", "why": "the last rival down: to the car"},
+  {"op": "enforcer", "do": "extract", "after": ["out"]}
+ ]
+}

@@ -1,0 +1,147 @@
+# Pulse 013 probe output, 2026-10-16. Engine as of the working tree; r016 cast; no orders (walkers on their routines). See pulse-witnesses.md.
+
+## report-point coverage (walking distance to the nearest door, 4 m samples of the walkable grid; THRESH=4000 = every sample within 40 m)
+report points (doors): door:cafe-entrance@(-10.3,-29.0), door:office-entrance@(51.8,-30.0), door:official-entrance@(76.3,-30.0)
+walkable samples (4 m): 624
+doors only: median 30.2 m, p90 43.1 m, max 55.7 m; within 25 m 31%, within 40 m 84%
+box candidates (beside a wall or kerb): 137
+  + box-1 at (73.0,15.0) covers 52 more; worst now 53.6 m
+  + box-2 at (-19.0,-13.0) covers 22 more; worst now 45.1 m
+  + box-3 at (13.0,-33.0) covers 12 more; worst now 45.1 m
+  + box-4 at (73.0,-61.0) covers 4 more; worst now 43.9 m
+  + box-5 at (-47.0,-33.0) covers 3 more; worst now 41.2 m
+  + box-6 at (1.0,3.0) covers 2 more; worst now 41.2 m
+  + box-7 at (73.0,-21.0) covers 1 more; worst now 40.0 m
+doors + 7 boxes: median 18.4 m, p90 32.2 m, max 40.0 m; within 25 m 71%, within 40 m 100%
+
+## discovery tables, entrance camera live
+seconds 510; fail rivals-reach-vale; on the street by 60 s: 0:12 60:12 120:12 180:12 240:12 300:12 360:81 420:81
+report points in use: 3
+
+nearest report point by walking distance (doors | doors + 7 boxes)
+  guard-door                 door:office-entrance 0.0 m | door:office-entrance 0.0 m
+  pickup-driver              door:official-entrance 4.1 m | door:official-entrance 4.1 m
+  K1 cabinet-0 lane          door:office-entrance 21.7 m | door:office-entrance 21.7 m
+  K3 control cabinet         door:office-entrance 34.5 m | box-3 19.4 m
+  K6 bins Rocket Lane        door:office-entrance 34.0 m | box-4 27.0 m
+  R1 behind cafe             door:cafe-entrance 27.3 m | box-2 23.6 m
+  R2 lane north mouth        door:office-entrance 16.7 m | door:office-entrance 16.7 m
+  R3 lane middle             door:official-entrance 21.3 m | box-4 19.7 m
+  R4 lane south end          door:official-entrance 13.9 m | door:official-entrance 13.9 m
+  R5 office east side        door:official-entrance 22.7 m | box-7 10.8 m
+  R6 official tower pocket   door:official-entrance 7.8 m | door:official-entrance 7.8 m
+  R7 cafe east end           door:cafe-entrance 18.6 m | box-2 6.7 m
+  D1 office service door     door:official-entrance 20.9 m | door:official-entrance 20.9 m
+  D2 cafe kitchen door       door:cafe-entrance 30.2 m | box-2 14.6 m
+scenario: entrance camera live; report points 3; drops every 10 s from 5 s to 485 s; pre = drop before 5:00 (T<300), post = from 5:00 (the chime 5:30 empties the Office)
+
+=== body seen from 13.0 m (clear line) === P(first report lands within 30 s / 60 s / never in 240 s) and median landing (s after the drop) and who lands first
+guard-door                 | pre n=30: <=30 100% <=60 100% never 0% med 4 s; people/60s med 0 [patrol66%/camera23%/staff10%] | post n=18: <=30 100% <=60 100% never 0% med 4 s; people/60s med 10 [patrol55%/staff44%]
+pickup-driver              | pre n=30: <=30 100% <=60 100% never 0% med 5 s; people/60s med 1 [staff100%] | post n=18: <=30 100% <=60 100% never 0% med 5 s; people/60s med 2 [staff100%]
+K1 cabinet-0 lane          | pre n=30: <=30 53% <=60 80% never 0% med 29 s; people/60s med 0 [patrol73%/staff26%] | post n=18: <=30 55% <=60 83% never 0% med 22 s; people/60s med 7 [patrol55%/staff44%]
+K3 control cabinet         | pre n=30: <=30 0% <=60 0% never 56% med 182 s; people/60s med 0 [staff43%] | post n=18: <=30 38% <=60 55% never 11% med 42 s; people/60s med 3 [staff88%]
+K6 bins Rocket Lane        | pre n=30: <=30 0% <=60 0% never 56% med 206 s; people/60s med 0 [civilian-report43%] | post n=18: <=30 11% <=60 33% never 22% med 76 s; people/60s med 31 [civilian-report77%]
+R1 behind cafe             | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+R2 lane north mouth        | pre n=30: <=30 23% <=60 36% never 0% med 104 s; people/60s med 0 [staff96%/civilian-report3%] | post n=18: <=30 55% <=60 66% never 33% med 11 s; people/60s med 38 [civilian-report33%/staff33%]
+R3 lane middle             | pre n=30: <=30 66% <=60 93% never 0% med 13 s; people/60s med 0 [patrol80%/staff20%] | post n=18: <=30 77% <=60 94% never 0% med 10 s; people/60s med 7 [patrol66%/staff33%]
+R4 lane south end          | pre n=30: <=30 13% <=60 23% never 16% med 118 s; people/60s med 1 [staff83%] | post n=18: <=30 38% <=60 38% never 61% med 5 s; people/60s med 1 [staff38%]
+R5 office east side        | pre n=30: <=30 70% <=60 100% never 0% med 19 s; people/60s med 0 [patrol100%] | post n=18: <=30 88% <=60 94% never 5% med 5 s; people/60s med 3 [patrol83%/staff11%]
+R6 official tower pocket   | pre n=30: <=30 3% <=60 13% never 23% med 131 s; people/60s med 1 [staff76%] | post n=18: <=30 27% <=60 27% never 72% med 5 s; people/60s med 1 [staff27%]
+R7 cafe east end           | pre n=30: <=30 0% <=60 0% never 80% med 222 s; people/60s med 0 [staff20%] | post n=18: <=30 11% <=60 27% never 0% med 102 s; people/60s med 0 [staff100%]
+D1 office service door     | pre n=30: <=30 20% <=60 30% never 10% med 107 s; people/60s med 0 [staff90%] | post n=18: <=30 44% <=60 50% never 50% med 5 s; people/60s med 7 [staff50%]
+D2 cafe kitchen door       | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+
+=== body seen from 4.0 m (clear line) === P(first report lands within 30 s / 60 s / never in 240 s) and median landing (s after the drop) and who lands first
+guard-door                 | pre n=30: <=30 100% <=60 100% never 0% med 4 s; people/60s med 0 [patrol70%/camera30%] | post n=18: <=30 100% <=60 100% never 0% med 4 s; people/60s med 2 [patrol55%/staff44%]
+pickup-driver              | pre n=30: <=30 100% <=60 100% never 0% med 21 s; people/60s med 0 [camera100%] | post n=18: <=30 100% <=60 100% never 0% med 11 s; people/60s med 1 [camera83%/staff16%]
+K1 cabinet-0 lane          | pre n=30: <=30 46% <=60 76% never 0% med 31 s; people/60s med 0 [patrol73%/staff26%] | post n=18: <=30 50% <=60 83% never 0% med 31 s; people/60s med 0 [patrol61%/staff38%]
+K3 control cabinet         | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+K6 bins Rocket Lane        | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+R1 behind cafe             | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+R2 lane north mouth        | pre n=30: <=30 0% <=60 0% never 46% med 172 s; people/60s med 0 [staff53%] | post n=18: <=30 22% <=60 38% never 44% med 42 s; people/60s med 0 [staff55%]
+R3 lane middle             | pre n=30: <=30 60% <=60 90% never 0% med 23 s; people/60s med 0 [patrol100%] | post n=18: <=30 72% <=60 94% never 0% med 13 s; people/60s med 0 [patrol72%/staff27%]
+R4 lane south end          | pre n=30: <=30 6% <=60 16% never 23% med 127 s; people/60s med 0 [staff76%] | post n=18: <=30 22% <=60 27% never 72% med 20 s; people/60s med 0 [staff27%]
+R5 office east side        | pre n=30: <=30 70% <=60 100% never 0% med 19 s; people/60s med 0 [patrol100%] | post n=18: <=30 83% <=60 94% never 5% med 5 s; people/60s med 0 [patrol88%/staff5%]
+R6 official tower pocket   | pre n=30: <=30 3% <=60 13% never 23% med 132 s; people/60s med 0 [staff76%] | post n=18: <=30 27% <=60 27% never 72% med 6 s; people/60s med 0 [staff27%]
+R7 cafe east end           | pre n=30: <=30 0% <=60 0% never 86% med 229 s; people/60s med 0 [staff13%] | post n=18: <=30 5% <=60 22% never 0% med 119 s; people/60s med 0 [staff100%]
+D1 office service door     | pre n=30: <=30 13% <=60 23% never 13% med 124 s; people/60s med 0 [staff86%] | post n=18: <=30 27% <=60 44% never 55% med 28 s; people/60s med 0 [staff44%]
+D2 cafe kitchen door       | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+
+=== who passes within 13.0 m with a clear line, 0:00-8:30 (unique people; first time in range; verb at Alert 0) ===
+guard-door                  69 people | first reporter: p-records-office-74 in range 4:14, lands +5 s (radio) | clerk/fearful/avoidx7, clerk/idealist/check-reportx10, clerk/loyal/reportx21, clerk/mercenary/quietx20, guard/loyal/radiox3, guard/mercenary/radiox8
+pickup-driver               13 people | first reporter: p-records-office-29 in range 0:00, lands +5 s (radio) | councillor/mercenary/quietx1, guard/loyal/radiox3, guard/mercenary/radiox9
+K1 cabinet-0 lane           40 people | first reporter: p-records-office-74 in range 4:19, lands +5 s (radio) | clerk/fearful/avoidx4, clerk/idealist/check-reportx6, clerk/loyal/reportx7, clerk/mercenary/quietx14, guard/loyal/radiox1, guard/mercenary/radiox8
+K3 control cabinet           3 people | first reporter: p-records-office-65 in range 6:52, lands +5 s (radio) | guard/loyal/radiox2, guard/mercenary/radiox1
+K6 bins Rocket Lane         31 people | first reporter: p-records-office-06 in range 6:54, lands +27 s (report) | clerk/fearful/avoidx4, clerk/idealist/check-reportx6, clerk/loyal/reportx7, clerk/mercenary/quietx14
+R1 behind cafe               0 people | first reporter: none | 
+R2 lane north mouth         40 people | first reporter: p-records-office-74 in range 4:04, lands +5 s (radio) | clerk/fearful/avoidx4, clerk/idealist/check-reportx6, clerk/loyal/reportx7, clerk/mercenary/quietx14, guard/loyal/radiox1, guard/mercenary/radiox8
+R3 lane middle               8 people | first reporter: p-records-office-74 in range 4:28, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+R4 lane south end            9 people | first reporter: p-records-office-74 in range 4:48, lands +5 s (radio) | driver/mercenary/quietx1, guard/loyal/radiox1, guard/mercenary/radiox7
+R5 office east side         24 people | first reporter: p-records-office-65 in range 5:53, lands +5 s (radio) | clerk/fearful/avoidx2, clerk/idealist/check-reportx4, clerk/loyal/reportx10, clerk/mercenary/quietx5, guard/loyal/radiox2, guard/mercenary/radiox1
+R6 official tower pocket     9 people | first reporter: p-records-office-74 in range 5:11, lands +5 s (radio) | driver/mercenary/quietx1, guard/loyal/radiox1, guard/mercenary/radiox7
+R7 cafe east end             3 people | first reporter: p-records-office-65 in range 8:02, lands +5 s (radio) | guard/loyal/radiox2, guard/mercenary/radiox1
+D1 office service door       8 people | first reporter: p-records-office-74 in range 4:27, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+D2 cafe kitchen door         0 people | first reporter: none | 
+
+=== who passes within 4.0 m with a clear line, 0:00-8:30 (unique people; first time in range; verb at Alert 0) ===
+guard-door                  60 people | first reporter: p-records-office-73 in range 5:23, lands +5 s (radio) | clerk/fearful/avoidx7, clerk/idealist/check-reportx10, clerk/loyal/reportx21, clerk/mercenary/quietx20, guard/mercenary/radiox2
+pickup-driver                9 people | first reporter: p-records-office-74 in range 5:18, lands +5 s (radio) | councillor/mercenary/quietx1, guard/loyal/radiox1, guard/mercenary/radiox7
+K1 cabinet-0 lane            8 people | first reporter: p-records-office-74 in range 4:37, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+K3 control cabinet           0 people | first reporter: none | 
+K6 bins Rocket Lane          0 people | first reporter: none | 
+R1 behind cafe               0 people | first reporter: none | 
+R2 lane north mouth          7 people | first reporter: p-records-office-36 in range 6:22, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox6
+R3 lane middle               8 people | first reporter: p-records-office-74 in range 4:47, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+R4 lane south end            8 people | first reporter: p-records-office-74 in range 5:07, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+R5 office east side          3 people | first reporter: p-records-office-65 in range 6:00, lands +5 s (radio) | guard/loyal/radiox2, guard/mercenary/radiox1
+R6 official tower pocket     8 people | first reporter: p-records-office-74 in range 5:12, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+R7 cafe east end             2 people | first reporter: p-records-office-65 in range 8:19, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox1
+D1 office service door       8 people | first reporter: p-records-office-74 in range 4:44, lands +5 s (radio) | guard/loyal/radiox1, guard/mercenary/radiox7
+D2 cafe kitchen door         0 people | first reporter: none | 
+
+## discovery tables, entrance camera looped (Tech)
+scenario: entrance camera LOOPED; report points 3; drops every 10 s from 5 s to 485 s; pre = drop before 5:00 (T<300), post = from 5:00 (the chime 5:30 empties the Office)
+
+=== body seen from 13.0 m (clear line) === P(first report lands within 30 s / 60 s / never in 240 s) and median landing (s after the drop) and who lands first
+guard-door                 | pre n=30: <=30 93% <=60 100% never 0% med 4 s; people/60s med 0 [patrol86%/staff13%] | post n=18: <=30 100% <=60 100% never 0% med 4 s; people/60s med 10 [patrol55%/staff44%]
+pickup-driver              | pre n=30: <=30 100% <=60 100% never 0% med 5 s; people/60s med 1 [staff100%] | post n=18: <=30 100% <=60 100% never 0% med 5 s; people/60s med 2 [staff100%]
+K1 cabinet-0 lane          | pre n=30: <=30 53% <=60 80% never 0% med 29 s; people/60s med 0 [patrol73%/staff26%] | post n=18: <=30 55% <=60 83% never 0% med 22 s; people/60s med 7 [patrol55%/staff44%]
+K3 control cabinet         | pre n=30: <=30 0% <=60 0% never 56% med 182 s; people/60s med 0 [staff43%] | post n=18: <=30 38% <=60 55% never 11% med 42 s; people/60s med 3 [staff88%]
+K6 bins Rocket Lane        | pre n=30: <=30 0% <=60 0% never 56% med 206 s; people/60s med 0 [civilian-report43%] | post n=18: <=30 11% <=60 33% never 22% med 76 s; people/60s med 31 [civilian-report77%]
+R1 behind cafe             | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+R2 lane north mouth        | pre n=30: <=30 23% <=60 36% never 0% med 104 s; people/60s med 0 [staff96%/civilian-report3%] | post n=18: <=30 55% <=60 66% never 33% med 11 s; people/60s med 38 [civilian-report33%/staff33%]
+R3 lane middle             | pre n=30: <=30 66% <=60 93% never 0% med 13 s; people/60s med 0 [patrol80%/staff20%] | post n=18: <=30 77% <=60 94% never 0% med 10 s; people/60s med 7 [patrol66%/staff33%]
+R4 lane south end          | pre n=30: <=30 13% <=60 23% never 16% med 118 s; people/60s med 1 [staff83%] | post n=18: <=30 38% <=60 38% never 61% med 5 s; people/60s med 1 [staff38%]
+R5 office east side        | pre n=30: <=30 70% <=60 100% never 0% med 19 s; people/60s med 0 [patrol100%] | post n=18: <=30 88% <=60 94% never 5% med 5 s; people/60s med 3 [patrol83%/staff11%]
+R6 official tower pocket   | pre n=30: <=30 3% <=60 13% never 23% med 131 s; people/60s med 1 [staff76%] | post n=18: <=30 27% <=60 27% never 72% med 5 s; people/60s med 1 [staff27%]
+R7 cafe east end           | pre n=30: <=30 0% <=60 0% never 80% med 222 s; people/60s med 0 [staff20%] | post n=18: <=30 11% <=60 27% never 0% med 102 s; people/60s med 0 [staff100%]
+D1 office service door     | pre n=30: <=30 20% <=60 30% never 10% med 107 s; people/60s med 0 [staff90%] | post n=18: <=30 44% <=60 50% never 50% med 5 s; people/60s med 7 [staff50%]
+D2 cafe kitchen door       | pre n=30: <=30 0% <=60 0% never 100% med - s; people/60s med 0 [] | post n=18: <=30 0% <=60 0% never 100% med - s; people/60s med 0 []
+
+=== body seen from 4.0 m (clear line) === P(first report lands within 30 s / 60 s / never in 240 s) and median landing (s after the drop) and who lands first
+
+## cost of the discovery check (random positions over the block's grid: the densest case)
+free 1 m samples: 9868
+engine Step with the 130-person crowd: 22.8 us/tick over 3300 ticks (0:00-5:30)
+people   130 bodies  1: linear     0.5 us/tick  (sight tests/tick 8.0) | bucketed     9.9 us/tick  [hits/tick 8.0]
+people   130 bodies  4: linear     7.0 us/tick  (sight tests/tick 24.0) | bucketed    15.8 us/tick  [hits/tick 21.0]
+people   130 bodies 12: linear     5.9 us/tick  (sight tests/tick 66.0) | bucketed    18.3 us/tick  [hits/tick 66.0]
+people  1300 bodies  1: linear     6.8 us/tick  (sight tests/tick 32.0) | bucketed    76.3 us/tick  [hits/tick 23.0]
+people  1300 bodies  4: linear    16.9 us/tick  (sight tests/tick 240.0) | bucketed    54.1 us/tick  [hits/tick 192.0]
+people  1300 bodies 12: linear    28.7 us/tick  (sight tests/tick 658.0) | bucketed    34.8 us/tick  [hits/tick 637.0]
+people  3000 bodies  1: linear     5.1 us/tick  (sight tests/tick 127.0) | bucketed    24.5 us/tick  [hits/tick 125.0]
+people  3000 bodies  4: linear    23.5 us/tick  (sight tests/tick 586.0) | bucketed    39.2 us/tick  [hits/tick 570.0]
+people  3000 bodies 12: linear    66.4 us/tick  (sight tests/tick 1599.0) | bucketed    72.7 us/tick  [hits/tick 1543.0]
+people  6000 bodies  1: linear     9.4 us/tick  (sight tests/tick 220.0) | bucketed    44.7 us/tick  [hits/tick 199.0]
+people  6000 bodies  4: linear    43.8 us/tick  (sight tests/tick 939.0) | bucketed    73.4 us/tick  [hits/tick 892.0]
+people  6000 bodies 12: linear   144.0 us/tick  (sight tests/tick 2790.0) | bucketed   144.4 us/tick  [hits/tick 2636.0]
+one Sight test (13 occluders): 211 ns
+one grid Route (A*): 597 us
+
+## response walking distances (mode resp): from the security entry, the rivals' entry, the patrol's ends and the café door to the Handover's places (police 2.2 m/s | robot 0.85 m/s)
+walking distance m and time s at police 2.2 m/s | robot 0.85 m/s
+security-entry       guard door: 105m 48s/124s; pickup bay: 132m 60s/155s; R3 lane middle: 114m 52s/134s; getaway bay: 59m 27s/69s; cafe door: 48m 22s/56s; official car bay: 134m 61s/158s;
+rival-entry          guard door: 44m 20s/52s; pickup bay: 64m 29s/75s; R3 lane middle: 66m 30s/78s; getaway bay: 65m 29s/76s; cafe door: 63m 28s/74s; official car bay: 62m 28s/72s;
+patrol-a             guard door: 12m 5s/14s; pickup bay: 42m 19s/50s; R3 lane middle: 25m 12s/30s; getaway bay: 37m 17s/43s; cafe door: 54m 24s/63s; official car bay: 45m 21s/53s;
+patrol-b             guard door: 20m 9s/24s; pickup bay: 50m 23s/59s; R3 lane middle: 42m 19s/49s; getaway bay: 49m 22s/57s; cafe door: 55m 25s/65s; official car bay: 48m 22s/56s;
+door:cafe-entrance   guard door: 65m 30s/76s; pickup bay: 94m 43s/111s; R3 lane middle: 77m 35s/91s; getaway bay: 28m 13s/33s; cafe door: 0m 0s/0s; official car bay: 97m 44s/114s;

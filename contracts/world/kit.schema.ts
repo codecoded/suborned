@@ -9,7 +9,9 @@ export type KitFile = { root?: 'generated'; role: 'fbx' | 'lod' | 'fbx-meta' | '
 export type KitReach = { axis: '+x' | '-x' | '+z' | '-z'; m: number };
 /** What the play camera sees through a piece (brief 008 B1, Vela): `open` = low or slender, a person behind it stays seen; `glazed` = a frontage with glass the view passes through but a wall of it, so people behind read only through the architecture fade. Absent = not stated (every piece adopted before brief 008). */
 export type KitSight = 'open' | 'glazed';
-export type KitTags = { use: string[]; reach?: KitReach; trade?: string[]; storeys?: [number, number]; form?: 'bay' | 'corner' | 'end'; scale: [number, number]; squash: number; wave: 1 | 2 | 3; sight?: KitSight };
+/** `stash` (brief 013, Vantage/Motive): the piece is a closed container that can hold a body out of every sightline, `holds` bodies at a time. Size alone does not decide it (a lamp, a booth, a crate stack all pass a size test), so it is a tag Vela and the checker read: R-HIDE holds every world stash to it. Absent = the piece hides nothing. */
+export type KitStash = { holds: number };
+export type KitTags = { use: string[]; reach?: KitReach; trade?: string[]; storeys?: [number, number]; form?: 'bay' | 'corner' | 'end'; scale: [number, number]; squash: number; wave: 1 | 2 | 3; sight?: KitSight; stash?: KitStash };
 /** A distance version: `file` relative to the same root as the piece's files (role 'lod'), `tris`, `screen` = Unity LOD transition (fraction of screen height at lodBias 1):
  *  the piece's `lodCategory` switch point (LOD1 at `l1`, LOD2 at `l2`). LOD0 = the fbx; up to LOD2 (about 25% then 6% of the triangles); absent for light pieces. */
 export type KitLod = { file: string; tris: number; screen: number };

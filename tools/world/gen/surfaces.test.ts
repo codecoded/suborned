@@ -69,8 +69,9 @@ test('the market-deck cranes (4 masts, 4 booms) draw `crane`; the Skyport girder
 
 test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs and palm trunks stay `trim` (RoofKit paints roof items from roofItems)', () => {
   const booths = w.street.filter(s => s.kind === 'phone-booth'), tubs = w.street.filter(s => s.kind === 'tub-palm');
-  expect(booths.length).toBe(64); for (const s of booths) expect(s.surface, s.id).toBe(BOOTH);
-  expect(withKey(BOOTH).length).toBe(64);
+  expect(booths.length).toBe(68); // 64 along the streets and the 4 call boxes the civic block's report rule placed (brief 013, street/civic/call-box-n)
+  for (const s of booths) expect(s.surface, s.id).toBe(BOOTH);
+  expect(withKey(BOOTH).length).toBe(68);
   expect(tubs.length).toBe(198); for (const s of tubs) expect(s.surface, s.id).toBe(TUB);
   expect(withKey(TUB).length).toBe(198); // nothing else in the world: not the 418 roof tubs
   const roofTubs = w.roofs.flatMap(r => r.parts).filter(p => /\/(tub|palm)-\d+$/.test(p.id));
@@ -88,24 +89,24 @@ test('a crossing\'s lights draw `glow`, its arcs `inlay`, its orbs `orb`; its st
   expect(withKey(GLOW).length).toBe(2211); expect(withKey(INLAY).length).toBe(322); expect(withKey(ORB).length).toBe(207); // 1464 dot rows + 747 lit strip modules
 });
 
-test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 482 + 2,740 parts in them', () => {
+test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 486 + 2,740 parts in them', () => {
   const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB, GLOW, INLAY, ORB];
   expect(keys.sort()).toEqual(named.sort());
   const count = (ks: string[]) => ks.reduce((n, k) => n + withKey(k).length, 0);
-  expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(482);
+  expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(486);
   expect(count([GLOW, INLAY, ORB])).toBe(2740);
-  expect(count(OWN_KEYS as unknown as string[])).toBe(3222);
+  expect(count(OWN_KEYS as unknown as string[])).toBe(3226);
 });
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
   const was: Record<string, string> = {
     'advertising-column': 'enamel', beacon: 'trim', bench: 'trim', bin: 'trim', bollard: 'trim', 'canopy-camera': 'trim', 'civic-robot-dock': 'enamel', 'crossing-arc': 'inlay', 'crossing-dots': 'glow', 'crossing-edge': 'trim', 'crossing-field': 'glow', 'crossing-stud': 'trim',
     hydrant: 'trim', 'kiosk-food': 'enamel', 'kiosk-tickets': 'enamel', lamp: 'trim', mailbox: 'enamel', 'mast-camera': 'trim', newsstand: 'enamel',
-    'phone-booth': 'booth', planter: 'park', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
+    dumpster: 'enamel', 'phone-booth': 'booth', planter: 'park', 'police-post': 'enamel', 'pole-camera': 'trim', 'public-clock': 'trim', 'signal-orb': 'orb', 'station-entrance': 'enamel', 'ticket-machine': 'trim', 'timetable-column': 'trim',
     'tram-shelter': 'enamel', tree: 'park', 'tub-palm': 'tub', 'vending-robot': 'enamel',
   };
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length).toBe(8187); // 3091 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
+  expect(w.street.length).toBe(8197); // (brief 013: +10 on the civic block: 1 stash container, 5 police posts, 4 call boxes) 3101 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
 });

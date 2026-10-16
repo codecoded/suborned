@@ -1,0 +1,13 @@
+
+prepared-a.json  Success at 4:54  final fight 4:01  replay hash matches
+  decisions before the fight: 15 order moments, 3.7 a minute; longest stretch with no order: 2:19-3:09 (50 s)
+  one-thread time before the fight (≤ 1 operative walks, acts or fights): 28.7 %
+  dead air before the fight (nobody walks, acts or fights): 0 s = 0 %
+  op       walk s  act s   teth s  fight s  idle s  idle %  idle % pre-fight  longest idle
+  scout    78      126     0       22.1     68.5    23.3    25.2              2:09-3:10 (60.8 s): mislead rivals after rivals.arrive
+  fixer    70.6    85      0       22.1     116.9   39.7    47.8              0:08-1:11 (63.4 s): turn waitress after scout.listen.heard
+  tech     41      107     82.5    22.1     42      14.3    4.4               3:50-4:32 (42 s): panic after fight.ambush
+  enforcer 92.6    38      7.1     0.6      156.3   53.1    64.8              0:41-3:09 (148 s): move d:Office entrance after turn.pay.turned, call.waitress
+
+mean over the 1 winning routes (prepared-a.json); the fail scripts are minimal fixtures, not play:
+  scout idle 23.3 % (pre-fight 25.2 %) · fixer idle 39.7 % (pre-fight 47.8 %) · tech idle 14.3 % (pre-fight 4.4 %) · enforcer idle 53.1 % (pre-fight 64.8 %) · one-thread 28.7 % · dead air 0 % of pre-fight time

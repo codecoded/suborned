@@ -85,7 +85,7 @@ public class RedlineTests
     public void E4_crlf_and_bom_replay_to_the_same_hashes()
     {
         string Win(string s) => "\uFEFF" + s.Replace("\n", "\r\n");
-        var w = Engine.FromTexts(Win(I.Rulebook), Win(I.PeopleRules), Win(I.Site), Win(I.People));
+        var w = Engine.FromTexts(Win(I.Rulebook), Win(I.PeopleRules), Win(I.Site), Win(I.People), I.Provisional.Length > 0 ? Win(I.Provisional) : null, I.Takedown.Length > 0 ? Win(I.Takedown) : null);
         Assert.Equal(I.Hash, w.Hash);
         var a = Scenarios.Run(I, Scenarios.Find("S10")!).G; var b = Scenarios.Run(w, Scenarios.Find("S10")!).G;
         Assert.Equal(a.Checkpoints, b.Checkpoints);

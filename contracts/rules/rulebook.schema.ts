@@ -139,6 +139,9 @@ const MemAct = z.strictObject({ facts: z.union([z.array(id).min(1), z.literal('a
 const Traceable = ground({ standing: z.enum(['hero', 'menace', 'none']) });
 const DebriefLine = z.strictObject({ fields: z.array(id).min(1), src: text });
 
+/** One watcher kind's knowledge rule: learned by a Scout Watch or on arrival; its routine fixed, the person's, watched over time, or none. */
+const SightKind = z.strictObject({ learn: z.enum(['watch', 'arrival']), routine: z.enum(['fixed', 'person', 'watched', 'none']) });
+
 export const Rulebook = z.strictObject({
   schema: z.literal('suborned.rulebook/1'),
   author: text, gdd: text, rule: text,
@@ -171,21 +174,23 @@ export const Rulebook = z.strictObject({
   }),
   exposure: ground({ rule: text }),
   traceable: z.record(id, Traceable),
-  // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref.
+  // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref
+  // (but loop.targets: the cameras the cabinet loops, brief 013 D).
   cell: ground({
     speed: Ref, runSpeed: Ref, runAlert: Ref, reach: Ref, atReach: Ref,
-    loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref }),
+    loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref, targets: z.array(id).nonempty().optional() }), // targets: site camera ids, or 'world' (the city's own cameras); optional only for runs pinned before brief 013 (rulebook.test.ts holds the live one to it)
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     call: z.strictObject({ trail: Ref }),
     enter: z.strictObject({ s: Ref, alarm: Ref }),
     carry: z.strictObject({ s: Ref }),
-    take: z.strictObject({ s: Ref, trailUnturned: Ref }),
+    take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     rule: text,
   }),
+  // checkIn (both) and seal: optional only so runs pinned before brief 013 parse; brief 013 retires them (response.checkIn, response.levels[].seal).
   security: ground({
-    response: z.strictObject({ witness: Ref, seen: Ref, unseen: Ref, civilian: Ref, checkIn: Ref, rivalsUnseen: Ref }),
-    checkIn: Ref, seal: Ref, speed: Ref,
+    response: z.strictObject({ witness: Ref, seen: Ref, unseen: Ref, civilian: Ref, checkIn: Ref.optional(), rivalsUnseen: Ref }),
+    checkIn: Ref.optional(), seal: Ref.optional(), speed: Ref,
     rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }),
     patrol: z.strictObject({ breakTo: Ref, period: Ref, chase: Ref }),
     rule: text,
@@ -216,6 +221,7 @@ export const Rulebook = z.strictObject({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),
     turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends'), reroute: z.literal('lost'), mislead: z.literal('lost'),
     enter: z.enum(['staff-report', 'quiet']), take: z.enum(['vale-reports', 'quiet']), carry: z.literal('lost'), carrying: z.literal('put-down'),
+    takedown: z.literal('released').optional(), body: z.literal('lost').optional(), // brief 013 (optional only for runs pinned before it)
     rule: text,
   }),
   perception: ground({
@@ -227,6 +233,49 @@ export const Rulebook = z.strictObject({
     patrol: z.strictObject({ depth: Ref, halfBase: Ref, halfPerMille: Ref }),
     rule: text,
   }),
+  // What the cell knows of each watcher's sight (Sky 2026-10-16: cones are the Scout's skill; Glyph's review §3.4): how it is learned, per kind.
+  // Optional here only so the runs that pinned the rulebook before it (dialogue r017–r019) still parse and replay; the engine requires it,
+  // and rulebook.test.ts holds the live rulebook to having it.
+  sight: ground({
+    watch: z.strictObject({ s: Ref, reach: Ref, routine: Ref }),
+    kinds: z.strictObject({
+      camera: SightKind, guard: SightKind, patrol: SightKind, security: SightKind, rivals: SightKind,
+    }),
+    unknown: z.literal('?'),
+    rule: text,
+  }).optional(),
+  // Brief 013 (Sky 2026-10-16): takedowns, bodies, the people who report them, the response dial and what the campaign keeps. Optional here
+  // only so runs pinned before it still parse; the engine requires them and rulebook.test.ts holds the live rulebook to having them.
+  takedown: ground({
+    ko: Ref, kill: Ref, struggle: Ref, reach: Ref, trail: z.strictObject({ kill: Ref }), koAlertMax: Ref, foundKillStanding: Ref,
+    wake: Ref, stagger: Ref, restrain: Ref, free: Ref, callOut: Ref,
+    carry: z.strictObject({ untrained: Ref, drop: Ref }), stash: z.strictObject({ container: Ref, door: Ref, doorHolds: Ref }), service: z.strictObject({ period: Ref, dwell: Ref }),
+    rule: text,
+  }).optional(),
+  witness: ground({
+    react: Ref, call: Ref, postCall: Ref, robot: Ref, cameraScan: Ref, cap: Ref, scream: Ref, screamFear: Ref, terrifiedFear: Ref, mercenaryAlert: Ref,
+    check: z.strictObject({ ticks: Ref, s: Ref }), tell: Ref,
+    alert: z.strictObject({ seen: Ref, carry: Ref, down: Ref, dead: Ref, woken: Ref, noise: Ref, mark: Ref, missing: Ref }),
+    staff: z.array(id).min(1), kin: z.array(id).min(1), close: z.array(id).min(1), tells: z.array(id).min(1),
+    rule: text,
+  }).optional(),
+  response: ground({
+    levels: z.array(z.strictObject({
+      name: id, dispatch: Ref, a1Robots: Ref, a2Units: Ref, a2Robots: Ref, reinforce: Ref.optional(), unitCap: Ref, seal: Ref, a3Units: Ref, doorsLock: z.boolean(),
+    })).length(5), // security levels 0..4 (Motive §5.3): lax, routine, watchful, guarded, swarm
+    robotSpeed: Ref, robotWire: Ref, robotReach: Ref, world: z.strictObject({ report: Ref, dock: Ref }), launchGap: Ref, check: Ref,
+    search: z.strictObject({ s: Ref, m: Ref, stash: Ref }),
+    standDown: z.strictObject({ inquiry: Ref, search: Ref }),
+    spread: Ref, cap: Ref, checkIn: Ref,
+    suspicion: z.strictObject({ s: Ref, meet: Ref, pm: z.strictObject({ fearful: Ref, loyal: Ref, idealist: Ref, mercenary: Ref }) }),
+    rule: text,
+  }).optional(),
+  campaign: ground({
+    missing: z.strictObject({ trail: Ref, tiesFear: Ref }),
+    areaWatch: z.strictObject({ step: Ref, missions: Ref }),
+    cases: z.strictObject({ perLevel: Ref, cap: Ref, close: Ref, trailEq: Ref }), // trailEq: the mission checker's price of an open case (MC-9); the engine reads it for the checker only
+    rule: text,
+  }).optional(),
   fight: ground({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
@@ -363,6 +412,7 @@ export function checkRulebook(rb: Rulebook, people: PeopleRules): string[] {
     if (c.k === 'tie') want(K, 'tie kind', c.kinds, 'condition');
   }
   for (const f of collect(rb, 'do') as Eff[]) if (f.do === 'tell') want(K, 'tie kind', f.along, 'tell');
+  if (rb.witness) { want(K, 'tie kind', rb.witness.kin, 'witness.kin'); want(K, 'tie kind', rb.witness.tells, 'witness.tells'); }
   // Each Turn event is one people.rules approach, and every approach has its event.
   const turns = rb.events.filter((e) => e.id.startsWith('turn.')).map((e) => e.id.slice(5));
   want(A, 'approach', turns, 'events turn.*');

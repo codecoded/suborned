@@ -438,6 +438,172 @@
      "P-13"
     ]
    }
+  ],
+  "72cb3b5189ae39acf531db8535a049fa49753f8fec4d562c0d012d3a3b64d545": [
+   {
+    "cause": "the verdict hash lists name tools/missions/check/engine.ts (the hash test: tools/missions/handover/summon.ts, which the people tools reach, imports it); the file's own text is what is added, no rule's result changes (Splice, 2026-10-16)",
+    "rules": []
+   },
+   {
+    "cause": "the Handover's lovers (brief 011, 94793d7): the expander draws a lover tie after the regular and workmate ties it forms along (a named pattern first, at most the rules' share of the people) and the secret (an affair for everyone with a lover tie, else a record by the row's share), so the people's tie draws and the fields a person carries change; P-6 reads the waitress's affair; P-14 and P-15 are the rules' own",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-12"
+    ]
+   },
+   {
+    "cause": "walk solids (a175d8a, W-5): a walker keeps the plan's body clearance from the block's planter runs, pots, bollards and lamp bases and tests a step against the solids' own edges, so walk times, reachable seats and the stops a day can make move",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "brief 013 C (Splice, 2026-10-16): the civic block gains kind on its entrances and two service doors (Office service door, café kitchen door); civic.ts splits them (`entrances` stays the public and official doors the cast and the tools use, `serviceDoors` and `walkFrom` carry the rest, `z` on both); tools/plan/walk-grid.ts is the engine's walk grid factored out of tools/sim/site.ts; tools/world/gen/street/quiet.ts + tools/world/civic/quiet.ts + handover.ts stand a stash container, police posts and call boxes on the street; Layer.fits is add's own test pulled out. The people tools read civ.entrances only: expand, scope, check and walk results are unchanged (a regenerated people file has the same persons, places, units, knowledge and background byte for byte; only its inputs hashes differ)",
+    "rules": []
+   }
+  ],
+  "9b4ee4c6aff7f6878393f591ad7292821ca634f21a0d898428718f04bffbfdb1": [
+   {
+    "cause": "the verdict hash lists name tools/missions/check/engine.ts (the hash test: tools/missions/handover/summon.ts, which the people tools reach, imports it); the file's own text is what is added, no rule's result changes (Splice, 2026-10-16)",
+    "rules": []
+   },
+   {
+    "cause": "the Handover's lovers (brief 011, 94793d7): the expander draws a lover tie after the regular and workmate ties it forms along (a named pattern first, at most the rules' share of the people) and the secret (an affair for everyone with a lover tie, else a record by the row's share), so the people's tie draws and the fields a person carries change; P-6 reads the waitress's affair; P-14 and P-15 are the rules' own",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-12"
+    ]
+   },
+   {
+    "cause": "walk solids (a175d8a, W-5): a walker keeps the plan's body clearance from the block's planter runs, pots, bollards and lamp bases and tests a step against the solids' own edges, so walk times, reachable seats and the stops a day can make move",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "brief 013 C (Splice, 2026-10-16): the civic block gains kind on its entrances and two service doors (Office service door, café kitchen door); civic.ts splits them (`entrances` stays the public and official doors the cast and the tools use, `serviceDoors` and `walkFrom` carry the rest, `z` on both); tools/plan/walk-grid.ts is the engine's walk grid factored out of tools/sim/site.ts; tools/world/gen/street/quiet.ts + tools/world/civic/quiet.ts + handover.ts stand a stash container, police posts and call boxes on the street; Layer.fits is add's own test pulled out. The people tools read civ.entrances only: expand, scope, check and walk results are unchanged (a regenerated people file has the same persons, places, units, knowledge and background byte for byte; only its inputs hashes differ)",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 D3 (Sky, 2026-10-16): the talker's facts gain enforcer-face (contracts/people/people.rules.json, FACTS in people.rules.schema.ts: type list only; the expander reads no talker fact) and the engine's Order type gains how (tools/missions/check/engine.ts: type only, imported by summon.ts). A people file regenerated from the promoted r016 cast with the old rules and with the new rules has the same persons, places, units, knowledge and background byte for byte; only inputs.rules (the rules file's own hash) and inputs.tools differ",
+    "rules": []
+   }
+  ],
+  "ab87d27d86db881b3593d6d8031714bf17d32ad1cc6a947d90196f906d5f42a4": [
+   {
+    "cause": "expander aims a regular tie at the staff of a pre-shift stop (never at one's own workplace colleagues); 'regular of X' is one definition: a regular tie to X's staff, in M-2, P-6, the review (share >= 50%) and the critic",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "brief 010 follow-up, café seating (Aster, 2026-10-15): the café's seats are the chairs of the café sets the world draws on the block's tables (kind seat, 24) with 24 standing points beside the café (kind stand); people are given them by person id, one to a seat at a time and then the nearest standing points, so every stop at a seat changes place and its walk times; the café's customers' side for a regular tie is a pre-shift stop at one of them (a meal or an evening at a chair is a customer's, no regular's), which moves the tie draws; P-13 is new; P-5 holds a chair only by a zone that bars tables. Person ids, names, jobs and homes do not move",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Suture QA 2026-10-15: the need draw has no fallback to the whole needs list (a person with none of their own row's needs is an expansion error; a temperament no row need can reach is drawn again within the row, and the mix repair picks only temperaments a need can reach); P-3 holds each need to the person's own row; a regular tie never points at the person's own employer (the expander's pool and P-7); the review reports the row cap on the people beside the weights. Ties and needs of the persons whose pools moved are drawn again",
+    "rules": [
+     "P-7",
+     "P-11"
+    ]
+   },
+   {
+    "cause": "Redline H1/M1 and Keel's rulebook point 8, 2026-10-15: a person carries position and needWeights (per mille, from the row), so P-12 counts 15 fields and P-3 holds both to the row; the people file's inputs carry the mission and plan hashes (and, from bun run people, the tools hash); P-9 makes a real second expansion and compares it with the people under test; M-2 expands the promoted cast itself",
+    "rules": [
+     "P-12"
+    ]
+   },
+   {
+    "cause": "brief 010 Handover fix (Pulse, 2026-10-15): the day-building moved to tools/people/day.ts, and the staffing vocabulary of the cast row is new and opt-in (Position count, posts, side, watch and the official post; commute car; Tie positions, with and at): exact staffing, a civic watch, the official car at the bay, aimed ties. A hop of 3 m or less costs no minute (stepMin); P-4 counts a civic watch; P-5 lets a person in a car at a bay stand there; P-7 accepts a pre-shift or evening stop as a visit; the CLI reports M-2 on the people it makes. A cast row that uses none of it, as r012 and r013, expands byte for byte as before and every check row is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "tools/plan/street-zones.ts (Splice, brief 009 crossings): FLAT gains crossing-field, a kind that lies flush and never counts as standing in a zone; no rule a people run records changes (carried by Pulse so the declared causes of the Handover fix stay on the current hash; repeat at the next change under the hash)",
+    "rules": []
+   },
+   {
+    "cause": "brief 010 r014 generator fixes (Pulse, 2026-10-15): the seat picker never double-books and a stop with no free seat or standing point is not made (a meal is eaten on site, an evening or a stop before the shift is dropped; a note, not a P-0 fault); seats go first to people whose ties name a stop; a person who carries an aimed tie (`at`) is drawn only among the variants that make the stop, where the café is open then; an aimed tie the day cannot carry is a P-0 gap naming the person; expand() also returns notes. All opt-in or reached only when seats run out: a cast row that uses none of it and fills no more than the café's 48 places, as r012 and r013, expands byte for byte as before. The hash also holds Splice's uncommitted standing-point and walk-clearance edits (tools/people/walk.ts, seats.ts, scope.ts), which move no rule a recorded people run records",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "brief 010 r014 generator fixes as committed in aef5862 (Pulse, 2026-10-15): the same seat picker and aimed-tie draw as the cause above, without Splice's uncommitted walk-clearance edits (walk.ts, scope.ts); seats.ts carries Splice's standing-point default (solid 0.65 m), which moves no rule a recorded people run records",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "W-5 walking clearance and the dressing's ground furniture (Datum and Vantage, 2026-10-15): the people's walk graph tests a step against the block's ground solids by their own edges, a body's clearance (standards.walking.body.r 0.65) away, and the standing points keep that clearance from every solid (it was 0.5); civic.ts adds the dressing's planter runs, pots, bollards and lamp bases to the solids (plan.civic.groundPieces), so a pinned block's standing points and walks differ where they stood within 0.65 m of a planter, pot, bollard or lamp, and a place's seeds start within `ends` of it",
+    "rules": [
+     "P-0",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "brief 011 lovers (Pulse, 2026-10-15; Motive briefs/011/motive-lovers.md, Sky's canon: Inez and the door guard): the lover tie and the secret in generation and in the checker. The lover tie is mutual, one per person, met on the routines (routine-meet), at most maxShare of the people, drawn along a regular then a workmate tie, made after those ties and only from a table's lover pattern (Tie.posts restricts it to the door post); people carry a secret (affair for everyone with a lover tie, record by the row's share; the need secret retires into that share, tools/people/secrets.ts); new rules P-14 (lovers) and P-15 (secrets); P-7 reads routine-meet; P-12 counts the secret field. All of it is active only when the rulebook carries the lover kind and `secrets`: a pinned older rulebook expands its tables exactly as it did, so no rule a recorded run records changes",
+    "rules": []
+   },
+   {
+    "cause": "the Handover's lovers (brief 011, 94793d7): the expander draws a lover tie after the regular and workmate ties it forms along (a named pattern first, at most the rules' share of the people) and the secret (an affair for everyone with a lover tie, else a record by the row's share), so the people's tie draws and the fields a person carries change; P-6 reads the waitress's affair; P-14 and P-15 are the rules' own",
+    "rules": [
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-12"
+    ]
+   },
+   {
+    "cause": "walk solids (a175d8a, W-5): a walker keeps the plan's body clearance from the block's planter runs, pots, bollards and lamp bases and tests a step against the solids' own edges, so walk times, reachable seats and the stops a day can make move",
+    "rules": [
+     "P-0",
+     "P-6",
+     "P-7",
+     "P-11",
+     "P-13"
+    ]
+   },
+   {
+    "cause": "the verdict hash lists name tools/missions/check/engine.ts (the hash test: tools/missions/handover/summon.ts, which the people tools reach, imports it); the file's own text is what is added, no rule's result changes (Splice, 2026-10-16)",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 C (Splice, 2026-10-16): the civic block gains kind on its entrances and two service doors (Office service door, café kitchen door); civic.ts splits them (`entrances` stays the public and official doors the cast and the tools use, `serviceDoors` and `walkFrom` carry the rest, `z` on both); tools/plan/walk-grid.ts is the engine's walk grid factored out of tools/sim/site.ts; tools/world/gen/street/quiet.ts + tools/world/civic/quiet.ts + handover.ts stand a stash container, police posts and call boxes on the street; Layer.fits is add's own test pulled out. The people tools read civ.entrances only: expand, scope, check and walk results are unchanged (a regenerated people file has the same persons, places, units, knowledge and background byte for byte; only its inputs hashes differ)",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 D3 (Sky, 2026-10-16): the talker's facts gain enforcer-face (contracts/people/people.rules.json, FACTS in people.rules.schema.ts: type list only; the expander reads no talker fact) and the engine's Order type gains how (tools/missions/check/engine.ts: type only, imported by summon.ts). A people file regenerated from the promoted r016 cast with the old rules and with the new rules has the same persons, places, units, knowledge and background byte for byte; only inputs.rules (the rules file's own hash) and inputs.tools differ",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Splice, 2026-10-16): the world generator takes a service door's stash capacity from the rulebook (tools/world/civic/quiet.ts QUIET.doorHolds = stash-door-holds, 3; the door stash was a literal 1) and the sim's takedown file says the same; the walk grid and civic block files moved with the other brief 013 work. Checked, not assumed: a people file regenerated from the promoted r016 cast with the code at HEAD and with this code is the same byte for byte except inputs.block, inputs.rules and inputs.tools, and the r012-r016 replays rerun the same rules differing, rule for rule, as they did at HEAD; no rule's result changes",
+    "rules": []
+   }
   ]
  }
 }

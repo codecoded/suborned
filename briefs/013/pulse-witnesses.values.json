@@ -1,0 +1,408 @@
+{
+ "schema": "suborned.rulebook.values.proposal/1",
+ "author": "Pulse, brief 013 witnesses, 2026-10-16",
+ "note": "Proposed entries for contracts/rules/rulebook.json `values` (the same shape: v, unit, tag, src, reason). Keel adds them; Motive owns every number and may change any. Nothing here is in the rulebook yet. Every entry is [S]. Third pass 2026-10-16, written to Motive's rev 2 (motive-takedowns.md): where we overlap, MOTIVE'S ID WINS (suspicion-s 20, check-in-period-s 90, area-watch-step, area-watch-missions, cases-per-level, case-level-cap, missing-trail, response.levels S0-S4, search-stash-m, search-stash-s, wake-s, restrain-s). Removed from my second pass: the temperament graces and jumpy/kin modifiers (replaced by suspicion-s plus optional suspicion-*-pm), the missing-person watch-level values (replaced by Motive's area watch and cases), response-unseen-floor-s (a seen takedown nobody reports raises no Alert). Entries marked optional are switches that default to Motive's behaviour.",
+ "reuses": [
+  "react-s",
+  "near-m",
+  "witness-range-m",
+  "crowd-startle-ticks",
+  "crowd-startle-fearful-ticks",
+  "crowd-run-cm-s",
+  "op-speed-cm-s",
+  "op-run-speed-cm-s",
+  "response-witness-s (as dispatch: a landed report puts the unit on the street this long after)",
+  "response-check-in-s",
+  "check-in-s",
+  "seal-s",
+  "alert-inquiry",
+  "alert-search",
+  "alert-lockdown",
+  "word-quiet-loyalty",
+  "patrol-chase-cm-s",
+  "security-speed-cm-s",
+  "patrol-resume-s",
+  "guard-return-s",
+  "Motive's: suspicion-s, check-in-period-s, area-watch-step, area-watch-missions, cases-per-level, case-level-cap, missing-trail, response.levels, search-stash-m, search-stash-s, wake-s, restrain-s, kill-trail, ko-s, kill-s"
+ ],
+ "reusesProposedElsewhere": [
+  "guard-leash-cm (1500, in briefs/011/pulse-fight-ai.values.json, not yet in the rulebook): the door guard checks a scream or a body within this of his post"
+ ],
+ "values": {
+  "body-check-ticks": {
+   "v": 5,
+   "unit": "ticks",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.2",
+   "reason": "a body is looked for every 5th tick (phase from the body's id): noticing is at most 0.5 s late, and the check is a fifth of the cost",
+   "proposed": true
+  },
+  "body-check-s": {
+   "v": 2.0,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.1",
+   "reason": "an Idealist who goes to a body stands 2 s beside it to learn whether it is dead or out; the same size as react-s",
+   "proposed": true
+  },
+  "screen-m": {
+   "v": 4,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §4.2",
+   "reason": "a body in a recess or behind a screen is seen only from within 4 m on a clear line: a passer at the recess mouth, not across the square; measured on the r016 cast it leaves the Handover's service lane quiet after the 5:30 chime (7 people against 38)",
+   "proposed": true
+  },
+  "scream-look-s": {
+   "v": 6,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.1",
+   "reason": "a hearer who turns to look walks toward the sound for at most 6 s (8 m at walking pace) or until they have a line within 13 m",
+   "proposed": true
+  },
+  "scream-fear": {
+   "v": 2,
+   "unit": "scale-steps",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.3",
+   "reason": "a witness of an act or carry with fear at least 2 (afraid) screams; fear 1 (uneasy) flees silently; fear is raised by pressure and threats (people.rules scales.fear), so a pressured Fearful person screams",
+   "proposed": true
+  },
+  "terrified-fear": {
+   "v": 3,
+   "unit": "scale-steps",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.3",
+   "reason": "fear 3 (terrified) never reports: they flee, and shout if it was an act",
+   "proposed": true
+  },
+  "mercenary-report-alert": {
+   "v": 2,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.3",
+   "reason": "a Mercenary keeps quiet until Alert 2 (search), when the city is awake and pays for words; after one reported incident a second body is far more likely to be reported",
+   "proposed": true
+  },
+  "call-s": {
+   "v": 6,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.2",
+   "reason": "a civilian at a door or call box dials, is answered by the desk, and speaks the place: 6 s",
+   "proposed": true
+  },
+  "post-call-s": {
+   "v": 3,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.2",
+   "reason": "staff with a radio or a post telephone call straight in: 3 s",
+   "proposed": true
+  },
+  "robot-report-s": {
+   "v": 4,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.2",
+   "reason": "a patrol robot with a body in its cone halts its sweep and rings the desk on its own set: a fixed 4 s (clockwork)",
+   "proposed": true
+  },
+  "robot-plate-m": {
+   "v": 2,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.1",
+   "reason": "a person within 2 m of the patrol robot can press its hailing plate: the robot is a report point when it is the nearest",
+   "proposed": true
+  },
+  "camera-scan-s": {
+   "v": 20,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.2",
+   "reason": "a person watches a bank of camera screens and reads each every 20 s (the investigators' question-s is the same size); a body in a live camera's cone is noticed at the next scan, phase from the camera's id; a looped camera shows nothing",
+   "proposed": true
+  },
+  "report-reach-m": {
+   "v": 40,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.1, §8.3",
+   "reason": "R-REPORT: every walkable street cell within 40 m of a report point on the grid walk; on the Handover grid the three doors give 84% and seven boxes 100%",
+   "proposed": true
+  },
+  "report-cap": {
+   "v": 4,
+   "unit": "count",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.2",
+   "reason": "at most 4 reporters in transit are kept per body (the 4 earliest landings): bounds state and cost; the player still has to face a second reporter if the first is stopped",
+   "proposed": true
+  },
+  "report-alert-down": {
+   "v": 1,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.3",
+   "reason": "a report of a person lying (alive or unknown) is an inquiry; the nth reported incident takes the rulebook's alert.byIncident[n-1]",
+   "proposed": true
+  },
+  "report-alert-dead": {
+   "v": 2,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.3",
+   "reason": "a report of a dead body is a search: the response unit goes to the place",
+   "proposed": true
+  },
+  "report-alert-carry": {
+   "v": 2,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 3.3; Motive 2.3",
+   "reason": "a carry seen is Alert 2 on landing (Motive 2.3 table); a seen takedown is 3",
+   "proposed": true
+  },
+  "report-alert-assault": {
+   "v": 1,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 3.3, 5; Motive 3.2",
+   "reason": "a woken victim's report is an inquiry: a knockout is never above Alert 1 (Motive 2.3, 3.2; Call 2)",
+   "proposed": true
+  },
+  "search-s": {
+   "v": 60,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.5",
+   "reason": "an unfounded report is followed by a search of the neighbourhood for 60 s, then the unit resumes; no seal starts",
+   "proposed": true
+  },
+  "scene-hold-m": {
+   "v": 5,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §3.5",
+   "reason": "after a body is confirmed the patrol or guard stands within 5 m, so moving the body is a carry in a watcher's cone",
+   "proposed": true
+  },
+  "avoid-m": {
+   "v": 8,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §2.1",
+   "reason": "a Fearful finder detours at least 8 m round a body",
+   "proposed": true
+  },
+  "stagger-s": {
+   "v": 4,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §5",
+   "reason": "a woken person staggers 4 s: stands, cannot call or run",
+   "proposed": true
+  },
+  "stagger-pace-pm": {
+   "v": 500,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §5",
+   "reason": "a staggering person moves at half pace",
+   "proposed": true
+  },
+  "call-out-s": {
+   "v": 10,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §5",
+   "reason": "ON (Motive 3.3): a stashed, unrestrained victim calls out every 10 s, heard within scream-m; a hearer may report a noise (Alert 1) and the verify opens the stash; hidden and restrained is silent",
+   "proposed": true
+  },
+  "service-bin-period-s": {
+   "v": 900,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §4.1",
+   "reason": "a sanitation round empties each bin once in 15 minutes, phase = Hash.Of(bin id) mod period; learnable by Watch; P(emptied in an 8.5 min mission) = 57%; in the mission only, never between missions (Motive 2.4, Call 9)",
+   "proposed": true
+  },
+  "service-bin-dwell-s": {
+   "v": 20,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md §4.1",
+   "reason": "the round robot stands 20 s at a bin; a body inside is found when it opens it",
+   "proposed": true
+  },
+  "free-s": {
+   "v": 3,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 2.1",
+   "reason": "a finder unties a restrained victim in 3 s; the victim then reports at once",
+   "proposed": true
+  },
+  "meet-m": {
+   "v": 6,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2",
+   "reason": "a person is at a meeting place within 6 m of its stand",
+   "proposed": true
+  },
+  "expect-look-s": {
+   "v": 10,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2",
+   "reason": "inside Motive's suspicion-s: the waiter scans the place and Q's nearby stops for the first 10 s of the 20; a body in sight turns it into an ordinary find",
+   "proposed": true
+  },
+  "expect-look-m": {
+   "v": 30,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2",
+   "reason": "how far a look reaches along Q's other routine stops",
+   "proposed": true
+  },
+  "alarm-spread": {
+   "v": 3,
+   "unit": "count",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 12.1",
+   "reason": "at most 3 of the raiser's ties' expected places join the destination list",
+   "proposed": true
+  },
+  "robot-reach-m": {
+   "v": 60,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 12.2",
+   "reason": "a robot takes a destination within 60 m of its origin; farther ones are for officers",
+   "proposed": true
+  },
+  "robot-wire-s": {
+   "v": 4,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 12.2",
+   "reason": "the desk radios a patrol robot: it breaks its sweep 4 s after a landing",
+   "proposed": true
+  },
+  "check-s": {
+   "v": 10,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 12.2",
+   "reason": "a unit checks the place 10 s on arrival (the same as Motive's search-stash-s)",
+   "proposed": true
+  },
+  "dock-reach-m": {
+   "v": 40,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 8.3",
+   "reason": "R-DOCK: every walkable cell within 40 m of a dock or post, so a profile's arrival times can be delivered",
+   "proposed": true
+  },
+  "scream-m": {
+   "v": 20,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 2.1; Motive 1.3, 3.3",
+   "reason": "a scream or call-out is heard 20 m round with no line (Motive's aware victim screams and a hidden victim's call-out use it); wider than the 13 m witness range, narrower than the 30 m of gunfire; a hearer's look still needs a clear line within 13 m",
+   "proposed": true
+  },
+  "tell-m": {
+   "v": 20,
+   "unit": "m",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 3.4",
+   "reason": "a person at a phone can tell a tie who is indoors or within 20 m on the street (a shout)",
+   "proposed": true
+  },
+  "verify-alert-down": {
+   "v": 1,
+   "unit": "alert",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 3.3; Motive 2.3",
+   "reason": "a living person confirmed where the report said stays at 1 (a knockout never exceeds 1, Call 2); dead is 2 (report-alert-dead)",
+   "proposed": true
+  },
+  "suspicion-fearful-pm": {
+   "v": 1000,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2 (differs from Motive 5.2)",
+   "reason": "OPTIONAL temperament scale on Motive's suspicion-s (20 s): 500 would make a Fearful waiter suspicious at 10 s; default 1000 = flat, as Motive",
+   "proposed": true,
+   "optional": true
+  },
+  "suspicion-loyal-pm": {
+   "v": 1000,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2 (differs from Motive 5.2)",
+   "reason": "the base: 20 s",
+   "proposed": true,
+   "optional": true
+  },
+  "suspicion-idealist-pm": {
+   "v": 1000,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2 (differs from Motive 5.2)",
+   "reason": "OPTIONAL: 1500 would make it 30 s",
+   "proposed": true,
+   "optional": true
+  },
+  "suspicion-mercenary-pm": {
+   "v": 1000,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 11.2 (differs from Motive 5.2)",
+   "reason": "OPTIONAL: 2250 would make it 45 s",
+   "proposed": true,
+   "optional": true
+  },
+  "launch-gap-s": {
+   "v": 1.5,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 13.2",
+   "reason": "units leave a dock or post one at a time, so a swarm streams out and can be counted",
+   "proposed": true
+  },
+  "robot-alarm-cm-s": {
+   "v": 85,
+   "unit": "cm-per-s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 13.2",
+   "reason": "how fast robots converge on an alarm: the patrol's chase speed (85), so nothing changes; 120 or 150 is a second difficulty lever beside the level S",
+   "proposed": true,
+   "optional": true
+  },
+  "hero-block-dispatch-s": {
+   "v": 0,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 13.2",
+   "reason": "OPTIONAL, off: per Hero step, +3 s dispatch (citizens block cars, GDD 05)",
+   "proposed": true,
+   "optional": true
+  },
+  "hero-block-speed-pm": {
+   "v": 0,
+   "unit": "per-mille",
+   "tag": "S",
+   "src": "brief 013 witnesses (Pulse) briefs/013/pulse-witnesses.md 13.2",
+   "reason": "OPTIONAL, off: per Hero step, -100 per-mille on unit speed",
+   "proposed": true,
+   "optional": true
+  }
+ }
+}

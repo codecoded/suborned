@@ -97,3 +97,11 @@ test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25
   for (const [m, hex] of Object.entries(want)) { expect(hexOf(m), `${m}.mat`).toBe(hex); expect(palette.get(m), `${m} palette row`).toBe(hex); }
   for (const m of Object.keys(want)) expect(new Set(adopted.flatMap(a => a.files.filter(f => f.path === `Materials/${m}.mat`).map(f => f.sha256))).size, `${m}: one file in the catalogue`).toBe(1);
 });
+
+test('brief 013 (Vantage, Motive §2.5): only a piece tagged `stash` can hold a body, and today that is the Dumpster, still a candidate until Vela adopts it', () => {
+  const stash = kit.assets.filter(a => a.tags.stash);
+  expect(stash.map(a => `${a.id} ${a.tags.stash!.holds} ${a.status}`)).toEqual(['Dumpster 1 candidate']);
+  expect(stash[0]!.tags.use).toContain('dumpster'); // the street item kind the world places it as
+  // size does not decide it: pieces as big as a Dumpster that must not hold a body (a booth, a lamp, a crate stack, a coffee cart)
+  for (const id of ['PhoneBooth', 'Streetlamp', 'CrateStack', 'UtilityCabinet', 'RecyclingBins']) expect(kit.assets.find(a => a.id === id)!.tags.stash, id).toBeUndefined();
+});
