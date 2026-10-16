@@ -8,6 +8,7 @@
     "plan": "bun tools/plan/cli.ts",
     "doctor": "bun tools/doctor.ts",
     "verify": "bun tools/verify.ts",
+    "budget": "bun tools/hud-budget/cli.ts briefs/014/play",
     "causes": "bun tools/levels/causes.ts",
     "kit": "bun tools/kit/cli.ts",
     "decokit": "bun tools/decokit/run.ts",

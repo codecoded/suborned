@@ -1,0 +1,8 @@
+{
+ "note": "Pins added after the run was recorded (see latePins in pins.ts). r017, r018 and r019 were made before the dialogue objective pinned contracts/missions/handover/mission.json; the corpus reads it as passages, so Waymark's re-siting of the cell's start (brief 014, 2026-10-16) changed their corpus hash. The copy is HEAD's mission.json (git show HEAD:contracts/missions/handover/mission.json at 2026-10-16, before that edit). Nothing is taken on trust: replay checks the file against this sha256 and then the corpus hash it gives against the one the run recorded.",
+ "runs": {
+  "r017": { "mission": { "source": "contracts/missions/handover/mission.json", "sha256": "2057806c11ac1878e2d4b489ee8ee5c9d4f496159a5012db4e9d973a10218fbb" } },
+  "r018": { "mission": { "source": "contracts/missions/handover/mission.json", "sha256": "2057806c11ac1878e2d4b489ee8ee5c9d4f496159a5012db4e9d973a10218fbb" } },
+  "r019": { "mission": { "source": "contracts/missions/handover/mission.json", "sha256": "2057806c11ac1878e2d4b489ee8ee5c9d4f496159a5012db4e9d973a10218fbb" } }
+ }
+}

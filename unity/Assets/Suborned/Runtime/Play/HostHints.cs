@@ -13,14 +13,15 @@ namespace Suborned.Play
     /// run.seen). Hints read the run; they never change it, so a replay is untouched.</summary>
     public sealed partial class HandoverHost
     {
-        public sealed class HintShown { public string Id = "", Line = ""; public Vector3? Ring; public int Portrait = -1; }
+        public sealed class HintShown { public string Id = "", Line = "", Who = ""; public Vector3? Ring; public int Portrait = -1; }
+        string trigWho = ""; // the role a trigger found (brief 014: the short line's {who})
         /// <summary>The hint on screen now, else null.</summary>
         public HintShown HintNow { get; private set; }
         public bool HintsOn { get => PlayerPrefs.GetInt(HintsPref, 1) == 1; set { PlayerPrefs.SetInt(HintsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12" };
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -67,15 +68,15 @@ namespace Suborned.Play
             {
                 if (hintsDone.Contains(h.Id) || known.Contains(h.Id) || h.Line.Length == 0) continue;
                 if (!Trigger(h.Id, out var ring, out var portrait)) continue;
-                HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = ring, Portrait = portrait }; hintOrdersAt = Game.Orders.Count;
+                HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = ring, Portrait = portrait, Who = trigWho }; hintOrdersAt = Game.Orders.Count;
                 return;
             }
         }
 
         /// <summary>The ✕ on the hint: this one is spent. H: the whole layer off (or back on).</summary>
-        public void RelearnHints() { PlayerPrefs.DeleteKey(LearnedPref); learned = null; PlayerPrefs.Save(); HintsOn = true; Status = "Hints on, from the start."; Pop(Status, null, SelectedWorld(), Feedback.Info); }
+        public void RelearnHints() { PlayerPrefs.DeleteKey(LearnedPref); learned = null; PlayerPrefs.Save(); HintsOn = true; Status = "Hints on, from the start."; PopKey("hints-on", null, SelectedWorld(), Feedback.Info, Status); }
         public void DismissHint() { if (HintNow != null) { hintsDone.Add(HintNow.Id); HintNow = null; } }
-        public void ToggleHints() { HintsOn = !HintsOn; if (!HintsOn) HintNow = null; Status = HintsOn ? "Hints on." : $"Hints off. {controls.Label(PlayAction.Hints)} brings them back."; Pop(Status, null, SelectedWorld(), Feedback.Info); }
+        public void ToggleHints() { HintsOn = !HintsOn; if (!HintsOn) HintNow = null; Status = HintsOn ? "Hints on." : $"Hints off. {controls.Label(PlayAction.Hints)} brings them back."; PopKey(HintsOn ? "hints-on" : "hints-off", null, SelectedWorld(), Feedback.Info, Status); }
 
         IEnumerable<Order> OrdersTaken(int from = 0) { for (int i = from; i < Game.Orders.Count; i++) if (Game.Orders[i].ok) yield return Game.Orders[i].order; }
         bool Given(Func<Order, bool> f, int from = 0) { foreach (var o in OrdersTaken(from)) if (f(o)) return true; return false; }
@@ -86,7 +87,7 @@ namespace Suborned.Play
         /// <summary>Motive's trigger for a hint, from the engine's state, with what it rings.</summary>
         bool Trigger(string id, out Vector3? ring, out int portrait)
         {
-            var g = Game; ring = null; portrait = -1;
+            var g = Game; ring = null; portrait = -1; trigWho = "";
             switch (id)
             {
                 case "H1":
@@ -100,7 +101,7 @@ namespace Suborned.Play
                     foreach (var r in Roles)
                     {
                         var p = g.PersonByRole(r);
-                        if (p.KRoutine && !(p.KNeed && p.KTemperament) && !Given(o => o.Do == "listen" && o.Target == r)) { ring = At(r); return true; }
+                        if (p.KRoutine && !(p.KNeed && p.KTemperament) && !Given(o => o.Do == "listen" && o.Target == r)) { ring = At(r); trigWho = r; return true; }
                     }
                     return false;
                 case "H3":
@@ -108,7 +109,7 @@ namespace Suborned.Play
                     {
                         if (r == "councillor") continue;
                         var p = g.PersonByRole(r);
-                        if (p.KNeed && !p.Turned && !Given(o => o.Do == "turn" && o.Target == r)) { portrait = (int)OpId.Fixer; ring = At(r); return true; }
+                        if (p.KNeed && !p.Turned && !Given(o => o.Do == "turn" && o.Target == r)) { portrait = (int)OpId.Fixer; ring = At(r); trigWho = r; return true; }
                     }
                     return false;
                 case "H4":
@@ -116,10 +117,10 @@ namespace Suborned.Play
                     ring = At("marker/cabinet"); return true;
                 case "H5":
                     foreach (var r in new[] { "waitress", "driver" })
-                        if (g.PersonByRole(r).Turned && !Given(o => o.Do == "call" && o.Target == r)) { ring = At(r); return true; }
+                        if (g.PersonByRole(r).Turned && !Given(o => o.Do == "call" && o.Target == r)) { ring = At(r); trigWho = r; return true; }
                     return false;
                 case "H6":
-                    foreach (var r in Roles) if (g.PersonByRole(r).KnownRefused.Count > 0) { ring = At(r); return true; }
+                    foreach (var r in Roles) if (g.PersonByRole(r).KnownRefused.Count > 0) { ring = At(r); trigWho = r; return true; }
                     return false;
                 case "H7":
                     {
@@ -147,6 +148,15 @@ namespace Suborned.Play
                         for (int k = 0; k < 3; k++) { var op = g.Ops[k]; if (op.Gun.W != null && !op.Down && !op.Inside && G.Within(op.Pos, car, 1500)) return false; }
                         ring = At("car/getaway"); return true;
                     }
+                case "H12": // Sky 2026-10-16: the first long walk teaches the run toggle (G, or the chip's pace glyph)
+                    for (int k = 0; k < 4; k++)
+                    {
+                        var op = g.Ops[k]; var d = doing[k];
+                        if (op.Walk == null || op.Running || op.CarryBody.Length > 0 || op.Carrying.HasValue || op.Inside || d.TicksLeft < 5 * Game.Hz) continue;
+                        if (k == (int)OpId.Enforcer && g.Vale == ValeAt.WithEnforcer) continue;
+                        portrait = k; ring = frame.World(op.Walk.End); return true; // the text: it rings the walk's destination
+                    }
+                    return false;
                 case "H11":
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
                     foreach (var name in g.WouldBeCaptured()) // Keel's query: downed and not within the car's reach (carried or not)
@@ -173,6 +183,7 @@ namespace Suborned.Play
                 case "H9": return Given(o => o.Target == "driver", from) || Array.Exists(Roles, r => g.PersonByRole(r).Turned);
                 case "H10": return Given(o => o.Do == "draw", from);
                 case "H11": return Given(o => o.Do is "carry" or "extract", from);
+                case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
             }
             return false;
         }

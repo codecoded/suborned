@@ -415,7 +415,7 @@ namespace Suborned.Sim
             if (a.Kill) RaiseAlert(Math.Max(a.Alert, R.AlertDead), "confirmed:dead:" + a.Victim);
             a.Alert = Math.Max(a.Alert, Alert);
             if (!a.Take) ChargeAct(a); // a Take keeps its own Trail (cell.take)
-            if (a.Kill && !a.StandingPaid) { a.StandingPaid = true; MoveStanding(R.FoundKillStanding, "found-killing:" + a.Victim); }
+            if (a.Kill && !a.StandingPaid) { a.StandingPaid = true; MoveStanding(R.FoundKillStanding, "found-killing:" + a.Victim, "found-killing", Who(a.P)); }
             Note("report.confirmed", $"{by.Replace("camera:", "the camera ")} confirms {Who(a.P)}: {(a.Take ? "taken" : a.Kill ? "dead" : "out")}.");
             if (Alert >= 2) SealFrom(Math.Max(Tick, SecurityArrives)); // the seal is the unit's cordon: from the later of the confirmation and the unit on the street (Motive rev 3)
             if (b != null && !a.Kill && b.P.Down && Bodies.Contains(b) && !b.Seizing) Wake(b, true);

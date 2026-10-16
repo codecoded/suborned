@@ -51,13 +51,15 @@ namespace Suborned.Sim
         public readonly List<(string id, string building, string kind, Pt at, Pt stand)> Entrances = new List<(string, string, string, Pt, Pt)>();
         public readonly List<(string id, Pt at)> CallBoxes = new List<(string, Pt)>(), Docks = new List<(string, Pt)>(), Posts = new List<(string, Pt)>();
         public int SecurityBase = 1, SecurityBonus; // no provisional data: level 1 (routine), today's numbers
+        public string District = "";                // brief 014: the district whose Standing the mission moves (provisional district.id; none without it)
         public bool HasProvisional;
 
         /// <summary>Read the provisional world facts (suborned.sim.provisional/1), checked at load like the site (Redline E1).</summary>
         public void AddProvisional(string json)
         {
             var n = JNode.Parse(json, "provisional");
-            n.Only("schema", "mission", "note", "security", "stashes", "callBoxes", "docks", "posts", "srcEmpty");
+            n.Only("schema", "mission", "note", "security", "district", "stashes", "callBoxes", "docks", "posts", "srcEmpty");
+            var dn = n["district"]; dn.Only("id", "src"); District = dn["id"].Str(); if (District.Length == 0) throw new FormatException("provisional district.id is empty");
             if (n["schema"].Str() != "suborned.sim.provisional/1") throw new FormatException("provisional schema is not suborned.sim.provisional/1");
             if (n["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
             var sec = n["security"]; sec.Only("base", "bonus", "src"); SecurityBase = sec["base"].Int(); SecurityBonus = sec["bonus"].Int();

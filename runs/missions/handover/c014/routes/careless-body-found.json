@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route G-kill with the body left where the guard fell, at his post, and the Enter given at once. The Tech leaves the cabinet with the Enforcer inside, the entrance camera's feed returns and its watcher reads a dead body at 2:37 (Alert 2: a found killing). The Enforcer comes out at 3:12 into the loud fight with the cell at the loud reference's cover posts and takes Vale to the getaway car, but the car is held while the police stand, and the district seals at 5:37 (145 s after the unit is on the street). The careful twin is route-g-kill.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":355,"op":"scout","do":"watch","target":"guard"},
+  {"tick":555,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1440,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"kill"},
+  {"tick":1540,"op":"enforcer","do":"enter"},
+  {"tick":1540,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1540,"op":"scout","do":"move","to":[1175,-4825]},
+  {"tick":1540,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":1920,"op":"scout","do":"draw"},
+  {"tick":1920,"op":"scout","do":"stance","stance":"free"},
+  {"tick":1920,"op":"fixer","do":"draw"},
+  {"tick":1920,"op":"fixer","do":"stance","stance":"free"},
+  {"tick":1920,"op":"tech","do":"draw"},
+  {"tick":1920,"op":"tech","do":"stance","stance":"free"},
+  {"tick":1920,"op":"enforcer","do":"move","to":"d:Getaway bay"}
+ ],
+ "until": 5100
+}

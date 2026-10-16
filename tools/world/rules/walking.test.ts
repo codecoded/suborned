@@ -41,8 +41,13 @@ test('without the seating allowance the narrow places inside the café terrace p
   const open = w5(strict, civ as never)!;
   expect(open.ok).toBe(false);
   expect(open.detail).toMatch(/^4 fail: /); // the 1.85 m Datum measured between the tables and the terrace wall, on both sides of the terrace: the same four gaps
-  expect(open.detail).toMatch(/Office entrance → Behind café passes 1\.87 m for 0\.8 m of the walk, past the 0 m a constrained gap may run between CafeBay\/wall-front-w and cafe-table-1 /);
-  expect(open.detail).toMatch(/Office entrance → Café kitchen door passes 1\.87 m for 0\.8 m of the walk, past the 0 m a constrained gap may run between cafe-table-2 and CafeBay\/wall-front-e /); // the kitchen door's walks (brief 013) cross the same gap
+  // The property, not a millimetre: the gap is about 1.85 m wide (1.8 to 1.9) and a fraction of a metre to a metre of the walk long. The W-5 grid starts at the corner of all the walk points,
+  // so moving a crew start (a mission edit) shifts it by a few millimetres and the sampled gap and run read 1.87 m for 0.8 m, or 1.88 m for 1.0 m: re-pinning would break on the next move.
+  const gap = String.raw`passes 1\.8\d m for [01]\.\d m of the walk, past`;
+  expect(open.detail).toMatch(new RegExp(String.raw`Office entrance → Behind café ${gap}`));
+  expect(open.detail).toMatch(new RegExp(String.raw`Office entrance → Café kitchen door ${gap}`));
+  expect(open.detail).toMatch(/Office entrance → Behind café passes [\d.]+ m for [\d.]+ m of the walk, past the 0 m a constrained gap may run between CafeBay\/wall-front-w and cafe-table-1 /);
+  expect(open.detail).toMatch(/Office entrance → Café kitchen door passes [\d.]+ m for [\d.]+ m of the walk, past the 0 m a constrained gap may run between cafe-table-2 and CafeBay\/wall-front-e /); // the kitchen door's walks (brief 013) cross the same gap
 });
 
 test('a plan that states no body has no W-5; nor has a block with no ground solids', () => {

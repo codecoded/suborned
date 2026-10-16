@@ -19,7 +19,15 @@ namespace Suborned.Sim
         public Run(Game g) { G = g; }
         public bool Is(bool ok, string what) { Checks.Add((ok, what)); return ok; }
         public void Eq<T>(T a, T b, string what) => Is(EqualityComparer<T>.Default.Equals(a, b), what + " (got " + Inv(a) + ", want " + Inv(b) + ")");
-        static string Inv(object? v) => v is IFormattable f ? f.ToString(null, System.Globalization.CultureInfo.InvariantCulture) : v?.ToString() ?? "";
+        static string Inv(object? v)
+        {
+            if (v is System.Runtime.CompilerServices.ITuple t) // a tuple's own ToString is the culture's (a negative item reads "−1" in sv-SE: Redline E7)
+            {
+                var parts = new string[t.Length]; for (int i = 0; i < t.Length; i++) parts[i] = Inv(t[i]);
+                return "(" + string.Join(", ", parts) + ")";
+            }
+            return v is IFormattable f ? f.ToString(null, System.Globalization.CultureInfo.InvariantCulture) : v?.ToString() ?? "";
+        }
         /// <summary>Give an order now and check it was taken.</summary>
         public bool Do(string op, string verb, string target = "", string approach = "")
         {

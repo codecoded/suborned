@@ -62,12 +62,16 @@ namespace Suborned.Sim
     public sealed class Event
     {
         public readonly string Id, By, Phase;
+        /// <summary>rulebook privacy (Sky 2026-10-16): a turning conversation; onlookers learn nothing from it (no witnesses, nobody on the card).</summary>
+        public readonly bool Private;
         public readonly List<Cond> Needs = new List<Cond>(); public readonly List<Line> Price = new List<Line>();
         public readonly List<ROutcome> Outcomes = new List<ROutcome>(); public readonly List<Also> Also = new List<Also>(); public readonly List<Witness> Witnesses = new List<Witness>();
         public Event(JNode n)
         {
-            n.Only("id", "by", "phase", "tag", "src", "proposed", "reason", "needs", "price", "outcomes", "also", "witnesses", "how", "order", "band");
+            n.Only("id", "by", "phase", "private", "tag", "src", "proposed", "reason", "needs", "price", "outcomes", "also", "witnesses", "how", "order", "band");
             Id = n["id"].Str(); By = n["by"].Str(); Phase = n["phase"].Str();
+            if (n.Opt("private") is JNode pv) Private = pv.Bool();
+            else if (By == "fixer" || By == "scout") throw new FormatException($"{Id}: an event by the Fixer or the Scout says whether it is private (rulebook privacy)");
             foreach (var c in n["needs"].Items) Needs.Add(new Cond(c));
             if (n.Opt("price") is JNode p) foreach (var l in p.Items) Price.Add(new Line(l));
             foreach (var o in n["outcomes"].Items) Outcomes.Add(new ROutcome(o));
@@ -103,6 +107,7 @@ namespace Suborned.Sim
             ["scale"] = new[] { "scale", "op", "than" }, ["trail"] = new[] { "atLeast" }, ["keeper-position"] = new string[0], ["introduces-along"] = new string[0],
             ["tie"] = new[] { "kinds" }, ["tie-between-holds"] = new[] { "is" }, ["act"] = new[] { "in" }, ["within"] = new[] { "m", "sightline" },
             ["cell"] = new[] { "is" }, ["called"] = new[] { "is" }, ["exposed"] = new[] { "is" }, ["count"] = new[] { "event", "below" },
+            ["done-to"] = new[] { "in" }, ["alive"] = new[] { "is" }, ["standing-moved"] = new[] { "is" }, // brief 014: Standing's word and drift
         };
         static readonly Dictionary<string, string[]> EffKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
@@ -111,7 +116,13 @@ namespace Suborned.Sim
             ["trail"] = new[] { "add", "per" }, ["standing"] = new[] { "step", "per" }, ["alert"] = new[] { "atLeast", "per" }, ["lead"] = new[] { "from" },
             ["spend-hop"] = new string[0], ["tell"] = new[] { "along", "hops" }, ["lapse-tie"] = new string[0], ["replace-need"] = new[] { "stream" },
             ["schedule"] = new[] { "fight" }, ["debrief"] = new[] { "line" },
+            ["word-standing"] = new[] { "toward", "step", "cap" }, ["drift-standing"] = new[] { "step", "to" }, // brief 014
         };
+        /// <summary>What the cell did to a person this mission that their word carries (standing.word; rulebook.schema.ts DONE_TO).</summary>
+        public static readonly string[] DoneTo = { "helped", "pressured", "knocked-out" };
+        /// <summary>The Standing line's causes besides seen-&lt;traceable act&gt; (rulebook standing.causes; rulebook.schema.ts STANDING_CAUSES).</summary>
+        public static readonly string[] StandingFixedCauses = { "found-killing", "word-helped", "word-pressured", "word-knocked-out", "balanced", "drift-down", "drift-up", "steady" };
+        public static readonly string[] StandingLineFields = { "district", "from", "to", "band", "cause", "who" };
         /// <summary>The kinds the engine itself evaluates inside a mission (the interpreted events: scout.*, turn.*; the reports table).</summary>
         static readonly HashSet<string> MissionKinds = new HashSet<string>(StringComparer.Ordinal)
         { "tier", "turned", "known", "leverage", "lover-within", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
@@ -158,6 +169,9 @@ namespace Suborned.Sim
         public readonly int MemoryCap;
         public readonly int[] AlertByIncident; public readonly int GunfireAlert, ViolenceSeen;
         public readonly int StandingStart, StandingStep, HeroAt, MenaceAt;
+        // brief 014 (Sky 2026-10-16, briefs/014/motive-standing.md): the word between missions and the drift back to the start
+        public readonly int WordStandingStep, WordStandingCap, StandingDrift;
+        public readonly HashSet<string> WordTies = new HashSet<string>(StringComparer.Ordinal), StandingCauses = new HashSet<string>(StringComparer.Ordinal);
         public readonly int WitnessRangeCm, WitnessTrail, ApproachReachCm, ListenReachCm, TrailOpen;
         // cell
         /// <summary>cell.loop.targets: the cameras the cabinet loops, by site camera id, or "world" for the city's own (brief 013 D).</summary>
@@ -211,7 +225,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "takedown", "witness", "response", "campaign", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "takedown", "witness", "response", "campaign", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -281,8 +295,13 @@ namespace Suborned.Sim
             ResolveAllRefs(b);
 
             // ---- sections, strictly, into fields
-            var s = b["standing"]; s.Only("start", "step", "hero", "menace", "rule", "tag", "src", "proposed", "reason");
+            var s = b["standing"]; s.Only("start", "step", "hero", "menace", "word", "drift", "causes", "rule", "tag", "src", "proposed", "reason");
             StandingStart = RI(s["start"]); StandingStep = RI(s["step"]); HeroAt = RI(s["hero"]); MenaceAt = RI(s["menace"]);
+            if (!(MenaceAt < StandingStart && StandingStart < HeroAt)) throw new FormatException("standing.start lies between the Menace and Hero bands");
+            s["word"].Only("step", "cap", "ties"); WordStandingStep = RI(s["word"]["step"]); WordStandingCap = RI(s["word"]["cap"]); StandingDrift = RI(s["drift"]);
+            if (WordStandingStep < 0 || WordStandingCap < 0 || StandingDrift < 0) throw new FormatException("standing.word and standing.drift are not negative");
+            foreach (var t in s["word"]["ties"].Strs()) { if (!TieKinds.Contains(t)) throw new FormatException($"standing.word.ties: tie kind '{t}' is unknown"); WordTies.Add(t); }
+            foreach (var kv in s["causes"].Entries) { kv.Value.Str(); StandingCauses.Add(kv.Key); }
             var al = b["alert"]; al.Only("levels", "byIncident", "gunfire", "violenceSeen", "rule", "tag", "src");
             var by = al["byIncident"].Items; AlertByIncident = new int[by.Count]; for (int i = 0; i < by.Count; i++) AlertByIncident[i] = RI(by[i]);
             if (AlertByIncident.Length == 0) throw new FormatException("alert.byIncident is empty");
@@ -308,6 +327,7 @@ namespace Suborned.Sim
             mem["reads"].Only("helped", "refused");
             HelpedAct = KnownAct(mem["reads"]["helped"]); RefusedAct = KnownAct(mem["reads"]["refused"]);
             b["exposure"].Only("rule", "tag", "src", "proposed", "reason");
+            b["privacy"].Only("rule", "tag", "src", "proposed", "reason");
             foreach (var kv in b["traceable"].Entries)
             {
                 kv.Value.Only("standing", "tag", "src", "proposed", "reason");
@@ -322,6 +342,11 @@ namespace Suborned.Sim
                 Ladders[kv.Key] = list.ToArray();
             }
             foreach (var kv in b["debrief"]["lines"].Entries) { kv.Value.Only("fields", "src"); DebriefLines.Add(kv.Key); }
+            // brief 014: the Standing line's causes are exactly what the engine emits (unknown = reject, both ways)
+            var wantCauses = new SortedSet<string>(StandingFixedCauses, StringComparer.Ordinal);
+            foreach (var kv in Traceable) if (kv.Value != 0) wantCauses.Add("seen-" + kv.Key);
+            if (!wantCauses.SetEquals(StandingCauses)) throw new FormatException($"standing.causes are {string.Join(",", new SortedSet<string>(StandingCauses, StringComparer.Ordinal))}; the engine's are {string.Join(",", wantCauses)}");
+            if (b["debrief"]["lines"].Opt("standing") is not JNode sl || string.Join(",", sl["fields"].Strs()) != string.Join(",", StandingLineFields)) throw new FormatException("debrief.lines.standing carries " + string.Join(", ", StandingLineFields));
             b["debrief"].Only("lines", "rule", "tag", "src");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
@@ -465,6 +490,10 @@ namespace Suborned.Sim
             KnownBy = pv["knownBy"].Strs(); foreach (var k in KnownBy) Ev(k);
             var ph = b["phases"]; ph.Only("mission-start", "between-missions", "iterate", "tag", "src");
             foreach (var k in ph["mission-start"].Strs()) Ev(k); foreach (var k in ph["between-missions"].Strs()) Ev(k);
+            { // brief 014: the engine runs the word after word.passes and the drift last, so the drift sees every move
+                var bm = ph["between-missions"].Strs(); int wpi = bm.IndexOf("word.passes"), sw = bm.IndexOf("standing.word"), sd = bm.IndexOf("standing.drift");
+                if (wpi < 0 || sw != wpi + 1 || sd != bm.Count - 1) throw new FormatException("phases.between-missions: standing.word follows word.passes, standing.drift is last");
+            }
             var stm = b["streams"]; stm.Only("hash", "generator", "draw", "keys", "weightScale", "weights", "rule", "tag", "src");
         }
 
@@ -528,6 +557,7 @@ namespace Suborned.Sim
             if (ev.Price.Count > 0 && ev.Price[0].Id != "base") throw new FormatException($"{ev.Id}: the first price line is the base");
             foreach (var o in ev.Outcomes) { Check(o.When, "outcomes"); foreach (var e in o.Changes) ValidateEff(e, ev, interpreted); }
             foreach (var a in ev.Also) { Check(a.When, "also"); foreach (var e in a.Changes) ValidateEff(e, ev, interpreted); }
+            if (ev.Private && ev.Witnesses.Count > 0) throw new FormatException($"{ev.Id}: a private event has no witnesses (rulebook privacy)");
             foreach (var w in ev.Witnesses) { Check(w.When, "witnesses"); if (!Traceable.ContainsKey(w.Act)) throw new FormatException($"{ev.Id}: witness act '{w.Act}' is not traceable"); }
         }
 
@@ -560,6 +590,8 @@ namespace Suborned.Sim
                 case "tie": foreach (var x in c.L("kinds")) if (!TieKinds.Contains(x)) throw new FormatException($"{w}: tie kind '{x}' is unknown"); break;
                 case "act": foreach (var x in c.L("in")) if (!Traceable.ContainsKey(x)) throw new FormatException($"{w}: act '{x}' is not traceable"); break;
                 case "count": Ev(c.S("event")); Num(c.S("below")); break;
+                case "done-to": foreach (var x in c.L("in")) if (Array.IndexOf(DoneTo, x) < 0) throw new FormatException($"{w}: done-to '{x}' is unknown"); break;
+                case "alive": case "standing-moved": Bool("is"); break;
             }
         }
 
@@ -582,6 +614,8 @@ namespace Suborned.Sim
                 case "replace-need": if (Book["streams"]["keys"].Opt(e.S("stream")) == null) throw new FormatException($"{w}: stream '{e.S("stream")}' is unknown"); break;
                 case "schedule": OneOf(n["fight"], new[] { "ambush" }); break;
                 case "debrief": if (!DebriefLines.Contains(e.S("line"))) throw new FormatException($"{w}: debrief line '{e.S("line")}' is unknown"); break;
+                case "word-standing": OneOf(n["toward"], new[] { "hero", "menace" }); Num(e.S("step")); Num(e.S("cap")); break;
+                case "drift-standing": Num(e.S("step")); Num(e.S("to")); break;
             }
         }
         static void OneOfStr(string v, string[] allowed, string where) { if (Array.IndexOf(allowed, v) < 0) throw new FormatException($"{where}: '{v}' is not one of {string.Join(", ", allowed)}"); }

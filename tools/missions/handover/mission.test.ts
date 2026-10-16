@@ -3,7 +3,7 @@
 // schedule, and the overlay still passes.
 // Preservation lock (Sky 2026-10-14): re-siting the Handover changes PLACES and MOVED or RENAMED; re-timing it changes the
 // timeline test (GDD §07, entry for entry).
-// Re-pinned 2026-10-14 (Waymark). Sky, 2026-10-13: "the handover mission is crucial we keep, though the timings and
+// Re-pinned 2026-10-16 (Waymark, brief 014): the cell's start moved into the camera's view (the four crew rows of MOVED). Re-pinned 2026-10-14 (Waymark). Sky, 2026-10-13: "the handover mission is crucial we keep, though the timings and
 // placements can be adjusted given we've regenerated the world". What moved: the Records Office doors now stand on its tower
 // faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 'Steps' is 'Terrace gate' (the café door is
 // flush, there are no steps; the point has not moved). No time moved: the schedule is GDD §07's clock offsets and names no
@@ -34,7 +34,7 @@ const raw = await text(FILE), mission = Mission.parse(JSON.parse(raw));
 const places = (s: string) => s.slice(s.indexOf('\n "destinations": ['));
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
-const PLACES = '0456823d4d8f845ca7dbb4c5b18750e813e41b2cbf2772b40d4f134e0bd725b0'; // sha256 of places() now: WAS with MOVED and RENAMED applied
+const PLACES = 'c71d2774843a1b094f144809900181d5180408251ae74f3914b1babcef6e3a62'; // sha256 of places() now: WAS with MOVED and RENAMED applied
 /** Every point re-sited since WAS: name, from, to (block frame, m). */
 const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   ['Office approach', [52, -30.5], [48.6, -30]], // the foot of the public door steps, 0.6 m before the first riser
@@ -42,6 +42,12 @@ const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   ['Official entrance', [73.25, -31], [76.25, -30]], // the flush official door, 0.75 m off tower-official's south face
   ['Meet Vale', [73.25, -31], [76.25, -30]], // the same point as Official entrance, as before
   ['Under parasol', [-7.92, -23.88], [-8.1, -23.7]], // off cafe-table-2's footprint (1.16 m from its centre, inside body clearance) onto free ground 1.41 m from it, still under the parasol's canopy, 0.3 m inside its ring (Pulse, Aster; Vantage's civic-dress test: the canopy is overhead)
+  // the cell's start (brief 014, Sky: "you can't see them!"): off Rocket Lane's kerb strip, where bld/rocket-west/19 hid the line from the play camera (V-1 6 %),
+  // to a loose group by the getaway car inside the block's crew-line-getaway zone, each 100 % seen, clear of the pavilion's canopy, the fans at 0:00 and P-16's places
+  ['Fixer', [1.168, -49.666], [-0.2, -46.6]],
+  ['Tech', [2.368, -49.666], [1.2, -44.6]],
+  ['Scout', [3.568, -49.666], [-1.6, -44.3]],
+  ['Enforcer', [4.768, -49.666], [2.7, -47.6]],
 ];
 /** Every point renamed since WAS, in place: from, to. */
 const RENAMED: [from: string, to: string][] = [['Steps', 'Terrace gate']];

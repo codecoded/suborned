@@ -39,10 +39,13 @@ namespace Suborned.Sim
             return h.V;
         }
 
+        /// <summary>For a behaviour-only comparison across a move of standing.start (suborned-sim hashes --standing-as n, brief 014): hash Standing
+        /// as if the run had started at n. Never set in play.</summary>
+        public static int StandingAs;
         public static ulong State(Game g)
         {
             var h = new H();
-            h.I(unchecked((long)g.StartHash)).I(g.Tick).I(g.Cash).I(g.Trail).I(g.Alert).I(g.Gunfire).I(g.Reported).I(g.Standing).I((int)g.Result).S(g.FailCode);
+            h.I(unchecked((long)g.StartHash)).I(g.Tick).I(g.Cash).I(g.Trail).I(g.Alert).I(g.Gunfire).I(g.Reported).I(g.Standing + StandingAs).I((int)g.Result).S(g.FailCode);
             foreach (var op in g.Ops)
             {
                 h.I((int)op.Id).P(op.Pos).Z(op.Walk != null).I(op.WalkMm).Z(op.Inside);
@@ -90,7 +93,7 @@ namespace Suborned.Sim
             // action, order and its answer, and every log entry's code and tick (not its words, which are for people)
             h.Z(g.GuardReachedCafe).I(g.Cash);
             foreach (var x in g.IncidentKeys()) h.S(x);
-            foreach (var (t, what, d, now, cause) in g.Ledger) h.I(t).S(what).I(d).I(now).S(cause);
+            foreach (var (t, what, d, now, cause) in g.Ledger) h.I(t).S(what).I(d).I(what == "standing" ? now + StandingAs : now).S(cause);
             foreach (var (t, line, who, detail) in g.DebriefLines) h.I(t).S(line).S(who).S(detail);
             foreach (var x in g.Chain) h.S(x);
             foreach (var x in g.Actions) h.S(x);

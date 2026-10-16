@@ -311,16 +311,22 @@ describe('Sky Q2: need replacement from the person\'s own stream (id + mission n
 });
 
 describe('§05 witnesses and Alert: one incident counts once', () => {
-  test('a witnessed payment, threat or debt cleared adds Trail and moves standing once per incident; background witnesses keep no memory', () => {
+  test('a witnessed threat adds Trail and moves standing once per incident; background witnesses keep no memory; the turning conversations are private (Sky 2026-10-16)', () => {
     const w = R.event(rb, 'witness.sees');
     expect(w.outcomes[0]!.changes).toEqual([{ do: 'trail', add: 'v:witness-trail', per: 'incident' }, { do: 'standing', step: 'v:standing-step', per: 'incident' }]);
     expect(w.also![0]).toEqual({ when: [{ k: 'tier', is: 'simulated' }], changes: [{ do: 'remember', act: 'saw-act' }] });
     expect(num(rb, people, 'v:witness-range-m')).toBe(13);
-    expect(act('pay', person('mercenary')).witnessed).toEqual(['payment']);
-    expect(act('help', person('idealist', 'debt')).witnessed).toEqual(['debt-cleared']);
+    expect(act('pay', person('mercenary')).witnessed).toEqual([]); // private: Pay keeps its own Trail, onlookers learn nothing
+    expect(act('help', person('idealist', 'debt')).witnessed).toEqual([]);
+    expect(act('help', person('idealist', 'cash')).witnessed).toEqual([]);
     expect(act('help', person('idealist', 'papers')).witnessed).toEqual([]);
     expect(act('pressure', person('fearful')).witnessed).toEqual(['threat']);
     expect([rb.traceable['debt-cleared']!.standing, rb.traceable.threat!.standing]).toEqual(['hero', 'menace']);
+    expect(rb.privacy?.src).toContain('Sky 2026-10-16');
+    const priv = rb.events.filter((e) => e.private).map((e) => e.id).sort();
+    expect(priv).toEqual(['scout.listen', 'turn.ask', 'turn.help', 'turn.pay']);
+    expect(R.event(rb, 'turn.pressure').private).toBe(false);
+    for (const e of rb.events) if (e.private) expect(e.witnesses ?? []).toEqual([]);
   });
 
   test('Alert: 1st reported incident → inquiry, 2nd → search, violence seen → lockdown; standing bands at ±3', () => {
@@ -451,7 +457,7 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
 
   test('the campaign: Sky\'s missing-person numbers', () => {
     expect([cp.missing.trail, cp.missing.tiesFear, cp.areaWatch.step, cp.areaWatch.missions, cp.cases.perLevel, cp.cases.cap, cp.cases.close].map(n)).toEqual([2, 1, 1, 3, 2, 2, 3]);
-    expect(rb.phases['between-missions'].slice(-5)).toEqual(['bodies.surface', 'body.grieved', 'missing.worried', 'area.hardens', 'cases.count']);
+    expect(rb.phases['between-missions'].slice(-6, -1)).toEqual(['bodies.surface', 'body.grieved', 'missing.worried', 'area.hardens', 'cases.count']); // brief 014: standing.drift runs last
   });
 
   test('unknown = reject: a fifth level missing, a lock that is no boolean, a kin tie people.rules lacks, an unknown cancel line', () => {
@@ -465,5 +471,58 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(Rulebook.safeParse(cancel).success).toBe(false);
     const extra = structuredClone(raw); extra.takedown.stun = 'v:ko-s';
     expect(Rulebook.safeParse(extra).success).toBe(false);
+  });
+});
+
+describe('brief 014: Standing leans Hero (Sky 2026-10-16; briefs/014/motive-standing.md)', () => {
+  const n = (r: string) => num(rb, people, r);
+  const tell = (who: string, ...done: R.Teller['done'][number][]): R.Teller => ({ who, done });
+  test('the numbers: start +2, the bands unchanged, the word ±1 a person capped at ±2, drift 1; every one Sky\'s, with Motive\'s reasons', () => {
+    expect([n(rb.standing.start), n(rb.standing.hero), n(rb.standing.menace), n(rb.standing.step)]).toEqual([2, 3, -3, 1]);
+    expect(rb.standing.word && rb.standing.drift && rb.standing.causes).toBeTruthy(); // optional in the schema only for pinned runs
+    expect([n(rb.standing.word!.step), n(rb.standing.word!.cap), n(rb.standing.drift!)]).toEqual([1, 2, 1]);
+    for (const v of ['standing-start', 'word-standing-step', 'word-standing-cap', 'standing-drift']) { expect(rb.values[v]!.src).toContain('Sky 2026-10-16'); expect(rb.values[v]!.reason).toContain('Motive'); }
+    expect(R.bandOf(rb, people, n(rb.standing.start))).toBe('neutral'); // one step short of Hero: the Handover's prices stay neutral
+    expect(rb.standing.word!.ties).toEqual(['family', 'lover', 'workmate']);
+  });
+  test('the events: the word after word.passes, the drift last; harm outranks help; a feeling, never a fact', () => {
+    const bm = rb.phases['between-missions'];
+    expect(bm[bm.indexOf('word.passes') + 1]).toBe('standing.word');
+    expect(bm.at(-1)).toBe('standing.drift');
+    const w = R.event(rb, 'standing.word');
+    expect(w.outcomes.map((o) => o.id)).toEqual(['pressured', 'knocked-out', 'helped']);
+    const changes = w.outcomes.flatMap((o) => o.changes);
+    expect(changes.every((c) => c.do === 'word-standing')).toBe(true); // no tell, no learn, no remember: nothing reaches the investigators
+    expect(R.event(rb, 'word.passes').outcomes.flatMap((o) => o.changes).some((c) => c.do === 'word-standing')).toBe(false); // facts never move it
+    expect(R.event(rb, 'standing.drift').outcomes.every((o) => o.changes.some((c) => c.do === 'debrief' && c.line === 'standing'))).toBe(true);
+    expect(rb.debrief.lines['standing']!.fields).toEqual(['district', 'from', 'to', 'band', 'cause', 'who']);
+    expect(checkRulebook(rb, people)).toEqual([]);
+  });
+  test('help spreads (N88): Inez helped, the district +2 → +3, the Hero band', () => {
+    expect(R.standingNext(rb, people, 2, [], [tell('waitress', 'helped')])).toMatchObject({ to: 3, band: 'hero', cause: 'word-helped', who: 'waitress', word: 1, drift: 0 });
+  });
+  test('harm spreads (N89, N90): a threat seen and her word: 0; a knockout unseen: +1', () => {
+    expect(R.standingNext(rb, people, 2, [{ delta: -1, cause: 'seen-threat', who: 'waitress' }], [tell('waitress', 'pressured')])).toMatchObject({ to: 0, band: 'neutral', cause: 'seen-threat', who: 'waitress' });
+    expect(R.standingNext(rb, people, 2, [], [tell('guard', 'knocked-out')])).toMatchObject({ to: 1, cause: 'word-knocked-out', who: 'guard' });
+  });
+  test('the cap (N91): three helped net +3, the district moves +2; seen acts are never capped', () => {
+    expect(R.standingNext(rb, people, 2, [], ['waitress', 'driver', 'guard'].map((w) => tell(w, 'helped')))).toMatchObject({ to: 4, word: 2, wordUncapped: 3, cause: 'word-helped', who: 'waitress' });
+    const seen = [1, 2, 3, 4].map(() => ({ delta: -1, cause: 'seen-gunfire', who: '' }));
+    expect(R.standingNext(rb, people, 2, seen, [])).toMatchObject({ to: -2, cause: 'seen-gunfire' });
+  });
+  test('drift both ways, never past the start (N92, N92b); nothing moved at the start is steady (N94)', () => {
+    expect([5, 3, 2, -3].map((f) => { const x = R.standingNext(rb, people, f, [], []); return [x.to, x.cause]; })).toEqual([[4, 'drift-down'], [2, 'drift-down'], [2, 'steady'], [-2, 'drift-up']]);
+    expect(R.standingNext(rb, people, 2, [{ delta: -1, cause: 'seen-threat', who: 'waitress' }], [tell('driver', 'helped')])).toMatchObject({ to: 2, drift: 0, cause: 'balanced' }); // moves that cancel are still moves: no drift
+  });
+  test('helped and pressured counts as pressured (N93)', () => {
+    expect(R.standingNext(rb, people, 2, [], [tell('waitress', 'helped', 'pressured')])).toMatchObject({ to: 1, cause: 'word-pressured', word: -1 });
+  });
+  test('unknown = reject: a cause the engine does not emit, a done-to it does not know, a word tie people.rules lacks', () => {
+    const cause = structuredClone(raw); cause.standing.causes['seen-kindness'] = 'x';
+    expect(checkRulebook(Rulebook.parse(cause), people).join()).toContain('standing.causes');
+    const done = structuredClone(raw); done.events.find((e: { id: string }) => e.id === 'standing.word').needs[1].in.push('bribed');
+    expect(Rulebook.safeParse(done).success).toBe(false);
+    const tie = structuredClone(raw); tie.standing.word.ties.push('neighbour');
+    expect(checkRulebook(Rulebook.parse(tie), people).join()).toContain('tie kind neighbour');
   });
 });

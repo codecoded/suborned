@@ -1,0 +1,8 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "beat", "x": 693, "y": 184, "w": 340, "h": 41, "text": "Vale is in the car."},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

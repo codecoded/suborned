@@ -104,8 +104,8 @@ namespace Suborned.Play
             var cam = host.View; bool kit = HudToolkit.Active; // the kit view draws the pill, roster, strips, verb plate, ticker and feed
             if (m.Fault != null) { var fr = new Rect(20 * s, 20 * s, 1000 * s, 50 * s); Plate(fr); GUI.Label(new Rect(fr.x + 14 * s, fr.y, fr.width, fr.height), $"<color=#ff9a8a>{m.Fault}</color>", txt); return; }
 
-            // markers on the pavement under the cell: the agent's number and what it is doing
-            if (cam)
+            // markers on the pavement under the cell: the agent's number and what it is doing (brief 014: the kit view's activity rings and pips say it)
+            if (cam && !kit)
                 for (int i = 0; i < 4; i++)
                 {
                     var mk = m.Marks[i]; if (!mk.World.HasValue) continue;
@@ -116,8 +116,8 @@ namespace Suborned.Play
                     GUI.Label(new Rect(r.x + 20 * s, r.y, 32 * s, r.height), mk.Verb, mid);
                 }
 
-            // at most two icons over a cast person
-            if (cam)
+            // at most two icons over a cast person (the kit view: the key-person pips and the street's marks instead)
+            if (cam && !kit)
                 for (int k = 0; k < 4; k++)
                 {
                     var ci = m.Cast[k]; if (!ci.World.HasValue) continue;
@@ -265,6 +265,10 @@ namespace Suborned.Play
         /// history (L) above the kit's feed bar, and the ring in the street for the feed card under the mouse.</summary>
         void KitRest(Camera cam)
         {
+            // brief 014: the kit view draws every mark itself (so the HUD layer of a budget shot is the whole HUD); here only the cursor
+            int want = m.Cursor;
+            if (want != cursorIs) { var tex = want == 3 ? cursorNoLine : want == 2 ? cursorAim : want == 1 ? cursorAct : null; Cursor.SetCursor(tex, tex ? new Vector2(16, 16) : Vector2.zero, CursorMode.Auto); cursorIs = want; }
+            if (want >= 0) return;
             // the history, the cards, the briefing, the end card and the hint plate are the kit's
             if (m.Box is Rect box)
             {

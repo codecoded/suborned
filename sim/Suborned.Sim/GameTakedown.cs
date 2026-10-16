@@ -366,7 +366,7 @@ namespace Suborned.Sim
         {
             a.Witnessed = true;
             if (!IsCellPerson(p) && !a.TrailPaid) { a.TrailPaid = true; AddTrail(R.WitnessTrail, "witnessed:takedown:" + a.Victim); }
-            if (!a.StandingPaid) { a.StandingPaid = true; MoveStanding(R.Traceable["takedown"] * R.StandingStep, "witnessed:takedown:" + a.Victim); }
+            if (!a.StandingPaid) { a.StandingPaid = true; MoveStanding(R.Traceable["takedown"] * R.StandingStep, "witnessed:takedown:" + a.Victim, "seen-takedown", Who(a.P)); }
             if (p.Turned) LadderMove(p, "saw-violence");
         }
 

@@ -333,6 +333,7 @@ namespace Suborned.Play
                 string sec = d.PublicSecurity switch { "calm" => "Security is calm.", "raised" => "Security is raised.", "high" => "Security is on high alert.", _ => "" };
                 string inv = d.InvestigationState switch { "little" => "Investigators: none yet.", "early" => "Investigators have a few leads.", "active" => "An investigation is open" + (Cause(d.InvestigationCause) is string cz ? $": {cz}." : "."), _ => "" };
                 EndLines.Add($"{sec} {inv}".Trim());
+                foreach (var st in h.StandingLines()) EndLines.Add(st.line); // brief 014: one Standing line per district (the debrief)
                 var route = d.Route.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));

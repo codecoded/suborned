@@ -1,0 +1,29 @@
+{
+ "state": "active",
+ "elements": [
+  {
+   "kind": "beat",
+   "x": 432.0,
+   "y": 167.0,
+   "w": 470.0,
+   "h": 40.0,
+   "text": "Vale is in the car."
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 92,
+   "w": 92,
+   "h": 352,
+   "text": "roster portraits"
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 996,
+   "w": 212,
+   "h": 132,
+   "text": "plot scope"
+  }
+ ]
+}

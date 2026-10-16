@@ -12,6 +12,8 @@ import { cafeSets, seatId, seatPoints, standId, standingPoints, type Table } fro
 
 export const SCOPES = ['civic-block'] as const;
 /** Residents who are simulated people per home plot; the rest of a plot is background (the density target tops the street up). [S] */
+/** Standing points at a tram stop for the residents who run an errand there. [S] */
+export const STOP_QUEUE = 24;
 export const HOME_SAMPLE = 8;
 /** Civic employers keep office hours until the shift chime (mission.json clock: 17:30; GDD §07). [S] */
 export const OFFICE_HOURS: [number, number] = [9.5, 17.5];
@@ -47,6 +49,12 @@ export type Scope = {
   cafe: string;
   /** the unit whose door the café's seats stand by */
   cafeUnit: string;
+  /** the counter window (Pulse, brief 014): a stop at it takes a standing point nearest the café's door; a customer who takes a coffee to go stands here */
+  counter: Table;
+  /** the standing points at the tram stop (kind 'stand', `<stop>-stand-NN`): a resident's errand there takes one, so a stop is a queue and never one point */
+  stopTable?: Table;
+  /** how the café's customers come and go (life.json: the food category's draw by band, its dwell): a resident's visits to the café are drawn from it (day.ts visitTimes) */
+  food: { bands: { from: number; to: number; draw: number }[]; dwellMin: number };
 };
 
 /** A stop at the café unit's customers' side, for a regular tie: before the shift, at one of its chairs or standing points (§05 the guard's café stop; §08 the café keeper tips on the
@@ -169,6 +177,17 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
   const stands = standingPoints(civ, cafeDoor.at as V, setsOut.flatMap(o => o.seats.map(x => x.at)).concat(sets.map(o => o.at)), free, clear, bodyOf(plan)), standIds: string[] = [];
   stands.forEach((c, k) => { const pl = plotAt(c), id = standId(k); add({ id, kind: 'stand', name: `café standing point ${k}`, at: c, area: pl?.area ?? areas[0]!, ...(pl ? { plot: pl.id } : {}) }); standIds.push(id); });
   const cafe = tables[0]?.seats[0] ?? cafeDoor.id;
+  const foodCat = life.pedestrians.category.food as { dwell: number; draw: Record<string, number> };
+  const food = { bands: (life.clock.bands as { id: string; from: number; to: number }[]).map(b => ({ from: b.from, to: b.to, draw: foodCat.draw[b.id] ?? 0 })), dwellMin: Math.round(foodCat.dwell / 60) };
+  const counter: Table = { id: 'cafe-counter', at: cafeDoor.at as V, seats: [], standing: standIds };
+  // the tram stop's queue: standing points around the stop, on free ground clear of every zone and bay (the café's lattice, centred on the stop)
+  let stopTable: Table | undefined;
+  const tramStop = stops.find(s => s.mode === 'tram');
+  if (tramStop) {
+    const sp = places.find(p => p.id === tramStop.place)!, ids: string[] = [];
+    standingPoints(civ, sp.at as V, [], free, clear, bodyOf(plan), STOP_QUEUE).forEach((c, k) => { const pl = plotAt(c), id = `${sp.id}-stand-${String(k).padStart(2, '0')}`; add({ id, kind: 'stand', name: `${sp.name} queue ${k}`, at: c, area: pl?.area ?? sp.area, ...(pl ? { plot: pl.id } : {}) }); ids.push(id); });
+    if (ids.length) stopTable = { id: sp.id, at: sp.at as V, seats: [], standing: ids };
+  }
   places.sort((a, b) => (a.id < b.id ? -1 : 1)); units.sort((a, b) => (a.id < b.id ? -1 : 1));
-  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, tables, sets: setsOut, stands: standIds, cafeSide: [...setsOut.flatMap(o => o.seats.map(x => x.place)), ...standIds].sort(), speed: life.pedestrians.walkSpeed, cafe, cafeUnit }, civ, d };
+  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, tables, sets: setsOut, stands: standIds, cafeSide: [...setsOut.flatMap(o => o.seats.map(x => x.place)), ...standIds].sort(), speed: life.pedestrians.walkSpeed, cafe, cafeUnit, counter, ...(stopTable ? { stopTable } : {}), food }, civ, d };
 }

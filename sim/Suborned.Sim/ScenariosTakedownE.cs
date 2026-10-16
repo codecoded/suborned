@@ -18,7 +18,7 @@ namespace Suborned.Sim
         /// beside the official entrance on the camera's blind side, the Scout watches the driver.</summary>
         static Order[] DriverOpening() => new[] {
             new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, new Pt(7625, -2880)), MvTo(0, Scout, new Pt(8250, -3100)), Mv(0, Fixer, "crew:fixer"),
-            Act(136, Tech, "loop", "pickup"), Act(518, Scout, "watch", Driver), MvTo(718, Scout, new Pt(8250, -3100)) };
+            Act(136, Tech, "loop", "pickup"), Act(560, Scout, "watch", Driver), MvTo(760, Scout, new Pt(8250, -3100)) }; // c014 start (brief 014): the Scout is within 6 m of the driver at 0:56.0, not 0:51.8
         const string Guard29 = "p-records-office-29", Guard74 = "p-records-office-74", Guard65 = "p-records-office-65", Clerk39 = "p-records-office-39";
         static bool ToldBy(Person q, Person by) => q.Memory.Exists(m => m.Act == "told" && m.By == by.Id);
 

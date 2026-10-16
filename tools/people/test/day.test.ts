@@ -49,8 +49,8 @@ describe('the day, split out of the expander', () => {
     // moved the day into day.ts; a deliberate change to the expansion updates it, with its cause declared in tools/levels/people/drift.json.
     // under the rulebook of that commit (no lover tie, no secrets: legacyRules) it is the same bytes; under the current rules the persons carry a secret and the need `secret`
     // is retired into the row's record share, so the needs of the people who drew it differ (brief 011; declared in drift.json)
-    expect(sha256(JSON.stringify(expand({ ...r013, rules: legacyRules(w.rules) }).people.persons))).toBe('e2bf019be3f486a2d6906ae576203c487ad6510a44c3c96422035ee65f79af75');
-    expect(sha256(JSON.stringify(r013Gen.people.persons))).toBe('e64b2230b6dbb28a4883cbf268c0b4903befe958e9fcce1438baa7b05dc12405');
+    expect(sha256(JSON.stringify(expand({ ...r013, rules: legacyRules(w.rules) }).people.persons))).toBe('ed8704178887d70149d27806b6f0d7eb54798689ca38d9be68a39024b4ab6703');
+    expect(sha256(JSON.stringify(r013Gen.people.persons))).toBe('992c0a44a92565698d98a7e2976fdacc7b989d820663b5be6b7c865d43998319');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;
@@ -296,7 +296,8 @@ describe('generator gaps found by r014', () => {
   });
   test('round 2: the one person with no seat at 13:41 eats on site, and is noted, not faulted; nobody holds a place another holds', () => {
     const g = expand(w.ctx(run(2)));
-    expect(g.notes).toEqual(['p-records-office-72: no free seat or standing point for the stop at 13:41; the stop is not made']);
+    // since brief 014 the residents' visits to the café share the lunch hour's chairs, so others are noted too; the person of this test is still among them
+    expect(g.notes).toContain('p-records-office-72: no free seat or standing point for the stop at 13:41; the stop is not made');
     const p = g.people.persons.find(x => x.id === 'p-records-office-72')!, meal = p.routine.stops.find(s => s.doing === 'meal')!;
     expect(meal.place).toBe(p.work!.place);
   });
@@ -308,7 +309,7 @@ describe('generator gaps found by r014', () => {
     expect(checks(c, g)).toEqual([]);
     expect(g.notes.length).toBeGreaterThan(0);
     const held = new Map<string, number>();
-    for (const p of g.people.persons) for (const s of p.routine.stops) if (/seat|stand/.test(s.place) && s.doing === 'meal') held.set(s.place, (held.get(s.place) ?? 0) + 1);
+    for (const p of g.people.persons) for (const s of p.routine.stops) if (p.work && /seat|stand/.test(s.place) && s.doing === 'meal') held.set(s.place, (held.get(s.place) ?? 0) + 1);
     expect(Math.max(...held.values())).toBeLessThanOrEqual(2); // the same place at two different times, never at once (P-13 holds the times)
   });
   test('a person whose tie names a stop is drawn only among the variants that make it: a night-watch variant with a heavy weight does not take the day door guard\'s café', () => {

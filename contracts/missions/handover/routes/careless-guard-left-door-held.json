@@ -8,14 +8,14 @@
   {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
   {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
   {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
-  {"tick":136,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":346,"op":"scout","do":"watch","target":"guard"},
-  {"tick":546,"op":"scout","do":"move","to":"crew:scout"},
-  {"tick":756,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":756,"op":"enforcer","do":"move","to":[5175,-2880]},
-  {"tick":1206,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
-  {"tick":1266,"op":"tech","do":"move","to":"crew:tech"},
-  {"tick":1566,"op":"enforcer","do":"enter"}
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":355,"op":"scout","do":"watch","target":"guard"},
+  {"tick":555,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":745,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":745,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":1195,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":1255,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1555,"op":"enforcer","do":"enter"}
  ],
  "until": 5100
 }

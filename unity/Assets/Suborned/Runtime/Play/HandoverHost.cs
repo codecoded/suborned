@@ -53,7 +53,13 @@ namespace Suborned.Play
         public SimBundle.Loaded Bundle { get; private set; }
         public bool Paused { get; private set; }
         /// <summary>The briefing's Begin (the kit's button; Space does the same): the clock runs and the briefing closes.</summary>
-        public void StartClock() { Paused = false; ShowBriefing = false; Status = "Running."; }
+        public void StartClock() { Paused = false; ShowBriefing = false; Status = "Running."; ClockStarted = Time.unscaledTime; }
+        /// <summary>Brief 014: when the clock last started from the briefing (the goal line shows for its seconds from here).</summary>
+        public float ClockStarted { get; private set; } = -100f;
+        /// <summary>The Next Step line: whether the HUD shows it now (its ring shows with it), and when the player asked for it again (H, the "?").</summary>
+        public bool HintLineShowing { get; set; } public float HintReopenAt { get; set; } = -1f;
+        /// <summary>For scripted captures and checks (the route scripts, the budget shots): hold the clock, or let it run.</summary>
+        public void SetPaused(bool p) { Paused = p; if (!p) { ShowBriefing = false; if (ClockStarted < 0) ClockStarted = Time.unscaledTime; } }
         public int Speed { get; private set; } = 1;
         public bool ShowDebug { get; private set; }
         public readonly bool[] Selected = new bool[4];
@@ -106,7 +112,7 @@ namespace Suborned.Play
             public string Seen = "";
             /// <summary>Brief 013: a takedown's way and the engine's quote (the card's full price); extra card rows (icon, text); the chip's lead icon
             /// and seen mark ("ok", "unk", "no").</summary>
-            public string How = "", Lead = "", SeenMark = ""; public TakedownQuote Td; public readonly List<(string icon, string text)> Rows = new();
+            public string How = "", Lead = "", SeenMark = ""; public TakedownQuote Td; public SeenQuote SeenQ; public readonly List<(string icon, string text)> Rows = new();
             /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
             public bool Actionable => Order != null && !Move;
         }
@@ -158,9 +164,10 @@ namespace Suborned.Play
             views.Tick(); views.Tick(); views.Frame(1f);
             Select(OpId.Scout, false);
             Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); ResetFeed(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
-            Track(); Notice(); lastWatchOrders = -1;
-            // open on the cell at the getaway bay with Inez's café door in frame
-            var inez = Game.PersonPos(Game.Inez); if (inez.HasValue) LookAt(Vector3.Lerp(frame.World(Game.Ops[0].Pos), frame.World(inez.Value), 0.45f));
+            ResetLess(); Track(); Notice(); lastWatchOrders = -1;
+            // open on the cell (Waymark 2026-10-16: the four stand by the getaway car's boarding pavilion): centred on block (-2.5, -40.5), play zoom 14,
+            // so the cell sits below the briefing card at any resolution; Replay opens the same way
+            LookAt(frame.World(OpeningFocus)); if (cam) cam.orthographicSize = 14f;
             SessionPath = SessionFile();
             Save();
             Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock; {controls.Label(PlayAction.Briefing)} shows the briefing again.";
@@ -183,7 +190,7 @@ namespace Suborned.Play
             var kb = Keyboard.current;
             if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
-            if (Ending.Length > 0) { if (controls.Down(kb, PlayAction.Restart)) Begin(); views?.Frame(1f); return; }
+            if (Ending.Length > 0) { ClearHover(); if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); return; } // the end card is modal (ModalGate)
             Controls();
             if (Fault != null) return;
             if (!Paused && !Game.Over && !(Panel != null && controls.pauseWithPanel))
@@ -230,22 +237,55 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- controls
 
+        /// <summary>The modal up now, if any (ModalGate): the briefing until Begin, the end card.</summary>
+        public ModalGate.Modal Modal => Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
+
+        /// <summary>Nothing hovered: no price chip, ring, aim or walk chip (a modal opened, or the run ended).</summary>
+        public void ClearHover() { Hover = null; HoverIntent = null; MoveChip = null; MoveNow = null; AimLine = null; AimNow = null; intentKey = "modal"; dragging = false; BoxScreen = null; }
+
+        /// <summary>Under a modal: the camera only (pan keys, middle-drag grab, wheel zoom).</summary>
+        void CameraOnly(Keyboard kb, UnityEngine.InputSystem.Mouse mouse)
+        {
+            var c = controls;
+            if (kb != null)
+            {
+                var pan = Vector2.zero;
+                if (c.Held(kb, PlayAction.PanUp)) pan.y += 1; if (c.Held(kb, PlayAction.PanDown)) pan.y -= 1;
+                if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
+                if (pan != Vector2.zero && cam) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
+            }
+            if (mouse == null || !cam) return;
+            var p = mouse.position.ReadValue();
+            Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
+            float wheel = mouse.scroll.ReadValue().y;
+            if (wheel != 0f && !HudToolkit.Blocks(p)) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
+        }
+
         void Controls()
         {
             var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current; var c = controls;
+            if (Modal == ModalGate.Modal.Briefing) // modal until Begin: Space or the button begins; B and Esc close it; the camera may look round
+            {
+                ClearHover(); if (Panel != null) ClosePanel();
+                if (c.Down(kb, PlayAction.Pause)) { Paused = false; ClockStarted = Time.unscaledTime; ShowBriefing = false; Status = "Running."; }
+                else if (c.Down(kb, PlayAction.Briefing) || (kb != null && kb.escapeKey.wasPressedThisFrame)) ShowBriefing = false;
+                CameraOnly(kb, mouse);
+                return;
+            }
             bool shift = c.Held(kb, PlayAction.AddToGroup);
             if (kb != null)
             {
-                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) ShowBriefing = false; else Save(); }
+                if (c.Down(kb, PlayAction.Pause)) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) { if (ShowBriefing) ClockStarted = Time.unscaledTime; ShowBriefing = false; } else Save(); }
                 if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
                 if (c.Down(kb, PlayAction.DialogueLog)) FeedHistoryOpen = !FeedHistoryOpen; // L: the feed's history (the old dialogue log is the ticker now)
                 if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
                 if (c.Down(kb, PlayAction.Cease)) CeaseFire();
                 if (c.Down(kb, PlayAction.Stance)) CycleStance();
-                if (c.Down(kb, PlayAction.Hints)) { if (shift) RelearnHints(); else ToggleHints(); } // Shift+H: the retired control hints come back
+                if (c.Down(kb, PlayAction.Hints)) { if (shift) RelearnHints(); else if (HintNow != null && !HintLineShowing && HintsOn) HintReopenAt = Time.unscaledTime; else ToggleHints(); } // H: a folded hint comes back, else the layer on or off; Shift+H: the retired control hints come back
                 if (c.Down(kb, PlayAction.Intel)) IntelOpen = !IntelOpen;
                 if (c.Down(kb, PlayAction.Response)) ResponseOpen = !ResponseOpen;
+                if (c.Down(kb, PlayAction.Gait)) ToggleGaitSelected();
                 if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
                 if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
                 if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
@@ -397,6 +437,7 @@ namespace Suborned.Play
         /// <summary>The mouse over the world (pixels, origin bottom left): what is under it, and what a right click would do there, priced once per change.</summary>
         public void PointerHover(Vector2 screen)
         {
+            if (!ModalGate.AllowsHover(Modal)) { ClearHover(); return; } // nothing in the street answers under a modal
             lastHover = screen; Mouse = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y); // GUI space: origin top left
             var t = TargetAt(screen);
             string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}";
@@ -412,6 +453,7 @@ namespace Suborned.Play
         /// says so once (Keel and Motive are writing the running rule; no speed is invented here).</summary>
         public void PointerLeft(Vector2 screen, bool shift = false)
         {
+            if (!ModalGate.AllowsClicks(Modal)) return;
             var t = TargetAt(screen, true);
             if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
             bool twice = Time.unscaledTime - lastGroundAt < controls.doubleSeconds && (screen - lastGround).magnitude < 24f;
@@ -432,13 +474,14 @@ namespace Suborned.Play
         /// <summary>Right click: on a person or object, the selected agent's current verb (the hovered intent, priced first); on empty ground, Cancel.</summary>
         public void PointerRight(Vector2 screen)
         {
+            if (!ModalGate.AllowsClicks(Modal)) return;
             lastRight = screen;
             if (Game == null || Fault != null || !cam) return;
             var t = TargetAt(screen);
             if (t != null && t.Kind == "op") { if (CarryDowned(t, screen)) return; t = null; }
             bool ctrl = controls.Held(Keyboard.current, PlayAction.Force);
             if (t != null && ShotAt(t, ctrl, out var fireAt, out var force)) { if (Panel != null) ClosePanel(); FireSelected(fireAt, force, screen, "right"); sweeping = true; return; }
-            if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { Pop("never fire on Vale: the mission fails", screen, TargetWorld(t), Feedback.Refused); return; }
+            if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, "never fire on Vale: the mission fails"); return; }
             if (t != null && t.Kind != "op")
             {
                 PointerHover(screen);
@@ -475,8 +518,9 @@ namespace Suborned.Play
                 // send the snapped point, so the order is what the agent does and the replay is exact
                 var want = new Pt(at.X + (k % 2) * 90, at.Y + (k / 2) * 90); k++;
                 Pt? to = Game.S.Grid.Free(want) ? want : Game.S.Grid.NearestFree(want);
-                if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) Pop("Can't walk there.", screen, null, Feedback.Refused); said = true; continue; }
-                Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null); // a walk needs no voice (Fable §4: move and run acks are silent)
+                if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) PopKey("no-way", screen, null, Feedback.Refused, "Can't walk there."); said = true; continue; }
+                if (Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null)) // a walk needs no voice (Fable §4: move and run acks are silent)
+                { Pulses.Add((frame.World(to.Value), Feedback.Ok, Time.unscaledTime)); while (Pulses.Count > 8) Pulses.RemoveAt(0); } // the click's pulse at the destination
             }
         }
 
@@ -544,6 +588,8 @@ namespace Suborned.Play
                 for (int i = 0; got == null && i < slots.Length; i++) if (!(slots[i].Id == "fire" && t.Kind == "person") && slots[i].Id != "takedown") got = Verb(Agent, i, t);
                 got ??= new Intent { Label = t.Label, Hint = WhoCan(t) };
             });
+            // brief 014 (Fable §2): the chip's time is the walk plus the act, so the hover prices the walk too (one A*, on change only)
+            if (got != null && got.Actionable && got.WalkS == 0) Guard("walk", () => { var aw = ActPlace(Agent, got.Order, t); if (aw != null) got.WalkS = aw.Seconds; });
             return got;
         }
 
@@ -615,7 +661,7 @@ namespace Suborned.Play
                     if (t.Kind is not ("cabinet" or "patrol")) return null;
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
                 case "act":
-                    if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; return i; }
+                    if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
                     if (t.Kind == "person" && t.Key == "councillor") { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; }
                     if (t.Kind == "car" && t.Key == "getaway") { var i = I("extract", "", "", "Vale into the car"); i.Time = "now"; i.Outcome = "win"; return i; }
                     return null;
@@ -675,7 +721,8 @@ namespace Suborned.Play
             // pill at the click (else over its target, else the agent), with a pulse on the target, and never becomes a card, a ticker or a history line
             if (!r.ok && !quietRefusal)
             {
-                Pop(Humanise(o, r), screen, screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused);
+                var full = Humanise(o, r); // brief 014: the pop is the short form with its family glyph; the long line is Alt
+                Pop(ShortOf(o, r) ?? full, screen, screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full);
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
             }
             if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not
@@ -794,7 +841,7 @@ namespace Suborned.Play
         {
             if (Panel == null || row < 0 || row >= Panel.Rows.Count) return;
             var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
-            if (!r.Available) { Pop(r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}", at, Panel.World, Feedback.Refused); return; }
+            if (!r.Available) { var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}"; Pop(Text?.ShortLock(r.Lock.code) is string sh ? ShortOf(r.I.Order, r.Lock) : full, at, Panel.World, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full); return; }
             ClosePanel();
             if (SeenGate(r.I, t, at, "left")) return;
             Give(r.By, r.I.Order, t, at);
@@ -805,7 +852,7 @@ namespace Suborned.Play
         {
             if (Panel == null) return;
             for (int i = 0; i < Panel.Rows.Count; i++) if (Panel.Rows[i].By == Agent && Panel.Rows[i].Key == slot) { PanelDo(i); return; }
-            Pop($"Nothing for the {AgentNames[(int)Agent]} there.", null, Panel.World, Feedback.Info);
+            PopKey("nothing-here", null, Panel.World, Feedback.Info, $"Nothing for the {AgentNames[(int)Agent]} there.");
         }
 
         /// <summary>A row's words: its name ("Pay Inez") and plain line, from the text's actions (Fable), by verb and target.</summary>
@@ -974,6 +1021,8 @@ namespace Suborned.Play
 
         string PlaceName(string place) => place == "cabinet" ? "the control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar ? "the getaway car" : place;
 
+        /// <summary>The act an agent walks to give (verb, approach), or empty (brief 014: its glyph at the walk's end).</summary>
+        public (string verb, string approach) PendingOf(int k) => pending[k] == null ? ("", "") : (pending[k].Do, pending[k].Approach ?? "");
         readonly Order[] pending = new Order[4]; readonly Vector3?[] pendingAt = new Vector3?[4]; readonly int[] pendingFrom = new int[4];
 
         /// <summary>After each step: an agent who has arrived (no walk, nothing in hand) gives the order they walked for.</summary>
@@ -992,16 +1041,16 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- feedback: every click answers where it was made
 
         public enum Feedback { Info, Ok, Refused }
-        public sealed class PopUp { public string Text = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born; }
+        public sealed class PopUp { public string Text = "", Icon = "", Long = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born; }
         /// <summary>Pops the HUD draws (at the cursor, or over a world point), newest last; and ring pulses on targets.</summary>
         public readonly List<PopUp> Pops = new();
         public readonly List<(Vector3 world, Feedback kind, float born)> Pulses = new();
 
-        public void Pop(string text, Vector2? screen, Vector3? world, Feedback kind, float seconds = 2.5f)
+        public void Pop(string text, Vector2? screen, Vector3? world, Feedback kind, float seconds = 2.5f, string icon = "", string longLine = "")
         {
             float now = Time.unscaledTime;
             var gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : (Vector2?)null;
-            Pops.Add(new PopUp { Text = text, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
+            Pops.Add(new PopUp { Text = text, Icon = icon, Long = longLine.Length > 0 ? longLine : text, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
             if (world.HasValue) Pulses.Add((world.Value, kind, now));
             while (Pops.Count > 6) Pops.RemoveAt(0);
             while (Pulses.Count > 6) Pulses.RemoveAt(0);
@@ -1056,7 +1105,7 @@ namespace Suborned.Play
             var final = Hash.Hex(Game.Checkpoints[Game.Checkpoints.Count - 1].hash);
             Ending = $"{Game.Result}{(Game.FailCode.Length > 0 ? $" ({Game.FailCode})" : "")} at {Report.Clock(Game.Tick)} · final {final[..12]} · replay {(same ? "identical" : "DIFFERS")}";
             try { File.WriteAllText(Path.ChangeExtension(SessionPath, null) + ".end.txt", $"{Ending}\n{Game.FailText}\nengine {Bundle.Source} dll {Bundle.DllSha}\nstep mean {StepMsMean:F4} ms, max {StepMsMax:F3} ms over {steps} steps; engine per frame {FrameMsMean:F4} ms over {frames} frames\n"); } catch { }
-            Debug.Log($"Play: {Ending}; session {SessionPath}");
+            Debug.Log($"Play: {Ending}; session {SessionPath}"); ClearHover(); if (Panel != null) ClosePanel();
         }
 
         int savedTick = -1;

@@ -22,7 +22,7 @@ import { checkRound } from './cast';
 import { dialogueLedger, dialogueLedgerFile, recordDialogue } from './drift';
 import { dialogueHash } from './hash';
 import { objectives } from './objectives';
-import { pinInputs } from './pins';
+import { MISSION_FILE, pinInputs } from './pins';
 import { dialogueReplay } from './replay';
 import { agents, type FableOut } from './schemas';
 import { sampleView, scopeView, type View } from './view';
@@ -63,7 +63,7 @@ export const dialoguePlugin: Plugin<State> = {
     const lex = await lexiconFor(plan.id, scope, parsed, text);
     return { id: plan.id, version: plan.version, async pin(rdir) {
       const { record } = await pinPlan(plan, rdir);
-      const inputs = await pinInputs(rdir, { ...texts, text: JSON.stringify(text, null, 1), ...(lex.text ? { lexicon: lex.text } : {}) }, lex.source ? { lexicon: lex.source } : {});
+      const inputs = await pinInputs(rdir, { ...texts, text: JSON.stringify(text, null, 1), mission: await Bun.file(resolve(root, MISSION_FILE)).text(), ...(lex.text ? { lexicon: lex.text } : {}) }, lex.source ? { lexicon: lex.source } : {});
       return { state: { texts, parsed, text, scope, context: lex.voices ? [lex.voices] : [], lexiconText: lex.text, lexiconSource: lex.source, rdir, planId: plan.id }, record: { ...record, ...inputs, scope } };
     } };
   },

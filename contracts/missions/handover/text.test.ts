@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -54,14 +54,28 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, x] of Object.entries(t.cancelCosts)) push(`cancelCosts.${k}`, x);
   const walk = (path: string, o: unknown) => { if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walk(`${path}.${k}`, v); };
   walk('activity', t.activity);
-  for (const [code, l] of Object.entries(t.locks)) push(`locks.${code}`, l.line);
+  for (const [code, l] of Object.entries(t.locks)) { push(`locks.${code}`, l.line); push(`locks.${code}.short`, l.short, false, SHORT_MAX); }
+  // brief 014: the short forms are strings the player reads, so the same length, tone, name and key rules apply (brackets mark a ringed noun and are not text)
+  const plain = (x: string) => x.replace(/[[\]]/g, '');
+  b.timeline.forEach((x, i) => push(`briefing.timeline[${i}].short`, x.short, false, 16));
+  for (const [id, h] of Object.entries(t.hints.items)) push(`hints.${id}.short`, plain(h.short), false, 36);
+  for (const [k, c] of Object.entries(t.cards.items)) for (const [v, r] of typeof c.beat === 'string' ? [['', c.beat] as const] : Object.entries(c.beat ?? {})) push(`cards.${k}.beat.${v}`, r, false, BEAT_MAX);
+  t.scenes.items.forEach((sc, i) => { if (sc.beat) push(`scenes[${i}].beat ${sceneKey(sc)}`, sc.beat, false, BEAT_MAX); });
+  { const L = t.less;
+    push('less.objective.take', plain(L.objective.take), false, 32); push('less.objective.carry', plain(L.objective.carry), false, 32); push('less.briefing.goal', plain(L.briefing.goal), false, 32);
+    push('less.end.win', L.end.win, false, SHORT_MAX); push('less.end.withdraw', L.end.withdraw, false, SHORT_MAX);
+    for (const [k, x] of Object.entries(L.end.fail)) push(`less.end.fail.${k}`, x, false, SHORT_MAX);
+    for (const [k, x] of Object.entries(L.pop)) push(`less.pop.${k}`, x, false, SHORT_MAX);
+    for (const [k, x] of Object.entries(L.cancel)) push(`less.cancel.${k}`, x, false, 20);
+    for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x); }
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
 const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\{op\}/g, 'Enforcer').replace(/\{m\}/g, '13').replace(/\{usd\}/g, '$100,000').replace(/\{target\}/g, 'the entrance camera').replace(/\{tick\}/g, '10:30').replace(/\{need\}/g, 'protection').replace(/\{temperament\}/g, 'Mercenary').replace(/\{alert\}/g, '3').replace(/\{agent\}/g, 'the Enforcer').replace(/\{n\}/g, '12').replace(/\{clock\}/g, '10:30').replace(/\{trail\}/g, '30').replace(/\{hits\}/g, '12').replace(/\{cause\}/g, "the guard's trip to the café looks staged").replace(/\{list\}/g, 'Inez, who can introduce you at the café.')
   // brief 013's between-missions fields: the widest the host fills each (the same widths as contracts/dialogue debriefFill, with a short place name)
   .replace(/\{fact\}/g, "the Fixer's face").replace(/\{facts\}/g, "place, time and the Enforcer's face").replace(/\{place\}/g, 'the service lane').replace(/\{of\}/g, 'Dimitra Marchetti').replace(/\{move\}/g, 'bravery +1')
-  .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found');
+  .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found')
+  .replace(/\{district\}/g, 'Harbour').replace(/\{band\}/g, 'Neutral').replace(/\{from\}/g, '-3').replace(/\{to\}/g, '-3');
 
 describe('the file', () => {
   test('parses as suborned.text/1 for the handover', () => {
@@ -76,8 +90,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}, and the Standing line\'s {district} {band} {from} {to}', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -123,7 +137,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'N', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -329,15 +343,15 @@ describe('training hints, the run toast, the going-loud card', () => {
   const rows = new Map<string, { trigger: string; rings: string; goneWhen: string }>();
   if (existsSync(motive)) for (const m of read('briefs/011/motive-fights.md').matchAll(/^\| (H\d+) \| (.*?) \| (.*?) \| (.*?) \| (.*?) \|$/gm)) rows.set(m[1]!, { trigger: m[2]!, rings: m[4]!, goneWhen: m[5]! });
   const items = Object.entries(t.hints.items);
-  test('H1–H11 are all here, in priority order, with Motive\'s trigger, ring and gone-when copied word for word', () => {
-    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 11 }, (_, i) => `H${i + 1}`));
+  test('H1–H12 are all here, in priority order; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, not in Motive\'s table)', () => {
+    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 12 }, (_, i) => `H${i + 1}`));
     expect(items.map(([, h]) => h.priority)).toEqual(items.map((_, i) => i + 1));
     if (!rows.size) return;
-    expect([...rows.keys()]).toEqual(items.map(([id]) => id));
-    for (const [id, h] of items) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
+    expect([...rows.keys()]).toEqual(items.filter(([id]) => id !== 'H12').map(([id]) => id));
+    for (const [id, h] of items.filter(([id]) => id !== 'H12')) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
   });
   test('each hint fits 110 characters, names an agent, a verb and a target, and introduces only its own verb', () => {
-    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip' };
+    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run' };
     const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take'];
     const bad: string[] = [];
     for (const [id, h] of items) {
@@ -801,6 +815,27 @@ describe('the end card\'s words (debrief ids)', () => {
     // a line states the fact and its cause plainly: no gore, no verdict on a person
     for (const id of mine) expect(d.between[id], id).not.toMatch(/blood|corpse|murder|killer|victim/i);
   });
+  test('brief 014: the Standing line has a cause sentence for every rulebook standing cause and a word for every band; the word causes are rumour and name no one but {who}', () => {
+    const rb = json('contracts/rules/rulebook.json');
+    expect(rb.debrief.lines['standing'].fields).toEqual(['district', 'from', 'to', 'band', 'cause', 'who']);
+    const s = d.standing;
+    expect(Object.keys(s.causes).sort()).toEqual(Object.keys(rb.standing.causes).sort());
+    expect(Object.keys(s.bands).sort()).toEqual(['hero', 'menace', 'neutral']);
+    for (const [id, line] of Object.entries(s.causes)) {
+      const slots = [...line.matchAll(/\{([a-z]+)\}/g)].map((m) => m[1]!);
+      expect(slots, id).toEqual(id.startsWith('word-') ? ['who'] : []);
+      expect(line, id).toMatch(/^[A-Z][^]*[.!?]$/);
+      if (id.startsWith('word-')) expect(line, id).toMatch(/^Word is /);
+      expect(line, id).not.toMatch(/\b(he|she|him|her|his|hers|man|woman|boy|girl)\b/i);
+      expect(line, id).not.toMatch(/blood|corpse|murder|killer|victim/i);
+    }
+    // the line carries the Standing fields; the cause comes in filled, and the widest line (a named teller) fits
+    expect([...new Set([...s.line.matchAll(/\{([a-z]+)\}/g)].map((m) => m[1]!))].sort()).toEqual(['band', 'cause', 'district', 'from', 'to']);
+    const cause = fillCard(s.causes['word-knocked-out']!, { who: 'Dimitra Marchetti' });
+    expect(fillCard(s.line, { district: 'Harbour', band: s.bands.neutral, from: '+2', to: '+1', cause })).toBe('Harbour: Neutral +1, was +2. Word is a stranger knocked Dimitra Marchetti out.');
+    expect(fillCard(s.line, { district: 'Harbour', band: s.bands.hero, from: '+2', to: '+3', cause: fillCard(s.causes['word-helped']!, { who: 'Inez' }) })).toBe('Harbour: Hero +3, was +2. Word is a stranger helped Inez.');
+    for (const c of Object.values(s.causes)) expect(fillCard(s.line, { district: 'Harbour', band: 'Neutral', from: '-3', to: '-3', cause: fillCard(c, { who: 'Dimitra Marchetti' }) }).length).toBeLessThanOrEqual(MAX_LINE);
+  });
   test('the headline for a win, a withdrawal and a bare failure; a fail with words in the briefing takes its first sentence', () => {
     expect(d.headline.win).toBe('Vale is in the car');
     for (const f of FAILS) if (f !== 'engine-error') expect(t.briefing.fails[f], f).toBeTruthy();
@@ -835,5 +870,185 @@ describe('lookup and pick', () => {
     const a = pickIndex('s', 'a/b', 3, 4), b = pickIndex('s', 'a/b', 3, 4);
     expect(a).toBe(b);
     expect(R.fnv1a32('s|a/b|0')).toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ---------------------------------------------------------------- brief 014: less reading (Sky, 2026-10-16: "It's the reading, it's too much")
+describe('brief 014: the short forms, the price line, the beats', () => {
+  const L = t.less;
+  const NUM = /\{(m|usd|tick)\}/g;
+  const nums = (x: string) => [...x.matchAll(NUM)].map((m) => m[1]!).sort();
+  /** A fragment: no sentence break inside, no comma-spliced second sentence, at most `max` words not counting numbers and marks. */
+  const words = (x: string) => x.replace(/\{[a-z]+\}/g, '').replace(/[·▲👁✓✗½[\]]/gu, ' ').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+
+  test('every refusal has a pop of a few words that keeps the numbers the long line carries and names no one', () => {
+    const bad: string[] = [];
+    for (const [code, l] of Object.entries(t.locks)) {
+      if (l.short.length > SHORT_MAX) bad.push(`${code}: ${l.short.length} characters`);
+      if (words(l.short) > 4) bad.push(`${code}: "${l.short}" is more than four words`);
+      if (/[.!?]/.test(l.short)) bad.push(`${code}: "${l.short}" is a sentence`);
+      if (/\{who\}|\{op\}/.test(l.short)) bad.push(`${code}: names who or what (the pop sits on it)`);
+      if (nums(l.short).join() !== nums(l.line).join()) bad.push(`${code}: numbers ${nums(l.short)} vs ${nums(l.line)}`);
+      if (l.short.length >= l.line.length) bad.push(`${code}: not shorter than its line`);
+    }
+    expect(bad).toEqual([]);
+  });
+  test('the distance refusals all show the distance as a number', () => {
+    const stands = Object.keys(t.locks).filter((c) => /^stand-|^too-far$|^out-of-range$/.test(c));
+    expect(stands.length).toBeGreaterThanOrEqual(10);
+    for (const c of stands) expect(t.locks[c]!.short, c).toContain('{m} m');
+  });
+  test('every card has a fate; only a beat card has a beat; its words are at most four and a fragment', () => {
+    const bad: string[] = [];
+    for (const [code, c] of Object.entries(t.cards.items)) {
+      if (!CARD_FATES.includes(c.fate)) bad.push(`${code}: fate ${c.fate}`);
+      if ((c.fate === 'beat') !== (c.beat !== undefined)) bad.push(`${code}: fate ${c.fate} and beat ${JSON.stringify(c.beat)}`);
+      const lines = typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {});
+      for (const x of lines) { if (words(x) > 4) bad.push(`${code}: "${x}" is more than four words`); if (!/^[A-Z][^.!?,;:]*\.$/.test(x)) bad.push(`${code}: "${x}" is not one short sentence`); }
+      if (typeof c.beat === 'object') for (const k of Object.keys(c.beat)) if (typeof c.result !== 'object' || !(k in c.result)) bad.push(`${code}: beat key ${k} is no result key`);
+    }
+    expect(bad).toEqual([]);
+  });
+  test('the beats are few: at most ten distinct lines in the feed, and the ones Sky named are there', () => {
+    const lines = new Set<string>();
+    for (const c of Object.values(t.cards.items)) for (const x of typeof c.beat === 'string' ? [c.beat] : Object.values(c.beat ?? {})) lines.add(x);
+    for (const sc of t.scenes.items) if (sc.beat) lines.add(sc.beat);
+    expect(lines.size).toBeLessThanOrEqual(10);
+    for (const x of ['Inez called the guard.', 'Body found.', 'Police coming.']) expect(lines.has(x), x).toBe(true);
+    expect(L.feed.maxOnScreen).toBeLessThanOrEqual(2);
+  });
+  test('a scene beat belongs to a call or a city scene; the call beat is Inez\'s, the one the capstone turns on', () => {
+    const withBeat = t.scenes.items.filter((sc) => sc.beat);
+    expect(withBeat.length).toBeGreaterThan(0);
+    for (const sc of withBeat) expect(['call', 'city']).toContain(sc.kind);
+    const call = t.scenes.items.filter((sc) => sc.kind === 'call' && sc.about === 'waitress');
+    expect(call.length).toBeGreaterThanOrEqual(4);
+    for (const sc of call) expect(sc.beat).toBe('Inez called the guard.');
+  });
+  test('the Fixer\'s done lines on a turn are the Fixer\'s own terse report-back: first person or plain report, no gendered word, none that narrates for the Fixer', () => {
+    const GENDER = /\b(he|she|him|her|hers|his|himself|herself|man|men|woman|women|boy|girl|sir|madam|lady|lord)\b/i;
+    const NARRATION = /\b(will be remembered|was noticed|and they'll remember|remembered)\b|^A kindness/i;
+    const rows = t.dialogue.filter((d) => d.event === 'done' && d.verb === 'turn');
+    expect(rows.length).toBe(5);
+    const bad: string[] = [];
+    for (const d of rows) for (const l of d.lines) { if (GENDER.test(l)) bad.push(`gendered: ${l}`); if (NARRATION.test(l)) bad.push(`narration: ${l}`); }
+    expect(bad).toEqual([]);
+    expect(rows.find((d) => d.outcome === 'refused')!.lines[0]).toBe("They said no. They'll remember me.");
+  });
+  test('H12 teaches the run toggle: it names the key the game binds (G), the one place a key is taught', () => {
+    const h = t.hints.items.H12!;
+    expect(h.verb).toBe('move');
+    expect(h.agent).toBe('any');
+    expect(h.line).toMatch(/\bG\b/);
+    expect(h.short).toMatch(/\bG\b/);
+    expect(h.short).toBe('Run to the [mark]: press G.');
+    expect(marked(h.short)).toEqual(['mark']);
+    // the same key as the game's (PlayControls: PlayAction.Gait on Key.G)
+    const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
+    if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Gait,\s*keys = new\[\] \{ Key\.G \}/);
+  });
+  test('a beat keeps its card\'s sight and needs rules (the cell is never told what it did not see): the cards that said in-sight still do', () => {
+    for (const [code, c] of Object.entries(t.cards.items)) if (c.fate === 'beat' && /found|confirmed|opened|serviced/.test(code)) expect(c.sight, code).toBe('in-sight');
+    expect(t.cards.items['rivals.arrive']!.sight).toBe('in-sight');
+    expect(t.cards.items['post.missed']!.needs).toBe('routine');
+    expect(t.cards.items['post.missed']!.fate).not.toBe('beat'); // a missed check in is a clock pip over the guard, once the routine is learned
+  });
+  test('no new short form uses a gendered word', () => {
+    const GENDER = /\b(he|she|him|her|hers|his|himself|herself|man|men|woman|women|boy|girl|sir|madam|lady|lord)\b/i;
+    const mine = strings.filter((s) => /^(locks\.[a-z-]+\.short|hints\.H\d+\.short|briefing\.timeline\[\d\]\.short|cards\..*\.beat|scenes\[\d+\]\.beat|less\.)/.test(s.path));
+    expect(mine.length).toBeGreaterThan(150);
+    expect(JSON.stringify(t.less).match(GENDER)).toBeNull(); // the rules, fates and grammar too
+    expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
+  });
+  test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
+    const lead: Record<string, RegExp> = { move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^Cover\b/, carry: /^Carry\b/ };
+    const bad: string[] = [];
+    for (const [id, h] of Object.entries(t.hints.items)) {
+      const n = marked(h.short);
+      if (n.length !== 1) bad.push(`${id}: ${n.length} ringed nouns`);
+      if (words(h.short) > 6) bad.push(`${id}: more than six words`);
+      if (!(lead[h.verb] ?? /^$/).test(h.short)) bad.push(`${id}: "${h.short}" does not lead with its verb (${h.verb})`);
+      if (/\b(Scout|Fixer|Tech|Enforcer|Ask|Pay|Help|Pressure|first|then|before|after|next|until|once)\b|\d/.test(h.short)) bad.push(`${id}: names an agent, an approach, a time or a sequence`);
+      if (h.short.length >= h.line.length) bad.push(`${id}: not shorter than its line`);
+      expect(nums(h.short), id).toEqual([]);
+    }
+    expect(bad).toEqual([]);
+  });
+  test('the objective is one imperative with a ringed noun for each thing that has a marker, and the briefing goal says the same', () => {
+    expect(marked(L.objective.take)).toEqual(['Vale']);
+    expect(marked(L.objective.carry)).toEqual(['Vale', 'car']);
+    expect(marked(L.briefing.goal)).toEqual(['Vale', 'car']);
+    for (const x of [L.objective.take, L.objective.carry]) expect(words(x)).toBeLessThanOrEqual(5);
+  });
+  test('the price line: a canonical field order, a list for every verb that starts with the name and keeps that order', () => {
+    expect(L.price.order).toEqual([...PRICE_FIELDS]);
+    expect(Object.keys(L.price.verbs).sort()).toEqual([...VERBS].sort());
+    expect(Object.keys(L.price.fields).sort()).toEqual([...PRICE_FIELDS].sort());
+    for (const [v, fs] of Object.entries(L.price.verbs)) {
+      expect(fs[0], v).toBe('name');
+      const at = fs.map((f) => PRICE_FIELDS.indexOf(f));
+      expect(at, v).toEqual([...at].sort((a, b) => a - b));
+      expect(new Set(fs).size, v).toBe(fs.length);
+    }
+    for (const v of ['ask', 'pay', 'help', 'pressure']) expect(L.price.verbs[v as (typeof VERBS)[number]]).toEqual(L.price.verbs.pay);
+    // every field a verb's card prices is on its line: the engine's price is ($, time, Trail, Alert risk); an order that traces, spends or risks shows it
+    for (const v of ['pay', 'help', 'ask', 'pressure', 'takedown', 'fire']) { expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('trail'); expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('alert'); }
+    for (const v of ['pay', 'help']) expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('usd');
+    expect(L.price.verbs.takedown).toContain('eye');
+  });
+  test('the price examples follow the grammar: a verb or way label, then fields in order, no zero field', () => {
+    const labels = new Set<string>();
+    for (const a of Object.values(t.actions)) { labels.add(a.label); for (const w of Object.values(a.ways ?? {})) labels.add(w.label); }
+    // compact money (brief 014): $90k, $1.5k, under $1,000 as it is, a range $40k–60k; whole dollars are for the status pill and the debrief
+    const COMPACT = /^\$(\d{1,3}|\d{1,3}(\.\d)?k)(–\d{1,3}(\.\d)?k?)?$/;
+    const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\d+ s$/.test(f) ? 'time' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
+    expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'fire', 'help', 'kill', 'knockout', 'pay', 'pressure']);
+    for (const [k, ex] of Object.entries(L.price.examples)) {
+      const parts = ex.split(' · ');
+      expect(labels.has(parts[0]!), `${k}: ${parts[0]}`).toBe(true);
+      const ks = parts.slice(1).map(kind);
+      expect(ks, ex).not.toContain('unknown');
+      for (const p of parts.filter((x) => /^\$/.test(x))) expect(p, `${k}: money on a price line is compact`).toMatch(COMPACT);
+      expect(ex, `${k}: no whole-dollar thousands on a price line`).not.toMatch(/\d,\d{3}/);
+      const at = ks.map((x) => PRICE_FIELDS.indexOf(x as (typeof PRICE_FIELDS)[number]));
+      expect(at, ex).toEqual([...at].sort((a, b) => a - b));
+      expect(parts.some((p) => /^\$0$|^\+0$|^0 s$/.test(p)), `${ex} shows a zero`).toBe(false);
+      expect(ex.length, ex).toBeLessThanOrEqual(40);
+    }
+    expect(L.price.examples.knockout).toBe('Knock out · 7 s · +4 · ▲1 · 👁 none');
+    expect(L.price.examples.pay).toBe('Pay · $90k · 50 s · +2 · ✓');
+    expect(L.price.examples.help).toBe('Help · $40k · 50 s · +1 · ½');
+    expect(L.price.fields.usd.shows).toContain('$90k');
+    expect(L.price.fields.usd.shows).toContain('$40k–60k');
+  });
+  test('the end card is one line: a headline for each fail code, and for a win and a withdrawal', () => {
+    expect(Object.keys(L.end.fail).sort()).toEqual(Object.keys(t.briefing.fails).sort());
+    for (const [k, x] of Object.entries(L.end.fail)) expect(x, k).toMatch(/^[A-Z][^.!?]*\.$/);
+    expect(L.end.win).toBe('Vale is in the car.');
+  });
+  test('cancel costs and pops are a few words; every cancel cost has one', () => {
+    expect(Object.keys(L.cancel).sort()).toEqual(Object.keys(t.cancelCosts).sort());
+    for (const [k, x] of [...Object.entries(L.cancel), ...Object.entries(L.pop)]) { expect(words(x), k).toBeLessThanOrEqual(3); expect(x, k).not.toMatch(/[.!?]/); }
+    // the host builds these refusals itself today: HandoverHost (Pop), HostFight, HostTakedown
+    for (const id of ['no-way', 'no-room', 'unarmed', 'not-drawn', 'other-carries', 'nothing-there', 'never-vale', 'who-can', 'nothing-here', 'select-agent']) expect(L.pop[id], id).toBeTruthy();
+  });
+  test('the timeline marks have a word for Alt', () => {
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals', 'Chime', 'Last turn', 'Vale out', 'Vale at car', 'Close']);
+  });
+  test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
+    for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
+    for (const g of ['briefing', 'targets', 'actions', 'cancelCosts', 'activity', 'locks', 'cards', 'debrief', 'hints', 'toasts', 'goingLoud', 'dialogue', 'scenes'])
+      expect(Object.keys(L.fates).some((p) => p === g || p.startsWith(g + '.')), g).toBe(true);
+    expect(L.fates.dialogue).toBe('speech');
+    expect(L.fates['toasts.run-seen']).toBe('cut');
+    expect(L.fates['briefing.fails']).toBe('debrief');
+  });
+  test('nothing was deleted: the long lines are still there for Alt and the debrief', () => {
+    for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
+    for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
+    for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
+    expect(Object.keys(t.cards.items).length).toBe(52);
+    expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
+    expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
   });
 });

@@ -183,6 +183,7 @@
 .s-portrait_shade { background-image: url("portraits/portrait_shade@2x.png"); }
 .s-portrait_mask { background-image: url("portraits/portrait_mask@2x.png"); }
 .s-portrait_ring_selected { background-image: url("portraits/portrait_ring_selected@2x.png"); }
+.s-portrait_ring_inner { background-image: url("portraits/portrait_ring_inner@2x.png"); }
 .s-portrait_ring_busy { background-image: url("portraits/portrait_ring_busy@2x.png"); }
 .s-portrait_scrim { background-image: url("portraits/portrait_scrim@2x.png"); }
 .s-cameo_scout_normal { background-image: url("portraits/cameo_scout_normal@2x.png"); }
@@ -260,6 +261,17 @@
 .i-units { background-image: url("icons/singles/units@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-way_kill { background-image: url("icons/singles/way_kill@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-way_knock { background-image: url("icons/singles/way_knock@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-arrive { background-image: url("icons/singles/arrive@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-bang { background-image: url("icons/singles/bang@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-car { background-image: url("icons/singles/car@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-cone { background-image: url("icons/singles/cone@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-eye_open { background-image: url("icons/singles/eye_open@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-eye_shut { background-image: url("icons/singles/eye_shut@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-eye_unk { background-image: url("icons/singles/eye_unk@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-found { background-image: url("icons/singles/found@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-pointer { background-image: url("icons/singles/pointer@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-routine { background-image: url("icons/singles/routine@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-run { background-image: url("icons/singles/run@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .btn_verb:hover { background-image: url("buttons/btn_verb_hover@2x.png"); }
 .btn_verb:active { background-image: url("buttons/btn_verb_pressed@2x.png"); }
 .btn_verb.selected { background-image: url("buttons/btn_verb_selected@2x.png"); }

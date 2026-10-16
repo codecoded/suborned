@@ -76,6 +76,7 @@ namespace Suborned.Play
                 else views.ShowAct(k, null);
             }
             FeedTrack();
+            SceneBubbles(); TrackVale(); // brief 014
         }
 
         string Name(string key) => key switch
@@ -162,6 +163,7 @@ namespace Suborned.Play
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
             FeedSay(speaker, text);
+            PushBubble(speaker, text); // brief 014: speech is a bubble at the speaker
             while (Talk.Count > 200) Talk.RemoveAt(0);
         }
 
@@ -214,7 +216,7 @@ namespace Suborned.Play
         void SayArrive(OpId by, Order o)
         {
             var verb = VerbOf(o);
-            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) Beat("arrive", verb, Op.Name(by), who: Name(o.Target));
+            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } } // Fable §6: arrive is history only
         }
 
         /// <summary>The refusal said for the player: the text's lock line for its code, filled (a port of `fillLock`); else the engine's words.</summary>

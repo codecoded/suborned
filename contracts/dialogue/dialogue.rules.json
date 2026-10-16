@@ -244,7 +244,10 @@
    "guards": "2",
    "cameras": "2",
    "missions": "3",
-   "closes": "when the body is found"
+   "closes": "when the body is found",
+   "district": "the Harbour District",
+   "band": "neutral",
+   "cause": "a man knocked out told his ties"
   }
  },
  "listen": {

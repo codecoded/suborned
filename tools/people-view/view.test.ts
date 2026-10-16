@@ -48,7 +48,7 @@ describe('the data', () => {
   test('is the expansion `bun run people` makes: 130 people, all checks on the current inputs', () => {
     expect(view.schema).toBe(VIEW_SCHEMA);
     expect(view.persons.length).toBe(130);
-    expect(view.checks.map(c => c.id)).toEqual([...Array(16).keys()].map(i => `P-${i}`).concat('M-2'));
+    expect(view.checks.map(c => c.id)).toEqual([...Array(17).keys()].map(i => `P-${i}`).concat('M-2'));
     // r015's tables carry no lover pattern: under the lovers' canon (brief 011) the waitress role cannot be cast, so P-6 and M-2 name her and nothing else fails, until a repair run writes the pair
     const bad = view.checks.filter(c => !c.ok);
     expect(bad.map(c => c.id).filter(id => !['P-6', 'M-2'].includes(id))).toEqual([]);

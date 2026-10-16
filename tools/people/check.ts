@@ -5,7 +5,7 @@ import { Cast as CastSchema } from '../../contracts/people/cast.schema';
 import { People as PeopleSchema, Person as PersonSchema, type Person } from '../../contracts/people/people.schema';
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
-import { stepMin } from './day';
+import { drawn, stepMin } from './day';
 import { expand, inShift, needsOf, needWeightsOf, routineMeet, rowOf, type Ctx } from './expand';
 import { withSecrets } from './secrets';
 import { castHandover, type MissionIn } from './handover';
@@ -42,6 +42,7 @@ export const RULES_SRC: Record<string, string> = {
   'P-13': 'GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear',
   'P-14': 'people.rules.json ties.kinds.lover (Motive briefs/011/motive-lovers.md §1): mutual, one per person, met on their routines, never family, at most maxShare of the simulated people',
   'P-15': 'people.rules.json secrets (Motive briefs/011/motive-lovers.md §2): 0 or 1 per person from the closed list; affair exactly for everyone with a lover tie; the need secret retired into the record share',
+  'P-16': 'brief 014 (Sky 2026-10-16: five identical servers on one point): no two people are drawn on one place at once; a door, a bay or a standing point holds one person at a time, a post is one person\'s',
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
 const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.value ?? (r.bad.length ? `${r.bad.length} fault(s)` : 'ok'), limit: r.limit ?? '0 faults', ok: !r.bad.length, ...(r.bad.length ? { detail: r.bad.slice(0, 12).join('; ') + (r.bad.length > 12 ? `; +${r.bad.length - 12} more` : '') } : {}), source: RULES_SRC[r.id] });
@@ -422,6 +423,22 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       }
     }
     out.push({ id: 'P-15', rule: 'Secrets: 0 or 1 per person from the rules\' list; the affair exactly for everyone with a lover tie; the need secret retired', bad: [...new Set(bad)], value: S ? `${P.filter(p => p.secret === 'affair').length} affairs, ${P.filter(p => p.secret === 'record').length} records` : 'none in the rules', limit: S ? 'one each, listed' : 'none' });
+  }
+  // P-16 one drawn person to a place (brief 014): the café's door was five servers on one point. A place holds one drawn person at a time; the minutes of a commute at a stop or bay are a
+  // passer's (the car at the bay, the tram stop) and the seats and standing points are P-13's. A civic employer's door and bay are held to one by its row (`count`, `posts`) and by M-2's `alone`
+  // and `waitsFor`, which read the role the mission needs; the rule here covers every other unit's places and the places no unit owns.
+  {
+    const bad: string[] = [], hm = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`, held = new Map<string, { who: string; from: number; to: number }[]>();
+    const kind = new Map(scope.places.map(x => [x.id, x.kind]));
+    for (const p of P) for (const s of p.routine.stops) {
+      if (!drawn(p, s) || s.doing === 'commute' || kind.get(s.place) === 'seat' || kind.get(s.place) === 'stand' || (p.work && unitOf.get(p.work.unit)?.kind === 'civic' && (s.doing === 'work' || s.doing === 'meal'))) continue;
+      held.set(s.place, [...(held.get(s.place) ?? []), { who: p.id, from: s.from, to: s.to }]);
+    }
+    for (const [place, list] of held) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+      const a = list[i]!, b = list[j]!;
+      if (a.from < b.to && b.from < a.to) bad.push(`${a.who} and ${b.who} are both drawn at ${place} (${hm(a.from)}-${hm(a.to)}, ${hm(b.from)}-${hm(b.to)})`);
+    }
+    out.push({ id: 'P-16', rule: 'No two people are drawn on one place at once (a door, a bay, a stop holds one at a time)', bad: [...new Set(bad)], value: `${held.size} places`, limit: 'one drawn person to a place' });
   }
   const checks = out.map(row);
   void rowOf; void (null as unknown as Unit);

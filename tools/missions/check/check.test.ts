@@ -76,7 +76,7 @@ describe('the §09 conditions, each with a failing example', () => {
     p['route-g'] = { ...win(2474, 2), campaignTrail: 4, alert: 1, takedownS: 6 }; p['route-g-fast'] = { ...win(2170, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 };
     p['route-g-kill'] = { ...win(2843, 2), campaignTrail: 2, alert: 1, takedownS: 34.4, openCases: 1 };
     p['careless-takedown-seen-camera'] = fail('entry-seen-camera'); p['careless-takedown-seen-crowd'] = fail('sealed'); p['careless-body-found'] = fail('sealed');
-    p['careless-reporter-not-stopped'] = { ...win(4604, 10), alert: 2 }; p['careless-guard-left-door-held'] = fail('rivals-reach-vale');
+    p['careless-reporter-not-stopped'] = { ...win(4604, 14), alert: 2 }; p['careless-guard-left-door-held'] = fail('rivals-reach-vale');
     for (const s of ['route-a', 'route-a-pressure']) p[`${s}~no-waitress`] = fail('entry-seen-guard');
     for (const s of ['route-b', 'route-b-block']) p[`${s}~no-driver`] = fail('abduction-seen-camera');
     return p;
@@ -132,7 +132,7 @@ describe('the §09 conditions, each with a failing example', () => {
 
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine at HEAD)', () => {
   test('route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships', async () => {
-    const c = await check(L, engineAt('HEAD'), () => {}, { slack: false }); // the committed engine with its rules and the mission's committed site
+    const c = await check(L, engineAt('HEAD', 'tree'), () => {}, { slack: false }); // the committed engine with its rules, on the tree's site and people (brief 014: Pulse's café street, accepted by Sky and swapped into sim/data before its commit; the route scripts are the tree's and are written against it)
     expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
     expect([c.plays['route-a']!.gunfire, c.plays['route-b']!.gunfire]).toEqual([0, 0]);
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);

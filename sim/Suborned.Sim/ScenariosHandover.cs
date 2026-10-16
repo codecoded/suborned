@@ -338,8 +338,12 @@ namespace Suborned.Sim
             Add("S15", "242", "An unseen shot: +45 s; the guard can't fire outside his cone; his missed check-in mark lands at the desk and brings the unit sooner (the level's dispatch after the mark; brief 013 retires the 18 s + 20 s).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                // c014 start (brief 014): the Enforcer's walk to the door is longer, so the Tech no longer waits for him; she loops the
+                // camera when she reaches the cabinet, which keeps the guard down before his 2:30 mark (waiting put him down at 2:30.8).
+                int enfAt = r.SendTo(Enf, BesideDoor);
+                r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.To(Math.Max(g.Tick, enfAt));
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
@@ -741,23 +745,44 @@ namespace Suborned.Sim
                 }
             });
 
-            Add("N12b", "—", "The crowd witnesses (§05): the Fixer helps Inez with people at the café; a witness adds Trail once, moves standing toward Hero (§04 clear debts publicly) and remembers the Fixer's face.", r =>
+            Add("N12b", "—", "A private Help (rulebook privacy, Sky 2026-10-16: a turning conversation is private, unless it's pressure): the Fixer helps Inez with customers at the café terrace in sight. Onlookers learn nothing: no witness Trail, no Standing move, no incident, nobody remembers the Fixer's face; the Help's own price stands (its base Trail).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));
-                int nearby = 0; var door = r.At("d:Café door");
-                foreach (var w in g.Walkers) { var p = g.CrowdPos(w); if (p.HasValue && G.Within(p.Value, door, 1300)) nearby++; }
-                r.Is(nearby > 0, $"people stand near the café door ({nearby})");
-                int trail = g.Trail;
+                int onlookers = g.Preview("pressure", Inez).Witnesses; // the same people, for a visible act (N12c)
+                r.Is(onlookers > 0, $"people stand within witness range of Inez, on a clear line: a threat here would be seen by {onlookers}");
+                int trail = g.Trail, standing = g.Standing, incidents = g.Incidents.Count;
                 var q = g.Preview("help", Inez); // the card after Listen: turned, or not yet (a Fearful Inez takes two; the cast decides)
+                r.Eq(q.Witnesses, 0, "the card counts nobody who would see it: the conversation is private");
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 r.Is(g.Inez.Has("help") && g.Inez.Turned == (q.Outcome == "turned"), $"the Help lands as the card said ({q.Outcome})");
-                r.Eq(g.Trail - trail, (int)q.Trail + 1, "+1 T for the Help, +1 T for the witnessed debt-clearing (once, however many saw it)");
-                r.Eq(g.Standing, 1, "a public debt-clearing moves standing toward Hero");
-                r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness remembers the Fixer's face");
-                r.Is(g.Ledger.Exists(l => l.cause == "witnessed:debt-cleared:waitress"), "the ledger names the witnessed act");
+                r.Eq(g.Trail - trail, (int)q.Trail, "the Help's own Trail only: no witness Trail");
+                r.Eq(g.Standing, standing, "no Standing move");
+                r.Eq(g.Incidents.Count, incidents, "no incident for the investigators");
+                r.Is(!g.Walkers.Exists(w => w.P != g.Inez && (g.HoldsFace(w.P) || w.P.Memory.Exists(m => m.Act == "saw-act"))), "no onlooker remembers the act or the Fixer's face");
+                r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("witnessed:", StringComparison.Ordinal)), "the ledger has no witnessed act");
+                r.Is(!g.Log.Exists(l => l.Code.StartsWith("witness.", StringComparison.Ordinal)), "nobody saw the help");
+                var next = g.BetweenMissions(g.Investigate());
+                r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who != Inez), "between missions: no onlooker passes word of it");
+            });
+
+            Add("N12c", "—", "Pressure stays witnessable (rulebook privacy: a threat is visible): the Fixer presses Inez with the same customers in sight. A witness adds Trail once, moves Standing one step toward Menace (§04 public threats), remembers the Fixer's face, and the threat is an incident for the investigators.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Fixer, "d:Courtyard"));
+                int trail = g.Trail, standing = g.Standing;
+                var q = g.Preview("pressure", Inez);
+                r.Is(q.Witnesses > 0, $"the card counts who would see it ({q.Witnesses})");
+                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
+                r.Eq(g.Trail - trail, (int)q.Trail + g.R.WitnessTrail, "the Pressure's own Trail, and +1 T for the witnessed threat (once, however many saw it)");
+                r.Eq(g.Standing, standing - g.R.StandingStep, "a public threat moves Standing one step toward Menace");
+                r.Is(g.Walkers.Exists(w => w.P != g.Inez && g.HoldsFace(w.P)), "a witness remembers the Fixer's face");
+                r.Is(g.Ledger.Exists(l => l.cause == "witnessed:threat:waitress"), "the ledger names the witnessed act");
+                r.Is(g.Incidents.Exists(i => i.Cause == "threat:waitress" && i.Witnesses.Count > 1), "an incident with its witnesses, for the investigators");
             });
 
             var drvKnown = Turned(Driver); drvKnown.Known[Driver] = new List<string> { "routine", "need", "temperament" };
@@ -832,11 +857,10 @@ namespace Suborned.Sim
                 r.FightItOut(); r.Do(Enf, "extract");
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 var next = Debrief.Of(g).Next;
-                // Changed (r016 cast, 2026-10-16): café customers saw the debt cleared, so the investigators work that lead, nearest first, then
-                // by id (rulebook investigation). The fixture's Inez (p-cafe-11) was asked first; r016's (p-cafe-14) shares the café entrance
-                // with two servers who are asked before her at Alert 0. Whether she is asked is the cast's; the ladder must follow it.
+                // Changed (rulebook privacy, Sky 2026-10-16): the Help is private, so no onlooker's sighting is a lead. Whether the
+                // investigators reach Inez by another lead is the cast's and the route's; the ladder must follow it.
                 var inv = Debrief.Of(g).Inv;
-                r.Is(inv.Findings.Exists(f => f.Lead == "incident:debt-cleared:waitress"), "the investigators work the witnessed debt-clearing");
+                r.Is(!inv.Findings.Exists(f => f.Lead.StartsWith("incident:debt-cleared", StringComparison.Ordinal) || f.Lead.StartsWith("incident:payment", StringComparison.Ordinal)), "a private Help leaves the investigators no witnessed lead");
                 bool asked = inv.Findings.Exists(f => f.Who == Inez);
                 string ladder = asked ? "job-exposed: resentment compliant → resentful" : "job-unexposed: bravery informant → helper";
                 r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == ladder), $"{(asked ? "questioned" : "not questioned")}, her ladder: {ladder}");
@@ -949,6 +973,7 @@ namespace Suborned.Sim
             TakedownCases(); // brief 013
             TakedownFixes(); // brief 013 D
             TakedownE(); // brief 013 E
+            StandingCases(); // brief 014
         }
     }
 }

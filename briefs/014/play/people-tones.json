@@ -1,0 +1,93 @@
+{
+ "schema": "brief014.people-tones/1",
+ "source": "contracts/world/civic-look.json palette.materials (unlit); signals from contracts/style/suborned.style.json signal_colours",
+ "gate": "deltaE2000 >= 20 from every signal",
+ "code": "unity/Assets/Suborned/Runtime/Play/HostViews.cs (Family, Shape)",
+ "tones": [
+  {
+   "family": "cafe (server, cook; Inez)",
+   "material": "DK_Bloom_Peach",
+   "hex": "#FCC4AC",
+   "deltaE2000": {
+    "cones": 31.3,
+    "guard": 21.0,
+    "rivals": 47.9
+   },
+   "min": 21.0,
+   "pass": true
+  },
+  {
+   "family": "cafe apron band",
+   "material": "DK_Cloth_Cream",
+   "hex": "#EFE8D6",
+   "deltaE2000": {
+    "cones": 43.3,
+    "guard": 27.0,
+    "rivals": 53.3
+   },
+   "min": 27.0,
+   "pass": true
+  },
+  {
+   "family": "office (clerk, attendant, councillor)",
+   "material": "DK_Pool_Civic",
+   "hex": "#3A9AA6",
+   "deltaE2000": {
+    "cones": 51.3,
+    "guard": 44.8,
+    "rivals": 33.4
+   },
+   "min": 33.4,
+   "pass": true
+  },
+  {
+   "family": "guards (and the door guard)",
+   "material": "DK_Enamel_Teal",
+   "hex": "#1F6C67",
+   "deltaE2000": {
+    "cones": 52.7,
+    "guard": 49.0,
+    "rivals": 34.8
+   },
+   "min": 34.8,
+   "pass": true
+  },
+  {
+   "family": "drivers",
+   "material": "DK_Enamel_Mint",
+   "hex": "#A8D3BE",
+   "deltaE2000": {
+    "cones": 55.0,
+    "guard": 35.8,
+    "rivals": 47.4
+   },
+   "min": 35.8,
+   "pass": true
+  },
+  {
+   "family": "passers-by (resident, keeper, others)",
+   "material": "DK_Steel",
+   "hex": "#A9ABAE",
+   "deltaE2000": {
+    "cones": 34.1,
+    "guard": 29.6,
+    "rivals": 31.0
+   },
+   "min": 29.6,
+   "pass": true
+  },
+  {
+   "family": "cap (guards, drivers)",
+   "material": "DK_Enamel_Charcoal",
+   "hex": "#2B2F33",
+   "deltaE2000": {
+    "cones": 40.7,
+    "guard": 59.2,
+    "rivals": 28.7
+   },
+   "min": 28.7,
+   "pass": true
+  }
+ ],
+ "pass": true
+}

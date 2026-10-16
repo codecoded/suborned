@@ -7,6 +7,10 @@
   "bonus": 0,
   "src": "briefs/013/motive-takedowns.md §5.3 (Sky 2026-10-16 merged call 3): the civic district's base level is 2 (watchful), the Handover's own bonus 0, no open cases. Replaced by plan.areas[*].securityBase (Datum) and mission.json securityBonus (Waymark)."
  },
+ "district": {
+  "id": "harbour-district",
+  "src": "Brief 014 (Keel, 2026-10-16): Standing is per district (§04; rulebook standing). The Handover plays in one district, the plan's own (contracts/world/harbour-district.plan.json id). Replaced by the plan and the campaign layer when they carry it."
+ },
  "stashes": [],
  "callBoxes": [],
  "docks": [],

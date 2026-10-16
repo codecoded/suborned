@@ -1,0 +1,29 @@
+{
+ "state": "active",
+ "elements": [
+  {
+   "kind": "line",
+   "x": 744.12890625,
+   "y": 1075.0,
+   "w": 237.7421875,
+   "h": 30.0,
+   "text": "Watch the caf\u00e9 terrace."
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 92,
+   "w": 92,
+   "h": 352,
+   "text": "roster portraits"
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 996,
+   "w": 212,
+   "h": 132,
+   "text": "plot scope"
+  }
+ ]
+}

@@ -45,6 +45,7 @@ namespace Suborned.Play
         void BuildTakedown()
         {
             marks = E(root); marks.style.position = Position.Absolute; marks.style.left = 0; marks.style.top = 0; marks.style.right = 0; marks.style.bottom = 0; marks.SendToBack(); // under the panels, over the world
+            marks.style.alignItems = Align.FlexStart; // marks size to their content (brief 014: bubbles, pops, name tags)
             // the way pills under the armed Takedown knob (Glyph §1): Knock out (the default) and Kill; the knob again flips
             wayRow = E(root); wayRow.style.position = Position.Absolute; wayRow.style.flexDirection = FlexDirection.Row;
             VisualElement Way(string glyph, string label)

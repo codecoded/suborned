@@ -228,7 +228,7 @@ namespace Suborned.Sim
             var changes = new List<Eff>(outcome.Changes);
             foreach (var a in ev.Also) if (AllHold(a.When, x)) changes.AddRange(a.Changes);
             var acts = new List<string>();
-            foreach (var w in ev.Witnesses) if (AllHold(w.When, x)) acts.Add(w.Act);
+            if (!ev.Private) foreach (var w in ev.Witnesses) if (AllHold(w.When, x)) acts.Add(w.Act); // rulebook privacy: a private conversation has no onlookers
             bool witnessed = false;
             foreach (var act in acts) witnessed |= WitnessAct(act, p, "fixer");
             bool charged = false;
@@ -312,7 +312,7 @@ namespace Suborned.Sim
             if (incidents.Add($"{act}:{subject.Role}:{Tick}"))
             {
                 AddTrail(R.WitnessTrail, $"witnessed:{act}:{subject.Role}");
-                MoveStanding(R.Traceable[act] * R.StandingStep, $"witnessed:{act}");
+                MoveStanding(R.Traceable[act] * R.StandingStep, $"witnessed:{act}", "seen-" + act, subject.Role.Length > 0 ? subject.Role : subject.Id);
             }
             foreach (var w in seen) Remember(w, "saw-act", by, true);
             Note("witness." + act, $"{seen.Count} saw the {act}.");
@@ -432,7 +432,7 @@ namespace Suborned.Sim
                 q.AlertIfReported = Math.Max(Alert, list[Math.Min(Reported + 1, list.Length) - 1]);
             }
             var at = PersonPos(p);
-            if (at.HasValue) foreach (var w in People) { if (w == p) continue; var wp = PersonPos(w); if (wp.HasValue && G.Within(wp.Value, at.Value, witnessRange) && Sees(wp.Value, at.Value)) q.Witnesses++; }
+            if (at.HasValue && !ev.Private) q.Witnesses = WitnessesWithPos(at.Value, p).Count; // who would see it: the same reading as witness.sees (WitnessAct), crowd included
             return q;
         }
         static readonly Cond ReportsCond = new Cond(JNode.Parse("{\"k\": \"reports\"}"));

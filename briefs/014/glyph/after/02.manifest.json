@@ -1,0 +1,29 @@
+{
+ "state": "rest",
+ "elements": [
+  {
+   "kind": "speech",
+   "x": 972.25,
+   "y": 370.0,
+   "w": 317.5,
+   "h": 26.0,
+   "text": "The patrol comes round, then nothing for minutes."
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 92,
+   "w": 92,
+   "h": 352,
+   "text": "roster portraits"
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 996,
+   "w": 212,
+   "h": 132,
+   "text": "plot scope"
+  }
+ ]
+}

@@ -27,7 +27,13 @@ namespace Suborned.Sim
             int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
             r.To(r.SendTo(Enf, BesideGuard));
         }
-        static TdAct ActOn(Run r, string id) => r.G.Acts.Last(a => a.Victim == id || a.P.Role == id);
+        /// <summary>The last takedown on `id` (a person id or a role); a clear failure, not a LINQ throw, when there is none.</summary>
+        static TdAct ActOn(Run r, string id)
+        {
+            var a = r.G.Acts.LastOrDefault(x => x.Victim == id || x.P.Role == id);
+            if (a != null) return a;
+            throw new InvalidOperationException($"no takedown on '{id}' at {Report.Clock(r.G.Tick)}: the order was refused (see the failed takedown check before this) or never issued");
+        }
         /// <summary>Free ground within reach of a person standing at `at` (1.2 m round, in a fixed order), the Enforcer can walk to, and
         /// not in `facing`'s cone from `at` (behind or beside him); null if none.</summary>
         static Pt? Beside(Run r, Pt at, Pt? facing = null)
@@ -129,18 +135,20 @@ namespace Suborned.Sim
                 r.Eq(next.NextLevel, g.S.SecurityBase, "one open case: the district's level stands (2 cases raise it 1)");
             });
 
-            Add("N48", "—", "A takedown seen by civilians (Sky merged calls 1, 5): a server knocked out at the café door in front of the other servers and Inez. At sight: +1 witness Trail and one step toward Menace, no Alert. The Loyal servers report from the café's door; when the first report lands, Alert 3 and the act's +4 T; the response goes by the dial (the unit, the robots and, at Alert 3, the cordon; the doors lock at this level). The card listed the witnesses with '?' for unknown temperaments.", r =>
+            Add("N48", "—", "A takedown seen by civilians (Sky merged calls 1, 5): a customer knocked out at a café terrace table in front of the other customers and Inez at the door (Pulse's café fix: the other servers work inside). At sight: +1 witness Trail and one step toward Menace, no Alert. The Loyal and Idealist customers report; when the first report lands, Alert 3 and the act's +4 T; the response goes by the dial (the unit, the robots and, at Alert 3, the cordon; the doors lock at this level). The card listed the witnesses with '?' for unknown temperaments.", r =>
             {
                 var g = r.G;
-                var cafe = r.At("d:Café door");
-                var spot = Beside(r, cafe) ?? throw new InvalidOperationException("no ground beside the café door");
-                r.To(T(240)); r.To(r.SendTo(Enf, spot));
-                var q = g.QuoteTakedown("p-cafe-12", "knockout");
+                const string Victim = "p-pylon-row-east-05"; // a Mercenary customer at terrace table 2 from 0:30
+                r.To(T(240));
+                var seat = g.CrowdPos(WalkerById(r, Victim)) ?? throw new InvalidOperationException($"{Victim} is not on the street at 4:00");
+                var spot = Beside(r, seat) ?? throw new InvalidOperationException("no ground beside the terrace table");
+                r.To(r.SendTo(Enf, spot));
+                var q = g.QuoteTakedown(Victim, "knockout");
                 r.Is(q.People.Count >= 3 && q.People.Exists(x => x.verb == "?"), $"the card: {q.People.Count} would see it, verbs '?' until their temperaments are known");
                 r.Eq(q.AlertIfSeen, 3, "the card: Alert 3 if seen");
                 int trail = g.Trail, standing = g.Standing;
-                r.Takedown("p-cafe-12", "knockout");
-                var a = ActOn(r, "p-cafe-12");
+                r.Takedown(Victim, "knockout");
+                var a = ActOn(r, Victim);
                 r.Is(a.Witnessed, "seen");
                 r.Eq(g.Trail, trail + g.R.WitnessTrail, "+1 witness Trail at sight, once");
                 r.Eq(g.Standing, standing - g.R.StandingStep, "one step toward Menace at sight");
@@ -154,15 +162,17 @@ namespace Suborned.Sim
                 r.Is(a.ActTrail, "the act's Trail is charged when a seen takedown's report lands");
                 r.Is(g.SecurityArrives == land + T(g.DialNow.DispatchS), "the response unit rolls the level's dispatch after the landing");
                 r.Is(g.Units.Count(u => u.Robot) == g.DialNow.A2Robots, "the level's Alert-2 robots");
-                r.Is(g.AlarmDestinations.Count >= 1 && G.Within(g.AlarmDestinations[0], a.Scene, g.R.WitnessRangeCm), $"the alarm's places ({g.AlarmDestinations.Count}): the scene first, then where the victim's and the first caller's ties are meant to be (the servers' ties stand at the café: one place; one dispatch, brief 013 D)");
+                r.Is(g.AlarmDestinations.Count >= 1 && G.Within(g.AlarmDestinations[0], a.Scene, g.R.WitnessRangeCm), $"the alarm's places ({g.AlarmDestinations.Count}): the scene first, then where the victim's and the first caller's ties are meant to be (one dispatch, brief 013 D)");
                 r.Is(g.Units.Count(u => u.Cordon) == g.DialNow.A3Units * g.R.ResponseOfficers, "Alert 3: the cordon to the mouths");
                 r.Eq(g.Lockdown, int.MaxValue / 4, "the seal waits for a confirmation");
                 var told = g.Walkers.FirstOrDefault(w => w.P.Memory.Exists(m => m.Act == "told"));
                 r.Is(told != null && !told.P.Memory.Exists(m => m.Act == "told" && m.By != reps[0].By && g.Walkers.Exists(x => x.P.Id == m.By && x.P.Memory.Exists(mm => mm.Act == "told"))), "a reporter tells a tie by telephone (facts only, one hop: a told person never retells)");
                 r.Until(() => a.Confirmed, T(120));
                 r.Is(a.Confirmed && g.Lockdown == g.Tick + T(g.SealS), "a unit confirms him at the scene: the seal starts then");
-                var w15 = WalkerById(r, "p-cafe-15");
-                r.Is(w15.P.Has("saw-takedown") && g.CrowdPos(w15) is Pt p15 && G.Within(p15, cafe, 300) && g.QuoteTakedown("p-cafe-15", "knockout").Aware == "yes", "a witness stays aware of the Enforcer for the rest of the mission (Motive rev 3): taking her now is the seen-coming case, though she stands at a stop");
+                // a witness who stays at her stop: the Mercenary customer at table 3 (quiet at Alert 0, so she stays seated)
+                const string Stays = "p-garden-row-east-03";
+                var ws = WalkerById(r, Stays);
+                r.Is(ws.P.Has("saw-takedown") && g.CrowdPos(ws) is Pt ps && G.Within(ps, seat, 600) && g.QuoteTakedown(Stays, "knockout").Aware == "yes", "a witness stays aware of the Enforcer for the rest of the mission (Motive rev 3): taking her now is the seen-coming case, though she sits at a stop");
                 if (g.DialNow.DoorsLock) { r.To(r.Send(Enf, "d:Office entrance")); r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" }).code, "doors-locked", "Alert 3 at this level: the doors are locked"); }
             });
 
@@ -190,7 +200,8 @@ namespace Suborned.Sim
                 var g = r.G;
                 var w = WalkerById(r, "p-records-office-74");
                 int t = Enumerable.Range(T(225), T(30)).First(x => g.CrowdPos(w, x) is Pt p && g.GuardWatching(p, false));
-                r.To(t - T(20)); int when = MeetFromBehind(r, w, t);
+                r.To(t - T(25)); int when = MeetFromBehind(r, w, t); // 25 s, not 20: from the c014 start (brief 014) the walk to the spot is 20.4 s
+                r.Is(r.Arrival(Enf) <= when, $"the Enforcer is in place before he passes ({Report.Clock(r.Arrival(Enf))})");
                 r.To(when);
                 r.Takedown("p-records-office-74", "knockout");
                 var a = ActOn(r, "p-records-office-74");
@@ -343,7 +354,7 @@ namespace Suborned.Sim
                 r.Eq(w.P.Sc[Rules.Fear], Math.Min(fear + 1, g.R.ScaleMax[Rules.Fear]), "his fear rises");
             });
 
-            Add("N65", "—", "A witness stopped before the report lands (Pulse §3.2): guard 73 is killed unseen crossing the square at 4:00 and carried to the north edge. At 6:47 clerk 34 (Loyal, and 73's workmate: he runs, Pulse row 2), walking home ahead of his group, finds the body and runs to the nearest phone (a call box) to report it. The Enforcer meets him on the way and takes him down: his report never lands. The next finder's report lands later: the incident still reaches the desk, by the next earliest.", r =>
+            Add("N65", "—", "A witness stopped before the report lands (Pulse §3.2): guard 73 is killed unseen crossing the square at 4:00 and carried to the bins on Rocket Lane's west pavement (nobody passes them); at 5:30, when the café's walkers are home and before the clerks leave, he is carried on to the north edge, unseen. At 6:47 clerk 34 (Loyal, and 73's workmate: he runs, Pulse row 2), walking home ahead of his group, finds the body and runs to the nearest phone (a call box) to report it. The Enforcer meets him on the way and takes him down: his report never lands. The next finder's report lands later: the incident still reaches the desk, by the next earliest.", r =>
             {
                 var g = r.G;
                 var w73 = WalkerById(r, "p-records-office-73");
@@ -352,7 +363,13 @@ namespace Suborned.Sim
                 r.Takedown("p-records-office-73", "kill"); r.Done(Enf);
                 var a = ActOn(r, "p-records-office-73");
                 r.Body(Enf, "carry", "p-records-office-73"); r.Done(Enf);
-                var spot = new Pt(4201, 1066); // the probe's spot: first found by clerk 34 alone (6:47), the next finder 37 s later, 28 m from a door
+                // Pulse's café fix (c013): the terrace's residents walk home past the Office side 3:30-5:30, on the carry's way north. Wait
+                // them out at the bins (Vantage K5, as N56), then carry on at 5:30: they are home, and the clerks have not left yet.
+                r.To(r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(740, -6180))!.Value));
+                r.Body(Enf, "drop"); r.Done(Enf);
+                r.To(T(330));
+                r.Body(Enf, "carry", "p-records-office-73"); r.Done(Enf);
+                var spot = new Pt(4201, 1066); // the probe's spot: first found by clerk 34 alone (6:47), 28 m from a door
                 r.To(r.SendTo(Enf, spot));
                 r.Body(Enf, "drop"); r.Done(Enf);
                 r.Is(!a.Witnessed, "unseen: the kill and the carry");
@@ -480,11 +497,11 @@ namespace Suborned.Sim
             Add("N58", "—", "Who can be taken (Sky 2026-10-16: anyone; one rule, no named list): only the Enforcer; within his reach; anyone on the street, cast or crowd, by role or id; Vale only killed (knockout: use Take), and killing him fails the mission; the patrol and cameras are no targets (Reroute and Loop are their verbs).", r =>
             {
                 var g = r.G;
-                var x = new Order { Tick = g.Tick, Op = Fixer, Do = "takedown", Target = "p-cafe-12", How = "kill" };
+                var x = new Order { Tick = g.Tick, Op = Fixer, Do = "takedown", Target = "p-cafe-14", How = "kill" }; // Inez, standing the café door (on the street all mission)
                 r.Eq(g.Issue(x).code, "only-enforcer", "only the Enforcer");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "patrol", How = "kill" }).code, "target-unknown", "the patrol is no target");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-12", How = "stun" }).code, "takedown-how", "a knockout or a kill");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-12", How = "kill" }).code, "too-far", "within reach");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-14", How = "stun" }).code, "takedown-how", "a knockout or a kill");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "p-cafe-14", How = "kill" }).code, "too-far", "within reach");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "councillor", How = "kill" }).code, "person-away", "Vale is inside");
                 r.To(T(g.S.ValeAtCar)); r.To(r.SendTo(Enf, Beside(r, g.ValePos()!.Value)!.Value));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "councillor", How = "knockout" }).code, "takedown-vale", "Vale is taken, not knocked out");

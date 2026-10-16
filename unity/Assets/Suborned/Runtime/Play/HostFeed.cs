@@ -27,7 +27,7 @@ namespace Suborned.Play
             public int Id, Agent = -1, Started, Ended = -1, Revealed, NextBeatAt = -1, Progress = -1, TicksLeft = -1;
             public string Kind = "learned", Verb = "", Target = "", Title = "", Where = "", Footer = "", Event = "", PlaceKey = "", Icon = "";
             public readonly List<FeedLine> Lines = new();
-            public PlayText.Scene Scene; public int SceneN; public long Paid; public Vector3? Place; public bool Live, Read; public Feedback Tone = Feedback.Info;
+            public PlayText.Scene Scene; public int SceneN, Bubbled; public long Paid; public Vector3? Place; public bool Live, Read; public Feedback Tone = Feedback.Info;
             public bool Typing => Revealed < Lines.Count;
         }
         /// <summary>Cards not yet acknowledged (oldest first), and the acknowledged history (newest last).</summary>
@@ -220,7 +220,7 @@ namespace Suborned.Play
             var sc = Text.LookupScene(new PlayText.SceneQuery { Kind = "call", Verb = "call", About = role, Temperament = p.Temperament });
             var c = NewCard("call", Text.Action("call", role).label, "call", $"{Name(role)} · {PlaceWords(role)}", TargetWorld(new Target { Kind = "person", Key = role }), role);
             c.Agent = (int)OpId.Fixer; c.Verb = "call"; c.Target = role;
-            if (sc != null) { c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c); }
+            if (sc != null) { c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c); SceneBeat(sc, "call"); }
             else c.Footer = $"{Cap(Name(role))} acts on the call.";
             c.Revealed = 1; c.NextBeatAt = Game.Tick + 15; c.Tone = Feedback.Ok;
         }
@@ -338,6 +338,7 @@ namespace Suborned.Play
                 var c = NewCard("city", SceneTitles.TryGetValue(ev, out var st) ? st : Title(ev.Replace('-', ' ')), "·", where, at.HasValue ? frame.World(at.Value) : null, key);
                 c.Event = ev; c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c);
                 c.Revealed = 1; c.NextBeatAt = Game.Tick + 15; lastEvent = c;
+                SceneBeat(sc, ev);
                 return Seen.Played;
             }
             return r;

@@ -271,11 +271,11 @@
   "file@2x": "panels/plate_verbs@2x.png",
   "size@1x": [
    96,
-   54
+   78
   ],
   "size@2x": [
    192,
-   108
+   156
   ],
   "slice@1x": {
    "left": 27,
@@ -290,7 +290,7 @@
    "bottom": 53
   },
   "type": "nine-slice",
-  "use": "verb plate behind the 1-4 knobs (229 x 54); the knobs are separate sprites (btn_verb_*). Plain strip art: the round 6 mock-up's baked knobs and cream end caps are not in this sprite",
+  "use": "verb plate behind the 1-4 knobs and their key numbers (brief 014 review round 2: 96 x 78 art, DRAW IT AT EXACTLY 78 px tall, 1:1, so the end screws, now whole and centred, never stretch; any width, 9-sliced at 27). Field inside the rim: 8.5 px from each edge. The knobs are separate sprites (btn_verb_*)",
   "fill_center": true,
   "knob_pitch_px_1x": 47.6,
   "knob_diameter_px_1x": 40,
@@ -1674,6 +1674,20 @@
   "inset_px@2x": 21,
   "type": "fixed",
   "use": "selection: turquoise band, white inner line and a soft glow round the window; sprite is larger than the window by inset_px each side; draw over the frame"
+ },
+ "portrait_ring_inner": {
+  "file@1x": "portraits/portrait_ring_inner@1x.png",
+  "file@2x": "portraits/portrait_ring_inner@2x.png",
+  "size@1x": [
+   78,
+   78
+  ],
+  "size@2x": [
+   156,
+   156
+  ],
+  "type": "fixed",
+  "use": "selection that needs no room outside the bezel (brief 014 review round 2): a turquoise band 3.8 px wide, a cream line and a soft glow, all INSIDE the photo circle (r 39). Draw it as the same size and position as the photo clip (78 x 78 centred on the bezel), over the photo and the scrim, under the health pips and the key badge. Replaces portrait_ring_selected in the left column."
  },
  "portrait_ring_busy": {
   "file@1x": "portraits/portrait_ring_busy@1x.png",

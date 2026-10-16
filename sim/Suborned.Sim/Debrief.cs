@@ -97,6 +97,15 @@ namespace Suborned.Sim
             w.Open("nextMission").Prop("ambush", Next.Ambush);
             if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before
                 w.Prop("campaignTrail", Next.CampaignTrail).Prop("campaignStanding", Next.CampaignStanding).Prop("openCases", Next.OpenCases).Prop("nextLevel", Next.NextLevel); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
+            w.OpenArr("standing"); // brief 014: one line per district (rulebook debrief.lines.standing) and the Standing the next mission starts at
+            foreach (var l in Next.Standing)
+            {
+                w.Obj().Prop("district", l.District).Prop("from", l.From).Prop("to", l.To).Prop("band", l.Band).Prop("cause", l.Cause).Prop("who", l.Who)
+                 .Prop("mission", l.End - l.From).Prop("found", l.Found).Prop("word", l.Word).Prop("wordUncapped", l.WordUncapped).Prop("drift", l.Drift).OpenArr("moves");
+                foreach (var (d, c, who) in l.Moves) w.Obj().Prop("delta", d).Prop("cause", c).Prop("who", who).EndObj();
+                w.EndArr().EndObj();
+            }
+            w.EndArr();
             w.OpenArr("lines"); foreach (var l in Next.Lines) w.Obj().Prop("line", l.Line).Prop("who", l.Who).Prop("detail", l.Detail).EndObj(); w.EndArr();
             w.OpenArr("contacts");
             foreach (var c in Next.Contacts)
@@ -138,7 +147,7 @@ namespace Suborned.Sim
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.5.0"; // 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
+        public const string Version = "suborned.sim/0.6.0"; // 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
         public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null)

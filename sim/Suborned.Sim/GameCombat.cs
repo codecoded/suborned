@@ -350,7 +350,7 @@ namespace Suborned.Sim
         {
             string who = Who(p);
             RaiseAlert(R.ViolenceSeen, $"violence-seen:{who}");
-            if (incidents.Add("seen:" + who)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{who}"); MoveStanding(-R.StandingStep, $"violence-seen:{who}"); }
+            if (incidents.Add("seen:" + who)) { AddTrail(R.WitnessTrail, $"witnessed:violence:{who}"); MoveStanding(-R.StandingStep, $"violence-seen:{who}", "seen-violence", who); }
             var g = GuardPose();
             if (g.HasValue && g.Value.phase != "door" && !GuardHeld)
             {
@@ -488,7 +488,7 @@ namespace Suborned.Sim
                 else
                 {
                     lastDrawIncident = AddIncident("weapon-drawn", "weapon-drawn:" + name, op.Pos, ws);
-                    AddTrail(R.WitnessTrail, $"witnessed:weapon-drawn:{name}"); MoveStanding(R.Traceable["weapon-drawn"] * R.StandingStep, "witnessed:weapon-drawn");
+                    AddTrail(R.WitnessTrail, $"witnessed:weapon-drawn:{name}"); MoveStanding(R.Traceable["weapon-drawn"] * R.StandingStep, "witnessed:weapon-drawn", "seen-weapon-drawn", "");
                 }
                 RaiseAlert(R.DrawSeenPeople, $"drawn-seen:people:{name}");
                 foreach (var (p, _) in ws) Remember(p, "saw-weapon-drawn", name, true);

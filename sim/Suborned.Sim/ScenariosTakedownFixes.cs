@@ -32,7 +32,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(136, Tech, "loop", "entrance"), Act(346, Scout, "watch", "guard"), Mv(546, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"),
+                    Act(136, Tech, "loop", "entrance"), Act(355, Scout, "watch", "guard"), Mv(555, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // watch 3:46 → 3:55 with the c014 start (brief 014), as route G-kill
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), Mv(1920, Enf, "d:Getaway bay"));
                 const string Clerk = "p-records-office-03";
@@ -264,12 +264,12 @@ namespace Suborned.Sim
                 r.Is(g.BodyById("p-records-office-74")!.Stash == ServiceDoorId, "the service door takes him");
             });
 
-            Add("N77", "—", "Route B under rev 4 (Motive R4.2; Sky 2026-10-16), Waymark's route-b orders: the Take at Vale's own car with its driver turned happens inside the car, off-screen: no witness window, though the clerks fill the lane at 6:10; the turned driver is the act's accomplice, never its witness. The escort to the getaway car (by the lane's south end, as the route walks it) is seen only by Vale's kin, or by anyone within 3 m who sees the grip: nobody. 7:40, 4 T, Alert 0, as before brief 013 D.", r =>
+            Add("N77", "—", "Route B under rev 4 (Motive R4.2; Sky 2026-10-16), Waymark's route-b orders: the Take at Vale's own car with its driver turned happens inside the car, off-screen: no witness window, though the clerks fill the lane at 6:10; the turned driver is the act's accomplice, never its witness. The escort to the getaway car (by the lane's south end, as the route walks it) is seen only by Vale's kin, or by anyone within 3 m who sees the grip: nobody. 7:39, 3 T (the Pay is private since Sky 2026-10-16; 4 T before), Alert 0.", r =>
             {
                 var g = r.G;
-                Orders(r, Mv(0, Enf, "d:Service lane"), Mv(0, Scout, "d:Meet driver"), Mv(0, Fixer, "d:Boarding pavilion"), Act(515, Scout, "watch", Driver),
-                    Mv(715, Scout, "d:Meet driver"), new Order { Tick = 715, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(737, Scout, "listen", Driver),
-                    MvTo(1157, Scout, new Pt(8250, -3100)), Mv(1215, Fixer, "crew:fixer"), Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"));
+                Orders(r, Mv(0, Enf, "d:Service lane"), Mv(0, Scout, "d:Meet driver"), Mv(0, Fixer, "d:Boarding pavilion"), Act(556, Scout, "watch", Driver), // Waymark's route-b on the c014 start (brief 014)
+                    Mv(756, Scout, "d:Meet driver"), new Order { Tick = 756, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(778, Scout, "listen", Driver),
+                    MvTo(1198, Scout, new Pt(8250, -3100)), Mv(1256, Fixer, "crew:fixer"), Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"));
                 r.To(T(370));
                 r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the lane, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;
@@ -278,10 +278,10 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
                 r.Eq(g.Alert, 0, "Alert 0");
-                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4394, "cell", "panic"), Mv(4475, Enf, "d:Getaway bay"), Act(4604, Enf, "extract"));
+                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4394, "cell", "panic"), Mv(4464, Enf, "d:Getaway bay"), Act(4593, Enf, "extract"));
                 r.Is(!g.Acts.Exists(x => x.Take), "the escort: no kin of Vale near, nobody within 3 m of the grip");
                 r.Eq(g.Result, Outcome.Success, "route B wins");
-                r.Eq((g.Tick, g.Trail, g.Alert), (4604, 4, 0), "at 7:40.4, 4 T, Alert 0");
+                r.Eq((g.Tick, g.Trail, g.Alert), (4593, 3, 0), "at 7:39.3 (7:40.4 before the c014 start), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
             });
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>

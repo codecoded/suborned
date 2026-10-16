@@ -43,7 +43,7 @@ namespace Suborned.Play
             var op = Game.Ops[(int)Agent];
             if (id == "drop") { var o = new Order { Op = Op.Name(Agent), Do = "drop" }; if (Issue(o, null, null)) SayOrder(Agent, o, null); return; }
             var st = NearestStash(op.Pos);
-            if (st == null) { Pop("No hiding place with room.", null, SelectedWorld(), Feedback.Refused); return; }
+            if (st == null) { PopKey("no-room", null, SelectedWorld(), Feedback.Refused, "No hiding place with room."); return; }
             var t = new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) };
             Give(Agent, new Order { Op = Op.Name(Agent), Do = "stash", Target = st.Id }, t, null);
         }
@@ -257,6 +257,7 @@ namespace Suborned.Play
         /// <summary>The response pill (Glyph §8): its line, and its rows when open (R or a click).</summary>
         public string ResponseLine { get; private set; } = ""; public readonly List<(string icon, string label, string text)> ResponseRows = new();
         public bool ResponseOpen { get; set; }
+        public bool RespAny { get; private set; } public int RespOfficers { get; private set; } public int RespRobots { get; private set; } public int RespComing { get; private set; } public int RespSoonestS { get; private set; } = -1;
 
         /// <summary>Per frame (positions follow the eased views), cheap: the body, stash, door, report and unit marks.</summary>
         public void StreetMarks()
@@ -327,6 +328,7 @@ namespace Suborned.Play
                 }
                 else { coming++; int at = Math.Max(u.Launch, u.Arrive); if (at > tick && at < soonest) soonest = at; }
             }
+            RespAny = any; RespOfficers = officers; RespRobots = robots; RespComing = coming; RespSoonestS = soonest < int.MaxValue ? (soonest - tick + Game.Hz - 1) / Game.Hz : -1; // brief 014: the pill as icons and numbers
             if (any)
             {
                 var lv = g.DialNow;
@@ -342,7 +344,8 @@ namespace Suborned.Play
         /// would hold (DoorsInSightOf), and who sees the way (Game.CarryPathSight, the SeenQuote test second by second; "?" for unknown watchers).</summary>
         string CarryChip(int k, Pt to)
         {
-            CarrySight c = null; if (!Guard("carry sight", () => c = Game.CarryPathSight((OpId)k, to)) || c == null) return null;
+            CarrySight c = null; lastCarry = null; if (!Guard("carry sight", () => c = Game.CarryPathSight((OpId)k, to)) || c == null) return null;
+            lastCarry = c.Refused.Length > 0 ? null : c;
             if (c.Refused.Length > 0) return null;
             var st = Game.S.Stashes.Find(x => G.Within(x.Stand, to, Game.R.AtReachCm));
             string dest = st != null ? $"{(st.Kind == "door" ? "Service door" : "Dumpster")}: {StashFree(st.Id)} free" : "Open ground: found if seen" + (c.Seen == "?" ? " (?)" : "");
@@ -351,6 +354,7 @@ namespace Suborned.Play
             return $"{AgentNames[k]} carrying: {c.S} s · {dest} · {held} · seen on the way: {(seen.Count == 0 ? "nobody known" : string.Join("; ", seen))}";
         }
 
+        CarrySight lastCarry; // brief 014: the carry chip's parts
         readonly Dictionary<string, int> heldFrom = new(); // when each held door's hold was first seen (its ring's start)
         string CrowdKey(Person p) { for (int i = 0; i < Game.Walkers.Count; i++) if (Game.Walkers[i].P == p) return "crowd/" + i; return ""; }
 
@@ -379,6 +383,7 @@ namespace Suborned.Play
             var card = NewCard(c.Kind, c.Title, c.Kind == "fight" ? "fire" : c.Kind == "warning" ? "!" : "·", who != null && (c.At.Length > 0 || c.Kind == "city") ? Cap(PersonName(who)) : "", /* the city's answer never says who reported (Fable) */ at.HasValue ? frame.World(at.Value) : null, who != null && who.Role.Length > 0 ? who.Role : "");
             card.Event = l.Code; card.Footer = Cap(FillCard(result, l, who)); card.Tone = c.Kind is "warning" or "fight" ? Feedback.Refused : Feedback.Info;
             lastEvent = card;
+            CardBeat(c, l, who); // brief 014: the card's story beat, if it has one
             return true;
         }
 

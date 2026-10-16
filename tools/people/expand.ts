@@ -10,7 +10,7 @@ import { allowedTemperaments, positionsOf, type Rules } from './rules';
 import { atCafeSide, HOME_SAMPLE, type Scope, type Unit } from './scope';
 import { Holds, seatPicker, type Fit, type Pick, type Table } from './seats';
 import type { Walker } from './walk';
-import { fold, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
+import { fold, insideFromDoor, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
 import { deriveKnowledge } from './knowledge';
 import { withSecrets } from './secrets';
 import { pinnedByRole, type Casting } from './roles';
@@ -93,7 +93,7 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
       work = { unit: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, ...(civicRole ? { role: position } : { position }), post, place: spot, shift };
       cycle = workerCycle(c, r, u, shift, spot, home.place === 'beyond' ? scope.homes[0]!.place : home.place, v);
       if (home.place === 'beyond' && v.commute !== 'tram' && v.commute !== 'car') cycle = undefined;
-    } else cycle = residentCycle(c, r, home.place, v);
+    } else cycle = residentCycle(c, r, home.place, v, id);
     const allowKey = u ? (u.kind === 'civic' ? position : u.trade) : 'resident';
     const allow = (allowedTemperaments(rules, allowKey) ?? []).filter(t => t in rules.temperaments);
     const want = row.temperaments.filter(t => allow.includes(t.temperament as never));
@@ -293,6 +293,9 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
       if (!names.has(full) || tries > 200) { names.add(full); a.name = full; break; }
     }
   }
+  // ---- a door is one person's post: the rest of a shift's door staff work inside (day.ts insideFromDoor); their place stays the unit's door, only they are not drawn
+  const inside = insideFromDoor(persons, new Map(scope.units.map(u => [u.id, u.kind])));
+  for (const a of persons) if (inside.has(a.id)) a.work = { ...a.work!, post: 'inside' };
   const people: People = {
     schema: 'suborned.people/1', plan: { id: c.planId, version: c.planVersion }, scope: scope.id, inputs: c.hashes,
     places: scope.places, units: scope.units.map(u => ({ id: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, name: u.name, staffPerShift: u.staffPerShift, hours: u.hours, shifts: u.shifts })),

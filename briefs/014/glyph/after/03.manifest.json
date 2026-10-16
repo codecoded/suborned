@@ -1,0 +1,21 @@
+{
+ "state": "active",
+ "elements": [
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 92,
+   "w": 92,
+   "h": 352,
+   "text": "roster portraits"
+  },
+  {
+   "kind": "image",
+   "x": 14,
+   "y": 996,
+   "w": 212,
+   "h": 132,
+   "text": "plot scope"
+  }
+ ]
+}

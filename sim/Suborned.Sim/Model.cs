@@ -176,7 +176,7 @@ namespace Suborned.Sim
         public string Event = "";            // the rulebook event the card prices
         public string Reports = "no";        // risk: "yes", "no" or "?" — would this person report the approach (+A)? (Motive's review, other findings 2)
         public int AlertIfReported;          // the Alert a report would raise it to
-        public int Witnesses;                // risk: people within witness range of the target now, who would see a traceable act (+1 T)
+        public int Witnesses;                // risk: people within witness range of the target now, who would see a traceable act (+1 T); 0 for a private event (rulebook privacy)
         public int WalkS;                    // seconds the acting operative walks to stand within reach, 0 if already there
         public bool Leverage;                // Pressure on a known secret: "exposure: their secret" (Motive, motive-lovers.md §2.2)
         public SeenQuote? Seen;              // the card's "seen by" where the act is done (Preview only; rulebook sight.unknown): "?" for an unknown watcher

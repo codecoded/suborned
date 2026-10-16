@@ -57,10 +57,13 @@
   "loyal-help-orders": { "v": 1, "unit": "orders", "tag": "S", "src": "§04 Loyal (institution): trust over time; Hero: turns after repeated Help", "proposed": true, "reason": "'repeated' read as the smallest repeat: one Help more than anyone else, so a Loyal person turns on the second Help even though Help suits them." },
   "mercenary-hero-usd": { "v": 20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Hero: overcharges; Motive K8 (CK3 additive line items)", "proposed": true, "reason": "the same size as the wrong-approach step, so the preview's lines read in one currency of steps: a Hero district's Mercenary costs what a wrong Pay costs." },
   "mercenary-menace-usd": { "v": -20000, "unit": "usd", "tag": "S", "src": "§04 Mercenary, Menace: discount", "proposed": true, "reason": "the mirror of the Hero overcharge: one step off ($50,000 for Inez's reference Pay)." },
-  "standing-start": { "v": 0, "unit": "standing", "tag": "S", "src": "§04 standing: per district, Hero ↔ Menace; neither end loses", "proposed": true, "reason": "every district starts neutral." },
+  "standing-start": { "v": 2, "unit": "standing", "tag": "S", "src": "Sky 2026-10-16 ('Hero is kinda the default, if you're not seen then everyone assumes you're good (it's that kinda world)'); briefs/014/motive-standing.md rule 1 (approved by Sky, 'sure', 2026-10-16); was 0", "proposed": true, "reason": "Motive: every district starts leaning Hero, one step short of the Hero band, so one known kindness earns the band. Starting at +3 would put the Handover in Hero prices from the first second and change its tested costs; at +2 every in-mission price stays neutral." },
   "standing-step": { "v": 1, "unit": "standing", "tag": "S", "src": "§04 standing: witnessed acts only; §05 witness moves standing", "proposed": true, "reason": "one step per witnessed incident, as Trail counts one point per incident: one incident counts once." },
   "hero-at": { "v": 3, "unit": "standing", "tag": "S", "src": "§04 standing table (turning, crowds, fights, street change at each end)", "proposed": true, "reason": "the Hero and Menace columns need a threshold. Three witnessed incidents one way make a district Hero (or Menace at −3): a mission or two of deliberate play, so the player sees it coming and chooses it." },
   "menace-at": { "v": -3, "unit": "standing", "tag": "S", "src": "§04 standing table", "proposed": true, "reason": "as hero-at, mirrored." },
+  "word-standing-step": { "v": 1, "unit": "standing", "tag": "S", "src": "Sky 2026-10-16 ('if you help in a good way then can move to hero'); briefs/014/motive-standing.md rules 2 and 3", "proposed": true, "reason": "Motive: between missions each person the cell helped tells their ties a stranger helped them (+1), and each person it pressured or knocked out tells of the harm (−1): one step per person, not per tie, so a large family is no lever." },
+  "word-standing-cap": { "v": 2, "unit": "standing", "tag": "S", "src": "Sky 2026-10-16 ('if you help in a good way then can move to hero'); briefs/014/motive-standing.md rules 2 and 3", "proposed": true, "reason": "Motive: the word moves a district at most 2 steps either way in one mission, so turning a crowd of kind strangers cannot buy the Hero band outright and a bad mission's word cannot sink a district alone; seen and found acts stay uncapped." },
+  "standing-drift": { "v": 1, "unit": "standing", "tag": "S", "src": "Sky 2026-10-16 (approved Motive's 'the benefit of the doubt'); briefs/014/motive-standing.md rule 5", "proposed": true, "reason": "Motive: what the city stops seeing, it forgives. A district where nothing moved Standing this mission moves 1 step back toward standing-start, from either side, never past it: unkept Hero fades back to +2 as Menace does, so Hero is kept by doing good and a Menace cell is not stuck." },
   "witness-range-m": { "v": 13, "unit": "m", "tag": "S", "src": "§05 witness [S]: clear sightline within 13 m; §05 levels: in 3D; top-down test inezWitness ≤ 13" },
   "witness-trail": { "v": 1, "unit": "trail", "tag": "S", "src": "§05 witness [S]: +1 T per incident" },
   "alert-inquiry": { "v": 1, "unit": "alert", "tag": "S", "src": "§05 Alert 1 inquiry [S]: witness report or found fault, once per incident" },
@@ -317,12 +320,31 @@
   "step": "v:standing-step",
   "hero": "v:hero-at",
   "menace": "v:menace-at",
-  "rule": "One integer per district. Each witnessed incident of a Hero act adds one step, of a Menace act takes one (traceable[].standing). At or above `hero` the district is in the Hero band, at or below `menace` in the Menace band, otherwise neutral. Only witness.sees moves it: an unwitnessed threat changes nothing (the victim still remembers), and news along ties never does (Sky Q6). Heat (§06) = campaign Trail + max(0, −standing); its threshold is Motive's.",
+  "word": { "step": "v:word-standing-step", "cap": "v:word-standing-cap", "ties": ["family", "lover", "workmate"] },
+  "drift": "v:standing-drift",
+  "causes": {
+   "seen-debt-cleared": "a debt cleared in sight of a witness (traceable debt-cleared; no turning verb makes it now: rulebook privacy)",
+   "seen-threat": "a threat seen (traceable threat: a Pressure in sight)",
+   "seen-gunfire": "gunfire seen (traceable gunfire)",
+   "seen-weapon-drawn": "a drawn weapon seen by people (traceable weapon-drawn)",
+   "seen-violence": "violence seen by a civilian (traceable violence)",
+   "seen-takedown": "a takedown, a carry or a Take seen (traceable takedown)",
+   "found-killing": "a killing found, in the mission or after it (takedown.foundKillStanding)",
+   "word-helped": "a person the cell helped told their ties a stranger helped them (standing.word)",
+   "word-pressured": "a person the cell pressured told their ties (standing.word)",
+   "word-knocked-out": "a person the cell knocked out came home and told their ties (standing.word)",
+   "balanced": "moves both ways that cancel out",
+   "drift-down": "nothing moved Standing: the district's Hero fades one step back toward the start (standing.drift)",
+   "drift-up": "nothing moved Standing: the city forgives one step back toward the start (standing.drift)",
+   "steady": "nothing moved Standing and it stands at the start"
+  },
+  "rule": "One integer per district, starting at `start` (one step short of the Hero band: Sky 2026-10-16, 'Hero is kinda the default'). At or above `hero` the district is in the Hero band, at or below `menace` in the Menace band, otherwise neutral. In a mission only acts seen or found move it: each witnessed incident of a Hero act adds one `step`, of a Menace act takes one (traceable[].standing, witness.sees), and a found killing moves it takedown.foundKillStanding; a missing person moves nothing. Facts along ties never move it (Sky Q6). Between missions the word does (standing.word): each person the cell helped, pressured or knocked out this mission, alive, not missing and with a tie of a kind in `word.ties`, tells those ties how a stranger treated them, once per person, not per tie: helped +`word.step`, pressured or knocked out −`word.step`; a person both helped and harmed counts as harmed (a threat outweighs a kindness). The word's net move in a district is clamped to ±`word.cap` a mission; seen and found acts are never capped. The word is a feeling, not a fact: no face, place or time and nothing about the cell goes with it, so it is no fact for word.passes, the Talker test or the investigators, and word-quiet-loyalty does not stop it. Then (standing.drift) a district where nothing moved Standing this mission (no act seen or found, in the mission or after it, and no word) moves `drift` back toward `start`, from either side, never past it. The debrief carries one Standing line per district (debrief.lines.standing) with its cause, one of `causes`: the cause that moved it most toward the net change (the earliest on a tie), `balanced` when the moves cancel, a drift, or `steady`. Heat (§06) = campaign Trail + max(0, −standing), unchanged: from the start it takes 3 net Menace steps before Standing adds Heat, and Hero never cancels Trail; its threshold is Motive's.",
   "tag": "S",
-  "src": "§04 standing; §05 witness; §06 Heat = T + Menace standing",
+  "src": "§04 standing; §05 witness; §06 Heat = T + Menace standing; Sky 2026-10-16 (briefs/014-less-reading.md items 10 and 11); briefs/014/motive-standing.md (approved by Sky, 'sure', 2026-10-16)",
   "proposed": true,
-  "reason": "the GDD names the axis and what moves it but gives it no scale. A signed integer with two thresholds is the least that lets the temperament table's Hero and Menace columns apply."
+  "reason": "the GDD names the axis and what moves it but gives it no scale. A signed integer with two thresholds is the least that lets the temperament table's Hero and Menace columns apply. Sky 2026-10-16: turning is private, which left nothing moving the city toward Hero; Motive's rules let a kindness reach the district through the person helped, and let the city forgive what it stops seeing."
  },
+
  "alert": {
   "levels": ["routine", "inquiry", "search", "lockdown"],
   "byIncident": ["v:alert-inquiry", "v:alert-search"],
@@ -427,6 +449,11 @@
   "weapon-drawn": { "standing": "menace", "tag": "S", "src": "Sky-approved fights, Motive addendum 2026-10-15 (briefs/011/motive-fights.md, Addendum) Q5: a drawn weapon seen by people moves standing one step toward Menace per incident; §04 Menace: public threats", "proposed": true, "reason": "a gun shown on a street is the plainest public threat; it mirrors threat, one step per incident (drawings at one place and time are one incident: weapons.costs.drawWindow)." },
   "violence": { "standing": "menace", "tag": "B", "src": "§04 Menace: harm bystanders; §05 violence seen by a civilian → 3. Made by the fight events (next entries)." },
   "takedown": { "standing": "menace", "tag": "S", "src": "brief 013 (Sky 2026-10-16): a takedown or a carry seen by a person; briefs/013/motive-takedowns.md §1.4", "proposed": true, "reason": "violence on a person is §04 Menace: one step per incident, at sight, whoever sees it (a turned witness included); one takedown is one incident however many see it or its carry" }
+ },
+ "privacy": {
+  "rule": "A turning conversation is private (Sky 2026-10-16). An event marked private (Listen, Ask, Pay, Help) has no witnesses: onlookers within witness range learn nothing from it, so it makes no witness fact or memory, no witness Trail, no Standing move, no incident for the investigators, nothing told along ties and no word between missions, and its card counts nobody who would see it. The event's own price stands: its base Trail (Pay is still traceable money), its time and cash, and the subject's own memory and report (a Loyal person still reports an approach). Pressure is not private: a threat is visible, and onlookers see it, remember it and pass it on (witness.sees). Every event by the Fixer or the Scout says whether it is private; a private event may carry no witnesses. Watch is no conversation (not private) and no traceable act (no witnesses): watching someone shows nothing. The traceable acts payment and debt-cleared stay in `traceable` for a visible act that is not a conversation; no turning verb makes them now.",
+  "tag": "S",
+  "src": "Sky 2026-10-16: \"seeing someone being turned isn't a concern. That's too much, would consider the conversation private, unless it's pressure\""
  },
  "cell": {
   "speed": "v:op-speed-cm-s",
@@ -660,7 +687,7 @@
  },
  "phases": {
   "mission-start": ["keeper.tips"],
-  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "contact.introduces", "bodies.surface", "body.grieved", "missing.worried", "area.hardens", "cases.count"],
+  "between-missions": ["ladder.job", "contact.informs", "mercenary.sells", "tie.lapses", "debtor.lapses", "need.replaced", "word.passes", "standing.word", "contact.introduces", "bodies.surface", "body.grieved", "missing.worried", "area.hardens", "cases.count", "standing.drift"],
   "iterate": "within a phase, events in the order listed; within an event, subjects by person id in ordinal order (C# string.CompareOrdinal, JS <)",
   "tag": "S",
   "src": "§04 between missions; §08 debrief [B] → next mission; §11 exact replay"
@@ -686,7 +713,8 @@
    "grief": { "fields": ["who", "of", "move"], "src": "briefs/013/motive-takedowns.md §2.5" },
    "worry": { "fields": ["who", "of", "fear"], "src": "briefs/013/motive-takedowns.md §2.6" },
    "area-watch": { "fields": ["place", "guards", "cameras", "missions"], "src": "Sky 2026-10-16: more guards and cameras in that area next time" },
-   "case": { "fields": ["who", "kind", "closes"], "src": "briefs/013/motive-takedowns.md §2.6: cases and the district level" }
+   "case": { "fields": ["who", "kind", "closes"], "src": "briefs/013/motive-takedowns.md §2.6: cases and the district level" },
+   "standing": { "fields": ["district", "from", "to", "band", "cause", "who"], "src": "Sky 2026-10-16 via Aster (brief 014): one Standing line per district with its cause; briefs/014/motive-standing.md, the debrief. cause is a standing.causes id; who the person the cause names (the teller of the word, the subject of a seen act, the found victim), else empty" }
   },
   "rule": "Every change between missions and every give-up is a debrief line with its cause (§08 [B]: the debrief reports each with cause). The fields are data; Fable writes the words, Glyph lays them out.",
   "tag": "B",
@@ -697,6 +725,7 @@
    "id": "scout.watch",
    "by": "scout",
    "phase": "mission",
+   "private": false,
    "tag": "B",
    "src": "§03 Scout: Watch reveals routine; §04 Pay requires routine known (Watch 52 s); Sky 2026-10-15: Watch reveals routine only (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: a Watch that ends with two lovers together reveals their affair",
    "needs": [{ "k": "tier", "is": "simulated" }],
@@ -710,6 +739,7 @@
    "id": "scout.listen",
    "by": "scout",
    "phase": "mission",
+   "private": true,
    "tag": "B",
    "src": "§03 Scout: Listen reveals need; §04 Help requires need known (Listen 42 s); top-down test listenInez needs the café watched first; Sky 2026-10-15: Listen reveals need and temperament (preview.knownBy); Motive, briefs/011/motive-lovers.md (2026-10-15) §1.2: and the secret (an affair teaches the tie and the secret on both lovers)",
    "needs": [{ "k": "tier", "is": "simulated" }, { "k": "known", "what": "routine" }, { "k": "reach", "m": "v:listen-reach-m" }],
@@ -722,6 +752,7 @@
    "id": "turn.ask",
    "by": "fixer",
    "phase": "mission",
+   "private": true,
    "tag": "B",
    "src": "§04 approaches [B]: Ask cold, requires nothing, $0, 25 s, +1 T, leaves a remembered refusal; §04 Idealist Hero volunteers free, Fearful Menace folds free",
    "needs": [
@@ -746,6 +777,7 @@
    "id": "turn.pay",
    "by": "fixer",
    "phase": "mission",
+   "private": true,
    "tag": "B",
    "src": "§04 approaches [B]: Pay, routine known, $70,000, 50 s, +2 T, traceable payment; §04 Mercenary Hero overcharges, Menace discount; Sky Q4",
    "needs": [
@@ -769,13 +801,13 @@
    "also": [
     { "when": [{ "k": "outcome", "is": ["turned"] }, { "k": "need-met-by", "approach": "pay" }], "changes": [{ "do": "need-met" }] },
     { "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }
-   ],
-   "witnesses": [{ "when": [{ "k": "outcome", "is": ["turned"] }], "act": "payment" }]
+   ]
   },
   {
    "id": "turn.help",
    "by": "fixer",
    "phase": "mission",
+   "private": true,
    "tag": "B",
    "src": "§04 approaches [B]: Help, need known, $40,000, 50 s, +1 T, gratitude; §04 wrong approach (Sky Q4): one more Help; Loyal turns after repeated Help; §07 route A, route B",
    "needs": [
@@ -798,16 +830,13 @@
     { "id": "turned", "when": [{ "k": "orders-reached", "is": true }], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "need-met" }, { "do": "turn" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "turned-how" }] },
     { "id": "not-yet", "when": [], "changes": [{ "do": "charge", "parts": ["usd", "s", "trail"] }, { "do": "move", "on": "help" }, { "do": "remember", "act": "help" }, { "do": "debrief", "line": "not-yet" }] }
    ],
-   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }],
-   "witnesses": [
-    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["debt"] }], "act": "debt-cleared" },
-    { "when": [{ "k": "outcome", "is": ["kept", "turned", "not-yet"] }, { "k": "need-is", "in": ["cash"] }], "act": "payment" }
-   ]
+   "also": [{ "when": [{ "k": "reports" }], "changes": [{ "do": "report" }] }]
   },
   {
    "id": "turn.pressure",
    "by": "fixer",
    "phase": "mission",
+   "private": false,
    "tag": "B",
    "src": "§04 approaches [B]: Pressure, need known, $0, 35 s, +3 T, fear, resentment grows, can identify Fixer; Sky Q4 one step worse; Motive, briefs/011/motive-lovers.md (2026-10-15) §2.2: a known secret is Pressure's leverage (needs no pressable need, no wrong-approach step, a Loyal person pressed by exposure doesn't report it)",
    "needs": [
@@ -961,7 +990,7 @@
    "by": "person",
    "phase": "between-missions",
    "tag": "S",
-   "src": "§04 knowledge [S] (Sky Q6): news travels along ties as facts, never opinion; standing stays witnessed acts only; §01 information moves through people; Motive K3",
+   "src": "§04 knowledge [S] (Sky Q6): news travels along ties as facts, never opinion; facts never move standing (the word of a helped, pressured or knocked-out person does: standing.word, Sky 2026-10-16); §01 information moves through people; Motive K3",
    "needs": [
     { "k": "tier", "is": "simulated" },
     { "k": "holds-fact", "is": true, "how": "witnessed" },
@@ -1601,6 +1630,52 @@
    ],
    "proposed": true,
    "reason": "Sky's missing-person numbers."
+  },
+  {
+   "id": "standing.word",
+   "by": "person",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "Sky 2026-10-16 ('if you help in a good way then can move to hero'); briefs/014/motive-standing.md rules 2 and 3 (approved by Sky, 'sure', 2026-10-16)",
+   "needs": [
+    { "k": "tier", "is": "simulated" },
+    { "k": "done-to", "in": ["helped", "pressured", "knocked-out"] },
+    { "k": "alive", "is": true },
+    { "k": "tie", "kinds": ["family", "lover", "workmate"] }
+   ],
+   "outcomes": [
+    { "id": "pressured", "when": [{ "k": "done-to", "in": ["pressured"] }], "changes": [{ "do": "word-standing", "toward": "menace", "step": "v:word-standing-step", "cap": "v:word-standing-cap" }] },
+    { "id": "knocked-out", "when": [{ "k": "done-to", "in": ["knocked-out"] }], "changes": [{ "do": "word-standing", "toward": "menace", "step": "v:word-standing-step", "cap": "v:word-standing-cap" }] },
+    { "id": "helped", "when": [], "changes": [{ "do": "word-standing", "toward": "hero", "step": "v:word-standing-step", "cap": "v:word-standing-cap" }] }
+   ],
+   "how": [
+    "done-to reads this mission's acts on the subject: helped, a Help order landed on them (memory help, any outcome); pressured, a Pressure landed (memory pressure); knocked-out, an Enforcer's knockout landed (a takedown ko, not a Take, not a kill). Alive: not killed by a takedown that landed (so not missing either) and not shot down (the engine does not tell the wounded from the dead)",
+    "outcomes in order, so a person both helped and pressured or knocked out counts as harmed",
+    "the step goes to the district where the act was done, once per person however many ties (standing.word.ties) they have; the district's net word is clamped to ±cap after every subject is counted (order-free)",
+    "a feeling, not a fact: nobody's memory changes, no fact is told, nothing reaches the investigators; word-quiet-loyalty does not apply (it hides facts)",
+    "a contact the Fixer has sealed would not tell (briefs/014/motive-standing.md 'who doesn't'): the rulebook has no such verb yet, so nobody is sealed"
+   ],
+   "proposed": true,
+   "reason": "Sky 2026-10-16: turning conversations are private, which left nothing moving the city toward Hero; Motive's rule lets kindness (and harm, symmetrically) spread one hop through the person it was done to."
+  },
+  {
+   "id": "standing.drift",
+   "by": "city",
+   "phase": "between-missions",
+   "tag": "S",
+   "src": "Sky 2026-10-16 (approved Motive's 'the benefit of the doubt'); briefs/014/motive-standing.md rule 5",
+   "needs": [],
+   "outcomes": [
+    { "id": "moved", "when": [{ "k": "standing-moved", "is": true }], "changes": [{ "do": "debrief", "line": "standing" }] },
+    { "id": "drifts", "when": [], "changes": [{ "do": "drift-standing", "step": "v:standing-drift", "to": "v:standing-start" }, { "do": "debrief", "line": "standing" }] }
+   ],
+   "how": [
+    "per district, last in the phase so it sees every move: standing-moved holds when an act seen or found (in the mission, or a killing found after it: bodies.surface) or any word (standing.word, even one that nets to 0) touched the district this mission",
+    "drift-standing moves the district at most `step` toward `to`, never past it: nothing at the start",
+    "both outcomes write the district's one Standing line (debrief.lines.standing) with its cause from standing.causes"
+   ],
+   "proposed": true,
+   "reason": "Motive: what the city stops seeing, it forgives; symmetric, so unkept Hero fades back to +2 as Menace does. Last in the phase (Motive had it after standing.word) so that a killing found between missions counts as a move."
   }
  ]
 }

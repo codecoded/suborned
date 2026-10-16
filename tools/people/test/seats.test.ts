@@ -64,7 +64,7 @@ describe('seats are the chairs the world draws', () => {
 
 describe('the standing points', () => {
   test('there are STAND.count, walkable, outside every zone, off every chair, nearest the café door first', () => {
-    const stands = w.scope.places.filter(p => p.kind === 'stand'), door = w.scope.places.find(p => p.id === 'cafe-entrance')!.at;
+    const stands = w.scope.places.filter(p => p.kind === 'stand' && p.id.startsWith('cafe-stand-')), door = w.scope.places.find(p => p.id === 'cafe-entrance')!.at;
     expect(stands.length).toBe(STAND.count);
     for (const s of stands) { expect(w.scope.zones.some(z => z.test(s.at as [number, number]))).toBe(false); expect(ctx.walk.free(s.at as [number, number])).toBe(true); }
     for (const s of stands) for (const c of w.scope.places.filter(p => p.kind === 'seat')) expect(dist(s.at, c.at)).toBeGreaterThanOrEqual(STAND.chair);
@@ -110,7 +110,7 @@ describe('who holds which seat', () => {
     for (const p of gen.people.persons) for (const s of p.routine.stops) if (chairs.has(s.place)) stopsAt.set(s.place, [...(stopsAt.get(s.place) ?? []), s]);
     let stands = 0;
     for (const p of gen.people.persons) for (const s of p.routine.stops) {
-      if (kindOf(s.place) !== 'stand') continue;
+      if (kindOf(s.place) !== 'stand' || !s.place.startsWith('cafe-stand-') || s.doing === 'errand') continue; // the counter window (a coffee to go, doing errand) is stood at with every chair free
       stands++;
       for (const c of chairs) expect((stopsAt.get(c) ?? []).some(x => x.from < s.to && s.from < x.to)).toBe(true);
     }

@@ -9,7 +9,8 @@
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
 //   hashes [--start-text <t>] [--legacy-start]  every scenario's and route script's checkpoint hashes as JSON; --legacy-start leaves a fixed
 //                                               security level out of the start state (a behaviour-only comparison across brief 013); --start-text replaces the inputs
-//                                               hash in the start state (a behaviour-only comparison across an input edit: Keel, cones 2026-10-16)
+//                                               hash in the start state (a behaviour-only comparison across an input edit: Keel, cones 2026-10-16);
+//                                               --standing-as <n> hashes Standing as if standing.start were n (across brief 014's start move)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,7 +58,12 @@ static class Program
                 case "probe": Probe.Run(inputs); return 0;
                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
                 case "fans": return Fans(inputs, args.Length > 1 && args[1] != "--crowd" ? int.Parse(args[1], CultureInfo.InvariantCulture) : 0, Array.IndexOf(args, "--crowd") > 0);
-                case "hashes": { int k = Array.IndexOf(args, "--start-text"); Start.LegacyCanonical = Array.IndexOf(args, "--legacy-start") > 0; Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0; }
+                case "hashes":
+                {
+                    int k = Array.IndexOf(args, "--start-text"), sa = Array.IndexOf(args, "--standing-as"); Start.LegacyCanonical = Array.IndexOf(args, "--legacy-start") > 0;
+                    if (sa > 0) Hash.StandingAs = int.Parse(args[sa + 1], CultureInfo.InvariantCulture) - inputs.Rules.StandingStart;
+                    Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0;
+                }
                 case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }

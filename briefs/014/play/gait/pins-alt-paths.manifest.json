@@ -1,0 +1,11 @@
+{
+ "state": "alt",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1600, "y": 66, "w": 112, "h": 30, "text": "known people"},
+  {"kind": "line", "x": 789, "y": 1098, "w": 149, "h": 30, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 1127, "y": 90, "w": 26, "h": 26, "text": "pip waitress"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

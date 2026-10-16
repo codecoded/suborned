@@ -18,6 +18,15 @@ namespace Suborned.Sim
         public string NamedCause = "";
     }
     public sealed class BetweenLine { public string Line = "", Who = "", Detail = ""; }
+    /// <summary>One district's Standing across the mission and the break (brief 014; rulebook standing, debrief.lines.standing): where it
+    /// started, where the mission left it, the word, the drift, where the next mission starts, and the line's one cause.</summary>
+    public sealed class StandingLine
+    {
+        public string District = "", Band = "", Cause = "", Who = "";
+        public int From, End, Found, Word, WordUncapped, Drift, To; public bool Moved;
+        /// <summary>Every move, in order: the mission's (seen, found), a killing found after it, then each teller's word before the cap.</summary>
+        public readonly List<(int delta, string cause, string who)> Moves = new List<(int, string, string)>();
+    }
     public sealed class Between
     {
         public readonly List<BetweenLine> Lines = new List<BetweenLine>(); public bool Ambush; public readonly List<string> AmbushBy = new List<string>();
@@ -26,6 +35,10 @@ namespace Suborned.Sim
         public int CampaignTrail, CampaignStanding, OpenCases, NextLevel;
         public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)
         public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();
+        /// <summary>brief 014: one Standing line per district (the Handover plays one) and the Standing the next mission starts at.</summary>
+        public readonly List<StandingLine> Standing = new List<StandingLine>();
+        public readonly List<(string who, string toward)> Word = new List<(string, string)>(); // standing.word's tellers, by id, and which way
+        public readonly List<string> FoundAfter = new List<string>(); // killings found after the mission whose Standing moves now (bodies.surface)
     }
 
     /// <summary>The seeded streams (rulebook streams): FNV-1a 32 and mulberry32, integer draws; the same as contracts/rules/rulebook.ref.ts.</summary>
@@ -274,6 +287,17 @@ namespace Suborned.Sim
                         line("word", p, $"tells {(q.Role.Length > 0 ? q.Role : q.Id)} ({kind}): {string.Join(", ", add)}");
                     }
                 }
+            // standing.word (brief 014): each person the cell helped, pressured or knocked out, alive, with a tie of a kind in standing.word.ties,
+            // tells them how a stranger treated them: a feeling, never a fact, so no memory or knowledge moves; harm outranks help
+            var word = new List<(int delta, string cause, string who)>();
+            foreach (var p in everyone)
+            {
+                var done = DoneTo(p);
+                if (done.Count == 0 || !Alive(p) || ties == null || !ties.TryGetValue(p.Id, out var wts) || !wts.Exists(t => R.WordTies.Contains(t.Item1))) continue;
+                string how = done.Contains("pressured") ? "pressured" : done.Contains("knocked-out") ? "knocked-out" : "helped";
+                int d = how == "helped" ? R.WordStandingStep : -R.WordStandingStep;
+                word.Add((d, "word-" + how, Who(p))); b.Word.Add((Who(p), how == "helped" ? "hero" : "menace"));
+            }
             // contact.introduces: who each contact could introduce (the pick is the player's order in the debrief)
             if (ties != null)
                 foreach (var p in everyone)
@@ -284,8 +308,57 @@ namespace Suborned.Sim
                     if (can.Count > 0) line("introduced", p, "can introduce " + string.Join(", ", can) + ", up to " + fmt(R.IntroductionsPerContact) + " (the player's pick)");
                 }
             Takedowns(b, C, byId, line, fmt);
+            StandingNext(b, word, fmt);
             foreach (var p in everyone) if (p.Turned) b.Contacts.Add(C(p));
             return b;
+        }
+
+        /// <summary>standing.done-to: what the cell did to the person this mission that their word carries (rulebook DoneTo): a Help that landed
+        /// (memory help, any outcome), a Pressure that landed (memory pressure), a knockout that landed (a takedown ko, not a Take or a kill).</summary>
+        List<string> DoneTo(Person p)
+        {
+            var o = new List<string>();
+            if (p.Has(R.HelpedAct)) o.Add("helped");
+            if (p.Has("pressure")) o.Add("pressured");
+            if (Acts.Exists(a => a.P == p && !a.Take && !a.Kill && a.Lead != null)) o.Add("knocked-out");
+            return o;
+        }
+        /// <summary>standing.alive: not killed by a takedown that landed (so not missing either) and not shot down; a knocked-out body lives.</summary>
+        bool Alive(Person p)
+        {
+            if (Acts.Exists(a => a.P == p && !a.Take && a.Kill && a.Lead != null)) return false;
+            if (!p.Down) return true;
+            var body = BodyOf(p); return body != null && !body.Dead;
+        }
+
+        /// <summary>The district's Standing for the next mission (rulebook standing; standing.word, standing.drift) and its one debrief line.
+        /// The Handover plays in one district (sim/data/handover.provisional.json district), so one line.</summary>
+        void StandingNext(Between b, List<(int delta, string cause, string who)> word, Func<int, string> fmt)
+        {
+            var l = new StandingLine { District = S.District, From = StandingAtStart, End = Standing, Found = b.CampaignStanding };
+            foreach (var m in StandingMoves) l.Moves.Add((m.delta, m.cause, m.who));
+            foreach (var v in b.FoundAfter) l.Moves.Add((R.FoundKillStanding, "found-killing", v)); // a killing found after the mission (bodies.surface)
+            int sum = 0; foreach (var w in word) { sum += w.delta; l.Moves.Add(w); }
+            l.WordUncapped = sum; l.Word = Math.Max(-R.WordStandingCap, Math.Min(R.WordStandingCap, sum));
+            l.Moved = l.Moves.Count > 0;
+            int at = l.End + l.Found + l.Word;
+            if (!l.Moved) { int gap = R.StandingStart - at; l.Drift = Math.Sign(gap) * Math.Min(R.StandingDrift, Math.Abs(gap)); }
+            l.To = at + l.Drift;
+            l.Band = Rules.BandId(R.BandOf(l.To));
+            // the cause: the one that moved it most toward the net change (earliest on a tie); balanced when the moves cancel; else the drift
+            int net = l.To - l.From - l.Drift;
+            if (!l.Moved) { l.Cause = l.Drift < 0 ? "drift-down" : l.Drift > 0 ? "drift-up" : "steady"; }
+            else if (net == 0) l.Cause = "balanced";
+            else
+            {
+                var order = new List<string>(); var by = new Dictionary<string, int>(StringComparer.Ordinal); var first = new Dictionary<string, string>(StringComparer.Ordinal);
+                foreach (var (d, c, w) in l.Moves) { if (!by.ContainsKey(c)) { by[c] = 0; order.Add(c); first[c] = w; } by[c] += d; }
+                int best = 0; foreach (var c in order) { int v = by[c] * Math.Sign(net); if (v > best) { best = v; l.Cause = c; l.Who = first[c]; } }
+            }
+            if (!R.StandingCauses.Contains(l.Cause)) throw new InvalidOperationException($"standing cause '{l.Cause}' is not in the rulebook");
+            b.Standing.Add(l);
+            string sg(int v) => (v > 0 ? "+" : "") + fmt(v);
+            b.Lines.Add(new BetweenLine { Line = "standing", Who = l.Who, Detail = $"{l.District}: {sg(l.From)} → {sg(l.To)} {l.Band} ({l.Cause}{(l.Who.Length > 0 ? ": " + l.Who : "")}; mission {sg(l.End - l.From)}, found {sg(l.Found)}, word {sg(l.Word)}{(l.Word != l.WordUncapped ? " of " + sg(l.WordUncapped) : "")}, drift {sg(l.Drift)})" });
         }
 
         /// <summary>Brief 013's between-missions events, in the phase order (bodies.surface, body.grieved, missing.worried, area.hardens,
@@ -308,7 +381,7 @@ namespace Suborned.Sim
                     {
                         found.Add(a);
                         if (!a.ActTrail) { b.CampaignTrail += R.HitTrail + R.DownTrail + R.KillTrail; line("case", a.P, $"found after the mission where he lay: {fmt(R.HitTrail + R.DownTrail + R.KillTrail)} T"); }
-                        if (!a.StandingPaid) { b.CampaignStanding += R.FoundKillStanding; }
+                        if (!a.StandingPaid) { b.CampaignStanding += R.FoundKillStanding; b.FoundAfter.Add(Who(a.P)); }
                     }
                     continue;
                 }

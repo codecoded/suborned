@@ -221,31 +221,37 @@
    {
     "at": "3:10",
     "label": "Rival car arrives",
+    "short": "Rivals",
     "known": false
    },
    {
     "at": "5:30",
     "label": "Handover chime",
+    "short": "Chime",
     "known": true
    },
    {
     "at": "5:40",
     "label": "Last turn for the driver",
+    "short": "Last turn",
     "known": true
    },
    {
     "at": "5:50",
     "label": "Vale leaves the Office",
+    "short": "Vale out",
     "known": true
    },
    {
     "at": "6:10",
     "label": "Vale reaches his car",
+    "short": "Vale at car",
     "known": true
    },
    {
     "at": "8:30",
     "label": "Close: rivals take Vale",
+    "short": "Close",
     "known": true
    }
   ],
@@ -356,169 +362,169 @@
   }
  },
  "locks": {
-  "mission-over": {"line":"The mission is over. Press Return to play again.","verbs":["*"]},
-  "engine-error": {"line":"The engine hit a fault. Restart the run.","verbs":["*"]},
-  "unknown-verb": {"line":"The engine doesn't know that order. Pick another.","verbs":["*"]},
-  "agent-down": {"line":"{op} is down. Another agent can carry them to the car.","verbs":["*"]},
-  "enforcer-inside": {"line":"The Enforcer is inside the Office. Wait for him at the service lane.","verbs":["*"]},
-  "agent-busy": {"line":"{op} is busy until {tick}. Wait, or use another agent.","verbs":["*"]},
-  "guard-down": {"line":"The guard is down. There is no one left to draw off.","verbs":["call"]},
-  "guard-not-at-door": {"line":"The guard isn't at the door. Call Inez while he is on post.","verbs":["call"]},
-  "person-down": {"line":"{who} is down. There is nothing more to do there.","verbs":["watch","listen","ask","pay","help","pressure","call"]},
-  "person-away": {"line":"{who} isn't out on the street yet. Wait for their routine.","verbs":["watch","listen","ask","pay","help","pressure"]},
-  "no-place": {"line":"No such place on the map. Pick a spot on the ground.","verbs":["move","run"]},
-  "unwalkable": {"line":"Can't walk there: a roof, a wall or a solid. Pick open ground.","verbs":["move","run"]},
-  "no-walk": {"line":"There's no way there from here. Pick another spot.","verbs":["move","run"]},
-  "run-carrying-vale": {"line":"Nobody runs while taking Vale. Walk him to the car.","verbs":["run"]},
-  "run-carrying-downed": {"line":"Nobody runs with a downed agent. Walk them to the car.","verbs":["run"]},
-  "run-tethered": {"line":"The Tech is tied to the cabinet while the loop holds. Wait for it to end.","verbs":["run","move"]},
-  "only-scout": {"line":"Only the Scout can do this. Select the Scout.","verbs":["watch","listen","mislead"]},
-  "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","verbs":["ask","pay","help","pressure","call"]},
-  "only-tech": {"line":"Only the Tech can do this. Select the Tech.","verbs":["loop","reroute"]},
-  "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","verbs":["enter","take","extract"]},
-  "too-far": {"line":"Too far from {who}. Walk within {m} m first.","verbs":["watch","listen","ask","pay","help","pressure"]},
-  "needs-routine": {"line":"Needs {who}'s routine first. Have the Scout Watch them.","verbs":["listen","pay"]},
-  "needs-need": {"line":"Needs what {who} needs first. Have the Scout Listen.","verbs":["help","pressure"]},
-  "needs-temperament": {"line":"Needs to know who {who} is first. Have the Scout Listen.","verbs":["ask","pay","help","pressure"]},
-  "no-act-need": {"line":"{who}'s need isn't one this approach can meet. Try another.","verbs":["help","pressure"]},
-  "need-met": {"line":"{who}'s need is already met. Nothing left to help with.","verbs":["help"]},
-  "refusal-remembered": {"line":"{who} refused this before. Try a different approach.","verbs":["ask","pay","help","pressure"]},
-  "already-turned": {"line":"{who} is already ours. Help keeps them; Call puts them to work.","verbs":["ask","pay","pressure"]},
-  "no-cash": {"line":"Not enough cash for the worst case ({usd}). Try a cheaper approach.","verbs":["pay","help"]},
-  "driver-too-late": {"line":"Too late to turn the driver: his last turn was {tick}.","verbs":["ask","pay","help","pressure"]},
-  "turn-needs-approach": {"line":"Pick an approach: Ask, Pay, Help or Pressure.","verbs":["ask","pay","help","pressure"]},
-  "vale-not-contact": {"line":"Vale is the target, not a contact. He can't be turned.","verbs":["ask","pay","help","pressure"]},
-  "not-a-contact": {"line":"{who} isn't a contact yet. Turn them first.","verbs":["call"]},
-  "car-gone": {"line":"The official car has gone. It is too late to call the driver.","verbs":["call"]},
-  "car-busy": {"line":"The car is still moving until {tick}. Call again then.","verbs":["call"]},
-  "call-too-late": {"line":"Too late: the car leaves for the pickup at {tick}.","verbs":["call"]},
-  "nothing-to-call": {"line":"{who} has nothing to do on a call.","verbs":["call"]},
-  "loop-wrong-target": {"line":"The cabinet loops the entrance camera only.","verbs":["loop"]},
-  "loop-holds": {"line":"The loop already holds. Nothing more to do.","verbs":["loop"]},
-  "stand-at-cabinet": {"line":"Walk the Tech within {m} m of the control cabinet first.","verbs":["loop","reroute"]},
-  "patrol-down": {"line":"The patrol is down. There is nothing to watch or reroute.","verbs":["watch","reroute"]},
-  "patrol-away": {"line":"The patrol is already away until {tick}. Wait for it to return.","verbs":["reroute"]},
-  "no-rivals": {"line":"No rivals here yet. Wait for them to show.","verbs":["mislead"]},
-  "stand-near-rivals": {"line":"Walk the Scout within {m} m of the rival crew first.","verbs":["mislead"]},
-  "vale-not-inside": {"line":"Vale isn't inside. Entering works only while he is in the Office.","verbs":["enter"]},
-  "stand-at-door": {"line":"Walk the Enforcer within {m} m of the public door first.","verbs":["enter"]},
-  "vale-not-at-car": {"line":"Vale isn't at his car yet. Wait for him to come out.","verbs":["take"]},
-  "stand-beside-vale": {"line":"Walk the Enforcer within {m} m of Vale first.","verbs":["take"]},
-  "no-vale-yet": {"line":"The Enforcer doesn't have Vale yet. Take him first.","verbs":["extract"]},
-  "stand-at-getaway": {"line":"Walk the Enforcer, with Vale, within {m} m of the getaway car.","verbs":["extract"]},
-  "car-held": {"line":"The car can't leave while a fight stands. Finish it first.","verbs":["extract"]},
-  "no-weapon": {"line":"{op} carries no weapon. Pick an agent who is armed.","verbs":["fire","draw","stance"]},
-  "already-drawn": {"line":"The weapon is already drawn. Give a fire order.","verbs":["draw"]},
-  "not-drawn": {"line":"No weapon drawn. Draw one first (F).","verbs":["holster","cease"]},
-  "stance-unknown": {"line":"A stance is hold, return or at will.","verbs":["stance"]},
-  "panic-not-cell": {"line":"Panic is the whole cell's order, not one agent's.","verbs":["panic"]},
-  "panic-no-fight": {"line":"Panic works only once a fight is on.","verbs":["panic"]},
-  "panic-nobody": {"line":"Nobody armed is free to fire.","verbs":["panic"]},
-  "fire-running": {"line":"Can't fire while running. Walk or stop first.","verbs":["fire"]},
-  "fire-carrying": {"line":"Can't fire while carrying. Put them down, or let another shoot.","verbs":["fire"]},
-  "no-target": {"line":"Nothing to fire at, or no clear line to a hostile in range.","verbs":["fire"]},
-  "fire-on-cell": {"line":"The cell never fires on its own.","verbs":["fire"]},
-  "target-unknown": {"line":"Not something to watch, listen to or fire on.","verbs":["fire","watch","listen"]},
-  "civilian-target": {"line":"A civilian or a contact. Ctrl forces it, and the city will remember.","verbs":["fire"]},
-  "out-of-range": {"line":"Out of range ({m} m). Walk closer first.","verbs":["fire"]},
-  "no-clear-line": {"line":"No clear line to {who}. Move to where you can see.","verbs":["fire","watch"]},
-  "carry-vale": {"line":"The Enforcer is already taking Vale. He can't carry anyone else.","verbs":["carry"]},
-  "already-carrying": {"line":"Already carrying someone.","verbs":["carry"]},
-  "carry-names-downed": {"line":"Carry needs a downed agent to lift.","verbs":["carry"]},
-  "carry-self": {"line":"Nobody carries themself.","verbs":["carry"]},
-  "not-down": {"line":"That agent isn't down.","verbs":["carry"]},
-  "already-carried": {"line":"Someone is already carrying that agent.","verbs":["carry"]},
-  "nothing-to-cancel": {"line":"Nothing to cancel: this agent is idle.","verbs":["cancel"]},
-  "keeps-vale": {"line":"Putting Vale down is no cancel. Walk him to the car.","verbs":["cancel"]},
-  "holstering": {"line":"Holstering finishes in a moment. Nothing to cancel.","verbs":["cancel"]},
-  "stand-beside-op": {"line":"Walk within {m} m of the downed agent first.","verbs":["carry"]},
-  "summon-busy": {"line":"He is down, busy or away from his door. Try when he is back on post.","verbs":["call"]},
-  "summon-came-once": {"line":"He has already come once this shift. He will not leave his post twice.","verbs":["call"]},
-  "summon-alert": {"line":"Security is searching. He will not leave his post while the alarm is up.","verbs":["call"]},
-  "summon-saw-violence": {"line":"He saw what the cell did. He will not come now.","verbs":["call"]},
-  "summon-too-far": {"line":"Too far: his walk to her would take {tick}. He will not come.","verbs":["call"]},
-  "summon-off-street": {"line":"One of them is off the street. Try when both are out.","verbs":["call"]},
-  "summon-no-visit": {"line":"This contact's lover has no post to leave, so a call moves no one.","verbs":["call"]},
-  "no-leverage": {"line":"{who} has nothing to lean on yet. Have the Scout Listen.","verbs":["pressure"]},
-  "needs-tier": {"line":"{who} is only passing by. The cell has no hold on them.","verbs":["*"]},
-  "needs-reach": {"line":"Get closer to {who} first.","verbs":["*"]},
-  "needs-need-is": {"line":"{who}'s need isn't one this order can meet.","verbs":["*"]},
-  "needs-standing": {"line":"The district doesn't see you that way yet.","verbs":["*"]},
-  "needs-fit": {"line":"{who} isn't the kind to answer this.","verbs":["*"]},
-  "needs-scale": {"line":"{who} isn't ready for this yet.","verbs":["*"]},
-  "needs-trail": {"line":"Not enough Trail has built up for that.","verbs":["*"]},
-  "takedown-how": {"line":"A takedown is a knockout or a kill. Pick one.","verbs":["takedown"]},
-  "takedown-vale": {"line":"Vale can't be knocked out. Use Take at the car.","verbs":["takedown"]},
-  "no-body": {"line":"{who} isn't lying down. Take them down first.","verbs":["carry","restrain"]},
-  "body-stashed": {"line":"{who} is hidden or already carried. Not on open ground.","verbs":["carry","restrain"]},
-  "not-carrying": {"line":"{op} isn't carrying anyone. Lift a body first.","verbs":["drop","stash"]},
-  "stand-at-stash": {"line":"Too far from the hiding place. Walk within {m} m first.","verbs":["stash"]},
-  "stash-full": {"line":"That hiding place is full. Find another.","verbs":["stash"]},
-  "body-dead": {"line":"{who} is dead. There is nothing to tie.","verbs":["restrain"]},
-  "already-restrained": {"line":"{who} is already tied.","verbs":["restrain"]},
-  "stand-beside-body": {"line":"Walk within {m} m of {who} first.","verbs":["carry","restrain"]},
-  "doors-locked": {"line":"Lockdown: the Office doors are locked. Nobody goes in.","verbs":["enter"]},
-  "door-held": {"line":"Police hold this door. Nobody goes in until they stand down.","verbs":["enter"]}
+  "mission-over": {"line":"The mission is over. Press Return to play again.","short":"Over","verbs":["*"]},
+  "engine-error": {"line":"The engine hit a fault. Restart the run.","short":"Run void","verbs":["*"]},
+  "unknown-verb": {"line":"The engine doesn't know that order. Pick another.","short":"Not an order","verbs":["*"]},
+  "agent-down": {"line":"{op} is down. Another agent can carry them to the car.","short":"Down","verbs":["*"]},
+  "enforcer-inside": {"line":"The Enforcer is inside the Office. Wait for him at the service lane.","short":"Inside","verbs":["*"]},
+  "agent-busy": {"line":"{op} is busy until {tick}. Wait, or use another agent.","short":"Busy · {tick}","verbs":["*"]},
+  "guard-down": {"line":"The guard is down. There is no one left to draw off.","short":"Guard down","verbs":["call"]},
+  "guard-not-at-door": {"line":"The guard isn't at the door. Call Inez while he is on post.","short":"Guard off post","verbs":["call"]},
+  "person-down": {"line":"{who} is down. There is nothing more to do there.","short":"Down","verbs":["watch","listen","ask","pay","help","pressure","call"]},
+  "person-away": {"line":"{who} isn't out on the street yet. Wait for their routine.","short":"Not out yet","verbs":["watch","listen","ask","pay","help","pressure"]},
+  "no-place": {"line":"No such place on the map. Pick a spot on the ground.","short":"Off the map","verbs":["move","run"]},
+  "unwalkable": {"line":"Can't walk there: a roof, a wall or a solid. Pick open ground.","short":"Blocked","verbs":["move","run"]},
+  "no-walk": {"line":"There's no way there from here. Pick another spot.","short":"No way","verbs":["move","run"]},
+  "run-carrying-vale": {"line":"Nobody runs while taking Vale. Walk him to the car.","short":"No running","verbs":["run"]},
+  "run-carrying-downed": {"line":"Nobody runs with a downed agent. Walk them to the car.","short":"No running","verbs":["run"]},
+  "run-tethered": {"line":"The Tech is tied to the cabinet while the loop holds. Wait for it to end.","short":"Tied to cabinet","verbs":["run","move"]},
+  "only-scout": {"line":"Only the Scout can do this. Select the Scout.","short":"Scout only","verbs":["watch","listen","mislead"]},
+  "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","short":"Fixer only","verbs":["ask","pay","help","pressure","call"]},
+  "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","reroute"]},
+  "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take","extract"]},
+  "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"]},
+  "needs-routine": {"line":"Needs {who}'s routine first. Have the Scout Watch them.","short":"Watch first","verbs":["listen","pay"]},
+  "needs-need": {"line":"Needs what {who} needs first. Have the Scout Listen.","short":"Listen first","verbs":["help","pressure"]},
+  "needs-temperament": {"line":"Needs to know who {who} is first. Have the Scout Listen.","short":"Listen first","verbs":["ask","pay","help","pressure"]},
+  "no-act-need": {"line":"{who}'s need isn't one this approach can meet. Try another.","short":"Wrong need","verbs":["help","pressure"]},
+  "need-met": {"line":"{who}'s need is already met. Nothing left to help with.","short":"Need met","verbs":["help"]},
+  "refusal-remembered": {"line":"{who} refused this before. Try a different approach.","short":"Refused before","verbs":["ask","pay","help","pressure"]},
+  "already-turned": {"line":"{who} is already ours. Help keeps them; Call puts them to work.","short":"Already ours","verbs":["ask","pay","pressure"]},
+  "no-cash": {"line":"Not enough cash for the worst case ({usd}). Try a cheaper approach.","short":"Short · {usd}","verbs":["pay","help"]},
+  "driver-too-late": {"line":"Too late to turn the driver: his last turn was {tick}.","short":"Too late · {tick}","verbs":["ask","pay","help","pressure"]},
+  "turn-needs-approach": {"line":"Pick an approach: Ask, Pay, Help or Pressure.","short":"Pick an approach","verbs":["ask","pay","help","pressure"]},
+  "vale-not-contact": {"line":"Vale is the target, not a contact. He can't be turned.","short":"Can't turn Vale","verbs":["ask","pay","help","pressure"]},
+  "not-a-contact": {"line":"{who} isn't a contact yet. Turn them first.","short":"Not ours yet","verbs":["call"]},
+  "car-gone": {"line":"The official car has gone. It is too late to call the driver.","short":"Car gone","verbs":["call"]},
+  "car-busy": {"line":"The car is still moving until {tick}. Call again then.","short":"Wait · {tick}","verbs":["call"]},
+  "call-too-late": {"line":"Too late: the car leaves for the pickup at {tick}.","short":"Too late · {tick}","verbs":["call"]},
+  "nothing-to-call": {"line":"{who} has nothing to do on a call.","short":"Nothing to call","verbs":["call"]},
+  "loop-wrong-target": {"line":"The cabinet loops the entrance camera only.","short":"Wrong camera","verbs":["loop"]},
+  "loop-holds": {"line":"The loop already holds. Nothing more to do.","short":"Loop holds","verbs":["loop"]},
+  "stand-at-cabinet": {"line":"Walk the Tech within {m} m of the control cabinet first.","short":"Too far · {m} m","verbs":["loop","reroute"]},
+  "patrol-down": {"line":"The patrol is down. There is nothing to watch or reroute.","short":"Patrol down","verbs":["watch","reroute"]},
+  "patrol-away": {"line":"The patrol is already away until {tick}. Wait for it to return.","short":"Away · {tick}","verbs":["reroute"]},
+  "no-rivals": {"line":"No rivals here yet. Wait for them to show.","short":"No rivals yet","verbs":["mislead"]},
+  "stand-near-rivals": {"line":"Walk the Scout within {m} m of the rival crew first.","short":"Too far · {m} m","verbs":["mislead"]},
+  "vale-not-inside": {"line":"Vale isn't inside. Entering works only while he is in the Office.","short":"Vale not inside","verbs":["enter"]},
+  "stand-at-door": {"line":"Walk the Enforcer within {m} m of the public door first.","short":"Too far · {m} m","verbs":["enter"]},
+  "vale-not-at-car": {"line":"Vale isn't at his car yet. Wait for him to come out.","short":"Vale not out","verbs":["take"]},
+  "stand-beside-vale": {"line":"Walk the Enforcer within {m} m of Vale first.","short":"Too far · {m} m","verbs":["take"]},
+  "no-vale-yet": {"line":"The Enforcer doesn't have Vale yet. Take him first.","short":"No Vale yet","verbs":["extract"]},
+  "stand-at-getaway": {"line":"Walk the Enforcer, with Vale, within {m} m of the getaway car.","short":"Too far · {m} m","verbs":["extract"]},
+  "car-held": {"line":"The car can't leave while a fight stands. Finish it first.","short":"Fight on","verbs":["extract"]},
+  "no-weapon": {"line":"{op} carries no weapon. Pick an agent who is armed.","short":"Unarmed","verbs":["fire","draw","stance"]},
+  "already-drawn": {"line":"The weapon is already drawn. Give a fire order.","short":"Drawn","verbs":["draw"]},
+  "not-drawn": {"line":"No weapon drawn. Draw one first (F).","short":"Not drawn","verbs":["holster","cease"]},
+  "stance-unknown": {"line":"A stance is hold, return or at will.","short":"Hold, return, free","verbs":["stance"]},
+  "panic-not-cell": {"line":"Panic is the whole cell's order, not one agent's.","short":"Whole cell","verbs":["panic"]},
+  "panic-no-fight": {"line":"Panic works only once a fight is on.","short":"No fight yet","verbs":["panic"]},
+  "panic-nobody": {"line":"Nobody armed is free to fire.","short":"Nobody armed","verbs":["panic"]},
+  "fire-running": {"line":"Can't fire while running. Walk or stop first.","short":"Not while running","verbs":["fire"]},
+  "fire-carrying": {"line":"Can't fire while carrying. Put them down, or let another shoot.","short":"Hands full","verbs":["fire"]},
+  "no-target": {"line":"Nothing to fire at, or no clear line to a hostile in range.","short":"No target","verbs":["fire"]},
+  "fire-on-cell": {"line":"The cell never fires on its own.","short":"Not the cell","verbs":["fire"]},
+  "target-unknown": {"line":"Not something to watch, listen to or fire on.","short":"Not a target","verbs":["fire","watch","listen"]},
+  "civilian-target": {"line":"A civilian or a contact. Ctrl forces it, and the city will remember.","short":"Civilian · Ctrl","verbs":["fire"]},
+  "out-of-range": {"line":"Out of range ({m} m). Walk closer first.","short":"Out of range · {m} m","verbs":["fire"]},
+  "no-clear-line": {"line":"No clear line to {who}. Move to where you can see.","short":"No clear line","verbs":["fire","watch"]},
+  "carry-vale": {"line":"The Enforcer is already taking Vale. He can't carry anyone else.","short":"Carrying Vale","verbs":["carry"]},
+  "already-carrying": {"line":"Already carrying someone.","short":"Hands full","verbs":["carry"]},
+  "carry-names-downed": {"line":"Carry needs a downed agent to lift.","short":"Nobody to lift","verbs":["carry"]},
+  "carry-self": {"line":"Nobody carries themself.","short":"Not yourself","verbs":["carry"]},
+  "not-down": {"line":"That agent isn't down.","short":"Not down","verbs":["carry"]},
+  "already-carried": {"line":"Someone is already carrying that agent.","short":"Being carried","verbs":["carry"]},
+  "nothing-to-cancel": {"line":"Nothing to cancel: this agent is idle.","short":"Idle","verbs":["cancel"]},
+  "keeps-vale": {"line":"Putting Vale down is no cancel. Walk him to the car.","short":"Walk Vale","verbs":["cancel"]},
+  "holstering": {"line":"Holstering finishes in a moment. Nothing to cancel.","short":"Holstering","verbs":["cancel"]},
+  "stand-beside-op": {"line":"Walk within {m} m of the downed agent first.","short":"Too far · {m} m","verbs":["carry"]},
+  "summon-busy": {"line":"He is down, busy or away from his door. Try when he is back on post.","short":"Not now","verbs":["call"]},
+  "summon-came-once": {"line":"He has already come once this shift. He will not leave his post twice.","short":"Came once","verbs":["call"]},
+  "summon-alert": {"line":"Security is searching. He will not leave his post while the alarm is up.","short":"Alarm up","verbs":["call"]},
+  "summon-saw-violence": {"line":"He saw what the cell did. He will not come now.","short":"Saw violence","verbs":["call"]},
+  "summon-too-far": {"line":"Too far: his walk to her would take {tick}. He will not come.","short":"Walk takes {tick}","verbs":["call"]},
+  "summon-off-street": {"line":"One of them is off the street. Try when both are out.","short":"Off the street","verbs":["call"]},
+  "summon-no-visit": {"line":"This contact's lover has no post to leave, so a call moves no one.","short":"No post to leave","verbs":["call"]},
+  "no-leverage": {"line":"{who} has nothing to lean on yet. Have the Scout Listen.","short":"Listen first","verbs":["pressure"]},
+  "needs-tier": {"line":"{who} is only passing by. The cell has no hold on them.","short":"Passing by","verbs":["*"]},
+  "needs-reach": {"line":"Get closer to {who} first.","short":"Get closer","verbs":["*"]},
+  "needs-need-is": {"line":"{who}'s need isn't one this order can meet.","short":"Wrong need","verbs":["*"]},
+  "needs-standing": {"line":"The district doesn't see you that way yet.","short":"Not trusted here","verbs":["*"]},
+  "needs-fit": {"line":"{who} isn't the kind to answer this.","short":"Not their kind","verbs":["*"]},
+  "needs-scale": {"line":"{who} isn't ready for this yet.","short":"Too big yet","verbs":["*"]},
+  "needs-trail": {"line":"Not enough Trail has built up for that.","short":"Trail too low","verbs":["*"]},
+  "takedown-how": {"line":"A takedown is a knockout or a kill. Pick one.","short":"Pick a way","verbs":["takedown"]},
+  "takedown-vale": {"line":"Vale can't be knocked out. Use Take at the car.","short":"Not Vale","verbs":["takedown"]},
+  "no-body": {"line":"{who} isn't lying down. Take them down first.","short":"Not down","verbs":["carry","restrain"]},
+  "body-stashed": {"line":"{who} is hidden or already carried. Not on open ground.","short":"Hidden","verbs":["carry","restrain"]},
+  "not-carrying": {"line":"{op} isn't carrying anyone. Lift a body first.","short":"Not carrying","verbs":["drop","stash"]},
+  "stand-at-stash": {"line":"Too far from the hiding place. Walk within {m} m first.","short":"Too far · {m} m","verbs":["stash"]},
+  "stash-full": {"line":"That hiding place is full. Find another.","short":"Full","verbs":["stash"]},
+  "body-dead": {"line":"{who} is dead. There is nothing to tie.","short":"Dead","verbs":["restrain"]},
+  "already-restrained": {"line":"{who} is already tied.","short":"Tied","verbs":["restrain"]},
+  "stand-beside-body": {"line":"Walk within {m} m of {who} first.","short":"Too far · {m} m","verbs":["carry","restrain"]},
+  "doors-locked": {"line":"Lockdown: the Office doors are locked. Nobody goes in.","short":"Locked","verbs":["enter"]},
+  "door-held": {"line":"Police hold this door. Nobody goes in until they stand down.","short":"Held","verbs":["enter"]}
  },
  "cards": {
-  "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` shows only when an agent can see the place, as a city scene does. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden.",
+  "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` shows only when an agent can see the place, as a city scene does. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines.",
   "items": {
-   "rivals.arrive": {"kind":"city","title":"Rival car arrives","sight":"in-sight","result":"Parked by the pickup. They want Vale too."},
-   "rivals.misled": {"kind":"city","title":"Rivals sent away","result":"They may be back."},
-   "rivals.drawn": {"kind":"warning","title":"Rivals heading in","result":"They heard the shots."},
-   "guard.at-cafe": {"kind":"city","title":"The guard is at the café","sight":"in-sight","result":"Away from the door."},
-   "guard.back": {"kind":"city","title":"Guard back on the door","result":"Watching the door again."},
-   "vale.exits": {"kind":"city","title":"Vale comes out","result":{"front":"Walking to the official car.","service":"Walking to the service lane."},"pick":"service when Game.PickupService, else front"},
-   "vale.at-car": {"kind":"city","title":"Vale reaches his car","result":{"front":"Under the pickup camera.","service":"In the service lane."},"pick":"service when Game.PickupService, else front"},
-   "car.blocks": {"kind":"city","title":"The car blocks the camera","result":"The pickup camera is blind."},
-   "car.leaves": {"kind":"city","title":"The official car leaves","result":"Heading for the service lane."},
-   "loop.ends": {"kind":"warning","title":"The loop ends","result":"The camera sees again."},
-   "security.called": {"kind":"warning","title":"Security is coming","result":"From the north street."},
-   "patrol.breaks": {"kind":"warning","title":"The patrol turns on you","result":"It saw a weapon or heard shots."},
-   "run.seen": {"kind":"warning","title":"Runner seen","result":"{who} saw {agent} run. Alert {alert}."},
-   "report": {"kind":"warning","title":"Reported","result":"{who} reported the attempt. Alert {alert}."},
-   "fight.loud": {"kind":"fight","title":"Police coming in","result":"{n} officers, from the north street. The district seals at {clock}."},
-   "fight.safe": {"kind":"fight","title":"The rivals wait at the car","result":"{n} of them. The car can't leave while they stand."},
-   "fight.ambush": {"kind":"fight","title":"Ambush","result":{"sprung":"The rivals open fire at the car.","warned":"Inez's warning came in time. You saw it first."},"pick":"warned when Game.FightWarned, else sprung"},
-   "fight.over": {"kind":"fight","title":"The fight is over","result":"The last of them is down or gone. The car can go."},
-   "captured": {"kind":"fight","title":"Captured","result":"{agent} was left behind and captured."},
-   "scout.down": {"kind":"fight","title":"Scout is down","result":"Another agent can carry them."},
-   "fixer.down": {"kind":"fight","title":"Fixer is down","result":"Another agent can carry them."},
-   "tech.down": {"kind":"fight","title":"Tech is down","result":"Another agent can carry them."},
-   "takedown.starts": {"kind":"city","title":"Takedown begins","result":{"unseen":"{who} didn't see it coming.","struggle":"{who} saw it coming and shouts. Others may hear."},"pick":"struggle when the engine's text says the target sees it coming, else unseen"},
-   "takedown.fails": {"kind":"warning","title":"Takedown failed","result":"{who} saw it coming and drew. It's a fight now. Alert {alert}."},
-   "takedown.dead": {"kind":"city","title":"Dead","result":"{who} is dead. The body lies where it fell."},
-   "takedown.out": {"kind":"city","title":"Knocked out","result":"{who} is out. Awake again in {n} s."},
-   "takedown.seen": {"kind":"warning","title":"Takedown seen","result":{"act":"{who} saw the takedown. Alert {alert}.","carry":"{who} saw a body being carried. Alert {alert}."},"pick":"carry when the engine's text says a body carried, else act"},
-   "carry.body": {"kind":"city","title":"Body lifted","result":{"enforcer":"{agent} has {who} up. No running while carrying.","other":"{agent} has {who} up, slowly. Only the Enforcer carries at a walk."},"pick":"enforcer when the carrier is the Enforcer, else other"},
-   "carry.down": {"kind":"city","title":"Body put down","result":"{who} is laid down here. Anyone passing may find the body."},
-   "stash.": {"kind":"city","title":"Body hidden","result":{"container":"{who} is in the bin. Hidden until it is searched or emptied.","door":"{who} is behind the service door. Hidden until a search opens it."},"pick":"container or door by the engine's code (stash.container, stash.door)"},
-   "restrain.done": {"kind":"city","title":"Tied up","result":"{who} is tied and can't call out. Whoever finds them will free them."},
-   "restrain.freed": {"kind":"city","title":"Untied","sight":"in-sight","at":"victim","result":"Someone found {who} and untied them."},
-   "victim.wakes": {"kind":"warning","title":"Awake","sight":"in-sight","at":"victim","result":"{who} is awake. Expect a report."},
-   "victim.statement": {"kind":"city","title":"A statement","sight":"in-sight","at":"victim","result":"The response brought {who} round. They gave a statement."},
-   "victim.calls-out": {"kind":"warning","title":"A voice from inside","sight":"in-sight","at":"stash","result":"{who} is calling out from the hiding place. Anyone near will hear."},
-   "report.started": {"kind":"warning","title":"Someone is reporting it","sight":"in-sight","at":"reporter","result":{"radio":"{who} is radioing it in.","look":"{who} goes to look first.","phone":"{who} is heading for a phone."},"pick":"radio when the engine's text says radios it in, look when it says goes to look, else phone"},
-   "report.stopped": {"kind":"city","title":"A report stopped","sight":"in-sight","at":"reporter","result":"{who} won't be making that call."},
-   "report.landed": {"kind":"warning","title":"A report reached the desk","result":"The desk has it. Alert {alert}."},
-   "report.unfounded": {"kind":"city","title":"Nothing found","sight":"in-sight","at":"scene","result":"{who} found nothing where the report said."},
-   "report.confirmed": {"kind":"warning","title":"Body confirmed","sight":"in-sight","at":"scene","result":{"dead":"{who} found the body. Alert {alert}.","out":"{who} found the knocked out body. Alert {alert}."},"pick":"dead or out by the engine's text"},
-   "seal.starts": {"kind":"warning","title":"The district will seal","result":"The district seals at {clock}."},
-   "post.missed": {"kind":"warning","title":"A missed check in","needs":"routine","result":"{who} missed the {clock} check in. The post is reported empty."},
-   "person.missed": {"kind":"warning","title":"Waiting for someone","sight":"in-sight","at":"person","result":"{who} expected someone and is growing suspicious."},
-   "guard.back-to-post": {"kind":"city","title":"The guard is up","sight":"in-sight","at":"guard","result":"Awake and heading back to the door."},
-   "alarm.dispatches": {"kind":"warning","title":"The response is sent","result":{"robots":"Robots are coming. On the street by {clock}.","both":"Robots and police are coming. On the street by {clock}."},"pick":"robots when the engine's text says 0 units, else both"},
-   "alarm.reassigns": {"kind":"warning","title":"Response redirected","sight":"in-sight","at":"unit","result":"{who} turns for a new scene."},
-   "doors.lock": {"kind":"warning","title":"Doors locked","sight":"in-sight","at":"door","result":"The Office doors are locked. Nobody goes in."},
-   "response.reinforces": {"kind":"warning","title":"Another unit","result":"Another unit is coming from the north street."},
-   "patrol.alarm": {"kind":"warning","title":"The patrol leaves its sweep","sight":"in-sight","at":"patrol","result":"Off its round, toward the alarm."},
-   "patrol.stands-down": {"kind":"city","title":"The patrol stands down","sight":"in-sight","at":"patrol","result":"Back to its sweep."},
-   "stash.serviced": {"kind":"warning","title":"The bin is emptied","sight":"in-sight","at":"stash","result":"The round emptied the bin and found {who}."},
-   "stash.opened": {"kind":"warning","title":"A hiding place is opened","sight":"in-sight","at":"stash","result":{"found":"{who} opened the hiding place and found a body.","empty":"{who} opened the hiding place. Nothing."},"pick":"found when the engine's text says a person is inside, else empty"}
+   "rivals.arrive": {"kind":"city","fate":"beat","beat":"Rivals here.","title":"Rival car arrives","sight":"in-sight","result":"Parked by the pickup. They want Vale too."},
+   "rivals.misled": {"kind":"city","fate":"alt","title":"Rivals sent away","result":"They may be back."},
+   "rivals.drawn": {"kind":"warning","fate":"alt","title":"Rivals heading in","result":"They heard the shots."},
+   "guard.at-cafe": {"kind":"city","fate":"alt","title":"The guard is at the café","sight":"in-sight","result":"Away from the door."},
+   "guard.back": {"kind":"city","fate":"icon","title":"Guard back on the door","result":"Watching the door again."},
+   "vale.exits": {"kind":"city","fate":"beat","beat":"Vale is out.","title":"Vale comes out","result":{"front":"Walking to the official car.","service":"Walking to the service lane."},"pick":"service when Game.PickupService, else front"},
+   "vale.at-car": {"kind":"city","fate":"icon","title":"Vale reaches his car","result":{"front":"Under the pickup camera.","service":"In the service lane."},"pick":"service when Game.PickupService, else front"},
+   "car.blocks": {"kind":"city","fate":"beat","beat":"Camera blind.","title":"The car blocks the camera","result":"The pickup camera is blind."},
+   "car.leaves": {"kind":"city","fate":"alt","title":"The official car leaves","result":"Heading for the service lane."},
+   "loop.ends": {"kind":"warning","fate":"icon","title":"The loop ends","result":"The camera sees again."},
+   "security.called": {"kind":"warning","fate":"beat","beat":"Police coming.","title":"Security is coming","result":"From the north street."},
+   "patrol.breaks": {"kind":"warning","fate":"alt","title":"The patrol turns on you","result":"It saw a weapon or heard shots."},
+   "run.seen": {"kind":"warning","fate":"alt","title":"Runner seen","result":"{who} saw {agent} run. Alert {alert}."},
+   "report": {"kind":"warning","fate":"beat","beat":"Reported.","title":"Reported","result":"{who} reported the attempt. Alert {alert}."},
+   "fight.loud": {"kind":"fight","fate":"beat","beat":"Police coming.","title":"Police coming in","result":"{n} officers, from the north street. The district seals at {clock}."},
+   "fight.safe": {"kind":"fight","fate":"alt","title":"The rivals wait at the car","result":"{n} of them. The car can't leave while they stand."},
+   "fight.ambush": {"kind":"fight","fate":"alt","title":"Ambush","result":{"sprung":"The rivals open fire at the car.","warned":"Inez's warning came in time. You saw it first."},"pick":"warned when Game.FightWarned, else sprung"},
+   "fight.over": {"kind":"fight","fate":"alt","title":"The fight is over","result":"The last of them is down or gone. The car can go."},
+   "captured": {"kind":"fight","fate":"debrief","title":"Captured","result":"{agent} was left behind and captured."},
+   "scout.down": {"kind":"fight","fate":"icon","title":"Scout is down","result":"Another agent can carry them."},
+   "fixer.down": {"kind":"fight","fate":"icon","title":"Fixer is down","result":"Another agent can carry them."},
+   "tech.down": {"kind":"fight","fate":"icon","title":"Tech is down","result":"Another agent can carry them."},
+   "takedown.starts": {"kind":"city","fate":"alt","title":"Takedown begins","result":{"unseen":"{who} didn't see it coming.","struggle":"{who} saw it coming and shouts. Others may hear."},"pick":"struggle when the engine's text says the target sees it coming, else unseen"},
+   "takedown.fails": {"kind":"warning","fate":"alt","title":"Takedown failed","result":"{who} saw it coming and drew. It's a fight now. Alert {alert}."},
+   "takedown.dead": {"kind":"city","fate":"icon","title":"Dead","result":"{who} is dead. The body lies where it fell."},
+   "takedown.out": {"kind":"city","fate":"icon","title":"Knocked out","result":"{who} is out. Awake again in {n} s."},
+   "takedown.seen": {"kind":"warning","fate":"icon","title":"Takedown seen","result":{"act":"{who} saw the takedown. Alert {alert}.","carry":"{who} saw a body being carried. Alert {alert}."},"pick":"carry when the engine's text says a body carried, else act"},
+   "carry.body": {"kind":"city","fate":"icon","title":"Body lifted","result":{"enforcer":"{agent} has {who} up. No running while carrying.","other":"{agent} has {who} up, slowly. Only the Enforcer carries at a walk."},"pick":"enforcer when the carrier is the Enforcer, else other"},
+   "carry.down": {"kind":"city","fate":"icon","title":"Body put down","result":"{who} is laid down here. Anyone passing may find the body."},
+   "stash.": {"kind":"city","fate":"icon","title":"Body hidden","result":{"container":"{who} is in the bin. Hidden until it is searched or emptied.","door":"{who} is behind the service door. Hidden until a search opens it."},"pick":"container or door by the engine's code (stash.container, stash.door)"},
+   "restrain.done": {"kind":"city","fate":"icon","title":"Tied up","result":"{who} is tied and can't call out. Whoever finds them will free them."},
+   "restrain.freed": {"kind":"city","fate":"alt","title":"Untied","sight":"in-sight","at":"victim","result":"Someone found {who} and untied them."},
+   "victim.wakes": {"kind":"warning","fate":"icon","title":"Awake","sight":"in-sight","at":"victim","result":"{who} is awake. Expect a report."},
+   "victim.statement": {"kind":"city","fate":"debrief","title":"A statement","sight":"in-sight","at":"victim","result":"The response brought {who} round. They gave a statement."},
+   "victim.calls-out": {"kind":"warning","fate":"alt","title":"A voice from inside","sight":"in-sight","at":"stash","result":"{who} is calling out from the hiding place. Anyone near will hear."},
+   "report.started": {"kind":"warning","fate":"icon","title":"Someone is reporting it","sight":"in-sight","at":"reporter","result":{"radio":"{who} is radioing it in.","look":"{who} goes to look first.","phone":"{who} is heading for a phone."},"pick":"radio when the engine's text says radios it in, look when it says goes to look, else phone"},
+   "report.stopped": {"kind":"city","fate":"icon","title":"A report stopped","sight":"in-sight","at":"reporter","result":"{who} won't be making that call."},
+   "report.landed": {"kind":"warning","fate":"beat","beat":"Reported.","title":"A report reached the desk","result":"The desk has it. Alert {alert}."},
+   "report.unfounded": {"kind":"city","fate":"alt","title":"Nothing found","sight":"in-sight","at":"scene","result":"{who} found nothing where the report said."},
+   "report.confirmed": {"kind":"warning","fate":"beat","beat":"Body found.","title":"Body confirmed","sight":"in-sight","at":"scene","result":{"dead":"{who} found the body. Alert {alert}.","out":"{who} found the knocked out body. Alert {alert}."},"pick":"dead or out by the engine's text"},
+   "seal.starts": {"kind":"warning","fate":"beat","beat":"District sealing.","title":"The district will seal","result":"The district seals at {clock}."},
+   "post.missed": {"kind":"warning","fate":"icon","title":"A missed check in","needs":"routine","result":"{who} missed the {clock} check in. The post is reported empty."},
+   "person.missed": {"kind":"warning","fate":"alt","title":"Waiting for someone","sight":"in-sight","at":"person","result":"{who} expected someone and is growing suspicious."},
+   "guard.back-to-post": {"kind":"city","fate":"alt","title":"The guard is up","sight":"in-sight","at":"guard","result":"Awake and heading back to the door."},
+   "alarm.dispatches": {"kind":"warning","fate":"beat","beat":{"robots":"Robots coming.","both":"Police coming."},"title":"The response is sent","result":{"robots":"Robots are coming. On the street by {clock}.","both":"Robots and police are coming. On the street by {clock}."},"pick":"robots when the engine's text says 0 units, else both"},
+   "alarm.reassigns": {"kind":"warning","fate":"alt","title":"Response redirected","sight":"in-sight","at":"unit","result":"{who} turns for a new scene."},
+   "doors.lock": {"kind":"warning","fate":"icon","title":"Doors locked","sight":"in-sight","at":"door","result":"The Office doors are locked. Nobody goes in."},
+   "response.reinforces": {"kind":"warning","fate":"icon","title":"Another unit","result":"Another unit is coming from the north street."},
+   "patrol.alarm": {"kind":"warning","fate":"icon","title":"The patrol leaves its sweep","sight":"in-sight","at":"patrol","result":"Off its round, toward the alarm."},
+   "patrol.stands-down": {"kind":"city","fate":"alt","title":"The patrol stands down","sight":"in-sight","at":"patrol","result":"Back to its sweep."},
+   "stash.serviced": {"kind":"warning","fate":"beat","beat":"Body found.","title":"The bin is emptied","sight":"in-sight","at":"stash","result":"The round emptied the bin and found {who}."},
+   "stash.opened": {"kind":"warning","fate":"beat","beat":{"found":"Body found."},"title":"A hiding place is opened","sight":"in-sight","at":"stash","result":{"found":"{who} opened the hiding place and found a body.","empty":"{who} opened the hiding place. Nothing."},"pick":"found when the engine's text says a person is inside, else empty"}
   }
  },
  "debrief": {
-  "rule": "The end card in the player's words, by the ids of sim Debrief.cs (route, assets, investigation cause) and the engine's named-witness:<role>. A failure with a line in briefing.fails takes that line's first sentence as its headline and the whole line as its result; the Fixer's spoken fail or win line sits under it (events fail, win). An id with no sentence here is not shown. The replay verdict and hash are never player text.",
+  "rule": "The end card in the player's words, by the ids of sim Debrief.cs (route, assets, investigation cause) and the engine's named-witness:<role>. A failure with a line in briefing.fails takes that line's first sentence as its headline and the whole line as its result; the Fixer's spoken fail or win line sits under it (events fail, win). An id with no sentence here is not shown. The replay verdict and hash are never player text. brief 014: the Standing line, one per district (rulebook debrief.lines.standing: district, from, to, band, cause, who). `line` is filled by the host from the debrief's fields: {district} is the district's name, {band} is bands[band], {from} and {to} are signed (+3, 0, -1), {cause} is causes[cause] filled with {who}, the person's name. The seen and found causes say what the city saw or found, with no name. The word causes are rumour, not fact the cell watched: they begin Word is, and name no face, place or time.",
   "headline": {"win":"Vale is in the car","withdraw":"You withdrew","fail":"The attempt failed"},
   "result": {"win":"The crew escapes with Vale alive."},
   "tally": "Done at {clock} · {usd} spent · Trail {trail}",
@@ -529,7 +535,27 @@
   "kept": "Kept: {list}",
   "route": {"waitress-pulls-guard-away":"Inez drew the guard off the door.","guard-shot-beside-waitress":"The guard was shot beside Inez.","guard-shot-away-from-waitress":"The guard was shot away from Inez.","guard-knocked-out":"The Enforcer knocked the guard out.","guard-killed":"The Enforcer killed the guard.","entrance-camera-looped":"The entrance camera was looped.","patrol-diverted":"The patrol was rerouted.","entry-timed-between-sweeps":"The Enforcer went in between the patrol's sweeps.","vale-taken-through-office":"The Enforcer took Vale through the Office.","vale-reaches-getaway-car":"Vale reached the getaway car.","driver-moves-vale-to-service-lane":"The driver brought Vale round to the service lane.","pickup-camera-blocked":"The driver's car blinded the pickup camera.","rivals-driven-back":"The rivals were driven back.","rivals-follow-false-tip":"The rivals followed a false tip.","vale-intercepted-outside":"Vale was taken outside."},
   "assets": {"waitress-introduces-cafe":"Inez, who can introduce you at the café.","waitress-may-be-questioned":"Inez, though investigators may question her.","waitress-may-identify-fixer":"Inez, who could identify the Fixer.","waitress-witnessed-shooting":"Inez, who saw the shooting.","driver-alters-pickups":"The driver, who can alter pickups."},
-  "between": {"volunteer":"{who} came forward unasked and gave up {fact}.","statement":"{who} gave a statement: {facts}. Trail {trail}.","missing":"{who} is missing near {place}. Case open, Trail {trail}.","grief":"{who} grieves for {of}: {move}.","worry":"{who} is frightened for {of}: {fear}.","area-watch":"{place}: +{guards} guard, +{cameras} camera, {missions} missions.","case":"Case on {who}: {kind}. Closes {closes}."}
+  "between": {"volunteer":"{who} came forward unasked and gave up {fact}.","statement":"{who} gave a statement: {facts}. Trail {trail}.","missing":"{who} is missing near {place}. Case open, Trail {trail}.","grief":"{who} grieves for {of}: {move}.","worry":"{who} is frightened for {of}: {fear}.","area-watch":"{place}: +{guards} guard, +{cameras} camera, {missions} missions.","case":"Case on {who}: {kind}. Closes {closes}."},
+  "standing": {
+   "line": "{district}: {band} {to}, was {from}. {cause}",
+   "bands": {"hero": "Hero", "neutral": "Neutral", "menace": "Menace"},
+   "causes": {
+    "seen-debt-cleared": "A debt was cleared in plain sight.",
+    "seen-threat": "A threat was seen.",
+    "seen-gunfire": "Gunfire was seen.",
+    "seen-weapon-drawn": "Drawn weapons were seen.",
+    "seen-violence": "Violence was seen.",
+    "seen-takedown": "A takedown was seen.",
+    "found-killing": "A killing was found.",
+    "word-helped": "Word is a stranger helped {who}.",
+    "word-pressured": "Word is a stranger leaned on {who}.",
+    "word-knocked-out": "Word is a stranger knocked {who} out.",
+    "balanced": "Good and bad cancelled out.",
+    "drift-down": "Nothing new was seen. The praise faded.",
+    "drift-up": "Nothing new was seen. The city forgave a little.",
+    "steady": "Nothing new was seen. Nothing changed."
+   }
+  }
  },
  "events": {
   "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","reroute","enter","take","extract","fire","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
@@ -785,7 +811,8 @@
    "once": "Each fires once per run, and H hides the layer for good.",
    "idle": "A hint shows only after the cell has given no order for 8 s.",
    "vanishes": "It vanishes the moment its gone-when act happens, or when its trigger stops holding.",
-   "words": "Each line names an agent, a verb and a target, introduces one verb, and never names an approach, a time or a sequence."
+   "words": "Each line names an agent, a verb and a target, introduces one verb, and never names an approach, a time or a sequence.",
+   "short": "Brief 014: the line at rest is `short` (one imperative, one [noun] ringed, no agent); this long line is Alt and the relearn key. See `less.hint` for when it shows and retires."
   },
   "items": {
    "H1": {
@@ -794,6 +821,7 @@
     "verb": "watch",
     "target": "the people on the café terrace",
     "line": "The door has a guard. The Scout can Watch the people on the café terrace.",
+    "short": "Watch the [café terrace].",
     "trigger": "briefing closed, nothing learned about anyone, no Watch or Listen given",
     "rings": "the café terrace (the place, not Inez)",
     "goneWhen": "any Watch or Listen order"
@@ -804,6 +832,7 @@
     "verb": "listen",
     "target": "the watched person",
     "line": "Watching shows where and when. The Scout can Listen, close by, to learn who someone is.",
+    "short": "Listen to [{who}].",
     "trigger": "a person's routine is known (Watch done), their need and temperament are not",
     "rings": "the watched person",
     "goneWhen": "Listen ordered on them"
@@ -814,6 +843,7 @@
     "verb": "turn",
     "target": "the person whose need is known",
     "line": "The Fixer can turn this person. Hover an option to read its price.",
+    "short": "Turn [{who}]: right click.",
     "trigger": "a person's need is known, they're not turned, and no approach has been given",
     "rings": "the Fixer's portrait",
     "goneWhen": "any Turn order"
@@ -824,6 +854,7 @@
     "verb": "loop",
     "target": "the control cabinet",
     "line": "A camera watches the public door. The Tech can Loop it from the control cabinet.",
+    "short": "Loop the camera at the [cabinet].",
     "trigger": "the entrance camera is live, the Tech is idle, and 0:45 has passed",
     "rings": "the cabinet",
     "goneWhen": "a Loop order"
@@ -834,6 +865,7 @@
     "verb": "call",
     "target": "the turned contact",
     "line": "Turned people act on a call. The Fixer can Call them: right click to see what they do.",
+    "short": "Call [{who}]: right click.",
     "trigger": "a contact is turned and has never been called",
     "rings": "the contact",
     "goneWhen": "a Call order"
@@ -844,6 +876,7 @@
     "verb": "listen",
     "target": "the refused person",
     "line": "They refused, and they will remember. The Scout can Listen to learn who someone is.",
+    "short": "Listen to [{who}].",
     "trigger": "an approach was refused",
     "rings": "the refused person",
     "goneWhen": "the next order to the Scout or the Fixer"
@@ -854,6 +887,7 @@
     "verb": "reroute",
     "target": "the patrol",
     "line": "A patrol sweeps this door. The Tech can Reroute it, and N shows it coming round.",
+    "short": "Reroute the [patrol].",
     "trigger": "the patrol's cone will cover the public door within the next 15 s, and the Enforcer stands within 10 m of it, not inside",
     "rings": "the patrol's cone",
     "goneWhen": "Enter, Reroute, or the Enforcer moving away"
@@ -864,6 +898,7 @@
     "verb": "mislead",
     "target": "the rival car",
     "line": "Another crew watches the pickup. The Scout can give them a false tip.",
+    "short": "Give the [rivals] a false tip.",
     "trigger": "3:10 has passed (the rivals have parked) and nobody has acted on them",
     "rings": "the rival car",
     "goneWhen": "a Mislead order, or the Enforcer holding Vale"
@@ -874,6 +909,7 @@
     "verb": "turn",
     "target": "the driver",
     "line": "Vale leaves by car. His driver waits at the pickup, and the Fixer can turn drivers.",
+    "short": "Turn [the driver].",
     "trigger": "4:00 has passed, route A isn't under way (no contact turned, no Enter), and the driver is unknown",
     "rings": "the driver",
     "goneWhen": "any order on the driver, or a contact turned"
@@ -884,6 +920,7 @@
     "verb": "fire",
     "target": "the getaway bay",
     "line": "Who covers the Enforcer on the way to the getaway car? Anyone armed can Fire.",
+    "short": "Cover the [getaway car].",
     "trigger": "the Enforcer holds Vale, and no other armed operative stands within 15 m of the getaway car",
     "rings": "the getaway bay",
     "goneWhen": "an armed operative within 15 m of the car, or a draw"
@@ -894,9 +931,21 @@
     "verb": "carry",
     "target": "the downed operative",
     "line": "A downed agent left behind is captured. Select another agent and right click them to carry them.",
+    "short": "Carry the [downed agent].",
     "trigger": "an operative is downed, the final fight is on or over, and nobody is carrying them",
     "rings": "the downed operative",
     "goneWhen": "a Carry order, or the extract"
+   },
+   "H12": {
+    "priority": 12,
+    "agent": "any",
+    "verb": "move",
+    "target": "the walk's destination",
+    "line": "A long walk? Press G and the agent runs there instead. A run can be seen.",
+    "short": "Run to the [mark]: press G.",
+    "trigger": "an agent has a walk of 5 s or more still to go, is not running or carrying, and is not inside (brief 014, Latch/Sky 2026-10-16; not in Motive's table)",
+    "rings": "the walk's destination",
+    "goneWhen": "a run is given, or the walk ends"
    }
   }
  },
@@ -908,6 +957,351 @@
  },
  "goingLoud": {
   "captured": "Anyone downed is captured unless carried."
+ },
+ "less": {
+  "rule": "brief 014 (Sky, 2026-10-16: \"It's the reading, it's too much\"). The play HUD at rest shows no sentences: people speaking (bubbles in the world), icons, numbers, rings, and at most two story beats. Every long line elsewhere in this file stays and is the Alt text (hold Alt, or the history key L) or the debrief; nothing was deleted. `fates` says where each group of text goes; the rest of this block is the short forms and the one-line price grammar. Told/learned holds: a beat or a pop never names what the cell has not been told or has not learned.",
+  "fates": {
+   "briefing.title": "label",
+   "briefing.card": "alt",
+   "briefing.objective": "alt",
+   "briefing.win": "alt",
+   "briefing.fails": "debrief",
+   "briefing.clock.close": "icon",
+   "briefing.clock.line": "alt",
+   "briefing.purse.usd": "icon",
+   "briefing.purse.line": "alt",
+   "briefing.hints": "alt",
+   "briefing.tracker": "alt",
+   "briefing.timeline.at": "icon",
+   "briefing.timeline.label": "alt",
+   "briefing.cell": "alt",
+   "targets.name": "label",
+   "targets.about": "alt",
+   "targets.watched": "alt",
+   "targets.routine": "alt",
+   "targets.heard": "alt",
+   "actions.label": "label",
+   "actions.does": "alt",
+   "actions.onTarget": "alt",
+   "actions.withTarget": "alt",
+   "actions.then": "icon",
+   "actions.ways.label": "label",
+   "actions.ways.does": "alt",
+   "cancelCosts": "alt",
+   "activity": "icon",
+   "locks.line": "alt",
+   "cards.items": "beat",
+   "debrief": "debrief",
+   "hints.items.line": "alt",
+   "toasts.run-seen": "cut",
+   "goingLoud.captured": "alt",
+   "dialogue": "speech",
+   "scenes.items.beats": "speech",
+   "scenes.items.result": "alt",
+   "scenes.items.title": "alt"
+  },
+  "price": {
+   "rule": "One line per way: the verb, then only the fields that are not zero, always in `order`; an unknown number is \"?\". Money is compact ($90k, $1.5k, a range $40k–60k; under $1,000 as it is): the rows have fixed columns; the status pill and the debrief keep whole dollars. Locked rows show the same line dimmed. Alt shows every field including the zeros, the walk split from the act, and the rows a card carries today (`actions.*.does`, found, never found, wakes, seen by).",
+   "order": [
+    "name",
+    "usd",
+    "time",
+    "trail",
+    "alert",
+    "eye",
+    "learns",
+    "pace",
+    "mark"
+   ],
+   "fields": {
+    "name": {
+     "shows": "the verb's label, or its way (Knock out, Kill); the target is the card's header or the chip's lead icon",
+     "hiddenWhen": "never"
+    },
+    "usd": {
+     "shows": "the cash the order spends, compact: $90k, $1.5k, under $1,000 as it is, or a range ($40k–60k) when the worst case is dearer; the status pill and the debrief keep whole dollars",
+     "hiddenWhen": "the order is free"
+    },
+    "time": {
+     "shows": "n s, the walk plus the act (Alt splits them)",
+     "hiddenWhen": "the order lands at once (Call, Vale into the car)"
+    },
+    "trail": {
+     "shows": "+n Trail the order traces",
+     "hiddenWhen": "it traces nothing"
+    },
+    "alert": {
+     "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire",
+     "hiddenWhen": "it raises none"
+    },
+    "eye": {
+     "shows": "the eye mark and who could see it: none, ? (a watcher the Scout has not learned could), or the watchers",
+     "hiddenWhen": "the order cannot be seen (a Call, a Watch from range)"
+    },
+    "learns": {
+     "shows": "the icons of what a Watch or Listen teaches: routine, sight, need, temperament",
+     "hiddenWhen": "the order teaches nothing"
+    },
+    "pace": {
+     "shows": "a carry's walking pace in m/s",
+     "hiddenWhen": "nobody is carrying"
+    },
+    "mark": {
+     "shows": "the outcome mark: ✓ works, ✗ they would refuse, ½ not yet, ? unknown until the Scout has learned who they are",
+     "hiddenWhen": "the order has no answer to guess"
+    }
+   },
+   "verbs": {
+    "watch": [
+     "name",
+     "time",
+     "learns"
+    ],
+    "listen": [
+     "name",
+     "time",
+     "learns"
+    ],
+    "mislead": [
+     "name",
+     "time",
+     "trail"
+    ],
+    "ask": [
+     "name",
+     "usd",
+     "time",
+     "trail",
+     "alert",
+     "eye",
+     "mark"
+    ],
+    "pay": [
+     "name",
+     "usd",
+     "time",
+     "trail",
+     "alert",
+     "eye",
+     "mark"
+    ],
+    "help": [
+     "name",
+     "usd",
+     "time",
+     "trail",
+     "alert",
+     "eye",
+     "mark"
+    ],
+    "pressure": [
+     "name",
+     "usd",
+     "time",
+     "trail",
+     "alert",
+     "eye",
+     "mark"
+    ],
+    "call": [
+     "name",
+     "trail",
+     "mark"
+    ],
+    "loop": [
+     "name",
+     "time",
+     "trail"
+    ],
+    "reroute": [
+     "name",
+     "time",
+     "trail"
+    ],
+    "enter": [
+     "name",
+     "time",
+     "eye",
+     "mark"
+    ],
+    "take": [
+     "name",
+     "time",
+     "trail"
+    ],
+    "extract": [
+     "name",
+     "mark"
+    ],
+    "fire": [
+     "name",
+     "trail",
+     "alert"
+    ],
+    "draw": [
+     "name"
+    ],
+    "holster": [
+     "name"
+    ],
+    "cease": [
+     "name"
+    ],
+    "stance": [
+     "name"
+    ],
+    "panic": [
+     "name"
+    ],
+    "carry": [
+     "name",
+     "time",
+     "pace"
+    ],
+    "takedown": [
+     "name",
+     "time",
+     "trail",
+     "alert",
+     "eye"
+    ],
+    "drop": [
+     "name",
+     "time"
+    ],
+    "stash": [
+     "name",
+     "time"
+    ],
+    "restrain": [
+     "name",
+     "time"
+    ],
+    "move": [
+     "name",
+     "time",
+     "eye"
+    ],
+    "run": [
+     "name",
+     "time",
+     "eye"
+    ],
+    "cancel": [
+     "name"
+    ],
+    "withdraw": [
+     "name"
+    ]
+   },
+   "examples": {
+    "knockout": "Knock out · 7 s · +4 · ▲1 · 👁 none",
+    "kill": "Kill · 4 s · +8 · ▲2 · 👁 none",
+    "ask": "Ask · 25 s · +1 · ✗",
+    "pay": "Pay · $90k · 50 s · +2 · ✓",
+    "help": "Help · $40k · 50 s · +1 · ½",
+    "pressure": "Pressure · 35 s · +3 · ✓",
+    "fire": "Fire · +2/hit · ▲≥2"
+   }
+  },
+  "feed": {
+   "rule": "The feed shows story beats only: a card's or a scene's `beat`, one short line each, and only when no bubble of that event's speech is on screen (say it where the player is looking: the person's own line if they are in view, else the beat). At most `maxOnScreen` at once, each gone after `seconds`, then it sits in the history (L). A beat identical to one shown in the last `dedupeSeconds` is dropped. A card with no `beat` is never on screen; its title and result are the history. The people in a scene speak as bubbles at the speaker: `bubblesAtOnce` at a time, `bubbleSeconds` each; overheard and approach scenes play every beat, call and city scenes their first `cityBeats`. A beat obeys the card's sight and needs rules (the cell is never told what it did not see).",
+   "maxOnScreen": 2,
+   "seconds": 4,
+   "dedupeSeconds": 10,
+   "bubblesAtOnce": 2,
+   "bubbleSeconds": 3,
+   "cityBeats": 3
+  },
+  "objective": {
+   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, then carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:30) is on the clock pill. It never explains and it is not a hint.",
+   "take": "Take [Vale] alive.",
+   "carry": "Get [Vale] to the [car].",
+   "showSeconds": 6
+  },
+  "briefing": {
+   "rule": "Before Begin the card shows the goal line, three numbers (close, purse, Alert) and the four portraits with their one-word roles. The sentences, the fails and the two ways in are Alt (B).",
+   "goal": "Take [Vale] alive to the [car]."
+  },
+  "end": {
+   "rule": "The end card is one line, the tally (m:ss, $ spent, Trail) and two buttons. The sentence under it, the route, the security and investigation lines and Kept are the debrief.",
+   "win": "Vale is in the car.",
+   "withdraw": "You withdrew.",
+   "fail": {
+    "vale-dead": "Vale is dead.",
+    "vale-leaves": "Vale got away.",
+    "rivals-reach-vale": "Rivals took Vale.",
+    "sealed": "District sealed.",
+    "enforcer-down": "Enforcer down.",
+    "entry-seen-guard": "The guard saw you.",
+    "entry-seen-camera": "A camera saw you.",
+    "entry-seen-patrol": "The patrol saw you.",
+    "abduction-seen-camera": "A camera saw the take.",
+    "driver-shot": "Driver shot.",
+    "engine-error": "The run is void.",
+    "withdraw": "You withdrew."
+   }
+  },
+  "pop": {
+   "no-way": "No way",
+   "no-room": "No room",
+   "unarmed": "Unarmed",
+   "not-drawn": "Not drawn",
+   "stance-hold": "Hold",
+   "stance-return": "Return",
+   "stance-free": "At will",
+   "other-carries": "Another carries",
+   "nothing-there": "Nothing there",
+   "never-vale": "Never Vale",
+   "who-can": "{op} can",
+   "nothing-here": "Nothing here",
+   "select-agent": "Select an agent",
+   "passer-by": "Passer-by",
+   "hints-on": "Hints on",
+   "hints-off": "Hints off",
+   "no-line": "No clear line"
+  },
+  "cancel": {
+   "stop": "free",
+   "holster": "free",
+   "cease": "free",
+   "lost": "time lost",
+   "aborted": "refund, remembered",
+   "ends": "loop ends",
+   "staff-report": "staff report",
+   "quiet": "free",
+   "vale-reports": "Vale reports",
+   "put-down": "body put down",
+   "keeps-vale": "can't",
+   "nothing": "idle",
+   "down": "down",
+   "none": "nearly done",
+   "released": "they report"
+  },
+  "alt": {
+   "rule": "The outcome marks in words, and what a Watch or Listen learns, for Alt. The host builds these by hand today (HudModel.OutcomeWords).",
+   "outcome": {
+    "ok": "Works",
+    "worse": "Works, one step worse",
+    "no": "They would refuse",
+    "half": "Not yet: one more try",
+    "unk": "? until the Scout learns who they are",
+    "learns-routine": "Learns their routine",
+    "learns-sight": "Learns what it sees",
+    "learns-person": "Learns their need and temperament",
+    "tethered": "Loops the camera; the Tech stays at the cabinet",
+    "call-ready": "They act on the call",
+    "call-not-now": "Not now",
+    "wins": "Wins the mission",
+    "loud": "Goes loud"
+   }
+  },
+  "hint": {
+   "rule": "The Next Step is `hints.items.*.short`: one imperative, one [noun] ringed in the street and coloured as its ring, no agent named (the agent's portrait pulses with the verb icon at the line's left). It shows for `showSeconds`, fades to its ring, returns once after `returnSeconds` more of idling if still undone, and never shows more than `maxShows` times in a run. It retires for good, per profile, once the player has given the verb it teaches; the long `line` is Alt and the relearn key.",
+   "showSeconds": 6,
+   "returnSeconds": 20,
+   "maxShows": 2
+  }
  },
  "dialogue": [
   {"event":"ack","verb":"watch","speaker":"scout","lines":["Watching.","Eyes on.","I'll sit on it."]},
@@ -993,15 +1387,15 @@
   {"event":"arrive","verb":"takedown","speaker":"enforcer","lines":["From behind.","Now.","Steady."]},
   {"event":"arrive","verb":"takedown","speaker":"enforcer","outcome":"struggle","lines":["Hold still!","Keep it down!","Quiet! Quiet!"]},
   {"event":"done","verb":"mislead","speaker":"scout","lines":["Tip's away. They're moving.","They bought it.","Gone. For now."]},
-  {"event":"done","verb":"loop","speaker":"tech","lines":["Looped. I'm tied here.","Holding. Don't ask me to move.","It sees the same minute, forever."]},
+  {"event":"done","verb":"loop","speaker":"tech","lines":["Looped. I'm tied here.","Holding. Don't ask me to move.","Same minute, on repeat."]},
   {"event":"done","verb":"reroute","speaker":"tech","lines":["Patrol's off its sweep. Not for long.","Rerouted. It will be back.","Gone the long way. Briefly."]},
   {"event":"done","verb":"enter","speaker":"enforcer","lines":["Inside. Looking for him.","In. Quiet halls.","Inside. Tell me if that changes."]},
   {"event":"done","verb":"take","speaker":"enforcer","lines":["Got him. To the car.","He's with me.","The Councillor comes along."]},
   {"event":"done","verb":"turn","speaker":"fixer","outcome":"turned","lines":["That's one friend.","They'll do it.","Done. They're with us."]},
-  {"event":"done","verb":"turn","speaker":"fixer","outcome":"refused","lines":["No. And they'll remember.","That went badly.","A no. Noted."]},
+  {"event":"done","verb":"turn","speaker":"fixer","outcome":"refused","lines":["They said no. They'll remember me.","That went badly.","A no. Noted."]},
   {"event":"done","verb":"turn","speaker":"fixer","outcome":"not-yet","lines":["Warming up. One more.","Not yet. Nearly.","They're thinking. Again, soon."]},
-  {"event":"done","verb":"turn","speaker":"fixer","outcome":"kept","lines":["A kindness, remembered.","Good. They trust us a little more.","That will be remembered."]},
-  {"event":"done","verb":"turn","speaker":"fixer","outcome":"suspicious","lines":["Careful. They're reporting this.","That was noticed.","They'll log that. Hurry."]},
+  {"event":"done","verb":"turn","speaker":"fixer","outcome":"kept","lines":["I helped. They won't forget.","Good. They trust us a little more.","They'll remember I helped."]},
+  {"event":"done","verb":"turn","speaker":"fixer","outcome":"suspicious","lines":["Careful. They're reporting this.","They noticed. Move.","They'll log that. Hurry."]},
   {"event":"done","verb":"takedown","speaker":"enforcer","lines":["Done.","That's that.","Clear."]},
   {"event":"done","verb":"takedown","speaker":"enforcer","outcome":"knockout","lines":["Out.","Asleep. For a while.","Down. Breathing."]},
   {"event":"done","verb":"takedown","speaker":"enforcer","outcome":"kill","lines":["Dead.","It's done.","Gone."]},
@@ -1358,6 +1752,7 @@
     "call": "The Fixer calls a turned contact: Inez calls the guard over and he leaves his post for her, with the coffee spill as cover; the driver parks across the pickup camera.",
     "city": "The city does something the cell may see. `sight` in-sight: show it only if an agent is within 13 m with a clear line; always: anyone hears it (the bell). Brief 013: a city scene may carry `outcome` (what the cell sees a witness do: report, flee, check) and `about` (the person missing); the host finds it with lookupScene() on the event, then the outcome."
    },
+   "less": "Brief 014: a scene plays as speech bubbles at the speakers, not as a card. Overheard and approach scenes play every beat (what the cell learns, and the Fixer's drama, are in them); call and city scenes their first `less.feed.cityBeats`. `result` is the Alt and history line; a `beat` is the one feed line when the scene starts.",
    "pick": "A scene is found by lookupScene(); a variant is picked by pickIndex(seed, key, n, count); a `ref` beat is picked by pickLine() with the same seed and n.",
    "story": "Inez and the door guard are lovers (the Story spine; Sky, 2026-10-15). The cell learns it by Listening at the café; he takes his café stop to see her, and when the turned Inez calls him over he leaves the door, which is what the call scene shows. Her debt is her need (Help clears it); the guard is her secret (Pressure threatens to expose it, and she resents it). Written plainly and with tact; nothing explicit.",
    "placeholders": "{who} the target's name (\"Inez\", \"the driver\"); {need} the need word the engine holds; {temperament} the temperament word, capitalised; {usd}; {alert} the Alert after the order."
@@ -1453,15 +1848,15 @@
    {"kind":"approach","verb":"help","about":"guard","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"State your business. I'm on the Office door."},{"speaker":"fixer","line":"I can ease something for you, officer."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"Halt. Identify yourself, please."},{"speaker":"fixer","line":"Is there something I could settle for you?"},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pressure","about":"guard","outcome":"turned","temperament":"mercenary","result":"{who} is turned. There is nothing yet to call him for.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"On the clock. Make it quick."},{"speaker":"fixer","line":"People ask why you linger at the café."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"Yes? I charge for chatting."},{"speaker":"fixer","line":"Your café breaks are noticed, officer. I'd hate for that to spread."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pressure","about":"guard","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"State your business. I'm on the Office door."},{"speaker":"fixer","line":"People ask why you linger at the café."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"Halt. Identify yourself, please."},{"speaker":"fixer","line":"Your café breaks are noticed, officer. I'd hate for that to spread."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"call","verb":"call","about":"waitress","temperament":"idealist","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Come over a moment. I need you."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Oh! Your coat! Forgive me."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come here. Just for a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Clumsy of me. Sit, I'll fetch a cloth."}]}]},
-   {"kind":"call","verb":"call","about":"waitress","temperament":"mercenary","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer! A word. It's worth your while."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Whoops. The cloth is on the house."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, love. I've something for you."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Oh dear, coffee. Let me wipe that."}]}]},
-   {"kind":"call","verb":"call","about":"waitress","temperament":"fearful","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come over. Quickly. Quietly."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Oh! Oh no, I'm sorry!"}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here! Oh, please, hurry."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Clumsy! I'm so clumsy. Sit, sit."}]}]},
-   {"kind":"call","verb":"call","about":"waitress","temperament":"loyal","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer. A moment at the café, please."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Forgive me. Café rules: I clean it."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, if you've a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"A spill. Sit, I'll see to it."}]}]},
+   {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"idealist","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Come over a moment. I need you."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Oh! Your coat! Forgive me."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come here. Just for a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Clumsy of me. Sit, I'll fetch a cloth."}]}]},
+   {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"mercenary","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer! A word. It's worth your while."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Whoops. The cloth is on the house."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, love. I've something for you."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Oh dear, coffee. Let me wipe that."}]}]},
+   {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"fearful","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come over. Quickly. Quietly."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Oh! Oh no, I'm sorry!"}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here! Oh, please, hurry."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Clumsy! I'm so clumsy. Sit, sit."}]}]},
+   {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"loyal","result":"Inez called the guard over. He has left his door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer. A moment at the café, please."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Forgive me. Café rules: I clean it."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, if you've a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"A spill. Sit, I'll see to it."}]}]},
    {"kind":"call","verb":"call","about":"driver","temperament":"idealist","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Moving the car. For the block."},{"speaker":"tech","line":"Pickup camera's blind. The window is open."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"The car's going across. Quick, all of you."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
    {"kind":"call","verb":"call","about":"driver","temperament":"mercenary","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Pulling across the lens. Time's ticking."},{"speaker":"tech","line":"Pickup camera's blind. The window is open."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"In place. Every minute counts."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
    {"kind":"call","verb":"call","about":"driver","temperament":"fearful","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Moving it. Please, don't be long."},{"speaker":"tech","line":"Pickup camera's blind. The window is open."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Car's across. I'm shaking, but it's there."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
    {"kind":"call","verb":"call","about":"driver","temperament":"loyal","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Parking by the book, in the right place."},{"speaker":"tech","line":"Pickup camera's blind. The window is open."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"The car is exactly where it should be."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
-   {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","sight":"in-sight","result":"A rival crew has parked near the pickup. They are after Vale too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. Same door as the file."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
+   {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","beat":"Rivals here.","sight":"in-sight","result":"A rival crew has parked near the pickup. They are after Vale too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. Same door as the file."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
    {"kind":"city","title":"Handover chime","event":"chime","sight":"always","result":"The handover chime. Vale leaves the Office soon.","variants":[{"beats":[{"speaker":"crowd","line":"There is the chime. Time to go home."},{"speaker":"crowd","line":"Mind the steps, everyone."},{"speaker":"crowd","line":"Handover already? The day flew."}]},{"beats":[{"speaker":"crowd","line":"Chime! Shift's over at the Office."},{"speaker":"crowd","line":"Doors open. Here come the clerks."},{"speaker":"crowd","line":"Walk, please. Walking is encouraged."}]}]},
    {"kind":"city","title":"Shift change at the Office","event":"chime","sight":"in-sight","result":"The Office is changing shift. The driver is ready at the bay.","variants":[{"beats":[{"speaker":"clerk","line":"Chime, driver. The Councillor is coming down."},{"speaker":"driver","line":"Engine's warm. Tell him I'm ready."},{"speaker":"clerk","line":"He's finishing a signature."},{"speaker":"driver","line":"He always is."}]},{"beats":[{"speaker":"clerk","line":"Shift's over. The door is yours, officer."},{"speaker":"guard","line":"Quiet day. Quiet door."},{"speaker":"clerk","line":"Mind the patrol on the steps."},{"speaker":"guard","line":"It minds me, more like."}]}]},
    {"kind":"city","title":"The guard is at the café","event":"guard-at-cafe","sight":"in-sight","result":"The guard is at the café, away from his door.","variants":[{"beats":[{"speaker":"guard","line":"The usual, please."},{"speaker":"waitress","line":"You're early today."},{"speaker":"guard","line":"Quiet on the door. The patrol is due round."},{"speaker":"waitress","line":"Then sit. Two minutes."}]},{"beats":[{"speaker":"waitress","line":"Sit. You've a long evening."},{"speaker":"guard","line":"Not so long. I'll come by after."},{"speaker":"waitress","line":"Hush, and eat."},{"speaker":"guard","line":"Yes, ma'am."}]}]},

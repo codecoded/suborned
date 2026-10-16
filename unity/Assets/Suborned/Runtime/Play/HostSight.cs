@@ -18,6 +18,8 @@ namespace Suborned.Play
         /// <summary>The watcher whose cone is drawn now (null: none), and whether Alt is showing every learned cone.</summary>
         public string FocusWatcher { get; private set; }
         public bool Peeking { get; private set; }
+        /// <summary>Alt held by a script (the budget shots' Alt moment): the same as holding the key.</summary>
+        public bool PeekLatch { get; set; }
         readonly List<Fan> shownFans = new();
         string lastWatch; int lastWatchOrders = -1;
 
@@ -67,7 +69,7 @@ namespace Suborned.Play
         {
             if (Game == null || views == null) return;
             shownFans.Clear();
-            Peeking = controls.Held(Keyboard.current, PlayAction.Peek) && Ending.Length == 0;
+            Peeking = (PeekLatch || controls.Held(Keyboard.current, PlayAction.Peek)) && Ending.Length == 0;
             FocusWatcher = null;
             Guard("sight", () =>
             {

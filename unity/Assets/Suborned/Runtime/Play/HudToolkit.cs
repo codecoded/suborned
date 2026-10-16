@@ -38,7 +38,8 @@ namespace Suborned.Play
             var ps = Resources.Load<PanelSettings>("Kit/HudPanel");
             if (ps == null) { Debug.Log("Play: the kit is not imported (Suborned/UI/Import Glyph's Kit); the IMGUI HUD draws"); enabled = false; return; }
             var go = new GameObject("hud-kit"); go.SetActive(false); go.transform.SetParent(transform, false);
-            doc = go.AddComponent<UIDocument>(); doc.panelSettings = ps; go.SetActive(true); // the panel exists once enabled with its settings
+            doc = go.AddComponent<UIDocument>(); doc.panelSettings = Instantiate(ps); go.SetActive(true); // a copy: the budget shots point it at a render texture (never the asset)
+            doc.panelSettings.scaleMode = PanelScaleMode.ConstantPixelSize; CrispScale(); // brief 014: an integer scale, so the @2x art and the type land on whole pixels // the panel exists once enabled with its settings
             root = doc.rootVisualElement; root.pickingMode = PickingMode.Ignore; root.style.flexGrow = 1;
             var uss = Resources.Load<StyleSheet>("Kit/kit"); if (uss != null) root.styleSheets.Add(uss);
             m = imgui != null ? imgui.Model : new HudModel();
@@ -46,6 +47,10 @@ namespace Suborned.Play
         }
 
         void OnDestroy() { if (live == this) live = null; }
+
+        /// <summary>The panel's scale: a whole number of screen pixels per kit pixel (1 at 1080 to 1619 px tall, 2 on a Retina MacBook Air's
+        /// 2x backing, 3 above), never a fraction, so the @2x sprites draw at 0.5 or 1.0 of their texels and nothing is resampled soft.</summary>
+        void CrispScale() { float k = Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)); if (doc != null && doc.panelSettings.scale != k) doc.panelSettings.scale = k; }
 
         // ---------------------------------------------------------------- helpers
 
@@ -68,6 +73,7 @@ namespace Suborned.Play
         static Label L(VisualElement parent, string style, float x = float.NaN, float y = float.NaN, float w = float.NaN, float h = float.NaN, bool ellipsis = false)
         {
             var l = new Label { pickingMode = PickingMode.Ignore, focusable = false }; l.AddToClassList("t-" + style);
+            l.style.whiteSpace = WhiteSpace.NoWrap; l.style.flexShrink = 0; // Sky 2026-10-16: nothing in the HUD wraps or squeezes unless a reading surface says so
             if (!float.IsNaN(x)) { l.style.position = Position.Absolute; l.style.left = x; }
             if (!float.IsNaN(y)) { l.style.position = Position.Absolute; l.style.top = y; }
             if (!float.IsNaN(w)) l.style.width = w; if (!float.IsNaN(h)) l.style.height = h;
@@ -95,7 +101,7 @@ namespace Suborned.Play
         VisualElement tickerChip, barChevron, barPill;
         // roster windows (roster_column.windows) and the strips
         static readonly Rect[] Win = { new(22, 34, 66, 65), new(22, 127, 66, 66), new(22, 222, 66, 66), new(22, 317, 65, 65) };
-        const float ColX = 12, ColY = 84;
+        const float ColX = 14, ColY = 14; // brief 014: one margin (14) from the screen edge for every corner group
         sealed class Strip { public VisualElement Root, Tags, Icon, Bar, Fill, Cancel, QueuedIcon, Stance; public Label Role, State, Action, Time, Queued, Ready, Hint; public bool Compact; }
         /// <summary>One agent's window in a roster frame (the column, or the row for the corner and bottom docks).</summary>
         sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips; public Label Num; public readonly List<VisualElement> PipDots = new(); }
@@ -136,8 +142,8 @@ namespace Suborned.Play
         void Build()
         {
             // the status pill (status_pill): top right 14, 12; height 44; padding from the content rect
-            pill = E(root, "s-pill_status", pick: true); pill.style.position = Position.Absolute; pill.style.right = 14; pill.style.top = 12; pill.style.height = 44;
-            pill.style.flexDirection = FlexDirection.Row; pill.style.alignItems = Align.Center; pill.style.paddingLeft = 19; pill.style.paddingRight = 18;
+            pill = E(root, "s-pill_status", pick: true); pill.style.position = Position.Absolute; pill.style.right = 14; pill.style.top = 14; pill.style.height = 44;
+            pill.style.flexDirection = FlexDirection.Row; pill.style.alignItems = Align.Center; pill.style.paddingLeft = 24; pill.style.paddingRight = 24; // clear of the pill's end caps, the same each side
             clock = L(pill, "clock"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "nextevent", TurqLight); nextLabel = L(pill, "pill-label"); nextTime = L(pill, "pill-value"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "p_cash", Cream); cash = L(pill, "pill-value"); Sep(pill);
@@ -203,16 +209,17 @@ namespace Suborned.Play
                 st.Ready = L(st.Root, "slot-ready", 30, 29, 160, 20); st.Hint = L(st.Root, "slot-hint", 30, 50, 170, 16, true);
             }
             // the verb plate (verb_plate): right of the selected strip +10; four knobs, glyph, numeral; the armed knob's name under it
-            verbPlate = E(root, "s-plate_verbs", ColX + 113 + 228 + 10, 0, 229, 54, pick: true);
+            verbPlate = E(root, "s-plate_verbs", ColX + 113 + 228 + 10, 0, PlateW, PlateH, pick: true); // brief 014 round 2: room for the end bolts and the key numbers
             for (int i = 0; i < 4; i++)
             {
-                int k = i; float cx = 42.3f + i * 47.6f;
-                var kb = knobs[i] = E(verbPlate, "s-btn_verb_normal btn_verb", cx - 24, 3, 48, 48, pick: true);
+                int k = i; float cx = KnobX0 + 24 + i * 47.6f;
+                var kb = knobs[i] = E(verbPlate, "s-btn_verb_normal btn_verb", cx - 24, KnobY, 48, 48, pick: true);
                 kb.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.Pick(k); e.StopPropagation(); } });
                 knobIcons[i] = E(kb, null, 14, 14, 20, 20);
-                knobNums[i] = L(kb, "numplate", 27, 28, 12, 12); knobNums[i].style.color = Cream; knobNums[i].style.unityTextAlign = TextAnchor.MiddleCenter;
+                var badge = E(verbPlate, null, cx - 8, 56, 16, 9); badge.name = "badge" + i; // under its knob, on the field: top 56, cap height under 8, clear of the rim (69.5)
+                knobNums[i] = L(badge, "numplate", 0, 0, 16, 9); knobNums[i].style.color = Cream; knobNums[i].style.fontSize = 9.5f; knobNums[i].style.unityTextAlign = TextAnchor.MiddleCenter;
             }
-            armedPlate = E(root, "s-plate_dark", 0, 0, float.NaN, 18); armedName = L(armedPlate, "verb-name"); armedName.style.paddingLeft = 8; armedName.style.paddingRight = 8; armedName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            armedPlate = E(root, "s-plate_dark", 0, 0, float.NaN, 32); armedPlate.style.justifyContent = Justify.Center; armedName = L(armedPlate, "verb-name"); armedName.style.paddingLeft = 12; armedName.style.paddingRight = 12; armedName.style.paddingTop = 0; armedName.style.paddingBottom = 0; armedName.style.fontSize = 10.5f; armedName.style.unityTextAlign = TextAnchor.MiddleCenter; /* Glyph round 3: 30 px chip, 11 px type: about 5 px above and below */ // Glyph round 2: 8 px clear of the rim
             // the ticker (ticker): below the column +8, 341 x 34; the cell's cameo and its last word, fading
             ticker = E(root, "s-panel_strip", ColX, ColY + 416 + 8, 341, 34);
             tickerChip = E(ticker, null, 14, 3, 28, 28); tickerText = L(ticker, "ticker", 48, 8, float.NaN, 18, true); tickerText.style.right = 16;
@@ -358,12 +365,30 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++)
             {
                 var w = into[i]; var r = wins[i];
-                E(frame, "s-portrait_scrim", r.x, r.y + r.height - 14, r.width, 14);
-                w.Pips = E(frame, null, r.x, r.y + r.height - 10, r.width, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center;
-                var plate = E(frame, "s-plate_light", r.x + 2, r.y + 1, 25, 21); w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter;
-                w.RingSel = E(frame, "s-portrait_ring_selected", r.x - 11, r.y - 11, r.width + 21, r.height + 21); w.RingBusy = E(frame, "s-portrait_ring_busy", r.x - 11, r.y - 11, r.width + 21, r.height + 21);
+                // brief 014, Sky round 2: the photo fills the bezel's inner circle, centred on it. The circle is measured from the art (the cream band's
+                // outer edge, a least-squares fit over 72 rays in roster_column@2x; briefs/014/play/polish/round2/bezels.json): it is not the window
+                // rect's centre (that was 1 px right and 1.2 px low, so the band showed thick at the top). Everything over the photo (the scrim, the
+                // health pips) is clipped to the same circle; the key badge sits above all of it at one offset from the centre on every portrait.
+                // Selection: Glyph's inner ring (portrait_ring_inner, inside the photo circle: the art has no room outside the bezel), the turquoise
+                // key badge and the others dimmed; busy is the timer chip.
+                Vector2 c0 = sprite == "s-roster_column" && i < ColumnBezels.Length ? ColumnBezels[i] : new Vector2(r.x + r.width / 2, r.y + r.height / 2);
+                const float rad = BezelR; var clip = E(frame, null, c0.x - rad, c0.y - rad, 2 * rad, 2 * rad); Round(clip, rad); clip.style.overflow = Overflow.Hidden;
+                w.Portrait.RemoveFromHierarchy(); clip.Add(w.Portrait); w.Portrait.style.left = 0; w.Portrait.style.top = 0; w.Portrait.style.width = 2 * rad; w.Portrait.style.height = 2 * rad;
+                E(clip, "s-portrait_scrim", 0, 2 * rad - 16, 2 * rad, 16);
+                w.RingSel = E(clip, "s-portrait_ring_inner", 0, 0, 2 * rad, 2 * rad); // Glyph round 2: the selected agent's ring, inside the photo circle (layers: photo, scrim, ring, pips)
+                w.Pips = E(clip, null, 0, 2 * rad - 14, 2 * rad, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center; // raised 2 px to clear the ring's band
+                w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
+                var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter;
             }
         }
+
+        /// <summary>The roster column's bezel centres (1x kit px, from the art) and the photo's radius: the cream band's outer edge (38.2 to 38.6) plus
+        /// half a pixel into the chrome, so no cream shows at any edge.</summary>
+        /// <summary>The order plate (plate_verbs, 9-sliced): its end bolts span x 16 to 26 at 1x, so the first knob's bezel (inset 4 in its 48 px
+        /// element) starts at 31; the plate is as wide again on the right, and tall enough for a row of key numbers under the knobs.</summary>
+        public const float PlateW = 248, PlateH = 78, KnobX0 = 28.5f, KnobY = 9.5f; // Glyph round 2: the rebuilt plate is drawn 1:1 at 78 px tall (field y 8.5 to 69.5); both bolt gaps ~8 px
+        static readonly Vector2[] ColumnBezels = { new(54.03f, 65.27f), new(54.09f, 159.25f), new(54.00f, 254.65f), new(53.99f, 348.85f) };
+        const float BezelR = 39f;
 
         void BuildStep3()
         {
@@ -416,19 +441,19 @@ namespace Suborned.Play
             var ways = E(brief); ways.style.flexDirection = FlexDirection.Row; ways.style.marginTop = 12;
             for (int i = 0; i < 2; i++) { var c = E(ways, "s-panel_card"); c.style.flexGrow = 1; c.style.flexBasis = 0; c.style.minHeight = 106; if (i == 1) c.style.marginLeft = 10; var t = L(c, "card-title"); t.style.marginLeft = 12; t.style.marginTop = 5; var b = L(c, "card-body"); b.style.whiteSpace = WhiteSpace.Normal; b.style.marginLeft = 12; b.style.marginRight = 12; b.style.marginTop = 10; briefWays[i] = (t, b); }
             var foot = E(brief); foot.style.flexDirection = FlexDirection.Row; foot.style.alignItems = Align.Center; foot.style.marginTop = 16;
-            var fl = L(foot, "briefing-small"); fl.text = "Time stops until you begin. Space pauses at any time."; fl.style.color = new Color(0.69f, 0.8f, 0.78f); fl.style.flexGrow = 1;
+            var fl = L(foot, "briefing-small"); briefFootLine = fl; fl.text = "Time stops until you begin. Space pauses at any time."; fl.style.color = new Color(0.69f, 0.8f, 0.78f); fl.style.flexGrow = 1;
             var begin = E(foot, "s-btn_text_normal btn_text", w: 190, h: 40, pick: true); begin.style.flexDirection = FlexDirection.Row; begin.style.alignItems = Align.Center; begin.style.justifyContent = Justify.Center;
             begin.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.StartClock(); e.StopPropagation(); } });
-            var bl = L(begin, "button-label"); bl.text = "Begin"; var bk = E(begin, "s-plate_light"); bk.style.height = 19; bk.style.marginLeft = 10; briefBeginKey = L(bk, "keycap"); briefBeginKey.style.paddingLeft = 6; briefBeginKey.style.paddingRight = 6;
+            var bl = L(begin, "button-label"); bl.text = "Begin"; briefBeginKey = L(null, "keycap"); /* Sky: no key hint on a button (keys are taught by the hints at first use); Space still begins */
             // the end card (debrief_card): 560 wide, top centre +40, y 160; Debrief opens the numbers, Replay plays again
-            end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = 30; end.style.paddingRight = 30; end.style.paddingTop = 22; end.style.paddingBottom = 20;
+            end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = 30; end.style.paddingRight = 30; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
             endTitle = L(end, "briefing-title"); endLine = L(end, "briefing-body"); endLine.style.whiteSpace = WhiteSpace.Normal; endLine.style.marginTop = 6;
             endDetail = E(end); endDetail.style.marginTop = 10;
             for (int i = 0; i < 8; i++) { var l = L(endDetail, "briefing-small"); l.style.whiteSpace = WhiteSpace.Normal; l.style.marginTop = 3; endLines.Add(l); }
-            var eb = E(end); eb.style.flexDirection = FlexDirection.Row; eb.style.marginTop = 16; eb.style.justifyContent = Justify.FlexEnd;
-            VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 20; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
+            var eb = E(end); eb.style.flexDirection = FlexDirection.Row; eb.style.marginTop = 18; eb.style.justifyContent = Justify.Center; // Glyph round 2: the pair centred
+            VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
-            var rp = Btn("Replay", () => host.Begin()); var rk = E(rp, "s-plate_light"); rk.style.height = 19; rk.style.marginLeft = 8; endReplayKey = L(rk, "keycap"); endReplayKey.style.paddingLeft = 6; endReplayKey.style.paddingRight = 6;
+            var rp = Btn("Replay", () => host.Begin()); endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
             // the history (history_panel): above the feed bar; filters, Read all, the rows (the wheel scrolls them)
             history = E(root, "s-panel_dark", pick: true); history.style.position = Position.Absolute; history.style.right = 14; history.style.bottom = 14 + 32 + 6; history.style.width = 384;
             history.style.paddingLeft = 28; history.style.paddingRight = 28; history.style.paddingTop = 14; history.style.paddingBottom = 12; // clear of the frame's corner screws
@@ -438,16 +463,16 @@ namespace Suborned.Play
             var fr = E(history); fr.style.flexDirection = FlexDirection.Row; fr.style.flexWrap = Wrap.Wrap; fr.style.marginTop = 8;
             foreach (var (key, label) in new[] { ("all", "All"), ("learned", "Learned"), ("turned", "Turned"), ("city", "City"), ("warnings", "Warnings") })
             {
-                var f = E(fr, "s-plate_dark", pick: true); f.style.height = 19; f.style.unitySliceScale = 0.35f; /* the plates' 24 px slices fold at 19 px tall */ f.style.marginRight = 6; f.style.marginBottom = 4; f.name = key; var fl2 = L(f, "feed-filter"); fl2.text = label; fl2.style.paddingLeft = 7; fl2.style.paddingRight = 7; fl2.style.unityTextAlign = TextAnchor.MiddleCenter;
+                var f = E(fr, "s-plate_dark", pick: true); f.style.height = 19; f.style.height = 24; f.style.unitySliceScale = 0.5f; f.style.marginRight = 6; f.style.marginBottom = 4; f.name = key; var fl2 = L(f, "feed-filter"); fl2.text = label; fl2.style.paddingLeft = 12; fl2.style.paddingRight = 12; fl2.style.flexGrow = 1; fl2.style.unityTextAlign = TextAnchor.MiddleCenter; /* Sky: the same padding rule as the other chips */
                 f.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.FeedFilter = key; e.StopPropagation(); } });
                 filterChips.Add(f);
             }
-            var sv = new ScrollView(ScrollViewMode.Vertical) { pickingMode = PickingMode.Ignore, focusable = false }; sv.verticalScrollerVisibility = ScrollerVisibility.Hidden; sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden; sv.style.maxHeight = 420; sv.style.marginTop = 6; history.Add(sv);
+            var sv = new ScrollView(ScrollViewMode.Vertical) { pickingMode = PickingMode.Ignore, focusable = false }; sv.verticalScrollerVisibility = ScrollerVisibility.Hidden; sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden; sv.style.maxHeight = 420; sv.style.marginTop = 6; sv.style.overflow = Overflow.Hidden; sv.style.flexShrink = 1; history.Add(sv); history.style.overflow = Overflow.Hidden; /* the list scrolls inside its frame, never past it */
             historyRows = sv.contentContainer;
             foreach (var e2 in new[] { hint, hintChip, toast, chip, loud, brief, end, history }) Show(e2, false);
         }
 
-        int historyKey = -1;
+        int historyKey = -1; Label briefFootLine;
         void Step3Frame()
         {
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x;
@@ -522,15 +547,23 @@ namespace Suborned.Play
                 if (key != historyKey)
                 {
                     historyKey = key; historyRows.Clear();
+                    // Sky: "Runner seen" three times for one agent: repeats of the same title and result within 15 s merge into one row, "×n"
+                    var merged = new List<(HandoverHost.FeedCard card, bool unread, int n)>();
                     foreach (var (_, card, unread) in m.History)
                     {
                         if (card == null) continue;
+                        if (merged.Count > 0 && merged[^1].card.Title == card.Title && merged[^1].card.Footer == card.Footer && card.Lines.Count == 0 && merged[^1].card.Lines.Count == 0 && Mathf.Abs(merged[^1].card.Started - card.Started) <= 15 * Suborned.Sim.Game.Hz)
+                        { var mm = merged[^1]; merged[^1] = (mm.card, mm.unread || unread, mm.n + 1); continue; }
+                        merged.Add((card, unread, 1));
+                    }
+                    foreach (var (card, unread, count) in merged)
+                    {
                         var r = E(historyRows, null, pick: true); r.style.flexDirection = FlexDirection.Row; r.style.minHeight = 40; r.style.marginBottom = 6; r.style.alignItems = Align.FlexStart;
                         var bar = E(r, null, w: 3, h: 34); bar.style.backgroundColor = Accent(card.Kind); bar.style.marginRight = 8; bar.style.flexShrink = 0;
-                        var disc = E(r, "s-disc_light_24", w: 21, h: 21); disc.style.flexShrink = 0; disc.style.marginTop = 2; Icon(E(disc, null, 4.5f, 4.5f, 12, 12), KindGlyph.TryGetValue(card.Kind, out var kg) ? kg : "dot", Ink); // the kind's icon
+                        var disc = E(r, "s-disc_light_24", w: 21, h: 21); disc.style.flexShrink = 0; disc.style.marginTop = 2; Icon(E(disc, null, 4.5f, 4.5f, 12, 12), card.Verb.Length > 0 ? HudModel.AtlasIcon(card.Verb, card.Verb, "") : KindGlyph.TryGetValue(card.Kind, out var kg) ? kg : "dot", Ink); // the verb's own glyph (Reroute is not Listen's ear), else the kind's
                         var col = E(r); col.style.flexGrow = 1; col.style.flexShrink = 1; col.style.marginLeft = 8;
                         var top = E(col); top.style.flexDirection = FlexDirection.Row; top.style.alignItems = Align.Center;
-                        var t = L(top, "history-row-title"); t.text = card.Title; t.style.flexShrink = 0; var wh = L(top, "feed-where", ellipsis: true); wh.text = card.Where; wh.style.marginLeft = 6; wh.style.flexGrow = 1; wh.style.flexShrink = 1;
+                        var t = L(top, "history-row-title"); t.text = count > 1 ? $"{card.Title} ×{count}" : card.Title; t.style.flexShrink = 0; var wh = L(top, "feed-where", ellipsis: true); wh.text = card.Where; wh.style.marginLeft = 6; wh.style.flexGrow = 1; wh.style.flexShrink = 1;
                         if (unread) { var dot = E(top, "s-dot_unread", w: 10, h: 10); dot.style.marginRight = 6; dot.style.flexShrink = 0; } // unread: a dot, no button
                         var ck = L(top, "feed-clock"); ck.text = HandoverHost.MissionClock(card.Started); ck.style.flexShrink = 0;
                         bool open = openRows.Contains(card.Id) || card.Footer.Length == 0;
@@ -551,7 +584,7 @@ namespace Suborned.Play
             "city" => new Color(0.651f, 0.714f, 0.667f), "warning" => new Color(0.431f, 0.478f, 0.486f), _ => new Color(0.329f, 0.376f, 0.38f),
         };
 
-        void Sep(VisualElement parent) { var s = E(parent, null, w: 1, h: 18); s.style.backgroundColor = new Color(0.824f, 0.902f, 0.886f, 0.35f); s.style.marginLeft = 12; s.style.marginRight = 12; }
+        void Sep(VisualElement parent) { var s = E(parent, null, w: 1, h: 18); s.style.backgroundColor = new Color(0.824f, 0.902f, 0.886f, 0.35f); s.style.marginLeft = 14; s.style.marginRight = 14; }
         static void Round(VisualElement e, float r) { e.style.borderTopLeftRadius = e.style.borderTopRightRadius = e.style.borderBottomLeftRadius = e.style.borderBottomRightRadius = r; }
         static void Border(VisualElement e, float w, Color c) { e.style.borderTopWidth = e.style.borderBottomWidth = e.style.borderLeftWidth = e.style.borderRightWidth = w; e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c; }
 
@@ -606,11 +639,11 @@ namespace Suborned.Play
             bool want = host.Game != null && host.Fault == null && host.controls.view == HudView.Kit;
             if (want != on) { on = want; Show(root, on); }
             if (!on) return;
-            m.Frame(host);
+            m.Frame(host); CrispScale();
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
             // the pill
-            Text(clock, m.Clock); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, m.NextTime); Text(cash, m.Cash); Text(trail, m.Trail.Replace("T ", ""));
+            Text(clock, Stress ? "8:30" : m.Clock); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "8:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
             for (int i = 0; i < 3; i++) lamps[i].style.backgroundColor = i < m.Alert ? new Color(1f, 0.988f, 0.94f) : new Color(0.039f, 0.11f, 0.118f);
             Text(state, m.State.Contains("PAUSE") ? "PAUSED" : m.State);
             Text(objText, m.Objective); Text(objTail, m.ObjectiveTail.Replace(' ', '\u00A0')); // UI Toolkit trims a label's leading spaces: "car· closes"
@@ -642,7 +675,7 @@ namespace Suborned.Play
                 string look = s.Down ? "down" : s.Hurt ? "hurt" : !any || s.Selected ? "normal" : "dim";
                 Bg(w.Portrait, $"portraits/portrait_{s.Role}_{look}");
                 Show(w.RingSel, s.Selected); Show(w.RingBusy, s.Busy && !s.Selected);
-                Text(w.Num, s.Key);
+                Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; // selected: the key badge turns turquoise (no ring: see BuildRoster)
                 Pips(w, s.Hp, s.HpMax);
                 if (st.Root.style.display == DisplayStyle.None) continue;
                 // compact (Glyph #8): a ready or downed agent is one 34 px line, "SCOUT · READY"; ` shows every strip full
@@ -687,6 +720,7 @@ namespace Suborned.Play
             }
             Feed();
             PanelFrame(); Step3Frame(); TakedownFrame();
+            LessFrame(); // brief 014: the less-reading HUD over the pieces above (it hides what is cut at rest)
         }
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).
@@ -731,7 +765,11 @@ namespace Suborned.Play
 
         void Pips(Window st, int hp, int max)
         {
-            while (st.PipDots.Count < max) { var d = E(st.Pips, null, w: 6, h: 6); d.style.marginLeft = 1.45f; d.style.marginRight = 1.45f; st.PipDots.Add(d); }
+            // Glyph round 2: the row must fit the photo circle's chord at its height (centre 30 px below the bezel centre: chord ~50 px); keep
+            // 4 px clear of the chrome, so 6 pips shrink (6 px dots and 2.9 px gaps for four, smaller for six)
+            float pitch = Mathf.Min(8.9f, 42f / Mathf.Max(1, max)), dot = Mathf.Min(6f, pitch * 0.67f), gap = (pitch - dot) / 2f;
+            while (st.PipDots.Count < max) { var d = E(st.Pips, null, w: 6, h: 6); st.PipDots.Add(d); }
+            foreach (var d in st.PipDots) { d.style.width = dot; d.style.height = dot; d.style.marginLeft = gap; d.style.marginRight = gap; d.style.alignSelf = Align.Center; }
             for (int i = 0; i < st.PipDots.Count; i++) { Show(st.PipDots[i], i < max); if (i < max) Bg(st.PipDots[i], i < hp ? "markers/pip_full" : "markers/pip_empty"); }
         }
 

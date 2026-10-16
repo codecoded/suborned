@@ -97,7 +97,7 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 1, "Alert 1");
                 r.Is(g.Incidents.Exists(i => i.Kind == "weapon-drawn" && i.Witnesses.Count > 0), "the incident with its witnesses (for the investigators)");
                 r.Is(g.Walkers.Exists(w => g.HoldsFace(w.P)), "a witness holds the Fixer's face");
-                r.Eq(g.Standing, -1, "a gun shown on the street: one step toward Menace (Motive addendum Q5)");
+                r.Eq(g.Standing, g.StandingAtStart - g.R.StandingStep, "a gun shown on the street: one step toward Menace (Motive addendum Q5)");
                 r.Wait(T(3)); r.Eq(g.Trail - trail, g.R.WitnessTrail, "once a draw, not once a tick");
                 r.SendTo(Scout, r.Op(Fixer).Pos + new Pt(0, 100)); r.Until(() => r.Op(Scout).Walk == null, T(120));
                 int incidents = g.Incidents.FindAll(i => i.Kind == "weapon-drawn").Count;

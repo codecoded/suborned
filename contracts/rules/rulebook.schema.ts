@@ -18,6 +18,8 @@ export const FITS = ['suits', 'worse', 'refused'] as const;
 export const KNOWS = ['routine', 'need', 'temperament', 'refused', 'secret'] as const; // refused: the cell knows this event's approach is refused by this person
 export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
 export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'contact', 'person', 'investigator', 'city'] as const;
+/** What the cell did to a person this mission that their word carries (standing.word): a Help, a Pressure, a knockout. */
+export const DONE_TO = ['helped', 'pressured', 'knocked-out'] as const;
 
 const Band = z.enum(BANDS);
 const Fit = z.enum(FITS);
@@ -63,6 +65,10 @@ export const Cond = z.discriminatedUnion('k', [
   z.strictObject({ k: z.literal('called'), is: z.boolean() }), // the Fixer called this contact in (§03 Call)
   z.strictObject({ k: z.literal('exposed'), is: z.boolean() }), // `exposure` rule
   z.strictObject({ k: z.literal('count'), event: eventId, below: Ref }), // times this event ran for the subject this break
+  // brief 014 (Sky 2026-10-16, briefs/014/motive-standing.md): Standing's word and drift, between missions
+  z.strictObject({ k: z.literal('done-to'), in: z.array(z.enum(DONE_TO)).min(1) }), // the cell did one of these to the subject this mission
+  z.strictObject({ k: z.literal('alive'), is: z.boolean() }), // not killed by a takedown (so not missing) and not shot down
+  z.strictObject({ k: z.literal('standing-moved'), is: z.boolean() }), // an act seen or found, or any word, moved the district's Standing this mission
 ]);
 export type Cond = z.infer<typeof Cond>;
 
@@ -87,6 +93,8 @@ export const Eff = z.discriminatedUnion('do', [
   z.strictObject({ do: z.literal('replace-need'), stream: id }), // a streams.keys key
   z.strictObject({ do: z.literal('schedule'), fight: z.enum(['ambush']) }),
   z.strictObject({ do: z.literal('debrief'), line: id }), // a debrief.lines key (K7)
+  z.strictObject({ do: z.literal('word-standing'), toward: z.enum(['hero', 'menace']), step: Ref, cap: Ref }), // standing.word: per person, the district's net word clamped to ±cap
+  z.strictObject({ do: z.literal('drift-standing'), step: Ref, to: Ref }), // standing.drift: at most step toward `to`, never past it
 ]);
 export type Eff = z.infer<typeof Eff>;
 
@@ -116,6 +124,7 @@ export const Event = z.strictObject({
   id: eventId,
   by: z.enum(BY),
   phase: z.enum(PHASES),
+  private: z.boolean().optional(), // rulebook privacy (Sky 2026-10-16): a turning conversation nobody else learns from; required on the Fixer's and Scout's events
   ...grounded,
   needs: z.array(Cond),
   price: z.array(Line).optional(),
@@ -151,7 +160,15 @@ export const Rulebook = z.strictObject({
   tags: z.strictObject({ B: text, S: text, L: text }),
   units: z.record(id, text),
   values: z.record(id, Value),
-  standing: ground({ start: Ref, step: Ref, hero: Ref, menace: Ref, rule: text }),
+  standing: ground({
+    start: Ref, step: Ref, hero: Ref, menace: Ref,
+    // brief 014 (Sky 2026-10-16). Optional here only so the runs that pinned the rulebook before it (dialogue r017-r019) still parse and
+    // replay; the engine requires them and rulebook.test.ts holds the live rulebook to having them.
+    word: z.strictObject({ step: Ref, cap: Ref, ties: z.array(id).min(1) }).optional(), // the word of a helped or harmed person, between missions
+    drift: Ref.optional(), // back toward start when nothing moved it
+    causes: z.record(id, text).optional(), // the debrief Standing line's cause ids (Fable writes the words)
+    rule: text,
+  }),
   alert: ground({
     levels: z.tuple([z.literal('routine'), z.literal('inquiry'), z.literal('search'), z.literal('lockdown')]),
     byIncident: z.array(Ref).min(1), gunfire: Ref, violenceSeen: Ref, rule: text,
@@ -174,6 +191,8 @@ export const Rulebook = z.strictObject({
   }),
   exposure: ground({ rule: text }),
   traceable: z.record(id, Traceable),
+  // optional so a pinned rulebook that predates it (dialogue r017-r019) parses; rulebook.test.ts holds the live rulebook to having it
+  privacy: ground({ rule: text }).optional(),
   // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref
   // (but loop.targets: the cameras the cabinet loops, brief 013 D).
   cell: ground({
@@ -326,6 +345,8 @@ export const Rulebook = z.strictObject({
     for (const c of [...(e.also ?? []).flatMap((a) => a.when), ...(e.witnesses ?? []).flatMap((w) => w.when ?? [])])
       if (c.k === 'outcome') for (const o of c.is) if (!outs.has(o)) bad(['events', e.id], `outcome ${o} is not one of ${e.id}'s`);
     for (const w of e.witnesses ?? []) if (!rb.traceable[w.act]) bad(['events', e.id, 'witnesses'], `${w.act} is not traceable`);
+    if (rb.privacy && (e.by === 'fixer' || e.by === 'scout') && e.private === undefined) bad(['events', e.id, 'private'], 'an event by the Fixer or the Scout says whether it is private (rulebook privacy)');
+    if (e.private && (e.witnesses ?? []).length > 0) bad(['events', e.id, 'witnesses'], 'a private event has no witnesses (rulebook privacy)');
     if (e.price && e.price[0]?.line !== 'base') bad(['events', e.id, 'price'], 'the first price line is the base');
   }
   for (const v of Object.values(rb.memory.reads)) if (!rb.memory.acts[v]) bad(['memory', 'reads'], `${v} is not a memory act`);
@@ -375,6 +396,9 @@ export function num(rb: Rulebook, people: PeopleRules, ref: string): number {
   return x;
 }
 
+/** The Standing line's causes besides seen-<traceable act> (rulebook standing.causes; sim Between.StandingLine). */
+export const STANDING_CAUSES = ['found-killing', 'word-helped', 'word-pressured', 'word-knocked-out', 'balanced', 'drift-down', 'drift-up', 'steady'] as const;
+
 /** Keys people.rules.json owns as definitions; the rulebook may name them as values, never as its own keys (never redefine).
  *  FIELDS may appear nowhere in the rulebook; SECTIONS may not be top-level sections of it (an event's `needs` is its conditions). */
 export const PEOPLE_OWNED_FIELDS = ['respondsTo', 'refuses', 'reportsApproach', 'steps', 'metBy', 'maxPerPerson', 'maxIncoming', 'introduces', 'between', 'allow', 'needsKnown', 'timeS'] as const;
@@ -413,6 +437,15 @@ export function checkRulebook(rb: Rulebook, people: PeopleRules): string[] {
   }
   for (const f of collect(rb, 'do') as Eff[]) if (f.do === 'tell') want(K, 'tie kind', f.along, 'tell');
   if (rb.witness) { want(K, 'tie kind', rb.witness.kin, 'witness.kin'); want(K, 'tie kind', rb.witness.tells, 'witness.tells'); }
+  if (rb.standing.word) { // brief 014 (absent only in a rulebook pinned before it)
+    want(K, 'tie kind', rb.standing.word.ties, 'standing.word.ties');
+    // the Standing line's causes: one seen-<act> per traceable act that moves Standing, and the fixed rest (the engine emits only these)
+    const seen = Object.entries(rb.traceable).filter(([, t]) => t.standing !== 'none').map(([a]) => `seen-${a}`);
+    const causes = [...seen, ...STANDING_CAUSES].sort(), have = Object.keys(rb.standing.causes ?? {}).sort();
+    if (JSON.stringify(causes) !== JSON.stringify(have)) out.push(`standing.causes are ${have.join(',')}; the engine's are ${causes.join(',')}`);
+    const sl = rb.debrief.lines['standing'];
+    if (!sl || JSON.stringify(sl.fields) !== JSON.stringify(['district', 'from', 'to', 'band', 'cause', 'who'])) out.push('debrief.lines.standing carries district, from, to, band, cause, who');
+  }
   // Each Turn event is one people.rules approach, and every approach has its event.
   const turns = rb.events.filter((e) => e.id.startsWith('turn.')).map((e) => e.id.slice(5));
   want(A, 'approach', turns, 'events turn.*');

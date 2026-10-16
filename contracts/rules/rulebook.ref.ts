@@ -287,3 +287,28 @@ export function hits(rb: Rulebook, people: PeopleRules, acc: number, shots: numb
   for (let i = 0; i < shots; i++) { a += acc; const hit = a >= 1000; if (hit) a -= 1000; out.push(hit); }
   return out;
 }
+
+/** Brief 014 (Sky 2026-10-16, briefs/014/motive-standing.md): one district's Standing for the next mission, as the engine's StandingNext
+ *  (sim GameInvestigation.cs). `moves` are the mission's seen and found moves and any killing found after it, in order; `tellers` the
+ *  standing.word subjects (helped, pressured or knocked out; alive; with a tie in standing.word.ties) in person-id order. */
+export type StandingMove = { delta: number; cause: string; who: string };
+export type Teller = { who: string; done: readonly ('helped' | 'pressured' | 'knocked-out')[] };
+export function standingNext(rb: Rulebook, people: PeopleRules, from: number, moves: readonly StandingMove[], tellers: readonly Teller[]) {
+  const n = (r: string) => num(rb, people, r), w = rb.standing.word!, step = n(w.step), cap = n(w.cap);
+  const all: StandingMove[] = [...moves];
+  for (const t of tellers) { // harm outranks help: a threat outweighs a kindness
+    const how = t.done.includes('pressured') ? 'pressured' : t.done.includes('knocked-out') ? 'knocked-out' : 'helped';
+    all.push({ delta: how === 'helped' ? step : -step, cause: `word-${how}`, who: t.who });
+  }
+  const seen = moves.reduce((a, m) => a + m.delta, 0), wordUncapped = all.slice(moves.length).reduce((a, m) => a + m.delta, 0);
+  const word = Math.max(-cap, Math.min(cap, wordUncapped)), at = from + seen + word, moved = all.length > 0;
+  const gap = n(rb.standing.start) - at, drift = moved ? 0 : Math.sign(gap) * Math.min(n(rb.standing.drift!), Math.abs(gap));
+  const to = at + drift, net = to - from - drift;
+  let cause = !moved ? (drift < 0 ? 'drift-down' : drift > 0 ? 'drift-up' : 'steady') : net === 0 ? 'balanced' : '', who = '';
+  if (moved && net !== 0) {
+    const by = new Map<string, { sum: number; who: string }>();
+    for (const m of all) { const g = by.get(m.cause) ?? { sum: 0, who: m.who }; g.sum += m.delta; by.set(m.cause, g); }
+    let best = 0; for (const [c, g] of by) if (g.sum * Math.sign(net) > best) { best = g.sum * Math.sign(net); cause = c; who = g.who; }
+  }
+  return { to, band: bandOf(rb, people, to), cause, who, word, wordUncapped, drift };
+}

@@ -28,7 +28,9 @@ namespace Suborned.Play
             head = Lit(host.headColour); ring = Unlit(Color.white); select = Unlit(host.selectColour);
             var g = host.Game; var s = g.S;
             for (int i = 0; i < 4; i++) Person("op/" + Op.Name((OpId)i), host.cellColour, true);
-            Person("waitress", host.waitressColour); Person("driver", host.civicColour); Person("guard", host.civicColour); Person("councillor", host.civicColour);
+            // brief 014 (Sky: "no idea who the waitress is"): the stand-ins are tinted by job family, with a role shape where it is cheap
+            Person("waitress", Family("server"), shape: Shape("server")); Person("driver", Family("official-driver"), shape: Shape("official-driver"));
+            Person("guard", Family("guard"), shape: Shape("guard")); Person("councillor", Family("councillor"));
             Person("patrol", host.securityColour);
             for (int i = 0; i < 3; i++) Person("rivals/" + i, host.rivalBodyColour);
             for (int i = 0; i < 2; i++) Person("security/" + i, host.securityColour);
@@ -52,7 +54,7 @@ namespace Suborned.Play
                 things["stash/" + st.Id] = (go.transform, at, at, true);
             }
             crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
-            for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, host.JobColour(g.Walkers[i].P.Job), false, true); // hoverable: "passer-by"
+            for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, Family(g.Walkers[i].P.Job), false, true, Shape(g.Walkers[i].P.Job)); // hoverable: "passer-by"
             for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
             Ring("sel/0"); Ring("sel/1"); Ring("sel/2"); Ring("sel/3");
             Ring("dest/0"); Ring("dest/1"); Ring("dest/2"); Ring("dest/3"); // where each walking agent will stop (the snapped point)
@@ -104,9 +106,14 @@ namespace Suborned.Play
         }
 
         /// <summary>The rest of agent k's walk to an act (null or fewer than two points hides it).</summary>
+        /// <summary>Sky 2026-10-16: "not really into this line showing the route". No route line is drawn in play: the HUD pins the destination
+        /// (and Alt draws the engine's path, dotted). Kept as an API so callers stay as they were.</summary>
+        public static bool RouteLines = false;
+
         public void ShowAct(int k, List<Vector3> pts)
         {
             var lr = acts[k]; if (!lr) return;
+            if (!RouteLines) pts = null;
             if (pts == null || pts.Count < 2) { if (lr.enabled) lr.enabled = false; return; }
             lr.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) lr.SetPosition(i, pts[i]); lr.enabled = true;
         }
@@ -118,6 +125,7 @@ namespace Suborned.Play
         public void ShowPath(List<Vector3> pts)
         {
             if (!path) return;
+            if (!RouteLines) pts = null; // no preview line on a hovered row either: the price line gives the time and the eye
             if (pts == null || pts.Count < 2) { path.enabled = false; return; }
             path.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) path.SetPosition(i, pts[i]); path.enabled = true;
         }
@@ -148,7 +156,8 @@ namespace Suborned.Play
                 if (!at.HasValue) { Set(crowdKeys[i], null); continue; }
                 int k = stacked.TryGetValue(at.Value, out var n) ? n + 1 : 0; stacked[at.Value] = k;
                 float r = 50f * Mathf.Sqrt(k), th = k * 2.399963f;
-                Set(crowdKeys[i], at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th))));
+                var fan = at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th)));
+                Set(crowdKeys[i], GiveWay(g, fan));
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
                 // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
@@ -163,6 +172,47 @@ namespace Suborned.Play
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
                 if (h != null) Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
             }
+        }
+
+        // ---------------------------------------------------------------- brief 014: job families, role shapes, the crowd giving way
+
+        /// <summary>The job families' calm tones, from the civic look's palette (contracts/world/civic-look.json), each ΔE2000 ≥ 20 from the three
+        /// signals (cones #e03a2f, guard #f0a020, rivals #8a4fd0; checked in briefs/014/play/people-tones.json): café staff peach (DK_Bloom_Peach),
+        /// Office staff pool teal (DK_Pool_Civic), guards deep teal (DK_Enamel_Teal), drivers mint (DK_Enamel_Mint), everyone else steel (DK_Steel).
+        /// The cell stays charcoal and the rivals glass dark: no family shares their tone.</summary>
+        public static readonly Color Cafe = Hex(0xFCC4AC), Office = Hex(0x3A9AA6), GuardTone = Hex(0x1F6C67), DriverTone = Hex(0xA8D3BE), Passer = Hex(0xA9ABAE), Apron = Hex(0xEFE8D6), Cap = Hex(0x2B2F33);
+        static Color Hex(int rgb) => new(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f, 1f);
+
+        /// <summary>A job's family: café (server, cook), Office (clerk, attendant, councillor), guard, driver, else a passer-by.</summary>
+        public static string FamilyOf(string job) => job switch
+        {
+            "server" or "cook" or "waitress" => "cafe", "clerk" or "attendant" or "councillor" => "office", "guard" => "guard", "official-driver" or "driver" => "driver", _ => "passer",
+        };
+        static Color Family(string job) => FamilyOf(job) switch { "cafe" => Cafe, "office" => Office, "guard" => GuardTone, "driver" => DriverTone, _ => Passer };
+        /// <summary>The cheap role shape: an apron band for café staff, a cap for guards and drivers.</summary>
+        static string Shape(string job) => FamilyOf(job) switch { "cafe" => "apron", "guard" or "driver" => "cap", _ => "" };
+
+        /// <summary>The crowd gives way to the people the cell knows (Inez, the door guard, the driver, Vale) for the eye only, so the known person
+        /// draws on top of a cluster: a passer-by standing between the camera and one (up to 3 m in front, where a 1.75 m figure overlaps them at
+        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.</summary>
+        Pt GiveWay(Game g, Pt p)
+        {
+            var cam = host.View; Vector2 f = Vector2.up, r = Vector2.right;
+            if (cam)
+            {
+                var o = frame.Engine(Vector3.zero); var ef = frame.Engine(new Vector3(cam.transform.forward.x, 0, cam.transform.forward.z).normalized * 10f); var er = frame.Engine(new Vector3(cam.transform.right.x, 0, cam.transform.right.z).normalized * 10f);
+                f = new Vector2(ef.X - o.X, ef.Y - o.Y).normalized; r = new Vector2(er.X - o.X, er.Y - o.Y).normalized;
+            }
+            foreach (var cp in new[] { g.PersonPos(g.Inez), g.GuardPose()?.pos, g.DriverPos(), g.ValePos() })
+            {
+                if (!cp.HasValue) continue;
+                var d = new Vector2(p.X - cp.Value.X, p.Y - cp.Value.Y);
+                float front = -Vector2.Dot(d, f), side = Vector2.Dot(d, r);
+                if (front > -40f && front < 300f && Mathf.Abs(side) < 70f) { side = side >= 0 ? 70f : -70f; d = -f * front + r * side; }
+                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * 70f : d.normalized * 70f;
+                p = new Pt(cp.Value.X + Mathf.RoundToInt(d.x), cp.Value.Y + Mathf.RoundToInt(d.y));
+            }
+            return p;
         }
 
         // ---------------------------------------------------------------- brief 013: bodies and the response's units
@@ -183,8 +233,8 @@ namespace Suborned.Play
                 var p = b.P; var key = "body/" + KeyOf(p);
                 if (!things.ContainsKey(key))
                 {
-                    var col = p.Role switch { "waitress" => host.waitressColour, "" => host.JobColour(p.Job), _ => host.civicColour };
-                    Person(key, col);
+                    var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
+                    Person(key, Family(job), shape: Shape(job));
                 }
                 bool down = p.Down || b.Seizing;
                 if (down) // the person's own view hides; the body draws
@@ -247,7 +297,7 @@ namespace Suborned.Play
                 bool on = host.Selected[i] && op.shown;
                 if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on);
                 if (on) r.position = op.t.position + Vector3.up * 0.03f;
-                var d = things[DestKeys[i]].t; var walk = g.Ops[i].Walk; bool dest = walk != null && op.shown;
+                var d = things[DestKeys[i]].t; var walk = g.Ops[i].Walk; bool dest = RouteLines && walk != null && op.shown; // the HUD's numbered pin replaces the ring
                 if (d.gameObject.activeSelf != dest) d.gameObject.SetActive(dest);
                 if (dest) { d.position = frame.World(walk.End) + Vector3.up * 0.03f; d.localScale = new Vector3(0.6f, 0.01f, 0.6f); }
             }
@@ -263,12 +313,14 @@ namespace Suborned.Play
             if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
         }
 
-        void Person(string key, Color body, bool cell = false, bool collide = true)
+        void Person(string key, Color body, bool cell = false, bool collide = true, string shape = "")
         {
             var go = new GameObject(key); go.transform.SetParent(root, false);
             float bodyH = Tall - HeadD - 0.03f;
             Part(go.transform, "body", capsule, Lit(body), new Vector3(0, bodyH / 2, 0), new Vector3(Radius * 2, bodyH / 2, Radius * 2));
             Part(go.transform, "head", sphere, cell ? Lit(host.cellHeadColour) : head, new Vector3(0, Tall - HeadD / 2, 0), Vector3.one * HeadD);
+            if (shape == "apron") Part(go.transform, "apron", cylinder, Lit(Apron), new Vector3(0, 0.78f, 0), new Vector3(Radius * 2 + 0.05f, 0.17f, Radius * 2 + 0.05f)); // a cream band from waist to hip
+            if (shape == "cap") Part(go.transform, "cap", cylinder, Lit(Cap), new Vector3(0, Tall - 0.02f, 0), new Vector3(HeadD + 0.07f, 0.035f, HeadD + 0.07f));    // a flat crown with a brim's width
             if (collide) { var col = go.AddComponent<CapsuleCollider>(); col.height = Tall; col.radius = Radius + 0.12f; col.center = new Vector3(0, Tall / 2, 0); } // the crowd is not a target (orders name roles)
             go.SetActive(false);
             things[key] = (go.transform, Vector3.zero, Vector3.zero, false);

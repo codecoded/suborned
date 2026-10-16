@@ -24,13 +24,15 @@ namespace Suborned.Sim
         public int? Arms;               // the mission's Arms (site arms) unless a scenario fixes it: one sidearm per weapons.sidearmArms
         public readonly List<string> Untie = new List<string>(); // roles whose lover tie (and affair) a test cuts: "with no tie, the call doesn't pull him"
         public int? Security;           // brief 013: the security level 0..4 a scenario fixes (else the district's base + the mission's bonus)
+        public int? Standing;           // brief 014: the district's Standing at the start, as a campaign hands it on (else rulebook standing.start)
         /// <summary>For a behaviour-only comparison across brief 013 (suborned-sim hashes --legacy-start): leave the security level out of the
         /// canonical start, as the start states before it had none. Never set in play.</summary>
         public static bool LegacyCanonical;
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing");
+            if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
             if (n.Opt("security") is JNode sl) { s.Security = sl.Int(); if (s.Security < 0 || s.Security > 4) throw new FormatException($"{sl.Path}: security level 0..4"); }
             if (n.Opt("arms") is JNode ar) { s.Arms = ar.Int(); if (s.Arms < 0 || s.Arms > 100) throw new FormatException($"{ar.Path}: arms 0..100"); }
@@ -56,6 +58,7 @@ namespace Suborned.Sim
             if (Arms.HasValue) w.Prop("arms", Arms.Value);
             if (Untie.Count > 0) { w.OpenArr("untie"); foreach (var x in Untie) w.Str(x); w.EndArr(); }
             if (Security.HasValue && !LegacyCanonical) w.Prop("security", Security.Value);
+            if (Standing.HasValue) w.Prop("standing", Standing.Value); // only a start that fixes it adds bytes: every earlier start hashes as before
             return w.EndObj().ToString();
         }
     }
@@ -76,6 +79,7 @@ namespace Suborned.Sim
         public Person GuardP => People[2];
         public Person ValeP => People[3];
         public long Cash; public int Trail, Alert, Gunfire, Reported, Standing;
+        public readonly int StandingAtStart; // brief 014: where the district's Standing stood at tick 0 (the debrief's Standing line reads from it)
         public Outcome Result; public string FailCode = "", FailText = "";
         public readonly List<LogLine> Log = new List<LogLine>();
         public readonly List<(Order order, bool ok, string code, string why)> Orders = new List<(Order, bool, string, string)>();
@@ -140,7 +144,7 @@ namespace Suborned.Sim
             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
 
             Cash = Start.Cash ?? S.Purse;
-            Standing = R.StandingStart;
+            Standing = StandingAtStart = Start.Standing ?? R.StandingStart;
             string[] crew = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
             // Arms (Sky 2026-10-15 Q1): the Enforcer's carbine is the cell's; each sidearm takes weapons.sidearmArms, issued Scout, Fixer, Tech
             int sidearms = (Start.Arms ?? S.Arms) / R.SidearmArms;
@@ -547,14 +551,23 @@ namespace Suborned.Sim
             if (witness.Turned) LadderMove(witness, "saw-violence");
             if (!incidents.Add("seen:" + incident)) return;
             AddTrail(R.WitnessTrail, $"witnessed:{incident}");
-            MoveStanding(-R.StandingStep, $"violence-seen:{incident}");
+            MoveStanding(-R.StandingStep, $"violence-seen:{incident}", "seen-violence", incident);
         }
 
         /// <summary>Every change to Trail, Alert and standing with its cause, in order: the answer to "why is the investigation active?" (§13 T3).</summary>
         public readonly List<(int tick, string what, int delta, int now, string cause)> Ledger = new List<(int, string, int, int, string)>();
         void AddTrail(int n, string cause) { if (n == 0) return; Trail += n; Ledger.Add((Tick, "trail", n, Trail, cause)); }
         void RaiseAlert(int to, string cause) { if (to <= Alert) return; int d = to - Alert; Alert = to; Ledger.Add((Tick, "alert", d, Alert, cause)); }
-        void MoveStanding(int d, string cause) { if (d == 0) return; Standing += d; Ledger.Add((Tick, "standing", d, Standing, cause)); }
+        /// <summary>Move the district's Standing: `cause` for the ledger, `why` a rulebook standing.causes id and `who` the person it names, for the
+        /// debrief's Standing line (brief 014). StandingMoves is output only, never hashed: Standing itself is.</summary>
+        void MoveStanding(int d, string cause, string why, string who)
+        {
+            if (d == 0) return;
+            if (!R.StandingCauses.Contains(why)) throw new InvalidOperationException($"standing cause '{why}' is not in the rulebook (unknown = reject)");
+            Standing += d; Ledger.Add((Tick, "standing", d, Standing, cause)); StandingMoves.Add((Tick, d, why, who));
+        }
+        /// <summary>Every move of Standing in the mission, in order, with its rulebook cause and the person it names (brief 014).</summary>
+        public readonly List<(int tick, int delta, string cause, string who)> StandingMoves = new List<(int, int, string, string)>();
 
         public void Finish()
         {

@@ -1,5 +1,32 @@
 # 013 D · The Handover with takedowns (Waymark, 2026-10-16, rev 5)
 
+## Rev 6 (brief 014): Pulse's café street, c013
+
+- **c013 on the tree: SHIPS, MC-0 to MC-9, 3,010 plays, REPLAY OK.** The engine source is unchanged (`2774bd4b61d3`, the same as c011). Only `sim/data/handover.people.json` and `handover.site.json` changed. The rulebook, the cast and `mission.json` hash the same.
+- **Every route plays exactly as in c011.** The end time, $, Trail, Alert and Enforcer idle are the same: G-fast 3:37.0 · 0 · 6 T · A 1 · 35.0 %; G 4:07.4 · 43.0 %; G-kill 4:44.3 · 37.4 %; A-Pressure 3:31.0 · 7 T · 35.0 %; A 4:27.1 · $80,000 · 48.9 %; B 7:40.4 · $70,000 · 4 T · A 0 · 71.4 %; loud 4:23.5 · 12 T · A 2 · 50.1 %. The §2 table stands.
+- **What the crowd changed, and why the routes held.**
+  - There are more eyes at the café. On route A, 10 people see the debt cleared (before, 6). On A-Pressure, 10 see the threat (6). In the final fights, 10 are startled (6).
+  - Trail and Standing are charged once per act, not per witness, so the totals didn't move. What did move is the word in the debrief: route A now has 9 word lines for the next mission (before, 6), and A-Pressure has 11 (7). That is next mission's problem, which is the right place for it.
+  - The new walkers past the cabinet (3:30–4:00 and 4:20–4:50) see only acts in the open. Route G's knockout is at the Office door at 2:00, and its Tech is gone before then, so they see nothing.
+- **What moved:**
+  - `careless-reporter-not-stopped` broke. Carrying 73 north at 4:06 is now seen by three walkers at 4:10 (p-pylon-row-east-04 reports, it lands 4:26 at Alert 2, and the final fight goes loud). It ended with no outcome, and the extract was refused with `car-held`.
+    - **Retimed** (script only): the Enforcer kills 73 at 4:00, leaves him where he fell and runs for the lane.
+    - He is found at 4:36 by a quiet walker and at 6:44 by p-garden-row-east-06, who walks to the café door unstopped. The run wins at 7:40.4, Alert 2, 14 T plus an open case, against route B's 4 T. MC-7 holds.
+  - `fight-loud-enforcer-down`: 8 → 9 T. A walker sees Vale carried at 3:39 and reports.
+  - In the variations (outcomes unchanged), the `route-a~late@…+75s` plays go from 20 T / A 2 to 22 T / A 3, because a customer sees security shot at. The `route-b~late@6:48+113…118s` plays go from A 0 to A 2, because a resident going home sees Vale carried at 9:12.
+- **Table 0 stress test** (Pulse's flag): in a scratch copy, I kept p-pylon-row-east-04 on table 0 seat 0 until 10:00. The start hash differs, and all 26 scripts give the same result. The fights don't hit or move a customer there.
+- **Tests:**
+  - `check.test.ts`: the HEAD-engine test now plays `engineAt('HEAD', 'tree')`, the committed engine on the tree's people and site. The retimed fixture is written against the new crowd and doesn't fail on the old one. Once `sim/data` is committed, `'tree'` and the commit are the same.
+  - The judge fixture for the careless reporter is 14 T.
+- **Sim tests, 399/409** (Keel's scenarios, not edited; 409/409 on a copy with the old crowd). Three scenarios fail, and the other seven failures are N48 run by other tests:
+  - **N48 and N58 target server p-cafe-12, who now works inside.** The door rule leaves only Inez on the street (before: 11, 12, 14, 15, 16). In N58, `too-far` becomes `person-away`. In N48 the takedown is refused, no act exists, and `ActOn` throws `Sequence contains no matching element` (ScenariosTakedown.cs:30). Through N48, this also fails RulesTests.EveryRefusalHasAStableCode…, the 4 Redline E7 culture cases, and N48's two determinism tests. N48's premise ("in front of the other servers and Inez") no longer exists: the only server at the door is Inez.
+  - **N65:** 73 and 34 have the same schedules as before. The walkers who now pass at 4:10 see 73 carried north, so "unseen: the kill and the carry" fails. This is the same cause as the careless fixture.
+- **Evidence:**
+  - `bun tools/missions/check/cli.ts check handover --engine tree --record …` gives SHIPS, recorded at `runs/missions/handover/c013`. `replay handover c013` gives REPLAY OK.
+  - `bun test tools/missions`: 46/46.
+  - `dotnet test sim/Suborned.Sim.Tests`: 399/409, as above.
+  - `bun run verify`: VERIFY OK, typecheck clean.
+
 ## Rev 5 (after 306b15e): pinned, re-recorded, driver route closed
 
 - **c012, pinned to 306b15e** (the committed brief 013 engine, source `410b81e232ef`): SHIPS, MC-0 to MC-9, 3,010 plays. `check.test.ts` now replays c012 instead of c006 (94793d7).

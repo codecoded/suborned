@@ -25,7 +25,7 @@ namespace Suborned.Play
         /// <summary>A feed card for an engine log code no scene covers (text.json `cards.items`; brief 013 Fable): its kind, title, the sight rule
         /// (in-sight: only when an agent can see `at`), what the cell must know first (`needs` routine), and its result: one line, or lines by
         /// a pick key the host chooses from the engine's state. A key ending in "." covers every code with that prefix (stash.container, stash.door).</summary>
-        public sealed class CardText { public string Code = "", Kind = "city", Title = "", Sight = "", At = "", Needs = "", Result = ""; public readonly Dictionary<string, string> Results = new(); }
+        public sealed class CardText { public string Code = "", Kind = "city", Title = "", Sight = "", At = "", Needs = "", Result = "", Fate = "", Beat = ""; public readonly Dictionary<string, string> Results = new(), Beats = new(); }
         public readonly Dictionary<string, CardText> Cards = new();
         /// <summary>The end card's route sentences by debrief id (text.json debrief.route).</summary>
         public readonly Dictionary<string, string> Route = new();
@@ -37,7 +37,7 @@ namespace Suborned.Play
             foreach (var kv in Cards) if (kv.Key.EndsWith(".") && code.StartsWith(kv.Key, StringComparison.Ordinal) && (best == null || kv.Key.Length > best.Code.Length)) best = kv.Value;
             return best;
         }
-        public sealed class LockText { public string Code = "", Line = ""; public readonly List<Regex> Match = new(); }
+        public sealed class LockText { public string Code = "", Line = "", Short = ""; public readonly List<Regex> Match = new(); }
         public sealed class EventText { public string Id = "", Kind = "", Clock = ""; public readonly List<string> Log = new(), Speakers = new(); }
         public sealed class Entry { public string Event = "", Verb, Speaker = "", Outcome, Temperament, About; public readonly List<string> Lines = new(); }
         public struct Query { public string Event, Verb, Speaker, Outcome, Temperament, About; }
@@ -60,17 +60,27 @@ namespace Suborned.Play
         public readonly Dictionary<string, string> CancelCosts = new();
         public readonly List<(string seed, string key, int n, int count, int index)> Vectors = new();
         /// <summary>The training hints (Motive's table, Fable's words): id → priority, line, and the prose trigger, ring and gone-when.</summary>
-        public sealed class Hint { public string Id = "", Line = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = ""; public int Priority; }
+        public sealed class Hint { public string Id = "", Line = "", Short = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = ""; public int Priority; }
         public readonly List<Hint> Hints2 = new();
         /// <summary>The feed's scenes (Fable, text.json `scenes`): overheard, approach, call, city; each variant's beats are a line or a `ref` to a
         /// dialogue event (ack, arrive, reply, done, confirm) picked as playScene does.</summary>
         public sealed class SceneBeat { public string Speaker = "", Line, Ref; }
-        public sealed class Scene { public string Kind = "", Verb, About, Outcome, Temperament, Event, Sight, Result = ""; public readonly List<List<SceneBeat>> Variants = new(); }
+        public sealed class Scene { public string Kind = "", Verb, About, Outcome, Temperament, Event, Sight, Result = "", Beat; public readonly List<List<SceneBeat>> Variants = new(); }
         public readonly List<Scene> Scenes = new();
         public readonly Dictionary<string, string> Toasts = new();
         public string LoudCaptured = "";
         public readonly List<(string sample, string code)> LockSamples = new();
         public readonly List<Entry> Dialogue = new();
+        /// <summary>Brief 014 (Fable's `less` block): the short forms the play HUD shows at rest. Pops by the host's own refusals, a cancel's 1 to 3
+        /// words, the outcome words for Alt, the objective and briefing goal lines, the end card's one line, the feed and hint timings, and the
+        /// price grammar (`less.price.verbs`: which fields each order's one line shows, in `less.price.order`).</summary>
+        public readonly Dictionary<string, string> Pops = new(), CancelShort = new(), AltOutcome = new(), EndFail = new(), TimelineShort = new();
+        public readonly Dictionary<string, List<string>> PriceVerbs = new();
+        public readonly List<string> PriceOrder = new();
+        public string ObjTake = "Take [Vale] alive.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
+        /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
+        public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
+        public float ObjShowS = 6, FeedS = 4, FeedDedupeS = 10, BubbleS = 3, HintShowS = 6, HintReturnS = 20; public int FeedMax = 2, BubbleMax = 2, CityBeats = 3, HintMaxShows = 2;
 
         // ---------------------------------------------------------------- reading
 
@@ -101,7 +111,7 @@ namespace Suborned.Play
                 if (b.Opt("clock") is JNode ck) { ClockLine = S(ck, "line") ?? ""; Close = S(ck, "close") ?? Close; }
                 if (b.Opt("purse") is JNode pu) PurseLine = S(pu, "line") ?? "";
                 if (b.Opt("hints") is JNode h) foreach (var kv in h.Entries) Hints.Add(kv.Value.Str());
-                if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool()));
+                if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) { Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool())); if (S(x, "short") is string sh) TimelineShort[x["at"].Str()] = sh; }
                 if (b.Opt("cell") is JNode ce) foreach (var kv in ce.Entries) Cell[kv.Key] = kv.Value.Str();
             }
             if (n.Opt("targets") is JNode ts) foreach (var kv in ts.Entries) { TargetNames.TryAdd(kv.Key, S(kv.Value, "name") ?? kv.Key); TargetAbout[kv.Key] = S(kv.Value, "about") ?? ""; }
@@ -114,7 +124,7 @@ namespace Suborned.Play
                     Actions[kv.Key] = a;
                 }
             if (n.Opt("locks") is JNode lo && lo.Kind == JKind.Obj) // suborned.text/1 since a103daf: code → { line, verbs }, keyed by Answer.code
-                foreach (var kv in lo.Entries) Locks.Add(new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "" });
+                foreach (var kv in lo.Entries) Locks.Add(new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "", Short = S(kv.Value, "short") ?? "" });
             else if (n.Opt("locks") is JNode ls)
                 foreach (var l in ls.Items)
                 {
@@ -139,23 +149,30 @@ namespace Suborned.Play
                 foreach (var kv in hi.Entries)
                 {
                     var v = kv.Value; int.TryParse(v.Opt("priority")?.NumberText ?? "99", out var pr);
-                    Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "" });
+                    Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Short = S(v, "short") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "" });
                 }
             Hints2.Sort((a, b) => a.Priority.CompareTo(b.Priority));
             if (n.Opt("scenes")?.Opt("items") is JNode sci)
                 foreach (var it in sci.Items)
                 {
-                    var sc = new Scene { Kind = S(it, "kind") ?? "", Verb = S(it, "verb"), About = S(it, "about"), Outcome = S(it, "outcome"), Temperament = S(it, "temperament"), Event = S(it, "event"), Sight = S(it, "sight"), Result = S(it, "result") ?? "" };
+                    var sc = new Scene { Kind = S(it, "kind") ?? "", Verb = S(it, "verb"), About = S(it, "about"), Outcome = S(it, "outcome"), Temperament = S(it, "temperament"), Event = S(it, "event"), Sight = S(it, "sight"), Result = S(it, "result") ?? "", Beat = S(it, "beat") };
                     foreach (var v in it["variants"].Items) { var beats = new List<SceneBeat>(); foreach (var bt in v["beats"].Items) beats.Add(new SceneBeat { Speaker = S(bt, "speaker") ?? "", Line = S(bt, "line"), Ref = S(bt, "ref") }); sc.Variants.Add(beats); }
                     Scenes.Add(sc);
                 }
             if (n.Opt("cards")?.Opt("items") is JNode ci)
                 foreach (var kv in ci.Entries)
                 {
-                    var v = kv.Value; var c = new CardText { Code = kv.Key, Kind = S(v, "kind") ?? "city", Title = S(v, "title") ?? "", Sight = S(v, "sight") ?? "", At = S(v, "at") ?? "", Needs = S(v, "needs") ?? "" };
+                    var v = kv.Value; var c = new CardText { Code = kv.Key, Kind = S(v, "kind") ?? "city", Title = S(v, "title") ?? "", Sight = S(v, "sight") ?? "", At = S(v, "at") ?? "", Needs = S(v, "needs") ?? "", Fate = S(v, "fate") ?? "" };
+                    if (v.Opt("beat") is JNode bt) { if (bt.Kind == JKind.Str) c.Beat = bt.Str(); else if (bt.Kind == JKind.Obj) foreach (var e in bt.Entries) c.Beats[e.Key] = e.Value.Str(); }
                     if (v.Opt("result") is JNode r) { if (r.Kind == JKind.Str) c.Result = r.Str(); else foreach (var e in r.Entries) c.Results[e.Key] = e.Value.Str(); }
                     Cards[kv.Key] = c;
                 }
+            if (n.Opt("debrief")?.Opt("standing") is JNode ds)
+            {
+                StandingLine = S(ds, "line") ?? StandingLine;
+                if (ds.Opt("bands") is JNode sb) foreach (var kv in sb.Entries) StandingBands[kv.Key] = kv.Value.Str();
+                if (ds.Opt("causes") is JNode sc2) foreach (var kv in sc2.Entries) StandingCauses[kv.Key] = kv.Value.Str();
+            }
             if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
@@ -164,6 +181,7 @@ namespace Suborned.Play
             if (n.Opt("silentLogs") is JNode sl) foreach (var kv in sl.Entries) Silent.Add(kv.Key);
             if (n.Opt("pick")?.Opt("vectors") is JNode vec)
                 foreach (var v in vec.Items) Vectors.Add((v["seed"].Str(), v["key"].Str(), v["n"].Int(), v["count"].Int(), v["index"].Int()));
+            if (n.Opt("less") is JNode ls2) ReadLess(ls2);
             if (n.Opt("dialogue") is JNode dl)
                 foreach (var d in dl.Items)
                 {
@@ -173,6 +191,27 @@ namespace Suborned.Play
                     Dialogue.Add(e);
                 }
         }
+
+        void ReadLess(JNode l)
+        {
+            static float F(JNode n, string k, float d) => n?.Opt(k) is JNode x && x.Kind == JKind.Num && float.TryParse(x.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : d;
+            if (l.Opt("pop") is JNode p) foreach (var kv in p.Entries) Pops[kv.Key] = kv.Value.Str();
+            if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
+            if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
+            if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjShowS = F(ob, "showSeconds", ObjShowS); }
+            if (l.Opt("briefing") is JNode br) BriefGoal = S(br, "goal") ?? BriefGoal;
+            if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
+            if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
+            if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); }
+            if (l.Opt("price") is JNode pr)
+            {
+                if (pr.Opt("order") is JNode po) PriceOrder.AddRange(po.Strs());
+                if (pr.Opt("verbs") is JNode pv) foreach (var kv in pv.Entries) PriceVerbs[kv.Key] = kv.Value.Strs();
+            }
+        }
+
+        /// <summary>A short refusal for an engine code (locks.*.short), or null.</summary>
+        public string ShortLock(string code) { var l = (code ?? "").Length > 0 ? LockByCode(code) : null; return l == null || l.Short.Length == 0 ? null : l.Short; }
 
         /// <summary>Whatever Fable's file leaves empty is taken from the placeholders (so a partial file still plays).</summary>
         void Fill(PlayText p)

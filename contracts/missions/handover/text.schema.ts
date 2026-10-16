@@ -21,6 +21,10 @@
 //              beats are written lines or refs into `dialogue`, with a result line saying what the player now knows or has
 //   dialogue   the lines: event × verb × speaker × outcome × temperament, 2–4 variants each; `lookup` and `pickLine` are the
 //              reference for how the host finds and picks one (deterministic: same seed and same run, same words)
+//   less       brief 014 (less reading; Sky 2026-10-16: "It's the reading, it's too much"): the short forms the play HUD shows at rest, kept beside
+//              the long ones. Every long line stays and is what Alt (hold) and the debrief show; the short forms are `short` on a lock, a hint and a
+//              timeline mark, `fate` and `beat` on a card, `beat` on a scene, and the `less` block (the one-line price grammar, the feed, the
+//              objective line, the end card's one line, pops that are not locks, cancel costs in a few words, the Alt words for the outcome marks)
 //
 // Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a spoken line 1–12 words; no one named but the cast; no
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
@@ -51,6 +55,12 @@ export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
 export const SCENE_SPEAKERS = [...SPEAKERS, ...SCENE_ONLY] as const;
 export const MAX_LINE = 80;
 export const MAX_WORDS = 12;
+/** brief 014: a short form is a fragment of a few words (a pop, a beat, a mark), at most `max` characters and never a sentence. */
+export const SHORT_MAX = 24;
+export const BEAT_MAX = 24;
+/** brief 014: the price line's fields, in the order the line shows them (canonical). `learns` = the icons of what a Watch or Listen teaches;
+ *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). */
+export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'alert', 'eye', 'learns', 'pace', 'mark'] as const;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -58,6 +68,8 @@ const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const Line = z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/);
 const Speaker = z.enum(SPEAKERS);
 const Verb = z.enum(VERBS);
+const Short = (max: number = SHORT_MAX) => z.string().min(1).max(max).regex(/^[^\n<>]+$/);
+const PriceField = z.enum(PRICE_FIELDS);
 const DVerb = z.enum(DIALOGUE_VERBS);
 const Temperament = z.enum(TEMPERAMENTS);
 
@@ -74,7 +86,8 @@ export const Action = z.strictObject({
 });
 
 export const Lock = z.strictObject({
-  line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer'),
+  line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
+  short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.literal('*')])).min(1).describe('the verbs that can return it'),
 });
 
@@ -94,7 +107,8 @@ export const Hint = z.strictObject({
   agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
   verb: DVerb,
   target: z.string().min(1).describe('what the hint rings, in words'),
-  line: HintLine,
+  line: HintLine.describe('brief 014: the long line, shown on Alt and by the relearn key; the line at rest is `short`'),
+  short: Short(36).describe('brief 014: the Next Step line, an imperative of at most six words with the one noun that is ringed in [brackets] (the host colours it as its marker); {who} is the person; it names no agent (the agent\'s portrait pulses) and no approach'),
   trigger: z.string().min(1).describe('copied from Motive: the game state that shows it'),
   rings: z.string().min(1),
   goneWhen: z.string().min(1),
@@ -111,6 +125,7 @@ export const Scene = z.strictObject({
   title: z.string().min(1).max(40).optional().describe('the card\'s title; required on city scenes (the event as the player would name it)'),
   verb: Verb.optional(), about: z.enum(PEOPLE).optional(), outcome: z.string().optional(), temperament: Temperament.optional(),
   event: code.optional().describe('city: the world event it plays with'),
+  beat: Short(BEAT_MAX).optional().describe('brief 014: the feed line when the scene starts and none of its speakers is on screen (its beats play as speech bubbles in the world, not as a card); at most four words'),
   sight: z.enum(['always', 'in-sight']).optional().describe('city: shown always, or only when an agent is within sight'),
   learns: z.array(z.enum(['routine', 'need', 'temperament', 'secret'])).optional(),
   result: Line.describe('one plain line of what the player now knows or has; placeholders {who} {need} {temperament} {usd} {alert}'),
@@ -132,6 +147,9 @@ export const Target = z.strictObject({
  *  Placeholders: {who} the watcher or person as names.targets says it ("the guard"), {agent} "the Scout", {alert}, {n}, {clock}. The host
  *  capitalises the first letter after filling. A result that is a record is picked by the engine state `pick` names. */
 export const CARD_KINDS = ['city', 'warning', 'fight'] as const;
+export const CARD_FATES = ['beat', 'icon', 'alt', 'debrief'] as const;
+/** brief 014: where a piece of text goes. speech = a person talking, in the world; beat = a one-line feed beat; icon = an icon, number, ring or mark in the street (Glyph draws it); alt = full detail on hold (Alt) and in the history key; debrief = after the run; cut = not shown; label = a name or a word or two the HUD needs as it is. */
+export const FATES = ['speech', 'beat', 'icon', 'alt', 'debrief', 'cut', 'label'] as const;
 /** Where an in-sight card looks (brief 013): the engine position the sight check uses. The log carries no position; the host reads it from the game. */
 export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol'] as const;
 export const Card = z.strictObject({
@@ -142,6 +160,8 @@ export const Card = z.strictObject({
   needs: z.enum(['routine']).optional().describe('the card shows only once the cell holds the routine of the person it is about (a completed Watch); until then the city\'s answer (report.landed) speaks alone'),
   result: z.union([Line, z.record(code, Line)]).optional(),
   pick: z.string().optional().describe('when `result` is a record: the engine state that chooses the key'),
+  fate: z.enum(CARD_FATES).describe('brief 014: where the card goes now. beat = a one-line feed beat (`beat`); icon = the street shows it (a marker, a ring, a lock, a pip) and the card text is history only; alt = history only (behind L) and Alt; debrief = the debrief says it'),
+  beat: z.union([Short(BEAT_MAX), z.record(code, Short(BEAT_MAX))]).optional().describe('brief 014: the feed line of a beat card (at most four words), or one per `pick` key (a key with no line shows none); only on fate beat; shown when no bubble of the event\'s speech is on screen'),
 });
 
 /** The end card's words by the debrief's ids (sim Debrief.cs). Placeholders: {clock} {usd} {trail} {n} {hits} {who} {cause} {list}. */
@@ -158,6 +178,11 @@ export const Debrief = z.strictObject({
   route: z.record(code, Line),
   assets: z.record(code, Line),
   between: z.record(code, Line).describe('brief 013: the between-missions lines a takedown leaves (rulebook debrief.lines: volunteer, statement, missing, grief, worry, area-watch, case), keyed by the rulebook id; each line carries every field the rulebook lists for it'),
+  standing: z.strictObject({
+    line: Line.describe('brief 014: the Standing line (rulebook debrief.lines.standing). Placeholders {district} {band} {from} {to} {cause}; the host fills {from} and {to} signed (+3, 0, -1) and {cause} from `causes` with {who} filled'),
+    bands: z.strictObject({ hero: Line, neutral: Line, menace: Line }).describe('{band}: the band id as a word'),
+    causes: z.record(code, Line).describe('one short sentence per rulebook standing.causes id; the word causes are rumour (told, not learned) and carry {who}'),
+  }),
 });
 
 export const EventDef = z.strictObject({
@@ -181,6 +206,54 @@ export const Entry = z.strictObject({
   lines: z.array(z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/)).min(2).max(4),
 });
 export type Entry = z.infer<typeof Entry>;
+
+/** brief 014: the short forms and the grammar the play HUD reads at rest. Nothing here is a rule; every number a line carries comes from the engine. */
+export const Less = z.strictObject({
+  rule: z.string().min(1),
+  price: z.strictObject({
+    rule: z.string().min(1),
+    order: z.array(PriceField).describe('the canonical field order; each verb\'s list below is a subsequence of it'),
+    fields: z.record(PriceField, z.strictObject({ shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
+    verbs: z.record(Verb, z.array(PriceField).min(1)).describe('the fields each verb\'s one-line price shows, in order; `name` first, always'),
+    examples: z.record(code, z.string().min(1).max(60)).describe('worked lines with the engine\'s numbers from the play screenshots; `\u{1F441}` is the eye mark, `\u25B2` the Alert mark'),
+  }),
+  feed: z.strictObject({
+    rule: z.string().min(1),
+    maxOnScreen: z.number().int().min(1).max(2),
+    seconds: z.number().int().min(2).max(6),
+    dedupeSeconds: z.number().int().min(1),
+    bubblesAtOnce: z.number().int().min(1).max(2).describe('speech bubbles on screen at once'),
+    bubbleSeconds: z.number().int().min(2).max(5),
+    cityBeats: z.number().int().min(1).max(4).describe('a call or city scene plays this many of its first beats as bubbles in play; the rest are history. Overheard and approach scenes play every beat (what the cell learns is in them)'),
+  }),
+  objective: z.strictObject({
+    rule: z.string().min(1),
+    take: Short(32), carry: Short(32), showSeconds: z.number().int().min(2).max(10),
+  }),
+  briefing: z.strictObject({ rule: z.string().min(1), goal: Short(32) }),
+  end: z.strictObject({
+    rule: z.string().min(1),
+    win: Short(), withdraw: Short(),
+    fail: z.record(code, Short()).describe('one line per fail code (the headline); the full sentence is briefing.fails, shown in the debrief'),
+  }),
+  pop: z.record(code, Short()).describe('refusals and notices the host builds itself (not engine codes): one pop each'),
+  cancel: z.record(code, Short(20)).describe('what a cancel costs, in a few words, by the same ids as cancelCosts; a costly one tints the cancel mark'),
+  alt: z.strictObject({
+    rule: z.string().min(1),
+    outcome: z.record(code, Line).describe('the outcome marks in words, for Alt: ok works, worse works one step worse, no refuses, half not yet, unk unknown until the Scout learns who they are'),
+  }),
+  fates: z.record(z.string(), z.enum(FATES)).describe('every player-facing group of this file by its path, with where it goes (the inventory in briefs/014/fable-less.md, as data)'),
+  hint: z.strictObject({
+    rule: z.string().min(1),
+    showSeconds: z.number().int().min(2).max(10),
+    returnSeconds: z.number().int().min(5),
+    maxShows: z.number().int().min(1).max(3),
+  }),
+});
+export type Less = z.infer<typeof Less>;
+
+/** The nouns a hint or objective line marks in [brackets]. */
+export const marked = (s: string): string[] => [...s.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]!);
 
 export const TextFile = z.strictObject({
   schema: z.literal('suborned.text/1'),
@@ -213,7 +286,7 @@ export const TextFile = z.strictObject({
     purse: z.strictObject({ usd: z.number().int().positive(), line: Line }),
     hints: z.strictObject({ 'front-door': Line, pickup: Line }),
     tracker: Line,
-    timeline: z.array(z.strictObject({ at: clock, label: Line, known: z.boolean().describe('false = the pill shows "?" until it happens') })),
+    timeline: z.array(z.strictObject({ at: clock, label: Line, short: Short(16).describe('brief 014: the mark in a word or two (the pill shows its icon and time; the word is on Alt)'), known: z.boolean().describe('false = the pill shows "?" until it happens') })),
     cell: z.record(z.enum(AGENTS), Line),
   }),
   targets: z.record(z.string(), Target),
@@ -232,17 +305,20 @@ export const TextFile = z.strictObject({
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
   scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1) }),
+  less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
 });
 export type TextFile = z.infer<typeof TextFile>;
 
 /** The values a card or debrief line may carry; `fillCard` is the reference for filling them. */
 export type CardVals = { who?: string; agent?: string; alert?: number; n?: number; clock?: string; usd?: number; trail?: number; hits?: number; cause?: string; list?: string;
+  /** brief 014's Standing line (rulebook debrief.lines.standing): district name, band word, signed from and to */
+  district?: string; band?: string; from?: string; to?: string;
   /** brief 013's between-missions fields (the rulebook's debrief.lines): the words the host fills from the debrief */
   fact?: string; facts?: string; place?: string; of?: string; move?: string; fear?: string; guards?: number; cameras?: number; missions?: number; kind?: string; closes?: string };
 export function fillCard(line: string, v: CardVals): string {
   const out = line.replace(/\{who\}/g, v.who ?? 'someone').replace(/\{agent\}/g, v.agent ?? 'an agent').replace(/\{alert\}/g, String(v.alert ?? '?'))
     .replace(/\{n\}/g, String(v.n ?? '?')).replace(/\{clock\}/g, v.clock ?? '?').replace(/\{usd\}/g, v.usd === undefined ? '?' : '$' + v.usd.toLocaleString('en-US'))
-    .replace(/\{trail\}/g, String(v.trail ?? '?')).replace(/\{hits\}/g, String(v.hits ?? '?')).replace(/\{cause\}/g, v.cause ?? '?').replace(/\{list\}/g, v.list ?? '')
+    .replace(/\{trail\}/g, String(v.trail ?? '?')).replace(/\{hits\}/g, String(v.hits ?? '?')).replace(/\{cause\}/g, v.cause ?? '?').replace(/\{list\}/g, v.list ?? '').replace(/\{district\}/g, v.district ?? 'the district').replace(/\{band\}/g, v.band ?? '?').replace(/\{from\}/g, v.from ?? '?').replace(/\{to\}/g, v.to ?? '?')
     .replace(/\{fact\}/g, v.fact ?? '?').replace(/\{facts\}/g, v.facts ?? '?').replace(/\{place\}/g, v.place ?? 'somewhere').replace(/\{of\}/g, v.of ?? 'someone')
     .replace(/\{move\}/g, v.move ?? '?').replace(/\{fear\}/g, v.fear ?? '?').replace(/\{guards\}/g, String(v.guards ?? '?')).replace(/\{cameras\}/g, String(v.cameras ?? '?'))
     .replace(/\{missions\}/g, String(v.missions ?? '?')).replace(/\{kind\}/g, v.kind ?? '?').replace(/\{closes\}/g, v.closes ?? '?');

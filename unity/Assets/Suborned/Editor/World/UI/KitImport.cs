@@ -45,7 +45,8 @@ namespace Suborned.World.UI
             foreach (var dir in new[] { "panels", "buttons", "badges", "markers", "overlays", "portraits", "roster", "icons/singles" })
                 foreach (var f in Directory.GetFiles(Path.Combine(KitDir, dir), "*@2x.png")) { var rel = Path.GetRelativePath(KitDir, f); Copy(rel); pngs.Add(rel); }
             // brief 013 E: Glyph's takedown glyphs (briefs/013/glyph-takedown-hud, monoline, white, tinted like the atlas) join the singles
-            var extra = Path.GetFullPath(Path.Combine(KitDir, "..", "..", "..", "013", "glyph-takedown-hud"));
+            // brief 014: Glyph's less-reading glyphs (eye_open, eye_shut, eye_unk, found, bang, routine, cone, car, run, arrive, pointer) too
+            foreach (var extra in new[] { Path.GetFullPath(Path.Combine(KitDir, "..", "..", "..", "013", "glyph-takedown-hud")), Path.GetFullPath(Path.Combine(KitDir, "..", "..", "..", "014", "glyph", "glyphs")) })
             if (Directory.Exists(extra))
                 foreach (var f in Directory.GetFiles(extra, "*@2x.png"))
                 {

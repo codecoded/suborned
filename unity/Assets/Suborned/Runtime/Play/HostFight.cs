@@ -100,7 +100,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) any = true;
             for (int k = 0; k < 4; k++)
                 if (Selected[k] && Armed(k) && Drawn(k) == any) list.Add(new Order { Op = Op.Name((OpId)k), Do = any ? "holster" : "draw" });
-            if (list.Count == 0) { Pop("Nobody selected is armed.", null, SelectedWorld(), Feedback.Info); return; }
+            if (list.Count == 0) { PopKey("unarmed", null, SelectedWorld(), Feedback.Info, "Nobody selected is armed."); return; }
             Fight(list, "F", null, SelectedWorld(), any ? "holster" : "draw");
         }
 
@@ -109,7 +109,7 @@ namespace Suborned.Play
         {
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
-            if (list.Count == 0) { Pop("No weapon drawn.", null, SelectedWorld(), Feedback.Info); return; }
+            if (list.Count == 0) { PopKey("not-drawn", null, SelectedWorld(), Feedback.Info, "No weapon drawn."); return; }
             Send(list, null, SelectedWorld());
         }
 
@@ -120,12 +120,12 @@ namespace Suborned.Play
         void CycleStance()
         {
             int first = -1; for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) { first = k; break; }
-            if (first < 0) { Pop("Nobody selected is armed.", null, SelectedWorld(), Feedback.Info); return; }
+            if (first < 0) { PopKey("unarmed", null, SelectedWorld(), Feedback.Info, "Nobody selected is armed."); return; }
             var next = Stances[(Array.IndexOf(Stances, Game.Ops[first].Gun.Stance) + 1) % 3];
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "stance", Stance = next });
             Send(list, null, SelectedWorld());
-            Pop($"stance: {StanceName(next)}", null, SelectedWorld(), Feedback.Info);
+            PopKey("stance-" + next, null, SelectedWorld(), Feedback.Info, $"stance: {StanceName(next)}");
         }
 
         /// <summary>Both buttons: panic (every armed agent draws and fires at will), only once a fight is on. Outside a fight the gesture is not
@@ -173,7 +173,7 @@ namespace Suborned.Play
                 if (at.HasValue && !Game.S.Sight(op.Pos, at.Value, Game.R.Eye)) { why = "no clear line"; continue; }
                 list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force });
             }
-            if (list.Count == 0) { Pop(why.Length > 0 ? why : "nobody selected can fire", screen, WorldOf(id), Feedback.Refused); return; }
+            if (list.Count == 0) { PopKey(why == "no clear line" ? "no-line" : why.Length > 0 ? "out-of-range" : "unarmed", screen, WorldOf(id), Feedback.Refused, why.Length > 0 ? why : "nobody selected can fire", System.Text.RegularExpressions.Regex.Match(why, @"\d+").Value); return; }
             sweepLast = id;
             Fight(list, source, screen, null, $"fire on {Name(id)}");
         }
@@ -204,7 +204,7 @@ namespace Suborned.Play
                 Give((OpId)k, new Order { Op = Op.Name((OpId)k), Do = "carry", Target = t.Key }, t, screen);
                 return true;
             }
-            Pop($"Another agent has to carry the {Cap(t.Key)}.", screen, null, Feedback.Info);
+            PopKey("other-carries", screen, null, Feedback.Info, $"Another agent has to carry the {Cap(t.Key)}.");
             return true;
         }
 
@@ -216,10 +216,10 @@ namespace Suborned.Play
 
         void UpdateAim()
         {
-            AimLine = null; AimNoLine = false;
+            AimLine = null; AimNoLine = false; AimNow = null; if (!ModalGate.AllowsHover(Modal)) return;
             var t = Hover; if (t == null || Game == null || Game.Over) return;
             bool ctrl = Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed);
-            if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) AimLine = "Vale · never: shooting him fails the mission"; return; }
+            if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) { AimLine = "Vale · never: shooting him fails the mission"; AimNow = new AimParts { Badge = "badges/npc_councillor", Refused = Text != null && Text.Pops.TryGetValue("never-vale", out var nv) ? nv : "Never Vale" }; } return; }
             if (!ShotAt(t, ctrl, out var id, out var force)) return;
             int k = -1; for (int i = 0; i < 4; i++) if (Selected[i] && Armed(i)) { k = i; break; }
             if (k < 0) return;
@@ -235,16 +235,18 @@ namespace Suborned.Play
             if (target is "security") { foreach (var s in g.SecGuns) if (g.PosOf(s.Id).HasValue) { id = s.Id; break; } }
             var tg = g.GunOf(id); var at = g.PosOf(id);
             string who = force ? $"CIVILIAN · {Name(id)}" : Cap(Name(id));
-            if (tg == null || !at.HasValue || tg.Down) return $"{who} · not there to fire at";
+            var parts = AimNow = new AimParts { Civilian = force, Badge = t.Kind == "person" ? t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "guard" => "badges/signal_guard", _ => "badges/npc_passer" } : id.StartsWith("rival") || t.Kind == "rivals" ? "badges/signal_rival" : "badges/signal_police" };
+            string P(string k, string d0) => Text != null && Text.Pops.TryGetValue(k, out var v) ? v : d0;
+            if (tg == null || !at.HasValue || tg.Down) { parts.Refused = P("nothing-there", "Nothing there"); return $"{who} · not there to fire at"; }
             long d = G.Isqrt(G.D2(op.Pos, at.Value));
-            if (d > w.MaxCm) return $"{who} · out of range ({d / 100} m, max {w.MaxCm / 100} m)";
-            if (!g.S.Sight(op.Pos, at.Value, R.Eye)) { AimNoLine = true; return $"{who} · ✕ no clear line"; }
+            if (d > w.MaxCm) { parts.Refused = (Text?.ShortLock("out-of-range") ?? "Out of range · {m} m").Replace("{m}", (d / 100).ToString()); return $"{who} · out of range ({d / 100} m, max {w.MaxCm / 100} m)"; }
+            if (!g.S.Sight(op.Pos, at.Value, R.Eye)) { AimNoLine = true; parts.Refused = P("no-line", "No clear line"); return $"{who} · ✕ no clear line"; }
             bool moving = op.Walk != null, targetMoving = false;
             foreach (var h in g.Hostiles) if (h.Id == id) targetMoving = h.Moving(g.Tick);
             int cover = targetMoving ? 1000 : CoverRules.Modifier(g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
             bool vale = op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer;
             int acc = R.Accuracy(w, d, moving, cover, vale, !gun.Trained);
-            if (acc <= 0) return $"{who} · can't hit from here";
+            if (acc <= 0) { parts.Refused = P("no-line", "No clear line"); return $"{who} · can't hit from here"; }
             // the time to down: the first shot (a draw, then aimNew on a new target), then one every W.Every; hits counted by the accumulator
             int need = Math.Max(1, (tg.Health + w.Damage - 1) / w.Damage), first;
             int a0 = gun.Target == id ? gun.Acc : R.AccStart;
@@ -256,8 +258,13 @@ namespace Suborned.Play
             int ticks = first + (shots - 1) * w.Every;
             string band = d <= R.PointBlankCm ? "point blank" : d <= w.EffCm ? "effective" : "long";
             string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : g.Gunfire > 0 ? $"+{R.HitTrail} T hit · +{R.DownTrail} T down" : $"+{R.GunfireTrail} T shooting · +{R.HitTrail} T hit · +{R.DownTrail} T down";
+            parts.Down = $"{ticks / Game.Hz}.{ticks % Game.Hz} s"; parts.Ratio = Frac(acc); parts.Cover = cover < 1000;
+            parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : $"+{R.HitTrail}/hit";
             return $"{who} · hits {Ratio(acc)} · down in {ticks / Game.Hz}.{ticks % Game.Hz} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
         }
+
+        /// <summary>The same fraction as a number for the chip: "3/4", "1/1".</summary>
+        static string Frac(int acc) { var r = Ratio(acc); if (r == "every shot") return "1/1"; var p = r.Split(" in "); return p.Length == 2 ? $"{p[0]}/{p[1]}" : r; }
 
         /// <summary>A per-mille accuracy as the nearest small fraction: 750 → "3 in 4", 1000 → "every shot".</summary>
         static string Ratio(int acc)
@@ -276,24 +283,27 @@ namespace Suborned.Play
 
         void UpdateMoveChip(Vector2 screen, bool force)
         {
-            if (Hover != null || Panel != null || Game.Over || !cam) { MoveChip = null; return; }
-            int k = Array.IndexOf(Selected, true); if (k < 0 || Game.Ops[k].Inside || Game.Ops[k].Down) { MoveChip = null; return; }
-            if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) { MoveChip = null; return; }
+            if (!ModalGate.AllowsHover(Modal)) { MoveChip = null; MoveNow = null; return; }
+            if (Hover != null || Panel != null || Game.Over || !cam) { MoveChip = null; MoveNow = null; return; }
+            int k = Array.IndexOf(Selected, true); if (k < 0 || Game.Ops[k].Inside || Game.Ops[k].Down) { MoveChip = null; MoveNow = null; return; }
+            if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) { MoveChip = null; MoveNow = null; return; }
             var at = frame.Engine(w); var cell = new Pt(at.X / 100 * 100, at.Y / 100 * 100);
             if (!force && cell == moveChipAt) return;
             if (Time.unscaledTime - moveChipTime < 0.2f && !force) { moveChipDirty = true; return; } // at most five quotes a second (an A* and a sweep each)
             moveChipAt = cell; moveChipTime = Time.unscaledTime; moveChipDirty = false;
             Pt? to = Game.S.Grid.Free(at) ? at : Game.S.Grid.NearestFree(at);
-            if (!to.HasValue || G.Dist(to.Value, at) > 300) { MoveChip = "can't walk there"; return; }
+            string NoWay() => Text != null && Text.Pops.TryGetValue("no-way", out var nw) ? nw : "No way";
+            if (!to.HasValue || G.Dist(to.Value, at) > 300) { MoveChip = "can't walk there"; MoveNow = new MoveParts { Refused = NoWay() }; return; }
             MoveQuote q = null; if (!Guard("move quote", () => q = Game.QuoteMove(Op.Name((OpId)k), to.Value))) return;
-            if (q.WalkS == 0 && q.RunS == 0 && q.RunRefused.Length > 0) { MoveChip = q.RunRefused == "no walk there" ? "can't walk there" : q.RunRefused; return; }
+            if (q.WalkS == 0 && q.RunS == 0 && q.RunRefused.Length > 0) { MoveChip = q.RunRefused == "no walk there" ? "can't walk there" : q.RunRefused; MoveNow = new MoveParts { Refused = NoWay() }; return; }
+            MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : EyeOf(q.Seen), Alert = q.RunFree || q.Seen.Seen == "no" ? "" : q.Seen.AlertIfSeen.ToString() };
             // "seen by" is the engine's SeenQuote (rulebook sight.unknown): a known watcher's true answer, "?" for one the Scout hasn't watched that
             // could; never RunSeenBy, which knows every watcher (Sky 2026-10-16: sight is the Scout's skill)
             var seen = SeenWords(q.Seen);
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
                 : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {q.Seen.AlertIfSeen})" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
-            if (Game.Ops[k].CarryBody.Length > 0) MoveChip = CarryChip(k, to.Value) ?? MoveChip; // brief 013: carrying, the chip is the carry's (Glyph §4)
+            if (Game.Ops[k].CarryBody.Length > 0) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
         }
 
         // ---------------------------------------------------------------- shots, read from the engine's log

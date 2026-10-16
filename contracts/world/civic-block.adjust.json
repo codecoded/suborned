@@ -67,7 +67,7 @@
    "Anything not placed here stays off the ground between the two buildings: ask Vantage."
   ],
   "keepClear": [
-   { "id": "crew-line-getaway", "polygon": [[-2, -52], [16, -52], [16, -44], [-2, -44]], "bars": ["planter", "lamp", "bollard", "tree", "parasol", "band"], "reason": "Crew start line (x 1.2..4.8, y -49.7) and the getaway bay with its canopy: the first thing the player reads and the last walk of the mission." },
+   { "id": "crew-line-getaway", "polygon": [[-2, -52], [16, -52], [16, -44], [-2, -44]], "bars": ["planter", "lamp", "bollard", "tree", "parasol", "band"], "reason": "The cell's start: a loose group of four by the getaway car, as people waiting at the square's boarding pavilion stand, 2.4 to 3.4 m apart at x -1.6..2.7, y -47.6..-44.3 (mission.json crew, re-sited 2026-10-16, Waymark, brief 014), and the getaway bay with its canopy: the first thing the player reads and the last walk of the mission." },
    { "id": "fountain-west-axis", "polygon": [[4.5, -44], [8.5, -44], [8.5, -33.3], [4.5, -33.3]], "bars": ["planter", "lamp", "bollard", "tree"], "reason": "Sightline and walk from the crew line to the fountain; 4 m wide on the fountain's centre x 6.5." },
    { "id": "fountain-east-axis", "polygon": [[4.5, -26.7], [8.5, -26.7], [8.5, -8], [4.5, -8]], "bars": ["planter", "lamp", "bollard", "tree"], "reason": "The mirror axis to the east kerb: the crowd's way in from that street." },
    { "id": "cafe-gate-spine", "polygon": [[-10.7, -31.6], [3.2, -31.6], [3.2, -26.4], [-10.7, -26.4]], "bars": ["planter", "lamp", "bollard", "tree", "parasol"], "reason": "Café door, through the 5.2 m terrace gate, to the pool: 'Café door', 'Courtyard', 'Steps' stand in it and the door must read at play zoom." },
