@@ -141,7 +141,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     guard: { post: 'd:Office entrance', facing: [-100, 0], cafe: 'd:Café door', cafeFacing: [-100, 0], src: 'GDD §05 guard on door routine (café stop pre-shift); mission.json windows.front-door; he faces the square from the door, and the café at it' },
     vale: { exit: 'd:Official entrance', car: 'd:Official drop-off', service: 'd:Service lane', src: 'GDD §07 5:50 Vale exits, 6:10 at car (service lane if the driver is turned); mission.json roles.councillor leavesTo' },
     car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'd:Service lane', block: 'block-spot', src: 'GDD §07; mission.json roles.driver' },
-    rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' },
+    rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', ...(mission.rivals ? { public: mission.rivals.public } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
     getaway: { car: 'd:Getaway bay', src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
     fight: { ambush: ambush.map((p) => p.id), police: police.map((p) => p.id), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },

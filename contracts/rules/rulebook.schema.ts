@@ -20,6 +20,10 @@ export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
 export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'contact', 'person', 'investigator', 'city'] as const;
 /** What the cell did to a person this mission that their word carries (standing.word): a Help, a Pressure, a knockout. */
 export const DONE_TO = ['helped', 'pressured', 'knocked-out'] as const;
+/** Whom the cell fired on in a fight (fight.public): authority, or a rival crew. */
+export const FOES = ['security', 'rivals'] as const;
+/** How the public sees a mission's rivals (fight.rivalsPublic; mission.json rivals.public). */
+export const RIVALS_PUBLIC = ['menace', 'neutral'] as const;
 
 const Band = z.enum(BANDS);
 const Fit = z.enum(FITS);
@@ -69,6 +73,13 @@ export const Cond = z.discriminatedUnion('k', [
   z.strictObject({ k: z.literal('done-to'), in: z.array(z.enum(DONE_TO)).min(1) }), // the cell did one of these to the subject this mission
   z.strictObject({ k: z.literal('alive'), is: z.boolean() }), // not killed by a takedown (so not missing) and not shot down
   z.strictObject({ k: z.literal('standing-moved'), is: z.boolean() }), // an act seen or found, or any word, moved the district's Standing this mission
+  // Sky 2026-10-16 (briefs/014/motive-standing.md, a public fight): the subject is one fight (fight.public)
+  z.strictObject({ k: z.literal('fight'), quiet: Ref }), // one fight: the final fight, or shots by or at the cell with no gap of `quiet` s
+  z.strictObject({ k: z.literal('public'), m: Ref }), // a person of the city, not security, within m of a shot of the fight, line or no line
+  z.strictObject({ k: z.literal('fired-on'), in: z.array(z.enum(FOES)).min(1) }), // the cell fired on one of these in the fight
+  z.strictObject({ k: z.literal('rivals-public'), in: z.array(z.enum(RIVALS_PUBLIC)).min(1) }), // the mission's rivals as the public sees them
+  z.strictObject({ k: z.literal('fired-first'), is: z.boolean() }), // the fight's first shot between the cell and the rivals was the cell's
+  z.strictObject({ k: z.literal('rivals-broken'), is: z.boolean() }), // every rival the cell fought broke, was driven back or is down when the fight ends
 ]);
 export type Cond = z.infer<typeof Cond>;
 
@@ -95,6 +106,7 @@ export const Eff = z.discriminatedUnion('do', [
   z.strictObject({ do: z.literal('debrief'), line: id }), // a debrief.lines key (K7)
   z.strictObject({ do: z.literal('word-standing'), toward: z.enum(['hero', 'menace']), step: Ref, cap: Ref }), // standing.word: per person, the district's net word clamped to ±cap
   z.strictObject({ do: z.literal('drift-standing'), step: Ref, to: Ref }), // standing.drift: at most step toward `to`, never past it
+  z.strictObject({ do: z.literal('fight-standing'), toward: z.enum(['hero', 'menace']), step: Ref, cause: id }), // fight.public: once per fight, when it ends; cause a standing.causes id
 ]);
 export type Eff = z.infer<typeof Eff>;
 
@@ -114,7 +126,7 @@ export const Line = z.strictObject({
   orders: Ref.optional(), // Help orders this line adds (base: the orders one approach takes)
 }).refine((l) => [l.usd, l.s, l.trail, l.orders].some((x) => x !== undefined), { message: 'a price line prices something' });
 export type Line = z.infer<typeof Line>;
-const Outcome = z.strictObject({ id, when: z.array(Cond), changes: z.array(Eff).min(1) });
+const Outcome = z.strictObject({ id, when: z.array(Cond), changes: z.array(Eff) }); // only the last (the fallback) may change nothing: refined on Event
 const Also = z.strictObject({ when: z.array(Cond).min(1), changes: z.array(Eff).min(1) });
 const Witness = z.strictObject({ when: z.array(Cond).optional(), act: id });
 
@@ -137,6 +149,7 @@ export const Event = z.strictObject({
 })
   .refine(needsReason, reasonMsg)
   .refine((e) => e.outcomes[e.outcomes.length - 1]!.when.length === 0, { message: 'the last outcome has no conditions, so every event resolves' })
+  .refine((e) => e.outcomes.slice(0, -1).every((o) => o.changes.length > 0), { message: 'only the last outcome may change nothing (fight.public: anything else moves 0)' })
   .refine((e) => new Set(e.outcomes.map((o) => o.id)).size === e.outcomes.length, { message: 'outcome ids repeat' });
 export type Event = z.infer<typeof Event>;
 
@@ -299,6 +312,8 @@ export const Rulebook = z.strictObject({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
+    // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses
+    rivalsPublic: z.enum(RIVALS_PUBLIC).optional(), rivalsPublicReason: text.optional(),
   }),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
@@ -441,7 +456,8 @@ export function checkRulebook(rb: Rulebook, people: PeopleRules): string[] {
     want(K, 'tie kind', rb.standing.word.ties, 'standing.word.ties');
     // the Standing line's causes: one seen-<act> per traceable act that moves Standing, and the fixed rest (the engine emits only these)
     const seen = Object.entries(rb.traceable).filter(([, t]) => t.standing !== 'none').map(([a]) => `seen-${a}`);
-    const causes = [...seen, ...STANDING_CAUSES].sort(), have = Object.keys(rb.standing.causes ?? {}).sort();
+    const fights = (collect(rb, 'do') as Eff[]).flatMap((f) => f.do === 'fight-standing' ? [f.cause] : []); // fight.public's outcomes name theirs
+    const causes = [...new Set([...seen, ...fights, ...STANDING_CAUSES])].sort(), have = Object.keys(rb.standing.causes ?? {}).sort();
     if (JSON.stringify(causes) !== JSON.stringify(have)) out.push(`standing.causes are ${have.join(',')}; the engine's are ${causes.join(',')}`);
     const sl = rb.debrief.lines['standing'];
     if (!sl || JSON.stringify(sl.fields) !== JSON.stringify(['district', 'from', 'to', 'band', 'cause', 'who'])) out.push('debrief.lines.standing carries district, from, to, band, cause, who');

@@ -25,13 +25,15 @@ namespace Suborned.Sim
         public readonly List<string> Untie = new List<string>(); // roles whose lover tie (and affair) a test cuts: "with no tie, the call doesn't pull him"
         public int? Security;           // brief 013: the security level 0..4 a scenario fixes (else the district's base + the mission's bonus)
         public int? Standing;           // brief 014: the district's Standing at the start, as a campaign hands it on (else rulebook standing.start)
+        public string? RivalsPublic;    // fight.public: how the public sees the rivals, as a scenario fixes it (else site rivals.public, else fight.rivalsPublic)
         /// <summary>For a behaviour-only comparison across brief 013 (suborned-sim hashes --legacy-start): leave the security level out of the
         /// canonical start, as the start states before it had none. Never set in play.</summary>
         public static bool LegacyCanonical;
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic");
+            if (n.Opt("rivalsPublic") is JNode rp) { s.RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, s.RivalsPublic) < 0) throw new FormatException($"{rp.Path}: rivalsPublic is one of {string.Join(", ", Rules.RivalsPublics)}"); }
             if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
             if (n.Opt("security") is JNode sl) { s.Security = sl.Int(); if (s.Security < 0 || s.Security > 4) throw new FormatException($"{sl.Path}: security level 0..4"); }
@@ -59,6 +61,7 @@ namespace Suborned.Sim
             if (Untie.Count > 0) { w.OpenArr("untie"); foreach (var x in Untie) w.Str(x); w.EndArr(); }
             if (Security.HasValue && !LegacyCanonical) w.Prop("security", Security.Value);
             if (Standing.HasValue) w.Prop("standing", Standing.Value); // only a start that fixes it adds bytes: every earlier start hashes as before
+            if (RivalsPublic != null) w.Prop("rivalsPublic", RivalsPublic); // likewise
             return w.EndObj().ToString();
         }
     }
@@ -261,6 +264,7 @@ namespace Suborned.Sim
                 if (RivalsPresent) Fail("rivals-reach-vale", "The rival crew reaches Vale first.");
                 else Fail("vale-leaves", "Vale leaves the district in the official car.");
             }
+            FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
         }
 
@@ -551,7 +555,9 @@ namespace Suborned.Sim
             if (witness.Turned) LadderMove(witness, "saw-violence");
             if (!incidents.Add("seen:" + incident)) return;
             AddTrail(R.WitnessTrail, $"witnessed:{incident}");
-            MoveStanding(-R.StandingStep, $"violence-seen:{incident}", "seen-violence", incident);
+            // Standing: a civilian shot at is violence (seen-violence); anyone else shot at (the guard, the rivals, officers) is the fight's
+            // to judge, once, when it ends (fight.public, Sky 2026-10-16): the incident's gunfire is traceable gunfire, Standing none
+            if (CivilianOf(incident) != null) MoveStanding(-R.StandingStep, $"violence-seen:{incident}", "seen-violence", incident);
         }
 
         /// <summary>Every change to Trail, Alert and standing with its cause, in order: the answer to "why is the investigation active?" (§13 T3).</summary>
@@ -571,6 +577,8 @@ namespace Suborned.Sim
 
         public void Finish()
         {
+            // a fight still open when the run ends ends with it (fight.public): its move replaces a checkpoint already taken at this tick
+            if (EndOpenFight() | fightClosedLate) { fightClosedLate = false; if (Checkpoints.Count > 0 && Checkpoints[Checkpoints.Count - 1].tick == Tick) Checkpoints.RemoveAt(Checkpoints.Count - 1); }
             if (Checkpoints.Count == 0 || Checkpoints[Checkpoints.Count - 1].tick != Tick) Checkpoints.Add((Tick, Hash.State(this)));
         }
     }

@@ -312,3 +312,27 @@ export function standingNext(rb: Rulebook, people: PeopleRules, from: number, mo
   }
   return { to, band: bandOf(rb, people, to), cause, who, word, wordUncapped, drift };
 }
+
+/** Sky 2026-10-16 (briefs/014/motive-standing.md, a public fight): what one fight moves Standing by when it ends, as the engine's
+ *  FightOutcome (sim GameCombat.cs): nothing unless public, else the first fight.public outcome whose conditions hold. */
+export type Fight = { public: boolean; firedOn: readonly ('security' | 'rivals')[]; firstByCell: boolean; rivalsBroken: boolean; rivalsPublic?: 'menace' | 'neutral' };
+export function fightStanding(rb: Rulebook, people: PeopleRules, f: Fight): { outcome: string; delta: number; cause: string } {
+  const e = event(rb, 'fight.public'), pub = f.rivalsPublic ?? rb.fight.rivalsPublic ?? 'menace';
+  if (!f.public) return { outcome: 'unheard', delta: 0, cause: '' };
+  const ok = (c: Cond): boolean => {
+    switch (c.k) {
+      case 'fired-on': return c.in.some((x) => f.firedOn.includes(x));
+      case 'rivals-public': return c.in.includes(pub);
+      case 'fired-first': return f.firstByCell === c.is;
+      case 'rivals-broken': return f.rivalsBroken === c.is;
+      default: throw new Error(`fight.public: condition ${c.k} is not a fight's`);
+    }
+  };
+  for (const o of e.outcomes) {
+    if (!o.when.every(ok)) continue;
+    const ch = o.changes.find((x) => x.do === 'fight-standing');
+    if (!ch || ch.do !== 'fight-standing') return { outcome: o.id, delta: 0, cause: '' };
+    return { outcome: o.id, delta: (ch.toward === 'hero' ? 1 : -1) * num(rb, people, ch.step), cause: ch.cause };
+  }
+  return { outcome: 'none', delta: 0, cause: '' };
+}

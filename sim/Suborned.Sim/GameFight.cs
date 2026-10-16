@@ -34,6 +34,7 @@ namespace Suborned.Sim
             if (!Start.FinalFight || FightBranch.Length > 0) return;
             bool loud = Gunfire > 0 || Alert >= 2;
             FightBranch = loud ? "loud" : "safe"; FightStart = Tick;
+            FightJoinsFinal(); // fight.public: gunfire still open is the final fight
             if (loud)
             {
                 int n = R.LoudOfficers;

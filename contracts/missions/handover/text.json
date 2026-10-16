@@ -542,7 +542,9 @@
    "causes": {
     "seen-debt-cleared": "A debt was cleared in plain sight.",
     "seen-threat": "A threat was seen.",
-    "seen-gunfire": "Gunfire was seen.",
+    "seen-fight-security": "A gunfight with security was heard.",
+    "seen-fight-first": "Strangers started a street fight.",
+    "seen-fight-rivals": "Strangers drove off a feared crew.",
     "seen-weapon-drawn": "Drawn weapons were seen.",
     "seen-violence": "Violence was seen.",
     "seen-takedown": "A takedown was seen.",
@@ -758,6 +760,7 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
   "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled): bookkeeping; the shots speak through the fight events",

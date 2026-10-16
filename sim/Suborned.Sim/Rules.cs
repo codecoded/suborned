@@ -83,6 +83,9 @@ namespace Suborned.Sim
         public string Approach => IsTurn ? Id.Substring(5) : "";
     }
 
+    /// <summary>One of fight.public's outcomes (Sky 2026-10-16): its conditions (fight kinds only), and the Standing it moves with its cause.</summary>
+    public sealed class FightOutcome { public string Id = "", Cause = ""; public int Delta; public readonly List<Cond> When = new List<Cond>(); }
+
     public sealed class Temperament
     {
         public string Id = ""; public HashSet<string> RespondsTo = new HashSet<string>(StringComparer.Ordinal), Refuses = new HashSet<string>(StringComparer.Ordinal);
@@ -108,6 +111,8 @@ namespace Suborned.Sim
             ["tie"] = new[] { "kinds" }, ["tie-between-holds"] = new[] { "is" }, ["act"] = new[] { "in" }, ["within"] = new[] { "m", "sightline" },
             ["cell"] = new[] { "is" }, ["called"] = new[] { "is" }, ["exposed"] = new[] { "is" }, ["count"] = new[] { "event", "below" },
             ["done-to"] = new[] { "in" }, ["alive"] = new[] { "is" }, ["standing-moved"] = new[] { "is" }, // brief 014: Standing's word and drift
+            // Sky 2026-10-16 (briefs/014/motive-standing.md, a public fight): fight.public reads one fight
+            ["fight"] = new[] { "quiet" }, ["public"] = new[] { "m" }, ["fired-on"] = new[] { "in" }, ["rivals-public"] = new[] { "in" }, ["fired-first"] = new[] { "is" }, ["rivals-broken"] = new[] { "is" },
         };
         static readonly Dictionary<string, string[]> EffKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
@@ -117,12 +122,16 @@ namespace Suborned.Sim
             ["spend-hop"] = new string[0], ["tell"] = new[] { "along", "hops" }, ["lapse-tie"] = new string[0], ["replace-need"] = new[] { "stream" },
             ["schedule"] = new[] { "fight" }, ["debrief"] = new[] { "line" },
             ["word-standing"] = new[] { "toward", "step", "cap" }, ["drift-standing"] = new[] { "step", "to" }, // brief 014
+            ["fight-standing"] = new[] { "toward", "step", "cause" }, // Sky 2026-10-16: fight.public
         };
         /// <summary>What the cell did to a person this mission that their word carries (standing.word; rulebook.schema.ts DONE_TO).</summary>
         public static readonly string[] DoneTo = { "helped", "pressured", "knocked-out" };
         /// <summary>The Standing line's causes besides seen-&lt;traceable act&gt; (rulebook standing.causes; rulebook.schema.ts STANDING_CAUSES).</summary>
         public static readonly string[] StandingFixedCauses = { "found-killing", "word-helped", "word-pressured", "word-knocked-out", "balanced", "drift-down", "drift-up", "steady" };
         public static readonly string[] StandingLineFields = { "district", "from", "to", "band", "cause", "who" };
+        /// <summary>Whom the cell fired on in a fight, and how the public sees a mission's rivals (fight.public; rulebook.schema.ts FOES, RIVALS_PUBLIC).</summary>
+        public static readonly string[] Foes = { "security", "rivals" }, RivalsPublics = { "menace", "neutral" };
+        static readonly string[] FightKinds = { "fired-on", "rivals-public", "fired-first", "rivals-broken" };
         /// <summary>The kinds the engine itself evaluates inside a mission (the interpreted events: scout.*, turn.*; the reports table).</summary>
         static readonly HashSet<string> MissionKinds = new HashSet<string>(StringComparer.Ordinal)
         { "tier", "turned", "known", "leverage", "lover-within", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
@@ -171,6 +180,12 @@ namespace Suborned.Sim
         public readonly int StandingStart, StandingStep, HeroAt, MenaceAt;
         // brief 014 (Sky 2026-10-16, briefs/014/motive-standing.md): the word between missions and the drift back to the start
         public readonly int WordStandingStep, WordStandingCap, StandingDrift;
+        /// <summary>fight.public (Sky 2026-10-16, briefs/014/motive-standing.md, a public fight): a fight outside the final fight ends this
+        /// long after its last shot; it is public when a person of the city who is not security stands within this reach of a shot; its
+        /// outcomes in order, the first that holds moves Standing once when it ends; the rivals' public face when the mission names none.</summary>
+        public readonly int FightQuietTicks, FightPublicCm;
+        public readonly List<FightOutcome> FightOutcomes = new List<FightOutcome>();
+        public readonly string RivalsPublicDefault = "";
         public readonly HashSet<string> WordTies = new HashSet<string>(StringComparer.Ordinal), StandingCauses = new HashSet<string>(StringComparer.Ordinal);
         public readonly int WitnessRangeCm, WitnessTrail, ApproachReachCm, ListenReachCm, TrailOpen;
         // cell
@@ -345,6 +360,8 @@ namespace Suborned.Sim
             // brief 014: the Standing line's causes are exactly what the engine emits (unknown = reject, both ways)
             var wantCauses = new SortedSet<string>(StandingFixedCauses, StringComparer.Ordinal);
             foreach (var kv in Traceable) if (kv.Value != 0) wantCauses.Add("seen-" + kv.Key);
+            foreach (var e in b["events"].Items) foreach (var o in e["outcomes"].Items) foreach (var ch in o["changes"].Items) // fight.public's outcomes name theirs
+                if (ch["do"].Str() == "fight-standing") wantCauses.Add(ch["cause"].Str());
             if (!wantCauses.SetEquals(StandingCauses)) throw new FormatException($"standing.causes are {string.Join(",", new SortedSet<string>(StandingCauses, StringComparer.Ordinal))}; the engine's are {string.Join(",", wantCauses)}");
             if (b["debrief"]["lines"].Opt("standing") is not JNode sl || string.Join(",", sl["fields"].Strs()) != string.Join(",", StandingLineFields)) throw new FormatException("debrief.lines.standing carries " + string.Join(", ", StandingLineFields));
             b["debrief"].Only("lines", "rule", "tag", "src");
@@ -467,7 +484,8 @@ namespace Suborned.Sim
             foreach (var m2 in new[] { "saw-takedown", "attacked", "attacked-aware", "saw-carry", "found-body", "heard-alarm", "reported", "missed-expected" })
                 if (!MemoryActs.Contains(m2)) throw new FormatException($"memory.acts.{m2}: brief 013's act is missing");
             if (!Traceable.ContainsKey("takedown")) throw new FormatException("traceable.takedown is missing");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "traced", "tracedReason", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "rule", "tag", "src");
+            RivalsPublicDefault = OneOf(fg["rivalsPublic"], RivalsPublics); fg["rivalsPublicReason"].Str();
             fg["safe"].Only("hostiles", "minus", "warn", "ambush"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeMinus = RI(fg["safe"]["minus"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100;
             fg["loud"].Only("officers", "alert", "civilian"); LoudOfficers = RI(fg["loud"]["officers"]); LoudAlert = RI(fg["loud"]["alert"]); LoudCivilian = RI(fg["loud"]["civilian"]);
             HoldCm = RI(fg["hold"]) * 100; FightTraced = fg["traced"].Bool();
@@ -486,6 +504,23 @@ namespace Suborned.Sim
                 Reports.Add(list);
             }
             foreach (var ev in Events) ValidateEvent(ev);
+            { // Sky 2026-10-16 (briefs/014/motive-standing.md, a public fight): the engine reads one fight's ends, its reach and its outcomes from fight.public
+                var fp = Ev("fight.public"); Cond? quiet = null, pub = null;
+                foreach (var fc in fp.Needs) { if (fc.K == "fight") quiet = fc; else if (fc.K == "public") pub = fc; else throw new FormatException($"fight.public: a fight's needs are fight and public, not '{fc.K}'"); }
+                if (quiet == null || pub == null || fp.Needs.Count != 2) throw new FormatException("fight.public needs fight (quiet) and public (m)");
+                FightQuietTicks = checked((int)Num(quiet.S("quiet")) * Game.Hz); FightPublicCm = checked((int)Num(pub.S("m")) * 100);
+                foreach (var o in fp.Outcomes)
+                {
+                    var fo = new FightOutcome { Id = o.Id };
+                    foreach (var oc in o.When) { if (Array.IndexOf(FightKinds, oc.K) < 0) throw new FormatException($"fight.public.{o.Id}: '{oc.K}' is not a fight's condition"); fo.When.Add(oc); }
+                    foreach (var e in o.Changes)
+                    {
+                        if (e.Do != "fight-standing" || fo.Cause.Length > 0) throw new FormatException($"fight.public.{o.Id}: an outcome changes at most one fight-standing");
+                        fo.Delta = (e.S("toward") == "hero" ? 1 : -1) * checked((int)Num(e.S("step"))); fo.Cause = e.S("cause");
+                    }
+                    FightOutcomes.Add(fo);
+                }
+            }
             var pv = b["preview"]; pv.Only("rule", "unknown", "knownBy", "knownByRule", "tag", "src");
             KnownBy = pv["knownBy"].Strs(); foreach (var k in KnownBy) Ev(k);
             var ph = b["phases"]; ph.Only("mission-start", "between-missions", "iterate", "tag", "src");
@@ -574,8 +609,11 @@ namespace Suborned.Sim
                 case "lover-within": Num(c.S("m")); break;
                 case "requires": case "need-met-by": Known(approaches, c.S("approach"), "approach", w); break;
                 case "need-is": foreach (var x in c.L("in")) Known(Needs, x, "need", w); break;
-                case "need-met": case "orders-reached": case "talker": case "lies": case "cell": case "called": case "exposed": case "tie-between-holds": Bool("is"); break;
-                case "reach": case "within": Num(c.S("m")); if (c.K == "within") OneOf(n["sightline"], new[] { "3d" }); break;
+                case "need-met": case "orders-reached": case "talker": case "lies": case "cell": case "called": case "exposed": case "tie-between-holds": case "fired-first": case "rivals-broken": Bool("is"); break;
+                case "reach": case "within": case "public": Num(c.S("m")); if (c.K == "within") OneOf(n["sightline"], new[] { "3d" }); break;
+                case "fight": Num(c.S("quiet")); break;
+                case "fired-on": if (c.L("in").Count == 0) throw new FormatException($"{w}: fired-on names a foe"); foreach (var x in c.L("in")) OneOfStr(x, Foes, w); break;
+                case "rivals-public": if (c.L("in").Count == 0) throw new FormatException($"{w}: rivals-public names one"); foreach (var x in c.L("in")) OneOfStr(x, RivalsPublics, w); break;
                 case "memory": if (!MemoryActs.Contains(c.S("act"))) throw new FormatException($"{w}: memory act '{c.S("act")}' is unknown"); Bool("has"); if (n.Has("this")) OneOf(n["this"], new[] { "mission" }); if (n.Has("of")) OneOf(n["of"], new[] { "friend" }); break;
                 case "fit": foreach (var x in c.L("is")) if (Array.IndexOf(Fits, x) < 0) throw new FormatException($"{w}: fit '{x}' is unknown"); break;
                 case "temperament": foreach (var x in c.L("in")) Known(temps, x, "temperament", w); break;
@@ -616,6 +654,7 @@ namespace Suborned.Sim
                 case "debrief": if (!DebriefLines.Contains(e.S("line"))) throw new FormatException($"{w}: debrief line '{e.S("line")}' is unknown"); break;
                 case "word-standing": OneOf(n["toward"], new[] { "hero", "menace" }); Num(e.S("step")); Num(e.S("cap")); break;
                 case "drift-standing": Num(e.S("step")); Num(e.S("to")); break;
+                case "fight-standing": OneOf(n["toward"], new[] { "hero", "menace" }); Num(e.S("step")); if (!StandingCauses.Contains(e.S("cause"))) throw new FormatException($"{w}: cause '{e.S("cause")}' is not a standing cause"); if (ev.Id != "fight.public") throw new FormatException($"{w}: fight-standing is fight.public's"); break;
             }
         }
         static void OneOfStr(string v, string[] allowed, string where) { if (Array.IndexOf(allowed, v) < 0) throw new FormatException($"{where}: '{v}' is not one of {string.Join(", ", allowed)}"); }

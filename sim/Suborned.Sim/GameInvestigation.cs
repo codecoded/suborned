@@ -128,6 +128,7 @@ namespace Suborned.Sim
         /// <summary>The investigation (rulebook investigation; investigator.question), worked from the leads at the end of the mission.</summary>
         public Investigation Investigate()
         {
+            if (EndOpenFight()) fightClosedLate = true; // the mission is over: a fight still open ends with it (fight.public)
             var inv = new Investigation();
             if (Trail < R.TrailOpen) return inv;
             inv.Investigators = R.InvestigatorsBase + R.InvestigatorsPerAlert * Alert;

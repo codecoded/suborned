@@ -111,6 +111,8 @@ export const Mission = z.strictObject({
   roles: z.array(role),
   /** Route windows restated against the world (/3, later). */
   windows: z.array(window).optional(),
+  /** The rival role: how the public sees the mission's rival crew (Sky 2026-10-16; rulebook fight.public, default fight.rivalsPublic): read into the site. */
+  rivals: z.strictObject({ public: z.enum(['menace', 'neutral']), src, note }).optional(),
   /** The cell's issue of arms (GDD §07 "Arms 3"): read into the site. */
   arms: z.strictObject({ sidearms: z.number().int().nonnegative(), src, note }).optional(),
   /** §07's route prep times restated against the rulebook (the Scout's Watch and Listen): `from` names the rulebook values summed. */

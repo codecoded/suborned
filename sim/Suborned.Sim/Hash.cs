@@ -42,6 +42,12 @@ namespace Suborned.Sim
         /// <summary>For a behaviour-only comparison across a move of standing.start (suborned-sim hashes --standing-as n, brief 014): hash Standing
         /// as if the run had started at n. Never set in play.</summary>
         public static int StandingAs;
+        static void Fight(H h, PublicFight f)
+        {
+            h.I(f.Start).I(f.Last).I(f.End).Z(f.Final).Z(f.Public).Z(f.OnSecurity).Z(f.OnRivals).S(f.FirstSecurity).S(f.RivalsFirst).I(f.CrewBroken).I(f.Rivals.Count);
+            foreach (var r in f.Rivals) h.S(r);
+            h.S(f.Outcome).I(f.Delta);
+        }
         public static ulong State(Game g)
         {
             var h = new H();
@@ -81,6 +87,11 @@ namespace Suborned.Sim
             foreach (var x in g.Captured) h.S(x);
             foreach (var x in g.Hostiles) h.P(x.Home);
             g.HashAi(h.I); h.I(g.LastShotTick);
+            if (g.Fights.Count > 0 || g.OpenFight != null) // fight.public (Sky 2026-10-16): only a run with a fight adds bytes
+            {
+                foreach (var f in g.Fights) Fight(h, f);
+                h.Z(g.OpenFight != null); if (g.OpenFight != null) Fight(h, g.OpenFight);
+            }
             if (g.People2 != null && g.Start.Crowd)
                 foreach (var w in g.Walkers)
                 {

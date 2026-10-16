@@ -79,6 +79,7 @@ describe('handover mission file', () => {
     expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'block-spot',
       'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally']); // the final fight's posts since engine 0.4.0
     expect(mission.arms?.sidearms).toBe(3); // GDD §07 Arms 3
+    expect(mission.rivals?.public).toBe('menace'); // briefs/014/motive-standing.md rule 4: the Handover's rivals are feared (fight.public)
     expect(mission.cameras!.map(c => `${c.id}>${c.looksAt}`)).toEqual(['entrance>Office entrance', 'pickup>Official drop-off']);
     expect(broken(m => { m.points[0].structure = 'civic-control-cabinet'; })).toBe(false); // a structure's centre and a point at once
     expect(broken(m => { m.points[1].id = 'cabinet'; })).toBe(false);

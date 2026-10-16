@@ -507,8 +507,8 @@ describe('brief 014: Standing leans Hero (Sky 2026-10-16; briefs/014/motive-stan
   });
   test('the cap (N91): three helped net +3, the district moves +2; seen acts are never capped', () => {
     expect(R.standingNext(rb, people, 2, [], ['waitress', 'driver', 'guard'].map((w) => tell(w, 'helped')))).toMatchObject({ to: 4, word: 2, wordUncapped: 3, cause: 'word-helped', who: 'waitress' });
-    const seen = [1, 2, 3, 4].map(() => ({ delta: -1, cause: 'seen-gunfire', who: '' }));
-    expect(R.standingNext(rb, people, 2, seen, [])).toMatchObject({ to: -2, cause: 'seen-gunfire' });
+    const seen = [1, 2, 3, 4].map(() => ({ delta: -1, cause: 'seen-fight-security', who: '' }));
+    expect(R.standingNext(rb, people, 2, seen, [])).toMatchObject({ to: -2, cause: 'seen-fight-security' });
   });
   test('drift both ways, never past the start (N92, N92b); nothing moved at the start is steady (N94)', () => {
     expect([5, 3, 2, -3].map((f) => { const x = R.standingNext(rb, people, f, [], []); return [x.to, x.cause]; })).toEqual([[4, 'drift-down'], [2, 'drift-down'], [2, 'steady'], [-2, 'drift-up']]);
@@ -516,6 +516,28 @@ describe('brief 014: Standing leans Hero (Sky 2026-10-16; briefs/014/motive-stan
   });
   test('helped and pressured counts as pressured (N93)', () => {
     expect(R.standingNext(rb, people, 2, [], [tell('waitress', 'helped', 'pressured')])).toMatchObject({ to: 1, cause: 'word-pressured', word: -1 });
+  });
+  test('a public fight moves Standing once, by whom the cell fought (Sky 2026-10-16; N95-N101): fight.public, the first outcome that holds', () => {
+    const e = R.event(rb, 'fight.public');
+    expect([e.src, e.phase, e.by]).toEqual([expect.stringContaining('Sky 2026-10-16'), 'mission', 'city']);
+    expect(e.needs).toEqual([{ k: 'fight', quiet: 'v:crowd-quiet-s' }, { k: 'public', m: 'v:crowd-scatter-m' }]);
+    expect(e.outcomes.map((o) => o.id)).toEqual(['security', 'first', 'rivals', 'none']);
+    expect([n(rb.crowd.quiet), n(rb.crowd.scatter), n('v:fight-standing-step'), rb.fight.rivalsPublic]).toEqual([30, 30, 1, 'menace']);
+    expect(rb.traceable['gunfire']!.standing).toBe('none'); // a shot is no Standing act: the fight is (seen-gunfire retired)
+    expect(Object.keys(rb.standing.causes!).filter((c) => c.startsWith('seen-fight-')).sort()).toEqual(['seen-fight-first', 'seen-fight-rivals', 'seen-fight-security']);
+    expect(rb.standing.causes!['seen-gunfire']).toBeUndefined();
+    const f = (x: Partial<R.Fight>) => R.fightStanding(rb, people, { public: true, firedOn: [], firstByCell: false, rivalsBroken: false, ...x });
+    expect(f({ firedOn: ['rivals'], rivalsBroken: true })).toEqual({ outcome: 'rivals', delta: 1, cause: 'seen-fight-rivals' }); // N95: feared rivals driven off
+    expect(f({ firedOn: ['rivals'], rivalsBroken: false }).delta).toBe(0); // N96: not won
+    expect(f({ firedOn: ['rivals'], firstByCell: true, rivalsPublic: 'neutral' })).toEqual({ outcome: 'first', delta: -1, cause: 'seen-fight-first' }); // N97
+    expect(f({ firedOn: ['rivals'], firstByCell: false, rivalsPublic: 'neutral', rivalsBroken: true }).delta).toBe(0); // neutral rivals who fired first
+    expect(f({ firedOn: ['security'] })).toEqual({ outcome: 'security', delta: -1, cause: 'seen-fight-security' }); // N98
+    expect(f({ firedOn: ['security', 'rivals'], rivalsBroken: true })).toMatchObject({ outcome: 'security', delta: -1 }); // N99: authority outranks
+    expect(f({ public: false, firedOn: ['security'] }).delta).toBe(0); // N100: nobody heard it
+    const bad = structuredClone(raw); bad.events.find((x: { id: string }) => x.id === 'fight.public').outcomes[0].when[0].in = ['police'];
+    expect(Rulebook.safeParse(bad).success).toBe(false); // the foes are security or rivals
+    const cause = structuredClone(raw); cause.events.find((x: { id: string }) => x.id === 'fight.public').outcomes[2].changes[0].cause = 'seen-fight-won';
+    expect(checkRulebook(Rulebook.parse(cause), people).join()).toContain('standing.causes'); // a fight's cause is a standing cause, both ways
   });
   test('unknown = reject: a cause the engine does not emit, a done-to it does not know, a word tie people.rules lacks', () => {
     const cause = structuredClone(raw); cause.standing.causes['seen-kindness'] = 'x';

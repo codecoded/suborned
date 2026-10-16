@@ -662,7 +662,8 @@
   "park": "rival-park",
   "entry": "rival-entry",
   "front": "d:Office approach",
-  "src": "GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office"
+  "public": "menace",
+  "src": "GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office; public: mission.json rivals (Sky 2026-10-16 (via Aster: 'a rival gang that has menace level authority is a +1'); briefs/014/motive-standing.md, a public fight, rule 4: the Handover's rivals are menace)"
  },
  "security": {
   "entry": "security-entry",

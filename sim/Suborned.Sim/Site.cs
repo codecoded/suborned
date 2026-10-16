@@ -39,6 +39,9 @@ namespace Suborned.Sim
         public readonly string[] FightAmbush, FightPolice;
         public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
+        /// <summary>How the public sees the mission's rivals (mission.json rivals.public: menace or neutral; Sky 2026-10-16, fight.public); "" when the
+        /// mission names none, and the rulebook's fight.rivalsPublic stands.</summary>
+        public readonly string RivalsPublic = "";
         public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
         public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
         public readonly string CoverSha = "";
@@ -175,7 +178,8 @@ namespace Suborned.Sim
             GuardPost = P(gu["post"]); GuardCafe = P(gu["cafe"]); GuardFacing = F(gu["facing"]); CafeFacing = F(gu["cafeFacing"]);
             var va = r["vale"]; va.Only("exit", "car", "service", "src"); ValeExit = P(va["exit"]); ValeCar = P(va["car"]); ValeService = P(va["service"]);
             var ca = r["car"]; ca.Only("pickup", "driver", "service", "block", "src"); CarPickup = P(ca["pickup"]); CarDriver = P(ca["driver"]); CarService = P(ca["service"]); CarBlock = P(ca["block"]);
-            var ri = r["rivals"]; ri.Only("park", "entry", "front", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
+            var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
+            if (ri.Opt("public") is JNode rp) { RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, RivalsPublic) < 0) throw new FormatException($"{rp.Path} = '{RivalsPublic}' is not one of {string.Join(", ", Rules.RivalsPublics)}"); }
             var se = r["security"]; se.Only("entry", "via", "to", "src"); SecEntry = P(se["entry"]); SecVia = P(se["via"]); SecTo = P(se["to"]);
             var ge = r["getaway"]; ge.Only("car", "src"); GetawayCar = P(ge["car"]);
             var fi = r["fight"]; fi.Only("ambush", "police", "entry", "guard", "src");

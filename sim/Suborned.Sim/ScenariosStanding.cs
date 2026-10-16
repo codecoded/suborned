@@ -7,6 +7,9 @@
 //  N92, N92b drift both ways: a district where nothing moved steps back toward the start, from the Hero side and from the Menace side, never past it
 //  N93 helped and pressured counts as pressured: one Help (not yet), then a Pressure nobody sees: the word is −1, and the Help adds nothing
 //  N94 the start is +2: neutral prices in the mission, and nothing moved means steady at +2
+//  N95-N101 a public fight moves Standing once, when it ends, by whom the cell fought (Sky 2026-10-16, via Aster; fight.public, replacing
+//            0.6.1's per-target gunfire.heard): feared rivals driven off +1 (the safe final fight), a rival fight not won 0, firing first on
+//            neutral rivals −1, a fight with security −1, a mixed fight −1, a fight nobody heard 0, and two fights 30 s apart two moves
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,6 +171,8 @@ namespace Suborned.Sim
                 var l = OneLine(r, g.BetweenMissions(g.Investigate()));
                 r.Eq((l.From, l.To, l.Drift, l.Cause), (2, 2, 0, "steady"), "nothing moved: steady at +2");
             }, Knowing(Inez));
+
+            PublicFightCases();
         }
         static Start Also(this Start s, Action<Start> f) { f(s); return s; }
     }

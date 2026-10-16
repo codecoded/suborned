@@ -275,6 +275,7 @@ namespace Suborned.Sim
                 var tg = GunOf(s.T)!;
                 tg.ShotBy = s.By; tg.ShotByTick = Tick;
                 shotsThisTick.Add(s.From); LastShotTick = Tick; lastShooter = s.From; // the crowd hears it (Pulse §4)
+                FightShot(s.By, s.T, s.From); // the public hears it: one fight, judged when it ends (fight.public)
                 if (IsOpId(s.T)) CellFiredOn = true;
                 Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
                 bool cell = IsOpId(s.By), untraced = cell && IsFightHostile(s.T) && !R.FightTraced;
@@ -381,6 +382,7 @@ namespace Suborned.Sim
                     if (down)
                     {
                         tg.Health = tg.Max; RivalsDelayedUntil = Tick + T(R.RivalsRetreatS); RivalsDelayMethod = "fire"; // running away isn't a drop (no Trail)
+                        CrewBroken(); // fight.public: the crew broke in this fight
                         Chain.Add("rivals-driven-back"); Note("rivals.retreat", "The rivals retreat for now.");
                     }
                     else Note("rivals.hit", "The rival crew takes a hit.");
