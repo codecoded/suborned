@@ -333,6 +333,51 @@ public static class Drive
         L($"door state {h.DoorState} eye {h.DoorEye} marked {h.DoorMarked} tick {h.Game.Tick}");
         yield return VShot("01c-door-seen", "rest");
     }
+    // ---------------------------------------------------------------- Intel, redesigned (Glyph; Sky approved): shots into briefs/016/intel/
+    static string IN(string n) => "/Users/sky/Projects/suborned/briefs/016/intel/" + n;
+    static System.Collections.IEnumerator IShot(string name, string state) { yield return Frames(4); while (HudToolkit.ShotBusy) yield return null; L(name + ": " + HudToolkit.Shoot(IN(name), state) + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    static string IntelState() { var h = H; var l = new System.Collections.Generic.List<string>(); foreach (var r in HudToolkit.IntelOrderNow) { var p = h.Game.PersonByRole(r); l.Add($"{r}[R{(p.KRoutine ? 1 : 0)} N{(p.KNeed ? 1 : 0)}{(p.Suspected.Length > 0 ? "s" : "")} T{(p.KTemperament ? 1 : 0)} S{(p.KSecret ? 1 : 0)} turned {p.Turned}]"); } return string.Join(" ", l); }
+    public static string Intel16() { rlog.Clear(); H.StartCoroutine(IntelCo()); return "started"; }
+    static System.Collections.IEnumerator IntelCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false; yield return Mouse(-50, -50, false);
+        h.Begin(); h.StartClock(); h.SetPaused(true); h.RunTo(20); h.IntelOpen = true; h.Select(OpId.Fixer, false); h.ClearHover(); yield return Frames(3);
+        L("start: " + IntelState()); yield return IShot("01-start", "rest");
+        HudToolkit.IntelHoverForce = (0, 0); yield return IShot("h1-told-slot", "active");
+        HudToolkit.IntelHoverForce = (0, 1); yield return IShot("h2-unknown-slot", "active");
+        HudToolkit.IntelHoverForce = (0, 3); yield return IShot("h3-chip-cream", "active");
+        HudToolkit.IntelHoverForce = null;
+        // the chip: a first click selects the Scout, a second gives the order
+        int n0 = h.Game.Orders.Count; HudToolkit.IntelClick(0); L($"chip click 1: agent {h.Agent} selected scout {h.Selected[0]} orders {n0}->{h.Game.Orders.Count}");
+        yield return Frames(3); HudToolkit.IntelHoverForce = (0, 3); yield return IShot("h4-chip-turquoise", "active"); HudToolkit.IntelHoverForce = null;
+        HudToolkit.IntelClick(0); L($"chip click 2: orders {n0}->{h.Game.Orders.Count} last {h.Game.Orders[h.Game.Orders.Count - 1]} pending {h.PendingOf(0).verb}");
+        // mid: route G at 2:00 (the guard watched)
+        L("mid setup " + Setup16()); h.Cancel(); h.ClosePanel(); h.IntelOpen = true; h.ClearHover(); L("mid: " + IntelState()); yield return IShot("02-mid", "rest");
+        // hover a learned slot (the guard: routine watched; Inez's need is told)
+        int gi = Array.IndexOf(HudToolkit.IntelOrderNow, "guard");
+        // late: route B at 3:54 (the driver watched, paid, listened: turned)
+        h.Begin(); h.IntelOpen = true; h.StartClock(); h.SetPaused(true);
+        Move("enforcer", "d:Service lane"); Move("scout", "d:Meet driver"); Move("fixer", "d:Boarding pavilion");
+        h.RunTo(556); h.Select(OpId.Scout, false); h.Pick(0); TC("person", "driver"); h.Cancel();
+        Free(756, 0); Move("scout", "d:Meet driver"); h.Select(OpId.Fixer, false); h.Pick(1); TC("person", "driver"); h.Cancel();
+        h.RunTo(778); h.Select(OpId.Scout, false); h.Pick(1); TC("person", "driver"); h.Cancel();
+        // and Inez learned in full, not turned: the Fixer's chip
+        { int w0 = 0; while ((h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null || h.PendingOf(0).verb.Length > 0) && w0++ < 3000) h.RunTo(h.Game.Tick + 1); }
+        h.Pick(0); L("watch inez " + TC("person", "waitress")); h.Cancel();
+        { int w0 = 0; while ((h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null || h.PendingOf(0).verb.Length > 0) && w0++ < 3000) h.RunTo(h.Game.Tick + 1); }
+        h.Pick(1); L("listen inez " + TC("person", "waitress")); h.Cancel();
+        { int w0 = 0; while ((h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null || h.PendingOf(0).verb.Length > 0) && w0++ < 3000) h.RunTo(h.Game.Tick + 1); }
+        h.Select(OpId.Fixer, false); h.ClearHover();
+        yield return new WaitForSecondsRealtime(3.5f); // the Listen's two bubbles (stacked 5 px apart) have gone: the shot is about Intel
+        L("late: " + IntelState() + " tick " + h.Game.Tick); yield return IShot("03-late", "rest");
+        int di = Array.IndexOf(HudToolkit.IntelOrderNow, "driver"), wi = Array.IndexOf(HudToolkit.IntelOrderNow, "waitress");
+        HudToolkit.IntelHoverForce = (di, 1); yield return IShot("h5-learned-slot", "active");
+        HudToolkit.IntelHoverForce = (di, 2); yield return IShot("h7-no-secret", "active");
+        HudToolkit.IntelHoverForce = (wi, 3); yield return IShot("h8-turn-chip", "active"); HudToolkit.IntelHoverForce = null;
+        // worst case: the longest name and fragment (the layout audit)
+        HudToolkit.Stress = true; HudToolkit.IntelHoverForce = (di, 0); yield return Frames(4); L($"stress audit: {Audit()}"); yield return IShot("h6-worst-case", "active"); HudToolkit.Stress = false; HudToolkit.IntelHoverForce = null;
+        L("intel done");
+    }
     public static string Turn(int k) { var h = H; h.TurnSnap(k); h.ClearHover(); return $"yaw {h.Yaw:0} index {h.YawIndex}"; }
     public static string TurnShot(int k, string name, string state) { if (HudToolkit.ShotBusy) return "busy (not turned)"; Turn(k); return HudToolkit.Shoot(ShotDir + name, state); }
     /// <summary>Where each key person stands on screen now: in view (viewport x, y), or off it, and whether an edge arrow points (Vale only).</summary>

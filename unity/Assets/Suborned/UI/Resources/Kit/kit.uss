@@ -272,6 +272,8 @@
 .i-pointer { background-image: url("icons/singles/pointer@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-routine { background-image: url("icons/singles/routine@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-run { background-image: url("icons/singles/run@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-secret_none { background-image: url("icons/singles/secret_none@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-turn_person { background-image: url("icons/singles/turn_person@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-turn_view { background-image: url("icons/singles/turn_view@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .btn_verb:hover { background-image: url("buttons/btn_verb_hover@2x.png"); }
 .btn_verb:active { background-image: url("buttons/btn_verb_pressed@2x.png"); }

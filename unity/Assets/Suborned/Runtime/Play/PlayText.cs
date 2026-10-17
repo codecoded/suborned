@@ -74,6 +74,8 @@ namespace Suborned.Play
         /// <summary>Brief 014 (Fable's `less` block): the short forms the play HUD shows at rest. Pops by the host's own refusals, a cancel's 1 to 3
         /// words, the outcome words for Alt, the objective and briefing goal lines, the end card's one line, the feed and hint timings, and the
         /// price grammar (`less.price.verbs`: which fields each order's one line shows, in `less.price.order`).</summary>
+        /// <summary>Intel's fragments (text.json less.intel), keyed "group.value": need, temperament, secret, verb.</summary>
+        public readonly Dictionary<string, string> Intel = new();
         public readonly Dictionary<string, string> Pops = new(), CancelShort = new(), AltOutcome = new(), EndFail = new(), TimelineShort = new();
         public readonly Dictionary<string, List<string>> PriceVerbs = new();
         public readonly List<string> PriceOrder = new();
@@ -196,6 +198,7 @@ namespace Suborned.Play
         {
             static float F(JNode n, string k, float d) => n?.Opt(k) is JNode x && x.Kind == JKind.Num && float.TryParse(x.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : d;
             if (l.Opt("pop") is JNode p) foreach (var kv in p.Entries) Pops[kv.Key] = kv.Value.Str();
+            if (l.Opt("intel") is JNode inl) foreach (var grp in inl.Entries) if (grp.Value.Kind == JKind.Obj) foreach (var kv in grp.Value.Entries) if (kv.Value.Kind == JKind.Str) Intel[grp.Key + "." + kv.Key] = kv.Value.Str(); // Fable's Intel fragments: need.debt, secret.affair-named, verb.watch
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
             if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
             if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjShowS = F(ob, "showSeconds", ObjShowS); } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it

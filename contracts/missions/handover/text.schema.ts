@@ -207,6 +207,9 @@ export const Entry = z.strictObject({
 });
 export type Entry = z.infer<typeof Entry>;
 
+/** An Intel fragment: one or two words (a `{name}` does not count) naming a fact, 14 characters at most, never a sentence. */
+const Fragment = z.string().min(1).max(16).regex(/^[A-Z][A-Za-z {}]*$/);
+
 /** brief 014: the short forms and the grammar the play HUD reads at rest. Nothing here is a rule; every number a line carries comes from the engine. */
 export const Less = z.strictObject({
   rule: z.string().min(1),
@@ -251,6 +254,13 @@ export const Less = z.strictObject({
     showSeconds: z.number().int().min(2).max(10),
     returnSeconds: z.number().int().min(5),
     maxShows: z.number().int().min(1).max(3),
+  }),
+  intel: z.strictObject({
+    rule: z.string().min(1),
+    need: z.record(code, Fragment).describe('one fragment per need value the rulebook allows (people.rules.json needs.list); a new need without one fails the test'),
+    temperament: z.record(code, Fragment).describe('one fragment per temperament (people.rules.json temperaments)'),
+    secret: z.record(code, Fragment).describe('one fragment per secret value (people.rules.json secrets), `affair-named` with {name} (the lover, cast) and `none` (nothing hidden)'),
+    verb: z.record(code, Fragment).describe('the chip word and the unknown-slot word: watch, listen, turn'),
   }),
 });
 export type Less = z.infer<typeof Less>;

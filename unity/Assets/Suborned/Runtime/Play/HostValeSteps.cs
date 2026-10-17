@@ -67,6 +67,25 @@ namespace Suborned.Play
         /// <summary>The objective's step (Fable's less.objective.steps): take, then bring once Enter is given, then carry once Vale is with him.</summary>
         public string ObjectiveKey => Game == null ? "take" : Game.Vale == ValeAt.WithEnforcer ? "carry" : Game.Vale == ValeAt.Office && EnterGiven ? "bring" : "take";
 
+        /// <summary>Intel's next-step chip (HudToolkit.Intel): the Scout's Watch or Listen on a person, given as the action panel gives it (walk,
+        /// then act; refused orders pop their reason), or the Fixer's panel on the person for a turn.</summary>
+        public void IntelOrder(string role, string verb)
+        {
+            if (Game == null || Modal != ModalGate.Modal.None) return;
+            var t = new Target { Kind = "person", Key = role, Label = Name(role), Id = role };
+            if (verb == "turn")
+            {
+                var tr = views?.Find(role); if (!tr || !cam) return;
+                var vp = cam.WorldToViewportPoint(tr.position); if (vp.z <= 0 || vp.x < 0.1f || vp.x > 0.9f || vp.y < 0.1f || vp.y > 0.9f) LookAt(tr.position);
+                var sp = cam.WorldToScreenPoint(tr.position + Vector3.up); Physics.SyncTransforms(); PointerHover(sp); OpenPanel(t, sp); return;
+            }
+            int slot = verb == "watch" ? 0 : 1; Intent i = null; Guard("intel", () => i = Verb(OpId.Scout, slot, t)); if (i?.Order == null) return;
+            var lk = Locked(OpId.Scout, i, t);
+            if (!lk.ok) { var w = views?.Find(role); Pop(ShortOf(i.Order, lk) ?? lk.why, null, w ? w.position : (Vector3?)null, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), lk.why); return; }
+            if (SeenGate(i, t, null, "left")) return;
+            Give(OpId.Scout, i.Order, t, null);
+        }
+
         /// <summary>A right click on a person's pin (the HUD's pip): as a right click on the person (Sky, route B: Vale's star over his car).</summary>
         public void RightOnPerson(string role)
         {

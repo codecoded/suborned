@@ -167,8 +167,10 @@ export function analyse(shot: Image, o: Options): Report {
   const { w, h } = shot, { mask, how } = maskOf(shot, o); let n = 0; for (const v of mask) n += v;
   const coveragePct = (n / (w * h)) * 100, limitPct = LIMIT[o.state], failures: string[] = [], warnings: string[] = [];
   const all = textRuns(shot, mask), els = o.manifest?.elements ?? [];
+  const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
+  const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
   for (const r of all) { const e = els.find(e => (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line') && inside(r, e)); if (e) { r.kind = e.kind as Run['kind']; } }
-  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line')) for (const r of all) if (inside(r, e)) r.words = wordsOf(e.text); }
+  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
   const art = els.filter(e => e.kind === 'image'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
   const sentences = hudRuns.filter(isSentence);
@@ -178,7 +180,7 @@ export function analyse(shot: Image, o: Options): Report {
   if (sentences.length) failures.push(`${sentences.length} line${sentences.length > 1 ? 's' : ''} of running text that is not speech`);
   if (blocks.length) failures.push(`${blocks.length} block${blocks.length > 1 ? 's' : ''} of stacked text`);
   const lines = (es: Run[]) => { const ys = es.map(r => r.y + r.h / 2).sort((a, b) => a - b); let n = 0, last = -1e9; for (const y of ys) { if (y - last > 8) n++; last = y; } return n; };
-  if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines || b.reduce((a, r) => a + r.words, 0) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
+  if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
     if (beats.some(r => r.words > BEAT_MAX.words)) failures.push(`a story beat is longer than ${BEAT_MAX.words} words`);

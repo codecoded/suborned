@@ -230,3 +230,53 @@ A plain cream ring with a turquoise clock fill and nothing inside. Seen: the con
 - Glyphs: all exist already (`s_moving`, `eye_open`, `eye_unk`, `p_alert`, `run`); no new art.
 - Build note for Latch: ring as a ground decal (an arc shader for the clock fill, an ellipse mask), the symbol a world-space billboard; the glow a soft ribbon along the route polyline clipped to each learned cone.
 - Against the references (search notes in the research file): Desperados III shows a cone on demand and zones inside it, Invisible Inc. marks the watched tiles, Shadow Tactics holds a key for the cones; none puts a sentence in the move preview. Ours adds the single ring and the watcher's colour.
+
+## Intel panel, redesigned (Glyph, 2026-10-18; Sky: "this needs work")
+Mock: `briefs/016/intel/intel.png` (before, after at 2x, three hover states), `briefs/016/intel/intel-on-shot.png` (on a real play shot; `intel-on-shot-2x.png` close up). Script: `briefs/014/glyph/scripts/intel.py`. No new art: it uses the existing `npc_*` badges, the need, temperament and `secret` glyphs, `listen`, `watch`, the cameo portraits, `chev_up` and `panel_dark`.
+
+**The problem it fixes.** Names sat against the screws, name and role were spread across an empty panel, and the three icons (need with a dotted ring, a "?" disc, a lone ear or binoculars) had no readable meaning.
+
+### Layout (all px at 1080p, sized to content)
+- **Panel:** `panel_dark`, 280 wide, anchored top right as now (right 14, top 108). Height = 40 header + 62 per card + 6 between cards + 26 bottom. Three people is 264 px. Padding: 26 px each side, so content clears the corner screws (the screws end about 20 px in).
+- **Header:** "INTEL" (Jost 11.5 bold caps, `#bee0d8`) at x 28, and a `chev_up` fold at the right. No subtitle.
+- **Card:** a plate 228 x 62, radius 9, fill `#164240`, 1 px rim `#6eafa8` at 43% opacity. The first card (the person the plan needs next) is a little lighter (`#20585a`) and has a 3.4 px turquoise bar down its left edge. That is the only "priority" cue.
+- **Inside a card** (offsets from the card's top left):
+  - role badge: the `npc_*` badge at 36 px, centre (26, 31);
+  - line 1: name (Jost 13.5 bold, cream) with a baseline at y 21 and x 52, then " ·  role" (Barlow 12, `#96c0ba`) on the same line;
+  - line 2: the three fact slots and the chip, centred on y 44.
+- **Slots**, left to right at centres x 64, 94, 127; each 24 px high:
+  1. **need**, a circle (`debt`, `cash`, `housing`, ...);
+  2. **temperament**, a rounded square (`idealist`, `mercenary`, `fearful`, `loyal`);
+  3. **ties or secret**, a landscape tab 30 x 24 (`secret`, `kin`).
+  - The frame shape is the label, and the order is the same on every card.
+- **Slot states** (shape and rim, never colour alone):
+  - learned: ink fill `#0a2624`, solid cream rim 1.3 px, cream glyph 15 px;
+  - told: the same with a dashed rim, glyph at 80%;
+  - unknown: dashed rim, a quiet bold "?" (Jost 12.5, 70% cream), no glyph.
+  - Never use the old dotted-ring "?" disc.
+- **Turned:** the badge gets a 2 px turquoise ring and a `mark_ok` at its lower right, and the chip is replaced by nothing (all done). The slots stay.
+- **Next-step chip**, right-aligned (10 px from the card's right), 56 x 26, radius 13:
+  - content: the acting agent's cameo (18 px, ring) and the verb glyph (15 px: `listen` or `watch`);
+  - turquoise rim and glyph: the right agent is selected, a click gives the order;
+  - cream rim: a click selects the right agent (and a second click gives the order);
+  - no text on the chip.
+
+### Hover (one fragment, one line)
+Tooltip: a dark chip 24 px tall, cream 1.3 px rim, radius 8, glyph 13 px then Jost 12 bold, under the slot, drawn above everything. The slot gets a turquoise ring (+2.4 px).
+- **learned slot:** its fact as a fragment, two words at most ("Debt", "Cash", "For hire", "Loyal", "Her guard"), from the cast data. No sentence.
+- **told slot:** the same fragment; the dashed rim already says it was told, so no extra word.
+- **unknown slot:** how to learn it, as the verb glyph and one word: "Listen" (temperament, need, ties by talk) or "Watch" (routine, who they meet). The verb comes from the rulebook's learn source for that slot.
+- **chip:** the verb word ("Listen" or "Watch").
+
+### Interaction
+- Click the chip: the right agent selected, order given (as the action panel does), else it selects that agent. Click a slot: the same as its row's chip. Click the badge or name: centre the camera on the person if known on the map.
+- Hit areas: slots and chip at least 28 x 28 (pad the 24 px frames).
+- Keyboard: Tab walks the cards, Enter does the chip.
+
+### Sort
+By relevance to the plan, from the mission's order list (the person the next plan mark depends on first), then people with an unknown slot a cheap verb can fill, then the rest. The order is recomputed when a fact is learned, not every frame, so rows do not jump under the cursor.
+
+### Budget and checks
+- Words on screen: the three names and roles per card and the header; no sentences. Facts are glyphs. Run `tools/hud-budget` on a real capture.
+- Signal colours: none used. Turquoise is the cell's highlight colour.
+- Max four cards (the known people); a fifth scrolls inside the panel, never grows it past 360 px.

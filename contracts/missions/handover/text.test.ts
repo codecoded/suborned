@@ -67,7 +67,8 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     for (const [k, x] of Object.entries(L.end.fail)) push(`less.end.fail.${k}`, x, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.pop)) push(`less.pop.${k}`, x, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.cancel)) push(`less.cancel.${k}`, x, false, 20);
-    for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x); }
+    for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x);
+    for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
 /** A line with the host's placeholders filled at their widest. */
@@ -1106,5 +1107,57 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(Object.keys(t.cards.items).length).toBe(52);
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
+  });
+});
+
+// ---------------------------------------------------------------- brief 016: Intel fragments (Fable, 2026-10-18)
+describe('brief 016: the Intel panel\'s fragments cover every need, temperament and secret the cast and the rules can produce', () => {
+  const I = t.less.intel;
+  const cast = json('contracts/people/harbour-district.cast.json') as { rows: { needs: { need: string }[]; temperaments: { temperament: string }[]; secrets?: { secret: string }[] }[] };
+  const promo = json('contracts/people/harbour-district.cast.promotion.json') as { cast: { file: string } };
+  const GENDER = /\b(he|she|him|her|hers|his|himself|herself|man|men|woman|women|boy|girl|sir|madam|lady|lord)\b/i;
+  const needsRule = Object.keys(people.needs.list);
+  const tempRule = Object.keys(people.temperaments);
+  const secretRule = Object.keys(people.secrets?.list ?? {});
+  const missing = (have: Record<string, string>, want: Iterable<string>) => [...new Set(want)].filter((k) => !(k in have)).sort();
+  const words = (x: string) => x.replace(/\{[a-z]+\}/g, '').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+
+  test('the cast file is the one promoted', () => { expect(promo.cast.file).toBe('contracts/people/harbour-district.cast.json'); });
+  test('every need the rules list or a cast table gives has a fragment', () => {
+    expect(missing(I.need, needsRule)).toEqual([]);
+    expect(missing(I.need, cast.rows.flatMap((r) => r.needs.map((n) => n.need)))).toEqual([]);
+  });
+  test('every temperament the rules list or a cast table gives has a fragment', () => {
+    expect(missing(I.temperament, tempRule)).toEqual([]);
+    expect(missing(I.temperament, TEMPERAMENTS)).toEqual([]);
+    expect(missing(I.temperament, cast.rows.flatMap((r) => r.temperaments.map((n) => n.temperament)))).toEqual([]);
+  });
+  test('every secret the rules list or a cast table gives has a fragment, plus the named lover and "none"', () => {
+    expect(missing(I.secret, secretRule)).toEqual([]);
+    expect(missing(I.secret, cast.rows.flatMap((r) => (r.secrets ?? []).map((n) => n.secret)))).toEqual([]);
+    expect(I.secret['affair-named']).toContain('{name}');
+    expect(I.secret.none).toBeDefined();
+  });
+  test('the verbs the slots and chip use have a word', () => { expect(missing(I.verb, ['watch', 'listen', 'turn'])).toEqual([]); });
+  test('nothing here is stale: a fragment names a value the rules still have', () => {
+    const extra = (have: Record<string, string>, ok: string[]) => Object.keys(have).filter((k) => !ok.includes(k));
+    expect(extra(I.need, needsRule)).toEqual([]);
+    expect(extra(I.temperament, tempRule)).toEqual([]);
+    expect(extra(I.secret, [...secretRule, 'affair-named', 'none'])).toEqual([]);
+  });
+  test('each is a fragment: one or two words, short, no sentence, no gendered word, none repeated within a slot', () => {
+    const bad: string[] = [];
+    for (const [slot, m] of Object.entries({ need: I.need, temperament: I.temperament, secret: I.secret, verb: I.verb })) {
+      const seen = new Set<string>();
+      for (const [k, x] of Object.entries(m)) {
+        if (words(x) < 1 || words(x) > 2) bad.push(`${slot}.${k}: "${x}" is not one or two words`);
+        if (/[.!?,;:]/.test(x)) bad.push(`${slot}.${k}: "${x}" is a sentence`);
+        if (GENDER.test(x)) bad.push(`${slot}.${k}: "${x}" is gendered`);
+        if (x.replace('{name}', 'Bartholomew').length > 20) bad.push(`${slot}.${k}: "${x}" is long`);
+        if (seen.has(x)) bad.push(`${slot}.${k}: "${x}" repeats`);
+        seen.add(x);
+      }
+    }
+    expect(bad).toEqual([]);
   });
 });

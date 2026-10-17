@@ -25,6 +25,9 @@ namespace Suborned.World.UI
         public static string KitDir => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "briefs", "011", "ui", "kit"));
         public const string Dest = "Assets/Suborned/UI/Resources/Kit";
 
+        /// <summary>Glyphs imported under another name (the art keeps its file name in Glyph's folder).</summary>
+        static readonly System.Collections.Generic.Dictionary<string, string> Renamed = new() { ["turn_him@2x.png"] = "turn_person@2x.png" };
+
         [MenuItem("Suborned/UI/Import Glyph's Kit")]
         public static void Menu() => Debug.Log(Import());
 
@@ -50,7 +53,8 @@ namespace Suborned.World.UI
             if (Directory.Exists(extra))
                 foreach (var f in Directory.GetFiles(extra, "*@2x.png"))
                 {
-                    var rel = Path.Combine("icons", "singles", Path.GetFileName(f)); var dst = Path.Combine(full, rel); var b = File.ReadAllBytes(f);
+                    var name = Path.GetFileName(f); if (Renamed.TryGetValue(name, out var to)) name = to; // a neutral name in the game (Aster: Glyph's turn_him is turn_person)
+                    var rel = Path.Combine("icons", "singles", name); var dst = Path.Combine(full, rel); var b = File.ReadAllBytes(f);
                     if (File.Exists(dst) && File.ReadAllBytes(dst).AsSpan().SequenceEqual(b)) same++; else { File.WriteAllBytes(dst, b); copied++; }
                     if (!pngs.Contains(rel)) pngs.Add(rel);
                 }

@@ -1,0 +1,21 @@
+2.8 start: waitress[R0 N0s T0 S0 turned False] driver[R0 N0s T0 S0 turned False] guard[R0 N0 T0 S0 turned False]
+2.8 01-start: queued · audit clean
+3.1 h1-told-slot: queued · audit clean
+3.4 h2-unknown-slot: queued · audit clean
+3.7 h3-chip-cream: queued · audit clean
+3.9 chip click 1: agent Scout selected scout True orders 0->0
+4.0 h4-chip-turquoise: queued · audit clean
+4.2 chip click 2: orders 0->1 last ({"tick":20,"op":"scout","do":"move","to":[-519,-3027]}, True, , ) pending watch
+4.4 mid setup reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+4.4 mid: waitress[R0 N0s T0 S0 turned False] driver[R0 N0s T0 S0 turned False] guard[R1 N0 T0 S0 turned False]
+4.5 02-mid: queued · audit clean
+5.4 watch inez marker person/waitress clicked: orders 9->10 pending 'watch' (was '')
+6.6 listen inez marker person/waitress clicked: orders 11->12 pending 'listen' (was '')
+7.2 late: waitress[R1 N1s T1 S1 turned False] driver[R1 N1s T1 S0 turned True] guard[R0 N0 T0 S1 turned False] tick 2473
+7.2 03-late: queued · audit clean
+7.5 h5-learned-slot: queued · audit clean
+7.7 h7-no-secret: queued · audit clean
+8.0 h8-turn-chip: queued · audit clean
+8.3 stress audit: clean
+8.3 h6-worst-case: queued · audit clean
+8.5 intel done

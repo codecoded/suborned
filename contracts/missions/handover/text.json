@@ -1356,6 +1356,37 @@
    "showSeconds": 6,
    "returnSeconds": 20,
    "maxShows": 2
+  },
+  "intel": {
+   "rule": "Brief 016 (Intel panel, Glyph's redesign). The tooltip of a fact slot on a person's card is one fragment of one or two words that only names the fact; the host decides whether the cell has learned or been told it (the slot's rim says which), so no word here says how it is known. A fragment is never a sentence, has no gendered word and never says who told it. `need`, `temperament` and `secret` are keyed by the value the cast and the rulebook carry (people.rules.json needs.list, temperaments, secrets); a new value without a fragment fails the test. `{name}` is the lover's name as the HUD shows it elsewhere: the given name for named people, the word the plus the role for role-named ones (Inez, the guard). `verb` is the word on the chip and on an unknown slot: what would teach it.",
+   "need": {
+    "debt": "Debt",
+    "cash": "Cash",
+    "housing": "Housing",
+    "papers": "Papers",
+    "kin": "Family",
+    "care": "Care",
+    "protection": "Protection",
+    "advancement": "Promotion",
+    "secret": "A secret"
+   },
+   "temperament": {
+    "idealist": "Idealist",
+    "mercenary": "For hire",
+    "fearful": "Fearful",
+    "loyal": "Loyal"
+   },
+   "secret": {
+    "affair": "A lover",
+    "affair-named": "Loves {name}",
+    "record": "A record",
+    "none": "No secret"
+   },
+   "verb": {
+    "watch": "Watch",
+    "listen": "Listen",
+    "turn": "Turn"
+   }
   }
  },
  "dialogue": [

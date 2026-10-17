@@ -319,6 +319,7 @@ namespace Suborned.Play
             BriefLess(alt);
             EndLess();
             ScopeFrame();
+            IntelFrame();
             for (int i = worldUsed; i < worldEls.Count; i++) Show(worldEls[i], false);
             world.MarkDirtyRepaint();
         }
@@ -491,7 +492,7 @@ namespace Suborned.Play
             }
             while (bubbleEls.Count < max)
             {
-                var r = E(marks, "s-plate_light"); r.style.paddingLeft = 10; r.style.paddingRight = 10; r.style.paddingTop = 4; r.style.paddingBottom = 5; r.style.maxWidth = 250;
+                var r = E(marks, "s-plate_light"); r.style.position = Position.Absolute; /* placed by left/top: in the flow, a second bubble sat a bubble's height off where it was put (the 5 px "stack") */ r.style.paddingLeft = 10; r.style.paddingRight = 10; r.style.paddingTop = 4; r.style.paddingBottom = 5; r.style.maxWidth = 250;
                 r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center;
                 var dot = E(r, null, w: 7, h: 7); Round(dot, 3.5f); dot.style.marginRight = 6; dot.name = "who"; // who speaks: a dot in their colour (a border drew a box outside the pill art)
                 var t = L(r, "card-body"); t.style.whiteSpace = WhiteSpace.Normal; t.style.color = Ink; t.style.fontSize = 13;
@@ -509,7 +510,8 @@ namespace Suborned.Play
                 var who = r.Q("who"); Show(who, rim.a > 0); who.style.backgroundColor = rim;
                 float w = r.resolvedStyle.width, h = r.resolvedStyle.height; if (float.IsNaN(w)) w = 160; if (float.IsNaN(h)) h = 26;
                 float y = p.y - h - 34, x = p.x - w / 2;
-                for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in bubbleRects) if (pr.Overlaps(new Rect(x - 4, y - 4, w + 8, h + 8))) { y = pr.y - h - 8; hit = true; } if (!hit) break; } // two bubbles never touch
+                const float BubbleGap = 14; // 2026-10-18: at least 10 px between stacked bubbles as drawn (the plate art's rim eats ~4), so each reads, and is counted, as its own; the newest nearest the speaker
+                for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in bubbleRects) if (pr.Overlaps(new Rect(x - BubbleGap / 2, y - BubbleGap / 2, w + BubbleGap, h + BubbleGap))) { y = pr.y - h - BubbleGap; hit = true; } if (!hit) break; }
                 bubbleRects.Add(new Rect(x, y, w, h));
                 r.style.left = x; r.style.top = y;
                 float age = Time.unscaledTime - b.Born; r.style.opacity = tail.style.opacity = Mathf.Clamp01((life - age) / 0.3f);
@@ -522,7 +524,7 @@ namespace Suborned.Play
             for (int i = m.Pops.Count - 1; i >= 0 && list.Count < 3; i--) if (now <= m.Pops[i].Until) list.Add(m.Pops[i]);
             while (popEls.Count < 3)
             {
-                var r = E(marks, "s-plate_dark"); r.style.height = ChipH; r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.paddingLeft = ChipPad; r.style.paddingRight = ChipPad; // the chips' rule
+                var r = E(marks, "s-plate_dark"); r.style.position = Position.Absolute; r.style.height = ChipH; r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.paddingLeft = ChipPad; r.style.paddingRight = ChipPad; // the chips' rule
                 var ic = E(r, null, w: Glyph, h: Glyph); ic.style.marginRight = 8; var t = L(r, "verb-name"); t.style.fontSize = 13; t.style.whiteSpace = WhiteSpace.Normal; t.style.maxWidth = 320;
                 popEls.Add((r, ic, t));
             }
