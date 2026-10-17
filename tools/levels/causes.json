@@ -46,8 +46,35 @@
     "P-13",
     "P-16"
    ]
+  },
+  {
+   "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+   "rules": [
+    "CD-4",
+    "SF-17"
+   ]
+  },
+  {
+   "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+   "rules": [
+    "SEC-1"
+   ]
   }
  ],
  "transit": [],
- "skyline": []
+ "skyline": [
+  {
+   "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+   "rules": [
+    "CD-4",
+    "SF-17"
+   ]
+  },
+  {
+   "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+   "rules": [
+    "SEC-1"
+   ]
+  }
+ ]
 }

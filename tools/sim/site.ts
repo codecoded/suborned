@@ -5,7 +5,7 @@
 // are Waymark's to adopt into mission.json (Suture O-6); until then they live here. Deterministic: the same inputs give the same
 // bytes. The file names its sources but holds no hash of them: an edit to the plan or the mission that leaves this ground as it
 // was leaves the file, and every replay's start hash, as they were; tools/sim/sim.test.ts fails on any edit that changes it.
-// Run: bun run sim:site (writes the file, the people extract and the takedown places, tools/sim/takedown.ts); bun test tools/sim (checks them).
+// Run: bun run sim:site (writes the file, the people extract, the takedown places (tools/sim/takedown.ts) and the provisional file with the security level (below)); bun test tools/sim (checks them).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { derive } from '../plan/plan';
@@ -22,6 +22,7 @@ import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
+export const PROVISIONAL_FILE = 'sim/data/handover.provisional.json';
 /** The people the Handover is cast from: the people file `bun run people` writes from the promoted cast. */
 export const PROMOTED_PEOPLE = 'out/people/harbour-district.people.json';
 /** Where the cast comes from. A fixture is labelled, in the site and the people extract alike. */
@@ -157,6 +158,36 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   return { json, site };
 }
 
+/** The security level the engine runs at (GDD v0.23 §05, briefs/013/motive-takedowns.md §5.3), written into sim/data/handover.provisional.json from the data that owns it:
+ *  `base` = the securityBase of the plan area the civic plots stand in (plan.areas[*].securityBase, Datum), `bonus` = mission.json securityBonus (Waymark), `district` = the plan's id.
+ *  The engine's reader (Site.AddProvisional, Keel) still takes the file in its first shape, and it hashes the file's canonical text into every replay's start, so the texts
+ *  below are pinned byte for byte: they say "until the plan carries it", which it now does. Rewording them, or retiring the file for a reader that takes the site, is Keel's change
+ *  and re-records the replays; until then this writes the same bytes the file always had, so the engine and every recorded run are untouched. */
+export function buildProvisional(): string {
+  const read = (f: string) => JSON.parse(readFileSync(join(root, f), 'utf8')), plan = read(PLAN), mission = read(MISSION);
+  const areas = [...new Set((plan.plots as { civic?: string; area: string }[]).filter(p => p.civic).map(p => p.area))];
+  if (areas.length !== 1) throw new Error(`plan: the civic plots stand in ${areas.length} areas (${areas.join(', ')}); the Handover needs one`);
+  const area = (plan.areas as { id: string; securityBase?: number }[]).find(a => a.id === areas[0]);
+  if (area?.securityBase === undefined) throw new Error(`plan.areas.${areas[0]} sets no securityBase (rule SEC-1)`);
+  if (typeof mission.securityBonus !== 'number') throw new Error('mission.json sets no securityBonus');
+  return pretty({
+    schema: 'suborned.sim.provisional/1',
+    mission: 'handover',
+    note: "Brief 013 B (Keel, 2026-10-16): the security level the Handover runs at, until the district plan (plan.areas[*].securityBase, Datum) and mission.json (securityBonus, Waymark) carry it. The world's takedown facts (stashes, call boxes, robot docks, police posts) came here first from Vantage's survey; since Splice's export (sim/data/handover.takedown.json, tools/sim/takedown.ts) carries them, they are read from there and this file holds the level only.",
+    security: {
+      base: area.securityBase,
+      bonus: mission.securityBonus,
+      src: 'briefs/013/motive-takedowns.md §5.3 (Sky 2026-10-16 merged call 3): the civic district\'s base level is 2 (watchful), the Handover\'s own bonus 0, no open cases. Replaced by plan.areas[*].securityBase (Datum) and mission.json securityBonus (Waymark).',
+    },
+    district: {
+      id: plan.id,
+      src: "Brief 014 (Keel, 2026-10-16): Standing is per district (§04; rulebook standing). The Handover plays in one district, the plan's own (contracts/world/harbour-district.plan.json id). Replaced by the plan and the campaign layer when they carry it.",
+    },
+    stashes: [], callBoxes: [], docks: [], posts: [],
+    srcEmpty: 'stashes, call boxes, docks and posts: sim/data/handover.takedown.json (Splice, 2026-10-16).',
+  }) + '\n';
+}
+
 /** The cover the engine's fight AI reads (brief 011, Pulse's briefs/011/pulse-fight-ai.md §5): a copy of contracts/world/civic-block.cover.json's points and sight
  *  blockers, with the file's sha256, so the engine reads one site file and a stale copy fails the site test. The file itself is Pulse's (`bun run cover`). */
 export const COVER_FILE = 'contracts/world/civic-block.cover.json';
@@ -201,5 +232,6 @@ if (import.meta.main) {
   writeFileSync(join(root, PEOPLE_OUT), people);
   const take = buildTakedown().json; // brief 013: stashes, report points, origins and watchers, derived from the world; a second file, so the site (and every replay's input hash) stays as the engine reads it
   writeFileSync(join(root, TAKEDOWN_FILE), take);
+  writeFileSync(join(root, PROVISIONAL_FILE), buildProvisional()); // the security level, from the plan and the mission
   console.log(`wrote ${SITE_FILE} (${json.length} bytes), ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''} and ${TAKEDOWN_FILE} (${take.length} bytes)`);
 }

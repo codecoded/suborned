@@ -1,0 +1,13 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 1439, "y": 777, "w": 249, "h": 25, "text": "Guard on the public door. Coffee soon."},
+  {"kind": "speech", "x": 1554, "y": 916, "w": 264, "h": 25, "text": "The café, before I go off. Same as always."},
+  {"kind": "image", "x": 1673, "y": 926, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

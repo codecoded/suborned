@@ -56,7 +56,7 @@ Other states:
 - **Price before commit** holds everywhere: chip, row, run price (`› 12 s  » 6 s  eye ▲`), going-loud card.
 
 ## 3 · The world markers that replace text
-All draw at play zoom (characters 40 to 60 px). Round markers are 22 px at 1080p, rims 2 px; they read at actual size (section 3 of the sheet shows each at 1x and 2x). At most two icons over a person. Signal colours stay reserved: red, amber and violet appear only as the rim of an eye or pip that belongs to a camera, guard or rival, and as cones. Everything else is ink, cream, turquoise.
+All draw at play zoom (characters 40 to 60 px). Round markers are 22 px at 1080p, rims 2 px; they read at actual size (section 3 of the sheet shows each at 1x and 2x). At most two icons over a person. Signal colours mark their watcher: red, amber and violet on an eye or pip belong to a camera, guard or rival, and to cones. Other HUD marks are ink, cream, turquoise. (Signals no longer own their colours in the world: Sky, 2026-10-16.)
 
 | marker | where | states and cues | replaces |
 |---|---|---|---|
@@ -101,7 +101,7 @@ A core surface, as Sky asked: the persistent state moves off the screen and onto
 ## 6 · Lines in the street
 **Goal line** (the objective and the Next Step hint share one place, one at a time; bottom centre; 6 s, then fades). Fable's text: one imperative, at most six words, one bracketed noun per marker. I draw: a dark plate, the words in cream, each bracketed noun in its **marker colour** plus a **tiny shape** (a triangle for a person, a ring for a place), so colour is never alone. The hint also carries the agent's portrait (pulsing, dashed ring) and the verb's glyph at the left: no agent is named.
 - *Take ▼Vale alive.* · *Get ▼Vale to the ○car.* · *Watch the ○café terrace.* · *Reroute the ▼patrol.* · *Give the ▼rivals a false tip.*
-- **Noun colours** (Fable asked): people the cell goes after (Vale, Inez, the driver), places (car, cabinet, café terrace, getaway car): turquoise-light `#60E0EA`, the one highlight; a guard, the patrol: amber `#F0A020`; rivals: violet `#8A4FD0`; cameras: red `#E03A2F`. Signals stay reserved for the things they mark.
+- **Noun colours** (Fable asked): people the cell goes after (Vale, Inez, the driver), places (car, cabinet, café terrace, getaway car): turquoise-light `#60E0EA`, the one highlight; a guard, the patrol: amber `#F0A020`; rivals: violet `#8A4FD0`; cameras: red `#E03A2F`. On the HUD, these colours keep meaning their watcher.
 - Reappears at the 5:30 chime and the 5:50 exit, and while the clock pill is hovered.
 
 **Story beats** (Fable's nine lines): a dark plate at the lower right, 34 px high, a leading badge (`signal_rival`, `npc_waitress`, `npc_councillor`, `signal_camera`, `call`, `signal_police` / `signal_guard`, `lock`, `body_out`), at most two stacked, 4 s each, a third pushes the oldest out at once, a repeat within 10 s is dropped. History: the **L key** opens a left drawer (the old SCENES history, as a list: time, badge, line); an unread dot on the key. At rest nothing else of it shows.
@@ -195,3 +195,38 @@ The old unknown badge (a "?" in a ring-like disc) read as a help button at chip 
 | unknown | the same almond, an empty iris ring, a small "?" tucked in the top-right corner outside the almond | cream | "Unknown. Watch first." |
 
 Use rules: draw the glyph at 18 px at 1x (14 px minimum). Drop the chrome disc (`s-disc_dark_24`) and its rim: a rimmed disc reads as a button, which was the "help" look. Either the bare glyph on the chip or, if the hud-budget wants it enclosed, a flat ink-deep disc 24 px with no rim and no ring. The eye is never inside a "?" disc and never next to the hint "?" disc. The hover line is one line, one sentence: "Unknown. Watch first." / "Seen by Guard." (the watcher's name or role, as today) / "Unseen." No colour carries the state alone: shape does.
+
+## Move preview: the ground answers (Sky, 2026-10-16: the chip everywhere the mouse goes is annoying)
+Sheet: `briefs/014/glyph/move-preview.png` (two variants, five states each, on the real cafe-after play shot, rings close up at the bottom; script `briefs/014/glyph/scripts/move_preview.py`; references and what is unverified in `briefs/014/research/move-preview.md`). Everything over the street in the sheet is drawn by the script, the build's own Alt chip is the one real piece. No Unity edits.
+
+**Recommendation: A, "the ring", with the exposed-route glow and without the cone pulse.** One ring is the cursor on the ground: Sky's colour-coded ring with a symbol, plus the walk time as a clock fill. It replaces the chip for the whole walk, so the screen stays bare while the mouse moves. B is kept on the sheet as the comparison: it spends the same information on more screen (a pulsing cone, a pip, a street pulse), which is right for the Scout's first look and wrong for every mouse move.
+
+### A · the ring
+Geometry: a ground ellipse at the cursor, 64 x 39 px at play zoom (about 1.6 m across, the ground circle at the 38 degree pitch, ratio 0.616). Rim 4.6 px, an ink under-stroke 8 px so it holds on pale stone, a dark inner disc, the symbol an upright 25 px glyph (billboard, not flattened). The clock: the rim fills clockwise from 12 o'clock with the walk time, a full ring = 60 s; the unfilled rim stays as a faint track. No digits, no words anywhere.
+
+| State | Ring | Symbol | Why this colour |
+|---|---|---|---|
+| Safe (nothing sees the walk, nothing unknown) | turquoise-light `#60e0ea`, solid | `s_moving` footprints | the cell's own colour ("go"); dE2000 46 or more from every signal |
+| Seen | the seeing watcher's own signal colour (camera red, guard amber, rival violet), solid | `eye_open` | it is that watcher seeing you, so the ring is the cone's colour and the eye is the link; a signal colour here is a use, not a new meaning |
+| Unknown (a watcher on the route has not been watched) | cream `#f7f4ec`, dashed track | `eye_unk` | dashed is the kit's "not known yet"; cream is 30 dE or more from amber |
+| Raises Alert (a run, a found fault) | ink `#12302e` rim with a second cream rim outside it | `p_alert` lamp | the one dark ring on a pale street, 36 dE or more from every signal; it needs no new hue |
+
+Rules:
+- Colour never carries a state alone: eye, dashed rim, second rim and lamp each differ in shape.
+- If two watchers would see the walk, the ring takes the more serious colour (camera, then guard, then rival); each watcher's stretch of the route glows in its own colour, so both show.
+- Alert wins the symbol slot over the eye (the lamp), and the ring keeps the double rim; the route glow still shows who sees.
+- **Seen: keep the route glow, drop the cone pulse.** The glow answers "where on my walk", which the ring cannot; the learned cones are already on the street, so a pulse adds motion on every mouse move and nothing new. The glow is a soft band of the watcher's colour under the route dots, only on the stretch inside the cone, pulsing once a second at most.
+- **Unknown:** the unwatched watcher carries a small "?" disc over his head while the preview is up (A), faint; the Scout's Watch is the way to clear it. B pulses two dashed rings at his feet as well.
+- **Alt held:** the numbers as today (walk, run, eye, Alert) in the existing chip, placed beside the ring, tail to the ring; Alt released, the chip goes.
+- Route: dotted, cream with an ink dot under it; a run is drawn with tighter dots. The route and glow appear after the cursor rests 0.25 s; the ring is immediate.
+- Not reachable ground: no ring, the cursor stays the cursor.
+
+### B · the ground answers (the comparison)
+A plain cream ring with a turquoise clock fill and nothing inside. Seen: the cone brightens and echoes its edge, the exposed stretch glows. Unknown: a small "?" pip on the ring's upper right, a faint "?" pulse on the unwatched watcher. Alert: a lamp pip on the ring's upper right. Alt: the chip.
+
+### Checks
+- Reserved colours: turquoise-light 46 dE or more, cream 30 dE or more, ink 36 dE or more from cone, guard and rival (CIEDE2000, my calculation; the signals are the contract's `#e03a2f`, `#f0a020`, `#8a4fd0`). Seen uses the signals themselves, on purpose.
+- Budget: one ring and at most one glow, no text, nothing a reader would count as a word. Latch should run `tools/hud-budget` on a real capture.
+- Glyphs: all exist already (`s_moving`, `eye_open`, `eye_unk`, `p_alert`, `run`); no new art.
+- Build note for Latch: ring as a ground decal (an arc shader for the clock fill, an ellipse mask), the symbol a world-space billboard; the glow a soft ribbon along the route polyline clipped to each learned cone.
+- Against the references (search notes in the research file): Desperados III shows a cone on demand and zones inside it, Invisible Inc. marks the watched tiles, Shadow Tactics holds a key for the cones; none puts a sentence in the move preview. Ours adds the single ring and the watcher's colour.

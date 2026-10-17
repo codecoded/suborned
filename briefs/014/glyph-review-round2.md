@@ -194,3 +194,40 @@ Reviewed: the 46 crops in `briefs/014/play/polish/round4/`. I checked the change
 5. `end--09-end-card.png` shows the centred buttons and the even padding.
 6. `armed--03-knockout-price.png`, `keys--01-tech-loop-targets.png` and `timer-3--05-takedown.png` show the three small chips that were crowded before.
 7. The full shot `briefs/014/play/01-tech-loop-targets.png` shows the selected agent in context.
+
+---
+
+# Move ring and chip rule (Glyph, 2026-10-17)
+
+Reviewed at 5x: the 56 crops in `briefs/014/play/polish/chips/` (rings upscaled 3x to 5x, chips 3x, pills 2x), and the real-play shots in `briefs/014/play/ring/` (01, 02, 04, 06 whole).
+
+**Verdict: the ring and the chip rule pass. Three small fixes before Sky sees them (1 to 3), and two things to look at (4, 5).** The ring reads at play size on pale stone, on grey road and on the red cone tint. Each state differs by shape as well as colour. The clock fill reads. The Alt chips are even, with no clipped glyph, in their worst-case values too ("29 s 15 s ? 1"). Latch's four flags are answered in the last section.
+
+## Fix before Sky sees it
+1. **Seen ring, the olive track (`ring--04-ring-seen.png`, `-alt`).** The unfilled track is the amber drawn over the ink disc, so it goes olive and looks dirty beside the clean amber fill.
+   - Fix: make the track the signal colour darkened in place, not blended with ink. For amber use about 40% brightness, `#6b4609`, with no green. Do the same for any other watcher colour (a maroon for camera red, a plum for rival violet).
+   - Keep the ink under-stroke as it is.
+2. **Refusal pop is covered by world markers (`pop-1--08-refusal-pop.png`).** The pop's text reads "N▢unning": a footprint disc with a dashed turquoise ring, and a sleeping "z" disc below it, are drawn over the pop and hide two letters. Draw the pop above all world marks, or hide marks inside the pop's rectangle (plus 6 px) while it is up.
+3. **Stash plates look hollow in the Alt-unknown shot (`stash-2--02-ring-unknown-alt.png`, `stash-3--02-...`; whole shot `ring/02-ring-unknown-alt.png`).**
+   - "Dumpster" and "Service door" show as thin white outlines with no dark fill, and the two overlap. In `06-ring-alert` the same plates are properly filled.
+   - It looks like a mid-fade frame, or the plates sitting behind the dithered wall. Check which. If it is a fade, fade the whole plate (fill and outline together) and never draw the outline alone. If it is the wall, draw the plates above the dither.
+
+## Look at
+4. **Name tag overlapped by a pip (`ring/02-ring-unknown-alt.png`, near the guard at 960,425).** The eye pip sits on the "guard" tag, which reads "ard". It was already there in earlier shots. Offset the tag 14 px right of the pip, or put the pip above the tag.
+5. **Rival "?" peeking under the Alt chip (`chip--06-ring-alert-alt.png`, Latch's flag 3).** A marker half hidden by the chip looks accidental. Either hide world marks inside the chip's rectangle plus 8 px while Alt is held, or let the chip sit where it hides nothing. Hiding is the quieter one.
+
+## Latch's four flags
+1. **Olive track: confirmed**, it is fix 1.
+2. **Goal and hint line at 40 px with an 18 px portrait: accepted.** It reads cleanly (`goal--00-rest.png`, `goal--05-chips-run-open-loop.png`): the padding is even (about 24 px each side), the portrait is whole with its turquoise ring, and the line fades after about 6 s. Keep it no taller than the status pill.
+3. **Rival "?" under the Alt chip:** see 5.
+4. **Response table opens on R or a click on the pill instead of Alt: accepted.** Alt keeps one job (the numbers), and the table no longer reads as stacked text to the budget.
+
+Note on colour: the ring spec says seen takes the watcher's signal colour so the ring and the cone match. The crew's reservation of those colours was dropped on 2026-10-16, so that choice is now taste, not a rule. The design stands. The Alt chip's open eye is red while an amber guard's ring is amber (`chip--04-ring-seen-alt.png`). It would match better if the eye took the watcher's colour, but that is optional.
+
+## Show Sky (after fixes 1 to 3)
+1. `briefs/014/play/ring/04-ring-seen.png`: the seen ring on real play, with the cone and the exposed stretch.
+2. `briefs/014/play/ring/06-ring-alert.png`: the Alert ring, with its second rim, on the car.
+3. `briefs/014/play/polish/chips/ring--01-ring-safe.png`: safe, turquoise with footprints.
+4. `briefs/014/play/polish/chips/ring--02-ring-unknown.png`: unknown, dashed with the eye and "?".
+5. `briefs/014/play/polish/chips/chip--02-ring-unknown-alt.png`: the fixed run chip with worst-case numbers ("29 s 15 s ? 1").
+6. `briefs/014/play/polish/chips/chip--04-ring-seen-alt.png`: the same chip with the open eye.

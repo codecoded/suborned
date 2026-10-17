@@ -88,9 +88,10 @@ LIB.setdefault("DK_Crown_Gold17", ("metal", CROWN_GOLD17))    # what DK_Gold17 w
 LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal faience bands (planters, piers)
 
 
-# Kit materials whose colour was retuned so the UNLIT base is >= 20 dE2000 from cones / guard / rivals (brief 007: signals
-# render unlit and emissive, so the gate is on the unlit palette). They sit in LIB above; this records the why.
-# old -> new, dE2000 min over the three signals: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
+# Kit materials whose colour was retuned in brief 007 (they sit in LIB above; WORLD_RETUNE is what unity_mats rewrites with their old guids). The retune
+# was made to keep the unlit base >= 20 dE2000 from cones / guard / rivals; that gate is gone (Sky, 2026-10-16: signal colours are no longer reserved, signals stay
+# readable by drawing unlit and emissive with a shape or motion cue), so nothing here is held to a distance now and the colours stay as adopted.
+# old -> new, dE2000 min over the three signals at the time: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
 # Gold #D6AE62 10.1 -> #E3D681 20.6 (pale atompunk gold); Enamel_Red #C42A1F 7.2 -> #820606 21.5 (oxblood);
 # Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
 # 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
@@ -281,11 +282,6 @@ def metric_tiling(name, kind):
 
 
 def export_json(path):
-    fails, report = signal_gate()
-    for r in report:
-        print(f"[DK-GATE] open: {r[0]} {r[2]} dE2000 {r[3]} from {r[4]}")
-    if fails:
-        raise SystemExit("[DK-GATE] FAIL " + "; ".join(f"{r[0]} {r[2]} dE {r[3]} from {r[4]}" for r in fails))
     rows = []
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
@@ -298,24 +294,3 @@ def export_json(path):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
 
-
-# Sky, 14 Oct 2026 ("red is definitely ok for electronics displays"): the stop pictogram of a crossing signal may be a signal red. Display pictograms only (small, emissive,
-# on a dark plate), never a surface; the cones keep their own shape and motion cue. Owed: GDD s10 / s15 and the style contract. Reported, not failed.
-SIGNAL_EXEMPT = {"DK_Cross_Stop"}
-
-
-def signal_gate(rows=None):
-    """dE2000 >= 20 of every untextured, non-glass material's UNLIT base colour from cones / guard / rivals (brief 007).
-    Returns (failures, report): gated = the retuned and v0.17 accent materials (must pass); the rest are reported as a to-do."""
-    from deltae import min_signal
-    gated = set(WORLD_RETUNE) | {"DK_Beacon_Rose", "DK_Gold17", "DK_Crown_Gold", "DK_Crown_Gold17", "DK_Far_Gold", "DK_Brass_Civic", "DK_Lamp_Deco", "DK_Hull_Navy", "DK_Exhaust_Flame", "DK_Exhaust_Core", "DK_Plume_Glow", "DK_Plume_Shade"} | {"DK_Enamel_" + n for n in ("Flamingo", "Sunshine", "Cobalt", "Turquoise", "Mint17", "Coral17")}
-    gated |= {n for n in LIB if n.startswith(("DK_Liner_", "DK_Accent_", "DK_Faience_", "DK_Cross_"))} - SIGNAL_EXEMPT  # brief 007 round 3: liner, look.json accents; brief 009: the crossing pieces
-    fails, report = [], []
-    for name, (kind, hexstr, *_) in LIB.items():
-        if name in TEXTURES or kind == "glass" or hexstr.upper() == "#FFFFFF":
-            continue
-        d, sig = min_signal(hexstr, SIGNALS)
-        row = (name, kind, hexstr.upper(), round(d, 1), sig)
-        if d < 20 and name not in SIGNAL_EXEMPT:
-            (fails if name in gated else report).append(row)
-    return fails, report

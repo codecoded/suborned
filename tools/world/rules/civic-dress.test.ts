@@ -192,7 +192,7 @@ describe('CD-1 keep-clear and Handover points', () => {
   });
 });
 
-describe('CD-2 adopted, CD-3 budget, CD-4 palette', () => {
+describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
   test('CD-2 names every piece and fails on one the kit has not adopted', () => {
     const named = namedPieces(dr);
     expect(named.length).toBeGreaterThanOrEqual(27);
@@ -218,20 +218,18 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette', () => {
     expect(budgetRule(base.w.civic).ok).toBe(true);
     expect(budgetRule(base.w.civic, n - 1).ok).toBe(false);
   });
-  test('CD-4 fails a material near a signal colour, and one the palette does not list', () => {
+  test('CD-4 fails a material the palette does not list, and holds no colour to a distance from the signal colours (Sky, 2026-10-16)', () => {
     expect(paletteRule(look.pieces).ok).toBe(true);
-    const near = { ...look.palette, materials: [...look.palette.materials, { material: 'DK_Test_Cones', unlit: '#E8392F' }] };
-    expect(paletteRule(['X'], near, () => ['DK_Test_Cones']).detail).toContain('from cones');
     expect(paletteRule(['X'], look.palette, () => ['DK_Unlisted']).detail).toContain('DK_Unlisted (X) has no unlit colour');
+    // cones red, guard amber and rivals violet are free for the world: a material drawn in each passes once the palette lists it
+    const free = { ...look.palette, materials: [...look.palette.materials, { material: 'DK_Test_Cones', unlit: '#E03A2F' }, { material: 'DK_Test_Guard', unlit: '#F0A020' }, { material: 'DK_Test_Rivals', unlit: '#8A4FD0' }] };
+    expect(paletteRule(['X'], free, () => ['DK_Test_Cones', 'DK_Test_Guard', 'DK_Test_Rivals']).ok).toBe(true);
   });
-  test('CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette', () => {
+  test('CD-4 also holds the bed kerb and hedge and the replaced slots', () => {
     const apart = drawnApart(base.w.civic);
     expect(apart.map(a => a.material)).toEqual(expect.arrayContaining(['DK_Limestone', 'DK_Leaf_CivicDark', 'DK_Pool_Civic']));
     expect(paletteRule(look.pieces, look.palette, undefined, apart).ok).toBe(true);
     expect(paletteRule([], look.palette, undefined, [{ material: 'DK_Mauve', by: 'bed kerb' }]).detail).toContain('DK_Mauve (bed kerb) has no unlit colour');
-    const near = { ...look.palette, materials: [...look.palette.materials, { material: 'DK_Test_Guard', unlit: '#EE9A22' }] };
-    expect(paletteRule([], near).detail).toContain('DK_Test_Guard is');
-    expect(paletteRule([], near).detail).toContain('from guard');
     expect(look.palette.materials.map(m => m.material)).toEqual(expect.arrayContaining(['DK_Brass_Civic', 'DK_Banner_Comet_Seafoam', 'DK_Pool_Civic']));
   });
   test('every piece brief 008 added is named in the placement kinds or a swap, so none is orphaned', () => {

@@ -39,7 +39,7 @@ export type Look = {
   budget: { lod0Tris: number };
   slab: { material: string; tile_m: number; surfaces: string[]; note: string };
   bands: { frame: string; pieces: Band[] };
-  palette: { signals: Record<string, string>; minDE: number; materials: { material: string; unlit: string; used_by?: string[] }[] };
+  palette: { materials: { material: string; unlit: string; used_by?: string[] }[] };
   roles: Record<string, unknown>;
 };
 

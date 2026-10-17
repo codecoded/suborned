@@ -113,6 +113,10 @@ export const Mission = z.strictObject({
   windows: z.array(window).optional(),
   /** The rival role: how the public sees the mission's rival crew (Sky 2026-10-16; rulebook fight.public, default fight.rivalsPublic): read into the site. */
   rivals: z.strictObject({ public: z.enum(['menace', 'neutral']), src, note }).optional(),
+  /** The mission's own step on the response dial (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3): the level is the civic area's plan.areas[*].securityBase + open cases + this, 0..4 in all.
+   *  A flat number with its reason beside it; tools/sim/site.ts reads both into the sim data. */
+  securityBonus: z.number().int().min(-4).max(4).optional(),
+  securityBonusWhy: z.string().min(1).optional(),
   /** The cell's issue of arms (GDD §07 "Arms 3"): read into the site. */
   arms: z.strictObject({ sidearms: z.number().int().nonnegative(), src, note }).optional(),
   /** §07's route prep times restated against the rulebook (the Scout's Watch and Listen): `from` names the rulebook values summed. */
@@ -134,6 +138,7 @@ export const Mission = z.strictObject({
   .refine(m => m.roles.every(r => !r.waitsFor || !!m.roles.find(x => x.id === r.waitsFor)?.leavesTo), { path: ['roles'], error: 'waitsFor names a role with leavesTo' })
   .refine(m => m.roles.every(r => !r.leavesTo || m.destinations.some(d => d.name === r.leavesTo!.at)), { path: ['roles'], error: 'leavesTo names a destination' })
   .refine(m => (m.windows ?? []).every(w => m.roles.some(r => r.id === w.role) && [w.walk.from, w.walk.to].every(n => m.destinations.some(d => d.name === n))), { path: ['windows'], error: 'a window names a role and two destinations of the mission' })
+  .refine(m => (m.securityBonus === undefined) === (m.securityBonusWhy === undefined), { path: ['securityBonus'], error: 'securityBonus and securityBonusWhy come together' })
   .refine(m => !m.clock.ruling || (!m.clock.provisional && !m.clock.contradiction), { path: ['clock'], error: 'a ruled start is not provisional and holds no contradiction' })
   .refine(m => { const ids = [...(m.points ?? []), ...(m.cameras ?? [])].map(p => p.id); return new Set(ids).size === ids.length; }, { path: ['points'], error: 'point and camera ids are unique' })
   .refine(m => (m.cameras ?? []).every(c => m.destinations.some(d => d.name === c.looksAt)), { path: ['cameras'], error: 'a camera looks at a destination' });

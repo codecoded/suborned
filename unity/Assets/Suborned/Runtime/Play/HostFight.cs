@@ -281,6 +281,9 @@ namespace Suborned.Play
         public string MoveChip { get; private set; }
         Pt moveChipAt = new(int.MinValue, int.MinValue); float moveChipTime; bool moveChipDirty;
 
+        /// <summary>The move preview at a screen point now (no throttle): for scripted checks and shots.</summary>
+        public void PreviewAt(Vector2 screen) { PointerHover(screen); if (Hover == null) UpdateMoveChip(screen, true); }
+
         void UpdateMoveChip(Vector2 screen, bool force)
         {
             if (!ModalGate.AllowsHover(Modal)) { MoveChip = null; MoveNow = null; return; }
@@ -303,7 +306,9 @@ namespace Suborned.Play
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
                 : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {q.Seen.AlertIfSeen})" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
-            if (Game.Ops[k].CarryBody.Length > 0) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
+            bool carrying = Game.Ops[k].CarryBody.Length > 0;
+            if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
+            Guard("move preview", () => PreviewRoute(k, to.Value, MoveNow, q.Seen, carrying && lastCarry != null && lastCarry.SeenS.Count > 0)); // Glyph's ring: its state and the route's glow
         }
 
         // ---------------------------------------------------------------- shots, read from the engine's log

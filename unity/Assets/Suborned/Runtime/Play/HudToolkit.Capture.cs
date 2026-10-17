@@ -88,12 +88,16 @@ namespace Suborned.Play
             for (int i = 0; i < popEls.Count; i++) list.Add(($"pop-{i + 1}", popEls[i].root));
             for (int i = 0; i < pipEls.Count; i++) list.Add(($"pip-{Cast[i]}", pipEls[i].root));
             for (int i = 0; i < edgeEls.Count; i++) list.Add(($"edge-{i + 1}", edgeEls[i]));
+            list.Add(("history-key", historyKey2));
+            for (int i = 0; i < stashMarks.Count; i++) list.Add(($"stash-{i + 1}", stashMarks[i].Plate));
             var sb = new StringBuilder("{\n"); bool first = true;
             foreach (var (n, e) in list)
             {
                 if (e == null || !Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1) continue;
                 sb.Append(first ? "" : ",\n").Append($" \"{n}\": [{R(b.x * k)}, {R(b.y * k)}, {R(b.width * k)}, {R(b.height * k)}]"); first = false;
             }
+            if (ringOn) // the move ring is painted, not an element: its box with room for the second rim and the start of the glow
+            { float pad = 24f; sb.Append(first ? "" : ",\n").Append($" \"ring\": [{R((ringAt.x - ringRx - pad) * k)}, {R((ringAt.y - ringRx * 0.616f - pad) * k)}, {R((2 * ringRx + 2 * pad) * k)}, {R((2 * ringRx * 0.616f + 2 * pad) * k)}]"); }
             return sb.Append("\n}\n").ToString();
         }
 
@@ -121,6 +125,26 @@ namespace Suborned.Play
                 {
                     float right = 0; foreach (var c in e.Children()) if (c.resolvedStyle.display != DisplayStyle.None && c.resolvedStyle.position == Position.Relative) right = Mathf.Max(right, c.layout.xMax);
                     if (right > e.layout.width + 0.75f) bad.Add($"{path}: content {right:0.0} px in a {e.layout.width:0.0} px row");
+                }
+                // Sky 2026-10-16 (the eye's "?" poked out of its chip): every glyph's whole box inside a dark plate sits 4 px clear of the plate's
+                // chrome (6.5 px in, measured on plate_dark's art); a satellite drawn wholly outside the plate (a cancel ✕) is not its content
+                if (e.ClassListContains("s-plate_dark") && e.worldBound.width > 0)
+                {
+                    var plate = e.worldBound; float inset = RimIn + Clear - 0.3f;
+                    var inner = Rect.MinMaxRect(plate.xMin + inset, plate.yMin + inset, plate.xMax - inset, plate.yMax - inset);
+                    void Glyphs(VisualElement x, string px)
+                    {
+                        foreach (var c in x.Children())
+                        {
+                            if (c.resolvedStyle.display == DisplayStyle.None || c.resolvedStyle.visibility == Visibility.Hidden) continue;
+                            var b = c.worldBound; if (!b.Overlaps(plate)) continue;
+                            bool art = c.resolvedStyle.backgroundImage.sprite != null || c.resolvedStyle.backgroundImage.texture != null;
+                            if (art && c.childCount == 0 && b.width > 0 && (b.xMin < inner.xMin || b.yMin < inner.yMin || b.xMax > inner.xMax || b.yMax > inner.yMax))
+                                bad.Add($"{px}/{(c.name.Length > 0 ? c.name : "glyph")}: box {b.width:0.#}x{b.height:0.#} at ({b.x - plate.x:0.#},{b.y - plate.y:0.#}) not 4 px clear of the rim of a {plate.width:0.#}x{plate.height:0.#} plate");
+                            Glyphs(c, px + "/" + (c.name.Length > 0 ? c.name : c.GetType().Name));
+                        }
+                    }
+                    Glyphs(e, path);
                 }
                 int i = 0; foreach (var c in e.Children()) Walk(c, $"{path}/{(c.name.Length > 0 ? c.name : c.GetType().Name)}[{i++}]");
             }

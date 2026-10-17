@@ -5,7 +5,7 @@ import { describe, expect, test } from 'bun:test';
 import { selectCover } from '../cover/select';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { buildSite, SITE_FILE, sourceOfSite } from './site';
+import { buildProvisional, buildSite, PROVISIONAL_FILE, SITE_FILE, sourceOfSite } from './site';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
@@ -25,6 +25,15 @@ describe('sim/data/handover.site.json', () => {
   });
   test.skipIf(!present)('sim/data/handover.people.json comes from the same people file', () => {
     expect(readFileSync(join(root, PEOPLE_OUT), 'utf8')).toBe(buildPeople(src));
+  });
+  test('sim/data/handover.provisional.json is generated from the plan and the mission: civic area base 2 + the mission\'s bonus 0 = the Handover\'s S2, the plan\'s id as the district', () => {
+    const text = readFileSync(join(root, PROVISIONAL_FILE), 'utf8'), p = JSON.parse(text);
+    expect(text).toBe(buildProvisional()); // bun run sim:site
+    const plan = JSON.parse(readFileSync(join(root, 'contracts/world/harbour-district.plan.json'), 'utf8')), mission = JSON.parse(readFileSync(join(root, 'contracts/missions/handover/mission.json'), 'utf8'));
+    expect(p.security.base).toBe(plan.areas.find((a: { id: string }) => a.id === 'records').securityBase);
+    expect(p.security.bonus).toBe(mission.securityBonus);
+    expect(p.security.base + p.security.bonus).toBe(2); // the level the recorded runs ran at
+    expect(p.district.id).toBe(plan.id);
   });
   test('the cast is M-2\'s, and a fixture says it is one', () => {
     const c = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).cast;

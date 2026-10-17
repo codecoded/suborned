@@ -25,7 +25,7 @@ export type Plan = {
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
   standards: any; nodes: Record<string, V>; links: { node: string; to: string; via: string }[];
   roads: Road[]; gates: { id: string; name: string; node: string; road: string; area: string }[];
-  areas: { id: string; name: string; rect: Rect; notch?: [number, number, number]; label?: V; size?: number }[]; plots: Plot[];
+  areas: { id: string; name: string; rect: Rect; notch?: [number, number, number]; label?: V; size?: number; securityBase?: number; securityWhy?: string }[]; plots: Plot[];
   foot: { id: string; name: string; kind: string; w: number; pts: V[] }[];
   circus: { c: V; island: number; garden: number; ring: V; pavement: number };
   water: V[][]; quay: V[][]; beyond: V[][]; landmarks: Landmark[]; megastructures?: Megastructure[]; signatures?: Signature[];

@@ -1,0 +1,13 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 1774, "y": 489, "w": 327, "h": 25, "text": "Citizen. Walking is encouraged. Running is reported."},
+  {"kind": "speech", "x": 1602, "y": 916, "w": 168, "h": 25, "text": "You there! Walk, please."},
+  {"kind": "image", "x": 1673, "y": 926, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

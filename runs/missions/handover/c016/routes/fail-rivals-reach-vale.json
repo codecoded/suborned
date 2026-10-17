@@ -1,0 +1,26 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'rivals reach Vale' (Suture N2): route B without the false tip; the rivals follow the car to the service lane and reach Vale at the take.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 591, "op": "scout", "do": "watch", "target": "driver"},
+  {"tick": 791, "op": "scout", "do": "listen", "target": "driver"},
+  {"tick": 1211, "op": "fixer", "do": "turn", "target": "driver", "approach": "pay"},
+  {"tick": 1711, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 3700, "op": "enforcer", "do": "take"},
+  {"tick": 4080, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 4468, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4469, "op": "enforcer", "do": "move", "to": [2000, -5600]},
+  {"tick": 4528, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4529, "op": "enforcer", "do": "move", "to": [-400, -5800]},
+  {"tick": 4588, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4648, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4649, "op": "enforcer", "do": "move", "to": [850, -4820]},
+  {"tick": 4698, "op": "enforcer", "do": "extract"}
+ ],
+ "until": 5100
+}

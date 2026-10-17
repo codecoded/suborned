@@ -2,8 +2,8 @@
  "state": "rest",
  "elements": [
   {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
-  {"kind": "image", "x": 1600, "y": 66, "w": 112, "h": 30, "text": "known people"},
-  {"kind": "line", "x": 789, "y": 1098, "w": 149, "h": 30, "text": "Take Vale alive."},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
   {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
   {"kind": "speech", "x": 750, "y": 438, "w": 234, "h": 25, "text": "Friends first, force last. Remember."},
   {"kind": "speech", "x": 777, "y": 519, "w": 287, "h": 25, "text": "The square looks ordinary. That's the trouble."},

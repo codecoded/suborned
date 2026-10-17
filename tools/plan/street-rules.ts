@@ -13,9 +13,8 @@ const G = 'Streetscape';
 const dist = (a: V, b: V) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const inRing = (p: V, r: V[]) => { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) if ((r[i]![1] > p[1]) !== (r[j]![1] > p[1]) && p[0] < ((r[j]![0] - r[i]![0]) * (p[1] - r[i]![1])) / (r[j]![1] - r[i]![1]) + r[i]![0]) c = !c; return c; };
 const tag = (s: Spot) => `${s.s.kind} ${s.s.id.replace(/^street\//, '')}`;
-/** The §15 city palette a sign may use (frontage.placement.signs); coral is the transit kiosks'; the rest are faction or signal colours. */
+/** The §15 city palette a sign may use (frontage.placement.signs); coral is the transit kiosks'. The palette is closed: a name outside it fails. Signal colours are not reserved (Sky, 2026-10-16), so none is barred by name; one joins the sign palette when the plan lists it. */
 const PALETTE = ['cream_stone', 'paper_cream', 'teal_enamel', 'mint_enamel', 'gold_trim', 'chrome', 'sky_cerulean', 'zenith_cobalt', 'warm_sand', 'stone_shadow', 'ink_black'];
-const SIGNAL = ['vermilion', 'violet_set', 'green_circle', 'cones', 'guard', 'rivals', 'signal'];
 
 export function streetRules(c: WCtx): Check[] {
   const out: Check[] = [], { plan, d, w, S, F } = c, spots = spotsOf(c), gnd = spots.filter(x => x.ground), gc = genCtx(plan, d, c.civ, 0.18), ix = indexes(gc);
@@ -136,16 +135,15 @@ export function streetRules(c: WCtx): Check[] {
   }
   out.push(rule('SF-16', G, 'Frontage spill depth ≤ the street section\'s frontage zone', w.frontages.filter(f => f.level === 'street').length, bad16, 'all', 'streetscape.sections · frontage.placement.spill'));
 
-  // SF-17 colours: no lamp glass, sign or furniture in a signal colour (cones, guard, rivals) or faction colour; coral_transit only on transit kiosks and their kit
+  // SF-17 colours: a sign uses the city palette; coral_transit only on transit kiosks and their kit (signal colours are free since 2026-10-16: no colour is barred for being one)
   const bad17: string[] = [];
   for (const f of w.frontages) {
     const p = f.sign.palette;
-    if (SIGNAL.includes(p)) bad17.push(`${f.id}: sign colour ${p} is a signal or faction colour`);
-    else if (p === 'coral_transit' && !/-kiosk$/.test(f.trade)) bad17.push(`${f.id}: coral_transit on ${f.trade}`);
+    if (p === 'coral_transit' && !/-kiosk$/.test(f.trade)) bad17.push(`${f.id}: coral_transit on ${f.trade}`);
     else if (p !== 'coral_transit' && !PALETTE.includes(p)) bad17.push(`${f.id}: sign colour ${p} is not in the city palette`);
   }
   const coralOk = new Set(['kiosk-tickets', 'station-entrance', 'timetable-column']), surfaces = new Set(['enamel', 'trim', 'park', 'crossing', 'booth', 'tub', 'glow', 'inlay', 'orb']); // crossing, booth, tub, glow, inlay, orb: the landing slab's (a plan without crossings.strip), the phone booth body's, the palm tub base's and a crossing's light, arc and orb's own look keys (so the trim colour does not decide them)
-  for (const sp of spots) { if (!surfaces.has(sp.s.surface)) bad17.push(`${tag(sp)}: surface ${sp.s.surface}`); if (sp.s.variant === 'coral-dial' && !coralOk.has(sp.s.kind)) bad17.push(`${tag(sp)}: coral off a transit item`); if (SIGNAL.some(x => `${sp.s.variant ?? ''}${sp.s.surface}`.includes(x))) bad17.push(`${tag(sp)}: signal colour`); }
-  out.push(rule('SF-17', G, 'No sign, lamp or furniture colour is a signal colour or a faction colour; coral_transit only on transit items', w.frontages.length + spots.length, bad17, 'none', 'streetscape.lamps.colour · frontage.placement.signs · §15 signal_colours'));
+  for (const sp of spots) { if (!surfaces.has(sp.s.surface)) bad17.push(`${tag(sp)}: surface ${sp.s.surface}`); if (sp.s.variant === 'coral-dial' && !coralOk.has(sp.s.kind)) bad17.push(`${tag(sp)}: coral off a transit item`); }
+  out.push(rule('SF-17', G, 'A sign uses the city palette and every street item a known surface; coral_transit only on transit items', w.frontages.length + spots.length, bad17, 'none', 'frontage.placement.signs · §15 city palette'));
   return out;
 }

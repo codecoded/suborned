@@ -94,9 +94,9 @@ namespace Suborned.World
         }
 
         /// <summary>Signal rule (Sky, 2026-10-13, brief 007 Decisions): cones, guard and rival markers draw unlit and emissive, each with
-        /// its shape or motion cue, so lighting and grade never shift them; the ΔE2000 >= 20 gate is measured on the unlit palette against
-        /// the signal colours (style contract `signal_colours`). No signal visuals exist in the world build yet; when they do, they take
-        /// this material and nothing lit.</summary>
+        /// its shape or motion cue, so lighting and grade never shift them. The signals don't own their colours: red, amber and violet are
+        /// free for the world (Sky, 2026-10-16, which dropped the ΔE2000 >= 20 reservation). No signal visuals exist in the world build yet;
+        /// when they do, they take this material and nothing lit.</summary>
         public static Material UnlitSignal(string name, Color colour)
         {
             var m = new Material(Shader.Find("Universal Render Pipeline/Unlit") ?? throw new InvalidDataException("World: URP Unlit shader not found")) { name = "signal/" + name };

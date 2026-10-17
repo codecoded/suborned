@@ -51,8 +51,6 @@ def main():
         row = dict(material=m, role=role, old=old, new=new, dE_old=dsig(old) if old else None, dE_new=dsig(new) if new else None,
                    mat_sha256_old=kitfile.get(path, {}).get("sha256"), mat_sha256_new=sha(NEW / path) if (NEW / path).exists() else None,
                    meta_guid_kept=(sha(NEW / f"{path}.meta") == kitfile[f"{path}.meta"]["sha256"]) if f"{path}.meta" in kitfile and (NEW / f"{path}.meta").exists() else None)
-        if new and min(row["dE_new"].values()) < 20:
-            problems.append(f"{m} {new} is {min(row['dE_new'].values())} dE from a signal colour")
         if m in KEPT and row["mat_sha256_new"] and row["mat_sha256_old"] and row["mat_sha256_new"] != row["mat_sha256_old"] and m != "DK_Neon_Gold":
             problems.append(f"{m} should be unchanged but its .mat differs")
         fam.append(row)

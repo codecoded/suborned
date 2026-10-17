@@ -748,7 +748,7 @@
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "0a6f66b91b6681682a3561a11010e8c47a6937cf631da5a6ccb530d5a9ead229",
+  "sha256": "a376480f053a0dc2eed061bb5b198a8b7c53190b34488ce996bbd01d0cbe0d42",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {

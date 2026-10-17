@@ -176,8 +176,9 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- brief 014: job families, role shapes, the crowd giving way
 
-        /// <summary>The job families' calm tones, from the civic look's palette (contracts/world/civic-look.json), each ΔE2000 ≥ 20 from the three
-        /// signals (cones #e03a2f, guard #f0a020, rivals #8a4fd0; checked in briefs/014/play/people-tones.json): café staff peach (DK_Bloom_Peach),
+        /// <summary>The job families' calm tones, from the civic look's palette (contracts/world/civic-look.json). The signals (cones, guard, rivals)
+        /// don't own their colours (Sky, 2026-10-16): they stay readable by drawing unlit and emissive with their own shape or motion cue, so a
+        /// family tone needs no distance from them. Café staff peach (DK_Bloom_Peach),
         /// Office staff pool teal (DK_Pool_Civic), guards deep teal (DK_Enamel_Teal), drivers mint (DK_Enamel_Mint), everyone else steel (DK_Steel).
         /// The cell stays charcoal and the rivals glass dark: no family shares their tone.</summary>
         public static readonly Color Cafe = Hex(0xFCC4AC), Office = Hex(0x3A9AA6), GuardTone = Hex(0x1F6C67), DriverTone = Hex(0xA8D3BE), Passer = Hex(0xA9ABAE), Apron = Hex(0xEFE8D6), Cap = Hex(0x2B2F33);

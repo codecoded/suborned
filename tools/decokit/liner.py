@@ -159,7 +159,7 @@ def liner_terminal(s):
 # (floor 15.8) at 4.8, with boarding doors there and gaps in the bulwark and rails. Plan envelope (signatures.ocean-liner):
 # beam <= 16.4 (half 8.2), length <= 96, top ~34.
 
-# unlit dE2000 from cones / guard / rivals (mats.signal_gate gates every DK_Liner_* and DK_Accent_* at >= 20). The accents are
+# unlit dE2000 from cones / guard / rivals, as measured when they were chosen (brief 007; no gate holds them to it since 2026-10-16). The accents are
 # the shared look.json roles (mats.py): DK_Accent_Coral #FC9C84 21.7 (boot-top, fins, lifeboat hoods), DK_Accent_Teal #36B0A8 43.3
 # (fin bands, bridge wings), DK_Accent_Gold #D0C848 20.9 (sheer line, speed lines, bow atom, mast orbits).
 register("DK_Liner_White", "enamel", "#F7F4EC")                  # 30.3 (guard): the hull and superstructure

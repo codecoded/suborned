@@ -254,7 +254,49 @@ namespace Suborned.Play
 
         /// <summary>The walk-or-run chip on empty ground: walk and run seconds, the run's eye (shut, open, ?) and its Alert; refused: the pop's
         /// words. Carrying: the carry's seconds and its eye.</summary>
-        public sealed class MoveParts { public int WalkS = -1, RunS = -1, CarryS = -1; public string Eye = "", Alert = "", Refused = ""; public bool RunFree; }
+        public sealed class MoveParts
+        {
+            public int WalkS = -1, RunS = -1, CarryS = -1; public string Eye = "", Alert = "", Refused = ""; public bool RunFree;
+            /// <summary>The move preview (Glyph, "Move preview", variant A): where the ring sits, its state (safe, seen, unk, alert), the seeing
+            /// watcher's kind (camera, guard, rivals: the ring's colour), the stretches of the route inside each known watcher's sight (the glow,
+            /// world points with the watcher's kind), and the unwatched watchers on the route (a faint "?" over each).</summary>
+            public Vector3 At; public string State = "safe", SeenKind = "";
+            public readonly List<(Vector3 a, Vector3 b, string kind)> Glow = new(); public readonly List<Vector3> Unwatched = new();
+        }
+
+        /// <summary>The ring's state and the route's glow for a walk from agent k to `to` (the engine's card-only SeenAt per route sample; read-only).</summary>
+        void PreviewRoute(int k, Pt to, MoveParts mp, SeenQuote whole, bool carrying)
+        {
+            var g = Game; mp.At = frame.World(to);
+            string Pri(IEnumerable<string> ids) { string best = ""; int rank = 9; foreach (var w in ids) { var kind = Game.WatcherKind(w); int r = kind == "camera" ? 0 : kind is "guard" or "security" or "patrol" ? 1 : kind == "rivals" ? 2 : 3; if (r < rank) { rank = r; best = kind == "security" || kind == "patrol" ? "guard" : kind; } } return best; }
+            mp.SeenKind = whole == null ? "" : Pri(whole.SeenBy);
+            mp.State = whole == null || whole.Seen == "no" ? "safe" : whole.Seen == "?" ? "unk" : carrying ? "alert" : "seen";
+            if (whole != null) foreach (var w in whole.MaybeSeenBy) if (WatcherAt(w) is Vector3 wp) mp.Unwatched.Add(wp + Vector3.up * 3f);
+            if (whole == null || whole.SeenBy.Count == 0) return;
+            var route = g.S.Grid.Route(g.Ops[k].Pos, to); if (route == null) return;
+            var pts = new List<Pt>(); for (int i = 1; i < route.Length; i++) { Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 60); for (int j = 0; j < n; j++) pts.Add(G.Lerp(a, c, j, n)); } pts.Add(route[^1]);
+            string prev = ""; Pt from = pts[0];
+            for (int i = 0; i < pts.Count; i++)
+            {
+                var q = g.SeenAt(pts[i]); string kind = q.Seen == "yes" ? Pri(q.SeenBy) : "";
+                if (kind != prev) { if (prev.Length > 0) mp.Glow.Add((frame.World(from), frame.World(pts[i]), prev)); from = pts[i]; prev = kind; }
+            }
+            if (prev.Length > 0) mp.Glow.Add((frame.World(from), frame.World(pts[^1]), prev));
+        }
+
+        /// <summary>Where a watcher stands now (world), for the unwatched "?".</summary>
+        Vector3? WatcherAt(string id)
+        {
+            var g = Game;
+            switch (Game.WatcherKind(id))
+            {
+                case "camera": { var c = g.S.Cameras.Find(x => "camera:" + x.Id == id); return c == null ? null : frame.World(c.At) + Vector3.up * 0.6f; }
+                case "guard": return g.GuardPose() is var gp && gp.HasValue ? frame.World(gp.Value.pos) : null;
+                case "patrol": return g.PatrolPose() is var pp && pp.HasValue ? frame.World(pp.Value.pos) : null;
+                case "rivals": return g.RivalsPose() is var rp && rp.HasValue ? frame.World(rp.Value.pos) : null;
+            }
+            return null;
+        }
         public MoveParts MoveNow { get; private set; }
 
         /// <summary>The crosshair chip: the target's badge, down in n s, hits as a fraction, Trail per hit; never: the refusal.</summary>

@@ -11,7 +11,7 @@ The mechanism is civic-look.json `materials` (mass id -> {piece slot -> material
 Everything here is read: the export (out/world), kit.json (slots per piece, file hashes), civic-look.json (palette, current overrides), the Unity kit's .mat files (the colour each
 slot draws now; out/decokit-brass first for the brass family), the looks/harbour.json palette, facade.json, the style contract (signal colours). Checks, as the plan checker does them:
   CD-2  every slot named is one the piece has; every target is a material Unity already has or this script builds;
-  CD-4  every target is >= 20 dE2000 from the cones, guard and rivals colours (unlit; a texture as the linear-light mean of its opaque texels).
+  CD-4  (was: every target >= 20 dE2000 from the signal colours; no longer a check since 2026-10-16: the dE columns are a report).
 Run: python3 tools/decokit/overrides008.py        Deterministic. Exit 1 on any failed check."""
 
 import hashlib
@@ -200,15 +200,13 @@ def facade_section():
     for k, (new, kind, why) in FACADE_DISTRICT.items():
         now = FACADE["paletteOverride"]["gold_trim"] if k.startswith("paletteOverride") else sw[k]
         d = dsig(new)
-        if min(d.values()) < 20:
-            bad.append(f"facade {k} {new} is {min(d.values())} dE from a signal colour")
         out[k] = dict(old=now.upper(), new=new.upper(), kind=kind, dE=d, min=min(d.values()), used_at=[f"{p}[{i}]" for p, i, v in uses if v == k] or (["75 sign boards (frontage `sign.palette`)"] if k.startswith("paletteOverride") else []), why=why)
     roles = {k: dict(old=o, new=n, dE_new=dsig(n), why=why) for k, (o, n, why) in ROLES_STILL_GOLD.items()}
     return out, roles, bad
 
 
 def palette_change(brass):
-    """civic-look.json palette.materials rows for the gold family (unlit values, CD-4 on each)."""
+    """civic-look.json palette.materials rows for the gold family (unlit values)."""
     cur = {m["material"]: m for m in json.loads((REPO / "contracts/world/civic-look.json").read_text())["palette"]["materials"]}
     used = {}
     for p in brass["brass_pieces"]:
@@ -264,8 +262,6 @@ def main():
             for t in ts:
                 h, note = mat_hex(t)
                 d = dsig(h)
-                if min(d.values()) < 20:
-                    problems.append(f"CD-4: {t} {h} is {min(d.values())} dE from a signal colour")
                 if t not in palette:
                     rows.setdefault("palette_add", {})[t] = dict(material=t, unlit=h.upper(), basis=note, dE=d, min=min(d.values()), used_by=ids)
             rows.setdefault(piece, {})[slot] = dict(now=now_h, now_dE=dsig(now_h), to=to, targets=[dict(material=t, unlit=mat_hex(t)[0], dE=dsig(mat_hex(t)[0]), min=min(dsig(mat_hex(t)[0]).values())) for t in ts], painting=painting, why=why)

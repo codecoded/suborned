@@ -1,7 +1,7 @@
 {
  "schema": "brief014.people-tones/1",
  "source": "contracts/world/civic-look.json palette.materials (unlit); signals from contracts/style/suborned.style.json signal_colours",
- "gate": "deltaE2000 >= 20 from every signal",
+ "gate": "none: Sky dropped the signal-colour reservation on 2026-10-16: signals stay readable by drawing unlit and emissive with their own shape or motion cue, so red, amber and violet are free for the world. The deltaE2000 values below are a record of the old gate, not a requirement",
  "code": "unity/Assets/Suborned/Runtime/Play/HostViews.cs (Family, Shape)",
  "tones": [
   {

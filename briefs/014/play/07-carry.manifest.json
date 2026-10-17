@@ -2,12 +2,18 @@
  "state": "rest",
  "elements": [
   {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
-  {"kind": "image", "x": 1600, "y": 66, "w": 112, "h": 30, "text": "known people"},
-  {"kind": "line", "x": 789, "y": 1098, "w": 149, "h": 30, "text": "Take Vale alive."},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
   {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
   {"kind": "speech", "x": 966, "y": 253, "w": 102, "h": 25, "text": "Up. I'll carry."},
   {"kind": "speech", "x": 767, "y": -480, "w": 220, "h": 25, "text": "It took the orders. It always does."},
   {"kind": "image", "x": 1379, "y": 918, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": -407, "y": -1424, "w": 76, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": -407, "y": -1395, "w": 76, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": 801, "y": 623, "w": 76, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 801, "y": 652, "w": 76, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 744, "y": 598, "w": 56, "h": 7, "text": "stash plate 3 rim"},
+  {"kind": "image", "x": 744, "y": 627, "w": 56, "h": 7, "text": "stash plate 3 rim"},
   {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
  ]
 }

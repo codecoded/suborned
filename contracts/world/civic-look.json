@@ -608,12 +608,6 @@
   ]
  },
  "palette": {
-  "signals": {
-   "cones": "#E03A2F",
-   "guard": "#F0A020",
-   "rivals": "#8A4FD0"
-  },
-  "minDE": 20,
   "materials": [
    {
     "material": "DK_Accent_Gold",

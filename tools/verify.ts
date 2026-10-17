@@ -1,5 +1,5 @@
-// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast and any promoted dialogue tables held to their runs. Exit 0 only if all hold.
-import { existsSync, readdirSync } from 'node:fs';
+// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast and any promoted dialogue tables held to their runs, the HUD budget of every committed 1x play shot. Exit 0 only if all hold.
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inProcess } from './levels/checker';
 import { runDirs, runsRoot } from './gen/paths';
@@ -10,6 +10,12 @@ import { root } from './rag/config';
 const PLAN = 'harbour-district', SUBMITTED = 'r008', bad: string[] = [];
 const tsc = Bun.spawn(['bun', 'run', 'typecheck'], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); // runs while the replays use this thread
 const tscOut = Promise.all([new Response(tsc.stdout).text(), new Response(tsc.stderr).text(), tsc.exited]);
+
+// HUD budget (brief 014, tools/hud-budget): every committed 1x play shot (briefs/014/play and its folders, each shot with its .hud.png mask and .manifest.json) must be within budget.
+// Left out: polish/ (2x crops and history, reading surfaces) and before/ (an old capture with no mask).
+const PLAY = resolve(root, 'briefs/014/play'), PLAY_SKIP = new Set(['polish', 'before']);
+const playDirs = (d: string): string[] => [d, ...readdirSync(d).filter(n => !PLAY_SKIP.has(n) && statSync(resolve(d, n)).isDirectory()).flatMap(n => playDirs(resolve(d, n)))];
+const budgetJobs = existsSync(PLAY) ? playDirs(PLAY).filter(d => readdirSync(d).some(f => f.endsWith('.png'))).map(d => { const p = Bun.spawn(['bun', 'tools/hud-budget/cli.ts', d], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); return Promise.all([Promise.resolve(d), new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited]); }) : [];
 
 /** Pure: label a replay's drift from its warn lines, and say whether its only failure is the expected "superseded". */
 function summarise(lines: string[]) {
@@ -85,12 +91,25 @@ for (const scope of dlgScopes) {
   if (!v.ok) { bad.push(`promoted dialogue tables ${scope}`); for (const p of v.problems) console.log('      ' + p.slice(0, 200)); }
 }
 
+// HUD budget: one PASS/FAIL line per shot; a folder that fails lists its failing shots with the reasons
+let shotsChecked = 0, shotsOver = 0;
+for (const [d, o, e, c] of await Promise.all(budgetJobs)) {
+  const lines = o.split('\n');
+  shotsChecked += lines.filter(l => /^(PASS|FAIL)\s/.test(l)).length; shotsOver += lines.filter(l => l.startsWith('FAIL')).length;
+  if (c !== 0) {
+    bad.push(`HUD budget ${d.slice(root.length + 1)}`);
+    for (const l of (o + e).split('\n').filter(l => /^(FAIL|\s+[-~] )|rror/.test(l))) console.log('      ' + l.slice(0, 220));
+  }
+}
+console.log(`HUD budget: ${shotsChecked} 1x play shots, ${shotsOver ? `${shotsOver} OVER BUDGET` : 'all within budget'}`);
+if (!shotsChecked) bad.push('HUD budget: no play shots found');
+
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);
 if (code !== 0) { bad.push('typecheck'); console.log((out + err).split('\n').slice(0, 15).join('\n')); }
 const unfinishedNote = unfinished.length ? `, ${unfinished.length} not completed (${unfinished.join(',')}; listed above)` : '';
 const superseding = superseded ? `, ${superseded} superseded (expected)` : '';
-const okLine = `VERIFY OK: ${replayed} runs replayed${superseding}${unfinishedNote} (submitted ${SUBMITTED} ACCEPTED), checker clean, typecheck clean`;
+const okLine = `VERIFY OK: ${replayed} runs replayed${superseding}${unfinishedNote} (submitted ${SUBMITTED} ACCEPTED), checker clean, ${shotsChecked} play shots within HUD budget, typecheck clean`;
 console.log(bad.length ? `VERIFY FAILED: ${bad.join('; ')}` : okLine);
 console.error(`(${((performance.now() - t0) / 1000).toFixed(0)} s)`);
 process.exit(bad.length ? 1 : 0);

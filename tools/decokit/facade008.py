@@ -4,7 +4,7 @@
 Reads unity/Assets/Suborned/Editor/World/facade.json (Latch's, with the 14 Oct patch) and the patch in out/decokit-008/civic-colour-roles.json (`facade_patch`),
 writes out/decokit-008/facade.patched.json and out/decokit-008/facade-patch.check.txt:
   - every changed or added key (the list Latch applies),
-  - dE2000 of every changed or added swatch from the cones, guard and rivals colours (all must be >= 20),
+  - dE2000 of every changed or added swatch from the cones, guard and rivals colours (a report; no gate since 2026-10-16),
   - the host colours the civic masses get before and after, by replaying the builder's own dice (FacadeKit.Fill: FNV-1a seed, xorshift32) for the
     four limestone civic masses, so the diagnosis (which fin / band / plinth colour each mass drew) is checked, not guessed.
 Run: python3 tools/decokit/facade008.py"""
@@ -100,7 +100,7 @@ def main():
         assert before["swatches"][k].lower() == v["now"].lower(), k
         opt.append(f"swatches.{k}: {v['now']} -> {v['to']}")
     lines = ["# facade.json keys that change (Latch)", *changes, "", "# optional, district wide (the gold rule reaches roof spheres and boxes through these)", *opt, ""]
-    lines.append("# dE2000 of every added or changed swatch (>= 20 required)")
+    lines.append("# dE2000 of every added or changed swatch from the signal colours (a report; no gate since 2026-10-16)")
     rows = []
     touched = list(fp["swatches_add"]) + list(fp["swatches_change"]) + [k for k in fp["optional_district_wide"]]
     for k in touched:
@@ -114,7 +114,7 @@ def main():
     bad = 0
     for k, h, d, m in rows:
         bad += m < 20
-        lines.append(f"{k:28s} {h}  cones {d['cones']:5.1f}  guard {d['guard']:5.1f}  rivals {d['rivals']:5.1f}  min {m:5.1f}  {'ok' if m >= 20 else 'FAIL'}")
+        lines.append(f"{k:28s} {h}  cones {d['cones']:5.1f}  guard {d['guard']:5.1f}  rivals {d['rivals']:5.1f}  min {m:5.1f}")
     # every swatch of the patched file, the way out/palette/facade-safety.ts does it
     allbad = [(k, h) for k, h in after["swatches"].items() if min(de(h, s) for s in SIG.values()) < 20]
     lines.append(f"whole patched swatch table: {len(after['swatches'])} swatches, below 20: {len(allbad)} {allbad}")
@@ -126,7 +126,7 @@ def main():
     (OUT / "facade.patched.json").write_text(json.dumps(after, indent=2) + "\n")
     (OUT / "facade-patch.check.txt").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
-    sys.exit(1 if bad or allbad else 0)
+    sys.exit(0)  # no signal-distance gate since 2026-10-16: the dE table above is a report
 
 
 if __name__ == "__main__":

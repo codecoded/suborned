@@ -2,8 +2,8 @@
  "state": "alt",
  "elements": [
   {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
-  {"kind": "image", "x": 1600, "y": 66, "w": 112, "h": 30, "text": "known people"},
-  {"kind": "line", "x": 789, "y": 1098, "w": 149, "h": 30, "text": "Take Vale alive."},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
   {"kind": "image", "x": 592, "y": 379, "w": 24, "h": 24, "text": "agent cameo"},
   {"kind": "image", "x": 642, "y": 381, "w": 20, "h": 20, "text": "target badge"},
   {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
@@ -11,6 +11,12 @@
   {"kind": "speech", "x": -1197, "y": -32, "w": 225, "h": 25, "text": "New orders received. Proceeding."},
   {"kind": "image", "x": 539, "y": 311, "w": 26, "h": 26, "text": "pip guard"},
   {"kind": "image", "x": 946, "y": 931, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": -841, "y": -1411, "w": 160, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": -841, "y": -1382, "w": 160, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": 368, "y": 636, "w": 160, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 368, "y": 665, "w": 160, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 232, "y": 611, "w": 122, "h": 7, "text": "stash plate 3 rim"},
+  {"kind": "image", "x": 232, "y": 640, "w": 122, "h": 7, "text": "stash plate 3 rim"},
   {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
  ]
 }

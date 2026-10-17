@@ -1,0 +1,13 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 607, "y": 496, "w": 234, "h": 25, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": 633, "y": 461, "w": 287, "h": 25, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 1127, "y": 90, "w": 26, "h": 26, "text": "pip waitress"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

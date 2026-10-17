@@ -11,7 +11,8 @@ namespace Suborned.World.Play
     /// <summary>Puts the live Handover host into the generated scene (brief 011 D): the root `handover` with HandoverHost and its DebugHud, baked from
     /// the sources so a player needs no repo files but the engine bundle in StreamingAssets: the block-to-plan frame (plan.json civic.blockToPlan),
     /// the ground heights on a 1 m grid over the site window (the scene's export, its plot slabs: the people layer's rule), the capsule colours
-    /// (civic look palette, unlit hex; the people layer's job blocks for the cast) and the signal colours (style contract signal_colours), and
+    /// (civic look palette, unlit hex; the people layer's job blocks for the cast) and the signals' draw colours (style contract signal_colours;
+    /// unlit and emissive, not reserved from the world: Sky, 2026-10-16), and
     /// two material templates (Assets/Suborned/Materials/Play) whose shaders a build then carries. The builder calls it on every build; the
     /// menu installs it on the open scene and sets the people layer to the mission start (mission.json clock.startsAt).
     /// Menu: Suborned/Play/Install Handover Host · Suborned/Play/Play the Handover</summary>

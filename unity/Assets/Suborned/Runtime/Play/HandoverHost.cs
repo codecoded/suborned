@@ -967,16 +967,28 @@ namespace Suborned.Play
                 var st = s.Stand(place); if (G.Dist(op.Pos, st) <= 100) return null;
                 var r = s.Grid.Route(op.Pos, st); return r == null ? null : Walk(place, st, r);
             }
-            if (!tp.HasValue || G.Dist(op.Pos, tp.Value) <= reach - 50) return null;
-            var goal = s.Grid.NearestFree(tp.Value); if (!goal.HasValue) return null;
+            if (!tp.HasValue) return null;
+            // watching a camera or the patrol needs a clear line as well as reach (the engine's own check, Site.Sight at the rulebook's eye
+            // height): the stand point is the first route point that has both, never one the engine then refuses with "no clear line"
+            bool line = o.Do == "watch" && t.Kind is "camera" or "patrol"; var aim = tp.Value;
+            bool Fits(Pt q) => G.Dist(q, aim) <= reach - 50 && s.Grid.Free(q) && (!line || s.Sight(q, aim, R.Eye));
+            if (G.Dist(op.Pos, aim) <= reach - 50 && (!line || s.Sight(op.Pos, aim, R.Eye))) return null;
+            var goal = s.Grid.NearestFree(aim); if (!goal.HasValue) return null;
             var route = s.Grid.Route(op.Pos, goal.Value); if (route == null) return null;
             var cut = new List<Pt> { route[0] };
-            for (int i = 1; i < route.Length; i++) // corners can be far apart: 25 cm steps, stop at the first free point within reach
+            for (int i = 1; i < route.Length; i++) // corners can be far apart: 25 cm steps, stop at the first free point within reach (and line)
             {
                 Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 25);
-                for (int k = 1; k <= n; k++) { var q = G.Lerp(a, c, k, n); if (G.Dist(q, tp.Value) <= reach - 50 && s.Grid.Free(q)) { cut.Add(q); return Walk("", q, cut.ToArray()); } }
+                for (int k = 1; k <= n; k++) { var q = G.Lerp(a, c, k, n); if (Fits(q)) { cut.Add(q); return Walk("", q, cut.ToArray()); } }
                 cut.Add(c);
             }
+            if (line && !s.Sight(goal.Value, aim, R.Eye)) // the route never sees it: the nearest free point in reach that does, by rings of 1 m
+                for (int rr = 100; rr < reach - 50; rr += 100)
+                    for (int d = 0; d < 360; d += 15)
+                    {
+                        var q = new Pt(aim.X + (int)(rr * Math.Cos(d * Math.PI / 180)), aim.Y + (int)(rr * Math.Sin(d * Math.PI / 180)));
+                        if (Fits(q) && s.Grid.Route(op.Pos, q) is Pt[] rq) return Walk("", q, rq);
+                    }
             return Walk("", goal.Value, route);
         }
 

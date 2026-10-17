@@ -1311,11 +1311,13 @@
   ],
 
   "areas": [
-    { "id": "records", "name": "Records Precinct", "rect": [-328, -14, -401, -192], "label": [-260, -300] },
+    { "id": "records", "name": "Records Precinct", "rect": [-328, -14, -401, -192], "label": [-260, -300],
+      "securityBase": 2, "securityWhy": "The civic district, where the Records Office and the Handover stand: watchful (S2). The response dial's base level for the area (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3, Sky 2026-10-16: civic 2). The mission adds its own securityBonus." },
     { "id": "lamplight", "name": "Lamplight", "rect": [-328, -14, -192, -9], "notch": [0, 0, 51], "label": [-246, -162] },
     { "id": "gardens", "name": "Sphere Gardens", "rect": [-328, -9, 9, 268], "notch": [0, 0, 51], "label": [-217, 178] },
     { "id": "crescent", "name": "Crescent Quarter", "rect": [9, 288, 20, 268], "notch": [0, 0, 51], "label": [92, 162] },
-    { "id": "harbour", "name": "Harbour Quarter", "rect": [14, 288, -401, -20], "notch": [0, 0, 51], "label": [175, -272], "size": 7 },
+    { "id": "harbour", "name": "Harbour Quarter", "rect": [14, 288, -401, -20], "notch": [0, 0, 51], "label": [175, -272], "size": 7,
+      "securityBase": 1, "securityWhy": "A working quarter: routine (S1). The response dial's base level for the area (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3, Sky 2026-10-16: harbour 1)." },
     { "id": "lantern", "name": "Lantern Quarter", "rect": [-328, -14, -708, -419], "label": [-260, -566] },
     { "id": "docks", "name": "Market Docks", "rect": [14, 288, -708, -419], "label": [175, -508] }
   ],

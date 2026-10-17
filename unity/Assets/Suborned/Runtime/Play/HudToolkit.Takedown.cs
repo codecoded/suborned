@@ -70,6 +70,7 @@ namespace Suborned.Play
             Show(respPill, false); Show(respList, false);
         }
 
+        readonly List<Rect> stashPlaced = new();
         static VisualElement Dot(VisualElement parent, float x, float y, float d, Color c) { var e = E(parent, null, x - d / 2, y - d / 2, d, d); Round(e, d / 2); e.style.backgroundColor = c; return e; }
 
         Mark NewMark(List<Mark> pool, string plate, float w, float h, bool square = false)
@@ -124,27 +125,41 @@ namespace Suborned.Play
             }
             for (int i = bi; i < bodyMarks.Count; i++) Show(bodyMarks[i].Root, false);
             // stash plates: icon, name, pips (a filled pip = a body inside), a leader to a diamond on the object; behind a building hollow, dashed
-            int si = 0;
+            int si = 0; stashPlaced.Clear();
             foreach (var st in m.Stashes)
             {
                 if (!Proj(st.World, out var p)) continue;
                 if (stashMarks.Count <= si)
                 {
-                    var k = new Mark { Root = E(marks, null, 0, 0, 170, 66) }; stashMarks.Add(k);
-                    k.Plate = E(k.Root, "s-plate_dark", 0, 0, float.NaN, 22); k.Plate.style.flexDirection = FlexDirection.Row; k.Plate.style.alignItems = Align.Center; k.Plate.style.paddingLeft = 7; k.Plate.style.paddingRight = 9;
-                    k.Glyph = E(k.Plate, null, w: 13, h: 13); Icon(k.Glyph, "stash", Cream); k.Text = L(k.Plate, "verb-name"); k.Text.style.marginLeft = 5; k.Text.style.marginRight = 6;
+                    var k = new Mark { Root = E(marks, null, 0, 0, 170, ChipH + 44) }; stashMarks.Add(k);
+                    k.Plate = E(k.Root, "s-plate_dark", 0, 0, float.NaN, ChipH); k.Plate.style.flexDirection = FlexDirection.Row; k.Plate.style.alignItems = Align.Center; k.Plate.style.paddingLeft = 16; k.Plate.style.paddingRight = 16; // the chips' rule: glyphs 4 px clear of the rim
+                    foreach (bool top in new[] { true, false }) // the plate's chrome rims are art, for the budget (a faded plate over a dithered wall
+                    {                                            // otherwise reads as a second row of words); its words stay text
+                        var band = E(k.Plate, null); band.style.position = Position.Absolute; band.style.left = 0; band.style.right = 0; band.style.height = 7;
+                        if (top) band.style.top = 0; else band.style.bottom = 0; band.pickingMode = PickingMode.Ignore; int kk = stashMarks.Count; manifest.Add((band, "image", () => $"stash plate {kk} rim"));
+                    }
+                    k.Glyph = E(k.Plate, null, w: Glyph, h: Glyph); Icon(k.Glyph, "stash", Cream); k.Text = L(k.Plate, "verb-name"); k.Text.style.marginLeft = 5; k.Text.style.marginRight = 6;
                     for (int j = 0; j < 3; j++) { var pp = E(k.Plate, null, w: 8, h: 8); pp.style.marginLeft = 2; k.Pips.Add(pp); }
-                    for (int j = 0; j < 8; j++) k.Dots.Add(Dot(k.Root, 20, 26 + j * 4, 1.8f, Cream));
-                    var dia = E(k.Root, null, 16, 58, 8, 8); dia.style.rotate = new Rotate(45); dia.style.backgroundColor = Cream; k.Second = dia;
+                    for (int j = 0; j < 20; j++) k.Dots.Add(Dot(k.Root, 22, ChipH + 2 + j * 4, 1.8f, Cream)); // 8 under the plate; more when it lifts clear of another
+                    var dia = E(k.Root, null, 18, ChipH + 34, 8, 8); dia.style.rotate = new Rotate(45); dia.style.backgroundColor = Cream; k.Second = dia;
                 }
-                var u = stashMarks[si++]; Show(u.Root, true); u.Root.style.left = p.x - 20; u.Root.style.top = p.y - 62;
+                var u = stashMarks[si++]; Show(u.Root, true); u.Root.style.left = p.x - 22; u.Root.style.top = p.y - (ChipH + 40);
+                // two plates never overlap (Glyph: "Dumpster" over "Service door"): a later one first leans the other way off its leader (the
+                // plates side by side, never a stack of text), and only if that still collides lifts above, its leader longer
+                float pw = u.Plate.resolvedStyle.width; if (float.IsNaN(pw) || pw < 1) pw = 140; float lift = 0, lean = 0;
+                bool Hits(Rect r) { foreach (var q in stashPlaced) if (q.Overlaps(r)) return true; return false; }
+                Rect At(float ln, float lf) => new Rect(p.x - 22 + ln, p.y - (ChipH + 40) - lf, pw, ChipH);
+                if (Hits(At(0, 0))) { if (!Hits(At(44 - pw, 0))) lean = 44 - pw; else for (int g2 = 0; g2 < 4 && Hits(At(0, lift)); g2++) lift += ChipH + 4; }
+                stashPlaced.Add(At(lean, lift)); u.Plate.style.left = lean; u.Plate.style.top = -lift;
                 Text(u.Text, st.Name);
                 for (int j = 0; j < u.Pips.Count; j++) { Show(u.Pips[j], j < st.Holds); if (j < st.Holds) Bg(u.Pips[j], j < st.Used ? "markers/pip_full" : "markers/pip_empty"); }
-                Class(u.Plate, "s-plate_dark", !st.Behind); Border(u.Plate, st.Behind ? 1.4f : 0f, Cream); u.Plate.style.backgroundColor = st.Behind ? new Color(0.06f, 0.16f, 0.16f, 0.35f) : Color.clear;
-                for (int j = 0; j < u.Dots.Count; j++) { Show(u.Dots[j], !st.Behind || j % 2 == 0); u.Dots[j].style.height = st.Behind ? 1.8f : 4.2f; } // solid leader in view, dashed behind a building
-                u.Root.style.opacity = st.Hover ? 1f : 0.92f;
+                // behind a building: the whole plate fades (fill and rim together, never the outline alone: Glyph), the leader dashed
+                int dots = 8 + Mathf.CeilToInt(lift / 4f);
+                for (int j = 0; j < u.Dots.Count; j++) { u.Dots[j].style.top = ChipH + 2 - lift + j * 4 - 0.9f; Show(u.Dots[j], j < dots && (!st.Behind || j % 2 == 0)); u.Dots[j].style.height = st.Behind ? 1.8f : 4.2f; }
+                u.Root.style.opacity = st.Hover ? 1f : st.Behind ? 0.62f : 0.92f;
             }
             for (int i = si; i < stashMarks.Count; i++) Show(stashMarks[i].Root, false);
+            stashPlaced.Clear();
             // held doors: the lock disc, a ring counting to the stand-down (full until the host can read it), tape at the foot; Alert 3: "locked"
             int di = 0;
             foreach (var d in m.Doors)

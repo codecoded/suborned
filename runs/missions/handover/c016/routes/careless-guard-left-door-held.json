@@ -1,0 +1,21 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D, rev 4 lockdown): route-g-fast's knockout at 2:01, but the Tech leaves the cabinet as soon as the guard is down and the Enforcer waits half a minute before the Enter, so the guard is left at the door the cell still needs. The entrance camera's watcher reads him at 2:17 (Alert 1: a knockout), a unit comes from the Office's door post, brings him round (his statement, +4 T) and holds the scene: the Enter at 2:36 is refused (door-held). Vale is never reached: at 8:30 the rivals have him. The careful twin is route-g-fast (Enter at once, the loop held until the Enforcer is inside).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":355,"op":"scout","do":"watch","target":"guard"},
+  {"tick":555,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":745,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":745,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":1195,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":1255,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1555,"op":"enforcer","do":"enter"}
+ ],
+ "until": 5100
+}

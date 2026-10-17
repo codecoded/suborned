@@ -2,10 +2,10 @@
 set flush in the road (seafoam bars or dots in brass frames), a floating chrome orb at each kerb end showing a walking or standing figure over a thin beam and a
 glowing disc where people wait, brass dome studs along the kerb edge, seafoam inlay arcs where the crossing lands. Brass is a frame line only (SF-21).
 
-Colour roles (all from the palette; dE2000 to the signal colours is measured by proposal009.py):
+Colour roles (all from the palette; proposal009.py still reports dE2000 to the signal colours, no longer a gate):
   seafoam glow   DK_Cross_Light #72B5A7 (the kit seafoam enamel, emissive): bars, dots, the halo's ring, the orb's emitter lens
   walk           DK_Cross_Walk #9BCFC2 (the civic pale seafoam, e_seafoam_pale), hotter than the bars: it is the message
-  stop           DK_Cross_Stop #E8402F, a signal red. Sky's exception (14 Oct): small emissive display pictograms only, never a surface (mats.SIGNAL_EXEMPT)
+  stop           DK_Cross_Stop #E8402F, a signal red, emissive on its dark display plate (signal colours are free since 16 Oct; a signal is read by its emissive draw and its figure)
   light volumes  DK_Cross_Beam #9BCFC2 (alpha 0.28) and DK_Cross_Halo #72B5A7 (alpha 0.40): kind `glow`, translucent; Latch draws them additive, double-sided
   frame          DK_Brass_Civic #99784D: bezels, bar and dot frames, hairlines, the dome stud (small metal only)
   body           DK_Chrome, display plate DK_Enamel_Charcoal #2B2F33, arc inlay DK_Inlay_Seafoam (as the civic paving)

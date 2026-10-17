@@ -2,7 +2,7 @@
 // crew and routes are the ones moved out of the world but for the changes declared below, its timeline is GDD §07's
 // schedule, and the overlay still passes.
 // Preservation lock (Sky 2026-10-14): re-siting the Handover changes PLACES and MOVED or RENAMED; re-timing it changes the
-// timeline test (GDD §07, entry for entry).
+// timeline test (GDD §07, entry for entry). Re-worded 2026-10-17 (Waymark, GDD v0.23.0): the 0:00 entry is §07's new words.
 // Re-pinned 2026-10-16 (Waymark, brief 014): the cell's start moved into the camera's view (the four crew rows of MOVED). Re-pinned 2026-10-14 (Waymark). Sky, 2026-10-13: "the handover mission is crucial we keep, though the timings and
 // placements can be adjusted given we've regenerated the world". What moved: the Records Office doors now stand on its tower
 // faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 'Steps' is 'Terrace gate' (the café door is
@@ -68,6 +68,10 @@ describe('handover mission file', () => {
     expect(broken(m => { delete m.timeline[0].src; })).toBe(false);
     expect(broken(m => { m.cast = []; })).toBe(false); // unknown key
     expect(broken(m => { m.clock.provisional = true; })).toBe(false); // a ruled start is settled
+    expect(mission.securityBonus).toBe(0); // the Handover adds nothing to the civic area's base (S2); the reason sits beside it
+    expect(broken(m => { m.securityBonus = 9; })).toBe(false); // a step beyond the dial
+    expect(broken(m => { m.securityBonus = 0.5; })).toBe(false);
+    expect(broken(m => { delete m.securityBonusWhy; })).toBe(false); // a bonus without its reason
     expect(broken(m => { m.windows[0].walk.s = 30; })).toBe(false); // the walk is its metres at its pace, not the GDD's figure
     expect(broken(m => { m.windows[0].windowS = 120; })).toBe(false); // out, stay and back
     expect(broken(m => { m.windows[0].role = 'doorman'; })).toBe(false); // a role the mission does not name
@@ -95,15 +99,34 @@ describe('handover mission file', () => {
     expect(sha(was)).toBe(WAS);
   });
 
-  test('the timeline is GDD §07\'s schedule, entry for entry, but for the entries retimed with the world (each declared here)', async () => {
+  // GDD v0.23.0 (2026-10-17): §07's 0:00 entry takes in the cell's start in view (brief 014) and the 8:30 close (brief 011), so no
+  // entry is retimed against §07 any more; it adds the guards' check-in line, a routine with no single offset. Every entry that
+  // opens on an m:ss is a timeline entry, word for word; the check-in line is checked against what the engine reads (the cast
+  // guard's post in the people file, the rulebook's check-in-period-s), and is not a timeline entry (the pill doesn't show it).
+  test('the timeline is GDD §07\'s schedule, entry for entry; its check-in line is the engine\'s guard marks', async () => {
     const gdd = readdirSync(resolve(root, 'GDD')).filter(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f));
     expect(gdd).toHaveLength(1);
     const s07 = (await text(`GDD/${gdd[0]}`)).split(/^## /m).find(s => s.startsWith('§07 '))!;
     const schedule = s07.split('\n').find(l => l.startsWith('schedule: '))!.slice('schedule: '.length).replace(/\.$/, '').split(' · ');
-    /** Sky 2026-10-15 (brief 011 Decisions): the close moves 8:00 → 8:30; GDD §07 text owed in the next version. */
-    const RETIMED: Record<string, string> = { 'rivals take Vale or car leaves = over': '8:30' };
-    expect(mission.timeline.map(e => `${RETIMED[e.what] && e.at === RETIMED[e.what] ? schedule.find(x => x.endsWith(` ${e.what}`))!.split(' ')[0] : e.at} ${e.what}`)).toEqual(schedule);
-    for (const [what, at] of Object.entries(RETIMED)) expect(mission.timeline.find(e => e.what === what)).toMatchObject({ at, note: expect.stringContaining('Retimed') });
+    const clocked = schedule.filter(x => /^\d+:\d\d /.test(x)), routines = schedule.filter(x => !/^\d+:\d\d /.test(x));
+    expect(mission.timeline.map(e => `${e.at} ${e.what}`)).toEqual(clocked);
+    expect(routines).toHaveLength(1);
+    const line = routines[0]!.match(/^the door guard checks in at (.+) \(shift end; [^)]*\)$/)!;
+    expect(line).not.toBeNull();
+    const marks = line[1]!.split(/, | and /).map(offsetS);
+    // the engine's marks (sim GameResponse.NextMarkOf): every period from the start of the cast guard's post, to his shift's end
+    const site = JSON.parse(await text('sim/data/handover.site.json')), ppl = JSON.parse(await text('sim/data/handover.people.json'));
+    const period = JSON.parse(await text('contracts/rules/rulebook.json')).values['check-in-period-s'].v as number;
+    const stops = (ppl.people as { id: string; stops: [string, number, number, number][] }[]).find(p => p.id === site.cast.guard.id)!.stops;
+    let i = stops.findIndex(([, from, to]) => from <= 0 && to > 0), j = i;
+    while (i > 0 && stops[i - 1]![0] === stops[i]![0] && stops[i - 1]![2] === stops[i]![1]) i--;
+    while (j + 1 < stops.length && stops[j + 1]![0] === stops[j]![0] && stops[j + 1]![1] === stops[j]![2]) j++;
+    const from = stops[i]![1], end = stops[j]![2], engine: number[] = [];
+    for (let k = Math.ceil(-from / period); from + k * period <= end; k++) engine.push(from + k * period);
+    if (engine.at(-1) !== end) engine.push(end);
+    expect(stops[i]![0]).toBe('office-entrance'); // his door
+    expect(marks).toEqual(engine); // 1:00, 2:30, 4:00, 5:30
+    expect(end).toBe(offsetS(mission.timeline.find(e => e.what === 'handover chime')!.at)); // (shift end) is the chime
     expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '5:30', 300, 1.8]]); // the chime's crowd
   });
 
