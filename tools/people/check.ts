@@ -15,6 +15,7 @@ import { positionsOf, type Rules } from './rules';
 import { seatId, seatPoints, SEAT_TOL, STAND } from './seats';
 import { atCafeSide, type Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
+import { checkNeeds, N_SRC } from './needs-check';
 
 export const GROUP = 'People';
 const PersonShape = PersonSchema.shape as Record<string, unknown>;
@@ -23,7 +24,8 @@ const PersonShape = PersonSchema.shape as Record<string, unknown>;
 export const FIELD_READER: Record<string, string> = {
   id: '~key: the person\'s key; no rule reads it', tier: '~tiers: rules tiers.simulated (background people are counts, not persons)', name: 'name', temperament: 'temperament', need: 'need',
   institution: 'temperament', start: 'scales', memory: 'memory', ties: 'ties', routine: 'routine', home: 'routine', work: 'routine', look: '~look: the graybox job colour (brief 010 E), no rule reads it',
-  position: 'need', needWeights: 'need', secret: 'secret', // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
+  position: 'need', needWeights: 'need', secret: 'secret', needRecord: 'need', secretRecord: 'secret', // brief 017: a record is read where its kind is (the label by Intel; size and holder in phase 2)
+  // the rulebook draws a replacement need from the person\'s row (Sky Q2): keel-rulebook.md point 8
 };
 export const RULES_SRC: Record<string, string> = {
   'P-0': 'GDD §09 (nothing hand-authored; unknown = reject): the cast tables cover the scope\'s area × occupation pairs, and only those',
@@ -43,6 +45,7 @@ export const RULES_SRC: Record<string, string> = {
   'P-14': 'people.rules.json ties.kinds.lover (Motive briefs/011/motive-lovers.md §1): mutual, one per person, met on their routines, never family, at most maxShare of the simulated people',
   'P-15': 'people.rules.json secrets (Motive briefs/011/motive-lovers.md §2): 0 or 1 per person from the closed list; affair exactly for everyone with a lover tie; the need secret retired into the record share',
   'P-16': 'brief 014 (Sky 2026-10-16: five identical servers on one point): no two people are drawn on one place at once; a door, a bay or a standing point holds one person at a time, a post is one person\'s',
+  ...N_SRC, // brief 017: open needs, N-1..N-8, run when the people were made with the need kinds and a catalogue
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
 const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.value ?? (r.bad.length ? `${r.bad.length} fault(s)` : 'ok'), limit: r.limit ?? '0 faults', ok: !r.bad.length, ...(r.bad.length ? { detail: r.bad.slice(0, 12).join('; ') + (r.bad.length > 12 ? `; +${r.bad.length - 12} more` : '') } : {}), source: RULES_SRC[r.id] });
@@ -328,13 +331,13 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     const bad: string[] = [], readers = Object.keys(rules.person.readBy.fields), carries = rules.tiers.simulated.carries;
     for (const f of carries) if (!readers.includes(f)) bad.push(`${f} is carried but no rule reads it`);
     for (const f of readers) if (!carries.includes(f)) bad.push(`${f} is read but not carried`);
-    const shape = Object.keys(PersonShape).filter(f => f !== 'secret' || !!rules.secrets), seen = new Set<string>(); // a rulebook without `secrets` has no such field (a pinned older one)
+    const recordFields = ['needRecord', 'secretRecord'], shape = Object.keys(PersonShape).filter(f => (f !== 'secret' || !!rules.secrets) && (!recordFields.includes(f) || (!!c.needs && (f !== 'secretRecord' || !!rules.secrets)))), seen = new Set<string>(); // a rulebook without `secrets` has no such field (a pinned older one)
     for (const f of shape) {
       const to = FIELD_READER[f];
       if (!to) bad.push(`field ${f} of a person has no named reader (add it to FIELD_READER with the rule that reads it)`);
       else if (!to.startsWith('~') && !readers.includes(to)) bad.push(`field ${f} is read by ${to}, which people.rules.json person.readBy does not list`);
     }
-    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f) && !(f === 'secret' && !rules.secrets)) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
+    for (const f of Object.keys(FIELD_READER)) if (!shape.includes(f) && !(f === 'secret' && !rules.secrets) && !(recordFields.includes(f) && (!c.needs || (f === 'secretRecord' && !rules.secrets)))) bad.push(`FIELD_READER names ${f}, which a person does not carry`);
     for (const p of P) for (const f of Object.keys(p)) if (!shape.includes(f) && !seen.has(f)) { seen.add(f); bad.push(`${p.id} carries ${f}, which the schema does not list`); }
     for (const b of people.background as Record<string, unknown>[]) for (const f of ['name', 'temperament', 'need', 'ties']) if (f in b) bad.push(`background ${b.plot} carries ${f}`);
     out.push({ id: 'P-12', rule: 'Every field a person carries names the rule that reads it', bad: [...new Set(bad)], value: `${shape.length} fields`, limit: 'each read by a rule' });
@@ -440,6 +443,8 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     }
     out.push({ id: 'P-16', rule: 'No two people are drawn on one place at once (a door, a bay, a stop holds one at a time)', bad: [...new Set(bad)], value: `${held.size} places`, limit: 'one drawn person to a place' });
   }
+  // N-1..N-8 open needs (brief 017): only when the people were made with the need kinds and a catalogue (a pinned older run has neither)
+  if (c.needs) for (const n of checkNeeds({ needs: c.needs, rules, cast, scope, people, mission, handover })) out.push(n);
   const checks = out.map(row);
   void rowOf; void (null as unknown as Unit);
   return { ok: checks.every(x => x.ok), checks, counts: { persons: P.length, units: scope.units.length, faults: out.reduce((n, r) => n + r.bad.length, 0) }, handover };

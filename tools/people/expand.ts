@@ -13,9 +13,10 @@ import type { Walker } from './walk';
 import { fold, insideFromDoor, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
 import { deriveKnowledge } from './knowledge';
 import { withSecrets } from './secrets';
+import { drawNeedRecord, drawSecretRecord, type Needs } from './needs';
 import { pinnedByRole, type Casting } from './roles';
 
-export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting };
+export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId: string; planVersion: string; atMin: number; hashes: People['inputs']; /** the Handover, to give pinned names by role */ casting?: Casting; /** brief 017: the need kinds and the catalogue; absent, no person draws a record (a pinned older run) */ needs?: Needs };
 const KEEPER = 'keeper';
 
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
@@ -277,6 +278,17 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
     a.institution = a.temperament === 'loyal' ? (a.work ? a.work.employer : 'civic') : null;
     // the secret (brief 011): an affair for everyone with a lover tie; otherwise a record, by the share the row names (the old need `secret`'s weight, migrated); else none
     if (rules.secrets) { const rec = row?.secrets?.find(x => x.secret === 'record'); a.secret = count(a, 'lover') ? 'affair' : rec && rng(`${a.id}/secret`).f() < rec.share ? 'record' : null; }
+    // the records (brief 017): the kind is drawn above, as it always was; the record is drawn after it, on a stream of its own (nothing else moves), among the catalogue's records of that kind in their area.
+    // A catalogue with none for them is the table's to know (P-0, N-2): unknown = reject.
+    if (c.needs && a.need) {
+      const area = a.work?.area ?? scope.homes.find(h => h.plot === a.home.plot)?.area ?? scope.areas[0]!;
+      const rec = drawNeedRecord(c.needs, rules, a.id, area, a.need, a.temperament);
+      if (rec) a.needRecord = rec.id; else gaps.push(`${a.id}: the catalogue has no record of need kind ${a.need} in area ${area} that a ${a.temperament} person's approaches can meet`);
+      if (a.secret) {
+        const sec = drawSecretRecord(c.needs, a.id, area, a.secret);
+        if (sec) a.secretRecord = sec.id; else gaps.push(`${a.id}: the catalogue has no record of secret kind ${a.secret} in area ${area}`);
+      }
+    }
   }
   const pick = (r: Rng, xs: { name: string }[]) => r.pick(xs).name;
   const pins = rules.names.pinned;

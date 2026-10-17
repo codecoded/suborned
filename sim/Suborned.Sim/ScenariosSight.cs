@@ -9,13 +9,13 @@ namespace Suborned.Sim
 {
     public static partial class Scenarios
     {
-        /// <summary>The free ground nearest the Scout (that it can walk to) from which a Watch on this watcher is taken now: within
+        /// <summary>The free ground nearest the Scout, or `who` (that it can walk to) from which a Watch on this watcher is taken now: within
         /// sight.watch.reach less 2 m, on a clear line (or, line false, behind a solid), and (unseen) in no watcher's sight. Ties by grid
         /// cell, so the same run finds the same spot.</summary>
-        static Pt WatchSpot(Run r, string watcher, bool unseen = true, bool line = true) => FindWatchSpot(r, watcher, unseen, line) ?? throw new InvalidOperationException($"no spot to watch {watcher} from");
-        static Pt? FindWatchSpot(Run r, string watcher, bool unseen, bool line)
+        static Pt WatchSpot(Run r, string watcher, bool unseen = true, bool line = true, string who = Scout) => FindWatchSpot(r, watcher, unseen, line, who) ?? throw new InvalidOperationException($"no spot to watch {watcher} from");
+        static Pt? FindWatchSpot(Run r, string watcher, bool unseen, bool line, string who = Scout)
         {
-            var g = r.G; var at = g.ConeFan(watcher)!.At; var grid = g.S.Grid; var from = r.Op(Scout).Pos;
+            var g = r.G; var at = g.ConeFan(watcher)!.At; var grid = g.S.Grid; var from = r.Op(who).Pos;
             var cands = new List<(long d, int i, int j, Pt c)>(); int reach = g.R.SightReachCm - 200;
             for (int i = 0; i < grid.Nx; i++)
                 for (int j = 0; j < grid.Ny; j++)
@@ -31,16 +31,16 @@ namespace Suborned.Sim
             return null;
         }
 
-        /// <summary>The Scout stands within sight.watch.reach of the watcher on a clear line now (what a Watch on it needs).</summary>
-        static bool Watchable(Run r, string watcher)
+        /// <summary>The Scout (or `who`) stands within sight.watch.reach of the watcher on a clear line now (what a Watch on it needs).</summary>
+        static bool Watchable(Run r, string watcher, string who = Scout)
         {
-            var f = r.G.ConeFan(watcher); var at = r.Op(Scout).Pos;
+            var f = r.G.ConeFan(watcher); var at = r.Op(who).Pos;
             return f != null && G.Within(at, f.At, r.G.R.SightReachCm) && r.G.S.Sight(at, f.At, r.G.R.Eye);
         }
 
         static void SightCases()
         {
-            Add("N41", "—", "Cones are the Scout's skill (Sky 2026-10-16; rulebook sight): no watcher's sight is known at the start and no fan is drawn; the card's 'seen by' shows '?' for a watcher that could see the route, never its answer. Only the Scout watches, within 18 m on a clear line; the response unit is not watched. A 20 s Watch on the entrance camera teaches its sight (its routine with it: a camera is fixed), and the card then shows the true answer.", r =>
+            Add("N41", "—", "Cones are the Scout's skill (Sky 2026-10-16; rulebook sight): no watcher's sight is known at the start and no fan is drawn; the card's 'seen by' shows '?' for a watcher that could see the route, never its answer. Only the Scout and (Sky 2026-10-18) the Tech watch a camera, within 18 m on a clear line; the response unit is not watched. A 20 s Watch on the entrance camera teaches its sight (its routine with it: a camera is fixed), and the card then shows the true answer.", r =>
             {
                 var g = r.G;
                 r.Is(g.WatcherIds().TrueForAll(w => !g.Known(w)!.Sight), "no watcher's sight is known at the start");
@@ -52,7 +52,7 @@ namespace Suborned.Sim
                 r.Eq(q0.Seen.AlertIfSeen, g.R.RunAlert, "and the Alert a seen run would raise");
                 var far = g.QuoteMove(Scout, r.Stand("crew:fixer"));
                 r.Is(!far.Seen.MaybeSeenBy.Contains("camera:entrance"), "a route no camera could see, whatever its facing, shows no '?' for it");
-                r.Refused(Tech, "watch", "camera:entrance", "only the Scout watches");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "watch", Target = "camera:entrance" }).code, "too-far", "the Tech watches the machines too (Sky 2026-10-18), but not from the start: too far"); // was only-scout before Sky 2026-10-18
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "watch", Target = "camera:entrance" }).code, "too-far", "too far to watch the camera from the start");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "watch", Target = "security-1" }).code, "target-unknown", "the response unit's sight is known when it comes: nothing to watch");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "watch", Target = "camera:roof" }).code, "target-unknown", "no such camera");

@@ -18,7 +18,7 @@ namespace Suborned.Play
     {
         public sealed class ActionText
         {
-            public string Label = "", Does = ""; public readonly Dictionary<string, string> OnTarget = new();
+            public string Label = "", Does = ""; public readonly Dictionary<string, string> OnTarget = new(); public readonly Dictionary<string, Dictionary<string, string>> OnTargetBy = new();
             /// <summary>A verb's ways (brief 013: the takedown's knockout and kill), each its own label and line.</summary>
             public readonly Dictionary<string, (string label, string does)> Ways = new();
         }
@@ -122,6 +122,7 @@ namespace Suborned.Play
                 {
                     var a = new ActionText { Label = S(kv.Value, "label") ?? kv.Key, Does = S(kv.Value, "does") ?? "" };
                     if (kv.Value.Opt("onTarget") is JNode ot) foreach (var o in ot.Entries) a.OnTarget[o.Key] = o.Value.Str();
+                    if (kv.Value.Opt("onTargetBy") is JNode ob) foreach (var ag in ob.Entries) { var d = a.OnTargetBy[ag.Key] = new Dictionary<string, string>(); foreach (var o in ag.Value.Entries) d[o.Key] = o.Value.Str(); } // Fable: the Tech's own lines on machines
                     if (kv.Value.Opt("ways") is JNode wy) foreach (var w in wy.Entries) a.Ways[w.Key] = (S(w.Value, "label") ?? w.Key, S(w.Value, "does") ?? "");
                     Actions[kv.Key] = a;
                 }
@@ -254,10 +255,11 @@ namespace Suborned.Play
         public string TargetName(string key, string fallback) => TargetNames.TryGetValue(key, out var s) ? s : fallback;
 
         /// <summary>An action's label and plain line ("Pay Inez", "slip her cash for a favour; she'll owe you, but the payment can be traced").</summary>
-        public (string label, string does) Action(string verb, string target)
+        public (string label, string does) Action(string verb, string target, string agent = null)
         {
             if (!Actions.TryGetValue(verb, out var a)) return (verb, "");
-            var does = target != null && a.OnTarget.TryGetValue(target, out var on) ? on : a.Does;
+            var does = target != null && agent != null && a.OnTargetBy.TryGetValue(agent, out var by) && by.TryGetValue(target, out var ob) ? ob
+                : target != null && a.OnTarget.TryGetValue(target, out var on) ? on : a.Does; // onTargetBy[agent][target] first (Fable, the Tech's Watch)
             return (a.Label, does);
         }
 

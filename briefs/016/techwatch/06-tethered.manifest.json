@@ -1,0 +1,19 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 833, "y": 549, "w": 24, "h": 24, "text": "agent cameo"},
+  {"kind": "image", "x": 883, "y": 551, "w": 20, "h": 20, "text": "target badge"},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 347, "y": 207, "w": 22, "h": 22, "text": "plate fold tab"},
+  {"kind": "image", "x": 105, "y": 179, "w": 248, "h": 78, "text": "order plate"},
+  {"kind": "speech", "x": 490, "y": -890, "w": 155, "h": 25, "text": "Looped. I'm tied here."},
+  {"kind": "image", "x": 663, "y": 0, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 747, "y": 524, "w": 59, "h": 26, "text": "name chip"},
+  {"kind": "image", "x": 1070, "y": 533, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": 732, "y": 14, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

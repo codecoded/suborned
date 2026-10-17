@@ -104,7 +104,8 @@ namespace Suborned.Play
         const float ColX = 14, ColY = 14; // brief 014: one margin (14) from the screen edge for every corner group
         sealed class Strip { public VisualElement Root, Tags, Icon, Bar, Fill, Cancel, QueuedIcon, Stance; public Label Role, State, Action, Time, Queued, Ready, Hint; public bool Compact; }
         /// <summary>One agent's window in a roster frame (the column, or the row for the corner and bottom docks).</summary>
-        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips; public Label Num; public readonly List<VisualElement> PipDots = new(); }
+        const float EndCardW = 400f, EndCardPad = 30f; // the end card at rest (Debrief opens it to 560)
+        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm; public Label Num; public readonly List<VisualElement> PipDots = new(); }
         readonly Window[] colWins = new Window[4], rowWins = new Window[4];
         static readonly Rect[] RowWin = { new(37, 15, 65, 64), new(123, 15, 65, 64), new(210, 15, 65, 64), new(296, 15, 65, 64) };
         VisualElement row;
@@ -378,6 +379,8 @@ namespace Suborned.Play
                 w.RingSel = E(clip, "s-portrait_ring_inner", 0, 0, 2 * rad, 2 * rad); // Glyph round 2: the selected agent's ring, inside the photo circle (layers: photo, scrim, ring, pips)
                 w.Pips = E(clip, null, 0, 2 * rad - 14, 2 * rad, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center; // raised 2 px to clear the ring's band
                 w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
+                w.Arm = E(frame, "s-disc_dark_24", c0.x + 14, c0.y + 13, 20, 20); Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
+                Icon(E(w.Arm, null, 2.4f, 2.4f, 12, 12), "fire", Cream); // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
                 var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter;
             }
         }
@@ -446,8 +449,8 @@ namespace Suborned.Play
             begin.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.StartClock(); e.StopPropagation(); } });
             var bl = L(begin, "button-label"); bl.text = "Begin"; briefBeginKey = L(null, "keycap"); /* Sky: no key hint on a button (keys are taught by the hints at first use); Space still begins */
             // the end card (debrief_card): 560 wide, top centre +40, y 160; Debrief opens the numbers, Replay plays again
-            end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = 30; end.style.paddingRight = 30; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
-            endTitle = L(end, "briefing-title"); endLine = L(end, "briefing-body"); endLine.style.whiteSpace = WhiteSpace.Normal; endLine.style.marginTop = 6;
+            end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = EndCardPad; end.style.paddingRight = EndCardPad; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
+            endTitle = L(end, "briefing-title"); endTitle.style.whiteSpace = WhiteSpace.Normal; /* a reading surface: the line wraps to two lines (EndCardAudit) */ endLine = L(end, "briefing-body"); endLine.style.whiteSpace = WhiteSpace.Normal; endLine.style.marginTop = 6;
             endDetail = E(end); endDetail.style.marginTop = 10;
             for (int i = 0; i < 8; i++) { var l = L(endDetail, "briefing-small"); l.style.whiteSpace = WhiteSpace.Normal; l.style.marginTop = 3; endLines.Add(l); }
             var eb = E(end); eb.style.flexDirection = FlexDirection.Row; eb.style.marginTop = 18; eb.style.justifyContent = Justify.Center; // Glyph round 2: the pair centred
@@ -675,6 +678,7 @@ namespace Suborned.Play
                 string look = s.Down ? "down" : s.Hurt ? "hurt" : !any || s.Selected ? "normal" : "dim";
                 Bg(w.Portrait, $"portraits/portrait_{s.Role}_{look}");
                 Show(w.RingSel, s.Selected); Show(w.RingBusy, s.Busy && !s.Selected);
+                Show(w.Arm, s.Armed && !s.Down); if (s.Armed && w.Arm.childCount > 0) w.Arm[0].style.unityBackgroundImageTintColor = s.Drawn ? TurqLight : Cream; Border(w.Arm, 1.6f, s.Drawn ? TurqLight : Color.clear); // drawn: turquoise, and a turquoise rim (the shape cue)
                 Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; // selected: the key badge turns turquoise (no ring: see BuildRoster)
                 Pips(w, s.Hp, s.HpMax);
                 if (st.Root.style.display == DisplayStyle.None) continue;

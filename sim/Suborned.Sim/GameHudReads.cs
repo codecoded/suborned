@@ -4,6 +4,8 @@
 //  · StashRoom(stash): the bodies in a stash and how many it holds (the pips).
 //  · NextRound(stash): a container's next servicing round, and whether the cell knows it ("?" until it does).
 //  · CarryPathSight(op, to): who sees which stretch of a carry walk, by SeenQuote's watcher test, second by second.
+//  · NeedRecordOf(person): a person's need as kind, record and label (brief 017 phase 1, for Intel). The truth, not what the cell knows:
+//    the host shows the kind's word while the need is only told and the label once learned, by Person.Knows("need") as before.
 using System;
 using System.Collections.Generic;
 
@@ -110,5 +112,13 @@ namespace Suborned.Sim
             c.Seen = c.SeenS.Count > 0 || c.Stretches.Exists(x => x.Seen == "yes") ? "yes" : c.MaybeS.Count > 0 || c.Stretches.Exists(x => x.Seen == "?") ? "?" : "no";
             return c;
         }
+
+        /// <summary>A person's need (brief 017): its kind (Person.Need, what every rule reads), the catalogue record's id and its label
+        /// ("Bureau loan"), by id or role, cast or crowd. Null if there is no such person; record and label "" when the host loaded no people
+        /// file or the catalogue has no record of the kind. Read-only: the truth, gated by the host on Knows("need").</summary>
+        public (string kind, string record, string label)? NeedRecordOf(string idOrRole) => PersonById(idOrRole) is Person p ? NeedRecordOf(p) : ((string, string, string)?)null;
+        /// <summary>The same for a person the engine handed out (a contact the debrief carries: Between.Contacts, whose need may be replaced).</summary>
+        public (string kind, string record, string label) NeedRecordOf(Person p)
+            => (p.Need, p.Record, p.Record.Length > 0 && People2 != null && People2.Records.TryGetValue(p.Record, out var r) ? r.label : "");
     }
 }

@@ -126,11 +126,15 @@ namespace Suborned.Sim
             pos = at.Value; return "";
         }
 
-        /// <summary>A Watch or a Listen; `engage` false checks it only (ScoutQuery, the card before the click) and changes nothing.</summary>
+        /// <summary>A Watch or a Listen; `engage` false checks it only (LearnQuery, the card before the click) and changes nothing. A Watch on a
+        /// machine (a camera, the patrol) is open to the operatives in its kind's sight `by` (Sky 2026-10-18: the Tech too); a person's Watch
+        /// and every Listen are the Scout's. A watcher known on arrival (the response, the rivals) is nothing to watch for anyone (target-unknown).
+        /// Any other operative is refused only-scout, as before.</summary>
         string Scout(Op op, Order o, bool engage = true)
         {
-            if (op.Id != OpId.Scout) return No("only-scout", "only the Scout watches and listens (§03)");
-            if (o.Do == "watch" && !IsPersonRoleName(o.Target)) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
+            bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
+            if (op.Id != OpId.Scout && !(machine && (WatchesKind(op, o.Target) || ArrivesKnown(o.Target)))) return No("only-scout", "only the Scout watches people and listens (§03)");
+            if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target);
             if (!ScoutTeaches(R.Ev("scout." + o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
@@ -167,20 +171,24 @@ namespace Suborned.Sim
             return false;
         }
 
-        /// <summary>The Watch or Listen row before the click (Latch, as CallQuery): would the Scout's order on this target be taken now, and if
-        /// not, its refusal code (already-heard, already-watched, too-far, …), words and numbers, exactly as Issue would answer it. Read-only.</summary>
-        public Answer ScoutQuery(string verb, string target)
+        /// <summary>The Scout's Watch or Listen row before the click: LearnQuery for the Scout (kept for its callers).</summary>
+        public Answer ScoutQuery(string verb, string target) => LearnQuery("scout", verb, target);
+
+        /// <summary>The Watch or Listen row before the click (Latch, as CallQuery), for any operative: would this agent's order on this target be
+        /// taken now, and if not, its refusal code (only-scout, run-tethered, already-heard, already-watched, too-far, …), words and numbers,
+        /// exactly as Issue would answer it. The Tech's Watch on a machine (Sky 2026-10-18) asks here with agent "tech". Read-only.</summary>
+        public Answer LearnQuery(string agent, string verb, string target)
         {
             var saved = refusal; refusal = default; string why;
             try
             {
-                var op = OpOf(OpId.Scout);
+                var op = OpOf(Sim.Op.Parse(agent));
                 why = Over ? No("mission-over", "the mission is over")
-                    : verb != "watch" && verb != "listen" ? No("unknown-verb", $"verb '{verb}' is no Scout order")
-                    : op.Down ? No("agent-down", "the scout is down")
+                    : verb != "watch" && verb != "listen" ? No("unknown-verb", $"verb '{verb}' is no Watch or Listen")
+                    : op.Down ? No("agent-down", $"the {agent} is down")
                     : op.Inside ? No("enforcer-inside", "inside the Office")
-                    : op.Busy != null ? No("agent-busy", $"scout is busy until {op.BusyEnd}", tick: op.BusyEnd)
-                    : Scout(op, new Order { Tick = Tick, Op = "scout", Do = verb, Target = target }, engage: false);
+                    : op.Busy != null ? No("agent-busy", $"{agent} is busy until {op.BusyEnd}", tick: op.BusyEnd)
+                    : Scout(op, new Order { Tick = Tick, Op = agent, Do = verb, Target = target }, engage: false);
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             var a = why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 }
@@ -212,7 +220,7 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
-                case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(o); break; // a camera or the patrol (rulebook sight)
+                case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
                 case "watch": case "listen":
                     LandPersonEvent(op, o, R.Ev("scout." + o.Do), PersonByRole(o.Target));
                     if (o.Do == "watch" && o.Target == "guard") WatchedWatcher("guard", R.SightWatchS); // the guard's Watch teaches his sight too
@@ -503,7 +511,7 @@ namespace Suborned.Sim
 
         PCtx WithTemperament(PCtx x, string t)
         {
-            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place, Secret = x.P.Secret, KSecret = x.P.KSecret, Lover = x.P.Lover };
+            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place, Secret = x.P.Secret, KSecret = x.P.KSecret, Lover = x.P.Lover, Record = x.P.Record, Size = x.P.Size, Holder = x.P.Holder };
             Array.Copy(x.P.Sc, q.Sc, 4); q.Memory.AddRange(x.P.Memory);
             return new PCtx { P = q, Ev = x.Ev, Band = x.Band, Outcome = x.Outcome, Reach = x.Reach, Cash = x.Cash };
         }

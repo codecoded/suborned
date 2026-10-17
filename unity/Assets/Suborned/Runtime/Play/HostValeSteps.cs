@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Suborned.Sim;
 using UnityEngine;
 
@@ -85,6 +87,65 @@ namespace Suborned.Play
             if (SeenGate(i, t, null, "left")) return;
             Give(OpId.Scout, i.Order, t, null);
         }
+
+        /// <summary>The door marker's next step while it reads "unk" (Sky 2026-10-18, the Tech's Watch on machines): the first watcher of the
+        /// door the cell has not learned (the entrance camera unless looped, then the patrol), and who should watch it: the Scout or the Tech,
+        /// whichever the engine would take (LearnQuery; too far or busy still counts), a free one before a busy one, then the closer. Null when
+        /// the door is not "unk" or nobody can.</summary>
+        public (OpId by, string watcher)? DoorNext()
+        {
+            var g = Game; if (g == null || DoorState != "unk") return null;
+            bool Learned(string w, bool routine) => g.Known(w) is { } k && k.Sight && k.How != "told" && (!routine || k.Routine);
+            string watcher = !(g.LoopOn && g.LoopCam == "entrance") && !Learned("camera:entrance", false) ? "camera:entrance"
+                : !g.PatrolDown && g.PatrolAwayUntil <= g.Tick && !Learned("patrol", true) ? "patrol" : null;
+            if (watcher == null) return null;
+            var t = WatcherTarget(watcher); var at = PosOf(t);
+            OpId? best = null; long bestScore = long.MaxValue;
+            foreach (var by in new[] { OpId.Scout, OpId.Tech })
+            {
+                Answer a = default; bool ok = false; Guard("door next", () => { a = g.LearnQuery(Op.Name(by), "watch", watcher); ok = true; }); if (!ok) continue;
+                if (!(a.ok || a.code is "too-far" or "agent-busy")) continue;
+                var op = g.Ops[(int)by]; long d = at.HasValue ? G.Isqrt(G.D2(op.Pos, at.Value)) : 0;
+                long score = (op.Busy != null ? 1_000_000_000L + Math.Max(0, op.BusyEnd - g.Tick) : 0) + d;
+                if (score < bestScore) { bestScore = score; best = by; }
+            }
+            return best is OpId b ? (b, watcher) : null;
+        }
+
+        /// <summary>The Tech's Watch knob greys while his loop holds (he is tied to the cabinet: the engine refuses run-tethered); its rows on a
+        /// camera or the patrol still show, locked, with the short reason.</summary>
+        public bool KnobTethered(OpId by, Slot s) => by == OpId.Tech && s.Id == "watch" && Game != null && Game.LoopOn;
+
+        Target WatcherTarget(string watcher) => watcher.StartsWith("camera:") ? new Target { Kind = "camera", Key = watcher[7..], Label = WatcherName(watcher), Id = watcher } : new Target { Kind = "patrol", Key = "patrol", Label = WatcherName(watcher), Id = "patrol" };
+
+        /// <summary>The door's next-step chip clicked: the agent selected first; selected, the Watch is given (walk, then watch).</summary>
+        public void DoorNextClick()
+        {
+            if (Game == null || Modal != ModalGate.Modal.None || DoorNext() is not { } nx) return; var (by, watcher) = nx;
+            if (!Selected[(int)by] || Agent != by) { Select(by, false); return; }
+            var t = WatcherTarget(watcher); var plate = PlateOf(by); int slot = Array.FindIndex(plate, x => x.Id == "watch"); if (slot < 0) return;
+            Intent i = null; Guard("door next", () => i = Verb(by, slot, t)); if (i?.Order == null) return;
+            var lk = Locked(by, i, t);
+            if (!lk.ok && lk.code is not ("too-far" or "agent-busy")) { Pop(ShortOf(i.Order, lk) ?? lk.why, null, frame.World(Game.S.At(Game.S.GuardPost)), Feedback.Refused, 2f, PopIcon(lk.code ?? ""), lk.why); return; }
+            Give(by, i.Order, t, null);
+        }
+
+        /// <summary>Sky, 2026-10-18 ("nothing happened"): the getaway car is held while a fight stands (the engine's CarHeld), and Extract is
+        /// refused. Until brief 018's getaway rule lands, the HUD says so: the car marker turns to a lock with the holder count, the row
+        /// reads the car-held short line, and the hostiles holding it are marked (Glyph, brief 018 grammar). Read only: the holders are those the engine's CarHeld counts (alive, not broken or gone, within its
+        /// hold reach of the car).</summary>
+        public bool CarHeldNow { get { var g = Game; if (g == null) return false; bool held = false; Guard("car held", () => held = g.CarHeld()); return held; } }
+        public List<(string id, Vector3 at)> CarHolders()
+        {
+            var list = new List<(string, Vector3)>(); var g = Game; if (g == null || !CarHeldNow) return list;
+            var car = g.S.At(g.S.GetawayCar); int hold = g.R.HoldCm;
+            foreach (var h in g.Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone" && (h.Present || g.FightBranch == "safe") && G.Within(h.Pos(g.Tick), car, hold)) list.Add((h.Id, frame.World(h.Pos(g.Tick))));
+            return list;
+        }
+        /// <summary>The car's hold reach in metres (rulebook fight-hold-m; brief 018 takes it to 8), and whether the final fight is on (the ring
+        /// is drawn only then).</summary>
+        public float CarHoldM => Game != null ? Game.R.HoldCm / 100f : 0f;
+        public bool CarRingOn => Game is { } g && g.FightBranch.Length > 0 && g.FightOverTick > g.Tick && !g.Over;
 
         /// <summary>A right click on a person's pin (the HUD's pip): as a right click on the person (Sky, route B: Vale's star over his car).</summary>
         public void RightOnPerson(string role)

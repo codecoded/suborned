@@ -1,0 +1,217 @@
+{
+ "schema": "suborned.needs.rules/1",
+ "author": "Motive (design), Pulse (phase 1 file)",
+ "gdd": "v0.23.0 (§04 changes in v0.24)",
+ "rule": "A need is a kind and a record. A KIND is a mechanic on a short closed list: which approaches act on it (metBy), what it requires, how Help pays. A RECORD is the open part (\"Bureau loan\"): its label, its size (sets Help's price line) and its holder (the person or office that could meet it without the cell's money). Every other word is text. The model never adds a kind (unknown = reject); Sky accepts a proposed kind as a rules change. One need per person. A record may narrow its kind's approaches, never widen them. No two records of an area differ only in wording: each differs in size, holder or kind. Phase 1: sizes are all standard, holders unset, one record per kind per area.",
+ "src": "Sky 2026-10-18 (brief 017): briefs/017-open-needs.md; Sky's answers 1-6",
+ "kinds": {
+  "debt": {
+   "metBy": [
+    "help",
+    "pressure",
+    "pay"
+   ],
+   "help": "cash",
+   "requires": "nothing",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.debt (§04 Help (clear debt); §07 Inez, café waitress, in debt)"
+  },
+  "cash": {
+   "metBy": [
+    "help",
+    "pay"
+   ],
+   "help": "cash",
+   "requires": "nothing",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.cash (§07 official driver (needs cash), turned for $40,000)"
+  },
+  "housing": {
+   "metBy": [
+    "help",
+    "pressure"
+   ],
+   "help": "favour",
+   "requires": "home",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.housing (§07 brief: Vale signed the clearance order for the marked block)",
+   "proposed": true,
+   "reason": "a home under a clearance order or a waiting list: the Handover's own cause, and a need only the civic order can meet or threaten. Needs a home in the district."
+  },
+  "papers": {
+   "metBy": [
+    "help",
+    "pressure"
+   ],
+   "help": "favour",
+   "requires": "nothing",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.papers (§01 world: records are physical (microfilm, punch cards, stamped forms))",
+   "proposed": true,
+   "reason": "a permit, licence or record on file that must be stamped, found or lost. The world's records are paper held by people, so a clerk can meet it and a threat can file one."
+  },
+  "kin": {
+   "metBy": [
+    "help",
+    "pressure"
+   ],
+   "help": "favour",
+   "requires": "family-tie",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.kin (§04 between missions: arrested (lost unless freed); standing: Hero frees arrested locals)",
+   "proposed": true,
+   "reason": "a family member arrested or in trouble. Needs a family tie, so the checker can see whose kin it is."
+  },
+  "care": {
+   "metBy": [
+    "help"
+   ],
+   "help": "favour",
+   "requires": "nothing",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.care (§08 wounds: a turned doctor heals fast and quietly)",
+   "proposed": true,
+   "reason": "illness at home, met by a doctor contact. Help only: §06 content line keeps harm to bystanders out of leverage."
+  },
+  "protection": {
+   "metBy": [
+    "help",
+    "pressure"
+   ],
+   "help": "favour",
+   "requires": "rival-tie",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.protection (§05 rivals; §06 citizens and fights)",
+   "proposed": true,
+   "reason": "someone leans on them. Needs a rival tie, so the threat is a person in the cast, not prose."
+  },
+  "advancement": {
+   "metBy": [
+    "help",
+    "pay"
+   ],
+   "help": "favour",
+   "requires": "work",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.advancement (§04 between missions: promoted (new access))",
+   "proposed": true,
+   "reason": "wants the better post or the access that comes with it. A promotion is a §04 outcome, so a person who wants one gives Help a lasting payoff. Needs work in the district."
+  }
+ },
+ "secretKinds": {
+  "affair": {
+   "requires": "lover-tie",
+   "learnedBy": [
+    "scout.listen",
+    "scout.watch"
+   ],
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json secrets.list.affair (Story spine v0.1: Inez's affair with the guard is her secret; Pressure threatens to expose it)"
+  },
+  "record": {
+   "requires": "nothing",
+   "learnedBy": [
+    "scout.listen"
+   ],
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json secrets.list.record (§01 world: records are physical; the retired need `secret` (people.rules needs.list.secret))"
+  }
+ },
+ "sizes": {
+  "small": "v:help-small-usd",
+  "standard": 0,
+  "large": "v:help-large-usd"
+ },
+ "bindings": [
+  "trade",
+  "role",
+  "tie"
+ ],
+ "label": {
+  "maxWords": 2,
+  "maxChars": 20,
+  "era": [
+   "nineteen",
+   "fifties",
+   "victorian",
+   "edwardian",
+   "postwar",
+   "war",
+   "wartime",
+   "ration",
+   "rationing",
+   "telegram",
+   "steam"
+  ],
+  "gendered": [
+   "he",
+   "she",
+   "his",
+   "her",
+   "him",
+   "man",
+   "men",
+   "woman",
+   "women",
+   "boy",
+   "girl",
+   "mister",
+   "madam",
+   "lady",
+   "sir",
+   "brother",
+   "sister",
+   "father",
+   "mother",
+   "husband",
+   "wife",
+   "son",
+   "daughter",
+   "uncle",
+   "aunt",
+   "nephew",
+   "niece"
+  ],
+  "src": "Sky 2026-10-18 (brief 017): N-3 (1-2 words, <= 20 characters, no sentence, no digits, dates or era words, no gendered words, no names)"
+ },
+ "tone": {
+  "never": [
+   "kill",
+   "killed",
+   "murder",
+   "dead",
+   "death",
+   "die",
+   "dying",
+   "suicide",
+   "funeral",
+   "grave",
+   "corpse",
+   "body",
+   "rape",
+   "abuse",
+   "torture",
+   "hostage",
+   "blood",
+   "cancer",
+   "plague"
+  ],
+  "children": [
+   "child",
+   "children",
+   "kid",
+   "kids",
+   "baby",
+   "infant",
+   "toddler",
+   "minor",
+   "orphan",
+   "pupil",
+   "schoolchild",
+   "teen",
+   "youth",
+   "newborn"
+  ],
+  "neverPressable": [
+   "care"
+  ],
+  "src": "Sky 2026-10-18 (brief 017): N-4; GDD §06 content line (civilians are never the payload); care is Help only (people.rules.json needs.list.care); children are never a subject"
+ },
+ "sameAs": {
+  "file": "contracts/people/people.rules.json",
+  "list": "needs.list",
+  "minus": [
+   "secret"
+  ]
+ }
+}

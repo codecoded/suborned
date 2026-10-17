@@ -109,7 +109,7 @@ describe('secrets', () => {
   });
   test('a pinned older rulebook (no secrets) reads its tables as written: no field, no lover, the need as it was', () => {
     const base = r013Cast(); // a table of the older rulebook: it draws the need `secret`, which the promoted cast (r016) does not
-    const oc = { ...w.ctx(base), rules: legacyRules(w.rules) }, g = expand(oc);
+    const oc = { ...w.ctx(base), rules: legacyRules(w.rules), needs: undefined }, g = expand(oc); // a run pinned under the older rulebook pins no need kinds or catalogue (brief 017)
     expect(g.people.persons.some(p => 'secret' in p)).toBe(false);
     expect(g.people.persons.some(p => p.need === 'secret')).toBe(true);
     expect(failed(g.people, oc).filter(id => ['P-12', 'P-14', 'P-15', 'P-7', 'P-3'].includes(id))).toEqual([]);

@@ -1,0 +1,88 @@
+{
+ "schema": "suborned.needs/1",
+ "plan": "harbour-district",
+ "scope": "civic-block",
+ "author": "Pulse (hand-seeded stand-in; the model writes the catalogue in phase 2, with Sky's go-ahead)",
+ "needs": [
+  {
+   "id": "bureau-loan",
+   "kind": "debt",
+   "label": "Bureau loan",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; Inez's record (Sky answer 6: Listen shows her specific label); standard = $40,000 Help, holder beyond the sheet; Motive briefs/017 examples"
+  },
+  {
+   "id": "lean-month",
+   "kind": "cash",
+   "label": "Lean month",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; the driver's record (Sky answer 6); standard = $40,000 Help, holder beyond the sheet; Motive briefs/017 examples"
+  },
+  {
+   "id": "clearance-order",
+   "kind": "housing",
+   "label": "Clearance order",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; GDD §07 brief: Vale signed the clearance order for the marked block; Motive briefs/017 examples"
+  },
+  {
+   "id": "concourse-pass",
+   "kind": "papers",
+   "label": "Concourse pass",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; a permit stamped by a clerk; Motive briefs/017 examples"
+  },
+  {
+   "id": "relative-held",
+   "kind": "kin",
+   "label": "Relative held",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; Motive briefs/017 examples (\"Brother held\"); ungendered for N-3"
+  },
+  {
+   "id": "nurse-robot",
+   "kind": "care",
+   "label": "Nurse robot",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; Help only; Motive briefs/017 examples"
+  },
+  {
+   "id": "leaned-on",
+   "kind": "protection",
+   "label": "Leaned on",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; someone leans on them, a rival tie; Motive briefs/017 examples"
+  },
+  {
+   "id": "day-shift",
+   "kind": "advancement",
+   "label": "Day shift",
+   "size": "standard",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; the better post; Motive briefs/017 examples"
+  }
+ ],
+ "secrets": [
+  {
+   "id": "secret-lover",
+   "kind": "affair",
+   "label": "Secret lover",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; bound to the lover tie (rules secretKinds.affair); Fable's \"Loves {name}\" stays the Intel text until she converts less.intel"
+  },
+  {
+   "id": "old-conviction",
+   "kind": "record",
+   "label": "Old conviction",
+   "area": "records",
+   "src": "Sky 2026-10-18 (brief 017) phase 1 stand-in, hand-seeded by Pulse; a past on file (rules secretKinds.record); Motive briefs/017 secrets examples"
+  }
+ ]
+}

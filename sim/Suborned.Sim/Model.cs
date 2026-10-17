@@ -16,6 +16,9 @@ namespace Suborned.Sim
     public sealed class Person
     {
         public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Job = "";
+        /// <summary>The need's record (brief 017, sim people `record`, `size`, `holder`): the catalogue's record of the `Need` kind, its size and
+        /// its holder ("beyond": nobody on the sheet; phase 2 binds a person). "" when the host loaded no people file. Phase 1: read, never acted on.</summary>
+        public string Record = "", Size = "", Holder = "";
         /// <summary>The city's own security (§05: guards, patrol officers, investigators, watchers) are no civilians: violence they see is not §05's "seen by a civilian".</summary>
         public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard";
         public readonly int[] Sc = new int[4];

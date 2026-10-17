@@ -31,6 +31,7 @@ describe('the people file carries what it was made from', () => {
   test('hashes of the cast, life, block, rules, mission and plan text', () => {
     expect(gen.people.inputs).toEqual({
       cast: sha256(JSON.stringify(ctx.cast)), life: sha256(texts.life), block: sha256(texts.block), rules: sha256(texts.rules), mission: sha256(texts.mission), plan: sha256(texts.plan),
+      needs: sha256(`${texts.needs!.rules}\n${texts.needs!.catalogue}`), // brief 017: the need kinds and the catalogue
     });
     expect(People.safeParse(gen.people).success).toBe(true);
     expect(People.safeParse({ ...gen.people, inputs: { ...gen.people.inputs, tools: 'x' } }).success).toBe(true); // `bun run people` adds the tools hash

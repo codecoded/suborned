@@ -150,7 +150,31 @@ namespace Suborned.Play
                 int i = 0; foreach (var c in e.Children()) Walk(c, $"{path}/{(c.name.Length > 0 ? c.name : c.GetType().Name)}[{i++}]");
             }
             Walk(live.root, "hud");
+            EndCardAudit(bad);
             return bad;
+        }
+
+        /// <summary>The end card is a reading surface: its line may wrap to two lines, never three, and no word may be wider than the card. Every
+        /// line text.json can put there (less.end win, withdraw and each fail) is measured at the card's narrow width (400 less its 30 px
+        /// padding each side), whether or not the card is open, so a new or longer line fails here first (the 379 px "The rival crew got to
+        /// Vale first" in a 340 px box, 2026-10-18).</summary>
+        static void EndCardAudit(List<string> bad)
+        {
+            var t = live.host != null ? live.host.Text : null; var l = live.endTitle; if (t == null || l == null) return;
+            if (l.resolvedStyle.whiteSpace != WhiteSpace.Normal) bad.Add("end card: the line does not wrap");
+            const float W = EndCardW - 2 * EndCardPad;
+            float one = l.MeasureTextSize("Vale", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).y;
+            var lines = new List<(string key, string text)> { ("win", t.EndWin), ("withdraw", t.EndWithdraw) };
+            foreach (var kv in t.EndFail) lines.Add(("fail." + kv.Key, kv.Value));
+            foreach (var (code, fl) in t.Fails) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
+            lines.Add(("fallback", "The attempt failed"));
+            foreach (var (key, text) in lines)
+            {
+                if (string.IsNullOrEmpty(text)) continue;
+                var sz = l.MeasureTextSize(text, W, VisualElement.MeasureMode.AtMost, 0, VisualElement.MeasureMode.Undefined);
+                if (one > 0 && sz.y > 2 * one + 1f) bad.Add($"end card/{key} '{text}': {Mathf.RoundToInt(sz.y / one)} lines at {W:0} px (two at most)");
+                foreach (var word in text.Split(' ')) { float ww = l.MeasureTextSize(word, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x; if (ww > W + 0.75f) bad.Add($"end card/{key} '{word}': {ww:0} px wider than the {W:0} px card"); }
+            }
         }
 
         static string R(float v) => Mathf.RoundToInt(v).ToString(CultureInfo.InvariantCulture);

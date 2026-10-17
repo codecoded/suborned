@@ -57,7 +57,8 @@ describe('people plug-in', () => {
       const rep = await replayRun(plugins, 'harbour-district', r.runId);
       expect(rep.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
       expect(rep.ok).toBe(true);
-      expect(rep.lines).toContain(`ok    round-1: checker rerun matches checks.json (17/17)`);
+      expect(rep.lines).toContain(`ok    round-1: checker rerun matches checks.json (25/25)`); // P-0..P-16 and N-1..N-8 (brief 017)
+      expect(Object.keys(run)).toEqual(expect.arrayContaining(['inputNeedsRules', 'inputNeeds'])); // the need kinds and the catalogue are pinned like the rules
     } finally { delete process.env.LEVELS_RUNS; delete process.env.LEVELS_OUT; }
   });
 

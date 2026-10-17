@@ -375,6 +375,20 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16)', () => {
     const missing = structuredClone(raw); delete missing.sight.kinds.rivals;
     expect(Rulebook.safeParse(missing).success).toBe(false);
   });
+  test('the Tech watches the machines too, people stay the Scout\'s (Sky 2026-10-18)', () => {
+    const sight = rb.sight!;
+    expect(Object.entries(sight.kinds).map(([k, v]) => `${k}:${(v.by ?? []).join('+')}`))
+      .toEqual(['camera:scout+tech', 'guard:scout', 'patrol:scout+tech', 'security:', 'rivals:']);
+    expect(R.event(rb, 'scout.watch').by).toBe('scout'); // the guard's Watch is the person event, the Scout's
+    const bad = (f: (k: any) => void) => { const b = structuredClone(raw); f(b.sight.kinds); return Rulebook.safeParse(b).success; };
+    expect(bad(() => {})).toBe(true);
+    expect(bad((k) => { delete k.camera.by; })).toBe(false);                  // a watched kind names who watches it
+    expect(bad((k) => { k.security.by = ['scout']; })).toBe(false);           // a kind known on arrival has nothing to watch
+    expect(bad((k) => { k.camera.by = ['tech']; })).toBe(false);              // the Scout always watches
+    expect(bad((k) => { k.guard.by = ['scout', 'tech']; })).toBe(false);      // a person is the Scout's alone
+    expect(bad((k) => { k.patrol.by = ['scout', 'tech', 'tech']; })).toBe(false);
+    expect(bad((k) => { k.patrol.by = ['scout', 'driver']; })).toBe(false);   // unknown = reject
+  });
 });
 
 describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-10-16; Motive, briefs/013/motive-takedowns.md)', () => {

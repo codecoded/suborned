@@ -49,8 +49,11 @@ describe('the day, split out of the expander', () => {
     // moved the day into day.ts; a deliberate change to the expansion updates it, with its cause declared in tools/levels/people/drift.json.
     // under the rulebook of that commit (no lover tie, no secrets: legacyRules) it is the same bytes; under the current rules the persons carry a secret and the need `secret`
     // is retired into the row's record share, so the needs of the people who drew it differ (brief 011; declared in drift.json)
-    expect(sha256(JSON.stringify(expand({ ...r013, rules: legacyRules(w.rules) }).people.persons))).toBe('ed8704178887d70149d27806b6f0d7eb54798689ca38d9be68a39024b4ab6703');
-    expect(sha256(JSON.stringify(r013Gen.people.persons))).toBe('992c0a44a92565698d98a7e2976fdacc7b989d820663b5be6b7c865d43998319');
+    // brief 017: and the same bytes with the need records drawn, less the record ids (the records are drawn on a stream of their own, after the kind)
+    const bare = (c: Ctx) => expand({ ...c, needs: undefined }).people.persons;
+    expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('ed8704178887d70149d27806b6f0d7eb54798689ca38d9be68a39024b4ab6703');
+    expect(sha256(JSON.stringify(bare(r013)))).toBe('992c0a44a92565698d98a7e2976fdacc7b989d820663b5be6b7c865d43998319');
+    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('992c0a44a92565698d98a7e2976fdacc7b989d820663b5be6b7c865d43998319');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;

@@ -76,7 +76,7 @@ describe('checker', () => {
   });
   test('P-2: a need outside the rules fails', () => {
     const p = clone(gen.people); p.persons[0]!.need = 'wanderlust';
-    expect(failed(p)).toEqual(['P-2', 'P-3', 'P-9']); // an edited file is no longer the expansion of its cast either (P-9 re-expands)
+    expect(failed(p)).toEqual(['P-2', 'P-3', 'P-9', 'N-1']); // an edited file is no longer the expansion of its cast either (P-9 re-expands); and their record is of another kind (N-1)
   });
   test('P-3: a guard who is an idealist fails', () => {
     const p = clone(gen.people); p.persons.find(q => q.work?.role === 'guard')!.temperament = 'idealist';

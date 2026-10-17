@@ -91,7 +91,7 @@ namespace Suborned.Play
         {
             new[] { new Slot("watch", "Watch", "eye"), new Slot("listen", "Listen", "ear"), new Slot("mislead", "False tip", "tip") },
             new[] { new Slot("ask", "Ask", "ask"), new Slot("pay", "Pay", "$"), new Slot("help", "Help", "help"), new Slot("pressure", "Pressure", "press") },
-            new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route") },
+            new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route"), new Slot("watch", "Watch", "eye") }, // Sky 2026-10-18: the Tech watches machines (rulebook sight.kinds[*].by)
             new[] { new Slot("act", "Enter / Take / Car", "act"), new Slot("fire", "Fire", "fire"), new Slot("takedown", "Takedown", "takedown") }, // brief 013: Takedown on the first empty knob (Glyph §1)
         };
         [Tooltip("Key bindings and HUD settings: one table (remap here; a settings screen later edits the same object).")]
@@ -653,7 +653,7 @@ namespace Suborned.Play
                         var i = I("watch", w, "", $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "its sight"; return i;
                     }
                 case "watch": case "listen":
-                    if (t.Kind != "person") return null;
+                    if (t.Kind != "person" || by != OpId.Scout) return null; // a person's Watch and every Listen are the Scout's
                     {
                         var q = g.Quote(R.Ev("scout." + id), g.PersonByRole(t.Key));
                         var i = I(id, t.Key, "", $"{Slots[0][slot].Label} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? "routine" : "need, temperament"; return i;
@@ -693,6 +693,14 @@ namespace Suborned.Play
                     }
             }
             return null;
+        }
+
+        /// <summary>Fire on a fight target for any armed agent (the Enforcer's knob intent, for an agent with no Fire knob).</summary>
+        Intent FireIntent(OpId by, Target t)
+        {
+            var R = Game.R; string target = t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "hostile" ? t.Key : ""; if (target.Length == 0) return null;
+            var i = new Intent { Slot = -1, Label = $"Fire on {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target } };
+            i.Time = "until down"; i.Trail = $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
         }
 
         Intent Call(Target t)
@@ -820,13 +828,17 @@ namespace Suborned.Play
                             var v = Verb((OpId)k, i, t); if (v != null) vs.Add((i, v));
                         }
                         foreach (var bv in BodyIntents((OpId)k, t)) vs.Add((-1, bv)); // carry, put down, hide, tie: rows, never knobs (Glyph §1)
+                        // Sky 2026-10-18 ("I thought they were unarmed"): every armed agent fires, not only the Enforcer, whose plate has the knob;
+                        // in a fight, Fire tops the rows on a hostile
+                        if (Armed(k) && t.Kind is "hostile" or "rivals" or "security" or "patrol" && !vs.Exists(x => x.v.Order?.Do == "fire") && FireIntent((OpId)k, t) is Intent fv)
+                        { if (Game.FightOn) vs.Insert(0, (-1, fv)); else vs.Add((-1, fv)); }
                         foreach (var (i, v) in vs)
                         {
                             var aw = ActPlace((OpId)k, v.Order, t); // distance never hides an action: it adds the walk to the price
                             if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then"; v.WalkS = aw.Seconds; }
                             Words(v, t);
                             var lk = Locked((OpId)k, v, t);
-                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.code is "vale-not-at-car" or "already-heard" or "already-watched" or "needs-routine" ? ShortOf(v.Order, lk) ?? lk.why : lk.why }); // Take too early: when (Sky, route B)
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.code is "car-held" or "run-tethered" or "vale-not-at-car" or "already-heard" or "already-watched" or "needs-routine" ? ShortOf(v.Order, lk) ?? lk.why : lk.why }); // Take too early: when (Sky, route B)
                         }
                     }
                     foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
@@ -886,7 +898,7 @@ namespace Suborned.Play
             var o = v.Order; var key = o.Do == "turn" ? o.Approach : o.Do;
             if (TakedownWords(v, t)) return;
             // an approach's own line for this person names their debt or secret: only once the cell knows them (§04), else the generic line
-            var (label, does) = Text != null ? Text.Action(key, o.Do == "turn" && !KnownPerson(t) ? null : TextKey(t)) : (key, "");
+            var (label, does) = Text != null ? Text.Action(key, o.Do == "turn" && !KnownPerson(t) ? null : TextKey(t), o.Op) : (key, "");
             bool person = t.Kind == "person" && o.Do != "take";
             v.Name = person ? $"{(label == "Listen" ? "Listen to" : label)} {Name(t.Key)}" : o.Do == "fire" ? $"{label} on {t.Label}" : label;
             v.Does = does;
@@ -908,7 +920,7 @@ namespace Suborned.Play
             var yes = new Answer { ok = true, code = "", why = "" };
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.Busy != null) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
-            if (o.Do is "watch" or "listen") { var sq = g.ScoutQuery(o.Do, o.Target); if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
+            if (o.Do is "watch" or "listen") { var sq = g.LearnQuery(Op.Name(by), o.Do, o.Target); /* any agent (the Tech watches machines): only-scout, run-tethered, already-watched */ if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
             switch (o.Do)
             {
                 case "watch" when Game.WatcherKind(o.Target) is "camera" or "patrol":
@@ -925,6 +937,7 @@ namespace Suborned.Play
                         return yes;
                     }
                 case "loop": return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
+                case "extract" when CarHeldNow: return No("car-held", "the car is held: the fight isn't over"); // Sky 2026-10-18: say so before the order
                 case "takedown": return v.Td != null && v.Td.Refused.Length > 0 ? No(v.Td.RefusedCode, v.Td.Refused) : op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "stash": return op.CarryBody.Length == 0 ? No("not-carrying", "carry the body to the stash first") : StashFree(o.Target) <= 0 ? No("stash-full", "full") : yes;
                 case "drop": return op.CarryBody.Length == 0 ? No("not-carrying", "carrying nobody") : yes;

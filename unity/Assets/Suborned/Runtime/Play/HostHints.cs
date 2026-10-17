@@ -21,7 +21,7 @@ namespace Suborned.Play
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", "H17" };
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -176,6 +176,12 @@ namespace Suborned.Play
                 case "H16": // route B: the driver turned, Vale at his car, not taken
                     if (!g.PersonByRole("driver").Turned || g.Vale != ValeAt.Pickup) return false;
                     ring = At("councillor"); portrait = (int)OpId.Enforcer; return true;
+                case "H17": // Sky 2026-10-18: a fight is on and an armed agent other than the Enforcer has not fired yet: everyone armed can fire
+                    {
+                        if (!g.FightOn) return false;
+                        for (int k = 0; k < 3; k++) if (Armed(k) && !g.Ops[k].Down && !g.Ops[k].Inside) { foreach (var h in g.Hostiles) if (!h.Down && h.Present) { ring = frame.World(h.Pos(g.Tick)); portrait = k; trigWho = h.Id.StartsWith("rival") ? "rival" : "officer"; return true; } } // Fable: {who} the hostile, "rival" or "officer" (they carry no names)
+                        return false;
+                    }
                 case "H13": // brief 016: the view turns; taught once, early (Fable's line in text.json; the HUD shows its keys as keycaps)
                     return g.Tick >= 20 * Game.Hz && !TurnedThisRun && !g.FightOn;
                 case "H11":
@@ -206,6 +212,7 @@ namespace Suborned.Play
                 case "H11": return Given(o => o.Do is "carry" or "extract", from);
                 case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
                 case "H13": return TurnedThisRun;
+                case "H17": return Given(o => o.Do == "fire" && o.Op != "enforcer", from) || !g.FightOn;
                 case "H14": return Given(o => o.Do == "enter", from);
                 case "H15": return Given(o => o.Do == "extract", from);
                 case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;

@@ -402,6 +402,262 @@
     "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained a less.intel section (Intel panel fragments: need, temperament, secret and verb words, one schema object and its test); the dialogue checker reads only dialogue and scenes, whose shapes are unchanged: no dialogue rule, check or expansion reads it",
     "rules": []
    }
+  ],
+  "0a660141b9a0ca11ae45746c46010f337192525d8fcbc35c391d82aef2848524": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Keel, Fable, Splice, 2026-10-16): contracts/rules rulebook.schema.ts and rulebook.ref.ts gained lockdown levels, witness.close, take.struggle, stash.doorHolds and campaign.cases.trailEq (Keel); cell.loop.targets and cell.take.struggle are optional in the schema so dialogue r017-r019's pinned rulebook parses (it predates them; rulebook.test.ts holds the live rulebook to having them; before this the replay stopped on a ZodError); text.schema.ts gained the door-held text (Fable); contracts/dialogue/dialogue.rules.json lexicon widths. No dialogue rule reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 (less reading, Fable, 2026-10-16): contracts/missions/handover/text.schema.ts gained the short forms the play HUD shows at rest: a required `short` on a lock, a hint and a timeline mark, a required `fate` and an optional `beat` on a card, an optional `beat` on a scene, and a required `less` block (price grammar, feed, objective, end card, pops, cancel costs, Alt words, fates), with the helpers SHORT_MAX, BEAT_MAX, PRICE_FIELDS, FATES and marked. Every existing field and its limits are unchanged and no line was deleted; the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (a scene may carry a beat); lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same. Replay parses only the pinned text's dialogue and scenes, so a recorded text that predates the new fields replays",
+    "rules": []
+   },
+   {
+    "cause": "contracts/rules (Keel, 2026-10-16; Sky: a turning conversation is private, unless it's pressure): rulebook.schema.ts gained an optional privacy section and an optional per-event private flag, with two cross-checks that apply only when the rulebook has privacy (an event by the Fixer or the Scout says whether it is private; a private event carries no witnesses); rulebook.test.ts holds the live rulebook to them. Optional so dialogue r017-r019's pinned rulebook parses (before this the replay stopped on a ZodError at privacy). No dialogue rule, check or expansion reads either",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing leans Hero (Keel, 2026-10-16; Sky approved briefs/014/motive-standing.md): contracts/rules rulebook.schema.ts gained the standing section's word, drift and causes (optional in the schema so dialogue r017-r019's pinned rulebook parses; rulebook.test.ts holds the live rulebook to having them), the condition kinds done-to, alive and standing-moved, the effects word-standing and drift-standing, STANDING_CAUSES and their cross-checks in checkRulebook; rulebook.ref.ts gained standingNext (the engine's StandingNext). No dialogue rule, check or expansion reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing text (Fable, 2026-10-16, after the Standing declaration above): contracts/missions/handover/text.schema.ts gained the debrief's standing block (the Standing line, placeholders {district} {band} {from} {to} {cause}; the hero, neutral and menace band words; and `causes`, one short sentence per rulebook standing.causes id). The dialogue checker reads only dialogue and scenes, whose shapes are unchanged. Declared by Waymark on the evidence, not as the author: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json and every retrieved passage matching the corpus",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 mission pin (Splice, 2026-10-16): tools/levels/dialogue/pins.ts now pins contracts/missions/handover/mission.json as a dialogue run's input (input.mission.json, inputMission in run.json, an overlay of the corpus like the people rules), required of every run; r017-r019 predate it and their run.json is sealed (the next run's continues holds its sha256), so their pin is in tools/levels/dialogue/late-pins.json, checked the same way (the file against its sha256, then the corpus hash it gives against the recorded one). plugin.ts writes the pin at run start. No dialogue rule, check or expansion reads the mission; r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "a public fight moves Standing once (Keel, 2026-10-16; Sky via Aster: 'it should be per fight, and depends who you're fighting'; briefs/014/motive-standing.md, a public fight; engine 0.6.2): contracts/rules rulebook.schema.ts gained the constants FOES and RIVALS_PUBLIC, the condition kinds fight, public, fired-on, rivals-public, fired-first and rivals-broken, the effect fight-standing (its cause a standing.causes id, cross-checked in checkRulebook), an optional fight.rivalsPublic, and lets the last (fallback) outcome of an event change nothing; rulebook.ref.ts gained fightStanding; the rulebook's new event fight.public replaces seen-gunfire with seen-fight-security, seen-fight-first and seen-fight-rivals, and traceable gunfire moves no Standing of its own. Only widened: dialogue r017-r019's pinned rulebook parses as before. No dialogue rule, check or expansion reads any of it",
+    "rules": []
+   },
+   {
+    "cause": "camera rotation hint H13 (Fable, 2026-10-18; brief 016, Aster): contracts/missions/handover/text.schema.ts widened: DIALOGUE_VERBS gained 'turn-view' (a control hint's verb, no engine verb) and a hint's priority may be 0 (min 1 -> 0). Only widened: dialogue r017-r019's pinned text.json parses as before. No dialogue rule, check or expansion reads hint verbs or priorities",
+    "rules": []
+   },
+   {
+    "cause": "brief 016 / Aster 2026-10-18 end steps (Fable): contracts/missions/handover/text.schema.ts: Hint.priority may be negative (min -9, was 0) so the end-step hints H14-H16 sort ahead of the view hint, and less.objective gained an optional-in-use `bring` line and a `steps` array (take, bring, carry, each with the state it shows in). Only widened: the dialogue checker reads dialogue and scenes, whose entry and scene shapes, lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained a less.intel section (Intel panel fragments: need, temperament, secret and verb words, one schema object and its test); the dialogue checker reads only dialogue and scenes, whose shapes are unchanged: no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): contracts/people gains needs.schema.ts, needs.rules.json and harbour-district.needs.json (the need kinds and the catalogue of records); contracts/people/people.schema.ts gains the optional needRecord and secretRecord on a person and a needs hash in the people file's inputs. No dialogue rule reads them (the text still reads the kind, less.intel is Fable's next); no rule a dialogue run records changes",
+    "rules": []
+   }
+  ],
+  "bbf92bb98e6d5728232402e7e3ca159eb6a9d42017703de059cd6c7b008c97ef": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Keel, Fable, Splice, 2026-10-16): contracts/rules rulebook.schema.ts and rulebook.ref.ts gained lockdown levels, witness.close, take.struggle, stash.doorHolds and campaign.cases.trailEq (Keel); cell.loop.targets and cell.take.struggle are optional in the schema so dialogue r017-r019's pinned rulebook parses (it predates them; rulebook.test.ts holds the live rulebook to having them; before this the replay stopped on a ZodError); text.schema.ts gained the door-held text (Fable); contracts/dialogue/dialogue.rules.json lexicon widths. No dialogue rule reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 (less reading, Fable, 2026-10-16): contracts/missions/handover/text.schema.ts gained the short forms the play HUD shows at rest: a required `short` on a lock, a hint and a timeline mark, a required `fate` and an optional `beat` on a card, an optional `beat` on a scene, and a required `less` block (price grammar, feed, objective, end card, pops, cancel costs, Alt words, fates), with the helpers SHORT_MAX, BEAT_MAX, PRICE_FIELDS, FATES and marked. Every existing field and its limits are unchanged and no line was deleted; the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (a scene may carry a beat); lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same. Replay parses only the pinned text's dialogue and scenes, so a recorded text that predates the new fields replays",
+    "rules": []
+   },
+   {
+    "cause": "contracts/rules (Keel, 2026-10-16; Sky: a turning conversation is private, unless it's pressure): rulebook.schema.ts gained an optional privacy section and an optional per-event private flag, with two cross-checks that apply only when the rulebook has privacy (an event by the Fixer or the Scout says whether it is private; a private event carries no witnesses); rulebook.test.ts holds the live rulebook to them. Optional so dialogue r017-r019's pinned rulebook parses (before this the replay stopped on a ZodError at privacy). No dialogue rule, check or expansion reads either",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing leans Hero (Keel, 2026-10-16; Sky approved briefs/014/motive-standing.md): contracts/rules rulebook.schema.ts gained the standing section's word, drift and causes (optional in the schema so dialogue r017-r019's pinned rulebook parses; rulebook.test.ts holds the live rulebook to having them), the condition kinds done-to, alive and standing-moved, the effects word-standing and drift-standing, STANDING_CAUSES and their cross-checks in checkRulebook; rulebook.ref.ts gained standingNext (the engine's StandingNext). No dialogue rule, check or expansion reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing text (Fable, 2026-10-16, after the Standing declaration above): contracts/missions/handover/text.schema.ts gained the debrief's standing block (the Standing line, placeholders {district} {band} {from} {to} {cause}; the hero, neutral and menace band words; and `causes`, one short sentence per rulebook standing.causes id). The dialogue checker reads only dialogue and scenes, whose shapes are unchanged. Declared by Waymark on the evidence, not as the author: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json and every retrieved passage matching the corpus",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 mission pin (Splice, 2026-10-16): tools/levels/dialogue/pins.ts now pins contracts/missions/handover/mission.json as a dialogue run's input (input.mission.json, inputMission in run.json, an overlay of the corpus like the people rules), required of every run; r017-r019 predate it and their run.json is sealed (the next run's continues holds its sha256), so their pin is in tools/levels/dialogue/late-pins.json, checked the same way (the file against its sha256, then the corpus hash it gives against the recorded one). plugin.ts writes the pin at run start. No dialogue rule, check or expansion reads the mission; r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "a public fight moves Standing once (Keel, 2026-10-16; Sky via Aster: 'it should be per fight, and depends who you're fighting'; briefs/014/motive-standing.md, a public fight; engine 0.6.2): contracts/rules rulebook.schema.ts gained the constants FOES and RIVALS_PUBLIC, the condition kinds fight, public, fired-on, rivals-public, fired-first and rivals-broken, the effect fight-standing (its cause a standing.causes id, cross-checked in checkRulebook), an optional fight.rivalsPublic, and lets the last (fallback) outcome of an event change nothing; rulebook.ref.ts gained fightStanding; the rulebook's new event fight.public replaces seen-gunfire with seen-fight-security, seen-fight-first and seen-fight-rivals, and traceable gunfire moves no Standing of its own. Only widened: dialogue r017-r019's pinned rulebook parses as before. No dialogue rule, check or expansion reads any of it",
+    "rules": []
+   },
+   {
+    "cause": "camera rotation hint H13 (Fable, 2026-10-18; brief 016, Aster): contracts/missions/handover/text.schema.ts widened: DIALOGUE_VERBS gained 'turn-view' (a control hint's verb, no engine verb) and a hint's priority may be 0 (min 1 -> 0). Only widened: dialogue r017-r019's pinned text.json parses as before. No dialogue rule, check or expansion reads hint verbs or priorities",
+    "rules": []
+   },
+   {
+    "cause": "brief 016 / Aster 2026-10-18 end steps (Fable): contracts/missions/handover/text.schema.ts: Hint.priority may be negative (min -9, was 0) so the end-step hints H14-H16 sort ahead of the view hint, and less.objective gained an optional-in-use `bring` line and a `steps` array (take, bring, carry, each with the state it shows in). Only widened: the dialogue checker reads dialogue and scenes, whose entry and scene shapes, lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained a less.intel section (Intel panel fragments: need, temperament, secret and verb words, one schema object and its test); the dialogue checker reads only dialogue and scenes, whose shapes are unchanged: no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): contracts/people gains needs.schema.ts, needs.rules.json and harbour-district.needs.json (the need kinds and the catalogue of records); contracts/people/people.schema.ts gains the optional needRecord and secretRecord on a person and a needs hash in the people file's inputs. No dialogue rule reads them (the text still reads the kind, less.intel is Fable's next); no rule a dialogue run records changes",
+    "rules": []
+   },
+   {
+    "cause": "H17 fight hint (Fable, 2026-10-18; Aster): contracts/missions/handover/text.schema.ts: only a header comment and the Hint.priority description changed (-1 now the fight hint H17, behind the end steps); no field, limit or shape changed, and the dialogue checker reads only dialogue and scenes, whose shapes, lookup, pickIndex and every dialogue rule are unchanged, so every pick is the same. Data, not hashed code: text.json gained hints.items.H17 and less.pop.car-held",
+    "rules": []
+   }
+  ],
+  "bff1eb04a632f038d7e0c48f1bb004d24d08bed16bb22a9a21f472c355a20756": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Keel, Fable, Splice, 2026-10-16): contracts/rules rulebook.schema.ts and rulebook.ref.ts gained lockdown levels, witness.close, take.struggle, stash.doorHolds and campaign.cases.trailEq (Keel); cell.loop.targets and cell.take.struggle are optional in the schema so dialogue r017-r019's pinned rulebook parses (it predates them; rulebook.test.ts holds the live rulebook to having them; before this the replay stopped on a ZodError); text.schema.ts gained the door-held text (Fable); contracts/dialogue/dialogue.rules.json lexicon widths. No dialogue rule reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 (less reading, Fable, 2026-10-16): contracts/missions/handover/text.schema.ts gained the short forms the play HUD shows at rest: a required `short` on a lock, a hint and a timeline mark, a required `fate` and an optional `beat` on a card, an optional `beat` on a scene, and a required `less` block (price grammar, feed, objective, end card, pops, cancel costs, Alt words, fates), with the helpers SHORT_MAX, BEAT_MAX, PRICE_FIELDS, FATES and marked. Every existing field and its limits are unchanged and no line was deleted; the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (a scene may carry a beat); lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same. Replay parses only the pinned text's dialogue and scenes, so a recorded text that predates the new fields replays",
+    "rules": []
+   },
+   {
+    "cause": "contracts/rules (Keel, 2026-10-16; Sky: a turning conversation is private, unless it's pressure): rulebook.schema.ts gained an optional privacy section and an optional per-event private flag, with two cross-checks that apply only when the rulebook has privacy (an event by the Fixer or the Scout says whether it is private; a private event carries no witnesses); rulebook.test.ts holds the live rulebook to them. Optional so dialogue r017-r019's pinned rulebook parses (before this the replay stopped on a ZodError at privacy). No dialogue rule, check or expansion reads either",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing leans Hero (Keel, 2026-10-16; Sky approved briefs/014/motive-standing.md): contracts/rules rulebook.schema.ts gained the standing section's word, drift and causes (optional in the schema so dialogue r017-r019's pinned rulebook parses; rulebook.test.ts holds the live rulebook to having them), the condition kinds done-to, alive and standing-moved, the effects word-standing and drift-standing, STANDING_CAUSES and their cross-checks in checkRulebook; rulebook.ref.ts gained standingNext (the engine's StandingNext). No dialogue rule, check or expansion reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing text (Fable, 2026-10-16, after the Standing declaration above): contracts/missions/handover/text.schema.ts gained the debrief's standing block (the Standing line, placeholders {district} {band} {from} {to} {cause}; the hero, neutral and menace band words; and `causes`, one short sentence per rulebook standing.causes id). The dialogue checker reads only dialogue and scenes, whose shapes are unchanged. Declared by Waymark on the evidence, not as the author: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json and every retrieved passage matching the corpus",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 mission pin (Splice, 2026-10-16): tools/levels/dialogue/pins.ts now pins contracts/missions/handover/mission.json as a dialogue run's input (input.mission.json, inputMission in run.json, an overlay of the corpus like the people rules), required of every run; r017-r019 predate it and their run.json is sealed (the next run's continues holds its sha256), so their pin is in tools/levels/dialogue/late-pins.json, checked the same way (the file against its sha256, then the corpus hash it gives against the recorded one). plugin.ts writes the pin at run start. No dialogue rule, check or expansion reads the mission; r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "a public fight moves Standing once (Keel, 2026-10-16; Sky via Aster: 'it should be per fight, and depends who you're fighting'; briefs/014/motive-standing.md, a public fight; engine 0.6.2): contracts/rules rulebook.schema.ts gained the constants FOES and RIVALS_PUBLIC, the condition kinds fight, public, fired-on, rivals-public, fired-first and rivals-broken, the effect fight-standing (its cause a standing.causes id, cross-checked in checkRulebook), an optional fight.rivalsPublic, and lets the last (fallback) outcome of an event change nothing; rulebook.ref.ts gained fightStanding; the rulebook's new event fight.public replaces seen-gunfire with seen-fight-security, seen-fight-first and seen-fight-rivals, and traceable gunfire moves no Standing of its own. Only widened: dialogue r017-r019's pinned rulebook parses as before. No dialogue rule, check or expansion reads any of it",
+    "rules": []
+   },
+   {
+    "cause": "camera rotation hint H13 (Fable, 2026-10-18; brief 016, Aster): contracts/missions/handover/text.schema.ts widened: DIALOGUE_VERBS gained 'turn-view' (a control hint's verb, no engine verb) and a hint's priority may be 0 (min 1 -> 0). Only widened: dialogue r017-r019's pinned text.json parses as before. No dialogue rule, check or expansion reads hint verbs or priorities",
+    "rules": []
+   },
+   {
+    "cause": "brief 016 / Aster 2026-10-18 end steps (Fable): contracts/missions/handover/text.schema.ts: Hint.priority may be negative (min -9, was 0) so the end-step hints H14-H16 sort ahead of the view hint, and less.objective gained an optional-in-use `bring` line and a `steps` array (take, bring, carry, each with the state it shows in). Only widened: the dialogue checker reads dialogue and scenes, whose entry and scene shapes, lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained a less.intel section (Intel panel fragments: need, temperament, secret and verb words, one schema object and its test); the dialogue checker reads only dialogue and scenes, whose shapes are unchanged: no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): contracts/people gains needs.schema.ts, needs.rules.json and harbour-district.needs.json (the need kinds and the catalogue of records); contracts/people/people.schema.ts gains the optional needRecord and secretRecord on a person and a needs hash in the people file's inputs. No dialogue rule reads them (the text still reads the kind, less.intel is Fable's next); no rule a dialogue run records changes",
+    "rules": []
+   },
+   {
+    "cause": "H17 fight hint (Fable, 2026-10-18; Aster): contracts/missions/handover/text.schema.ts: only a header comment and the Hint.priority description changed (-1 now the fight hint H17, behind the end steps); no field, limit or shape changed, and the dialogue checker reads only dialogue and scenes, whose shapes, lookup, pickIndex and every dialogue rule are unchanged, so every pick is the same. Data, not hashed code: text.json gained hints.items.H17 and less.pop.car-held",
+    "rules": []
+   },
+   {
+    "cause": "Tech watches the machines (Keel, Sky 2026-10-18; Aster): contracts/rules rulebook.schema.ts's SightKind gained an optional `by` (the operatives who may Watch a kind: required for a kind learned by a Watch, absent otherwise, the Scout always one, a person the Scout's alone), and rulebook.test.ts a test of it; rulebook.json's sight.kinds name camera and patrol by scout and tech, the guard by scout. Optional, so dialogue r017-r019's pinned rulebook (which has no sight section) parses. No dialogue rule, check or expansion reads it",
+    "rules": []
+   }
+  ],
+  "6d2b5b44b5f39448662348a11976a53864915535437df822daa57c18761ba7f7": [
+   {
+    "cause": "contracts/rules: the rulebook's sight section (Keel, 2026-10-16: view cones are the Scout's skill): two values, an optional schema section and its test; no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained host sections (targets tiers, cards, debrief, a scene title, Scout reads of a camera or the patrol); the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (read 'about' also takes the watched targets, a scene may carry a title); lookup, pickIndex and every dialogue rule are unchanged. Replay now parses the pinned text's dialogue and scenes in full (tools/levels/dialogue/replay.ts) instead of the whole file, so a recorded text that predates cards and debrief replays",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 (takedowns, engine 0.5.0): (a) contracts/rules rulebook.ref.ts and rulebook.schema.ts gained the takedown, witness, response and campaign sections and the debrief lines volunteer, statement, missing, grief, worry, area-watch and case (Keel); none of the dialogue rules reads them: the cells the generator requires are unchanged. (b) contracts/missions/handover/text.schema.ts (Fable): four new verbs (takedown, drop, stash, restrain), optional Action.ways, Card.at and Card.needs, Activity.acting for the new verbs, Debrief.between, and a wider fillCard; entry and scene shapes only widened, lookup, pickIndex and every dialogue rule are unchanged. (c) data, not hashed code: contracts/dialogue/dialogue.rules.json lexicon.debriefFill gained widths for the nine fields those debrief lines carry (facts, trail, place, of, fear, guards, cameras, missions, closes) and widened kind to found killing: D-11 holds the lexicon to the rulebook's debrief fields, and a recorded lexicon predates seven of the lines",
+    "rules": []
+   },
+   {
+    "cause": "brief 013 rev 4 (Keel, Fable, Splice, 2026-10-16): contracts/rules rulebook.schema.ts and rulebook.ref.ts gained lockdown levels, witness.close, take.struggle, stash.doorHolds and campaign.cases.trailEq (Keel); cell.loop.targets and cell.take.struggle are optional in the schema so dialogue r017-r019's pinned rulebook parses (it predates them; rulebook.test.ts holds the live rulebook to having them; before this the replay stopped on a ZodError); text.schema.ts gained the door-held text (Fable); contracts/dialogue/dialogue.rules.json lexicon widths. No dialogue rule reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 (less reading, Fable, 2026-10-16): contracts/missions/handover/text.schema.ts gained the short forms the play HUD shows at rest: a required `short` on a lock, a hint and a timeline mark, a required `fate` and an optional `beat` on a card, an optional `beat` on a scene, and a required `less` block (price grammar, feed, objective, end card, pops, cancel costs, Alt words, fates), with the helpers SHORT_MAX, BEAT_MAX, PRICE_FIELDS, FATES and marked. Every existing field and its limits are unchanged and no line was deleted; the dialogue checker reads only dialogue and scenes, whose entry and scene shapes only widened (a scene may carry a beat); lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same. Replay parses only the pinned text's dialogue and scenes, so a recorded text that predates the new fields replays",
+    "rules": []
+   },
+   {
+    "cause": "contracts/rules (Keel, 2026-10-16; Sky: a turning conversation is private, unless it's pressure): rulebook.schema.ts gained an optional privacy section and an optional per-event private flag, with two cross-checks that apply only when the rulebook has privacy (an event by the Fixer or the Scout says whether it is private; a private event carries no witnesses); rulebook.test.ts holds the live rulebook to them. Optional so dialogue r017-r019's pinned rulebook parses (before this the replay stopped on a ZodError at privacy). No dialogue rule, check or expansion reads either",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing leans Hero (Keel, 2026-10-16; Sky approved briefs/014/motive-standing.md): contracts/rules rulebook.schema.ts gained the standing section's word, drift and causes (optional in the schema so dialogue r017-r019's pinned rulebook parses; rulebook.test.ts holds the live rulebook to having them), the condition kinds done-to, alive and standing-moved, the effects word-standing and drift-standing, STANDING_CAUSES and their cross-checks in checkRulebook; rulebook.ref.ts gained standingNext (the engine's StandingNext). No dialogue rule, check or expansion reads any of it: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 Standing text (Fable, 2026-10-16, after the Standing declaration above): contracts/missions/handover/text.schema.ts gained the debrief's standing block (the Standing line, placeholders {district} {band} {from} {to} {cause}; the hero, neutral and menace band words; and `causes`, one short sentence per rulebook standing.causes id). The dialogue checker reads only dialogue and scenes, whose shapes are unchanged. Declared by Waymark on the evidence, not as the author: r017, r018 and r019 rerun with every check in every round matching its recorded checks.json and every retrieved passage matching the corpus",
+    "rules": []
+   },
+   {
+    "cause": "brief 014 mission pin (Splice, 2026-10-16): tools/levels/dialogue/pins.ts now pins contracts/missions/handover/mission.json as a dialogue run's input (input.mission.json, inputMission in run.json, an overlay of the corpus like the people rules), required of every run; r017-r019 predate it and their run.json is sealed (the next run's continues holds its sha256), so their pin is in tools/levels/dialogue/late-pins.json, checked the same way (the file against its sha256, then the corpus hash it gives against the recorded one). plugin.ts writes the pin at run start. No dialogue rule, check or expansion reads the mission; r017, r018 and r019 rerun with every check in every round matching its recorded checks.json",
+    "rules": []
+   },
+   {
+    "cause": "a public fight moves Standing once (Keel, 2026-10-16; Sky via Aster: 'it should be per fight, and depends who you're fighting'; briefs/014/motive-standing.md, a public fight; engine 0.6.2): contracts/rules rulebook.schema.ts gained the constants FOES and RIVALS_PUBLIC, the condition kinds fight, public, fired-on, rivals-public, fired-first and rivals-broken, the effect fight-standing (its cause a standing.causes id, cross-checked in checkRulebook), an optional fight.rivalsPublic, and lets the last (fallback) outcome of an event change nothing; rulebook.ref.ts gained fightStanding; the rulebook's new event fight.public replaces seen-gunfire with seen-fight-security, seen-fight-first and seen-fight-rivals, and traceable gunfire moves no Standing of its own. Only widened: dialogue r017-r019's pinned rulebook parses as before. No dialogue rule, check or expansion reads any of it",
+    "rules": []
+   },
+   {
+    "cause": "camera rotation hint H13 (Fable, 2026-10-18; brief 016, Aster): contracts/missions/handover/text.schema.ts widened: DIALOGUE_VERBS gained 'turn-view' (a control hint's verb, no engine verb) and a hint's priority may be 0 (min 1 -> 0). Only widened: dialogue r017-r019's pinned text.json parses as before. No dialogue rule, check or expansion reads hint verbs or priorities",
+    "rules": []
+   },
+   {
+    "cause": "brief 016 / Aster 2026-10-18 end steps (Fable): contracts/missions/handover/text.schema.ts: Hint.priority may be negative (min -9, was 0) so the end-step hints H14-H16 sort ahead of the view hint, and less.objective gained an optional-in-use `bring` line and a `steps` array (take, bring, carry, each with the state it shows in). Only widened: the dialogue checker reads dialogue and scenes, whose entry and scene shapes, lookup, pickIndex, sceneKey and every dialogue rule are unchanged, so every pick is the same",
+    "rules": []
+   },
+   {
+    "cause": "contracts/missions/handover/text.schema.ts: the Handover text gained a less.intel section (Intel panel fragments: need, temperament, secret and verb words, one schema object and its test); the dialogue checker reads only dialogue and scenes, whose shapes are unchanged: no dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): contracts/people gains needs.schema.ts, needs.rules.json and harbour-district.needs.json (the need kinds and the catalogue of records); contracts/people/people.schema.ts gains the optional needRecord and secretRecord on a person and a needs hash in the people file's inputs. No dialogue rule reads them (the text still reads the kind, less.intel is Fable's next); no rule a dialogue run records changes",
+    "rules": []
+   },
+   {
+    "cause": "H17 fight hint (Fable, 2026-10-18; Aster): contracts/missions/handover/text.schema.ts: only a header comment and the Hint.priority description changed (-1 now the fight hint H17, behind the end steps); no field, limit or shape changed, and the dialogue checker reads only dialogue and scenes, whose shapes, lookup, pickIndex and every dialogue rule are unchanged, so every pick is the same. Data, not hashed code: text.json gained hints.items.H17 and less.pop.car-held",
+    "rules": []
+   },
+   {
+    "cause": "Tech watches the machines (Keel, Sky 2026-10-18; Aster): contracts/rules rulebook.schema.ts's SightKind gained an optional `by` (the operatives who may Watch a kind: required for a kind learned by a Watch, absent otherwise, the Scout always one, a person the Scout's alone), and rulebook.test.ts a test of it; rulebook.json's sight.kinds name camera and patrol by scout and tech, the guard by scout. Optional, so dialogue r017-r019's pinned rulebook (which has no sight section) parses. No dialogue rule, check or expansion reads it",
+    "rules": []
+   },
+   {
+    "cause": "Sky 2026-10-18 (the Tech watches machines; Fable, with Keel's sight.kinds by): contracts/missions/handover/text.schema.ts gained an optional Action.onTargetBy (a per-agent onTarget line, partial record by agent), text.json gained the Tech's Watch lines (read, ack, arrive, onTargetBy, run-tethered and only-scout wording). The dialogue checker reads only dialogue and scenes, whose entry and scene shapes are unchanged: lookup, pickIndex, sceneKey and every dialogue rule are unchanged. Keel's rulebook sight.kinds[*].by is read by no dialogue rule. Declared on the evidence: r017, r018, r019 rerun with every check matching its recorded checks.json",
+    "rules": []
+   }
   ]
  }
 }

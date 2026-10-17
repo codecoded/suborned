@@ -225,7 +225,7 @@ namespace Suborned.Sim
             Person C(Person p)
             {
                 if (copies.TryGetValue(p, out var c)) return c;
-                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected };
+                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected, Record = p.Record, Size = p.Size, Holder = p.Holder };
                 Array.Copy(p.Sc, c.Sc, 4); c.Memory.AddRange(p.Memory); foreach (var a in p.KnownRefused) c.KnownRefused.Add(a);
                 copies[p] = c; return c;
             }
@@ -270,6 +270,7 @@ namespace Suborned.Sim
                 if (!p.NeedMet) continue;
                 var c = C(p); string old = c.Need;
                 c.Need = ReplacementNeed(c, mission); c.NeedMet = false;
+                if (People2 != null) { c.Record = People2.DefaultRecord(c.Need); c.Size = c.Record.Length > 0 ? People2.Records[c.Record].size : ""; c.Holder = c.Record.Length > 0 ? "beyond" : ""; } // brief 017 phase 1: the kind's record, no draw
                 if (c.Turned) c.KNeed = true; else c.KNeed = false;
                 line("need-replaced", p, $"{old} → {c.Need}{(c.Turned ? " (told free: a contact)" : " (Listen again)")}");
             }

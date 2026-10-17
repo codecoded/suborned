@@ -130,7 +130,7 @@ namespace Suborned.Play
                 s.Hp = op.Gun.Health; s.HpMax = Mathf.Max(op.Gun.Max, op.Gun.Health); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0;
                 s.Stance = op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down;
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
-                s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : "";
+                s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : d.Phase == "firing" ? (h.FireDownS(i) is int fs && fs >= 0 ? $"{fs} s" : "?") : ""; // firing: until the target is down at the present odds, "?" while the line is broken (Glyph fight r1 #6)
                 s.Under = op.Down ? "" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
                     : s.Armed && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
@@ -158,7 +158,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim; VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full

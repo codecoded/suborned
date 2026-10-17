@@ -975,6 +975,7 @@ namespace Suborned.Sim
             TakedownE(); // brief 013 E
             StandingCases(); // brief 014
             RepeatCases(); // Sky 2026-10-18: a Watch or Listen that teaches nothing more is refused
+            TechWatchCases(); // Sky 2026-10-18: the Tech watches the machines too
         }
     }
 }

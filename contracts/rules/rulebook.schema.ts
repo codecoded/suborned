@@ -161,8 +161,15 @@ const MemAct = z.strictObject({ facts: z.union([z.array(id).min(1), z.literal('a
 const Traceable = ground({ standing: z.enum(['hero', 'menace', 'none']) });
 const DebriefLine = z.strictObject({ fields: z.array(id).min(1), src: text });
 
-/** One watcher kind's knowledge rule: learned by a Scout Watch or on arrival; its routine fixed, the person's, watched over time, or none. */
-const SightKind = z.strictObject({ learn: z.enum(['watch', 'arrival']), routine: z.enum(['fixed', 'person', 'watched', 'none']) });
+/** One watcher kind's knowledge rule: learned by a Watch or on arrival; its routine fixed, the person's, watched over time, or none; `by`,
+ *  for a kind learned by a Watch, the operatives who may Watch it (Sky 2026-10-18: the Tech watches the machines too). The Scout is always
+ *  one of them (cones are the Scout's skill), and the guard, a person, is the Scout's alone (his Watch is scout.watch). */
+const SightKind = z.strictObject({
+  learn: z.enum(['watch', 'arrival']), routine: z.enum(['fixed', 'person', 'watched', 'none']),
+  by: z.array(z.enum(['scout', 'fixer', 'tech', 'enforcer'])).min(1).optional(),
+}).refine((k) => (k.learn === 'watch') === (k.by !== undefined), { message: 'a kind learned by a Watch names who watches it (`by`), and only such a kind' })
+  .refine((k) => k.by === undefined || (k.by.includes('scout') && new Set(k.by).size === k.by.length), { message: '`by` holds the Scout, each operative once' })
+  .refine((k) => k.routine !== 'person' || (k.by?.length === 1), { message: 'a person (routine person) is watched by the Scout alone' });
 
 export const Rulebook = z.strictObject({
   schema: z.literal('suborned.rulebook/1'),

@@ -172,6 +172,12 @@ namespace Suborned.Sim
                 var p = new Person { Role = roles[i], Id = c.Id, Name = c.Name, Temperament = Start.Temperament.TryGetValue(roles[i], out var tm) ? tm : c.Temperament, Need = c.Need, Place = places[i], Secret = c.Secret };
                 if (p.Secret.Length > 0 && !R.SecretIds.Contains(p.Secret)) throw new FormatException($"cast {roles[i]}: secret '{p.Secret}' is not in people.rules secrets (unknown = reject)");
                 var t = R.Temp(p.Temperament); R.CheckNeed(p.Need);
+                if (crowd != null) // the need's record (brief 017): the people file's, of the kind the site casts them with
+                {
+                    if (!crowd.RecordOf.TryGetValue(c.Id, out var rr)) throw new FormatException($"cast {roles[i]}: {c.Id} is not in the people file");
+                    if (crowd.Records[rr.record].kind != p.Need) throw new FormatException($"cast {roles[i]}: need record '{rr.record}' is not a {p.Need} record");
+                    p.Record = rr.record; p.Size = rr.size; p.Holder = rr.holder;
+                }
                 for (int k = 0; k < 4; k++) p.Sc[k] = t.Start[k];
                 People.Add(p);
                 civGuns[roles[i]] = NewGun(roles[i], null, false, R.HealthCivilian);

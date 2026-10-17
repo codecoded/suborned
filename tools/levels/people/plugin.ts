@@ -80,7 +80,7 @@ export const peoplePlugin: Plugin<State> = {
       },
     };
   },
-  ownersOf: rule => (/^P-\d+$/.test(rule) ? ['Pulse'] : undefined),
+  ownersOf: rule => (/^[PN]-\d+$/.test(rule) ? ['Pulse'] : undefined),
   standIn: (s, key) => (key === 'pulse' ? { cast: standInCast(s.w.scope, s.w.rules, { lovers: true }), notes: [], sources: [] } satisfies PulseOut : undefined),
   replay: peopleReplay,
 };

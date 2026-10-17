@@ -226,6 +226,34 @@ namespace Suborned.Play
             Guard("aim", () => AimLine = Aim(k, id, force, t));
         }
 
+        /// <summary>The time to down `id` from agent k at accuracy `acc` (the aim chip's number): the first shot (a draw, then aimNew on a new
+        /// target), then one every W.Every; hits counted by the accumulator. Read only.</summary>
+        int DownTicks(int k, string id, Gun tg, int acc)
+        {
+            var g = Game; var R = g.R; var gun = g.Ops[k].Gun; var w = gun.W;
+            int need = Math.Max(1, (tg.Health + w.Damage - 1) / w.Damage), first;
+            int a0 = gun.Target == id ? gun.Acc : R.AccStart;
+            if (!(gun.Drawn && gun.HolsterAt < 0)) first = R.DrawTicks + R.AimNewTicks;
+            else if (gun.Target != id) first = Math.Max(Math.Max(0, gun.NextShot - g.Tick), Math.Max(0, gun.DrawReady - g.Tick) + R.AimNewTicks);
+            else first = Math.Max(0, gun.NextShot - g.Tick);
+            int hits = 0, shots = 0, accum = a0;
+            while (hits < need && shots < 500) { shots++; accum += acc; if (accum >= 1000) { accum -= 1000; hits++; } }
+            return first + (shots - 1) * w.Every;
+        }
+
+        /// <summary>An agent firing: whole seconds until its target is down at the present odds (the timer chip's number), or -1 (no line,
+        /// out of range, nothing there). Glyph fight r1 #6: the chip had a bar and no number.</summary>
+        public int FireDownS(int k)
+        {
+            var g = Game; if (g == null) return -1; var R = g.R; var op = g.Ops[k]; var gun = op.Gun; var w = gun.W;
+            string id = gun.Order.Length > 0 ? gun.Order : gun.Target; if (w == null || id.Length == 0) return -1; /* the standing fire order's target (Target is the aim, empty between shots) */ var tg = g.GunOf(id); var at = g.PosOf(id); if (tg == null || !at.HasValue || tg.Down) return -1;
+            long d = G.Isqrt(G.D2(op.Pos, at.Value)); if (d > w.MaxCm || !g.S.Sight(op.Pos, at.Value, R.Eye)) return -1;
+            bool targetMoving = false; foreach (var h in g.Hostiles) if (h.Id == id) targetMoving = h.Moving(g.Tick);
+            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
+            int acc = R.Accuracy(w, d, op.Walk != null, cover, op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer, !gun.Trained); if (acc <= 0) return -1;
+            int ticks = DownTicks(k, id, tg, acc); return (ticks + Game.Hz - 1) / Game.Hz;
+        }
+
         bool AnyDrawn() { for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) return true; return false; }
 
         string Aim(int k, string target, bool force, Target t)
@@ -247,24 +275,13 @@ namespace Suborned.Play
             bool vale = op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer;
             int acc = R.Accuracy(w, d, moving, cover, vale, !gun.Trained);
             if (acc <= 0) { parts.Refused = P("no-line", "No clear line"); return $"{who} · can't hit from here"; }
-            // the time to down: the first shot (a draw, then aimNew on a new target), then one every W.Every; hits counted by the accumulator
-            int need = Math.Max(1, (tg.Health + w.Damage - 1) / w.Damage), first;
-            int a0 = gun.Target == id ? gun.Acc : R.AccStart;
-            if (!(gun.Drawn && gun.HolsterAt < 0)) first = R.DrawTicks + R.AimNewTicks;
-            else if (gun.Target != id) first = Math.Max(Math.Max(0, gun.NextShot - g.Tick), Math.Max(0, gun.DrawReady - g.Tick) + R.AimNewTicks);
-            else first = Math.Max(0, gun.NextShot - g.Tick);
-            int hits = 0, shots = 0, accum = a0;
-            while (hits < need && shots < 500) { shots++; accum += acc; if (accum >= 1000) { accum -= 1000; hits++; } }
-            int ticks = first + (shots - 1) * w.Every;
+            int ticks = DownTicks(k, id, tg, acc);
             string band = d <= R.PointBlankCm ? "point blank" : d <= w.EffCm ? "effective" : "long";
             string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : g.Gunfire > 0 ? $"+{R.HitTrail} T hit · +{R.DownTrail} T down" : $"+{R.GunfireTrail} T shooting · +{R.HitTrail} T hit · +{R.DownTrail} T down";
-            parts.Down = $"{ticks / Game.Hz}.{ticks % Game.Hz} s"; parts.Ratio = Frac(acc); parts.Cover = cover < 1000;
+            int secs = (ticks + Game.Hz - 1) / Game.Hz; parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); // Glyph fight r1 #2: whole seconds, as the rest of the HUD parts.Cover = cover < 1000;
             parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : $"+{R.HitTrail}/hit";
-            return $"{who} · hits {Ratio(acc)} · down in {ticks / Game.Hz}.{ticks % Game.Hz} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
+            return $"{who} · hits {Ratio(acc)} · down in {secs} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
         }
-
-        /// <summary>The same fraction as a number for the chip: "3/4", "1/1".</summary>
-        static string Frac(int acc) { var r = Ratio(acc); if (r == "every shot") return "1/1"; var p = r.Split(" in "); return p.Length == 2 ? $"{p[0]}/{p[1]}" : r; }
 
         /// <summary>A per-mille accuracy as the nearest small fraction: 750 → "3 in 4", 1000 → "every shot".</summary>
         static string Ratio(int acc)
@@ -328,8 +345,7 @@ namespace Suborned.Play
                 var side = Vector3.Cross(Vector3.up, dir) * (((l.Tick + by.Length) & 1) == 0 ? 0.7f : -0.7f);
                 dst = to.Value + dir * 1.8f + side; dst.y = to.Value.y + 0.05f;
             }
-            var colour = by is "scout" or "fixer" or "tech" or "enforcer" ? cellHeadColour : by.StartsWith("rival") ? rivalColour : guardColour;
-            views.Tracer(src, dst, colour);
+            views.Tracer(src, dst, by is "scout" or "fixer" or "tech" or "enforcer" ? "cell" : by.StartsWith("rival") ? "rival" : "guard"); // the HUD draws it (Glyph fight r2)
             if (hit) { Pulses.Add((to.Value, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: the tracer is enough
         }
 

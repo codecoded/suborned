@@ -214,6 +214,8 @@ namespace Suborned.Sim
         // seconds a routine needs, and per kind (camera, guard, patrol, security, rivals) how its sight is learned and what its routine is
         public readonly int SightWatchS, SightReachCm, SightRoutineS;
         public readonly Dictionary<string, (string learn, string routine)> SightKinds = new Dictionary<string, (string, string)>(StringComparer.Ordinal);
+        /// <summary>sight.kinds.*.by: the operatives who may Watch a kind (Sky 2026-10-18), empty for a kind known on arrival.</summary>
+        public readonly Dictionary<string, string[]> SightBy = new Dictionary<string, string[]>(StringComparer.Ordinal);
         public static readonly string[] WatcherKinds = { "camera", "guard", "patrol", "security", "rivals" };
         // brief 013 (Sky 2026-10-16): the takedown, bodies, the people who report them, the response dial, the campaign's cases
         public readonly int KoS, KillS, StruggleS, TakedownReachCm, KillTrail, KoAlertMax, FoundKillStanding, WakeS, StaggerS, RestrainS, FreeS, CallOutS,
@@ -433,8 +435,16 @@ namespace Suborned.Sim
             si["kinds"].Only(WatcherKinds);
             foreach (var k in WatcherKinds)
             {
-                var kn = si["kinds"][k]; kn.Only("learn", "routine");
+                var kn = si["kinds"][k]; kn.Only("learn", "routine", "by");
                 SightKinds[k] = (OneOf(kn["learn"], new[] { "watch", "arrival" }), OneOf(kn["routine"], new[] { "fixed", "person", "watched", "none" }));
+                // Sky 2026-10-18: who may Watch a kind (the Tech the machines, the Scout everything watched); unknown = reject
+                var kby = kn.Opt("by");
+                if ((SightKinds[k].learn == "watch") != (kby != null)) throw new FormatException($"sight.kinds.{k}.by: a kind learned by a Watch names who watches it, and only such a kind");
+                var who = new List<string>();
+                if (kby != null) foreach (var w in kby.Items) { var n = OneOf(w, new[] { "scout", "fixer", "tech", "enforcer" }); if (who.Contains(n)) throw new FormatException($"sight.kinds.{k}.by: '{n}' twice"); who.Add(n); }
+                if (kby != null && !who.Contains("scout")) throw new FormatException($"sight.kinds.{k}.by: the Scout watches every watched kind (cones are the Scout's skill)");
+                if (SightKinds[k].routine == "person" && who.Count != 1) throw new FormatException($"sight.kinds.{k}.by: a person is watched by the Scout alone (scout.watch)");
+                SightBy[k] = who.ToArray();
             }
             if (si["unknown"].Str() != "?") throw new FormatException("sight.unknown is not '?'");
             if (SightKinds["guard"].routine == "person" && SightKinds["guard"].learn != "watch") throw new FormatException("sight.kinds.guard: a person routine is learned by a Watch");

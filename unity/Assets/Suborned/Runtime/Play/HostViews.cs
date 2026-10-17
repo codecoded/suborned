@@ -72,9 +72,6 @@ namespace Suborned.Play
         }
 
         readonly LineRenderer[] acts = new LineRenderer[4], ranges = new LineRenderer[4];
-        readonly List<(LineRenderer lr, float born)> tracers = new();
-        readonly Dictionary<Color, Material> tracerMats = new();
-        int nextTracer;
 
         LineRenderer NewLine(string name, Material m, float width)
         {
@@ -84,14 +81,16 @@ namespace Suborned.Play
             return lr;
         }
 
-        /// <summary>One shot: a thin line from the muzzle to where it ends, for 0.15 s (placeholder for Glyph's tracers).</summary>
-        public void Tracer(Vector3 from, Vector3 to, Color c)
+        /// <summary>A shot in flight, drawn by the HUD in screen pixels (Glyph fight r2): a 2 px line on a 1 px dark underlay, a small muzzle
+        /// flash, the cell's cream with a turquoise glow, rivals violet, guards and police amber. It lives ShotLife, shorter than any fire cadence,
+        /// so it never reads as a tether.</summary>
+        public sealed class ShotLine { public Vector3 From, To; public string Side = ""; public float Born; }
+        public readonly List<ShotLine> ShotLines = new();
+        public const float ShotLife = 0.1f;
+        public void Tracer(Vector3 from, Vector3 to, string side)
         {
-            if (!tracerMats.TryGetValue(c, out var m)) tracerMats[c] = m = Unlit(c);
-            if (tracers.Count < 16) tracers.Add((NewLine("tracer/" + tracers.Count, m, 0.06f), 0f));
-            int i = nextTracer++ % tracers.Count; var lr = tracers[i].lr;
-            lr.sharedMaterial = m; lr.positionCount = 2; lr.SetPosition(0, from); lr.SetPosition(1, to); lr.enabled = true;
-            tracers[i] = (lr, Time.unscaledTime);
+            ShotLines.Add(new ShotLine { From = from, To = to, Side = side, Born = Time.unscaledTime });
+            while (ShotLines.Count > 16) ShotLines.RemoveAt(0);
         }
 
         /// <summary>The weapon's effective range round agent k when its weapon is drawn and it is selected (radius in m; 0 hides).</summary>
@@ -286,7 +285,7 @@ namespace Suborned.Play
         public void Frame(float alpha)
         {
             float now = Time.unscaledTime;
-            foreach (var (lr, born) in tracers) if (lr.enabled && now - born > 0.15f) lr.enabled = false;
+            ShotLines.RemoveAll(x => now - x.Born > ShotLife);
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;

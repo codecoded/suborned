@@ -34,6 +34,8 @@ export const PERSON_FIELDS: Record<keyof Person, string> = {
   institution: 'person.institution', start: 'person.start', memory: 'person.memory', ties: 'tie (person -> person)', look: 'person.look', position: 'person.position (and works_at.position)',
   needWeights: 'person.need_weights (and has_need.weight for the person\'s own need)',
   secret: 'person.secret (the secret lookup; an affair is the lover tie\'s other face, held by both lovers)',
+  needRecord: 'not in the graph yet: brief 017 phase 1 adds the record id to the people file only (the engine reads the kind, `need`); a record lookup follows with phase 2',
+  secretRecord: 'not in the graph yet: as needRecord',
 };
 
 const by = <T>(key: (x: T) => string) => (a: T, b: T) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0);

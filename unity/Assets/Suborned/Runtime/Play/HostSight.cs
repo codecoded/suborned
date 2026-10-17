@@ -51,15 +51,15 @@ namespace Suborned.Play
         /// <summary>The watcher the Scout is watching now, or the one the Scout's last order watched (until the Scout's next order).</summary>
         string ScoutWatch()
         {
-            var sc = Game.Ops[(int)OpId.Scout];
-            if (sc.Busy != null && sc.Busy.Do == "watch") return Game.WatcherKind(sc.Busy.Target).Length > 0 ? sc.Busy.Target : null;
+            foreach (var w in new[] { OpId.Scout, OpId.Tech }) // the Tech watches machines too (Sky 2026-10-18)
+            { var sc = Game.Ops[(int)w]; if (sc.Busy != null && sc.Busy.Do == "watch" && Game.WatcherKind(sc.Busy.Target).Length > 0) return sc.Busy.Target; }
             if (lastWatchOrders != Game.Orders.Count)
             {
                 lastWatchOrders = Game.Orders.Count; lastWatch = null;
                 for (int i = Game.Orders.Count - 1; i >= 0; i--)
                 {
                     var (o, ok) = (Game.Orders[i].order, Game.Orders[i].ok);
-                    if (!ok || o.Op != "scout") continue;
+                    if (!ok || o.Op is not ("scout" or "tech")) continue;
                     if (o.Do == "watch" && Game.WatcherKind(o.Target).Length > 0) lastWatch = o.Target;
                     break;
                 }

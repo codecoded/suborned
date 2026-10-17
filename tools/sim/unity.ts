@@ -63,7 +63,7 @@ if (tree) {
   if (problems.length) { console.error(`rulebook refs fail:\n  ${problems.join('\n  ')}`); process.exit(1); }
   const site = read(INPUTS['handover.site.json']);
   if (site.schema !== 'suborned.sim.site/1' || site.mission !== 'handover') { console.error('the site is not suborned.sim.site/1 for the Handover'); process.exit(1); }
-  if (read(INPUTS['handover.people.json']).schema !== 'suborned.sim.people/1') { console.error('handover.people.json is not suborned.sim.people/1'); process.exit(1); }
+  if (read(INPUTS['handover.people.json']).schema !== 'suborned.sim.people/2') { console.error('handover.people.json is not suborned.sim.people/2'); process.exit(1); }
   for (const [f, id] of [['handover.provisional.json', 'suborned.sim.provisional/1'], ['handover.takedown.json', 'suborned.sim.takedown/1']] as const) {
     const n = read(INPUTS[f]); if (n.schema !== id || n.mission !== 'handover') { console.error(`${f} is not ${id} for the Handover`); process.exit(1); }
   }

@@ -147,7 +147,7 @@ namespace Suborned.Sim
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.6.2"; // 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
+        public const string Version = "suborned.sim/0.6.3"; // 0.6.3: open needs phase 1 (brief 017): the people file is suborned.sim.people/2, every person carries a need record (kind, label, size, holder), read strictly and never acted on; behaviour unchanged, only the inputs hash moves. 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
         public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null)

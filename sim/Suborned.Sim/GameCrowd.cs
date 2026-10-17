@@ -18,7 +18,7 @@ namespace Suborned.Sim
         public int Pace; // brief 013: the pace of a report's walk or a check (mm a tick); 0 for the crowd machine's own states
         public Walker Fresh()
         {
-            var p = new Person { Id = P.Id, Name = P.Name, Job = P.Job, Temperament = P.Temperament, Need = P.Need, Role = "" };
+            var p = new Person { Id = P.Id, Name = P.Name, Job = P.Job, Temperament = P.Temperament, Need = P.Need, Role = "", Record = P.Record, Size = P.Size, Holder = P.Holder };
             Array.Copy(P.Sc, p.Sc, 4);
             return new Walker { P = p, Place = Place, From = From, To = To, Out = Out };
         }
@@ -29,6 +29,13 @@ namespace Suborned.Sim
         public readonly List<Walker> Walkers = new List<Walker>();
         public readonly Dictionary<string, Pt> Places = new Dictionary<string, Pt>(StringComparer.Ordinal);
         public readonly int StartsAt;
+        /// <summary>The need records (brief 017; sim people `needs.records`, from contracts/people/&lt;plan&gt;.needs.json): id → kind, label, size.</summary>
+        public readonly SortedDictionary<string, (string kind, string label, string size)> Records = new SortedDictionary<string, (string, string, string)>(StringComparer.Ordinal);
+        /// <summary>Everyone's need record, the cast's too: id → record, size, holder.</summary>
+        public readonly Dictionary<string, (string record, string size, string holder)> RecordOf = new Dictionary<string, (string, string, string)>(StringComparer.Ordinal);
+        /// <summary>The record a replaced need of `kind` takes (phase 1: the kind's one record, the first by id; "" if the catalogue has none).
+        /// No draw: phase 1 moves no stream (brief 017: need.replaced draws records in phase 2).</summary>
+        public string DefaultRecord(string kind) { foreach (var kv in Records) if (kv.Value.kind == kind) return kv.Key; return ""; }
         /// <summary>Everyone's ties, home and work, the cast's too (between missions: word along ties, need replacement's requires).</summary>
         public readonly Dictionary<string, List<(string kind, string with)>> Ties = new Dictionary<string, List<(string, string)>>(StringComparer.Ordinal);
         public readonly Dictionary<string, bool> HasHome = new Dictionary<string, bool>(StringComparer.Ordinal), HasWork = new Dictionary<string, bool>(StringComparer.Ordinal);
@@ -59,20 +66,37 @@ namespace Suborned.Sim
         public Crowd(string json, Rules rules, ICollection<string> cast)
         {
             var n = JNode.Parse(json, "people");
-            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "people");
-            if (n["schema"].Str() != "suborned.sim.people/1") throw new FormatException("people schema is not suborned.sim.people/1");
+            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "needs", "people");
+            if (n["schema"].Str() != "suborned.sim.people/2") throw new FormatException("people schema is not suborned.sim.people/2");
+            // the need records (brief 017): every record's kind is a rules need and its size one the need kinds name (unknown = reject)
+            var nd = n["needs"]; nd.Only("sizes", "records", "frame");
+            var sizes = new HashSet<string>(StringComparer.Ordinal); foreach (var z in nd["sizes"].Items) sizes.Add(z.Str());
+            foreach (var kv in nd["records"].Entries)
+            {
+                var x = kv.Value.Items; if (x.Count != 3) throw new FormatException($"{kv.Value.Path}: a record is [kind, label, size]");
+                string kind = x[0].Str(), label = x[1].Str(), size = x[2].Str();
+                rules.CheckNeed(kind);
+                if (label.Length == 0) throw new FormatException($"{kv.Value.Path}: a record has a label");
+                if (!sizes.Contains(size)) throw new FormatException($"{kv.Value.Path}: size '{size}' is not in needs.sizes (unknown = reject)");
+                Records[kv.Key] = (kind, label, size);
+            }
             StartsAt = n["startsAt"].Int();
             foreach (var kv in n["places"].Entries) Places[kv.Key] = Pt.Of(kv.Value);
             foreach (var p in n["people"].Items)
             {
-                p.Only("id", "name", "job", "temperament", "need", "home", "work", "start", "ties", "stops");
+                p.Only("id", "name", "job", "temperament", "need", "home", "work", "record", "size", "holder", "start", "ties", "stops");
                 var ties = new List<(string, string)>(); foreach (var t in p["ties"].Items) ties.Add((t.Items[0].Str(), t.Items[1].Str()));
                 Ties[p["id"].Str()] = ties; HasHome[p["id"].Str()] = p["home"].Int() == 1; HasWork[p["id"].Str()] = p["work"].Int() == 1;
                 var id = p["id"].Str();
+                string rec = p["record"].Str(), size = p["size"].Str(), holder = p["holder"].Str();
+                if (!Records.TryGetValue(rec, out var r)) throw new FormatException($"{id}: need record '{rec}' is not in needs.records (unknown = reject)");
+                if (r.kind != p["need"].Str()) throw new FormatException($"{id}: need record '{rec}' is a {r.kind} record, not {p["need"].Str()}");
+                if (r.size != size) throw new FormatException($"{id}: size '{size}' is not record {rec}'s ({r.size})");
+                RecordOf[id] = (rec, size, holder);
                 var all = new List<(string, int, int, bool)>(); foreach (var sx in p["stops"].Items) { var x = sx.Items; all.Add((x[0].Str(), x[1].Int() * Game.Hz, x[2].Int() * Game.Hz, x[3].Int() == 1)); }
                 Stops[id] = all;
                 if (cast.Contains(id)) continue;
-                var person = new Person { Id = id, Name = p["name"].Str(), Job = p["job"].Str(), Temperament = p["temperament"].Str(), Need = p["need"].Str() };
+                var person = new Person { Id = id, Name = p["name"].Str(), Job = p["job"].Str(), Temperament = p["temperament"].Str(), Need = p["need"].Str(), Record = rec, Size = size, Holder = holder };
                 rules.Temp(person.Temperament); rules.CheckNeed(person.Need);
                 var st = p["start"].Ints(); for (int k = 0; k < 4; k++) person.Sc[k] = st[k];
                 var stops = p["stops"].Items; var w = new Walker { P = person, Place = new string[stops.Count], From = new int[stops.Count], To = new int[stops.Count], Out = new bool[stops.Count] };
@@ -84,6 +108,8 @@ namespace Suborned.Sim
                 }
                 Walkers.Add(w);
             }
+            // a holder is nobody on the sheet ("beyond") or a person of this file (phase 2 binds them)
+            foreach (var kv in RecordOf) if (kv.Value.holder != "beyond" && !RecordOf.ContainsKey(kv.Value.holder)) throw new FormatException($"{kv.Key}: holder '{kv.Value.holder}' is not a person of the people file (unknown = reject)");
         }
     }
 

@@ -4,7 +4,7 @@
 // What is in the file:
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
-//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view) and H14–H16 (the end steps: Enter, Extract, Take at the pickup), the first-run toasts, the going-loud card's words
+//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view), H14–H16 (the end steps: Enter, Extract, Take at the pickup) and H17 (the fight hint: right click a hostile to fire), the first-run toasts, the going-loud card's words
 //   targets    each thing the cell can right click, in tiers of knowledge: `about` is what the cell was TOLD at the start (always shown);
 //              `watched` what a Scout Watch teaches (a person's routine, a camera's or the patrol's sight), `routine` the patrol's rounds,
 //              `heard` what a Scout Listen teaches (need, temperament); a tier shows only once the cell has learned it (GDD §04)
@@ -81,6 +81,8 @@ export const Action = z.strictObject({
   withTarget: Line.optional().describe('the row or card label once a target is chosen, e.g. "Listen to {target}"; {target} is names.targets[key]. Absent = the verb takes no target'),
   then: Line.optional().describe('the queued clause after a walk, e.g. "listens to {target}": "{agent} walks to {target}, then {then}"'),
   onTarget: z.record(z.string(), Line).optional().describe('the same verb on one target (a target key from `targets`), when the plain line can say more'),
+  onTargetBy: z.partialRecord(z.enum(AGENTS), z.record(z.string(), Line)).optional()
+    .describe('Sky 2026-10-18: the same verb on one target in one agent\'s voice, when that agent\'s card differs from the plain `onTarget` (the Tech\'s Watch on a machine); read the agent\'s line first, `onTarget` otherwise'),
   ways: z.record(code, z.strictObject({ label: z.string().min(1).max(24), does: Line })).optional()
     .describe('brief 013: an order with a choice (Order.How: takedown knockout or kill): the panel row for each way and its price in words'),
 });
@@ -103,7 +105,7 @@ export const Activity = z.strictObject({
 export const HINT_MAX = 110;
 const HintLine = z.string().min(1).max(HINT_MAX).regex(/^[^\n<>]+$/);
 export const Hint = z.strictObject({
-  priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); below 0 = the Handover\'s end steps (H14 Enter, H15 Extract, H16 Take at the pickup), which win over every other hint when their trigger holds'),
+  priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); -1 = the fight hint (H17), behind the end steps; below -1 = the Handover\'s end steps (H14 Enter, H16 Take at the pickup, H15 Extract), which win over every other hint when their trigger holds'),
   agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
   verb: DVerb,
   target: z.string().min(1).describe('what the hint rings, in words'),

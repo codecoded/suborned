@@ -140,7 +140,7 @@ namespace Suborned.Play
             return value.Length > 0 ? char.ToUpperInvariant(value[0]) + value[1..] : value;
         }
         /// <summary>The layout audit's worst cases (Fable's longest fragments).</summary>
-        public static readonly string[] IntelWorst = { "Protection", "Promotion" };
+        public static readonly string[] IntelWorst = { "Clearance order", "Protection", "Promotion" }; // the longest record label (needs.json) and kind words
 
         /// <summary>What teaches the next unknown slot, as (agent, verb), checked with the engine (never a refused order); the Fixer's turn when
         /// everything is learned and the person is not turned; null when there is nothing to do.</summary>
@@ -194,7 +194,9 @@ namespace Suborned.Play
                 float nw = c.Name.resolvedStyle.width; c.Role.style.left = 52 + (float.IsNaN(nw) ? 60 : nw) + 6;
                 // the slots, from the engine's knowledge
                 var nx = IntelNext(p, role);
-                Fill(c.Slots[0], p.KNeed ? "learned" : p.Suspected.Length > 0 ? "told" : "unk", p.KNeed ? p.Need : p.Suspected, p.KNeed ? IntelFragment("need", p.Need) : p.Suspected.Length > 0 ? IntelFragment("need", p.Suspected) : "");
+                // brief 017: heard (Listen) shows the need record's own label ("Bureau loan"), told only the kind's word ("Debt")
+                string heard = ""; if (p.KNeed) { string lb = ""; try { lb = g.NeedRecordOf(p).label ?? ""; } catch (Exception) { lb = ""; } heard = lb.Length > 0 ? lb : IntelFragment("need", p.Need); }
+                Fill(c.Slots[0], p.KNeed ? "learned" : p.Suspected.Length > 0 ? "told" : "unk", p.KNeed ? p.Need : p.Suspected, p.KNeed ? heard : p.Suspected.Length > 0 ? IntelFragment("need", p.Suspected) : "");
                 Fill(c.Slots[1], p.KTemperament ? "learned" : "unk", p.Temperament, p.KTemperament ? IntelFragment("temperament", p.Temperament) : "");
                 bool tiesKnown = p.KSecret && p.Secret.Length > 0, noneKnown = p.KNeed && p.KTemperament && p.Secret.Length == 0;
                 string lover = p.Lover != null ? host.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; // "Loves Inez", "Loves the guard" (Aster)

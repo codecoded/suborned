@@ -263,6 +263,15 @@ namespace Suborned.Play
             if (quiet.HasValue && quiet.Value.Tick == l.Tick && quiet.Value.Code == l.Code && quiet.Value.Text == l.Text) return; // its card is out of sight: so are its lines
             string code = l.Code, role = RoleIn(l);
             if (code.StartsWith("crowd.")) return; // the crowd speaks by its states (CityBeats): one passer-by near the cell, not the log's counts
+            if (code is "scout.watch.watched" or "tech.watch.watched" && role == null)
+            {   // a machine watched (Sky 2026-10-18: the Tech watches machines too): its sight learned, the patrol's rounds once known
+                string speaker = code.StartsWith("tech.") ? "tech" : "scout";
+                var mm = System.Text.RegularExpressions.Regex.Match(l.Text, @"watched the (\w+)( camera)?");
+                string about = !mm.Success ? null : mm.Groups[2].Success ? "camera-" + mm.Groups[1].Value : mm.Groups[1].Value;
+                string outcome = about == "patrol" ? (l.Text.Contains(", and its routine") ? "routine" : "sight") : null;
+                if (about == null || !Beat("read", "watch", speaker, outcome, null, about, "", Feedback.Ok)) Say(speaker, l.Text, Feedback.Ok);
+                return;
+            }
             if (code.StartsWith("scout.") && role != null)
             {
                 bool listen = code.StartsWith("scout.listen");
