@@ -201,6 +201,7 @@ namespace Suborned.Play
             manifest.Add((endTitle, "beat", () => endTitle.text)); // the end card's one line (Fable §3 end)
             manifest.Add((briefGoal, "line", () => briefGoal.text)); manifest.Add((briefPeople, "image", () => "cell portraits"));
             BuildScope();
+            BuildMenu();
         }
 
         bool goalHover; int busyHover = -1; string goalText = "";

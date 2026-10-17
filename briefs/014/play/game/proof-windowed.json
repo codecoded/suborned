@@ -1,0 +1,11 @@
+{
+ "schema": "suborned.game-proof/1",
+ "status": "ok",
+ "unity": "6000.6.2f1",
+ "product": "The Suborned",
+ "screen": "4812x2706",
+ "mode": "Windowed",
+ "hudScale": 3,
+ "frames": {"seconds": 10, "frames": 2974, "meanMs": 3.364, "fps": 297.301, "p95Ms": 3.62, "p99Ms": 3.925, "over20msFrames": 0, "vSyncCount": 0, "targetFrameRate": -1, "zoom": 14},
+ "log": ["briefing up: True, modal Briefing, screen 4812x2706 Windowed, HUD scale 3", "briefing: queued", "play: modal None, paused False, tick 40, zoom 14", "play: queued", "menu: open True, modal Menu, paused True", "menu: queued"]
+}

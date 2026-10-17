@@ -190,7 +190,8 @@ namespace Suborned.Play
             var kb = Keyboard.current;
             if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
-            if (Ending.Length > 0) { ClearHover(); if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); return; } // the end card is modal (ModalGate)
+            if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); return; } // the end card is modal (ModalGate)
             Controls();
             if (Fault != null) return;
             if (!Paused && !Game.Over && !(Panel != null && controls.pauseWithPanel))
@@ -238,7 +239,7 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- controls
 
         /// <summary>The modal up now, if any (ModalGate): the briefing until Begin, the end card.</summary>
-        public ModalGate.Modal Modal => Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
+        public ModalGate.Modal Modal => MenuOpen ? ModalGate.Modal.Menu : Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
 
         /// <summary>Nothing hovered: no price chip, ring, aim or walk chip (a modal opened, or the run ended).</summary>
         public void ClearHover() { Hover = null; HoverIntent = null; MoveChip = null; MoveNow = null; AimLine = null; AimNow = null; intentKey = "modal"; dragging = false; BoxScreen = null; }
@@ -295,7 +296,7 @@ namespace Suborned.Play
                     if (c.Down(kb, PlayAction.Verb1 + i)) { if (Panel != null) PanelKey(i); else Pick(i); }
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
-                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (Picked >= 0) { Picked = -1; intentKey = ""; } }
+                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
                 if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);

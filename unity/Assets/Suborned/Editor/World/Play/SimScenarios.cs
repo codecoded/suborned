@@ -48,7 +48,7 @@ namespace Suborned.World.Play
         }
 
         /// <summary>The DLL Unity loaded is the bundle's (the bytes the CLI ran): the project holds one Suborned.Sim plugin, with those bytes.</summary>
-        static void CheckDll(SimBundle.Loaded b)
+        internal static void CheckDll(SimBundle.Loaded b)
         {
             var plugins = PluginImporter.GetAllImporters().Where(p => Path.GetFileName(p.assetPath) == "Suborned.Sim.dll").ToList();
             if (plugins.Count != 1) throw new InvalidDataException($"Sim: {plugins.Count} Suborned.Sim.dll plugins in the project ({string.Join(", ", plugins.Select(p => p.assetPath))}); there must be one");

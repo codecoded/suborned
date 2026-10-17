@@ -7,6 +7,32 @@ The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): A
 ## Assignment 4 submission (content pipeline)
 Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, 1–2.5 minutes; allow a 5-minute timeout).
 
+## Play the game
+
+```sh
+bun run game          # builds out/build/play/The Suborned.app if it is missing or out of date, then opens it full screen
+bun run game -- --windowed
+```
+
+The Handover opens on its briefing. Esc opens the pause menu (Resume, Restart mission, Quit). `bun run game:build` forces a build; `bun run game:check` proves the built app (all scenarios against headless, then the briefing, play and menu shots with frame times, into `out/build/play/proof/`). Building needs Unity 6000.6.2f1. With Unity closed the build runs in batch mode. With the project open in Unity it builds through the Editor (menu Suborned/Build Game), and refuses while Unity is in Play.
+
+On another Mac (the MacBook Air):
+
+- `bun run game:pack` zips the app to `out/build/play/TheSuborned-<sha>.zip`, and `bun run game:send [device]` sends it by Taildrop (default `skys-macbook-air-1`; `--dry-run` prints the command). No SSH is needed.
+- On the Air, the zip lands in Downloads through the Tailscale app. Unzip it, then open the app by right-click → Open the first time, or run `xattr -dr com.apple.quarantine "The Suborned.app"` first. The app is signed ad hoc, not notarised.
+- Or pull the branch on the Air and run `bun run game` there. That needs Unity 6000.6.2f1 on the Air.
+
+Signing and notarisation, so the game opens on other Macs without "not verified":
+
+- Run `bun run game:signing-check` to see what exists. Two things are needed, made once on this Mac:
+  1. A "Developer ID Application" certificate: Xcode → Settings → Accounts → (team) → Manage Certificates → + → Developer ID Application. This needs the Account Holder role. You can also create it at developer.apple.com → Certificates and install it.
+  2. A notary profile: make an app-specific password at appleid.apple.com, then run `xcrun notarytool store-credentials suborned-notary --apple-id <email> --team-id <TEAM>`. It asks for the password itself.
+- With both in place, `bun run game:pack` does the rest:
+  - signs under the hardened runtime with `tools/game/entitlements.plist` (allow-jit and disable-library-validation, the two the Mono player needs);
+  - notarises (`notarytool submit --wait`), staples, re-zips, and checks with `codesign --verify` and `spctl`.
+- Without them it packs the ad hoc build and prints what is missing.
+- `SUBORNED_SIGN_ID` picks a different identity.
+
 ## Run it
 
 Needs [Bun](https://bun.sh) 1.4+ and Docker. Generation and the crew need [Claude Code](https://code.claude.com) (signed in). The visible world needs Unity 6000.6.2f1; the Unity MCP needs the `unity` CLI on `PATH` (or set `UNITY_CLI`).

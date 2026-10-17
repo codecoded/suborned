@@ -720,7 +720,7 @@ namespace Suborned.Play
             }
             Feed();
             PanelFrame(); Step3Frame(); TakedownFrame();
-            LessFrame(); // brief 014: the less-reading HUD over the pieces above (it hides what is cut at rest)
+            LessFrame(); MenuFrame(); // brief 014: the less-reading HUD over the pieces above (it hides what is cut at rest)
         }
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).

@@ -23,6 +23,13 @@ namespace Suborned.Play.Tests
         }
 
         [Test]
+        public void ThePauseMenuStopsEverything()
+        {
+            Assert.That(ModalGate.AllowsHover(ModalGate.Modal.Menu) || ModalGate.AllowsClicks(ModalGate.Modal.Menu) || ModalGate.AllowsCamera(ModalGate.Modal.Menu), Is.False, "menu: no hover, click or camera");
+            foreach (PlayAction a in Enum.GetValues(typeof(PlayAction))) Assert.That(ModalGate.Allows(ModalGate.Modal.Menu, a), Is.False, $"menu: {a}");
+        }
+
+        [Test]
         public void OnlyBeginAndTheCameraKeysUnderTheBriefing()
         {
             var allowed = new[] { PlayAction.Pause, PlayAction.Briefing, PlayAction.Debug, PlayAction.PanUp, PlayAction.PanDown, PlayAction.PanLeft, PlayAction.PanRight };

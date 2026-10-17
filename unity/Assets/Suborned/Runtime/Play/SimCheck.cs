@@ -87,7 +87,7 @@ namespace Suborned.Play
         static void FromCommandLine()
         {
             if (Application.isEditor) return;
-            var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, "-sim-check");
+            var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, "-sim-check"); if (i < 0) i = Array.IndexOf(args, "-runScenarios"); // the game build's name for it
             if (i < 0 || i + 1 >= args.Length) return;
             int code = 1;
             try

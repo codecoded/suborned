@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  The game app's entitlements under the hardened runtime (the codesign runtime option), only what the Unity Mono player needs. Tested
+  2026-10-17 on the built app, signed ad hoc with the runtime flag, by -runScenarios (137/137) and -gameProof (rendered):
+    none, allow-jit alone, allow-jit + allow-unsigned-executable-memory: abort at start (exit 134)
+    disable-library-validation alone: hangs in the crash handler (Mono's JIT needs allow-jit)
+    allow-jit + disable-library-validation: passes; allow-unsigned-executable-memory adds nothing, so it is left out
+  disable-library-validation lets the player load its Mono and Burst libraries (Contents/Frameworks, PlugIns).
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+</dict>
+</plist>

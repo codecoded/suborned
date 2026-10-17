@@ -1,0 +1,13 @@
+{
+ "schema": "suborned.sim.unity-check/1",
+ "runtime": "Mono",
+ "where": "player",
+ "unity": "6000.6.2f1",
+ "platform": "OSXPlayer",
+ "commit": "8b088019ec6ea4a562300b46343f72610eff5d45",
+ "dllSha256": "7aaf0107516ff6d163eab75d0351b39ebb015acea9fd0401550c8d6e98f6434f",
+ "passed": true,
+ "matching": 137,
+ "scenarios": 137,
+ "failingRows": []
+}
