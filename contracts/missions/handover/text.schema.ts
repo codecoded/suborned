@@ -4,7 +4,7 @@
 // What is in the file:
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
-//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), the first-run toasts, the going-loud card's words
+//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view) and H14–H16 (the end steps: Enter, Extract, Take at the pickup), the first-run toasts, the going-loud card's words
 //   targets    each thing the cell can right click, in tiers of knowledge: `about` is what the cell was TOLD at the start (always shown);
 //              `watched` what a Scout Watch teaches (a person's routine, a camera's or the patrol's sight), `routine` the patrol's rounds,
 //              `heard` what a Scout Listen teaches (need, temperament); a tier shows only once the cell has learned it (GDD §04)
@@ -42,8 +42,8 @@ export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
   'extract', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
-/** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). */
-export const DIALOGUE_VERBS = [...VERBS, 'turn'] as const;
+/** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
+export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view'] as const;
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. */
@@ -103,7 +103,7 @@ export const Activity = z.strictObject({
 export const HINT_MAX = 110;
 const HintLine = z.string().min(1).max(HINT_MAX).regex(/^[^\n<>]+$/);
 export const Hint = z.strictObject({
-  priority: z.number().int().min(1),
+  priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); below 0 = the Handover\'s end steps (H14 Enter, H15 Extract, H16 Take at the pickup), which win over every other hint when their trigger holds'),
   agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
   verb: DVerb,
   target: z.string().min(1).describe('what the hint rings, in words'),
@@ -229,6 +229,9 @@ export const Less = z.strictObject({
   objective: z.strictObject({
     rule: z.string().min(1),
     take: Short(32), carry: Short(32), showSeconds: z.number().int().min(2).max(10),
+    bring: Short(32).describe('the goal line while the Enforcer is inside for Vale (after Enter, before he comes out)'),
+    steps: z.array(z.strictObject({ key: z.enum(['take', 'bring', 'carry']), when: z.string().min(1).describe('the game state in which the host shows this line as the goal') })).min(3)
+      .describe('the goal line in order: take, then bring, then carry; each `key` names the line above, `when` is the state the host reads (Latch builds the trigger)'),
   }),
   briefing: z.strictObject({ rule: z.string().min(1), goal: Short(32) }),
   end: z.strictObject({

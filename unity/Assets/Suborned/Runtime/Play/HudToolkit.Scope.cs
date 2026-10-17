@@ -6,17 +6,18 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>The plot scope (brief 014 rule 7; Glyph §5; Sky: "knowing where Vale is located is not obvious"): a period plotting instrument,
-    /// 212 x 132 at 1080p in the bottom left, rotated to the camera's fixed yaw so up on the scope is up on the street. The glass shows the
+    /// 212 x 132 at 1080p in the bottom left, heading-up: it turns with the view (brief 016), so up on the scope is up on the street at every
+    /// yaw, with a north tick on the glass's rim; one scale fits the block at all four yaws. The glass shows the
     /// block from the engine's own walk grid (open ground dull teal, everything built seafoam), and only what the cell knows, told or learned:
     /// the cell as numbered discs (the selected ringed), Vale exact only while an agent sees him (else a dashed ring at his last known place,
     /// growing with its age; the briefing gives the Office), the key people's glyphs (the same as their pips), learned cones (grey when not
     /// live), the patrol's route once its routine is learned, held doors, bodies, stashes holding one, reports in transit and units, and the
-    /// main view as a trapezoid. A click or drag pans the camera; a click on a cell disc selects that agent; a key person's glyph finds them.
+    /// main view as a trapezoid. A click or drag pans the camera (in the turned frame: the point under the pointer comes to the centre); a click on a cell disc selects that agent; a key person's glyph finds them.
     /// No orders from the scope: an order needs the street's price first.</summary>
     public sealed partial class HudToolkit
     {
         const float ScopeW = 212, ScopeH = 132, GlassInset = 8;
-        VisualElement scope, glass; Paint scopePaint; Texture2D scopeTex;
+        VisualElement scope, glass, scopeImage; Paint scopePaint, scopeRim; Vector2 northTip, northDir; bool northOn; Texture2D scopeTex; float scopeImageSize;
         Vector3 scopeC; Vector2 scopeR, scopeF; float scopeScale; bool scopeReady;
         readonly List<VisualElement> blips = new(); int blipUsed;
         readonly List<Fan> scopeFans = new(); float fansAt = -1f; bool scopeDrag;
@@ -26,7 +27,9 @@ namespace Suborned.Play
         {
             scope = E(root, "s-panel_dark", pick: true); scope.style.position = Position.Absolute; scope.style.left = 14; scope.style.bottom = 14; scope.style.width = ScopeW; scope.style.height = ScopeH;
             glass = E(scope, null, GlassInset, GlassInset, ScopeW - 2 * GlassInset, ScopeH - 2 * GlassInset, pick: true); glass.style.overflow = Overflow.Hidden; glass.style.backgroundColor = Glass; Round(glass, 5);
+            scopeImage = E(glass, null, 0, 0, 1, 1); scopeImage.pickingMode = PickingMode.Ignore; // the block, baked north-up, turned with the view under the marks
             scopePaint = P(glass, 0, 0, ScopeW - 2 * GlassInset, ScopeH - 2 * GlassInset, DrawScope);
+            scopeRim = P(scope, 0, 0, ScopeW, ScopeH, DrawNorth); // on the frame, over the glass's edge: the north wedge sits on the rim
             glass.RegisterCallback<PointerDownEvent>(e =>
             {
                 if (e.button != 0) return; e.StopPropagation(); scopeDrag = true; glass.CapturePointer(e.pointerId);
@@ -41,32 +44,50 @@ namespace Suborned.Play
             manifest.Add((scope, "image", () => "plot scope"));
         }
 
-        /// <summary>The mapping (once the camera stands): the block's centre, the camera's right and forward on the ground, the scale that fits the
-        /// grid's turned footprint into the glass; and the glass's texture, sampled from the engine's walk grid.</summary>
+        /// <summary>The mapping (once the camera stands): the block's centre, and one scale that fits the grid's footprint into the glass at every
+        /// one of the four yaws; and the block's picture, sampled from the engine's walk grid north-up (x east, y north) on a square the
+        /// footprint's diagonal wide, so it covers the glass at any turn.</summary>
         void ScopeSetup()
         {
             var cam = host.View; var g = host.Game; if (!cam || g == null) return;
             var grid = g.S.Grid; var fr = host.frame;
             Vector3 W(int i, int j) => fr.World(new Pt(grid.X0 + i * grid.Cell, grid.Y0 + j * grid.Cell));
-            var r3 = cam.transform.right; var f3 = cam.transform.forward; scopeR = new Vector2(r3.x, r3.z).normalized; scopeF = new Vector2(f3.x, f3.z).normalized;
             var corners = new[] { W(0, 0), W(grid.Nx, 0), W(0, grid.Ny), W(grid.Nx, grid.Ny) };
             scopeC = (corners[0] + corners[3]) / 2f; scopeC.y = 0;
-            float umin = 1e9f, umax = -1e9f, vmin = 1e9f, vmax = -1e9f;
-            foreach (var c in corners) { var d = new Vector2(c.x - scopeC.x, c.z - scopeC.z); float u = Vector2.Dot(d, scopeR), v = Vector2.Dot(d, scopeF); umin = Mathf.Min(umin, u); umax = Mathf.Max(umax, u); vmin = Mathf.Min(vmin, v); vmax = Mathf.Max(vmax, v); }
-            float gw = ScopeW - 2 * GlassInset, gh = ScopeH - 2 * GlassInset;
-            scopeScale = Mathf.Min(gw / (umax - umin), gh / (vmax - vmin)) * 0.98f;
-            int tw = (int)gw * 2, th = (int)gh * 2; scopeTex = new Texture2D(tw, th, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
-            var px = new Color32[tw * th];
-            for (int y = 0; y < th; y++)
-                for (int x = 0; x < tw; x++)
+            float gw = ScopeW - 2 * GlassInset, gh = ScopeH - 2 * GlassInset, diag = 0f;
+            scopeScale = float.MaxValue;
+            for (int k = 0; k < 4; k++)
+            {
+                float yaw = (cam.transform.eulerAngles.y + 90f * k) * Mathf.Deg2Rad; var R = new Vector2(Mathf.Cos(yaw), -Mathf.Sin(yaw)); var F = new Vector2(Mathf.Sin(yaw), Mathf.Cos(yaw));
+                float umin = 1e9f, umax = -1e9f, vmin = 1e9f, vmax = -1e9f;
+                foreach (var c in corners) { var d = new Vector2(c.x - scopeC.x, c.z - scopeC.z); float u = Vector2.Dot(d, R), v = Vector2.Dot(d, F); umin = Mathf.Min(umin, u); umax = Mathf.Max(umax, u); vmin = Mathf.Min(vmin, v); vmax = Mathf.Max(vmax, v); diag = Mathf.Max(diag, d.magnitude); }
+                scopeScale = Mathf.Min(scopeScale, Mathf.Min(gw / (umax - umin), gh / (vmax - vmin)) * 0.98f);
+            }
+            ScopeAxes(cam);
+            // the picture: a square of side 2 * max(the footprint's half diagonal, the glass's half diagonal / scale), 3 texels a glass pixel
+            float half = Mathf.Max(diag, 0.5f * Mathf.Sqrt(gw * gw + gh * gh) / scopeScale) + 2f; scopeImageSize = 2f * half * scopeScale;
+            int tn = Mathf.Min(1024, Mathf.CeilToInt(scopeImageSize * 3f)); scopeTex = new Texture2D(tn, tn, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            var px = new Color32[tn * tn];
+            for (int y = 0; y < tn; y++)
+                for (int x = 0; x < tn; x++)
                 {
-                    var w = WorldOf(new Vector2(x / 2f, gh - y / 2f)); var p = fr.Engine(w);
+                    var w = new Vector3(scopeC.x + ((x + 0.5f) / tn * 2f - 1f) * half, 0f, scopeC.z + ((y + 0.5f) / tn * 2f - 1f) * half); var p = fr.Engine(w); // texture row 0 = the south edge
                     int ci = grid.CI(p.X), cj = grid.CJ(p.Y); bool inside = ci >= 0 && cj >= 0 && ci < grid.Nx && cj < grid.Ny;
-                    px[y * tw + x] = !inside ? Glass : grid.FreeCell(ci, cj) ? Floor : Built;
+                    px[y * tn + x] = !inside ? new Color32(0, 0, 0, 0) : grid.FreeCell(ci, cj) ? Floor : Built; // outside the block: clear (the glass shows), so a turned corner never paints past the glass
                 }
             scopeTex.SetPixels32(px); scopeTex.Apply();
-            glass.style.backgroundImage = new StyleBackground(scopeTex);
+            scopeImage.style.backgroundImage = new StyleBackground(scopeTex);
+            scopeImage.style.left = gw / 2 - scopeImageSize / 2; scopeImage.style.top = gh / 2 - scopeImageSize / 2; scopeImage.style.width = scopeImageSize; scopeImage.style.height = scopeImageSize;
+            scopeImage.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
             scopeReady = true;
+        }
+
+        /// <summary>The camera's right and forward on the ground now (the scope turns with the view), and the picture turned to match: a
+        /// north-up picture turned by minus the yaw (screen y runs down, so that is a turn of -yaw in the panel's terms).</summary>
+        void ScopeAxes(UnityEngine.Camera cam)
+        {
+            var r3 = cam.transform.right; var f3 = cam.transform.forward; scopeR = new Vector2(r3.x, r3.z).normalized; scopeF = new Vector2(f3.x, f3.z).normalized;
+            if (scopeImage != null) scopeImage.style.rotate = new Rotate(new Angle(-cam.transform.eulerAngles.y, AngleUnit.Degree));
         }
 
         Vector2? ScopeOf(Vector3 w)
@@ -93,10 +114,20 @@ namespace Suborned.Play
         readonly List<System.Action<Painter2D>> scopeOps = new();
         void DrawScope(Painter2D p, Rect r) { foreach (var f in scopeOps) f(p); }
 
+        /// <summary>The north wedge on the frame (scope space): 11 px wide at its base on the glass's edge, 6 px out into the chrome, and a
+        /// 2 px tick along the rim under it.</summary>
+        void DrawNorth(Painter2D p, Rect r)
+        {
+            if (!northOn) return; var at = northTip; var o = northDir; var along = new Vector2(-o.y, o.x);
+            p.fillColor = Cream; p.BeginPath(); p.MoveTo(at + along * 5.5f); p.LineTo(at + o * 6f); p.LineTo(at - along * 5.5f); p.ClosePath(); p.Fill();
+            p.strokeColor = Cream; p.lineWidth = 2f; p.lineCap = LineCap.Butt; p.BeginPath(); p.MoveTo(at + along * 7.5f - o * 1f); p.LineTo(at - along * 7.5f - o * 1f); p.Stroke();
+        }
+
         void ScopeFrame()
         {
             var g = host.Game; Show(scope, g != null && !m.Ended && !m.BriefingOpen); if (g == null) return;
             if (!scopeReady) ScopeSetup(); if (!scopeReady) return;
+            if (host.View) ScopeAxes(host.View);
             scopeOps.Clear(); blipUsed = 0; bool alt = host.Peeking; float now = Time.unscaledTime;
             // a faint plotting grid and the sweep arm (cosmetic)
             float gw = ScopeW - 2 * GlassInset, gh = ScopeH - 2 * GlassInset; var mid = new Vector2(gw / 2, gh / 2);
@@ -162,6 +193,16 @@ namespace Suborned.Play
             }
             // the levels: street, deck, sky concourse; the scope draws the street (every Handover act is on it)
             scopeOps.Add(pp => { for (int i = 0; i < 3; i++) { pp.fillColor = i == 0 ? Cream : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(new Vector2(gw - 8, gh - 9 - i * 7), 1.8f, Deg(0), Deg(360)); /* Glyph round 2: 7 px in from the glass edge */ pp.Fill(); } });
+            // north (Glyph's 016 review §1): a cream wedge seated on the frame's inner rim where north lies from the centre, base on the rim line,
+            // apex out into the chrome, a 2 px tick on the rim under it; slid along the straight edges, never into the rounded corners
+            {
+                var nd = new Vector2(Vector2.Dot(Vector2.up, scopeR), -Vector2.Dot(Vector2.up, scopeF)); // world north (+z) in glass terms (y down)
+                float hx = gw / 2, hy = gh / 2, kx = Mathf.Abs(nd.x) > 1e-4f ? hx / Mathf.Abs(nd.x) : 1e9f, ky = Mathf.Abs(nd.y) > 1e-4f ? hy / Mathf.Abs(nd.y) : 1e9f;
+                const float Corner = 10f; Vector2 on, outward;
+                if (ky <= kx) { float x = Mathf.Clamp(nd.x * ky, -hx + Corner, hx - Corner); on = new Vector2(hx + x, nd.y < 0 ? 0 : gh); outward = new Vector2(0, nd.y < 0 ? -1 : 1); }
+                else { float y = Mathf.Clamp(nd.y * kx, -hy + Corner, hy - Corner); on = new Vector2(nd.x < 0 ? 0 : gw, hy + y); outward = new Vector2(nd.x < 0 ? -1 : 1, 0); }
+                northTip = on + new Vector2(GlassInset, GlassInset); northDir = outward; northOn = true; scopeRim.MarkDirtyRepaint();
+            }
             for (int i = blipUsed; i < blips.Count; i++) Show(blips[i], false);
             scopePaint.MarkDirtyRepaint();
         }

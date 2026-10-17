@@ -1,0 +1,9 @@
+47.4 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+47.4 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+47.5 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+47.6 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+47.6 01-open: queued · audit clean
+47.8 02-folded: queued · audit clean
+48.0 2 pressed folded: picked 1 target mode True marks person/waitress, person/guard, person/driver
+48.0 03-folded-2-pressed: queued · audit clean
+48.3 done

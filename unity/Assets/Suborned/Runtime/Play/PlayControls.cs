@@ -10,6 +10,7 @@ namespace Suborned.Play
         Agent1, Agent2, Agent3, Agent4, CycleAgent,
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
         Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView, Intel, Peek, Response, Gait,
+        TurnLeft, TurnRight, TurnDrag,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -17,9 +18,9 @@ namespace Suborned.Play
     /// <summary>Which HUD draws: Glyph's kit on UI Toolkit (HudToolkit, its pieces as they land) or the IMGUI placeholder (PlayHud).</summary>
     public enum HudView { Kit, Imgui }
 
-    /// <summary>The play controls in one table (Sky, 2026-10-15, "everything but rotation": the camera keeps yaw 30), and the HUD's settings.
-    /// Every key the host reads comes from `keys`; the mouse buttons are fixed by the scheme (left select and move, right act, middle pan,
-    /// wheel zoom). Remapping is editing this table; a settings screen or the dock option later reads and writes the same object.</summary>
+    /// <summary>The play controls in one table (Sky, 2026-10-15; the view turns since brief 016, Sky 2026-10-17: Q / E a quarter round, Alt +
+    /// middle-drag freely, snapping to a quarter), and the HUD's settings. Every key the host reads comes from `keys`; the mouse buttons are
+    /// fixed by the scheme (left select and move, right act, middle pan, with TurnDrag's key held middle turns, wheel zoom). Remapping is editing this table; a settings screen or the dock option later reads and writes the same object.</summary>
     [Serializable]
     public sealed class PlayControls
     {
@@ -65,6 +66,9 @@ namespace Suborned.Play
             new() { action = PlayAction.Peek, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" },
             new() { action = PlayAction.Response, keys = new[] { Key.R }, label = "R" }, // brief 013: the response pill's list (Glyph §8)
             new() { action = PlayAction.Gait, keys = new[] { Key.G }, label = "G" }, // Sky 2026-10-16: a moving agent between walk and run (R is the response list; G is free)
+            new() { action = PlayAction.TurnLeft, keys = new[] { Key.Q }, label = "Q" }, // brief 016: the view a quarter round left (Q and E were free)
+            new() { action = PlayAction.TurnRight, keys = new[] { Key.E }, label = "E" },
+            new() { action = PlayAction.TurnDrag, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" }, // held with the middle button: turn freely (Alt alone is Peek; the detail layer stays off while turning)
         };
         static readonly Binding[] defaults = Defaults();
 

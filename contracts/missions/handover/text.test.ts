@@ -62,7 +62,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, c] of Object.entries(t.cards.items)) for (const [v, r] of typeof c.beat === 'string' ? [['', c.beat] as const] : Object.entries(c.beat ?? {})) push(`cards.${k}.beat.${v}`, r, false, BEAT_MAX);
   t.scenes.items.forEach((sc, i) => { if (sc.beat) push(`scenes[${i}].beat ${sceneKey(sc)}`, sc.beat, false, BEAT_MAX); });
   { const L = t.less;
-    push('less.objective.take', plain(L.objective.take), false, 32); push('less.objective.carry', plain(L.objective.carry), false, 32); push('less.briefing.goal', plain(L.briefing.goal), false, 32);
+    push('less.objective.take', plain(L.objective.take), false, 32); push('less.objective.bring', plain(L.objective.bring), false, 32); push('less.objective.carry', plain(L.objective.carry), false, 32); push('less.briefing.goal', plain(L.briefing.goal), false, 32);
     push('less.end.win', L.end.win, false, SHORT_MAX); push('less.end.withdraw', L.end.withdraw, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.end.fail)) push(`less.end.fail.${k}`, x, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.pop)) push(`less.pop.${k}`, x, false, SHORT_MAX);
@@ -137,7 +137,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -343,15 +343,20 @@ describe('training hints, the run toast, the going-loud card', () => {
   const rows = new Map<string, { trigger: string; rings: string; goneWhen: string }>();
   if (existsSync(motive)) for (const m of read('briefs/011/motive-fights.md').matchAll(/^\| (H\d+) \| (.*?) \| (.*?) \| (.*?) \| (.*?) \|$/gm)) rows.set(m[1]!, { trigger: m[2]!, rings: m[4]!, goneWhen: m[5]! });
   const items = Object.entries(t.hints.items);
-  test('H1–H12 are all here, in priority order; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, not in Motive\'s table)', () => {
-    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 12 }, (_, i) => `H${i + 1}`));
-    expect(items.map(([, h]) => h.priority)).toEqual(items.map((_, i) => i + 1));
+  const motiveIds = (id: string) => Number(id.slice(1)) <= 11;
+  test('H1–H16 are all here, H1–H12 in priority order, H13 (turn the view) ahead of them at 0 and H14–H16 (the end steps) ahead of H13; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, H13 brief 016\'s and H14–H16 Aster\'s end steps, not in Motive\'s table)', () => {
+    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 16 }, (_, i) => `H${i + 1}`));
+    expect(items.slice(0, 12).map(([, h]) => h.priority)).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
+    expect(t.hints.items.H13!.priority).toBe(0);
+    const end = ['H14', 'H15', 'H16'].map((id) => t.hints.items[id]!.priority);
+    for (const p of end) expect(p).toBeLessThan(t.hints.items.H13!.priority); // they win over every flavour hint, the view turn included, when their trigger holds
+    expect(new Set(end).size).toBe(3); // no tie: the host's sort is not stable
     if (!rows.size) return;
-    expect([...rows.keys()]).toEqual(items.filter(([id]) => id !== 'H12').map(([id]) => id));
-    for (const [id, h] of items.filter(([id]) => id !== 'H12')) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
+    expect([...rows.keys()]).toEqual(items.filter(([id]) => motiveIds(id)).map(([id]) => id));
+    for (const [id, h] of items.filter(([id]) => motiveIds(id))) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
   });
   test('each hint fits 110 characters, names an agent, a verb and a target, and introduces only its own verb', () => {
-    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run' };
+    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run', 'turn-view': 'turn', extract: 'into the car' };
     const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take'];
     const bad: string[] = [];
     for (const [id, h] of items) {
@@ -381,6 +386,8 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
   // A key a line names must be bound to what the line means. Anything not listed here must not appear.
   const MEANS: Record<string, { action: string; where: string[] }> = {
     N: { action: 'next event', where: ['hints.H7'] },
+    Q: { action: 'turn the view left', where: ['hints.H13'] },
+    E: { action: 'turn the view right', where: ['hints.H13'] },
     F: { action: 'draw or holster', where: ['locks.not-drawn'] },
     Ctrl: { action: 'force fire', where: ['locks.civilian-target'] },
     Return: { action: 'play again', where: ['locks.mission-over'] },
@@ -393,7 +400,7 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
     const bad = named.filter((n) => !MEANS[n.key] || !MEANS[n.key]!.where.some((w) => n.path.startsWith(w))).map((n) => `${n.key}: ${n.path}`);
     expect(bad).toEqual([]);
     expect(named.length).toBeGreaterThanOrEqual(4); // the scan finds the keys that are there
-    if (howTo) for (const [k, v] of Object.entries(MEANS)) expect(howTo, `${k} (${v.action}) is bound in HOW-TO-PLAY.md`).toMatch(new RegExp(`\\*\\*[^*]*\\b${k}\\b[^*]*\\*\\*`));
+    if (howTo) for (const [k, v] of Object.entries(MEANS).filter(([k]) => k !== 'Q' && k !== 'E')) expect(howTo, `${k} (${v.action}) is bound in HOW-TO-PLAY.md`).toMatch(new RegExp(`\\*\\*[^*]*\\b${k}\\b[^*]*\\*\\*`));
   });
   test('H11 says how to carry: right click the downed agent with another selected', () => {
     const l = t.hints.items.H11!.line;
@@ -947,6 +954,26 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
     if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Gait,\s*keys = new\[\] \{ Key\.G \}/);
   });
+  test('H13 teaches the view turn: Q / E in the short form (the host swaps them for keycaps), the game\'s own keys, retired for good by turning', () => {
+    const h = t.hints.items.H13!;
+    expect(h.verb).toBe('turn-view');
+    expect(h.agent).toBe('any');
+    expect(h.priority).toBe(0);
+    expect(h.short).toBe('Turn the view: Q / E.');
+    expect(marked(h.short)).toEqual([]); // nothing in the street is ringed; the host draws the glyph, the words, then Q and E as keycaps
+    expect(h.line).toMatch(/\bQ\b/);
+    expect(h.line).toMatch(/\bE\b/);
+    expect(h.line).toMatch(/\bagent\b/i);
+    expect(h.trigger).toMatch(/0:20/);
+    expect(h.trigger).toMatch(/never turned/);
+    expect(h.goneWhen).toMatch(/for good/);
+    const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
+    if (existsSync(controls)) {
+      const src = read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
+      expect(src).toMatch(/PlayAction\.TurnLeft,\s*keys = new\[\] \{ Key\.Q \}/);
+      expect(src).toMatch(/PlayAction\.TurnRight,\s*keys = new\[\] \{ Key\.E \}/);
+    }
+  });
   test('a beat keeps its card\'s sight and needs rules (the cell is never told what it did not see): the cards that said in-sight still do', () => {
     for (const [code, c] of Object.entries(t.cards.items)) if (c.fate === 'beat' && /found|confirmed|opened|serviced/.test(code)) expect(c.sight, code).toBe('in-sight');
     expect(t.cards.items['rivals.arrive']!.sight).toBe('in-sight');
@@ -961,11 +988,11 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^Cover\b/, carry: /^Carry\b/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, extract: /^Put\b/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^Cover\b/, carry: /^Carry\b/, 'turn-view': /^Turn the view\b/ };
     const bad: string[] = [];
     for (const [id, h] of Object.entries(t.hints.items)) {
       const n = marked(h.short);
-      if (n.length !== 1) bad.push(`${id}: ${n.length} ringed nouns`);
+      if (n.length !== (id === 'H13' ? 0 : 1)) bad.push(`${id}: ${n.length} ringed nouns`); // H13 rings nothing: the view is no thing in the street
       if (words(h.short) > 6) bad.push(`${id}: more than six words`);
       if (!(lead[h.verb] ?? /^$/).test(h.short)) bad.push(`${id}: "${h.short}" does not lead with its verb (${h.verb})`);
       if (/\b(Scout|Fixer|Tech|Enforcer|Ask|Pay|Help|Pressure|first|then|before|after|next|until|once)\b|\d/.test(h.short)) bad.push(`${id}: names an agent, an approach, a time or a sequence`);
@@ -976,9 +1003,38 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the objective is one imperative with a ringed noun for each thing that has a marker, and the briefing goal says the same', () => {
     expect(marked(L.objective.take)).toEqual(['Vale']);
+    expect(marked(L.objective.bring)).toEqual(['Vale']);
     expect(marked(L.objective.carry)).toEqual(['Vale', 'car']);
     expect(marked(L.briefing.goal)).toEqual(['Vale', 'car']);
-    for (const x of [L.objective.take, L.objective.carry]) expect(words(x)).toBeLessThanOrEqual(5);
+    for (const x of [L.objective.take, L.objective.bring, L.objective.carry]) expect(words(x)).toBeLessThanOrEqual(5);
+    expect(L.objective.take).toBe('Take [Vale] alive.');
+    expect(L.objective.bring).toBe('Bring [Vale] out.');
+    expect(L.objective.carry).toBe('Get [Vale] to the [car].');
+  });
+  test('the goal line progresses take, bring, carry: each step names a line and the state the host reads', () => {
+    expect(L.objective.steps.map((x) => x.key)).toEqual(['take', 'bring', 'carry']);
+    for (const x of L.objective.steps) { expect(L.objective[x.key], x.key).toBeTruthy(); expect(x.when.length, x.key).toBeGreaterThan(20); }
+    expect(L.objective.steps[1]!.when).toMatch(/Enter/);
+    expect(L.objective.steps[2]!.when).toMatch(/Vale is with the Enforcer/);
+  });
+  test('H14–H16 teach the end steps: Enter at the open door, Extract at the car, Take at the pickup; each for the Enforcer, each short form leads with its verb', () => {
+    const [a, b, c] = [t.hints.items.H14!, t.hints.items.H15!, t.hints.items.H16!];
+    expect([a.verb, b.verb, c.verb]).toEqual(['enter', 'extract', 'take']);
+    for (const h of [a, b, c]) { expect(h.agent).toBe('enforcer'); expect(h.line).toMatch(/\bEnforcer\b/); expect(h.priority).toBeLessThan(0); expect(marked(h.short).length).toBe(1); expect(words(h.short)).toBeLessThanOrEqual(6); }
+    expect(a.short).toBe('Go in by the [door].');
+    expect(b.short).toBe('Put Vale in the [car].');
+    expect(c.short).toBe('Take [Vale] at the pickup.');
+    // H14's Alt line explains the off-screen time and that being seen on the way in fails
+    expect(a.line).toMatch(/off screen/);
+    expect(a.line).toMatch(/[Ss]een on the way in, it fails/);
+    // the triggers say what Latch builds
+    expect(a.trigger).toMatch(/guard/); expect(a.trigger).toMatch(/camera/); expect(a.trigger).toMatch(/Vale is in the Office/);
+    expect(b.trigger).toMatch(/come out with Vale/);
+    expect(c.trigger).toMatch(/driver is turned/); expect(c.trigger).toMatch(/pickup/);
+    // the rings are things the street has markers for
+    expect(a.rings).toBe('the public door'); expect(b.rings).toBe('the getaway car');
+    // a hint's verb is one the action panel gives, and the enforcer gives it
+    for (const h of [a, b, c]) expect(t.actions[h.verb as keyof typeof t.actions]!.by).toContain('enforcer');
   });
   test('the price line: a canonical field order, a list for every verb that starts with the name and keeps that order', () => {
     expect(L.price.order).toEqual([...PRICE_FIELDS]);

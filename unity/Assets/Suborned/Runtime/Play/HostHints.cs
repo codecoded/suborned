@@ -21,7 +21,7 @@ namespace Suborned.Play
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13" };
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -55,6 +55,16 @@ namespace Suborned.Play
         {
             if (Text == null || Game.Over || Game.Tick % 5 != 0) return;
             if (!HintsOn) { HintNow = null; return; }
+            if (HintNow != null && Game.Tick - lastOrderTick >= 8 * Game.Hz && Text.Hints2.Find(x => x.Id == HintNow.Id) is { Priority: >= 0 })
+            {   // the end steps (H14 to H16, negative priorities) cut in over a teaching hint on show: they say what wins the mission now (Sky, route B)
+                var learnedNow = Learned();
+                foreach (var h in Text.Hints2)
+                {
+                    if (h.Priority >= 0) break; if (hintsDone.Contains(h.Id) || learnedNow.Contains(h.Id) || h.Line.Length == 0) continue;
+                    if (!Trigger(h.Id, out var r2, out var p2)) continue;
+                    HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = r2, Portrait = p2, Who = trigWho }; hintOrdersAt = Game.Orders.Count; return;
+                }
+            }
             if (HintNow != null)
             {
                 if (Gone(HintNow.Id)) { hintsDone.Add(HintNow.Id); Learn(HintNow.Id); HintNow = null; }
@@ -157,6 +167,17 @@ namespace Suborned.Play
                         portrait = k; ring = frame.World(op.Walk.End); return true; // the text: it rings the walk's destination
                     }
                     return false;
+                case "H14": // the end steps (Fable, Aster 2026-10-18): the door is open to the Enforcer; the same check as the door marker (HostValeSteps)
+                    if (!EnterAvailable) return false;
+                    ring = At("marker/door"); portrait = (int)OpId.Enforcer; return true;
+                case "H15": // out with Vale, no Extract yet (before H10)
+                    if (!ExtractAvailable || Given(o => o.Do == "extract")) return false;
+                    ring = At("car/getaway"); portrait = (int)OpId.Enforcer; return true;
+                case "H16": // route B: the driver turned, Vale at his car, not taken
+                    if (!g.PersonByRole("driver").Turned || g.Vale != ValeAt.Pickup) return false;
+                    ring = At("councillor"); portrait = (int)OpId.Enforcer; return true;
+                case "H13": // brief 016: the view turns; taught once, early (Fable's line in text.json; the HUD shows its keys as keycaps)
+                    return g.Tick >= 20 * Game.Hz && !TurnedThisRun && !g.FightOn;
                 case "H11":
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
                     foreach (var name in g.WouldBeCaptured()) // Keel's query: downed and not within the car's reach (carried or not)
@@ -184,6 +205,10 @@ namespace Suborned.Play
                 case "H10": return Given(o => o.Do == "draw", from);
                 case "H11": return Given(o => o.Do is "carry" or "extract", from);
                 case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
+                case "H13": return TurnedThisRun;
+                case "H14": return Given(o => o.Do == "enter", from);
+                case "H15": return Given(o => o.Do == "extract", from);
+                case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;
             }
             return false;
         }

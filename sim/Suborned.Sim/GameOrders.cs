@@ -126,22 +126,67 @@ namespace Suborned.Sim
             pos = at.Value; return "";
         }
 
-        string Scout(Op op, Order o)
+        /// <summary>A Watch or a Listen; `engage` false checks it only (ScoutQuery, the card before the click) and changes nothing.</summary>
+        string Scout(Op op, Order o, bool engage = true)
         {
             if (op.Id != OpId.Scout) return No("only-scout", "only the Scout watches and listens (§03)");
-            if (o.Do == "watch" && !IsPersonRoleName(o.Target)) return WatchWatcher(op, o); // a camera or the patrol (rulebook sight)
+            if (o.Do == "watch" && !IsPersonRoleName(o.Target)) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
-            var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
+            var p = PersonByRole(o.Target);
+            if (!ScoutTeaches(R.Ev("scout." + o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
+            var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
             var ev = R.Ev("scout." + o.Do);
             int reach = actReach;
             foreach (var c in ev.Needs) if (c.K == "reach") reach = (int)R.Num(c.S("m")) * 100;
-            if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
             var x = Ctx(p, ev);
+            // only asking (ScoutQuery, target mode; Latch 2026-10-18): a need the order lacks outranks its reach, since walking closer won't
+            // cure it. Issue keeps its order (reach, then needs), so every recorded run replays as before.
+            if (!engage) foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
+            if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
             foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
+            if (!engage) return "";
             var q = Quote(ev, p);
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = 0;
             return "";
+        }
+
+        /// <summary>Whether a Scout event on this person can still teach the cell anything (Sky 2026-10-18: "if I've listened to someone before,
+        /// I think I can then listen to them again?"; a repeat that teaches nothing is refused, already-heard or already-watched, at no cost).
+        /// Read from the rulebook, not listed here: every fact its outcomes and `also` rows learn of the subject (an `also` that needs a lover
+        /// only for someone who has one), the temperament if the event is in preview.knownBy, and for the guard's Watch his sight (rulebook
+        /// sight: his Watch teaches it too). A secret counts only for someone who has one. Knowledge forgotten opens the event again.</summary>
+        bool ScoutTeaches(Event ev, Person p)
+        {
+            bool Open(string what) => what == "secret" ? p.Secret.Length > 0 && !p.KSecret : what != "refused" && !p.Knows(what);
+            bool Learns(List<Eff> changes) { foreach (var c in changes) if (c.Do == "learn" && c.S("of") == "subject") foreach (var w in c.L("what")) if (Open(w)) return true; return false; }
+            foreach (var oc in ev.Outcomes) if (Learns(oc.Changes)) return true;
+            foreach (var a in ev.Also) if (!a.When.Exists(c => c.K == "lover-within") || p.Lover != null) if (Learns(a.Changes)) return true;
+            if (R.KnownBy.Contains(ev.Id) && !p.KTemperament) return true;
+            if (ev.Id == "scout.watch" && p == GuardP && !(Known("guard")?.Sight ?? true)) return true;
+            return false;
+        }
+
+        /// <summary>The Watch or Listen row before the click (Latch, as CallQuery): would the Scout's order on this target be taken now, and if
+        /// not, its refusal code (already-heard, already-watched, too-far, …), words and numbers, exactly as Issue would answer it. Read-only.</summary>
+        public Answer ScoutQuery(string verb, string target)
+        {
+            var saved = refusal; refusal = default; string why;
+            try
+            {
+                var op = OpOf(OpId.Scout);
+                why = Over ? No("mission-over", "the mission is over")
+                    : verb != "watch" && verb != "listen" ? No("unknown-verb", $"verb '{verb}' is no Scout order")
+                    : op.Down ? No("agent-down", "the scout is down")
+                    : op.Inside ? No("enforcer-inside", "inside the Office")
+                    : op.Busy != null ? No("agent-busy", $"scout is busy until {op.BusyEnd}", tick: op.BusyEnd)
+                    : Scout(op, new Order { Tick = Tick, Op = "scout", Do = verb, Target = target }, engage: false);
+            }
+            catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
+            var a = why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 }
+                : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            refusal = saved;
+            return a;
         }
 
         string Turn(Op op, Order o)
@@ -421,6 +466,7 @@ namespace Suborned.Sim
             q.Orders = OrdersFor(ev, x);
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
             q.Event = ev.Id;
+            if (ev.Id.StartsWith("scout.", StringComparison.Ordinal) && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : "already-watched"; // the same test Issue refuses by
             q.Leverage = ev.Id == "turn.pressure" && p.Knows("secret");
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal) && p.KnownRefused.Contains(ev.Id.Substring(5))) q.Outcome = "refused"; // a refusal seen: ✗
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))

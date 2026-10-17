@@ -119,6 +119,8 @@ namespace Suborned.Play
         }
 
         public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : null;
+        /// <summary>Every view by key (picking walks them: HostPick).</summary>
+        public IEnumerable<(string key, Transform t)> All() { foreach (var kv in things) yield return (kv.Key, kv.Value.t); }
         LineRenderer path;
 
         /// <summary>The walk an action panel row would take (null hides it).</summary>

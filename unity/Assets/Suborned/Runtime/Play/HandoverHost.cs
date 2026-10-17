@@ -22,7 +22,8 @@ namespace Suborned.Play
     /// else stops the selection's walks · 1–4 pick a verb (the hotbar lights the
     /// one a right click gives) · F1–F4 or a roster portrait select an agent, twice quickly centres on them · Tab cycles agents · WASD,
     /// arrows or the middle mouse pan (edge scrolling is a setting, off) · the wheel zooms 12.5–18.5, where a 1.75 m person stays 40–60 px
-    /// at 1080p (§10); no rotation, yaw stays 30 · Space pauses (on at the start) · = and − change speed · N jumps to the next event ·
+    /// at 1080p (§10) · Q / E turn the view a quarter round, Alt + middle-drag turns it freely and snaps to the nearest quarter (brief 016,
+    /// HostTurn; the opening view keeps yaw 30) · Space pauses (on at the start) · = and − change speed · N jumps to the next event ·
     /// F12 the debug layer · Return restarts after the end card.
     /// Engine exceptions stop the host at this boundary, never the Editor (Redline E1). Preview (one A* and four temperament evaluations) is
     /// called only when the hovered target, the agent or the verb changes.</summary>
@@ -136,7 +137,7 @@ namespace Suborned.Play
             {
                 shadows = cam.GetComponent<TacticalShadows>(); fade = cam.GetComponent<ArchitectureFade>();
                 focus = cam.transform.position + cam.transform.forward * (shadows ? shadows.focusDepth : 80f);
-                focus.y = 0f; PlaceCamera();
+                focus.y = 0f; PlaceCamera(); TurnInit();
             }
             if (!GetComponent<HudToolkit>()) gameObject.AddComponent<HudToolkit>(); // Glyph's kit on UI Toolkit (off until the kit is imported)
             background = GameObject.Find("people");
@@ -167,7 +168,7 @@ namespace Suborned.Play
             ResetLess(); Track(); Notice(); lastWatchOrders = -1;
             // open on the cell (Waymark 2026-10-16: the four stand by the getaway car's boarding pavilion): centred on block (-2.5, -40.5), play zoom 14,
             // so the cell sits below the briefing card at any resolution; Replay opens the same way
-            LookAt(frame.World(OpeningFocus)); if (cam) cam.orthographicSize = 14f;
+            TurnReset(); LookAt(frame.World(OpeningFocus)); if (cam) cam.orthographicSize = 14f;
             SessionPath = SessionFile();
             Save();
             Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock; {controls.Label(PlayAction.Briefing)} shows the briefing again.";
@@ -191,7 +192,7 @@ namespace Suborned.Play
             if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); FadePoints(); return; } // the end card is modal (ModalGate)
             Controls();
             if (Fault != null) return;
             if (!Paused && !Game.Over && !(Panel != null && controls.pauseWithPanel))
@@ -206,6 +207,7 @@ namespace Suborned.Play
             frames++;
             if (Game.Over && Ending.Length == 0) End();
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            FadePoints();
             ShowSight();
             Guard("street marks", StreetMarks);
             for (int k = 0; k < 4; k++)
@@ -242,7 +244,7 @@ namespace Suborned.Play
         public ModalGate.Modal Modal => MenuOpen ? ModalGate.Modal.Menu : Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
 
         /// <summary>Nothing hovered: no price chip, ring, aim or walk chip (a modal opened, or the run ended).</summary>
-        public void ClearHover() { Hover = null; HoverIntent = null; MoveChip = null; MoveNow = null; AimLine = null; AimNow = null; intentKey = "modal"; dragging = false; BoxScreen = null; }
+        public void ClearHover() { HoverAnchor = null; HoverName = ""; Hover = null; HoverIntent = null; MoveChip = null; MoveNow = null; AimLine = null; AimNow = null; intentKey = "modal"; dragging = false; BoxScreen = null; }
 
         /// <summary>Under a modal: the camera only (pan keys, middle-drag grab, wheel zoom).</summary>
         void CameraOnly(Keyboard kb, UnityEngine.InputSystem.Mouse mouse)
@@ -255,9 +257,10 @@ namespace Suborned.Play
                 if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
                 if (pan != Vector2.zero && cam) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
             }
+            TurnInput(kb, mouse);
             if (mouse == null || !cam) return;
             var p = mouse.position.ReadValue();
-            Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
+            if (!turnDragging) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
             float wheel = mouse.scroll.ReadValue().y;
             if (wheel != 0f && !HudToolkit.Blocks(p)) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
         }
@@ -297,7 +300,9 @@ namespace Suborned.Play
                     if (c.Down(kb, PlayAction.Agent1 + i)) AgentKey(i, shift);
                 }
                 if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
-                if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
+                if (c.Down(kb, PlayAction.CycleAgent) && HoverStackCount > 1 && !TargetMode) StepStack(); // things overlap under the cursor: Tab steps through them
+                else if (c.Down(kb, PlayAction.CycleAgent) && TargetMode) FocusNext(); // a verb picked: Tab steps through its targets, nearest first (HostPick)
+                else if (c.Down(kb, PlayAction.CycleAgent)) { var next = (OpId)(((int)Agent + 1) % 4); Select(next, false); Status = $"{Op.Name(next)} selected"; }
                 if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
                 if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
                 if (c.Down(kb, PlayAction.Slower)) Speed = Mathf.Max(1, Speed / 2);
@@ -307,6 +312,7 @@ namespace Suborned.Play
                 if (pan != Vector2.zero && cam) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             GateFrame(kb, mouse);
+            TurnInput(kb, mouse);
             if (mouse == null || !cam) return;
             var p = mouse.position.ReadValue();
             // both buttons together: panic, read only once a fight is on (outside one they are just two clicks: no order, no refusal, no card);
@@ -314,7 +320,7 @@ namespace Suborned.Play
             if (Game.FightOn && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed)))
             { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
             Sweep(p, mouse.rightButton.isPressed);
-            Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
+            if (!turnDragging) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
             if (c.edgeScroll && Application.isFocused)
             {
                 float band = c.edgePixels * Screen.height / 1080f; var e = Vector2.zero;
@@ -322,6 +328,7 @@ namespace Suborned.Play
                 if (e != Vector2.zero) Pan(e * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             float wheel = mouse.scroll.ReadValue().y; // over the HUD the wheel scrolls the HUD (the action panel's cards), not the zoom
+            if (wheel != 0f && HoverStackCount > 1 && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them
             if (wheel != 0f && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
             if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
@@ -393,14 +400,15 @@ namespace Suborned.Play
             if (!grabPlane.Raycast(r, out var d)) return;
             var under = r.GetPoint(d); var move = (grabWorld - under) * controls.dragPan; move.y = 0f;
             if (move.sqrMagnitude < 1e-8f) return;
-            focus += move; PlaceCamera(); // the grabbed point is back under the cursor
+            focus += move; TurnMoved(move); PlaceCamera(); // the grabbed point is back under the cursor
         }
 
         void Pan(Vector2 screen)
         {
             var right = cam.transform.right; right.y = 0; right.Normalize();
             var up = cam.transform.forward; up.y = 0; up.Normalize();
-            focus += right * screen.x + up * screen.y / Mathf.Sin(cam.transform.eulerAngles.x * Mathf.Deg2Rad);
+            var d = right * screen.x + up * screen.y / Mathf.Sin(cam.transform.eulerAngles.x * Mathf.Deg2Rad); // the screen's own axes: at any yaw a key pans along the screen
+            focus += d; TurnMoved(d);
             PlaceCamera();
         }
 
@@ -412,8 +420,8 @@ namespace Suborned.Play
             if (fade) fade.focus = focus;
         }
 
-        /// <summary>Pan so the camera centres on a world point (zoom, pitch and yaw stay).</summary>
-        public void LookAt(Vector3 world) { if (!cam) return; focus = new Vector3(world.x, 0f, world.z); PlaceCamera(); }
+        /// <summary>Pan so the camera centres on a world point (zoom, pitch and yaw stay; a turn under way keeps turning about it).</summary>
+        public void LookAt(Vector3 world) { if (!cam) return; focus = new Vector3(world.x, 0f, world.z); TurnLookAt(world); PlaceCamera(); }
 
         public void Select(OpId id, bool add)
         {
@@ -443,7 +451,7 @@ namespace Suborned.Play
             var t = TargetAt(screen);
             string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}";
             if (key == intentKey) { if (t == null) UpdateMoveChip(screen, false); return; }
-            intentKey = key; Hover = t;
+            intentKey = key; Hover = t; HoverFeedback(t);
             HoverIntent = t == null ? null : IntentFor(t);
             UpdateAim();
             if (t == null) UpdateMoveChip(screen, false); else MoveChip = null;
@@ -530,16 +538,25 @@ namespace Suborned.Play
         Target TargetAt(Vector2 screen, bool agents = false)
         {
             if (!cam || viewRoot == null) return null;
-            // people before things: the door, cabinet and car markers are generous boxes, and the guard stands in the door's
-            Target best = null; int rank = 9; float dist = float.MaxValue;
+            // people before things: the door, cabinet and car markers are generous boxes, and the guard stands in the door's. Everything under the
+            // ray is kept, best first (the overlap stack, HostPick): the selected agent's best verb breaks ties (Sky, route B: "it kept landing on
+            // the driver", Vale at his car with the Enforcer selected), and Tab or the wheel steps through a stack
+            var found = new List<(Target t, float score)>();
             foreach (var hit in Physics.RaycastAll(cam.ScreenPointToRay(screen), 5000f))
             {
                 if (!hit.collider.transform.IsChildOf(viewRoot)) continue;
                 var t = TargetOf(hit.collider.transform); if (t == null) continue;
                 int r = t.Kind == "op" ? (agents ? 0 : 3) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" ? (agents ? 1 : 0) : t.Kind == "crowd" ? (agents ? 3 : 2) : (agents ? 2 : 1);
-                if (r < rank || (r == rank && hit.distance < dist)) { best = t; rank = r; dist = hit.distance; }
+                float score = r * 10000f + hit.distance - (agents ? 0 : Prefer(t));
+                int at = found.FindIndex(x => x.t.Kind == t.Kind && x.t.Key == t.Key);
+                if (at < 0) found.Add((t, score)); else if (score < found[at].score) found[at] = (t, score);
             }
-            return best;
+            // brief 016 (Sky: "hard to select areas, like a camera"): nothing under the ray, or only a passer-by: the nearest thing within the pick
+            // radius of the cursor wins over the ground (HostPick)
+            if (found.Count == 0 || found.TrueForAll(x => x.t.Kind == "crowd")) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
+            found.Sort((a, b) => a.score.CompareTo(b.score));
+            var list = new List<Target>(); foreach (var x in found) if (x.t.Kind != "crowd" || list.Count == 0 || found.TrueForAll(y => y.t.Kind == "crowd")) list.Add(x.t);
+            return Stacked(screen, list, agents);
         }
 
         Target TargetOf(Transform t)
@@ -663,7 +680,7 @@ namespace Suborned.Play
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
                 case "act":
                     if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
-                    if (t.Kind == "person" && t.Key == "councillor") { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; }
+                    if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official") || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
                     if (t.Kind == "car" && t.Key == "getaway") { var i = I("extract", "", "", "Vale into the car"); i.Time = "now"; i.Outcome = "win"; return i; }
                     return null;
                 case "takedown": return TakedownIntent(slot, t, Way);
@@ -809,14 +826,21 @@ namespace Suborned.Play
                             if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then"; v.WalkS = aw.Seconds; }
                             Words(v, t);
                             var lk = Locked((OpId)k, v, t);
-                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.why });
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.code is "vale-not-at-car" or "already-heard" or "already-watched" or "needs-routine" ? ShortOf(v.Order, lk) ?? lk.why : lk.why }); // Take too early: when (Sky, route B)
                         }
                     }
                     foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
+                // Sky, route B ("couldn't get the take action to appear"): Vale or his car with the Enforcer not selected: his Take, greyed, says who does it
+                if (!Selected[(int)OpId.Enforcer] && ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official")) && Verb(OpId.Enforcer, 0, t) is Intent tk)
+                {
+                    Words(tk, t); var only = new Answer { ok = false, code = "only-enforcer", why = "Enforcer only", m = -1, cm = -1, tick = -1, usd = -1 };
+                    pn.Rows.Add(new PanelRow { By = OpId.Enforcer, Slot = 0, I = tk, Verb = tk.Name, Lock = only, Reason = only.why, Available = false, Unlock = $"Select the Enforcer ({AgentKeyLabel((int)OpId.Enforcer)})." });
+                }
                 if (pn.Rows.Count == 0) pn.Note = WhoCan(t, order);
                 KeyRows(pn); Before(pn);
+                int ti = pn.Rows.FindIndex(r => r.I.Order?.Do == "take" && r.Available); if (ti > 0) { var tr = pn.Rows[ti]; pn.Rows.RemoveAt(ti); pn.Rows.Insert(0, tr); } // Take Vale tops the panel (Sky, route B), above a takedown
             });
             Panel = pn; PanelHover = -1; views.ShowPath(null);
         }
@@ -884,14 +908,11 @@ namespace Suborned.Play
             var yes = new Answer { ok = true, code = "", why = "" };
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.Busy != null) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
+            if (o.Do is "watch" or "listen") { var sq = g.ScoutQuery(o.Do, o.Target); if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
             switch (o.Do)
             {
                 case "watch" when Game.WatcherKind(o.Target) is "camera" or "patrol":
-                    {
-                        var k = g.Known(o.Target);
-                        if (k != null && k.Sight && (k.Routine || k.RoutineNeedsS == 0)) return No("watcher-known", "the cell knows its sight already");
-                        return g.ConeFan(o.Target) != null ? yes : No("watcher-away", "not out on the street");
-                    }
+                    return g.ConeFan(o.Target) != null ? yes : No("watcher-away", "not out on the street");
                 case "watch": case "listen": return g.PersonPos(g.PersonByRole(o.Target)).HasValue ? yes : No("person-away", "not out on the street");
                 case "turn":
                     {

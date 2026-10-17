@@ -1,0 +1,32 @@
+2.4 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+3.1 pressed E: yaw 120 heading 1
+3.1 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+3.2 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+3.2 alt+middle down: drag True peeking False
+3.3 dragged 200 px: yaw 176.7
+3.9 released: yaw 210 heading 2
+4.0 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+4.0 set a zoom 14
+4.1 a yaw 30: queued · yaw 30 fadePoints 3 reached 11 | op/scout: drawn off screen (-0.42, 1.39) | op/fixer: drawn off screen (-0.45, 1.33) | op/tech: drawn off screen (0.44, 1.20) | op/enforcer: drawn on screen (0.52, 0.54) | waitress: drawn off screen (-0.21, 1.72) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (0.45, 7.65) | vale known (-160.00, 0.18, -281.75) seen False
+4.3 a yaw 120: queued · yaw 120 fadePoints 2 reached 20 | op/scout: drawn off screen (-0.42, -0.33) | op/fixer: drawn off screen (-0.37, -0.36) | op/tech: drawn off screen (-0.22, 0.47) | op/enforcer: drawn on screen (0.49, 0.55) | waitress: drawn off screen (-0.78, -0.13) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (-7.16, 0.47) | vale known (-160.00, 0.18, -281.75) seen False
+4.5 a yaw 210: queued · yaw 210 fadePoints 2 reached 46 | op/scout: drawn off screen (1.42, -0.33) | op/fixer: drawn off screen (1.45, -0.28) | op/tech: drawn off screen (0.56, -0.15) | op/enforcer: drawn on screen (0.48, 0.51) | waitress: drawn off screen (1.21, -0.66) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (0.55, -6.60) | vale known (-160.00, 0.18, -281.75) seen False
+4.6 a yaw 300: queued · yaw 300 fadePoints 2 reached 11 | op/scout: drawn off screen (1.42, 1.39) | op/fixer: drawn off screen (1.37, 1.42) | op/tech: drawn off screen (1.22, 0.59) | op/enforcer: drawn on screen (0.51, 0.51) | waitress: drawn off screen (1.78, 1.19) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (8.16, 0.57) | vale known (-160.00, 0.18, -281.75) seen False
+4.8 act yaw 30: picked 2 hover guard intent Knock out the guard · queued
+5.0 act yaw 120: picked 2 hover guard intent Knock out the guard · queued
+5.2 act yaw 210: picked 2 hover guard intent Knock out the guard · queued
+5.4 act yaw 300: picked 2 hover guard intent Knock out the guard · queued
+5.6 set b zoom 18.5
+5.6 b yaw 30: queued · yaw 30 fadePoints 2 reached 15 | op/scout: drawn on screen (0.13, 0.73) | op/fixer: drawn on screen (0.11, 0.69) | op/tech: drawn on screen (0.78, 0.59) | op/enforcer: drawn on screen (0.85, 0.09) | waitress: drawn on screen (0.29, 0.98) | guard: drawn on screen (0.83, 0.08) | councillor: not drawn off screen (0.79, 5.47) | vale known (-160.00, 0.18, -281.75) seen False
+5.8 b yaw 120: queued · yaw 120 fadePoints 6 reached 57 | op/scout: drawn on screen (0.28, 0.18) | op/fixer: drawn on screen (0.32, 0.16) | op/tech: drawn on screen (0.43, 0.79) | op/enforcer: drawn on screen (0.97, 0.85) | waitress: drawn on screen (0.01, 0.33) | guard: drawn on screen (0.98, 0.83) | councillor: not drawn off screen (-4.82, 0.79) | vale known (-160.00, 0.18, -281.75) seen False
+6.0 b yaw 210: queued · yaw 210 fadePoints 6 reached 80 | op/scout: drawn on screen (0.87, 0.31) | op/fixer: drawn on screen (0.89, 0.35) | op/tech: drawn on screen (0.22, 0.46) | op/enforcer: drawn on screen (0.15, 0.95) | waitress: drawn on screen (0.71, 0.06) | guard: drawn on screen (0.17, 0.96) | councillor: not drawn off screen (0.21, -4.43) | vale known (-160.00, 0.18, -281.75) seen False
+6.2 b yaw 300: queued · yaw 300 fadePoints 6 reached 57 | op/scout: drawn on screen (0.72, 0.86) | op/fixer: drawn on screen (0.68, 0.88) | op/tech: drawn on screen (0.57, 0.26) | op/enforcer: drawn on screen (0.03, 0.20) | waitress: drawn on screen (0.99, 0.71) | guard: drawn on screen (0.02, 0.21) | councillor: not drawn off screen (5.82, 0.25) | vale known (-160.00, 0.18, -281.75) seen False
+6.4 set a zoom 14
+6.4 cameos yaw 120: queued
+6.6 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+6.6 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+7.3 pressed Q: yaw 300 heading 3
+7.3 enter row 0 · tick 1327 2:12 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+7.9 pressed Q: yaw 210 heading 2
+8.6 finish row 0 · tick 2182 3:38 over True ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' panel - enforcer  inside False vale Car alert 1 busy False
+8.6 ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' yaw 210 session /Users/sky/Projects/suborned/out/play/handover-20261018-004933.script.json
+8.6 done

@@ -12,7 +12,8 @@ namespace Suborned.Play
     /// window of 80% of it with `-windowed`. The HUD's scale is HudToolkit.CrispScale's whole-number rule (round(height / 1080), at least 1),
     /// so @2x art lands on whole pixels at native Retina. Frames follow the display (vSync 1) unless `-novsync`. The host opens on the briefing (Begin). Flags for the proof (`bun run game` checks):
     /// `-runScenarios &lt;out.json&gt;` plays every scenario against headless.json and quits (SimCheck, the Editor's check); `-gameProof &lt;dir&gt;`
-    /// shoots the briefing, play and the pause menu (with their HUD layers, for the budget), samples frame times at play zoom, writes
+    /// shoots the briefing, play and the pause menu (with their HUD layers, for the budget), samples frame times at play zoom (and at each of
+    /// the four yaws the view turns to, brief 016), writes
     /// proof.json and quits through the menu's Quit. Nothing runs in the Editor.</summary>
     public static class GameBoot
     {
@@ -74,7 +75,19 @@ namespace Suborned.Play
             while (Time.realtimeSinceStartup - s0 < 10f) { yield return null; dts.Add(Time.unscaledDeltaTime * 1000f); }
             dts.Sort(); float mean = dts.Average(), p95 = dts[(int)(dts.Count * 0.95f)], p99 = dts[(int)(dts.Count * 0.99f)];
             int slow = dts.Count(d => d > 1000f / 60f * 1.2f);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}}}";
+            // brief 016: the same at each of the four yaws (the view turned with the host's own snap; 1 s to settle, 6 s sampled each)
+            var byYaw = new List<string>();
+            for (int k = 0; k < 4; k++)
+            {
+                h.TurnSnap(k); yield return new WaitForSecondsRealtime(1f);
+                var ys = new List<float>(); float y0 = Time.realtimeSinceStartup;
+                while (Time.realtimeSinceStartup - y0 < 6f) { yield return null; ys.Add(Time.unscaledDeltaTime * 1000f); }
+                ys.Sort(); float ym = ys.Average();
+                byYaw.Add($"{{\"yaw\": {F(h.Yaw)}, \"frames\": {ys.Count}, \"meanMs\": {F(ym)}, \"fps\": {F(1000f / ym)}, \"p95Ms\": {F(ys[(int)(ys.Count * 0.95f)])}, \"p99Ms\": {F(ys[(int)(ys.Count * 0.99f)])}, \"over20msFrames\": {ys.Count(d => d > 1000f / 60f * 1.2f)}}}");
+                log.Add($"yaw {h.Yaw:0}: {1000f / ym:0.#} fps mean");
+            }
+            h.TurnSnap(0);
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}]}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");

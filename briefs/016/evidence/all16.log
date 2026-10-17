@@ -1,0 +1,147 @@
+2.7 == route G turned
+2.8 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+3.5 pressed E: yaw 120 heading 1
+3.5 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+3.5 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+3.6 alt+middle down: drag True peeking False
+3.7 dragged 200 px: yaw 176.7
+4.3 released: yaw 210 heading 2
+4.5 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+4.5 set a zoom 14
+4.5 a yaw 30: queued · yaw 30 fadePoints 3 reached 11 | op/scout: drawn off screen (-0.42, 1.39) | op/fixer: drawn off screen (-0.45, 1.33) | op/tech: drawn off screen (0.44, 1.20) | op/enforcer: drawn on screen (0.52, 0.54) | waitress: drawn off screen (-0.21, 1.72) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (0.45, 7.65) | vale known (-160.00, 0.18, -281.75) seen False
+4.7 a yaw 120: queued · yaw 120 fadePoints 2 reached 20 | op/scout: drawn off screen (-0.42, -0.33) | op/fixer: drawn off screen (-0.37, -0.36) | op/tech: drawn off screen (-0.22, 0.47) | op/enforcer: drawn on screen (0.49, 0.55) | waitress: drawn off screen (-0.78, -0.13) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (-7.16, 0.47) | vale known (-160.00, 0.18, -281.75) seen False
+4.9 a yaw 210: queued · yaw 210 fadePoints 2 reached 46 | op/scout: drawn off screen (1.42, -0.33) | op/fixer: drawn off screen (1.45, -0.28) | op/tech: drawn off screen (0.56, -0.15) | op/enforcer: drawn on screen (0.48, 0.51) | waitress: drawn off screen (1.21, -0.66) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (0.55, -6.60) | vale known (-160.00, 0.18, -281.75) seen False
+5.0 a yaw 300: queued · yaw 300 fadePoints 2 reached 11 | op/scout: drawn off screen (1.42, 1.39) | op/fixer: drawn off screen (1.37, 1.42) | op/tech: drawn off screen (1.22, 0.59) | op/enforcer: drawn on screen (0.51, 0.51) | waitress: drawn off screen (1.78, 1.19) | guard: drawn on screen (0.50, 0.53) | councillor: not drawn off screen (8.16, 0.57) | vale known (-160.00, 0.18, -281.75) seen False
+5.2 act yaw 30: picked 2 hover guard intent Knock out the guard · queued
+5.5 act yaw 120: picked 2 hover guard intent Knock out the guard · queued
+5.6 act yaw 210: picked 2 hover guard intent Knock out the guard · queued
+5.8 act yaw 300: picked 2 hover guard intent Knock out the guard · queued
+6.0 set b zoom 18.5
+6.0 b yaw 30: queued · yaw 30 fadePoints 2 reached 15 | op/scout: drawn on screen (0.13, 0.73) | op/fixer: drawn on screen (0.11, 0.69) | op/tech: drawn on screen (0.78, 0.59) | op/enforcer: drawn on screen (0.85, 0.09) | waitress: drawn on screen (0.29, 0.98) | guard: drawn on screen (0.83, 0.08) | councillor: not drawn off screen (0.79, 5.47) | vale known (-160.00, 0.18, -281.75) seen False
+6.3 b yaw 120: queued · yaw 120 fadePoints 6 reached 57 | op/scout: drawn on screen (0.28, 0.18) | op/fixer: drawn on screen (0.32, 0.16) | op/tech: drawn on screen (0.43, 0.79) | op/enforcer: drawn on screen (0.97, 0.85) | waitress: drawn on screen (0.01, 0.33) | guard: drawn on screen (0.98, 0.83) | councillor: not drawn off screen (-4.82, 0.79) | vale known (-160.00, 0.18, -281.75) seen False
+6.5 b yaw 210: queued · yaw 210 fadePoints 6 reached 80 | op/scout: drawn on screen (0.87, 0.31) | op/fixer: drawn on screen (0.89, 0.35) | op/tech: drawn on screen (0.22, 0.46) | op/enforcer: drawn on screen (0.15, 0.95) | waitress: drawn on screen (0.71, 0.06) | guard: drawn on screen (0.17, 0.96) | councillor: not drawn off screen (0.21, -4.43) | vale known (-160.00, 0.18, -281.75) seen False
+6.7 b yaw 300: queued · yaw 300 fadePoints 6 reached 57 | op/scout: drawn on screen (0.72, 0.86) | op/fixer: drawn on screen (0.68, 0.88) | op/tech: drawn on screen (0.57, 0.26) | op/enforcer: drawn on screen (0.03, 0.20) | waitress: drawn on screen (0.99, 0.71) | guard: drawn on screen (0.02, 0.21) | councillor: not drawn off screen (5.82, 0.25) | vale known (-160.00, 0.18, -281.75) seen False
+6.9 set a zoom 14
+6.9 cameos yaw 120: queued
+7.1 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+7.1 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+7.7 pressed Q: yaw 300 heading 3
+7.7 enter row 0 · tick 1327 2:12 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+8.4 pressed Q: yaw 210 heading 2
+9.0 finish row 0 · tick 2182 3:38 over True ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' panel - enforcer  inside False vale Car alert 1 busy False
+9.0 ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' yaw 210 session /Users/sky/Projects/suborned/out/play/handover-20261018-013942.script.json
+9.0 done
+9.0 == vale
+9.1 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+9.1 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+9.2 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+9.3 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+9.3 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+9.3 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+9.3 door marked: state go eye  enter available True tick 1267 objective take hint H13
+9.4 01-door-clear-marker: queued · audit clean
+9.6 tech gone: door state go eye  loop True tick 1269
+9.6 door marker clicked: pending  busy enter picked -1 objective bring · tick 1269 2:06 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+9.6 inside True progress 394 objective bring · tick 1419 2:21 over False ending '' panel - enforcer enter inside True vale Office alert 1 busy False
+9.6 02-inside-timer: queued · audit clean
+10.1 out with Vale: extract available True plate 1 'Vale into the car' objective carry hint H13 · tick 1649 2:44 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+10.1 03-out-with-vale-car-marker: queued · audit clean
+10.8 panic · tick 1963 3:16 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+10.9 car marker clicked: pending extract · tick 2044 3:24 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+11.4 ending 'Success at 3:38.4 · final 40a3516487ef · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-013948.script.json
+11.4 04-success: queued · audit clean
+11.6 done
+11.6 == pick
+11.8 real cursor 20 px off the camera: hover camera/entrance name 'Camera'
+11.8 01-hover-entrance-camera: queued · audit clean
+12.2 tech loop marks: cabinet/cabinet, camera/entrance, camera/mast-314, camera/pickup
+12.2 02-target-tech-loop: queued · audit clean
+12.4 loop marker cabinet/cabinet clicked: orders 4->5 pending 'loop' (was '')
+12.4 scout watch marks: person/guard, patrol/patrol, camera/entrance, camera/pickup, person/driver, person/waitress, camera/mast-314
+12.5 03-target-scout-watch: queued · audit clean
+12.7 watch marker person/guard clicked: orders 6->7 pending 'watch' (was '')
+12.7 reroute marker cabinet/cabinet clicked: orders 10->11 pending '' (was '')
+12.9 tab focus person/guard hover guard · marks person/guard, person/driver, person/waitress
+12.9 04-takedown-tab-focus: queued · audit clean
+13.2 takedown marker person/guard clicked: orders 11->12 pending 'takedown' (was '')
+13.2 enter row 0 · tick 1327 2:12 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+13.8 finish row 0 · tick 2182 3:38 over True ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' panel - enforcer  inside False vale Car alert 1 busy False
+13.8 ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-013951.script.json
+13.8 done
+13.8 == plate
+13.9 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+13.9 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+13.9 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+14.1 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+14.1 01-open: queued · audit clean
+14.4 02-folded: queued · audit clean
+14.7 2 pressed folded: picked 1 target mode True marks person/guard
+14.7 03-folded-2-pressed: queued · audit clean
+14.9 done
+14.9 == route B
+15.0 watch marker person/driver clicked: orders 3->4 pending 'watch' (was '')
+15.0 pay marker person/driver clicked: orders 6->7 pending '' (was '')
+15.1 listen marker person/driver clicked: orders 7->8 pending 'listen' (was '')
+15.1 mislead marker rivals/rivals clicked: orders 11->12 pending '' (was '')
+15.2 driver turned True · tick 2340 3:54 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+15.4 3600 vale Leaving: panel rows Enforcer Kill Vale ok | Enforcer Take Vale Vale not out · 6:10
+15.4 route-b-00-take-too-early: queued · audit clean
+15.8 at the car: vale Pickup tick 3700 objective take hint H16
+15.9 route-b-01-vale-at-car: queued · audit clean
+16.2 hover at Vale: person/councillor 'Vale' stack 4 at 0
+16.2 route-b-02-hover-vale: queued · audit clean
+16.4 hover at the driver: person/councillor 'Vale' stack 4
+16.5 scout selected, right click Vale: Scout Watch Vale ok | Scout Listen to Vale Watch first | Enforcer Take Vale Enforcer only
+16.5 route-b-03-enforcer-only: queued · audit clean
+16.7 enforcer, right click the driver: Enforcer Take Vale ok | Enforcer Kill Vale ok
+16.8 enforcer, right click Vale: Enforcer Take Vale ok | Enforcer Kill Vale ok
+16.8 route-b-04-panel-take: queued · audit clean
+17.0 take row 0 · tick 3700 6:10 over False ending '' panel - enforcer take inside False vale Taking alert 0 busy False
+17.6 taken: vale WithEnforcer tick 4080 objective carry
+17.9 route-b-05-car-marker: queued · audit clean
+18.3 car marker tick 4604 7:40 over True ending 'Success at 7:40.4 · final 8ca988597af2 · replay identical' panel - enforcer  inside False vale Car alert 0 busy False
+18.3 ending 'Success at 7:40.4 · final 8ca988597af2 · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-013954.script.json
+18.4 route-b-06-success: queued · audit clean
+18.7 done
+18.7 == heard
+18.8 listen marks before Inez's routine (none on her): 
+18.8 watch marker person/waitress clicked: orders 0->1 pending 'watch' (was '')
+19.2 listen 1 marker person/waitress clicked: orders 2->3 pending 'listen' (was '')
+19.8 listened: tick 774 orders ({"tick":20,"op":"scout","do":"move","to":[-519,-3027]}, True, , ) | ({"tick":132,"op":"scout","do":"watch","target":"waitress"}, True, , ) | ({"tick":332,"op":"scout","do":"move","to":[-811,-2955]}, True, , ) | ({"tick":354,"op":"scout","do":"listen","target":"waitress"}, True, , )
+19.8 listen marks now: 
+19.9 second listen on Inez: Scout Watch Inez Watched | Scout Listen to Inez Heard
+19.9 05-listen-heard: queued · audit clean
+20.3 heard done
+20.3 == door unknown
+20.5 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+20.5 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+20.5 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+20.6 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+20.6 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+20.6 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+22.2 door state unk eye  patrol away until 2354 tick 2354 hint H14
+22.3 01b-door-unknown-hover: queued · audit clean
+22.4 done
+22.4 == door seen
+22.7 setup reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+22.7 door state seen eye guard marked True tick 1204
+22.7 01c-door-seen: queued · audit clean
+22.8 == audits
+23.1 yaw 30 rest: clean
+23.1 yaw 30 price: clean
+23.1 yaw 30 stress: clean
+23.2 yaw 120 rest: clean
+23.2 yaw 120 price: clean
+23.2 yaw 120 stress: clean
+23.2 yaw 210 rest: clean
+23.2 yaw 210 price: clean
+23.3 yaw 210 stress: clean
+23.3 yaw 300 rest: clean
+23.3 yaw 300 price: clean
+23.3 yaw 300 stress: clean
+23.3 done
+23.3 == hint
+23.4 first H1 · watch row 0 · now H1 'The door has a guard. The Scout can Watch the people on the café terrace.' turned False · tick 260 0:26 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+23.7 hint H13
+30.7 h13: queued · audit clean
+31.0 ALL DONE

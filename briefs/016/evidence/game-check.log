@@ -1,0 +1,2 @@
+game: scenarios 137/137 match headless, passed true (Mono, DLL f1934a759792); exit 0
+game: proof ok, 6016x3384 FullScreenWindow, HUD x3, 147.209 fps mean (p99 7.184 ms); by yaw 30° 147.463 fps (p99 7.113 ms), 120° 142.366 fps (p99 7.519 ms), 210° 154.353 fps (p99 6.65 ms), 300° 168.874 fps (p99 6.09 ms); exit 0

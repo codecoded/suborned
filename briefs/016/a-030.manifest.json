@@ -1,0 +1,17 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 347, "y": 282, "w": 22, "h": 22, "text": "plate fold tab"},
+  {"kind": "speech", "x": 644, "y": -332, "w": 220, "h": 25, "text": "It took the orders. It always does."},
+  {"kind": "speech", "x": -886, "y": 128, "w": 225, "h": 25, "text": "New orders received. Proceeding."},
+  {"kind": "image", "x": 850, "y": 558, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 850, "y": 471, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1257, "y": 1091, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": 777, "y": 14, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

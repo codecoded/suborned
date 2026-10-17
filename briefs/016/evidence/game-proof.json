@@ -1,0 +1,11 @@
+{
+ "schema": "suborned.game-proof/1",
+ "status": "ok",
+ "unity": "6000.6.2f1",
+ "product": "The Suborned",
+ "screen": "6016x3384",
+ "mode": "FullScreenWindow",
+ "hudScale": 3,
+ "frames": {"seconds": 10, "frames": 1467, "meanMs": 6.822, "fps": 146.591, "p95Ms": 6.936, "p99Ms": 7.152, "over20msFrames": 0, "vSyncCount": 0, "targetFrameRate": -1, "zoom": 14, "byYaw": [{"yaw": 30, "frames": 881, "meanMs": 6.813, "fps": 146.774, "p95Ms": 6.889, "p99Ms": 7.114, "over20msFrames": 0}, {"yaw": 120, "frames": 860, "meanMs": 6.981, "fps": 143.241, "p95Ms": 7.046, "p99Ms": 7.266, "over20msFrames": 0}, {"yaw": 210, "frames": 929, "meanMs": 6.461, "fps": 154.785, "p95Ms": 6.55, "p99Ms": 6.778, "over20msFrames": 0}, {"yaw": 300, "frames": 1020, "meanMs": 5.888, "fps": 169.842, "p95Ms": 5.948, "p99Ms": 6.133, "over20msFrames": 0}]},
+ "log": ["briefing up: True, modal Briefing, screen 6016x3384 FullScreenWindow, HUD scale 3", "briefing: queued", "rendered: True", "play: modal None, paused False, tick 40, zoom 14", "play: queued", "yaw 30: 146.8 fps mean", "yaw 120: 143.2 fps mean", "yaw 210: 154.8 fps mean", "yaw 300: 169.8 fps mean", "menu: open True, modal Menu, paused True", "menu: queued"]
+}

@@ -12,8 +12,10 @@ const tsc = Bun.spawn(['bun', 'run', 'typecheck'], { cwd: root, stdout: 'pipe', 
 const tscOut = Promise.all([new Response(tsc.stdout).text(), new Response(tsc.stderr).text(), tsc.exited]);
 
 // HUD budget (brief 014, tools/hud-budget): every committed 1x play shot (briefs/014/play and its folders, each shot with its .hud.png mask and .manifest.json) must be within budget.
-// Left out: polish/ (2x crops and history, reading surfaces) and before/ (an old capture with no mask).
-const PLAY = resolve(root, 'briefs/014/play'), PLAY_SKIP = new Set(['polish', 'before']);
+// Left out: polish/ (2x crops and history, reading surfaces), before/ (an old capture with no mask) and game/ (the built app's proof
+// evidence: macOS captures with no HUD layer, and proof shots at the display's native size and whole-number HUD scale, which the 1x
+// budget's line and text sizes do not read; `bun run game:check` proves the app).
+const PLAY = resolve(root, 'briefs/014/play'), PLAY_SKIP = new Set(['polish', 'before', 'game']);
 const playDirs = (d: string): string[] => [d, ...readdirSync(d).filter(n => !PLAY_SKIP.has(n) && statSync(resolve(d, n)).isDirectory()).flatMap(n => playDirs(resolve(d, n)))];
 const budgetJobs = existsSync(PLAY) ? playDirs(PLAY).filter(d => readdirSync(d).some(f => f.endsWith('.png'))).map(d => { const p = Bun.spawn(['bun', 'tools/hud-budget/cli.ts', d], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); return Promise.all([Promise.resolve(d), new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited]); }) : [];
 

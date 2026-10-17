@@ -77,7 +77,7 @@ namespace Suborned.Play
         public readonly Dictionary<string, string> Pops = new(), CancelShort = new(), AltOutcome = new(), EndFail = new(), TimelineShort = new();
         public readonly Dictionary<string, List<string>> PriceVerbs = new();
         public readonly List<string> PriceOrder = new();
-        public string ObjTake = "Take [Vale] alive.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
+        public string ObjTake = "Take [Vale] alive.", ObjBring = "Bring [Vale] out.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
         /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
         public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
         public float ObjShowS = 6, FeedS = 4, FeedDedupeS = 10, BubbleS = 3, HintShowS = 6, HintReturnS = 20; public int FeedMax = 2, BubbleMax = 2, CityBeats = 3, HintMaxShows = 2;
@@ -198,7 +198,7 @@ namespace Suborned.Play
             if (l.Opt("pop") is JNode p) foreach (var kv in p.Entries) Pops[kv.Key] = kv.Value.Str();
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
             if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
-            if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjShowS = F(ob, "showSeconds", ObjShowS); }
+            if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjShowS = F(ob, "showSeconds", ObjShowS); } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it
             if (l.Opt("briefing") is JNode br) BriefGoal = S(br, "goal") ?? BriefGoal;
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }

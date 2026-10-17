@@ -1,0 +1,9 @@
+58.4 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+58.4 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+58.5 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+58.6 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+58.6 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+58.6 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+60.2 door state unk eye  patrol away until 2354 tick 2354 hint H14
+60.3 01b-door-unknown-hover: queued · audit clean
+60.4 done

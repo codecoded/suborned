@@ -21,7 +21,11 @@ namespace Suborned
     /// other camera (a review eye, the Scene view) is cut. Orthographic cameras only: the test assumes parallel view rays.
     /// One camera at a time holds the reach (the first enabled one); any other fading camera, and every render outside Play
     /// Mode, turns the cutting variant on for the whole of its render instead: the same picture, at a cost that only matters
-    /// in play.</summary>
+    /// in play.
+    ///
+    /// Brief 016 (the view turns, so a tower can stand in front of anything): besides the focus, up to MaxPoints points keep their own
+    /// smaller discs clear by the same rule, each at its own level (SetPoints: the host gives the agents, the action target, the cursor's
+    /// ground point and the key people every frame). The reach takes what any disc can reach.</summary>
     [DefaultExecutionOrder(1000)] // after whatever moves the camera and sets the focus this frame
     [ExecuteAlways, RequireComponent(typeof(Camera))]
     public sealed class ArchitectureFade : MonoBehaviour
@@ -53,11 +57,30 @@ namespace Suborned
         [Range(0f, 1f)] public float ghostShadow = 0.4f;
         [Tooltip("Off (as built since 008 B6): only the fade cells the cut reaches draw with the discarding variant. On: a reached cell takes its whole 64 m batch tile with it, as before B6 (the perf harness's as-was reach).")]
         public bool wholeTiles;
+        [Tooltip("Kit pieces (name prefixes) drawn whole inside the discs though tagged: free-standing props, so only building meshes fade (Glyph, brief 016 review §2). Play Mode only.")]
+        public string[] wholeProps = { "DK_Cypress", "DK_Parasol" };
         [Tooltip("Seconds to ease in or out when `fade` changes (unscaled time: it runs during a tactical pause).")]
         public float fadeTime = 0.25f;
 
         static readonly int FocusId = Shader.PropertyToID("_DKCutFocus"), ViewId = Shader.PropertyToID("_DKCutView"),
-            ShapeId = Shader.PropertyToID("_DKCutShape"), BackId = Shader.PropertyToID("_DKCutBack");
+            ShapeId = Shader.PropertyToID("_DKCutShape"), BackId = Shader.PropertyToID("_DKCutBack"), PointsId = Shader.PropertyToID("_DKCutPoints");
+
+        /// <summary>DK_CUT_POINTS in DK_Cutaway.hlsl: the shader's array is always this long.</summary>
+        public const int MaxPoints = 10;
+        readonly Vector4[] points = new Vector4[MaxPoints]; // xyz world, w disc radius (m)
+        int pointCount;
+        readonly FadeCut[] cuts = new FadeCut[MaxPoints + 1];
+
+        /// <summary>The points kept clear besides the focus this frame: xyz world (its height is its level), w the disc radius (m). Past
+        /// MaxPoints are dropped, so give them in order of need.</summary>
+        public void SetPoints(System.Collections.Generic.IReadOnlyList<Vector4> list)
+        {
+            pointCount = 0;
+            if (list != null) for (int i = 0; i < list.Count && pointCount < MaxPoints; i++) if (list[i].w > 0f) points[pointCount++] = list[i];
+            for (int i = pointCount; i < MaxPoints; i++) points[i] = Vector4.zero;
+        }
+        /// <summary>The points kept clear now.</summary>
+        public int PointCount => pointCount;
 
         static ArchitectureFade holder; // the camera whose reach picks the cutting materials
 
@@ -100,8 +123,14 @@ namespace Suborned
             if (!Application.isPlaying) return;
             if (!holder && cam.enabled) holder = this;
             if (holder != this) return;
-            reach ??= new FadeReach();
-            if (cam.enabled && Cuts(out var cut)) reach.Set(cut, wholeTiles); else reach.Clear();
+            reach ??= new FadeReach(wholeProps);
+            if (cam.enabled && Cuts(out var cut))
+            {
+                cuts[0] = cut;
+                for (int i = 0; i < pointCount; i++) { var q = points[i]; cuts[i + 1] = cut; cuts[i + 1].Focus = q; cuts[i + 1].FloorY = q.y + (cut.FloorY - cut.Focus.y); cuts[i + 1].Radius = q.w; }
+                reach.Set(cuts, pointCount + 1, wholeTiles);
+            }
+            else reach.Clear();
         }
 
         void Begin(ScriptableRenderContext _, Camera c)
@@ -114,7 +143,8 @@ namespace Suborned
             Shader.SetGlobalVector(FocusId, new Vector4(cut.Focus.x, cut.Focus.y, cut.Focus.z, cut.Radius));
             Shader.SetGlobalVector(ViewId, new Vector4(fwd.x, fwd.y, fwd.z, cut.FloorY));
             Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, ghost, level), column ? 1f : 0f, shadows ? 1f : 0f));
-            Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), 0f));
+            Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), pointCount));
+            Shader.SetGlobalVectorArray(PointsId, points);
             if (reach == null) Shader.EnableKeyword(FadeReach.Keyword); // no reach: every tagged shader takes its cutting variant for this render
         }
 

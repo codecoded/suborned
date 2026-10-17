@@ -185,7 +185,10 @@ namespace Suborned.Play
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            return s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
+            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
+            // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
+            if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
+            return s;
         }
 
         /// <summary>A pop the host builds itself (less.pop by key), with its long line kept for Alt.</summary>

@@ -14,7 +14,7 @@ bun run game          # builds out/build/play/The Suborned.app if it is missing 
 bun run game -- --windowed
 ```
 
-The Handover opens on its briefing. Esc opens the pause menu (Resume, Restart mission, Quit). `bun run game:build` forces a build; `bun run game:check` proves the built app (all scenarios against headless, then the briefing, play and menu shots with frame times, into `out/build/play/proof/`). Building needs Unity 6000.6.2f1. With Unity closed the build runs in batch mode. With the project open in Unity it builds through the Editor (menu Suborned/Build Game), and refuses while Unity is in Play.
+The Handover opens on its briefing. Esc opens the pause menu (Resume, Restart mission, Quit). `bun run game:build` forces a build; `bun run game:check` proves the built app (all scenarios against headless, then the briefing, play and menu shots with frame times, into `out/build/play/proof/`). A fresh build is proved to draw before it is trusted: Unity sometimes ships a player that draws only a black screen (a second build in one Editor session), so `game:build` and `game:check` run the proof after building and, if its frame is blank, build once more on their own. Building needs Unity 6000.6.2f1. With Unity closed the build runs in batch mode. With the project open in Unity it builds through the Editor (menu Suborned/Build Game), and refuses while Unity is in Play.
 
 On another Mac (the MacBook Air):
 

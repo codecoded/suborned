@@ -88,6 +88,7 @@ namespace Suborned.Play
             for (int i = 0; i < popEls.Count; i++) list.Add(($"pop-{i + 1}", popEls[i].root));
             for (int i = 0; i < pipEls.Count; i++) list.Add(($"pip-{Cast[i]}", pipEls[i].root));
             for (int i = 0; i < edgeEls.Count; i++) list.Add(($"edge-{i + 1}", edgeEls[i]));
+            for (int i = 0; i < edgeCams.Count; i++) list.Add(($"edge-cameo-{i + 1}", edgeCams[i].Root));
             list.Add(("history-key", historyKey2));
             for (int i = 0; i < stashMarks.Count; i++) list.Add(($"stash-{i + 1}", stashMarks[i].Plate));
             var sb = new StringBuilder("{\n"); bool first = true;

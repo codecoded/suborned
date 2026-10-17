@@ -1,0 +1,18 @@
+19.7 start tick 120 0:12 over False ending '' panel 4 enforcer  inside False vale Office alert 0 busy False
+19.7 loop row 0 · tick 125 0:12 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+19.8 watch row 0 · tick 500 0:50 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+19.9 takedown armed reroute True · armed 2 · tick 1204 2:00 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+19.9 card tick 1204 2:00 over False ending '' panel 3 enforcer  inside False vale Office alert 0 busy False
+19.9 knockout takedown move True · tick 1224 2:02 over False ending '' panel - enforcer takedown inside False vale Office alert 0 busy False
+19.9 door open True enter available True tick 1267 objective take hint H13
+20.0 01-door-clear-marker: queued · audit clean
+20.4 door marker clicked: pending  busy enter picked -1 objective bring · tick 1267 2:06 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+20.4 inside True progress 394 objective bring · tick 1417 2:21 over False ending '' panel - enforcer enter inside True vale Office alert 1 busy False
+20.5 02-inside-timer: queued · audit clean
+20.9 out with Vale: extract available True plate 1 'Vale into the car' objective carry hint H13 · tick 1647 2:44 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+21.1 03-out-with-vale-car-marker: queued · audit clean
+21.7 panic · tick 1961 3:16 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+21.8 car marker clicked: pending extract · tick 2042 3:24 over False ending '' panel - enforcer  inside False vale WithEnforcer alert 1 busy False
+23.0 ending 'Success at 3:38.2 · final 314f79682d31 · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-010444.script.json
+23.1 04-success: queued · audit clean
+23.4 done

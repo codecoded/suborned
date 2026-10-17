@@ -161,6 +161,8 @@ namespace Suborned.Sim
             "needs-tier", "needs-reach", "needs-need-is", "needs-standing", "needs-fit", "needs-scale", "needs-trail",
             // brief 013: takedowns, bodies and stashes, the doors at lockdown
             "takedown-how", "takedown-vale", "no-body", "body-stashed", "not-carrying", "stand-at-stash", "stash-full", "body-dead", "already-restrained", "stand-beside-body", "doors-locked", "door-held",
+            // Sky 2026-10-18: a Watch or Listen that can teach nothing more is refused, free (GameOrders.ScoutTeaches, GameSight.WatchWatcher)
+            "already-heard", "already-watched",
         };
     }
 
@@ -180,5 +182,6 @@ namespace Suborned.Sim
         public int WalkS;                    // seconds the acting operative walks to stand within reach, 0 if already there
         public bool Leverage;                // Pressure on a known secret: "exposure: their secret" (Motive, motive-lovers.md §2.2)
         public SeenQuote? Seen;              // the card's "seen by" where the act is done (Preview only; rulebook sight.unknown): "?" for an unknown watcher
+        public string Refused = "";          // a Watch or Listen that can teach nothing more: already-watched or already-heard (Sky 2026-10-18), the row greyed; "" otherwise
     }
 }

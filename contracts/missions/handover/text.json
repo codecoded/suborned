@@ -390,6 +390,8 @@
   "need-met": {"line":"{who}'s need is already met. Nothing left to help with.","short":"Need met","verbs":["help"]},
   "refusal-remembered": {"line":"{who} refused this before. Try a different approach.","short":"Refused before","verbs":["ask","pay","help","pressure"]},
   "already-turned": {"line":"{who} is already ours. Help keeps them; Call puts them to work.","short":"Already ours","verbs":["ask","pay","pressure"]},
+  "already-heard": {"line":"Already heard {who}. A Listen teaches nothing more.","short":"Heard","verbs":["listen"]},
+  "already-watched": {"line":"Already watched {who}. A Watch teaches nothing more.","short":"Watched","verbs":["watch"]},
   "no-cash": {"line":"Not enough cash for the worst case ({usd}). Try a cheaper approach.","short":"Short · {usd}","verbs":["pay","help"]},
   "driver-too-late": {"line":"Too late to turn the driver: his last turn was {tick}.","short":"Too late · {tick}","verbs":["ask","pay","help","pressure"]},
   "turn-needs-approach": {"line":"Pick an approach: Ask, Pay, Help or Pressure.","short":"Pick an approach","verbs":["ask","pay","help","pressure"]},
@@ -810,7 +812,7 @@
  "hints": {
   "rules": {
    "source": "briefs/011/motive-fights.md §8 (Motive); words by Fable; each line fits Glyph's 110 characters",
-   "one": "One at a time, in priority order (H1 first).",
+   "one": "One at a time, in priority order, lowest number first (H14, H15 and H16, the end steps, are -1 to -3: they win over every other hint, H13 included, when their trigger holds; their triggers never hold together).",
    "once": "Each fires once per run, and H hides the layer for good.",
    "idle": "A hint shows only after the cell has given no order for 8 s.",
    "vanishes": "It vanishes the moment its gone-when act happens, or when its trigger stops holding.",
@@ -949,6 +951,50 @@
     "trigger": "an agent has a walk of 5 s or more still to go, is not running or carrying, and is not inside (brief 014, Latch/Sky 2026-10-16; not in Motive's table)",
     "rings": "the walk's destination",
     "goneWhen": "a run is given, or the walk ends"
+   },
+   "H13": {
+    "priority": 0,
+    "agent": "any",
+    "verb": "turn-view",
+    "target": "the view",
+    "line": "A wall hides an agent? Press Q or E and the view turns a quarter round to show them.",
+    "short": "Turn the view: Q / E.",
+    "trigger": "0:20 has passed, at the first lull in the hint line, and the view has never turned (brief 016, Latch/Sky 2026-10-17; not in Motive's table)",
+    "rings": "nothing: no noun is ringed",
+    "goneWhen": "the view turns, for good"
+   },
+   "H14": {
+    "priority": -1,
+    "agent": "enforcer",
+    "verb": "enter",
+    "target": "the public door",
+    "line": "The way is clear. The Enforcer can Enter and goes off screen. Seen on the way in, it fails.",
+    "short": "Go in by the [door].",
+    "trigger": "the door is open to the Enforcer: the guard is away from it or down, the entrance camera is looped or does not cover the door, the patrol's cone is off it, nothing holds it; Vale is in the Office; the Enforcer is outside and has no Enter order (end steps, Aster 2026-10-18; not in Motive's table)",
+    "rings": "the public door",
+    "goneWhen": "an Enter order, or the door shuts again (the guard back, the camera live, the patrol over it)"
+   },
+   "H15": {
+    "priority": -2,
+    "agent": "enforcer",
+    "verb": "extract",
+    "target": "the getaway car",
+    "line": "Vale is out. The Enforcer can put Vale into the car beside it. A fight holds the car.",
+    "short": "Put Vale in the [car].",
+    "trigger": "the Enforcer has come out with Vale (Vale is with the Enforcer) and no Extract has been given (end steps, Aster 2026-10-18; not in Motive's table)",
+    "rings": "the getaway car",
+    "goneWhen": "an Extract order"
+   },
+   "H16": {
+    "priority": -3,
+    "agent": "enforcer",
+    "verb": "take",
+    "target": "Vale at the pickup",
+    "line": "The driver is turned and Vale is at the car. The Enforcer can Take Vale there. A watching eye ruins it.",
+    "short": "Take [Vale] at the pickup.",
+    "trigger": "the driver is turned, Vale is at his car (the pickup), and the Enforcer has not taken him (route B; end steps, Aster 2026-10-18; not in Motive's table)",
+    "rings": "Vale at the pickup",
+    "goneWhen": "a Take order, or Vale leaves the pickup"
    }
   }
  },
@@ -1217,9 +1263,15 @@
    "cityBeats": 3
   },
   "objective": {
-   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, then carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:30) is on the clock pill. It never explains and it is not a hint.",
+   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:30) is on the clock pill. It never explains and it is not a hint.",
    "take": "Take [Vale] alive.",
+   "bring": "Bring [Vale] out.",
    "carry": "Get [Vale] to the [car].",
+   "steps": [
+    {"key": "take", "when": "from the start, until the Enforcer is given Enter (routes A and G) or holds Vale (route B); and again if the Enter order is cancelled before the Enforcer is in"},
+    {"key": "bring", "when": "the Enforcer has an Enter order (walking to the door, or inside) and Vale is not yet with the Enforcer: shown at the order, kept while inside, replaced on coming out"},
+    {"key": "carry", "when": "Vale is with the Enforcer (out of the Office by Enter, or taken at the pickup by Take), until Vale is in the car"}
+   ],
    "showSeconds": 6
   },
   "briefing": {

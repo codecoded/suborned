@@ -162,19 +162,36 @@ namespace Suborned
         /// <summary>Per renderer, the last Set that reached it (`frame`).</summary>
         readonly int[] now;
         int frame;
-        FadeCut last;
         bool any;
+
+        /// <summary>Tagged props drawn whole instead (wholeProps).</summary>
+        public int WholeProps { get; private set; }
+
+        static bool IsProp(MeshRenderer r, string[] prefixes)
+        {
+            if (prefixes == null || prefixes.Length == 0) return false;
+            var n = r.name.StartsWith("__LOD", System.StringComparison.Ordinal) && r.transform.parent ? r.transform.parent.name : r.name;
+            foreach (var p in prefixes) if (!string.IsNullOrEmpty(p) && n.StartsWith(p, System.StringComparison.Ordinal)) return true;
+            return false;
+        }
 
         /// <summary>Tagged renderers in the loaded scenes.</summary>
         public int Count => renderers.Length;
         /// <summary>How many of them draw with the cutting variant now.</summary>
         public int Reached { get; private set; }
 
-        public FadeReach()
+        /// <summary>wholeProps: kit pieces (by name prefix, a LOD child by its piece's name) drawn whole inside the discs although the builder
+        /// tagged them (Glyph's 016 review §2: cypresses and parasols in a disc dithered into dotted columns that no longer read as trees; only
+        /// building meshes fade). Their tag is taken off for the session (Play only: never saved).</summary>
+        public FadeReach(string[] wholeProps = null)
         {
             var tagged = new List<MeshRenderer>();
             foreach (var r in Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include))
-                if ((r.renderingLayerMask & ArchitectureFade.Layer) != 0) tagged.Add(r);
+                if ((r.renderingLayerMask & ArchitectureFade.Layer) != 0)
+                {
+                    if (IsProp(r, wholeProps)) { r.renderingLayerMask &= ~ArchitectureFade.Layer; WholeProps++; continue; }
+                    tagged.Add(r);
+                }
             renderers = tagged.ToArray();
             bounds = new Bounds[renderers.Length]; plain = new Material[renderers.Length][]; cutting = new Material[renderers.Length][]; reached = new bool[renderers.Length]; now = new int[renderers.Length];
             var shared = new Dictionary<Material, Material[]>(); // one twin array per single-material renderer kind: few
@@ -209,20 +226,39 @@ namespace Suborned
         /// <summary>Gives the cutting variant to what the cut can reach and takes it back from what it no longer can. wholeTiles:
         /// a reached fade cell takes every cell of its batch tile with it (the reach before 008 B6, for the perf harness; it walks
         /// every renderer, as the reach before B6 did).</summary>
-        public void Set(in FadeCut cut, bool wholeTiles = false)
+        public void Set(in FadeCut cut, bool wholeTiles = false) { one[0] = cut; Set(one, 1, wholeTiles); }
+
+        readonly FadeCut[] one = new FadeCut[1];
+        FadeCut[] lastCuts = new FadeCut[1];
+        int lastCount;
+
+        /// <summary>As Set, for several discs at once (the focus and the points ArchitectureFade keeps clear, brief 016): what any of the
+        /// first `count` cuts can reach takes the cutting variant.</summary>
+        public void Set(FadeCut[] cuts, int count, bool wholeTiles = false)
         {
-            if (any && cut.Same(last) && wholeTiles == lastWhole) return;
-            last = cut; any = true; lastWhole = wholeTiles;
-            float r = cut.Radius + Margin;
-            next.Clear();
-            if (!wholeTiles) grid.Query(cut, r, next);
-            else
+            if (any && wholeTiles == lastWhole && count == lastCount)
             {
-                for (int g = 0; g < groupHit.Length; g++) groupHit[g] = FadeGrid.Reaches(groupBounds[g], cut, r); // the tile's bounds, as its one renderer had
-                for (int i = 0; i < renderers.Length; i++) if (groupHit[group[i]]) next.Add(i);
+                bool same = true; for (int c = 0; c < count && same; c++) same = cuts[c].Same(lastCuts[c]);
+                if (same) return;
             }
+            if (lastCuts.Length < count) lastCuts = new FadeCut[cuts.Length];
+            System.Array.Copy(cuts, lastCuts, count); lastCount = count; any = true; lastWhole = wholeTiles;
+            next.Clear();
             if (++frame == int.MaxValue) { System.Array.Clear(now, 0, now.Length); frame = 1; }
-            foreach (int i in next) { now[i] = frame; Mark(i, true); }
+            for (int c = 0; c < count; c++)
+            {
+                var cut = cuts[c]; float r = cut.Radius + Margin; int from = next.Count;
+                if (!wholeTiles) grid.Query(cut, r, next);
+                else
+                {
+                    for (int g = 0; g < groupHit.Length; g++) groupHit[g] = FadeGrid.Reaches(groupBounds[g], cut, r); // the tile's bounds, as its one renderer had
+                    for (int i = 0; i < renderers.Length; i++) if (groupHit[group[i]]) next.Add(i);
+                }
+                // keep each renderer once across the discs
+                int w = from; for (int k = from; k < next.Count; k++) { int i = next[k]; if (now[i] == frame) continue; now[i] = frame; next[w++] = i; }
+                next.RemoveRange(w, next.Count - w);
+            }
+            foreach (int i in next) Mark(i, true);
             foreach (int i in on) if (now[i] != frame) Mark(i, false);
             (on, next) = (next, on);
         }

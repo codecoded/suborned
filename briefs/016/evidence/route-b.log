@@ -1,0 +1,24 @@
+2.5 watch marker person/driver clicked: orders 3->4 pending 'watch' (was '')
+2.6 pay marker person/driver clicked: orders 6->7 pending '' (was '')
+2.6 listen marker person/driver clicked: orders 7->8 pending 'listen' (was '')
+2.7 mislead marker rivals/rivals clicked: orders 11->12 pending '' (was '')
+2.7 driver turned True · tick 2340 3:54 over False ending '' panel - enforcer  inside False vale Office alert 0 busy False
+3.0 3600 vale Leaving: panel rows Enforcer Kill Vale ok | Enforcer Take Vale Vale not out · 6:10
+3.0 route-b-00-take-too-early: queued · audit clean
+3.4 at the car: vale Pickup tick 3700 objective take hint H16
+3.4 route-b-01-vale-at-car: queued · audit clean
+3.7 hover at Vale: person/councillor 'Vale' stack 4 at 0
+3.7 route-b-02-hover-vale: queued · audit clean
+3.9 hover at the driver: person/councillor 'Vale' stack 4
+4.0 scout selected, right click Vale: Scout Watch Vale ok | Scout Listen to Vale ok | Enforcer Take Vale Enforcer only
+4.0 route-b-03-enforcer-only: queued · audit clean
+4.2 enforcer, right click the driver: Enforcer Take Vale ok | Enforcer Kill Vale ok
+4.3 enforcer, right click Vale: Enforcer Take Vale ok | Enforcer Kill Vale ok
+4.3 route-b-04-panel-take: queued · audit clean
+4.5 take row 0 · tick 3700 6:10 over False ending '' panel - enforcer take inside False vale Taking alert 0 busy False
+5.1 taken: vale WithEnforcer tick 4080 objective carry
+5.5 route-b-05-car-marker: queued · audit clean
+5.8 car marker tick 4604 7:40 over True ending 'Success at 7:40.4 · final 8ca988597af2 · replay identical' panel - enforcer  inside False vale Car alert 0 busy False
+5.8 ending 'Success at 7:40.4 · final 8ca988597af2 · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-010426.script.json
+5.8 route-b-06-success: queued · audit clean
+6.0 done

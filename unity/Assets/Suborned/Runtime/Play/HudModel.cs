@@ -158,7 +158,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim; VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? AtlasIcon(slots[i].Id, slots[i].Id, "") : ""; VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim; VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -407,6 +407,7 @@ namespace Suborned.Play
             "watch" or "listen" or "mislead" or "loop" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
             "act" => "enter", "extract" => "take", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
+            "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",
         };
 

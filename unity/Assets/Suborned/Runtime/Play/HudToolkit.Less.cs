@@ -173,6 +173,7 @@ namespace Suborned.Play
             // Sky: the shields and the "IIII" didn't read. The pill shows only while units are on their way: Glyph's arrive glyph, how many, how soon
             if (respPill.childCount > 0) Show(respPill[0], false);
             var ar = E(respIcons, null, w: Glyph, h: Glyph); Icon(ar, "arrive", Cream); respCome = L(respIcons, "verb-name"); respCome.style.marginLeft = 6; respCome.style.fontSize = 13;
+            var un = E(respIcons, null, w: 14, h: 14); Icon(un, "units", Cream); un.style.marginLeft = 6; un.SendToBack(); respIcons.Remove(un); respIcons.Insert(1, un); // Glyph 016 r2: what the number counts (units coming)
             var tm = E(respIcons, null, w: 14, h: 14); Icon(tm, "p_time", Cream); tm.style.marginLeft = 12; respOff = L(respIcons, "verb-name"); respOff.style.marginLeft = 5; respOff.style.fontSize = 13; respBot = respOff;
             // the going-loud card's icon row and the allies it loses (crossed)
             loudIcons = E(loud); loudIcons.style.flexDirection = FlexDirection.Row; loudIcons.style.flexWrap = Wrap.Wrap; loudIcons.style.alignItems = Align.Center; loudIcons.style.marginTop = 8;
@@ -229,6 +230,7 @@ namespace Suborned.Play
                 float WinMid(int i) => ColY + ColumnBezels[i].y * RosterScale; // the bezel's measured centre
                 float plateX = ColX + colW + 4, plateY = WinMid(a) - PlateH / 2; // brief 014: chips and the plate share one line, 4 off the column
                 verbPlate.style.left = plateX; verbPlate.style.top = plateY;
+                PlateFold(plateX, WinMid(a)); bool folded = PlateFolded;
                 for (int k = 0; k < 4; k++)
                 {
                     bool has = m.VerbHas[k]; knobs[k].style.opacity = has ? 1f : 0.28f; Show(knobIcons[k], has); Show(verbPlate.Q("badge" + k), has); // an empty knob: a quiet socket
@@ -236,12 +238,23 @@ namespace Suborned.Play
                 }
                 if (host.Picked < 0) Show(armedPlate, false); // the name plate only while a verb is armed (Glyph §1)
                 else if (m.TakedownArmed) Text(armedName, host.Text != null && host.Text.Actions.TryGetValue("takedown", out var tda) && tda.Ways.TryGetValue(m.Way, out var wy) ? wy.label : m.Way == "kill" ? "Kill" : "Knock out"); // the way, not the verb
-                if (armedPlate.style.display != DisplayStyle.None) { armedPlate.style.left = plateX + KnobX0 + 24 + m.VerbLit * 47.6f - 40; armedPlate.style.top = plateY + PlateH + 2; }
+                if (armedPlate.style.display != DisplayStyle.None)
+                {
+                    float ax = folded ? plateX : plateX + KnobX0 + 24 + m.VerbLit * 47.6f - 40, ay = folded ? WinMid(a) + StubH / 2 + 4 : plateY + PlateH + 2;
+                    float aw = float.IsNaN(armedPlate.resolvedStyle.width) ? 120 : armedPlate.resolvedStyle.width, ah = 32;
+                    for (int j = 0; j < 4; j++) // Glyph 016 r3: 6 px clear of a timer pill under it (it rises; the plate's lower rim may go under it)
+                    {
+                        var br = busy[j].root; if (br.resolvedStyle.display == DisplayStyle.None) continue;
+                        float bx2 = br.style.left.value.value, by2 = br.style.top.value.value, bw2 = br.resolvedStyle.width, bh2 = br.resolvedStyle.height; if (float.IsNaN(bw2) || float.IsNaN(bh2)) continue;
+                        if (ax < bx2 + bw2 && ax + aw > bx2 && ay < by2 + bh2 && ay + ah + 6 > by2) ay = by2 - 6 - ah;
+                    }
+                    armedPlate.style.left = ax; armedPlate.style.top = ay;
+                }
                 for (int i = 0; i < 4; i++)
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
                     bool on = (s.Busy || s.Down || s.Pace.Length > 0) && !ended; Show(r, on); if (!on) continue;
-                    float bx = i == a ? plateX + PlateW + 4 : ColX + colW + 4; r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
+                    float bx = i == a ? plateX + (folded ? StubW : PlateW) + 4 : ColX + colW + 4; r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
                     Icon(ic, s.Down ? "s_downed" : moving ? (running ? "run" : "s_moving") : s.Icon, running ? TurqLight : Cream);
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
@@ -299,6 +312,7 @@ namespace Suborned.Play
             Chip(alt, W);
             StreetLess(alt, cam);
             Pips(cam);
+            foreach (var (br, _, _) in bubbleEls) if (br.resolvedStyle.display != DisplayStyle.None) br.BringToFront(); // Glyph 016 r2 B: speech above the pins
             ClearUnderChip(alt);
             Edges(cam, W, H);
             LoudLess(alt);
@@ -332,7 +346,7 @@ namespace Suborned.Play
         {
             var t = host.Text; var g = host.Game; float now = Time.unscaledTime;
             if (t == null || m.Ended || m.BriefingOpen) { Show(goal, false); goalText = ""; return; }
-            string obj = g.Vale == ValeAt.WithEnforcer ? t.ObjCarry : t.ObjTake;
+            string obj = host.ObjectiveKey switch { "carry" => t.ObjCarry, "bring" => t.ObjBring, _ => t.ObjTake }; // Fable's steps: take, bring, carry
             if (obj != objWas) { objWas = obj; objChanged = now; }
             // the marks where a window opens: the chime (5:30) and Vale out (5:50)
             foreach (var mk in new[] { 330 * Game.Hz, 350 * Game.Hz }) if (lastTickSeen >= 0 && lastTickSeen < mk && g.Tick >= mk) markAt = now;
@@ -358,31 +372,54 @@ namespace Suborned.Play
                     line = h.Short.Replace("{who}", host.HintNow.Who.Length > 0 ? Cap1(host.Text.TargetName(host.HintNow.Who, host.HintNow.Who)) : "them");
                     string ag = h.Agent == "any" ? (host.HintNow.Portrait >= 0 ? Op.Name((OpId)host.HintNow.Portrait) : "") : h.Agent;
                     cameo = ag.Length > 0 ? $"portraits/cameo_{ag}_normal" : null; glyph = HudModel.AtlasIcon(h.Verb, h.Verb, "");
+                    if (h.Verb == "turn-view" && line.IndexOf('<') < 0 && line.LastIndexOf(':') is int ci and > 0) line = line[..ci] + ": <TurnLeft> <TurnRight>"; // Glyph 016 §3: the keys as keycaps (text.json's "Q / E" until it carries the tokens)
                 }
                 else hintQOn = true; // folded: a "?" disc at the goal line's place reopens it
             }
             host.HintLineShowing = hintAlpha > 0f;
             Show(hintQ, hintQOn && !show0(line)); if (hintQOn) hintQ.style.left = (W - 26) / 2;
-            bool show = line != null; Show(goal, show); goalText = show ? line.Replace("[", "").Replace("]", "") : "";
+            if (line != null) line = Keys(line);
+            bool show = line != null; Show(goal, show); goalText = show ? line.Replace("[", "").Replace("]", "").Replace("<", "").Replace(">", "") : "";
             goal.style.opacity = hintAlpha > 0f ? hintAlpha : 1f;
             if (!show) return;
             Show(goalCameo, cameo != null); if (cameo != null) { Bg(goalCameo, cameo); goalCameo.style.opacity = 0.75f + 0.25f * Mathf.Sin(now * 5f); }
-            Show(goalGlyph, glyph != null); if (glyph != null) Icon(goalGlyph, glyph, TurqLight);
+            Show(goalGlyph, glyph != null); if (glyph != null) { float gs = glyph == "turn_view" ? 18f : Glyph; goalGlyph.style.width = gs; goalGlyph.style.height = gs; Icon(goalGlyph, glyph, TurqLight); } // Glyph 016 §3: the turn glyph at 18 px
             if (line != goalKey)
             {
                 goalKey = line; goalWords.Clear();
                 int i = 0;
                 while (i < line.Length)
                 {
-                    int a = line.IndexOf('[', i);
+                    int a = line.IndexOfAny(new[] { '[', '<' }, i);
                     if (a < 0) { Word(goalWords, line[i..], null); break; }
                     if (a > i) Word(goalWords, line[i..a], null);
-                    int b = line.IndexOf(']', a); if (b < 0) b = line.Length;
-                    Word(goalWords, line[(a + 1)..b], Noun(line[(a + 1)..b]));
+                    bool key = line[a] == '<'; int b = line.IndexOf(key ? '>' : ']', a); if (b < 0) b = line.Length;
+                    if (key) KeyCap(goalWords, line[(a + 1)..b]); else Word(goalWords, line[(a + 1)..b], Noun(line[(a + 1)..b]));
                     i = b + 1;
                 }
             }
             goal.style.left = (W - (float.IsNaN(goal.resolvedStyle.width) ? 330 : goal.resolvedStyle.width)) / 2;
+        }
+
+        /// <summary>A line's key tokens (`&lt;TurnLeft&gt;`, a PlayAction's name) to the bound key's label (`&lt;Q&gt;`), so a remapped key shows.</summary>
+        string Keys(string line)
+        {
+            int i = 0; var sb = new System.Text.StringBuilder();
+            while (i < line.Length)
+            {
+                int a = line.IndexOf('<', i); if (a < 0) { sb.Append(line, i, line.Length - i); break; }
+                int b = line.IndexOf('>', a); if (b < 0) { sb.Append(line, i, line.Length - i); break; }
+                sb.Append(line, i, a - i); var name = line[(a + 1)..b];
+                sb.Append('<').Append(Enum.TryParse<PlayAction>(name, out var act) ? host.controls.Label(act) : name).Append('>'); i = b + 1;
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>A key in a line: the order plate's light keycap, 22 px wide (Glyph 016 §3).</summary>
+        void KeyCap(VisualElement parent, string label)
+        {
+            var kp = E(parent, "s-plate_light", w: 22, h: 19); kp.style.position = Position.Relative; kp.style.left = StyleKeyword.Auto; kp.style.top = StyleKeyword.Auto; kp.style.marginLeft = 4; kp.style.flexShrink = 0;
+            var l = L(kp, "keycap"); l.text = label; l.style.flexGrow = 1; l.style.unityTextAlign = TextAnchor.MiddleCenter;
         }
 
         static string Cap1(string s) => s.Length > 0 && s.StartsWith("the ") ? s : s.Length > 0 ? char.ToUpperInvariant(s[0]) + s[1..] : s;
@@ -395,7 +432,7 @@ namespace Suborned.Play
             if (l.Contains("rival")) return (Violet, true);
             if (l.Contains("guard") || l.Contains("patrol")) return (Amber, true);
             if (l.Contains("camera")) return (Red, false);
-            bool place = l.Contains("car") && !l.Contains("care") || l.Contains("cabinet") || l.Contains("terrace") || l.Contains("door") || l == "mark";
+            bool place = l.Contains("car") && !l.Contains("care") || l.Contains("cabinet") || l.Contains("terrace") || l.Contains("door") || l == "mark" || l == "view"; // "view": the turn hint (H13), a thing, not a person
             return (TurqLight, !place);
         }
 
@@ -404,12 +441,16 @@ namespace Suborned.Play
             if (noun.HasValue)
             {
                 var (c, person) = noun.Value;
+                if (!person && text.Trim().ToLowerInvariant() == "car") // Glyph 016 r2 C: the car's glyph, as on the knob and the ground marker (a ring read as an O)
+                { var cg = E(parent, null, w: 14, h: 14); cg.style.position = Position.Relative; cg.style.left = StyleKeyword.Auto; cg.style.top = StyleKeyword.Auto; cg.style.marginLeft = 4; cg.style.marginRight = 4; Icon(cg, "car", c); }
+                else {
                 var shape = P(null, 0, 0, 10, 10, (p, r) =>
                 {
                     if (person) { p.fillColor = c; p.BeginPath(); p.MoveTo(new Vector2(0, 1)); p.LineTo(new Vector2(10, 1)); p.LineTo(new Vector2(5, 9)); p.ClosePath(); p.Fill(); }
                     else { p.strokeColor = c; p.lineWidth = 1.8f; p.BeginPath(); p.Arc(new Vector2(5, 5), 3.8f, Deg(0), Deg(360)); p.Stroke(); }
                 });
                 shape.style.position = Position.Relative; shape.style.left = StyleKeyword.Auto; shape.style.top = StyleKeyword.Auto; shape.style.marginLeft = 4; shape.style.marginRight = 4; parent.Add(shape);
+                }
             }
             // Glyph round 2: a word's own leading space becomes a 4 px margin and a trailing one goes, so the gaps round a shape are even
             var trimmed = text.Trim(); if (trimmed.Length == 0) return;
@@ -584,7 +625,7 @@ namespace Suborned.Play
             }
             var at = RuntimePanelUtils.ScreenToPanel(root.panel, m.PanelAt);
             float hgt = sheet.resolvedStyle.height; if (float.IsNaN(hgt) || hgt <= 0) hgt = 160;
-            float left = Mathf.Clamp(at.x + 14, 14, Mathf.Max(14, W - sheetW - 14)), top = Mathf.Clamp(at.y - 14, 14, Mathf.Max(14, H - hgt - 14));
+            float left = Mathf.Clamp(at.x + 30, 14, Mathf.Max(14, W - sheetW - 14)), top = Mathf.Clamp(at.y - 4, 14, Mathf.Max(14, H - hgt - 14)); // Glyph 016 r2 H: 16 px right, 10 px down, off the target's feet
             sheet.style.left = left; sheet.style.top = top;
             bool tip = alt && hoverRow >= 0 && hoverRow < pn.Rows.Count; if (tipFor < 0) Show(sheetTip, tip);
             if (tip)
@@ -715,7 +756,7 @@ namespace Suborned.Play
 
         void StreetLess(bool alt, Camera cam)
         {
-            paints.Clear(); var g = host.Game; if (g == null || !cam) return;
+            paints.Clear(); eyesAt.Clear(); var g = host.Game; if (g == null || !cam) return;
             float px = 14f / cam.orthographicSize; float now = Time.unscaledTime;
             // the hover ring and the hint's ring at the feet; pulses where an order lands
             void Ground(Vector3 w, float d, Color c, float width, bool dashed = false)
@@ -751,6 +792,8 @@ namespace Suborned.Play
                 paints.Add(pp => { if (open) Dashed(pp, q, 15, new Color(1, 1, 1, 0.5f), 2.4f, 10); else { RingArc(pp, q, 15, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, q, 15, frac, TurqLight, 2.6f); } });
                 if (rg.ActAt.HasValue && Proj(rg.ActAt.Value + Vector3.up * 0.3f, out var aq)) { var ae = WorldEl("s-disc_light_24", 20, 20); ae.style.left = aq.x - 10; ae.style.top = aq.y - 10; var (qd, qa) = host.PendingOf(i); Icon(ae.Q("g"), HudModel.AtlasIcon(qd, qa, ""), Ink); }
             }
+            StepMarks(px, now);
+            PickMarks(now);
             MovePreview(alt, px, now);
             // destinations (Sky 2026-10-16, replacing the route line): a ring at each moving agent's destination with its number, as the scope's
             // cell discs (cream, ink numeral, the selected one ringed turquoise); never on another pin; gone on arrival. Alt: the engine's own
@@ -887,11 +930,14 @@ namespace Suborned.Play
             string glyph = state == "seen" ? "eye_open" : state == "unk" ? "eye_unk" : state == "alert" ? "p_alert" : mv.CarryS >= 0 ? "s_carrying" : "s_moving";
             float gs = Mathf.Min(25f, 25f * px); var se = WorldEl(null, gs, gs); se.style.left = q.x - gs / 2; se.style.top = q.y - gs / 2;
             var sg = se.Q("g"); sg.style.left = 0; sg.style.top = 0; sg.style.width = gs; sg.style.height = gs; Icon(sg, glyph, state == "seen" ? rim : state == "alert" ? cream : state == "unk" ? cream : TurqLight);
-            foreach (var w in mv.Unwatched) if (Proj(w, out var wq)) { EyeMark(wq, "unk", Cream); worldEls[worldUsed - 1].style.opacity = 0.6f; }
+            foreach (var w in mv.Unwatched) if (Proj(w, out var wq)) { int was = worldUsed; EyeMark(wq, "unk", Cream); if (worldUsed > was) worldEls[worldUsed - 1].style.opacity = 0.6f; }
         }
 
+        readonly List<Vector2> eyesAt = new();
         void EyeMark(Vector2 at, string state, Color rim)
         {
+            foreach (var e0 in eyesAt) if ((e0 - at).sqrMagnitude < 40f * 40f) return; // Glyph 016 r2 A: one eye a person (the takedown's, else the "?"): two icons at most
+            eyesAt.Add(at);
             // Glyph, "Eyes, revised": a flat ink-deep disc (no chrome, which read as a button), the glyph 18 px; the thin rim says whose eye
             var e = WorldEl(null, 24, 24); e.style.left = at.x - 12; e.style.top = at.y - 12; Round(e, 12); e.style.backgroundColor = new Color(0.059f, 0.153f, 0.157f, 0.94f);
             var g2 = e.Q("g"); g2.style.left = 3; g2.style.top = 3; g2.style.width = 18; g2.style.height = 18;
@@ -932,7 +978,7 @@ namespace Suborned.Play
             {
                 var r = E(marks, null, 0, 0, 26, 26, pick: true); var bd = E(r, null, 2, 2, 22, 22); var nm = L(marks, "verb-name", 0, 0); nm.AddToClassList("s-plate_dark"); nm.style.paddingLeft = 7; nm.style.paddingRight = 7; nm.style.height = 20;
                 int k = pipEls.Count; r.RegisterCallback<PointerEnterEvent>(_ => pipHover = Cast[k]); r.RegisterCallback<PointerLeaveEvent>(_ => { if (pipHover == Cast[k]) pipHover = null; });
-                r.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { FindPerson(Cast[k]); e.StopPropagation(); } });
+                r.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { FindPerson(Cast[k]); e.StopPropagation(); } else if (e.button == 1) { host.RightOnPerson(Cast[k]); e.StopPropagation(); } }); // Sky, route B: a right click on the pin is a right click on the person
                 pipEls.Add((r, bd, nm)); manifest.Add((r, "image", () => "pip " + Cast[k]));
             }
             var placed = new List<Rect>(); bool alt = host.Peeking;
@@ -953,14 +999,14 @@ namespace Suborned.Play
                 Show(r, true); r.style.left = rect.x; r.style.top = rect.y; Bg(bd, CastBadge(role));
                 float pulse = pulseAt.TryGetValue(role, out var pa) ? Time.unscaledTime - pa : 99f;
                 float s = pulse < 2f ? 1f + 0.35f * Mathf.Abs(Mathf.Sin(pulse * Mathf.PI * 2f)) : 1f; r.style.scale = new Scale(new Vector2(s, s));
-                bool named = pipHover == role || alt; Show(nm, named);
+                bool named = pipHover == role || alt || (host.Hover?.Kind == "person" && host.Hover.Key == role); Show(nm, named); // the hovered person is named by their pip's tag (no second chip)
                 if (named)
                 {
                     Text(nm, Cap1(host.Text?.TargetName(role, role) ?? role).Replace("the ", ""));
                     float tw = nm.resolvedStyle.width; if (float.IsNaN(tw) || tw < 1) tw = 60;
                     bool Free(Rect t) { foreach (var mr in OtherMarks()) if (mr.Overlaps(t)) return false; foreach (var pr in placed) if (pr != rect && pr.Overlaps(t)) return false; return true; }
                     var right = new Rect(rect.x + 28, rect.y + 3, tw, 20); var left = new Rect(rect.x - 2 - tw, rect.y + 3, tw, 20); var above = new Rect(rect.center.x - tw / 2, rect.y - 22, tw, 20);
-                    var tag = Free(right) ? right : Free(left) ? left : above; // Glyph: an eye pip covered the guard's tag ("ard")
+                    var tag = Free(above) ? above : Free(right) ? right : left; // Glyph 016 r2 A: above the pips first; an eye pip covered the guard's tag ("ard")
                     nm.style.left = tag.x; nm.style.top = tag.y; placed.Add(tag);
                 }
             }
@@ -996,21 +1042,181 @@ namespace Suborned.Play
         /// <summary>The cell has learned something of this person (Intel's "known": routine, need, temperament, turned, or a suspicion).</summary>
         bool KnownPerson(string role) { int i = Array.IndexOf(new[] { "waitress", "driver", "guard", "councillor" }, role); return i >= 0 && m.Intel[i].Known; }
 
-        // ---------------------------------------------------------------- edge pointers (Glyph §5): Vale, and units arriving
+        // ---------------------------------------------------------------- the plate folds (Sky 2026-10-18: "I am finding the control panel not much";
+        // a small arrow to collapse and show it). Remembered per profile; open for a first-time player. Folded, keys 1-4 still pick, and the stub
+        // shows the knob that fired (the armed verb while armed, else 1.2 s).
+
+        const float StubW = 38, StubH = 62; const string PlateFoldPref = "Suborned.Hud.PlateFolded"; // the stub's glyphs 4 px clear of the dark plate's rim (the audit)
+        bool? plateFolded; VisualElement plateTab, plateStub, stubIcon; int stubPicked = -1; float stubAt = -10f;
+        bool PlateFolded { get => plateFolded ??= PlayerPrefs.GetInt(PlateFoldPref, 0) == 1; set { plateFolded = value; PlayerPrefs.SetInt(PlateFoldPref, value ? 1 : 0); PlayerPrefs.Save(); } }
+        /// <summary>Fold or open the order plate (the tab or the stub; also for scripted shots).</summary>
+        public void FoldPlate(bool fold) => PlateFolded = fold;
+
+        void PlateFold(float x, float midY)
+        {
+            if (plateTab == null)
+            {
+                plateTab = E(verbPlate, "s-disc_dark_24", PlateW - 6, PlateH / 2 - 11, 22, 22, pick: true); var ch = E(plateTab, null, 5, 5, 12, 12); ch.name = "c"; Icon(ch, "chev_down", Cream); ch.style.rotate = new Rotate(new Angle(90, AngleUnit.Degree)); // points left: fold
+                plateTab.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; e.StopPropagation(); PlateFolded = true; });
+                plateStub = E(root, "s-plate_dark", 0, 0, StubW, StubH, pick: true); var so = E(plateStub, null, 13, 11, 12, 12); so.name = "c"; Icon(so, "chev_down", Cream); so.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree)); // points right: open
+                stubIcon = E(plateStub, null, 11, 30, 16, 16);
+                plateStub.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; e.StopPropagation(); PlateFolded = false; });
+                manifest.Add((plateTab, "image", () => "plate fold tab")); manifest.Add((verbPlate, "image", () => "order plate")); // knobs and their key digits: art, no running text manifest.Add((plateStub, "image", () => "plate stub"));
+            }
+            bool folded = PlateFolded; Show(verbPlate, !folded); Show(plateStub, folded);
+            if (armedPlate.resolvedStyle.display != DisplayStyle.None && armedPlate.parent != null && armedPlate.parent.IndexOf(armedPlate) != armedPlate.parent.childCount - 1) armedPlate.BringToFront(); // Glyph 016 r2 F: the armed verb's chip above the timer pills
+            if (host.Picked != stubPicked) { stubPicked = host.Picked; if (host.Picked >= 0) stubAt = Time.unscaledTime; }
+            if (!folded) return;
+            plateStub.style.left = x; plateStub.style.top = midY - StubH / 2;
+            int k = host.Picked >= 0 ? host.Picked : m.VerbLit; bool show = host.Picked >= 0 || Time.unscaledTime - stubAt < 1.2f;
+            Show(stubIcon, show && k >= 0 && k < 4 && m.VerbHas[k]); if (show && k >= 0 && k < 4) Icon(stubIcon, m.VerbIcon[k], host.Picked >= 0 ? TurqLight : Cream);
+        }
+
+        // ---------------------------------------------------------------- picking (brief 016 queue: Sky, "hard to select areas, like a camera")
+
+        VisualElement nameChip; Label nameText; readonly List<VisualElement> targetEls = new();
+        /// <summary>The hovered thing's soft rim (a cream circle round its pick anchor) and a one-word name chip over it; in target mode, a
+        /// marker over every valid target in view (the verb's glyph in a disc over a dashed ring, the hint ring's grammar; the Tab focus ringed
+        /// solid), each a click that gives the picked verb there.</summary>
+        void PickMarks(float now)
+        {
+            if (nameChip == null) { nameChip = E(marks, "s-plate_dark", 0, 0, float.NaN, float.NaN); nameChip.style.paddingLeft = 8; nameChip.style.paddingRight = 8; nameChip.style.paddingTop = 4; nameChip.style.paddingBottom = 4; nameChip.style.minHeight = 22; nameChip.style.justifyContent = Justify.Center; nameText = L(nameChip, "verb-name"); manifest.Add((nameChip, "image", () => "name chip")); } // Glyph 016 r3: 8 px sideways, 4 px above and below
+            var g = host.Game; bool live = g != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
+            var cam = host.View;
+            bool named = false;
+            if (live && doorHover && host.DoorState == "unk" && doorMark != null && doorMark.resolvedStyle.display != DisplayStyle.None)
+            {   // the door marker's unknown state says why on hover (Glyph's ruling)
+                Text(nameText, "Unknown. Watch first."); float w = float.IsNaN(nameChip.resolvedStyle.width) ? 150 : nameChip.resolvedStyle.width;
+                nameChip.style.left = doorMark.style.left.value.value + 13 - w / 2; nameChip.style.top = doorMark.style.top.value.value + 32; named = true; // under the marker: the price chip and the wake disc sit above it
+            }
+            else if (live && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq))
+            {
+                // Glyph 016 r2 E: one ellipse on the ground (the hover ring when the thing is actionable, else this one, the same size)
+                if (m.HoverRing == null && host.Hover != null && host.TargetWorld(host.Hover) is Vector3 gw && Proj(gw, out var gq))
+                { float rx = 64 * (cam ? 14f / cam.orthographicSize : 1f) / 2, ry = rx * 0.62f; var c = gq; paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 2.2f; pp.BeginPath(); for (int s2 = 0; s2 <= 32; s2++) { float a = Mathf.PI * 2 * s2 / 32; var v = c + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (s2 == 0) pp.MoveTo(v); else pp.LineTo(v); } pp.Stroke(); }); }
+                // a known person is named by their pip's tag; anything else by the chip
+                bool pip = host.Hover?.Kind == "person" && Array.IndexOf(Cast, host.Hover.Key) >= 0 && KnownOf(host.Hover.Key);
+                if (!pip)
+                {
+                    Text(nameText, host.HoverName); float w = float.IsNaN(nameChip.resolvedStyle.width) ? 60 : nameChip.resolvedStyle.width;
+                    nameChip.style.left = hq.x - w / 2; nameChip.style.top = hq.y - 17 - 8 - 22; named = true;
+                }
+                int sn = host.HoverStackCount, si = host.HoverStackIndex; // things overlap here: a dot each, the one a right click hits filled (Tab or the wheel steps)
+                if (sn > 1) { var top = new Vector2(hq.x, hq.y - 17 - 8 - 22 - 7); paints.Add(pp => { for (int i = 0; i < sn; i++) { var c2 = top + new Vector2((i - (sn - 1) / 2f) * 9f, 0); pp.BeginPath(); pp.Arc(c2, 3f, Deg(0), Deg(360)); if (i == si) { pp.fillColor = Cream; pp.Fill(); } else { pp.strokeColor = Cream; pp.lineWidth = 1.4f; pp.Stroke(); } } }); }
+            }
+            Show(nameChip, named); if (named && nameChip.parent.IndexOf(nameChip) != nameChip.parent.childCount - 1) nameChip.BringToFront();
+            int used = 0;
+            if (live && host.TargetMode && cam)
+            {
+                var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 3)]; var focus = host.Focused;
+                foreach (var p in host.TargetMarks)
+                {
+                    var vp = cam.WorldToViewportPoint(p.Anchor); if (vp.z <= 0 || vp.x < 0.02f || vp.x > 0.98f || vp.y < 0.02f || vp.y > 0.98f) continue; // off screen: an edge pin (Edges)
+                    if (!Proj(p.Anchor, out var q)) continue;
+                    while (targetEls.Count <= used)
+                    {
+                        var e = E(marks, "s-disc_dark_24", 0, 0, 24, 24, pick: true); E(e, null, 4, 4, 16, 16).name = "g"; int ix = targetEls.Count;
+                        e.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); if (e.userData is HandoverHost.Pickable pk) host.TargetClick(pk); });
+                        manifest.Add((e, "image", () => "target marker")); targetEls.Add(e);
+                    }
+                    var el = targetEls[used++]; el.userData = p; Show(el, true); var at = q + new Vector2(0, -30); el.style.left = at.x - 12; el.style.top = at.y - 12; Icon(el.Q("g"), icon, TurqLight);
+                    bool f = focus == p; var rc = q;
+                    paints.Add(pp => { if (f) { pp.strokeColor = TurqLight; pp.lineWidth = 2.2f; pp.BeginPath(); pp.Arc(at, 15f, Deg(0), Deg(360)); pp.Stroke(); } Dashed(pp, rc, 15f, new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.9f), 1.8f, 10); });
+                }
+            }
+            for (int i = used; i < targetEls.Count; i++) Show(targetEls[i], false);
+        }
+
+        // ---------------------------------------------------------------- the end steps (Sky 2026-10-18: "it's really unclear on how to take Vale")
+
+        VisualElement doorMark, carMark; Paint knobRing; bool doorHover;
+        /// <summary>The door marker while Enter is open to the Enforcer (a dashed ring with the Enter glyph, the hint ring's grammar, quiet: no
+        /// pulse), with his progress round it while he is inside; the car marker once he is out with Vale. A click gives the order (HostValeSteps).
+        /// His first knob carries a dashed ring while either is open, unless it is already armed.</summary>
+        void StepMarks(float px, float now)
+        {
+            VisualElement Mk(string which)
+            {
+                var e = E(marks, "s-disc_dark_24", 0, 0, 26, 26, pick: true); E(e, null, 5, 5, 16, 16).name = "g";
+                e.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.StepMarkClick(which); });
+                if (which == "door") { e.RegisterCallback<PointerEnterEvent>(_ => doorHover = true); e.RegisterCallback<PointerLeaveEvent>(_ => doorHover = false); }
+                manifest.Add((e, "image", () => which + " marker")); return e;
+            }
+            doorMark ??= Mk("door"); carMark ??= Mk("car");
+            if (knobRing == null && verbPlate != null) knobRing = P(verbPlate, 0, 0, PlateW, PlateH, DrawKnobRing);
+            var g = host.Game; bool live = g != null && !m.Ended && !m.BriefingOpen;
+            bool door = live && (host.DoorMarked || host.EnterProgress >= 0), car = live && host.ExtractAvailable;
+            // Glyph's ruling: the door from what the cell learned: go (turquoise, the Enter glyph), unknown (cream, "?" eye), seen (the watcher's eye, no ring)
+            string ds = host.EnterProgress >= 0 ? "go" : host.DoorState; Color dc = ds == "unk" ? Cream : TurqLight;
+            string dIcon = ds == "unk" ? "eye_unk" : ds == "seen" ? "eye_open" : "enter"; Color dIconC = ds == "seen" ? (host.DoorEye == "camera" ? Red : Amber) : dc;
+            void Place(VisualElement e, bool on, Vector3 w, string icon, bool ringIt, int progress, Color col, Color iconCol)
+            {
+                if (!on || !Proj(w, out var q)) { Show(e, false); return; }
+                Show(e, true); e.style.left = q.x - 13; e.style.top = q.y - 13; Icon(e.Q("g"), icon, iconCol);
+                if (ringIt) { float rx = 46 * px / 2, ry = rx * 0.62f; paints.Add(pp => { pp.strokeColor = col; pp.lineWidth = 2f; for (int i = 0; i < 14; i++) { pp.BeginPath(); float a0 = i * 360f / 14, a1 = a0 + 180f / 14; for (int s2 = 0; s2 <= 8; s2++) { float a = Mathf.Deg2Rad * Mathf.Lerp(a0, a1, s2 / 8f); var v = q + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (s2 == 0) pp.MoveTo(v); else pp.LineTo(v); } pp.Stroke(); } }); }
+                if (progress >= 0) { var c = q; float f = progress / 1000f; paints.Add(pp => { RingArc(pp, c, 16, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, c, 16, f, TurqLight, 2.6f); }); }
+            }
+            bool hintHere(string id) => host.HintNow?.Id == id && hintAlpha > 0f; // the hint's own ring stands there: no second ring
+            if (g != null)
+            {
+                Place(doorMark, door, host.frame.World(g.S.At(g.S.GuardPost)), dIcon, host.EnterProgress < 0 && ds != "seen" && !hintHere("H14"), host.EnterProgress, dc, dIconC); // Glyph 016 r2: the ring round the marker only (it touched the Z)
+                Place(carMark, car, host.frame.World(g.S.At(g.S.GetawayCar)), "car", !hintHere("H15"), -1, TurqLight, TurqLight);
+            }
+            else { Show(doorMark, false); Show(carMark, false); }
+            knobOn = live && m.Agent == (int)OpId.Enforcer && (host.EnterAvailable || host.ExtractAvailable) && host.Picked != 0; knobRing?.MarkDirtyRepaint();
+        }
+        bool knobOn;
+        void DrawKnobRing(Painter2D p, Rect r)
+        {
+            if (!knobOn || knobs[0] == null || verbPlate == null) return;
+            var kb = knobs[0].worldBound; var pb = verbPlate.worldBound; if (kb.width <= 0) return;
+            var c = kb.center - pb.position; Dashed(p, c, kb.width / 2 - 3f, TurqLight, 1.6f, 12); // Glyph 016 r2 D: tight on the bezel, 2 px clear of the key number
+        }
+
+        // ---------------------------------------------------------------- edge pointers (Glyph §5): Vale, and units arriving; brief 016 (Glyph
+        // review §4): edge cameos for the cell and edge pins for key people, so a turn or a pan never loses them
+
+        /// <summary>Brief 016's edge cameos: a 24 px cameo of the agent with its F key and a cream wedge at it; turquoise rim when selected.</summary>
+        sealed class EdgeCam { public VisualElement Root, Key; public Label KeyText; public int Agent = -1; public string Role; public HandoverHost.Pickable Target; }
+        readonly List<EdgeCam> edgeCams = new();
+        /// <summary>The timeline marks that hang on a known person (the pill's next mark): who to pin at the edge in the 10 s before.</summary>
+        static string MarkPerson(string label) { var l = label.ToLowerInvariant(); return l.Contains("chime") ? "guard" : l.Contains("driver") ? "driver" : ""; }
 
         void Edges(Camera cam, float W, float H)
         {
-            int used = 0;
-            void Pointer(Vector3 w, string badge, Color c, string count)
+            int used = 0, camUsed = 0;
+            var placed = new List<Rect>();
+            // the HUD groups an edge mark slides clear of (panel space), with 6 px air
+            var blocks = new List<Rect>();
+            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub })
+                if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line
+            const float M = 26; // the marks' centres run round this inset rectangle
+            float pw = W - 2 * M, ph = H - 2 * M, per = 2 * (pw + ph);
+            Vector2 Perim(float d) { d = Mathf.Repeat(d, per); if (d < pw) return new Vector2(M + d, M); d -= pw; if (d < ph) return new Vector2(W - M, M + d); d -= ph; if (d < pw) return new Vector2(W - M - d, H - M); d -= pw; return new Vector2(M, H - M - d); }
+            float PerimOf(Vector2 a) { if (Mathf.Abs(a.y - M) < 0.5f) return a.x - M; if (Mathf.Abs(a.x - (W - M)) < 0.5f) return pw + (a.y - M); if (Mathf.Abs(a.y - (H - M)) < 0.5f) return pw + ph + (W - M - a.x); return pw + ph + pw + (H - M - a.y); }
+            bool Free(Vector2 c, float half) { var r = new Rect(c.x - half, c.y - half, 2 * half, 2 * half); foreach (var b in blocks) if (b.Overlaps(r)) return false; foreach (var q in placed) if (q.Overlaps(r)) return false; return true; }
+            // where a world point off the frame meets the edge, slid along it until clear of the HUD and the other marks; null when on screen
+            (Vector2 at, Vector2 dir)? Spot(Vector3 w, float half)
             {
-                if (!cam) return; var sp = cam.WorldToScreenPoint(w);
-                var vp = cam.WorldToViewportPoint(w); if (vp.z > 0 && vp.x > 0.03f && vp.x < 0.97f && vp.y > 0.03f && vp.y < 0.97f) return;
+                if (!cam) return null; var sp = cam.WorldToScreenPoint(w);
+                var vp = cam.WorldToViewportPoint(w); if (vp.z > 0 && vp.x > 0.03f && vp.x < 0.97f && vp.y > 0.03f && vp.y < 0.97f) return null;
                 var centre = new Vector2(W / 2, H / 2);
                 var pp = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(sp.x, Screen.height - sp.y)); if (sp.z < 0) pp = centre - (pp - centre);
-                var dir = (pp - centre); if (dir.sqrMagnitude < 1) return; dir.Normalize();
-                float l = 130, rgt = W - 40, t = 110, b = H - 84; // clear of the roster column, the pill and the goal line
-                float k = Mathf.Min(dir.x > 0 ? (rgt - centre.x) / dir.x : dir.x < 0 ? (l - centre.x) / dir.x : 1e9f, dir.y > 0 ? (b - centre.y) / dir.y : dir.y < 0 ? (t - centre.y) / dir.y : 1e9f);
-                var at = centre + dir * k;
+                var dir = pp - centre; if (dir.sqrMagnitude < 1) return null; dir.Normalize();
+                float k = Mathf.Min(dir.x > 0 ? (W - M - centre.x) / dir.x : dir.x < 0 ? (M - centre.x) / dir.x : 1e9f, dir.y > 0 ? (H - M - centre.y) / dir.y : dir.y < 0 ? (M - centre.y) / dir.y : 1e9f);
+                float d0 = PerimOf(centre + dir * k);
+                for (float step = 0; step < per / 2; step += 4)
+                    foreach (var d in step == 0 ? new[] { d0 } : new[] { d0 + step, d0 - step })
+                    {
+                        var a = Perim(d); if (!Free(a, half)) continue;
+                        placed.Add(new Rect(a.x - half - 3, a.y - half - 3, 2 * half + 6, 2 * half + 6));
+                        var to = pp - a; return (a, to.sqrMagnitude > 1 ? to.normalized : dir);
+                    }
+                return null;
+            }
+            void Pointer(Vector3 w, string badge, Color c, string count)
+            {
+                if (Spot(w, 17) is not { } spw) return; var (at, dir) = spw;
                 // Glyph round 2: the inner disc sat ~3 px off its bezel: a CSS border moved the content box. The disc art (disc_dark_30, 76 px with a
                 // shadow: the disc's centre is 0.4 px below the sprite's) carries the badge on its own centre; the ring is painted on the same centre
                 while (edgeEls.Count <= used) { var e = E(marks, "s-disc_dark_30", 0, 0, 30, 30); E(e, null, 5, 5.2f, 20, 20).name = "b"; var n = L(e, "keycap"); n.name = "n"; n.AddToClassList("s-plate_light"); n.style.position = Position.Absolute; n.style.left = 22; n.style.top = -8; n.style.paddingLeft = 3; n.style.paddingRight = 3; edgeEls.Add(e); }
@@ -1020,13 +1226,67 @@ namespace Suborned.Play
                 var tip = at + dir * 24; var side = new Vector2(-dir.y, dir.x) * 5;
                 paints.Add(p2 => { p2.fillColor = c; p2.BeginPath(); p2.MoveTo(tip); p2.LineTo(at + dir * 18 + side); p2.LineTo(at + dir * 18 - side); p2.ClosePath(); p2.Fill(); });
             }
+            EdgeCam CamEl()
+            {
+                while (edgeCams.Count <= camUsed)
+                {
+                    var ec = new EdgeCam(); ec.Root = E(marks, null, 0, 0, 24, 24, pick: true); Round(ec.Root, 12); ec.Root.style.backgroundColor = Ink;
+                    ec.Key = E(ec.Root, "s-plate_light", 16, -13, float.NaN, 18); ec.Key.style.minWidth = 22; ec.KeyText = L(ec.Key, "keycap"); ec.KeyText.style.fontSize = 10f; ec.KeyText.style.flexGrow = 1; ec.KeyText.style.unityTextAlign = TextAnchor.MiddleCenter; ec.KeyText.style.paddingLeft = 4; ec.KeyText.style.paddingRight = 4; // Glyph 016 r2-3: 10 px type on the order plate's keycap, half a cameo out ec.KeyText.style.paddingLeft = 3; ec.KeyText.style.paddingRight = 3;
+                    ec.Root.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; e.StopPropagation(); if (ec.Agent >= 0) host.CentreOn((OpId)ec.Agent); else if (ec.Target != null) host.TargetFind(ec.Target); else if (!string.IsNullOrEmpty(ec.Role)) FindPerson(ec.Role); });
+                    manifest.Add((ec.Root, "image", () => "edge cameo")); // art and its F key: no running text
+                    edgeCams.Add(ec);
+                }
+                var x = edgeCams[camUsed++]; Show(x.Root, true); return x;
+            }
+            void Wedge(Vector2 at, Vector2 dir, Color c) { var tip = at + dir * 19; var side = new Vector2(-dir.y, dir.x) * 4.5f; paints.Add(p2 => { p2.fillColor = c; p2.BeginPath(); p2.MoveTo(tip); p2.LineTo(at + dir * 14 + side); p2.LineTo(at + dir * 14 - side); p2.ClosePath(); p2.Fill(); }); }
             if (!m.Ended && !m.BriefingOpen && host.Game != null)
             {
-                Pointer(host.ValeKnown + Vector3.up * 1f, "badges/npc_councillor", TurqLight, "");
+                var g = host.Game; int budget = 4; // Glyph: at most four at the edge at once (Vale's arrow, the cameos, the pins)
+                int before = used; Pointer(host.ValeKnown + Vector3.up * 1f, "badges/npc_councillor", TurqLight, ""); if (used > before) budget--;
+                // the cell: the selected agent always while off screen; another only when busy, hurt, down or seen (an idle one's portrait says ready)
+                var order = new List<int>(); for (int k = 0; k < 4; k++) if (host.Selected[k]) order.Add(k); for (int k = 0; k < 4; k++) if (!host.Selected[k]) order.Add(k);
+                foreach (int k in order)
+                {
+                    if (budget <= 0) break; var op = g.Ops[k]; if (op.Inside) continue;
+                    var s = m.Slots[k]; bool sel = host.Selected[k], matters = sel || s.Busy || s.Hurt || s.Down || host.RunEye(k) == "open";
+                    if (!matters || host.Views?.Find("op/" + Op.Name((OpId)k)) is not Transform t || !t.gameObject.activeSelf) continue;
+                    if (Spot(t.position + Vector3.up, 13) is not { } spa) continue; var (at, dir) = spa;
+                    var ec = CamEl(); ec.Agent = k; ec.Role = null; ec.Target = null; ec.Root.style.left = at.x - 12; ec.Root.style.top = at.y - 12;
+                    Bg(ec.Root, $"portraits/cameo_{Op.Name((OpId)k)}_normal"); Border(ec.Root, 1.6f, sel ? Turq : Cream); Show(ec.Key, true); Text(ec.KeyText, host.AgentKeyLabel(k)); if (ec.Root.Q("pin") is VisualElement pn) Show(pn, false);
+                    Wedge(at, dir, Cream); budget--;
+                }
+                // key people: a pin only in the 10 s before the next plan mark that hangs on them (the goal, Vale, keeps his own arrow)
+                var tl = host.Text?.Timeline;
+                if (tl != null) foreach (var (atS, label, known) in tl)
+                    {
+                        var p = atS.Split(':'); int tick = (int.Parse(p[0]) * 60 + int.Parse(p[1])) * Game.Hz; if (tick <= g.Tick) continue;
+                        var role = known ? MarkPerson(label) : ""; if (budget > 0 && role.Length > 0 && tick - g.Tick <= 10 * Game.Hz && KnownOf(role) && host.Views?.Find(role) is Transform pt && pt.gameObject.activeSelf && Spot(pt.position + Vector3.up, 13) is { } psp)
+                        { var (pa, pd) = psp; var ec = CamEl(); ec.Agent = -1; ec.Role = role; ec.Target = null; ec.Root.style.left = pa.x - 12; ec.Root.style.top = pa.y - 12; ec.Root.style.backgroundImage = StyleKeyword.Null; Border(ec.Root, 1.6f, Cream); Show(ec.Key, false); PinBadge(ec, role); Wedge(pa, pd, Cream); budget--; }
+                        break; // the next mark only
+                    }
+                // target mode: the valid targets off screen get edge pins with the verb's glyph (up to four); a click pans to one and focuses it
+                if (host.TargetMode)
+                {
+                    int tb = 4; var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 3)];
+                    foreach (var tp in host.TargetMarks)
+                    {
+                        if (tb <= 0) break; if (Spot(tp.Anchor, 13) is not { } tsp) continue; var (ta, td) = tsp;
+                        var ec = CamEl(); ec.Agent = -1; ec.Role = null; ec.Target = tp; ec.Root.style.left = ta.x - 12; ec.Root.style.top = ta.y - 12; ec.Root.style.backgroundImage = StyleKeyword.Null; Border(ec.Root, 1.6f, TurqLight); Show(ec.Key, false);
+                        var pin = ec.Root.Q("pin"); if (pin == null) { pin = E(ec.Root, null, 3, 3, 18, 18); pin.name = "pin"; } Show(pin, true); Icon(pin, icon, TurqLight); Wedge(ta, td, TurqLight); tb--;
+                    }
+                }
                 var seen = new List<Vector3>();
                 foreach (var a in m.Arrivals) { bool near = false; foreach (var s in seen) if ((s - a.World).sqrMagnitude < 400f) near = true; if (near) continue; seen.Add(a.World); int n = 0; foreach (var b in m.Arrivals) if ((b.World - a.World).sqrMagnitude < 400f) n++; Pointer(a.World, "badges/signal_police", Amber, n > 1 ? n.ToString() : ""); }
             }
             for (int i = used; i < edgeEls.Count; i++) Show(edgeEls[i], false);
+            for (int i = camUsed; i < edgeCams.Count; i++) Show(edgeCams[i].Root, false);
+        }
+
+        /// <summary>A key person's pin: their role badge (the same as their pip and scope blip) inside the edge disc.</summary>
+        void PinBadge(EdgeCam ec, string role)
+        {
+            var b = ec.Root.Q("pin"); if (b == null) { b = E(ec.Root, null, 3, 3, 18, 18); b.name = "pin"; }
+            Show(b, true); Bg(b, CastBadge(role), Color.white);
         }
 
         // ---------------------------------------------------------------- the going-loud card, the briefing, the end card without sentences

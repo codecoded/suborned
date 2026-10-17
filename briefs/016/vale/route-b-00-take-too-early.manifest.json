@@ -1,0 +1,19 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 786, "y": 1088, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "beat", "x": 1587, "y": 1004, "w": 125, "h": 36, "text": "Rivals here."},
+  {"kind": "beat", "x": 1587, "y": 1048, "w": 125, "h": 36, "text": "Vale is out."},
+  {"kind": "image", "x": 919, "y": 549, "w": 24, "h": 24, "text": "agent cameo"},
+  {"kind": "image", "x": 969, "y": 551, "w": 20, "h": 20, "text": "target badge"},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 347, "y": 282, "w": 22, "h": 22, "text": "plate fold tab"},
+  {"kind": "speech", "x": -915, "y": -1071, "w": 195, "h": 25, "text": "Vale's out. Walking to his car."},
+  {"kind": "speech", "x": 1152, "y": 525, "w": 260, "h": 25, "text": "The driver's moved the car. Service lane."},
+  {"kind": "image", "x": 718, "y": 432, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": 850, "y": 471, "w": 26, "h": 26, "text": "pip councillor"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

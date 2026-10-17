@@ -20,6 +20,9 @@ namespace Suborned.Play
         public bool Peeking { get; private set; }
         /// <summary>Alt held by a script (the budget shots' Alt moment): the same as holding the key.</summary>
         public bool PeekLatch { get; set; }
+        /// <summary>Seconds Alt must be held before the detail layer shows (Glyph, brief 016 review §5).</summary>
+        public const float PeekDelay = 0.25f;
+        float peekHeldSince = -1f;
         readonly List<Fan> shownFans = new();
         string lastWatch; int lastWatchOrders = -1;
 
@@ -69,7 +72,10 @@ namespace Suborned.Play
         {
             if (Game == null || views == null) return;
             shownFans.Clear();
-            Peeking = (PeekLatch || controls.Held(Keyboard.current, PlayAction.Peek)) && Ending.Length == 0;
+            // Glyph's 016 review §5: the detail layer shows once Alt has been held 0.25 s, so an Alt chord (Alt + middle turns the view) or a quick
+            // tap never flashes it; nothing shows while the view is being turned
+            bool held = controls.Held(Keyboard.current, PlayAction.Peek); if (!held) peekHeldSince = -1f; else if (peekHeldSince < 0f) peekHeldSince = Time.unscaledTime;
+            Peeking = (PeekLatch || held && Time.unscaledTime - peekHeldSince >= PeekDelay) && Ending.Length == 0 && !TurnDragging;
             FocusWatcher = null;
             Guard("sight", () =>
             {

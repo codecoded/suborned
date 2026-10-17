@@ -513,16 +513,20 @@ namespace Suborned.Sim
 
         /// <summary>Scout Watch on a camera or the patrol (rulebook sight.watch): within its reach of the watcher on a clear line; it takes
         /// watch.s and lands as WatchedWatcher. The guard is watched as a person (scout.watch) and Land teaches his sight as well.</summary>
-        string WatchWatcher(Op op, Order o)
+        string WatchWatcher(Op op, Order o, bool engage = true)
         {
             var kind = WatcherKind(o.Target);
             if (!IsWatcher(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to watch here");
             if (R.SightKinds[kind].learn != "watch") return No("target-unknown", $"the {kind}'s sight is known when they come: there is nothing to watch for");
+            // Sky 2026-10-18: a Watch that can teach nothing is refused, free: its sight known, and its routine (a camera's comes with its sight;
+            // the patrol's once the cell's Watches of it total sight.watch.routine seconds, or told)
+            { var k = Known(o.Target)!; if (k.Sight && k.Routine) return No("already-watched", $"the cell knows the {o.Target.Replace("camera:", "")}{(kind == "camera" ? " camera" : "")}'s sight{(kind == "patrol" ? " and routine" : "")} already: a Watch teaches nothing more"); }
             var sh = ShapeOf(o.Target);
             if (!sh.HasValue) return kind == "patrol" ? No("patrol-down", "the patrol is down") : No("target-unknown", $"the {o.Target} is not on the street");
             var at = sh.Value.At;
             if (!G.Within(op.Pos, at, R.SightReachCm)) return No("too-far", $"stand within {R.SightReachCm / 100} m of the {o.Target.Replace("camera:", "")} {(kind == "camera" ? "camera" : "")}".TrimEnd(), m: R.SightReachCm / 100);
             if (!Sees(op.Pos, at)) return No("no-clear-line", "no clear line: move to where the Scout can see it");
+            if (!engage) return "";
             Engage(op, o, R.SightWatchS);
             op.BusyQuote = null; op.BusyPaid = 0;
             return "";

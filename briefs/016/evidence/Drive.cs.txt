@@ -1,0 +1,740 @@
+using System;
+using System.Linq;
+using Suborned.Play;
+using Suborned.Sim;
+using UnityEngine;
+
+// Brief 016 scratch driver (from brief 014's): route G by hand, then the same moment at the four yaws.
+// Brief 014 C scratch driver: plays the Handover through the host's player-facing calls (select, pick, right click at a target's screen
+// point, a panel row clicked, ground clicks as the move orders a click gives) and takes the budget shots. Not shipped; run with run_script.
+public static class Drive
+{
+    // ---------------------------------------------------------------- brief 016
+    /// <summary>Route G by hand to the armed takedown on the guard (2:00): the Tech has looped and rerouted, the Scout watched the guard.</summary>
+    public static string Setup16() { var h = H; Application.runInBackground = true; h.PeekLatch = false; Start(); Loop(); ToWatch(); var r = ToTakedown(); h.Cancel(); h.ClosePanel(); h.Select(OpId.Enforcer, false); h.TurnSnap(0); h.PointerHover(new Vector2(-500, -500)); return r; }
+    /// <summary>Frame the cell's centroid with the guard and Inez (the same ground point at every yaw).</summary>
+    public static string FrameAll() { var h = H; var c = Vector3.zero; int n = 0; foreach (var k in new[] { "op/scout", "op/fixer", "op/tech", "op/enforcer", "guard", "waitress" }) { var t = h.Views.Find(k); if (t && t.gameObject.activeSelf) { c += t.position; n++; } } h.LookAt(c / Mathf.Max(1, n)); return "framed " + n; }
+    /// <summary>Set A: play zoom 14 framed on the door (the guard, the Enforcer, the Tech's cabinet); set B: zoom 18.5 on the centroid of the cell, the guard and Inez.</summary>
+    public static string FrameSet(string set) { var h = H; if (set == "a") { h.View.orthographicSize = 14f; Frame("guard", 0.5f, 0.5f); } else { h.View.orthographicSize = 18.5f; FrameAll(); } h.ClearHover(); return "set " + set + " zoom " + h.View.orthographicSize; }
+    /// <summary>A real key through the Input System (the host reads the table's binding): down on one call, up on the next.</summary>
+    public static string KeyDown(string key) { var kb = UnityEngine.InputSystem.Keyboard.current; var k = (UnityEngine.InputSystem.Key)Enum.Parse(typeof(UnityEngine.InputSystem.Key), key); UnityEngine.InputSystem.InputSystem.QueueStateEvent(kb, new UnityEngine.InputSystem.LowLevel.KeyboardState(k)); return "down " + key; }
+    public static string KeysDown(string a, string b) { var kb = UnityEngine.InputSystem.Keyboard.current; var ka = (UnityEngine.InputSystem.Key)Enum.Parse(typeof(UnityEngine.InputSystem.Key), a); var kb2 = (UnityEngine.InputSystem.Key)Enum.Parse(typeof(UnityEngine.InputSystem.Key), b); UnityEngine.InputSystem.InputSystem.QueueStateEvent(kb, new UnityEngine.InputSystem.LowLevel.KeyboardState(ka, kb2)); return "down " + a + "+" + b; }
+    public static string KeysUp() { UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Keyboard.current, new UnityEngine.InputSystem.LowLevel.KeyboardState()); var h = H; return $"up · yaw {h.Yaw:0.#} heading {h.YawIndex} turning drag {h.TurnDragging} peeking {h.Peeking}"; }
+    /// <summary>The mouse through the Input System: position (pixels, origin bottom left) and the middle button.</summary>
+    public static string MouseAt(float x, float y, bool middle) { var st = new UnityEngine.InputSystem.LowLevel.MouseState { position = new Vector2(x, y) }; if (middle) st = st.WithButton(UnityEngine.InputSystem.LowLevel.MouseButton.Middle, true); UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Mouse.current, st); var h = H; return $"mouse ({x},{y}) middle {middle} · yaw {h.Yaw:0.#} drag {h.TurnDragging} peeking {h.Peeking}"; }
+    public static string Yaw() { var h = H; return $"yaw {h.Yaw:0.##} heading {h.YawIndex} drag {h.TurnDragging} turned {h.TurnedThisRun} tick {h.Game.Tick} hint {h.HintNow?.Id}"; }
+    /// <summary>The armed takedown on the guard, the cursor on him (the price line and the eye), at yaw k.</summary>
+    public static string ActiveShot(int k, string name) { if (HudToolkit.ShotBusy) return "busy (not turned)"; var h = H; Turn(k); if (h.Picked != 2) h.Pick(2); Hover("guard"); return $"picked {h.Picked} hover {h.Hover?.Key} intent {h.HoverIntent?.Label} · " + HudToolkit.Shoot(ShotDir + name, "active"); }
+    public static string RestShot(int k, string name) { if (HudToolkit.ShotBusy) return "busy (not turned)"; var h = H; if (h.Picked >= 0) h.Cancel(); Turn(k); return HudToolkit.Shoot(ShotDir + name, "rest"); }
+    public static string Busy() => HudToolkit.ShotBusy ? "busy" : "free: " + HudToolkit.LastShot;
+    /// <summary>Diagnosis: the composited screen with one thing off (fade, hud, none), to /tmp/l16/screen-&lt;what&gt;.png.</summary>
+    public static string ScreenWith(string what) { var h = H; h.StartCoroutine(ScreenCo(what)); return "started " + what; }
+    static System.Collections.IEnumerator ScreenCo(string what)
+    {
+        var h = H; var fade = Fade(); var doc = UnityEngine.Object.FindAnyObjectByType<UnityEngine.UIElements.UIDocument>();
+        if (what == "fade" && fade) fade.fade = false; if (what == "hud" && doc) doc.enabled = false;
+        for (int i = 0; i < 20; i++) yield return null; yield return new WaitForEndOfFrame();
+        var t = ScreenCapture.CaptureScreenshotAsTexture(); System.IO.File.WriteAllBytes($"/tmp/l16/screen-{what}.png", t.EncodeToPNG()); UnityEngine.Object.Destroy(t);
+        if (fade) fade.fade = true; if (doc) doc.enabled = true;
+    }
+    /// <summary>H13 (the turn hint): a fresh run, H1 shows at the first lull; a Watch retires it; the next lull shows H13 (the view never turned).</summary>
+    public static string HintTest(int phase)
+    {
+        var h = H; Application.runInBackground = true;
+        if (phase == 0)
+        {
+            h.RelearnHints(); h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.HintsOn = true; h.ClearHover();
+            h.RunTo(100); var first = h.HintNow?.Id; h.Select(OpId.Scout, false); Frame("guard", 0.45f, 0.45f); Right("guard"); var r = DoRow(x => x.I.Order.Do == "watch");
+            h.RunTo(260); h.ClearHover(); return $"first {first} · watch {r} · now {h.HintNow?.Id} '{h.HintNow?.Line}' turned {h.TurnedThisRun} · {Status()}";
+        }
+        if (phase == 1) { var hn = h.HintNow; return $"hint {hn?.Id} showing {h.HintLineShowing} · " + HudToolkit.Shoot(ShotDir + "h13-hint", "rest"); }
+        return $"after turn: hint {h.HintNow?.Id} turned {h.TurnedThisRun} yaw {h.Yaw:0}";
+    }
+    // ---------------------------------------------------------------- the whole of brief 016's check in one coroutine: route G by hand with
+    // real Q / E presses and an Alt + middle-drag, the same moment shot at the four yaws (set A rest, active, set B rest), then on to the end
+    static readonly System.Collections.Generic.List<string> rlog = new();
+    public static string Route16() { rlog.Clear(); H.StartCoroutine(RouteCo()); return "started"; }
+    public static string RouteLog() => string.Join("\n", rlog);
+    static void L(string s) { rlog.Add($"{Time.realtimeSinceStartup:0.0} {s}"); System.IO.File.WriteAllLines("/Users/sky/Projects/suborned/out/latch016/route16.log", rlog); }
+    static System.Collections.IEnumerator Frames(int n) { for (int i = 0; i < n; i++) yield return null; }
+    static System.Collections.IEnumerator Press(string key)
+    {
+        KeyDown(key); yield return Frames(3); UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Keyboard.current, new UnityEngine.InputSystem.LowLevel.KeyboardState());
+        yield return new WaitForSecondsRealtime(0.6f); L($"pressed {key}: yaw {H.Yaw:0.#} heading {H.YawIndex}");
+    }
+    static System.Collections.IEnumerator Mouse(float x, float y, bool mid) { MouseAt(x, y, mid); yield return Frames(3); }
+    static System.Collections.IEnumerator Shot(System.Func<string> take) { while (HudToolkit.ShotBusy) yield return null; L(take()); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    static System.Collections.IEnumerator RouteCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        L("start " + Start());
+        yield return Press("E");
+        L("loop " + Loop()); L("watch " + ToWatch());
+        KeyDown("LeftAlt"); yield return Frames(3);
+        yield return Mouse(800, 500, true); L($"alt+middle down: drag {h.TurnDragging} peeking {h.Peeking}");
+        yield return Mouse(1000, 500, true); L($"dragged 200 px: yaw {h.Yaw:0.#}");
+        yield return Mouse(1000, 500, false); UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Keyboard.current, new UnityEngine.InputSystem.LowLevel.KeyboardState());
+        yield return new WaitForSecondsRealtime(0.6f); L($"released: yaw {h.Yaw:0.#} heading {h.YawIndex}");
+        yield return Mouse(-50, -50, false);
+        L("takedown armed " + ToTakedown());
+        L(FrameSet("a"));
+        for (int k = 0; k < 4; k++) { int kk = k; yield return Shot(() => $"a yaw {30 + 90 * kk}: " + RestShot(kk, $"a-{30 + 90 * kk:000}") + " · " + Who().Replace("\n", " | ")); }
+        for (int k = 0; k < 4; k++) { int kk = k; yield return Shot(() => $"act yaw {30 + 90 * kk}: " + ActiveShot(kk, $"act-{30 + 90 * kk:000}")); }
+        if (h.Picked >= 0) h.Cancel(); Turn(0); L(FrameSet("b"));
+        for (int k = 0; k < 4; k++) { int kk = k; yield return Shot(() => $"b yaw {30 + 90 * kk}: " + RestShot(kk, $"b-{30 + 90 * kk:000}") + " · " + Who().Replace("\n", " | ")); }
+        L(FrameSet("a"));
+        // the edge cameos after a turn: the Scout selected (off screen at the door), the busy ones with her
+        h.Select(OpId.Scout, false); yield return Shot(() => "cameos yaw 120: " + RestShot(1, "edge-cameos-120"));
+        h.Select(OpId.Enforcer, false); Turn(0);
+        L("card " + OpenCard()); L("knockout " + KnockOut());
+        yield return Press("Q");
+        L("enter " + Enter());
+        yield return Press("Q");
+        L("finish " + Finish());
+        int g = 0; while (h.Ending.Length == 0 && g++ < 600) { h.RunTo(h.Game.Tick + 10); yield return null; }
+        L($"ending '{h.Ending}' yaw {h.Yaw:0} session {h.SessionPath}");
+        L("done");
+    }
+    /// <summary>The same orders with no turn at all (yaw 30 throughout): the reference for "view only".</summary>
+    public static string RouteRef() { rlog.Clear(); H.StartCoroutine(RefCo()); return "started"; }
+    static System.Collections.IEnumerator RefCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        L("ref start " + Start()); L("loop " + Loop()); L("watch " + ToWatch()); L("takedown armed " + ToTakedown());
+        if (h.Picked >= 0) h.Cancel(); L(FrameSet("a"));
+        L("card " + OpenCard()); L("knockout " + KnockOut()); L("enter " + Enter()); L("finish " + Finish());
+        int g = 0; while (h.Ending.Length == 0 && g++ < 600) { h.RunTo(h.Game.Tick + 10); yield return null; }
+        L($"ending '{h.Ending}' yaw {h.Yaw:0} turned {h.TurnedThisRun} session {h.SessionPath}");
+        L("done");
+    }
+    /// <summary>The layout audit at each yaw, at rest and with the armed takedown's price on the guard (a coroutine: the layout settles between).</summary>
+    public static string Audits() { rlog.Clear(); H.StartCoroutine(AuditCo()); return "started"; }
+    static System.Collections.IEnumerator AuditCo()
+    {
+        var h = H;
+        for (int k = 0; k < 4; k++)
+        {
+            if (h.Picked >= 0) h.Cancel(); Turn(k); yield return Frames(6); L($"yaw {h.Yaw:0} rest: {Audit()}");
+            h.Pick(2); Hover("guard"); yield return Frames(6); L($"yaw {h.Yaw:0} price: {Audit()}");
+            HudToolkit.Stress = true; yield return Frames(6); L($"yaw {h.Yaw:0} stress: {Audit()}"); HudToolkit.Stress = false;
+        }
+        if (h.Picked >= 0) h.Cancel(); Turn(0); L("done");
+    }
+    // ---------------------------------------------------------------- the Vale steps (Aster's queue, 2026-10-18): route G by hand, the end steps
+    // given only from what the HUD shows (the door marker, the car marker), with shots at each step into briefs/016/vale/
+    public static string Vale16() { rlog.Clear(); H.StartCoroutine(ValeCo()); return "started"; }
+    static string V(string n) => "/Users/sky/Projects/suborned/briefs/016/vale/" + n;
+    static System.Collections.IEnumerator VShot(string name, string state) { while (HudToolkit.ShotBusy) yield return null; L(name + ": " + HudToolkit.Shoot(V(name), state) + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    static System.Collections.IEnumerator ValeCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        L("start " + Start()); L("loop " + Loop()); L("watch " + ToWatch()); L("takedown armed " + ToTakedown()); L("card " + OpenCard()); L("knockout " + KnockOut());
+        int g = 0; while ((h.Game.Ops[3].Busy != null || h.Game.Ops[3].Walk != null) && g++ < 400) h.RunTo(h.Game.Tick + 1);
+        g = 0; while (!h.DoorMarked && g++ < 600 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        h.Select(OpId.Enforcer, false); h.Cancel(); h.ClosePanel(); Frame("marker/door", 0.5f, 0.5f); h.ClearHover();
+        L($"door marked: state {h.DoorState} eye {h.DoorEye} enter available {h.EnterAvailable} tick {h.Game.Tick} objective {h.ObjectiveKey} hint {h.HintNow?.Id}");
+        yield return Frames(4); yield return VShot("01-door-clear-marker", "rest");
+        h.RunTo(Math.Max(h.Game.Tick, 1255)); Move("tech", "crew:tech"); h.RunTo(h.Game.Tick + 2); // as route G: the Tech leaves the cabinet, and the loop with him
+        L($"tech gone: door state {h.DoorState} eye {h.DoorEye} loop {h.Game.LoopOn} tick {h.Game.Tick}");
+
+        h.StepMarkClick("door"); L($"door marker clicked: pending {h.PendingOf(3).verb} busy {h.Game.Ops[3].Busy?.Do} picked {h.Picked} objective {h.ObjectiveKey} · {Status()}");
+        g = 0; while (!h.Game.Ops[3].Inside && g++ < 600 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(h.Game.Tick + 150); h.ClearHover(); L($"inside {h.Game.Ops[3].Inside} progress {h.EnterProgress} objective {h.ObjectiveKey} · {Status()}");
+        yield return Frames(4); yield return VShot("02-inside-timer", "rest");
+        g = 0; while (h.Game.Vale != ValeAt.WithEnforcer && g++ < 900 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        Frame("car/getaway", 0.5f, 0.45f); h.Select(OpId.Enforcer, false); h.ClearHover(); // the car marker in view; the Enforcer off screen gets his edge cameo
+        L($"out with Vale: extract available {h.ExtractAvailable} plate 1 '{h.PlateOf(OpId.Enforcer)[0].Label}' objective {h.ObjectiveKey} hint {h.HintNow?.Id} · {Status()}");
+        yield return Frames(4); yield return VShot("03-out-with-vale-car-marker", "rest");
+        // as route G: out the safe way first (a ground click), both buttons once the fight is on, then the car marker
+        Move("enforcer", at: new Pt(2400, -6000)); int t0 = h.Game.Tick;
+        g = 0; while (!h.Game.FightOn && !h.Game.Over && g++ < 900) h.RunTo(h.Game.Tick + 1);
+        if (h.Game.FightOn) { h.RunTo(Math.Max(h.Game.Tick, t0 + 314)); h.Issue(new Order { Op = "cell", Do = "panic" }); L("panic · " + Status()); h.RunTo(h.Game.Tick + 81); }
+        Frame("car/getaway", 0.5f, 0.55f); h.Select(OpId.Enforcer, false); h.StepMarkClick("car"); L($"car marker clicked: pending {h.PendingOf(3).verb} · {Status()}");
+        g = 0; while (!h.Game.Over && g++ < 1200) { if (h.ExtractAvailable && h.PendingOf(3).verb != "extract" && h.Game.Ops[3].Walk == null) { h.StepMarkClick("car"); L("car marker clicked again · " + Status()); } h.RunTo(h.Game.Tick + 5); yield return null; }
+        int w = 0; while (h.Ending.Length == 0 && w++ < 100) yield return null;
+        L($"ending '{h.Ending}' session {h.SessionPath}");
+        yield return Frames(6); yield return VShot("04-success", "active");
+        L("done");
+    }
+    // ---------------------------------------------------------------- picking (Sky: "hard to select areas, like a camera"): shots into briefs/016/pick/
+    // and route G by hand through the new paths: clicks off the thing's centre, target markers, Tab, the door and car markers
+    static string PK(string n) => "/Users/sky/Projects/suborned/briefs/016/pick/" + n;
+    static System.Collections.IEnumerator PShot(string name, string state) { while (HudToolkit.ShotBusy) yield return null; L(name + ": " + HudToolkit.Shoot(PK(name), state) + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    static string TC(string kind, string key)
+    {
+        var h = H; foreach (var p in h.TargetMarks) if (p.T.Kind == kind && (key == null || p.T.Key == key)) { int n = h.Game.Orders.Count; var pend = h.PendingOf((int)h.Agent).verb; h.TargetClick(p); return $"marker {kind}/{p.T.Key} clicked: orders {n}->{h.Game.Orders.Count} pending '{h.PendingOf((int)h.Agent).verb}' (was '{pend}')"; }
+        return $"no {kind} marker among {h.TargetMarks.Count}";
+    }
+    static string Marks() { var h = H; var l = new System.Collections.Generic.List<string>(); foreach (var p in h.TargetMarks) l.Add(p.T.Kind + "/" + p.T.Key); return string.Join(", ", l); }
+    /// <summary>The hover a cursor 20 px off a thing's anchor gets (the generous pick).</summary>
+    static string Near(string key, float dx = 20, float dy = -12) { var h = H; var t = h.Views.Find(key); Physics.SyncTransforms(); var p = h.Pickables(); Vector3 a = t.position; foreach (var x in p) if (h.Views.Find(key) == t) { } var sp = h.View.WorldToScreenPoint(AnchorOf(key)); var at = new Vector2(sp.x + dx, sp.y + dy); h.PointerHover(at); return $"hover near {key}: {h.Hover?.Kind}/{h.Hover?.Key} name '{h.HoverName}'"; }
+    static Vector3 AnchorOf(string key) { var h = H; foreach (var p in h.Pickables()) { var k = p.T.Kind switch { "camera" => "camera/" + p.T.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "car" => "car/" + p.T.Key, "op" => "op/" + p.T.Key, _ => p.T.Key }; if (k == key) return p.Anchor; } return h.Views.Find(key).position; }
+    public static string Pick16() { rlog.Clear(); H.StartCoroutine(PickCo()); return "started"; }
+    static System.Collections.IEnumerator PickCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+        Move("tech", "cabinet", run: true); Move("enforcer", at: new Pt(4850, -2300)); Move("scout", "d:Office approach"); Move("fixer", "crew:fixer"); h.RunTo(120);
+        // 1. hover the entrance camera from 20 px off its head
+        h.Select(OpId.Tech, false); h.View.orthographicSize = 14f; Frame("camera/entrance", 0.5f, 0.5f);
+        { var csp = h.View.WorldToScreenPoint(AnchorOf("camera/entrance")); yield return Mouse(csp.x + 20, csp.y - 12, false); yield return Frames(4); L($"real cursor 20 px off the camera: hover {h.Hover?.Kind}/{h.Hover?.Key} name '{h.HoverName}'"); }
+        yield return PShot("01-hover-entrance-camera", "active");
+        // 2. the Tech's Loop: the cabinet and the cameras it reaches, marked (zoomed out to show the three)
+        yield return Mouse(-50, -50, false); yield return Frames(2);
+        h.ClearHover(); h.Pick(0); h.View.orthographicSize = 18.5f; Frame("marker/cabinet", 0.5f, 0.5f); yield return Frames(3); L("tech loop marks: " + Marks()); yield return Frames(3);
+        yield return PShot("02-target-tech-loop", "active");
+        h.View.orthographicSize = 14f; Frame("marker/cabinet", 0.5f, 0.5f);
+        h.RunTo(125); L("loop " + TC("cabinet", null)); h.Cancel();
+        // 3. the Scout's Watch: every valid target marked, Tab to the nearest
+        h.RunTo(355); h.Select(OpId.Scout, false); h.Pick(0); Frame("guard", 0.45f, 0.45f); h.ClearHover(); yield return Frames(3); L("scout watch marks: " + Marks()); yield return Frames(3);
+        yield return PShot("03-target-scout-watch", "active");
+        h.RunTo(355); L("watch " + TC("person", "guard")); h.Cancel(); h.RunTo(500); Frame("guard", 0.45f, 0.45f);
+        // route G on: the takedown and the reroute through the markers
+        Free(555, 0); Move("scout", "crew:scout");
+        h.RunTo(745); Move("enforcer", at: new Pt(5175, -2880));
+        Free(745, 2); h.Select(OpId.Tech, false); h.ClosePanel(); h.Pick(1); L("reroute " + TC("cabinet", null)); h.Cancel();
+        h.RunTo(1190); int w = 0; while (h.Game.PatrolAwayUntil <= h.Game.Tick && w++ < 300) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(Math.Max(h.Game.Tick, 1195)); h.Select(OpId.Enforcer, false); h.Pick(2); Frame("guard", 0.4f, 0.4f); yield return Frames(2);
+        // Tab focuses the nearest target, its price on show
+        h.ClearHover(); yield return KeyTab(); L($"tab focus {h.Focused?.T.Kind}/{h.Focused?.T.Key} hover {h.Hover?.Key} · marks {Marks()}"); yield return Frames(3);
+        yield return PShot("04-takedown-tab-focus", "active");
+        L("takedown " + TC("person", "guard")); h.Cancel(); h.RunTo(h.Game.Tick + 20);
+        L("enter " + Enter());
+        L("finish " + Finish());
+        int g = 0; while (h.Ending.Length == 0 && g++ < 200) yield return null;
+        L($"ending '{h.Ending}' session {h.SessionPath}"); L("done");
+    }
+    static System.Collections.IEnumerator KeyTab() { KeyDown("Tab"); yield return Frames(3); UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Keyboard.current, new UnityEngine.InputSystem.LowLevel.KeyboardState()); yield return Frames(3); }
+    /// <summary>The plate open, folded, and 2 pressed while folded (the Scout's Listen: target mode), at route G's 2:00, into briefs/016/plate/.</summary>
+    public static string Plate16() { rlog.Clear(); H.StartCoroutine(PlateCo()); return "started"; }
+    static string PL(string n) => "/Users/sky/Projects/suborned/briefs/016/plate/" + n;
+    static System.Collections.IEnumerator PlShot(string name, string state) { while (HudToolkit.ShotBusy) yield return null; L(name + ": " + HudToolkit.Shoot(PL(name), state) + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    static System.Collections.IEnumerator PlateCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false; var hud = UnityEngine.Object.FindAnyObjectByType<HudToolkit>();
+        yield return Mouse(-50, -50, false);
+        L("start " + Start()); L("loop " + Loop()); L("watch " + ToWatch()); L("takedown armed " + ToTakedown());
+        h.Cancel(); h.ClosePanel(); h.Select(OpId.Scout, false); h.View.orthographicSize = 14f; Frame("guard", 0.5f, 0.5f); h.ClearHover();
+        hud.FoldPlate(false); yield return Frames(4); yield return PlShot("01-open", "rest");
+        hud.FoldPlate(true); yield return Frames(4); yield return PlShot("02-folded", "rest");
+        KeyDown("Digit2"); yield return Frames(3); UnityEngine.InputSystem.InputSystem.QueueStateEvent(UnityEngine.InputSystem.Keyboard.current, new UnityEngine.InputSystem.LowLevel.KeyboardState()); yield return Frames(4);
+        h.ClearHover(); yield return Frames(2);
+        L($"2 pressed folded: picked {h.Picked} target mode {h.TargetMode} marks {Marks()}");
+        yield return PlShot("03-folded-2-pressed", "active");
+        h.Cancel(); hud.FoldPlate(false); PlayerPrefs.DeleteKey("Suborned.Hud.PlateFolded"); L("done");
+    }
+    // ---------------------------------------------------------------- route B by hand (Sky: "couldn't get the take action to appear"; "it kept landing
+    // on the driver"): route-b.json's orders at its ticks, each through the HUD (ground clicks, target markers, the right-click panel, the car marker)
+    public static string RouteB() { rlog.Clear(); H.StartCoroutine(RouteBCo()); return "started"; }
+    static System.Collections.IEnumerator RouteBCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+        Move("enforcer", "d:Service lane"); Move("scout", "d:Meet driver"); Move("fixer", "d:Boarding pavilion");
+        h.RunTo(556); h.Select(OpId.Scout, false); h.Pick(0); L("watch " + TC("person", "driver")); h.Cancel();
+        Free(756, 0); Move("scout", "d:Meet driver"); h.Select(OpId.Fixer, false); h.Pick(1); L("pay " + TC("person", "driver")); h.Cancel();
+        h.RunTo(778); h.Select(OpId.Scout, false); h.Pick(1); L("listen " + TC("person", "driver")); h.Cancel();
+        Free(1198, 0); Move("scout", at: new Pt(8250, -3100)); h.RunTo(1256); Move("fixer", "crew:fixer");
+        h.RunTo(1900); h.Select(OpId.Scout, false); h.Pick(2); L("mislead " + TC("rivals", null)); h.Cancel();
+        Free(2340, 0); Move("scout", "crew:scout");
+        L($"driver turned {h.Game.PersonByRole("driver").Turned} · {Status()}");
+        // too early: the Enforcer's Take on Vale is locked, with when
+        h.RunTo(3600); h.Select(OpId.Enforcer, false); h.View.orthographicSize = 14f; Frame("councillor", 0.5f, 0.5f); h.ClosePanel();
+        { var sp = h.View.WorldToScreenPoint(AnchorOf("councillor")); yield return Mouse(sp.x, sp.y, false); yield return Frames(3); h.PointerRight(sp); yield return Frames(3);
+          L($"3600 vale {h.Game.Vale}: panel rows {(h.Panel == null ? "-" : string.Join(" | ", h.Panel.Rows.ConvertAll(r => $"{r.By} {r.Verb} {(r.Available ? "ok" : r.Reason)}")))}");
+          yield return BShot("route-b-00-take-too-early", "active"); h.ClosePanel(); }
+        int g = 0; while (h.Game.Vale != ValeAt.Pickup && g++ < 600) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(Math.Max(h.Game.Tick, 3700)); Frame("councillor", 0.5f, 0.5f); yield return Mouse(-50, -50, false); yield return Frames(2); h.ClearHover();
+        L($"at the car: vale {h.Game.Vale} tick {h.Game.Tick} objective {h.ObjectiveKey} hint {h.HintNow?.Id}");
+        yield return BShot("route-b-01-vale-at-car", "rest");
+        // the cursor on Vale where the driver stands with him: Vale is what a right click hits (the stack shows both)
+        { var sp = h.View.WorldToScreenPoint(AnchorOf("councillor")); yield return Mouse(sp.x, sp.y, false); yield return Frames(4);
+          L($"hover at Vale: {h.Hover?.Kind}/{h.Hover?.Key} '{h.HoverName}' stack {h.HoverStackCount} at {h.HoverStackIndex}");
+          yield return BShot("route-b-02-hover-vale", "active");
+          var dsp = h.View.WorldToScreenPoint(AnchorOf("driver")); yield return Mouse(dsp.x, dsp.y, false); yield return Frames(4);
+          L($"hover at the driver: {h.Hover?.Kind}/{h.Hover?.Key} '{h.HoverName}' stack {h.HoverStackCount}");
+          // the Scout selected: Take shows greyed, Enforcer only
+          h.Select(OpId.Scout, false); h.PointerRight(sp); yield return Frames(3);
+          L($"scout selected, right click Vale: {(h.Panel == null ? "-" : string.Join(" | ", h.Panel.Rows.ConvertAll(r => $"{r.By} {r.Verb} {(r.Available ? "ok" : r.Reason)}")))}");
+          yield return BShot("route-b-03-enforcer-only", "active"); h.ClosePanel();
+          // the Enforcer: right click the driver (the fallback), then Vale; Take tops the panel
+          h.Select(OpId.Enforcer, false); h.PointerRight(dsp); yield return Frames(3);
+          L($"enforcer, right click the driver: {(h.Panel == null ? "-" : string.Join(" | ", h.Panel.Rows.ConvertAll(r => $"{r.By} {r.Verb} {(r.Available ? "ok" : r.Reason)}")))}"); h.ClosePanel();
+          h.PointerRight(sp); yield return Frames(3);
+          L($"enforcer, right click Vale: {(h.Panel == null ? "-" : string.Join(" | ", h.Panel.Rows.ConvertAll(r => $"{r.By} {r.Verb} {(r.Available ? "ok" : r.Reason)}")))}");
+          yield return BShot("route-b-04-panel-take", "active");
+          L("take " + DoRow(x => x.I.Order.Do == "take") + " · " + Status()); }
+        yield return Mouse(-50, -50, false);
+        g = 0; while (h.Game.Vale != ValeAt.WithEnforcer && g++ < 600 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        L($"taken: vale {h.Game.Vale} tick {h.Game.Tick} objective {h.ObjectiveKey}");
+        h.RunTo(Math.Max(h.Game.Tick, 4080)); Move("enforcer", at: new Pt(2400, -6000));
+        h.RunTo(4394); h.Issue(new Order { Op = "cell", Do = "panic" }); h.RunTo(4464); Move("enforcer", "d:Getaway bay");
+        g = 0; while (h.Game.Ops[3].Walk != null && g++ < 600 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(Math.Max(h.Game.Tick, 4593)); Frame("car/getaway", 0.5f, 0.45f); h.ClearHover(); yield return Frames(2);
+        yield return BShot("route-b-05-car-marker", "rest");
+        h.StepMarkClick("car"); L("car marker " + Status());
+        g = 0; while (!h.Game.Over && g++ < 300) { h.RunTo(h.Game.Tick + 5); yield return null; }
+        int w = 0; while (h.Ending.Length == 0 && w++ < 100) yield return null;
+        L($"ending '{h.Ending}' session {h.SessionPath}");
+        yield return Frames(6); yield return BShot("route-b-06-success", "active");
+        L("done");
+    }
+    static System.Collections.IEnumerator BShot(string name, string state) { while (HudToolkit.ShotBusy) yield return null; L(name + ": " + HudToolkit.Shoot(V(name), state) + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null; }
+    public static string All16() { rlog.Clear(); H.StartCoroutine(AllCo()); return "started"; }
+    static System.Collections.IEnumerator AllCo()
+    {
+        L("== route G turned"); yield return RouteCo(); L("== vale"); yield return ValeCo(); L("== pick"); yield return PickCo(); L("== plate"); yield return PlateCo(); L("== route B"); yield return RouteBCo();
+        L("== heard"); yield return HeardCo(); L("== door unknown"); yield return UnkCo(); L("== door seen"); yield return SeenCo(); L("== audits"); Setup16(); yield return AuditCo(); L("== hint"); yield return HintCo(); L("ALL DONE");
+    }
+    static System.Collections.IEnumerator HintCo()
+    {
+        var h = H; L(HintTest(0)); var g = h.Game; int guard = 0; while (!g.Orders.Exists(o => o.order.Do == "watch" && o.ok) && guard++ < 1200) h.RunTo(g.Tick + 1);
+        h.RunTo(g.Tick + 100); h.CentreOn(OpId.Scout); h.ClearHover(); L($"hint {h.HintNow?.Id}");
+        yield return new WaitForSecondsRealtime(7f); h.HintReopenAt = Time.unscaledTime; yield return Frames(3);
+        while (HudToolkit.ShotBusy) yield return null; L("h13: " + HudToolkit.Shoot(ShotDir + "h13-hint", "rest") + $" · audit {Audit()}"); yield return Frames(2); while (HudToolkit.ShotBusy) yield return null;
+    }
+    /// <summary>The door's unknown state: route G to the knockout, then wait (no Enter) until the reroute runs out and the unlearned patrol is back.</summary>
+    public static string Unk16() { rlog.Clear(); H.StartCoroutine(UnkCo()); return "started"; }
+    static System.Collections.IEnumerator UnkCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        yield return Mouse(-50, -50, false);
+        L("start " + Start()); L("loop " + Loop()); L("watch " + ToWatch()); L("takedown armed " + ToTakedown()); L("card " + OpenCard()); L("knockout " + KnockOut());
+        int g = 0; while (h.DoorState != "unk" && g++ < 2400 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        h.Select(OpId.Enforcer, false); h.Cancel(); h.ClosePanel(); Frame("marker/door", 0.5f, 0.5f); h.ClearHover();
+        L($"door state {h.DoorState} eye {h.DoorEye} patrol away until {h.Game.PatrolAwayUntil} tick {h.Game.Tick} hint {h.HintNow?.Id}");
+        var dsp = h.View.WorldToScreenPoint(h.frame.World(h.Game.S.At(h.Game.S.GuardPost))); yield return Mouse(dsp.x, dsp.y, false); yield return Frames(6);
+        yield return VShot("01b-door-unknown-hover", "active"); yield return Mouse(-50, -50, false); L("done");
+    }
+    public static string Heard16() { rlog.Clear(); H.StartCoroutine(HeardCo()); return "started"; }
+    static System.Collections.IEnumerator HeardCo()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false; yield return Mouse(-50, -50, false);
+        h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.RunTo(20);
+        h.Select(OpId.Scout, false); h.Pick(1); L("listen marks before Inez's routine (none on her): " + Marks()); h.Cancel();
+        h.Pick(0); L("watch " + TC("person", "waitress")); h.Cancel();
+        { int g0 = 0; while ((h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null || h.PendingOf(0).verb.Length > 0) && g0++ < 2000) h.RunTo(h.Game.Tick + 1); }
+        h.Pick(1); L("listen 1 " + TC("person", "waitress")); h.Cancel();
+        int g = 0; while ((h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null || h.PendingOf(0).verb.Length > 0) && g++ < 2000) h.RunTo(h.Game.Tick + 1);
+        L($"listened: tick {h.Game.Tick} orders {string.Join(" | ", h.Game.Orders.ConvertAll(o => o.ToString()))}");
+        h.Pick(1); yield return Frames(2); L("listen marks now: " + Marks()); h.Cancel();
+        Frame("waitress", 0.45f, 0.45f); var sp = h.View.WorldToScreenPoint(AnchorOf("waitress")); yield return Mouse(sp.x, sp.y, false); yield return Frames(3); h.PointerRight(sp); yield return Frames(3);
+        L($"second listen on Inez: {(h.Panel == null ? "-" : string.Join(" | ", h.Panel.Rows.ConvertAll(r => $"{r.By} {r.Verb} {(r.Available ? "ok" : r.Reason)}")))}");
+        yield return PShot("05-listen-heard", "active"); h.ClosePanel(); yield return Mouse(-50, -50, false); L("heard done");
+    }
+    static System.Collections.IEnumerator SeenCo()
+    {
+        var h = H; L("setup " + Setup16()); h.Cancel(); h.ClosePanel(); h.Select(OpId.Enforcer, false); h.View.orthographicSize = 14f; Frame("marker/door", 0.5f, 0.5f); h.TurnSnap(2); h.ClearHover(); yield return Frames(4);
+        L($"door state {h.DoorState} eye {h.DoorEye} marked {h.DoorMarked} tick {h.Game.Tick}");
+        yield return VShot("01c-door-seen", "rest");
+    }
+    public static string Turn(int k) { var h = H; h.TurnSnap(k); h.ClearHover(); return $"yaw {h.Yaw:0} index {h.YawIndex}"; }
+    public static string TurnShot(int k, string name, string state) { if (HudToolkit.ShotBusy) return "busy (not turned)"; Turn(k); return HudToolkit.Shoot(ShotDir + name, state); }
+    /// <summary>Where each key person stands on screen now: in view (viewport x, y), or off it, and whether an edge arrow points (Vale only).</summary>
+    public static string Who()
+    {
+        var h = H; var cam = h.View; var sb = new System.Text.StringBuilder($"yaw {h.Yaw:0} fadePoints {Fade()?.PointCount} reached {Fade()?.Reached}\n");
+        foreach (var k in new[] { "op/scout", "op/fixer", "op/tech", "op/enforcer", "waitress", "guard", "councillor" })
+        {
+            var t = h.Views.Find(k); if (!t) { sb.Append($"{k}: no view\n"); continue; }
+            var vp = cam.WorldToViewportPoint(t.position + Vector3.up); bool on = t.gameObject.activeSelf && vp.z > 0 && vp.x > 0 && vp.x < 1 && vp.y > 0 && vp.y < 1;
+            sb.Append($"{k}: {(t.gameObject.activeSelf ? "drawn" : "not drawn")} {(on ? "on screen" : "off screen")} ({vp.x:0.00}, {vp.y:0.00})\n");
+        }
+        sb.Append($"vale known {h.ValeKnown} seen {h.ValeSeen}");
+        return sb.ToString();
+    }
+    static Suborned.ArchitectureFade Fade() => H.View ? H.View.GetComponent<Suborned.ArchitectureFade>() : null;
+
+    static HandoverHost H => UnityEngine.Object.FindAnyObjectByType<HandoverHost>();
+    const string Out = "/Users/sky/Projects/suborned/briefs/016/";
+
+    static Vector2 Screen(Vector3 w) { var p = H.View.WorldToScreenPoint(w); return new Vector2(p.x, p.y); }
+    static Vector3 W(string key) => H.Views.Find(key).position;
+    static void Right(string key, float up = 1.0f) { Physics.SyncTransforms(); var s = Screen(W(key) + Vector3.up * up); H.PointerHover(s); H.PointerRight(s); }
+    static void Hover(string key) { Physics.SyncTransforms(); var s = Screen(W(key) + Vector3.up * 1.0f); H.PointerHover(s); }
+    static int Row(Func<HandoverHost.PanelRow, bool> f) { var p = H.Panel; for (int i = 0; i < p.Rows.Count; i++) if (f(p.Rows[i])) return i; return -1; }
+    static string DoRow(Func<HandoverHost.PanelRow, bool> f) { int i = Row(f); if (i < 0) return "no row"; H.PanelDo(i); return "row " + i; }
+    static void Move(string op, string to = null, Pt? at = null, bool run = false) => H.Issue(at.HasValue ? new Order { Op = op, Do = "move", Point = at, Run = run } : new Order { Op = op, Do = "move", To = to, Run = run });
+    static void Look(string key, Vector3 off = default) => H.LookAt(W(key) + off);
+    /// <summary>Pan so `key` sits at a fraction of the frame (0,0 top left), as the 013 moments framed it.</summary>
+    static void Frame(string key, float fx, float fy)
+    {
+        var h = H; var w = W(key); h.LookAt(w); var cam = h.View; var plane = new Plane(Vector3.up, w);
+        Vector3 G(Vector2 sp) { var r = cam.ScreenPointToRay(sp); plane.Raycast(r, out var d); return r.GetPoint(d); }
+        var p = cam.WorldToScreenPoint(w); var want = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight);
+        h.LookAt(w + (G(p) - G(want)));
+    }
+
+    /// <summary>A player waits: run to `tick`, then on until the agent is free (no act, no walk).</summary>
+    static void Free(int tick, int k) { var h = H; h.RunTo(tick); int g = 0; while ((h.Game.Ops[k].Busy != null || h.Game.Ops[k].Walk != null) && g++ < 600 && !h.Game.Over) h.RunTo(h.Game.Tick + 1); }
+
+    public static string Status() { var h = H; return $"tick {h.Game.Tick} {HandoverHost.MissionClock(h.Game.Tick)} over {h.Game.Over} ending '{h.Ending}' panel {(h.Panel == null ? "-" : h.Panel.Rows.Count.ToString())} enforcer {h.Game.Ops[3].Busy?.Do} inside {h.Game.Ops[3].Inside} vale {h.Game.Vale} alert {h.Game.Alert} busy {HudToolkit.ShotBusy}"; }
+    // each run_script compiles afresh, so the shot folder lives in a file (empty or absent: briefs/014/play/)
+    const string DirFile = "/Users/sky/Projects/suborned/out/latch016/shot-dir.txt";
+    static string ShotDir => System.IO.File.Exists(DirFile) && System.IO.File.ReadAllText(DirFile).Trim().Length > 0 ? System.IO.File.ReadAllText(DirFile).Trim() : Out;
+    public static string Shot(string name, string state) => HudToolkit.Shoot(ShotDir + name, state);
+    public static string Peek(bool on) { H.PeekLatch = on; return "peek " + on; }
+
+    public static string Start()
+    {
+        var h = H; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+        Move("tech", "cabinet", run: true); Move("enforcer", at: new Pt(4850, -2300)); Move("scout", "d:Office approach"); Move("fixer", "crew:fixer");
+        h.RunTo(120); h.Select(OpId.Tech, false); Frame("marker/cabinet", 0.5f, 0.5f); // Keel's retimed route G (route-g-fast, 2026-10-16): the cell starts by the pavilion
+        Right("marker/cabinet");
+        return Status();
+    }
+
+    /// <summary>Route G by hand, as recorded in briefs/013/play/route-g-by-hand.script.json: the same orders at the same ticks, each given the
+    /// way a player gives it (a ground click's move, a panel row, the hotbar's verb and a right click on the target).</summary>
+    public static string Loop() { var h = H; h.ClosePanel(); h.RunTo(125); Right("marker/cabinet"); var r = DoRow(x => x.I.Order.Do == "loop" && x.I.Order.Target == "entrance"); return r + " · " + Status(); }
+
+    public static string ToWatch()
+    {
+        var h = H; h.RunTo(355); h.Select(OpId.Scout, false);
+        Frame("guard", 0.45f, 0.45f); Right("guard"); var r = DoRow(x => x.I.Order.Do == "watch");
+        h.RunTo(500); Frame("guard", 0.45f, 0.45f); return r + " · " + Status();
+    }
+
+    public static string ToTakedown()
+    {
+        var h = H; Free(555, 0); Move("scout", "crew:scout");
+        h.RunTo(745); Move("enforcer", at: new Pt(5175, -2880));
+        Free(745, 2); h.Select(OpId.Tech, false); h.ClosePanel(); h.Pick(1); Right("marker/cabinet"); var r = "reroute " + h.Game.Orders[h.Game.Orders.Count - 1].ok; // the hotbar's fast path: 2 then a right click
+        h.Cancel();
+        h.RunTo(1190); int w = 0; while (h.Game.PatrolAwayUntil <= h.Game.Tick && w++ < 300) h.RunTo(h.Game.Tick + 1); // the patrol must be away first
+        h.Select(OpId.Enforcer, false); h.Pick(2); Frame("guard", 0.32f, 0.36f); Hover("guard");
+        return r + " · armed " + h.Picked + " · " + Status();
+    }
+
+    public static string OpenCard() { var h = H; h.Cancel(); Right("guard"); return Status(); }
+    public static string KnockOut()
+    {
+        var h = H; h.ClosePanel(); h.Cancel();
+        h.RunTo(Math.Max(h.Game.Tick, 1195)); h.Pick(2); Right("guard"); var r = "takedown " + h.Game.Orders[h.Game.Orders.Count - 1].order.Do + " " + h.Game.Orders[h.Game.Orders.Count - 1].ok;
+        h.RunTo(h.Game.Tick + 20); return r + " · " + Status();
+    }
+
+    public static string Enter()
+    {
+        var h = H; h.RunTo(1255); Move("tech", "crew:tech"); Free(1255, 3); h.Select(OpId.Enforcer, false); h.Cancel(); Right("marker/door"); var r = DoRow(x => x.I.Order.Do == "enter");
+        h.RunTo(h.Game.Tick + 60); Frame("marker/door", 0.36f, 0.4f); return r + " · " + Status();
+    }
+
+    public static string Finish()
+    {
+        var h = H;
+        // as a player plays it: out with Vale, then towards the car; panic once the fight is on; to the bay; Vale into the car on arrival
+        h.RunTo(1635); int g = 0; while ((h.Game.Ops[3].Inside || h.Game.Vale != ValeAt.WithEnforcer) && g++ < 900 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        Move("enforcer", at: new Pt(2400, -6000)); int t0 = h.Game.Tick;
+        g = 0; while (!h.Game.FightOn && g++ < 900 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(Math.Max(h.Game.Tick, t0 + 314)); h.Issue(new Order { Op = "cell", Do = "panic" }); // both buttons, once the fight is on
+        h.RunTo(h.Game.Tick + 81); Move("enforcer", "d:Getaway bay");
+        Free(2159, 3); h.Select(OpId.Enforcer, false); Frame("car/getaway", 0.5f, 0.55f); Right("car/getaway"); var r = h.Panel != null ? DoRow(x => x.I.Order.Do == "extract") : "no panel";
+        return r + " · " + Status();
+    }
+
+    // the branch for 07, 08, 10, 11: route G's orders up to the knockout, then carry and hide, or leave the body to be found
+    public static string Branch()
+    {
+        var h = H; Start(); Loop(); ToWatch(); ToTakedown(); OpenCard(); KnockOut();
+        int guard = 0; while (h.Game.Ops[3].Busy != null && guard++ < 200) h.RunTo(h.Game.Tick + 1);
+        return Status();
+    }
+
+    public static string Carry()
+    {
+        var h = H; var body = h.Game.Bodies.First(); h.Select(OpId.Enforcer, false); h.Cancel(); Frame("body/" + HostViews.KeyOf(body.P), 0.4f, 0.4f);
+        Right("body/" + HostViews.KeyOf(body.P), 0.15f); var r = DoRow(x => x.I.Order.Do == "carry");
+        int guard = 0; while (h.Game.Ops[3].CarryBody.Length == 0 && guard++ < 200) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(Math.Max(h.Game.Tick, 1320));
+        var st = h.Game.S.Stashes.First(s => s.Kind != "door"); var at = h.frame.World(st.Stand);
+        h.LookAt(Vector3.Lerp(W("op/enforcer"), at, 0.5f)); h.PointerHover(Screen(at));
+        return r + " · " + Status();
+    }
+
+    public static string Hide()
+    {
+        var h = H; h.Pick(1); int guard = 0; while (h.Game.Ops[3].CarryBody.Length > 0 && guard++ < 400) h.RunTo(h.Game.Tick + 1);
+        h.RunTo(1540); return Status();
+    }
+
+    public static string WaitHeld()
+    {
+        var h = H; h.RunTo(1255); Move("tech", "crew:tech"); // as route G: the Tech leaves the cabinet and the camera sees again; the Enforcer stays out
+        int guard = 0; while (!h.Game.S.Entrances.Exists(e => h.Game.DoorHeld(e.id)) && guard++ < 1200 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+        Frame("marker/door", 0.36f, 0.4f); h.Select(OpId.Enforcer, false); h.Cancel(); h.RunTo(h.Game.Tick + 10); return Status() + " held " + h.Game.S.Entrances.Count(e => h.Game.DoorHeld(e.id));
+    }
+
+    public static string TryEnter() { Right("marker/door"); var r = H.Panel != null ? DoRow(x => x.I.Order.Do == "enter") : "no panel"; return r + " · " + Status(); }
+
+    /// <summary>Replays from the start to moment n (the 013 moments, 12 = the takedown card with Alt held) and shoots it.</summary>
+    public static string Moment(int n)
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false; string r = "";
+        switch (n)
+        {
+            case 1: r = Start(); return r + " · " + Shot("01-tech-loop-targets", "active");
+            case 2: Start(); Loop(); r = ToWatch(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("02-scout-watches-guard", "rest");
+            case 3: Start(); Loop(); ToWatch(); r = ToTakedown(); return r + " · " + Shot("03-knockout-price", "active");
+            case 4: Start(); Loop(); ToWatch(); ToTakedown(); r = OpenCard(); return r + " · " + Shot("04-takedown-card", "active");
+            case 12: Start(); Loop(); ToWatch(); ToTakedown(); r = OpenCard(); h.PeekLatch = true; return r + " · " + Shot("12-alt", "alt");
+            case 5: Start(); Loop(); ToWatch(); ToTakedown(); OpenCard(); r = KnockOut(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("05-takedown", "rest");
+            case 6: Start(); Loop(); ToWatch(); ToTakedown(); OpenCard(); KnockOut(); r = Enter(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("06-body", "rest");
+            case 7: Branch(); r = Carry(); return r + " · " + Shot("07-carry", "rest");
+            case 8: Branch(); Carry(); r = Hide(); Look("op/enforcer"); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("08-body-hidden", "rest");
+            case 10: Branch(); r = WaitHeld(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("10-held-door", "rest");
+            case 11: Branch(); WaitHeld(); r = TryEnter(); return r + " · " + Shot("11-held-door-enter-refused", "rest");
+            case 13: r = Cafe(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + Shot("cafe-after", "rest");
+            case 9: Start(); Loop(); ToWatch(); ToTakedown(); OpenCard(); KnockOut(); Enter(); r = Finish(); return r + " · " + Shot("09-end-card", "active");
+        }
+        return "no moment " + n;
+    }
+
+    /// <summary>Moment 10's state shot to an arbitrary name (the polish crops at 1x and 2x).</summary>
+    public static string Polish(string name) { var h = H; Application.runInBackground = true; h.PeekLatch = false; Branch(); var r = WaitHeld(); H.PointerHover(new Vector2(-500, -500)); return r + " · " + HudToolkit.Shoot("/Users/sky/Projects/suborned/out/less/polish/" + name, "rest"); }
+    public static string FreeAspect()
+    {
+        var gv = Type.GetType("UnityEditor.GameView,UnityEditor"); var w = Resources.FindObjectsOfTypeAll(gv)[0];
+        gv.GetProperty("selectedSizeIndex", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public).SetValue(w, 0);
+        return "free aspect " + gv.GetProperty("targetSize", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public).GetValue(w);
+    }
+    public static string OneX() { UnityEditor.PlayModeWindow.SetCustomRenderingResolution(1726, 1142, "brief014"); return "1x"; }
+
+    /// <summary>Live check: a fresh run with the briefing up; the pointer swept over the street (people, the cabinet, open ground) and clicked
+    /// there must leave no hover, intent, walk chip or order. Then the briefing shot with the cursor over the street.</summary>
+    public static string ModalCheck()
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false; h.Begin(); h.IntelOpen = false;
+        if (!h.ShowBriefing) return "FAIL: no briefing";
+        int orders = h.Game.Orders.Count; var bad = new System.Collections.Generic.List<string>();
+        foreach (var key in new[] { "waitress", "guard", "marker/cabinet", "op/scout", "councillor" })
+        {
+            var t = h.Views.Find(key); if (!t || !t.gameObject.activeSelf) continue; Physics.SyncTransforms();
+            var sp = Screen(t.position + Vector3.up); h.PointerHover(sp); h.PointerRight(sp); h.PointerLeft(sp);
+            if (h.Hover != null || h.HoverIntent != null || h.Panel != null) bad.Add(key);
+        }
+        for (int i = 0; i < 6; i++) { var sp = new Vector2(200 + i * 230, 300 + i * 60); h.PointerHover(sp); if (h.MoveChip != null || h.MoveNow != null || h.Hover != null) bad.Add($"ground {i}"); }
+        if (h.Game.Orders.Count != orders) bad.Add("an order reached the engine");
+        var mid = new Vector2(1100, 260); h.PointerHover(mid); // the cursor stays over the street for the shot
+        var shot = HudToolkit.Shoot(ShotDir + "briefing-cursor-over-street", "active");
+        return (bad.Count == 0 ? "PASS" : "FAIL: " + string.Join(", ", bad)) + $" · orders {h.Game.Orders.Count} · briefing {h.ShowBriefing} · shot {shot}";
+    }
+
+    /// <summary>A hint with its ring (moment: Scout idle with Inez's routine known), and the same after the fade.</summary>
+    public static string HintRing(int phase)
+    {
+        var h = H; Application.runInBackground = true;
+        if (phase == 0)
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.HintsOn = true;
+            h.RunTo(200); // H1 (watch the café terrace) shows after 8 s idle
+            var r = h.HintNow?.Ring; if (r.HasValue) h.LookAt(r.Value);
+            h.SetPaused(true); H.PointerHover(new Vector2(-500, -500));
+            return $"hint {h.HintNow?.Id} ring {r.HasValue} (set up; the objective line shows first)";
+        }
+        if (phase == 1) return $"hint {h.HintNow?.Id} showing {h.HintLineShowing} · " + HudToolkit.Shoot(ShotDir + "hint-ring-on", "rest");
+        return $"hint {h.HintNow?.Id} showing {h.HintLineShowing} · " + HudToolkit.Shoot(ShotDir + "hint-ring-faded", "rest");
+    }
+
+    /// <summary>Walk, run, refused run: the Scout walks a long way (the walk chip), G toggles it to a run (the run chip, its eye), and the
+    /// Enforcer carrying the guard's body is refused a run (the pop; the chip unchanged).</summary>
+    public static string Gait(int phase)
+    {
+        var h = H; Application.runInBackground = true;
+        if (phase == 0)
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.Select(OpId.Scout, false);
+            Move("scout", at: new Pt(5175, -6000)); h.RunTo(40); Frame("op/scout", 0.5f, 0.5f); H.PointerHover(new Vector2(-500, -500));
+            return $"walking {h.Game.Ops[0].Walk != null} running {h.Game.Ops[0].Running} left {h.DoingOf(0).TicksLeft / 10} s · " + HudToolkit.Shoot(ShotDir + "gait-walk", "rest");
+        }
+        if (phase == 1) { h.ToggleGait(0); h.RunTo(h.Game.Tick + 5); Frame("op/scout", 0.5f, 0.5f); H.PointerHover(new Vector2(-500, -500)); var o = h.Game.Orders[h.Game.Orders.Count - 1]; return $"order {o.order.Do} run {o.order.Run} ok {o.ok} running {h.Game.Ops[0].Running} left {h.DoingOf(0).TicksLeft / 10} s · " + HudToolkit.Shoot(ShotDir + "gait-run", "rest"); }
+        // the carry: route G to the knockout, the Enforcer lifts the body and walks it; G is refused
+        Branch(); Carry(); var e = h.Game.Ops[3]; Move("enforcer", at: new Pt(e.Pos.X - 1500, e.Pos.Y)); h.RunTo(h.Game.Tick + 3); h.Select(OpId.Enforcer, false);
+        int n = h.Game.Orders.Count; h.ToggleGait(3); var last = h.Game.Orders[h.Game.Orders.Count - 1];
+        Frame("op/enforcer", 0.5f, 0.5f); H.PointerHover(new Vector2(-500, -500));
+        return $"carrying {e.CarryBody.Length > 0} walking {e.Walk != null} order {last.order.Do} run {last.order.Run} ok {last.ok} running {e.Running} · " + HudToolkit.Shoot(ShotDir + "gait-refused-carrying", "rest");
+    }
+
+    /// <summary>Two agents moving with their pins (the click path: MoveSelection, so the pulse fires), then Alt held with their paths.</summary>
+    public static string Pins(int phase)
+    {
+        var h = H; Application.runInBackground = true;
+        if (phase == 0)
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+            h.Select(OpId.Scout, false); Frame("op/scout", 0.45f, 0.5f);
+            var cam = h.View; h.MoveSelection(new Vector2(cam.pixelWidth * 0.78f, cam.pixelHeight * 0.30f));
+            h.Select(OpId.Fixer, false); h.MoveSelection(new Vector2(cam.pixelWidth * 0.70f, cam.pixelHeight * 0.62f));
+            h.RunTo(h.Game.Tick + 30); h.PeekLatch = false; H.PointerHover(new Vector2(-500, -500));
+            return $"scout walk {h.Game.Ops[0].Walk != null} fixer walk {h.Game.Ops[1].Walk != null} · " + HudToolkit.Shoot(ShotDir + "pins-two-agents", "rest");
+        }
+        h.PeekLatch = true; var r = HudToolkit.Shoot(ShotDir + "pins-alt-paths", "alt"); return "alt · " + r;
+    }
+
+    /// <summary>Inez's card: the Fixer on Inez with every approach available (her routine, need and temperament learned first), then the
+    /// same card with locked rows (a fresh run, nothing learned). Each shot, then the layout audit with worst-case values.</summary>
+    public static string InezCard(int phase)
+    {
+        var h = H; Application.runInBackground = true; HudToolkit.Stress = false;
+        if (phase == 0 || phase == 2)
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+            if (phase == 0)
+            {
+                h.Select(OpId.Scout, false); Right("waitress"); DoRow(x => x.I.Order.Do == "watch"); int g = 0; while (h.Game.Ops[0].Busy == null && h.Game.Ops[0].Walk != null || h.Game.Ops[0].Busy != null) { h.RunTo(h.Game.Tick + 5); if (++g > 400) break; }
+                Right("waitress"); DoRow(x => x.I.Order.Do == "listen"); g = 0; while (h.Game.Ops[0].Busy != null || h.Game.Ops[0].Walk != null) { h.RunTo(h.Game.Tick + 5); if (++g > 400) break; }
+            }
+            h.Select(OpId.Fixer, false); Frame("waitress", 0.35f, 0.4f); h.Cancel(); Right("waitress");
+            var p = h.Panel; var rows = p == null ? "none" : string.Join(", ", p.Rows.ConvertAll(r => r.I.Order.Approach + (r.Available ? "" : "(locked)")));
+            return rows + " · " + HudToolkit.Shoot(ShotDir + (phase == 0 ? "inez-card-available" : "inez-card-locked"), "active");
+        }
+        // phase 1 / 3: the audit, real values then worst case
+        var real = HudToolkit.AuditText(); return "real: " + (real.Count == 0 ? "clean" : string.Join(" | ", real));
+    }
+
+    public static string StressOn() { HudToolkit.Stress = true; return "on"; }
+    public static string AuditStress() { var bad = HudToolkit.AuditText(); return "stress: " + (bad.Count == 0 ? "clean" : string.Join(" | ", bad)); }
+    public static string StressShot(string name) { HudToolkit.Stress = true; return HudToolkit.Shoot(ShotDir + name, "active"); }
+    public static string StressOff() { HudToolkit.Stress = false; return "off"; }
+
+    /// <summary>The history drawer open after the held-door branch (repeats merged, verb glyphs), and the people plate.</summary>
+    public static string History()
+    {
+        var h = H; Application.runInBackground = true; Branch(); WaitHeld(); h.Cancel(); H.PointerHover(new Vector2(-500, -500)); h.FeedHistoryOpen = true;
+        return HudToolkit.Shoot(ShotDir + "history-open", "active");
+    }
+    public static string HistoryClose() { H.FeedHistoryOpen = false; return "closed"; }
+
+    /// <summary>The eye's three states on real rows: report what each row's eye is.</summary>
+    public static string Eyes()
+    {
+        var h = H; var p = h.Panel; if (p == null) return "no panel";
+        return string.Join(", ", p.Rows.ConvertAll(r => { var f = HudModel.PriceLine(h, r.I).Find(x => x.Kind == "eye"); return $"{HudModel.ShortName(h, r.I)}={f?.Eye}"; }));
+    }
+
+    /// <summary>A seen run: the guard's sight learned (route G's Watch), then the Scout runs across his door: the run chip's eye is open.</summary>
+    public static string EyeOpen()
+    {
+        var h = H; Start(); Loop(); ToWatch(); Free(560, 0); h.Select(OpId.Scout, false); Move("scout", at: new Pt(5600, -1500), run: true); var lo = h.Game.Orders[h.Game.Orders.Count - 1]; h.RunTo(h.Game.Tick + 4);
+        Frame("op/scout", 0.4f, 0.45f); H.PointerHover(new Vector2(-500, -500)); var e = h.RunEye(0);
+        return $"order ok {lo.ok} running {h.Game.Ops[0].Running} eye {e} log {h.Game.Log[h.Game.Log.Count - 1].Text} · " + HudToolkit.Shoot(ShotDir + "eye-run-open", "rest");
+    }
+
+    /// <summary>The opening: a fresh run (as Begin and Replay make it), the briefing up; then the first second after Begin. Reports where each
+    /// agent lands on screen.</summary>
+    public static string Opening(int phase)
+    {
+        var h = H; Application.runInBackground = true; h.PeekLatch = false;
+        if (phase == 0) { h.Begin(); h.IntelOpen = false; }
+        else if (phase == 1) { h.StartClock(); h.RunTo(h.Game.Tick + 10); h.SetPaused(true); }
+        H.PointerHover(new Vector2(-500, -500));
+        var cam = h.View; var pts = new System.Collections.Generic.List<string>();
+        for (int k = 0; k < 4; k++) { var t = h.Views.Find("op/" + Op.Name((OpId)k)); var sp = cam.WorldToScreenPoint(t.position); pts.Add($"{Op.Name((OpId)k)} {sp.x:0},{cam.pixelHeight - sp.y:0}"); }
+        var focus = h.frame.World(HandoverHost.OpeningFocus);
+        return $"screen {cam.pixelWidth}x{cam.pixelHeight} zoom {cam.orthographicSize} focus {focus} · {string.Join(" · ", pts)} · " + HudToolkit.Shoot(ShotDir + (phase == 0 ? "opening-briefing" : "opening-after-begin"), phase == 0 ? "active" : "rest");
+    }
+
+    // ---------------------------------------------------------------- the move preview's states and the chips (brief 014, Glyph variant A)
+
+    public static string SetupFresh() { var h = H; Application.runInBackground = true; h.PeekLatch = false; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.RunTo(20); h.Select(OpId.Scout, false); Frame("guard", 0.5f, 0.42f); return Status(); }
+    public static string SetupWatched() { var h = H; Application.runInBackground = true; h.PeekLatch = false; Start(); Loop(); ToWatch(); Free(560, 0); h.Select(OpId.Scout, false); h.ClosePanel(); h.Cancel(); Frame("guard", 0.5f, 0.42f); return Status(); }
+    public static string SetupAlert() { var h = H; Application.runInBackground = true; h.PeekLatch = false; Branch(); var w = WatchCam("pickup"); var r = Carry(); h.Cancel(); h.Select(OpId.Enforcer, false); Frame("op/enforcer", 0.5f, 0.45f); return w + " · " + r; }
+    public static string SetupCarry() { var h = H; Application.runInBackground = true; h.PeekLatch = false; Branch(); var r = Carry(); h.Cancel(); h.Select(OpId.Enforcer, false); Frame("op/enforcer", 0.5f, 0.45f); return r; }
+
+    /// <summary>Sweeps the screen for a ground point whose preview is `state` for the selected agent, leaves the cursor there.</summary>
+    public static string Find(string state) => FindW(state, 0);
+    public static string FindW(string state, int minWalk)
+    {
+        var h = H; var cam = h.View; Vector2 best = default; bool found = false; int tried = 0;
+        for (float fy = 0.25f; fy <= 0.85f && !found; fy += 0.05f)
+            for (float fx = 0.2f; fx <= 0.85f && !found; fx += 0.04f)
+            {
+                var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight); tried++;
+                h.PreviewAt(sp); var mv = h.MoveNow;
+                if (mv != null && mv.Refused.Length == 0 && mv.State == state && mv.WalkS >= minWalk && (state != "seen" || mv.Glow.Count > 0)) { best = sp; found = true; }
+            }
+        if (!found) return $"no {state} point in {tried}";
+        h.PreviewAt(best); var m = h.MoveNow;
+        return $"{state} at {best} walk {m.WalkS} s seenKind '{m.SeenKind}' glow {m.Glow.Count} unwatched {m.Unwatched.Count}";
+    }
+
+    public static string Probe(float fx, float fy)
+    {
+        var h = H; var cam = h.View; var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight); h.PreviewAt(sp); var m = h.MoveNow;
+        return $"sel {h.Selected} hover {(h.Hover == null ? "-" : "set")} mv {(m == null ? "null" : $"refused '{m.Refused}' state '{m.State}' walk {m.WalkS} glow {m.Glow?.Count} seenKind '{m.SeenKind}'")} cam {cam.pixelWidth}x{cam.pixelHeight}";
+    }
+
+    public static string ProbeQ(float fx, float fy)
+    {
+        var h = H; var cam = h.View; var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight); h.PreviewAt(sp); var m = h.MoveNow;
+        var r = cam.ScreenPointToRay(sp); var hit = Physics.Raycast(r, out var rh, 500f);
+        var pt = h.frame.Engine(rh.point); var q = h.Game.SeenAt(pt);
+        return $"state {m?.State} walk {m?.WalkS} | SeenAt here: {q.Seen} by [{string.Join(",", q.SeenBy)}] maybe [{string.Join(",", q.MaybeSeenBy)}] known guard sight {h.Game.Known("guard")?.Sight}";
+    }
+    public static string WatchCam(string id)
+    {
+        var h = H; h.Select(OpId.Scout, false); h.Cancel(); Frame("camera/" + id, 0.5f, 0.5f); Right("camera/" + id, 1.6f);
+        var rows = h.Panel == null ? "no panel" : string.Join(",", h.Panel.Rows.Select(x => x.I.Order.Do + ":" + x.I.Order.Target));
+        var r = DoRow(x => x.I.Order.Do == "watch"); int t0 = h.Game.Tick; Free(h.Game.Tick + 5, 0);
+        return $"{rows} · {r} · {t0}->{h.Game.Tick} known {h.Game.Known("camera:" + id)?.Sight}";
+    }
+    public static string To(int tick) { H.RunTo(tick); return Status() + $" carry {H.Game.Ops[3].CarryBody} pickup known {H.Game.Known("camera:pickup")?.Sight}"; }
+    /// <summary>The Scout runs to a screen point (a double-click's order); reports the run chip's eye, then the audit.</summary>
+    public static string RunAt(float fx, float fy)
+    {
+        var h = H; var cam = h.View; var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight);
+        h.frame.Ground(cam.ScreenPointToRay(sp), out var gw); var pt = h.frame.Engine(gw); pt = h.Game.S.Grid.NearestFree(pt) ?? pt;
+        Move("scout", at: pt, run: true); var o = h.Game.Orders[h.Game.Orders.Count - 1]; h.RunTo(h.Game.Tick + 3); h.PointerHover(new Vector2(-500, -500));
+        return $"running {h.Game.Ops[0].Running} eye '{h.RunEye(0)}' left {h.DoingOf(0)?.TicksLeft / 10} s";
+    }
+    public static string GoAt(int k, float fx, float fy, bool run)
+    {
+        var h = H; var cam = h.View; var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight);
+        h.frame.Ground(cam.ScreenPointToRay(sp), out var gw); var pt = h.frame.Engine(gw); pt = h.Game.S.Grid.NearestFree(pt) ?? pt;
+        Move(Op.Name((OpId)k), at: pt, run: run); var o = h.Game.Orders[h.Game.Orders.Count - 1];
+        return $"{(OpId)k} ok {o.ok} running {h.Game.Ops[k].Running} eye '{h.RunEye(k)}' walk {h.Game.Ops[k].Walk != null}";
+    }
+    public static string Step(int n) { var h = H; h.RunTo(h.Game.Tick + n); h.PointerHover(new Vector2(-500, -500)); return Status(); }
+    /// <summary>Runs agent k to the first point in view whose run nobody could see (the run chip's eye shut).</summary>
+    public static string RunShut(int k)
+    {
+        var h = H; var cam = h.View;
+        for (float fy = 0.15f; fy <= 0.9f; fy += 0.05f) for (float fx = 0.1f; fx <= 0.9f; fx += 0.04f)
+        {
+            var sp = new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight); if (!h.frame.Ground(cam.ScreenPointToRay(sp), out var gw)) continue;
+            var pt = h.frame.Engine(gw); if (!h.Game.S.Grid.Free(pt)) continue;
+            var q = h.Game.QuoteMove(Op.Name((OpId)k), pt); if (q.RunRefused.Length > 0 || q.RunFree || q.RunS < 4 || q.Seen.Seen != "no") continue;
+            Move(Op.Name((OpId)k), at: pt, run: true); h.RunTo(h.Game.Tick + 2); return $"{(OpId)k} runs {q.RunS} s eye '{h.RunEye(k)}'";
+        }
+        return "no shut run in view";
+    }
+    public static string Menu() { var h = H; h.StartClock(); h.RunTo(h.Game.Tick + 20); h.OpenMenu(); H.PointerHover(new Vector2(-500, -500)); return $"menu {h.MenuOpen} modal {h.Modal} paused {h.Paused}"; }
+    public static string MenuClose() { H.ResumeFromMenu(); return $"menu {H.MenuOpen} paused {H.Paused}"; }
+    public static string TwoX() { UnityEditor.PlayModeWindow.SetCustomRenderingResolution(3452, 2284, "brief014-2x"); return "2x"; }
+    public static string Sel(int k) { H.Select((OpId)k, false); return "selected " + (OpId)k; }
+    public static string FrameMid(string a, string b, float fx, float fy) { var h = H; var w = (W(a) + W(b)) / 2; h.LookAt(w); return "mid"; }
+    public static string FrameOn(string key, float fx, float fy) { Frame(key, fx, fy); return "framed " + key; }
+
+    /// <summary>States over a grid of the screen, as a map of letters (s safe, e seen, u unknown, a alert, - refused).</summary>
+    public static string Map()
+    {
+        var h = H; var cam = h.View; var sb = new System.Text.StringBuilder();
+        for (float fy = 0.2f; fy <= 0.86f; fy += 0.06f) { for (float fx = 0.1f; fx <= 0.9f; fx += 0.03f)
+        { h.PreviewAt(new Vector2(fx * cam.pixelWidth, (1 - fy) * cam.pixelHeight)); var m = h.MoveNow; sb.Append(m == null ? ' ' : m.Refused.Length > 0 ? '-' : m.State[0]); } sb.Append('\n'); }
+        return sb.ToString();
+    }
+
+    public static string Peeked(bool on) { H.PeekLatch = on; return "peek " + on; }
+
+    /// <summary>A run chip with the eye: the Scout runs to a point; reports the chip's eye.</summary>
+    public static string RunTo(int x, int y) { var h = H; Move("scout", at: new Pt(x, y), run: true); var o = h.Game.Orders[h.Game.Orders.Count - 1]; h.RunTo(h.Game.Tick + 4); H.PointerHover(new Vector2(-500, -500)); return $"ok {o.ok} running {h.Game.Ops[0].Running} eye '{h.RunEye(0)}' left {h.DoingOf(0).TicksLeft / 10} s"; }
+
+    public static string Audit() { var bad = HudToolkit.AuditText(); return bad.Count == 0 ? "clean" : string.Join(" | ", bad); }
+
+    public static string Cafe() { var h = H; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); h.RunTo(400); h.LookAt(h.frame.World(h.Game.PersonPos(h.Game.Inez).Value)); return Status(); }
+}

@@ -1,0 +1,16 @@
+32.7 real cursor 20 px off the camera: hover camera/entrance name 'Camera'
+32.7 01-hover-entrance-camera: queued · audit clean
+33.3 tech loop marks: cabinet/cabinet, camera/entrance, camera/mast-314, camera/pickup
+33.4 02-target-tech-loop: queued · audit clean
+33.7 loop marker cabinet/cabinet clicked: orders 4->5 pending 'loop' (was '')
+33.7 scout watch marks: person/guard, patrol/patrol, camera/entrance, camera/pickup, person/driver, person/waitress, camera/mast-314
+33.7 03-target-scout-watch: queued · audit clean
+34.1 watch marker person/guard clicked: orders 6->7 pending 'watch' (was '')
+34.2 reroute marker cabinet/cabinet clicked: orders 10->11 pending '' (was '')
+34.3 tab focus person/guard hover guard · marks person/guard, person/driver, person/waitress
+34.4 04-takedown-tab-focus: queued · audit clean
+34.7 takedown marker person/guard clicked: orders 11->12 pending 'takedown' (was '')
+34.7 enter row 0 · tick 1327 2:12 over False ending '' panel - enforcer enter inside True vale Office alert 0 busy False
+35.3 finish row 0 · tick 2182 3:38 over True ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' panel - enforcer  inside False vale Car alert 1 busy False
+35.3 ending 'Success at 3:38.2 · final 6a6efc182e38 · replay identical' session /Users/sky/Projects/suborned/out/play/handover-20261018-005003.script.json
+35.3 done

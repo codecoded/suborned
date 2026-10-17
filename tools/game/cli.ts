@@ -115,10 +115,36 @@ function check(): boolean {
   const s = spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
   const sj = existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
   console.log(`game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
+  const { pj, status } = proof();
+  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0;
+}
+
+/** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
+function proof(): { pj: any; status: number | null } {
+  const exe = join(APP, 'Contents', 'MacOS', 'The Suborned');
+  const bin = existsSync(exe) ? exe : join(APP, 'Contents', 'MacOS', readdirSync(join(APP, 'Contents', 'MacOS'))[0]);
+  const out = join(DIR, 'proof');
+  run('mkdir', ['-p', out]);
+  if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
   const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 180000 }); // uncapped: the headroom over 60 fps
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
-  console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && p.status === 0;
+  console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
+  return { pj, status: p.status };
+}
+
+function proofBlank(): boolean { const f = join(DIR, 'proof', 'proof.json'); return existsSync(f) && JSON.parse(readFileSync(f, 'utf8')).status === 'blank'; }
+
+/** A fresh build is proved to draw before it is trusted: a second player build in one Editor domain can ship a player whose URP pipeline
+ *  fails to start (a black screen; GameBuild.cs). A blank proof gets one more build, then the proof again. */
+async function buildDrawn(): Promise<boolean> {
+  if (!(await build())) return false;
+  const first = proof();
+  if (first.pj?.status !== 'blank') return true;
+  console.log('game: the build drew a blank frame (the second-build black screen); building once more…');
+  if (!(await build())) return false;
+  const again = proof();
+  if (again.pj?.status === 'blank') { console.error('game: the rebuild drew a blank frame too; see out/build/play/proof/player.log'); return false; }
+  return true;
 }
 
 if (has('--signing-check')) process.exit(signingCheck() ? 0 : 1);
@@ -126,9 +152,17 @@ const b = built(), inp = newestInput();
 const stale = !b.ok ? b.why : inp.at > b.at ? `older than ${inp.what}` : '';
 if (has('--build') || stale) {
   if (stale && !has('--build')) console.log(`game: rebuilding (${stale})`);
-  if (!(await build())) process.exit(1);
+  if (!(await buildDrawn())) process.exit(1);
 } else console.log('game: the app is current');
-if (has('--check')) process.exit(check() ? 0 : 1);
+if (has('--check')) {
+  if (check()) process.exit(0);
+  if (proofBlank()) { // a blank frame from an app built earlier: build once more and prove again
+    console.log('game: the app drew a blank frame (the second-build black screen); building once more…');
+    if (!(await build())) process.exit(1);
+    process.exit(check() ? 0 : 1);
+  }
+  process.exit(1);
+}
 if (has('--pack') || has('--send')) {
   const zip = pack();
   if (!zip) process.exit(1);
