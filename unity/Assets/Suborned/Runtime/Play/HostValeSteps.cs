@@ -63,11 +63,11 @@ namespace Suborned.Play
         /// <summary>Inside: Enter's progress per mille (the door marker's ring), else -1.</summary>
         public int EnterProgress { get { var op = Game?.Ops[(int)OpId.Enforcer]; return op != null && op.Inside ? doing[(int)OpId.Enforcer].Progress : -1; } }
 
-        /// <summary>Out with Vale and no Extract given: the car marker.</summary>
-        public bool ExtractAvailable { get { var g = Game; var op = g?.Ops[(int)OpId.Enforcer]; return op != null && g.Vale == ValeAt.WithEnforcer && !op.Down && op.Busy?.Do != "extract" && pending[(int)OpId.Enforcer]?.Do != "extract"; } }
+        /// <summary>Out with Vale and no Board given: the car marker calls the Enforcer (brief 018; HostGetaway.BoardAvailable). Kept by name for the HUD.</summary>
+        public bool ExtractAvailable => BoardAvailable;
 
         /// <summary>The objective's step (Fable's less.objective.steps): take, then bring once Enter is given, then carry once Vale is with him.</summary>
-        public string ObjectiveKey => Game == null ? "take" : Game.Vale == ValeAt.WithEnforcer ? "carry" : Game.Vale == ValeAt.Office && EnterGiven ? "bring" : "take";
+        public string ObjectiveKey => Game == null ? "take" : Game.Vale == ValeAt.Car ? "go" : Game.Vale == ValeAt.WithEnforcer ? "carry" : Game.Vale == ValeAt.Office && EnterGiven ? "bring" : "take";
 
         /// <summary>Intel's next-step chip (HudToolkit.Intel): the Scout's Watch or Listen on a person, given as the action panel gives it (walk,
         /// then act; refused orders pop their reason), or the Fixer's panel on the person for a turn.</summary>
@@ -130,18 +130,8 @@ namespace Suborned.Play
             Give(by, i.Order, t, null);
         }
 
-        /// <summary>Sky, 2026-10-18 ("nothing happened"): the getaway car is held while a fight stands (the engine's CarHeld), and Extract is
-        /// refused. Until brief 018's getaway rule lands, the HUD says so: the car marker turns to a lock with the holder count, the row
-        /// reads the car-held short line, and the hostiles holding it are marked (Glyph, brief 018 grammar). Read only: the holders are those the engine's CarHeld counts (alive, not broken or gone, within its
-        /// hold reach of the car).</summary>
+        /// <summary>The getaway car is held (brief 018 §1: a holder within 8 m or on the exit lane; the engine's CarHeld). Read only.</summary>
         public bool CarHeldNow { get { var g = Game; if (g == null) return false; bool held = false; Guard("car held", () => held = g.CarHeld()); return held; } }
-        public List<(string id, Vector3 at)> CarHolders()
-        {
-            var list = new List<(string, Vector3)>(); var g = Game; if (g == null || !CarHeldNow) return list;
-            var car = g.S.At(g.S.GetawayCar); int hold = g.R.HoldCm;
-            foreach (var h in g.Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone" && (h.Present || g.FightBranch == "safe") && G.Within(h.Pos(g.Tick), car, hold)) list.Add((h.Id, frame.World(h.Pos(g.Tick))));
-            return list;
-        }
         /// <summary>The car's hold reach in metres (rulebook fight-hold-m; brief 018 takes it to 8), and whether the final fight is on (the ring
         /// is drawn only then).</summary>
         public float CarHoldM => Game != null ? Game.R.HoldCm / 100f : 0f;
@@ -160,8 +150,9 @@ namespace Suborned.Play
         {
             if (Game == null || Modal != ModalGate.Modal.None || !cam) return;
             var e = (int)OpId.Enforcer;
-            if (!Selected[e]) { Select(OpId.Enforcer, false); Status = "Enforcer selected"; return; }
+            if (!Selected[e] && !(which == "car" && GoAvailable)) { Select(OpId.Enforcer, false); Status = "Enforcer selected"; return; }
             if (which == "door" && DoorState == "seen") { PopKey("door-seen", null, frame.World(Game.S.At(Game.S.GuardPost)), Feedback.Refused, "Seen there."); return; } // a learned eye on the door: no order
+            if (which == "car" && GoAvailable) { GoGive(Agent, null, "left"); return; } // brief 018: anyone in the car, the marker is Go
             if (Agent != OpId.Enforcer) Select(OpId.Enforcer, false);
             var t = views.Find(which == "car" ? "car/getaway" : "marker/door"); if (!t) return;
             var sp = cam.WorldToScreenPoint(t.position + Vector3.up * (which == "car" ? 0.8f : 1.0f)); if (sp.z <= 0) return;

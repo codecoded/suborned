@@ -37,7 +37,9 @@ namespace Suborned.Play
             foreach (var kv in Cards) if (kv.Key.EndsWith(".") && code.StartsWith(kv.Key, StringComparison.Ordinal) && (best == null || kv.Key.Length > best.Code.Length)) best = kv.Value;
             return best;
         }
-        public sealed class LockText { public string Code = "", Line = "", Short = ""; public readonly List<Regex> Match = new(); }
+        public sealed class LockText { public string Code = "", Line = "", Short = ""; public readonly List<Regex> Match = new();
+            /// <summary>Fable 019: a lock's wording by the kind of target (`byTarget.machine`: a camera or a robot); the base line is the person case.</summary>
+            public readonly Dictionary<string, (string line, string shortText)> ByTarget = new(); }
         public sealed class EventText { public string Id = "", Kind = "", Clock = ""; public readonly List<string> Log = new(), Speakers = new(); }
         public sealed class Entry { public string Event = "", Verb, Speaker = "", Outcome, Temperament, About; public readonly List<string> Lines = new(); }
         public struct Query { public string Event, Verb, Speaker, Outcome, Temperament, About; }
@@ -79,6 +81,25 @@ namespace Suborned.Play
         public readonly Dictionary<string, string> Pops = new(), CancelShort = new(), AltOutcome = new(), EndFail = new(), TimelineShort = new();
         public readonly Dictionary<string, List<string>> PriceVerbs = new();
         public readonly List<string> PriceOrder = new();
+        /// <summary>Brief 018 (Fable, 019 Part 2): the Go card's words, the holders' phrases by role (names.holders), the objective's go step.</summary>
+        /// <summary>Brief 018 §3 (Fable): debrief.between's lines (left-behind, captive, car-seen) and debrief.getaway's fills.</summary>
+        public readonly Dictionary<string, string> DebriefBetween = new(), GetawayFate = new(), GetawayWhy = new(), GetawayBy = new();
+        public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
+        public string ObjGo = "Drive off in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind";
+        public readonly Dictionary<string, string> GoWhy = new() { ["downed"] = "down", ["fighting"] = "fighting", ["sealed"] = "sealed", ["walked"] = "walks out" }, GoFate = new() { ["captured"] = "{who} would be captured.", ["walked"] = "{who} would walk out." };
+        public readonly Dictionary<string, (string one, string many)> Holders = new() { ["mixed"] = ("hostiles", "hostiles") };
+        /// <summary>A port of text.schema.ts roleOfId: the role of an id the engine names in Answer.ids.</summary>
+        public static string RoleOfId(string id) => Regex.IsMatch(id, "^rivals?(-\\d+)?$") ? "rival" : Regex.IsMatch(id, "^(officer|security)(-\\d+)?$") ? "officer" : Regex.IsMatch(id, "^robot(-\\d+)?$") ? "robot" : id == "patrol" ? "patrol" : id == "guard" ? "guard" : "other";
+        /// <summary>A port of text.schema.ts holdersPhrase: "a rival", "2 robots", "police", or "hostiles" when the roles differ. `ids` is Answer.ids.</summary>
+        public string HoldersPhrase(string ids)
+        {
+            var list = new List<string>(); foreach (var x in (ids ?? "").Split(',')) if (x.Trim().Length > 0) list.Add(x.Trim());
+            if (list.Count == 0) return "something";
+            var roles = new HashSet<string>(); foreach (var x in list) roles.Add(RoleOfId(x));
+            string role = null; foreach (var r in roles) role = r;
+            if (roles.Count != 1 || !Holders.TryGetValue(role, out var w)) { var mx = Holders.TryGetValue("mixed", out var m) ? m.many : "hostiles"; return mx.Replace("{n}", list.Count.ToString()); }
+            return list.Count == 1 ? w.one : w.many.Replace("{n}", list.Count.ToString());
+        }
         public string ObjTake = "Take [Vale] alive.", ObjBring = "Bring [Vale] out.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
         /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
         public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
@@ -104,6 +125,7 @@ namespace Suborned.Play
             {
                 if (nm.Opt("speakers") is JNode sp) foreach (var kv in sp.Entries) Speakers[kv.Key] = kv.Value.Str();
                 if (nm.Opt("targets") is JNode tg) foreach (var kv in tg.Entries) TargetNames[kv.Key] = kv.Value.Str();
+                if (nm.Opt("holders") is JNode ho) foreach (var kv in ho.Entries) Holders[kv.Key] = (S(kv.Value, "one") ?? kv.Key, S(kv.Value, "many") ?? kv.Key); // brief 018: {holders}
             }
             if (n.Opt("briefing") is JNode b)
             {
@@ -127,7 +149,12 @@ namespace Suborned.Play
                     Actions[kv.Key] = a;
                 }
             if (n.Opt("locks") is JNode lo && lo.Kind == JKind.Obj) // suborned.text/1 since a103daf: code → { line, verbs }, keyed by Answer.code
-                foreach (var kv in lo.Entries) Locks.Add(new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "", Short = S(kv.Value, "short") ?? "" });
+                foreach (var kv in lo.Entries)
+                {
+                    var lt = new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "", Short = S(kv.Value, "short") ?? "" };
+                    if (kv.Value.Opt("byTarget") is JNode bt && bt.Kind == JKind.Obj) foreach (var v in bt.Entries) lt.ByTarget[v.Key] = (S(v.Value, "line") ?? lt.Line, S(v.Value, "short") ?? lt.Short);
+                    Locks.Add(lt);
+                }
             else if (n.Opt("locks") is JNode ls)
                 foreach (var l in ls.Items)
                 {
@@ -176,6 +203,12 @@ namespace Suborned.Play
                 if (ds.Opt("bands") is JNode sb) foreach (var kv in sb.Entries) StandingBands[kv.Key] = kv.Value.Str();
                 if (ds.Opt("causes") is JNode sc2) foreach (var kv in sc2.Entries) StandingCauses[kv.Key] = kv.Value.Str();
             }
+            if (n.Opt("debrief")?.Opt("between") is JNode dbw) foreach (var kv in dbw.Entries) if (kv.Value.Kind == JKind.Str) DebriefBetween[kv.Key] = kv.Value.Str();
+            if (n.Opt("debrief")?.Opt("getaway") is JNode dga) // brief 018 §3: the getaway's debrief words
+            {
+                GetawayHoldsOut = S(dga, "holdsOut") ?? GetawayHoldsOut; GetawayPost = S(dga, "post") ?? GetawayPost;
+                foreach (var (k, into) in new[] { ("fate", GetawayFate), ("why", GetawayWhy), ("by", GetawayBy) }) if (dga.Opt(k) is JNode m) foreach (var kv in m.Entries) into[kv.Key] = kv.Value.Str();
+            }
             if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
@@ -202,7 +235,13 @@ namespace Suborned.Play
             if (l.Opt("intel") is JNode inl) foreach (var grp in inl.Entries) if (grp.Value.Kind == JKind.Obj) foreach (var kv in grp.Value.Entries) if (kv.Value.Kind == JKind.Str) Intel[grp.Key + "." + kv.Key] = kv.Value.Str(); // Fable's Intel fragments: need.debt, secret.affair-named, verb.watch
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
             if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
-            if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjShowS = F(ob, "showSeconds", ObjShowS); } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it
+            if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjGo = S(ob, "go") ?? ObjGo; ObjShowS = F(ob, "showSeconds", ObjShowS); }
+            if (l.Opt("go") is JNode go) // brief 018 §6.5: the Go card and the roster flag
+            {
+                GoNone = S(go, "none") ?? GoNone; GoLeaves = S(go, "leaves") ?? GoLeaves; GoSeen = S(go, "seen") ?? GoSeen; GoFlag = S(go, "flag") ?? GoFlag;
+                if (go.Opt("why") is JNode gw) foreach (var kv in gw.Entries) GoWhy[kv.Key] = kv.Value.Str();
+                if (go.Opt("fate") is JNode gf) foreach (var kv in gf.Entries) GoFate[kv.Key] = kv.Value.Str();
+            } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it
             if (l.Opt("briefing") is JNode br) BriefGoal = S(br, "goal") ?? BriefGoal;
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
@@ -215,7 +254,11 @@ namespace Suborned.Play
         }
 
         /// <summary>A short refusal for an engine code (locks.*.short), or null.</summary>
-        public string ShortLock(string code) { var l = (code ?? "").Length > 0 ? LockByCode(code) : null; return l == null || l.Short.Length == 0 ? null : l.Short; }
+        public string ShortLock(string code, string targetKind = null)
+        {
+            var l = (code ?? "").Length > 0 ? LockByCode(code) : null; if (l == null) return null;
+            var s = targetKind != null && l.ByTarget.TryGetValue(targetKind, out var v) ? v.shortText : l.Short; return s.Length == 0 ? null : s;
+        }
 
         /// <summary>Whatever Fable's file leaves empty is taken from the placeholders (so a partial file still plays).</summary>
         void Fill(PlayText p)
@@ -427,7 +470,8 @@ namespace Suborned.Play
             A("mislead", "False tip", "a false tip sends the rival crew elsewhere for a while");
             A("enter", "Enter", "slip in at the public door to reach Vale; anyone watching the door sees");
             A("take", "Take Vale", "seize Vale at his car");
-            A("extract", "Into the car", "Vale into your getaway car: the job is done");
+            A("board", "Board", "get into the getaway car (Vale or a downed agent first)"); // brief 018: placeholders until Fable's lines land
+            A("go", "Go", "the car leaves with whoever is in it");
             A("fire", "Fire", "fire until they are down: the run goes loud");
             void Lk(string code, string pattern, string line) { var l = new LockText { Code = code, Line = line }; l.Match.Add(new Regex(pattern, RegexOptions.IgnoreCase)); t.Locks.Add(l); }
             Lk("needs-routine", "needs .*routine", "Watch them first (Scout) to learn their routine.");

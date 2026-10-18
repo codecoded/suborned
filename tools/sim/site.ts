@@ -19,6 +19,7 @@ import { summonRules } from '../missions/handover/summon';
 import { createHash } from 'node:crypto';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
+import { buildExit, blockM, checkExit } from './getaway';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -129,6 +130,12 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   if (src.fixture) cast.fixture = src.fixture;
   cast.src = 'tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks';
 
+  // ---- the car's exit lane (brief 018 §1): derived from routes.getaway and the plan road, checked here (SX-1) so a lane off the carriageway never ships
+  const rulebook = JSON.parse(read('contracts/rules/rulebook.json'));
+  const exitLane = buildExit(plan, d, mission, 'Getaway bay', rulebook);
+  const exitBad = checkExit(exitLane, plan, d, toPlan(dest('Getaway bay')), blockM(rulebook).m);
+  if (exitBad.length) throw new Error(`getaway.exit (SX-1): ${exitBad.join('; ')}`);
+
   const site = {
     schema: 'suborned.sim.site/1',
     mission: 'handover',
@@ -144,7 +151,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'd:Service lane', block: 'block-spot', src: 'GDD §07; mission.json roles.driver' },
     rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', ...(mission.rivals ? { public: mission.rivals.public } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
-    getaway: { car: 'd:Getaway bay', src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
+    getaway: { car: 'd:Getaway bay', exit: exitLane, src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
     fight: { ambush: ambush.map((p) => p.id), police: police.map((p) => p.id), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },
     schedule,
     purse: 100000,

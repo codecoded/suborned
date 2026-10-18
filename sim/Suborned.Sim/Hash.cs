@@ -115,7 +115,8 @@ namespace Suborned.Sim
             foreach (var s in g.Sightings) h.S(s.Watcher).S(s.Op).I(s.From).I(s.To).P(s.At);
             foreach (var x in g.ExposedByWatcher) h.S(x);
             g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
-            g.HashTakedown(h); // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
+            g.HashTakedown(h);
+            g.HashGetaway(h); // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }
     }

@@ -20,7 +20,8 @@
   {"tick": 4588, "op": "enforcer", "do": "fire", "target": "hostiles"},
   {"tick": 4648, "op": "enforcer", "do": "fire", "target": "hostiles"},
   {"tick": 4649, "op": "enforcer", "do": "move", "to": [850, -4820]},
-  {"tick": 4698, "op": "enforcer", "do": "extract"}
+  {"tick": 4698, "op": "enforcer", "do": "board", "target": "car"},
+  {"tick": 4739, "op": "cell", "do": "go"}
  ],
  "until": 5100
 }

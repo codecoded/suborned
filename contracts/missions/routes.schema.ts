@@ -5,7 +5,8 @@
 //   careless (brief 013: a takedown done carelessly, seen or found or reported; `twin` names the careful script it is compared with);
 // - route: which of the mission's routes it plays (quiet routes are counted by route, not by script: a variant is the same route);
 // - primary: the route's reference script (the one the §09 conditions compare and vary);
-// - expects: the outcome and fail code the engine must report (sim/Suborned.Sim/Game*.cs Fail codes);
+// - expects: the outcome and fail code the engine must report (sim/Suborned.Sim/Game*.cs Fail codes), and (brief 018) who the car
+//   left behind, with fate and why;
 // - pending: why it can't be played yet (the final fight, N10/N11, is not in the engine); a pending script is listed, never played.
 // `fails` is the mission's fail list (GDD §07), each with the engine codes that reach it; `contacts` the roles a route may turn.
 // `closing` is the mission's closing event; each primary quiet route names its own (`closes`): the fully informed player secures
@@ -26,7 +27,11 @@ export const RouteScript = z.strictObject({
   /** The route's closing event (§09 template: the event after which the route can no longer take Vale) and the engine log code that
    *  marks Vale secured on it (enter.in: the Enforcer is inside, Vale no longer leaves; take.done: Vale is with the Enforcer). */
   closes: z.strictObject({ at, what: z.string().min(1), secured: z.string().min(1) }).optional(),
-  expects: z.strictObject({ outcome: z.enum(['success', 'failure', 'withdrawn']), fail: id.optional() }),
+  expects: z.strictObject({
+    outcome: z.enum(['success', 'failure', 'withdrawn']), fail: id.optional(),
+    /** brief 018 §3: everyone the car left behind, by op, with fate and why (the debrief's left-behind lines), exactly. */
+    left: z.partialRecord(z.enum(['scout', 'fixer', 'tech', 'enforcer']), z.enum(['captured downed', 'captured fighting', 'captured sealed', 'walked'])).optional(),
+  }),
   reaches: id.optional().describe('the `fails` entry a fail script reaches'),
   twin: id.optional().describe('a careless script: the careful script it is the careless version of (brief 013 D, MC-7)'),
   pending: z.string().min(1).optional(),

@@ -106,7 +106,7 @@ namespace Suborned.Play
         /// <summary>Per frame: the eased yaw, the camera turned about the pivot so the pivot stays at the screen centre.</summary>
         void ApplyTurn()
         {
-            if (!cam || !turnReady) return;
+            if (!cam || !turnReady || Following) return; // the follow view turns itself (HostFollow)
             if (turnStart >= 0f)
             {
                 float t = turnSeconds <= 0f ? 1f : Mathf.Clamp01((Time.unscaledTime - turnStart) / turnSeconds);
@@ -145,6 +145,7 @@ namespace Suborned.Play
             Vector3? Person(string key) { var t = views.Find(key); return t && t.gameObject.activeSelf ? t.position : (Vector3?)null; }
             for (int k = 0; k < 4; k++) if (Selected[k]) Add(OpAt(k), r);
             if (Panel != null) Add(Panel.World, r); else if (Hover != null) Add(TargetWorld(Hover), r);
+            if (Ending.Length == 0 && (DoorMarked || EnterProgress >= 0)) Add(frame.World(Game.S.At(Game.S.GuardPost)), r); // Glyph techwatch fix 4: the door stays ghosted round its marker when the guard has gone (the marker itself reads on an ink halo, HudToolkit.StepMarks)
             if (Modal == ModalGate.Modal.None && UnityEngine.InputSystem.Mouse.current is { } mouse)
             {
                 var p = mouse.position.ReadValue();

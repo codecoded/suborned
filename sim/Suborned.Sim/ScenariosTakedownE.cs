@@ -203,7 +203,7 @@ namespace Suborned.Sim
                     new Order { Tick = 1875, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, Act(1900, Scout, "mislead", "rivals"), Act(1900, Tech, "reroute", "patrol"),
                     Act(1921, Enf, "carry", Guard29), MvTo(1951, Enf, ServiceDoor), Act(2043, Enf, "stash", ServiceDoorId), MvTo(2143, Enf, new Pt(6278, -4175)), Mv(2340, Scout, "crew:scout"),
                     MvTo(2400, Enf, new Pt(7625, -2880)), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3610, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"),
-                    MvTo(4080, Enf, new Pt(2400, -6000)), Act(4080, "cell", "panic") }).ToArray());
+                    MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
                 r.To(T(478) + 5);
                 var open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Tick == T(478) + 5 && l.Text.Contains("driver"));
                 r.Is(open >= 0, "at 7:58.5 an officer opens the service door and finds the driver");
@@ -211,7 +211,7 @@ namespace Suborned.Sim
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.To(T(500));
                 r.Is(g.FailCode != "engine-error", "the run goes on");
-            });
+            }, NoFight()); // brief 018 (c018): walking Vale the Enforcer no longer fires, so the loud final fight downs him at 7:35, before the 7:58.5 search; without the final fight the fixture is the same path
         }
     }
 }

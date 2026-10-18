@@ -18,7 +18,7 @@ namespace Suborned.Sim
             try { why = Over ? No("mission-over", "the mission is over") : Check(o); }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             bool ok = why.Length == 0;
-            var a = ok ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 } : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            var a = AnswerOf(why);
             if (!ok && a.code == "uncoded") throw new InvalidOperationException($"a refusal without a code: {why}"); // every refusal says its code (Fable)
             Orders.Add((o, ok, a.code, why));
             if (!ok) Note("order.rejected", $"{o.Op} {o.Do} {o.Target}{o.To}: {why}");
@@ -26,13 +26,17 @@ namespace Suborned.Sim
         }
         public bool Do(Order o) => Issue(o).ok;
 
-        (string? code, int m, int cm, long usd, int tick) refusal;
-        /// <summary>A refusal: its stable code and its numbers (m, cm, usd, tick; -1 when it has none), and the words for the log.</summary>
-        string No(string code, string why, int m = -1, int cm = -1, long usd = -1, int tick = -1)
+        (string? code, int m, int cm, long usd, int tick, string ids) refusal;
+        /// <summary>A refusal: its stable code and its numbers (m, cm, usd, tick; -1 when it has none), the ids it names (car-held's holders),
+        /// and the words for the log.</summary>
+        string No(string code, string why, int m = -1, int cm = -1, long usd = -1, int tick = -1, string ids = "")
         {
             if (Array.IndexOf(Answer.Codes, code) < 0) throw new InvalidOperationException($"refusal code '{code}' is not in Answer.Codes");
-            refusal = (code, m, cm, usd, tick); return why;
+            refusal = (code, m, cm, usd, tick, ids); return why;
         }
+        /// <summary>The answer for these words: taken when empty, else the refusal No() recorded.</summary>
+        Answer AnswerOf(string why) => why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1, ids = "" }
+            : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick, ids = refusal.ids ?? "" };
         /// <summary>A rulebook need that does not hold, as its own code (Fable): the knowledge a Turn or Listen needs, the need it acts on,
         /// a refusal remembered, a contact or not, and cash for the worst case (with the worst case in usd).</summary>
         string NeedsNo(Cond c, PCtx x)
@@ -56,11 +60,17 @@ namespace Suborned.Sim
         {
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (o.Do == "panic") return Panic(o);
+            if (o.Do == "go") return Go(o); // brief 018: anyone, from the car's card (GameGetaway.cs)
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
             if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
             if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
+            if (op.InCar) // brief 018: a move steps out first; a stance, holster or cease changes nothing on the street; the rest waits for stepping out
+            {
+                if (o.Do == "move") return StepOut(op, o);
+                if (o.Do != "stance" && o.Do != "holster" && o.Do != "cease") return No("in-car", $"the {o.Op} is in the car: a move steps out first");
+            }
             switch (o.Do)
             {
                 case "move": return Move(op, o);
@@ -78,7 +88,7 @@ namespace Suborned.Sim
                 case "carry": return Carry(op, o);
                 case "enter": return Enter(op, o);
                 case "take": return Take(op, o);
-                case "extract": return Extract(op, o);
+                case "board": return Board(op, o); // brief 018 (GameGetaway.cs); extract is retired
                 case "takedown": return Takedown(op, o);   // brief 013 (GameTakedown.cs)
                 case "drop": return Drop(op, o);
                 case "stash": return Stash(op, o);
@@ -191,8 +201,7 @@ namespace Suborned.Sim
                     : Scout(op, new Order { Tick = Tick, Op = agent, Do = verb, Target = target }, engage: false);
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
-            var a = why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 }
-                : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            var a = AnswerOf(why);
             refusal = saved;
             return a;
         }
@@ -254,6 +263,8 @@ namespace Suborned.Sim
                         Note("enter.out", serviceHeld ? "The service door is held: Vale and the Enforcer come out at the public door." : "Vale and the Enforcer come out at the service lane."); StartFight(); break;
                     }
                 case "takedown": LandTakedown(op, o); break;
+                case "board": LandBoard(op); break;
+                case "move": LandStepOut(op, o); break; // only a boarded operative's move is an action: the step out
                 case "drop": case "stash": case "restrain": LandBodyOrder(op, o); break;
                 case "carry" when !IsOpId(o.Target): LandBodyOrder(op, o); break;
                 case "carry":
@@ -265,7 +276,7 @@ namespace Suborned.Sim
                         break;
                     }
                 case "take":
-                    Vale = ValeAt.WithEnforcer;
+                    Vale = ValeAt.WithEnforcer; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; // brief 018: walking Vale, he doesn't fire
                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
                     Chain.Add("vale-taken-outside"); Note("take.done", "Vale is with the Enforcer. Get to the car."); StartFight(); break;
             }
@@ -570,8 +581,7 @@ namespace Suborned.Sim
                     : CallRefusal(op, role);
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
-            var a = why.Length == 0 ? new Answer { ok = true, code = "", why = "", m = -1, cm = -1, usd = -1, tick = -1 }
-                : new Answer { ok = false, code = refusal.code ?? "uncoded", why = why, m = refusal.m, cm = refusal.cm, usd = refusal.usd, tick = refusal.tick };
+            var a = AnswerOf(why);
             refusal = saved;
             return a;
         }
@@ -697,18 +707,6 @@ namespace Suborned.Sim
             Vale = ValeAt.Taking;
             Engage(op, o, R.TakeS);
             TakeScan(); // a Take seen is a takedown seen (brief 013 D; rev 4: its struggle, unless inside his own car)
-            return "";
-        }
-        string Extract(Op op, Order o)
-        {
-            if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer brings Vale to the car");
-            if (Vale != ValeAt.WithEnforcer) return No("no-vale-yet", "the Enforcer does not have Vale");
-            if (!G.Within(op.Pos, S.At(S.GetawayCar), R.AtReachCm)) return No("stand-at-getaway", "stand at the getaway car", cm: R.AtReachCm);
-            if (CarHeld()) return No("car-held", "the car is held: the fight isn't over (§07)");
-            op.Walk = null;
-            Vale = ValeAt.Car; Result = Outcome.Success; Chain.Add("vale-in-getaway-car");
-            Note("success", "Vale is in the car. The crew escapes.");
-            Captures();
             return "";
         }
     }

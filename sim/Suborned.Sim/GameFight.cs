@@ -10,7 +10,8 @@ namespace Suborned.Sim
 {
     public sealed class Hostile
     {
-        public string Id = ""; public Pt At, Home; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!; // Home: its stand (police)
+        public string Id = ""; public Pt At, Home; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!; // Home: its stand (police; a blocker's lane point)
+        public bool Blocker; // brief 018 §1: it went for the road, and holds its point in the exit lane as police hold a stand
         public bool Down => Gun.Down; public int Health => Gun.Health;
         public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
         public bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;
@@ -80,6 +81,8 @@ namespace Suborned.Sim
         {
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
             JoinResponse();
+            if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
+            if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out."); return; }
             var e = Enforcer; var car = S.At(S.GetawayCar);
             if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm))
             {
@@ -87,6 +90,7 @@ namespace Suborned.Sim
                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing)
                 foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + R.AimNewTicks + (FightWarned ? T(R.SafeWarnS) : 0); }
                 Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
+                if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
                 if (GuardAlly)
                 {
                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);
@@ -120,14 +124,6 @@ namespace Suborned.Sim
             return best;
         }
 
-        /// <summary>A hostile still holds the getaway car (rulebook fight.hold): the car can't leave.</summary>
-        public bool CarHeld()
-        {
-            if (FightBranch.Length == 0) return false;
-            var car = S.At(S.GetawayCar); int hold = R.HoldCm;
-            foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone" && (h.Present || FightBranch == "safe") && G.Within(h.Pos(Tick), car, hold)) return true; // a broken rival no longer holds it (Pulse §2.1)
-            return false;
-        }
 
         void MisledOnce() { misledOnce = true; }
         bool RivalsAbsorbed => rivalsAbsorbed;

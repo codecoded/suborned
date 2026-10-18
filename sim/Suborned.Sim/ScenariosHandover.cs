@@ -131,7 +131,10 @@ namespace Suborned.Sim
             Add("S05", "72", "The front route with the guard shot beside Inez still wins; the alarm is up, so Enter takes +30 s (Sky 2026-10-15 Q5); the debrief reads High alert and Inez witnessed.", r =>
             {
                 var g = r.G;
-                r.Send(Enf, "d:Between tables");
+                // Changed (brief 018: Board with Vale takes 4 s, which closed the 3 s the Enforcer had at the car before the seal): he shoots from
+                // 17 m east of the café, inside the carbine's effective reach and still beside Inez's sight of the guard, so his walk to the door is
+                // shorter and the seal falls later behind him
+                r.SendTo(Enf, new Pt(600, -2500));
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet")));
                 r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
                 r.Done(Scout); r.To(r.Send(Scout, "beside-inez"));
@@ -167,7 +170,7 @@ namespace Suborned.Sim
                 r.Send(Enf, "d:Getaway bay");
                 var car = r.At("d:Getaway bay"); int reach = g.R.AtReachCm;
                 while (!g.Over && !G.Within(r.Op(Enf).Pos, car, reach)) g.Step();
-                r.Do(Enf, "extract");
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "a witnessed shooting leaves an escape window");
                 var d = Debrief.Of(g);
                 r.Eq(d.PublicSecurity, "high", "the debrief: high alert");
@@ -243,7 +246,7 @@ namespace Suborned.Sim
                 r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "waiting for its cone to pass makes an opening");
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay"));
-                r.Do(Enf, "extract");
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 r.Eq(g.Gunfire, 0, "no shots");
                 var d = Debrief.Of(g);
@@ -277,7 +280,7 @@ namespace Suborned.Sim
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
                 r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay"));
-                r.Do(Enf, "extract");
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "the loud front wins");
                 r.Is(g.EnforcerHealth < g.R.HealthEnforcer, "the Enforcer was hit");
                 r.Eq(Debrief.Of(g).PublicSecurity, "raised", "Raised");
@@ -462,7 +465,7 @@ namespace Suborned.Sim
                 r.Is(g.PickupService, "the pickup moved to the service lane");
                 r.Do(Enf, "take"); r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay"));
-                r.Do(Enf, "extract");
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route B wins");
                 r.Eq(g.Gunfire, 0, "no shots");
                 r.Is(g.Chain.Contains("rivals-false-tip"), "the rivals followed a false tip");
@@ -497,7 +500,7 @@ namespace Suborned.Sim
                 r.Eq(g.ValePos(), (Pt?)g.CarPos(), "Vale at the car");
                 r.Is(g.PickupCameraLive(), "leaving the pickup restores its camera");
                 r.Do(Enf, "take"); r.Done(Enf);
-                r.To(r.Send(Enf, "d:Getaway bay")); r.Do(Enf, "extract");
+                r.To(r.Send(Enf, "d:Getaway bay")); r.Extract();
                 var d = Debrief.Of(g);
                 r.Eq(d.Route.Count > 0 ? d.Route[0] : "", "driver-moves-vale-to-service-lane", "the route summary leads with the driver");
                 r.Is(d.Extra.Contains("2 call:driver"), "the debrief lists 2 camera blockades");
@@ -634,7 +637,7 @@ namespace Suborned.Sim
                 r.Eq(g.FailCode, "", "no fail cause");
             });
 
-            Add("N10", "—", "Final fight, loud (§07), at security level 1: after shots the police come from the north street, 2–4 officers, the seal clock running, no allies; the Enforcer fights them off at the car.", r =>
+            Add("N10", "—", "Final fight, loud (§07), at security level 1: after shots the police come from the north street, 2–4 officers, the seal clock running, no allies; the Enforcer fights them off at the car. Brief 018 §10: an officer holding his stand sees the car leave (+1 T, the car hunted).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
@@ -654,13 +657,16 @@ namespace Suborned.Sim
                 foreach (var op in new[] { Scout, Fixer, Tech }) r.Do(op, "draw"); // the fight is on: the whole armed cell (Sky Q1)
                 r.Send(Enf, "d:Getaway bay");
                 r.FightItOut(120, Scout, Fixer, Tech);
-                r.Do(Enf, "extract");
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "the loud route wins through the fight");
                 var d = Debrief.Of(g);
                 r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
                 r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
                 r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
                 r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
+                // brief 018 §10 (Pulse): a final-fight officer sees the car go within the pistol's 25 m on a clear line: officer-2 at his stand, 19.4 m
+                r.Is(g.CarSeenBy.StartsWith("officer-", StringComparison.Ordinal) && g.Ledger.Exists(x => x.cause == "car-seen:" + g.CarSeenBy && x.delta == g.R.WitnessTrail), $"seen leaving: +1 T, by {g.CarSeenBy}");
+                r.Is(d.Inv.Hunted.Contains("cell-car") && d.Next.Lines.Exists(l => l.Line == "car-seen"), "the car hunted; the debrief's car-seen line");
             }, Level(1)); // brief 013: the loud fight's mechanics at level 1 (routine, today's response); N52 is the dial at each level
 
             Add("N11", "—", "Final fight, safe (§07): route A, quiet, then the rival crew ambushes the extraction; the helped Inez warns 10 s early and the guard, who never saw the cell, fights them.", r =>
@@ -671,24 +677,24 @@ namespace Suborned.Sim
                 r.Eq(g.Hostiles.Count, 5, "five rivals: no driver turned, no false tip");
                 r.Is(g.FightWarned, "the helped Inez warns");
                 r.Is(g.GuardAlly, "the guard never saw the cell, so he fights them");
-                r.Do(Enf, "draw");
-                r.Send(Enf, "d:Getaway bay");
-                while (!g.Over && g.FightSprung == int.MaxValue / 4) g.Step();
+                Support(r); ToAmbush(r); // brief 018: walking Vale the Enforcer doesn't fire; the three by the car fight
                 r.Is(g.Hostiles.TrueForAll(h => h.Gun.NextShot == g.FightSprung + g.R.AimNewTicks + T(10)), "lying in wait they would fire 1 s after springing; Inez's warning holds them 10 s more");
-                r.FightItOut();
-                r.Do(Enf, "extract");
+                r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018 §10: break the crew (the blocker on the road falls first, the car free before the crew breaks)
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
                 // Changed (r016 cast, 2026-10-16): was "the guard dropped at least one of them". A Fearful Inez takes two Helps, route A runs 50 s
                 // later, and the Enforcer drops three before the guard lands one: who fires the last shot is the fight's timing, not the rule
                 // under test (§07 safe: the guard, who never saw the cell, fights them).
-                r.Is(r.Shots().Exists(x => x.by == "guard" && x.target.StartsWith("rival-", StringComparison.Ordinal)), $"the guard fires on them (he dropped {g.DownedByGuard})");
+                // brief 018 (c018): the three by the car now do the fighting (walking Vale, the Enforcer doesn't fire) and break the crew before the
+                // guard is in reach: the rule under test is that he joins against them
+                r.Is(g.Log.Exists(l => l.Code == "fight.guard") && g.GuardAlly, $"the guard runs in against them (he dropped {g.DownedByGuard})");
                 r.Is(g.FightWhy.Contains("rivals-break") && g.Hostiles.Exists(h => h.Gun.St == "break" || h.Gun.St == "gone"), "more than half the crew down, the rest break for their car (Pulse §3.1)");
                 r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("guard", StringComparison.Ordinal)), "the guard runs in to cover by his post (Pulse §3.4)");
                 var dd = Debrief.Of(g);
                 r.Is(dd.FightWhy.Contains("waitress-warns") && dd.FightWhy.Contains("guard-fights-them"), "the debrief says why: Inez's warning, the guard");
             });
 
-            Add("N11b", "—", "Final fight, safe, prepared (§07): route B with the driver turned (he blocks the rival car, −1) and the rivals tipped off earlier (−1): three rivals.", r =>
+            Add("N11b", "—", "Final fight, safe, prepared (§07): route B with the driver turned (he blocks the rival car, −1) and the rivals tipped off earlier (−1): three rivals. Brief 018: the three fight it out (walking Vale, the Enforcer doesn't fire), anyone downed is carried in, and the whole cell boards and goes.", r =>
             {
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
@@ -703,9 +709,17 @@ namespace Suborned.Sim
                 r.Eq(g.Hostiles.Count, 3, "three rivals: the turned driver and the earlier false tip take one each");
                 foreach (var op in new[] { Enf, Scout, Fixer, Tech }) r.Do(op, "draw"); // with Vale in hand the fight is on its way: drawing is no new act (the final fight is untraced)
                 r.Send(Enf, "d:Getaway bay");
-                r.FightItOut(120, Scout, Fixer, Tech);
-                r.Is(Array.TrueForAll(g.Ops, o => !o.Down), "nobody down");
-                r.Do(Enf, "extract");
+                r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018: fight it out (the crew broken), then the whole cell boards and goes
+                // brief 018 (c018): walking Vale the Enforcer no longer fires, so the three take the fight and one of them may go down: carry him in
+                foreach (var down in new[] { Scout, Fixer, Tech })
+                {
+                    if (!r.Op(down).Down) continue;
+                    var by = Array.Find(new[] { Fixer, Scout, Tech }, o => o != down && !r.Op(o).Down && !r.Op(o).Carrying.HasValue);
+                    if (by == null) continue;
+                    r.To(r.SendTo(by, g.S.Grid.NearestFree(r.Op(down).Pos)!.Value)); r.Do(by, "carry", down); r.Done(by);
+                }
+                r.GetAway(Enf, Scout, Fixer, Tech);
+                r.Eq(g.LeftBehindAtGo.Count, 0, "nobody left behind: a downed operative is carried in by another");
                 r.Eq(g.Result, Outcome.Success, "the prepared route wins");
                 r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("rival-", StringComparison.Ordinal)), "a rival steps to cover the data give (Pulse §2.3)");
             });
@@ -852,9 +866,8 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
-                r.Send(Enf, "d:Getaway bay");
-                while (!g.Over && g.FightSprung == int.MaxValue / 4) g.Step();
-                r.FightItOut(); r.Do(Enf, "extract");
+                Support(r); ToAmbush(r); // brief 018: walking Vale the Enforcer doesn't fire; the three by the car fight
+                r.FightItOutAll(120, Scout, Fixer, Tech); r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 var next = Debrief.Of(g).Next;
                 // Changed (rulebook privacy, Sky 2026-10-16): the Help is private, so no onlooker's sighting is a lead. Whether the
@@ -976,6 +989,7 @@ namespace Suborned.Sim
             StandingCases(); // brief 014
             RepeatCases(); // Sky 2026-10-18: a Watch or Listen that teaches nothing more is refused
             TechWatchCases(); // Sky 2026-10-18: the Tech watches the machines too
+            GetawayCases(); // brief 018 (Sky 2026-10-18): the hold, the blocker, Board and Go, left behind, seen leaving, custody
         }
     }
 }

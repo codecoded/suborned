@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route G, kill (brief 013 D; Motive 013 §6.1 G-kill): route G with a kill (3 s) instead of a knockout; the body is carried at a walk to the Office's service door and put through it (10 s, off-screen), the Dumpster beside it being emptied at 5:22. Nobody sees the act or the carry; the 4:00 mark is missed (Alert 1) and at Alert 1 nobody opens the door. In the debrief the guard is a missing person: +2 T, no Menace, his lover's worry, +1 guard and +1 camera on the block for 3 missions, and an open case.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":355,"op":"scout","do":"watch","target":"guard"},
+  {"tick":555,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1440,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"kill"},
+  {"tick":1540,"op":"enforcer","do":"carry","target":"guard"},
+  {"tick":1570,"op":"enforcer","do":"move","to":[6325,-4125]},
+  {"tick":1754,"op":"enforcer","do":"stash","target":"stash/office-service-door/door"},
+  {"tick":1854,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1939,"op":"enforcer","do":"enter"},
+  {"tick":1939,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":2319,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":2633,"op":"cell","do":"panic"},
+  {"tick":2786,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2915,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2955,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

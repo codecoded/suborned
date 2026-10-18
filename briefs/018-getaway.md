@@ -259,3 +259,99 @@ Rule text changes:
 4. **Menu Withdraw:** stays a free abort, nobody captured. Go without Vale is the in-world withdrawal with left-behind rules.
 5. **Seen leaving:** +1 T, and the car becomes **known**: the investigation holds `cell-car` as a hunted car next mission, which the cell must answer (e.g. a new car through a contact). The campaign side waits for a campaign layer; the engine records the fact.
 
+
+## 10. Pulse review (2026-10-18): the blocker, its post, and seen leaving
+
+Asked by Keel after building §1 from the numbers. Sky's intent (2026-10-17): "I want to get my team into the car, and get away. But it's interesting, because the enforcer can't run, so they have to support the enforcer." The getaway is a tense supported walk and board, beatable by the three covering the Enforcer; the quiet routes still beat loud. No C# was edited. Evidence came from a scratch copy of the engine (outside the repo, since deleted; the rules were switched by environment variable) run on the real block over N10, N11, N75, N87, N111 to N116 and four probes: the Enforcer walks Vale in while the three (P1) fire on the others and spare the blocker, (P2) fire on all, (P3) fire on the blocker alone, (P4) only draw fire.
+
+### What the numbers showed
+
+- **cv-004 is a door-camper.** The planter-run cover cv-004 (975, -5025) is 2.4 m from the car point (850, -4820), inside the exit lane. From the west the nearest lane cover is always cv-004, in the quiet branch too (N11, N18, N95, N111 to N115: rival-4 picks it). A shot at 2 to 4 m is inside `point-blank-m` (5 m): accuracy 750 per shot for a rival, no cover discount for the blocker against anyone within 5 m, and 750 against the Enforcer where every other rival hits at 562. The blocker is the best shot in the fight, and the cell's cover is worth nothing against it.
+- **The blocker is not the main danger in the quiet branch.** The other four rivals do most of the damage: in P1 and P4 the Enforcer is dead in about 14 s with the blocker at cv-004, about 17 s with it at 11 m. It adds 0.5 hits/s at the door against 0.375 from each other rival. A blocker at the door is the problem, not blockers.
+- **Loud is deadly because of four trained officers, not the blocker.** At level 1 with the cell parked at the car (L1 to L3), the cell is down in about 31 s whichever cover the blocker takes. That is the price of going loud (§5) and I leave it alone.
+- **The pick can choose the wrong body.** `NearestInExitLane` pulls the measuring point to 1 m inside the lane's edge. For a rival west of the bay that point is (465, -5282): behind the lane's start, outside the lane. By that measure rival-4 (west, 13.8 m) beats rival-1 (east, on the road, 17.3 m), so the blocker runs 26 m through the cell and is dead in 2.5 s (N113). The mechanic then never bites in the quiet branch.
+
+### Decisions
+
+**1. The pick: shortest grid walk, measured to the blocker's own post. Ties by id. Candidates are the officers on the street on the fight's first tick, the response unit's included.**
+
+- Keep "on the first tick, from every officer on the street". "The first to arrive" is the shortest walk, because they all walk at one pace.
+- Change the measurement point. Each candidate is scored by the walk from where it stands to the post it would take (cover point, else the open point of decision 3), not to a lane point.
+- Why: it picks the body that really is nearest to the job, and it never picks a body for a point outside the lane. In the Handover's quiet branch this makes the blocker rival-1 (east, on the road, 17 m from the lane; the shortest walk to a post in the ring), not rival-4.
+- The response unit's officers count where they stand. Pulling one off an earlier exchange is the right reading of "first to arrive".
+
+**2. Behaviour: accept all three as built.**
+
+- It never stops on the way: it fires nothing while it moves, so a long walk through the cell is a gauntlet the cell can shoot at, and the blocker has no free hits.
+- It holds its post as police hold a stand, and does not step to other cover. A blocker that left its post to chase cover would free the car by itself.
+- Not replaced: a downed, broken or gone blocker frees the car.
+- A rival blocker breaks with its crew (`RivalDown`), because a broken crew is gone. Police never break. That is the existing rule, and it is what makes "fight it out" (break the crew) and "board and go" (down the blocker) different jobs.
+- One fact to keep: the warning (`fight-warn-s`, 10 s) does not hold the walk. The blocker takes its post while the rest hold their fire, so a warned player sees the road close and has 10 s to answer it.
+
+**3. The post: a ring, not "nearest to the blocker".** The nearest free cover inside the lane, but only at `fight-block-near-m` (10 m) to `fight-block-far-m` (13 m) from the car point, measured in a straight line as the hold is. If no cover stands in that ring, the blocker stands in the open on the lane centreline `fight-block-near-m` along the lane from its start.
+
+- **near = 10 m.** Beyond the hold ring (8 m), so the blocker holds the car by the lane, not by the door, and beyond point-blank (5 m) with margin, so the cell's cover works against it and the Enforcer's 4 s Board is not at point blank.
+- **far = 13 m.** Inside `pistol-eff-m` (15 m) with 2 m to spare, so the cell around the car and the blocker are in each other's effective reach. At 15 m or more an unengaged blocker stands off: nobody fires, and Go stays refused with nothing to answer. Cover at 19 m (cv-092, N75 and N87 as built) is the same trap.
+- **Why a ring and not "the lane's far half" or "no cover".** The far half of the lane is 15 to 30 m: out of the cell's reach at the car, so the three must leave the Enforcer to flush it, which is the opposite of supporting him. Open ground with no cover is kinder than cv-004 but takes away the cell's choice of how to fight and any reason to read the cover. A ring lets cover in the right place do its job and gives the open fallback a defined spot on a block with no planter.
+- **What it does on the Handover:** the only cover in the ring is cv-088 (1925, -5075), 11.05 m from the car, on the lane's north kerb, facing the car. Quiet and loud both go there (N75, N87 now cv-088 instead of cv-092).
+- **Why that is a supported walk.** The blocker is 11 m from the cell at the car, in its reach and in cover. Three ops at that range hit a covered target at 281 per mille each, so about 5 s to down a 3-health officer when all three fire. They draw its fire first (target class 1, whoever shot it within 3 s), so it shoots them and not the Enforcer. The Enforcer walks into its reach only as the cell is already firing, and boards with Vale in 4 s. A blocker left alone shoots him at 0.375 to 0.5 hits/s, so ignoring it still costs: P3 and P4 die, P1 and P2 board.
+- **Measured (quiet, 5 rivals, Inez warned, the guard fights them):**
+
+| | blocker cv-004 (as built) | cv-088 (ring, pick by post) |
+| --- | --- | --- |
+| P1 fire on others, spare the blocker | Enforcer dead at 14.2 s | in the car at 18.3 s, 2 health |
+| P2 fire on all | in the car at 18.3 s, 2 health | in the car at 18.3 s, 2 health |
+| P3 fire on the blocker alone | Enforcer dead at 17.2 s | Enforcer dead at 17.2 s |
+| P4 only draw fire | Enforcer dead at 14.2 s | Enforcer dead at 17.2 s |
+| N11 fight it out (final health) | Enforcer 1 of 6 | Enforcer 4 of 6 |
+
+  Boarding is beatable and tense: the Enforcer ends at 2 to 4 of 6 health when the three do the job, and dies when they stand idle. Dying needs only ignoring the field. Quiet still beats loud, whose cost is paid before the car (§5).
+
+**4. Seen leaving: final-fight officers see the car out to `weapons.pistol.max` (25 m) on a clear line.**
+
+- Final-fight officers have no cone, so Keel gave them security's 19 m. An officer in a fight watches the fight, and the car is where the shooting is: if it can shoot as far as the car's door, it sees the car go.
+- Use the officer's weapon maximum (25 m, existing value `pistol-max-m`), still needing a clear line. An officer with no line to the car does not see it, as built. No new key.
+- Effect on the real block: N10 (a won loud route) now ends with "officer-2 sees the car leave", +1 T and the car hunted. Before, every officer was at 19.4 m or hidden, and the +1 T almost never came, which broke Sky's answer 5 (a loud mid-fight getaway gives the police the car). Quiet runs are unchanged: rivals never report, and the guard ally and the patrol are as built.
+- The cone does not change for the response unit's own officers, the robots or the patrol.
+
+### What Keel changes
+
+`sim/Suborned.Sim/GameGetaway.cs`
+
+1. `BlockCover(from)`: skip a cover point unless its straight-line distance to `Car` is at least `R.BlockNearCm` and at most `R.BlockFarCm`. Keep: free (`coverTaken`), `Q >= CoverQPartial`, `Present`, `S.InExitLane`; nearest to `from`, ties by id.
+2. New `Pt BlockPost(Pt from, out CoverPoint? cv)`: `cv = BlockCover(from)`; the post is `cv.At` or, with none, `S.LanePointAt(R.BlockNearCm)`.
+3. `PickBlockers`: for each candidate compute its post first, then the walk from `S.Grid.NearestFree(from)` to `S.Grid.NearestFree(post)`; sort on that walk, then id. Do not take cover while scoring; take it for the winner only, as now. Drop the `NearestInExitLane(from)` entry point. Skip a candidate whose route is null, as now.
+4. `CarWatcher`, the loop over `Hostiles` for officers: replace `R.SecReachCm` with `R.Pistol.MaxCm` (the final fight's officers only; leave the response unit, robots and patrol on their cones).
+
+`sim/Suborned.Sim/Site.cs`: add `public Pt LanePointAt(int cm)`, the point `cm` along the `ExitLane` polyline from `ExitLane[0]` (the last point if the lane is shorter). On the centreline, no inset.
+
+`contracts/rules/rulebook.json` and `contracts/rules/rulebook.schema.ts`, `Rules.cs`:
+
+| key | v | unit | tag | src | reason |
+| --- | --- | --- | --- | --- | --- |
+| `fight-block-near-m` | 10 | m | S | brief 018 §10, Pulse | beyond `fight-hold-m` (8 m) and point-blank (5 m): the blocker holds the lane, not the door, and the cell's cover works against it |
+| `fight-block-far-m` | 13 | m | S | brief 018 §10, Pulse | inside `pistol-eff-m` (15 m) by 2 m: the cell at the car and the blocker are in each other's effective reach, so the fight starts and Go is never a standoff |
+
+- Add `fight.blockNear` and `fight.blockFar` (`v:` refs) in the `fight` section. Read them as `R.BlockNearCm` and `R.BlockFarCm`.
+- Validate `BlockNearCm > HoldCm`, `BlockFarCm >= BlockNearCm` and `BlockFarCm < Pistol.EffCm`; reject otherwise (unknown = reject).
+- `fight.rule`: the blocker's post is the nearest free cover inside the lane at 10 to 13 m from the car, else the open lane at 10 m. Seen leaving: a final-fight officer with a clear line to the car within `weapons.pistol.max`.
+- `fight.blockers` stays 1, `fight.block` stays 30.
+
+Fixtures and records that will move (rule consequences, not defects):
+
+- **N11, N114.** `FightItOut` ends when the car is free. With the east rival as blocker it falls first, so the crew is not broken: N11's "rest break" and N114's "fight over, walk out, +1" fail (the three are captured "fighting", the fight moves 0). The fixture, not the rule: N114 should run `FightItOutAll()` as N115 does, or the check should read that the crew is whole and the car free.
+- **N115.** The seal clock needs the guard downed by the rivals; with the blocker pick changed the guard survives the timing. Fixture only.
+- **N75, N87, N111, N113.** The blocker's post becomes cv-088. N111 and N113 pass unchanged as built; check N111's "post inside the lane" assertion against the ring.
+- **N10.** Ends with a `car-seen` line (+1 T): update its expected Trail and the debrief's lines.
+- **N116.** Unchanged (the response unit's cone).
+- The Unity match and Waymark's re-record (§5) take the new posts and the +1 T on loud.
+
+If Keel wants the smaller diff first: change only step 1 and the two keys (leave the pick). Only N115 moves, but the lane-cap artifact stays and the west rival (rival-4) is still the quiet blocker, so the mechanic barely bites. I recommend the full set.
+
+### Not changed
+
+`fight-hold-m` 8, `fight-block-m` 30, `fight-blockers` 1, `board-s` 1, `carry-s` 3, the loud fight's four-officer size and the stands, and §5's table are all kept.
+
+## 11. Tension after c019 (Waymark, 2026-10-18)
+
+c019 ships. The getaway is a supported walk on B and G (the Enforcer loses 2–3 health) but a walkover on A (Inez's 10 s warning), and the rival blocker leaves when its crew breaks, so it never makes the car wait. Waymark's options: (1) the rival blocker holds the lane until downed, like police; (2) rival health 3 → 4 (too lethal alone); (3) Inez's warning 10 → 5 s. Aster recommends 1 + 3. **Sky (2026-10-18): play the build first, then decide.** Open bug for Keel: if the three never fire, the downed Enforcer and a held car leave the mission with no outcome; needs a time limit with a plain fail line.

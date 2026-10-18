@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Board and go (brief 018 §5), the twin of route-b: the same route to the ambush; then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route B, the pickup, quiet (GDD §07; Keel N11b): watch and listen to the driver, turn him before 5:40 with the approach the card shows works, the pickup moves to the service lane, a false tip sends the rivals away, take Vale at 6:10 and fight the smaller ambush (the turned driver and the tip each take a rival) with the whole armed cell.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"enforcer","do":"move","to":"d:Service lane"},
+  {"tick":0,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":556,"op":"scout","do":"watch","target":"driver"},
+  {"tick":756,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":756,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":778,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1198,"op":"scout","do":"move","to":[8250,-3100]},
+  {"tick":1256,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2340,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":3700,"op":"enforcer","do":"take"},
+  {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":4394,"op":"cell","do":"panic"},
+  {"tick":4394,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4526,"op":"enforcer","do":"board","target":"car"},
+  {"tick":4526,"op":"scout","do":"move","to":"d:Getaway bay"},
+  {"tick":4526,"op":"fixer","do":"move","to":"d:Getaway bay"},
+  {"tick":4526,"op":"tech","do":"move","to":"d:Getaway bay"},
+  {"tick":4579,"op":"fixer","do":"board","target":"car"},
+  {"tick":4579,"op":"tech","do":"board","target":"car"},
+  {"tick":4596,"op":"scout","do":"board","target":"car"},
+  {"tick":4606,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

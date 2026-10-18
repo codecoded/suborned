@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A with Pressure for Help (Keel S25; Sky Q4): Pressure leans on her affair, learned by Listen ($0, +3 T, no step worse whatever her temperament: Motive, motive-lovers.md); the r016 cast's Inez is Fearful, so Pressure is also her own approach and one order turns her; the rest is route A. The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4900,-1700]},
+  {"tick":54,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":254,"op":"scout","do":"move","to":"beside-inez"},
+  {"tick":275,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":695,"op":"fixer","do":"turn","target":"waitress","approach":"pressure"},
+  {"tick":745,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1045,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1045,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1045,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1045,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":1195,"op":"enforcer","do":"enter"},
+  {"tick":1195,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1575,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":1889,"op":"cell","do":"panic"},
+  {"tick":1950,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2079,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2119,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

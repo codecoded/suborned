@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "The cheapest loud win (brief 013 D, Waymark): the reference loud (loud.json) with the Scout and Fixer holding fire until the final fight, so the guard's are the only traced shots (8 T, against the reference's 12): the response unit, which now comes from the Office's doors, downs the Scout, who is left behind and captured. A variant, not the reference: T2 races the fastest loud win that leaves nobody captured. Hand-tuned from the composed loud.json (stances hold, then free at the final fight; the extract at the first tick it is taken); the composer cannot place it, since its plan's 'when' steps land on other ticks and the fight turns.",
+ "note": "The cheapest loud win (brief 013 D; brief 018 §5): the reference loud with the Scout and Fixer holding fire until the final fight, so the guard's are the only traced shots. Its orders up to the walk to the car are c017's hand-tuned ticks, pinned by `at`, without c017's close on the café wall (the Scout and Tech stay in their cover: walking Vale, the Enforcer no longer fires, so they must keep the blocker in their line, and it is down 3.3 s into the fight). Board and go: once the blocker is down the whole cell boards and the car leaves with the officers still at their stands.",
  "start": {},
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
@@ -23,9 +23,14 @@
   {"tick":2258,"op":"enforcer","do":"move","to":"d:Getaway bay"},
   {"tick":2258,"op":"scout","do":"stance","stance":"free"},
   {"tick":2258,"op":"fixer","do":"stance","stance":"free"},
-  {"tick":2262,"op":"scout","do":"move","to":[100,-4500]},
-  {"tick":2262,"op":"tech","do":"move","to":[300,-4300]},
-  {"tick":2640,"op":"enforcer","do":"extract"}
+  {"tick":2635,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2635,"op":"scout","do":"move","to":"d:Getaway bay"},
+  {"tick":2635,"op":"tech","do":"move","to":[1025,-4625]},
+  {"tick":2635,"op":"tech","do":"carry","target":"fixer"},
+  {"tick":2648,"op":"scout","do":"board","target":"car"},
+  {"tick":2665,"op":"tech","do":"move","to":"d:Getaway bay"},
+  {"tick":2674,"op":"tech","do":"board","target":"car"},
+  {"tick":2714,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

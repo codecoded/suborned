@@ -232,6 +232,10 @@ namespace Suborned.Sim
         public readonly Dictionary<string, List<string>> ActFacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         // the final fight
         public readonly int SafeHostiles, SafeMinus, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, HoldCm; public readonly bool FightTraced;
+        // brief 018 (Sky 2026-10-18, the getaway): the exit lane's length and its blockers, boarding, and what a capture costs the campaign
+        public readonly int BlockCm, BlockNearCm, BlockFarCm, Blockers, BoardS, CapturedTrail, CustodyFear, CustodyLoyalty, AbandonedResentment, AbandonedLoyalty, CustodyMissions;
+        /// <summary>The founding (training) cell's scales (campaign.custody.cellStart), in ScaleNames order: bravery, resentment, fear, loyalty.</summary>
+        public readonly int[] CellStart = new int[4];
         // the investigation and between missions
         public readonly int InvestigatorsBase, InvestigatorsPerAlert, InvestigatorHops, WordHops, WordQuietLoyalty, IntroductionsPerContact, NeedWeightScale;
         public readonly Dictionary<string, string> StreamKeys = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -289,6 +293,7 @@ namespace Suborned.Sim
             if (tk["test"]["op"].Str() != ">") throw new FormatException("people.talker.test.op is not >");
             TalkerLeft = Scales(tk["test"]["left"].Strs()); TalkerRight = Scales(tk["test"]["right"].Strs());
             Facts = tk["facts"].Strs();
+            foreach (var f in new[] { "cell-face", "cell-car", "place-time", "contact" }) if (!Facts.Contains(f)) throw new FormatException($"people.talker.facts lacks '{f}': a captive gives it (brief 018 §3)");
             var lie = tk["lie"]; lie.Only("when", "gives", "src", "proposed", "reason"); lie["when"].Only("talker", "helped", "braveryAtLeast"); lie["gives"].Only("hero", "otherwise");
             LieTalker = lie["when"]["talker"].Bool(); LieHelped = lie["when"]["helped"].Bool(); LieBraveryAtLeast = Bounded(lie["when"]["braveryAtLeast"], 0, ScaleMax[Bravery]);
             LieGivesHero = lie["gives"]["hero"].Str(); LieGivesOtherwise = lie["gives"]["otherwise"].Str();
@@ -367,9 +372,12 @@ namespace Suborned.Sim
             if (!wantCauses.SetEquals(StandingCauses)) throw new FormatException($"standing.causes are {string.Join(",", new SortedSet<string>(StandingCauses, StringComparer.Ordinal))}; the engine's are {string.Join(",", wantCauses)}");
             if (b["debrief"]["lines"].Opt("standing") is not JNode sl || string.Join(",", sl["fields"].Strs()) != string.Join(",", StandingLineFields)) throw new FormatException("debrief.lines.standing carries " + string.Join(", ", StandingLineFields));
             b["debrief"].Only("lines", "rule", "tag", "src");
+            // brief 018 §3: the getaway's lines, with exactly the fields the engine fills (unknown = reject, both ways)
+            foreach (var (ln, fs) in new[] { ("left-behind", "who,fate,why"), ("captive", "who,held-at,holds,rescue-until"), ("car-seen", "by,trail") })
+                if (b["debrief"]["lines"].Opt(ln) is not JNode dl || string.Join(",", dl["fields"].Strs()) != fs) throw new FormatException($"debrief.lines.{ln} carries {fs.Replace(",", ", ")} (brief 018)");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
-            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "rule", "tag", "src");
+            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "board", "rule", "tag", "src");
             CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); RunAlert = RI(c["runAlert"]); ActReachCm = RI(c["reach"]) * 100; AtReachCm = RI(c["atReach"]);
             c["loop"].Only("s", "trail", "tether", "targets"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
             LoopTargets.AddRange(c["loop"]["targets"].Strs());
@@ -378,6 +386,8 @@ namespace Suborned.Sim
             c["call"].Only("trail"); CallTrail = RI(c["call"]["trail"]);
             c["enter"].Only("s", "alarm"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
             c["carry"].Only("s"); CarryS = RI(c["carry"]["s"]);
+            c["board"].Only("s"); BoardS = RI(c["board"]["s"]); // brief 018 §2: Board, and stepping out
+            if (BoardS < 1) throw new FormatException("cell.board.s is at least 1 s");
             c["take"].Only("s", "trailUnturned", "struggle"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]); TakeStruggleS = RI(c["take"]["struggle"]);
             var se = b["security"]; se.Only("response", "speed", "rivals", "patrol", "rule", "tag", "src"); // checkIn and seal retired by brief 013 (response.checkIn, response.levels)
             var re = se["response"]; re.Only("witness", "seen", "unseen", "civilian", "rivalsUnseen");
@@ -486,7 +496,12 @@ namespace Suborned.Sim
             AlarmSpread = RI(rs["spread"]); CombatantCap = RI(rs["cap"]); CheckInPeriodS = RI(rs["checkIn"]);
             var su2 = rs["suspicion"]; su2.Only("s", "meet", "pm"); SuspicionS = RI(su2["s"]); MeetCm = RI(su2["meet"]) * 100;
             su2["pm"].Only("fearful", "loyal", "idealist", "mercenary"); foreach (var kv in su2["pm"].Entries) SuspicionPm[kv.Key] = RI(kv.Value);
-            var cpn = b["campaign"]; cpn.Only("missing", "areaWatch", "cases", "rule", "tag", "src", "proposed", "reason");
+            var cpn = b["campaign"]; cpn.Only("missing", "areaWatch", "cases", "custody", "rule", "tag", "src", "proposed", "reason");
+            var cus = cpn["custody"]; cus.Only("trail", "fear", "loyalty", "abandonedResentment", "abandonedLoyalty", "missions", "cellStart", "rule", "src"); // brief 018 §3
+            CapturedTrail = RI(cus["trail"]); CustodyFear = RI(cus["fear"]); CustodyLoyalty = RI(cus["loyalty"]); AbandonedResentment = RI(cus["abandonedResentment"]); AbandonedLoyalty = RI(cus["abandonedLoyalty"]); CustodyMissions = RI(cus["missions"]);
+            if (CapturedTrail < 0 || CustodyFear < 0 || CustodyLoyalty < 0 || AbandonedResentment < 0 || AbandonedLoyalty < 0 || CustodyMissions < 1) throw new FormatException("campaign.custody: the costs are not negative and the rescue window is at least one mission");
+            cus["cellStart"].Only(ScaleNames);
+            for (int i = 0; i < 4; i++) { CellStart[i] = RI(cus["cellStart"][ScaleNames[i]]); if (CellStart[i] < ScaleMin[i] || CellStart[i] > ScaleMax[i]) throw new FormatException($"campaign.custody.cellStart.{ScaleNames[i]} is off its scale"); }
             cpn["missing"].Only("trail", "tiesFear"); MissingTrail = RI(cpn["missing"]["trail"]); MissingTiesFear = RI(cpn["missing"]["tiesFear"]);
             cpn["areaWatch"].Only("step", "missions"); AreaWatchStep = RI(cpn["areaWatch"]["step"]); AreaWatchMissions = RI(cpn["areaWatch"]["missions"]);
             cpn["cases"].Only("perLevel", "cap", "close", "trailEq"); CaseTrailEq = RI(cpn["cases"]["trailEq"]); CasesPerLevel = RI(cpn["cases"]["perLevel"]); CaseLevelCap = RI(cpn["cases"]["cap"]); CaseCloseMissions = RI(cpn["cases"]["close"]);
@@ -494,11 +509,16 @@ namespace Suborned.Sim
             foreach (var m2 in new[] { "saw-takedown", "attacked", "attacked-aware", "saw-carry", "found-body", "heard-alarm", "reported", "missed-expected" })
                 if (!MemoryActs.Contains(m2)) throw new FormatException($"memory.acts.{m2}: brief 013's act is missing");
             if (!Traceable.ContainsKey("takedown")) throw new FormatException("traceable.takedown is missing");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "rule", "tag", "src");
+            BlockCm = RI(fg["block"]) * 100; Blockers = RI(fg["blockers"]); // brief 018 §1
+            if (BlockCm < 100 || Blockers < 0) throw new FormatException("fight.block is at least 1 m and fight.blockers is not negative");
+            BlockNearCm = RI(fg["blockNear"]) * 100; BlockFarCm = RI(fg["blockFar"]) * 100; // brief 018 §10 (Pulse): the blocker's post ring
             RivalsPublicDefault = OneOf(fg["rivalsPublic"], RivalsPublics); fg["rivalsPublicReason"].Str();
             fg["safe"].Only("hostiles", "minus", "warn", "ambush"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeMinus = RI(fg["safe"]["minus"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100;
             fg["loud"].Only("officers", "alert", "civilian"); LoudOfficers = RI(fg["loud"]["officers"]); LoudAlert = RI(fg["loud"]["alert"]); LoudCivilian = RI(fg["loud"]["civilian"]);
             HoldCm = RI(fg["hold"]) * 100; FightTraced = fg["traced"].Bool();
+            if (!(BlockNearCm > HoldCm && BlockFarCm >= BlockNearCm && BlockFarCm < Pistol.EffCm))
+                throw new FormatException("fight.blockNear lies beyond fight.hold, fight.blockFar at or beyond blockNear and inside the pistol's effective reach (brief 018 §10)");
             var inv = b["investigation"]; inv.Only("base", "perAlert", "hops", "rule", "tag", "src", "proposed", "reason");
             InvestigatorsBase = RI(inv["base"]); InvestigatorsPerAlert = RI(inv["perAlert"]); InvestigatorHops = RI(inv["hops"]);
             WordHops = VI("word-hops"); WordQuietLoyalty = VI("word-quiet-loyalty"); IntroductionsPerContact = VI("introductions-per-contact"); NeedWeightScale = VI("need-weight-scale");

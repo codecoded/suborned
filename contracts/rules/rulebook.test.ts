@@ -398,6 +398,7 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
   test('the live rulebook has the sections (optional only for runs pinned before them); the 18 s check-in is retired', () => {
     expect(rb.cell.loop.targets).toBeDefined(); expect(rb.cell.take.struggle).toBeDefined(); // optional in the schema only so dialogue r017-r019's pinned rulebook parses
     expect([td, wi, rs, cp].every((x) => x !== undefined)).toBe(true);
+    expect([rb.cell.board, rb.fight.block, rb.fight.blockers, rb.fight.blockNear, rb.fight.blockFar, cp.custody].every((x) => x !== undefined)).toBe(true); // brief 018 (the getaway)
     expect(rb.values['check-in-s']).toBeUndefined();
     expect(rb.values['response-check-in-s']).toBeUndefined();
     expect(rb.security.checkIn).toBeUndefined();

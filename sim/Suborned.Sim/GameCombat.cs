@@ -140,11 +140,14 @@ namespace Suborned.Sim
         /// still beside a cover point that shields it, past point blank: weapons.mod.cover for full cover, ai.cover.modPartial for partial.</summary>
         int CoverMod(string t, Pt at, Pt from)
         {
+            if (IsOpId(t) && OpOf(Sim.Op.Parse(t)).InCar) return R.ModCover; // brief 018 §2: in the car, a target still beside cover
             if (S.Cover.Count == 0 || Moving(t)) return 1000;
             return CoverRules.Modifier(S.Cover, at, from, Tick / Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
         }
 
         static long Dist(Pt a, Pt b) => G.Isqrt(G.D2(a, b));
+        /// <summary>Brief 018 (Sky 2026-10-18): the Enforcer walking Vale can't run or fire; once Vale is in the car he is any operative again.</summary>
+        bool CarriesVale(Op op) => op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking);
         bool Ready(Gun g) => g.Drawn && g.HolsterAt < 0 && Tick >= g.DrawReady;
 
         // ---------------------------------------------------------------- the tick
@@ -181,7 +184,7 @@ namespace Suborned.Sim
         void CellShooter(Op op)
         {
             var g = op.Gun; string name = Sim.Op.Name(op.Id);
-            if (g.Down || g.W == null || op.Inside || !g.Drawn) return;
+            if (g.Down || g.W == null || op.Inside || op.InCar || !g.Drawn) return; // in the car: no fire (brief 018 §2)
             if (g.Order.Length > 0)
             {
                 var tg = GunOf(g.Order);
@@ -191,7 +194,7 @@ namespace Suborned.Sim
                     g.Order = ""; g.Force = false; g.Target = ""; g.LostAt = -1;
                 }
             }
-            if (op.Busy != null || op.Running || op.Carrying.HasValue || op.CarryBody.Length > 0 || !Ready(g)) return;
+            if (op.Busy != null || op.Running || op.Carrying.HasValue || op.CarryBody.Length > 0 || CarriesVale(op) || !Ready(g)) return; // brief 018: walking Vale, the Enforcer doesn't fire
             string t = g.Order.Length > 0 ? g.Order : StanceTarget(op);
             if (t.Length == 0) { g.Target = ""; return; }
             var at = PosOf(t)!.Value; long d = Dist(op.Pos, at);
@@ -419,7 +422,7 @@ namespace Suborned.Sim
             if (FightBranch.Length > 0) FightHits++;
             Note(name + ".hit." + (IsFightHostile(by) ? "fight" : by), $"{by} hits the {name}. {op.Gun.Health} health left.");
             if (!down) return;
-            if (op.Id == OpId.Enforcer)
+            if (op.Id == OpId.Enforcer && Vale != ValeAt.Car) // brief 018 §2: once Vale is in the car, the Enforcer is any operative
             {
                 if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", "The Enforcer is down and the rival crew takes Vale off him."); // the rivals' goal (Motive addendum Q7)
                 else Fail("enforcer-down", "The Enforcer is down.");
@@ -429,7 +432,7 @@ namespace Suborned.Sim
             op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Target = "";
             if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
             if (op.CarryBody.Length > 0) PutDown(op, name + " down");
-            Note(name + ".down", $"The {name} is down. Carry them to the car, or they are captured.");
+            Note(name + ".down", op.InCar ? $"The {name} is down in the car." : $"The {name} is down. Carry them into the car, or they are captured.");
         }
 
         void GuardHit(bool down, string by)
@@ -601,7 +604,7 @@ namespace Suborned.Sim
             int n = 0;
             foreach (var op in Ops)
             {
-                if (op.Down || op.Inside || op.Gun.W == null) continue;
+                if (op.Down || op.Inside || op.InCar || op.Gun.W == null) continue;
                 if (!op.Gun.Drawn || op.Gun.HolsterAt >= 0) StartDraw(op);
                 op.Gun.Stance = "free"; n++;
             }
@@ -635,6 +638,7 @@ namespace Suborned.Sim
             if (g.W == null) return No("no-weapon", $"{o.Op} carries no weapon (Arms)");
             if (op.Running) return No("fire-running", "a running operative doesn't fire: walk or stop first");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("fire-carrying", "carrying, the operative doesn't fire");
+            if (CarriesVale(op)) return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him (brief 018)");
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
@@ -660,28 +664,10 @@ namespace Suborned.Sim
             if (other == op) return No("carry-self", "nobody carries themself");
             if (!other.Down) return No("not-down", $"{o.Target} is not down");
             if (other.CarriedBy.HasValue) return No("already-carried", $"{o.Target} is already carried");
+            if (other.InCar) return No("in-car", $"the {o.Target} is in the car");
             if (!G.Within(op.Pos, other.Pos, actReach)) return No("stand-beside-op", $"stand beside the {o.Target}", m: actReach / 100);
             Engage(op, o, R.CarryS); op.Gun.Order = ""; op.Gun.Target = "";
             return "";
-        }
-
-        /// <summary>The mission ends with Vale in the car: a downed operative not carried to it, nor lying beside it, is captured (§06).</summary>
-        void Captures()
-        {
-            foreach (var name in WouldBeCaptured())
-            {
-                Captured.Add(name); Chain.Add(name + "-captured");
-                Note("captured", $"The {name} is left behind and captured.");
-            }
-        }
-
-        /// <summary>The operatives an extract now would leave behind: every downed one not within the getaway car's reach (cell.atReach, the
-        /// same reach as Extract), carried or not; a carried one stands where its carrier stands. For the HUD's warning (Motive's H11).</summary>
-        public List<string> WouldBeCaptured()
-        {
-            var car = S.At(S.GetawayCar); var l = new List<string>();
-            foreach (var op in Ops) if (op.Down && !G.Within(op.Pos, car, R.AtReachCm)) l.Add(Sim.Op.Name(op.Id));
-            return l;
         }
 
         // ---------------------------------------------------------------- the cards
@@ -697,6 +683,7 @@ namespace Suborned.Sim
             if (o.Do != "draw" && o.Do != "fire") { c.Why = "no-change"; return c; }
             var op = OpOf(Sim.Op.Parse(o.Op)); var g = op.Gun;
             if (g.W == null) { c.Refused = $"{o.Op} carries no weapon (Arms)"; return c; }
+            if (o.Do == "fire" && CarriesVale(op)) { c.Refused = "walking Vale, the Enforcer doesn't fire"; return c; }
             if (FightOn || FightBranch.Length > 0) { c.Why = "fight-on"; return c; }
             if (loudNow) { c.Why = "already-loud"; return c; }
             string reported; int delay; int civ = 0;

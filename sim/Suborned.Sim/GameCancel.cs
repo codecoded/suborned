@@ -43,6 +43,12 @@ namespace Suborned.Sim
                 if (o.Do == "enter" && o.How == "out") { a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "both doors are held: he waits inside until one is free"; } // a cancelled Enter, waiting
                 return a;
             }
+            if (op.InCar) // brief 018: boarded; a move steps out (an order, not a cancel)
+            {
+                a.Verb = "board"; a.Target = "car"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "leaves with the car on Go";
+                a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "in the car: a move steps out";
+                return a;
+            }
             if (op.Walk != null)
             {
                 a.Verb = "move"; a.Phase = op.Running ? "running" : "walking"; a.Target = $"{op.Walk.End.X},{op.Walk.End.Y}";
@@ -88,7 +94,7 @@ namespace Suborned.Sim
             }
             if (id == OpId.Enforcer && Vale == ValeAt.WithEnforcer)
             {
-                a.Verb = "take"; a.Target = "councillor"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "Vale in the getaway car: the mission is won";
+                a.Verb = "take"; a.Target = "councillor"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "Vale boards the getaway car with him; the win is the car leaving with Vale (Go)";
                 a.CanCancel = false; a.CancelCost = "keeps-vale"; a.CancelText = "putting Vale down is no cancel";
                 return a;
             }
@@ -120,6 +126,8 @@ namespace Suborned.Sim
                 case "drop": return "laid down";
                 case "stash": return "hidden";
                 case "restrain": return "tied";
+                case "board": return op.Carrying.HasValue ? $"in the car with the {Sim.Op.Name(op.Carrying.Value)}" : op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer ? "in the car with Vale" : "in the car";
+                case "move": return "steps out of the car"; // only a boarded operative's move is an action
                 default: return "";
             }
         }

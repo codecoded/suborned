@@ -168,7 +168,7 @@ namespace Suborned.Play
             "only-scout" => "portraits/cameo_scout_normal", "only-fixer" => "portraits/cameo_fixer_normal", "only-tech" => "portraits/cameo_tech_normal", "only-enforcer" => "portraits/cameo_enforcer_normal",
             "no-cash" => "icons/singles/pay",
             "driver-too-late" or "call-too-late" or "car-busy" or "patrol-away" or "agent-busy" or "summon-too-far" => "icons/singles/p_time",
-            "no-weapon" or "already-drawn" or "not-drawn" or "fire-running" or "fire-carrying" or "no-target" or "civilian-target" or "no-clear-line" or "target-unknown" or "fire-on-cell"
+            "no-weapon" or "already-drawn" or "not-drawn" or "fire-running" or "fire-carrying" or "no-target" or "civilian-target" or "no-clear-line" or "target-unknown" or "fire-on-cell" or "fire-carrying-vale"
                 or "stance-unknown" or "panic-not-cell" or "panic-no-fight" or "panic-nobody" or "unarmed" or "never-vale" or "no-line" or "stance-hold" or "stance-return" or "stance-free" => "icons/singles/fire",
             "carry-vale" or "already-carrying" or "carry-names-downed" or "carry-self" or "not-down" or "no-body" or "already-carried" or "body-stashed" or "not-carrying" or "stash-full" or "body-dead"
                 or "already-restrained" or "keeps-vale" or "run-carrying-vale" or "run-carrying-downed" or "other-carries" or "no-room" => "icons/singles/s_carrying",
@@ -180,15 +180,25 @@ namespace Suborned.Play
         /// <summary>A refusal's pop: the code's short form with {m} {usd} {tick} filled (as the long line), else the host's own short.</summary>
         string ShortOf(Order o, Answer a)
         {
-            var s = Text?.ShortLock(a.code);
+            var s = Text?.ShortLock(a.code, TargetKindOf(o.Target));
             if (s == null) return null;
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
+            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
             // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;
+        }
+
+        /// <summary>Fable 019's `byTarget` key for an order's target: "machine" for a camera (by its id or "camera:" key), the patrol robot or a
+        /// response robot; else null (the base line, the person case).</summary>
+        string TargetKindOf(string target)
+        {
+            if (string.IsNullOrEmpty(target)) return null;
+            if (target == "patrol" || target.StartsWith("camera:") || target.StartsWith("camera/") || target.Contains("robot")) return "machine";
+            foreach (var p in Pickables()) if (p.T.Kind == "camera" && p.T.Key == target) return "machine";
+            return null;
         }
 
         /// <summary>A pop the host builds itself (less.pop by key), with its long line kept for Alt.</summary>

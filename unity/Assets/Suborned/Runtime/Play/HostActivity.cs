@@ -89,7 +89,7 @@ namespace Suborned.Play
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {
-            "loop" or "reroute" => "the cabinet", "enter" => "the public door", "extract" => "the getaway car", "take" => "Vale",
+            "loop" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => "Vale",
             _ => q.Target.Length > 0 ? Name(q.Target) : "the act",
         };
 
@@ -118,7 +118,7 @@ namespace Suborned.Play
         public static string Glyph(string verb, string approach) => verb switch
         {
             "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "reroute" => "route",
-            "mislead" => "tip", "enter" => "in", "take" => "take", "extract" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "takedown" => "takedown", "restrain" => "restrain", "stash" => "stash", "drop" => "drop", "" => "", _ => verb,
+            "mislead" => "tip", "enter" => "in", "take" => "take", "board" or "go" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "takedown" => "takedown", "restrain" => "restrain", "stash" => "stash", "drop" => "drop", "" => "", _ => verb,
         };
 
         /// <summary>Cancel costs that lose nothing (the text's cancelCosts keys): a walk stopped, a weapon holstered or a fire ceased, nothing under way.</summary>
@@ -237,12 +237,14 @@ namespace Suborned.Play
             var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
             l ??= Text.LockOf(a.why ?? "");
             if (l == null || l.Line.Length == 0) return null;
+            var line = TargetKindOf(o.Target) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine
             string who = o.Target.Length > 0 ? Name(o.Target) : "them";
             string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            return l.Line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
+            line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
+            return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }
 
         // engine log codes that land an order's act, and the verb and agent whose exchange they belong to

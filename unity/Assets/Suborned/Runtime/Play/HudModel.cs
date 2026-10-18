@@ -17,10 +17,16 @@ namespace Suborned.Play
             public bool Selected, HintRing, Armed, Drawn, Down, Busy, CanCancel; public int Hp, HpMax, Progress = -1;
             // for the kit view (Glyph's slot strip): role, the atlas icon, the state tag, the ready/hurt/down line, the queued act, the cancel tooltip
             public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = "", Pace = ""; public bool Hurt, Show, Compact;
+            /// <summary>Brief 018 §6.6: in the getaway car (the roster's in-car badge); while the Go card is up, the fate of one a Go would leave ("captured" or "walked", else "").</summary>
+            public bool InCar; public string LeftFate = "";
         }
         public sealed class AgentMark { public Vector3? World; public string Num = "", Verb = ""; public bool Selected; }
         public sealed class CastIcon { public Vector3? World; public string A = "", B; }
-        public sealed class Ring { public bool Show, Selected, CanCancel; public Vector3 World; public string Glyph = "", Tip = "", ActGlyph = ""; public int Progress = -1; public Vector3? ActAt; }
+        public sealed class Ring { public bool Show, Selected, CanCancel; public Vector3 World; public string Glyph = "", Tip = "", ActGlyph = ""; public int Progress = -1; public Vector3? ActAt;
+            /// <summary>Glyph techwatch fix 3: a timed act that ran to its end keeps its ring a beat (DoneSeconds), full, with a tick. Done: showing that beat now.</summary>
+            public bool Done; internal bool WasActing; internal int LastEnd = -1; internal float DoneAt = -10f; }
+        /// <summary>How long a finished act's ring stays, full, with its tick (unscaled seconds: it holds through a pause).</summary>
+        public const float DoneSeconds = 1.2f;
         public struct Pips { public Vector3 World; public int Hp, Max; public bool Cell; }
         public struct Downed { public Vector3 World; public string Line; }
         /// <summary>One person in Intel (Glyph's intel_panel): what the cell knows of them, and the secret and the lover tie only once known.</summary>
@@ -54,7 +60,7 @@ namespace Suborned.Play
         public string Clock = "", Next = "", Cash = "", Trail = "", State = "", City = "", Tracker = ""; public int Alert;
         // the roster and hotbar
         public readonly Slot[] Slots = { new(), new(), new(), new() };
-        public readonly string[] VerbGlyph = new string[4], VerbKey = new string[4], VerbIcon = new string[4], VerbName = new string[4]; public readonly bool[] VerbHas = new bool[4]; public int VerbLit, Agent; public string VerbCaption = "";
+        public readonly string[] VerbGlyph = new string[4], VerbKey = new string[4], VerbIcon = new string[4], VerbName = new string[4]; public readonly bool[] VerbHas = new bool[4], VerbRefused = new bool[4]; /* a verb the agent has but can't give now (Fire while carrying Vale): its knob greys, its glyph kept */ public int VerbLit, Agent; public string VerbCaption = "";
         public bool AllStrips, Fight; public string NextLabel = "", NextTime = "", Objective = "", ObjectiveTail = "", CancelKey = "";
         // marks in the world
         public readonly AgentMark[] Marks = { new(), new(), new(), new() };
@@ -114,11 +120,12 @@ namespace Suborned.Play
         }
 
         /// <summary>Per frame: what follows the camera, the cursor and the selection; the roster's live state; the open cards.</summary>
-        int builtFrame = -1;
+        int builtFrame = -1; List<(string op, string fate, string why)> goLeft; static readonly List<(string op, string fate, string why)> noneLeft = new();
         public void Frame(HandoverHost h)
         {
             if (builtFrame == Time.frameCount) return; builtFrame = Time.frameCount; // both views may ask; it is built once a frame
             var g = h.Game; Refresh(h);
+            goLeft = h.GoCardOpen ? h.LeftBehindNow() : noneLeft; // brief 018: the Go card's left-behind flags on the roster
             Fault = h.Fault != null ? h.Status : null; Status = h.Status; Dock = h.controls.dock; Mouse = h.Mouse; Box = h.BoxScreen;
             AckKey = h.controls.Label(PlayAction.Acknowledge); HistoryKey = h.controls.Label(PlayAction.DialogueLog); HintKey = h.controls.Label(PlayAction.Hints);
             bool ended = h.Ending.Length > 0;
@@ -135,6 +142,8 @@ namespace Suborned.Play
                     : s.Armed && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
+                s.InCar = op.InCar && !ended; s.LeftFate = "";
+                if (!ended && !op.InCar && h.GoCardOpen) foreach (var (who, fate, _) in goLeft) if (who == s.Role) s.LeftFate = fate;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
                 s.StateTag = op.Down ? "DOWN" : op.CarryBody.Length > 0 && d.Phase != "walking" && d.Phase != "acting" ? "CARRYING" : op.CarryBody.Length > 0 ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
                 s.Pace = op.CarryBody.Length > 0 ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
@@ -146,8 +155,16 @@ namespace Suborned.Play
                 var t = h.Views?.Find("op/" + Op.Name((OpId)i)); bool on = t && t.gameObject.activeSelf;
                 var m = Marks[i]; m.World = on ? t.position : null; m.Num = Nums[i]; m.Selected = h.Selected[i];
                 m.Verb = op.Busy != null ? HandoverHost.Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
-                var r = Rings[i]; r.Show = on && d.Busy && d.Phase != "down" && !ended;
-                if (r.Show)
+                var r = Rings[i]; bool busyRing = on && d.Busy && d.Phase != "down" && !ended;
+                // the beat after an act: it was acting (not walking to it) and the engine's end tick has come, so it ran out, not cancelled
+                bool acting = busyRing && !(d.Phase is "walking" or "running") && op.Busy != null;
+                if (r.WasActing && !acting && r.LastEnd >= 0 && g.Tick >= r.LastEnd && !op.Down) r.DoneAt = Time.unscaledTime;
+                if (acting) r.LastEnd = op.BusyEnd; else if (!busyRing) r.LastEnd = -1;
+                r.WasActing = acting;
+                r.Done = !busyRing && on && !ended && !op.Down && Time.unscaledTime - r.DoneAt < DoneSeconds;
+                r.Show = busyRing || r.Done;
+                if (r.Done) { r.World = t.position; r.Selected = h.Selected[i]; r.Progress = 1000; r.CanCancel = false; r.ActAt = null; r.Glyph = "✓"; }
+                else if (r.Show)
                 {
                     bool walking = d.Phase is "walking" or "running";
                     r.World = t.position; r.Selected = h.Selected[i]; r.Progress = d.Progress; r.CanCancel = d.CanCancel; r.Tip = s.CancelTip;
@@ -158,7 +175,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 4; i++) { VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 4; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -337,8 +354,32 @@ namespace Suborned.Play
                 var route = d.Route.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
+                Getaway(h, d);
             }
             if (h.ShowDebug) EndLines.Add(h.Ending);
+        }
+
+        /// <summary>Brief 018 §3 (Fable's debrief.between and debrief.getaway): who was left behind and their fate, each captive (talks in n, or
+        /// holding out when the projection has them silent through the rescue window), and who saw the car leave.</summary>
+        void Getaway(HandoverHost h, Debrief d)
+        {
+            var t = h.Text; if (t == null) return;
+            static string Missions(int n) => n == 1 ? "1 mission" : $"{n} missions";
+            string Who(string op) { var n = op.Length > 0 ? char.ToUpperInvariant(op[0]) + op[1..] : op; return "The " + n; }
+            string W(System.Collections.Generic.Dictionary<string, string> m, string k) => m.TryGetValue(k, out var v) ? v : k;
+            // Glyph r2: one row each: a captive's cameo and the cuffs, then Fable's captive line (holding out when they never talk in the window);
+            // one walked out, its cameo and footprints, then the left-behind line. "\u0001op:fate\u0001" leads a row (the end card draws the cameo and glyph)
+            t.DebriefBetween.TryGetValue("left-behind", out var lb);
+            foreach (var (op, fate, why) in d.LeftBehind)
+            {
+                var c = d.Next.Captives.Find(x => x.Op == op);
+                string line = null;
+                if (c != null) { var cl0 = c.TalksAt == 0 ? t.GetawayHoldsOut : t.DebriefBetween.TryGetValue("captive", out var cl) ? cl : null; line = cl0?.Replace("{who}", Who(op)).Replace("{held-at}", t.GetawayPost) /* the engine names a post by its id: Fable's default */.Replace("{holds}", Missions(c.Holds)).Replace("{rescue-until}", Missions(c.RescueUntil)); }
+                line ??= lb?.Replace("{who}", Who(op)).Replace("{fate}", W(t.GetawayFate, fate)).Replace("{why}", W(t.GetawayWhy, why));
+                if (line != null) EndLines.Add($"\u0001{op}:{fate}\u0001{line}");
+            }
+            if (d.Next.CarSeenBy.Length > 0 && t.DebriefBetween.TryGetValue("car-seen", out var cs))
+                EndLines.Add(cs.Replace("{by}", W(t.GetawayBy, PlayText.RoleOfId(d.Next.CarSeenBy))).Replace("{trail}", h.Game.R.WitnessTrail.ToString()));
         }
 
         static string RouteWords(string id) => id switch
@@ -385,7 +426,8 @@ namespace Suborned.Play
                 case "listen": return "Learns their need and temperament";
                 case "loop": return "Loops the camera; the Tech stays at the cabinet";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
-                case "extract": return i.Outcome.StartsWith("win") ? "Wins the mission" + (i.Outcome.Contains("captured") ? i.Outcome[3..] : "") : i.Outcome;
+                case "go": return i.Outcome == "win" ? "Wins the mission" : "Withdraws"; // brief 018: who stays is the Go line itself
+                case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
                 case "fire": return "Goes loud";
                 default: return i.Outcome;
             }
@@ -405,7 +447,7 @@ namespace Suborned.Play
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
             "watch" or "listen" or "mislead" or "loop" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
-            "act" => "enter", "extract" => "take", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
+            "act" => "enter", "board" or "go" => "car", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",

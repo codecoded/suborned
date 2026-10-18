@@ -11,6 +11,7 @@ namespace Suborned.Play
         Pause, Faster, Slower, NextEvent, Restart, Debug, AddToGroup,
         Cancel, Briefing, DialogueLog, Draw, Cease, Stance, Force, Hints, Acknowledge, AllStrips, HudView, Intel, Peek, Response, Gait,
         TurnLeft, TurnRight, TurnDrag,
+        FollowView,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
@@ -69,6 +70,7 @@ namespace Suborned.Play
             new() { action = PlayAction.TurnLeft, keys = new[] { Key.Q }, label = "Q" }, // brief 016: the view a quarter round left (Q and E were free)
             new() { action = PlayAction.TurnRight, keys = new[] { Key.E }, label = "E" },
             new() { action = PlayAction.TurnDrag, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" }, // held with the middle button: turn freely (Alt alone is Peek; the detail layer stays off while turning)
+            new() { action = PlayAction.FollowView, keys = new[] { Key.T }, label = "T" }, // Sky 2026-10-18, a test: the third-person follow view (V is Stance; T was free)
         };
         static readonly Binding[] defaults = Defaults();
 

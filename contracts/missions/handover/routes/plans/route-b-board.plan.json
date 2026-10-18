@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Board and go (brief 018 §5), the twin of route-b: the same route to the ambush; then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route B, the pickup, quiet (GDD §07; Keel N11b): watch and listen to the driver, turn him before 5:40 with the approach the card shows works, the pickup moves to the service lane, a false tip sends the rivals away, take Vale at 6:10 and fight the smaller ambush (the turned driver and the tip each take a rival) with the whole armed cell.",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {"op": "enforcer", "do": "move", "to": "d:Service lane", "why": "to wait where the turned driver will bring the car"},
+  {"op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"op": "scout", "do": "watch", "target": "driver"},
+  {"op": "scout", "do": "move", "to": "d:Meet driver", "why": "Watch reaches 6 m and stops the walk; Listen needs 3 m: on to the driver"},
+  {"op": "scout", "do": "listen", "target": "driver"},
+  {"op": "fixer", "do": "turn", "target": "driver", "approach": "pay", "by": "5:40", "label": "turned", "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"},
+  {"op": "fixer", "do": "move", "to": "crew:fixer", "why": "back to the getaway car to cover the extraction"},
+  {"op": "scout", "do": "move", "to": [8250,-3100], "after": ["scout"], "why": "near the rivals' car"},
+  {"op": "scout", "do": "mislead", "target": "rivals", "at": "3:10", "why": "a false tip sends the rivals away (3:50) as soon as they park"},
+  {"op": "scout", "do": "move", "to": "crew:scout"},
+  {"op": "enforcer", "do": "take", "label": "take", "why": "Vale reaches the car in the service lane at 6:10"},
+  {"op": "enforcer", "do": "move", "to": [2400,-6000], "after": ["take"], "gap": 0, "why": "with Vale, to a point 19.5 m south-east of the car, off the rivals' posts by the planters: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"},
+  {"op": "cell", "do": "panic", "after": ["take"], "why": "the ambush: the armed cell fires at will"},
+  {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.ambush", "label": "out", "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire"},
+  {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale in first (Board, 4 s carrying)"},
+  {"op": "scout", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out", "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2)"},
+  {"op": "scout", "do": "board", "target": "car", "label": "scout-in"},
+  {"op": "fixer", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
+  {"op": "fixer", "do": "board", "target": "car", "label": "fixer-in"},
+  {"op": "tech", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
+  {"op": "tech", "do": "board", "target": "car", "label": "tech-in"},
+  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": "captured", "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind"}
+ ]
+}

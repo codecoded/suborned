@@ -260,9 +260,10 @@ namespace Suborned.Sim
             if (!Over) DrawnSeen();
             if (!Over) FightStep();
             if (!Over) Combat();
+            if (!Over) GetawayAfterFire(); // brief 018: the blocker picked among those still standing after this tick's fire; blocker.out, car.free
             if (!Over) CrowdStep();
             if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
-            if (!Over && Tick >= Lockdown && Vale != ValeAt.Car) Fail("sealed", "Security seals the district before Vale reaches the getaway car.");
+            if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves."); // brief 018: the car must leave, not only be reached
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
                 Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
             if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car)
@@ -386,7 +387,7 @@ namespace Suborned.Sim
         }
         public Pt? DriverPos()
         {
-            if (Driver.Down || Vale == ValeAt.Car) return null;
+            if (Driver.Down) return null;
             var car = CarPos();
             return car == blockPath.Points[0] ? S.Stand(S.CarDriver) : car;
         }

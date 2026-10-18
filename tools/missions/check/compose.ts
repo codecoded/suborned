@@ -12,7 +12,8 @@
 //   at      m:ss: no earlier than this mission time;
 //   clear   seconds the run must go on without failing after the order is given (an entry the patrol would see is "taken", then fails);
 //   by      m:ss: the latest the step may be given; past it the plan fails to compose, naming the step;
-//   when    an engine log code that must have been logged first (fight.over: the last hostile is down);
+//   when    an engine log code that must have been logged first (fight.over: the last hostile is down; blocker.out, brief 018: every
+//           hostile the engine sent for the road is down, broken or gone);
 //   unless  an engine log code that must not be logged by the order or `clear` s after it (captured: nobody left behind at the extract).
 // The search: from the earliest tick, every 5 s until taken, then back tick by tick to the first tick taken. Deterministic: the same
 // plan on the same engine gives the same script.
@@ -36,6 +37,7 @@ export const Plan = z.strictObject({
 export type Step = z.infer<typeof Step>;
 export type Plan = z.infer<typeof Plan>;
 
+const logged = (log: { tick: number; code: string }[], code: string, t: number) => log.some(l => l.code === code && l.tick <= t);
 const ticks = (s: string) => { const [m, r] = s.split(':'), [sec, d] = r!.split('.'); return (Number(m) * 60 + Number(sec)) * 10 + Number(d ?? 0); };
 const orderOf = (s: Step, tick: number): Order => {
   const o: Record<string, unknown> = { tick };
@@ -56,7 +58,7 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? The last match is this step's: a repeated order (Help twice) placed at a tick an earlier one holds sorts after it. */
     const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12)).map((p, k) => {
       const t = ts[k]!, mine = p.orders.findLast(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
-      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || p.log.some(l => l.code === s.when && l.tick <= t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
+      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
     });
     let found = -1;
     for (let t0 = lo; t0 <= hi && found < 0; t0 += 50 * 12) { // coarse: every 5 s, twelve at a time

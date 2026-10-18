@@ -22,7 +22,7 @@ export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; not
 export type Play = {
   id: string; outcome: 'success' | 'failure' | 'withdrawn' | 'none'; fail: string; tick: number; cash: number; trail: number; alert: number; gunfire: number; standing: number;
   startHash: string; finalHash: string; replayIdentical: boolean; checkpoints: { tick: number; hash: string }[];
-  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number } };
+  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
 };
 
 /** sha256 of the engine's source (library and CLI, .cs and .csproj, by path) under `dir` (the repo root or a pinned copy). */

@@ -32,7 +32,7 @@ namespace Suborned.Play
         {
             var own = Slots[(int)by];
             if (by == OpId.Enforcer && Game != null && Game.Vale == ValeAt.WithEnforcer) // the end steps: out with Vale, the first knob is the car
-            { var v = (Slot[])own.Clone(); v[0] = new Slot("act", Text?.Actions.TryGetValue("extract", out var ex) == true && ex.Label.Length > 0 ? ex.Label : "Vale into the car", "car"); return v; }
+            { var v = (Slot[])own.Clone(); v[0] = new Slot("act", Text?.Actions.TryGetValue("board", out var ex) == true && ex.Label.Length > 0 ? ex.Label : "Board", "car"); for (int i = 1; i < v.Length; i++) if (v[i].Id == "fire") v[i] = new Slot("fire", v[i].Label, v[i].Glyph, true); return v; } // Keel c018: walking Vale he doesn't fire (fire-carrying-vale): the knob greys // brief 018: Board (with Vale), then Go from the car
             if (Game == null || Game.Ops[(int)by].CarryBody.Length == 0) return own;
             var p = new Slot[Math.Max(2, own.Length)]; p[0] = DropSlot; p[1] = StashSlot;
             for (int i = 2; i < own.Length; i++) p[i] = new Slot(own[i].Id, own[i].Label, own[i].Glyph, true);

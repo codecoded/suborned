@@ -28,7 +28,7 @@ namespace Suborned.Sim
 
         static void TakedownFixes()
         {
-            Add("N68", "—", "A check that ends while reports are stepped (Waymark §6, 'Collection was modified' at 5:34.1): route G-kill with the body left at the guard's post and the Enforcer waiting at the getaway bay. The entrance camera reads the dead guard when the Tech leaves the cabinet (Alert 2); at the chime the clerks stream out and find him; Idealist clerk 03 walks to look, and at 5:34.1 his check ends and his walk to the phone starts as a new report while the reports are being stepped. The engine goes on, his report is a dead body, and the run is sealed at 5:37 (the seal 145 s after the unit is on the street), as Waymark expected of the fixture.", r =>
+            Add("N68", "—", "A check that ends while reports are stepped (Waymark §6, 'Collection was modified' at 5:34.1): route G-kill with the body left at the guard's post and the Enforcer waiting with Vale in the service lane (brief 018: at the getaway bay the loud fight's blocker now downs him first). The entrance camera reads the dead guard when the Tech leaves the cabinet (Alert 2); at the chime the clerks stream out and find him; Idealist clerk 03 walks to look, and at 5:34.1 his check ends and his walk to the phone starts as a new report while the reports are being stepped. The engine goes on, his report is a dead body, and the run is sealed at 6:12. Brief 018: the fixture now runs without the final fight (Start.FinalFight off): with it, the loud fight's blocker takes the cover beside the getaway car and downs the cell long before 5:34, so the stepped report is never reached; without it the 5:34.1 path is the same and the dial's seal falls at 6:12 (5:37 was the loud fight's own seal).", r =>
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
@@ -37,14 +37,14 @@ namespace Suborned.Sim
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), Mv(1920, Enf, "d:Getaway bay"));
                 const string Clerk = "p-records-office-03";
                 r.Is(r.Until(() => g.Reps.Exists(x => x.By == Clerk && x.Phase == "check"), T(340) - g.Tick), "the Idealist clerk finds the body after the chime and walks to look");
-                var check = g.Reps.First(x => x.By == Clerk && x.Phase == "check");
+                var check = g.Reps.FirstOrDefault(x => x.By == Clerk && x.Phase == "check"); if (check == null) return;
                 r.To(check.PhaseUntil);
                 r.Is(g.FailCode != "engine-error", $"no engine error when the check ends ({Report.Clock(g.Tick)}){(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.Is(check.Phase == "stopped" && g.Reps.Exists(x => x.By == Clerk && x.Kind == "dead" && x.Phase == "walk" && x.Seq > check.Seq), "his check is done: he walks to the phone with a dead body (a new report, stepped the same tick)");
                 r.Until(() => g.Over, T(60));
-                r.Eq(g.FailCode, "sealed", "sealed at 5:37, the fixture's failure");
-                r.Eq(g.Tick, T(337), "at 5:37");
-            });
+                r.Eq(g.FailCode, "sealed", "sealed, the fixture's failure");
+                r.Eq(g.Tick, T(372), "at 6:12 (the dial's seal: no final fight, brief 018)");
+            }, new Start { FinalFight = false });
 
             Add("N69", "—", "A takedown under the live entrance camera (Waymark §6): route G without the Loop. The camera is a watcher like any other: it records the act, its watcher reads the screen at the next scan and the report lands 3 s later (Alert 3, a takedown seen); nothing fails at the act or when he is out. At this level Alert 3 locks the Office doors: the Enter is refused, and the response comes by the dial. (The old guard-down rule is kept only for a guard shot: his missed mark calls the response, as gunfire's own rule.)", r =>
             {
@@ -278,10 +278,10 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
                 r.Eq(g.Alert, 0, "Alert 0");
-                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4394, "cell", "panic"), Mv(4464, Enf, "d:Getaway bay"), Act(4593, Enf, "extract"));
+                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4394, "cell", "panic"), Mv(4464, Enf, "d:Getaway bay"), Act(4593, Enf, "board", "car"), Act(4633, "cell", "go")); // brief 018: Board (with Vale, 4 s) and Go
                 r.Is(!g.Acts.Exists(x => x.Take), "the escort: no kin of Vale near, nobody within 3 m of the grip");
                 r.Eq(g.Result, Outcome.Success, "route B wins");
-                r.Eq((g.Tick, g.Trail, g.Alert), (4593, 3, 0), "at 7:39.3 (7:40.4 before the c014 start), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
+                r.Eq((g.Tick, g.Trail, g.Alert), (4633, 3, 0), "at 7:43.3 (brief 018: Board with Vale takes 4 s, then Go; 7:39.3 at Extract) (7:40.4 before the c014 start), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
             });
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>

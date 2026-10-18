@@ -16,6 +16,8 @@ namespace Suborned.Sim
     {
         public int Investigators, Hops; public readonly List<Finding> Findings = new List<Finding>(); public readonly HashSet<string> Exposed = new HashSet<string>(StringComparer.Ordinal);
         public string NamedCause = "";
+        /// <summary>What the investigation hunts next mission (brief 018 §3, Sky 2026-10-18 answer 5): cell-car when security saw the car leave.</summary>
+        public readonly List<string> Hunted = new List<string>();
     }
     public sealed class BetweenLine { public string Line = "", Who = "", Detail = ""; }
     /// <summary>One district's Standing across the mission and the break (brief 014; rulebook standing, debrief.lines.standing): where it
@@ -39,6 +41,8 @@ namespace Suborned.Sim
         public readonly List<StandingLine> Standing = new List<StandingLine>();
         public readonly List<(string who, string toward)> Word = new List<(string, string)>(); // standing.word's tellers, by id, and which way
         public readonly List<string> FoundAfter = new List<string>(); // killings found after the mission whose Standing moves now (bodies.surface)
+        /// <summary>brief 018 §3: each captured operative's custody, projected; and who saw the car leave ("" if nobody).</summary>
+        public readonly List<Captive> Captives = new List<Captive>(); public string CarSeenBy = "";
     }
 
     /// <summary>The seeded streams (rulebook streams): FNV-1a 32 and mulberry32, integer draws; the same as contracts/rules/rulebook.ref.ts.</summary>
@@ -130,6 +134,7 @@ namespace Suborned.Sim
         {
             if (EndOpenFight()) fightClosedLate = true; // the mission is over: a fight still open ends with it (fight.public)
             var inv = new Investigation();
+            if (CarSeenBy.Length > 0) inv.Hunted.Add("cell-car"); // brief 018 §3: the car seen leaving is hunted, whatever the Trail
             if (Trail < R.TrailOpen) return inv;
             inv.Investigators = R.InvestigatorsBase + R.InvestigatorsPerAlert * Alert;
             inv.Hops = inv.Investigators * R.InvestigatorHops;
@@ -310,6 +315,7 @@ namespace Suborned.Sim
                     if (can.Count > 0) line("introduced", p, "can introduce " + string.Join(", ", can) + ", up to " + fmt(R.IntroductionsPerContact) + " (the player's pick)");
                 }
             Takedowns(b, C, byId, line, fmt);
+            Custody(b, fmt); // brief 018 §3: who was left behind, the car seen, each captive (GameGetaway.cs)
             StandingNext(b, word, fmt);
             foreach (var p in everyone) if (p.Turned) b.Contacts.Add(C(p));
             return b;

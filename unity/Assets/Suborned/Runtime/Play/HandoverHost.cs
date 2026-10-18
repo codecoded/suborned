@@ -148,6 +148,7 @@ namespace Suborned.Play
         /// <summary>A new run from the start state (Start, and Return after the end card).</summary>
         public void Begin()
         {
+            if (Following) FollowExit(); // a restart opens on the overhead view
             if (Game != null && Fault == null) Save(); // a restart closes the run being left at its last tick
             Fault = null; Ending = ""; EndDebrief = null; lastLog = 0; acc = 0f; steps = 0; stepMs = 0; StepMsMax = 0; frames = 0; frameEngineMs = 0;
             Paused = startPaused; Speed = 1; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
@@ -192,7 +193,7 @@ namespace Suborned.Play
             if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); FadePoints(); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             Controls();
             if (Fault != null) return;
             if (!Paused && !Game.Over && !(Panel != null && controls.pauseWithPanel))
@@ -207,6 +208,7 @@ namespace Suborned.Play
             frames++;
             if (Game.Over && Ending.Length == 0) End();
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            FollowFrame(); // the test follow view (HostFollow): after the views moved
             FadePoints();
             ShowSight();
             Guard("street marks", StreetMarks);
@@ -250,6 +252,8 @@ namespace Suborned.Play
         void CameraOnly(Keyboard kb, UnityEngine.InputSystem.Mouse mouse)
         {
             var c = controls;
+            FollowKey(kb);
+            if (Following) { FollowInput(kb, mouse, mouse != null && HudToolkit.Blocks(mouse.position.ReadValue())); return; } // the follow view: its own turn and distance, no pan
             if (kb != null)
             {
                 var pan = Vector2.zero;
@@ -293,6 +297,7 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
                 if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
                 if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
+                FollowKey(kb); // T: the test follow view (HostFollow)
                 if (kb.leftCtrlKey.wasPressedThisFrame || kb.leftCtrlKey.wasReleasedThisFrame || kb.rightCtrlKey.wasPressedThisFrame || kb.rightCtrlKey.wasReleasedThisFrame) UpdateAim();
                 for (int i = 0; i < 4; i++)
                 {
@@ -309,10 +314,10 @@ namespace Suborned.Play
                 var pan = Vector2.zero;
                 if (c.Held(kb, PlayAction.PanUp)) pan.y += 1; if (c.Held(kb, PlayAction.PanDown)) pan.y -= 1;
                 if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
-                if (pan != Vector2.zero && cam) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
+                if (pan != Vector2.zero && cam && !Following) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             GateFrame(kb, mouse);
-            TurnInput(kb, mouse);
+            if (Following) FollowInput(kb, mouse, mouse != null && (PlayHud.Blocks(mouse.position.ReadValue()) || HudToolkit.Blocks(mouse.position.ReadValue()))); else TurnInput(kb, mouse);
             if (mouse == null || !cam) return;
             var p = mouse.position.ReadValue();
             // both buttons together: panic, read only once a fight is on (outside one they are just two clicks: no order, no refusal, no card);
@@ -320,8 +325,8 @@ namespace Suborned.Play
             if (Game.FightOn && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed)))
             { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
             Sweep(p, mouse.rightButton.isPressed);
-            if (!turnDragging) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
-            if (c.edgeScroll && Application.isFocused)
+            if (!turnDragging && !Following) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
+            if (c.edgeScroll && Application.isFocused && !Following)
             {
                 float band = c.edgePixels * Screen.height / 1080f; var e = Vector2.zero;
                 if (p.x <= band) e.x -= 1; if (p.x >= Screen.width - band) e.x += 1; if (p.y <= band) e.y -= 1; if (p.y >= Screen.height - band) e.y += 1;
@@ -329,7 +334,7 @@ namespace Suborned.Play
             }
             float wheel = mouse.scroll.ReadValue().y; // over the HUD the wheel scrolls the HUD (the action panel's cards), not the zoom
             if (wheel != 0f && HoverStackCount > 1 && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them
-            if (wheel != 0f && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax);
+            if (wheel != 0f && !Following && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - Mathf.Sign(wheel) * 0.5f, zoomMin, zoomMax); // the follow view's wheel is its distance (FollowInput)
             if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
             bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p) || HudToolkit.Blocks(p);
@@ -414,6 +419,7 @@ namespace Suborned.Play
 
         void PlaceCamera()
         {
+            if (Following) return; // the follow view places itself; the overhead view comes back as it was left
             cam.transform.position = focus - cam.transform.forward * standOff;
             cam.farClipPlane = Mathf.Max(cam.farClipPlane, standOff + 1500f);
             if (shadows) shadows.focusDepth = standOff;
@@ -436,6 +442,7 @@ namespace Suborned.Play
         public void Pick(int slot)
         {
             var plate = PlateOf(Agent);
+            if (slot < plate.Length && plate[slot].Dim && plate[slot].Id == "fire" && Game?.Vale == ValeAt.WithEnforcer && Agent == OpId.Enforcer) { var lk = new Answer { ok = false, code = "fire-carrying-vale", why = "walking Vale, the Enforcer doesn't fire", m = -1, cm = -1, usd = -1, tick = -1 }; var o = new Order { Op = "enforcer", Do = "fire" }; Pop(ShortOf(o, lk) ?? lk.why, null, SelectedWorld(), Feedback.Refused, 2f, PopIcon(lk.code), LockLine(o, lk) ?? lk.why); return; } // the greyed Fire knob says why
             if (slot >= plate.Length || plate[slot].Dim) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
             if (plate[slot].Id is "drop" or "stash") { PlateAct(plate[slot].Id); return; } // carrying: Put down and Hide act at once (Glyph §4)
             if (plate[slot].Id == "takedown") { Way = Picked == slot && Way == "knockout" ? "kill" : "knockout"; } // 4 again flips; kill is never the default (Glyph §1)
@@ -493,9 +500,10 @@ namespace Suborned.Play
             if (t != null && t.Kind == "person" && t.Key == "councillor" && ctrl) { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, "never fire on Vale: the mission fails"); return; }
             if (t != null && t.Kind != "op")
             {
+                if (Panel == null && BoardSelection(t, screen)) return; // brief 018: the whole cell selected, a right click on the car boards each
                 PointerHover(screen);
                 var i = HoverIntent;
-                if (Picked >= 0 && i != null && i.Actionable) { if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once (a seen takedown asks for the hold first)
+                if (Picked >= 0 && i != null && i.Actionable) { if (i.Order.Do == "go") GoGive(Agent, screen, "right"); else if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once (a seen takedown asks for the hold first)
                 OpenPanel(t, screen);                                                                       // else the action panel (Sky: "expecting an actions panel to pop out")
                 return;
             }
@@ -596,6 +604,7 @@ namespace Suborned.Play
             if (t.Kind == "crowd" && Agent != OpId.Enforcer) return new Intent { Label = "a passer-by" }; // takes no orders but the Enforcer's takedown (brief 013): a hover says nothing (Fable A8)
             if (t.Kind is "body" or "stash") { Intent b = null; Guard("price", () => { var l = BodyIntents(Agent, t); b = l.Count > 0 ? l[0] : new Intent { Label = t.Label, Hint = WhoCan(t) }; }); return b; }
             Intent got = null;
+            if (IsGetaway(t)) { Guard("price", () => got = Game.Ops[(int)Agent].InCar || (Game.AnyInCar && BoardLock(Agent).code is "in-car" or "agent-down") ? GoIntent(Agent) : BoardIntent(Agent)); if (got != null) { if (got.Order?.Do == "board" && got.WalkS == 0) Guard("walk", () => { var aw = ActPlace(Agent, got.Order, t); if (aw != null) got.WalkS = aw.Seconds; }); return got; } } // brief 018: Board, or Go from the car
             Guard("price", () =>
             {
                 var slots = PlateOf(Agent);
@@ -681,7 +690,7 @@ namespace Suborned.Play
                 case "act":
                     if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
                     if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official") || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", "Take Vale"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
-                    if (t.Kind == "car" && t.Key == "getaway") { var i = I("extract", "", "", "Vale into the car"); i.Time = "now"; i.Outcome = "win"; return i; }
+                    if (t.Kind == "car" && t.Key == "getaway") return g.Ops[(int)by].InCar ? GoIntent(by) : BoardIntent(by); // brief 018: Extract retired into Board and Go
                     return null;
                 case "takedown": return TakedownIntent(slot, t, Way);
                 case "drop": case "stash": { var l = BodyIntents(by, t, id); return l.Count > 0 ? l[0] : null; }
@@ -813,6 +822,7 @@ namespace Suborned.Play
                 // Sky: "the action menu should only show the actions for the player(s) I've selected"
                 var order = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k]) order.Add(k);
                 if (order.Count == 0) { pn.Note = "select an agent: F1–F4 (or click one)"; return; }
+                if (IsGetaway(t)) { CarRows(pn, order, t); KeyRows(pn); return; } // brief 018: Board for each selected agent, then Go
                 foreach (var k in order)
                 {
                     var rows = new List<PanelRow>();
@@ -878,8 +888,10 @@ namespace Suborned.Play
         {
             if (Panel == null || row < 0 || row >= Panel.Rows.Count) return;
             var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
+            if (!r.Available && r.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime; // brief 018 §6.5: a refused Go pulses the holders
             if (!r.Available) { var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}"; Pop(Text?.ShortLock(r.Lock.code) is string sh ? ShortOf(r.I.Order, r.Lock) : full, at, Panel.World, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full); return; }
             ClosePanel();
+            if (r.I.Order?.Do == "go") { GoGive(r.By, at, "left"); return; } // brief 018: the commit hold when anyone stays
             if (SeenGate(r.I, t, at, "left")) return;
             Give(r.By, r.I.Order, t, at);
         }
@@ -937,7 +949,8 @@ namespace Suborned.Play
                         return yes;
                     }
                 case "loop": return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
-                case "extract" when CarHeldNow: return No("car-held", "the car is held: the fight isn't over"); // Sky 2026-10-18: say so before the order
+                case "board": return BoardLock(by);
+                case "go": return GoLock();
                 case "takedown": return v.Td != null && v.Td.Refused.Length > 0 ? No(v.Td.RefusedCode, v.Td.Refused) : op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "stash": return op.CarryBody.Length == 0 ? No("not-carrying", "carry the body to the stash first") : StashFree(o.Target) <= 0 ? No("stash-full", "full") : yes;
                 case "drop": return op.CarryBody.Length == 0 ? No("not-carrying", "carrying nobody") : yes;
@@ -946,10 +959,7 @@ namespace Suborned.Play
                 case "mislead": return g.RivalsPresent ? yes : No("no-rivals", "no rivals here yet");
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
                 case "take": return g.Vale == ValeAt.Pickup ? yes : No("vale-not-at-car", "Vale is not at his car yet");
-                case "extract":
-                    if (g.Vale != ValeAt.WithEnforcer) return No("no-vale-yet", "you don't have Vale yet");
-                    { var left = g.WouldBeCaptured(); if (left.Count > 0) v.Outcome = $"win · leaves the {string.Join(" and the ", left)} (captured)"; }
-                    return yes;
+                case "fire" when by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer: return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him");
                 case "fire": return op.Gun.W == null ? No("no-weapon", "has no weapon") : op.Running ? No("fire-running", "can't fire while running")
                         : o.Target is "waitress" or "driver" ? No("civilian-target", $"{o.Target} is a civilian or a contact: a target only when forced (Ctrl)") : yes;
             }
@@ -984,7 +994,7 @@ namespace Suborned.Play
             {
                 case "loop": case "reroute": place = "cabinet"; break;
                 case "enter": place = s.GuardPost; break;
-                case "extract": place = s.GetawayCar; break;
+                case "board": place = s.GetawayCar; break; // brief 018: board within at-reach of the car
                 case "watch" when t.Kind is "camera" or "patrol": tp = PosOf(t); reach = R.SightReachCm; break; // within the watch reach of the watcher (a clear line is the engine's check)
                 case "watch": case "listen": tp = PosOf(t); reach = ReachOf("scout." + o.Do); break;
                 case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;

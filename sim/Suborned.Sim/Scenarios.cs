@@ -102,10 +102,11 @@ namespace Suborned.Sim
                 foreach (var name in ops)
                 {
                     var e = Op(name); var w = e.Gun.W;
-                    if (e.Down || e.Inside || e.Busy != null || w == null) continue;
+                    if (e.Down || e.Inside || e.InCar || e.Busy != null || w == null) continue; // in the car: no fire, and a move would step out (brief 018)
                     string near = ""; Pt np = default; long bd = long.MaxValue;
                     foreach (var id in ts) { var at = G.PosOf(id); if (!at.HasValue || G.GunOf(id)!.Down) continue; long d = G.D2(e.Pos, at.Value); if (d < bd) { bd = d; near = id; np = at.Value; } }
                     if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.S.Stand(G.S.GetawayCar) }); continue; }
+                    if (name == "enforcer" && G.Vale == ValeAt.WithEnforcer) { if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } // brief 018: walking Vale he doesn't fire; he holds back while the others fight
                     bool line = G.S.Sight(e.Pos, np, G.R.Eye);
                     bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
                     bool firedOn = G.GunOf(near)!.Target == name;
@@ -133,23 +134,47 @@ namespace Suborned.Sim
         public void FightOff(Func<bool> done, int limitS, params string[] ops) => Engage(CityGunmen, done, limitS, ops, false, false);
         /// <summary>The final fight: fight the hostiles (and the city's gunmen) until the car is free, walk the Enforcer to it, and fight
         /// again if a hostile comes back within hold of the car on the way.</summary>
-        public void FightItOut(int limitS = 120, params string[] with)
+        public void FightItOut(int limitS = 120, params string[] with) => FightItOut(false, limitS, with);
+        /// <summary>Fight it out (brief 018 §5): until the fight is over (the crew broken or every hostile down), not only until the car is free.</summary>
+        public void FightItOutAll(int limitS = 120, params string[] with) => FightItOut(true, limitS, with);
+        void FightItOut(bool all, int limitS, string[] with)
         {
+            Func<bool> free = all ? () => !G.CarHeld() && G.FightOverTick != int.MaxValue / 4 : () => !G.CarHeld();
             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
             int end = G.Tick + Game.T(limitS); var car = G.S.At(G.S.GetawayCar);
             while (!G.Over && G.Tick < end)
             {
                 Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
-                       () => !G.CarHeld(), Math.Max(1, (end - G.Tick) / Game.Hz), ops.ToArray(), true);
+                       free, Math.Max(1, (end - G.Tick) / Game.Hz), ops.ToArray(), true);
                 if (G.Over || G.Tick >= end) return;
                 if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
                 {
                     int at = SendTo("enforcer", G.S.Stand(G.S.GetawayCar));
-                    while (!G.Over && G.Tick < at && !G.CarHeld()) G.Step();
+                    while (!G.Over && G.Tick < at && free()) G.Step();
                 }
-                if (!G.CarHeld() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
+                if (free() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
             }
         }
+        /// <summary>The getaway (brief 018): each named operative walks to the car if it isn't at it and boards (the Enforcer first, carrying
+        /// Vale), then Go once the car is free. Checks each order was taken; returns Go's answer. Anyone not named stays out (left behind).</summary>
+        public Answer GetAway(params string[] ops)
+        {
+            var car = G.S.At(G.S.GetawayCar);
+            foreach (var name in ops)
+            {
+                if (G.Over) break;
+                var o = Op(name); if (o.Down || o.InCar) continue;
+                if (!G.Within(o.Pos, car, G.R.AtReachCm)) { int at = SendTo(name, G.S.Stand(G.S.GetawayCar)); while (!G.Over && G.Tick < at) G.Step(); }
+                if (G.Over) break;
+                Do(name, "board", "car"); Done(name); if (!G.Over) G.Step();
+            }
+            if (G.Over) return default;
+            var a = G.Issue(new Order { Tick = G.Tick, Op = "cell", Do = "go" });
+            Is(a.ok, $"go taken at {Report.Clock(G.Tick)}{(a.ok ? "" : ": " + a.why)}");
+            return a;
+        }
+        /// <summary>The Enforcer boards with Vale and the car goes (brief 018: Extract retired into Board and Go).</summary>
+        public Answer Extract() => GetAway("enforcer");
         /// <summary>A takedown order now (brief 013): knockout or kill, on a person's role or id; checks it was taken.</summary>
         public bool Takedown(string target, string how)
         {

@@ -105,7 +105,23 @@ namespace Suborned.Play
         sealed class Strip { public VisualElement Root, Tags, Icon, Bar, Fill, Cancel, QueuedIcon, Stance; public Label Role, State, Action, Time, Queued, Ready, Hint; public bool Compact; }
         /// <summary>One agent's window in a roster frame (the column, or the row for the corner and bottom docks).</summary>
         const float EndCardW = 400f, EndCardPad = 30f; // the end card at rest (Debrief opens it to 560)
-        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm; public Label Num; public readonly List<VisualElement> PipDots = new(); }
+        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm, Car, Rim; public Label Num; public readonly List<VisualElement> PipDots = new(); }
+        int rosterHover = -1; readonly VisualElement[] leftTips = new VisualElement[4];
+        /// <summary>Brief 018 §6.6 (Glyph r1): the left-behind flag's line on hover (the whole portrait) or Alt: "Left behind", then Fable's fate line.</summary>
+        void LeftTip(int i, Window w, HudModel.Slot s)
+        {
+            if (leftTips[i] == null)
+            {
+                var t = leftTips[i] = E(root, "s-plate_dark", 0, 0, float.NaN, float.NaN); t.style.paddingLeft = 10; t.style.paddingRight = 10; t.style.paddingTop = 5; t.style.paddingBottom = 6;
+                var a = L(t, "verb-name"); a.name = "a"; a.style.fontSize = 12; var b = L(t, "card-body"); b.name = "b"; b.style.fontSize = 12; b.style.color = Cream; Show(t, false);
+                manifest.Add((t, "line", () => leftTips[i].Q<Label>("a").text + " " + leftTips[i].Q<Label>("b").text));
+            }
+            var tip = leftTips[i]; Show(tip, s != null); if (s == null) return;
+            var tx = host.Text; string name = s.Role.Length > 0 ? "The " + char.ToUpperInvariant(s.Role[0]) + s.Role[1..] : "";
+            Text(tip.Q<Label>("a"), tx?.GoFlag ?? "Left behind");
+            Text(tip.Q<Label>("b"), (tx != null && tx.GoFate.TryGetValue(s.LeftFate, out var f) ? f : "{who}").Replace("{who}", name));
+            var pb = w.Portrait.worldBound; tip.style.left = pb.xMax + 22; tip.style.top = pb.center.y - 20;
+        }
         readonly Window[] colWins = new Window[4], rowWins = new Window[4];
         static readonly Rect[] RowWin = { new(37, 15, 65, 64), new(123, 15, 65, 64), new(210, 15, 65, 64), new(296, 15, 65, 64) };
         VisualElement row;
@@ -381,6 +397,9 @@ namespace Suborned.Play
                 w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
                 w.Arm = E(frame, "s-disc_dark_24", c0.x + 14, c0.y + 13, 20, 20); Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
                 Icon(E(w.Arm, null, 2.4f, 2.4f, 12, 12), "fire", Cream); // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
+                w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
+                w.Rim = E(frame, null, c0.x - BezelR - 2, c0.y - BezelR - 2, 2 * BezelR + 4, 2 * BezelR + 4); Round(w.Rim, BezelR + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false); // the hover rim (brief 018 §6.6: the left-behind flag's line on hover)
+                int kk = i; w.Portrait.RegisterCallback<PointerEnterEvent>(_ => rosterHover = kk); w.Portrait.RegisterCallback<PointerLeaveEvent>(_ => { if (rosterHover == kk) rosterHover = -1; }); // brief 018 §6.6: the in-car badge, or (Go card up) the left-behind flag, in the top right kept for it
                 var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter;
             }
         }
@@ -452,7 +471,7 @@ namespace Suborned.Play
             end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = EndCardPad; end.style.paddingRight = EndCardPad; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
             endTitle = L(end, "briefing-title"); endTitle.style.whiteSpace = WhiteSpace.Normal; /* a reading surface: the line wraps to two lines (EndCardAudit) */ endLine = L(end, "briefing-body"); endLine.style.whiteSpace = WhiteSpace.Normal; endLine.style.marginTop = 6;
             endDetail = E(end); endDetail.style.marginTop = 10;
-            for (int i = 0; i < 8; i++) { var l = L(endDetail, "briefing-small"); l.style.whiteSpace = WhiteSpace.Normal; l.style.marginTop = 3; endLines.Add(l); }
+            for (int i = 0; i < 14; i++) { var row = E(endDetail); row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center; var cm = E(row, null, w: 18, h: 18); cm.name = "cm"; Round(cm, 9); cm.style.flexShrink = 0; cm.style.marginRight = 4; var fg = E(row, null, w: 16, h: 16); fg.name = "fg"; fg.style.flexShrink = 0; fg.style.marginRight = 7; P(fg, 0, 0, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; var l = L(row, "briefing-small"); l.style.flexShrink = 1; /* brief 018: room for the getaway rows; a row may lead with a cameo and a fate glyph (Glyph r2) */ l.style.whiteSpace = WhiteSpace.Normal; l.style.marginTop = 3; endLines.Add(l); }
             var eb = E(end); eb.style.flexDirection = FlexDirection.Row; eb.style.marginTop = 18; eb.style.justifyContent = Justify.Center; // Glyph round 2: the pair centred
             VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
@@ -538,7 +557,14 @@ namespace Suborned.Play
                 end.style.left = (W - 560) / 2 + 40;
                 Text(endTitle, m.EndLines.Count > 0 ? m.EndLines[0] : ""); Text(endLine, m.EndLines.Count > 1 ? m.EndLines[1] : ""); Text(endReplayKey, m.RestartKey);
                 Show(endDetail, endDetailOpen);
-                for (int i = 0; i < endLines.Count; i++) { int li = i + 2; bool has = endDetailOpen && li < m.EndLines.Count; Show(endLines[i], has); if (has) Text(endLines[i], m.EndLines[li]); }
+                for (int i = 0; i < endLines.Count; i++)
+                {
+                    int li = i + 2; bool has = endDetailOpen && li < m.EndLines.Count; var row = endLines[i].parent; Show(row, has); if (!has) continue;
+                    var ln = m.EndLines[li]; string lead = null;
+                    if (ln.StartsWith("\u0001")) { int e2 = ln.IndexOf('\u0001', 1); lead = ln.Substring(1, e2 - 1); ln = ln[(e2 + 1)..]; }
+                    Show(row.Q("cm"), lead != null); Show(row.Q("fg"), lead != null); Text(endLines[i], ln);
+                    if (lead != null) { var (who, fate) = (lead.Split(':')[0], lead.Split(':')[1]); bool cap = fate == "captured"; Bg(row.Q("cm"), $"portraits/cameo_{who}_normal", Color.white); Border(row.Q("cm"), 1.2f, cap ? Red : Cream); Show(row.Q("cf"), cap); if (cap) row.Q("fg").style.backgroundImage = StyleKeyword.Null; else Icon(row.Q("fg"), "s_moving", Cream); }
+                }
             }
             else endDetailOpen = false;
             // the history
@@ -678,6 +704,11 @@ namespace Suborned.Play
                 string look = s.Down ? "down" : s.Hurt ? "hurt" : !any || s.Selected ? "normal" : "dim";
                 Bg(w.Portrait, $"portraits/portrait_{s.Role}_{look}");
                 Show(w.RingSel, s.Selected); Show(w.RingBusy, s.Busy && !s.Selected);
+                bool inCar = s.InCar, left = s.LeftFate.Length > 0; Show(w.Car, inCar || left);
+                if (inCar) { w.Car.style.backgroundColor = TurqLight; Icon(w.Car.Q("g"), "car", Ink); Border(w.Car, 1.4f, Ink); } // Glyph r1: a solid cyan disc, a dark glyph (unlike the stance ring)
+                bool capF = !inCar && left && s.LeftFate == "captured"; Show(w.Car.Q("cf"), capF); Show(w.Car.Q("g"), !capF);
+                if (left && !inCar) { w.Car.style.backgroundColor = Ink; if (!capF) Icon(w.Car.Q("g"), "s_moving", Cream); Border(w.Car, 1.6f, s.LeftFate == "captured" ? Red : Cream); } // captured: a red lock on a red rim; walks out: footprints on a cream rim
+                bool tipOn = left && (rosterHover == i || host.Peeking); Show(w.Rim, tipOn); LeftTip(i, w, tipOn ? s : null);
                 Show(w.Arm, s.Armed && !s.Down); if (s.Armed && w.Arm.childCount > 0) w.Arm[0].style.unityBackgroundImageTintColor = s.Drawn ? TurqLight : Cream; Border(w.Arm, 1.6f, s.Drawn ? TurqLight : Color.clear); // drawn: turquoise, and a turquoise rim (the shape cue)
                 Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; // selected: the key badge turns turquoise (no ring: see BuildRoster)
                 Pips(w, s.Hp, s.HpMax);
@@ -725,7 +756,36 @@ namespace Suborned.Play
             Feed();
             PanelFrame(); Step3Frame(); TakedownFrame();
             LessFrame(); MenuFrame(); // brief 014: the less-reading HUD over the pieces above (it hides what is cut at rest)
+            FollowMarks();
         }
+
+        /// <summary>The test follow view (HostFollow): the world marks are sized for the orthographic camera (rings, pins, markers, the move ring,
+        /// edge cameos), so they hide while it is on; speech and pops (screen-sized, anchored to a head or a click) stay. Visibility, not display:
+        /// the HUD's own Show calls keep their state, and the overhead view gets every mark back as it was.</summary>
+        void FollowMarks()
+        {
+            bool f = host.Following;
+            // the chip by the plot scope while the follow view is on (Glyph r2): what is on, and its key (T leaves it)
+            if (followChip == null)
+            {
+                followChip = E(root, "s-plate_dark", 0, 0, float.NaN, 30); followChip.style.top = StyleKeyword.Auto; followChip.style.left = 14 + 212 + 8; followChip.style.bottom = 14 + (132 - 30) / 2f;
+                followChip.style.flexDirection = FlexDirection.Row; followChip.style.alignItems = Align.Center; followChip.style.paddingLeft = 12; followChip.style.paddingRight = 10;
+                var fl = L(followChip, "verb-name"); fl.text = "Follow view"; fl.style.fontSize = 12; KeyCap(followChip, host.controls.Label(PlayAction.FollowView));
+                manifest.Add((followChip, "image", () => "follow view chip")); Show(followChip, false);
+            }
+            Show(followChip, f && !m.Ended);
+            // a plain ground ring under the followed agent, drawn in the view's own perspective (the one world mark the follow view keeps)
+            followRing.Clear();
+            if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
+                for (int i = 0; i <= 40; i++) { float a = i * Mathf.PI * 2f / 40f; if (!Proj(ft.position + new Vector3(Mathf.Cos(a) * 0.55f, 0.03f, Mathf.Sin(a) * 0.55f), out var q)) { followRing.Clear(); break; } followRing.Add(q); }
+            if (!f && !followHid) return; followHid = f;
+            foreach (var c in marks.Children())
+            {
+                bool keep = c == world; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
+            }
+        }
+        bool followHid; VisualElement followChip; readonly List<Vector2> followRing = new();
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).
         ///  · left column: the column at (12, 84); a strip beside each shown agent's window; the verb plate right of the selected strip; the ticker under the column.

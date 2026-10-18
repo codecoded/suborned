@@ -223,6 +223,7 @@ export const Rulebook = z.strictObject({
     call: z.strictObject({ trail: Ref }),
     enter: z.strictObject({ s: Ref, alarm: Ref }),
     carry: z.strictObject({ s: Ref }),
+    board: z.strictObject({ s: Ref }).optional(), // brief 018 (Board, step out); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     rule: text,
   }),
@@ -313,12 +314,19 @@ export const Rulebook = z.strictObject({
     missing: z.strictObject({ trail: Ref, tiesFear: Ref }),
     areaWatch: z.strictObject({ step: Ref, missions: Ref }),
     cases: z.strictObject({ perLevel: Ref, cap: Ref, close: Ref, trailEq: Ref }), // trailEq: the mission checker's price of an open case (MC-9); the engine reads it for the checker only
+    // brief 018 §3: what a capture at Go costs the campaign; optional only for runs pinned before it
+    custody: z.strictObject({
+      trail: Ref, fear: Ref, loyalty: Ref, abandonedResentment: Ref, abandonedLoyalty: Ref, missions: Ref,
+      cellStart: z.strictObject({ bravery: Ref, resentment: Ref, fear: Ref, loyalty: Ref }),
+      rule: text, src: text,
+    }).optional(),
     rule: text,
   }).optional(),
   fight: ground({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
+    block: Ref.optional(), blockers: Ref.optional(), blockNear: Ref.optional(), blockFar: Ref.optional(), // brief 018 §1: the exit lane's length and the blockers; optional only for runs pinned before it
     // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses
     rivalsPublic: z.enum(RIVALS_PUBLIC).optional(), rivalsPublicReason: text.optional(),
   }),

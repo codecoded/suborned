@@ -26,7 +26,7 @@ namespace Suborned.Sim
         }
 
         static bool IsRival(string id) => id.StartsWith("rival-", StringComparison.Ordinal);
-        bool IsHolder(Hostile h) => !IsRival(h.Id); // police and the response unit hold their stand (Pulse §3.2)
+        bool IsHolder(Hostile h) => !IsRival(h.Id) || h.Blocker; // police and the response unit hold their stand (Pulse §3.2); a blocker its lane point (brief 018 §1)
         Pt Car => S.At(S.GetawayCar);
 
         // ---------------------------------------------------------------- moving a body
@@ -181,7 +181,7 @@ namespace Suborned.Sim
                     }
                     break;
                 case "advance":
-                    if (foes.Count > 0) { Stop(h); g.St = "engage"; moving = false; }
+                    if (foes.Count > 0) { if (!h.Blocker) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // a blocker keeps walking to the road (brief 018 §1)
                     else if (!moving) g.St = "hold";
                     break;
                 case "engage":
@@ -218,7 +218,7 @@ namespace Suborned.Sim
                 else if (g.UnprotSince < 0) g.UnprotSince = Tick;
                 else if (Tick - g.UnprotSince >= T(R.CoverLeaveS)) ReleaseCover(g);
             }
-            if (!prot && IsRival(h.Id) && Tick - g.StepAt >= T(R.CoverStepGapS))
+            if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
             {
                 var c = SelectCover(pos, Car, at, R.SeekRivalCm);
                 if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick)) return; }

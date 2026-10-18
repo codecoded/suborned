@@ -81,6 +81,7 @@ const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\
   // brief 013's between-missions fields: the widest the host fills each (the same widths as contracts/dialogue debriefFill, with a short place name)
   .replace(/\{fact\}/g, "the Fixer's face").replace(/\{facts\}/g, "place, time and the Enforcer's face").replace(/\{place\}/g, 'the service lane').replace(/\{of\}/g, 'Dimitra Marchetti').replace(/\{move\}/g, 'bravery +1')
   .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found')
+  .replace(/\{holders\}/g, '2 rivals').replace(/\{fate\}/g, 'walked out').replace(/\{why\}/g, 'the district was sealed').replace(/\{held-at\}/g, 'the post').replace(/\{holds\}/g, '3 missions').replace(/\{rescue-until\}/g, '3 missions').replace(/\{by\}/g, 'A police officer')
   .replace(/\{district\}/g, 'Harbour').replace(/\{band\}/g, 'Neutral').replace(/\{from\}/g, '-3').replace(/\{to\}/g, '-3');
 
 describe('the file', () => {
@@ -96,8 +97,8 @@ describe('the file', () => {
     const bad = strings.filter((s) => s.spoken).filter((s) => wordCount(s.text) < 1 || wordCount(s.text) > MAX_WORDS || s.text !== s.text.trim() || /\s{2}/.test(s.text) || !/[.!?]$/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
-  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}, and the Standing line\'s {district} {band} {from} {to}', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+  test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}, and the Standing line\'s {district} {band} {from} {to}, and brief 018\'s {holders} (locks) {fate} {why} {held-at} {holds} {rescue-until} {by} (the getaway lines)', () => {
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\}|holders\}|fate\}|why\}|held-at\}|holds\}|rescue-until\}|by\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -143,7 +144,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -301,7 +302,7 @@ describe('verbs and refusals', () => {
     expect(fillLock(t, { code: 'stand-at-door', cm: 600 })).toContain('within 6 m');
     expect(fillLock(t, { code: 'no-cash', usd: 90000 })).toContain('$90,000');
     expect(fillLock(t, { code: 'agent-busy', tick: 1830 }, { op: 'Scout', clock })).toBe('Scout is busy until 3:03. Wait, or use another agent.');
-    expect(fillLock(t, { code: 'summon-too-far', tick: 950 }, { clock })).toBe('Too far: his walk to her would take 1:35. He will not come.');
+    expect(fillLock(t, { code: 'summon-too-far', tick: 950 }, { clock })).toBe("Too far: the guard's walk to Inez would take 1:35. The guard won't come.");
     expect(fillLock(t, { code: 'nope' })).toBeUndefined();
   });
   const dotnet = Bun.which('dotnet');
@@ -350,21 +351,21 @@ describe('training hints, the run toast, the going-loud card', () => {
   if (existsSync(motive)) for (const m of read('briefs/011/motive-fights.md').matchAll(/^\| (H\d+) \| (.*?) \| (.*?) \| (.*?) \| (.*?) \|$/gm)) rows.set(m[1]!, { trigger: m[2]!, rings: m[4]!, goneWhen: m[5]! });
   const items = Object.entries(t.hints.items);
   const motiveIds = (id: string) => Number(id.slice(1)) <= 11;
-  test('H1–H17 are all here, H1–H12 in priority order, H13 (turn the view) ahead of them at 0, H17 (the fight hint) ahead of H13 and H14–H16 (the end steps) ahead of H17; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, H13 brief 016\'s, H14–H17 Aster\'s end steps and fight hint, not in Motive\'s table)', () => {
-    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 17 }, (_, i) => `H${i + 1}`));
+  test('H1–H18 are all here, H1–H12 in priority order, H13 (turn the view) ahead of them at 0, H17 (the fight hint) ahead of H13 and H14–H16 (the end steps) ahead of H17, H18 (Go, brief 018) ahead of all; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, H13 brief 016\'s, H14–H17 Aster\'s end steps and fight hint, not in Motive\'s table)', () => {
+    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 18 }, (_, i) => `H${i + 1}`));
     expect(items.slice(0, 12).map(([, h]) => h.priority)).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
     expect(t.hints.items.H13!.priority).toBe(0);
-    const end = ['H14', 'H15', 'H16'].map((id) => t.hints.items[id]!.priority);
+    const end = ['H14', 'H15', 'H16', 'H18'].map((id) => t.hints.items[id]!.priority);
     for (const p of end) expect(p).toBeLessThan(t.hints.items.H17!.priority); // they win over the fight hint and every flavour hint, the view turn included, when their trigger holds
     expect(t.hints.items.H17!.priority).toBeLessThan(t.hints.items.H13!.priority); // a shot to take beats a view to turn
-    expect(new Set([...end, t.hints.items.H17!.priority, t.hints.items.H13!.priority]).size).toBe(5); // no tie: the host's sort is not stable
+    expect(new Set([...end, t.hints.items.H17!.priority, t.hints.items.H13!.priority]).size).toBe(6); // no tie: the host's sort is not stable
     if (!rows.size) return;
     expect([...rows.keys()]).toEqual(items.filter(([id]) => motiveIds(id)).map(([id]) => id));
     for (const [id, h] of items.filter(([id]) => motiveIds(id))) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
   });
   test('each hint fits 110 characters, names an agent, a verb and a target, and introduces only its own verb', () => {
-    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run', 'turn-view': 'turn', extract: 'into the car' };
-    const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take'];
+    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run', 'turn-view': 'turn' };
+    const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take', 'Board', 'Go'];
     const bad: string[] = [];
     for (const [id, h] of items) {
       const l = h.line;
@@ -385,7 +386,7 @@ describe('training hints, the run toast, the going-loud card', () => {
   test('the run toast and the loss line exist; the loss line says what Motive asked', () => {
     expect(t.toasts['run-seen']!.line).toMatch(/run/i);
     expect(t.toasts['run-seen']!.line).toContain('Alert 1');
-    expect(t.goingLoud.captured.toLowerCase()).toBe('anyone downed is captured unless carried.');
+    expect(t.goingLoud.captured.toLowerCase()).toBe('anyone left behind in a fight is captured.');
   });
 });
 
@@ -779,7 +780,7 @@ describe('feed cards for engine events no scene covers', () => {
   });
   test('cardResult and fillCard fill the placeholders and capitalise the start', () => {
     expect(fillCard(cardResult(t, 'run.seen')!, { who: 'the entrance camera', agent: 'the Scout', alert: 1 })).toBe('The entrance camera saw the Scout run. Alert 1.');
-    expect(fillCard(cardResult(t, 'fight.loud')!, { n: 5, clock: '7:10' })).toBe('5 officers, from the north street. The district seals at 7:10.');
+    expect(fillCard(cardResult(t, 'fight.loud')!, { n: 5, clock: '7:10' })).toBe('5 officers, from the north street. Police seal the district at 7:10.');
     expect(cardResult(t, 'vale.exits', 'service')).toBe('Walking to the service lane.'); expect(cardResult(t, 'vale.exits')).toBeUndefined();
   });
   test('every city scene has a title the player can read', () => {
@@ -819,14 +820,16 @@ describe('the end card\'s words (debrief ids)', () => {
   });
   test('brief 013: a line for each between-missions id a takedown adds (rulebook debrief.lines), carrying every field the rulebook lists for it and no other', () => {
     const lines = json('contracts/rules/rulebook.json').debrief.lines as Record<string, { fields: string[] }>;
-    const mine = ['volunteer', 'statement', 'missing', 'grief', 'worry', 'area-watch', 'case'];
+    const mine = ['volunteer', 'statement', 'missing', 'grief', 'worry', 'area-watch', 'case', 'left-behind', 'captive', 'car-seen'];
     expect(Object.keys(d.between)).toEqual(mine);
     for (const id of mine) {
       expect(lines[id], `${id} is a rulebook debrief line`).toBeTruthy();
-      const slots = [...d.between[id]!.matchAll(/\{([a-z]+)\}/g)].map((m) => m[1]!);
+      const slots = [...d.between[id]!.matchAll(/\{([a-z-]+)\}/g)].map((m) => m[1]!);
       expect([...new Set(slots)].sort(), id).toEqual([...lines[id]!.fields].sort());
     }
     expect(fillCard(d.between['missing']!, { who: 'Sunita Ferrer', place: 'the service lane', trail: 6 })).toBe('Sunita Ferrer is missing near the service lane. Case open, Trail 6.');
+    // the captive who never talks inside the window has its own line, with the same fields less {holds}
+    expect([...new Set([...d.getaway.holdsOut.matchAll(/\{([a-z-]+)\}/g)].map((m) => m[1]!))].sort()).toEqual(['held-at', 'rescue-until', 'who']);
     // a line states the fact and its cause plainly: no gore, no verdict on a person
     for (const id of mine) expect(d.between[id], id).not.toMatch(/blood|corpse|murder|killer|victim/i);
   });
@@ -996,7 +999,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, extract: /^Put\b/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn the view\b/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn the view\b/ };
     const bad: string[] = [];
     for (const [id, h] of Object.entries(t.hints.items)) {
       const n = marked(h.short);
@@ -1020,21 +1023,20 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(L.objective.carry).toBe('Get [Vale] to the [car].');
   });
   test('the goal line progresses take, bring, carry: each step names a line and the state the host reads', () => {
-    expect(L.objective.steps.map((x) => x.key)).toEqual(['take', 'bring', 'carry']);
+    expect(L.objective.steps.map((x) => x.key)).toEqual(['take', 'bring', 'carry', 'go']);
     for (const x of L.objective.steps) { expect(L.objective[x.key], x.key).toBeTruthy(); expect(x.when.length, x.key).toBeGreaterThan(20); }
     expect(L.objective.steps[1]!.when).toMatch(/Enter/);
     expect(L.objective.steps[2]!.when).toMatch(/Vale is with the Enforcer/);
   });
-  test('H14–H16 teach the end steps: Enter at the open door, Extract at the car, Take at the pickup; each for the Enforcer, each short form leads with its verb', () => {
+  test('H14–H16 teach the end steps: Enter at the open door, Board at the car, Take at the pickup; each for the Enforcer, each short form leads with its verb', () => {
     const [a, b, c] = [t.hints.items.H14!, t.hints.items.H15!, t.hints.items.H16!];
-    expect([a.verb, b.verb, c.verb]).toEqual(['enter', 'extract', 'take']);
+    expect([a.verb, b.verb, c.verb]).toEqual(['enter', 'board', 'take']);
     for (const h of [a, b, c]) { expect(h.agent).toBe('enforcer'); expect(h.line).toMatch(/\bEnforcer\b/); expect(h.priority).toBeLessThan(0); expect(marked(h.short).length).toBe(1); expect(words(h.short)).toBeLessThanOrEqual(6); }
     expect(a.short).toBe('Go in by the [door].');
-    expect(b.short).toBe('Put Vale in the [car].');
+    expect(b.short).toBe('Board the [car] with Vale.');
     expect(c.short).toBe('Take [Vale] at the pickup.');
-    // H14's Alt line explains the off-screen time and that being seen on the way in fails
-    expect(a.line).toMatch(/off screen/);
-    expect(a.line).toMatch(/[Ss]een on the way in, it fails/);
+    // H14's Alt line says that being seen on the way in fails (plain words, brief 019)
+    expect(a.line).toMatch(/if he is seen, it fails/);
     // the triggers say what Latch builds
     expect(a.trigger).toMatch(/guard/); expect(a.trigger).toMatch(/camera/); expect(a.trigger).toMatch(/Vale is in the Office/);
     expect(b.trigger).toMatch(/come out with Vale/);
@@ -1060,10 +1062,14 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(h.rings).toBe('the hostile');
     expect(t.actions.fire!.by.length).toBeGreaterThan(1); // more than the Enforcer can fire
   });
-  test('the car marker chip reads less.pop.car-held (a pop of two words); the Enforcer\'s Extract row reads the car-held refusal\'s short', () => {
-    expect(L.pop['car-held']).toBe('Car held');
-    expect(t.locks['car-held']!.short).toBe('Fight on');
-    expect(t.locks['car-held']!.verbs).toEqual(['extract']);
+  test('the car marker chip reads less.pop.car-held (a pop of three words); Go on a held car reads the car-held refusal, which names the holders (brief 018)', () => {
+    expect(L.pop['car-held']).toBe('Fight blocks car');
+    expect(t.locks['car-held']!.short).toBe('Blocked · down {holders}');
+    expect(t.locks['car-held']!.line).toContain('{holders}');
+    expect(t.locks['car-held']!.verbs).toEqual(['go']);
+    expect(fillLock(t, { code: 'car-held', ids: 'rival-1' }, {})).toBe('The car is blocked by a rival. Down them, or drive them off, then Go.');
+    expect(fillLock(t, { code: 'car-held', ids: 'officer-1,officer-2,rival-1' }, {})).toContain('blocked by hostiles');
+    expect(fillLock(t, { code: 'car-held', ids: 'robot-1,robot-2' }, {})).toContain('blocked by 2 robots');
   });
   test('the price line: a canonical field order, a list for every verb that starts with the name and keeps that order', () => {
     expect(L.price.order).toEqual([...PRICE_FIELDS]);
@@ -1087,7 +1093,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     // compact money (brief 014): $90k, $1.5k, under $1,000 as it is, a range $40k–60k; whole dollars are for the status pill and the debrief
     const COMPACT = /^\$(\d{1,3}|\d{1,3}(\.\d)?k)(–\d{1,3}(\.\d)?k?)?$/;
     const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\d+ s$/.test(f) ? 'time' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
-    expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'fire', 'help', 'kill', 'knockout', 'pay', 'pressure']);
+    expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'board', 'fire', 'go', 'help', 'kill', 'knockout', 'pay', 'pressure']);
     for (const [k, ex] of Object.entries(L.price.examples)) {
       const parts = ex.split(' · ');
       expect(labels.has(parts[0]!), `${k}: ${parts[0]}`).toBe(true);
@@ -1118,7 +1124,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const id of ['no-way', 'no-room', 'unarmed', 'not-drawn', 'other-carries', 'nothing-there', 'never-vale', 'who-can', 'nothing-here', 'select-agent']) expect(L.pop[id], id).toBeTruthy();
   });
   test('the timeline marks have a word for Alt', () => {
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals', 'Chime', 'Last turn', 'Vale out', 'Vale at car', 'Close']);
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1132,7 +1138,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(52);
+    expect(Object.keys(t.cards.items).length).toBe(58);
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
   });

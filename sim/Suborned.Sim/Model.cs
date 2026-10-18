@@ -76,6 +76,7 @@ namespace Suborned.Sim
         public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
+        public bool InCar;                               // brief 018: boarded the getaway car (off the street, doesn't fire, a target as beside cover)
         public Gun Gun = null!;                          // health, weapon, fire order and stance (rulebook weapons)
         public OpId? Carrying, CarriedBy;                // carrying a downed operative, or being carried (rulebook cell.carry)
         public string CarryBody = "";                    // brief 013: the body (a person's id) this operative carries
@@ -90,7 +91,9 @@ namespace Suborned.Sim
     /// One order, as the GDD controls give it (§10: select/move, engage, fire, call; the §03 verbs). JSON:
     /// {"tick": 120, "op": "scout", "do": "move", "to": "d:Courtyard"} · {"tick": 690, "op": "fixer", "do": "turn", "approach": "help", "target": "waitress"}
     /// Verbs: move (to: a place id or [x, y] cm) · watch, listen (target: a role) · turn (approach, target) · call (target: a turned role)
-    /// · loop (target: a camera) · reroute (target: "patrol") · mislead (target: "rivals") · enter · take · extract · withdraw.
+    /// · loop (target: a camera) · reroute (target: "patrol") · mislead (target: "rivals") · enter · take · withdraw.
+    /// Brief 018 (Sky 2026-10-18): board (target "car" or none: into the getaway car, with whoever the operative carries) · go (op "cell" or
+    /// any operative: the car leaves with whoever is in it) · a move on a boarded operative steps out first. Extract is retired.
     /// "run": true on a move (opt-in, Sky 2026-10-15: double-click runs) walks it at the rulebook's run speed; absent, it walks as before.
     /// Shoot-outs (Sky 2026-10-15, briefs/011/motive-fights.md §2.4): draw · holster · fire (target: guard, patrol, security or
     /// security-n, rivals, hostiles or a hostile's id, and with "force": true only, waitress, driver, councillor; fires until the target is
@@ -144,6 +147,8 @@ namespace Suborned.Sim
     public struct Answer
     {
         public bool ok; public string code, why; public int m, cm, tick; public long usd;
+        /// <summary>The ids the refusal names, comma-joined (brief 018: car-held names its holders, in id order); "" when it names none.</summary>
+        public string ids;
         public void Deconstruct(out bool ok, out string why) { ok = this.ok; why = this.why; }
         public static implicit operator (bool ok, string why)(Answer a) => (a.ok, a.why); // older callers that hold (ok, why) keep compiling
         public void Deconstruct(out bool ok, out string code, out string why) { ok = this.ok; code = this.code; why = this.why; }
@@ -155,7 +160,7 @@ namespace Suborned.Sim
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
             "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", "car-gone", "car-busy",
             "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "patrol-down", "patrol-away", "no-rivals",
-            "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "no-vale-yet", "stand-at-getaway",
+            "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
@@ -166,6 +171,8 @@ namespace Suborned.Sim
             "takedown-how", "takedown-vale", "no-body", "body-stashed", "not-carrying", "stand-at-stash", "stash-full", "body-dead", "already-restrained", "stand-beside-body", "doors-locked", "door-held",
             // Sky 2026-10-18: a Watch or Listen that can teach nothing more is refused, free (GameOrders.ScoutTeaches, GameSight.WatchWatcher)
             "already-heard", "already-watched",
+            // brief 018 (Sky 2026-10-18): Board and Go
+            "board-running", "board-tethered", "in-car", "car-empty", "fire-carrying-vale",
         };
     }
 

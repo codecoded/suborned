@@ -276,6 +276,7 @@ namespace Suborned.Play
                 GUI.DrawTexture(new Rect(box.x, box.y, box.width, b), edge); GUI.DrawTexture(new Rect(box.x, box.yMax - b, box.width, b), edge);
                 GUI.DrawTexture(new Rect(box.x, box.y, b, box.height), edge); GUI.DrawTexture(new Rect(box.xMax - b, box.y, b, box.height), edge);
             }
+            if (host.Following) return; // the test follow view: these marks are sized for the orthographic camera (HostFollow)
             if (cam && Event.current.type == EventType.Repaint && HudToolkit.HoverPlace is Vector3 at)
             {
                 var p = cam.WorldToScreenPoint(at); if (p.z > 0) { float rw = 80 * s * 14f / cam.orthographicSize, rh = rw * 0.62f; GUI.DrawTexture(new Rect(p.x - rw / 2, Screen.height - p.y - rh / 2, rw, rh), ring); }

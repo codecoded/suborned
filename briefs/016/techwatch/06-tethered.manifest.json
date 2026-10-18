@@ -9,7 +9,7 @@
   {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
   {"kind": "image", "x": 347, "y": 207, "w": 22, "h": 22, "text": "plate fold tab"},
   {"kind": "image", "x": 105, "y": 179, "w": 248, "h": 78, "text": "order plate"},
-  {"kind": "speech", "x": 490, "y": -890, "w": 155, "h": 25, "text": "Looped. I'm tied here."},
+  {"kind": "speech", "x": 485, "y": -898, "w": 164, "h": 25, "text": "Looped. I'm stuck here."},
   {"kind": "image", "x": 663, "y": 0, "w": 26, "h": 26, "text": "door marker"},
   {"kind": "image", "x": 747, "y": 524, "w": 59, "h": 26, "text": "name chip"},
   {"kind": "image", "x": 1070, "y": 533, "w": 26, "h": 26, "text": "pip driver"},

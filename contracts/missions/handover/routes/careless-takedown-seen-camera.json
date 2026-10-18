@@ -18,7 +18,8 @@
   {"tick":1950,"op":"enforcer","do":"move","to":[2400,-6000]},
   {"tick":2264,"op":"cell","do":"panic"},
   {"tick":2345,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2474,"op":"enforcer","do":"extract"}
+  {"tick":2474,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2515,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

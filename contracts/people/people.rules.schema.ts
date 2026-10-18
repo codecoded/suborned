@@ -15,7 +15,7 @@ export const SCALES = ['bravery', 'resentment', 'fear', 'loyalty'] as const;
 export const NEED_REQUIRES = ['nothing', 'home', 'work', 'family-tie', 'rival-tie'] as const;
 export const TIE_BETWEEN = ['any', 'same-employer', 'routine-stop', 'same-trade-or-employer', 'routine-meet'] as const;
 export const SECRETS = ['affair', 'record'] as const;
-export const FACTS = ['fixer-face', 'enforcer-face', 'cell-car', 'place-time'] as const; // enforcer-face: Sky 2026-10-16 D3 (brief 013)
+export const FACTS = ['fixer-face', 'enforcer-face', 'cell-car', 'place-time', 'cell-face', 'contact'] as const; // enforcer-face: Sky 2026-10-16 D3 (brief 013)
 export const IDENTITY_STATES = ['face', 'alias', 'name'] as const; // DF's three (Adams 2017); the file says which are in play
 export const KNOWN_VIA = ['workmate', 'unit-regular'] as const;
 

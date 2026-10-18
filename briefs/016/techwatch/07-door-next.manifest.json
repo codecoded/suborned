@@ -7,7 +7,7 @@
   {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
   {"kind": "image", "x": 347, "y": 282, "w": 22, "h": 22, "text": "plate fold tab"},
   {"kind": "image", "x": 105, "y": 254, "w": 248, "h": 78, "text": "order plate"},
-  {"kind": "speech", "x": 833, "y": 464, "w": 124, "h": 25, "text": "Close and quiet."},
+  {"kind": "speech", "x": 833, "y": 456, "w": 124, "h": 25, "text": "Close and quiet."},
   {"kind": "speech", "x": 644, "y": -294, "w": 220, "h": 25, "text": "It took the orders. It always does."},
   {"kind": "image", "x": 850, "y": 597, "w": 26, "h": 26, "text": "door marker"},
   {"kind": "image", "x": 882, "y": 597, "w": 52, "h": 26, "text": "door next step"},

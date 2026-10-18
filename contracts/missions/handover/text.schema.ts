@@ -37,13 +37,14 @@ export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
 /** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. */
-export const WATCHED = ['camera-entrance', 'camera-pickup', 'patrol'] as const;
+export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
-  'extract', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
+  'board', 'go', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
-export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view'] as const;
+/** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
+export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as const;
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. */
@@ -91,13 +92,15 @@ export const Lock = z.strictObject({
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.literal('*')])).min(1).describe('the verbs that can return it'),
+  byTarget: z.partialRecord(z.enum(['machine']), z.strictObject({ line: Line, short: Short() })).optional()
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Additive: a host that does not read it shows the base line and short'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
 export const Activity = z.strictObject({
   idle: Line, down: Line, walking: Line, running: Line, drawing: Line, holstering: Line, firing: Line,
   holding: z.strictObject({ loop: Line, carry: Line, take: Line }),
-  acting: z.strictObject({ watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
+  acting: z.strictObject({ board: Line, watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
     takedown: Line, drop: Line, stash: Line, restrain: Line, body: Line.describe('any other work with a body (the rulebook cancel verb `body`: lift, drop, stash or tie)') }),
 });
 
@@ -105,7 +108,7 @@ export const Activity = z.strictObject({
 export const HINT_MAX = 110;
 const HintLine = z.string().min(1).max(HINT_MAX).regex(/^[^\n<>]+$/);
 export const Hint = z.strictObject({
-  priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); -1 = the fight hint (H17), behind the end steps; below -1 = the Handover\'s end steps (H14 Enter, H16 Take at the pickup, H15 Extract), which win over every other hint when their trigger holds'),
+  priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); -1 = the fight hint (H17), behind the end steps; below -1 = the Handover\'s end steps (H14 Enter, H16 Take at the pickup, H15 Board), which win over every other hint when their trigger holds'),
   agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
   verb: DVerb,
   target: z.string().min(1).describe('what the hint rings, in words'),
@@ -179,7 +182,14 @@ export const Debrief = z.strictObject({
   kept: Line,
   route: z.record(code, Line),
   assets: z.record(code, Line),
-  between: z.record(code, Line).describe('brief 013: the between-missions lines a takedown leaves (rulebook debrief.lines: volunteer, statement, missing, grief, worry, area-watch, case), keyed by the rulebook id; each line carries every field the rulebook lists for it'),
+  between: z.record(code, Line).describe('brief 013 and brief 018: the between-missions lines a takedown or the getaway leaves (rulebook debrief.lines: volunteer, statement, missing, grief, worry, area-watch, case, left-behind, captive, car-seen), keyed by the rulebook id; each line carries every field the rulebook lists for it'),
+  getaway: z.strictObject({
+    holdsOut: Line.describe('brief 018: the `captive` line for a captive who does not talk inside the rescue window (the projection has no talk); the host picks it instead of `between.captive`. Fields {who} {held-at} {rescue-until}'),
+    fate: z.record(code, Line).describe('brief 018 {fate} of `left-behind`: captured, walked (the engine\'s LeftBehind fate)'),
+    why: z.record(code, Line).describe('brief 018 {why} of `left-behind`: downed, fighting, sealed, walked (the engine\'s why), as a clause that follows ": "'),
+    by: z.record(code, Line).describe('brief 018 {by} of `car-seen`, by the role of the id the engine names (roleOfId): officer, robot, patrol'),
+    post: Line.describe('brief 018 {held-at} of `captive` when the host has no better name for the district\'s police post'),
+  }).describe('brief 018 (the getaway; rulebook debrief.lines left-behind, captive, car-seen): the words the host puts in those three lines. {fate} and {why} follow the engine\'s LeftBehind fate and why; {by} the role of the id CarSeenBy names; {held-at} is the host\'s name for the district\'s police post, else `post`; {holds} and {rescue-until} are a number with its unit ("1 mission", "3 missions"); {held-at} is at most 8 characters, "the post" by default'),
   standing: z.strictObject({
     line: Line.describe('brief 014: the Standing line (rulebook debrief.lines.standing). Placeholders {district} {band} {from} {to} {cause}; the host fills {from} and {to} signed (+3, 0, -1) and {cause} from `causes` with {who} filled'),
     bands: z.strictObject({ hero: Line, neutral: Line, menace: Line }).describe('{band}: the band id as a word'),
@@ -233,9 +243,9 @@ export const Less = z.strictObject({
   }),
   objective: z.strictObject({
     rule: z.string().min(1),
-    take: Short(32), carry: Short(32), showSeconds: z.number().int().min(2).max(10),
+    take: Short(32), carry: Short(32), go: Short(32).describe('brief 018: the goal line once Vale is in the car and the car has not left'), showSeconds: z.number().int().min(2).max(10),
     bring: Short(32).describe('the goal line while the Enforcer is inside for Vale (after Enter, before he comes out)'),
-    steps: z.array(z.strictObject({ key: z.enum(['take', 'bring', 'carry']), when: z.string().min(1).describe('the game state in which the host shows this line as the goal') })).min(3)
+    steps: z.array(z.strictObject({ key: z.enum(['take', 'bring', 'carry', 'go']), when: z.string().min(1).describe('the game state in which the host shows this line as the goal') })).min(3)
       .describe('the goal line in order: take, then bring, then carry; each `key` names the line above, `when` is the state the host reads (Latch builds the trigger)'),
   }),
   briefing: z.strictObject({ rule: z.string().min(1), goal: Short(32) }),
@@ -256,6 +266,15 @@ export const Less = z.strictObject({
     showSeconds: z.number().int().min(2).max(10),
     returnSeconds: z.number().int().min(5),
     maxShows: z.number().int().min(1).max(3),
+  }),
+  go: z.strictObject({
+    rule: z.string().min(1),
+    none: Short().describe('the Go card when nobody would be left'),
+    leaves: Short(30).describe('the Go card when someone would be: {list} is "Tech (down), Scout", each name with its why in brackets when the fate is captured'),
+    why: z.record(code, Short(16)).describe('the bracket after a name in {list}, by the engine\'s why (downed, fighting, sealed, walked)'),
+    seen: Short().describe('the Go card\'s extra price when a security body would see the car leave'),
+    flag: Short().describe('the roster flag on every agent not in the car while the Go card is open'),
+    fate: z.record(code, Line).describe('Alt on a name\'s fate glyph, by the engine\'s fate (captured, walked); {who} is the agent'),
   }),
   intel: z.strictObject({
     rule: z.string().min(1),
@@ -286,6 +305,8 @@ export const TextFile = z.strictObject({
     named: z.array(z.string()).describe('the only people the words may name'),
     speakers: z.record(z.string(), z.string()).describe('the speaker label the dialogue shows'),
     targets: z.record(z.string(), z.string()).describe('how the cell refers to each target in a sentence'),
+    holders: z.record(code, z.strictObject({ one: z.string().min(1).max(10), many: z.string().min(1).max(12) }))
+      .describe('brief 018 (the getaway): what holds the car, by the role of an id the engine names in Answer.ids (rival-1, officer-1, security-1, robot-1, patrol, guard); `one` for a single holder, `many` with {n} for several of that role, and the key `mixed` when the roles differ. Each phrase is at most 10 characters so the pop "Blocked · down {holders}" fits. `holdersPhrase` is the reference'),
   }),
   pick: z.strictObject({
     rule: z.string().min(1),
@@ -329,14 +350,18 @@ export type CardVals = { who?: string; agent?: string; alert?: number; n?: numbe
   /** brief 014's Standing line (rulebook debrief.lines.standing): district name, band word, signed from and to */
   district?: string; band?: string; from?: string; to?: string;
   /** brief 013's between-missions fields (the rulebook's debrief.lines): the words the host fills from the debrief */
-  fact?: string; facts?: string; place?: string; of?: string; move?: string; fear?: string; guards?: number; cameras?: number; missions?: number; kind?: string; closes?: string };
+  fact?: string; facts?: string; place?: string; of?: string; move?: string; fear?: string; guards?: number; cameras?: number; missions?: number; kind?: string; closes?: string;
+  /** brief 018's getaway lines: {fate} {why} {held-at} {holds} {rescue-until} {by} */
+  fate?: string; why?: string; heldAt?: string; holds?: number; rescueUntil?: number; by?: string };
 export function fillCard(line: string, v: CardVals): string {
   const out = line.replace(/\{who\}/g, v.who ?? 'someone').replace(/\{agent\}/g, v.agent ?? 'an agent').replace(/\{alert\}/g, String(v.alert ?? '?'))
     .replace(/\{n\}/g, String(v.n ?? '?')).replace(/\{clock\}/g, v.clock ?? '?').replace(/\{usd\}/g, v.usd === undefined ? '?' : '$' + v.usd.toLocaleString('en-US'))
     .replace(/\{trail\}/g, String(v.trail ?? '?')).replace(/\{hits\}/g, String(v.hits ?? '?')).replace(/\{cause\}/g, v.cause ?? '?').replace(/\{list\}/g, v.list ?? '').replace(/\{district\}/g, v.district ?? 'the district').replace(/\{band\}/g, v.band ?? '?').replace(/\{from\}/g, v.from ?? '?').replace(/\{to\}/g, v.to ?? '?')
     .replace(/\{fact\}/g, v.fact ?? '?').replace(/\{facts\}/g, v.facts ?? '?').replace(/\{place\}/g, v.place ?? 'somewhere').replace(/\{of\}/g, v.of ?? 'someone')
     .replace(/\{move\}/g, v.move ?? '?').replace(/\{fear\}/g, v.fear ?? '?').replace(/\{guards\}/g, String(v.guards ?? '?')).replace(/\{cameras\}/g, String(v.cameras ?? '?'))
-    .replace(/\{missions\}/g, String(v.missions ?? '?')).replace(/\{kind\}/g, v.kind ?? '?').replace(/\{closes\}/g, v.closes ?? '?');
+    .replace(/\{missions\}/g, String(v.missions ?? '?')).replace(/\{kind\}/g, v.kind ?? '?').replace(/\{closes\}/g, v.closes ?? '?')
+    .replace(/\{fate\}/g, v.fate ?? '?').replace(/\{why\}/g, v.why ?? '?').replace(/\{held-at\}/g, v.heldAt ?? 'the police post').replace(/\{holds\}/g, String(v.holds ?? '?'))
+    .replace(/\{rescue-until\}/g, String(v.rescueUntil ?? '?')).replace(/\{by\}/g, v.by ?? 'Security');
   return out.charAt(0).toUpperCase() + out.slice(1);
 }
 /** The result line of a card: a record result is chosen by `variant`. */
@@ -348,15 +373,28 @@ export function cardResult(t: Pick<TextFile, 'cards'>, code: string, variant?: s
 // ---------------------------------------------------------------- the reference lookups (Latch ports these; the checker runs them)
 
 /** What the engine sends with a refusal (sim Answer): -1 = none. */
-export type Answer = { code: string; m?: number; cm?: number; usd?: number; tick?: number };
+export type Answer = { code: string; m?: number; cm?: number; usd?: number; tick?: number; /** brief 018: the ids a refusal names, comma-joined (car-held: its holders, in id order) */ ids?: string };
+
+/** The role of an engine id (rival-1 → rival; security-1 and officer-1 → officer; robot-1 → robot; patrol; guard); anything else is `other`. */
+export const roleOfId = (id: string): string => (/^rivals?(-\d+)?$/.test(id) ? 'rival' : /^(officer|security)(-\d+)?$/.test(id) ? 'officer' : /^robot(-\d+)?$/.test(id) ? 'robot' : id === 'patrol' ? 'patrol' : id === 'guard' ? 'guard' : 'other');
+/** What holds the car, in words, for `{holders}` in a refusal: "a rival", "2 robots", "police", "patrol", or "3 hostiles" when the roles differ. `ids` is Answer.ids. */
+export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
+  const list = ids.split(',').map((x) => x.trim()).filter(Boolean);
+  if (list.length === 0) return 'something';
+  const roles = [...new Set(list.map(roleOfId))];
+  const h = t.names.holders;
+  const w = roles.length === 1 ? h[roles[0]!] : undefined;
+  if (!w) return h['mixed']!.many.replace('{n}', String(list.length));
+  return list.length === 1 ? w.one : w.many.replace('{n}', String(list.length));
+}
 /** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
  *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
-export function fillLock(t: Pick<TextFile, 'locks'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string } = {}): string | undefined {
+export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string } = {}): string | undefined {
   const l = t.locks[a.code];
   if (!l) return undefined;
   const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
   return l.line
-    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent')
+    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
     .replace(/\{m\}/g, m === undefined ? '?' : String(m))
     .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
     .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');

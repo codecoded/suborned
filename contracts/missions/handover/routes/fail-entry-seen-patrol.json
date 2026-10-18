@@ -18,7 +18,8 @@
   {"tick": 2233, "op": "enforcer", "do": "move", "to": "d:Office entrance"},
   {"tick": 2804, "op": "enforcer", "do": "enter"},
   {"tick": 3184, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
-  {"tick": 3572, "op": "enforcer", "do": "extract"}
+  {"tick": 3572, "op": "enforcer", "do": "board", "target": "car"},
+  {"tick": 3613, "op": "cell", "do": "go"}
  ],
  "until": 5100
 }

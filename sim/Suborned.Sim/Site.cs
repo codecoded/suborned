@@ -37,6 +37,61 @@ namespace Suborned.Sim
             SecEntry, SecVia, SecTo, GetawayCar, FightEntry, FightGuard, PatrolA, PatrolB, PatrolReroute;
         public readonly Pt GuardFacing, CafeFacing, PatrolFacing, PatrolRerouteFacing;
         public readonly string[] FightAmbush, FightPolice;
+        /// <summary>The getaway car's exit lane (brief 018 §1; site getaway.exit): the centreline in the site frame (cm) and half its width (cm).</summary>
+        public readonly Pt[] ExitLane = Array.Empty<Pt>(); public readonly int ExitHalfCm;
+        /// <summary>Metres, as the file writes them (an integer or a decimal), to whole centimetres; a width finer than a centimetre is rejected.</summary>
+        static int MetresToCm(JNode n)
+        {
+            if (!decimal.TryParse(n.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m)) throw new FormatException($"{n.Path} is not a number");
+            var c = m * 100; if (c != decimal.Truncate(c)) throw new FormatException($"{n.Path} = {n.NumberText} m is finer than a centimetre");
+            return (int)c;
+        }
+        /// <summary>On the street inside the exit lane: within half its width of a segment, between the segment's ends (the lane's ends are
+        /// square), or of an inner corner. Integers only.</summary>
+        public bool InExitLane(Pt p)
+        {
+            var L = ExitLane; int half = ExitHalfCm;
+            for (int i = 1; i < L.Length; i++)
+            {
+                Pt a = L[i - 1], b = L[i];
+                long abx = b.X - a.X, aby = b.Y - a.Y, apx = p.X - a.X, apy = p.Y - a.Y;
+                long ab2 = abx * abx + aby * aby, dot = apx * abx + apy * aby;
+                if (dot < 0 || dot > ab2) continue;
+                long cross = Math.Abs(apx * aby - apy * abx), len = G.Isqrt(ab2);
+                if (cross <= (long)half * len) return true;
+            }
+            for (int i = 1; i < L.Length - 1; i++) if (G.Within(p, L[i], half)) return true;
+            return false;
+        }
+        /// <summary>The point `cm` along the exit lane's centreline from its start (the car's foot); its last point if the lane is shorter
+        /// (brief 018 §10, Pulse: the blocker's open post).</summary>
+        public Pt LanePointAt(int cm)
+        {
+            var L = ExitLane; long left = Math.Max(0, cm);
+            for (int i = 1; i < L.Length; i++)
+            {
+                long seg = G.Dist(L[i - 1], L[i]);
+                if (left <= seg) return G.Lerp(L[i - 1], L[i], left, Math.Max(1, seg));
+                left -= seg;
+            }
+            return L[L.Length - 1];
+        }
+        /// <summary>The point of the lane nearest p, kept a metre inside its sides (or on the centreline for a lane narrower than 2 m).</summary>
+        public Pt NearestInExitLane(Pt p)
+        {
+            var L = ExitLane; Pt best = L[0]; long bd = long.MaxValue; int inset = Math.Max(0, ExitHalfCm - 100);
+            for (int i = 1; i < L.Length; i++)
+            {
+                Pt a = L[i - 1], b = L[i];
+                long abx = b.X - a.X, aby = b.Y - a.Y, ab2 = abx * abx + aby * aby;
+                long t = Math.Max(0, Math.Min(ab2, (p.X - a.X) * abx + (p.Y - a.Y) * aby));
+                var foot = G.Lerp(a, b, t, ab2);
+                long ox = p.X - foot.X, oy = p.Y - foot.Y, ol = G.Isqrt(ox * ox + oy * oy);
+                var q = ol <= inset ? p : new Pt(foot.X + (int)(ox * inset / Math.Max(1, ol)), foot.Y + (int)(oy * inset / Math.Max(1, ol)));
+                long d = G.D2(p, q); if (d < bd) { bd = d; best = q; }
+            }
+            return best;
+        }
         public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
         /// <summary>How the public sees the mission's rivals (mission.json rivals.public: menace or neutral; Sky 2026-10-16, fight.public); "" when the
@@ -181,7 +236,16 @@ namespace Suborned.Sim
             var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
             if (ri.Opt("public") is JNode rp) { RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, RivalsPublic) < 0) throw new FormatException($"{rp.Path} = '{RivalsPublic}' is not one of {string.Join(", ", Rules.RivalsPublics)}"); }
             var se = r["security"]; se.Only("entry", "via", "to", "src"); SecEntry = P(se["entry"]); SecVia = P(se["via"]); SecTo = P(se["to"]);
-            var ge = r["getaway"]; ge.Only("car", "src"); GetawayCar = P(ge["car"]);
+            var ge = r["getaway"]; ge.Only("car", "exit", "src"); GetawayCar = P(ge["car"]);
+            // brief 018 §1: the car's exit lane, derived from the plan by tools/sim/getaway.ts (Splice). Required: unknown = reject, never invented
+            var ex = ge.Opt("exit") ?? throw new FormatException($"{ge.Path}.exit is missing: the car's exit lane comes from the plan's routes.getaway (brief 018 §1); no lane is invented");
+            ex.Only("polyline", "w", "src"); ex["src"].Str();
+            var lane = new List<Pt>(); foreach (var q in ex["polyline"].Items) lane.Add(Pt.Of(q));
+            if (lane.Count < 2) throw new FormatException($"{ex.Path}.polyline needs two points at least");
+            for (int i = 1; i < lane.Count; i++) if (lane[i] == lane[i - 1]) throw new FormatException($"{ex.Path}.polyline repeats a point");
+            ExitLane = lane.ToArray();
+            ExitHalfCm = MetresToCm(ex["w"]) / 2; // w is the plan road's width in metres (the file's only metre field)
+            if (ExitHalfCm < 50 || ExitHalfCm > 5000) throw new FormatException($"{ex.Path}.w is outside 1..100 m");
             var fi = r["fight"]; fi.Only("ambush", "police", "entry", "guard", "src");
             FightAmbush = fi["ambush"].Items.Select(P).ToArray(); FightPolice = fi["police"].Items.Select(P).ToArray(); FightEntry = P(fi["entry"]); FightGuard = P(fi["guard"]);
             var sc = r["schedule"]; sc.Only("rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");

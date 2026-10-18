@@ -170,8 +170,8 @@ namespace Suborned.Play
                 case "H14": // the end steps (Fable, Aster 2026-10-18): the door is open to the Enforcer; the same check as the door marker (HostValeSteps)
                     if (!EnterAvailable) return false;
                     ring = At("marker/door"); portrait = (int)OpId.Enforcer; return true;
-                case "H15": // out with Vale, no Extract yet (before H10)
-                    if (!ExtractAvailable || Given(o => o.Do == "extract")) return false;
+                case "H15": // out with Vale, not boarded yet (before H10; brief 018: Board replaces Extract)
+                    if (!BoardAvailable || Given(o => o.Do == "board" && o.Op == "enforcer")) return false;
                     ring = At("car/getaway"); portrait = (int)OpId.Enforcer; return true;
                 case "H16": // route B: the driver turned, Vale at his car, not taken
                     if (!g.PersonByRole("driver").Turned || g.Vale != ValeAt.Pickup) return false;
@@ -184,10 +184,14 @@ namespace Suborned.Play
                     }
                 case "H13": // brief 016: the view turns; taught once, early (Fable's line in text.json; the HUD shows its keys as keycaps)
                     return g.Tick >= 20 * Game.Hz && !TurnedThisRun && !g.FightOn;
-                case "H11":
+                case "H18": // brief 018 §6.7 (Fable): Vale is in the car and no Go has been given; rings the car
+                    if (g.Vale != ValeAt.Car || g.Over || Given(o => o.Do == "go")) return false;
+                    ring = At("car/getaway"); return true;
+                case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
-                    foreach (var name in g.WouldBeCaptured()) // Keel's query: downed and not within the car's reach (carried or not)
-                    { var op = g.Ops[(int)Op.Parse(name)]; if (!op.CarriedBy.HasValue) { ring = At("op/" + name); return true; } }
+                    foreach (var (name, fate, why) in LeftBehindNow()) // brief 018: anyone not in the car stays behind (LeftBehind); a downed one not carried is the warning's ring
+                    { var op = g.Ops[(int)Op.Parse(name)]; if (fate == "captured" && why == "downed" && !op.CarriedBy.HasValue) { ring = At("op/" + name); return true; } }
+                    foreach (var (name, fate, _) in LeftBehindNow()) if (fate == "captured" && g.AnyInCar) { ring = At("op/" + name); return true; }
                     return false;
             }
             return false;
@@ -209,12 +213,13 @@ namespace Suborned.Play
                 case "H8": return Given(o => o.Do == "mislead", from) || g.Vale == ValeAt.WithEnforcer;
                 case "H9": return Given(o => o.Target == "driver", from) || Array.Exists(Roles, r => g.PersonByRole(r).Turned);
                 case "H10": return Given(o => o.Do == "draw", from);
-                case "H11": return Given(o => o.Do is "carry" or "extract", from);
+                case "H11": return Given(o => o.Do is "carry" or "board", from);
                 case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
                 case "H13": return TurnedThisRun;
                 case "H17": return Given(o => o.Do == "fire" && o.Op != "enforcer", from) || !g.FightOn;
                 case "H14": return Given(o => o.Do == "enter", from);
-                case "H15": return Given(o => o.Do == "extract", from);
+                case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);
+                case "H18": return Given(o => o.Do == "go", from) || Game.Over;
                 case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;
             }
             return false;

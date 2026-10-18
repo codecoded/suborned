@@ -20,7 +20,7 @@ namespace Suborned.Play
         public static string EyeTip(string eye, string seenBy) => eye == "open" ? $"Seen by {(string.IsNullOrEmpty(seenBy) || seenBy == "?" ? "a watcher" : seenBy)}." : eye == "unk" ? "Unknown. Watch first." : "Unseen.";
 
         /// <summary>Fable's field order (less.price.order), the price line's columns.</summary>
-        public static readonly string[] FieldOrder = { "usd", "time", "trail", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" };
+        public static readonly string[] FieldOrder = { "left", "usd", "time", "trail", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" }; // "left": the Go row's cameos and fates (brief 018)
 
         /// <summary>Compact money for a price line (Sky 2026-10-16: the line stays short): 100,000 → 100k, 1,500 → 1.5k, under 1,000 as it is;
         /// a range "40,000–60,000" → "40k–60k". The status pill and the debrief keep whole dollars.</summary>
@@ -42,7 +42,8 @@ namespace Suborned.Play
             if (o.Do == "takedown" && t != null && t.Actions.TryGetValue("takedown", out var td) && td.Ways.TryGetValue(o.How ?? "", out var w)) return w.label;
             if (o.Do == "takedown") return o.How == "kill" ? "Kill" : "Knock out";
             if (o.Do == "enter") return "Enter";
-            if (o.Do == "extract") return "Into car";
+            if (o.Do == "board") return "Board";
+            if (o.Do == "go") return "Go"; // brief 018 §6.5 (Glyph r1): who stays is the row's cameos and fate glyphs, not a sentence
             if (o.Do == "loop") return "Loop";
             if (o.Do == "stash") return "Hide";
             if (o.Do == "reroute") return "Reroute";
@@ -57,6 +58,13 @@ namespace Suborned.Play
         public static List<PField> PriceLine(HandoverHost h, HandoverHost.Intent i)
         {
             var l = new List<PField>(); var o = i.Order; if (o == null) return l;
+            if (o.Do == "go") // brief 018 §6.5 (Glyph r1): up to three cameos, each with its fate glyph (lock: captured; footprints: walks out); +1 T if police see it leave
+            {
+                var lf = new PField { Kind = "left" }; foreach (var (who, fate, _) in h.LeftBehindNow()) if (lf.Icons.Count < 3) lf.Icons.Add(who + ":" + fate);
+                if (lf.Icons.Count > 0) l.Add(lf);
+                if (Plus.Match(i.Trail ?? "") is var gp && gp.Success && gp.Groups[1].Value != "0") l.Add(new PField { Kind = "trail", Icon = "p_trail", Text = "+" + gp.Groups[1].Value });
+                return l;
+            }
             var verb = PriceVerb(o);
             IList<string> fields = h.Text != null && h.Text.PriceVerbs.TryGetValue(verb, out var fs) ? fs : DefaultFields;
             bool td = o.Do == "takedown" && i.Td != null; bool foundSaid = false;
@@ -70,6 +78,7 @@ namespace Suborned.Play
                     case "time":
                         {
                             var m = Num.Match(i.Time ?? ""); if (!m.Success) break;
+                            if (o.Do == "board" && i.WalkS > 0) { F("walk", "s_moving", $"{i.WalkS} s"); F("time", "p_time", $"{m.Groups[1].Value} s"); break; } // Glyph r1: "9 s" was walk 8 + board 1; the walk and the boarding apart
                             int s = int.Parse(m.Groups[1].Value) + System.Math.Max(0, i.WalkS);
                             F("time", "p_time", $"{s} s");
                             break;
@@ -119,7 +128,7 @@ namespace Suborned.Play
                             {
                                 case "turn": mk = i.Orders > 1 && i.Outcome == "turned" ? "half" : MarkOf(i.Outcome); break;
                                 case "call": mk = i.Outcome == "ready" ? "ok" : "no"; break;
-                                case "extract": mk = "ok"; break;
+                                case "go": mk = i.Outcome.Contains("captured") ? "no" : "ok"; break;
                                 case "enter": if (i.SeenQ != null && i.SeenQ.Seen == "yes") mk = "no"; break;
                             }
                             if (mk != null) F("mark", "", "").Mark = mk;

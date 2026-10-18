@@ -139,9 +139,9 @@ namespace Suborned.Play
         public void Tick()
         {
             var g = host.Game; var s = g.S;
-            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside ? null : op.Pos, op.Down); }
+            for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside || op.InCar ? null : op.Pos, op.Down); } // brief 018: in the car is off the street (the car marker's seat pips say who)
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
-            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.ValePos(), g.ValeP.Down);
+            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car ? null : g.ValePos(), g.ValeP.Down);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
             var rp = g.RivalsPose();
             for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? rp.Value.pos + new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0) : (Pt?)null);
@@ -361,7 +361,7 @@ namespace Suborned.Play
         readonly List<FanDraw> fans = new();
         readonly Dictionary<(Color, float), Material> fanMats = new();
         readonly List<Vector3> verts = new(); readonly List<int> tris = new();
-        const float FillAlpha = 0.3f, RimW = 0.06f, FillY = 0.05f, RimY = 0.07f;
+        const float FillAlpha = 0.38f, RimW = 0.085f, FillY = 0.05f, RimY = 0.07f; // Glyph techwatch r2 C: the rim 2 px or more at play zoom where it runs across the view (0.085 m x 38.6 px/m x sin 38), the fill a little up, so a cone under a ghosted tower's dither still reads
         static readonly Color Grey = new(0.55f, 0.55f, 0.55f);
 
         /// <summary>The fans to draw this frame (the host's choice: the focused watcher's, or every learned one while Alt is held); the rest hide.

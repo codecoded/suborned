@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Board and go (brief 018 §5), the twin of route-g: the same route to the ambush; then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO): the Scout watches the guard (his sight and check-in marks), the Tech loops the entrance camera and reroutes the patrol, the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service lane; the cell fights the rivals' ambush at the getaway car. No contact, $0. A knockout found is an inquiry (Alert 1 at most): the camera reads him once the loop goes, his 4:00 mark is missed, guard 74 finds him; he gives a statement (+4 T).",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {"op": "tech", "do": "move", "to": "cabinet", "run": true, "why": "to the control cabinet"},
+  {"op": "enforcer", "do": "move", "to": [4850,-2300], "why": "beside the Office approach, out of the guard's door cone"},
+  {"op": "scout", "do": "move", "to": "d:Office approach", "why": "to where the guard can be watched"},
+  {"op": "fixer", "do": "move", "to": "crew:fixer", "why": "no one to turn on this route: the Fixer waits armed at the getaway car"},
+  {"op": "scout", "do": "watch", "target": "guard", "why": "the guard's sight and his check-in marks (1:00, 2:30, 4:00): the takedown card reads 'sees it coming: no' and 'next mark' from this"},
+  {"op": "tech", "do": "loop", "target": "entrance", "label": "loop", "why": "the entrance camera sees the guard's post all mission"},
+  {"op": "scout", "do": "move", "to": "crew:scout", "why": "the watch done, to the getaway car"},
+  {"op": "tech", "do": "reroute", "target": "patrol", "at": "1:46", "why": "timed so the patrol leaves the door's sweep at 2:31, as the guard's 2:30 mark passes"},
+  {"op": "enforcer", "do": "move", "to": [5175,-2880], "why": "beside the guard, outside his door cone (he faces the square): from here he doesn't see it coming", "at": "2:24"},
+  {"op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout", "at": "2:31", "label": "td", "why": "just after his 2:30 check-in mark (the next is 4:00): 6 s, surprised, the camera looped, the patrol away, nobody on the square"},
+  {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter", "why": "the door unwatched, Alert 0: 38 s"},
+  {"op": "tech", "do": "move", "to": "crew:tech", "after": ["enter"], "why": "the loop is no longer needed once the Enforcer is inside"},
+  {"op": "enforcer", "do": "move", "to": [2400,-6000], "after": ["enter"], "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"},
+  {"op": "cell", "do": "panic", "after": ["enter"], "why": "the ambush: the armed cell fires at will"},
+  {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.ambush", "label": "out", "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire"},
+  {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale in first (Board, 4 s carrying)"},
+  {"op": "scout", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out", "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2)"},
+  {"op": "scout", "do": "board", "target": "car", "label": "scout-in"},
+  {"op": "fixer", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
+  {"op": "fixer", "do": "board", "target": "car", "label": "fixer-in"},
+  {"op": "tech", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
+  {"op": "tech", "do": "board", "target": "car", "label": "tech-in"},
+  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": "captured", "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind"}
+ ]
+}

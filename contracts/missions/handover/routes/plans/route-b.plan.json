@@ -20,6 +20,7 @@
   {"op": "enforcer", "do": "move", "to": [2400, -6000], "after": ["take"], "gap": 0, "why": "with Vale, to a point 19.5 m south-east of the car, off the rivals' posts by the planters: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"},
   {"op": "cell", "do": "panic", "after": ["take"], "why": "the ambush: the armed cell fires at will"},
   {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.over", "label": "out", "why": "the last rival down: to the car"},
-  {"op": "enforcer", "do": "extract", "after": ["out"]}
+  {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale into the car first (Board, 4 s carrying; brief 018 §2)"},
+  {"op": "cell", "do": "go", "after": ["in"], "why": "fight it out: the crew is broken and the car free, so the car leaves at once; the three walk out on a calm street (brief 018 §3), which costs nothing, so they do not spend time boarding"}
  ]
 }

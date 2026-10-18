@@ -77,11 +77,9 @@ namespace Suborned.Sim
                 r.Eq(g.RivalsPublic, "menace", "the Handover's rivals are feared");
                 RouteA(r, reroute: true);
                 r.Eq((g.FightBranch, g.Fights.Count, g.StandingMoves.Count), ("safe", 0, 0), "a quiet route: no fight and no move before the final fight");
-                r.Do(Enf, "draw");
-                r.Send(Enf, "d:Getaway bay");
-                while (!g.Over && g.FightSprung == int.MaxValue / 4) g.Step();
-                r.FightItOut();
-                r.Do(Enf, "extract");
+                Support(r); ToAmbush(r); // brief 018: walking Vale the Enforcer doesn't fire; the three by the car fight
+                r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018 §10: break the crew (the blocker falls first; a free car alone is board and go, N113)
+                r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
                 r.Eq(g.Fights.Count, 1, "one fight: the final fight");
                 var f = g.Fights[0];

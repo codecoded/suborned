@@ -19,7 +19,7 @@ namespace Suborned.Play
     {
         // ---------------------------------------------------------------- the going-loud gate
 
-        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Target Target; public OpId By; }
+        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Target Target; public OpId By; /** brief 018: a Go that leaves someone behind (who, fate, why), and whether security sees the car leave */ public List<(string op, string fate, string why)> Left; public bool SeenLeaving; }
         /// <summary>The going-loud card while it is held open, else null.</summary>
         public Gate Loud { get; private set; }
         public float GateProgress => Loud == null ? 0f : Mathf.Clamp01((Time.unscaledTime - Loud.Start) / HoldSeconds);
@@ -79,6 +79,7 @@ namespace Suborned.Play
             if (GateProgress < 1f) return;
             var g = Loud; Loud = null;
             if (g.Takedown) { Give(g.By, g.Orders[0], g.Target, null); Status = "Committed: the takedown is seen."; return; } // walk-then-act like any order
+            if (g.Left != null) { Issue(g.Orders[0], null, g.At); Status = "Go: the car leaves."; return; } // brief 018: the Go that leaves someone behind
             Send(new List<Order>(g.Orders), null, g.At);
             FeedLoud(g.Card, g.What);
             if (Text != null && Text.Events.TryGetValue("going-loud", out var e)) WorldBeat(e, null, "", Feedback.Refused, 1);
@@ -373,7 +374,7 @@ namespace Suborned.Play
         public IEnumerable<(string id, Gun gun)> Fighters()
         {
             var g = Game; bool fight = g.FightOn;
-            for (int k = 0; k < 4; k++) { var gun = g.Ops[k].Gun; if (gun.W != null && (fight || gun.Drawn || gun.Health < gun.Max || g.Ops[k].Down)) yield return (Op.Name((OpId)k), gun); }
+            for (int k = 0; k < 4; k++) { var gun = g.Ops[k].Gun; if (gun.W != null && !g.Ops[k].InCar && (fight || gun.Drawn || gun.Health < gun.Max || g.Ops[k].Down)) yield return (Op.Name((OpId)k), gun); }
             foreach (var h in g.Hostiles) if (h.Present && !h.Down) yield return (h.Id, h.Gun);
             foreach (var id in new[] { "guard", "patrol", "rivals" }) { var gun = g.GunOf(id); if (gun != null && !gun.Down && (gun.Fired || gun.Engaged || gun.Health < gun.Max || (fight && id == "guard" && g.GuardAlly))) yield return (id, gun); }
             foreach (var gun in g.SecGuns) if (!gun.Down && (gun.Fired || gun.Engaged) && g.PosOf(gun.Id).HasValue) yield return (gun.Id, gun);

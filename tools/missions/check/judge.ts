@@ -14,6 +14,12 @@
 //      at Alert ≤ 1, and each such win spends Enforcer time on the takedown (the act, the lift, the carry, the stash: > 0 s).
 // MC-9 turning people stays competitive (brief 013 D): no takedown win dominates every turning win, i.e. for each takedown win some
 //      win that turns a contact is faster, or cheaper in total Trail.
+// MC-10 quiet beats loud on every count (brief 018 §5): against every loud win (variants too), every quiet win costs less total Trail
+//      (a captive's +captured-trail is campaign Trail), stands at a lower Alert, ends at a Standing no worse, and leaves no seal clock
+//      running (anyone a loud getaway leaves standing is captured; a quiet one walks out).
+// MC-11 no stop holds the car (brief 018 §1, §5): every place the final fight posts a hostile at (the ambush spots, the police stands)
+//      stands outside fight-hold-m of the car and outside the exit lane, so only a hostile that comes for the car (the blocker, or one
+//      that walks in) holds it; and every reference win's car left free (none waits on a hostile it merely stands at).
 // Trail is compared in total (brief 013): the mission's own Trail plus what the debrief carries into the campaign (a knockout's
 // statement, a missing person's file), plus `case-trail-eq` T for each open case it leaves (rulebook, rev 4 R4.4), so a body hidden
 // until the debrief is not cheaper than it is.
@@ -22,6 +28,7 @@
 //      against the mission's close, and how late each of its steps can be before it stops winning, are reported beside it.
 import type { Routes, RouteScript } from '../../../contracts/missions/routes.schema';
 import type { Play, Script } from './engine';
+import { blockerOut } from './blocker';
 
 /** What the record keeps of a play: enough to judge and to replay against. */
 export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' | 'alert' | 'gunfire' | 'startHash' | 'finalHash' | 'replayIdentical'> & {
@@ -36,6 +43,10 @@ export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' |
   campaignTrail?: number; standing?: number; openCases?: number;
   /** brief 013: seconds the takedown work held the Enforcer, from the first takedown.starts to the last of its act, lift, carry, stash or drop */
   takedownS?: number;
+  /** brief 018 §1: seconds from the moment every blocker was out (compose.ts blockerOut) to the car leaving; absent if none was */
+  carFreeS?: number;
+  /** brief 018 §3: everyone the car left behind, op → "captured <why>" or "walked" (the debrief's left-behind lines) */
+  left?: Record<string, string>;
 };
 /** Trail in total: the mission's and what the debrief carries into the campaign (brief 013). */
 export const totalTrailOf = (d: Digest, caseTrailEq = 0) => d.trail + (d.campaignTrail ?? 0) + (d.openCases ?? 0) * caseTrailEq;
@@ -48,12 +59,14 @@ export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => 
   if (keepMarks) for (const l of p.log) if (!(l.code in marks) && !l.code.startsWith('order.')) marks[l.code] = l.tick;
   const fightAt = p.log.find(l => l.code === 'fight.safe' || l.code === 'fight.loud');
   const shots = p.log.filter(l => l.code.startsWith('fire.') && l.code !== 'fire.hostiles' && (!fightAt || l.tick < fightAt.tick)).length;
-  const nm = p.debrief?.nextMission, tdFrom = p.log.find(l => l.code === 'takedown.starts')?.tick, tdTo = p.log.filter(l => TD_END.test(l.code)).at(-1)?.tick;
+  const free = blockerOut(p.log), nm = p.debrief?.nextMission, left = Object.fromEntries((nm?.lines ?? []).filter(l => l.line === 'left-behind').map(l => [l.who, l.detail.startsWith('walked') ? 'walked' : l.detail.replace(/^captured \((\w+)\)$/, 'captured $1')])), tdFrom = p.log.find(l => l.code === 'takedown.starts')?.tick, tdTo = p.log.filter(l => TD_END.test(l.code)).at(-1)?.tick;
   return {
     outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical,
     rejected: p.orders.filter(o => !o.ok).length, scriptSha, marks, shots, ...(fightAt ? { fight: fightAt.code === 'fight.safe' ? 'safe' as const : 'loud' as const } : {}),
     ...(nm?.campaignTrail ? { campaignTrail: nm.campaignTrail } : {}), ...(p.standing ? { standing: p.standing } : {}), ...(nm?.openCases ? { openCases: nm.openCases } : {}),
     ...(tdFrom !== undefined && tdTo !== undefined && tdTo >= tdFrom ? { takedownS: (tdTo - tdFrom) / 10 } : {}),
+    ...(Object.keys(left).length ? { left } : {}),
+    ...(free !== undefined && p.outcome === 'success' ? { carFreeS: (p.tick - free) / 10 } : {}),
   };
 };
 /** Every play the checker made, by name: `<script>`, `<script>~no-<role>`, `<script>~late@<tick>+<s>s`. */
@@ -61,6 +74,19 @@ export type Plays = Record<string, Digest>;
 /** How late each planned step of a primary route can be (its steps up to the one that secures Vale; the final fight after it is
  *  fought, not planned): the most seconds, contiguous from 0, every later order can slip and still win. */
 export type Slack = { script: string; steps: { tick: number; orders: string; slackS: number; breaksAs?: string }[]; maxS: number };
+
+/** The getaway as the engine's site and rulebook give it (brief 018 §1): the car, the hold ring, the exit lane, the fight's posts. */
+export type Getaway = { car: [number, number]; holdCm: number; lane: [number, number][]; laneHalfCm: number; posts: { id: string; at: [number, number] }[] };
+/** The engine's Site.InExitLane: within the lane's half width of a segment, between its ends, or of an inner joint. */
+export function inLane(g: Getaway, p: [number, number]): boolean {
+  const L = g.lane;
+  for (let i = 1; i < L.length; i++) {
+    const [ax, ay] = L[i - 1]!, [bx, by] = L[i]!, abx = bx - ax, aby = by - ay, apx = p[0] - ax, apy = p[1] - ay, ab2 = abx * abx + aby * aby, dot = apx * abx + apy * aby;
+    if (dot < 0 || dot > ab2) continue;
+    if (Math.abs(apx * aby - apy * abx) <= g.laneHalfCm * Math.sqrt(ab2)) return true;
+  }
+  return L.slice(1, -1).some(q => Math.hypot(p[0] - q[0], p[1] - q[1]) <= g.laneHalfCm);
+}
 
 export type Condition = { id: string; rule: string; ok: boolean; value: string; detail: string };
 export type Report = { ok: boolean; conditions: Condition[]; scripts: Row[]; contacts: ContactRow[]; informed: InformedRow[]; slack: Slack[]; pending: string[] };
@@ -72,11 +98,13 @@ type InformedRow = { script: string; route: string; closes: string; secured: str
 export const quietWin = (d?: Digest) => !!d && d.outcome === 'success' && d.shots === 0;
 export const clock = (tick: number) => { const s = Math.floor(tick / 10); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}${tick % 10 ? `.${tick % 10}` : ''}`; };
 const ticksOf = (at: string) => { const [m, s] = at.split(':').map(Number); return (m! * 60 + s!) * 10; };
-const got = (d: Digest) => (d.outcome === 'failure' ? `failure ${d.fail}` : d.outcome);
-const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.expects.fail}` : s.expects.outcome);
-const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && d.replayIdentical;
+const got = (d: Digest) => (d.outcome === 'failure' ? `failure ${d.fail}` : d.outcome) + (d.left && Object.values(d.left).some(f => f !== 'walked') ? `; left: ${leftOf(d.left)}` : '');
+const leftOf = (l?: Record<string, string>) => Object.entries(l ?? {}).sort(([a], [b]) => a.localeCompare(b)).map(([op, f]) => `${op} ${f}`).join(', ');
+const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.expects.fail}` : s.expects.outcome) + (s.expects.left ? `; left: ${leftOf(s.expects.left)}` : '');
+/** brief 018: a script that names who is left behind must leave exactly them, so (as `want`) */
+const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && d.replayIdentical;
 
-export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number } = {}): Report {
+export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway } = {}): Report {
   const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
   const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: got(d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
@@ -164,6 +192,40 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     value: dominated.length ? `dominant: ${dominated.map(s => s.id).join(', ')}` : `${td.length} takedown win${td.length === 1 ? '' : 's'}, none dominant over ${turnWins.length} turning wins`,
     detail: td.map(s => { const d = plays[s.id]!, f = turnWins.filter(t => plays[t.id]!.tick < d.tick).map(t => t.id), c = turnWins.filter(t => totalTrail(plays[t.id]!) < totalTrail(d)).map(t => t.id); return `${s.id} (${clock(d.tick)}, ${totalTrail(d)} T): faster ${f.join(', ') || 'none'}; cheaper ${c.join(', ') || 'none'}`; }).join('; '),
   });
+  // MC-10 (brief 018 §5): quiet beats loud on Trail, Alert, Standing and the seal, against every loud win
+  const loudWon = live.filter(s => s.kind === 'loud' && plays[s.id]?.outcome === 'success'), st = (d: Digest) => d.standing ?? 0;
+  const sealed = (d: Digest) => d.fight === 'loud' || 'seal.starts' in d.marks;
+  const beats = quietAll.map(q => {
+    const d = plays[q.id]!, off: string[] = [];
+    for (const l of loudWon) {
+      const e = plays[l.id]!;
+      if (totalTrail(d) >= totalTrail(e)) off.push(`Trail ${totalTrail(d)} not under ${l.id}'s ${totalTrail(e)}`);
+      if (d.alert >= e.alert) off.push(`Alert ${d.alert} not under ${l.id}'s ${e.alert}`);
+      if (st(d) < st(e)) off.push(`Standing ${st(d)} under ${l.id}'s ${st(e)}`);
+    }
+    if (sealed(d)) off.push('the seal clock runs');
+    return { q, d, off: [...new Set(off)] };
+  });
+  const loudLine = loudWon.map(l => { const e = plays[l.id]!; return `${l.id} ${T(l.id)} T, A ${e.alert}, Standing ${st(e)}${sealed(e) ? ', seal clock' : ''}${e.left ? `, left: ${leftOf(e.left)}` : ''}`; });
+  C.push({
+    id: 'MC-10', rule: 'Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock', ok: loudWon.length > 0 && quietAll.length > 0 && beats.every(b => !b.off.length) && loudWon.every(l => sealed(plays[l.id]!)),
+    value: quietAll.length && loudWon.length ? `quiet ${Math.min(...quietAll.map(q => totalTrail(plays[q.id]!)))}-${maxQuiet} T, A ≤ ${Math.max(...quietAll.map(q => plays[q.id]!.alert))}, Standing ≥ ${Math.min(...quietAll.map(q => st(plays[q.id]!)))}; loud ${Math.min(...loudWon.map(l => totalTrail(plays[l.id]!)))}-${Math.max(...loudWon.map(l => totalTrail(plays[l.id]!)))} T, A ≥ ${Math.min(...loudWon.map(l => plays[l.id]!.alert))}, Standing ≤ ${Math.max(...loudWon.map(l => st(plays[l.id]!)))}` : 'no quiet or no loud win',
+    detail: [...loudLine, ...beats.filter(b => b.off.length).map(b => `${b.q.id} NOT BETTER: ${b.off.join(', ')}`), ...loudWon.filter(l => !sealed(plays[l.id]!)).map(l => `${l.id}: no seal clock (NOT LOUD)`)].join('; '),
+  });
+  // MC-11 (brief 018 §1, §5): no stop holds the car
+  const g = o.getaway;
+  if (g) {
+    const near = (p: [number, number]) => Math.hypot(p[0] - g.car[0], p[1] - g.car[1]) <= g.holdCm;
+    const posts = g.posts.map(x => ({ ...x, m: Math.hypot(x.at[0] - g.car[0], x.at[1] - g.car[1]) / 100, holds: near(x.at) || inLane(g, x.at) }));
+    const refs = live.filter(s => (s.kind === 'quiet' || s.kind === 'loud') && plays[s.id]?.outcome === 'success' && plays[s.id]!.fight);
+    const late = refs.filter(s => { const d = plays[s.id]!; return d.carFreeS === undefined || d.carFreeS < 0; });
+    C.push({
+      id: 'MC-11', rule: `No stop holds the car: every ambush spot and police stand lies beyond fight-hold ${g.holdCm / 100} m of the car and outside the exit lane, and every reference win's car was free when it left`, ok: posts.every(x => !x.holds) && !late.length,
+      value: `${posts.filter(x => !x.holds).length}/${posts.length} posts clear (nearest ${Math.min(...posts.map(x => x.m)).toFixed(1)} m); ${refs.length - late.length}/${refs.length} reference wins free at Go`,
+      detail: [...posts.filter(x => x.holds).map(x => `${x.id} at ${x.m.toFixed(1)} m HOLDS the car${inLane(g, x.at) ? ' (in the exit lane)' : ''}`),
+        ...refs.map(s => { const d = plays[s.id]!; return `${s.id}: ${d.carFreeS === undefined ? 'no blocker out logged (NOT FREE)' : `blocker out ${d.carFreeS.toFixed(1)} s before Go`}`; })].join('; '),
+    });
+  }
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }
 

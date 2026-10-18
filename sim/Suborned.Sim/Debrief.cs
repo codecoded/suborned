@@ -14,6 +14,8 @@ namespace Suborned.Sim
         public readonly List<string> Captured = new List<string>(); public readonly List<(string op, int health, int max)> Cell = new List<(string, int, int)>();
         public Investigation Inv = new Investigation(); public Between Next = new Between(); public int Sightings; public readonly List<string> FightWhy = new List<string>();
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
+        /// <summary>brief 018 §3: everyone not in the car when it left, with fate and why.</summary>
+        public readonly List<(string op, string fate, string why)> LeftBehind = new List<(string, string, string)>();
 
         public static Debrief Of(Game g)
         {
@@ -39,7 +41,7 @@ namespace Suborned.Sim
             if (g.Driver.Turned && !g.Driver.Down) d.Assets.Add("driver-alters-pickups");
             d.Chain.AddRange(g.Chain);
             d.FightBranch = g.FightBranch; d.FightHostiles = g.Hostiles.Count; d.FightDownedByEnforcer = g.DownedByEnforcer; d.FightDownedByGuard = g.DownedByGuard; d.FightDownedByCell = g.DownedByCell; d.FightHits = g.FightHits; d.FightShots = g.FightShots; d.FightWhy.AddRange(g.FightWhy);
-            d.Captured.AddRange(g.Captured); foreach (var op in g.Ops) d.Cell.Add((Sim.Op.Name(op.Id), op.Gun.Health, op.Gun.Max)); // wounds carry over (§08)
+            d.Captured.AddRange(g.Captured); d.LeftBehind.AddRange(g.LeftBehindAtGo); foreach (var op in g.Ops) d.Cell.Add((Sim.Op.Name(op.Id), op.Gun.Health, op.Gun.Max)); // wounds carry over (§08)
 
             var relevant = new HashSet<string>(StringComparer.Ordinal);
             if (g.RouteKind == "front")
@@ -93,7 +95,9 @@ namespace Suborned.Sim
                 if (x.Cause.Length > 0) w.Prop("because", x.Cause);
                 w.EndObj();
             }
-            w.EndArr().EndObj();
+            w.EndArr();
+            if (Inv.Hunted.Count > 0) { w.OpenArr("hunted"); foreach (var x in Inv.Hunted) w.Str(x); w.EndArr(); } // brief 018: written only when set
+            w.EndObj();
             w.Open("nextMission").Prop("ambush", Next.Ambush);
             if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before
                 w.Prop("campaignTrail", Next.CampaignTrail).Prop("campaignStanding", Next.CampaignStanding).Prop("openCases", Next.OpenCases).Prop("nextLevel", Next.NextLevel); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
@@ -106,6 +110,19 @@ namespace Suborned.Sim
                 w.EndArr().EndObj();
             }
             w.EndArr();
+            if (Next.Captives.Count > 0 || Next.CarSeenBy.Length > 0) // brief 018 §3: written only when the car left someone or was seen
+            {
+                if (Next.CarSeenBy.Length > 0) w.Prop("carSeenBy", Next.CarSeenBy);
+                w.OpenArr("captives");
+                foreach (var c in Next.Captives)
+                {
+                    w.Obj().Prop("who", c.Op).Prop("why", c.Why).Prop("heldAt", c.HeldAt).Prop("holds", c.Holds).Prop("talksAt", c.TalksAt).Prop("rescueUntil", c.RescueUntil)
+                     .Prop("bravery", c.Sc[0]).Prop("resentment", c.Sc[1]).Prop("fear", c.Sc[2]).Prop("loyalty", c.Sc[3]).Prop("left", c.Left).Prop("right", c.Right).OpenArr("gives");
+                    foreach (var f in c.Facts) w.Str(f);
+                    w.EndArr().EndObj();
+                }
+                w.EndArr();
+            }
             w.OpenArr("lines"); foreach (var l in Next.Lines) w.Obj().Prop("line", l.Line).Prop("who", l.Who).Prop("detail", l.Detail).EndObj(); w.EndArr();
             w.OpenArr("contacts");
             foreach (var c in Next.Contacts)
@@ -119,6 +136,7 @@ namespace Suborned.Sim
             }
             w.OpenArr("cell"); foreach (var (op, hp, max) in Cell) w.Obj().Prop("op", op).Prop("health", hp).Prop("max", max).EndObj(); w.EndArr();
             w.OpenArr("captured"); foreach (var c in Captured) w.Str(c); w.EndArr();
+            if (LeftBehind.Count > 0) { w.OpenArr("leftBehind"); foreach (var (op, fate, why) in LeftBehind) w.Obj().Prop("who", op).Prop("fate", fate).Prop("why", why).EndObj(); w.EndArr(); } // brief 018
             w.EndObj();
         }
     }
@@ -147,7 +165,7 @@ namespace Suborned.Sim
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.6.3"; // 0.6.3: open needs phase 1 (brief 017): the people file is suborned.sim.people/2, every person carries a need record (kind, label, size, holder), read strictly and never acted on; behaviour unchanged, only the inputs hash moves. 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
+        public const string Version = "suborned.sim/0.7.0"; // 0.7.0: the getaway (brief 018, Sky 2026-10-18): the hold is 8 m or the exit lane (site getaway.exit) with one blocker per fight, Board and Go replace Extract, left behind at Go (captured or walks out), seen leaving (+1 T, the car hunted), the custody projection; the rulebook, the people rules and the site move every inputs hash. 0.6.3: open needs phase 1 (brief 017): the people file is suborned.sim.people/2, every person carries a need record (kind, label, size, holder), read strictly and never acted on; behaviour unchanged, only the inputs hash moves. 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
         public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null)

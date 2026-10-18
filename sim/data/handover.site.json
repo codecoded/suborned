@@ -673,6 +673,11 @@
  },
  "getaway": {
   "car": "d:Getaway bay",
+  "exit": {
+   "polyline": [[850,-5600],[3850,-5600]],
+   "w": 12,
+   "src": "mission.json routes \"getaway\" (r_orbit_w to off_southside), its first road rocket-lane (plan.roads w 12 m); the car's bay \"Getaway bay\" projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
+  },
   "src": "GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay"
  },
  "fight": {

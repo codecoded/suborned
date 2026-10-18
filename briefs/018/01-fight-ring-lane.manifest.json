@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1609, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 763, "y": 1088, "w": 200, "h": 40, "text": "Get Vale to the car."},
+  {"kind": "image", "x": 14, "y": 996, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 347, "y": 282, "w": 22, "h": 22, "text": "plate fold tab"},
+  {"kind": "image", "x": 105, "y": 254, "w": 248, "h": 78, "text": "order plate"},
+  {"kind": "speech", "x": 703, "y": 168, "w": 183, "h": 25, "text": "One's heading for the road."},
+  {"kind": "speech", "x": 1068, "y": -213, "w": 179, "h": 25, "text": "Rivals! By the car! Look out!"},
+  {"kind": "image", "x": 850, "y": 558, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 776, "y": 984, "w": 26, "h": 26, "text": "pip councillor"},
+  {"kind": "image", "x": 1608, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

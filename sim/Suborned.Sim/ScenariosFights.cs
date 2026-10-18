@@ -335,10 +335,14 @@ namespace Suborned.Sim
                 r.Refused(Fixer, "fire", GuardR, "carrying, no fire");
                 r.Send(Fixer, "d:Getaway bay"); r.Wait(T(5));
                 r.Eq(r.Op(Scout).Pos, r.Op(Fixer).Pos, "the carried Scout goes where the Fixer goes");
-                // carried is not yet safe (Waymark asked): only at the car, within the same reach as Extract (cell.atReach)
-                r.Is(!G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), 2000) && g.WouldBeCaptured().Contains(Scout), "carried 20 m and more from the car, an extract now would leave him: captured");
+                // carried is not yet safe (Waymark asked): only in the car (brief 018: Board, the carried first, 1 s + carry 3 s)
+                r.Is(!G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), 2000) && g.LeftBehind().Contains((Scout, "captured", "downed")), "carried 20 m and more from the car, a Go now would leave him: captured, downed");
                 r.Until(() => r.Op(Fixer).Walk == null, T(120));
-                r.Is(G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), g.R.AtReachCm) && g.WouldBeCaptured().Count == 0, "carried to the car, within Extract's reach: he escapes");
+                r.Is(G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), g.R.AtReachCm) && g.LeftBehind().Contains((Scout, "captured", "downed")), "carried to the car but not in it: still left behind");
+                r.Do(Fixer, "board", "car");
+                r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.BoardS + g.R.CarryS), "boarding carrying: 1 s + 3 s");
+                r.Done(Fixer);
+                r.Is(r.Op(Fixer).InCar && r.Op(Scout).InCar && !g.LeftBehind().Exists(x => x.op == Scout || x.op == Fixer), "both in the car: neither is left behind");
             });
         }
     }
