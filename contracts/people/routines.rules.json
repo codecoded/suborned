@@ -1,0 +1,113 @@
+{
+  "schema": "suborned.routines.rules/1",
+  "author": "Pulse (brief 022, 2026-10-18)",
+  "gdd": "the-suborned-agent-gdd-v0.23.0-2026-10-17.md",
+  "status": "proposed: Keel's engine does not read this file yet. Nothing here moves a recorded run; the numbers join the rulebook (contracts/rules/rulebook.json, Motive confirms) when Keel lands the reader.",
+  "rule": "How a person works their post, and what two partners do when they meet (Sky 2026-10-18, after playing the Handover with real figures: \"have the waitress also walk around the cafe tables, and when guard comes, they stand together\"). A stop in the people file says where a person is based; a round says how they work it. Both rules are about people, not about Inez: the generator (tools/routines/rounds.ts) finds the people they apply to from their job, their stop and their ties, and nothing here names a person. Same inputs, same bytes. Tags: [B] built, [S] starting value to tune by playtest; `of` names the rulebook value a number copies, and tools/routines/rounds.test.ts holds them equal.",
+  "rounds": {
+    "who": {
+      "jobs": ["server"],
+      "stop": "a stop out on the street at a unit's door (post: door) whose unit has a terrace of tables",
+      "terraces": { "cafe-entrance": "cafe-table-" },
+      "src": "Sky 2026-10-18 (the waitress walks the tables); briefs/014/pulse-cafe.md (a door is one person's post, so one server is drawn at the café door and she is the one who works the terrace)",
+      "reason": "keyed by job and stop, never by id: any server who stands a door with tables beside it works them, in any café the plan draws. A server who works inside is not drawn, so she has no round."
+    },
+    "pace": { "cmPerS": 140, "of": "values.op-speed-cm-s", "src": "life.json pedestrians.walkSpeed 1.4 m/s; rulebook op-speed-cm-s [S]", "reason": "the world's one walking pace, so Latch plays the one walk clip and a leg's seconds are its length over 1.4 m/s, rounded up to a whole second (never faster than the cell)." },
+    "opening": {
+      "settleS": 30,
+      "src": "briefs/022-living-cafe.md consequences; GDD §07 schedule: 0:00 routines run, the camera opens on the cell",
+      "proposed": true,
+      "reason": "no excursion starts before 0:30, so what the player sees first is Inez at her door; the Scout's Watch (20 s) and his first Listen reach her where the briefing put her. Readable before rich."
+    },
+    "rest": {
+      "s": [24, 36],
+      "src": "briefs/022-living-cafe.md; Pulse numbers [S]",
+      "proposed": true,
+      "reason": "she stands her post between excursions. At 24 to 36 s she is at the door about half the time (a window the player sees coming) and back every minute or so; shorter and she is never there to be turned, longer and she is not walking round the tables."
+    },
+    "serve": {
+      "s": [12, 18],
+      "src": "briefs/022-living-cafe.md; Pulse numbers [S]",
+      "proposed": true,
+      "reason": "the pause at a table: long enough to read as taking an order (Latch's talk clip), short enough that a table 19 m away still brings her back inside a minute."
+    },
+    "demand": {
+      "greetS": 10,
+      "revisitS": [75, 105],
+      "src": "briefs/022-living-cafe.md; Pulse numbers [S]",
+      "proposed": true,
+      "reason": "she goes where people sit: a new party is greeted greetS after it sits, a seated table is visited again every revisitS, the most overdue first (then the nearer, then the lower table). A table already seated at 0:00 is due at a seeded moment between settleS and the longest revisit, so the first minute is not a queue. An empty table is never visited. Occupancy is read from the people file's seat stops of drawn walkers; the four cast roles are not counted, because the engine plays them by their role, not by their routine."
+    },
+    "servicePoint": {
+      "ringCm": [130, 110, 150, 170],
+      "clearOfSeatCm": 60,
+      "face": "the table",
+      "src": "briefs/022-living-cafe.md; tools/decokit/furnish_cafe.py (three chairs at 72 cm round a table, 120 degrees apart)",
+      "proposed": true,
+      "reason": "she stands in the gap between two chairs, on the first ring that is free ground on the site's walk grid, the gap the shortest walk from her post reaches. 60 cm from every chair keeps her off a customer (P-16, no two on one place)."
+    },
+    "leashM": { "v": 25, "src": "briefs/022-living-cafe.md", "proposed": true, "reason": "a table further than 25 m of walking from her post is not hers; the flank tables are 15 to 19 m, so all eight tables are." },
+    "horizonS": { "v": 900, "src": "mission window 8 to 12 min (GDD §01)", "reason": "the round is baked for 15 minutes of round clock, which holds cover the longest mission (12 min) with room; after it she stands her post." },
+    "clock": {
+      "rule": "the round runs on a round clock that starts at 0 at the mission's first second (or at the stop's start, if it begins later) and stops while she is held. The baked excursions are on that clock.",
+      "src": "briefs/022-living-cafe.md",
+      "reason": "one primitive for every interruption: stop the clock, put her somewhere, start it again. Nothing is rebuilt and nothing replays differently."
+    },
+    "holds": {
+      "verbs": ["listen", "ask", "pay", "help", "pressure"],
+      "from": "the tick the order is taken",
+      "until": "the tick it lands, plus lingerS",
+      "lingerS": 3,
+      "where": "stands where she is, turned toward the operative",
+      "src": "GDD §04 turning is a conversation; briefs/022-living-cafe.md",
+      "proposed": true,
+      "reason": "a person being spoken to stands still: reach is checked when the order is given, so she must not walk off from under it. lingerS lets a recorded chain re-issue at the tick the last order lands (Help, then Help, then the call, as route A does). Watch holds nothing: the Scout watching her is how he learns the round."
+    },
+    "ends": {
+      "on": ["alert-2", "gunfire", "body-found", "final-fight"],
+      "then": "she walks the way she came to her post (a leg's own seconds, never more than the longest leg) and stands it for the rest of the mission",
+      "src": "GDD §05 crowds within 30 m of gunfire scatter; the café door is her refuge; briefs/022-living-cafe.md",
+      "proposed": true,
+      "reason": "the loud and the fighting parts of every mission are played with Inez at her door, as they were recorded: nothing in the fights, the response or the cover reads a moving Inez. Quiet play is where her round runs."
+    },
+    "called": {
+      "when": "the Fixer's call is taken and her lover will come",
+      "does": "she breaks off, walks the way she came to her post, and the round clock stops until the visit is over",
+      "resumes": "partS after he turns to go, at the start of the next rest",
+      "src": "GDD §07 the capstone; rulebook summon; briefs/022-living-cafe.md",
+      "reason": "the visit is always at her post, so its walk, window and sightlines are the ones the Handover was built on."
+    }
+  },
+  "partners": {
+    "kinds": ["lover"],
+    "closeCm": { "v": 120, "src": "briefs/022-living-cafe.md; Sky 2026-10-18 (they stand together)", "proposed": true, "reason": "arm's length: far enough that two bodies (65 cm clearance on the walk grid) never overlap, near enough to read as a couple. Well inside together-m (4 m), so a Watch that ends with them standing together still teaches the affair." },
+    "partS": { "v": 2, "src": "briefs/022-living-cafe.md", "proposed": true, "reason": "the beat they stand turned to each other before the one who came turns away." },
+    "clearCm": { "v": 100, "src": "briefs/022-living-cafe.md addendum (Sky 2026-10-18: \"the guard stops on top of the Scout\"); the walk grid's 65 cm body clearance", "proposed": true, "reason": "the summoned partner never stops within a metre of anyone else: two bodies and a hand's width. Read at the tick of the call, over the operatives and everyone on the street." },
+    "summoned": {
+      "meetAt": "the post of the one who called",
+      "stay": { "s": 60, "of": "values.lover-stay-s" },
+      "face": "each other",
+      "side": {
+        "stepDeg": 15,
+        "order": "angle off her facing nearest 90 degrees first (a side, then the front quarter), then her left (east of a south-facing post) before her right; free ground only",
+        "pick": "the first stop with nobody within clearCm of it; if every stop is taken, the stop whose nearest person is farthest, the earlier in the list on a tie; if the file has no stop, the old stop: on his own route, closeCm short of her post",
+        "src": "briefs/022-living-cafe.md addendum (Pulse; Waymark's c020 play note: the guard stops 0.9 m from the Scout at beside-inez)",
+        "proposed": true,
+        "reason": "a couple stand side by side, not one behind the other on the line the cell walks up. Her post is a door alcove 2 m wide: at closeCm only the front quarter (up to 45 degrees off her facing, either hand) is free ground, so that is where he stands, 1.5 m from the Listen point instead of 0.9 m. The stops are made at build time from the walk grid; the engine only picks, so there is no trigonometry and no float at runtime."
+      },
+      "src": "GDD §07 route A (the guard walks over, stays, returns); rulebook summon; Sky 2026-10-18",
+      "proposed": true,
+      "reason": "he walks the route he always walked to her post and stops closeCm from it, at her side (side), and faces her; she faces him. Walk and window follow the world: his stop is the grid's, never a number written here."
+    },
+    "chance": {
+      "noticeM": 8,
+      "stayS": 20,
+      "perPair": 1,
+      "who": "two walkers whose ties include a partner kind, both out on the street, neither held, neither on a post, the first time in the mission their routines bring them within noticeM on a clear line",
+      "shape": "an excursion for each: leave the routine point, walk to their place beside the other, stand facing, walk back, and the routine clock stops for it",
+      "src": "Sky 2026-10-18 (\"meets her off shift\"); briefs/022-living-cafe.md",
+      "proposed": true,
+      "reason": "two partners do not pass each other: they stop for stayS. It happens once a mission for a pair, so a couple on the same street all day is not a queue. A person on a post is not a walker: the guard is met at his door only by the summons. The Harbour cast has two lover pairs and no chance meeting in the mission window; the rule is for the missions the generator makes."
+    }
+  }
+}

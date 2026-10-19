@@ -4,6 +4,7 @@
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
 //   probe                                       distances and windows on the real block (for writing scenarios)
+//   drive-session [out]                         record the driven session the DP1 scenario replays (brief 025; Fixtures/drive-session.script.json)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
@@ -56,6 +57,7 @@ static class Program
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
+                case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session
                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
                 case "fans": return Fans(inputs, args.Length > 1 && args[1] != "--crowd" ? int.Parse(args[1], CultureInfo.InvariantCulture) : 0, Array.IndexOf(args, "--crowd") > 0);
                 case "hashes":
@@ -93,6 +95,7 @@ static class Program
             foreach (var l in g.Log) Console.WriteLine($"  {Report.Clock(l.Tick)}  {l.Code,-28} {l.Text}");
             foreach (var c in checks) Console.WriteLine($"  [{(c.ok ? "ok" : "FAIL")}] {c.what}");
             if (g.Result == Outcome.Success) { var w = new JWriter(); Debrief.Of(g).Write(w); Console.WriteLine($"  debrief {w}"); }
+            if (g.Cause != null) Console.WriteLine($"  cause {g.Cause.Json()}");
             Console.WriteLine($"  start {Hash.Hex(g.StartHash)}  final {Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)}  checkpoints {g.Checkpoints.Count}  replay {(same ? "identical" : "DIFFERS")}");
         }
         return passed && same ? 0 : 1;

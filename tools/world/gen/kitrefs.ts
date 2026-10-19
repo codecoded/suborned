@@ -11,6 +11,7 @@ import { signBox, signObstacles } from './box';
 import { type Ctx, r3, r4, rng } from './common';
 import type { V } from '../../plan/geom';
 import type { Landmark as PlanLandmark } from '../../plan/plan';
+import { footOf } from '../civic/foot';
 
 const KIT = resolve(import.meta.dir, '../../../contracts/world/kit.json');
 const catalogues = new Map<string, KitAsset[]>();
@@ -51,7 +52,7 @@ export function cataloguedFor(use: string): KitAsset | undefined {
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
 
 /** Metres within which two items of one kind must not use the same piece. */
-const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
+const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:planted': 12, planter: 24, 'tram-shelter': 60, newsstand: 60, 'kiosk-food': 60, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
 /** Kerb zone depth: the narrowest in the plan (standards.streetscape.sections). */
 export const kerbZone = (ctx: Ctx): number => Math.min(...Object.values<any>(ctx.S.sections).map(s => s?.kerb).filter((k): k is number => typeof k === 'number'));
 
@@ -70,7 +71,15 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'pole-camera': return { h, along: 0.8, depth: kerb };
     case 'canopy-camera': return { h, hTol: 0.5, along: 0.6, depth: 0.6 };
     case 'advertising-column': return { h, along: w * 1.3, depth: d * 1.3 };
-    case 'tree': case 'tub-palm': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.35, along: sp.spread, depth: sp.spread } : null; }
+    // brief 020 (Vela's pick; the plan's sizes stay the plan's, the slot says how far a piece may differ from them):
+    case 'planter': return { h, hTol: 0.4, along: w * 1.4, depth: d }; // the deck's planting bed 1.5 x 1.5 x 0.9: a trough 2.0 m long may stand across it, an urn inside it
+    case 'mailbox': return { h, hTol: 0.15, along: 1.0, depth: 1.0 }; // the plan's 0.6 x 0.6 x 1.3 m box; PneumaticPost_Play is that box (brief 020 follow-up)
+    case 'public-clock': return { h, hTol: 0.1, along: (ctx.S.catalogue['public-clock'].face as number) * 1.1, depth: 0.8 }; // the double face is 1.2 m wide
+    case 'tram-shelter': { const r = ctx.S.catalogue['tram-shelter'].roof as [number, number, number]; return { h, hTol: 0.15, along: r[0], depth: r[1] }; } // the roof's footprint 9.0 x 2.4
+    case 'newsstand': return { h, hTol: 0.15, along: w * 1.1, depth: d * 1.3 };
+    case 'kiosk-food': { const r = ctx.S.catalogue['kiosk-food'].roof as [number, number, number]; return { h, hTol: 0.2, along: r[0], depth: r[1] }; }
+    case 'tub-palm': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.5, along: sp.spread, depth: sp.spread } : null; } // brief 020: a tub palm may stand to half its plan height (FanPalm's crown is 2.8 m wide: 4.5 m at that crown is a 5 m crown in a 3 m room)
+    case 'tree': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.35, along: sp.spread, depth: sp.spread } : null; }
     default: return null;
   }
 }
@@ -94,8 +103,9 @@ export function choose(id: string, options: Fit[], taken: string[], adjacent: st
 
 export function streetKit(ctx: Ctx, items: StreetItem[]): StreetItem[] {
   const grids = new Map<string, Grid<{ at: V; id: string }>>();
+  const planted = new Set(items.filter(i => i.kind === 'planter').map(i => `${i.at[0].toFixed(1)},${i.at[1].toFixed(1)}`)); // a palm standing in a planter's bed (a deck's planting bed carries one): it takes a bare palm, never a potted piece
   return items.map(it => {
-    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' ? 'tub-palm' : it.kind;
+    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind;
     const g = grids.get(use) ?? grids.set(use, new Grid(8, o => o.at)).get(use)!, near = g.near(it.at, NEAR[use] ?? 20).filter(o => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]) < (NEAR[use] ?? 20));
     const gap = (o: { at: V }) => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]);
     near.sort((a, b) => gap(a) - gap(b));
@@ -158,6 +168,21 @@ export function landmarkKit(l: Landmark, plan: PlanLandmark): Landmark {
   const k = fit(a, { foot: 2 * plan.r, maxH: plan.caisson && plan.top ? plan.top - plan.caisson.deck : l.height });
   if (!k) return { ...l, source: 'procedural', why: `${a.id} ${a.size.join('×')} m does not fit the plan disc Ø${2 * plan.r} × ${r3(l.height)} m within scale ${a.tags.scale.join('–')}` };
   return { ...l, source: 'kit', kit: { id: a.id, scale: k } };
+}
+
+/**
+ * An adopted piece standing on the roof slab (brief 020): its footprint centre at (lu, lv) in the roof frame (u along `frame.yaw`, v across), turned by `frame.yaw + yawAdd`, at scale 1.
+ * None if its footprint (pivotOffset included) leaves the roof rect (the usable rect inside the parapet), or if `maxTop` is given and the piece rises above it.
+ */
+export function roofPiece(a: KitAsset, frame: { c: V; yaw: number; W: number; D: number }, lu: number, lv: number, o: { yawAdd?: number; maxTop?: number; z?: number } = {}): (KitRef & { at: V }) | undefined {
+  if (o.maxTop !== undefined && (o.z ?? 0) + a.size[1] > o.maxTop + 1e-6) return undefined;
+  const y = frame.yaw + (o.yawAdd ?? 0), U: V = [Math.cos(frame.yaw), Math.sin(frame.yaw)], Vv: V = [-U[1], U[0]], off = a.pivotOffset ?? [0, 0], ky: V = [Math.cos(y), Math.sin(y)];
+  const at: V = [frame.c[0] + U[0] * lu + Vv[0] * lv, frame.c[1] + U[1] * lu + Vv[1] * lv];
+  const pivot: V = [at[0] - (off[0] * ky[0] - off[1] * ky[1]), at[1] - (off[0] * ky[1] + off[1] * ky[0])]; // the footprint centre lands on `at`: pivot + offset (kit x along the yaw, kit z across)
+  const ring = footOf(a, { scale: [1, 1, 1], yaw: y, at: pivot });
+  const E = 1e-6;
+  if (ring.some(q => { const dx = q[0] - frame.c[0], dy = q[1] - frame.c[1]; return Math.abs(dx * U[0] + dy * U[1]) > frame.W / 2 + E || Math.abs(dx * Vv[0] + dy * Vv[1]) > frame.D / 2 + E; })) return undefined;
+  return { id: a.id, scale: [1, 1, 1], yaw: r4(y), at: [r3(pivot[0]), r3(pivot[1])] };
 }
 
 /** A roof programme's kit piece (plan roofs.kit.programmes.<name>.kit) at `at` on the slab, if adopted and it fits the roof rect. */

@@ -14,4 +14,8 @@
     <CheckForOverflowUnderflow Condition="'$(Configuration)' == 'Debug'">true</CheckForOverflowUnderflow>
     <PathMap>$(MSBuildProjectDirectory)=/_/Suborned.Sim/</PathMap>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- brief 025: recorded sessions the scenarios replay (DP1), embedded so Unity's player replays them as the CLI does -->
+    <EmbeddedResource Include="Fixtures/*.json" LogicalName="Suborned.Sim.Fixtures.%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>

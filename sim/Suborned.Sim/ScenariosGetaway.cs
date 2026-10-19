@@ -225,6 +225,8 @@ namespace Suborned.Sim
                 r.Eq(next.Lines.Count(l => l.Line == "left-behind"), 3, "a left-behind line each");
                 r.Eq(next.Lines.Count(l => l.Line == "captive"), 3, "a captive line each");
                 r.Eq(d.LeftBehind.Count, 3, "the debrief carries who was left");
+                var fc = CauseIs(r, "withdraw", "car-left-without-vale", false, "getaway-car", "car", ""); // the fail camera (ScenariosFailCause.cs): the car that left without him
+                r.Is(fc != null && fc.Culprits[0].At == r.At(g.S.GetawayCar) && d.Cause == fc, "at the getaway bay; the debrief carries the same cause");
             });
 
             Add("N113", "—", "§4's twin of N95 (brief 018 §4): route A, quiet, the feared rivals' ambush; the three by the car down the blocker and draw the fire while the Enforcer walks Vale in, and the car goes with the crew unbroken. The final fight is judged when the car leaves: public, but no outcome holds (driven off needs the crew broken): Standing 0 from the fight, cause none; Inez's word still adds +1 between missions (+2 → +3). The three left by the car are captured fighting: the captures move nothing. The blocker is not replaced.", r =>
@@ -240,7 +242,9 @@ namespace Suborned.Sim
                 r.Is(g.Hostiles.Exists(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone"), "the crew is not broken");
                 r.Eq(g.Hostiles.Count(h => h.Blocker), 1, "the job of the road did not pass on");
                 var bo = g.Log.FindAll(l => l.Code == "blocker.out"); var cf = g.Log.FindAll(l => l.Code == "car.free");
-                r.Is(bo.Count == 1 && cf.Count >= 1 && cf[0].Tick >= bo[0].Tick, $"logged by code: blocker.out, then car.free ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
+                // 2026-10-19 (Keel, brief 023; the west-face door): the three down rival-1 before he reaches the lane, so the car is never held and
+                // no car.free is logged; "blocker.out, then car.free" is checked in N95, where he holds the lane first
+                r.Is(bo.Count == 1 && cf.TrueForAll(l => l.Tick >= bo[0].Tick), $"logged by code: blocker.out, and no car.free before it ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
                 r.Is(r.Do("cell", "go"), "Go");
                 r.Eq(g.Result, Outcome.Success, "Vale in the car when it leaves: the win");
                 if (!r.Is(g.Fights.Count == 1, $"one fight: the final fight ({g.Fights.Count})")) return;
@@ -279,7 +283,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(136, Tech, "loop", "entrance"), Act(355, Scout, "watch", "guard"), Mv(555, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"),
+                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // c022's route G-kill timings (N68)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), Mv(1540, Fixer, "d:Getaway bay"));
                 r.Is(r.Until(() => g.Lockdown != Never, T(120)) && !g.Over, $"the seal clock runs ({Report.Clock(g.Tick)}; seal {Report.Clock(g.Lockdown)})");

@@ -1,0 +1,22 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1572, "y": 1925, "w": 308, "h": 80, "text": "Take Vale alive."},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 564, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 508, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "speech", "x": 3387, "y": 2360, "w": 653, "h": 50, "text": "Citizen. Walking is encouraged. Running is reported."},
+  {"kind": "speech", "x": 1770, "y": 746, "w": 336, "h": 50, "text": "You there! Walk, please."},
+  {"kind": "image", "x": 1700, "y": 980, "w": 52, "h": 52, "text": "door marker"},
+  {"kind": "image", "x": 1649, "y": 955, "w": 46, "h": 46, "text": "door turn"},
+  {"kind": "image", "x": 1912, "y": 815, "w": 52, "h": 52, "text": "pip guard"},
+  {"kind": "image", "x": 713, "y": 446, "w": 52, "h": 52, "text": "pip driver"},
+  {"kind": "image", "x": 2314, "y": 1957, "w": 48, "h": 48, "text": "edge cameo"},
+  {"kind": "image", "x": 2250, "y": 1957, "w": 48, "h": 48, "text": "edge cameo"},
+  {"kind": "beat", "x": 2792, "y": 1818, "w": 150, "h": 32, "text": "Seen running"},
+  {"kind": "speech", "x": 2792, "y": 1856, "w": 576, "h": 33, "text": "Patrol: Citizen. Walking is encouraged. Running is reported."},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

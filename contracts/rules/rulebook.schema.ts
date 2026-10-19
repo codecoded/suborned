@@ -113,7 +113,7 @@ export type Eff = z.infer<typeof Eff>;
 /** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
 export const UNIT_BOUNDS = {
   s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [0, 100], alert: [0, 3], standing: [-1000, 1000],
-  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000],
+  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100],
 } as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
@@ -224,6 +224,8 @@ export const Rulebook = z.strictObject({
     enter: z.strictObject({ s: Ref, alarm: Ref }),
     carry: z.strictObject({ s: Ref }),
     board: z.strictObject({ s: Ref }).optional(), // brief 018 (Board, step out); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+    // brief 025 (EXPERIMENTAL, engine 0.9.0): the driven agent; optional: a rulebook without it makes drive an unknown verb (rulebook.test.ts holds the live one to it)
+    drive: z.strictObject({ experimental: text, slack: Ref, burst: Ref, busyPush: Ref, gap: Ref, onBusy: z.enum(['cancel', 'hold']), onRelease: z.enum(['stand', 'resume']), rule: text, tag: z.string().optional(), src: z.string().optional() }).optional(),
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     rule: text,
   }),
@@ -253,7 +255,7 @@ export const Rulebook = z.strictObject({
     rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, rule: text,
   }),
   // The crowd in a fight (Pulse §4): every number a ref.
-  crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, rule: text }),
+  crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
   // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
   summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref, rule: text }),
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
@@ -322,6 +324,11 @@ export const Rulebook = z.strictObject({
     }).optional(),
     rule: text,
   }).optional(),
+  // brief 022 (Pulse): a server's round; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+  rounds: ground({ linger: Ref, close: Ref, clear: Ref, part: Ref, holds: z.array(id).nonempty(), ends: z.array(z.enum(['alert-2', 'gunfire', 'body-found', 'final-fight'])).nonempty(), rule: text }).optional(),
+  // brief 023 (engine 0.8.2): where a moving car may go, the site's drive grid; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+  // brief 023: car.drive (0.8.2) and car.pace (Motive 2026-10-19); pace optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
+  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional() }).optional(),
   fight: ground({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
@@ -329,6 +336,8 @@ export const Rulebook = z.strictObject({
     block: Ref.optional(), blockers: Ref.optional(), blockNear: Ref.optional(), blockFar: Ref.optional(), // brief 018 §1: the exit lane's length and the blockers; optional only for runs pinned before it
     // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses
     rivalsPublic: z.enum(RIVALS_PUBLIC).optional(), rivalsPublicReason: text.optional(),
+    // brief 023 (Motive 2026-10-19): fire orders on final-fight hostiles end when the final fight is over (fight-over); optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
+    over: text.optional(), overReason: text.optional(),
   }),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),

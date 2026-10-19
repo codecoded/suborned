@@ -10,20 +10,125 @@ namespace Suborned.Sim
     {
         public readonly int X0, Y0, Cell, Nx, Ny;
         readonly bool[] free;
+        /// <summary>Brief 023 (car.pace): each free cell's surface on a drive grid, 'r' carriageway or 'y' drive or bay; '.' on a walk grid.</summary>
+        readonly char[] surface;
+        /// <summary>True when every free cell names its surface ('r' or 'y'): a drive grid as tools/sim/drive.ts writes it since car.pace.</summary>
+        public readonly bool Surfaces;
         public Grid(JNode g)
         {
             X0 = g["x0"].Int(); Y0 = g["y0"].Int(); Cell = g["cell"].Int(); Nx = g["nx"].Int(); Ny = g["ny"].Int();
             var rows = g["rows"].Items;
             if (rows.Count != Nx) throw new FormatException("grid rows != nx");
-            free = new bool[Nx * Ny];
+            free = new bool[Nx * Ny]; surface = new char[Nx * Ny];
+            bool dots = false, marks = false;
             for (int i = 0; i < Nx; i++)
             {
                 var r = rows[i].Str(); if (r.Length != Ny) throw new FormatException($"grid row {i} length != ny");
                 for (int j = 0; j < Ny; j++)
                 {
-                    if (r[j] == '.') free[i * Ny + j] = true; else if (r[j] != '#') throw new FormatException($"grid row {i} has '{r[j]}'");
+                    char c = r[j];
+                    if (c == '.' || c == 'r' || c == 'y') { free[i * Ny + j] = true; surface[i * Ny + j] = c; if (c == '.') dots = true; else marks = true; }
+                    else if (c != '#') throw new FormatException($"grid row {i} has '{c}'");
                 }
             }
+            if (dots && marks) throw new FormatException("grid: a free cell is '.' (walk grid) or names its surface 'r'/'y' (drive grid), never both in one grid");
+            Surfaces = marks;
+        }
+        /// <summary>The surface of the cell at p ('r', 'y', '.'), or '#' off free ground.</summary>
+        public char SurfaceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? surface[i * Ny + j] : '#'; }
+
+        // ---------------------------------------------------------------- the car's route (brief 023, Keel with Pulse; Aster 2026-10-19)
+        // A car keeps off the kerb: on a carriageway its centre keeps `lane` cm from the edge of the drivable ground where it can (half the city's
+        // lane: the lane centre on the side it drives), on a drive or in a bay it keeps to the middle. Clearance = the Chebyshev ring distance in
+        // cells from a free cell to the nearest cell that is not (exact, by a breadth-first pass from every blocked cell). The route is A* whose
+        // step costs the cell's shortfall below its target (carriageway: the lane in cells; drive or bay: ClearCap, so the most clearance there is),
+        // then string-pulled only along lines whose cells keep at least the clearance the A* path kept between the two ends: the pulled line never
+        // runs nearer an edge than the cells it replaces. Integer costs, ties by cell index: the same route on every run.
+        const int ClearCap = 8;
+        int[]? clear;
+        int[] Clearance()
+        {
+            var c = clear; if (c != null) return c;
+            int n = Nx * Ny; c = new int[n]; var q = new int[n]; int head = 0, tail = 0;
+            for (int k = 0; k < n; k++) { if (!free[k]) { c[k] = 0; q[tail++] = k; } else c[k] = int.MaxValue; }
+            // cells off the window count as blocked: the free border cells are seeds at distance 1 (after every 0, so the queue stays in order)
+            for (int k = 0; k < n; k++)
+            {
+                int i = k / Ny, j = k % Ny;
+                if (free[k] && (i == 0 || j == 0 || i == Nx - 1 || j == Ny - 1)) { c[k] = 1; q[tail++] = k; }
+            }
+            while (head < tail)
+            {
+                int k = q[head++], i = k / Ny, j = k % Ny;
+                for (int d = 0; d < 8; d++)
+                {
+                    int ni = i + DI[d], nj = j + DJ[d]; if (ni < 0 || nj < 0 || ni >= Nx || nj >= Ny) continue;
+                    int nk = ni * Ny + nj; if (c[nk] <= c[k] + 1) continue;
+                    c[nk] = c[k] + 1; q[tail++] = nk;
+                }
+            }
+            for (int k = 0; k < n; k++) if (c[k] > ClearCap) c[k] = ClearCap;
+            clear = c; return c; // benign race: every thread computes the same array
+        }
+        /// <summary>A cell's clearance (0 off free ground), capped at ClearCap.</summary>
+        public int ClearanceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Clearance()[i * Ny + j] : 0; }
+
+        /// <summary>The car's route from a to b on this drive grid (see above); `laneCm` the carriageway's keep-off. Null if b is unreachable.</summary>
+        public Pt[]? CarRoute(Pt a, Pt b, int laneCm)
+        {
+            Pt? s0 = NearestFree(a); if (!s0.HasValue || !Free(b)) return null;
+            var c = Clearance();
+            int laneCells = Math.Min(ClearCap, (laneCm + Cell / 2 + Cell - 1) / Cell); // the centre (c − ½ cell from the edge) at least laneCm off
+            int Short(int k) { int target = surface[k] == 'r' ? laneCells : ClearCap; return Math.Max(0, target - c[k]); }
+            int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), ti = CI(b.X), tj = CJ(b.Y);
+            int n = Nx * Ny, s = si * Ny + sj, t = ti * Ny + tj;
+            var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;
+            P.Set(s, 0, -1); heap.Push(H(si, sj, ti, tj), s);
+            int orth = Cell, diag = Cell * 1414 / 1000, per = 2 * Cell; // a cell of shortfall costs two cells of distance
+            while (heap.Count > 0)
+            {
+                int k = heap.Pop(); if (P.IsClosed(k)) continue; P.Closed[k] = true;
+                if (k == t) break;
+                int i = k / Ny, j = k % Ny;
+                for (int d = 0; d < 8; d++)
+                {
+                    int ni = i + DI[d], nj = j + DJ[d];
+                    if (!FreeCell(ni, nj)) continue;
+                    if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue; // no corner cutting
+                    int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
+                    int ng = P.G(k) + (d < 4 ? orth : diag) + per * Short(nk);
+                    if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng + H(ni, nj, ti, tj), nk); }
+                }
+            }
+            if (P.G(t) == int.MaxValue) return null;
+            var cells = new List<int>();
+            for (int k = t; k != s; k = P.Prev[k]) cells.Add(k);
+            cells.Add(s); cells.Reverse();
+            var raw = new List<Pt>(); var rc = new List<int>(); // the raw drive and each point's clearance
+            raw.Add(a); rc.Add(c[s]);
+            foreach (var k in cells) { var ce = Centre(k / Ny, k % Ny); if (ce != raw[raw.Count - 1]) { raw.Add(ce); rc.Add(c[k]); } }
+            if (raw[raw.Count - 1] != b) { raw.Add(b); rc.Add(c[t]); }
+            var path = new List<Pt> { raw[0] };
+            int at = 0;
+            while (at < raw.Count - 1)
+            {
+                int to = raw.Count - 1;
+                while (to > at + 1)
+                {
+                    int keep = int.MaxValue; for (int m = at; m <= to; m++) keep = Math.Min(keep, rc[m]);
+                    if (LineKeeps(raw[at], raw[to], keep, c)) break;
+                    to--;
+                }
+                path.Add(raw[to]); at = to;
+            }
+            return path.ToArray();
+        }
+        /// <summary>The straight segment a→b stays on cells of clearance ≥ keep (sampled every 10 cm).</summary>
+        bool LineKeeps(Pt a, Pt b, int keep, int[] c)
+        {
+            int n = Math.Max(1, G.Dist(a, b) / 10);
+            for (int k = 0; k <= n; k++) { var p = G.Lerp(a, b, k, n); int i = CI(p.X), j = CJ(p.Y); if (!FreeCell(i, j) || c[i * Ny + j] < keep) return false; }
+            return true;
         }
         public bool FreeCell(int i, int j) => i >= 0 && j >= 0 && i < Nx && j < Ny && free[i * Ny + j];
         public int CI(int x) => FloorDiv(x - X0, Cell);
@@ -178,9 +283,24 @@ namespace Suborned.Sim
         /// <summary>The direction of travel at mm (the segment's vector).</summary>
         public Pt Heading(long mm)
         {
-            if (Points.Length < 2) return new Pt(0, 0);
-            int i = 1; while (i < Points.Length - 1 && cum[i] < mm) i++;
-            return Points[i] - Points[i - 1];
+            int n = Points.Length; if (n < 2) return new Pt(0, 0);
+            int i = 1; while (i < n - 1 && cum[i] < mm) i++;
+            // brief 022 (Pulse): a walk repeats its end points (a leg keeps both ends), so a zero-length segment is skipped: the next one that goes
+            // somewhere, else the last one that did (tools/routines/walk.ts Path.heading); a path with no length still answers (0, 0)
+            bool still(int k) => Points[k] == Points[k - 1];
+            int j = i; while (j < n - 1 && still(j)) j++;
+            if (still(j)) { j = i; while (j > 1 && still(j)) j--; }
+            return Points[j] - Points[j - 1];
+        }
+        /// <summary>The first `mm` of the walk (brief 022: the summoned lover stops short of her post), a path of its own.</summary>
+        public Path Cut(long mm)
+        {
+            if (mm >= Length) return this;
+            if (mm <= 0) return new Path(new[] { Points[0], Points[0] });
+            var pts = new List<Pt> { Points[0] };
+            int i = 1; while (cum[i] < mm) { pts.Add(Points[i]); i++; }
+            pts.Add(At(mm));
+            return new Path(pts.ToArray());
         }
     }
 }

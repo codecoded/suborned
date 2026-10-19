@@ -75,6 +75,12 @@
    "rules": [
     "SEC-1"
    ]
+  },
+  {
+   "cause": "Splice, 2026-10-19, brief 023 (Sky: add pavement on Starline Street north of Garden Row; Datum found the pavement was in the plan and the world but not on the walk grid): tools/plan/walk.ts blockersOf (and walk-gap.ts) block a built plot only behind its building line (tools/world/gen/edges.ts buildingLine: the plot edge set back along each road by the street section's pavement, the line B-3 holds every building to), not out to its boundary, so the pavement walks; a plan with no street sections still blocks its plots whole. W-1's walks to stops and stations run over the pavements and are shorter where they hugged a built plot (the live plan: Cafe entrance to tram Records 279 to 260 m, Cafe kitchen door to tram Crown Circus 254 m, Office entrance 233 to 219 m, Official entrance 210 to 195 m; a pinned run's rerun reads the same). Rules whose result differs on a recorded plan: W-1 only; the street, kit, pylon and people rules read nothing of the walk grid but the live world's civic block (a pinned older block has none). Traced by replaying r011 and r012-r016 with the code before and after this change: the only rule the change moves in r011 is W-1 (SF-2, K-1 and SF-18 are the carried causes' of brief 020 and the service drive), and the rules r012-r016 differ in are the same set as before (P-0, P-6, P-7, P-11, P-12, P-13).",
+   "rules": [
+    "W-1"
+   ]
   }
  ]
 }

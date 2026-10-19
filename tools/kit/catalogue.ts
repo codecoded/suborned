@@ -21,15 +21,20 @@ function walk(dir: string, out: string[] = []): string[] {
 export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   const manifestText = readFileSync(join(root, 'decokit_manifest.json')), materialsText = readFileSync(join(root, 'decokit_materials.json'));
   const manifest = JSON.parse(manifestText.toString()).assets as { name: string; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; lod1?: unknown; lods?: Lod[] }[];
-  const mats = (JSON.parse(materialsText.toString()).materials as { name: string; texture: string; normal: string; mask: string }[]);
-  const guidTex = new Map<string, string>(); // texture guid -> path relative to root
-  const texDir = join(root, 'Textures');
-  for (const f of existsSync(texDir) ? walk(texDir) : []) if (f.endsWith('.meta')) { const g = /guid: ([0-9a-f]{32})/.exec(readFileSync(f, 'utf8'))?.[1]; if (g) guidTex.set(g, relative(root, f.slice(0, -5))); }
+  type MatRow = { name: string; texture: string; normal: string; mask: string };
+  const genMatsFile = gen && join(gen, 'decokit_materials.json');
+  const mats = [...(genMatsFile && existsSync(genMatsFile) ? JSON.parse(readFileSync(genMatsFile, 'utf8')).materials as MatRow[] : []), ...(JSON.parse(materialsText.toString()).materials as MatRow[])];
+  const guidTex = new Map<string, string>(); // texture guid -> path relative to its root (the legacy root's, else the generator's: a texture only the generator wrote, e.g. the café's floor and paintings)
+  const texDir = join(root, 'Textures'), genTexDir = gen && join(gen, 'Textures');
+  for (const [base, dir] of [[gen, genTexDir], [root, texDir]] as const) // the legacy root last: where both have a guid, its path wins
+    if (base && dir && existsSync(dir)) for (const f of walk(dir)) if (f.endsWith('.meta')) { const g = /guid: ([0-9a-f]{32})/.exec(readFileSync(f, 'utf8'))?.[1]; if (g) guidTex.set(g, relative(base, f.slice(0, -5))); }
+  /** A texture only the generator has (the legacy root lacks it) is the generator's file; one both have stays the legacy root's, as before. */
+  const genTex = (path: string) => !!gen && /^Textures\/[^/]+(\.meta)?$/.test(path) && existsSync(join(gen, path)) && !existsSync(join(root, path));
   const cache = new Map<string, KitFile>();
   // Materials the generator wrote (tools/decokit unity_mats.py: the v0.17 colours and the retuned ones) win over the legacy root's.
   const genMat = (path: string) => !!gen && /^Materials\/[^/]+\.mat(\.meta)?$/.test(path) && existsSync(join(gen, path));
   const file = (role: KitFile['role'], path: string): KitFile | null => {
-    const g = genMat(path), abs = join(g ? gen! : root, path); if (!existsSync(abs)) return null;
+    const g = genMat(path) || genTex(path), abs = join(g ? gen! : root, path); if (!existsSync(abs)) return null;
     const k = `${role}|${path}`; let f = cache.get(k);
     if (!f) { const b = readFileSync(abs); f = { ...(g ? { root: 'generated' as const } : {}), role, path, sha256: sha(b), bytes: statSync(abs).size }; cache.set(k, f); }
     return f;
@@ -42,7 +47,7 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
       const mp = `Materials/${m}.mat`; out.push(...pair('material', mp));
       if (existsSync(join(genMat(mp) ? gen! : root, mp))) for (const g of readFileSync(join(genMat(mp) ? gen! : root, mp), 'utf8').matchAll(GUID)) { const t = guidTex.get(g[1]!); if (t) tex.add(t); }
       const e = mats.find(x => x.name === m);
-      for (const n of [e?.texture, e?.normal, e?.mask]) if (n && existsSync(join(texDir, n))) tex.add(`Textures/${n}`);
+      for (const n of [e?.texture, e?.normal, e?.mask]) if (n && (existsSync(join(texDir, n)) || (genTexDir && existsSync(join(genTexDir, n))))) tex.add(`Textures/${n}`);
     }
     for (const t of [...tex].sort()) out.push(...pair('texture', t));
     return out;

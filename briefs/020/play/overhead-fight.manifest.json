@@ -1,0 +1,19 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2614, "y": 3222, "w": 788, "h": 120, "text": "Board the car with Vale."},
+  {"kind": "image", "x": 2662, "y": 3255, "w": 54, "h": 54, "text": "hint portrait"},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "image", "x": 1042, "y": 846, "w": 66, "h": 66, "text": "plate fold tab"},
+  {"kind": "image", "x": 316, "y": 762, "w": 744, "h": 234, "text": "order plate"},
+  {"kind": "speech", "x": 2912, "y": -959, "w": 385, "h": 74, "text": "Down. Leave me."},
+  {"kind": "image", "x": 3267, "y": 198, "w": 78, "h": 78, "text": "car held marker"},
+  {"kind": "image", "x": 3050, "y": 1459, "w": 78, "h": 78, "text": "pip councillor"},
+  {"kind": "image", "x": 3038, "y": 42, "w": 72, "h": 72, "text": "edge cameo"},
+  {"kind": "image", "x": 3650, "y": 774, "w": 78, "h": 78, "text": "holder"},
+  {"kind": "beat", "x": 5026, "y": 3103, "w": 240, "h": 47, "text": "Scout is down"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

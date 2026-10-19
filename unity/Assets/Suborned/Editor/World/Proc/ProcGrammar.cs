@@ -21,6 +21,8 @@ namespace Suborned.World
     public sealed class SignSpec
     {
         public string Shape, Board, Tube, Ink, Icon, Mount, Trade;
+        /// <summary>The trade fixes its sign's icon colour (facade.json trades[3]); otherwise the icon is ink or paper by the board's lightness.</summary>
+        public bool FixedInk;
         public string Kit;
         public string Key => $"{Shape}|{Board}|{Tube}|{Icon}|{Kit}";
     }
@@ -199,18 +201,18 @@ namespace Suborned.World
 
         static readonly Dictionary<string, string[]> TradeShapes = new()
         {
-            ["diner"] = new[] { "starburst", "boomerang", "arrow" }, ["automat"] = new[] { "bar", "disc", "pennant" },
+            ["diner"] = new[] { "starburst", "disc", "arrow" }, // Vela round 5: no boomerang on a wall (from the street it read as a "V" marker) ["automat"] = new[] { "bar", "disc", "pennant" },
             ["soda-fountain"] = new[] { "disc", "starburst", "pennant" }, ["newsstand"] = new[] { "blade", "bar" },
-            ["cocktail-lounge"] = new[] { "arrow", "boomerang", "disc" }, ["tiki-bar"] = new[] { "pennant", "pylon", "boomerang" },
+            ["cocktail-lounge"] = new[] { "arrow", "pennant", "disc" }, ["tiki-bar"] = new[] { "pennant", "pylon", "disc" },
             ["dockside-tavern"] = new[] { "blade", "disc" }, ["jazz-club"] = new[] { "pylon", "starburst" },
             ["beauty-salon"] = new[] { "disc", "blade" }, ["florist"] = new[] { "disc", "pennant" }, ["record-shop"] = new[] { "disc", "blade", "arrow" },
-            ["travel-bureau"] = new[] { "arrow", "pylon" }, ["couture-boutique"] = new[] { "boomerang", "blade" },
+            ["travel-bureau"] = new[] { "arrow", "pylon" }, ["couture-boutique"] = new[] { "pennant", "blade" },
             ["market-stall"] = new[] { "pennant", "bar" }, ["grocer"] = new[] { "bar", "pennant" }, ["robot-repair"] = new[] { "pylon", "disc" },
             ["radio-tv-repair"] = new[] { "pylon", "arrow" }, ["launderette"] = new[] { "disc", "bar" }, ["hotel-lobby"] = new[] { "pylon", "bar" },
             ["pawnbroker"] = new[] { "blade", "bar" }, ["barber"] = new[] { "blade", "pylon" }, ["lobby"] = new[] { "plaque", "disc" },
             ["ships-chandler"] = new[] { "blade", "pennant" }, ["cinema"] = new[] { "pylon", "starburst" }, ["tailor"] = new[] { "blade", "arrow" },
         };
-        static readonly string[] AllShapes = { "arrow", "starburst", "boomerang", "disc", "pylon", "blade", "pennant", "bar" };
+        static readonly string[] AllShapes = { "arrow", "starburst", "disc", "pylon", "blade", "pennant", "bar" }; // the boomerang stays a crown and canopy profile (ProcFacade), never a wall sign
 
         static void AssignSigns(WorldDto world, FacadeKit fk)
         {
@@ -262,9 +264,10 @@ namespace Suborned.World
                 case 3: s.Board = en[d.Int(en.Length)]; s.Tube = "white"; s.Ink = "ink"; break;
                 default: s.Board = tc[1] == "chrome" || tc[1] == "chrome_dark" ? "paper" : tc[1]; s.Tube = tc[0]; s.Ink = "ink"; break;
             }
+            if (tc.Length >= 4 && !(f.Lobby || trade == "lobby")) { s.Board = tc[2]; s.Tube = tc[0]; s.Ink = tc[3]; s.FixedInk = true; } // Vela round 5: a trade with its own sign colours (the diner: coral tube, dark board, cream icon and ring)
             if (f.Lobby || trade == "lobby") { s.Board = h.A; s.Tube = "white"; s.Ink = "ink"; }
             if (s.Board == s.Tube) s.Tube = "white";
-            if (s.Board == "ink") s.Ink = "paper";
+            if (s.Board == "ink" && !s.FixedInk) s.Ink = "paper";
             s.Mount = shape switch { "blade" => "blade", "starburst" or "disc" or "pylon" => "stand", _ => "fascia" };
             return s;
         }

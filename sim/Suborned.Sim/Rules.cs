@@ -191,6 +191,9 @@ namespace Suborned.Sim
         // cell
         /// <summary>cell.loop.targets: the cameras the cabinet loops, by site camera id, or "world" for the city's own (brief 013 D).</summary>
         public readonly List<string> LoopTargets = new List<string>();
+        /// <summary>cell.drive (brief 025, EXPERIMENTAL): the driven agent's rules; null when the rulebook has none (drive = unknown verb).</summary>
+        public readonly DriveRules? Drive;
+        public sealed class DriveRules { public int SlackCm, BurstTicks, BusyPushCm, GapCm; public string OnBusy = "cancel", OnRelease = "stand"; }
         public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
@@ -203,7 +206,11 @@ namespace Suborned.Sim
         public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
             SeekRivalCm, SeekPoliceCm, SeekResponseCm, SeekAllyCm, SeekGuardCm, RivalGoneCm, GuardReturnS, PatrolResumeS;
         // the crowd in a fight (Pulse §4)
-        public readonly int CrowdScatterCm, CrowdStartleTicks, CrowdStartleFearfulTicks, CrowdRunSpeed, CrowdFleeMaxCm, CrowdQuietS, CrowdOccludeCm;
+        public readonly int CrowdScatterCm, CrowdStartleTicks, CrowdStartleFearfulTicks, CrowdRunSpeed, CrowdFleeMaxCm, CrowdQuietS, CrowdOccludeCm, CrowdPaceSpreadPct;
+        /// <summary>car.drive (brief 023, engine 0.8.2): the rule's words; the engine routes every moving car on the site's drive grid (Site.Drive).</summary>
+        public readonly string CarDrive = "";
+        /// <summary>car.pace (brief 023, Motive 2026-10-19): cm/s (= mm a tick) on a carriageway cell and on a drive or bay cell.</summary>
+        public readonly int CarRoadSpeed, CarYardSpeed;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
         public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, GunfireTrail, DrawWindowS, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
@@ -236,6 +243,9 @@ namespace Suborned.Sim
         public readonly int BlockCm, BlockNearCm, BlockFarCm, Blockers, BoardS, CapturedTrail, CustodyFear, CustodyLoyalty, AbandonedResentment, AbandonedLoyalty, CustodyMissions;
         /// <summary>The founding (training) cell's scales (campaign.custody.cellStart), in ScaleNames order: bravery, resentment, fear, loyalty.</summary>
         public readonly int[] CellStart = new int[4];
+        // brief 022 (Pulse): a server's round: the linger after an order on her, the summoned lover's stop short of her post, the beat they part
+        public readonly int RoundsLingerS, PartnersCloseCm, PartnersClearCm, PartnersPartS;
+        public readonly HashSet<string> RoundHolds = new HashSet<string>(StringComparer.Ordinal), RoundEnds = new HashSet<string>(StringComparer.Ordinal);
         // the investigation and between missions
         public readonly int InvestigatorsBase, InvestigatorsPerAlert, InvestigatorHops, WordHops, WordQuietLoyalty, IntroductionsPerContact, NeedWeightScale;
         public readonly Dictionary<string, string> StreamKeys = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -246,7 +256,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "takedown", "witness", "response", "campaign", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -307,7 +317,7 @@ namespace Suborned.Sim
                 {
                     "s" => (1L, 3600L), "usd" => (-1_000_000_000L, 1_000_000_000L), "m" => (0L, 1000L), "cm" => (0L, 100_000L), "cm-per-s" => (1L, 10_000L),
                     "trail" => (0L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (0L, 10L), "scale-steps" => (-10L, 10L),
-                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L),
+                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L),
                     _ => throw new FormatException($"{v.Path}.unit '{unit}' is unknown"),
                 };
                 if (x < lo || x > hi) throw new FormatException($"{v.Path} = {x} is outside {lo}..{hi} for unit {unit}");
@@ -377,7 +387,16 @@ namespace Suborned.Sim
                 if (b["debrief"]["lines"].Opt(ln) is not JNode dl || string.Join(",", dl["fields"].Strs()) != fs) throw new FormatException($"debrief.lines.{ln} carries {fs.Replace(",", ", ")} (brief 018)");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
-            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "board", "rule", "tag", "src");
+            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "board", "drive", "rule", "tag", "src");
+            if (c.Opt("drive") is JNode dv) // brief 025 (EXPERIMENTAL, engine 0.9.0): the driven agent; absent, a drive order is an unknown verb
+            {
+                dv.Only("experimental", "slack", "burst", "busyPush", "gap", "onBusy", "onRelease", "rule", "tag", "src");
+                if (dv["experimental"].Str().Length == 0) throw new FormatException("cell.drive.experimental: say what the playground is (brief 025)");
+                var onBusy = dv["onBusy"].Str(); var onRelease = dv["onRelease"].Str();
+                if (onBusy != "cancel" && onBusy != "hold") throw new FormatException($"cell.drive.onBusy '{onBusy}' is cancel or hold (unknown = reject)");
+                if (onRelease != "stand" && onRelease != "resume") throw new FormatException($"cell.drive.onRelease '{onRelease}' is stand or resume (unknown = reject)");
+                Drive = new DriveRules { SlackCm = RI(dv["slack"]), BurstTicks = RI(dv["burst"]), BusyPushCm = RI(dv["busyPush"]), GapCm = RI(dv["gap"]), OnBusy = onBusy, OnRelease = onRelease };
+            }
             CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); RunAlert = RI(c["runAlert"]); ActReachCm = RI(c["reach"]) * 100; AtReachCm = RI(c["atReach"]);
             c["loop"].Only("s", "trail", "tether", "targets"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
             LoopTargets.AddRange(c["loop"]["targets"].Strs());
@@ -424,9 +443,10 @@ namespace Suborned.Sim
                 sec.Only("rule", "perPerson", "list", "src", "proposed", "reason");
                 foreach (var kv in sec["list"].Entries) { kv.Value.Only("requires", "learnedBy", "src", "proposed", "reason"); OneOf(kv.Value["requires"], new[] { "nothing", "lover-tie" }); SecretIds.Add(kv.Key); }
             }
-            var cr = b["crowd"]; cr.Only("scatter", "startle", "startleFearful", "run", "fleeMax", "quiet", "occlude", "rule", "tag", "src", "proposed", "reason");
+            var cr = b["crowd"]; cr.Only("scatter", "startle", "startleFearful", "run", "fleeMax", "quiet", "occlude", "pace", "rule", "tag", "src", "proposed", "reason");
             CrowdScatterCm = RI(cr["scatter"]) * 100; CrowdStartleTicks = RI(cr["startle"]); CrowdStartleFearfulTicks = RI(cr["startleFearful"]); CrowdRunSpeed = RI(cr["run"]);
             CrowdFleeMaxCm = RI(cr["fleeMax"]); CrowdQuietS = RI(cr["quiet"]); CrowdOccludeCm = RI(cr["occlude"]);
+            CrowdPaceSpreadPct = RI(cr["pace"]); if (CrowdPaceSpreadPct < 0 || CrowdPaceSpreadPct > 50) throw new FormatException("crowd.pace: a spread of 0..50 %"); // brief 023 (engine 0.8.2)
             var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "takedown", "body", "rule", "tag", "src", "proposed", "reason");
             OneOf(ca["takedown"], new[] { "released" }); OneOf(ca["body"], new[] { "lost" }); // brief 013
             foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
@@ -509,7 +529,23 @@ namespace Suborned.Sim
             foreach (var m2 in new[] { "saw-takedown", "attacked", "attacked-aware", "saw-carry", "found-body", "heard-alarm", "reported", "missed-expected" })
                 if (!MemoryActs.Contains(m2)) throw new FormatException($"memory.acts.{m2}: brief 013's act is missing");
             if (!Traceable.ContainsKey("takedown")) throw new FormatException("traceable.takedown is missing");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "rule", "tag", "src");
+            // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
+            // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
+            var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
+            cd.Only("drive", "pace", "paceRule", "tag", "src", "proposed", "reason"); CarDrive = cd["drive"].Str(); if (CarDrive.Length == 0) throw new FormatException("car.drive is empty");
+            // car.pace (Motive 2026-10-19, brief 023): a moving car drives each cell at its surface's pace; required from engine 0.8.2
+            var cp = cd.Opt("pace") ?? throw new FormatException("rulebook car.pace is missing: engine 0.8.2 drives each cell at its surface's pace (brief 023)");
+            cp.Only("road", "yard"); CarRoadSpeed = RI(cp["road"]); CarYardSpeed = RI(cp["yard"]);
+            if ((cd.Opt("paceRule")?.Str() ?? "").Length == 0) throw new FormatException("rulebook car.paceRule is missing (brief 023)");
+            var rd = b["rounds"]; rd.Only("linger", "close", "clear", "part", "holds", "ends", "rule", "tag", "src", "proposed", "reason"); // brief 022
+            RoundsLingerS = RI(rd["linger"]); PartnersCloseCm = RI(rd["close"]); PartnersClearCm = RI(rd["clear"]); PartnersPartS = RI(rd["part"]);
+            foreach (var v in rd["holds"].Strs()) { if (v != "listen" && !approaches.ContainsKey(v)) throw new FormatException($"rounds.holds: '{v}' is neither listen nor an approach (unknown = reject)"); RoundHolds.Add(v); }
+            foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
+            if (PartnersCloseCm < 1 || PartnersCloseCm >= TogetherCm) throw new FormatException("rounds.close is inside summon.together (a Watch that ends with them standing together still teaches the affair)");
+            if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "rule", "tag", "src");
+            // fight.over (Motive 2026-10-19, brief 023): the engine ends fire orders on final-fight hostiles at the fight's end and refuses new ones (fight-over); the words are required
+            if (fg.Opt("over") is not JNode fover || fover.Str().Length == 0) throw new FormatException("rulebook fight.over is missing: engine 0.8.2 ends the fire orders on the final fight's hostiles when it is over (brief 023)");
             BlockCm = RI(fg["block"]) * 100; Blockers = RI(fg["blockers"]); // brief 018 §1
             if (BlockCm < 100 || Blockers < 0) throw new FormatException("fight.block is at least 1 m and fight.blockers is not negative");
             BlockNearCm = RI(fg["blockNear"]) * 100; BlockFarCm = RI(fg["blockFar"]) * 100; // brief 018 §10 (Pulse): the blocker's post ring

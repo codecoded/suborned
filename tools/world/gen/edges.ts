@@ -45,6 +45,25 @@ export function plotRing(ctx: Ctx, plot: Plot & { polyV: V[] }): Ring {
   const r = plotRingOf(ctx, plot); m.set(plot.id, r);
   return r;
 }
+/** SF-8: the road kinds whose meeting makes a junction corner. */
+const CORNER_ROADS = ['primary', 'district', 'access'];
+/** SF-8: a sight-blocking item stands this far (m) from every junction corner's kerb tangent point. */
+export const SIGHT_CLEAR = 6;
+/** The junction corners of the street: the kerb tangent point of every non-civic plot vertex where two road edges meet (each point once, 0.5 m hash). SF-8 keeps a sight-blocking item
+ *  SIGHT_CLEAR m from each, and the generator (Layer.fits) skips a spot that would break it, so the checker and the generator read one list. */
+const cornersOf = new WeakMap<Ctx, V[]>();
+export function junctionCorners(ctx: Ctx): V[] {
+  const hit = cornersOf.get(ctx); if (hit) return hit;
+  const out: V[] = [], seen = new Set<string>();
+  for (const pl of ctx.d.plots) {
+    if (pl.civic) continue;
+    const r = plotRing(ctx, pl), n = r.p.length;
+    for (let i = 0; i < n; i++) if (CORNER_ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && CORNER_ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen.has(k)) { seen.add(k); out.push(q); } }
+  }
+  cornersOf.set(ctx, out);
+  return out;
+}
+
 function plotRingOf(ctx: Ctx, plot: Plot & { polyV: V[] }): Ring {
   const classify = probeFor(ctx), pts = ccw(plot.polyV), p: V[] = [], c: string[] = [];
   const n = pts.length;

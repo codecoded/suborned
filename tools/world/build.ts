@@ -5,7 +5,7 @@ import { type V, centroid, dist, norm, polyline, rectPoly, segDist, sub } from '
 import type { Derived, Plan } from '../plan/plan';
 import { type Civic, toPlanFn } from '../plan/civic';
 import { placements, modeOf } from '../plan/transit';
-import type { Circus, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World } from '../../contracts/world/world.schema';
+import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World } from '../../contracts/world/world.schema';
 import { ctxOf } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
@@ -20,7 +20,10 @@ import { look } from './civic/look';
 export const PROV = {
   view: { yaw: 30, pitch: 38, zoom: 14 }, // play camera, brief 002 B: zoom 14 at 38°
   pavement: 0.18, // standards.buildings.datum: pavement top; plots and civic stand on it
-  kerb: { width: 0.3, height: 0.18 }, // TODO standards.roads.kerb
+  // The kerb strip lies under the plot slab's outer 0.3 m (the slab's edge is the carriageway edge), so a top at the slab's 0.18 was coplanar with it and
+  // z-fought at 6016 x 3384 (Glint). Its top stays 12 mm under the slab top: the slab hides it, every stud, arc and bollard on the kerb keeps standing at 0.18, the
+  // standing height is unchanged (pavement above). TODO standards.roads.kerb
+  kerb: { width: 0.3, height: 0.168 },
   water: WATER_LEVEL, quayBase: -2.5, // TODO standards.harbour
   foot: 0.02, ground: -0.03, beyond: -0.02, // flat layers kept apart in height so they never z-fight
   track: { width: 1.6, level: 0.04, depth: 0.04 }, // TODO standards.tram.track
@@ -52,6 +55,7 @@ function ground(plan: Plan, d: Derived, civ: Civic): World['ground'] {
     water: plan.water.map((w, i): Flat => ({ id: `water/${i}`, surface: 'water', ring: ring(w), level: PROV.water })),
     quays: plan.quay.map((q, i): Mass => ({ id: `quay/${i}`, surface: 'quay', ring: ring(q), base: PROV.quayBase, height: r3(PROV.pavement - PROV.quayBase) })),
     flats, plots: [],
+    ...(civ.drives?.length ? { drives: civ.drives.map((x): Drive => ({ id: `civic/drive/${x.id}`, surface: 'bay', ring: ring(x.poly), level: PROV.foot, road: `road/${x.road}`, to: `civic/bay/${x.to}`, kerb: [rv(x.kerb[0]), rv(x.kerb[1])], kerbWidth: PROV.kerb.width, kerbHeight: 0 })) } : {}),
   };
 }
 

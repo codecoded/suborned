@@ -1,0 +1,25 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"entry seen by patrol\" (Suture N7): route A without the patrol reroute, entering while the patrol's sweep covers the door. Two Helps on Inez (r016 cast: a Fearful Inez needs Help ×2, §04), so the call and everything after it come 50 s later; an entry at 4:26.9 is clear of the sweep, from 4:27.4 the patrol sees it, and this one comes at 4:40.4.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Courtyard"},
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 283, "op": "scout", "do": "watch", "target": "waitress"},
+  {"tick": 283, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 803, "op": "scout", "do": "move", "to": "beside-inez"},
+  {"tick": 813, "op": "scout", "do": "listen", "target": "waitress"},
+  {"tick": 813, "op": "fixer", "do": "move", "to": "d:Courtyard"},
+  {"tick": 813, "op": "enforcer", "do": "move", "to": [4900,-1700]},
+  {"tick": 1233, "op": "fixer", "do": "turn", "target": "waitress", "approach": "help"},
+  {"tick": 1733, "op": "fixer", "do": "turn", "target": "waitress", "approach": "help"},
+  {"tick": 2233, "op": "fixer", "do": "call", "target": "waitress"},
+  {"tick": 2233, "op": "enforcer", "do": "move", "to": "d:Office entrance"},
+  {"tick": 2804, "op": "enforcer", "do": "enter"},
+  {"tick": 3184, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 3572, "op": "enforcer", "do": "board", "target": "car"},
+  {"tick": 3613, "op": "cell", "do": "go"}
+ ],
+ "until": 5100
+}

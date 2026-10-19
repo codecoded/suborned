@@ -8,7 +8,7 @@
   {"op": "scout", "do": "move", "to": "d:Courtyard", "why": "to the café terrace, where Inez can be watched", "run": true},
   {"op": "tech", "do": "move", "to": "cabinet", "why": "to the control cabinet", "run": true},
   {"op": "fixer", "do": "move", "to": "d:Courtyard", "run": true},
-  {"op": "enforcer", "do": "move", "to": [4900,-1700], "why": "to wait beside the Office approach, out of the guard's cone"},
+  {"op": "enforcer", "do": "move", "to": [6950, -4250], "why": "to wait by the service end of the west face (Sky's door option (b), 2026-10-19), 5.6 m south of the public door and out of the guard's cone, which looks west over the forecourt"},
   {"op": "scout", "do": "watch", "target": "waitress"},
   {"op": "tech", "do": "loop", "target": "entrance", "label": "loop"},
   {"op": "scout", "do": "move", "to": "beside-inez"},

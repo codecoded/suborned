@@ -89,6 +89,75 @@
     "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
     "rules": []
    }
+  ],
+  "8e72d16ffa4c095a87f63fb76591360286a83aac6eaaca1a22f95c15e066911a": [
+   {
+    "cause": "brief 007 B: world rules added or refined (F-5 lobby kinds, L-5/SF-13 platformClear, SG-1, P-1, SK-1, SK-2), S-C1 through a declared portal, pylons skip declared portals; none changes a rule the A04 plans run",
+    "rules": [
+     "F-5",
+     "L-5",
+     "SF-13",
+     "SG-1",
+     "P-1",
+     "SK-1",
+     "SK-2",
+     "S-C1"
+    ]
+   },
+   {
+    "cause": "brief 007 follow-up: SF-13 hall lane replaces the signature-ground exemption (stationEntrance.hallLane); kit catalogue prefers generated materials; none changes a rule the A04 plans run",
+    "rules": [
+     "SF-13"
+    ]
+   },
+   {
+    "cause": "brief 007 round 2: L-7 (every lift attached to a structure along its whole run) added and L-6 counts connector dress ids; none changes a rule the A04 plans run",
+    "rules": [
+     "L-6",
+     "L-7"
+    ]
+   },
+   {
+    "cause": "brief 007 round 3 walk: opt-in standards.skyrail.pylonClear keeps a pylon off a landmark disc (derive places pylons as before when a plan lacks it, so the A04 plans' pylons are unchanged); world rules F-7, SF-18, L-8, SF-19 registered in world-rules.ts and run only on a plan with the world standards; none changes a rule the A04 plans run",
+    "rules": [
+     "F-7",
+     "SF-18",
+     "L-8",
+     "SF-19"
+    ]
+   },
+   {
+    "cause": "brief 007 round 3 walk, second pass: opt-in standards.skyrail.pylonClear {landmark, span, remnant}. derive keeps a pylon's face 3 m off a landmark disc, lets a span that crosses a disc reach pylonClear.span (S-P1 reads that limit for that span only), re-sets short spans beside a forced pylon and drops a portal stand-off pylon that would leave a stub. A plan without the keys places pylons as before, so the A04 plans' pylons and every recorded rule result are unchanged",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 B3: the plan checker reads a civic block's tower footprints. block/4 adds towers[].polygon, and W-4 (a walk origin stands at a wall or door) and the walk's blockers test buildings and towers together; a block without a tower polygon (block/2 and block/3, so every recorded run's pinned block) is read exactly as before, so no recorded rule result changes. The world generator's kerb-to-kerb crossings and rule SF-20 are opt-in on standards.streetscape.crossings.strip, which no recorded plan carries.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 B3 second half: the plan checker's walk reads a civic block's ground solids. civic() adds `solids` only for a block/4 that carries a `dressing`, walk.ts blocks a step by those solids' own edges (walk-solids.ts) and seeds a walk from its origin point, walk-fine.ts measures one pair on a 0.1 m grid, and worldKey also hashes civic-look.json. A block without a dressing (block/2 and block/3, so every recorded run's pinned block) has no solids and walks bit-identically, so no recorded rule result changes.",
+    "rules": []
+   },
+   {
+    "cause": "brief 007 F review M1 + Datum's height cut: world rule K-2 added (a regenerated tower's built tip within 0.5 m of its order's regen.tip); the plan checker CLI takes --kit and a transit candidate now runs the world rules on the kit digest the run pinned, which transit-replay reruns the same way; world-rules.ts worldChecksUnder. Every one of these acts only on a plan that carries the world standards (buildings, levels, frontage, streetscape), which no recorded transit plan does, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: transit's code hash now covers tools/world, tools/kit/fit.ts, the checker plumbing and the Handover overlay, and the transit code moves like skyline's (labelled drift for a matching rerun, a declared cause for a changed result; each run records its code state); runs pin contracts/world/civic-look.json (input.civic-look.json, inputLook.sha256) and the world rules read the pinned copy (plan checker --look, withLook); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; with 8df5287 (SF-17 accepts the crossing surface). A recorded transit plan carries no world standards, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   }
   ]
  }
 }

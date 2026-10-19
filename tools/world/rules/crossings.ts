@@ -10,7 +10,7 @@ import { dist, inPoly } from '../../plan/geom';
 import { samples9 } from '../../plan/street-zones';
 import { TOL, type WCtx, itemRing, lineDist, rule } from '../../plan/world-ctx';
 import { ctxOf } from '../gen/common';
-import { areaOf, clipConvex, landingsOf, stripBlock } from '../gen/street/crossings';
+import { areaOf, clipConvex, landingsOf, mayCross, overlaps, stripBlock } from '../gen/street/crossings';
 import { type Pair, armSeeds, dedupe, islandSeeds, mallSeeds, rulesOf } from '../gen/street/coverage';
 import { lawn, levelAt } from '../gen/street/ground';
 import { lookOf } from '../gen/street/parts';
@@ -57,10 +57,11 @@ function stripRule(c: WCtx): Check[] {
   for (const s of landings) { // a landing lies at the level of the surface under it and never on a lawn (Latch's rebuild, notes 2 and 3)
     const level = levelAt(gc, s.at);
     if (Math.abs(s.z - level) > TOL) bad.push(`${s.id} is at z ${s.z} over a surface at ${level}`);
+    const dr = (c.w.ground.drives ?? []).find(x => overlaps(itemRing(s), x.ring)); if (dr) bad.push(`${s.id} stands on the drive ${dr.id}: nothing stands on a drive`); // brief 023
     const on = samples9(itemRing(s)).find(p => lawn(gc, p));
     if (on) bad.push(`${s.id} stands on the lawn at (${on[0].toFixed(1)}, ${on[1].toFixed(1)}): a landing stands on pavement, a path or a platform`);
   }
-  const envelope = c.plan.standards.tram.trackCentres / 2 + 0.5, tracks = c.w.transit.tram.map(t => t.line), bays = c.w.ground.flats.filter(f => f.surface === 'bay').map(f => f.ring);
+  const envelope = c.plan.standards.tram.trackCentres / 2 + 0.5, tracks = c.w.transit.tram.map(t => t.line), bays = c.w.ground.flats.filter(f => f.surface === 'bay').map(f => f.ring), drives = (c.w.ground.drives ?? []).map(f => f.ring);
   const medians = c.w.ground.medians.filter(m => dist(m.ring[1]!, m.ring[2]!) >= std.refuge - TOL);
   for (const x of crossings) {
     const its = x.landings, why = ((): string => {
@@ -76,8 +77,8 @@ function stripRule(c: WCtx): Check[] {
         if (x.control !== control) return `control is ${x.control ?? 'none'}, the plan gives ${road.class} roads ${control ?? 'none'}`;
       } else if (its.length !== 1) return `has ${its.length} landings, needs 1`;
       if (Math.abs(x.width - W) > TOL) return `strip is ${x.width} m wide, needs ${W}`;
-      const block = stripBlock(x.strip, tracks, envelope, bays);
-      if (block && !(block === 'a tram track' ? std.across?.track : std.across?.bay)?.includes(x.kind)) return `strip crosses ${block} and the plan does not say a ${x.kind} crossing may`;
+      const block = stripBlock(x.strip, tracks, envelope, bays, drives);
+      if (block && !mayCross(std.across, block)?.includes(x.kind)) return `strip crosses ${block} and the plan does not say a ${x.kind} crossing may`;
       if (block === 'a tram track' && x.kind === 'kerb' && x.control !== 'signal') return 'strip crosses a tram track and the crossing has no signal control (the signal stops the tram)';
       const want = x.kind === 'kerb' ? medians.map(m => clipConvex(x.strip, m.ring)).filter(r => areaOf(r) > 0.25) : [];
       const sum = (rs: number[][][]) => rs.reduce((t, r) => t + areaOf(r as [number, number][]), 0);
@@ -87,7 +88,7 @@ function stripRule(c: WCtx): Check[] {
     if (why) bad.push(`${x.id} ${why}`);
   }
   bad.push(...arcOverlaps(arcsAll));
-  return [rule('SF-20', 'Streetscape', 'A crossing is two landings and a strip between their kerbs, a refuge where it crosses a median of refuge width, no strip across a tram track or a bay the plan does not allow, '
+  return [rule('SF-20', 'Streetscape', 'A crossing is two landings and a strip between their kerbs, a refuge where it crosses a median of refuge width, no strip across a tram track or a bay the plan does not allow, none across a drive, no landing on one, '
     + 'and the parts the plan gives it (light bars or dots, a signal orb at each kerb end and refuge, studs on the kerb edge, an inlay arc), each in one crossing, on pavement or road and never on a lawn', landings.length + crossings.length + parts.size, bad, 'none', SOURCE20)];
 }
 

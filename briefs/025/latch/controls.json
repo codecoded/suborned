@@ -1,0 +1,13 @@
+{
+  "schema": "suborned.drive-controls/1",
+  "walkCmPerS": 140,
+  "open": [325, -5425],
+  "yaws": [
+    {"yaw": 30, "cameraYaw": 30, "wVsCameraDeg": 0, "sVsBehindDeg": 0, "w2sCm": 277.811, "diagonal2sCm": 277.827, "diagonalOverStraight": 1, "run2sCm": 555.647, "runOverWalk": 2, "pass": true},
+    {"yaw": 120, "cameraYaw": 120, "wVsCameraDeg": 0, "sVsBehindDeg": 0, "w2sCm": 277.8, "diagonal2sCm": 277.822, "diagonalOverStraight": 1, "run2sCm": 555.642, "runOverWalk": 2, "pass": true},
+    {"yaw": 210, "cameraYaw": 210, "wVsCameraDeg": 0, "sVsBehindDeg": 0, "w2sCm": 277.811, "diagonal2sCm": 277.827, "diagonalOverStraight": 1, "run2sCm": 555.646, "runOverWalk": 2, "pass": true},
+    {"yaw": 300, "cameraYaw": 300, "wVsCameraDeg": 0, "sVsBehindDeg": 0, "w2sCm": 277.8, "diagonal2sCm": 277.822, "diagonalOverStraight": 1, "run2sCm": 555.643, "runOverWalk": 2, "pass": true}
+  ],
+  "wall": {"from": [1925, -4425], "wallX": 1950, "end": [1948.5, -4228.553], "cmShortOfWall": 1.5, "slidCm": 196.447, "expectedYShareCm": 197.988, "pass": true},
+  "pass": true
+}

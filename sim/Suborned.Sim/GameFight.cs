@@ -36,6 +36,7 @@ namespace Suborned.Sim
             bool loud = Gunfire > 0 || Alert >= 2;
             FightBranch = loud ? "loud" : "safe"; FightStart = Tick;
             FightJoinsFinal(); // fight.public: gunfire still open is the final fight
+            RoundsEnd("final-fight"); // brief 022
             if (loud)
             {
                 int n = R.LoudOfficers;
@@ -50,7 +51,9 @@ namespace Suborned.Sim
                     var gun = NewGun($"officer-{i + 1}", R.Pistol, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
                     Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Home = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
+                int lockBefore = Lockdown;
                 Lockdown = Math.Min(Lockdown, Tick + T(SealS));
+                SealOrigin(lockBefore, () => { var o = alertTwoOrigin ?? gunfireOrigin; return o == null ? OriginNow("loud-fight", "loud-fight", "", null, null, null, "enforcer") : Recast(o, "loud-fight"); }); // what made it loud
                 Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from the north street. The seal clock is running.");
             }
             else
@@ -82,7 +85,7 @@ namespace Suborned.Sim
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
             JoinResponse();
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
-            if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out."); return; }
+            if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
             var e = Enforcer; var car = S.At(S.GetawayCar);
             if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm))
             {

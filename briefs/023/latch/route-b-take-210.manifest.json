@@ -1,0 +1,20 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1572, "y": 1925, "w": 308, "h": 80, "text": "Take Vale alive."},
+  {"kind": "beat", "x": 3182, "y": 1699, "w": 242, "h": 72, "text": "Vale is out."},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 564, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 508, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "speech", "x": 1623, "y": 738, "w": 295, "h": 50, "text": "Drive on. I'm expected."},
+  {"kind": "speech", "x": 5622, "y": 2605, "w": 409, "h": 50, "text": "He's at the car. Now or never."},
+  {"kind": "image", "x": 3227, "y": 202, "w": 52, "h": 52, "text": "pip guard"},
+  {"kind": "image", "x": 1754, "y": 807, "w": 52, "h": 52, "text": "pip driver"},
+  {"kind": "image", "x": 1744, "y": 751, "w": 52, "h": 52, "text": "pip councillor"},
+  {"kind": "beat", "x": 2792, "y": 1818, "w": 227, "h": 32, "text": "Vale reaches his car"},
+  {"kind": "speech", "x": 2792, "y": 1856, "w": 576, "h": 33, "text": "Vale: Drive on. I'm expected."},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

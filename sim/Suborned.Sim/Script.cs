@@ -69,6 +69,7 @@ namespace Suborned.Sim
             var w = new JWriter().Obj().Prop("id", id).Prop("outcome", g.Result.ToString().ToLowerInvariant()).Prop("fail", g.FailCode).Prop("tick", g.Tick)
                 .Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing)
                 .Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)).Prop("replayIdentical", replayIdentical);
+            if (g.Cause != null) { w.Key("cause"); g.Cause.Write(w); } // the fail camera's culprit (FailCause.cs): written only when the run failed or withdrew
             w.OpenArr("checkpoints"); foreach (var (t, h) in g.Checkpoints) w.Obj().Prop("tick", t).Prop("hash", Hash.Hex(h)).EndObj(); w.EndArr();
             w.OpenArr("checks"); foreach (var c in checks) w.Obj().Prop("ok", c.ok).Prop("what", c.what).EndObj(); w.EndArr();
             w.OpenArr("orders"); foreach (var (o, ok, code, why) in g.Orders) { w.Obj().Key("order").Raw(o.ToString()).Prop("ok", ok); if (!ok) w.Prop("code", code).Prop("why", why); w.EndObj(); } w.EndArr();

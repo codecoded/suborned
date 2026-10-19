@@ -37,6 +37,11 @@ namespace Suborned.World
             w.Ground.Medians = Each(g, "medians", Mass);
             w.Ground.Plots = Each(g, "plots", Mass);
             w.Ground.Flats = Each(g, "flats", x => new WaterDto { Id = Id(x), Surface = J.S(x, "surface"), Ring = J.Poly(x, "ring"), Level = J.F(x, "level") });
+            w.Ground.Drives = Each(g, "drives", x => new DriveDto
+            {
+                Id = Id(x), Surface = J.S(x, "surface"), Ring = J.Poly(x, "ring"), Level = J.F(x, "level"), Road = J.S(x, "road"), To = J.S(x, "to"),
+                Kerb = J.Poly(x, "kerb"), KerbWidth = J.F(x, "kerbWidth"), KerbHeight = J.F(x, "kerbHeight"),
+            }); // optional (present when the civic block states drives)
 
             var t = J.Get(o, "transit");
             w.Transit.Tram = Each(t, "tram", x => new TrackDto

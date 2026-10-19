@@ -2,6 +2,7 @@
 import type { StreetItem } from '../../../../contracts/world/world.schema';
 import { type V, dist } from '../../../plan/geom';
 import { type Ctx, r3, r4, rv } from '../common';
+import { SIGHT_CLEAR, junctionCorners } from '../edges';
 import { type Rect, inRect, pointInRing } from '../geo';
 import { BOOTH, TUB } from '../surfaces';
 import { Grid } from '../../../plan/street-geo';
@@ -14,6 +15,8 @@ const sightOf = (s: unknown): StreetItem['sight'] => (String(s).startsWith('bloc
 /** Tree keep-clear (streetscape.trees.keepClear): a tree stays 3 m from a lamp and 2 m from a hydrant, centre to centre. */
 const CLEAR = (a: string, b: string) => (a === 'tree' && b === 'lamp') || (a === 'lamp' && b === 'tree') ? 3 : (a === 'tree' && b === 'hydrant') || (a === 'hydrant' && b === 'tree') ? 2 : 0;
 
+/** m: street items keep this far off a drive (brief 023, SF-2); a bollard or beacon may stand beside it, never on it. */
+export const DRIVE_CLEAR = 2;
 /** Kinds allowed next to a crossing (streetscape.rules SF-2): bollards and the crossing's beacons. */
 const NEAR_CROSSING = new Set(['bollard', 'beacon', 'crossing']);
 
@@ -26,8 +29,11 @@ export class Layer {
   landings: Landing[] = [];
   private placed = new Grid<{ p: V; r: number; k: string; ring: V[]; exempt: boolean; id: string }>(8, o => o.p); // items so far, hashed: free() asks about the neighbours only
   private crossings: V[][] = []; // crossing footprints placed so far (SF-2: nothing else within 2 m)
+  private corners: V[] | undefined; // junction corners (SF-8), read from the plan on first use
   private boxes: Float64Array; private doorGrid = new Grid<V[]>(8, c => c[0]!);
+  private drives: V[][]; // the civic block's drives (brief 023, plan frame): nothing stands on one, street items keep DRIVE_CLEAR off it
   constructor(readonly ctx: Ctx, readonly solids: V[][], readonly decks: Rect[], readonly columns: V[], readonly keep: Rect[], readonly pylons: V[], readonly doors: V[][] = []) {
+    this.drives = (ctx.civ.drives ?? []).map(x => x.poly);
     this.boxes = new Float64Array(solids.length * 4);
     solids.forEach((s, i) => { this.boxes[i * 4] = Math.min(...s.map(q => q[0])); this.boxes[i * 4 + 1] = Math.max(...s.map(q => q[0])); this.boxes[i * 4 + 2] = Math.min(...s.map(q => q[1])); this.boxes[i * 4 + 3] = Math.max(...s.map(q => q[1])); });
     for (const d of doors) this.doorGrid.add(d);
@@ -71,22 +77,26 @@ export class Layer {
   }
 
   /** Whether `add` would place an item of this kind here: the tests `add` makes before it places (free of neighbours and solids, out of the clear walking zone and the tram's space, 2 m off crossings and doors, off the quay). No change to the layer. */
-  fits(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean } = {}): boolean {
+  fits(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; blocks?: boolean } = {}): boolean {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
     if (!o.force && !this.free(at, r, o.ground ?? true, kind)) return false;
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
     if ((o.ground ?? true) && !FLAT.has(kind)) {
       // skip, never squeeze: the clear walking zone and the tram's own space stay clear (SF-1, SF-3); crossings keep 2 m clear (SF-2)
       if (!o.force && (walkBlock(this.ctx, samples9(ring), edge) || tramBlock(this.ctx, samples9(ring)))) return false;
+      if (this.drives.some(r => ringGap(ring, r) < (NEAR_CROSSING.has(kind) ? 0.011 : DRIVE_CLEAR))) return false; // a drive (brief 023): nothing on it, items 2 m off it
       if (!NEAR_CROSSING.has(kind) && !edge.startsWith('stop/') && (this.crossings.some(c => ringGap(ring, c) < 2) || this.doorGrid.near(at, 10).some(c => ringGap(ring, c) < 2))) return false;
       if (kind === 'tree' && !o.force && beamBlock(this.ctx, at, ring, o.variant, z)) return false;
       if (!o.force && kind !== 'lamp' && kind !== 'mooring-cleat' && quayBlock(this.ctx, samples9(ring))) return false; // the quay edge is the water's (SF-14)
+      // SF-8: nothing that blocks sight stands within SIGHT_CLEAR m of a junction corner's kerb tangent point (a kind the catalogue calls `blocks`, or one the caller says blocks)
+      if (!o.force && (o.blocks ?? sightOf(c?.sight) === 'blocks')) { const pts = samples9(ring); if ((this.corners ??= junctionCorners(this.ctx)).some(q => pts.some(p => dist(p, q) < SIGHT_CLEAR))) return false; }
     }
+    if (kind === 'crossing' && this.drives.some(r => ringGap(ring, r) < 0.011)) return false; // a landing never stands on a drive
     return true;
   }
 
   /** Add an item from the catalogue (or a given size). Returns false (item skipped, never squeezed: SF-6) if it does not fit. */
-  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
+  add(kind: string, at: V, yaw: number, z: number, edge: string, o: { size?: [number, number, number]; variant?: string; r?: number; ground?: boolean; force?: boolean; blocks?: boolean; id?: string; trade?: string; uncounted?: boolean } = {}): boolean {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
     if (!this.fits(kind, at, yaw, z, edge, o)) return false;
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
@@ -97,7 +107,7 @@ export class Layer {
     this.placed.add({ p: at, r, k: kind, ring, exempt: NEAR_CROSSING.has(kind) || edge.startsWith('stop/'), id });
     this.items.push({
       id, kind, at: rv(at), yaw: r4(yaw), z: r3(z), size: [r3(size[0]), r3(size[1]), r3(size[2])], surface: SURF[kind] ?? 'trim', edge,
-      sight: c ? sightOf(c.sight) : kind === 'tree' ? 'open' : 'open', ...(staffed ? { staffed } : {}), ...(o.variant ? { variant: o.variant } : {}),
+      sight: o.blocks ? 'blocks' : c ? sightOf(c.sight) : 'open', ...(staffed ? { staffed } : {}), ...(o.variant ? { variant: o.variant } : {}),
     });
     return true;
   }

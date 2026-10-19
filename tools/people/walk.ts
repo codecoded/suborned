@@ -1,4 +1,4 @@
-// The walk graph the people are checked on (brief 010 B, P-1): the plan checker's blockers (built plots, the block's
+// The walk graph the people are checked on (brief 010 B, P-1): the plan checker's blockers (built plots behind their building lines, the block's
 // footprints, water, landmarks: tools/plan/walk.ts blockersOf) on a 2 m grid, 16 neighbours, shortest paths from each place by
 // Dijkstra. The grid is the scope's bounding box, so a run costs a few thousand cells. Minutes = metres / walk speed. A walker keeps the plan's body clearance from the block's ground solids
 // (standards.walking.body.r, W-5: tools/plan/walk-solids.ts, the same class the plan checker's walks use): a step is tested against the solids' own edges, never against cell centres alone, and a walk

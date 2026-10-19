@@ -10,7 +10,7 @@ import { allowedTemperaments, positionsOf, type Rules } from './rules';
 import { atCafeSide, HOME_SAMPLE, type Scope, type Unit } from './scope';
 import { Holds, seatPicker, type Fit, type Pick, type Table } from './seats';
 import type { Walker } from './walk';
-import { fold, insideFromDoor, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
+import { fold, insideFromDoor, lingerOf, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
 import { deriveKnowledge } from './knowledge';
 import { withSecrets } from './secrets';
 import { drawNeedRecord, drawSecretRecord, type Needs } from './needs';
@@ -92,7 +92,7 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
       const spot = workPlaceOf(u, row, position, post);
       const civicRole = u.kind === 'civic';
       work = { unit: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, ...(civicRole ? { role: position } : { position }), post, place: spot, shift };
-      cycle = workerCycle(c, r, u, shift, spot, home.place === 'beyond' ? scope.homes[0]!.place : home.place, v);
+      cycle = workerCycle(c, r, u, shift, spot, home.place === 'beyond' ? scope.homes[0]!.place : home.place, v, post === 'inside' ? lingerOf(id, v) : 0);
       if (home.place === 'beyond' && v.commute !== 'tram' && v.commute !== 'car') cycle = undefined;
     } else cycle = residentCycle(c, r, home.place, v, id);
     const allowKey = u ? (u.kind === 'civic' ? position : u.trade) : 'resident';

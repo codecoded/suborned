@@ -105,7 +105,7 @@ export function record(c: Check, L: Loaded, note: string): string {
   // one play per line: the record stays readable and diffable without growing a line per field
   const body = JSON.stringify({ ...run, plays: '@plays' }, null, 1).replace('"@plays"', `{\n${Object.entries(c.plays).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n }`);
   writeFileSync(join(dir, 'run.json'), body + '\n');
-  writeFileSync(join(dir, 'report.html'), html(c, id));
+  writeFileSync(join(dir, 'report.html'), html(c, id, note));
   return dir;
 }
 
@@ -153,7 +153,7 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
 // ---------------------------------------------------------------- the report page
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-export function html(c: Check, id: string): string {
+export function html(c: Check, id: string, note?: string): string {
   const r = c.report, td = (x: unknown) => `<td>${esc(String(x))}</td>`;
   const cond = r.conditions.map(x => `<tr class="${x.ok ? 'ok' : 'bad'}">${td(x.id)}${td(x.ok ? 'ok' : 'FAIL')}${td(x.rule)}${td(x.value)}<td class="d">${esc(x.detail).replace(/; /g, '<br>')}</td></tr>`).join('');
   const rows = r.scripts.map(x => `<tr class="${x.ok ? 'ok' : 'bad'}">${[x.id, x.kind, x.route ?? '', x.expects, x.got, x.at, x.trail, x.alert, x.shots, x.fight ? `${x.fight}, ${x.fightShots} shots` : '', `$${x.cash.toLocaleString('en-US')}`, x.replay ? 'identical' : 'DIFFERS'].map(td).join('')}</tr>`).join('');
@@ -162,6 +162,7 @@ export function html(c: Check, id: string): string {
 <style>body{font:14px/1.4 -apple-system,sans-serif;margin:24px;max-width:1200px}table{border-collapse:collapse;margin:8px 0 20px}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left;vertical-align:top}tr.bad td{background:#fde8e8}tr.ok td:nth-child(2){color:#17663a}.d{font-size:12px}code{font-size:12px}</style>
 <h1>Mission check: ${esc(c.mission)} · ${id} · ${r.ok ? 'SHIPS' : 'HOLDS'}</h1>
 <p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
+${note ? `<h2>Note</h2><p>${esc(note)}</p>` : ''}
 <h2>Conditions</h2><table><tr><th>id</th><th></th><th>rule</th><th>value</th><th>detail</th></tr>${cond}</table>
 <h2>Scripts</h2><table><tr><th>script</th><th>kind</th><th>route</th><th>expects</th><th>got</th><th>at</th><th>T</th><th>A</th><th>shots before the fight</th><th>final fight</th><th>cash</th><th>replay</th></tr>${rows}</table>
 <p>Pending (not played): ${esc(r.pending.join(', ') || 'none')}</p>

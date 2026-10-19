@@ -9,7 +9,7 @@
 import { type V, dist, inPoly, segDist } from './geom';
 import type { Civic } from './civic';
 import type { Derived, Plan } from './plan';
-import { OPEN } from './walk';
+import { buildingLines } from './walk';
 
 export type Body = { r: number; clearWidth: number; constrained: { w: number; run: number }; aisle: number; ends: number };
 export const bodyStd = (plan: Plan): Body | undefined => plan.standards.walking?.body as Body | undefined;
@@ -53,7 +53,7 @@ export function gapWalks(plan: Plan, d: Derived, civ: Civic, points: Pt[], seati
   // what stands in the way, named: built plots, building and tower footprints, water, then the ground solids
   type Ob = { name: string; poly: V[]; solid: boolean };
   const obs: Ob[] = [
-    ...d.plots.filter(p => !OPEN.has(p.use)).map(p => ({ name: `plot ${p.id}`, poly: p.polyV, solid: false })),
+    ...[...buildingLines(plan, d, civ)].map(([id, poly]) => ({ name: `plot ${id}`, poly, solid: false })),
     ...civ.buildings.flatMap(b => [{ name: b.id, poly: b.poly, solid: false }, ...(b.towers ?? []).filter(t => t.poly).map(t => ({ name: `${b.id} tower ${t.id}`, poly: t.poly!, solid: false }))]),
     ...plan.water.map((w, i) => ({ name: `water ${i}`, poly: w, solid: false })),
     ...(civ.solids ?? []).map((s, i) => ({ name: civ.solidIds?.[i] ?? `solid ${i}`, poly: s, solid: true })),

@@ -16,7 +16,7 @@ setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block));
 const base = generated(plan, d, civ);
-const KNOWN = ['F-2']; // fail on the live world: report to Datum, not weakened
+const KNOWN = ['F-2']; // fails on the live world: F-2 reported to Datum; not weakened. (R-REPORT was known from 2026-10-19 until the north-west mouth of the block was covered from the square's corner pavement.)
 
 type W = any;
 /** The rules on a clone of the world with `mutate(w, gen, plan)` applied; returns the ids that fail. */
@@ -27,6 +27,7 @@ const failing = (mutate: (w: W, g: W, p: W) => void): string[] => {
   return worldRules(ctxOf(p, d, civ, { w, gen: g })).filter(c => !c.ok).map(c => c.id);
 };
 const first = <T>(a: T[], f: (t: T) => boolean) => a.find(f)!;
+const centre = (r: number[][]): number[] => [r.reduce((a, p) => a + p[0]!, 0) / r.length, r.reduce((a, p) => a + p[1]!, 0) / r.length];
 
 describe('world rules', () => {
   test('the unmodified world passes every rule but the known failures', () => {
@@ -61,6 +62,11 @@ describe('world rules', () => {
     ['F-4', 'a service bay of the wrong size', (w) => { const f = first(w.frontages, (q: W) => q.service); f.service = { ...f.service, size: [9, f.service.size[1], f.service.size[2]] }; }],
     ['F-5', 'buildings with no lobby', (w) => { for (const f of w.frontages) if (f.trade === 'lobby') f.trade = 'florist'; }],
     ['SF-2', 'a lamp in a doorway', (w) => { first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1).at = w.frontages.find((f: W) => f.z < 1 && f.entrance).entrance.c.slice(0, 2); }],
+    ['SF-2', 'a bollard standing on the service drive (brief 023: nothing stands on a drive)', (w) => { first(w.street, (s: W) => s.kind === 'bollard' && s.z < 1).at = centre(w.ground.drives[0].ring); }],
+    ['SF-2', 'a lamp 1 m from the service drive (street items keep 2 m off it)', (w) => { const r = w.ground.drives[0].ring, x = Math.max(...r.map((p: number[]) => p[0])), y = (r[0][1] + r[1][1]) / 2; first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1).at = [x + 1.6, y]; }],
+    ['SF-18', 'a sky rail pylon on the service drive', (w) => { w.transit.skyRail[0].pylons[0] = centre(w.ground.drives[0].ring); }],
+    ['SF-20', 'a crossing landing on the service drive', (w) => { w.crossings[0].landings[0].at = centre(w.ground.drives[0].ring); }],
+    ['SF-20', 'a crossing strip across the service drive', (w) => { w.crossings[0].strip = w.ground.drives[0].ring.map((p: number[]) => [...p]); }],
     ['SF-3', 'a lamp on the tram reservation', (w) => { first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1).at = d.tram[0]!.samples[10]!.p; }],
     ['SF-4', 'a tree under the sky rail beam', (w) => { const t = first(w.street, (s: W) => s.kind === 'tree' && s.z < 1); t.at = d.pylons[0]!.p; }],
     ['SF-6', 'a lamp that does not fit its zone', (w) => { const t = first(w.street, (s: W) => s.kind === 'lamp' && s.z < 1); t.at = [t.at[0] + 1.5, t.at[1] + 1.5]; }],

@@ -63,7 +63,10 @@ namespace Suborned
         public float fadeTime = 0.25f;
 
         static readonly int FocusId = Shader.PropertyToID("_DKCutFocus"), ViewId = Shader.PropertyToID("_DKCutView"),
-            ShapeId = Shader.PropertyToID("_DKCutShape"), BackId = Shader.PropertyToID("_DKCutBack"), PointsId = Shader.PropertyToID("_DKCutPoints");
+            ShapeId = Shader.PropertyToID("_DKCutShape"), BackId = Shader.PropertyToID("_DKCutBack"), PointsId = Shader.PropertyToID("_DKCutPoints"), CleanId = Shader.PropertyToID("_DKCutClean");
+
+        [Tooltip("Brief 020 (Glyph): a person's disc (SetPoints with a negative radius) is cut clean, not to the ghost, so no screen door falls over a figure; this is its feather (m).")]
+        public float cleanFeather = 0.4f;
 
         /// <summary>DK_CUT_POINTS in DK_Cutaway.hlsl: the shader's array is always this long.</summary>
         public const int MaxPoints = 10;
@@ -71,16 +74,31 @@ namespace Suborned
         int pointCount;
         readonly FadeCut[] cuts = new FadeCut[MaxPoints + 1];
 
-        /// <summary>The points kept clear besides the focus this frame: xyz world (its height is its level), w the disc radius (m). Past
-        /// MaxPoints are dropped, so give them in order of need.</summary>
+        /// <summary>The points kept clear besides the focus this frame: xyz world (its height is its level), w the disc radius (m); a negative
+        /// w is a person's disc of radius -w, cut clean (no ghost dither over the figure). Past MaxPoints are dropped, so give them in order of need.</summary>
         public void SetPoints(System.Collections.Generic.IReadOnlyList<Vector4> list)
         {
             pointCount = 0;
-            if (list != null) for (int i = 0; i < list.Count && pointCount < MaxPoints; i++) if (list[i].w > 0f) points[pointCount++] = list[i];
+            if (list != null) for (int i = 0; i < list.Count && pointCount < MaxPoints; i++) if (list[i].w != 0f) points[pointCount++] = list[i];
             for (int i = pointCount; i < MaxPoints; i++) points[i] = Vector4.zero;
         }
         /// <summary>The points kept clear now.</summary>
         public int PointCount => pointCount;
+
+        readonly System.Collections.Generic.Dictionary<Renderer, (Material[] plain, uint mask)> forced = new();
+        /// <summary>Brief 022: a prop drawn whole (wholeProps) that must fade for now, as the architecture does (the parasol over the table
+        /// Inez is serving): on, it takes the cut tag and its cutting materials; off, it is put back. Play Mode only.</summary>
+        public void ForceFade(Renderer r, bool on)
+        {
+            if (!r || reach == null) return;
+            if (on)
+            {
+                if (forced.ContainsKey(r)) return;
+                forced[r] = (r.sharedMaterials, r.renderingLayerMask);
+                r.renderingLayerMask |= Layer; r.sharedMaterials = reach.CuttingOf(r.sharedMaterials);
+            }
+            else if (forced.TryGetValue(r, out var was)) { r.sharedMaterials = was.plain; r.renderingLayerMask = was.mask; forced.Remove(r); }
+        }
 
         static ArchitectureFade holder; // the camera whose reach picks the cutting materials
 
@@ -127,7 +145,7 @@ namespace Suborned
             if (cam.enabled && Cuts(out var cut))
             {
                 cuts[0] = cut;
-                for (int i = 0; i < pointCount; i++) { var q = points[i]; cuts[i + 1] = cut; cuts[i + 1].Focus = q; cuts[i + 1].FloorY = q.y + (cut.FloorY - cut.Focus.y); cuts[i + 1].Radius = q.w; }
+                for (int i = 0; i < pointCount; i++) { var q = points[i]; cuts[i + 1] = cut; cuts[i + 1].Focus = q; cuts[i + 1].FloorY = q.y + (cut.FloorY - cut.Focus.y); cuts[i + 1].Radius = Mathf.Abs(q.w); }
                 reach.Set(cuts, pointCount + 1, wholeTiles);
             }
             else reach.Clear();
@@ -145,6 +163,7 @@ namespace Suborned
             Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, ghost, level), column ? 1f : 0f, shadows ? 1f : 0f));
             Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), pointCount));
             Shader.SetGlobalVectorArray(PointsId, points);
+            Shader.SetGlobalVector(CleanId, new Vector4(1f - level, Mathf.Max(cleanFeather, 0.01f), 0f, 0f));
             if (reach == null) Shader.EnableKeyword(FadeReach.Keyword); // no reach: every tagged shader takes its cutting variant for this render
         }
 

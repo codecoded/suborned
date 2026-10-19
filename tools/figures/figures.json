@@ -1,0 +1,795 @@
+{
+ "figures": [
+  {
+   "id": "scout",
+   "role": "scout",
+   "label": "Scout S1-2 (hooded jacket, shorts, harness)",
+   "source": "Citizens3D/rigged/scout_S1-2__h3t30_ownrig.glb; LODs Citizens3D/rigged/scout_lod/ (h3.1 mesh, own Meshy-style rig, 24 bones)",
+   "provenance": [
+    "bench/scout_S1-2__apose_nopack_1__h3t30.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD1_12k.glb",
+     "tex": 2048
+    },
+    {
+     "src": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD2_4k5.glb",
+     "tex": 1024
+    },
+    {
+     "from": 1,
+     "tris": 1500,
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "tech",
+   "role": "tech",
+   "label": "Tech F2-1 (vest, visor, cargo skirt-shorts; older outfit than the 16 Oct final)",
+   "source": "Citizens3D/rigged/tech_F2-1_h3t30_master.glb; LODs Citizens3D/rigged/tech_lod/ (h3.1 mesh, own rig, visor is a separate emissive sheet)",
+   "provenance": [
+    "bench/tech_F2-1__apose_1__h3t30.glb",
+    "bench/../props/tech_visor_0__h3t5.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD1_12k.glb",
+     "tex": 2048,
+     "decimateTo": 12000
+    },
+    {
+     "src": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD2_4k5.glb",
+     "tex": 1024
+    },
+    {
+     "from": 1,
+     "tris": 2000,
+     "tex": 512
+    }
+   ],
+   "lift": 0.19
+  },
+  {
+   "id": "enforcer",
+   "role": "enforcer",
+   "label": "Enforcer G2 (white coat, black suit, gold trim); the G3 pick has no rig yet",
+   "source": "characters/enforcer_G2/07_export/enforcer_G2.2k.glb (h3.1 mesh G2 aposec, Mixamo rig with fingers, 2k textures)",
+   "provenance": [
+    "bench/enforcer_G2__aposec_1__h3t30.glb"
+   ],
+   "lods": [
+    {
+     "src": "../characters/enforcer_G2/07_export/enforcer_G2.2k.glb",
+     "tex": 2048,
+     "decimateTo": 12000
+    },
+    {
+     "from": 0,
+     "tris": 4500,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "guard",
+   "role": "guard",
+   "label": "Door guard P1 (white and blue duty suit, cap)",
+   "source": "Citizens3D/rigged/guard_P1_h3own.glb; LODs Citizens3D/lod/guard_P1/",
+   "provenance": [
+    "bench/guard_P1__apose_0__h3t12.glb",
+    "bench/guard_P1__apose_hands_0__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD0.glb",
+     "tex": 2048
+    },
+    {
+     "src": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb",
+     "tex": 1024
+    },
+    {
+     "src": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb",
+     "tex": 512
+    }
+   ],
+   "trimOnly": true
+  },
+  {
+   "id": "waitress",
+   "role": "waitress",
+   "label": "Inez, caf\u00e9 waitress W6 (green uniform, apron, glasses)",
+   "source": "Citizens3D/rigged/waitress_W6_h3own.glb; LODs Citizens3D/lod/waitress_W6/",
+   "provenance": [
+    "bench/waitress_W6__apose_0__h3t12.glb",
+    "bench/waitress_W6__apose_1__h3t12.glb",
+    "bench/waitress_W6__aposenog_0__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD0.glb",
+     "tex": 2048
+    },
+    {
+     "src": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD1.glb",
+     "tex": 1024
+    },
+    {
+     "src": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD2.glb",
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Commuter C6 (silver hooded jacket, patterned mini dress)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "bakeoff/commuters_C6__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "repair": [
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      32
+     ],
+     "sat": [
+      0.1,
+      0.3
+     ],
+     "val": [
+      0.8,
+      1.0
+     ],
+     "to": [
+      0.9,
+      0.88,
+      0.84
+     ],
+     "keep": 0.4,
+     "boxes": [
+      [
+       0.723,
+       0.044,
+       0.796,
+       0.098
+      ],
+      [
+       0.903,
+       0.256,
+       0.977,
+       0.342
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "d6",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Commuter D6 (mustard shift dress, white hat)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D6__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/commuters_D6__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D6__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2
+  },
+  {
+   "id": "c1",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Corporation C1 (navy tunic, short coral cape, helmet)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/bakeoff/corporation_C1__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "bakeoff/corporation_C1__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bakeoff/corporation_C1__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "rigidCloth": {
+    "hue": [
+     0,
+     35
+    ],
+    "minSat": 0.45,
+    "minVal": 0.5,
+    "z": [
+     0.8,
+     1.6
+    ],
+    "maxX": 0.45,
+    "bones": {
+     "Spine2": 1.0
+    },
+    "grow": 2,
+    "limb": 0.5
+   }
+  },
+  {
+   "id": "d5c",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Corporation D5 (mint chevron dress, white boots)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/corporation_D5__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/corporation_D5__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/corporation_D5__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2
+  },
+  {
+   "id": "d2m",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Commuter D2 (coral uniform, chrome visor helmet)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/commuters_D2__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2
+  },
+  {
+   "id": "workers_d5",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Worker D5 (yellow quilted jacket, jeans, cap)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/workers_D5__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2
+  },
+  {
+   "id": "d4",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Commuter D4 (pale grey bomber, navy jumpsuit; the sheen is flattened to matte cloth)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/commuters_D4__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "repair": [
+    {
+     "op": "flatten",
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": 0.72,
+     "k": 0.4
+    }
+   ],
+   "matSmoothness": 0.05,
+   "noNormal": true
+  },
+  {
+   "id": "d4b",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Commuter D4b (coral bomber, charcoal jumpsuit, dark brown hair): the D4 model recoloured so two passers-by are not twins",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here",
+   "provenance": [
+    "citizens/commuters_D4__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "repair": [
+    {
+     "op": "flatten",
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": 0.72,
+     "k": 0.4
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": [
+      0.93,
+      0.64,
+      0.52
+     ],
+     "keep": 0.75
+    }
+   ],
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "tint": [
+    {
+     "from": 42,
+     "width": 13,
+     "minSat": 0.3,
+     "shift": -24,
+     "sat": 1.0,
+     "val": 0.45
+    },
+    {
+     "from": 220,
+     "width": 30,
+     "minSat": 0.3,
+     "shift": 0,
+     "sat": 0.25,
+     "val": 0.9
+    }
+   ]
+  },
+  {
+   "id": "el1",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Elder EL1 (grey set hair, sunglasses, orange jumpsuit, white boots)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "rotZ": -90,
+   "source": "Citizens3D/bench/elders_EL1__h3t12.glb (Tripo h3.1 12k, faces +X: turned here; decimated to 3000 and 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "bench/elders_EL1__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bench/elders_EL1__h3t12.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2
+  },
+  {
+   "id": "sh2",
+   "role": "townsperson",
+   "kind": "transfer",
+   "label": "Shopper D2 (gold print shirt and shorts, visor, white boots)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "rotZ": -90,
+   "source": "Citizens3D/bench/shoppers_D2__h3t12.glb (Tripo h3.1 12k, faces +X: turned here; decimated to 3000 and 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "bench/shoppers_D2__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bench/shoppers_D2__h3t12.glb",
+     "tex": 1024,
+     "decimateTo": 3000
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "repair": [
+    {
+     "op": "spots",
+     "hue": [
+      30,
+      62
+     ],
+     "minSat": 0.3,
+     "minVal": 0.4,
+     "dark": 0.3,
+     "r": 14,
+     "field": 0.3,
+     "grow": 2,
+     "fill": 12
+    }
+   ],
+   "noNormal": true
+  },
+  {
+   "id": "cafe_w2",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W2 (teal jumpsuit, white boots)",
+   "source": "Citizens3D/rigged/waitress_W2.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    "bench/waitress_W2__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/rigged/waitress_W2.glb",
+     "tex": 2048,
+     "decimateTo": 4500
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "cafe_w3",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W3 (yellow uniform, white apron)",
+   "source": "Citizens3D/rigged/waitress_W3.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    "bench/waitress_W3__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/rigged/waitress_W3.glb",
+     "tex": 2048,
+     "decimateTo": 4500
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "cafe_w5",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W5 (orange dress, grey boots)",
+   "source": "Citizens3D/rigged/waitress_W5_h3own.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    "bench/waitress_W5__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/rigged/waitress_W5_h3own.glb",
+     "tex": 2048,
+     "decimateTo": 4500
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "trimOnly": true
+  },
+  {
+   "id": "fixer",
+   "role": "fixer",
+   "kind": "transfer",
+   "label": "Fixer P4-6 (ivory and black panelled dress, halter, detached long sleeves, high ponytail, two-tone heeled boots); no briefcase",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "rotZ": -90,
+   "source": "Citizens3D/bench/fixer_P4-6__tripo_h3.glb (Tripo 3.1, 30k, from a Seedream front A-pose sheet of the Fixer in Sky's 2026-10-18 lineup, hem shortened above the knee; faces +X, turned here; decimated to 12000, 4500, 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "bench/fixer_P4-6__tripo_h3.glb",
+    "model_sheets/fixer_P4-6__apose_2_1.png",
+    "model_sheets/refs/fixer_P4-6_lineup.png"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bench/fixer_P4-6__tripo_h3.glb",
+     "tex": 2048,
+     "decimateTo": 12000
+    },
+    {
+     "from": 0,
+     "tris": 4500,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ]
+  },
+  {
+   "id": "security",
+   "role": "security",
+   "label": "Security officer: door guard P1 with the blue turned charcoal",
+   "source": "Citizens3D/rigged/guard_P1_h3own.glb; LODs Citizens3D/lod/guard_P1/",
+   "provenance": [
+    "bench/guard_P1__apose_0__h3t12.glb",
+    "bench/guard_P1__apose_hands_0__h3t12.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb",
+     "tex": 1024
+    },
+    {
+     "src": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb",
+     "tex": 512
+    }
+   ],
+   "tint": [
+    {
+     "from": 215,
+     "width": 35,
+     "minSat": 0.2,
+     "shift": -175,
+     "sat": 1.3,
+     "val": 1.0
+    },
+    {
+     "from": 0,
+     "width": 180,
+     "minSat": 0.0,
+     "maxSat": 0.22,
+     "minVal": 0.35,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.45
+    }
+   ],
+   "trimOnly": true
+  },
+  {
+   "id": "driver",
+   "role": "driver",
+   "kind": "transfer",
+   "label": "Official driver: commuter D2 with the coral uniform turned mint",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); coral turned mint",
+   "provenance": [
+    "citizens/commuters_D2__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "tint": {
+    "from": 2,
+    "width": 18,
+    "minSat": 0.45,
+    "minVal": 0.3,
+    "shift": 145,
+    "sat": 0.55,
+    "val": 1.0
+   },
+   "smoothness": 0.2
+  },
+  {
+   "id": "councillor",
+   "role": "councillor",
+   "kind": "transfer",
+   "label": "Councillor Vale stand-in: commuter D4 with the navy trousers turned camel (a warm tone, so a carried Vale separates from the Enforcer's black at play zoom)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); navy turned camel",
+   "provenance": [
+    "citizens/commuters_D4__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "tint": {
+    "from": 220,
+    "width": 30,
+    "minSat": 0.3,
+    "shift": -188,
+    "sat": 0.75,
+    "val": 2.2
+   },
+   "smoothness": 0.2,
+   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "repair": [
+    {
+     "op": "flatten",
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": 0.72,
+     "k": 0.4
+    }
+   ],
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "torsoWebs": true
+  },
+  {
+   "id": "rival",
+   "role": "rival",
+   "kind": "transfer",
+   "label": "Rival crew: worker D5 with the yellow jacket turned dark violet",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb (50k, decimated here to 4500 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); yellow turned dark violet",
+   "provenance": [
+    "citizens/workers_D5__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb",
+     "tex": 1024,
+     "decimateTo": 4500
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "tint": {
+    "from": 48,
+    "width": 22,
+    "minSat": 0.45,
+    "shift": 235,
+    "sat": 0.8,
+    "val": 0.38
+   },
+   "smoothness": 0.2
+  }
+ ]
+}

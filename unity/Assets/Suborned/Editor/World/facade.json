@@ -14,7 +14,7 @@
     "teal": "#1cb9c6", "teal_soft": "#5fb8b0", "mint_e": "#8fe3c2", "cobalt": "#2f84e8", "sunshine": "#f8e26c", "flamingo": "#e8609a",
     "coral": "#f09a8a", "apricot": "#f8d0b6", "gold": "#99784d", "lilac": "#c4b2ec", "pastel_pink": "#f5a9c4", "pastel_sky": "#86cff2",
     "pastel_mint": "#b5ead7", "green": "#6cc481", "lime": "#b8d84a", "navy": "#296587",
-    "t_diner": "#e8609a", "t_automat": "#6fd3b0", "t_soda": "#f8e26c", "t_news": "#86cff2", "t_cocktail": "#3b78da", "t_tiki": "#1e9c78",
+    "t_diner": "#F58468", "t_diner_board": "#3a3030", "t_diner_cream": "#FFE6C4", "t_automat": "#6fd3b0", "t_soda": "#f8e26c", "t_news": "#86cff2", "t_cocktail": "#3b78da", "t_tiki": "#1e9c78",
     "t_tavern": "#296587", "t_jazz": "#2b3a7c", "t_beauty": "#f4a6c6", "t_florist": "#c4a8ee", "t_record": "#f09a8a", "t_travel": "#4aa3e8",
     "t_couture": "#d78fc4", "t_market": "#b8d84a", "t_grocer": "#7fcf5a", "t_robot": "#1cb9c6", "t_radio": "#5f8fd0", "t_launder": "#9fd1c9",
     "t_hotel": "#ad866f", "t_pawn": "#7a7e83", "t_barber": "#f3eadb", "t_civic": "#b7c4c9", "t_garage": "#8fa5c8", "t_cinema": "#d8b4e0",
@@ -44,7 +44,7 @@
   "roofItems": { "trim": "@A", "column": "chrome", "park": "@leaf", "sign": "@B", "roof": "paper", "deck": "paper", "water": "pool", "awning": "@B", "landmark": "cobalt" },
   "greens": ["leaf_a", "leaf_b", "leaf_c"],
   "trades": {
-    "diner": ["t_diner", "paper"], "automat": ["t_automat", "white"], "soda-fountain": ["t_soda", "white"], "newsstand": ["t_news", "paper"],
+    "diner": ["t_diner", "paper", "t_diner_board", "t_diner_cream"], "automat": ["t_automat", "white"], "soda-fountain": ["t_soda", "white"], "newsstand": ["t_news", "paper"],
     "cocktail-lounge": ["t_cocktail", "chrome"], "tiki-bar": ["t_tiki", "sunshine"], "dockside-tavern": ["t_tavern", "paper"], "jazz-club": ["t_jazz", "gold"],
     "beauty-salon": ["t_beauty", "white"], "florist": ["t_florist", "white"], "record-shop": ["t_record", "paper"], "travel-bureau": ["t_travel", "white"],
     "couture-boutique": ["t_couture", "white"], "market-stall": ["t_market", "white"], "grocer": ["t_grocer", "white"], "robot-repair": ["t_robot", "ink"],

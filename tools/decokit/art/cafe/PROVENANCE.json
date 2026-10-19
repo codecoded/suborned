@@ -1,0 +1,30 @@
+{
+ "note": "Brief 020 B, Vela. Source art of the caf\u00e9's lit interior. Stand-in art for the Handover caf\u00e9 (the 9 Oct 'Caprice Grand Caf\u00e9' look).",
+ "files": [
+  {
+   "file": "cafe_back_bar_v1.png",
+   "source": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/Handover/Cafe/Cafe_back_bar.png",
+   "sha256": "5b0a7c89451055e6b7add519d0502c389498773c13ab1604331f05451d2d4fba",
+   "bytes": 1688107,
+   "service": "image generation in the old repo (9 Oct 2026); the old repo kept no record of the service, prompt or cost (the pilot artwork of HandoverCafeShell.cs: 'new back-bar and botanical-mural walls, no text, no logos')",
+   "use": "flat quads on the caf\u00e9's back wall (CafeInterior); never on the curved glass"
+  },
+  {
+   "file": "cafe_mural_v1.png",
+   "source": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/Handover/Cafe/Cafe_botanical_mural.png",
+   "sha256": "6b03f19b33be8f013ca9424b859372a6822bdcc510eb52e37b8034cfb4f3deff",
+   "bytes": 1357371,
+   "service": "image generation in the old repo (9 Oct 2026); the old repo kept no record of the service, prompt or cost (the pilot artwork of HandoverCafeShell.cs: 'new back-bar and botanical-mural walls, no text, no logos')",
+   "use": "flat quads on the caf\u00e9's back wall (CafeInterior); never on the curved glass"
+  },
+  {
+   "file": "cafe_floor_v1.png",
+   "source": "tools/decokit/derive020.py (numpy, seed 20261018)",
+   "sha256": "e62d70f20baee6712848c29ccd002d051b0af9b04a90d2ca5c31e522ebe11ce7",
+   "bytes": 161729,
+   "service": "none: procedural",
+   "cost": 0,
+   "use": "DK_Cafe_Floor, metric tiling 1.2 m (cells of 0.6 m)"
+  }
+ ]
+}

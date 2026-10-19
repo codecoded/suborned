@@ -90,7 +90,13 @@ namespace Suborned.Play
             // the test follow view (Sky 2026-10-18): frame times behind an agent at the café front, the pickup and mid-fight (FollowSpots)
             var follow = new List<string>();
             yield return FollowSpots(h, Dir, log, follow);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}]}}";
+            // brief 025: take control of the Scout at street level (frame times while driven), E on Inez, let go; the session replays headless (game:check)
+            var drive = new List<string>(); var session = new string[1];
+            yield return DriveSpot(h, Dir, log, drive, session);
+            // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
+            var people = new List<string>();
+            yield return PeopleCost(h, log, people, 6f, Dir);
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
@@ -112,6 +118,17 @@ namespace Suborned.Play
             new() { Tick = 1280, Op = "tech", Do = "move", To = "crew:tech" }, new() { Tick = 1660, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(2400, -6000) },
         };
 
+        /// <summary>Route A (contracts/missions/handover/routes/route-a.json) to the Fixer's call: Inez is turned, then summons the guard to her.</summary>
+        static readonly Suborned.Sim.Order[] RouteToCall =
+        {
+            new() { Tick = 0, Op = "scout", Do = "move", To = "d:Courtyard", Run = true }, new() { Tick = 0, Op = "tech", Do = "move", To = "cabinet", Run = true },
+            new() { Tick = 0, Op = "fixer", Do = "move", To = "d:Courtyard", Run = true }, new() { Tick = 0, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(4900, -1700) },
+            new() { Tick = 54, Op = "scout", Do = "watch", Target = "waitress" }, new() { Tick = 125, Op = "tech", Do = "loop", Target = "entrance" },
+            new() { Tick = 254, Op = "scout", Do = "move", To = "beside-inez" }, new() { Tick = 275, Op = "scout", Do = "listen", Target = "waitress" },
+            new() { Tick = 695, Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }, new() { Tick = 745, Op = "tech", Do = "reroute", Target = "patrol" },
+            new() { Tick = 1195, Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }, new() { Tick = 1695, Op = "fixer", Do = "call", Target = "waitress" },
+        };
+
         /// <summary>The test follow view at three spots, each a fresh run: the Fixer 8 m out from the café door facing Inez and the front, the Fixer 7 m back from the pickup (the
         /// driver's meeting point) facing Vale's car, and the Enforcer mid-fight on route G's way out. At each: T's toggle, 1 s to settle, 6 s
         /// of frame times with the clock running, a shot (follow-&lt;spot&gt; in dir). Ends on the overhead view. The Editor's scratch driver
@@ -124,8 +141,19 @@ namespace Suborned.Play
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
                 string face; Suborned.Sim.OpId who;
-                if (spot == "cafe") { var iz = h.Game.PersonPos(h.Game.Inez).Value; h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = new Suborned.Sim.Pt(iz.X + 800, iz.Y + 250), Run = true }); Arrive(1, 1500); who = Suborned.Sim.OpId.Fixer; face = "waitress"; } // 8 m out in the street (engine +x), facing the café door and Inez
-                else if (spot == "pickup") { var md = h.Game.S.At("d:Meet driver"); h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = new Suborned.Sim.Pt(md.X + 500, md.Y - 500), Run = true }); Arrive(1, 1500); who = Suborned.Sim.OpId.Fixer; face = "car/official"; } // 7 m back from the driver's meeting point, his car beyond him
+                if (spot == "cafe")
+                {
+                    // brief 022 (Glyph): the café front with the door guard and Inez standing together, so the guards are in frame: route A to
+                    // its call (the Fixer turns Inez and calls her; she summons him), the Fixer then walks 8 m out in the street (engine +x)
+                    // facing the café door, and the run goes on until the guard stands with her
+                    var iz = h.Game.PersonPos(h.Game.Inez).Value; // at her post (tick 0)
+                    foreach (var o in RouteToCall) { h.RunTo(o.Tick); h.Issue(new Suborned.Sim.Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
+                    h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = new Suborned.Sim.Pt(iz.X + 800, iz.Y + 250) }); Arrive(1, 1500);
+                    for (int k = 0; k < 1500 && !h.Game.Over && !(h.Game.PersonPose(h.Game.Inez) is { } ip && ip.phase == "together"); k++) h.RunTo(h.Game.Tick + 1);
+                    log.Add($"cafe: Inez {h.Game.PersonPose(h.Game.Inez)?.phase} at tick {h.Game.Tick}");
+                    who = Suborned.Sim.OpId.Fixer; face = "waitress";
+                }
+                else if (spot == "pickup") { var md = h.Game.S.At("d:Meet driver"); h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = new Suborned.Sim.Pt(md.X + 500, md.Y - 500), Run = true }); foreach (var (op, dx, dy) in new[] { ("scout", 600, -350), ("tech", 400, -650), ("enforcer", 650, -620) }) h.Issue(new Suborned.Sim.Order { Op = op, Do = "move", Point = new Suborned.Sim.Pt(md.X + dx, md.Y + dy), Run = true }); for (int k = 0; k < 4; k++) Arrive(k, 1500); /* brief 020: the whole cell at the pickup */ who = Suborned.Sim.OpId.Fixer; face = "car/official"; } // 7 m back from the driver's meeting point, his car beyond him
                 else
                 {
                     foreach (var o in RouteToFight) { h.RunTo(o.Tick); h.Issue(new Suborned.Sim.Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, How = o.How, Run = o.Run }); }
@@ -133,22 +161,134 @@ namespace Suborned.Play
                     h.RunTo(h.Game.Tick + 20); who = Suborned.Sim.OpId.Enforcer; face = "car/getaway";
                 }
                 h.Select(who, false); h.ClearHover();
+                var ds = new List<float>(); var gpu = new float[1];
+                // brief 020: the same moment overhead first (play zoom, the agent centred), then behind the agent
+                h.LookAt(At("op/" + Suborned.Sim.Op.Name(who))); h.SetPaused(false);
+                yield return new WaitForSecondsRealtime(1f); yield return Sample(seconds, ds, gpu);
+                rows.Add(Row(spot + "-overhead", ds, gpu[0])); log.Add($"overhead {spot}: {1000f / ds.Average():0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms, gpu {gpu[0]:0.##} ms");
+                h.SetPaused(true); while (HudToolkit.ShotBusy) yield return null;
+                log.Add($"overhead-{spot}: " + HudToolkit.Shoot(Path.Combine(dir, "overhead-" + spot), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null;
                 if (!h.Following) h.FollowToggle();
                 h.FollowFace(At(face));
                 log.Add($"follow {spot}: {who} at tick {h.Game.Tick}, fight {h.Game.FightOn}, over {h.Game.Over}, facing {face}");
                 h.SetPaused(false);
-                yield return new WaitForSecondsRealtime(1f);
-                var ds = new List<float>(); float t0 = Time.realtimeSinceStartup;
-                while (Time.realtimeSinceStartup - t0 < seconds) { yield return null; ds.Add(Time.unscaledDeltaTime * 1000f); }
-                ds.Sort(); float m = ds.Average();
-                rows.Add($"{{\"spot\": \"{spot}\", \"frames\": {ds.Count}, \"meanMs\": {F(m)}, \"fps\": {F(1000f / m)}, \"p95Ms\": {F(ds[(int)(ds.Count * 0.95f)])}, \"p99Ms\": {F(ds[(int)(ds.Count * 0.99f)])}, \"over20msFrames\": {ds.Count(d => d > 1000f / 60f * 1.2f)}, \"fightOn\": {(h.Game.FightOn ? "true" : "false")}}}");
-                log.Add($"follow {spot}: {1000f / m:0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms");
+                yield return new WaitForSecondsRealtime(1f); yield return Sample(seconds, ds, gpu);
+                rows.Add(Row(spot, ds, gpu[0])); log.Add($"follow {spot}: {1000f / ds.Average():0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms, gpu {gpu[0]:0.##} ms");
                 h.SetPaused(true);
                 while (HudToolkit.ShotBusy) yield return null;
                 log.Add($"follow-{spot}: " + HudToolkit.Shoot(Path.Combine(dir, "follow-" + spot), "rest"));
                 yield return null; while (HudToolkit.ShotBusy) yield return null;
                 if (h.Following) h.FollowToggle();
             }
+        }
+
+        /// <summary>Brief 025 (take control): a fresh run, the clock running; T on the Scout; the controller walks her to Inez (DriveRoute: the same
+        /// camera-relative input the keys give) while 6 s of frame times are taken at street level (drive-street) and a shot (drive-scout); on
+        /// arrival the price chip on Inez (drive-e-inez), E (Watch), and T lets go. The session is closed (saved) and its path returned for
+        /// game:check to replay headless on every checkpoint.</summary>
+        public static IEnumerator DriveSpot(HandoverHost h, string dir, List<string> log, List<string> rows, string[] session)
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock();
+            h.Select(Suborned.Sim.OpId.Scout, false); h.DriveToggle();
+            if (!h.Driving) { log.Add("drive: could not take control"); yield break; }
+            var g = h.Game; var route = g.S.Grid.Route(g.Ops[0].Pos, g.S.At("beside-inez"));
+            h.DriveRoute = route == null ? null : new List<Suborned.Sim.Pt>(route);
+            var ds = new List<float>(); var gpu = new float[1];
+            yield return new WaitForSecondsRealtime(1f); yield return Sample(6f, ds, gpu);
+            rows.Add(Row("drive-street", ds, gpu[0])); log.Add($"drive street: {1000f / ds.Average():0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms, gpu {gpu[0]:0.##} ms");
+            while (HudToolkit.ShotBusy) yield return null;
+            log.Add("drive-scout: " + HudToolkit.Shoot(Path.Combine(dir, "drive-scout"), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+            float t0 = Time.realtimeSinceStartup; while (h.DriveRoute != null && Time.realtimeSinceStartup - t0 < 40f) yield return null;
+            t0 = Time.realtimeSinceStartup; while (h.DriveFocus?.Key != "waitress" && Time.realtimeSinceStartup - t0 < 5f) yield return null;
+            log.Add($"drive: arrived {h.DriveRoute == null} at tick {g.Tick}, focus {h.DriveFocus?.Kind}/{h.DriveFocus?.Key}, chip {h.HoverIntent?.Label} {h.HoverIntent?.Usd} {h.HoverIntent?.Time}");
+            log.Add("drive-e-inez: " + HudToolkit.Shoot(Path.Combine(dir, "drive-e-inez"), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+            int n0 = g.Orders.Count; h.DriveAct(); yield return null;
+            var last = g.Orders.Count > n0 ? g.Orders[g.Orders.Count - 1] : default;
+            log.Add($"drive E: {(g.Orders.Count > n0 ? $"{last.order.Do} {last.order.Target} ok {last.ok}" : "no order")}");
+            yield return new WaitForSecondsRealtime(1f);
+            int samples = 0, refused = 0; foreach (var o in g.Orders) if (o.order.Do == "drive" && !o.order.Release) { samples++; if (!o.ok) refused++; }
+            int corr = g.DrivePoseOf(Suborned.Sim.OpId.Scout).Corrections;
+            h.DriveToggle(); yield return null;
+            log.Add($"drive: {samples} samples, {refused} refused, {corr} corrected; let go: driven {g.DrivePoseOf(Suborned.Sim.OpId.Scout).Driven}, overhead {!h.Following}");
+            yield return new WaitForSecondsRealtime(1f);
+            session[0] = h.SessionPath; h.Begin(); // the restart closes the run at its last tick (saved)
+        }
+
+        /// <summary>Mean and p99 frame ms over `seconds`, and the GPU's mean frame ms (FrameTimingManager; -1 when the player has no timing stats).</summary>
+        public static IEnumerator Sample(float seconds, List<float> into, float[] gpu)
+        {
+            into.Clear(); double gsum = 0; int gn = 0; var ft = new FrameTiming[1]; float t0 = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - t0 < seconds)
+            {
+                yield return null; into.Add(Time.unscaledDeltaTime * 1000f);
+                FrameTimingManager.CaptureFrameTimings(); if (FrameTimingManager.GetLatestTimings(1, ft) == 1 && ft[0].gpuFrameTime > 0) { gsum += ft[0].gpuFrameTime; gn++; }
+            }
+            into.Sort(); gpu[0] = gn > 0 ? (float)(gsum / gn) : -1f;
+        }
+        static string Row(string spot, List<float> ds, float gpu) => $"{{\"spot\": \"{spot}\", \"frames\": {ds.Count}, \"meanMs\": {F(ds.Average())}, \"fps\": {F(1000f / ds.Average())}, \"p99Ms\": {F(ds[(int)(ds.Count * 0.99f)])}, \"gpuMs\": {F(gpu)}}}";
+
+        /// <summary>Brief 020: the opening view (the square, the crowd walking) with the figures and with capsules only; overhead.</summary>
+        public static IEnumerator PeopleCost(HandoverHost h, List<string> log, List<string> rows, float seconds = 6f, string dir = "")
+        {
+            // brief 020 (Glint §3, Redline's 4.5 ms for people): the opening square with the figures, with capsules, and the figures with the crowd's
+            // shadows off, SSAO off, SMAA off; one change at a time, overhead, the same moment each
+            var lib = h.figures; var ds = new List<float>(); var gpu = new float[1]; var cam = h.View;
+            var ucd = cam ? cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>() : null;
+            UnityEngine.Rendering.Universal.ScriptableRendererFeature ssao = null;
+            if (UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline is UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset urp)
+            {
+                var rdf = typeof(UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset).GetField("m_RendererDataList", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (rdf?.GetValue(urp) is UnityEngine.Rendering.Universal.ScriptableRendererData[] list) foreach (var rd in list) if (rd != null) foreach (var f in rd.rendererFeatures) if (f != null && f.GetType().Name.Contains("AmbientOcclusion")) ssao = f;
+            }
+            foreach (var variant in new[] { "figures", "capsules", "no-crowd-shadows", "no-ssao", "no-smaa" })
+            {
+                h.figures = variant == "capsules" ? null : lib; h.Begin(); h.IntelOpen = false; h.StartClock(); h.RunTo(20);
+                if (variant == "no-crowd-shadows") foreach (var r in UnityEngine.Object.FindObjectsByType<SkinnedMeshRenderer>()) { var a = r.GetComponentInParent<Animator>(); if (a != null && a.transform.parent != null && a.transform.parent.name.StartsWith("crowd/")) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; }
+                if (variant == "no-ssao" && ssao != null) ssao.SetActive(false);
+                if (variant == "no-smaa" && ucd != null) ucd.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.None;
+                yield return new WaitForSecondsRealtime(1f); yield return Sample(seconds, ds, gpu);
+                rows.Add(Row("square-" + variant, ds, gpu[0])); log.Add($"square {variant}: {1000f / ds.Average():0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms, gpu {gpu[0]:0.##} ms{(variant == "no-ssao" && ssao == null ? " (no SSAO feature found)" : "")}");
+                if (variant == "figures" && dir.Length > 0) { h.SetPaused(true); while (HudToolkit.ShotBusy) yield return null; log.Add("overhead-square: " + HudToolkit.Shoot(Path.Combine(dir, "overhead-square"), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null; h.SetPaused(false); }
+                if (ssao != null) ssao.SetActive(true); if (ucd != null) ucd.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            }
+            // brief 020 (Glint §3): the 50-figure spot. The square shows about 20 figures at the opening, so the same view is filled to 50 visible
+            // figures with walking clones of the library's models (on the ground in frame, each with its own animator: what 50 people cost
+            // to skin, shadow and draw). Figures there with SMAA on, with SMAA off, with the crowd's shadows off; and the capsules baseline
+            // again (no figures at all) so the people's share is the difference.
+            var clones = new List<GameObject>();
+            foreach (var variant in new[] { "fifty", "fifty-no-smaa", "fifty-no-crowd-shadows", "fifty-capsules" })
+            {
+                bool caps = variant == "fifty-capsules";
+                h.figures = caps ? null : lib; h.Begin(); h.IntelOpen = false; h.StartClock(); h.RunTo(20);
+                yield return null; yield return null;
+                int visible = 0;
+                if (!caps)
+                {
+                    foreach (var a in UnityEngine.Object.FindObjectsByType<Animator>()) if (a.name == "figure") foreach (var r in a.GetComponentsInChildren<SkinnedMeshRenderer>()) if (r.isVisible) { visible++; break; }
+                    int need = Mathf.Max(0, 50 - visible), cols = Mathf.CeilToInt(Mathf.Sqrt(Mathf.Max(1, need)));
+                    for (int i = 0; i < need && lib != null && lib.figures.Length > 0 && cam; i++)
+                    {
+                        var fig = lib.figures[i % lib.figures.Length]; if (fig.model == null) continue;
+                        var ray = cam.ViewportPointToRay(new Vector3(0.2f + 0.6f * ((i % cols) + 0.5f) / cols, 0.2f + 0.6f * ((i / cols) + 0.5f) / cols, 0f));
+                        if (Mathf.Abs(ray.direction.y) < 1e-3f) continue; var at = ray.origin + ray.direction * (-ray.origin.y / ray.direction.y);
+                        var go = UnityEngine.Object.Instantiate(fig.model, at, Quaternion.Euler(0f, i * 47f, 0f)); go.name = "figure-clone";
+                        var an = go.GetComponent<Animator>() ?? go.AddComponent<Animator>(); an.runtimeAnimatorController = lib.controller; an.applyRootMotion = false;
+                        an.Play(fig.female ? "walk_f" : "walk", 0, (i * 0.137f) % 1f);
+                        if (variant == "fifty-no-crowd-shadows") foreach (var r in go.GetComponentsInChildren<SkinnedMeshRenderer>()) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                        clones.Add(go);
+                    }
+                    if (variant == "fifty-no-crowd-shadows") foreach (var r in UnityEngine.Object.FindObjectsByType<SkinnedMeshRenderer>()) { var a = r.GetComponentInParent<Animator>(); if (a != null && a.transform.parent != null && a.transform.parent.name.StartsWith("crowd/")) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; }
+                    if (variant == "fifty-no-smaa" && ucd != null) ucd.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.None;
+                    yield return null; yield return null; visible = 0;
+                    foreach (var a in UnityEngine.Object.FindObjectsByType<Animator>()) if (a.name is "figure" or "figure-clone") foreach (var r in a.GetComponentsInChildren<SkinnedMeshRenderer>()) if (r.isVisible) { visible++; break; }
+                }
+                yield return new WaitForSecondsRealtime(1f); yield return Sample(seconds, ds, gpu);
+                rows.Add(Row("square-" + variant, ds, gpu[0]).Replace("}", $", \"figuresVisible\": {visible}}}")); log.Add($"square {variant}: {visible} figures visible, {1000f / ds.Average():0.#} fps mean, p99 {ds[(int)(ds.Count * 0.99f)]:0.#} ms, gpu {gpu[0]:0.##} ms");
+                if (variant == "fifty" && dir.Length > 0) { h.SetPaused(true); while (HudToolkit.ShotBusy) yield return null; log.Add("overhead-square-fifty: " + HudToolkit.Shoot(Path.Combine(dir, "overhead-square-fifty"), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null; h.SetPaused(false); }
+                foreach (var c in clones) if (c) UnityEngine.Object.Destroy(c); clones.Clear();
+                if (ucd != null) ucd.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            }
+            h.figures = lib; h.Begin();
         }
 
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);

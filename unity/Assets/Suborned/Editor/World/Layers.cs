@@ -17,10 +17,19 @@ namespace Suborned.World
                 nodes.Part(el, "carriageway", new MeshKit().Ribbon(r.Line, r.Width, r.Level, r.Level), r.Surface);
                 // Kerb strips centred on the carriageway edges' outer side: offset lines at (width + kerb) / 2.
                 var (l, rr) = Poly.Ribbon(Poly.CleanLine(r.Line), r.Width + r.KerbWidth, false);
-                var kerbs = new MeshKit()
-                    .Ribbon(l, r.KerbWidth, r.Level, r.Level + r.KerbHeight)
-                    .Ribbon(rr, r.KerbWidth, r.Level, r.Level + r.KerbHeight);
+                var drives = g.Drives.FindAll(d => d.Road == r.Id && d.Kerb is { Length: 2 });
+                var kerbs = new MeshKit(); var dropped = new MeshKit(); bool anyDrop = false;
+                foreach (var side in new[] { l, rr }) // brief 023: the kerb is dropped where a drive crosses it (the drive's kerb segment)
+                    foreach (var (piece, drop, h) in KerbPieces(side, drives, r.KerbWidth))
+                    {
+                        if (!drop) kerbs.Ribbon(piece, r.KerbWidth, r.Level, r.Level + r.KerbHeight);
+                        else { dropped.Ribbon(piece, r.KerbWidth, r.Level, r.Level + h); anyDrop = true; }
+                    }
                 nodes.Part(el, "kerbs", kerbs, r.KerbSurface);
+                if (anyDrop) nodes.Part(el, "kerbs-dropped", dropped, r.KerbSurface);
+                // the drive itself: a flat at its level from the carriageway's edge to its bay, drawn with the road it leaves (one element per
+                // export id, and counts.ground has no drives: world.schema.ts)
+                foreach (var d in drives) nodes.Part(el, "drive/" + d.Id, new MeshKit().Flat(d.Ring, d.Level), d.Surface);
             }
             foreach (var c in g.Circuses)
             {
@@ -34,13 +43,107 @@ namespace Suborned.World
             foreach (var f in g.Flats) nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), f.Surface);
             foreach (var w in g.Water) nodes.Solid(layer, w.Id, new MeshKit().Flat(w.Ring, w.Level), w.Surface);
             foreach (var q in g.Quays) Mass(layer, q);
+            // brief 023: a drive and the bay it reaches lie below the plot slab's top: the slab is cut round them (each a convex ring)
+            var cuts = new System.Collections.Generic.List<Vector2[]>();
+            foreach (var d in g.Drives) { cuts.Add(d.Ring); var bay = g.Flats.Find(f => f.Id == d.To); if (bay != null) cuts.Add(bay.Ring); }
             foreach (var p in g.Plots)
             {   // a plan signature's ground (SpaceHQ's drum) is the piece's own floor: the pavement slab stops at its edge
                 var parts = KitCover.OutsideGrounds(Poly.Clean(p.Ring));
+                foreach (var c in cuts) parts = CutConvex(parts, Poly.Clean(c));
                 var kit = new MeshKit();
                 foreach (var q in parts) kit.Prism(q, p.Base, p.Base + p.Height);
                 nodes.Solid(layer, p.Id, kit, p.Surface);
             }
+        }
+
+        /// <summary>A kerb line in pieces: kept, and dropped (to the drive's kerb height) where a drive's kerb segment runs along it within the
+        /// kerb's width; in order along the line.</summary>
+        static System.Collections.Generic.List<(Vector2[] piece, bool drop, float h)> KerbPieces(Vector2[] line, System.Collections.Generic.List<DriveDto> drives, float kerbWidth)
+        {
+            var cuts = new System.Collections.Generic.List<(float a, float b, float h)>();
+            foreach (var d in drives)
+            {
+                var (sa, da) = Project(line, d.Kerb[0]); var (sb, db) = Project(line, d.Kerb[1]);
+                if (da > kerbWidth + 0.05f || db > kerbWidth + 0.05f || Mathf.Abs(sb - sa) < 0.01f) continue; // the other side of the road
+                cuts.Add((Mathf.Min(sa, sb), Mathf.Max(sa, sb), Mathf.Max(0f, d.KerbHeight)));
+            }
+            var r = new System.Collections.Generic.List<(Vector2[], bool, float)>();
+            float total = Length(line), at = 0f;
+            cuts.Sort((x, y) => x.a.CompareTo(y.a));
+            foreach (var (a, b, h) in cuts)
+            {
+                if (a > at + 0.01f) r.Add((Sub(line, at, a), false, 0f));
+                if (b > Mathf.Max(a, at) + 0.01f) r.Add((Sub(line, Mathf.Max(a, at), b), true, h));
+                at = Mathf.Max(at, b);
+            }
+            if (total > at + 0.01f) r.Add((Sub(line, at, total), false, 0f));
+            return r;
+        }
+
+        static float Length(Vector2[] line) { float s = 0f; for (int i = 1; i < line.Length; i++) s += Vector2.Distance(line[i - 1], line[i]); return s; }
+
+        /// <summary>The arc length along the line of its nearest point to p, and the distance to it.</summary>
+        static (float s, float d) Project(Vector2[] line, Vector2 p)
+        {
+            float best = float.MaxValue, bestS = 0f, s = 0f;
+            for (int i = 1; i < line.Length; i++)
+            {
+                Vector2 a = line[i - 1], b = line[i], ab = b - a; float len = ab.magnitude; if (len < 1e-6f) continue;
+                float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / (len * len)); float d = Vector2.Distance(p, a + ab * t);
+                if (d < best) { best = d; bestS = s + t * len; }
+                s += len;
+            }
+            return (bestS, best);
+        }
+
+        /// <summary>The line between arc lengths s0 and s1.</summary>
+        static Vector2[] Sub(Vector2[] line, float s0, float s1)
+        {
+            var r = new System.Collections.Generic.List<Vector2>(); float s = 0f;
+            for (int i = 1; i < line.Length; i++)
+            {
+                Vector2 a = line[i - 1], b = line[i]; float len = Vector2.Distance(a, b); if (len < 1e-6f) continue;
+                float e = s + len;
+                if (e >= s0 && s <= s1)
+                {
+                    if (r.Count == 0) r.Add(Vector2.Lerp(a, b, Mathf.Clamp01((s0 - s) / len)));
+                    if (e <= s1) r.Add(b); else { r.Add(Vector2.Lerp(a, b, Mathf.Clamp01((s1 - s) / len))); break; }
+                }
+                s = e;
+            }
+            return r.ToArray();
+        }
+
+        /// <summary>Each part less a convex ring: split along the ring's edges (Sutherland–Hodgman), keeping what lies outside.</summary>
+        static System.Collections.Generic.List<Vector2[]> CutConvex(System.Collections.Generic.List<Vector2[]> parts, Vector2[] convex)
+        {
+            if (convex.Length < 3) return parts;
+            if (Poly.SignedArea(convex) < 0) System.Array.Reverse(convex = (Vector2[])convex.Clone()); // counter-clockwise: outside is right of each edge
+            var outParts = new System.Collections.Generic.List<Vector2[]>();
+            foreach (var p in parts)
+            {
+                var rest = p;
+                for (int i = 0; i < convex.Length && rest.Length >= 3; i++)
+                {
+                    Vector2 a = convex[i], b = convex[(i + 1) % convex.Length], e = b - a; var n = new Vector2(e.y, -e.x).normalized; float k = Vector2.Dot(n, a);
+                    var outside = Half(rest, n, k + 1e-4f); if (outside.Length >= 3 && Mathf.Abs(Poly.SignedArea(outside)) > 0.01f) outParts.Add(outside);
+                    rest = Half(rest, -n, -k - 1e-4f);
+                }
+            }
+            return outParts;
+        }
+
+        static Vector2[] Half(Vector2[] p, Vector2 n, float k)
+        {
+            var r = new System.Collections.Generic.List<Vector2>();
+            for (int i = 0; i < p.Length; i++)
+            {
+                var a = p[i]; var b = p[(i + 1) % p.Length];
+                float da = Vector2.Dot(n, a) - k, db = Vector2.Dot(n, b) - k;
+                if (da >= 0) r.Add(a);
+                if ((da >= 0) != (db >= 0)) r.Add(a + (b - a) * (da / (da - db)));
+            }
+            return r.ToArray();
         }
 
         public void Transit(Transform layer, TransitDto t)

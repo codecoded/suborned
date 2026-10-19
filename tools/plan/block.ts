@@ -85,20 +85,29 @@ const objects: Item[] = nav.solids
 
 // ---- adjustments ----
 type Adj = {
-  op: 'addBay' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing'; reason: string;
+  op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing'; reason: string;
   id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number;
-  building?: string; tower?: string; to?: P; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance
+  building?: string; tower?: string; to?: P | string; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance; addDrive: `to` = the bay it reaches
+  road?: string; kerb?: [P, P]; // addDrive: the plan road it leaves and the segment of that road's kerb it crosses (block frame)
 };
 const adjFile = readFileSync(ADJUST, 'utf8');
 const adj: { schema: string; owner: string; adjustments: Adj[]; dressing?: Record<string, unknown> } = JSON.parse(adjFile);
 if (adj.schema !== 'suborned.block-adjust/1') throw new Error('adjust file schema must be suborned.block-adjust/1');
 const bays: { id: string; polygon: P[] }[] = [];
+// A drive (brief 023; Sky 2026-10-19, service door east face): the vehicle crossing from a road's carriageway across the pavement of the plot to a bay that touches no road. Block frame, like the bays.
+// `kerb` is the segment of the road's kerb the drive crosses (the world drops that kerb flush); `to` is the bay it reaches. tools/sim/drive.ts reads {id, polygon}; the plan checker's DR-1..DR-3 hold the rest.
+const drives: { id: string; polygon: P[]; road: string; kerb: [P, P]; to: string; reason: string }[] = [];
 const all = new Map<string, Item>([...structures, ...objects].map(i => [i.id, i]));
 const building = (a: Adj) => { const b = buildings.find(x => x.id === a.building); if (!b) throw new Error(`adjustment ${a.op}: no building ${a.building}`); return b; };
 let dressing: Record<string, unknown> | undefined;
 for (const a of adj.adjustments) {
   if (!a.reason?.trim()) throw new Error(`adjustment without a reason: ${JSON.stringify(a)}`);
   if (a.op === 'addBay') bays.push({ id: a.id!, polygon: a.polygon! });
+  else if (a.op === 'addDrive') {
+    if (!a.id || !a.polygon || a.polygon.length < 3 || !a.road || !a.kerb || a.kerb.length !== 2 || typeof a.to !== 'string') throw new Error(`adjustment addDrive ${a.id ?? ''}: needs id, polygon, road, kerb [[x,y],[x,y]] and to (a bay id)`);
+    if (drives.some(x => x.id === a.id)) throw new Error(`adjustment addDrive: ${a.id} exists`);
+    drives.push({ id: a.id, polygon: a.polygon, road: a.road, kerb: a.kerb, to: a.to, reason: a.reason });
+  }
   else if (a.op === 'addStructure') { structures.push(a.item!); all.set(a.item!.id, a.item!); }
   else if (a.op === 'edit') {
     const it = all.get(a.id!); if (!it) throw new Error(`adjustment ${a.id}: no such item in the source (stale adjustment?)`);
@@ -117,7 +126,7 @@ for (const a of adj.adjustments) {
   } else if (a.op === 'moveEntrance') {
     const e = buildings.flatMap(b => b.entrances as { id: string; at: P; z?: number }[]).find(x => x.id === a.id);
     if (!e) throw new Error(`adjustment moveEntrance ${a.id}: no such entrance (stale adjustment?)`);
-    Object.assign(e, { at: [r3(a.to![0]), r3(a.to![1])], ...(a.z !== undefined ? { z: a.z } : {}), ...(a.on ? { on: a.on } : {}), ...(a.face ? { face: a.face } : {}) });
+    Object.assign(e, { at: [r3((a.to as P)[0]), r3((a.to as P)[1])], ...(a.z !== undefined ? { z: a.z } : {}), ...(a.on ? { on: a.on } : {}), ...(a.face ? { face: a.face } : {}) });
   } else if (a.op === 'addEntrance') {
     const b = building(a), e = a.item as unknown as { id: string; kind?: string };
     if ((b.entrances as { id: string }[]).some(x => x.id === e.id)) throw new Error(`adjustment addEntrance: ${e.id} exists`);
@@ -129,6 +138,7 @@ for (const a of adj.adjustments) {
   } else throw new Error(`unknown adjustment op ${(a as any).op}`);
 }
 
+for (const x of drives) if (!bays.some(b => b.id === x.to)) throw new Error(`adjustment addDrive ${x.id}: no bay ${x.to} (add it with addBay)`);
 const out = {
   schema: 'suborned.block/4', id: 'civic',
   frame: {
@@ -139,7 +149,7 @@ const out = {
   sourceRoot: SRC_LABEL,
   sources,
   adjustments: { file: 'contracts/world/civic-block.adjust.json', sha256: createHash('sha256').update(adjFile).digest('hex'), owner: adj.owner, applied: adj.adjustments },
-  buildings, structures, objects, bays,
+  buildings, structures, objects, bays, drives,
   ...(dressing ? { dressing } : {}),
 };
 
@@ -149,6 +159,6 @@ writeFileSync(OUT, text);
 const kinds = (a: Item[]) => Object.entries(a.reduce<Record<string, number>>((m, i) => ((m[i.kind ?? i.category ?? '?'] = (m[i.kind ?? i.category ?? '?'] ?? 0) + 1), m), {})).map(([k, n]) => `${k} ${n}`).join(', ');
 console.log(`block → ${OUT} (${Buffer.byteLength(text)} bytes)`);
 console.log(`sources: ${sources.map(s => `${s.path} ${s.sha256.slice(0, 12)}`).join('; ')}`);
-console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
+console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, drives ${drives.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
 console.log(`omitted from ${nav.solids.length} nav solids: cars, sentries, globes, lamps, chairs, parasols, street props, access ramps (not exported before; add when a consumer needs them)`);
 console.log(`adjustments applied: ${adj.adjustments.length} (${adj.owner})`);

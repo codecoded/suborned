@@ -2,7 +2,7 @@
 // engine and its three inputs at a commit (default HEAD: the committed engine; --tree: the working tree), builds the CLI against that very
 // project (Release), plays every scenario headless through it, and copies into the Unity project:
 //   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)
-//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json (the inputs it ran on),
+//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json, handover.rounds.json (the inputs it ran on),
 //                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json
 // Unity's Suborned/Sim/Run Scenarios plays the same scenarios with the same DLL and inputs and must give the same hashes (§11).
 // The inputs are validated by bun first, with the schemas of the same commit (Redline E1: Engine.FromTexts lets unknown keys through, and a
@@ -35,7 +35,7 @@ const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.ma
 const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader recurses per level
 // brief 013 E: the provisional facts (security level) and the world's takedown places (stashes, service doors, call boxes, posts, watchers)
 // are inputs too: without them the engine runs at level 1 with no stashes, and its records differ from every headless run of the repo.
-const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json', 'handover.provisional.json': 'sim/data/handover.provisional.json', 'handover.takedown.json': 'sim/data/handover.takedown.json' } as const;
+const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json', 'handover.provisional.json': 'sim/data/handover.provisional.json', 'handover.takedown.json': 'sim/data/handover.takedown.json', 'handover.rounds.json': 'sim/data/handover.rounds.json' } as const; // rounds: brief 022 (Keel), the mission's data plays the round in the host too
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
 const dirty = sh(['git', 'diff', '--quiet', 'HEAD', '--', 'sim/Suborned.Sim', ...Object.values(INPUTS)]).code !== 0;
 const label = (tree ? `working tree on ${commit.slice(0, 12)}${dirty ? ' (uncommitted engine or input changes)' : ''}` : `commit ${commit.slice(0, 12)}`) + (dllArg ? `, engine bytes from ${dllArg}` : '');
@@ -67,6 +67,7 @@ if (tree) {
   for (const [f, id] of [['handover.provisional.json', 'suborned.sim.provisional/1'], ['handover.takedown.json', 'suborned.sim.takedown/1']] as const) {
     const n = read(INPUTS[f]); if (n.schema !== id || n.mission !== 'handover') { console.error(`${f} is not ${id} for the Handover`); process.exit(1); }
   }
+  if (read(INPUTS['handover.rounds.json']).schema !== 'suborned.sim.rounds/1') { console.error('handover.rounds.json is not suborned.sim.rounds/1'); process.exit(1); } // brief 022: the round has no mission key, the site names it
   for (const rel of Object.values(INPUTS)) { const d = depth(read(rel)); if (d > MAX_DEPTH) { console.error(`${rel} nests ${d} deep (> ${MAX_DEPTH})`); process.exit(1); } }
   console.log('bun: rulebook.json and people.rules.json parse with their schemas and every ref resolves; the site, people, provisional and takedown files parse with their schema ids; nesting within bounds');
 }
@@ -127,6 +128,21 @@ let text = 'absent (the host shows its placeholders)';
     writeFileSync(join(stream, 'text.json'), body); text = `text.json ${sha(body).slice(0, 12)} (suborned.text/1 parses)`;
   } else rmSync(join(stream, 'text.json'), { force: true });
 }
+// 4c. who sits at which café chair (Pulse, suborned.view.seats/1, `bun run seats`): view-only host content like the text, never an engine
+// input and never hashed (the engine walks people to their chairs; the host only draws them seated). Same source as the inputs; absent, nobody sits.
+const SEATS = 'contracts/people/handover.seats.json';
+let seats = 'absent (nobody is drawn seated)';
+{
+  const body = tree ? (existsSync(join(root, SEATS)) ? readFileSync(join(root, SEATS)) : null)
+    : (sh(['git', 'cat-file', '-e', `HEAD:${SEATS}`]).code === 0 ? Buffer.from(need(sh(['git', 'show', `HEAD:${SEATS}`]), `git show ${SEATS}`)) : null);
+  if (body) {
+    const j = JSON.parse(body.toString('utf8'));
+    if (j.schema !== 'suborned.view.seats/1' || typeof j.tables !== 'object' || typeof j.seated !== 'object') { console.error(`${SEATS} is not suborned.view.seats/1 with tables and seated`); process.exit(1); }
+    if (depth(j) > MAX_DEPTH) { console.error(`${SEATS} nests deeper than ${MAX_DEPTH}`); process.exit(1); }
+    writeFileSync(join(stream, 'handover.seats.json'), body);
+    seats = `handover.seats.json ${sha(body).slice(0, 12)} (${Object.keys(j.seated).length} people, ${Object.keys(j.tables).length} tables; view only, unhashed)`;
+  } else rmSync(join(stream, 'handover.seats.json'), { force: true });
+}
 const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, text, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
 writeFileSync(join(stream, 'engine.json'), JSON.stringify(engine, null, 1) + '\n');
 writeFileSync(join(stream, 'headless.json'), JSON.stringify({ schema: 'suborned.sim.headless/1', engine: { commit, dllSha256: dllSha, inputs }, scenarios, routes }, null, 1) + '\n');
@@ -136,5 +152,6 @@ console.log(`engine ${label}: Suborned.Sim.dll sha256 ${dllSha.slice(0, 12)} (${
 console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scenarios pass with identical replay${bad.length ? `; failing: ${bad.map(b => b.id).join(' ')}` : ''}`);
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
+console.log(`seats: ${seats}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, ${Object.keys(INPUTS).length} inputs)`);
 process.exit(bad.length ? 1 : 0);

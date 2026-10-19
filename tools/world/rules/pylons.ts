@@ -33,6 +33,7 @@ function groundThings(w: World): Thing[] {
     ...w.street.filter(s => s.kind === 'station-entrance')
       .map(s => keep(`the entrance ${s.id}`, itemRing(s), DOORWAY_CLEAR)),
     ...w.ground.flats.filter(f => f.surface === 'bay').map(f => keep(`the bay ${f.id}`, f.ring)),
+    ...(w.ground.drives ?? []).map(f => keep(`the drive ${f.id}`, f.ring)),
     ...w.frontages.filter(f => onGround(f.z)).flatMap(f => [
       keep(`the door of ${f.id}`, primBox(f.entrance).ring, DOORWAY_CLEAR),
       ...(f.service ? [keep(`the service bay of ${f.id}`, primBox(f.service).ring)] : []),
@@ -56,6 +57,6 @@ export function pylonRules(c: WCtx): Check[] {
       }
     }
   }
-  return [rule('SF-18', 'Sky rail', 'A sky rail pylon\'s footprint stands clear of steps, landmarks, bays and '
+  return [rule('SF-18', 'Sky rail', 'A sky rail pylon\'s footprint stands clear of steps, landmarks, bays, drives and '
     + 'buildings, and 2 m from crossings and doorways', total, bad, 'none', SOURCE)];
 }

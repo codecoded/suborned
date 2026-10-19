@@ -87,7 +87,7 @@ namespace Suborned.Play
         /// <summary>The keys and the wheel in the follow view (T toggles in either view: see FollowKey).</summary>
         void FollowInput(Keyboard kb, UnityEngine.InputSystem.Mouse mouse, bool overHud)
         {
-            if (kb != null && !fDragging)
+            if (kb != null && !fDragging && !Driving) // driven: E acts and the drag orbits (HostDrive)
             {
                 if (controls.Down(kb, PlayAction.TurnLeft)) FollowTurn(-1);
                 if (controls.Down(kb, PlayAction.TurnRight)) FollowTurn(1);
@@ -101,7 +101,7 @@ namespace Suborned.Play
                 else { fYaw += (x - fDragX) * turnDragDegPerPixel * 1080f / Mathf.Max(1f, Screen.height); fYawFrom = fYawTo = fYaw; fDragX = x; }
             }
             float wheel = mouse.scroll.ReadValue().y;
-            if (wheel != 0f && !overHud) fDist = Mathf.Clamp(fDist - Mathf.Sign(wheel) * 0.75f, followMin, followMax);
+            if (wheel != 0f && !overHud) fDist = FollowWheel(fDist, wheel); // stepped or proportional (brief 025)
         }
 
         /// <summary>Scripted shots and the proof: turn the follow view (no ease, no swing) to look from the agent towards a world point.</summary>
@@ -136,6 +136,7 @@ namespace Suborned.Play
         /// head to the camera (never under 1.5 m). Props on that line, or within followPropNear of the camera, are hidden while they are.</summary>
         float FollowClear(Vector3 fwd)
         {
+            if (!Cam.follow.collision) { foreach (var r in fHidden) if (r) r.enabled = true; fHidden.Clear(); return fDist; } // brief 025: collision off in the lab
             FollowIndex(); fHideNow.Clear();
             var head = fPivot + Vector3.up * 1.6f; var cam0 = fPivot - fwd * fDist + Vector3.up * (followHeight + fDist * followRise);
             var ray = new Ray(head, (cam0 - head).normalized); float len = Vector3.Distance(head, cam0), d = fDist;
@@ -160,12 +161,48 @@ namespace Suborned.Play
             fHidden.Clear(); fHidden.UnionWith(fHideNow);
             return Mathf.Max(1.5f, d);
         }
-        void FollowUnhide() { foreach (var r in fHidden) if (r) r.enabled = true; fHidden.Clear(); }
+        void FollowUnhide() { foreach (var r in fHidden) if (r) r.enabled = true; fHidden.Clear(); FollowPeopleUnhide(); }
+
+        [Tooltip("Follow view: a passer-by nearer the camera whose drawn box covers at least this share of the followed agent's (feet to head, on screen) is hidden while they do.")]
+        public float followPersonCover = 0.12f;
+        readonly List<Renderer> fPeopleHidden = new();
+        void FollowPeopleUnhide() { foreach (var r in fPeopleHidden) if (r) r.forceRenderingOff = false; fPeopleHidden.Clear(); }
+
+        /// <summary>Glyph 022 (player-follow-cafe: the selected ring sat under a blond passer-by, who stood between the camera and the Fixer): a
+        /// passer-by (crowd/*) nearer the camera than the followed agent whose screen box covers part of the agent's is hidden while they do, so
+        /// the agent, and the ring at her feet, are never drawn behind (or under) someone else. The cast, the cell and every signal figure stay.</summary>
+        void FollowPeople()
+        {
+            FollowPeopleUnhide();
+            if (views == null || !cam || FollowPoint(fAgent) is not Vector3 a) return;
+            static Rect Box(UnityEngine.Camera c, Vector3 feet, out float depth)
+            {
+                var f = c.WorldToScreenPoint(feet); var h = c.WorldToScreenPoint(feet + Vector3.up * 1.8f); depth = f.z;
+                float half = Mathf.Abs(c.WorldToScreenPoint(feet + c.transform.right * 0.32f).x - f.x);
+                return Rect.MinMaxRect(Mathf.Min(f.x, h.x) - half, Mathf.Min(f.y, h.y), Mathf.Max(f.x, h.x) + half, Mathf.Max(f.y, h.y));
+            }
+            var ab = Box(cam, a, out var ad); if (ad <= 0f || ab.width * ab.height < 1f) return;
+            foreach (var (key, t) in views.All())
+            {
+                if (!key.StartsWith("crowd/") || !t || !t.gameObject.activeInHierarchy) continue;
+                var pb = Box(cam, t.position, out var pd); if (pd <= 0f || pd >= ad - 0.3f) continue; // behind the camera, or not in front of the agent
+                float ox = Mathf.Min(ab.xMax, pb.xMax) - Mathf.Max(ab.xMin, pb.xMin), oy = Mathf.Min(ab.yMax, pb.yMax) - Mathf.Max(ab.yMin, pb.yMin);
+                if (ox <= 0f || oy <= 0f || ox * oy < followPersonCover * ab.width * ab.height) continue;
+                foreach (var r in t.GetComponentsInChildren<Renderer>()) if (!r.forceRenderingOff) { r.forceRenderingOff = true; fPeopleHidden.Add(r); }
+            }
+        }
 
         void FollowTurn(int dir) { fYawFrom = fYaw; fYawTo += followTurnStep * dir; fTurnStart = Time.unscaledTime; }
 
         /// <summary>T in either view (under a modal too: the camera may look round there).</summary>
-        bool FollowKey(Keyboard kb) { if (!controls.Down(kb, PlayAction.FollowView)) return false; FollowToggle(); return true; }
+        /// <summary>T (brief 025): take control of the selected agent, or let go; under a modal, or in a plain follow view (the lab's button), the
+        /// follow view only.</summary>
+        bool FollowKey(Keyboard kb)
+        {
+            if (!controls.Down(kb, PlayAction.FollowView)) return false;
+            if (Driving) DriveToggle(); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter();
+            return true;
+        }
 
         /// <summary>Per frame, after the views moved: the agent followed (a new selection swings to its agent), the turn eased, the camera placed.</summary>
         void FollowFrame()
@@ -189,12 +226,19 @@ namespace Suborned.Play
             // colliders: the engine's walk grid, read only, is the test); in at once, back out eased
             float want = FollowClear(fwd);
             fDistNow = snap || want < fDistNow ? want : Mathf.MoveTowards(fDistNow, want, 4f * dt);
-            var pos = fPivot - fwd * fDistNow + Vector3.up * (followHeight + fDistNow * followRise);
-            var look = fPivot + fwd * followAhead + Vector3.up * followLookHeight;
+            var right = Quaternion.Euler(0f, fYaw, 0f) * Vector3.right * Cam.follow.shoulder; // brief 025: over the shoulder
+            var pos = fPivot - fwd * fDistNow + Vector3.up * (followHeight + fDistNow * followRise) + right;
+            var look = fPivot + fwd * followAhead + Vector3.up * followLookHeight + right;
             var rot = Quaternion.LookRotation(look - pos, Vector3.up);
+            if (Cam.follow.pitch >= 0f) // brief 025: a set pitch: the boom tilts round the agent's head, the camera looks down at that angle
+            {
+                rot = Quaternion.Euler(Cam.follow.pitch, fYaw, 0f);
+                pos = fPivot + Vector3.up * (followLookHeight + followHeight - 1.3f) - rot * Vector3.forward * fDistNow + right;
+            }
             float sw = followSwing <= 0f ? 1f : Mathf.Clamp01((Time.unscaledTime - fSwingStart) / followSwing);
             if (sw < 1f) { float e = sw * sw * (3f - 2f * sw); pos = Vector3.Lerp(fSwingFromPos, pos, e); rot = Quaternion.Slerp(Quaternion.LookRotation(fPivot - fSwingFromPos), rot, e); }
             cam.transform.SetPositionAndRotation(pos, rot);
+            FollowPeople();
         }
     }
 }

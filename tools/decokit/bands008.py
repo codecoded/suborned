@@ -60,9 +60,15 @@ bands.append(ring("ring-outer", "InlayArc_R9_W12", F, R_OUT, 1.2, "0.94 m of sla
 #    PavilionPier_Square piers (x 5.84 to 11.16 open)
 y_w0, y_w1 = F[1] - (R_OUT + 0.6), -43.2
 bands.append(line("spoke-west", "InlayBand_12_2", F[0], y_w0, F[0], y_w1, "1.2", "fountain ring to the square shelter"))
-# 5. the Records forecourt bar: 1.2 m parallel to the tower face (x 52.5), 0.7 m before the stair foot (x 49.2), centred on the door axis
-#    y -30 (B2: the beds moved 0.4 and 0.5 m, the corridor between them is y -34.1 to -25.8), y -34 to -26
-bands.append(line("forecourt-bar", "InlayBand_12_2", 47.9, -34.0, 47.9, -26.0, "1.2", "apron line before the entrance stairs, on the door axis"))
+# 5. the Records forecourt bar: 1.2 m parallel to the wing face, 0.7 m before the stair foot, centred on the door axis, 8 m long as before.
+#    Brief 023 (Sky, 2026-10-19, door option (b)): the public door is on the wing's west face (y -40.5, door axis x 64, steps' foot y -43.8),
+#    so the bar runs along x at y -43.8 - 0.7 - 0.6 = -45.1, x 60 to 68: 0.6 m of slab inside the kerb-side cabinets (x 58.38 and 69.03) either end.
+#    (Was x 47.9, y -34 to -26 on tower-public's north face.) Read off the block's steps, not typed.
+_st = S["office-public-steps"]
+_sx = [p_[0] for p_ in _st]
+_door_x, _foot_y = (min(_sx) + max(_sx)) / 2, min(p_[1] for p_ in _st)
+_bar_y = r2(_foot_y - 0.7 - 0.6)
+bands.append(line("forecourt-bar", "InlayBand_12_2", r2(_door_x - 4.0), _bar_y, r2(_door_x + 4.0), _bar_y, "1.2", "apron line before the entrance stairs, on the door axis"))
 # 6. lamp rings: one full ring (4 x InlayArc_R2_W06, R 2.3 outside) on each lamp Vantage rings (dressing.lamps.at, ring true)
 LAMPS = DRESS["lamps"]["at"]
 lamps = [(l["id"], tuple(l["at"])) for l in LAMPS if l["ring"]]
@@ -73,7 +79,7 @@ cnt = {}
 for p in pieces:
     cnt[p["piece"]] = cnt.get(p["piece"], 0) + 1
 rules = {
-    "schema": "suborned.paving-bands/1", "brief": "008 B1 + B2", "date": "2026-10-14", "revision": "B2: forecourt-bar y -34..-26, spoke-west ends y -43.2, rings on the four ringed lamps, rules follow Vantage (flat inlay may pass under a Handover point)",
+    "schema": "suborned.paving-bands/1", "brief": "008 B1 + B2", "date": "2026-10-14", "revision": "B2 + brief 023: forecourt-bar on the west-face door (x 60..68 at y -45.1; B2 had y -34..-26 on the tower face), spoke-west ends y -43.2, rings on the four ringed lamps, rules follow Vantage (flat inlay may pass under a Handover point)",
     "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
     "drawn_from": "gameplay-plan, mission-block and inez-cutaway paintings (26 Sep): large pale slabs, seafoam bands 0.6 to 1.2 m wide, arcs round the lamps and the fountain",
     "slabs": {"material": "DK_Pave_Civic", "tile_m": 4.0, "use": "plot surfaces of the fountain square, the café terrace and the office apron; world-space UVs"},
@@ -84,7 +90,7 @@ rules = {
         "a ring leaves 0.4 m or more of slab to the coping, 0.9 m to other bands, 0.5 m to planters and walls",
         "colour is the enamel seafoam #72B5A7 (the 4 mm ceramic strip); gold is never used in paving"]},
     "anchors": {"fountain_centre": list(F), "pool_coping_R": [3.3, 3.6], "planter_ring_R": [5.36, 7.06], "cafe_door": [-10.3, -29.0], "cafe_ring_line_x": -10.7,
-                "cafe_terrace_wall_x": -4.3, "cafe_gate_y": [-31.6, -26.4], "tower_public_face_x": 52.5, "stair_foot_x": 49.2, "entrance_bed_gap_y": [-34.1, -25.8],
+                "cafe_terrace_wall_x": -4.3, "cafe_gate_y": [-31.6, -26.4], "office_west_face_y": -40.5, "door_axis_x": _door_x, "stair_foot_y": _foot_y,
                 "square_shelter": {"x": [4.3, 12.7], "y": [-47.0, -44.86]}, "handover_points_bands_may_cross": {"plaza_east_west": [[6.5, -25.5], [6.5, -34.5]], "steps": [-3.6, -29.0], "crew_line": [[1.2, -49.7], [4.8, -49.7]]}},
     "bands": bands,
     "pieces": pieces,
@@ -126,6 +132,7 @@ def footprint(p, step=0.1):
 barred = {z["id"]: z["polygon"] for z in DRESS["keepClear"] if "band" in z["bars"] and "polygon" in z}
 barred.update({o["id"]: o["polygon"] for o in BLOCK["structures"] if o["id"] in ("office-public-landing", "office-public-steps")})
 barred.update({b["id"]: b["polygon"] for b in BLOCK["bays"]})
+barred.update({d["id"]: d["polygon"] for d in BLOCK.get("drives", [])})  # brief 023: a drive was the keep-clear zone service-drive; no inlay crosses it
 barred.update({o["id"]: o["polygon"] for o in BLOCK["objects"] if o.get("kind") == "planter"})
 viol = {}
 for p in pieces:
@@ -220,5 +227,5 @@ def svg(view, scale, title):
 
 
 (OUT / "paving-bands.plaza.svg").write_text(svg((-13, 31, -52, -16), 15, "Fountain square: block x (south) to the right, y (east) up"))
-(OUT / "paving-bands.forecourt.svg").write_text(svg((44, 62, -42, -18), 28, "Records forecourt"))
+(OUT / "paving-bands.forecourt.svg").write_text(svg((54, 74, -52, -38), 28, "Records forecourt (west face)"))
 print("svg written")

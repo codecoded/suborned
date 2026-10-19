@@ -36,6 +36,8 @@ function zonesOf(c: WCtx, dr: Dressing, toPlan: (p: V) => V): Zone[] {
     const it = landingsOf(c.w).find(s => s.id.endsWith(`/crossing-${l.id}`));
     if (it) { const ring = itemRing(it); zones.push({ id: `landing ${l.id}`, bars: ['planter', 'lamp', 'bollard', 'tree'], hits: (r: V[]) => overlaps(r, ring) }); }
   }
+  // a drive (brief 023) bars what its keep-clear zone service-drive barred: planters, lamps, bollards, trees, parasols and inlay
+  zones.push(...c.civ.drives.map((x): Zone => ({ id: `drive ${x.id}`, bars: ['planter', 'lamp', 'bollard', 'tree', 'parasol', 'band'], hits: (r: V[]) => overlaps(r, x.poly) })));
   // flat inlay may not enter a bay, the entrance steps or landing, or a planting bed (dressing.rules)
   const bed = (id: string, ring: V[]): Zone => ({ id, bars: ['band'], hits: (r: V[]) => overlaps(r, ring) });
   zones.push(...c.civ.bays.map(b => bed(`bay ${b.id}`, b.poly)), ...c.civ.structures.filter(s => /^entrance-(landing|steps)$/.test(s.category)).map(s => bed(s.id, s.poly)), ...c.civ.objects.filter(o => o.kind === 'planter').map(o => bed(`bed ${o.id}`, o.poly)));

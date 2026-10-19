@@ -347,6 +347,7 @@ namespace Suborned.Play
                 dst = to.Value + dir * 1.8f + side; dst.y = to.Value.y + 0.05f;
             }
             views.Tracer(src, dst, by is "scout" or "fixer" or "tech" or "enforcer" ? "cell" : by.StartsWith("rival") ? "rival" : "guard"); // the HUD draws it (Glyph fight r2)
+            { var e = frame.Engine(from.Value); views.LastShotFrom = new Pt((int)System.Math.Round(e.X / 100.0) * 100, (int)System.Math.Round(e.Y / 100.0) * 100); } // brief 023: the startled turn away from it (1 m, so a frame's easing never moves it)
             if (hit) { Pulses.Add((to.Value, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: the tracer is enough
         }
 

@@ -211,7 +211,7 @@ namespace Suborned.Sim
             var route = S.Grid.Route(from, to);
             if (route != null && route.Length >= 2) securityPath = new Path(route);
             SecurityArrives = arrival; unitsSent++;
-            if (sealOnArrival) { sealOnArrival = false; SealFrom(arrival); }
+            if (sealOnArrival) { sealOnArrival = false; SealFrom(arrival, () => pendingSealOrigin); }
             for (int k = 0; k < SecGuns.Length; k++) Units.Add(new Unit { Id = SecGuns[k].Id, Legacy = true, Gun = SecGuns[k], Speed = secSpeed, Launch = arrival, Dest = to, Act = a?.Id ?? -1, Scene = true, St = "walk" });
             Note("security.called", "The response unit is sent to the scene. Security is coming from the north street.");
         }
@@ -401,7 +401,7 @@ namespace Suborned.Sim
         /// <summary>The response finds a body (its own eyes): its incident lands if it hadn't, and is confirmed.</summary>
         void FoundBySecurity(Body b, string by)
         {
-            var a = ActOf(b);
+            var a = ActOf(b); RoundsEnd("body-found"); // brief 022
             if (!a.Landed) LandAct(a, b.Dead ? "dead" : "down", by, null, BodyPos(b), SevOf(b.Dead ? "dead" : "down"), "");
             else HoldScene(a, b.Dead ? "dead" : "down", BodyPos(b)); // found by the response's own eyes after another report (a missed mark): the scene is held
             Confirm(a, b, by);
@@ -417,16 +417,16 @@ namespace Suborned.Sim
             if (!a.Take) ChargeAct(a); // a Take keeps its own Trail (cell.take)
             if (a.Kill && !a.StandingPaid) { a.StandingPaid = true; MoveStanding(R.FoundKillStanding, "found-killing:" + a.Victim, "found-killing", Who(a.P)); }
             Note("report.confirmed", $"{by.Replace("camera:", "the camera ")} confirms {Who(a.P)}: {(a.Take ? "taken" : a.Kill ? "dead" : "out")}.");
-            if (Alert >= 2) SealFrom(Math.Max(Tick, SecurityArrives)); // the seal is the unit's cordon: from the later of the confirmation and the unit on the street (Motive rev 3)
+            if (Alert >= 2) SealFrom(Math.Max(Tick, SecurityArrives), () => Confirmed(a, by)); // the seal is the unit's cordon: from the later of the confirmation and the unit on the street (Motive rev 3)
             if (b != null && !a.Kill && b.P.Down && Bodies.Contains(b) && !b.Seizing) Wake(b, true);
         }
 
         bool sealOnArrival; // confirmed at Alert 2 or more before the response unit was called: the seal waits for it
-        void SealFrom(int at)
+        void SealFrom(int at, Func<CauseOrigin?>? origin = null)
         {
-            if (at >= INF) { sealOnArrival = true; return; }
+            if (at >= INF) { sealOnArrival = true; if (origin != null) { try { pendingSealOrigin = origin(); } catch (Exception e) when (!(e is OutOfMemoryException)) { } } return; }
             int seal = at + T(SealS);
-            if (seal < Lockdown) { Lockdown = seal; Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
+            if (seal < Lockdown) { int lockBefore = Lockdown; Lockdown = seal; if (origin != null) SealOrigin(lockBefore, origin); Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
         }
 
         // ---------------------------------------------------------------- the scene held (Motive rev 4 R4.1; Sky 2026-10-16)
@@ -463,7 +463,9 @@ namespace Suborned.Sim
             return false;
         }
         /// <summary>Is this entrance held now (no Enter, no exit through it)?</summary>
-        public bool DoorHeld(string id) { if (id.Length == 0) return false; foreach (var h in SceneHolds) if (h.Doors.Contains(id) && HoldActive(h)) return true; return false; }
+        public bool DoorHeld(string id) { if (id.Length == 0) return false; foreach (var h in SceneHolds) if (h.Doors.Contains(id) && HoldActive(h)) return true; return FixtureHeldUntil(id) >= 0; }
+        /// <summary>Test only (Start.Holds, N85): the tick a start fixture's hold on this door ends, if one holds it now; else -1.</summary>
+        int FixtureHeldUntil(string id) { int end = -1; foreach (var (d, f, u) in Start.Holds) if (d == id && Tick >= T(f) && Tick < T(u)) end = Math.Max(end, T(u)); return end; }
 
         /// <summary>A report that a body lies here has landed (rev 4 R4.1): the scene is held. "Found" is a landed report of a person lying
         /// (down, dead, a takedown seen) whose body is still there, open, or a woken victim's own report where he woke; an empty post (a
@@ -540,7 +542,7 @@ namespace Suborned.Sim
                 {
                     missedMarks.Add(GuardP.Id); MissingNotice = Tick;
                     Note("guard.check-in", "The guard misses his check-in. Security now knows the post is empty.");
-                    CallSecurity(0, "The empty guard post is reported.", S.Stand(S.GuardPost), landing: true);
+                    CallSecurity(0, "The empty guard post is reported.", S.Stand(S.GuardPost), landing: true, origin: () => OriginNow("post-empty:guard", "response", "desk", S.Stand(S.GuardPost), S.Stand(S.GuardPost), null, OpIn(GuardGun.ShotBy)));
                 }
             }
         }

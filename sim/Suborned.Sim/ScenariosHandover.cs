@@ -14,12 +14,25 @@ namespace Suborned.Sim
         const string Scout = "scout", Fixer = "fixer", Tech = "tech", Enf = "enforcer";
         const string Inez = "waitress", Driver = "driver", GuardR = "guard", Vale = "councillor";
         static readonly Pt Roof = new Pt(6400, -3000); // inside the Records Office
-        // where the Enforcer stands to shoot the guard unseen: beside the public door, outside his door cone and both cameras
-        static readonly Pt BesideDoor = new Pt(4850, -2300);
-        // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit)
-        static readonly Pt LanePostA = new Pt(6250, -5300), LanePostB = new Pt(6000, -5300);
+        // where the Enforcer stands to shoot the guard unseen: beside the public door, outside his door cone and the pickup camera.
+        // Re-sited 2026-10-19 with the door (Sky's option (b): the public door on the Office's west face): 5.6 m south of the door on the
+        // forecourt, where Waymark's c022 routes park him (route G, loud); was (4850, -2300) beside the old north door. The entrance
+        // camera, which now looks south along the face, sees it unless looped; the patrol's sweep crosses it.
+        static readonly Pt BesideDoor = new Pt(6950, -4250);
+        // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit).
+        // Re-sited 2026-10-19: the service door is on the east face, in a quiet yard the unit enters from the north; the posts are at
+        // its south end. Were (62.5, -53) and (60, -53), down the old lane west of the Office.
+        static readonly Pt LanePostA = new Pt(7050, -1680), LanePostB = new Pt(7050, -1450);
         static Start NoFight() { var s = new Start(); s.FinalFight = false; return s; }
         static Start Level(int level) { var s = new Start(); s.Security = level; return s; } // brief 013: the response dial's level, fixed
+        /// <summary>S11's cover for the exit: the Scout here, the Fixer 2.5 m north, the Tech 2.5 m west, on the response unit's way from the
+        /// north street to the Office approach. Moved 2026-10-19 (Keel, brief 023; the door on the west face) from (4500, -3500), where the
+        /// unit came into reach 1 s too late, 10 m back toward the square, so they meet it earlier on the same walk.</summary>
+        static readonly Pt S11Post = new Pt(3500, -4000);
+        /// <summary>S14: where the Enforcer withdraws once the guard is down, round the Office's south-west corner toward the official side,
+        /// off the response unit's way to the Office approach. Added 2026-10-19 (Keel, brief 023): with the door on the west face the unit
+        /// reaches the approach before the 4:00 mark and downed the Enforcer standing there, ending the run before the mark it tests.</summary>
+        static readonly Pt S14Away = new Pt(7250, -4000);
         static Start Turned(params string[] roles) { var s = new Start(); s.Turned.AddRange(roles); return s; }
         static int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }
 
@@ -158,7 +171,11 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 r.Is(g.InezWitnessedShooting, "Inez witnesses the shooting");
-                r.To(r.Send(Enf, "d:Office entrance"));
+                // Changed (engine 0.8.2, Motive 2026-10-19, briefs/023/motive-0.8.2.md §3): he runs to the door. Running is free while the
+                // shot's fight is on (cell.rule) and he is at Alert 3 already; §07 "walking legs shorten where the cell runs". Walking, the seal
+                // (7:24.0) closes before the car leaves; running, the car leaves at 7:09.3 with 14.7 s spare. He walks the second leg (nobody
+                // runs carrying Vale), so the 45 s from the service lane to the car stands: the cost of where the city put the door.
+                r.To(r.Send(Enf, "d:Office entrance", run: true));
                 r.Do(Enf, "holster");
                 r.Do(Enf, "enter");
                 r.Eq(r.Op(Enf).BusyEnd - g.Tick, T(g.R.EnterS + g.R.EnterAlarmS), "Alert ≥ 2: the staff hide Vale, Enter takes 30 s longer");
@@ -180,7 +197,9 @@ namespace Suborned.Sim
             Add("S06", "95", "A shot on the guard's walk back, away from the café, does not make Inez a witness.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Enf, "d:Plaza east"));
+                // Changed 2026-10-19 (Keel, brief 023; the door on the west face): his walk back runs south-east to the forecourt now, and from
+                // Plaza east itself he is out of line 15 s out; the Enforcer stands 6 m from it, off the café, where the line is clear
+                r.To(r.SendTo(Enf, new Pt(1200, -2900)));
                 r.Do(Fixer, "call", Inez);
                 r.Wait(g.VisitWalkTicks + T(g.R.SummonStayS + 15 - 2)); // walk, stay, 15 s back (the prototype's 30 + 60 + 15), less the draw and the aim
                 r.Fire(Enf, GuardR);
@@ -223,6 +242,7 @@ namespace Suborned.Sim
                 r.Until(() => g.Over, T(10));
                 r.Eq(g.Result, Outcome.Failure, "killing the live capture target fails the objective");
                 r.Eq(g.FailCode, "vale-dead", "the cause is Vale dead");
+                ShotFrom(r, CauseIs(r, "vale-dead", "shot", true, Enf, "op", Enf), Enf, Vale); // the fail camera (ScenariosFailCause.cs): the Enforcer who fired, then Vale
             });
 
             Add("S10", "140", "Route A, quiet: arriving shows nothing; Watch doesn't reveal the debt; Listen; loop; Help; call; wait out the patrol's sweep; enter; to the car. Calm, no shots, one contact.", r =>
@@ -275,7 +295,7 @@ namespace Suborned.Sim
                 // Changed (Sky 2026-10-15 Q5): the 68 s inside lets the guard's call (18 s) bring the response unit to the service lane
                 // before Vale comes out; alone, the Enforcer walks into two officers and goes down. The cell covers the exit.
                 // posts beside the Office approach, which the unit crosses on its way to the service lane: they meet it before Vale comes out
-                r.To(Max(r.SendTo(Scout, new Pt(4500, -3500)), r.SendTo(Fixer, new Pt(4250, -3500)), r.SendTo(Tech, new Pt(4500, -3750))));
+                r.To(Max(r.SendTo(Scout, S11Post), r.SendTo(Fixer, S11Post + new Pt(-250, 0)), r.SendTo(Tech, S11Post + new Pt(0, -250))));
                 r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech);
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
                 r.Done(Enf);
@@ -329,6 +349,7 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 int mark = g.NextMarkOf(g.GuardP, g.Tick);
                 r.Is(mark > g.Tick && mark <= g.Tick + T(g.R.CheckInPeriodS) && (mark - T(60)) % T(g.R.CheckInPeriodS) == 0, "his next mark is within 90 s, on his shift's 90 s marks (1:00, 2:30, …)");
+                r.SendTo(Enf, S14Away);
                 r.To(mark);
                 r.Eq(g.MissingNotice, mark, "the check-in is missed at the mark");
                 r.Is(g.Log.Exists(l => l.Code == "guard.check-in"), "the log: he misses his check-in");
@@ -416,7 +437,10 @@ namespace Suborned.Sim
                 // the patrol is rerouted, the guard is lured and shot from behind in the square (unseen: the response comes in 45 s), and
                 // the Enforcer walks to the north street, where the response unit comes in (sim/data site security-entry).
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, new Pt(1400, -3300))));
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                // Changed 2026-10-19 (Keel, brief 023; the door on the west face): the Tech's walk to the cabinet on the forecourt is longer, and
+                // a call after the reroute lands put the shot at 1:55, its 45 s response after the 2:30 mark; the Fixer calls as the reroute
+                // starts (it lands at 1:19, before the shot), so the shot comes before 1:45 and the unit, not the mark, is the shot's
+                r.Do(Tech, "reroute", "patrol");
                 r.Do(Fixer, "call", Inez);
                 // wait for a shot from behind: in range, out of his cone, and a clear line (the atom fountain blocks sight since the cover's blockers, Pulse §5.4)
                 bool Shot() { var gp = g.GuardPose()!.Value.pos; return gp.X < 2500 && !G.Within(gp, r.At("d:Café door"), 1400) && G.Within(r.Op(Enf).Pos, gp, 1400) && !g.GuardWatching(r.Op(Enf).Pos) && g.S.Sight(r.Op(Enf).Pos, gp, g.R.Eye); }
@@ -479,25 +503,32 @@ namespace Suborned.Sim
                 // and two blockades (2 × 2:38) no longer fit before 5:32; the start state keeps the scenario's intent, the mechanics.
                 r.Send(Enf, "d:Service lane"); r.Send(Scout, "d:Meet driver"); r.Send(Tech, "cabinet");
                 r.Do(Fixer, "call", Driver);
-                r.Eq(g.CarPos(), r.At("d:Official drop-off"), "the car starts at Vale's pickup");
+                // Changed (brief 023, engine 0.8.2): a car stands on the drive grid, at its place's nearest drivable cell (rulebook car.drive)
+                var pickup = g.S.CarStand(g.S.CarPickup); var bay = g.S.CarStand(g.S.CarService);
+                r.Eq(g.CarPos(), pickup, "the car starts at Vale's pickup");
                 r.Is(g.PickupCameraLive(), "the camera stays live while the car moves");
                 r.To(g.BlockedFrom);
-                r.Eq(g.CarPos(), r.At("block-spot"), "the car parks in the sightline");
+                r.Eq(g.CarPos(), g.S.CarStand(g.S.CarBlock), "the car parks in the sightline");
+                r.Eq(g.CarHeading(), (Pt?)g.S.CarBlockFacing, "parked at block-spot it lies along the bay's kerb, nose the way it pulled out (site car.blockFacing; Aster 2026-10-19)");
                 r.Is(!g.PickupCameraLive(), "the camera is blocked only once the car is there");
                 r.To(g.BlockedUntil + T(8));
-                r.Eq(g.CarPos(), r.At("d:Official drop-off"), "the car returns after the blockade");
+                r.Eq(g.CarPos(), pickup, "the car returns after the blockade");
                 r.Do(Fixer, "call", Driver);
                 r.Do(Tech, "reroute", "patrol");
                 r.To(r.SendTo(Scout, new Pt(8250, -3100)));
                 r.To(T(320)); r.Do(Scout, "mislead", "rivals");
                 r.To(T(355));
-                var car = g.CarPos();
-                r.Is(car != r.At("d:Official drop-off") && car != r.Stand("d:Service lane"), "the driver takes the car round to the service lane");
+                // Changed (brief 023, car.pace, Motive 2026-10-19): the turned driver drives at the road's and the yard's pace from 5:40 and is
+                // parked in the service bay about 13 s later, as Vale comes out (5:50) and long before he reaches it (6:10); Vale walks round to
+                // the parked car (its kerbside door is the Service lane point, 2.2 m from the car's centre: Waymark 2026-10-19)
+                r.Is(g.CarInBayTick > T(340) && g.CarInBayTick < T(355), $"the car is parked in the service bay by 5:55, before Vale reaches it at 6:10 (at {Report.Clock(g.CarInBayTick)})");
+                r.Eq(g.CarPos(), bay, "the driver has taken the car round to the service bay");
                 r.Eq(g.Vale, ValeAt.Leaving, "Vale is leaving");
-                r.Is(g.ValePos() != r.Stand("d:Official entrance") && g.ValePos() != r.Stand("d:Service lane"), "Vale walks round to meet the moving car");
+                r.Is(g.ValePos() != r.Stand("d:Official entrance") && g.ValePos() != r.Stand("d:Service lane"), "Vale walks round to the parked car");
                 r.To(T(370));
-                r.Eq(g.CarPos(), r.Stand("d:Service lane"), "the car arrives at the service lane with Vale");
-                r.Eq(g.ValePos(), (Pt?)g.CarPos(), "Vale at the car");
+                r.Eq(g.CarPos(), bay, "the car waits in the service bay (service-bay)");
+                r.Eq(g.ValePos(), (Pt?)r.Stand("d:Service lane"), "Vale at the car's kerbside door (the Service lane point)");
+                r.Is(G.Within(g.ValePos()!.Value, g.CarPos(), 250), $"Vale beside the car: {G.Dist(g.ValePos()!.Value, g.CarPos())} cm from its centre");
                 r.Is(g.PickupCameraLive(), "leaving the pickup restores its camera");
                 r.Do(Enf, "take"); r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay")); r.Extract();
@@ -989,7 +1020,10 @@ namespace Suborned.Sim
             StandingCases(); // brief 014
             RepeatCases(); // Sky 2026-10-18: a Watch or Listen that teaches nothing more is refused
             TechWatchCases(); // Sky 2026-10-18: the Tech watches the machines too
+            RoundsCases(); // brief 022: the living café
             GetawayCases(); // brief 018 (Sky 2026-10-18): the hold, the blocker, Board and Go, left behind, seen leaving, custody
+            FailCauseCases(); // Sky 2026-10-18: the fail camera's culprit, every way the Handover ends without Vale
+            DriveCases(); // brief 025 (EXPERIMENTAL): the driven agent, and the recorded driven session (DP1)
         }
     }
 }

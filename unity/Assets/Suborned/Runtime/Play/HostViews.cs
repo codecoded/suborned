@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// (camera, patrol and officers dashed red, the camera with a scan edge and two fading ghosts; the guard amber with chevrons; the rivals
     /// violet with diamonds), unlit; grey when the watcher sees nothing now. Positions are the engine's, eased between its 10 Hz ticks.
     /// Nothing here feeds back into the engine.</summary>
-    public sealed class HostViews
+    public sealed partial class HostViews
     {
         public const float Tall = 1.75f, Radius = 0.28f, HeadD = 0.3f;
         readonly Transform root; readonly SiteFrame frame; readonly HandoverHost host;
@@ -36,6 +36,9 @@ namespace Suborned.Play
             for (int i = 0; i < 2; i++) Person("security/" + i, host.securityColour);
             Box("car/official", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
             Box("car/getaway", new Vector3(1.8f, 1.4f, 4.6f), host.getawayColour, true);
+            if (Visual("patrol", host.patrolRobot) is Transform pr) { if (things["patrol"].t.Find("head")?.GetComponent<MeshRenderer>() is MeshRenderer ph) ph.enabled = false; carModels["patrol"] = pr; } // the patrol is the lighter butler robot (RobotButler_Play), facing where it goes
+            if (Visual("car/official", host.sedanOfficial) is Transform so) carModels["car/official"] = so; // brief 020: Vela's sedans; the boxes stay the click targets
+            if (Visual("car/getaway", host.sedanGetaway) is Transform sg) carModels["car/getaway"] = sg;
             Marker("door", frame.World(s.At(s.GuardPost)) + Vector3.up * 1.2f, new Vector3(2.4f, 2.4f, 2.4f));
             Marker("cabinet", frame.World(s.At("cabinet")) + Vector3.up * 0.7f, new Vector3(1.4f, 1.4f, 1.4f));
             foreach (var c in s.Cameras)
@@ -56,6 +59,9 @@ namespace Suborned.Play
             crowdKeys = new string[g.Walkers.Count]; hostileKeys = new string[MaxHostiles];
             for (int i = 0; i < g.Walkers.Count; i++) Person(crowdKeys[i] = "crowd/" + i, Family(g.Walkers[i].P.Job), false, true, Shape(g.Walkers[i].P.Job)); // hoverable: "passer-by"
             for (int i = 0; i < MaxHostiles; i++) Person(hostileKeys[i] = "hostile/" + i, host.securityColour);
+            // brief 020: the stand-in figures in the fixed views and the crowd (capsules stay for anyone without one)
+            foreach (var k in new List<string>(things.Keys)) if (RoleFigure(k) is string fid) Dress(k, fid);
+            DressCrowd(g);
             Ring("sel/0"); Ring("sel/1"); Ring("sel/2"); Ring("sel/3");
             Ring("dest/0"); Ring("dest/1"); Ring("dest/2"); Ring("dest/3"); // where each walking agent will stop (the snapped point)
             var pg = new GameObject("path"); pg.transform.SetParent(root, false);
@@ -133,7 +139,6 @@ namespace Suborned.Play
         const int MaxHostiles = 8;
         static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" }, DestKeys = { "dest/0", "dest/1", "dest/2", "dest/3" };
         string[] crowdKeys = System.Array.Empty<string>(), hostileKeys = System.Array.Empty<string>(); // no string building per tick
-        readonly Dictionary<Pt, int> stacked = new();
 
         /// <summary>Sets where each thing is after a tick (the frame eases from the previous one).</summary>
         public void Tick()
@@ -142,6 +147,11 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside || op.InCar ? null : op.Pos, op.Down); } // brief 018: in the car is off the street (the car marker's seat pips say who)
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
             Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car ? null : g.ValePos(), g.ValeP.Down);
+            // brief 022: Inez's round gives her facing (to her table, to the guard when they stand together), the guard's pose his
+            faces.Clear();
+            phases.Clear();
+            if (g.PersonPose(g.Inez) is { } ip) { if (ip.facing.X != 0 || ip.facing.Y != 0) faces["waitress"] = frame.Dir(ip.facing); phases["waitress"] = ip.phase; if (ip.phase == "together") phases["guard"] = "together"; } // he stands with her: both talk
+            if (g.GuardPose() is { } gp && (gp.facing.X != 0 || gp.facing.Y != 0)) faces["guard"] = frame.Dir(gp.facing);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
             var rp = g.RivalsPose();
             for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? rp.Value.pos + new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0) : (Pt?)null);
@@ -149,16 +159,14 @@ namespace Suborned.Play
             for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? sp.Value.pos + new Pt(0, i * 90) : (Pt?)null);
             Set("car/official", g.Vale == ValeAt.Car && g.Result != Outcome.Success ? (Pt?)null : g.CarPos());
             Set("car/getaway", s.At(s.GetawayCar));
-            // the crowd: people the engine puts on one place point are fanned out on a 0.5 m sunflower for the eye only (the engine is not told)
-            stacked.Clear();
+            // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
+            // loose column when walking, drawn up to a wall when standing; the engine is not told)
+            Spread(g);
             for (int i = 0; i < g.Walkers.Count; i++)
             {
-                var at = g.CrowdPos(g.Walkers[i]);
-                if (!at.HasValue) { Set(crowdKeys[i], null); continue; }
-                int k = stacked.TryGetValue(at.Value, out var n) ? n + 1 : 0; stacked[at.Value] = k;
-                float r = 50f * Mathf.Sqrt(k), th = k * 2.399963f;
-                var fan = at.Value + new Pt(Mathf.RoundToInt(r * Mathf.Cos(th)), Mathf.RoundToInt(r * Mathf.Sin(th)));
-                Set(crowdKeys[i], GiveWay(g, fan));
+                if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
+                Set(crowdKeys[i], GiveWay(g, SpreadAt(i)));
+                if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
                 // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
@@ -171,7 +179,7 @@ namespace Suborned.Play
             {
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
-                if (h != null) Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour);
+                if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
             }
         }
 
@@ -236,7 +244,7 @@ namespace Suborned.Play
                 if (!things.ContainsKey(key))
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
-                    Person(key, Family(job), shape: Shape(job));
+                    Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p));
                 }
                 bool down = p.Down || b.Seizing;
                 if (down) // the person's own view hides; the body draws
@@ -246,7 +254,7 @@ namespace Suborned.Play
                 }
                 if (!down || !b.Open) { Set(key, null); continue; }
                 if (b.Seizing) { Set(key, b.At, false); continue; }                  // the struggle: still on their feet
-                if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); continue; } // over the carrier's shoulder
+                if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); carriers[key] = OpKeys[(int)b.Carrier.Value]; continue; } // over the carrier's shoulder
                 Set(key, b.At, true, Radius);                                            // where they fell, or were put down
             }
         }
@@ -260,7 +268,7 @@ namespace Suborned.Play
             {
                 if (u.Legacy || u.Patrol) continue;
                 var key = "unit/" + u.Id;
-                if (!things.ContainsKey(key)) { if (u.Robot) Drum(key, RobotColour); else Person(key, host.securityColour); }
+                if (!things.ContainsKey(key)) { if (u.Robot) Drum(key, RobotColour); else { Person(key, host.securityColour); Dress(key, "security"); } }
                 var pose = g.UnitPose(u); Set(key, pose?.pos);
             }
         }
@@ -269,10 +277,16 @@ namespace Suborned.Play
         {
             var go = new GameObject(key); go.transform.SetParent(root, false);
             Part(go.transform, "body", cylinder, Lit(c), new Vector3(0, 0.6f, 0), new Vector3(0.75f, 0.6f, 0.75f));
-            Part(go.transform, "head", sphere, Unlit(host.coneColour), new Vector3(0, 1.28f, 0), Vector3.one * 0.22f); // the lamp: a signal, unlit
+            var lamp = Part(go.transform, "head", sphere, Unlit(host.coneColour), new Vector3(0, 1.28f, 0), Vector3.one * 0.22f); // the lamp: a signal, unlit
             var col = go.AddComponent<CapsuleCollider>(); col.height = 1.4f; col.radius = 0.45f; col.center = new Vector3(0, 0.7f, 0);
             go.SetActive(false);
             things[key] = (go.transform, Vector3.zero, Vector3.zero, false);
+            if (Visual(key, host.robotPorter) is Transform m) // brief 020: the porter; the lamp rides on top of it
+            {
+                float top = 0f; foreach (var r in m.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y - go.transform.position.y);
+                if (top > 0.3f) lamp.localPosition = new Vector3(0, top + 0.12f, 0);
+                carModels[key] = m; // it faces where it goes, as a car does
+            }
         }
 
         void Tint(string key, Color c)
@@ -280,6 +294,10 @@ namespace Suborned.Play
             var r = things[key].t.Find("body")?.GetComponent<MeshRenderer>(); if (!r) return;
             if (r.sharedMaterial.GetColor("_BaseColor") != c) r.sharedMaterial.SetColor("_BaseColor", c);
         }
+
+        /// <summary>Brief 025 (take control): the driven agent's view key, drawn from the host's controller (position, facing, ground speed), not
+        /// from the engine's eased 10 Hz pose, so input feels immediate. Null when nobody is driven.</summary>
+        public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed;
 
         /// <summary>Per frame: eases positions, draws the cones and the selection rings.</summary>
         public void Frame(float alpha)
@@ -290,9 +308,11 @@ namespace Suborned.Play
             {
                 var (t, from, to, shown) = kv.Value;
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
-                if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
+                if (shown && kv.Key == DriveKey) t.position = DrivePos; // the controller's (brief 025)
+                else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
             }
             var g = host.Game;
+            Untangle();
             for (int i = 0; i < 4; i++)
             {
                 var r = things[SelKeys[i]].t; var op = things[OpKeys[i]];
@@ -303,6 +323,34 @@ namespace Suborned.Play
                 if (d.gameObject.activeSelf != dest) d.gameObject.SetActive(dest);
                 if (dest) { d.position = frame.World(walk.End) + Vector3.up * 0.03f; d.localScale = new Vector3(0.6f, 0.01f, 0.6f); }
             }
+            Figures(alpha); Cars(); CellRings(); RivalRings();
+        }
+
+        /// <summary>Glyph 022 (N119: the Enforcer at the public door stood in the guard, one figure where two were): the engine may put an agent
+        /// on the very point a cast member stands (the door is the guard's post); the agent's view steps 0.7 m aside, across the other's facing,
+        /// so both are drawn. View only: the engine's positions are untouched.</summary>
+        void Untangle()
+        {
+            foreach (var who in new[] { "guard", "waitress", "driver" })
+            {
+                if (!things.TryGetValue(who, out var o) || !o.shown) continue; var op0 = o.t.position;
+                Vector3 side = faces.TryGetValue(who, out var fc) ? new Vector3(fc.z, 0f, -fc.x).normalized : Vector3.right;
+                for (int i = 0; i < 4; i++)
+                {
+                    var a = things[OpKeys[i]]; if (!a.shown) continue; var d = a.t.position - op0; d.y = 0f;
+                    if (d.sqrMagnitude < 0.45f * 0.45f) a.t.position = op0 + side * 0.7f + Vector3.up * (a.t.position.y - op0.y);
+                }
+            }
+        }
+
+        /// <summary>Brief 020: where the signal figures stand as drawn (hostiles, units, the patrol, the rivals, the legacy officers), shown only.</summary>
+        public IEnumerable<Vector3> SignalPeople()
+        {
+            foreach (var kv in things)
+            {
+                var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || k.StartsWith("rivals/") || k.StartsWith("security/") || k == "patrol")) continue;
+                var (t, _, _, shown) = kv.Value; if (shown && t.gameObject.activeInHierarchy) yield return t.position;
+            }
         }
 
         void Set(string key, Pt? at, bool down = false, float lift = 0f)
@@ -310,6 +358,7 @@ namespace Suborned.Play
             var x = things[key];
             if (!at.HasValue) { things[key] = (x.t, x.to, x.to, false); return; }
             var w = frame.World(at.Value) + Vector3.up * lift;
+            if (down) lifted[key] = lift; else lifted.Remove(key); // brief 020: a figure lies (or rides a shoulder) instead of the capsule laid flat
             bool wasShown = x.shown;
             things[key] = (x.t, wasShown ? x.to : w, w, true);
             if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
@@ -454,8 +503,8 @@ namespace Suborned.Play
                 float len = Vector3.Distance(a, b);
                 switch (f.Kind)
                 {
-                    case "guard":   // chevrons marching the way he faces, on a hairline
-                        Quad(a, b, RimW * 0.5f);
+                    case "guard":   // chevrons marching the way he faces, on a crisp rim (Glyph 020: the hairline left a flat amber wash)
+                        Quad(a, b, RimW);
                         for (; dash < len; dash += 0.7f) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f);
                         dash -= len; break;
                     case "rivals":  // diamond ticks
@@ -473,7 +522,7 @@ namespace Suborned.Play
         void ScanEdges(FanDraw d, Fan f, int n)
         {
             d.A0 = d.A1 = 0f;
-            if (f.Kind == "camera" && n >= 3)
+            if (f.Kind is "camera" or "guard" && n >= 3) // brief 020 (Glyph): the guard's cone sweeps as the camera's does
             {
                 var fwd = Flat(frame.Dir(f.Facing)); float lo = float.MaxValue, hi = float.MinValue;
                 for (int i = 0; i < n; i++) if (f.Stop.Length == n && f.Stop[i] == "reach") { float a = Vector3.SignedAngle(fwd, Flat(d.Ring[i] - d.Hub), Vector3.up); lo = Mathf.Min(lo, a); hi = Mathf.Max(hi, a); }
@@ -484,7 +533,7 @@ namespace Suborned.Play
         /// <summary>The camera's scan edge and its two fading ghosts: from the lens to where the fan ends along a sweeping bearing.</summary>
         void Scan(FanDraw d)
         {
-            bool on = d.Kind == "camera" && d.Live && d.A1 > d.A0;
+            bool on = d.Kind is "camera" or "guard" && d.Live && d.A1 > d.A0;
             for (int k = 0; k < 3; k++)
             {
                 var lr = d.Scan[k];

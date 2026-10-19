@@ -31,7 +31,7 @@ test('an old suborned.block/1 file is refused, not drawn', () => {
 
 test('the world block holds no mission: no destinations, no crew, bays named by place', () => {
   expect(block.destinations).toBeUndefined(); expect(block.crew).toBeUndefined();
-  expect(block.bays.map((b: any) => b.id)).toEqual(['officeBay', 'squareBay']);
+  expect(block.bays.map((b: any) => b.id)).toEqual(['officeBay', 'squareBay', 'serviceBay']); // serviceBay: the Office's east yard (Sky 2026-10-19, door option b), reached by the service-drive
 });
 
 test('W-4 fails when a walk starts away from any building', () => {

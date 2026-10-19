@@ -30,6 +30,7 @@ namespace Suborned.Sim
         static bool HelpRole(Run r, string role, int most = 3)
         {
             var g = r.G; var p = g.PersonByRole(role);
+            r.ForHer("turn", role); // brief 022: a server is met at her post
             var at = g.PersonPos(p); if (!r.Is(at.HasValue, $"{role} is on the street at {Report.Clock(g.Tick)}")) return false;
             if (!G.Within(r.Op(Fixer).Pos, at!.Value, g.R.ApproachReachCm)) r.To(r.SendTo(Fixer, g.S.Grid.NearestFree(at.Value)!.Value));
             HelpUntilTurned(r, role, most);

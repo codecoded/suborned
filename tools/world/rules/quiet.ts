@@ -3,14 +3,17 @@
 // R-STASH   every service door is a stash, and has a container within 10 m of it that stands clear of every building and ground solid, or says why none stands there.
 // R-REPORT  every walkable lattice sample of the block's window is within `reach.report` m (walk, on the engine's grid) of a door of a staffed unit, a phone booth or a call box.
 // R-DOCK    every sample is within `reach.origin` m of a robot dock or a police post (the Records Office's doors are posts).
+// R-REPORT/site  a phone booth or call box stands where a real city puts one (tools/world/civic/siting.ts, sources in briefs/023/research/call-box-siting.md): never in a carriageway or a side-road's mouth;
+//           a call box the world placed for R-REPORT stands on a corner's pavement, `setback`..`zone` m from the corner along its kerb, and opens on the footway, not on the road.
 // Sources: briefs/013/vantage-quiet-places.md §2 (hide), briefs/013/pulse-witnesses.md §8.3 (R-REPORT, R-DOCK; reach 40 m, proposed rulebook values report-reach-m, dock-reach-m), briefs/013/motive-takedowns.md §2.4, §8.7.
 import type { StreetItem } from '../../../contracts/world/world.schema';
 import type { Check } from '../../plan/checks';
-import { type V, dist } from '../../plan/geom';
-import { ringGap } from '../../plan/street-zones';
+import { type V, dist, lineDist } from '../../plan/geom';
+import { boxRing, ringGap, samples9 } from '../../plan/street-zones';
 import { INF, type WalkGrid, reachField, toBlockFn, walkGrid } from '../../plan/walk-grid';
 import { type WCtx, rule, stat } from '../../plan/world-ctx';
 import { QUIET, lattice } from '../civic/quiet';
+import { SITING, cornerOf, junctionCorners, opensOnFootway } from '../civic/siting';
 import { catalogued, cataloguedFor } from '../gen/kitrefs';
 
 const G = 'Takedown';
@@ -61,6 +64,20 @@ export function quietRules(c: WCtx): Check[] {
   const where = (cells: number[]) => cells.slice(0, 4).map(s => { const i = Math.floor(s / grid.ny), j = s % grid.ny, q = grid.centre(i, j); return `${q[0].toFixed(0)},${q[1].toFixed(0)}`; });
   out.push(rule('R-REPORT', G, `Every walkable lattice sample (${t.reach.lattice} m) of the block's window is within ${t.reach.report} m (walk, on the engine's grid) of a door, phone booth or call box`, samples.length, [...far1.length ? [`${far1.length} samples farther, e.g. block ${where(far1).join(' · ')}`] : [], ...lost(t.report), ...(samples.length ? [] : ['no walkable ground reaches a door']), ...missing('report', t.report)], 'all', SRC));
   out.push(rule('R-DOCK', G, `Every walkable lattice sample is within ${t.reach.origin} m (walk) of a robot dock or police post (the Records Office's doors are posts)`, samples.length, [...far2.length ? [`${far2.length} samples farther, e.g. block ${where(far2).join(' · ')}`] : [], ...lost(t.origins), ...missing('origin', t.origins)], 'all', SRC));
+  // R-REPORT/site: every phone booth (a street's own, a stop's, a call box) off the carriageway; every call box the world placed on a corner's pavement, set back, facing the footway
+  const booths = c.w.street.filter(s => s.kind === 'phone-booth'), corners = junctionCorners(c.d.roads, c.plan.nodes), badSite: string[] = [], boxes = booths.filter(s => /^street\/civic\/call-box-\d+$/.test(s.id));
+  for (const s of booths) {
+    const ring = boxRing(s.at, s.size[0], s.size[1], s.yaw), hit = c.d.roads.find(o => samples9(ring).some(q => lineDist(q, o.line) < o.w / 2));
+    if (hit) badSite.push(`${s.id} stands in the carriageway of ${hit.name} (a mouth is its side road's carriageway)`);
+  }
+  for (const s of boxes) {
+    const r = c.d.roads.find(o => `civic/${o.id}` === s.edge); if (!r) { badSite.push(`${s.id}: stands at no road (edge ${s.edge})`); continue; }
+    const k = cornerOf(r, s.at, corners);
+    if (!k) badSite.push(`${s.id} stands at no corner of ${r.name} (no junction corner on its side of the road)`);
+    else if (k.along < SITING.setback - 0.5 || k.along > SITING.zone + 0.5) badSite.push(`${s.id} stands ${k.along.toFixed(1)} m from the corner at ${k.corner.at.map(Math.round).join(',')}: a corner's box stands ${SITING.setback}..${SITING.zone} m off it`);
+    if (!opensOnFootway(r.line, s.at, s.yaw)) badSite.push(`${s.id} opens on the carriageway of ${r.name}, not on the footway`);
+  }
+  out.push(rule('R-REPORT/site', G, `A phone booth or call box never stands in a carriageway or a side road's mouth; a call box the world placed stands on a corner's pavement ${SITING.setback}..${SITING.zone} m off the corner and opens on the footway`, booths.length, badSite, 'all', `${SRC} · Sky 2026-10-19 (call boxes where a real city places them) · briefs/023/research/call-box-siting.md`));
   out.push(stat('R-REPORT/n', G, 'Call boxes, police posts, docks and containers the world stands for the block (informational)', `${t.report.filter(r => r.kind === 'call-box').length} call boxes, ${t.origins.filter(o => o.kind === 'post' && o.item).length} police posts, ${t.origins.filter(o => o.kind === 'dock').length} docks, ${t.stashes.filter(s => s.kind === 'container').length} containers`, '-', true, SRC, `report: median ${t.coverage.report.medianM} m, worst ${t.coverage.report.worstM} m, doors alone ${t.coverage.report.baselineWithin / 10}% within reach; origins: median ${t.coverage.origin.medianM} m, worst ${t.coverage.origin.worstM} m, docks and Office doors alone ${t.coverage.origin.baselineWithin / 10}%`));
   return out;
 }

@@ -310,10 +310,18 @@ namespace Suborned.Sim
                         for (int m = 0, n = pb.Length - 1; m < pb.Length; n = m++)
                             if (SegPoint(pa[j], pa[i], pb[n], pb[m]) is Pt x && G.D2(o, x) <= maxR2) Ray3(x);
                 }
+            // a person's shadow edges are the two tangents from o to the circle of crowd.occlude round them, at asin(occ / d) either side of the
+            // line to them, built as directions (never as rounded points beside them): a point a centimetre off at a person 3 m away swings the
+            // ray by more than its hair, and both hairs then fell in the shadow, dropping the clear wedge beside it (Keel 2026-10-19: the
+            // Records Square mast's crowd fan at 0:30, a person 3 m off its cone's edge)
+            void RayDir3(long dx, long dy) { while (Math.Abs(dx) > 1L << 30 || Math.Abs(dy) > 1L << 30) { dx /= 2; dy /= 2; } long len = G.Isqrt(dx * dx + dy * dy); if (len == 0) return; dx = dx * RayLen / len; dy = dy * RayLen / len; Ray(dx, dy); Ray(dx - dy / 512, dy + dx / 512); Ray(dx + dy / 512, dy - dx / 512); }
             foreach (var w in walkers)
             {
-                long vx = w.X - o.X, vy = w.Y - o.Y, len = G.Isqrt(vx * vx + vy * vy); if (len == 0) continue;
-                Ray3(w); Ray3(new Pt((int)(w.X - vy * occR / len), (int)(w.Y + vx * occR / len))); Ray3(new Pt((int)(w.X + vy * occR / len), (int)(w.Y - vx * occR / len)));
+                long vx = w.X - o.X, vy = w.Y - o.Y, d2 = vx * vx + vy * vy, len = G.Isqrt(d2); if (len == 0) continue;
+                Ray3(w);
+                if (len <= occR) continue; // o inside the body: no tangent
+                long c = G.Isqrt(d2 - occR * occR); // d·cos θ, with sin θ = occ / d
+                RayDir3(vx * c - vy * occR, vy * c + vx * occR); RayDir3(vx * c + vy * occR, vy * c - vx * occR);
             }
 
             // each ray's end: the farther of the shape's exit and the near circle, cut at the first occluder (or person) across it

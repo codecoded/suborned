@@ -1,0 +1,8 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "line", "x": 1498, "y": 1879, "w": 456, "h": 50, "text": "This camera covers the door."},
+  {"kind": "image", "x": 1577, "y": 436, "w": 56, "h": 56, "text": "culprit locator"},
+  {"kind": "image", "x": 28, "y": 28, "w": 180, "h": 60, "text": "replay chip"}
+ ]
+}

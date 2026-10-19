@@ -1,0 +1,93 @@
+// Scratch (brief 020, Forma): a MonoBehaviour added to a COPY of the real project (never to unity/) so the built player can be driven and photographed:
+// the Scout walks and stops, the Fixer runs, the fight route with Vale carried, then GameProof.FollowSpots. Run the copy's player with `-animProbe <dir>`;
+// GameBoot.Proof() in the copy starts it. Needs HostViews.FigState (a one-line public accessor, see the copy's HostViews.Figures.cs). Kept as .txt so Unity does not compile it here.
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+
+namespace Suborned.Play
+{
+    /// <summary>Scratch (Forma, brief 020): frame strips of the figures moving in the game's own scene. -animProbe &lt;dir&gt;.</summary>
+    public sealed class AnimProbe : MonoBehaviour
+    {
+        public string Dir = "";
+        readonly List<string> log = new();
+        HandoverHost h;
+
+        IEnumerator Start()
+        {
+            Directory.CreateDirectory(Dir);
+            float t0 = Time.realtimeSinceStartup;
+            while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Application.Quit(2); yield break; } yield return null; }
+            yield return new WaitForSecondsRealtime(3f);
+            log.Add($"figures: {(h.figures ? h.figures.figures.Length : -1)}");
+            yield return A();
+            yield return B();
+            File.WriteAllText(Path.Combine(Dir, "probe.log"), string.Join("\n", log));
+            Application.Quit(0);
+        }
+
+        Texture2D Grab() { return ScreenCapture.CaptureScreenshotAsTexture(); }
+        void Crop(Texture2D t, string name, Vector2 centre, int w, int hgt)
+        {
+            int x = Mathf.Clamp((int)centre.x - w / 2, 0, t.width - w), y = Mathf.Clamp((int)centre.y - hgt / 2, 0, t.height - hgt);
+            var c = new Texture2D(w, hgt, TextureFormat.RGB24, false); c.SetPixels(t.GetPixels(x, y, w, hgt)); c.Apply();
+            File.WriteAllBytes(Path.Combine(Dir, name + ".png"), c.EncodeToPNG()); Destroy(c);
+        }
+
+        // A: the Scout walks off and stops, like Sky's recording: crops round her every 0.1 s
+        IEnumerator A()
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(false);
+            var cam = h.View; cam.orthographicSize = 3.2f;
+            var p = h.Game.Ops[0].Pos; h.Issue(new Suborned.Sim.Order { Op = "scout", Do = "move", Point = new Suborned.Sim.Pt(p.X + 900, p.Y + 300), Run = false });
+            var p1 = h.Game.Ops[1].Pos; h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = new Suborned.Sim.Pt(p1.X + 900, p1.Y + 300), Run = true });
+            for (int n = 0; n < 90; n++)
+            {
+                var focus = h.Views.Find("op/scout"); if (focus) h.LookAt(focus.position);
+                yield return new WaitForEndOfFrame();
+                var t = Grab();
+                foreach (var (key, nm) in new[] { ("op/scout", "scout"), ("op/fixer", "fixer") })
+                {
+                    var tr = h.Views.Find(key); if (!tr) continue; var sp = cam.WorldToScreenPoint(tr.position + Vector3.up * 0.9f);
+                    if (sp.z > 0 && sp.x > 200 && sp.x < t.width - 200 && sp.y > 260 && sp.y < t.height - 260) Crop(t, $"A_{nm}_{n:00}", new Vector2(sp.x, sp.y), 400, 520);
+                }
+                if (n % 6 == 0) log.Add($"A {n} scout {h.Views.FigState("op/scout")} fixer {h.Views.FigState("op/fixer")}");
+                Destroy(t);
+                yield return new WaitForSecondsRealtime(0.08f);
+            }
+        }
+
+        // B: the fight route, Vale carried: whole frames behind the Enforcer
+        static readonly Suborned.Sim.Order[] Route =
+        {
+            new() { Tick = 0, Op = "tech", Do = "move", To = "cabinet", Run = true }, new() { Tick = 0, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(4850, -2300) },
+            new() { Tick = 0, Op = "scout", Do = "move", To = "d:Office approach" }, new() { Tick = 0, Op = "fixer", Do = "move", To = "crew:fixer" },
+            new() { Tick = 136, Op = "tech", Do = "move", To = "cabinet" }, new() { Tick = 147, Op = "tech", Do = "loop", Target = "entrance" },
+            new() { Tick = 346, Op = "scout", Do = "move", Point = new Suborned.Sim.Pt(4679, -3207) }, new() { Tick = 350, Op = "scout", Do = "watch", Target = "guard" },
+            new() { Tick = 550, Op = "scout", Do = "move", To = "crew:scout" }, new() { Tick = 756, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(5175, -2880) },
+            new() { Tick = 767, Op = "tech", Do = "reroute", Target = "patrol" }, new() { Tick = 1217, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(5175, -2910) },
+            new() { Tick = 1220, Op = "enforcer", Do = "takedown", Target = "guard", How = "knockout" }, new() { Tick = 1280, Op = "enforcer", Do = "enter" },
+            new() { Tick = 1280, Op = "tech", Do = "move", To = "crew:tech" }, new() { Tick = 1660, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(2400, -6000) },
+        };
+        IEnumerator B()
+        {
+            h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true);
+            foreach (var o in Route) { h.RunTo(o.Tick); h.Issue(new Suborned.Sim.Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, How = o.How, Run = o.Run }); }
+            int g = 0; while (!h.Game.FightOn && g++ < 900 && !h.Game.Over) h.RunTo(h.Game.Tick + 1);
+            h.RunTo(h.Game.Tick + 20); h.Select(Suborned.Sim.OpId.Enforcer, false); h.ClearHover();
+            log.Add($"B fight at tick {h.Game.Tick}: vale {h.Game.Vale}");
+            h.SetPaused(false); var cam = h.View; cam.orthographicSize = 4f;
+            for (int n = 0; n < 40; n++)
+            {
+                var e = h.Views.Find("op/enforcer"); if (e) h.LookAt(e.position);
+                yield return new WaitForEndOfFrame(); var t = Grab();
+                var sp = cam.WorldToScreenPoint((e ? e.position : Vector3.zero) + Vector3.up * 1f); Crop(t, $"B_{n:00}", new Vector2(sp.x, sp.y), 900, 640);
+                if (n % 5 == 0) log.Add($"B {n} tick {h.Game.Tick} vale {h.Game.Vale} councillor {h.Views.FigState("councillor")} enforcer {h.Views.FigState("op/enforcer")} guard {h.Views.FigState("guard")}");
+                Destroy(t); yield return new WaitForSecondsRealtime(0.15f);
+            }
+        }
+    }
+}

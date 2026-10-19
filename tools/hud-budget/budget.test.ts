@@ -1,7 +1,7 @@
 // The HUD budget (brief 014, Glyph). Synthetic images prove the geometry; fixtures prove the verdicts: the play HUD of brief 013 fails (coverage and running text), the redesign passes.
 // Fixtures sit on a flat ground so they stay small: tools/hud-budget/fixtures/ (after-*: the HUD layer, the composite and the manifest; before-*: the old HUD pasted from briefs/013/play by its rectangles).
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { analyse, footprint, LIMIT, maskOf, rectMask, stack, type Manifest, type Rect } from './budget';
 import { decodePng, encodePng, type Image } from './png';
@@ -36,8 +36,8 @@ describe('coverage', () => {
     const { mask, how } = maskOf(shot, { state: 'rest', world }); expect(how).toBe('world'); expect(mask[25 * 100 + 25]).toBe(1);
     expect(analyse(shot, { state: 'rest', world }).coveragePct).toBeGreaterThan(8.9);
   });
-  test('over the limit fails, and the limit is per state: rest 15, active 22, alt 30', () => {
-    expect(LIMIT).toEqual({ rest: 15, active: 22, alt: 30 });
+  test('over the limit fails, and the limit is per state: rest 15, active 22, alt 30, log 18, briefing 18', () => {
+    expect(LIMIT).toEqual({ rest: 15, active: 22, alt: 30, log: 18, briefing: 18 });
     const shot = flat(100, 100), rects = [{ x: 0, y: 0, w: 100, h: 18 }];
     expect(analyse(shot, { state: 'rest', rects }).pass).toBe(false);
     expect(analyse(shot, { state: 'active', rects }).pass).toBe(true);
@@ -87,5 +87,44 @@ describe('the 013 play HUD (before) and the 014 redesign (after)', () => {
   test('the Alt state allows fragments but its coverage is still measured', () => {
     const m = json<Manifest>('after-12.manifest.json'), r = analyse(png('after-12.png'), { state: 'alt', hud: png('after-12.hud.png'), manifest: m });
     expect(r.state).toBe('alt'); expect(r.pass).toBe(true); expect(r.coveragePct).toBeGreaterThan(5);
+  });
+});
+
+describe('the log state and the line check (Glyph\'s review, 2026-10-18)', () => {
+  test('log: the open history panel gets 18%, sentences allowed; rest still stops at 15%', () => {
+    const shot = flat(100, 100), a = [{ x: 0, y: 0, w: 100, h: 17 }], b = [{ x: 0, y: 0, w: 100, h: 19 }];
+    expect(analyse(shot, { state: 'log', rects: a }).pass).toBe(true);
+    expect(analyse(shot, { state: 'log', rects: b }).pass).toBe(false);
+    expect(analyse(shot, { state: 'rest', rects: a }).pass).toBe(false);
+    expect(analyse(shot, { state: 'log', rects: a }).warnings).toEqual([]); // the 10% warning is for rest only
+    expect(analyse(shot, { state: 'briefing', rects: a }).pass).toBe(true);
+    expect(analyse(shot, { state: 'briefing', rects: b }).pass).toBe(false);
+  });
+  const play = (f: string) => join(import.meta.dir, '../../briefs', f), has = (f: string) => existsSync(play(f + '.png')) && existsSync(play(f + '.hud.png'));
+  const run = (f: string, state: 'rest' | 'log') => analyse(decodePng(readFileSync(play(f + '.png'))), { state, hud: decodePng(readFileSync(play(f + '.hud.png'))), manifest: JSON.parse(readFileSync(play(f + '.manifest.json'), 'utf8')) });
+  test('a one-line plate over foliage is one line: its lit rim fragment is not a second line', () => {
+    for (const f of ['022/latch/inez-serving-close', '021/latch-022/N125', '021/03-enforcer-shot-N125']) if (has(f)) expect(run(f, 'rest').failures).toEqual([]);
+  });
+  test('the open history panel: as log it has no sentence or block failure and fits 18%', () => {
+    for (const f of ['022/latch/history-top', '022/latch/history-scrolled']) if (has(f)) { const r = run(f, 'log'); expect(r.sentences).toEqual([]); expect(r.blocks).toEqual([]); expect(r.failures.filter(x => /HUD covers|running text|stacked/.test(x))).toEqual([]); expect(run(f, 'rest').pass).toBe(false); }
+  });
+});
+
+describe('a line drawn on the HUD layer is not text', () => {
+  // Latch's N125 (brief 021): the shot's tracer, a long shallow diagonal on the HUD layer, broke into runs that stacked into a "block of text".
+  const f = join(import.meta.dir, '../../briefs/021/latch-r4/N125');
+  test('the tracer of N125 makes no block of stacked text', () => {
+    if (!existsSync(f + '.png') || !existsSync(f + '.hud.png')) return;
+    const r = analyse(decodePng(readFileSync(f + '.png')), { state: 'rest', hud: decodePng(readFileSync(f + '.hud.png')), manifest: JSON.parse(readFileSync(f + '.manifest.json', 'utf8')) });
+    expect(r.blocks).toEqual([]); expect(r.pass).toBe(true);
+  });
+});
+
+describe('the briefing card (a reading surface before play)', () => {
+  const f = join(import.meta.dir, '../../briefs/022/latch/briefing-turn-keys');
+  test('its title and copy are not in-play running text: as briefing it passes, as rest it fails', () => {
+    if (!existsSync(f + '.png') || !existsSync(f + '.hud.png')) return;
+    const run = (state: 'rest' | 'briefing') => analyse(decodePng(readFileSync(f + '.png')), { state, hud: decodePng(readFileSync(f + '.hud.png')), manifest: JSON.parse(readFileSync(f + '.manifest.json', 'utf8')) });
+    expect(run('briefing').pass).toBe(true); expect(run('rest').pass).toBe(false);
   });
 });

@@ -11,6 +11,7 @@ import { PART_USE, fitsPart } from '../world/gen/street/partkit';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist } from './geom';
 import { quayBlock } from './street-zones';
+import { footOf } from '../world/civic/foot';
 import { type R4, type WCtx, TIP_TOL, TOL, f1, rule } from './world-ctx';
 
 const rectPts = (r: R4, step = 0.5): V[] => {
@@ -42,7 +43,7 @@ export function kitFitChecks(c: WCtx): Check[] {
   // roofs: the kit piece inside the usable roof rect (the programme's minRoof is SF-15)
   for (const r of w.roofs) if (r.kit) {
     const k = piece(r.id, r.kit); if (!k) continue;
-    const cs = corners(k.s, r.kit.at, r.kit.yaw ?? 0), ux: V = [Math.cos(r.yaw), Math.sin(r.yaw)];
+    const cs = footOf(k.a, r.kit), ux: V = [Math.cos(r.yaw), Math.sin(r.yaw)];
     const off = cs.map(q => [(q[0] - r.c[0]) * ux[0] + (q[1] - r.c[1]) * ux[1], -(q[0] - r.c[0]) * ux[1] + (q[1] - r.c[1]) * ux[0]] as V);
     if (off.some(o => Math.abs(o[0]) > r.size[0] / 2 + TOL || Math.abs(o[1]) > r.size[1] / 2 + TOL)) bad.push(`${r.id}: ${k.a.id} ${k.s.map(f1).join('×')} m outside the roof ${r.size.map(f1).join('×')}`);
   }

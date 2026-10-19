@@ -2,7 +2,7 @@
 // Each rule is the plan's "if" sentence made measurable: items are placed from their footprints (street-geo.ts), zones from the
 // plan's sections, so a generator that breaks the standard fails here whatever it meant to do.
 import { ctxOf as genCtx } from '../world/gen/common';
-import { kindOf, plotRing } from '../world/gen/edges';
+import { SIGHT_CLEAR, junctionCorners, kindOf, plotRing } from '../world/gen/edges';
 import { landingsOf } from '../world/gen/street/crossings';
 import { PART_KINDS } from '../world/gen/street/parts';
 import type { Check } from './checks';
@@ -37,12 +37,14 @@ export function streetChecks(c: WCtx): Check[] {
   const bad2: string[] = [], cross = landingsOf(w).map(l => ({ s: l, ring: boxRing(l.at, l.size[0], l.size[1], l.yaw) })), doors = new Grid<Door>(10, f => f.c), own = PART_KINDS as readonly string[];
   const exempt = (s: Spot) => ['bollard', 'beacon', 'crossing'].includes(s.s.kind) || own.includes(s.s.kind) || s.kit;
   for (const f of w.frontages.filter(q => q.level === 'street')) doors.add({ c: f.entrance.c as V, ring: boxRing(f.entrance.c as V, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw), f });
+  const drives = (w.ground.drives ?? []).map(x => ({ id: x.id, ring: x.ring as V[] })); // brief 023: nothing stands on a drive; nothing but bollards and beacons within 2 m of one
   for (const sp of gnd) {
+    if (!FLAT.has(sp.s.kind)) for (const x of drives) { const gap = ringGap(sp.ring, x.ring); if (gap < TOL) bad2.push(`${tag(sp)} stands on the drive ${x.id}`); else if (!exempt(sp) && gap < 2 - TOL) bad2.push(`${tag(sp)} ${f1(gap)} m from the drive ${x.id}`); }
     if (exempt(sp)) continue;
     for (const x of cross) if (x.s.edge === sp.s.edge && dist(x.s.at, sp.s.at) < 12 && ringGap(sp.ring, x.ring) < 2 - TOL) { bad2.push(`${tag(sp)} ${f1(ringGap(sp.ring, x.ring))} m from a crossing`); break; }
     for (const f of doors.near(sp.s.at, 6)) if (ringGap(sp.ring, f.ring) < 2 - TOL) { bad2.push(`${tag(sp)} ${f1(ringGap(sp.ring, f.ring))} m from the door of ${f.f.id}`); break; }
   }
-  out.push(rule('SF-2', G, 'Nothing but bollards, crossing beacons and tram stop kits within 2 m of a crossing or a doorway\'s jambs', gnd.length, bad2, 'none', 'streetscape.crossings · bollards'));
+  out.push(rule('SF-2', G, 'Nothing but bollards, crossing beacons and tram stop kits within 2 m of a crossing or a doorway\'s jambs, or of a drive; nothing at all on a drive', gnd.length, bad2, 'none', 'streetscape.crossings · bollards · brief 023 (drives: Sky 2026-10-19)'));
 
   // SF-3 the tram's own space: nothing but track, lawn and the stop kit's platforms in a reservation or a track's swept envelope (± 1.325 + 0.5)
   const bad3: string[] = [];
@@ -107,14 +109,9 @@ export function streetChecks(c: WCtx): Check[] {
   out.push(rule('SF-7', G, 'Counts and spacing per edge: trees 12 m, lamps by type, benches 36, hydrants 90, mailboxes 250, columns 60, food kiosks 30, flower kiosks and district newsstands 120 apart', n7 + dn.length, bad7, 'all', 'streetscape.trees.spacing · lamps.types · catalogue[].count'));
 
   // SF-8 corner visibility: nothing that blocks sight within 6 m of a junction corner's kerb tangent point
-  const bad8: string[] = [], corners: V[] = [], seen8 = new Set<string>(), ROADS = ['primary', 'district', 'access'];
-  for (const pl of d.plots) {
-    if (pl.civic) continue;
-    const r = plotRing(gc, pl), n = r.p.length;
-    for (let i = 0; i < n; i++) if (ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen8.has(k)) { seen8.add(k); corners.push(q); } }
-  }
+  const bad8: string[] = [], corners = junctionCorners(gc);
   const blockers = gnd.filter(x => x.s.sight === 'blocks');
-  for (const sp of blockers) { const k = corners.find(q => Math.min(...sp.pts.map(p => dist(p, q))) < 6 - TOL); if (k) bad8.push(`${tag(sp)} ${f1(Math.min(...sp.pts.map(p => dist(p, k))))} m from the corner at ${k.map(Math.round)}`); }
+  for (const sp of blockers) { const k = corners.find(q => Math.min(...sp.pts.map(p => dist(p, q))) < SIGHT_CLEAR - TOL); if (k) bad8.push(`${tag(sp)} ${f1(Math.min(...sp.pts.map(p => dist(p, k))))} m from the corner at ${k.map(Math.round)}`); }
   out.push(rule('SF-8', G, 'No sight-blocking item within 6 m of a junction corner\'s kerb tangent point', blockers.length, bad8, '≥ 6 m', 'streetscape.sight · rules SF-8'));
 
   // SF-9 watchers stand at every site the plan lists and nowhere else (stations, tram stops, gates, the square, the circus)

@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1572, "y": 1925, "w": 308, "h": 80, "text": "Take Vale alive."},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 110, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 54, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "speech", "x": 46, "y": 1554, "w": 485, "h": 50, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": 87, "y": 1448, "w": 592, "h": 50, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 3193, "y": 3420, "w": 52, "h": 52, "text": "door marker"},
+  {"kind": "image", "x": 1700, "y": 823, "w": 52, "h": 52, "text": "pip waitress"},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

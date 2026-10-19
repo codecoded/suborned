@@ -1,10 +1,12 @@
 // Walking on foot: players cross any road anywhere (no crossings, kerbs, medians or tram reservation stop them).
-// Only buildings, built plots, landmarks and water block (and, on a block with a dressing, its ground solids: walk-solids.ts). Dijkstra on a grid
+// Only buildings, built plots (behind their building line: the pavement in front of it walks), landmarks and water block (and, on a block with a dressing, its ground solids: walk-solids.ts). Dijkstra on a grid
 // with 16 neighbours, then string-pulled to an any-angle route.
 import { type V, dist, inPoly } from './geom';
 import type { Derived, Plan } from './plan';
 import { type Civic, footprints } from './civic';
 import { type Edge, Solids, bodyOf } from './walk-solids';
+import { ctxOf } from '../world/gen/common';
+import { buildingLine, plotRing } from '../world/gen/edges';
 
 export type Walk = { from: string; to: string; kind: string; m: number; straight: number; path: V[] };
 /** One tram stop or sky rail station and its shortest walk (m) from the nearest origin; Infinity = no walk at all. */
@@ -22,10 +24,21 @@ function solve(plan: Plan, d: Derived, civ: Civic) {
   const r = run(plan, d, civ); memo.set(d, r); return r;
 }
 
-/** What blocks a walker: the built plots, the block's buildings and entrance towers, the water (polygons), and the landmarks (discs; the skyport is walked under). */
+/** A built plot's walk blocker (brief 023): the plot behind its building line, the plot edge set back along each road by the street section's pavement (standards.streetscape.sections[class].pavement,
+ *  the line rule B-3 holds every building to and the world generator builds on: tools/world/gen/edges.ts buildingLine). The pavement between the kerb and that line is public ground and walkable;
+ *  street furniture on it blocks where it stands (the ground solids). A plot too small to hold a building behind its line (the world builds none) stays blocked whole, as before. */
+const lines = new WeakMap<Derived, Map<string, V[]>>();
+export function buildingLines(plan: Plan, d: Derived, civ: Civic): Map<string, V[]> {
+  const hit = lines.get(d); if (hit) return hit;
+  const ctx = ctxOf(plan, d, civ), out = new Map<string, V[]>(), sections = !!ctx.S?.sections; // a plan with no street sections has no pavement to take off: its plots block whole
+  for (const p of d.plots) if (!OPEN.has(p.use)) out.set(p.id, (sections ? buildingLine(ctx, plotRing(ctx, p))?.p : undefined) ?? p.polyV);
+  lines.set(d, out); return out;
+}
+
+/** What blocks a walker: the built plots behind their building lines, the block's buildings and entrance towers, the water (polygons), and the landmarks (discs; the skyport is walked under). */
 export function blockersOf(plan: Plan, d: Derived, civ: Civic) {
   return {
-    polys: [...d.plots.filter(p => !OPEN.has(p.use)).map(p => p.polyV), ...footprints(civ), ...plan.water] as V[][],
+    polys: [...buildingLines(plan, d, civ).values(), ...footprints(civ), ...plan.water] as V[][],
     rounds: plan.landmarks.filter(l => l.id !== 'skyport'),
   };
 }

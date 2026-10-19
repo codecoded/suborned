@@ -123,7 +123,7 @@ namespace Suborned.Sim
         (bool aware, bool armed) Awareness(Person p, Pt at)
         {
             var e = Enforcer; bool armed = p == GuardP && GuardGun.W != null && !GuardAlly;
-            bool aware = e.Running && e.Walk != null && G.Within(e.Pos, at, witnessRange);
+            bool aware = e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run
             if (!aware && p == GuardP) aware = GuardWatching(e.Pos, false);
             // Motive rev 3 §1.3: a person who witnessed one of the cell's acts (a takedown, a carry, a drawn weapon) stays aware of the
             // Enforcer for the rest of the mission (until Pulse gives a stop its facing)
@@ -146,7 +146,7 @@ namespace Suborned.Sim
                 if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
                     var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i];
-                    return span <= 0 ? (Pt?)null : path.Heading(path.Length * (Tick - w.To[i]) / span);
+                    return span <= 0 ? (Pt?)null : path.Heading(LegMm(w, path, Tick - w.To[i], span));
                 }
             return null;
         }
@@ -189,7 +189,7 @@ namespace Suborned.Sim
             if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
             GuardEngaged = true; Remember(GuardP, "attacked-aware", "enforcer", true);
             RaiseAlert(R.DrawSeenSecurity, "takedown-fails:" + p.Id);
-            CallSecurity(R.RespSeenS, "The guard calls in an attack.", at);
+            CallSecurity(R.RespSeenS, "The guard calls in an attack.", at, origin: () => OriginNow("attack:" + Who(p), "response", Who(p), at, at, op.Pos, "enforcer"));
         }
 
         /// <summary>The person is taken off the street (a body from the order on: no witness, no reporter, no walk).</summary>
@@ -214,7 +214,7 @@ namespace Suborned.Sim
             {
                 b.WakeAt = INF;
                 Chain.Add("killed:" + Who(p)); Note("takedown.dead", $"{Who(p)} is dead. The body lies where it fell.");
-                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", "Vale is dead. The live capture objective has failed."); }
+                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", "Vale is dead. The live capture objective has failed.", () => With(Because("killed", true, Locate(Sim.Op.Name(op.Id), "killed", b.At), Locate("councillor", "victim", null, b.At)), Sim.Op.Name(op.Id))); }
             }
             else
             {
@@ -352,6 +352,7 @@ namespace Suborned.Sim
         /// saw-violence move), then their reaction by the list (Pulse §2.3).</summary>
         void PersonNotices(TdAct a, Person p, Pt wp, string what, Body? b)
         {
+            if (what == "body") RoundsEnd("body-found"); // brief 022
             string by = what == "act" ? "enforcer" : what == "carry" && b != null && b.Carrier.HasValue ? Sim.Op.Name(b.Carrier.Value) : "";
             Remember(p, what == "act" ? "saw-takedown" : what == "carry" ? "saw-carry" : "found-body", by, true);
             if (a.Lead != null && !a.Lead.Witnesses.Exists(x => x.p == p)) a.Lead.Witnesses.Add((p, wp));
@@ -445,6 +446,7 @@ namespace Suborned.Sim
         void WatcherNotices(TdAct a, string w, string what, Body? b)
         {
             string kind = KindOf(a, b, what, true);
+            if (what == "body") RoundsEnd("body-found"); // brief 022
             if (w.StartsWith("camera:", StringComparison.Ordinal))
             {
                 int phase = (int)(Streams.Fnv1a32(w) % (uint)T(R.CameraScanS)), period = T(R.CameraScanS);
@@ -611,7 +613,11 @@ namespace Suborned.Sim
             if (first) { Reported++; var list = R.AlertByIncident; to = Math.Max(sev, list[Math.Min(Reported, list.Length) - 1]); }
             a.Alert = Math.Max(a.Alert, to);
             int before = Alert;
+            string reporter = p != null ? Who(p) : by;
+            if (first && !actOrigin.ContainsKey(a.Id)) actOrigin[a.Id] = OriginNow($"report:{kind}:{a.Victim}", "response", reporter, place, p == null ? place : (Pt?)null, place, "enforcer"); // the report that raised the response (FailCause.cs, output only)
+            landingBy = reporter; landingAt = place;
             RaiseAlert(to, $"report:{kind}:{a.Victim}");
+            landingBy = "";
             if ((kind == "seen" || kind == "woken") && !a.Take) ChargeAct(a); // a Take keeps its own Trail (cell.take)
             AddIncident("report", $"report:{kind}:{a.Victim}", place, p != null ? new[] { (p, PosOfPerson(p) ?? place) } : null);
             a.Scene = place;

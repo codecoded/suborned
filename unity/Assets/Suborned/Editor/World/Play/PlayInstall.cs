@@ -85,7 +85,20 @@ namespace Suborned.World.Play
                     if (job != null && !jobBlocks.ContainsKey(job)) jobBlocks[job] = J.S(J.Get(p, "look"), "block");
                 }
             host.jobs = jobBlocks.Keys.ToArray(); host.jobColours = jobBlocks.Values.Select(Block).ToArray();
+            host.figures = People.FigureBuild.Library(); // brief 020: the stand-in figures, when installed (else capsules)
+            GameObject Kit(string path) => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/" + path); // brief 020: kit models (bun run kit), else the boxes
+            host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx"); host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_RobotButler_Play.fbx"); // the patrol robot (a sim agent, no world element): the lighter butler, as the café's foreground robot (Splice, brief 020)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
+            // GDD v0.24: the public door's view from each yaw (DoorSight), for the door marker's turn glyph and H13's door cause
+            try
+            {
+                var site = SimBundle.Load().Inputs.SiteData; host.doorSeen = DoorSight.Measure(host.frame.World(site.At(site.GuardPost)));
+                var ms = Json.Parse(File.ReadAllText(Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts/missions/handover/mission.json"))); // the Office entrance's `yaw` (V-1, v0.24), else the yaw that sees the door best (brief 023: the west door, clear at the opening yaw 30, carries no yaw)
+                int best = 0; for (int k = 1; k < host.doorSeen.Length; k++) if (host.doorSeen[k] > host.doorSeen[best]) best = k;
+                host.doorPlayedYaw = host.doorSeen.Length == 4 ? 30 + 90 * best : 210; foreach (var d in J.A(ms, "destinations")) if (J.S(d, "name") == "Office entrance" && J.Get(d, "yaw") is double y) host.doorPlayedYaw = (int)y;
+                Debug.Log($"Play: the public door seen at yaw 30/120/210/300: {string.Join(" / ", host.doorSeen.Select(x => x.ToString("0.00")))} (clear at {HandoverHost.DoorClearLimit}); played at {host.doorPlayedYaw}");
+            }
+            catch (System.Exception e) { host.doorSeen = new float[0]; Debug.LogWarning($"Play: the door's view was not measured ({e.Message}); the host falls back to the GDD's yaw 210"); }
             EditorSceneManager.MarkSceneDirty(go.scene);
             Debug.Log($"Play: installed the Handover host (`{RootName}`): frame origin {f.origin}, heights {f.nx}x{f.ny} at {f.cell} m (max {f.heights.Max():F2} m)");
             return host;
@@ -126,7 +139,8 @@ namespace Suborned.World.Play
             return m;
         }
 
-        /// <summary>Pavement height per 1 m cell: the highest plot slab under the cell centre with its top below 1 m (PeopleLayer's Ground.Height).</summary>
+        /// <summary>Pavement height per 1 m cell: the highest plot slab under the cell centre with its top below 1 m (PeopleLayer's Ground.Height);
+        /// a drive and the bay it reaches at their own level (the slab is cut round them).</summary>
         static float[] Heights(WorldDto w, SiteFrame f)
         {
             var slabs = new List<(Vector2[] ring, Rect box, float top)>();
@@ -136,12 +150,15 @@ namespace Suborned.World.Play
                     float x0 = p.Ring.Min(v => v.x), y0 = p.Ring.Min(v => v.y);
                     slabs.Add((p.Ring, new Rect(x0, y0, p.Ring.Max(v => v.x) - x0, p.Ring.Max(v => v.y) - y0), p.Base + p.Height));
                 }
+            var cuts = new List<(Vector2[] ring, float level)>();
+            foreach (var d in w.Ground.Drives) { cuts.Add((d.Ring, d.Level)); if (w.Ground.Flats.Find(x => x.Id == d.To) is { } bay) cuts.Add((bay.Ring, bay.Level)); }
             var h = new float[f.nx * f.ny];
             for (int i = 0; i < f.nx; i++)
                 for (int j = 0; j < f.ny; j++)
                 {
                     var plan = f.ToPlan(f.x0 + (i + 0.5f) * f.cell, f.y0 + (j + 0.5f) * f.cell); float top = 0f;
                     foreach (var (ring, box, t) in slabs) if (t > top && box.Contains(plan) && Poly.Contains(ring, plan)) top = t;
+                    foreach (var (ring, level) in cuts) if (Poly.Contains(ring, plan)) { top = level; break; } // brief 023: a drive and its bay are cut out of the slab (Layers.Ground)
                     h[i * f.ny + j] = top;
                 }
             return h;

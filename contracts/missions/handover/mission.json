@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission/3",
  "id": "handover",
- "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). The cell's start re-sited 2026-10-16 (Waymark; brief 014, Sky playing the Handover: \"you can't see them! That's a very bad start\"): the four stood in a 1.2 m line at (1.168..4.768, -49.666), on the kerb strip of Rocket Lane, where bld/rocket-west/19 stands between them and the play camera (V-1: 6 % of a figure seen). They now stand loosely by the getaway car, as people waiting at the square's boarding pavilion would, inside the keep-clear zone the block keeps for them (crew-line-getaway): Fixer (-0.2, -46.6), Tech (1.2, -44.6), Scout (-1.6, -44.3), Enforcer (2.7, -47.6), 2.4-3.4 m from each neighbour. Each is 100 % seen at the play camera (zoom 14, 38 degrees, yaw 30), out from under the pavilion's canopy, on a free cell of the engine's walk grid, 23 m or more from every watcher's fan at 0:00 and 5.9 m or more from any person's place (P-16). GDD section 07's 0:00 entry says so since v0.23.0 (the timeline's first entry takes its words); the Enforcer stands nearest the car. Walks (tools/plan/walk-fine.ts): Scout to beside Inez 25.0 to 18.6 m, Fixer to the cafe door 26.4 to 23.2 m, Tech to the cabinet 39.6 to 36.0 m, Enforcer to the Office approach 49.3 to 50.9 m. The opening view centres on block (-2.5, -40.5): briefs/014/waymark-start.png. Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). The cell's start re-sited 2026-10-16 (Waymark; brief 014, Sky playing the Handover: \"you can't see them! That's a very bad start\"): the four stood in a 1.2 m line at (1.168..4.768, -49.666), on the kerb strip of Rocket Lane, where bld/rocket-west/19 stands between them and the play camera (V-1: 6 % of a figure seen). They now stand loosely by the getaway car, as people waiting at the square's boarding pavilion would, inside the keep-clear zone the block keeps for them (crew-line-getaway): Fixer (-0.2, -46.6), Tech (1.2, -44.6), Scout (-1.6, -44.3), Enforcer (2.7, -47.6), 2.4-3.4 m from each neighbour. Each is 100 % seen at the play camera (zoom 14, 38 degrees, yaw 30), out from under the pavilion's canopy, on a free cell of the engine's walk grid, 23 m or more from every watcher's fan at 0:00 and 5.9 m or more from any person's place (P-16). GDD section 07's 0:00 entry says so since v0.23.0 (the timeline's first entry takes its words); the Enforcer stands nearest the car. Walks (tools/plan/walk-fine.ts): Scout to beside Inez 25.0 to 18.6 m, Fixer to the cafe door 26.4 to 23.2 m, Tech to the cabinet 39.6 to 36.0 m, Enforcer to the Office approach 49.3 to 50.9 m. The opening view centres on block (-2.5, -40.5): briefs/014/waymark-start.png. Re-sited 2026-10-19 (Sky's door option (b), then the service door on the east face; brief 023, Vantage moved the points, Waymark the prose): the public door, landing, steps and forecourt turn onto the wing's west face, over Rocket Lane, seen at the opening yaw 30. Office entrance (51.75, -30) to (64, -41.25); Office approach (48.6, -30) to (64, -44.4); the entrance camera (49.5, -41.5) to (53, -44.5); patrol-a and patrol-b (40.75, -34 and -14) to (68, -44.8) and (52, -44.8); the cabinet point (23.9, -17) to (46.5, -44.5); patrol-reroute (20, -58) to (19.2, -47); South walkway (26.6, -17) to (26.6, -23); Service lane (62.5, -43.2) to (62.5, -16.8), by the service door on the east face (yaw 210); the turned driver's car stands in serviceBay beside it (new point service-bay, (63.75, -15.0), yaw 210), not on 'Service lane'. No offset moves: the guard's summoned walk grows from 63.7 to 79.8 m (the unguarded door 2:31.2 to 2:54.0 from the call; windows.front-door) and the escort from 'Service lane' to 'Getaway bay' from 54.8 to 64.6 m on the engine's grid (timeline 8:30). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
  "status": {
   "state": "preserved",
   "adjustable": ["timings", "placements"],
@@ -49,7 +49,7 @@
    "at": "5:50",
    "what": "Vale exits north (service lane if driver turned)",
    "src": "GDD §07",
-   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faces north to the square. Not re-sited here."
+   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faced north to the square until 2026-10-19, when Sky's door option (b) turned the public door onto the wing's west face, over the forecourt and Rocket Lane (brief 023). The service-lane branch: the turned driver's car stands in serviceBay in the Office's east service yard (point service-bay, (63.75, -15.0), nose in facing -x), and Vale's stop is 'Service lane' (62.5, -16.8), by the service door on the east face since Sky's choice of 2026-10-19 (brief 023; it stood on the west side, (62.5, -43.2), then for a day by the new public door, (70.5, -43.2)): he walks from the official entrance to 'Service lane' (24.2 m, 17.3 s on the engine's grid), inside the 20 s from 5:50 to 6:10, then about 2 m to the car. The offsets are not re-timed."
   },
   {
    "at": "6:10",
@@ -61,7 +61,7 @@
    "at": "8:30",
    "what": "rivals take Vale or car leaves = over",
    "src": "GDD §07; Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
-   "note": "Retimed with the world (CLAUDE.md: the Handover's timings may move): route B cannot take Vale before he reaches the service lane at 6:10, and the take (38 s, §07) and the 54 m walk to the getaway bay (39 s) left it 33 s before 8:00; at 8:30 it has 1:03, inside the 8-12 min mission rule (§01). Route A and the loud route finish long before either close. GDD §07's schedule reads 8:30 since v0.23.0 (it read 8:00 to v0.22.0). The close ends the take, not a carry already under way (Waymark's ruling, 2026-10-15): if the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open), and it wins only when Vale reaches the getaway car; the final fight and the seal bound the carry."
+   "note": "Retimed with the world (CLAUDE.md: the Handover's timings may move): route B cannot take Vale before he reaches the service lane at 6:10, and the take (38 s, §07) and the 54 m walk to the getaway bay (39 s) left it 33 s before 8:00; at 8:30 it had 1:03, inside the 8-12 min mission rule (§01). Since the service door moved to the Office's east face (Sky, 2026-10-19, brief 023) the escort from 'Service lane' to 'Getaway bay' is 64.6 m on the engine's grid (46.2 s; Vantage's fine walk 63.9 m), so the take and the walk end at 7:34 and 8:30 leaves 56 s; the close stays (Waymark, brief 023: the Take itself, which MC-5 times, still lands 1:42 before it). Route A and the loud route finish long before either close. GDD §07's schedule reads 8:30 since v0.23.0 (it read 8:00 to v0.22.0). The close ends the take, not a carry already under way (Waymark's ruling, 2026-10-15): if the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open), and it wins only when Vale reaches the getaway car; the final fight and the seal bound the carry."
   }
  ],
  "events": [
@@ -149,7 +149,7 @@
    "walk": { "from": "Office entrance", "to": "Café door" },
    "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
    "src": "GDD §07 route A; Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door; rulebook summon (Motive briefs/011/motive-lovers.md §1.3): stay lover-stay-s, walk at most summon-walk-max-s, on the walk grid at walking pace",
-   "note": "Read from the rules since the lovers canon (Waymark 2026-10-15): the guard is Inez's lover and her call summons him; how long he stays and how far he will walk are the rulebook's summon values, and his walk is the grid's (66 m, about 46-47 s at 1.4 m/s; §07 says 30 s), so the window (about 2:33) follows the world and the rules, never a number written here. tools/missions/handover/mission.test.ts measures the walk and checks it against the summons' limit."
+   "note": "Read from the rules since the lovers canon (Waymark 2026-10-15): the guard is Inez's lover and her call summons him; how long he stays and how far he will walk are the rulebook's summon values, and his walk is the grid's (§07 says 30 s), so the window follows the world and the rules, never a number written here. Since the public door moved onto the wing's west face (Sky's door option (b), 2026-10-19, brief 023) he walks from the forecourt round the Office's north-west corner and across the square: 79.8 m to his stop at her side (the rounds file's guard.stops[0].walkCm 7978; 80.3 m door to door on the engine's grid), 57.0 s each way at 1.4 m/s, inside the summons' 90 s (summon-walk-max-s). The engine measures the unguarded door at 2:54.0 from the call (57 s out, 60 s at the café, 57 s back; Waymark, scratch play of route-a-pressure on engine 0.8.1: call 1:44.5, at the café 2:41.5, leaves 3:41.5, back 4:38.5), against 2:31.2 in c021. The beats hold: the Enforcer enters seconds after the call and is out by the service door long before the guard is back; on route A as recorded (call 2:49.5) he would be back at 5:43.5, after his 5:30 shift end, which only lengthens a window the route no longer needs. History: Measured by the engine (Waymark, c021, engine 0.8.1, brief 022 §7.1): he stops at her free side, the first of the rounds file's guard.stops with nobody within rounds.clear (partners-clear-cm 100 cm) at the call; on every recorded route with a call that is the first, 45 degrees ahead on her left (63.7 m from his post, 45.5 s at 1.4 m/s, 45.6 s in whole ticks each way), and the unguarded door runs 2:31.2 from the call (60 s at the café), against 2:30.6 at 0.8.0's stop 1.2 m straight in front of her and 2:32.4 without rounds. tools/missions/handover/mission.test.ts measures the walk and checks it against the summons' limit."
   }
  ],
  "rivals": {
@@ -187,9 +187,9 @@
  "points": [
   {
    "id": "cabinet",
-   "at": [23.9, -17.0],
-   "src": "civic-block.json structures civic-control-cabinet (x 24.95-25.85, y -17.84 to -16.16); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
-   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, in the square 28 m from the public door and outside every cone, as the top-down test's cabinet stood about 31 units from the door. The point stands 1.05 m off its west face, centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
+   "at": [46.5, -44.5],
+   "src": "civic-block.json structures civic-control-cabinet (x 44.55-45.45, y -45.34 to -43.66; moved with the public door 2026-10-19, civic-block.adjust.json, Vantage, brief 023, Sky's door option (b)); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
+   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, at the office plot's north-west corner, 17.8 m from the public door and 6.5 m behind the entrance camera's pole, outside every cone (the camera's, the door guard's and the patrol's sweep along y -44.8, which ends at x 52, 5.5 m short of it). Was in the square 28 m from the old north door (moved 2026-10-19 with the door, Sky's option (b)). The point stands 1.05 m off its south face (x 45.45), centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
   },
   {
    "id": "beside-inez",
@@ -217,27 +217,34 @@
   },
   {
    "id": "patrol-a",
-   "at": [40.75, -34.0],
+   "at": [68.0, -44.8],
    "src": "the top-down test: the patrol sweeps 11 units in front of the public door, from 4 to one side of it to 16 to the other",
-   "reason": "the same offsets from the real public door (51.75, −30): 11 m north of it, 4 m west to 16 m east."
+   "reason": "the sweep's south end: the patrol walks the forecourt's outer edge (y -44.8, 3.55 m out from the public door on the wing's west face and 1 m out from the foot of its steps), from by the entrance camera's pole (patrol-b, x 52, 12 m north of the door axis x 64) to here, 4 m south of the axis and 1.4 m short of the service door (69.4, -41.1); it crosses the Office approach both ways each round. Moved 2026-10-19 with the door (Sky's option (b); Vantage, brief 023), was (40.75, -34) in front of the old north door: the top-down test's sweep in front of the door, shortened to the forecourt between the camera pole and the service door."
   },
   {
    "id": "patrol-b",
-   "at": [40.75, -14.0],
+   "at": [52.0, -44.8],
    "src": "as patrol-a",
-   "reason": "the far end of the sweep."
+   "reason": "the sweep's north end, by the entrance camera's pole (53, -44.5), 12.5 m from the public door. Moved 2026-10-19 with the door (was (40.75, -14))."
   },
   {
    "id": "patrol-reroute",
-   "at": [20.0, -58.0],
+   "at": [19.2, -47.0],
    "src": "the top-down test: a rerouted patrol waits at the far corner from the door",
-   "reason": "the square's west edge, 33 m from the public door and out of its sightlines."
+   "reason": "the square's south-east edge by Rocket Lane, on the pavement off the carriageway (was (20, -58), on the road), 45 m up the street from the public door, which faces Rocket Lane: far from the door and the service door, so the entry and the carry-out go unseen by it while it stands here. 10.8 m from the getaway bay on the way the carry comes in, and 1.6 m from guard-ally. Moved 2026-10-19 (Vantage, brief 023; the common fix of briefs/011/vantage/study.ts, then tuned). Seen at the play camera (V-1), so it no longer declares itself hidden."
+  },
+  {
+   "id": "service-bay",
+   "at": [63.75, -15.0],
+   "src": "GDD §07 route B: the turned driver moves the pickup to the service lane; civic-block.json serviceBay in the Office's east service yard (Sky 2026-10-19, the service door on the east face; Vantage, brief 023); plan frame (-145.0, -293.75)",
+   "reason": "where the turned driver's car stands for the service-lane pickup: in serviceBay, nose in, facing -x (north, back toward the yard's closed end), 2.3 m from 'Service lane' (62.5, -16.8), where Vale comes out by the service door and walks about 2 m to the car. It replaces 'Service lane' as the car's stand; Vale's stop stays 'Service lane'. The car reaches it from Apron Road by the yard's reserved vehicle way (y -16.5..-13.5), which becomes a drive when Splice's world and Keel's engine 0.8.2 let cars cross the pavement there. The facing is a reason, not a field: the mission schema has no heading for a car, so the engine takes it from the bay.",
+   "yaw": 210
   },
   {
    "id": "block-spot",
-   "at": [75.7, -36.4],
+   "at": [77.25, -33.75],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
-   "reason": "on the sightline from the pickup camera to the official car, 40% of the way from the camera, on the pavement between the Office and the bay."
+   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed."
   },
   {
    "id": "ambush-1",
@@ -303,12 +310,12 @@
  "cameras": [
   {
    "id": "entrance",
-   "at": [49.5, -41.5],
+   "at": [53.0, -44.5],
    "looksAt": "Office entrance",
    "reachM": 22,
    "halfM": 9,
    "src": "GDD §05 cameras: fixed visible cones; §07 route A: Tech loops the entrance camera",
-   "reason": "a pole at the forecourt's west corner, looking at the public door across the foot of its steps: the door, the steps and the Office approach in the cone, the tower beside the door clear of the sightline."
+   "reason": "a pole at the forecourt's north end, 11.5 m north of the public door on the wing's west face, looking south along the face at the door: the door, its landing, the steps and the Office approach in the cone. Moved 2026-10-19 with the door (Sky's option (b); Vantage, brief 023), was (49.5, -41.5) looking north-east at the old north door."
   },
   {
    "id": "pickup",
@@ -334,7 +341,8 @@
   {
    "name": "Behind café",
    "at": [-23.4, -35],
-   "surface": "ground"
+   "surface": "ground",
+   "hidden": "the Scout's seat, unwatched on purpose: behind the café, out of the street's and the cameras' view, so nobody sees who is watching the door."
   },
   {
    "name": "West side",
@@ -388,17 +396,18 @@
   },
   {
    "name": "Service lane",
-   "at": [62.5, -43.2],
-   "surface": "ground"
+   "at": [62.5, -16.8],
+   "surface": "ground",
+   "yaw": 210
   },
   {
    "name": "South walkway",
-   "at": [26.6, -17],
+   "at": [26.6, -23],
    "surface": "ground"
   },
   {
    "name": "Office approach",
-   "at": [48.6, -30],
+   "at": [64, -44.4],
    "surface": "ground"
   },
   {
@@ -408,7 +417,7 @@
   },
   {
    "name": "Office entrance",
-   "at": [51.75, -30],
+   "at": [64, -41.25],
    "surface": "office-public"
   },
   {

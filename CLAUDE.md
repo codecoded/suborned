@@ -11,7 +11,7 @@ Lean game repo: GDD → crew → plan → visible world. It grows only when a ta
 - **World:** an alternate history, "a 1950s world that discovered atomic power centuries ago": 1950s style, technology centuries ahead. No thinking machines or networks: robots are clockwork-smart on fixed routines, records are paper and microfilm, cameras are closed-circuit and watched by people, calls are by voice. Information moves through people, so people are the weak point. An abundant city that fears disorder: optimistic surface, coercive underneath. Design test for every object: 1950s style, centuries-ahead tech (crossings have floating signal eyes and light set in the road, never a zebra).
 - **The Handover** (GDD §07) is the capstone and the reference every generated mission must match: take Councillor Vale alive at shift handover outside the Civic Records Office, by the front door (Inez the waitress) or at the pickup (the driver). Keep it; its timings and placements may move with the world.
 - **Fixed limits:**
-  - camera above the street, never first person: play zoom 14 at 38°, yaw 30; characters 40–60 px at 1080p
+  - camera above the street, never first person: play zoom 14 at 38°, opening yaw 30, turned in quarter steps with Q/E (the Records Office front is played at 210); characters 40–60 px at 1080p
   - exteriors only: interiors are timed off-screen actions
   - levels: street 0, deck 9.43 m, sky concourse 24 m
   - 60 fps at play zoom on the 15-inch MacBook Air M4
@@ -38,7 +38,7 @@ Lean game repo: GDD → crew → plan → visible world. It grows only when a ta
 - `tools/rag/`: build-time generation core (ported from Assignment 4). Corpus = agent GDD by §, human GDD by heading, plans by part → SurrealDB (HNSW + BM25, RRF) via `compose.yaml` + `services/embeddings`. `runAgent` runs a crew member tool-less (card body as system prompt, only StructuredOutput) and saves card, retrieval, prompt, schema, transcript and output per call. `bun run up`, `ingest`, `retrieve`. Model calls are opt-in, never in tests. One database per corpus hash, so machines and trees can share one server without clobbering each other; an ingest of a corpus already indexed is reused. The Mac Studio can serve the Air over Tailscale (`.env.example`; `bun run doctor` checks it).
 - `unity/`: Unity 6000.6.2f1 URP project. Unity MCP via `.mcp.json`. Only Latch edits scenes. `Assets/Scenes/HarbourDistrict.unity` is built from the world export by `HarbourWorldBuilder` (`Assets/Suborned/Editor/World/`) and git-ignored; never edit it by hand.
 - `briefs/`: objectives Aster hands out (objective · owner · done-check · evidence · next owner).
-- `out/`: generated, git-ignored. Evidence that must ship goes in a committed folder, never only in out/.
+- `out/`: generated, git-ignored. Evidence that must ship (JSON, manifests, reports) goes in a committed folder, never only in out/. Screenshots, renders and captures under `briefs/` are git-ignored: they stay on disk; an image a tool reads is un-ignored by name in `.gitignore`.
 
 ## Run the crew
 `claude --agent lead-producer` (from this folder): the lead (Aster in the GDD) spawns crew by job name (`world-planner`, `unity-engineer`, `tools-engineer`, …). Every card carries the GDD name → agent roster; the GDD and briefs use the names. Any session here can also spawn a crew member directly with the Agent tool.

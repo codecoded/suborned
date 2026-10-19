@@ -62,7 +62,7 @@ namespace Suborned.Play
         public readonly Dictionary<string, string> CancelCosts = new();
         public readonly List<(string seed, string key, int n, int count, int index)> Vectors = new();
         /// <summary>The training hints (Motive's table, Fable's words): id → priority, line, and the prose trigger, ring and gone-when.</summary>
-        public sealed class Hint { public string Id = "", Line = "", Short = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = ""; public int Priority; }
+        public sealed class Hint { public string Id = "", Line = "", Short = "", Agent = "", Verb = "", Trigger = "", Rings = "", GoneWhen = "", DoorLine = "", DoorShort = ""; public int Priority; } // Door*: H13's door cause (Fable, GDD v0.24), optional
         public readonly List<Hint> Hints2 = new();
         /// <summary>The feed's scenes (Fable, text.json `scenes`): overheard, approach, call, city; each variant's beats are a line or a `ref` to a
         /// dialogue event (ack, arrive, reply, done, confirm) picked as playScene does.</summary>
@@ -85,6 +85,8 @@ namespace Suborned.Play
         /// <summary>Brief 018 §3 (Fable): debrief.between's lines (left-behind, captive, car-seen) and debrief.getaway's fills.</summary>
         public readonly Dictionary<string, string> DebriefBetween = new(), GetawayFate = new(), GetawayWhy = new(), GetawayBy = new();
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
+        /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
+        public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
         public string ObjGo = "Drive off in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind";
         public readonly Dictionary<string, string> GoWhy = new() { ["downed"] = "down", ["fighting"] = "fighting", ["sealed"] = "sealed", ["walked"] = "walks out" }, GoFate = new() { ["captured"] = "{who} would be captured.", ["walked"] = "{who} would walk out." };
         public readonly Dictionary<string, (string one, string many)> Holders = new() { ["mixed"] = ("hostiles", "hostiles") };
@@ -179,7 +181,7 @@ namespace Suborned.Play
                 foreach (var kv in hi.Entries)
                 {
                     var v = kv.Value; int.TryParse(v.Opt("priority")?.NumberText ?? "99", out var pr);
-                    Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Short = S(v, "short") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "" });
+                    Hints2.Add(new Hint { Id = kv.Key, Priority = pr, Line = S(v, "line") ?? "", Short = S(v, "short") ?? "", Agent = S(v, "agent") ?? "", Verb = S(v, "verb") ?? "", Trigger = S(v, "trigger") ?? "", Rings = S(v, "rings") ?? "", GoneWhen = S(v, "goneWhen") ?? "", DoorLine = v.Opt("door") is JNode hdl ? S(hdl, "line") ?? "" : "", DoorShort = v.Opt("door") is JNode hds ? S(hds, "short") ?? "" : "" });
                 }
             Hints2.Sort((a, b) => a.Priority.CompareTo(b.Priority));
             if (n.Opt("scenes")?.Opt("items") is JNode sci)
@@ -236,6 +238,11 @@ namespace Suborned.Play
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
             if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
             if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjGo = S(ob, "go") ?? ObjGo; ObjShowS = F(ob, "showSeconds", ObjShowS); }
+            if (l.Opt("failcam") is JNode fc)
+            {
+                if (fc.Opt("by") is JNode fb) foreach (var kv in fb.Entries) FailBy[kv.Key] = kv.Value.Str();
+                foreach (var (k, into) in new[] { ("caption", FailCaption), ("tip", FailTip) }) if (fc.Opt(k) is JNode m) foreach (var f in m.Entries) if (f.Value.Kind == JKind.Obj) foreach (var w in f.Value.Entries) into[f.Key + "|" + w.Key] = w.Value.Str();
+            }
             if (l.Opt("go") is JNode go) // brief 018 §6.5: the Go card and the roster flag
             {
                 GoNone = S(go, "none") ?? GoNone; GoLeaves = S(go, "leaves") ?? GoLeaves; GoSeen = S(go, "seen") ?? GoSeen; GoFlag = S(go, "flag") ?? GoFlag;

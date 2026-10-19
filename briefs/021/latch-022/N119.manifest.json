@@ -1,0 +1,8 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "line", "x": 1500, "y": 1879, "w": 452, "h": 50, "text": "The guard watches the door."},
+  {"kind": "image", "x": 1698, "y": 758, "w": 56, "h": 56, "text": "culprit locator"},
+  {"kind": "image", "x": 28, "y": 28, "w": 180, "h": 60, "text": "replay chip"}
+ ]
+}

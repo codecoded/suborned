@@ -31,6 +31,7 @@ export function buildMap(plan: { civic: unknown }, civ: Civic, scope: Scope, mis
   const poly = (layer: string, id: string, name: string, kind: string, p: V[], h?: number) => polys.push({ layer, id, name, kind, pts: p.map(S), ...(h !== undefined ? { h } : {}) });
   for (const b of civ.blocks) poly('ground', b.id, `${b.id} block`, 'block', b.outer);
   for (const b of civ.bays) poly('bays', b.id, b.id, 'bay', b.poly);
+  for (const x of civ.drives ?? []) poly('bays', x.id, x.id, 'bay', x.poly); // a drive is drawn as the bay it reaches (brief 023)
   poly('crossing', 'crossing', 'the block\'s crossing', 'crossing', civ.crossing);
   // crossing landings: a strip 4 m wide, 1.8 m deep inside the kerb (plan standards.streetscape.crossings), drawn from the block's own `at` and `inward`
   const dress = (civ.dressing ?? {}) as { crossings?: { at?: { id: string; at: number[]; inward: number[] }[] }; keepClear?: { id: string; polygon?: number[][]; ring?: { centre: number[]; r0: number; r1: number }; reason?: string }[] };

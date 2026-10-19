@@ -81,6 +81,14 @@ namespace Suborned.Sim
         public OpId? Carrying, CarriedBy;                // carrying a downed operative, or being carried (rulebook cell.carry)
         public string CarryBody = "";                    // brief 013: the body (a person's id) this operative carries
         public bool RunAlerted;                          // this run was seen by security: its found fault is counted (rulebook cell.runAlert, once a run)
+        // brief 025 (EXPERIMENTAL, rulebook cell.drive): the driven agent. Hashed only while Driven, so every run without a drive hashes as before
+        public bool Driven;                              // the host moves this operative (drive samples)
+        public Pt? DriveTo;                              // this tick's sample, consumed by the step
+        public bool DriveRun, DriveSpan, DriveMoved;     // the sample asks to run; a run span is open (once-a-span notice); moved this tick
+        public int Face = -1;                            // the last sample's facing, degrees (-1: none given)
+        public int DriveBudget, DrivePush;               // mm the agent may still move (refilled each tick); cm pushed while busy
+        public Pt? DriveResume; public bool DriveResumeRun; // the walk control took over (onRelease resume)
+        public int DriveHeld;                            // samples the engine corrected (diagnostic for the host; not hashed)
         public readonly HashSet<string> RunSeen = new HashSet<string>(StringComparer.Ordinal); // who remembers this run (once each)
         public bool Down => Gun.Down;
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
@@ -102,11 +110,15 @@ namespace Suborned.Sim
     /// cancel (Sky 2026-10-15 playtest): stops what the operative is doing now (Game.ActivityOf), at the rulebook cancel line's cost.
     /// Brief 013 (Sky 2026-10-16): takedown (op enforcer; target a person's id or role; "how": knockout or kill) · carry (target a body: the
     /// person's id or role) · drop · stash (target a stash id) · restrain (target a body).
+    /// Brief 025 (EXPERIMENTAL, rulebook cell.drive): drive ("to": [x, y] cm, "run", "face" 0..359) is a driven agent's sample, one a tick;
+    /// {"do": "drive", "release": true} hands control back.
     /// </summary>
     public sealed class Order
     {
         public int Tick; public string Op = "", Do = "", Target = "", Approach = "", To = "", Stance = "", How = ""; public Pt? Point; public bool Run, Force;
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how" };
+        /// <summary>Brief 025 (EXPERIMENTAL): a drive sample's facing in whole degrees (-1: none), and a drive order that hands control back.</summary>
+        public int Face = -1; public bool Release;
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
@@ -115,7 +127,9 @@ namespace Suborned.Sim
             o.Target = n.Opt("target")?.Str() ?? "";
             o.Approach = n.Opt("approach")?.Str() ?? "";
             if (n.Opt("to") is JNode to) { if (to.Kind == JKind.Str) o.To = to.Str(); else o.Point = Pt.Of(to); }
-            if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move") throw new FormatException($"{n.Path}: run is for a move (no other verb walks)"); }
+            if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move" && o.Do != "drive") throw new FormatException($"{n.Path}: run is for a move or a drive sample (no other verb walks)"); }
+            if (n.Opt("face") is JNode fc) { o.Face = fc.Int(); if (o.Do != "drive" || o.Face < 0 || o.Face > 359) throw new FormatException($"{n.Path}: face is a drive sample's facing, 0..359 degrees"); }
+            if (n.Opt("release") is JNode rl) { o.Release = rl.Bool(); if (o.Do != "drive") throw new FormatException($"{n.Path}: release is for a drive order"); }
             if (n.Opt("stance") is JNode st) { o.Stance = st.Str(); if (o.Do != "stance") throw new FormatException($"{n.Path}: stance is for the stance order"); }
             if (n.Opt("force") is JNode fo) { o.Force = fo.Bool(); if (o.Force && o.Do != "fire") throw new FormatException($"{n.Path}: force is for a fire order (the Ctrl case)"); }
             if (n.Opt("how") is JNode hw) { o.How = hw.Str(); if (o.Do != "takedown") throw new FormatException($"{n.Path}: how is for a takedown (knockout or kill)"); }
@@ -134,6 +148,8 @@ namespace Suborned.Sim
             if (Stance.Length > 0) w.Prop("stance", Stance);
             if (Force) w.Prop("force", true);
             if (How.Length > 0) w.Prop("how", How); // brief 013: written only when set, so every older order reads and hashes as before
+            if (Face >= 0) w.Prop("face", Face); // brief 025: likewise
+            if (Release) w.Prop("release", true);
             w.EndObj();
         }
         public override string ToString() { var w = new JWriter(); Write(w); return w.ToString(); }
@@ -173,6 +189,8 @@ namespace Suborned.Sim
             "already-heard", "already-watched",
             // brief 018 (Sky 2026-10-18): Board and Go
             "board-running", "board-tethered", "in-car", "car-empty", "fire-carrying-vale",
+            // brief 023 (Motive 2026-10-19, rulebook fight.over): no fire order on a final-fight hostile once the final fight is over
+            "fight-over",
         };
     }
 

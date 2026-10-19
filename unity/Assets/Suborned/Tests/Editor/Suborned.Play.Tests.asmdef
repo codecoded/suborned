@@ -1,14 +1,26 @@
 {
     "name": "Suborned.Play.Tests",
     "rootNamespace": "Suborned.Play.Tests",
-    "references": ["Suborned.Runtime", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
-    "includePlatforms": ["Editor"],
+    "references": [
+        "Suborned.Runtime",
+        "Suborned.World.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": ["nunit.framework.dll", "Suborned.Sim.dll"],
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Suborned.Sim.dll"
+    ],
     "autoReferenced": false,
-    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

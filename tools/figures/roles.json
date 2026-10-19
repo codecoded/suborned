@@ -1,0 +1,187 @@
+{
+ "note": "Which figure stands in for which thing the play scene draws today as a capsule. Keys are HostViews keys (Runtime/Play/HostViews.cs) and the people layer's job blocks (Editor/World/People/people.json). A list is a pool: pick by the person's id so the same person always looks the same. Capsules stay the fallback for any key not listed.",
+ "playViews": {
+  "op/scout": [
+   "scout"
+  ],
+  "op/fixer": [
+   "fixer"
+  ],
+  "op/tech": [
+   "tech"
+  ],
+  "op/enforcer": [
+   "enforcer"
+  ],
+  "waitress": [
+   "waitress"
+  ],
+  "guard": [
+   "guard"
+  ],
+  "driver": [
+   "driver"
+  ],
+  "councillor": [
+   "councillor"
+  ],
+  "patrol": [
+   "security"
+  ],
+  "security/0..1": [
+   "security"
+  ],
+  "unit/<officer>": [
+   "security"
+  ],
+  "rivals/0..2": [
+   "rival"
+  ],
+  "hostile/<n> (id starts rival)": [
+   "rival"
+  ],
+  "hostile/<n> (officers)": [
+   "security"
+  ],
+  "body/<key>": "the same figure as the person, playing `lying` (or laid flat as the capsule is); `carried` over the carrier's shoulder",
+  "crowd/<n>": "by job family below"
+ },
+ "families": {
+  "cafe (server, cook, waitress)": [
+   "cafe_w2",
+   "cafe_w3",
+   "cafe_w5"
+  ],
+  "office (clerk, attendant, councillor)": [
+   "d5c",
+   "d4"
+  ],
+  "guard": [
+   "guard"
+  ],
+  "driver": [
+   "driver"
+  ],
+  "passer (everyone else)": [
+   "c6",
+   "d6",
+   "el1",
+   "sh2",
+   "workers_d5",
+   "d2m",
+   "d4",
+   "d4b",
+   "d5c"
+  ]
+ },
+ "jobBlocks": {
+  "job/civic": [
+   "d5c",
+   "d4",
+   "d4b"
+  ],
+  "job/food": [
+   "cafe_w2",
+   "cafe_w3",
+   "cafe_w5"
+  ],
+  "job/kiosk": [
+   "c6",
+   "sh2"
+  ],
+  "job/resident": [
+   "c6",
+   "d6",
+   "el1",
+   "sh2",
+   "workers_d5",
+   "d2m",
+   "d4",
+   "d4b",
+   "d5c"
+  ],
+  "job/retail": [
+   "d6",
+   "c6",
+   "sh2"
+  ],
+  "job/market": [
+   "sh2",
+   "workers_d5"
+  ],
+  "job/service": [
+   "d2m",
+   "workers_d5"
+  ],
+  "job/trade": [
+   "workers_d5"
+  ],
+  "job/cinema": [
+   "d4",
+   "d4b"
+  ],
+  "job/nightlife": [
+   "d6",
+   "d5c"
+  ],
+  "job/lobby": [
+   "d4",
+   "d4b"
+  ]
+ },
+ "variantOf": {
+  "security": "guard",
+  "driver": "d2m",
+  "councillor": "d4",
+  "rival": "workers_d5",
+  "d4b": "d4"
+ },
+ "lodScreen": {
+  "note": "LODGroup transition heights as a fraction of screen height, a start for Latch to tune. A 1.75 m figure is 53 px of 1080 (0.049) at play zoom (ortho 14, pitch 38), so play zoom lands on the last LOD of each figure; the follow view and close views land on LOD0.",
+  "3": [
+   0.18,
+   0.08,
+   0.012
+  ],
+  "2": [
+   0.08,
+   0.012
+  ]
+ },
+ "missing": [
+  "Fixer: a real model now (Sky, 2026-10-18): Tripo 3.1 from a Seedream front A-pose sheet of the Fixer cropped from the latest cell lineup (ivory and black), hem shortened to above the knee, no briefcase. $0.7 spent (store characters/fixer_P4-6/spend.json). The briefcase is not modelled: it is a prop for the right Hand bone. The pencil-cut dress hugs both thighs, so it stretches across the legs in a long stride (the hem faces at about 0.64 m; fine at play zoom, visible in the follow view): if it reads badly, a slit or a looser hem is a one-line edit to the sheet prompt (`tools/figures/fixer_gen.py`) and a $0.6 regeneration.",
+  "Enforcer: G3 (the style pick) is an unrigged Tripo mesh (characters/enforcer_G3/02_mesh/tripo_p1/model.glb). G2, rigged, is the stand-in: grey-bearded man, cream knee-length coat over a black suit with gold trim. Both coats are below the hip, against the no-long-coat rule: they held in the stretch test (no torn faces in a walk-and-bend pose) but should go when G3 is rigged.",
+  "Tech: the older outfit (sleeveless vest, cargo skirt-shorts to the knee, sandals, cyan visor and bands), not the 16 Oct final. Visor and trim are an emission map.",
+  "Councillor Vale: no design and no model. Stand-in is commuter D4 (blond, silver bomber, navy jumpsuit turned deep teal), at 8k. The official driver is commuter D2 (chrome visor helmet, coral uniform turned mint), at 8k.",
+  "Props: none. The models hold nothing. The aim, shoot and draw clips pose the arms for a rifle or pistol; weapons, the briefcase, a phone are Latch's attachments on the Hand bones (Humanoid RightHand / LeftHand).",
+  "Hands: the Meshy-style rigs (everyone but the Enforcer) have no finger bones; hands are mitten shapes. Fine at 53 px, visible only in the follow view.",
+  "Carrying Vale (Forma, 2026-10-18): a fireman's carry now exists: `carried_drape` (the carried person folded belly-down over the carrier's RIGHT shoulder, trunk, head and arms hanging down his back, legs hanging down his chest, a slow limp sway) with `carry_shoulder` / `carry_shoulder_idle` for the carrier (the library walk or idle, right arm clamping the load). `carried` (flat across the shoulders) stays in the library but read from above as a rifle bar: do not use it for the carry. Hands are mitten shapes on the Meshy-style rigs, so the clamping hand is a hint at play zoom. The pose is authored (tools/figures/author_clips.py), not captured: expect the hang of the limbs to need a tweak after Sky sees it in the scene.",
+  "Knockout and kill clips are one-sided and not synced (knockout 5.6 s, kill 4.4 to 5 s). Time the body falling to the sim's event; each ends lying, so the body can switch to `lying` after.",
+  "Left out on purpose: commuter D3 (shin-length trench coat), commuter D5 (long cape), worker D2 (calf-length cape; the cloth was a separate simulated sheet in the VAT crowd), shopper D5 (a child in a bubble helmet). All in the store if wanted.",
+  "Crowd variety is nine looks plus the three caf\u00e9 staff; recolours (hue windows in tools/figures/figures.json) would add more cheaply.",
+  "Not measured here: GPU time. Triangle counts at play zoom are the last LOD of each figure (1.5k cell and cast, about 1.5k crowd): 100 figures on screen is about 150k triangles and 100 skinned renderers, so the cost to watch is skinning and animator updates, not triangles. Redline's 4.5 ms is for Latch to measure on the Air with the real scene.",
+  "The contact sheets are from a scratch Unity project (built-in Standard shader, one sun, no grade, no shadows). The look in the game's URP scene with Glint's grade will differ.",
+  "Against the latest cell lineup (cell-lineup-latest.png, Sky 2026-10-18): Scout S1-2 is near (same ivory hooded jacket, black harness, shorts, fingerless gloves and sneakers; the lineup adds the black backpack and chrome-banded shorts, and ours has brass trim). Tech F2-1 is far (the lineup is a sleeveless black wrap top with an ivory sash, wide black-and-ivory pleated hakama trousers with cyan piping, chrome bracers, goggles pushed up, black sneakers; ours is a black vest, cargo skirt-shorts to the knee, sandals, a cyan visor over the eyes and cyan bands: only the dreadlocks, the black and the cyan carry over). Enforcer G2 is half way (same grey-bearded man in sunglasses with a knee-length coat and white boots; the lineup is mostly black with ivory panels and chrome bands and a big chrome rifle, ours is cream with a black suit and gold trim, no rifle).",
+  "Elders: one (EL1, a woman). No male elder, no child, no figure in a wheeled pose. Seated pose exists now (Forma, brief 022): the library sit clips, one posture family (thighs level, hands forward, feet flat); no women's variant with the knees together, no one-handed drinking sit (the library's Sitting_Drinking starts standing)."
+ ],
+ "forLatch": [
+  "1. Get the files: `bun tools/figures/run.ts` builds out/people-models/People (needs Blender and the store); `--install` mirrors it to unity/Assets/Suborned/People. Git-ignore that folder like Kit/ (97 MB). Splice may want a hash-checked copy step like the kit's.",
+  "2. Everything is imported by its .meta: figures as Humanoid with an avatar from the model, textures with the right colour space, materials bound by name (URP Lit), clips Humanoid with loops set. Checked in Unity 6000.6.2f1 with URP 17.6: avatars valid, LOD groups made, materials resolve.",
+  "3. Per figure build a prefab: the FBX root (LODGroup from the names; set the transition heights from `lodScreenHeights`), an Animator with the FBX's avatar and one shared AnimatorController, a CapsuleCollider (1.75 m, radius 0.4) for clicks (the models carry none), Apply Root Motion off. The figure faces +Z; turn the object to the heading the capsule faces.",
+  "5. Mapping from the play scene: `playRoles`, `families` and `jobBlocks` in the manifest. Pick from a pool by the person's id so the same person always looks the same. Keys with no entry keep their capsule.",
+  "6. The family tints in HostViews (caf\u00e9 peach, office teal, guard, driver) are no longer needed: the figures carry their own colours. The signals (cones, rings, price chips, fight tracers) stay as they are.",
+  "4. One AnimatorController for all (FigureBuild already makes it). Cross-fade with `CrossFadeInFixedTime(state, 0.15f)`, not `CrossFade(state, 0.15f)`: the second is a fraction of the clip, and an idle of 8.8 s blends for 1.3 s (the Scout's hands stayed on her hips after she stopped). The fourth argument of CrossFade is seconds, not a 0..1 phase.",
+  "5. Mapping from the play scene: `playRoles`, `families` and `jobBlocks` in the manifest.",
+  "6. Stride: `naturalSpeedMs` per locomotion clip was re-measured in Unity (walk 1.29, walk_f 0.99, run 2.52, walk_armed 2.44, run_armed 3.11 m/s). `walk_armed` and `run_armed` are fast clips: below about 2 m/s play `walk` (or `walk_f`) and keep the weapon in the aim pose, or the armed walk plays at 0.6x in slow motion.",
+  "7. Carried and lying (updated 2026-10-18, Forma). CARRY: the carried person plays `carried_drape` (never `carried`, a flat bar from above) and the carrier plays `carry_shoulder` (moving; stride from naturalSpeedMs 1.29, same legs as `walk`) or `carry_shoulder_idle` (standing). Seat: turn the carried figure to the carrier's heading + 180 degrees (its trunk hangs down his back, its legs down his chest), then move it so its Hips bone is at the carrier's RightShoulder bone + 0.10 m along the carrier's right + 0.10 m up (+ 0 along his heading); recompute each frame from the bone, as now. In code: `figure.model.rotation = Quaternion.Euler(0, carrierYaw + 180f, 0); var want = rShoulder.position + carrierRight * 0.10f + Vector3.up * 0.10f; model.position += want - hips.position;` (tools/figures/scratch/FigCarry.cs does exactly this: mode new, seat 0.10,0.10,0, yawadd 180). Cross-fade into both clips as usual (CrossFadeInFixedTime 0.15). The Enforcer's carrying hand now closes round the legs (two-bone solve to the carried knees, fingers curled), standing and walking. Nobody runs carrying Vale, so there is no carry run. LYING: `lying` and the knockout and kill clips end on the ground: place the figure at the body's point (no lift). The old `carried` clip (limp, flat) is a lying pose: use it only for a body laid across something.",
+  "8. Standing, walking and running clips now put the soles on the ground themselves (Root Transform Position (Y): Based Upon Feet; the lying, falling and carried clips keep the original height).",
+  "9. Materials are matte now (metallic 0, smoothness 0.15 on the no-map materials; the mapped ones rebaked to the world's cloth). If a figure is still too bright, change `_Smoothness` on its material, not the map.",
+  "10. Serving tray (brief 022, Forma, 2026-10-18). Inez is figure `waitress`; the other caf\u00e9 staff are cafe_w2/w3/w5. New clips `serve` (standing: right hand holds a tray out at waist height, palm up; the left arm as the idle has it, 8.8 s loop) and `serve_walk` (the same right arm over the women's walk, natural speed 0.99 like walk_f; use it on the way to and from a table if you want the tray carried both ways). Play `serve` in the `serving` phase instead of `talk`. The prop is People/Props/tray/tray.fbx (cream enamel dish, chrome rim, one thin brass line, cup, saucer, coffee, spoon; 2.2k tris; URP Lit materials tray_cream/chrome/brass/coffee beside it; origin = the middle of the tray's underside; root rotation identity). Attach: `var hand = anim.GetBoneTransform(HumanBodyBones.RightHand); prop.SetParent(hand, false); prop.localPosition = ...; prop.localRotation = Quaternion.Euler(...)`, with the per-figure values in manifest.props[0].attach.perFigure (waitress: position (0.0114, 0.0475, -0.0442), euler (280.4, 98.1, 258.4); cafe_w2 and cafe_w3: (0.0001, 0.0450, -0.0481), (277.7, 215.0, 139.9); cafe_w5: (0.0170, 0.0463, -0.0438), (282.5, 96.6, 254.7)). They differ because each rig's hand bone has its own local axes. SetActive(true) only while the state is `serve` or `serve_walk`, false in every other state (it is one instance per figure, made when the figure is made). The tray is 0.32 m across, a hair over life so it reads at play zoom.",
+  "11. New pool member `d4b` (the D4 model with dark brown hair, coral bomber, charcoal jumpsuit) is in the `passer` family and in every job block that lists d4 (civic, cinema, lobby, resident): two passers-by no longer have to be twins. If the pick is by hash among the pool it needs no code; if you pick by index into a fixed list, re-read the manifest. D4 (and the councillor) are now matte: the bomber's baked satin sheen is flattened, smoothness 0.05, no normal map. The councillor's trousers are camel (they were deep teal), so a carried Vale separates from the Enforcer's black at play zoom.",
+  "12. Seated customers (brief 022, Forma, 2026-10-19). Clips `sit` (4.3 s loop), `sit_alt` (7 s loop, a second idle so a table does not breathe in step), `sit_talk` (44 s loop, hand gestures), `stand_to_sit` and `sit_to_stand` (2.3 s each, once). All play on every Humanoid figure, women and men alike, with Apply Root Motion off. PLACEMENT: put the figure's root (the object origin, at its feet) on the chair's `at` point at ground level, the figure turned to face the table pivot, and add nothing: the clips already put the pelvis over the root (hips 0.04 m behind the chair centre, 0.65 m up) and the feet on the floor for every pooled commuter. For the figures with their own rig (scout, tech, enforcer, guard, security, cafe_w5; waitress and cafe_w2/w3 are within 5 mm) add manifest.seat.perFigure[id].rootUp / rootForward (about -0.03 m up). The chair is the caf\u00e9 set's Tulip chair (seat bowl 0.462 m, cushion top 0.474 m; manifest.seat.chair). Chain: play stand_to_sit when the person arrives at the seat, CrossFadeInFixedTime(sit, 0.15f) at its end; sit_to_stand when they leave, then idle or walk (the figure stands over the seat, inside the chair: step it off in the same frame). Pick sit, sit_alt or sit_talk by the person's id hash; sit_talk while talking. Loop flags are set in the .meta. Checked in Unity on the real chair with 18 figures (briefs/022/forma/seated-before-after.png, seated-chair-contract.png); see manifest.seat.knownGaps.",
+  "13. Carry hip tear (brief 022, Forma, 2026-10-19). Fixed in the councillor's weights and mesh, not in the pose: nearest-surface skinning had given the jacket hem and waist band the forearm's and upper arm's influence, so a body hung over a shoulder dragged those vertices a metre from their neighbours (edges stretched 58 times). The arms' weights are now taken off the waist and hips on every figure (figlib.torso_guard; standing, walking, running and aiming checked unchanged on 18 figures), and the councillor also has the thin strip of faces that joined his sleeve to his jacket side cut (figures.json torsoWebs; on the puffy-jacket figures it opens a hole when the arms move, so it is off for them). The edges still stretched past 5x went from 138 to 32 (ragged hem corners remain at the side: briefs/022/forma/carry-hip-before-after.png). Install and the councillor needs no code change. If another body (a guard, a passer) shows a sliver when carried, set \"torsoWebs\": true on its figures.json entry and rebuild."
+ ],
+ "pulledFromPools": {
+  "c1": "Orange cape still opens small dark slits in a run and a fast walk (closed double-layer cloth shell from the generator; weights smoothed over the cape in build.py, smoothSkin, which took the long slits out). Built and installed, but not in any pool until Forma regenerates or hand-cleans the cape. Latch: do not Pick it."
+ }
+}

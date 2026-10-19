@@ -11,19 +11,28 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         const string GuardId = "p-records-office-01";
-        /// <summary>Beside the door guard, outside his door cone (he faces the square): where the Enforcer stands to take him from the side.</summary>
-        static readonly Pt BesideGuard = new Pt(5175, -2880);
+        /// <summary>Beside the door guard, outside his door cone (he faces west over the forecourt): where the Enforcer stands to take him
+        /// from the side. 1.2 m south of the public door on its landing, as Waymark's c022 route G (2026-10-19, the door on the west face; was (51.75, -28.8)).</summary>
+        static readonly Pt BesideGuard = new Pt(6520, -4110);
         // the service lane's stashes (sim/data/handover.takedown.json: the world's rules put a Dumpster beside the Office's service door)
         const string DumpsterId = "stash/office-service-door/container", ServiceDoorId = "stash/office-service-door/door";
-        static readonly Pt Dumpster = new Pt(6025, -4275), ServiceDoor = new Pt(6325, -4125); // their stands
+        static readonly Pt Dumpster = new Pt(5975, -1725), ServiceDoor = new Pt(6275, -1875); // their stands (2026-10-19: the service door on the east face; were (60.25, -42.75) and (63.25, -41.25))
 
         /// <summary>The quiet setup for the guard (Motive §6.1, route G): the Tech loops the entrance camera and reroutes the patrol; the
         /// Enforcer waits beside the door; then, just after the guard's check-in mark, the Enforcer stands beside him.</summary>
         static void GuardQuiet(Run r)
         {
             var g = r.G;
-            r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-            r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            // 2026-10-19 (the door on the west face): the cabinet is 48 m from the Tech's start, so she runs to it as Waymark's c022 route G
+            // does, and the loop and the reroute are done before the guard's 2:30 mark; the Enforcer walks to the door meanwhile. She starts
+            // the reroute so it lands 5 s before the mark, as the walk to the old cabinet had it: the patrol's 115 s away then covers the
+            // takedown and the 4:00 mark (back on its sweep at 4:00 it would take the alarm itself, Pulse §12.2, which N46 doesn't test).
+            int enfAt = r.SendTo(Enf, BesideDoor);
+            r.To(r.Send(Tech, "cabinet", run: true));
+            r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+            r.To(Math.Max(g.Tick, g.NextMarkOf(g.GuardP, g.Tick + T(g.R.RerouteS)) - T(g.R.RerouteS + 5)));
+            r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.To(Math.Max(g.Tick, enfAt));
             int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
             r.To(r.SendTo(Enf, BesideGuard));
         }
@@ -195,16 +204,21 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 3, "the camera's report lands: Alert 3");
             });
 
-            Add("N50", "—", "A takedown seen by the door guard (armed security): guard 74 knocked out from behind as he crosses the square in the guard's cone. The guard engages at once: Alert 2 at sight, the Enforcer is a foe, the incident is confirmed by his own eyes and the seal starts; the response comes by the dial.", r =>
+            // Changed 2026-10-19 (the public door on the Office's west face): guard 74's way from the café to the official entrance no longer
+            // crosses the door guard's cone (it runs east along the square and through the service yard, 22 m from the door at the nearest).
+            // Guard 73 walks up the forecourt to the public door for her 5:30 shift and enters his cone at 5:23: she is the one taken.
+            Add("N50", "—", "A takedown seen by the door guard (armed security): guard 73 knocked out from behind as she walks up the forecourt in the guard's cone. The guard engages at once: Alert 2 at sight, the Enforcer is a foe, the incident is confirmed by his own eyes and the seal starts; the response comes by the dial.", r =>
             {
                 var g = r.G;
-                var w = WalkerById(r, "p-records-office-74");
-                int t = Enumerable.Range(T(225), T(30)).First(x => g.CrowdPos(w, x) is Pt p && g.GuardWatching(p, false));
-                r.To(t - T(25)); int when = MeetFromBehind(r, w, t); // 25 s, not 20: from the c014 start (brief 014) the walk to the spot is 20.4 s
-                r.Is(r.Arrival(Enf) <= when, $"the Enforcer is in place before he passes ({Report.Clock(r.Arrival(Enf))})");
+                const string Victim = "p-records-office-73";
+                var w = WalkerById(r, Victim);
+                int t = Enumerable.Range(T(300), T(30)).FirstOrDefault(x => g.CrowdPos(w, x) is Pt p && g.GuardWatching(p, false) && !G.Within(p, g.S.Stand(g.S.GuardPost), 300));
+                if (!r.Is(t > 0, "guard 73 crosses the door guard's cone on her way to the door, between 5:00 and 5:30")) return;
+                r.To(t - T(70)); int when = MeetFromBehind(r, w, t); // the Enforcer's walk from the start to the forecourt is ~50 s
+                r.Is(r.Arrival(Enf) <= when, $"the Enforcer is in place before she passes ({Report.Clock(r.Arrival(Enf))})");
                 r.To(when);
-                r.Takedown("p-records-office-74", "knockout");
-                var a = ActOn(r, "p-records-office-74");
+                r.Takedown(Victim, "knockout");
+                var a = ActOn(r, Victim);
                 r.Is(a.SecuritySaw && g.GuardEngaged, "the guard sees it and engages");
                 r.Eq(g.Alert, g.R.DrawSeenSecurity, "Alert 2 at sight (security sees violence)");
                 r.Is(a.Confirmed && g.SecurityArrives == g.Tick + T(g.DialNow.DispatchS) && g.Lockdown == g.SecurityArrives + T(g.SealS), "confirmed by his own eyes; the seal starts when the response unit is on the street (the unit's cordon, Motive rev 3)");
@@ -215,7 +229,7 @@ namespace Suborned.Sim
             Add("N51", "—", "An armed target sees it coming (Motive §1.3): the Enforcer stands in front of the door guard, in his cone, and orders the takedown. It fails into a fight: the guard draws and engages (Alert 2 at sight, the drawn-weapon rule), calls it in, and nobody is down. The card said so before the order ('aware: yes', a fight) once his sight was known.", r =>
             {
                 var g = r.G;
-                var front = new Pt(5055, -3000);
+                var front = AheadOfGuard(r, 120); // within takedown reach, in his cone (2026-10-19: west of the door; was (50.55, -30) north of it)
                 r.To(r.SendTo(Enf, front));
                 r.Is(g.GuardWatching(r.Op(Enf).Pos), "in his door cone");
                 r.Eq(g.QuoteTakedown("guard", "knockout").Aware, "?", "the card: '?' while his sight is unknown");
@@ -279,18 +293,23 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => a.ActTrail, T(30)), "his statement or his own report: +4 T");
             });
 
-            Add("N54", "—", "A body found by routine (Pulse §4.1): the guard killed unseen and left at his post. His 4:00 mark is missed (Alert 1); at 4:13 guard 74, on his way along the square, finds him and radios a dead body: Alert 2 when it lands, the level's units and robots. A unit confirms him: the act's +6 T, a found killing's step toward Menace (Sky 1), and the seal starts at the confirmation, not before.", r =>
+            Add("N54", "—", "A body found by routine (Pulse §4.1): the guard killed unseen and left at his post. His 4:00 mark is missed (Alert 1); at 4:34 the patrol, back on its sweep from the reroute, finds him and rings in a dead body: Alert 2 when it lands, the level's units and robots. A unit confirms him: the act's +6 T, a found killing's step toward Menace (Sky 1), and the seal starts at the confirmation, not before.", r =>
             {
                 var g = r.G;
+                // Changed 2026-10-19 (the public door on the west face): nobody's routine passes the door between 4:00 and 5:00 now (guard 74
+                // walks the square's south side and the service yard; guard 73, coming on shift, walks up the forecourt at 5:06). The routine
+                // that finds him is the patrol's: rerouted before the 2:30 mark, it is back on its sweep at 4:20 and sees the body at the door
+                // on its way along the forecourt. A robot rings the desk (robot.report, 4 s) where a person radios (5 s); the rest is as before.
                 GuardQuiet(r);
                 int trail = g.Trail, standing = g.Standing;
                 r.Takedown("guard", "kill"); r.Done(Enf);
                 r.SendTo(Enf, BesideDoor);
                 var a = ActOn(r, GuardId);
+                r.Is(!a.Witnessed && a.Noticed.Count == 0, "nobody saw it");
                 r.To(T(240)); r.Eq(g.Alert, 1, "the missed mark: Alert 1");
-                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.By == "p-records-office-74"), T(60)), "guard 74 finds the body on his routine");
-                var rep = g.Reps.First(x => x.Act == a.Id && x.By == "p-records-office-74");
-                r.Eq((rep.Kind, rep.LandAt - g.Tick), ("dead", T(g.R.WitnessReactS + g.R.PostCallS)), "staff know a dead body and radio it: 5 s");
+                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.By == "patrol"), T(60)), "the patrol, back on its sweep, finds the body");
+                var rep = g.Reps.First(x => x.Act == a.Id && x.By == "patrol");
+                r.Eq((rep.Kind, rep.LandAt - g.Tick), ("dead", T(g.R.RobotReportS)), "the patrol knows a dead body and rings the desk: 4 s");
                 r.To(rep.LandAt);
                 r.Eq(g.Alert, 2, "a dead body reported: Alert 2");
                 r.Is(g.SecurityArrives == g.Tick + T(g.DialNow.DispatchS), "the response unit is sent to the scene");
@@ -397,7 +416,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.Phase == "landed"), T(150)), "the next finder's report lands");
                 var next = g.Reps.First(x => x.Act == a.Id && x.Phase == "landed");
                 r.Is(next.By != "p-records-office-34", "by someone else, later");
-                r.Is(g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.P.Temperament == "mercenary" && x.Phase != "stopped"), "a Mercenary who finds it now reports it: quiet at Alert 0, he reports once Alert is 2 or more (Sky merged call 4)");
+                // the Mercenary check (Sky merged call 4) moved to N68 on 2026-10-19 (Keel, brief 023): with Pulse's leave stagger no Mercenary passes this body
                 r.Is(g.PersonById("p-records-office-34")!.Has("attacked-aware") && g.FactsOf(g.PersonById("p-records-office-34")!).Contains("enforcer-face"), "clerk 34 holds the Enforcer's face");
             });
 
@@ -507,6 +526,8 @@ namespace Suborned.Sim
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "takedown", Target = "councillor", How = "knockout" }).code, "takedown-vale", "Vale is taken, not knocked out");
                 r.Takedown("councillor", "kill"); r.Done(Enf);
                 r.Eq((g.Result, g.FailCode), (Outcome.Failure, "vale-dead"), "Vale killed: the mission fails");
+                var fc = CauseIs(r, "vale-dead", "killed", true, Enf, "op", Enf); // the fail camera (ScenariosFailCause.cs): the Enforcer who killed him, then Vale where he lies
+                r.Is(fc != null && fc.Culprits.Count == 2 && fc.Culprits[1].Kind == "vale" && fc.Culprits[1].Role == "victim" && fc.Culprits[1].At == g.BodyOf(g.ValeP)!.At, "then Vale, where he lies");
             });
 
             Add("N59", "—", "An alarm beyond robot reach (Pulse §12.2; Motive rev 3): the Tech runs to the cabinet, the guard is killed unseen just after the reroute lands (2:01) and put through the service door before his 2:30 mark. The mark lands (Alert 1). The patrol is away and the world's one dock (by the café) is more than 60 m from the post, so the level's robots go only where they can: to where his lover is meant to be. Nobody checks the post: nothing is confirmed, Alert stays 1, no seal, the door stays shut. (A report found unfounded at the scene: N66.)", r =>

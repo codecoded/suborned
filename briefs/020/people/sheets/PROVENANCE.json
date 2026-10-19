@@ -1,0 +1,57 @@
+[
+ {
+  "file": "sheets/scout_turnaround_1_0.png",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1703024716,
+  "cost": 0.0963,
+  "size": "2304x1536",
+  "sha256": "9d9b6c849fe79f1d4cbd38db51cfd1d880f062ee48794e7d7183ab29dfee5751",
+  "reference": "refs/scout_lineup.png (crop (80, 80, 440, 1024) of briefs/020/people/cell-lineup-latest.png, sha256 ac4190537aa6)",
+  "prompt": "A character turnaround sheet for 3D modelling: one person, the person in the reference image, drawn four times on a single sheet in a row, at exactly the same scale and the same height, with clear space between the figures: front view, three-quarter front view, side view and back view. The same person in every view, with the same face, hair, outfit, cut, colours, materials, panels, trims and worn gear; the side and the back show the matching side and back of the same outfit, drawn as it would really be cut. Full body from head to toe, in a relaxed A-pose: the arms held about 30 degrees away from the body with a clear gap of air between each arm and the torso, open relaxed hands, legs straight and the feet shoulder-width apart. No props: nothing is held or carried. Plain light warm-grey backdrop, even soft shadowless studio light, no cast shadows, no floor, a clear margin all round. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark. The person: a lean young person with a short black undercut and a swept top, a small earpiece; an ivory hooded jacket with black panels, a standing collar and rolled three-quarter sleeves; a black cross-body harness with chrome buckles and a small black backpack worn on the back; black fingerless gloves; black panelled shorts with chrome bands; chrome and ivory high sneakers with black ankle cuffs. The harness and the backpack stay: they are worn gear.",
+  "copy": "briefs/020/people/sheets/scout.png"
+ },
+ {
+  "file": "sheets/fixer_turnaround_1_0.png",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1111723517,
+  "cost": 0.0963,
+  "size": "2304x1536",
+  "sha256": "99485c12558aef35d49dff1a3a8be22c24b52ebb7cb9258426b52a10a376987c",
+  "reference": "refs/fixer_lineup.png (crop (440, 90, 705, 1024) of briefs/020/people/cell-lineup-latest.png, sha256 5f000b443a25)",
+  "prompt": "A character turnaround sheet for 3D modelling: one person, the person in the reference image, drawn four times on a single sheet in a row, at exactly the same scale and the same height, with clear space between the figures: front view, three-quarter front view, side view and back view. The same person in every view, with the same face, hair, outfit, cut, colours, materials, panels, trims and worn gear; the side and the back show the matching side and back of the same outfit, drawn as it would really be cut. Full body from head to toe, in a relaxed A-pose: the arms held about 30 degrees away from the body with a clear gap of air between each arm and the torso, open relaxed hands, legs straight and the feet shoulder-width apart. No props: nothing is held or carried. Plain light warm-grey backdrop, even soft shadowless studio light, no cast shadows, no floor, a clear margin all round. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark. The person: a woman with long straight black hair in a high ponytail; a fitted dress of vertical panels in ivory and black with fine pinstripe panels, a high halter neckline with bare shoulders and a bare upper back with fine straps, long fitted ivory sleeves worn from the shoulder to the wrist as separate sleeves; the dress hem shortened to a clear hand's width above the kneecap, straight and clean, nothing flowing or trailing below it; two-tone ivory and black heeled ankle boots with a chrome heel accent. The briefcase of the reference is removed: nothing is held.",
+  "copy": "briefs/020/people/sheets/fixer.png"
+ },
+ {
+  "file": "sheets/tech_turnaround_1_0.png",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 136167223,
+  "cost": 0.0963,
+  "size": "2304x1536",
+  "sha256": "8af9ce34a930b565ac1732b845a1ed6a78c21c1efb4bef86a677327717117c9f",
+  "reference": "refs/tech_lineup.png (crop (660, 15, 1020, 1024) of briefs/020/people/cell-lineup-latest.png, sha256 f110d1dc3421)",
+  "prompt": "A character turnaround sheet for 3D modelling: one person, the person in the reference image, drawn four times on a single sheet in a row, at exactly the same scale and the same height, with clear space between the figures: front view, three-quarter front view, side view and back view. The same person in every view, with the same face, hair, outfit, cut, colours, materials, panels, trims and worn gear; the side and the back show the matching side and back of the same outfit, drawn as it would really be cut. Full body from head to toe, in a relaxed A-pose: the arms held about 30 degrees away from the body with a clear gap of air between each arm and the torso, open relaxed hands, legs straight and the feet shoulder-width apart. No props: nothing is held or carried. Plain light warm-grey backdrop, even soft shadowless studio light, no cast shadows, no floor, a clear margin all round. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark. The person: a muscular man with dreadlocks tied up and chrome and black goggles pushed up on his forehead, a short beard; a sleeveless black wrap top with an ivory sash across the chest and thin cyan piping; a black belt with a chrome buckle; wide pleated black and ivory trousers with cyan piping down the outer legs, the hems ending at the ankle; chrome and black bracers on both forearms; black fingerless gloves; black strap sneakers.",
+  "copy": "briefs/020/people/sheets/tech.png"
+ },
+ {
+  "file": "sheets/enforcer_turnaround_1_0.png",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1553259830,
+  "cost": 0.0963,
+  "size": "2304x1536",
+  "sha256": "0215d36cafa957722a4c7cdf33155c445843c8a0c1b8bd1031a9355f81292b1b",
+  "reference": "refs/enforcer_lineup.png (crop (1000, 5, 1470, 1024) of briefs/020/people/cell-lineup-latest.png, sha256 825346232c8a)",
+  "prompt": "A character turnaround sheet for 3D modelling: one person, the person in the reference image, drawn four times on a single sheet in a row, at exactly the same scale and the same height, with clear space between the figures: front view, three-quarter front view, side view and back view. The same person in every view, with the same face, hair, outfit, cut, colours, materials, panels, trims and worn gear; the side and the back show the matching side and back of the same outfit, drawn as it would really be cut. Full body from head to toe, in a relaxed A-pose: the arms held about 30 degrees away from the body with a clear gap of air between each arm and the torso, open relaxed hands, legs straight and the feet shoulder-width apart. No props: nothing is held or carried. Plain light warm-grey backdrop, even soft shadowless studio light, no cast shadows, no floor, a clear margin all round. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark. The person: a big older man with short grey hair, a full grey beard and tinted sunglasses; a black and ivory panelled coat with chrome bands, a standing collar, rolled sleeves and a round roundel patch on the shoulder; a black belt with a round chrome buckle; black gloves with chrome knuckle plates; black trousers with ivory and chrome knee panels; white knee-high boots with black soles. The big chrome rifle of the reference is removed: nothing is held and nothing leans on him. The coat ends at the knee, as in the reference.",
+  "copy": "briefs/020/people/sheets/enforcer.png"
+ },
+ {
+  "file": "sheets/enforcer_coat_mid_turnaround_1_0.png",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 630251984,
+  "cost": 0.0963,
+  "size": "2304x1536",
+  "sha256": "c778d7d837cccaffdd935444a5b2b34d6eb802d8af043587c3aabbc61043ada1",
+  "reference": "refs/enforcer_lineup.png (crop (1000, 5, 1470, 1024) of briefs/020/people/cell-lineup-latest.png, sha256 825346232c8a)",
+  "prompt": "A character turnaround sheet for 3D modelling: one person, the person in the reference image, drawn four times on a single sheet in a row, at exactly the same scale and the same height, with clear space between the figures: front view, three-quarter front view, side view and back view. The same person in every view, with the same face, hair, outfit, cut, colours, materials, panels, trims and worn gear; the side and the back show the matching side and back of the same outfit, drawn as it would really be cut. Full body from head to toe, in a relaxed A-pose: the arms held about 30 degrees away from the body with a clear gap of air between each arm and the torso, open relaxed hands, legs straight and the feet shoulder-width apart. No props: nothing is held or carried. Plain light warm-grey backdrop, even soft shadowless studio light, no cast shadows, no floor, a clear margin all round. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark. The person: a big older man with short grey hair, a full grey beard and tinted sunglasses; a black and ivory panelled coat with chrome bands, a standing collar, rolled sleeves and a round roundel patch on the shoulder; a black belt with a round chrome buckle; black gloves with chrome knuckle plates; black trousers with ivory and chrome knee panels; white knee-high boots with black soles. The big chrome rifle of the reference is removed: nothing is held and nothing leans on him. The coat is shortened to end at mid-thigh; everything else is exactly the same.",
+  "copy": "briefs/020/people/sheets/enforcer_coat_mid.png"
+ }
+]

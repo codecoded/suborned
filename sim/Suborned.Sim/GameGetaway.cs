@@ -201,7 +201,7 @@ namespace Suborned.Sim
             }
             CarLeftTick = Tick;
             if (Vale == ValeAt.Car) { Result = Outcome.Success; Chain.Add("car-leaves-with-vale"); Note("success", "The car leaves with Vale. The crew escapes."); }
-            else { Result = Outcome.Withdrawn; Chain.Add("car-leaves-without-vale"); Note("withdraw.car", "The car leaves without Vale: the cell withdraws."); }
+            else { Result = Outcome.Withdrawn; Withdrew(true); Chain.Add("car-leaves-without-vale"); Note("withdraw.car", "The car leaves without Vale: the cell withdraws."); }
             EndOpenFight(); // brief 018 §4: the final fight is judged at the tick the car leaves
             fightClosedLate = true; // Finish replaces a checkpoint already taken at this tick with the state after Go
         }

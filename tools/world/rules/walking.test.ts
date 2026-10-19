@@ -43,11 +43,16 @@ test('without the seating allowance the narrow places inside the café terrace p
   expect(open.detail).toMatch(/^4 fail: /); // the 1.85 m Datum measured between the tables and the terrace wall, on both sides of the terrace: the same four gaps
   // The property, not a millimetre: the gap is about 1.85 m wide (1.8 to 1.9) and a fraction of a metre to a metre of the walk long. The W-5 grid starts at the corner of all the walk points,
   // so moving a crew start (a mission edit) shifts it by a few millimetres and the sampled gap and run read 1.87 m for 0.8 m, or 1.88 m for 1.0 m: re-pinning would break on the next move.
-  const gap = String.raw`passes 1\.8\d m for [01]\.\d m of the walk, past`;
-  expect(open.detail).toMatch(new RegExp(String.raw`Office entrance → Behind café ${gap}`));
-  expect(open.detail).toMatch(new RegExp(String.raw`Office entrance → Café kitchen door ${gap}`));
-  expect(open.detail).toMatch(/Office entrance → Behind café passes [\d.]+ m for [\d.]+ m of the walk, past the 0 m a constrained gap may run between CafeBay\/wall-front-w and cafe-table-1 /);
-  expect(open.detail).toMatch(/Office entrance → Café kitchen door passes [\d.]+ m for [\d.]+ m of the walk, past the 0 m a constrained gap may run between cafe-table-2 and CafeBay\/wall-front-e /); // the kitchen door's walks (brief 013) cross the same gap
+  // Which walks carry the four gaps follows where the walks start: the public door moved to the Office's west face (Sky 2026-10-19, option b), so the shortest walks from it now cross the terrace
+  // as Office entrance → East side and → Between tables, where they once crossed it as → Behind café and → Café kitchen door. The gaps are the property: each is about 1.85 m wide and a fraction of a metre to a metre of the walk long.
+  const fails = open.detail!.replace(/^4 fail: /, '').split('; ');
+  expect(fails).toHaveLength(4);
+  for (const f of fails) expect(f).toMatch(/ → .* passes 1\.8\d m for [01]\.\d m of the walk, past the 0 m a constrained gap may run between /);
+  const between = (a: string, b: string) => fails.filter(f => f.includes(`between ${a} and ${b} `) || f.includes(`between ${b} and ${a} `)).length;
+  expect(between('CafeBay/wall-front-w', 'cafe-table-1')).toBe(2); // the west side of the terrace, crossed by two walks
+  expect(between('CafeBay/wall-front-e', 'cafe-table-2')).toBe(2); // the east side
+  expect(fails.some(f => f.startsWith('Café kitchen door →'))).toBe(true); // the kitchen door's walks (brief 013) cross the same gaps
+  expect(fails.some(f => f.startsWith('Office entrance →'))).toBe(true);
 });
 
 test('a plan that states no body has no W-5; nor has a block with no ground solids', () => {

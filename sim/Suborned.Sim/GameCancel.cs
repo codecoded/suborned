@@ -92,6 +92,12 @@ namespace Suborned.Sim
                 a.CanCancel = true; a.CancelCost = "put-down"; a.CancelText = $"the {a.Target} is laid down here";
                 return a;
             }
+            if (op.Driven) // brief 025 (EXPERIMENTAL): the host moves it; a release ends that, not a cancel
+            {
+                a.Verb = "drive"; a.Phase = op.Running ? "running" : "driven"; a.TicksLeft = -1; a.OnDone = "the player moves them";
+                a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "under the player's control: release to stop driving";
+                return a;
+            }
             if (id == OpId.Enforcer && Vale == ValeAt.WithEnforcer)
             {
                 a.Verb = "take"; a.Target = "councillor"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "Vale boards the getaway car with him; the win is the car leaving with Vale (Go)";
@@ -155,7 +161,7 @@ namespace Suborned.Sim
             {
                 case "acting":
                     {
-                        var o = op.Busy!; long paid = op.BusyPaid;
+                        var o = op.Busy!; long paid = op.BusyPaid; RoundHoldCut(op);
                         op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; op.BusyEnd = Tick;
                         switch (o.Do)
                         {

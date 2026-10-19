@@ -22,14 +22,14 @@ describe('the committed block', () => {
     expect(office(block).towers.map((t: any) => [t.id, t.polygon])).toEqual([
       ['public', [[52.5, -33], [58.5, -33], [58.5, -27], [52.5, -27]]], ['official', [[69.5, -33], [75.5, -33], [75.5, -27], [69.5, -27]]]]);
     expect(office(block).entrances).toMatchObject([
-      { id: 'office-entrance', kind: 'public', at: [51.75, -30], z: 0.75 }, { id: 'official-entrance', kind: 'official', at: [76.25, -30], z: 0 },
-      { id: 'office-service-door', kind: 'service', at: [63, -41.1], z: 0 }]); // brief 013: the service door in the lane, with its kind
+      { id: 'office-entrance', kind: 'public', at: [64, -41.25], z: 0.75 }, { id: 'official-entrance', kind: 'official', at: [76.25, -30], z: 0 },
+      { id: 'office-service-door', kind: 'service', at: [62.5, -18.9], z: 0 }]); // brief 013: the service door, with its kind; 2026-10-19 (Sky, door option b): the public door is on the wing's west face, the service door on its east face
     expect(block.buildings.find((x: any) => x.id === 'cafe').entrances).toMatchObject([{ id: 'cafe-entrance', kind: 'public' }, { id: 'cafe-kitchen-door', kind: 'service', at: [-22.4, -26] }]);
     expect(block.structures.map((s: any) => s.id).filter((id: string) => id.startsWith('office-pavilion-support'))).toEqual([]);
     expect(block.dressing).toEqual(adjust.dressing);
     expect(adjust.pending.ops).toEqual([]); // each op moved out of pending, its reason kept
     expect(block.adjustments.applied.filter((a: any) => ['towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'dressing'].includes(a.op)).map((a: any) => a.op))
-      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'addEntrance', 'addEntrance', 'dressing']);
+      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'addEntrance', 'addEntrance', 'moveEntrance', 'moveEntrance', 'remove', 'remove', 'dressing']);
     expect(block.adjustments.applied.every((a: any) => a.reason.length > 20)).toBe(true);
   });
 
@@ -46,9 +46,9 @@ describe('towers in W-4 and the walk blockers', () => {
     expect(footprints(civic(plan.civic, bare(block))).length).toBe(2);
   });
 
-  test('W-4: the entrance 0.75 m off the tower face passes (3.75 m off the wing); without the tower plan it is stray', () => {
+  test('W-4: the public door stands on the wing\'s west face and passes with or without the tower plan; the official door, 0.75 m off a tower face, is stray without it', () => {
     expect(w4(block).ok).toBe(true);
-    expect(w4(bare(block))).toMatchObject({ ok: false, detail: 'Office entrance, Official entrance' });
+    expect(w4(bare(block))).toMatchObject({ ok: false, detail: 'Official entrance' });
   });
 
   test('W-4 still fails an entrance away from every footprint, a tower\'s included', () => {

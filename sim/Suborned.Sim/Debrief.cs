@@ -16,10 +16,12 @@ namespace Suborned.Sim
         public readonly List<string> Assets = new List<string>(), Route = new List<string>(), Extra = new List<string>(), Chain = new List<string>();
         /// <summary>brief 018 §3: everyone not in the car when it left, with fate and why.</summary>
         public readonly List<(string op, string fate, string why)> LeftBehind = new List<(string, string, string)>();
+        /// <summary>What ended a failed (or withdrawn) run, for the fail camera (FailCause.cs); null on success, and then not written.</summary>
+        public FailCause? Cause;
 
         public static Debrief Of(Game g)
         {
-            var d = new Debrief { Loud = g.Gunfire > 0 };
+            var d = new Debrief { Loud = g.Gunfire > 0, Cause = g.Cause };
             d.PublicSecurity = g.Alert >= 3 ? "high" : d.Loud ? "raised" : "calm";
             bool inezExposed = g.GuardReachedCafe;
             d.Inv = g.Investigate(); d.Next = g.BetweenMissions(d.Inv); d.Sightings = g.Sightings.Count;
@@ -137,6 +139,7 @@ namespace Suborned.Sim
             w.OpenArr("cell"); foreach (var (op, hp, max) in Cell) w.Obj().Prop("op", op).Prop("health", hp).Prop("max", max).EndObj(); w.EndArr();
             w.OpenArr("captured"); foreach (var c in Captured) w.Str(c); w.EndArr();
             if (LeftBehind.Count > 0) { w.OpenArr("leftBehind"); foreach (var (op, fate, why) in LeftBehind) w.Obj().Prop("who", op).Prop("fate", fate).Prop("why", why).EndObj(); w.EndArr(); } // brief 018
+            if (Cause != null) { w.Key("cause"); Cause.Write(w); } // the fail camera's culprit: only a failed or withdrawn run has one
             w.EndObj();
         }
     }
@@ -146,13 +149,14 @@ namespace Suborned.Sim
     {
         public const string RulebookFile = "contracts/rules/rulebook.json", PeopleRulesFile = "contracts/people/people.rules.json", SiteFile = "sim/data/handover.site.json", PeopleFile = "sim/data/handover.people.json",
             ProvisionalFile = "sim/data/handover.provisional.json", // brief 013: the security level until the plan and mission carry it
-            TakedownFile = "sim/data/handover.takedown.json";       // brief 013: stashes, report points, docks and posts (Splice, tools/sim/takedown.ts)
+            TakedownFile = "sim/data/handover.takedown.json",       // brief 013: stashes, report points, docks and posts (Splice, tools/sim/takedown.ts)
+            RoundsFile = "sim/data/handover.rounds.json";           // brief 022: the server's baked round (Pulse, tools/routines/rounds.ts)
 
         public sealed class Inputs
         {
-            public string Rulebook = "", PeopleRules = "", Site = "", People = "", Provisional = "", Takedown = ""; public Rules Rules = null!; public Site SiteData = null!; public Crowd? Crowd;
+            public string Rulebook = "", PeopleRules = "", Site = "", People = "", Provisional = "", Takedown = "", Rounds = ""; public Rules Rules = null!; public Site SiteData = null!; public Crowd? Crowd;
             /// <summary>The inputs' hash over their canonical text (no BOM, LF line ends: Redline E4), so a Windows checkout replays a Mac record.</summary>
-            public ulong Hash { get { unchecked { var h = Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7) ^ (Sim.Hash.Of(People) * 11); if (Provisional.Length > 0) h ^= Sim.Hash.Of(Provisional) * 13; if (Takedown.Length > 0) h ^= Sim.Hash.Of(Takedown) * 17; return h; } } } // a host without brief 013's files hashes as before, and its record says so
+            public ulong Hash { get { unchecked { var h = Sim.Hash.Of(Rulebook) ^ (Sim.Hash.Of(PeopleRules) * 3) ^ (Sim.Hash.Of(Site) * 7) ^ (Sim.Hash.Of(People) * 11); if (Provisional.Length > 0) h ^= Sim.Hash.Of(Provisional) * 13; if (Takedown.Length > 0) h ^= Sim.Hash.Of(Takedown) * 17; if (Rounds.Length > 0) h ^= Sim.Hash.Of(Rounds) * 19; return h; } } } // a host without brief 013's files hashes as before, and its record says so
         }
         static Inputs? cache; static string? cacheRoot;
         public static Inputs Load(string root)
@@ -160,22 +164,24 @@ namespace Suborned.Sim
             if (cache != null && cacheRoot == root) return cache;
             string rd(string f) => System.IO.File.ReadAllText(System.IO.Path.Combine(root, f));
             string? opt(string f) => System.IO.File.Exists(System.IO.Path.Combine(root, f)) ? rd(f) : null;
-            var i = FromTexts(rd(RulebookFile), rd(PeopleRulesFile), rd(SiteFile), rd(PeopleFile), opt(ProvisionalFile), opt(TakedownFile));
+            var i = FromTexts(rd(RulebookFile), rd(PeopleRulesFile), rd(SiteFile), rd(PeopleFile), opt(ProvisionalFile), opt(TakedownFile), opt(RoundsFile));
             cache = i; cacheRoot = root; return i;
         }
         /// <summary>The same inputs from their texts, for a host that reads files its own way (Unity: TextAssets or StreamingAssets).</summary>
         /// <summary>The engine's version for run records: bump it when a change moves any replay. The assembly's MVID is recorded beside it.</summary>
-        public const string Version = "suborned.sim/0.7.0"; // 0.7.0: the getaway (brief 018, Sky 2026-10-18): the hold is 8 m or the exit lane (site getaway.exit) with one blocker per fight, Board and Go replace Extract, left behind at Go (captured or walks out), seen leaving (+1 T, the car hunted), the custody projection; the rulebook, the people rules and the site move every inputs hash. 0.6.3: open needs phase 1 (brief 017): the people file is suborned.sim.people/2, every person carries a need record (kind, label, size, holder), read strictly and never acted on; behaviour unchanged, only the inputs hash moves. 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
+        public const string Version = "suborned.sim/0.9.0"; // 0.9.0: the driven agent, EXPERIMENTAL (brief 025 playground, Sky 2026-10-19; rulebook cell.drive): a host moves one operative freely and hands the engine a drive sample a tick (an order: to, run, face; release), checked against the pace budget (cell.speed or runSpeed, burst, slack), the walk grid one axis at a time (it slides along walls, never crosses one) and a gap to people; the agent is then where it stands for every rule; a run is one span from Shift down to Shift up (runAlert once a span); pushing a busy agent cancels its act at the cancel cost (onBusy), release stands it (onRelease); a playground start may set pace, onBusy, onRelease, gap (Start.drive); Start.holds (test only) places a held scene at a door (N85); the official car faces along its bay at block-spot (site car.blockFacing, read by CarHeading only); the rulebook and the site move every inputs hash. 0.8.2: a person walks a routine leg 0..12 % faster than its timing, by a hash of their id, and waits at its end (rulebook crowd.pace, brief 023, Pulse: people who leave a stop on the same tick no longer walk as one block); every moving car keeps to the site's drive grid (rulebook car.drive, brief 023: carriageways, bays and drives, never a pavement): the turned driver reaches the service bay (mission point service-bay, parked facing car.serviceFacing) by the road and the drive, and the block move stops at block-spot's nearest drivable cell; a car drives each drive-grid cell at its surface's pace (rulebook car.pace, Motive 2026-10-19: road 5 m/s, drive or bay 2 m/s; the site marks cells r and y): the turned driver is in the service bay about 13 s after driverLast and waits there for Vale (the block move keeps blockMoveS); a car keeps off the kerb (Grid.CarRoute: a carriageway's lane, the middle of a drive or bay; the site's drive.lane); fire orders on final-fight hostiles end when the final fight is over and new ones are refused fight-over (rulebook fight.over, Motive 2026-10-19); the rulebook and the site move every inputs hash. 0.8.1: the summoned partner stands at her side (brief 022 §7.1, Pulse): his stop is the first of the baked rounds guard.stops with nobody within rounds.clear (partners-clear-cm) at the call, else the farthest from anyone; the rulebook and the rounds file move every inputs hash. 0.8.0: the living café (brief 022, Sky 2026-10-18): a server works her round from the baked sim/data/handover.rounds.json (held while spoken to, called home by the summons, ended by Alert 2, a shot, a body found or the final fight); the summoned lover stops rounds.close short of her post, facing her; Path.Heading skips zero-length segments (moves no run); the rounds file moves every inputs hash. 0.7.0: the getaway (brief 018, Sky 2026-10-18): the hold is 8 m or the exit lane (site getaway.exit) with one blocker per fight, Board and Go replace Extract, left behind at Go (captured or walks out), seen leaving (+1 T, the car hunted), the custody projection; the rulebook, the people rules and the site move every inputs hash. 0.6.3: open needs phase 1 (brief 017): the people file is suborned.sim.people/2, every person carries a need record (kind, label, size, holder), read strictly and never acted on; behaviour unchanged, only the inputs hash moves. 0.6.2: a public fight moves Standing once, by whom the cell fought (fight.public, Sky 2026-10-16; retires 0.6.1's gunfire.heard). 0.6.1: a public gunfight costs Standing (gunfire.heard, Sky 2026-10-16). 0.6.0: brief 014 (private turning; Standing starts at +2, the word and the drift between missions). 0.5.0: brief 013 (takedowns, bodies, reports, the response dial, check-in marks)
         public static string Mvid => typeof(Engine).Assembly.ManifestModule.ModuleVersionId.ToString("D");
 
-        public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null)
+        public static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null, string? rounds = null)
         {
+            rounds = rounds == null ? null : JNode.Canon(rounds);
             rulebook = JNode.Canon(rulebook); peopleRules = JNode.Canon(peopleRules); site = JNode.Canon(site); people = people == null ? null : JNode.Canon(people);
             provisional = provisional == null ? null : JNode.Canon(provisional); takedown = takedown == null ? null : JNode.Canon(takedown);
-            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site, People = people ?? "", Provisional = provisional ?? "", Takedown = takedown ?? "" };
+            var i = new Inputs { Rulebook = rulebook, PeopleRules = peopleRules, Site = site, People = people ?? "", Provisional = provisional ?? "", Takedown = takedown ?? "", Rounds = rounds ?? "" };
             i.Rules = new Rules(rulebook, peopleRules); i.SiteData = new Site(site);
             if (provisional != null) i.SiteData.AddProvisional(provisional);
             if (takedown != null) i.SiteData.AddTakedownWorld(takedown);
+            if (rounds != null) i.SiteData.Rounds = RoundsData.Parse(rounds, i.Rules, i.SiteData); // brief 022: the mission's data turns the round on
             if (people != null)
             {
                 var cast = new List<string>(); foreach (var c in i.SiteData.Cast) cast.Add(c.Id);

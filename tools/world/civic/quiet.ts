@@ -16,7 +16,7 @@ export const QUIET = {
   doorHalf: 0.6, // m: half of a door leaf; a container stands clear of the jamb by `doorClear`
   doorClear: 1.0, // m
   wall: 0.1, // m: a container stands this far off the wall it is against
-  apart: 8, // m: a call box, police post or dock stands this far from every other one (a corner of the block is not four things)
+  apart: 8, // m: a call box, police post or dock stands this far from another, of its kind or not (a corner of the block is not four things). Until 2026-10-19 a box and a post could stand 2 m apart (apartOther): the north-west mouth needed both from the same two kerb stations; with Starline's pavement walkable it spreads (briefs/023/research/call-box-siting.md)
   kerbReach: 10, // m: a container that cannot stand against the wall stands in a kerb zone this near the door at most
   lane: 2.0, // m: the clear width a container leaves in front of it (W-5: no gap under 2 m)
   size: { 'police-post': [1.0, 1.0, 2.8] as [number, number, number] }, // m: a police post is a police box of the call box's footprint (it must stand in a kerb zone, 1.5 m on a primary); no kit piece yet (Vela)
@@ -100,28 +100,31 @@ export function lattice(grid: WalkGrid, from: V[], lat = QUIET.lattice): number[
   return out;
 }
 
-export type Cand = { id: string; at: V; stand: V; yaw: number; edge: string };
+/** `tier` is a preference: the candidates of tier 0 are used until none brings new ground within reach, then tier 1, and so on (none given: tier 0). `near` (m from its corner, for a call box) breaks a tie in gain: the box nearest its corner. */
+export type Cand = { id: string; at: V; stand: V; yaw: number; edge: string; tier?: number; near?: number };
 
 /**
  * Greedy cover: while some sample is farther than `reachM` (walk, cm on the grid) from every source, take the candidate that brings the most uncovered samples within
- * reach (ties: the candidate nearest the window's north-west corner by x then y, then id), and place it with `place` (which may refuse: the layer's own rules; the candidate
- * is then dropped). Deterministic: no random choice anywhere. Returns what was placed and the field of the final set.
+ * reach (ties: the nearer to its corner, then the candidate nearest the window's north-west corner by x then y, then id), and place it with `place` (which may refuse: the layer's own rules; the candidate
+ * is then dropped). Candidates carry a `tier` (a preference): tier 0 is used until none gains, then tier 1, and so on. Deterministic: no random choice anywhere.
+ * Returns what was placed and the field of the final set.
  */
 export function cover(o: { grid: WalkGrid; samples: number[]; sources: V[]; reachM: number; cands: Cand[]; place: (c: Cand) => boolean; limit?: number }): { placed: Cand[]; field: Int32Array } {
   const { grid, samples } = o, reach = Math.round(o.reachM * 100);
   let field = reachField(grid, o.sources);
   const sets = new Map<Cand, number[]>();
-  const cands = o.cands.slice().sort((p, q) => p.at[0] - q.at[0] || p.at[1] - q.at[1] || (p.id < q.id ? -1 : 1));
+  const cands = o.cands.slice().sort((p, q) => (p.near ?? 0) - (q.near ?? 0) || p.at[0] - q.at[0] || p.at[1] - q.at[1] || (p.id < q.id ? -1 : 1));
   for (const c of cands) {
     const f = reachField(grid, [c.stand], reach), hit: number[] = [];
     samples.forEach((s, k) => { if (f[s]! <= reach) hit.push(k); });
     sets.set(c, hit);
   }
   const unc = new Uint8Array(samples.length); samples.forEach((s, k) => { unc[k] = field[s]! > reach ? 1 : 0; });
-  const placed: Cand[] = [], dead = new Set<Cand>();
-  for (let guard = 0; guard < (o.limit ?? 64); guard++) {
+  const placed: Cand[] = [], dead = new Set<Cand>(), tiers = [...new Set(cands.map(c => c.tier ?? 0))].sort((p, q) => p - q);
+  let guard = 0;
+  for (const tier of tiers) for (; guard < (o.limit ?? 64); guard++) {
     let pick: Cand | undefined, gain = 0;
-    for (const c of cands) { if (dead.has(c)) continue; let g = 0; for (const k of sets.get(c)!) g += unc[k]!; if (g > gain) { gain = g; pick = c; } }
+    for (const c of cands) { if (dead.has(c) || (c.tier ?? 0) !== tier) continue; let g = 0; for (const k of sets.get(c)!) g += unc[k]!; if (g > gain) { gain = g; pick = c; } }
     if (!pick || gain === 0) break;
     if (!o.place(pick)) { dead.add(pick); continue; }
     placed.push(pick); dead.add(pick);

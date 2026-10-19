@@ -1,0 +1,4009 @@
+{
+ "schema": "suborned.people-models/1",
+ "standIn": true,
+ "brief": "briefs/020-stand-in-visuals.md",
+ "owner": "Forma",
+ "for": "Latch",
+ "built": {
+  "by": "tools/figures (build.py, clips.py, assemble.py)",
+  "blender": "5.2.2",
+  "specs": [
+   "tools/figures/figures.json",
+   "tools/figures/clips.json",
+   "tools/figures/roles.json"
+  ]
+ },
+ "conventions": {
+  "unit": "metres, FBX unit scale 1 (file units cm, Unity useFileScale on)",
+  "axes": "Y up, figure faces +Z",
+  "origin": "feet on y = 0, centred on x and z",
+  "standingHeightM": 1.75,
+  "rig": "Humanoid, Mixamo bone names without prefix (Hips, Spine, Spine1, Spine2, Neck, Head, Left/RightShoulder, Arm, ForeArm, Hand, UpLeg, Leg, Foot, ToeBase). 22 mapped bones for the Meshy-style rigs (no fingers), 52 for the Enforcer (fingers). Avatar: Create From This Model, set in each .fbx.meta; Unity maps it unaided (checked: valid, human).",
+  "lods": "one FBX per figure holds the skeleton and every LOD as a skinned mesh named <id>_LOD0.. ; Unity builds the LODGroup from the names. Skin weights: 4 per vertex.",
+  "materials": "URP Lit .mat per texture set, bound by name in the .fbx.meta. Matte, as the world is (Glint, briefs/020/figures-render.md): the maps are albedo (sRGB) and normal for the 1024 and 2048 sets, plus on the cell and cast a metallic map (R metallic 0..0.6 only on real trim, G occlusion, A smoothness 0.15..0.28 on cloth, skin and hair and up to 0.55 on trim; the map is 1024 px even under a 2048 material). The 512 LOD (what play zoom draws) and every crowd material have no metallic map: _Metallic 0, _Smoothness 0.15. The Tech visor is _Smoothness 0.75 with an emission map; his albedo blacks are lifted (a black outfit keeps its shape in shade).",
+  "clips": "People/Clips/<name>.fbx: Mixamo library files copied as they are (clip only, 30 fps, in place), each with a Humanoid .meta and one clip named <name>. Any Humanoid figure plays any clip. loop flags are set in the meta; root motion is not baked into the pose, so leave Apply Root Motion off and move the object from the sim.",
+  "tintedVariants": "security, driver, councillor, rival and fixer are recolours of another model: only the albedo changed (hue window, skin and hair outside it)."
+ },
+ "playRoles": {
+  "op/scout": [
+   "scout"
+  ],
+  "op/fixer": [
+   "fixer"
+  ],
+  "op/tech": [
+   "tech"
+  ],
+  "op/enforcer": [
+   "enforcer"
+  ],
+  "waitress": [
+   "waitress"
+  ],
+  "guard": [
+   "guard"
+  ],
+  "driver": [
+   "driver"
+  ],
+  "councillor": [
+   "councillor"
+  ],
+  "patrol": [
+   "security"
+  ],
+  "security/0..1": [
+   "security"
+  ],
+  "unit/<officer>": [
+   "security"
+  ],
+  "rivals/0..2": [
+   "rival"
+  ],
+  "hostile/<n> (id starts rival)": [
+   "rival"
+  ],
+  "hostile/<n> (officers)": [
+   "security"
+  ],
+  "body/<key>": "the same figure as the person, playing `lying` (or laid flat as the capsule is); `carried` over the carrier's shoulder",
+  "crowd/<n>": "by job family below"
+ },
+ "families": {
+  "cafe (server, cook, waitress)": [
+   "cafe_w2",
+   "cafe_w3",
+   "cafe_w5"
+  ],
+  "office (clerk, attendant, councillor)": [
+   "c1",
+   "d5c",
+   "d4"
+  ],
+  "guard": [
+   "guard"
+  ],
+  "driver": [
+   "driver"
+  ],
+  "passer (everyone else)": [
+   "c6",
+   "d6",
+   "el1",
+   "sh2",
+   "workers_d5",
+   "d2m",
+   "d4",
+   "d5c",
+   "c1"
+  ]
+ },
+ "jobBlocks": {
+  "job/civic": [
+   "c1",
+   "d5c",
+   "d4"
+  ],
+  "job/food": [
+   "cafe_w2",
+   "cafe_w3",
+   "cafe_w5"
+  ],
+  "job/kiosk": [
+   "c6",
+   "sh2"
+  ],
+  "job/resident": [
+   "c6",
+   "d6",
+   "el1",
+   "sh2",
+   "workers_d5",
+   "d2m",
+   "d4",
+   "d5c",
+   "c1"
+  ],
+  "job/retail": [
+   "d6",
+   "c6",
+   "sh2"
+  ],
+  "job/market": [
+   "sh2",
+   "workers_d5"
+  ],
+  "job/service": [
+   "d2m",
+   "workers_d5"
+  ],
+  "job/trade": [
+   "workers_d5"
+  ],
+  "job/cinema": [
+   "d4",
+   "c1"
+  ],
+  "job/nightlife": [
+   "d6",
+   "d5c"
+  ],
+  "job/lobby": [
+   "c1",
+   "d4"
+  ]
+ },
+ "missing": [
+  "Fixer: a real model now (Sky, 2026-10-18): Tripo 3.1 from a Seedream front A-pose sheet of the Fixer cropped from the latest cell lineup (ivory and black), hem shortened to above the knee, no briefcase. $0.7 spent (store characters/fixer_P4-6/spend.json). The briefcase is not modelled: it is a prop for the right Hand bone. The pencil-cut dress hugs both thighs, so it stretches across the legs in a long stride (the hem faces at about 0.64 m; fine at play zoom, visible in the follow view): if it reads badly, a slit or a looser hem is a one-line edit to the sheet prompt (`tools/figures/fixer_gen.py`) and a $0.6 regeneration.",
+  "Enforcer: G3 (the style pick) is an unrigged Tripo mesh (characters/enforcer_G3/02_mesh/tripo_p1/model.glb). G2, rigged, is the stand-in: grey-bearded man, cream knee-length coat over a black suit with gold trim. Both coats are below the hip, against the no-long-coat rule: they held in the stretch test (no torn faces in a walk-and-bend pose) but should go when G3 is rigged.",
+  "Tech: the older outfit (sleeveless vest, cargo skirt-shorts to the knee, sandals, cyan visor and bands), not the 16 Oct final. Visor and trim are an emission map.",
+  "Councillor Vale: no design and no model. Stand-in is commuter D4 (blond, silver bomber, navy jumpsuit turned deep teal), at 8k. The official driver is commuter D2 (chrome visor helmet, coral uniform turned mint), at 8k.",
+  "Props: none. The models hold nothing. The aim, shoot and draw clips pose the arms for a rifle or pistol; weapons, the briefcase, a phone are Latch's attachments on the Hand bones (Humanoid RightHand / LeftHand).",
+  "Hands: the Meshy-style rigs (everyone but the Enforcer) have no finger bones; hands are mitten shapes. Fine at 53 px, visible only in the follow view.",
+  "Carrying Vale: Mixamo has `carry` (the carrier holds a load in front, standing) and `carried` (the limp body) but no walking-while-carrying. First pass: carrier plays walk, body plays carried at the shoulder (the capsule lift of 1.15 m). A load layer on walk would be Latch's.",
+  "Knockout and kill clips are one-sided and not synced (knockout 5.6 s, kill 4.4 to 5 s). Time the body falling to the sim's event; each ends lying, so the body can switch to `lying` after.",
+  "Left out on purpose: commuter D3 (shin-length trench coat), commuter D5 (long cape), worker D2 (calf-length cape; the cloth was a separate simulated sheet in the VAT crowd), shopper D5 (a child in a bubble helmet). All in the store if wanted.",
+  "Elders: one (EL1, a woman). No male elder, no child, no figure in a wheeled or seated pose. Seated caf\u00e9 patrons are not covered (exteriors: customers come and go).",
+  "Crowd variety is nine looks plus the three caf\u00e9 staff; recolours (hue windows in tools/figures/figures.json) would add more cheaply.",
+  "Not measured here: GPU time. Triangle counts at play zoom are the last LOD of each figure (1.5k cell and cast, about 1.5k crowd): 100 figures on screen is about 150k triangles and 100 skinned renderers, so the cost to watch is skinning and animator updates, not triangles. Redline's 4.5 ms is for Latch to measure on the Air with the real scene.",
+  "The contact sheets are from a scratch Unity project (built-in Standard shader, one sun, no grade, no shadows). The look in the game's URP scene with Glint's grade will differ.",
+  "Against the latest cell lineup (cell-lineup-latest.png, Sky 2026-10-18): Scout S1-2 is near (same ivory hooded jacket, black harness, shorts, fingerless gloves and sneakers; the lineup adds the black backpack and chrome-banded shorts, and ours has brass trim). Tech F2-1 is far (the lineup is a sleeveless black wrap top with an ivory sash, wide black-and-ivory pleated hakama trousers with cyan piping, chrome bracers, goggles pushed up, black sneakers; ours is a black vest, cargo skirt-shorts to the knee, sandals, a cyan visor over the eyes and cyan bands: only the dreadlocks, the black and the cyan carry over). Enforcer G2 is half way (same grey-bearded man in sunglasses with a knee-length coat and white boots; the lineup is mostly black with ivory panels and chrome bands and a big chrome rifle, ours is cream with a black suit and gold trim, no rifle)."
+ ],
+ "forLatch": [
+  "1. Get the files: `bun tools/figures/run.ts` builds out/people-models/People (needs Blender and the store); `--install` mirrors it to unity/Assets/Suborned/People. Git-ignore that folder like Kit/ (97 MB). Splice may want a hash-checked copy step like the kit's.",
+  "2. Everything is imported by its .meta: figures as Humanoid with an avatar from the model, textures with the right colour space, materials bound by name (URP Lit), clips Humanoid with loops set. Checked in Unity 6000.6.2f1 with URP 17.6: avatars valid, LOD groups made, materials resolve.",
+  "3. Per figure build a prefab: the FBX root (LODGroup from the names; set the transition heights from `lodScreenHeights`), an Animator with the FBX's avatar and one shared AnimatorController, a CapsuleCollider (1.75 m, radius 0.4) for clicks (the models carry none), Apply Root Motion off. The figure faces +Z; turn the object to the heading the capsule faces.",
+  "5. Mapping from the play scene: `playRoles`, `families` and `jobBlocks` in the manifest. Pick from a pool by the person's id so the same person always looks the same. Keys with no entry keep their capsule.",
+  "6. The family tints in HostViews (caf\u00e9 peach, office teal, guard, driver) are no longer needed: the figures carry their own colours. The signals (cones, rings, price chips, fight tracers) stay as they are.",
+  "4. One AnimatorController for all (FigureBuild already makes it). Cross-fade with `CrossFadeInFixedTime(state, 0.15f)`, not `CrossFade(state, 0.15f)`: the second is a fraction of the clip, and an idle of 8.8 s blends for 1.3 s (the Scout's hands stayed on her hips after she stopped). The fourth argument of CrossFade is seconds, not a 0..1 phase.",
+  "5. Mapping from the play scene: `playRoles`, `families` and `jobBlocks` in the manifest.",
+  "6. Stride: `naturalSpeedMs` per locomotion clip was re-measured in Unity (walk 1.29, walk_f 0.99, run 2.52, walk_armed 2.44, run_armed 3.11 m/s). `walk_armed` and `run_armed` are fast clips: below about 2 m/s play `walk` (or `walk_f`) and keep the weapon in the aim pose, or the armed walk plays at 0.6x in slow motion.",
+  "7. Carried and lying: `carried` is now the limp lying clip. Put the figure at the carrier's shoulder with the object's own height at 1.15 m (the clip adds 0.13 m of hips) and turn it 90 degrees to the carrier's heading so it lies across the shoulders; never add the lift twice (the old `carried` clip climbed from the ground to 1.4 m by itself, and the lift made Vale fly). `lying` and the knockout and kill clips end on the ground: place the figure at the body's point (no lift).",
+  "8. Standing, walking and running clips now put the soles on the ground themselves (Root Transform Position (Y): Based Upon Feet; the lying, falling and carried clips keep the original height).",
+  "9. Materials are matte now (metallic 0, smoothness 0.15 on the no-map materials; the mapped ones rebaked to the world's cloth). If a figure is still too bright, change `_Smoothness` on its material, not the map."
+ ],
+ "totals": {
+  "figures": 22,
+  "clips": 40,
+  "bytes": 88917428
+ },
+ "figures": [
+  {
+   "id": "scout",
+   "role": "scout",
+   "label": "Scout S1-2 (hooded jacket, shorts, harness)",
+   "standIn": true,
+   "fbx": "Figures/scout/scout.fbx",
+   "sha256": "f0c3bd6b36115803443cd1c342e2481fe40c5f0aab3041be66d739aa7118e1c5",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "scout_LOD0",
+     "tris": 12000,
+     "tex": 2048,
+     "source": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD1_12k.glb"
+    },
+    {
+     "name": "scout_LOD1",
+     "tris": 4500,
+     "tex": 1024,
+     "source": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD2_4k5.glb"
+    },
+    {
+     "name": "scout_LOD2",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD1"
+    }
+   ],
+   "materials": [
+    {
+     "name": "scout_body_2048",
+     "file": "Figures/scout/Materials/scout_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_2048_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_2048_normal.jpg",
+      "metal": "Figures/scout/Textures/scout_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "scout_body_1024",
+     "file": "Figures/scout/Materials/scout_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_1024_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_1024_normal.jpg",
+      "metal": "Figures/scout/Textures/scout_body_1024_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "scout_body_512",
+     "file": "Figures/scout/Materials/scout_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/scout_S1-2__h3t30_ownrig.glb; LODs Citizens3D/rigged/scout_lod/ (h3.1 mesh, own Meshy-style rig, 24 bones)",
+   "provenance": [
+    {
+     "file": "bench/scout_S1-2__apose_nopack_1__h3t30.glb",
+     "entry": {
+      "file": [
+       "bench/scout_S1-2__apose_nopack_1__h3t30.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 30000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 120.0,
+      "sheet": "model_sheets/scout_S1-2__apose_nopack_1.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/scout/Materials/scout_body_1024.mat",
+     "sha256": "c4844e3f14572bd252e4563272a8b32be53bff0509d8516f78eb6bfb375edc0a",
+     "bytes": 3679
+    },
+    {
+     "path": "Figures/scout/Materials/scout_body_2048.mat",
+     "sha256": "5743cb685a3f75723a65f9606ad85561696ca4138812fa6f9261648c02a7e82d",
+     "bytes": 3679
+    },
+    {
+     "path": "Figures/scout/Materials/scout_body_512.mat",
+     "sha256": "fc915bf1be009bfea664a9ad470b618a95b97598cb95ea79bc8be694e5083916",
+     "bytes": 3460
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_1024_albedo.jpg",
+     "sha256": "0112b5881e7076bcc8dab802e44bb81fa3be59edbf52e8a0b1960ba902ccb070",
+     "bytes": 228880
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_1024_metal.png",
+     "sha256": "b5f7b8b0879601b2404c6fe21b67ac5b2385daedfb8e9de1b4a71d55d4d95819",
+     "bytes": 874568
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_1024_normal.jpg",
+     "sha256": "2422f08ea6f46a5360c9abeb5cd0082db42d3f9ea967464e16ce4c71521cecea",
+     "bytes": 120973
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_2048_albedo.jpg",
+     "sha256": "49a0298cf3177f26d490d731b5646703c18eef51821ac27d71f953ff40f8c883",
+     "bytes": 360322
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_2048_metal.png",
+     "sha256": "b5f7b8b0879601b2404c6fe21b67ac5b2385daedfb8e9de1b4a71d55d4d95819",
+     "bytes": 874568
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_2048_normal.jpg",
+     "sha256": "c481ffd98243948bc984d84b2b3837df3b86b8c612e6442a0821705a5e0fc6a2",
+     "bytes": 203457
+    },
+    {
+     "path": "Figures/scout/Textures/scout_body_512_albedo.jpg",
+     "sha256": "68e8f26c6f7694ddef6c2b990b75e944a7354e2bc83c2fef2d0815854b09034e",
+     "bytes": 83785
+    },
+    {
+     "path": "Figures/scout/scout.fbx",
+     "sha256": "f0c3bd6b36115803443cd1c342e2481fe40c5f0aab3041be66d739aa7118e1c5",
+     "bytes": 1617676
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD1_12k.glb",
+     "sha256": "36624e99d08113cd5fafd0616c4edb560d50e6a221056b841463cb6ded1233f8"
+    },
+    {
+     "path": "Citizens3D/rigged/scout_lod/scout_S1-2_LOD2_4k5.glb",
+     "sha256": "794ba1d018528397deb134fef5e93aab7ae021a84f38980365d81ba02eca9eed"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "tech",
+   "role": "tech",
+   "label": "Tech F2-1 (vest, visor, cargo skirt-shorts; older outfit than the 16 Oct final)",
+   "standIn": true,
+   "fbx": "Figures/tech/tech.fbx",
+   "sha256": "977dd4a243cb833f62a351f86779098d657600bb6da1e73fe4dc191cef83291e",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "tech_LOD0",
+     "tris": 11999,
+     "tex": 2048,
+     "source": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD1_12k.glb"
+    },
+    {
+     "name": "tech_LOD1",
+     "tris": 6998,
+     "tex": 1024,
+     "source": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD2_4k5.glb"
+    },
+    {
+     "name": "tech_LOD2",
+     "tris": 1998,
+     "tex": 512,
+     "source": "decimated from LOD1"
+    }
+   ],
+   "materials": [
+    {
+     "name": "tech_visor_2048",
+     "file": "Figures/tech/Materials/tech_visor_2048.mat",
+     "size": 2048,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_2048_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_2048_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_visor_2048_emissive.jpg"
+     },
+     "emissionStrength": 1.25,
+     "alphaInSource": true
+    },
+    {
+     "name": "tech_body_2048",
+     "file": "Figures/tech/Materials/tech_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_2048_albedo.jpg",
+      "normal": "Figures/tech/Textures/tech_body_2048_normal.jpg",
+      "metal": "Figures/tech/Textures/tech_body_2048_metal.png",
+      "emissive": "Figures/tech/Textures/tech_body_2048_emissive.jpg"
+     },
+     "emissionStrength": 1.5,
+     "alphaInSource": true
+    },
+    {
+     "name": "tech_visor_1024",
+     "file": "Figures/tech/Materials/tech_visor_1024.mat",
+     "size": 1024,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_1024_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_1024_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_visor_1024_emissive.jpg"
+     },
+     "emissionStrength": 1.25,
+     "alphaInSource": true
+    },
+    {
+     "name": "tech_body_1024",
+     "file": "Figures/tech/Materials/tech_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_1024_albedo.jpg",
+      "normal": "Figures/tech/Textures/tech_body_1024_normal.jpg",
+      "metal": "Figures/tech/Textures/tech_body_1024_metal.png",
+      "emissive": "Figures/tech/Textures/tech_body_1024_emissive.png"
+     },
+     "emissionStrength": 1.5,
+     "alphaInSource": true
+    },
+    {
+     "name": "tech_visor_512",
+     "file": "Figures/tech/Materials/tech_visor_512.mat",
+     "size": 512,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_512_albedo.png",
+      "emissive": "Figures/tech/Textures/tech_visor_512_emissive.png"
+     },
+     "emissionStrength": 1.25,
+     "alphaInSource": true
+    },
+    {
+     "name": "tech_body_512",
+     "file": "Figures/tech/Materials/tech_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_512_albedo.jpg",
+      "emissive": "Figures/tech/Textures/tech_body_512_emissive.png"
+     },
+     "emissionStrength": 1.5,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/tech_F2-1_h3t30_master.glb; LODs Citizens3D/rigged/tech_lod/ (h3.1 mesh, own rig, visor is a separate emissive sheet)",
+   "provenance": [
+    {
+     "file": "bench/tech_F2-1__apose_1__h3t30.glb",
+     "entry": {
+      "file": [
+       "bench/tech_F2-1__apose_1__h3t30.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 30000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 120.0,
+      "sheet": "model_sheets/tech_F2-1__apose_1.png"
+     }
+    },
+    {
+     "file": "bench/../props/tech_visor_0__h3t5.glb",
+     "entry": {
+      "file": [
+       "bench/../props/tech_visor_0__h3t5.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 5000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 172.0,
+      "sheet": "model_sheets/../props/tech_visor_0.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/tech/Materials/tech_body_1024.mat",
+     "sha256": "1c86b449431a36ed6eeea241c0648d2de6da042be11c5f16194cb9c94077bb72",
+     "bytes": 3753
+    },
+    {
+     "path": "Figures/tech/Materials/tech_body_2048.mat",
+     "sha256": "7b2bf03591c21fe55f918165f6f1f3d825006de21b26e31a339cd80ff50feda9",
+     "bytes": 3753
+    },
+    {
+     "path": "Figures/tech/Materials/tech_body_512.mat",
+     "sha256": "eaa542a6a4e1a5158dc2d59e67c58d404fc3c3f065597c50342d8738ae15bc7b",
+     "bytes": 3530
+    },
+    {
+     "path": "Figures/tech/Materials/tech_visor_1024.mat",
+     "sha256": "7fda7c2a2af3df1e749dcdec6d475bb53b79350bd5f28f52dbf25e00c6f57273",
+     "bytes": 3606
+    },
+    {
+     "path": "Figures/tech/Materials/tech_visor_2048.mat",
+     "sha256": "2f15b3a5967d0c7403d142ce7e7532544b6780e10d6ce02908acb912c33669f4",
+     "bytes": 3606
+    },
+    {
+     "path": "Figures/tech/Materials/tech_visor_512.mat",
+     "sha256": "aca965e7f611d18cea482eef395d503a09d1143e74a5987474e7d6c33e76b365",
+     "bytes": 3535
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_1024_albedo.jpg",
+     "sha256": "38a9405dfb8d14eb843c3266787bcfc6d8a4dcf050dae92aa41a647d7ede2bbc",
+     "bytes": 97065
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_1024_emissive.png",
+     "sha256": "7c131b2feb54039a3f3f4d87dba3255395ab28fe2b90bf5f1577e9bb9e706316",
+     "bytes": 112138
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_1024_metal.png",
+     "sha256": "500bd5b5e13cf79b485ebed102b27f8babb10d05d4986913a0e42ecadc86d233",
+     "bytes": 915566
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_1024_normal.jpg",
+     "sha256": "167da8e0d8d0d58bd0b64fc114fe62ef8ee0b04c533800a5d5b932c9351b4c55",
+     "bytes": 74002
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_2048_albedo.jpg",
+     "sha256": "6f92717d7ca762791563c6f4cbb73bf2681e62166e169dadfa724cfb6da9001b",
+     "bytes": 265134
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_2048_emissive.jpg",
+     "sha256": "66837c32edb837f78c2080bd0378922d4bf83000a5176092ff920544854a011c",
+     "bytes": 97077
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_2048_metal.png",
+     "sha256": "500bd5b5e13cf79b485ebed102b27f8babb10d05d4986913a0e42ecadc86d233",
+     "bytes": 915566
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_2048_normal.jpg",
+     "sha256": "a5726e79fa053263e277285a929f432d0d25f5b16e8120a3007e4bfa4e7986ae",
+     "bytes": 134639
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_512_albedo.jpg",
+     "sha256": "fa019ee724cf1c45ba8b9c4d29059b3355b529925b7883bcad81844e56d34df9",
+     "bytes": 35028
+    },
+    {
+     "path": "Figures/tech/Textures/tech_body_512_emissive.png",
+     "sha256": "ad7706ad860f5cb1d559e8f151f9a6b46fcd1e522a1c2b9b3c29c2b9ddbc7313",
+     "bytes": 32997
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_1024_albedo.png",
+     "sha256": "8f9b2b7a43232e5f2ac33f308dc3db8614555cffcc7233aecf798fd7b44c2165",
+     "bytes": 1566561
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_1024_emissive.jpg",
+     "sha256": "68faeb9697ee66eb46308352a5ff1a041afec7d8d33f331c02f89a7a4c2338db",
+     "bytes": 137839
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_1024_normal.jpg",
+     "sha256": "d521fb01ca0b5b9767da421e008aa5c10f07c34385188103441f4808ef2cce89",
+     "bytes": 54710
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_2048_albedo.png",
+     "sha256": "8f9b2b7a43232e5f2ac33f308dc3db8614555cffcc7233aecf798fd7b44c2165",
+     "bytes": 1566561
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_2048_emissive.jpg",
+     "sha256": "68faeb9697ee66eb46308352a5ff1a041afec7d8d33f331c02f89a7a4c2338db",
+     "bytes": 137839
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_2048_normal.jpg",
+     "sha256": "d521fb01ca0b5b9767da421e008aa5c10f07c34385188103441f4808ef2cce89",
+     "bytes": 54710
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_512_albedo.png",
+     "sha256": "024458efc060c32da1d1c935a10733efbc5c3e01096f0ffdd0bf2b7f67d2cac5",
+     "bytes": 481949
+    },
+    {
+     "path": "Figures/tech/Textures/tech_visor_512_emissive.png",
+     "sha256": "9cb2036a93994991a79acef18249b68c9a457fbd418d2503b813e7b3963356cb",
+     "bytes": 375182
+    },
+    {
+     "path": "Figures/tech/tech.fbx",
+     "sha256": "977dd4a243cb833f62a351f86779098d657600bb6da1e73fe4dc191cef83291e",
+     "bytes": 1913548
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD1_12k.glb",
+     "sha256": "1b0213d01f7f18d0f0785217fe23f759cd3f9ca29eec6854b866fff36c20b9b2"
+    },
+    {
+     "path": "Citizens3D/rigged/tech_lod/tech_F2-1_LOD2_4k5.glb",
+     "sha256": "8f203e25124f49e900c5f6c16f677a740e468f53ac7b08362f3caf7f41903fe3"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "enforcer",
+   "role": "enforcer",
+   "label": "Enforcer G2 (white coat, black suit, gold trim); the G3 pick has no rig yet",
+   "standIn": true,
+   "fbx": "Figures/enforcer/enforcer.fbx",
+   "sha256": "6c13fd2c221d142320336bf0cf275337c377fa6aa3ad2f82070ee3440e2668ec",
+   "rig": {
+    "type": "humanoid",
+    "bones": 65,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "enforcer_LOD0",
+     "tris": 12000,
+     "tex": 2048,
+     "source": "../characters/enforcer_G2/07_export/enforcer_G2.2k.glb"
+    },
+    {
+     "name": "enforcer_LOD1",
+     "tris": 4500,
+     "tex": 1024,
+     "source": "decimated from LOD0"
+    },
+    {
+     "name": "enforcer_LOD2",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "enforcer_body_2048",
+     "file": "Figures/enforcer/Materials/enforcer_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_body_2048_albedo.jpg",
+      "normal": "Figures/enforcer/Textures/enforcer_body_2048_normal.jpg",
+      "metal": "Figures/enforcer/Textures/enforcer_body_2048_metal.png",
+      "emissive": "Figures/enforcer/Textures/enforcer_body_2048_emissive.png"
+     },
+     "emissionStrength": 1.2000000476837158,
+     "alphaInSource": true
+    },
+    {
+     "name": "enforcer_body_1024",
+     "file": "Figures/enforcer/Materials/enforcer_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_body_1024_albedo.jpg",
+      "normal": "Figures/enforcer/Textures/enforcer_body_1024_normal.jpg",
+      "metal": "Figures/enforcer/Textures/enforcer_body_1024_metal.png",
+      "emissive": "Figures/enforcer/Textures/enforcer_body_1024_emissive.png"
+     },
+     "emissionStrength": 1.2000000476837158,
+     "alphaInSource": true
+    },
+    {
+     "name": "enforcer_body_512",
+     "file": "Figures/enforcer/Materials/enforcer_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_body_512_albedo.jpg",
+      "emissive": "Figures/enforcer/Textures/enforcer_body_512_emissive.png"
+     },
+     "emissionStrength": 1.2000000476837158,
+     "alphaInSource": true
+    }
+   ],
+   "source": "characters/enforcer_G2/07_export/enforcer_G2.2k.glb (h3.1 mesh G2 aposec, Mixamo rig with fingers, 2k textures)",
+   "provenance": [
+    {
+     "file": "bench/enforcer_G2__aposec_1__h3t30.glb",
+     "entry": {
+      "file": [
+       "bench/enforcer_G2__aposec_1__h3t30.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 30000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 164.0,
+      "sheet": "model_sheets/enforcer_G2__aposec_1.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/enforcer/Materials/enforcer_body_1024.mat",
+     "sha256": "0172ef661b05fbc46b2d186f32839042a0d1a80c5ee1840a2b9250d2d7c880db",
+     "bytes": 3757
+    },
+    {
+     "path": "Figures/enforcer/Materials/enforcer_body_2048.mat",
+     "sha256": "8696f973a50312fab9c00e026882a52aaa120e018572fc451458c05c8d8db9bb",
+     "bytes": 3757
+    },
+    {
+     "path": "Figures/enforcer/Materials/enforcer_body_512.mat",
+     "sha256": "d75214be13dd75977ce0d53a139e170ac4491bdfa33695990d1039ba3424a121",
+     "bytes": 3535
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_1024_albedo.jpg",
+     "sha256": "5be3560ea21012617e9f60c615615ae1332124a4df7e3e83f984d668423c1d98",
+     "bytes": 266841
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_1024_emissive.png",
+     "sha256": "15f4c3ede5ccf90bf8a487db87f5c9ebfbb745cb0b8c1d3d771d7455608e4521",
+     "bytes": 280207
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_1024_metal.png",
+     "sha256": "f3f6cb228435b979aa750d2c07460fd6a1132bc168e7b03405942b7c130d0a5e",
+     "bytes": 777980
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_1024_normal.jpg",
+     "sha256": "59c20335afd857e7009e38158ee431aed96ddf3f03231fa640cac4b9d48fd6cc",
+     "bytes": 79835
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_2048_albedo.jpg",
+     "sha256": "c259dce868fb426d8d7716785065ffd28505442fb458f2cc7bb393a8d7654891",
+     "bytes": 5793195
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_2048_emissive.png",
+     "sha256": "0d1d1613358d4eee35ce9c7ccec071034217aa604a207c66199cb727c30ad72e",
+     "bytes": 765052
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_2048_metal.png",
+     "sha256": "f3f6cb228435b979aa750d2c07460fd6a1132bc168e7b03405942b7c130d0a5e",
+     "bytes": 777980
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_2048_normal.jpg",
+     "sha256": "f114758af9e8a5fdd8b760e77df703996efd6b38cade917522d9c0f3296125f9",
+     "bytes": 2018277
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_512_albedo.jpg",
+     "sha256": "10973cc28dee4ae134329af27f1608751014b4e51b0fc41bad028e65af8efb89",
+     "bytes": 91039
+    },
+    {
+     "path": "Figures/enforcer/Textures/enforcer_body_512_emissive.png",
+     "sha256": "74acceaf6fc9dffc82ae5ef2f94050bfde51ff216c6b78e3bf4589131ba0106d",
+     "bytes": 92629
+    },
+    {
+     "path": "Figures/enforcer/enforcer.fbx",
+     "sha256": "6c13fd2c221d142320336bf0cf275337c377fa6aa3ad2f82070ee3440e2668ec",
+     "bytes": 1824908
+    }
+   ],
+   "sources": [
+    {
+     "path": "../characters/enforcer_G2/07_export/enforcer_G2.2k.glb",
+     "sha256": "a8a5dbca7a0575ac1682155bcbd28b594f243b29234be3c460e439e6ab069da8"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "guard",
+   "role": "guard",
+   "label": "Door guard P1 (white and blue duty suit, cap)",
+   "standIn": true,
+   "fbx": "Figures/guard/guard.fbx",
+   "sha256": "7602de51819933a9663b59e52958495cfb8c79ff4c356583094bd8a2a6f734f1",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "guard_LOD0",
+     "tris": 11417,
+     "tex": 2048,
+     "source": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD0.glb"
+    },
+    {
+     "name": "guard_LOD1",
+     "tris": 4499,
+     "tex": 1024,
+     "source": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb"
+    },
+    {
+     "name": "guard_LOD2",
+     "tris": 1499,
+     "tex": 512,
+     "source": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "guard_body_2048",
+     "file": "Figures/guard/Materials/guard_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/guard/Textures/guard_body_2048_albedo.jpg",
+      "normal": "Figures/guard/Textures/guard_body_2048_normal.jpg",
+      "metal": "Figures/guard/Textures/guard_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "guard_body_1024",
+     "file": "Figures/guard/Materials/guard_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/guard/Textures/guard_body_1024_albedo.jpg",
+      "normal": "Figures/guard/Textures/guard_body_1024_normal.jpg",
+      "metal": "Figures/guard/Textures/guard_body_1024_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "guard_body_512",
+     "file": "Figures/guard/Materials/guard_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/guard/Textures/guard_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/guard_P1_h3own.glb; LODs Citizens3D/lod/guard_P1/",
+   "provenance": [
+    {
+     "file": "bench/guard_P1__apose_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/guard_P1__apose_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 260.0,
+      "sheet": "model_sheets/guard_P1__apose_0.png"
+     }
+    },
+    {
+     "file": "bench/guard_P1__apose_hands_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/guard_P1__apose_hands_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 132.0,
+      "sheet": "model_sheets/guard_P1__apose_hands_0.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/guard/Materials/guard_body_1024.mat",
+     "sha256": "7132f233687a7d7f48162e405d6cdde0af6b2d618d043b00b1ae36de22a19150",
+     "bytes": 3678
+    },
+    {
+     "path": "Figures/guard/Materials/guard_body_2048.mat",
+     "sha256": "f08c67a0d7b21dd28b7a1a3ccd5935b6d9b9bc03a18f0fec2c035f201f8dc184",
+     "bytes": 3678
+    },
+    {
+     "path": "Figures/guard/Materials/guard_body_512.mat",
+     "sha256": "5ac900f23b88736444ff8c07c61eb41fe48a2be633fa826ff6fed2e2c84c50a5",
+     "bytes": 3460
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_1024_albedo.jpg",
+     "sha256": "b5aadeff80479c1d6ecff071e76ab76dbedf9e5733a5a6c110e1ae8681463e1c",
+     "bytes": 249671
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_1024_metal.png",
+     "sha256": "a496ce8536da815ca9330a6daf2139bfbf7e5a72a92016b88e3c6f05f0317b02",
+     "bytes": 1018479
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_1024_normal.jpg",
+     "sha256": "1abbeffd007287ee75cfc8b4bec8ca8ab4e2cfa418d68d12b12b54646fe33d6b",
+     "bytes": 137635
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_2048_albedo.jpg",
+     "sha256": "e44d4dbaccc2c282b2467a83f4d983809b0034bd5f0c5b2e738804c540f5406f",
+     "bytes": 406218
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_2048_metal.png",
+     "sha256": "a496ce8536da815ca9330a6daf2139bfbf7e5a72a92016b88e3c6f05f0317b02",
+     "bytes": 1018479
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_2048_normal.jpg",
+     "sha256": "e703a9204ca819c7cb1edf207766de4b9e369d041b87216bccdb9457e2c62d4c",
+     "bytes": 228929
+    },
+    {
+     "path": "Figures/guard/Textures/guard_body_512_albedo.jpg",
+     "sha256": "47021fab55bf0ffb040a9ef11ae13802731150a7551bdeb24e95dd5cb57100ec",
+     "bytes": 90515
+    },
+    {
+     "path": "Figures/guard/guard.fbx",
+     "sha256": "7602de51819933a9663b59e52958495cfb8c79ff4c356583094bd8a2a6f734f1",
+     "bytes": 1462172
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD0.glb",
+     "sha256": "89a8b990984eab8178f8ed34df9af4a4e54715ccd59c13c0086bc79e778fd8ac"
+    },
+    {
+     "path": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb",
+     "sha256": "3de89e9ee3447cb725e668586c1b3c74fbfbc339270af75cc01af8250c0d9f41"
+    },
+    {
+     "path": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb",
+     "sha256": "408dc9df223422456ecfbacb29e4f94e9bea5456263bde9087dc52becf844135"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "waitress",
+   "role": "waitress",
+   "label": "Inez, caf\u00e9 waitress W6 (green uniform, apron, glasses)",
+   "standIn": true,
+   "fbx": "Figures/waitress/waitress.fbx",
+   "sha256": "822ba667ad0550583f4cd69c654f352aa2cdddfec1a9c369272b66c9afffbced",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "waitress_LOD0",
+     "tris": 11941,
+     "tex": 2048,
+     "source": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD0.glb"
+    },
+    {
+     "name": "waitress_LOD1",
+     "tris": 4499,
+     "tex": 1024,
+     "source": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD1.glb"
+    },
+    {
+     "name": "waitress_LOD2",
+     "tris": 1499,
+     "tex": 512,
+     "source": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD2.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "waitress_body_2048",
+     "file": "Figures/waitress/Materials/waitress_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/waitress/Textures/waitress_body_2048_albedo.jpg",
+      "normal": "Figures/waitress/Textures/waitress_body_2048_normal.jpg",
+      "metal": "Figures/waitress/Textures/waitress_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "waitress_body_1024",
+     "file": "Figures/waitress/Materials/waitress_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/waitress/Textures/waitress_body_1024_albedo.jpg",
+      "normal": "Figures/waitress/Textures/waitress_body_1024_normal.jpg",
+      "metal": "Figures/waitress/Textures/waitress_body_1024_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "waitress_body_512",
+     "file": "Figures/waitress/Materials/waitress_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/waitress/Textures/waitress_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/waitress_W6_h3own.glb; LODs Citizens3D/lod/waitress_W6/",
+   "provenance": [
+    {
+     "file": "bench/waitress_W6__apose_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W6__apose_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 112.0,
+      "sheet": "model_sheets/waitress_W6__apose_0.png"
+     }
+    },
+    {
+     "file": "bench/waitress_W6__apose_1__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W6__apose_1__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 108.0,
+      "sheet": "model_sheets/waitress_W6__apose_1.png"
+     }
+    },
+    {
+     "file": "bench/waitress_W6__aposenog_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W6__aposenog_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 124.0,
+      "sheet": "model_sheets/waitress_W6__aposenog_0.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/waitress/Materials/waitress_body_1024.mat",
+     "sha256": "e36a8d7556c8cf57d07bab7ae21cc784cace78f9eb2037856a64dfff871e16ac",
+     "bytes": 3681
+    },
+    {
+     "path": "Figures/waitress/Materials/waitress_body_2048.mat",
+     "sha256": "00be93e83b07c249904748b23d9fb99b58fdb29f537431f73e3f6d0a4d836657",
+     "bytes": 3682
+    },
+    {
+     "path": "Figures/waitress/Materials/waitress_body_512.mat",
+     "sha256": "7da2f45abdc2775a61d7c5be6e3eb022534897ce20a399b98de3668269684f4d",
+     "bytes": 3463
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_1024_albedo.jpg",
+     "sha256": "b23383bb06d36ba7743b06a16dcacada8467b5b5ff7f4bfc0f3f438636b3ccb7",
+     "bytes": 201359
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_1024_metal.png",
+     "sha256": "2b4e25497a2b88a92469c1dd3c534a558ace6c669776492bf9770eb4f35be8f2",
+     "bytes": 571200
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_1024_normal.jpg",
+     "sha256": "62140b118d8ac16b8dced1b1b66853f2eaf915c60e1e3cf4ee8a4eacb7a281c3",
+     "bytes": 110626
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_2048_albedo.jpg",
+     "sha256": "be99e5f862e5ed7b23a6eab4a48a9eb5e6ce49adf131766665974b79a86dad69",
+     "bytes": 320678
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_2048_metal.png",
+     "sha256": "2b4e25497a2b88a92469c1dd3c534a558ace6c669776492bf9770eb4f35be8f2",
+     "bytes": 571200
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_2048_normal.jpg",
+     "sha256": "8782f47c4668b6385c19f9eb2ac65e8e9a176e4543f11e3f6cbddbe33169e026",
+     "bytes": 187136
+    },
+    {
+     "path": "Figures/waitress/Textures/waitress_body_512_albedo.jpg",
+     "sha256": "0c5166f81c2a61e26950d5bc0e1ebba89d1f3037bd981ef9d4ca8feec8c510ff",
+     "bytes": 72487
+    },
+    {
+     "path": "Figures/waitress/waitress.fbx",
+     "sha256": "822ba667ad0550583f4cd69c654f352aa2cdddfec1a9c369272b66c9afffbced",
+     "bytes": 1490060
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD0.glb",
+     "sha256": "e399c246cd93771994d368ff21eedb4533ee3905c5955254062386bdfda0a640"
+    },
+    {
+     "path": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD1.glb",
+     "sha256": "d432525b2e9459792bd81e5e6c94f3e47c78923406ac5d8165d4fa7258e70b2f"
+    },
+    {
+     "path": "Citizens3D/lod/waitress_W6/waitress_W6_h3own_LOD2.glb",
+     "sha256": "cdd9c7c930ba88e312ea4a16424cb916c768ab4bd449f85bb7762699b78025fb"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "c6",
+   "role": "townsperson",
+   "label": "Commuter C6 (silver hooded jacket, patterned mini dress)",
+   "standIn": true,
+   "fbx": "Figures/c6/c6.fbx",
+   "sha256": "c3e58c48d2662c0aa012120b76d114cc2fac263e1496e4148c57deddae786f49",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.749,
+   "lods": [
+    {
+     "name": "c6_LOD0",
+     "tris": 2995,
+     "tex": 1024,
+     "source": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb"
+    },
+    {
+     "name": "c6_LOD1",
+     "tris": 1499,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "c6_body_1024",
+     "file": "Figures/c6/Materials/c6_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/c6/Textures/c6_body_1024_albedo.jpg",
+      "normal": "Figures/c6/Textures/c6_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "c6_body_512",
+     "file": "Figures/c6/Materials/c6_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/c6/Textures/c6_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "bakeoff/commuters_C6__hunyuan_pro.glb",
+     "entry": {
+      "file": "bakeoff/commuters_C6__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 108.0,
+      "bytes": 32205072,
+      "sheet": "model_sheets/commuters_C6.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/c6/Materials/c6_body_1024.mat",
+     "sha256": "93578576d299b91ddd6967e41472a33b8fd71ddaa68909e3866fd5d5586fb8d2",
+     "bytes": 3524
+    },
+    {
+     "path": "Figures/c6/Materials/c6_body_512.mat",
+     "sha256": "db0f756cd178b4f0278f53c5967a9301090031d7c81eff802ec77b3c452de551",
+     "bytes": 3457
+    },
+    {
+     "path": "Figures/c6/Textures/c6_body_1024_albedo.jpg",
+     "sha256": "b1310d8d1269bfb35ff262bf56424e9202910b5f1232eebefe53f2df42a2e579",
+     "bytes": 174355
+    },
+    {
+     "path": "Figures/c6/Textures/c6_body_1024_normal.jpg",
+     "sha256": "547a023cd837b9ee4fc53b56dfe027ce95f5c7977be654f115fa7f31d73db251",
+     "bytes": 71310
+    },
+    {
+     "path": "Figures/c6/Textures/c6_body_512_albedo.jpg",
+     "sha256": "6bb8332d0dd75a995d2f82a77d5cf3c6144668d3699c323da2475f7a0071434d",
+     "bytes": 64514
+    },
+    {
+     "path": "Figures/c6/c6.fbx",
+     "sha256": "c3e58c48d2662c0aa012120b76d114cc2fac263e1496e4148c57deddae786f49",
+     "bytes": 516988
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb",
+     "sha256": "a5391b31636a9aff562ee978b61e58b750a9ce80629e79a35e24f0144a5a674e"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "d6",
+   "role": "townsperson",
+   "label": "Commuter D6 (mustard shift dress, white hat)",
+   "standIn": true,
+   "fbx": "Figures/d6/d6.fbx",
+   "sha256": "e41510b615c4692900206df67e09c7a3333f7bb818b0cf7078aa3a9d0d3ed4fa",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.749,
+   "lods": [
+    {
+     "name": "d6_LOD0",
+     "tris": 2990,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/commuters_D6__hunyuan_pro.glb"
+    },
+    {
+     "name": "d6_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "d6_body_1024",
+     "file": "Figures/d6/Materials/d6_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d6/Textures/d6_body_1024_albedo.jpg",
+      "normal": "Figures/d6/Textures/d6_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "d6_body_512",
+     "file": "Figures/d6/Materials/d6_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d6/Textures/d6_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/commuters_D6__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "citizens/commuters_D6__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/commuters_D6__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 192.0,
+      "bytes": 27143928,
+      "sheet": "model_sheets/commuters_D6.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/d6/Materials/d6_body_1024.mat",
+     "sha256": "5f34e0944b6885119744f0ce825a23b98402fa615b5dca21a38044bcbd4aba19",
+     "bytes": 3525
+    },
+    {
+     "path": "Figures/d6/Materials/d6_body_512.mat",
+     "sha256": "d07e3afba84dc3f56a368d5f1fb557309c7df9602a1c0cf16099f307bf6ed3a8",
+     "bytes": 3457
+    },
+    {
+     "path": "Figures/d6/Textures/d6_body_1024_albedo.jpg",
+     "sha256": "a644842b071abec5d4afcc978845c3d9abf57e80c69f44c8f91e62273cbe579c",
+     "bytes": 145925
+    },
+    {
+     "path": "Figures/d6/Textures/d6_body_1024_normal.jpg",
+     "sha256": "1c8a1d1c4a83ed96fc37e06827f173f187cbc08865215be2534bfc271ae3e403",
+     "bytes": 51349
+    },
+    {
+     "path": "Figures/d6/Textures/d6_body_512_albedo.jpg",
+     "sha256": "a99c4ca329ae88066ec8ec7f49998953d94ea08d328e99f7ebed13f78b0cd8b1",
+     "bytes": 55902
+    },
+    {
+     "path": "Figures/d6/d6.fbx",
+     "sha256": "e41510b615c4692900206df67e09c7a3333f7bb818b0cf7078aa3a9d0d3ed4fa",
+     "bytes": 515644
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/commuters_D6__hunyuan_pro.glb",
+     "sha256": "7a51dc206f02d15165e4c05044c200128cc7b46b695e6a0e2deeae9896d78494"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "c1",
+   "role": "townsperson",
+   "label": "Corporation C1 (navy tunic, short coral cape, helmet)",
+   "standIn": true,
+   "fbx": "Figures/c1/c1.fbx",
+   "sha256": "956071f545ac20b42e8e38ba15ea28354d6e8b865ba2d7ffa1c55ce738b25b1c",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.749,
+   "lods": [
+    {
+     "name": "c1_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/bakeoff/corporation_C1__hunyuan_pro.glb"
+    },
+    {
+     "name": "c1_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "c1_body_1024",
+     "file": "Figures/c1/Materials/c1_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/c1/Textures/c1_body_1024_albedo.jpg",
+      "normal": "Figures/c1/Textures/c1_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "c1_body_512",
+     "file": "Figures/c1/Materials/c1_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/c1/Textures/c1_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/bakeoff/corporation_C1__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "bakeoff/corporation_C1__hunyuan_pro.glb",
+     "entry": {
+      "file": "bakeoff/corporation_C1__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 114.0,
+      "bytes": 28781836,
+      "sheet": "model_sheets/corporation_C1.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/c1/Materials/c1_body_1024.mat",
+     "sha256": "ece85b416e61d873c3b3e28cd3b2353391ece3fa3dea6d6d3768ae4c681b1489",
+     "bytes": 3525
+    },
+    {
+     "path": "Figures/c1/Materials/c1_body_512.mat",
+     "sha256": "8aa33512ededb56e6bbd8c0e6cfc6459e5f5f534e97f28c56adc25b8cd2aa3de",
+     "bytes": 3457
+    },
+    {
+     "path": "Figures/c1/Textures/c1_body_1024_albedo.jpg",
+     "sha256": "4c99404920f33a427c905d30959f7fd962e1e49e19bbd5cc7dc227913192b63a",
+     "bytes": 197267
+    },
+    {
+     "path": "Figures/c1/Textures/c1_body_1024_normal.jpg",
+     "sha256": "163636e9e12263362eac2192c47b42c6ee9e0162b5970d0312d99c5dfb8f641e",
+     "bytes": 58736
+    },
+    {
+     "path": "Figures/c1/Textures/c1_body_512_albedo.jpg",
+     "sha256": "f8414a684efbcddc5da60e951fe90661ed027b0bbc2cdec803ee8ba2a0a5b4d9",
+     "bytes": 75860
+    },
+    {
+     "path": "Figures/c1/c1.fbx",
+     "sha256": "956071f545ac20b42e8e38ba15ea28354d6e8b865ba2d7ffa1c55ce738b25b1c",
+     "bytes": 541356
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/bakeoff/corporation_C1__hunyuan_pro.glb",
+     "sha256": "a3ed5c25c20d45fac6b6c4ff60c61efaef0886feade68f9305ffaa013b8fb25d"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "d5c",
+   "role": "townsperson",
+   "label": "Corporation D5 (mint chevron dress, white boots)",
+   "standIn": true,
+   "fbx": "Figures/d5c/d5c.fbx",
+   "sha256": "f2285163bca4621b8939f9d1c336307e01f088e2181186db28ece4f28d9837e4",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.751,
+   "lods": [
+    {
+     "name": "d5c_LOD0",
+     "tris": 2982,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/corporation_D5__hunyuan_pro.glb"
+    },
+    {
+     "name": "d5c_LOD1",
+     "tris": 1498,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "d5c_body_1024",
+     "file": "Figures/d5c/Materials/d5c_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d5c/Textures/d5c_body_1024_albedo.jpg",
+      "normal": "Figures/d5c/Textures/d5c_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "d5c_body_512",
+     "file": "Figures/d5c/Materials/d5c_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d5c/Textures/d5c_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/corporation_D5__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "citizens/corporation_D5__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/corporation_D5__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 120.0,
+      "bytes": 31098596,
+      "sheet": "model_sheets/corporation_D5.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/d5c/Materials/d5c_body_1024.mat",
+     "sha256": "55b4510ef730cac46d251cfce0e329e114d1c5a39164a3220fe7217d48aed004",
+     "bytes": 3526
+    },
+    {
+     "path": "Figures/d5c/Materials/d5c_body_512.mat",
+     "sha256": "11e4cff7819275ba4dd119afeae5dfe55d6b4d3b0f32de230a9e056c068a16d8",
+     "bytes": 3458
+    },
+    {
+     "path": "Figures/d5c/Textures/d5c_body_1024_albedo.jpg",
+     "sha256": "ef4c1502c27f56fe12e28b38d4b6e84902040dd84d977b3af913e0e541d7386f",
+     "bytes": 169533
+    },
+    {
+     "path": "Figures/d5c/Textures/d5c_body_1024_normal.jpg",
+     "sha256": "b0ac72c6a26f49598894959c1f7dc135476f409a8451ed422379443fe2c0fc5e",
+     "bytes": 71177
+    },
+    {
+     "path": "Figures/d5c/Textures/d5c_body_512_albedo.jpg",
+     "sha256": "a8a515c8c0ae1acdacefd1457826533645f8d348a5d91023ab252660d0982cce",
+     "bytes": 63587
+    },
+    {
+     "path": "Figures/d5c/d5c.fbx",
+     "sha256": "f2285163bca4621b8939f9d1c336307e01f088e2181186db28ece4f28d9837e4",
+     "bytes": 523340
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/corporation_D5__hunyuan_pro.glb",
+     "sha256": "364ea1618ff3811e95baabf4886212b1e77d53d39d1937e69dc4385e9e7960f9"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "d2m",
+   "role": "townsperson",
+   "label": "Commuter D2 (coral uniform, chrome visor helmet)",
+   "standIn": true,
+   "fbx": "Figures/d2m/d2m.fbx",
+   "sha256": "a6f5aa2a0fd853ee43e44950caf3dc57eacfe898ac67c1d2c7603925a0149fa5",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "d2m_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb"
+    },
+    {
+     "name": "d2m_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "d2m_body_1024",
+     "file": "Figures/d2m/Materials/d2m_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d2m/Textures/d2m_body_1024_albedo.jpg",
+      "normal": "Figures/d2m/Textures/d2m_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "d2m_body_512",
+     "file": "Figures/d2m/Materials/d2m_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d2m/Textures/d2m_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "citizens/commuters_D2__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/commuters_D2__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 150.0,
+      "bytes": 31186664,
+      "sheet": "model_sheets/commuters_D2.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/d2m/Materials/d2m_body_1024.mat",
+     "sha256": "9d238fc9ee780df20d46cdc2651600851726f17e2fd1f981dec66d6f9c47c9f2",
+     "bytes": 3526
+    },
+    {
+     "path": "Figures/d2m/Materials/d2m_body_512.mat",
+     "sha256": "a93823fd8bf932a6894140689dbd9320d790dc32a7b52aadada371c278c4bada",
+     "bytes": 3458
+    },
+    {
+     "path": "Figures/d2m/Textures/d2m_body_1024_albedo.jpg",
+     "sha256": "59c23917d0a879a5ed951b310c13190e45739e1a223932547e910fd706d4dbbb",
+     "bytes": 159731
+    },
+    {
+     "path": "Figures/d2m/Textures/d2m_body_1024_normal.jpg",
+     "sha256": "9a64c1f367f1639514837dbc31d8383d01ebdf6212a0b70c8490fb7f4a0b7a69",
+     "bytes": 61288
+    },
+    {
+     "path": "Figures/d2m/Textures/d2m_body_512_albedo.jpg",
+     "sha256": "2184c37dae30632f662be77f2247db50499caa11a1211c56ae5129f6eddcdb63",
+     "bytes": 59993
+    },
+    {
+     "path": "Figures/d2m/d2m.fbx",
+     "sha256": "a6f5aa2a0fd853ee43e44950caf3dc57eacfe898ac67c1d2c7603925a0149fa5",
+     "bytes": 523036
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb",
+     "sha256": "5addc70d96f40f308c530820b9a080b84b48a4c278925e05772b59e8a8c1fd06"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "workers_d5",
+   "role": "townsperson",
+   "label": "Worker D5 (yellow quilted jacket, jeans, cap)",
+   "standIn": true,
+   "fbx": "Figures/workers_d5/workers_d5.fbx",
+   "sha256": "27595f5fcc39217df3bfbd79f7b8a58d669dd9c75fa13fa729310f3a55615a88",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.751,
+   "lods": [
+    {
+     "name": "workers_d5_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb"
+    },
+    {
+     "name": "workers_d5_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "workers_d5_body_1024",
+     "file": "Figures/workers_d5/Materials/workers_d5_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/workers_d5/Textures/workers_d5_body_1024_albedo.jpg",
+      "normal": "Figures/workers_d5/Textures/workers_d5_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "workers_d5_body_512",
+     "file": "Figures/workers_d5/Materials/workers_d5_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/workers_d5/Textures/workers_d5_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb (50k, welded and decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "citizens/workers_D5__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/workers_D5__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 138.0,
+      "bytes": 38067248,
+      "sheet": "model_sheets/workers_D5.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/workers_d5/Materials/workers_d5_body_1024.mat",
+     "sha256": "4119f7aa1323ce48069b260e845446b164dbbd5dc83c0d8e836d5f6738f842e5",
+     "bytes": 3533
+    },
+    {
+     "path": "Figures/workers_d5/Materials/workers_d5_body_512.mat",
+     "sha256": "52696788276395457410eb14abeacf2a04979091cc458ffdfbeda2d07b945e4b",
+     "bytes": 3465
+    },
+    {
+     "path": "Figures/workers_d5/Textures/workers_d5_body_1024_albedo.jpg",
+     "sha256": "b9230f3a9a8e62daec22fe292583f844d2f19f7eb0b9b5b8829713a46d42fd64",
+     "bytes": 249140
+    },
+    {
+     "path": "Figures/workers_d5/Textures/workers_d5_body_1024_normal.jpg",
+     "sha256": "dfbb0e478897e821608c40cec9dee8653130c66169fc838b1ca1fcc72be8218c",
+     "bytes": 117171
+    },
+    {
+     "path": "Figures/workers_d5/Textures/workers_d5_body_512_albedo.jpg",
+     "sha256": "8a091f2df7365d904534489efaeb15aaf977989ac7d75e2ca7e38945f7cda501",
+     "bytes": 86054
+    },
+    {
+     "path": "Figures/workers_d5/workers_d5.fbx",
+     "sha256": "27595f5fcc39217df3bfbd79f7b8a58d669dd9c75fa13fa729310f3a55615a88",
+     "bytes": 541820
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb",
+     "sha256": "0e1ca14775544472ac052bfe2a53f7402ba5ce6c60ee690bb025c57221beffde"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "d4",
+   "role": "townsperson",
+   "label": "Commuter D4 (silver bomber, navy jumpsuit)",
+   "standIn": true,
+   "fbx": "Figures/d4/d4.fbx",
+   "sha256": "24a2857d977addc2246d133a67d69469aaf3a5eb96f19bc73f576206385e47ed",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.745,
+   "lods": [
+    {
+     "name": "d4_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb"
+    },
+    {
+     "name": "d4_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "d4_body_1024",
+     "file": "Figures/d4/Materials/d4_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d4/Textures/d4_body_1024_albedo.jpg",
+      "normal": "Figures/d4/Textures/d4_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "d4_body_512",
+     "file": "Figures/d4/Materials/d4_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/d4/Textures/d4_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "citizens/commuters_D4__hunyuan_pro.glb",
+     "entry": null
+    }
+   ],
+   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "files": [
+    {
+     "path": "Figures/d4/Materials/d4_body_1024.mat",
+     "sha256": "66f9604ab7e618b884676dabff78ea3b3cef43cc00db26ed07c6f4929de49098",
+     "bytes": 3525
+    },
+    {
+     "path": "Figures/d4/Materials/d4_body_512.mat",
+     "sha256": "c6eecc764e64ba4684936f18b022892e6cdd300d0c33d9edebf3e1c89055c6ca",
+     "bytes": 3457
+    },
+    {
+     "path": "Figures/d4/Textures/d4_body_1024_albedo.jpg",
+     "sha256": "a91dbaf1dcea45150bab4711adba439d91f78d85e6da44131a41b296f21e75f1",
+     "bytes": 194312
+    },
+    {
+     "path": "Figures/d4/Textures/d4_body_1024_normal.jpg",
+     "sha256": "a1b181897a80f96b17fe198a588c51484412a52d93e2fd96c19a0d2bce6ff900",
+     "bytes": 93114
+    },
+    {
+     "path": "Figures/d4/Textures/d4_body_512_albedo.jpg",
+     "sha256": "92e83ff4b5df6af2a3c0867c76f720d829e6cbc76a495a42aed41cf645cf10eb",
+     "bytes": 69657
+    },
+    {
+     "path": "Figures/d4/d4.fbx",
+     "sha256": "24a2857d977addc2246d133a67d69469aaf3a5eb96f19bc73f576206385e47ed",
+     "bytes": 534908
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "sha256": "4d2e5340e9b874fcb4eb7f4bb7c218a0d055b264c2519ad2ec0c3672a6baf425"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "el1",
+   "role": "townsperson",
+   "label": "Elder EL1 (grey set hair, sunglasses, orange jumpsuit, white boots)",
+   "standIn": true,
+   "fbx": "Figures/el1/el1.fbx",
+   "sha256": "e67a7096c42a83bc0d299aed956f953477e4350aa9c948df732fd5a18e1d61ae",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.751,
+   "lods": [
+    {
+     "name": "el1_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/bench/elders_EL1__h3t12.glb"
+    },
+    {
+     "name": "el1_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "el1_body_1024",
+     "file": "Figures/el1/Materials/el1_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/el1/Textures/el1_body_1024_albedo.jpg",
+      "normal": "Figures/el1/Textures/el1_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "el1_body_512",
+     "file": "Figures/el1/Materials/el1_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/el1/Textures/el1_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/bench/elders_EL1__h3t12.glb (Tripo h3.1 12k, faces +X: turned here; decimated to 3000 and 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "bench/elders_EL1__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/elders_EL1__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 88.0,
+      "sheet": "model_sheets/elders_EL1.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/el1/Materials/el1_body_1024.mat",
+     "sha256": "291ed3412d86af0af4b910db78ceb41a39825bbe83ea06a799aa9f0fda856d64",
+     "bytes": 3526
+    },
+    {
+     "path": "Figures/el1/Materials/el1_body_512.mat",
+     "sha256": "7448f9ba62b6502d8491c9e54c1085f4adcaae19730b20800fa2f2129b8c48fd",
+     "bytes": 3458
+    },
+    {
+     "path": "Figures/el1/Textures/el1_body_1024_albedo.jpg",
+     "sha256": "5bfa112edd4cce2e781fece625bbc3d80a44581588a24170a031b7398933048a",
+     "bytes": 216155
+    },
+    {
+     "path": "Figures/el1/Textures/el1_body_1024_normal.jpg",
+     "sha256": "15342d12ecf47719c0698a4626096e684c359515cac01ba8fabb55fa387f3bac",
+     "bytes": 114112
+    },
+    {
+     "path": "Figures/el1/Textures/el1_body_512_albedo.jpg",
+     "sha256": "3a94e10a9eed1a462a7e305413d6a8012b94d062f4221cea5b695be5ba74c86f",
+     "bytes": 74897
+    },
+    {
+     "path": "Figures/el1/el1.fbx",
+     "sha256": "e67a7096c42a83bc0d299aed956f953477e4350aa9c948df732fd5a18e1d61ae",
+     "bytes": 468844
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/bench/elders_EL1__h3t12.glb",
+     "sha256": "4f9d2bb50f629b3c0d40d206fa04ed134a13a8df4ce27c92f87670bca297a6d1"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "sh2",
+   "role": "townsperson",
+   "label": "Shopper D2 (gold print shirt and shorts, visor, white boots)",
+   "standIn": true,
+   "fbx": "Figures/sh2/sh2.fbx",
+   "sha256": "4caec58cd16016392eafe9fb53cea53c8855562af3e13783df1882efa3a314f4",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.749,
+   "lods": [
+    {
+     "name": "sh2_LOD0",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "Citizens3D/bench/shoppers_D2__h3t12.glb"
+    },
+    {
+     "name": "sh2_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "sh2_body_1024",
+     "file": "Figures/sh2/Materials/sh2_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/sh2/Textures/sh2_body_1024_albedo.jpg",
+      "normal": "Figures/sh2/Textures/sh2_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "sh2_body_512",
+     "file": "Figures/sh2/Materials/sh2_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/sh2/Textures/sh2_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/bench/shoppers_D2__h3t12.glb (Tripo h3.1 12k, faces +X: turned here; decimated to 3000 and 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "bench/shoppers_D2__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/shoppers_D2__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 108.0,
+      "sheet": "model_sheets/shoppers_D2.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/sh2/Materials/sh2_body_1024.mat",
+     "sha256": "007e6b8b37145789553978ff09b4b93862393b6168928a650b13b5c68e43bd6d",
+     "bytes": 3526
+    },
+    {
+     "path": "Figures/sh2/Materials/sh2_body_512.mat",
+     "sha256": "9459abbba110d18329d97c85eb0cf028def1e249c3bef133667f3f028f68a518",
+     "bytes": 3458
+    },
+    {
+     "path": "Figures/sh2/Textures/sh2_body_1024_albedo.jpg",
+     "sha256": "31523dd6d946d4ee3ea2db41375cb0f27ff1e617b512fce44223ce8285f834d5",
+     "bytes": 263814
+    },
+    {
+     "path": "Figures/sh2/Textures/sh2_body_1024_normal.jpg",
+     "sha256": "e1cc24e3f645245c04bec950b743e20e590f85f6e5b8e8710bcae3815a996836",
+     "bytes": 117410
+    },
+    {
+     "path": "Figures/sh2/Textures/sh2_body_512_albedo.jpg",
+     "sha256": "e452754646891a46671181f4a5e220ed22343019fd442d62a77b2cc6801d1a08",
+     "bytes": 84220
+    },
+    {
+     "path": "Figures/sh2/sh2.fbx",
+     "sha256": "4caec58cd16016392eafe9fb53cea53c8855562af3e13783df1882efa3a314f4",
+     "bytes": 474028
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/bench/shoppers_D2__h3t12.glb",
+     "sha256": "1485443851289375ffb5d22f8ecae11fb81b65c1ca5e31f2b2a70fd56e4b327f"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "cafe_w2",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W2 (teal jumpsuit, white boots)",
+   "standIn": true,
+   "fbx": "Figures/cafe_w2/cafe_w2.fbx",
+   "sha256": "21bb2c7ed5fd06db3b888b4272cfde7dcea46bd27a69a4aedf060b0bf8ac1f78",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "cafe_w2_LOD0",
+     "tris": 4500,
+     "tex": 2048,
+     "source": "Citizens3D/rigged/waitress_W2.glb"
+    },
+    {
+     "name": "cafe_w2_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "cafe_w2_body_2048",
+     "file": "Figures/cafe_w2/Materials/cafe_w2_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w2/Textures/cafe_w2_body_2048_albedo.jpg",
+      "normal": "Figures/cafe_w2/Textures/cafe_w2_body_2048_normal.jpg",
+      "metal": "Figures/cafe_w2/Textures/cafe_w2_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "cafe_w2_body_512",
+     "file": "Figures/cafe_w2/Materials/cafe_w2_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w2/Textures/cafe_w2_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/waitress_W2.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    {
+     "file": "bench/waitress_W2__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W2__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 188.0,
+      "sheet": "model_sheets/waitress_W2.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/cafe_w2/Materials/cafe_w2_body_2048.mat",
+     "sha256": "1918f68357a91c7bb6c52bff39088aa38ed916c0bb9ee1204f17a1f510e23ee3",
+     "bytes": 3681
+    },
+    {
+     "path": "Figures/cafe_w2/Materials/cafe_w2_body_512.mat",
+     "sha256": "357efe3604f6d59c8929a14e8a2f2dbd20e8345b7ef8fe8ab2de0efb42844ccb",
+     "bytes": 3462
+    },
+    {
+     "path": "Figures/cafe_w2/Textures/cafe_w2_body_2048_albedo.jpg",
+     "sha256": "d1f07465b07ab4750ccbc150be2e165741ba60cfaabe54f4f4f8bc9fd46552a0",
+     "bytes": 489378
+    },
+    {
+     "path": "Figures/cafe_w2/Textures/cafe_w2_body_2048_metal.png",
+     "sha256": "a11e1e9b41ce0ddaff31dc0f1f93b1ad6d48201f606eed838c994b4bf16ef2b7",
+     "bytes": 555564
+    },
+    {
+     "path": "Figures/cafe_w2/Textures/cafe_w2_body_2048_normal.jpg",
+     "sha256": "2bc28e22d8cbf84a5157dd6f97422f3a04a6ed036850159a920868d0af8703e6",
+     "bytes": 277523
+    },
+    {
+     "path": "Figures/cafe_w2/Textures/cafe_w2_body_512_albedo.jpg",
+     "sha256": "121c969555cd40c14120a0c53bffc38a35e6fb7dbe06b4d8ab3e440bb34dfb71",
+     "bytes": 68308
+    },
+    {
+     "path": "Figures/cafe_w2/cafe_w2.fbx",
+     "sha256": "21bb2c7ed5fd06db3b888b4272cfde7dcea46bd27a69a4aedf060b0bf8ac1f78",
+     "bytes": 589676
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/rigged/waitress_W2.glb",
+     "sha256": "a3b1ecb1c50753c99510076672ac44cfebcb1e356186e49169d7b0259efa0491"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "cafe_w3",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W3 (yellow uniform, white apron)",
+   "standIn": true,
+   "fbx": "Figures/cafe_w3/cafe_w3.fbx",
+   "sha256": "8ae17b68803f2d2cd7022a789ac8ca79b1e1a24c5d23371f961acce3d1feea82",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.751,
+   "lods": [
+    {
+     "name": "cafe_w3_LOD0",
+     "tris": 4499,
+     "tex": 2048,
+     "source": "Citizens3D/rigged/waitress_W3.glb"
+    },
+    {
+     "name": "cafe_w3_LOD1",
+     "tris": 1499,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "cafe_w3_body_2048",
+     "file": "Figures/cafe_w3/Materials/cafe_w3_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w3/Textures/cafe_w3_body_2048_albedo.jpg",
+      "normal": "Figures/cafe_w3/Textures/cafe_w3_body_2048_normal.jpg",
+      "metal": "Figures/cafe_w3/Textures/cafe_w3_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "cafe_w3_body_512",
+     "file": "Figures/cafe_w3/Materials/cafe_w3_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w3/Textures/cafe_w3_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/waitress_W3.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    {
+     "file": "bench/waitress_W3__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W3__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 188.0,
+      "sheet": "model_sheets/waitress_W3.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/cafe_w3/Materials/cafe_w3_body_2048.mat",
+     "sha256": "7f3770bf302d012eb50426712df2ee4d554f38bc705b140047fab6be70e1040b",
+     "bytes": 3681
+    },
+    {
+     "path": "Figures/cafe_w3/Materials/cafe_w3_body_512.mat",
+     "sha256": "a145b4d807dec9db672f10cb8715a7bb898f04952c26edb5b27fd8cb141882cf",
+     "bytes": 3462
+    },
+    {
+     "path": "Figures/cafe_w3/Textures/cafe_w3_body_2048_albedo.jpg",
+     "sha256": "30e68b4a9350f2d40d7b507f3977c5a8092e0b654cb2074c76ec8a0be9637d23",
+     "bytes": 598588
+    },
+    {
+     "path": "Figures/cafe_w3/Textures/cafe_w3_body_2048_metal.png",
+     "sha256": "dd3c2ebc8c01b487b4c15ef633e06b501cd527d30fbd5d349c95c6e22f97ef8a",
+     "bytes": 439347
+    },
+    {
+     "path": "Figures/cafe_w3/Textures/cafe_w3_body_2048_normal.jpg",
+     "sha256": "16d7fdbfadb7782148c2336c92d972cd25f0c8215fb4713513537b9bd835e544",
+     "bytes": 256578
+    },
+    {
+     "path": "Figures/cafe_w3/Textures/cafe_w3_body_512_albedo.jpg",
+     "sha256": "92b4663715ae63b5ed204d9168961513dc69a44d4847704355e51f4f74e0bc10",
+     "bytes": 78255
+    },
+    {
+     "path": "Figures/cafe_w3/cafe_w3.fbx",
+     "sha256": "8ae17b68803f2d2cd7022a789ac8ca79b1e1a24c5d23371f961acce3d1feea82",
+     "bytes": 594812
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/rigged/waitress_W3.glb",
+     "sha256": "cfe409cefd2211a04fa3bc62d00dd2b2fc62844b3d71b0ef45222193845f482e"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "cafe_w5",
+   "role": "waitress-staff",
+   "label": "Caf\u00e9 staff W5 (orange dress, grey boots)",
+   "standIn": true,
+   "fbx": "Figures/cafe_w5/cafe_w5.fbx",
+   "sha256": "f692f7ff2e8217029cceb0e395f19fc3e0c26b575882bb42d95f9e8e7e0313e3",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.749,
+   "lods": [
+    {
+     "name": "cafe_w5_LOD0",
+     "tris": 4499,
+     "tex": 2048,
+     "source": "Citizens3D/rigged/waitress_W5_h3own.glb"
+    },
+    {
+     "name": "cafe_w5_LOD1",
+     "tris": 1499,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "cafe_w5_body_2048",
+     "file": "Figures/cafe_w5/Materials/cafe_w5_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w5/Textures/cafe_w5_body_2048_albedo.jpg",
+      "normal": "Figures/cafe_w5/Textures/cafe_w5_body_2048_normal.jpg",
+      "metal": "Figures/cafe_w5/Textures/cafe_w5_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "cafe_w5_body_512",
+     "file": "Figures/cafe_w5/Materials/cafe_w5_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/cafe_w5/Textures/cafe_w5_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/waitress_W5_h3own.glb (Tripo h3.1 12k, own Meshy-style rig; LODs decimated here)",
+   "provenance": [
+    {
+     "file": "bench/waitress_W5__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/waitress_W5__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 188.0,
+      "sheet": "model_sheets/waitress_W5.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/cafe_w5/Materials/cafe_w5_body_2048.mat",
+     "sha256": "f8965061fedb9925dfadb0074725ca3fe8b3c34083f39cafe66ac9dc73ea7548",
+     "bytes": 3681
+    },
+    {
+     "path": "Figures/cafe_w5/Materials/cafe_w5_body_512.mat",
+     "sha256": "2a2900f660da2b6bbdb3784cfb7ea6c569ba9faf8a57a3e32a4e6af25eb0be57",
+     "bytes": 3462
+    },
+    {
+     "path": "Figures/cafe_w5/Textures/cafe_w5_body_2048_albedo.jpg",
+     "sha256": "578977825b5800729fd19b3f18ef29fdccb3f93f2bb4e451aa92d9d0a909ef75",
+     "bytes": 473073
+    },
+    {
+     "path": "Figures/cafe_w5/Textures/cafe_w5_body_2048_metal.png",
+     "sha256": "4eec15eb536663205c09881c390f37fc5adec0d333f5d9d38ae85b58d5227a26",
+     "bytes": 835989
+    },
+    {
+     "path": "Figures/cafe_w5/Textures/cafe_w5_body_2048_normal.jpg",
+     "sha256": "5e610e685cdfdc7ca530b0f8dad783692fe5cc6918465ce5421e840d4bfb499d",
+     "bytes": 220940
+    },
+    {
+     "path": "Figures/cafe_w5/Textures/cafe_w5_body_512_albedo.jpg",
+     "sha256": "06706c74f1859eeccd6f1bde0e9e2630d78ee01aca93cf49e21e8c216a4a36b0",
+     "bytes": 67330
+    },
+    {
+     "path": "Figures/cafe_w5/cafe_w5.fbx",
+     "sha256": "f692f7ff2e8217029cceb0e395f19fc3e0c26b575882bb42d95f9e8e7e0313e3",
+     "bytes": 589868
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/rigged/waitress_W5_h3own.glb",
+     "sha256": "7170071fc47e92dfbce1a9004bf30ba37e6ce65211d9e33ec20de7e724e1ee3f"
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "fixer",
+   "role": "fixer",
+   "label": "Fixer P4-6 (ivory and black panelled dress, halter, detached long sleeves, high ponytail, two-tone heeled boots); no briefcase",
+   "standIn": true,
+   "fbx": "Figures/fixer/fixer.fbx",
+   "sha256": "f2fd67419989952e316fd6e55604b940297dfdfaced3ce437214a5db39e184a5",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "fixer_LOD0",
+     "tris": 12000,
+     "tex": 2048,
+     "source": "Citizens3D/bench/fixer_P4-6__tripo_h3.glb"
+    },
+    {
+     "name": "fixer_LOD1",
+     "tris": 4499,
+     "tex": 1024,
+     "source": "decimated from LOD0"
+    },
+    {
+     "name": "fixer_LOD2",
+     "tris": 1499,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "fixer_body_2048",
+     "file": "Figures/fixer/Materials/fixer_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/fixer/Textures/fixer_body_2048_albedo.jpg",
+      "normal": "Figures/fixer/Textures/fixer_body_2048_normal.jpg",
+      "metal": "Figures/fixer/Textures/fixer_body_2048_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "fixer_body_1024",
+     "file": "Figures/fixer/Materials/fixer_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/fixer/Textures/fixer_body_1024_albedo.jpg",
+      "normal": "Figures/fixer/Textures/fixer_body_1024_normal.jpg",
+      "metal": "Figures/fixer/Textures/fixer_body_1024_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "fixer_body_512",
+     "file": "Figures/fixer/Materials/fixer_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/fixer/Textures/fixer_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/bench/fixer_P4-6__tripo_h3.glb (Tripo 3.1, 30k, from a Seedream front A-pose sheet of the Fixer in Sky's 2026-10-18 lineup, hem shortened above the knee; faces +X, turned here; decimated to 12000, 4500, 1500; skinned from the C1 Meshy rig)",
+   "provenance": [
+    {
+     "file": "bench/fixer_P4-6__tripo_h3.glb",
+     "entry": {
+      "file": "bench/fixer_P4-6__tripo_h3.glb",
+      "model": "tripo:v3.1@0",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "faceLimit": 30000,
+       "geometryQuality": "detailed",
+       "textureQuality": "detailed",
+       "orientation": "default"
+      },
+      "cost": 0.6,
+      "seconds": 90.0,
+      "bytes": 8057912,
+      "sha256": "608d64aafbaa77e5d32faa4fd58288d6bffe317f98eb7141fc675b412a43d52b",
+      "sheet": "model_sheets/fixer_P4-6__apose_2_1.png"
+     }
+    },
+    {
+     "file": "model_sheets/fixer_P4-6__apose_2_1.png",
+     "entry": {
+      "file": "model_sheets/fixer_P4-6__apose_2_1.png",
+      "model": "bytedance:seedream@5.0-pro",
+      "seed": 1577190504,
+      "cost": 0.04815,
+      "size": "1024x2048",
+      "sha256": "37ae8ba12cac191b9eed5fff11e9fd74f8df59b54dc1c9dbb6dfa668a13db480",
+      "reference": "model_sheets/refs/fixer_P4-6_lineup.png",
+      "prompt": "Character model sheet for 3D modelling of the character in the reference image, who is seen from behind: the same woman with exactly the same outfit, cut, colours, materials and trims, now shown from the FRONT. The outfit: a fitted dress of vertical panels in ivory and black, with fine pinstripe panels, a high halter neckline with bare shoulders, long fitted ivory sleeves worn from the shoulder to the wrist as separate sleeves, the dress hem cut shorter than in the reference to sit a clear hand's width above the kneecap, so the knees show, straight and clean, nothing flowing or trailing below it; a high ponytail of long straight black hair; two-tone ivory and black heeled ankle boots with a chrome heel accent. The briefcase is removed: nothing is held or attached. Full body from head to toe, centred, front view, standing in a strict A-pose: both arms straight and held 45 degrees out from the body, a clear gap of air between each arm and the torso and between each hand and the hips, palms facing the thighs, fingers relaxed; legs straight with the feet shoulder-width apart so the thighs do not touch. Neutral expression. Even soft shadowless studio light, no cast shadows, no floor, plain background. The same rendering style as the reference image, crisp edges. Original design, not resembling any real person or film character. No text, no letters, no numbers, no logos, no watermark."
+     }
+    },
+    {
+     "file": "model_sheets/refs/fixer_P4-6_lineup.png",
+     "entry": {
+      "file": "model_sheets/refs/fixer_P4-6_lineup.png",
+      "model": "crop",
+      "cost": 0,
+      "sha256": "d7f9eb27d2d688eca8b621b5c5d8546da8846512c11289ec89111bff81118d41",
+      "from": "briefs/020/people/cell-lineup-latest.png (Sky, 2026-10-18), box (430, 95, 720, 615)"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/fixer/Materials/fixer_body_1024.mat",
+     "sha256": "0d6172f46fd32e53f6b8e2a4aa2127a30ebc98df83ca85c7b3451b6fbd69b292",
+     "bytes": 3679
+    },
+    {
+     "path": "Figures/fixer/Materials/fixer_body_2048.mat",
+     "sha256": "ce1249801ac7ea024fd44e624fe55c669bf8059f6b98d7d0e1bbb7f77e35e586",
+     "bytes": 3679
+    },
+    {
+     "path": "Figures/fixer/Materials/fixer_body_512.mat",
+     "sha256": "38ee37668be47fd91e650f113b8389cf5af9c5f48ebe88b92c55b5bb4a806a3b",
+     "bytes": 3460
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_1024_albedo.jpg",
+     "sha256": "c4136067d18e7695b583361db05676543b91bd645ec3231bbdca70c6cae09076",
+     "bytes": 217819
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_1024_metal.png",
+     "sha256": "123182544e70aac872c863cc793eb1646ab6f5bb479e6b114d8e1bf2df745538",
+     "bytes": 599750
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_1024_normal.jpg",
+     "sha256": "c04edfe0038528567175c9a019110a542f0af1130c416eebc6223b4cf65eff62",
+     "bytes": 74108
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_2048_albedo.jpg",
+     "sha256": "24d605f265686b34e9c393c0b10d63c659f9496149c55145af54690af29900ec",
+     "bytes": 574781
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_2048_metal.png",
+     "sha256": "123182544e70aac872c863cc793eb1646ab6f5bb479e6b114d8e1bf2df745538",
+     "bytes": 599750
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_2048_normal.jpg",
+     "sha256": "4b465b5ffea1ec7e7ada9e4dc65345c945905b9461a56c9ce20f2e74b372a42a",
+     "bytes": 214534
+    },
+    {
+     "path": "Figures/fixer/Textures/fixer_body_512_albedo.jpg",
+     "sha256": "c435b34381b2dc28e3c09977ab79fba9ece053f035d2d93072beb7c59fa97b0e",
+     "bytes": 83049
+    },
+    {
+     "path": "Figures/fixer/fixer.fbx",
+     "sha256": "f2fd67419989952e316fd6e55604b940297dfdfaced3ce437214a5db39e184a5",
+     "bytes": 1654188
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/bench/fixer_P4-6__tripo_h3.glb",
+     "sha256": "608d64aafbaa77e5d32faa4fd58288d6bffe317f98eb7141fc675b412a43d52b"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "security",
+   "role": "security",
+   "label": "Security officer: door guard P1 with the blue turned charcoal",
+   "standIn": true,
+   "fbx": "Figures/security/security.fbx",
+   "sha256": "c6a086097b9139c2a34a3e4ca53ae7e1f4be95bbb4fd35c1eed9c67a087c0f92",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "security_LOD0",
+     "tris": 4499,
+     "tex": 1024,
+     "source": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb"
+    },
+    {
+     "name": "security_LOD1",
+     "tris": 1499,
+     "tex": 512,
+     "source": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "security_body_1024",
+     "file": "Figures/security/Materials/security_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/security/Textures/security_body_1024_albedo.jpg",
+      "normal": "Figures/security/Textures/security_body_1024_normal.jpg",
+      "metal": "Figures/security/Textures/security_body_1024_metal.png"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "security_body_512",
+     "file": "Figures/security/Materials/security_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/security/Textures/security_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/rigged/guard_P1_h3own.glb; LODs Citizens3D/lod/guard_P1/",
+   "provenance": [
+    {
+     "file": "bench/guard_P1__apose_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/guard_P1__apose_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 260.0,
+      "sheet": "model_sheets/guard_P1__apose_0.png"
+     }
+    },
+    {
+     "file": "bench/guard_P1__apose_hands_0__h3t12.glb",
+     "entry": {
+      "file": [
+       "bench/guard_P1__apose_hands_0__h3t12.glb"
+      ],
+      "model": "fal:tripo3d/h3.1/image-to-3d",
+      "settings": {
+       "texture": true,
+       "pbr": true,
+       "texture_quality": "detailed",
+       "face_limit": 12000,
+       "quad": false,
+       "geometry_quality": "detailed"
+      },
+      "seconds": 132.0,
+      "sheet": "model_sheets/guard_P1__apose_hands_0.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/security/Materials/security_body_1024.mat",
+     "sha256": "2a0b5702e4d76f911b085d69a22f999256aff05f73aaa932dd683fc776a9e8e1",
+     "bytes": 3681
+    },
+    {
+     "path": "Figures/security/Materials/security_body_512.mat",
+     "sha256": "f667e7c41c70e50ff174dbcd51aa301fda20daeb6d1f3d7d6ab07c9488fa9665",
+     "bytes": 3463
+    },
+    {
+     "path": "Figures/security/Textures/security_body_1024_albedo.jpg",
+     "sha256": "7bcaf5bccd20058f06b9d3beb0563f3f04c533876ee22e51c1c9cc622b7a4695",
+     "bytes": 202782
+    },
+    {
+     "path": "Figures/security/Textures/security_body_1024_metal.png",
+     "sha256": "12c06a2440033a719ae3b825d9332a0200ce5e27d210eb6fe4426279ea54ea41",
+     "bytes": 1025459
+    },
+    {
+     "path": "Figures/security/Textures/security_body_1024_normal.jpg",
+     "sha256": "065405c64187d8721d320330bc481c0de44fabed2e1974f397d375b1770fd387",
+     "bytes": 79207
+    },
+    {
+     "path": "Figures/security/Textures/security_body_512_albedo.jpg",
+     "sha256": "2b6bec4aab131bfe84368481660b4e6551fc9d0b4fcdfca118a03814c44116d0",
+     "bytes": 72968
+    },
+    {
+     "path": "Figures/security/security.fbx",
+     "sha256": "c6a086097b9139c2a34a3e4ca53ae7e1f4be95bbb4fd35c1eed9c67a087c0f92",
+     "bytes": 570924
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD1.glb",
+     "sha256": "3de89e9ee3447cb725e668586c1b3c74fbfbc339270af75cc01af8250c0d9f41"
+    },
+    {
+     "path": "Citizens3D/lod/guard_P1/guard_P1_h3own_LOD2.glb",
+     "sha256": "408dc9df223422456ecfbacb29e4f94e9bea5456263bde9087dc52becf844135"
+    }
+   ],
+   "variantOf": "guard",
+   "tint": [
+    {
+     "from": 215,
+     "width": 35,
+     "minSat": 0.2,
+     "shift": -175,
+     "sat": 1.3,
+     "val": 1.0
+    },
+    {
+     "from": 0,
+     "width": 180,
+     "minSat": 0.0,
+     "maxSat": 0.22,
+     "minVal": 0.35,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.45
+    }
+   ],
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "driver",
+   "role": "driver",
+   "label": "Official driver: commuter D2 with the coral uniform turned mint",
+   "standIn": true,
+   "fbx": "Figures/driver/driver.fbx",
+   "sha256": "36096b8d86dc41a45ffb850ce2082a724d6e8212b8187de171365bbdeeebf1a0",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "driver_LOD0",
+     "tris": 8000,
+     "tex": 2048,
+     "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb"
+    },
+    {
+     "name": "driver_LOD1",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "decimated from LOD0"
+    },
+    {
+     "name": "driver_LOD2",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "driver_body_2048",
+     "file": "Figures/driver/Materials/driver_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/driver/Textures/driver_body_2048_albedo.jpg",
+      "normal": "Figures/driver/Textures/driver_body_2048_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "driver_body_1024",
+     "file": "Figures/driver/Materials/driver_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/driver/Textures/driver_body_1024_albedo.jpg",
+      "normal": "Figures/driver/Textures/driver_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "driver_body_512",
+     "file": "Figures/driver/Materials/driver_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/driver/Textures/driver_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); coral turned mint",
+   "provenance": [
+    {
+     "file": "citizens/commuters_D2__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/commuters_D2__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 150.0,
+      "bytes": 31186664,
+      "sheet": "model_sheets/commuters_D2.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/driver/Materials/driver_body_1024.mat",
+     "sha256": "46753f33fed99c39d05047e98da68a6257faaf8665b2cd4a6777cbd96b21cc0f",
+     "bytes": 3529
+    },
+    {
+     "path": "Figures/driver/Materials/driver_body_2048.mat",
+     "sha256": "9242fffc7e2b3a90b7b280d9ba6d2724edbfc4b8e7f2d23bcfeaffced7a8b55a",
+     "bytes": 3529
+    },
+    {
+     "path": "Figures/driver/Materials/driver_body_512.mat",
+     "sha256": "ce3523b0895a97acdf55fe18a0129bd82090979566655f1fea28d87b6b4b001c",
+     "bytes": 3461
+    },
+    {
+     "path": "Figures/driver/Textures/driver_body_1024_albedo.jpg",
+     "sha256": "4bfb2191980a0d3e1620f8ab4bd4a7ca02d33d1ecee6cbb2e22ee73ea355271a",
+     "bytes": 196489
+    },
+    {
+     "path": "Figures/driver/Textures/driver_body_1024_normal.jpg",
+     "sha256": "9a64c1f367f1639514837dbc31d8383d01ebdf6212a0b70c8490fb7f4a0b7a69",
+     "bytes": 61288
+    },
+    {
+     "path": "Figures/driver/Textures/driver_body_2048_albedo.jpg",
+     "sha256": "7280f0014d11537b0ea5da752bf86fc662c968854965aba58a9ec1a6fe26d933",
+     "bytes": 547529
+    },
+    {
+     "path": "Figures/driver/Textures/driver_body_2048_normal.jpg",
+     "sha256": "548ee0495739f5d1742386169a06d14d2fc029e711d597851a04e6cf074322d9",
+     "bytes": 211302
+    },
+    {
+     "path": "Figures/driver/Textures/driver_body_512_albedo.jpg",
+     "sha256": "028dac788cd3768ef671af83bc3405bd5f0eec3eecf4195c0431a16429200b75",
+     "bytes": 71545
+    },
+    {
+     "path": "Figures/driver/driver.fbx",
+     "sha256": "36096b8d86dc41a45ffb850ce2082a724d6e8212b8187de171365bbdeeebf1a0",
+     "bytes": 1226748
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb",
+     "sha256": "5addc70d96f40f308c530820b9a080b84b48a4c278925e05772b59e8a8c1fd06"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "variantOf": "d2m",
+   "tint": {
+    "from": 2,
+    "width": 18,
+    "minSat": 0.45,
+    "minVal": 0.3,
+    "shift": 145,
+    "sat": 0.55,
+    "val": 1.0
+   },
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "councillor",
+   "role": "councillor",
+   "label": "Councillor Vale stand-in: commuter D4 with the navy trousers turned deep teal",
+   "standIn": true,
+   "fbx": "Figures/councillor/councillor.fbx",
+   "sha256": "5a76cdb64b1e3fa52edd8d6dc3d75e2244d708a60c7a5a9ba471afc3ebed162e",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.75,
+   "lods": [
+    {
+     "name": "councillor_LOD0",
+     "tris": 8000,
+     "tex": 2048,
+     "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb"
+    },
+    {
+     "name": "councillor_LOD1",
+     "tris": 3000,
+     "tex": 1024,
+     "source": "decimated from LOD0"
+    },
+    {
+     "name": "councillor_LOD2",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "councillor_body_2048",
+     "file": "Figures/councillor/Materials/councillor_body_2048.mat",
+     "size": 2048,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/councillor/Textures/councillor_body_2048_albedo.jpg",
+      "normal": "Figures/councillor/Textures/councillor_body_2048_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "councillor_body_1024",
+     "file": "Figures/councillor/Materials/councillor_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/councillor/Textures/councillor_body_1024_albedo.jpg",
+      "normal": "Figures/councillor/Textures/councillor_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "councillor_body_512",
+     "file": "Figures/councillor/Materials/councillor_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/councillor/Textures/councillor_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); navy turned deep teal",
+   "provenance": [
+    {
+     "file": "citizens/commuters_D4__hunyuan_pro.glb",
+     "entry": null
+    }
+   ],
+   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "files": [
+    {
+     "path": "Figures/councillor/Materials/councillor_body_1024.mat",
+     "sha256": "4b4c13e937cad86a8d4d7d16ff35c2ba9b59c36924e35fdad743d1bbbf5d4ac2",
+     "bytes": 3533
+    },
+    {
+     "path": "Figures/councillor/Materials/councillor_body_2048.mat",
+     "sha256": "180adcf1c5fc3b1753799415c1bb812a61f794beaa19786d67538e3b4b93d359",
+     "bytes": 3533
+    },
+    {
+     "path": "Figures/councillor/Materials/councillor_body_512.mat",
+     "sha256": "e6e1ec3862aeeb070f6bc4ae5519bef5318328d15adad1b6c4bbe9404ebdf67e",
+     "bytes": 3464
+    },
+    {
+     "path": "Figures/councillor/Textures/councillor_body_1024_albedo.jpg",
+     "sha256": "203337df35eaab20e38b23e7e0efc96fb7871af45578b26f7f604df5510d342d",
+     "bytes": 194309
+    },
+    {
+     "path": "Figures/councillor/Textures/councillor_body_1024_normal.jpg",
+     "sha256": "a1b181897a80f96b17fe198a588c51484412a52d93e2fd96c19a0d2bce6ff900",
+     "bytes": 93114
+    },
+    {
+     "path": "Figures/councillor/Textures/councillor_body_2048_albedo.jpg",
+     "sha256": "cd91c89442356ca2e48a81651d9bbf45110ad75fbde6e18647dc1fa31c09479f",
+     "bytes": 541950
+    },
+    {
+     "path": "Figures/councillor/Textures/councillor_body_2048_normal.jpg",
+     "sha256": "da3e4aaedfc6931e01499b5ca74a3f5d4267c90bb9bd9ce565a9bd446b365086",
+     "bytes": 321043
+    },
+    {
+     "path": "Figures/councillor/Textures/councillor_body_512_albedo.jpg",
+     "sha256": "796ddd2c5304cdb56bb162c6a7ad248512f213447df5f3f077d096eea9e9cffb",
+     "bytes": 69112
+    },
+    {
+     "path": "Figures/councillor/councillor.fbx",
+     "sha256": "5a76cdb64b1e3fa52edd8d6dc3d75e2244d708a60c7a5a9ba471afc3ebed162e",
+     "bytes": 1261164
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "sha256": "4d2e5340e9b874fcb4eb7f4bb7c218a0d055b264c2519ad2ec0c3672a6baf425"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "variantOf": "d4",
+   "tint": {
+    "from": 220,
+    "width": 30,
+    "minSat": 0.3,
+    "shift": -35,
+    "sat": 0.9,
+    "val": 0.7
+   },
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "rival",
+   "role": "rival",
+   "label": "Rival crew: worker D5 with the yellow jacket turned dark violet",
+   "standIn": true,
+   "fbx": "Figures/rival/rival.fbx",
+   "sha256": "7af104692a0b111c35e82af665dd9581c2fc5afe12d2d91be005edeb8f324011",
+   "rig": {
+    "type": "humanoid",
+    "bones": 23,
+    "names": "mixamo"
+   },
+   "heightM": 1.751,
+   "lods": [
+    {
+     "name": "rival_LOD0",
+     "tris": 4500,
+     "tex": 1024,
+     "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb"
+    },
+    {
+     "name": "rival_LOD1",
+     "tris": 1500,
+     "tex": 512,
+     "source": "decimated from LOD0"
+    }
+   ],
+   "materials": [
+    {
+     "name": "rival_body_1024",
+     "file": "Figures/rival/Materials/rival_body_1024.mat",
+     "size": 1024,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/rival/Textures/rival_body_1024_albedo.jpg",
+      "normal": "Figures/rival/Textures/rival_body_1024_normal.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    },
+    {
+     "name": "rival_body_512",
+     "file": "Figures/rival/Materials/rival_body_512.mat",
+     "size": 512,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/rival/Textures/rival_body_512_albedo.jpg"
+     },
+     "emissionStrength": 0,
+     "alphaInSource": true
+    }
+   ],
+   "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb (50k, decimated here to 4500 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); yellow turned dark violet",
+   "provenance": [
+    {
+     "file": "citizens/workers_D5__hunyuan_pro.glb",
+     "entry": {
+      "file": "citizens/workers_D5__hunyuan_pro.glb",
+      "model": "tencent:hunyuan-3d@3.1-pro",
+      "settings": {
+       "generateType": "Normal",
+       "pbr": true,
+       "faceCount": 50000
+      },
+      "cost": 0.675,
+      "seconds": 138.0,
+      "bytes": 38067248,
+      "sheet": "model_sheets/workers_D5.png"
+     }
+    }
+   ],
+   "notes": "",
+   "files": [
+    {
+     "path": "Figures/rival/Materials/rival_body_1024.mat",
+     "sha256": "060af8b5b9c0363684f47d95bab1e1e7991cf4ebf90581f1398efaeffb699ca1",
+     "bytes": 3528
+    },
+    {
+     "path": "Figures/rival/Materials/rival_body_512.mat",
+     "sha256": "d9e4597e990a014262384da02403d02a9154b8c56cb2dbfa6b302fefeb04fa2a",
+     "bytes": 3460
+    },
+    {
+     "path": "Figures/rival/Textures/rival_body_1024_albedo.jpg",
+     "sha256": "7e44715ea715d5ddfc88e09d70c56cce5c216a21e28c39cdbe43fc86346b588b",
+     "bytes": 282759
+    },
+    {
+     "path": "Figures/rival/Textures/rival_body_1024_normal.jpg",
+     "sha256": "dfbb0e478897e821608c40cec9dee8653130c66169fc838b1ca1fcc72be8218c",
+     "bytes": 117171
+    },
+    {
+     "path": "Figures/rival/Textures/rival_body_512_albedo.jpg",
+     "sha256": "7501e6c0893b76ef41d1780e068743df7789d68694b386fb38b7a97d9e475259",
+     "bytes": 95210
+    },
+    {
+     "path": "Figures/rival/rival.fbx",
+     "sha256": "7af104692a0b111c35e82af665dd9581c2fc5afe12d2d91be005edeb8f324011",
+     "bytes": 673788
+    }
+   ],
+   "sources": [
+    {
+     "path": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb",
+     "sha256": "0e1ca14775544472ac052bfe2a53f7402ba5ce6c60ee690bb025c57221beffde"
+    },
+    {
+     "path": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+     "sha256": "9a6926a9fe9c7ce795b96b2c128850e355c45b84a46b97f24e0d2db6b12b20c9"
+    }
+   ],
+   "variantOf": "workers_d5",
+   "tint": {
+    "from": 48,
+    "width": 22,
+    "minSat": 0.45,
+    "shift": 235,
+    "sat": 0.8,
+    "val": 0.38
+   },
+   "lodScreenHeights": [
+    0.08,
+    0.012
+   ]
+  }
+ ],
+ "clips": [
+  {
+   "name": "idle",
+   "file": "Clips/idle.fbx",
+   "source": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+   "sha256": "da97a1cb23be5852a76c9a292604f7a900082e14b802d3c56d7ff64d9db9865c",
+   "frames": 264,
+   "fps": 30,
+   "seconds": 8.8,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "standing, any figure (calm, 8.8 s)",
+   "sourceSha256": "da97a1cb23be5852a76c9a292604f7a900082e14b802d3c56d7ff64d9db9865c"
+  },
+  {
+   "name": "idle_alt",
+   "file": "Clips/idle_alt.fbx",
+   "source": "Anim/mixamo_library/Breathing_Idle__c9c6d0d5.fbx",
+   "sha256": "99fcb475a28754e0a13c4a83bda0750bb01ac21c1a7073fac31d872bf2b38ceb",
+   "frames": 299,
+   "fps": 30,
+   "seconds": 9.967,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "second idle so a crowd does not breathe in step",
+   "sourceSha256": "99fcb475a28754e0a13c4a83bda0750bb01ac21c1a7073fac31d872bf2b38ceb"
+  },
+  {
+   "name": "walk",
+   "file": "Clips/walk.fbx",
+   "source": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "sha256": "936efb7ad3929c7a24b936897d25728e3f22332a58f0bbbc1f3d837a024542e5",
+   "frames": 36,
+   "fps": 30,
+   "seconds": 1.2,
+   "loop": true,
+   "naturalSpeedMs": 1.29,
+   "use": "walk, any figure",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "936efb7ad3929c7a24b936897d25728e3f22332a58f0bbbc1f3d837a024542e5"
+  },
+  {
+   "name": "walk_f",
+   "file": "Clips/walk_f.fbx",
+   "source": "Anim/mixamo_library/Female_Tough_Walk__c9c68eaa.fbx",
+   "sha256": "ac8f3326c4b02faf5fb75bf2b1dc7ec4e9dcf51efa3f954378d70d566dae449c",
+   "frames": 39,
+   "fps": 30,
+   "seconds": 1.3,
+   "loop": true,
+   "naturalSpeedMs": 0.99,
+   "use": "walk, women (crowd, staff): a tough strut with a full arm swing (Female_Walk swings the arms half as far)",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "ac8f3326c4b02faf5fb75bf2b1dc7ec4e9dcf51efa3f954378d70d566dae449c"
+  },
+  {
+   "name": "walk_old",
+   "file": "Clips/walk_old.fbx",
+   "source": "Anim/mixamo_library/Old_Man_Walk__c9c6c0c2.fbx",
+   "sha256": "fd6b1369a3f2f57db165c277ebbf55c96d44ec66abfe71db419a91557d29f7c5",
+   "frames": 39,
+   "fps": 30,
+   "seconds": 1.3,
+   "loop": true,
+   "naturalSpeedMs": 0.41,
+   "use": "walk, elders",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "fd6b1369a3f2f57db165c277ebbf55c96d44ec66abfe71db419a91557d29f7c5"
+  },
+  {
+   "name": "run",
+   "file": "Clips/run.fbx",
+   "source": "Anim/mixamo_library/Running__c9c610bc.fbx",
+   "sha256": "022e1adba12735baa2493d4885a092acad69af59212b2f293127e38ff47e5bd8",
+   "frames": 26,
+   "fps": 30,
+   "seconds": 0.867,
+   "loop": true,
+   "naturalSpeedMs": 2.52,
+   "use": "run (double-click, panic run)",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "022e1adba12735baa2493d4885a092acad69af59212b2f293127e38ff47e5bd8"
+  },
+  {
+   "name": "walk_armed",
+   "file": "Clips/walk_armed.fbx",
+   "source": "Anim/mixamo_library/Pistol_Walk__c9cdb8f0.fbx",
+   "sha256": "f6b52e8b89dfc263390ec2914f723337c733d448dd937e99adbc83c8103f4fd8",
+   "frames": 25,
+   "fps": 30,
+   "seconds": 0.833,
+   "loop": true,
+   "naturalSpeedMs": 2.44,
+   "use": "walk with a weapon drawn",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "f6b52e8b89dfc263390ec2914f723337c733d448dd937e99adbc83c8103f4fd8"
+  },
+  {
+   "name": "run_armed",
+   "file": "Clips/run_armed.fbx",
+   "source": "Anim/mixamo_library/Pistol_Run__c9c9b1f3.fbx",
+   "sha256": "d04bbb5f424b409eddf81fda64302bccb401c4182d1a6a57f92fbfdab2edbae4",
+   "frames": 23,
+   "fps": 30,
+   "seconds": 0.767,
+   "loop": true,
+   "naturalSpeedMs": 3.11,
+   "use": "run with a weapon drawn",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "d04bbb5f424b409eddf81fda64302bccb401c4182d1a6a57f92fbfdab2edbae4"
+  },
+  {
+   "name": "aim",
+   "file": "Clips/aim.fbx",
+   "source": "Anim/mixamo_library/Idle_Aiming__c9cea19a.fbx",
+   "sha256": "a4f846e3102fdf4429b3cb968ba96f42d56f68619a42eb725abbb413763d68ac",
+   "frames": 64,
+   "fps": 30,
+   "seconds": 2.133,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "weapon up, holding",
+   "sourceSha256": "a4f846e3102fdf4429b3cb968ba96f42d56f68619a42eb725abbb413763d68ac"
+  },
+  {
+   "name": "aim_pistol",
+   "file": "Clips/aim_pistol.fbx",
+   "source": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "sha256": "50280ffb3bab0b8cadbdbbd6d298aceb4424c0fe6e924361d3b9c071b18b79ea",
+   "frames": 214,
+   "fps": 30,
+   "seconds": 7.133,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "pistol up, holding",
+   "sourceSha256": "50280ffb3bab0b8cadbdbbd6d298aceb4424c0fe6e924361d3b9c071b18b79ea"
+  },
+  {
+   "name": "shoot",
+   "file": "Clips/shoot.fbx",
+   "source": "Anim/mixamo_library/Firing_Rifle__c9c9245d.fbx",
+   "sha256": "87ccd2e45f138225d92398a0aa3ae22254d4bf1be67801559b046f8332621bb8",
+   "frames": 18,
+   "fps": 30,
+   "seconds": 0.6,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "one shot with recoil (0.6 s)",
+   "sourceSha256": "87ccd2e45f138225d92398a0aa3ae22254d4bf1be67801559b046f8332621bb8"
+  },
+  {
+   "name": "draw",
+   "file": "Clips/draw.fbx",
+   "source": "Anim/mixamo_library/Drawing_Gun__c9c83441.fbx",
+   "sha256": "e24d74f8931b1ef53955050061e0919a52dcf3ba9ab3d7d2a9bcf058124a4c54",
+   "frames": 61,
+   "fps": 30,
+   "seconds": 2.033,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "draw a weapon",
+   "sourceSha256": "e24d74f8931b1ef53955050061e0919a52dcf3ba9ab3d7d2a9bcf058124a4c54"
+  },
+  {
+   "name": "melee",
+   "file": "Clips/melee.fbx",
+   "source": "Anim/mixamo_library/Jab_Cross__c9cae414.fbx",
+   "sha256": "102f98acfe9a5d534e1cd077668e6ec62bf9becf1ec4c3aadf0b37969abc67e6",
+   "frames": 68,
+   "fps": 30,
+   "seconds": 2.267,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "strike: jab and cross",
+   "sourceSha256": "102f98acfe9a5d534e1cd077668e6ec62bf9becf1ec4c3aadf0b37969abc67e6"
+  },
+  {
+   "name": "melee_whip",
+   "file": "Clips/melee_whip.fbx",
+   "source": "Anim/mixamo_library/Pistol_Whip__c9c890a6.fbx",
+   "sha256": "8880a0b4704f83e3588dcf61634c3baf3f88d69354c63ea87c54b9bc454b7b24",
+   "frames": 78,
+   "fps": 30,
+   "seconds": 2.6,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "strike: pistol whip",
+   "sourceSha256": "8880a0b4704f83e3588dcf61634c3baf3f88d69354c63ea87c54b9bc454b7b24"
+  },
+  {
+   "name": "hit",
+   "file": "Clips/hit.fbx",
+   "source": "Anim/mixamo_library/Standing_React_Small_From_Front__c9cebe15.fbx",
+   "sha256": "9af87cf68a893428bdc69e75d3382e39b113b775b3c2e4eb3af7d204411d6b97",
+   "frames": 39,
+   "fps": 30,
+   "seconds": 1.3,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "hit reaction, small",
+   "sourceSha256": "9af87cf68a893428bdc69e75d3382e39b113b775b3c2e4eb3af7d204411d6b97"
+  },
+  {
+   "name": "hit_large",
+   "file": "Clips/hit_large.fbx",
+   "source": "Anim/mixamo_library/Standing_React_Large_From_Front__314b7218.fbx",
+   "sha256": "e8368f715d68701a569ca3e08f92429f44cf991180305510104c0c4ea33cc215",
+   "frames": 31,
+   "fps": 30,
+   "seconds": 1.033,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "hit reaction, large (staggers)",
+   "sourceSha256": "e8368f715d68701a569ca3e08f92429f44cf991180305510104c0c4ea33cc215"
+  },
+  {
+   "name": "panic",
+   "file": "Clips/panic.fbx",
+   "source": "Anim/mixamo_library/Scared__c9c77b46.fbx",
+   "sha256": "7a5d2540d7f26804df72959db116b5bdd4279476dbc0c1bb23aa02a2a54fe170",
+   "frames": 303,
+   "fps": 30,
+   "seconds": 10.1,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "startled or panicking on the spot",
+   "sourceSha256": "7a5d2540d7f26804df72959db116b5bdd4279476dbc0c1bb23aa02a2a54fe170"
+  },
+  {
+   "name": "cower",
+   "file": "Clips/cower.fbx",
+   "source": "Anim/mixamo_library/Ducking__c9c8de59.fbx",
+   "sha256": "5951a754d8d21ffbf95ab4ff619699f5f237a08f4bfad5ff9c43a8d2062720b0",
+   "frames": 47,
+   "fps": 30,
+   "seconds": 1.567,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "duck and cover (1.5 s); hold the last frame",
+   "sourceSha256": "5951a754d8d21ffbf95ab4ff619699f5f237a08f4bfad5ff9c43a8d2062720b0"
+  },
+  {
+   "name": "crouch",
+   "file": "Clips/crouch.fbx",
+   "source": "Anim/mixamo_library/Crouch_Idle__c9cecb5b.fbx",
+   "sha256": "a5c5427b007fa7c106841fe4d94c8775b8dde1a271162f3af155ebd611f3440f",
+   "frames": 51,
+   "fps": 30,
+   "seconds": 1.7,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "crouch stance, holding",
+   "sourceSha256": "a5c5427b007fa7c106841fe4d94c8775b8dde1a271162f3af155ebd611f3440f"
+  },
+  {
+   "name": "crouch_walk",
+   "file": "Clips/crouch_walk.fbx",
+   "source": "Anim/mixamo_library/Crouched_Walking__c9c616aa.fbx",
+   "sha256": "85a693ffd0b9cea0963c8a29e6daf5fdd6efae534979ab977954603aa694fa2d",
+   "frames": 52,
+   "fps": 30,
+   "seconds": 1.733,
+   "loop": true,
+   "naturalSpeedMs": 0.85,
+   "use": "crouch stance, moving",
+   "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "85a693ffd0b9cea0963c8a29e6daf5fdd6efae534979ab977954603aa694fa2d"
+  },
+  {
+   "name": "stunned",
+   "file": "Clips/stunned.fbx",
+   "source": "Anim/mixamo_library/Stunned__c9ca7f74.fbx",
+   "sha256": "1b45df35dca32c78b34d8d2e0f4affc24495f04b761e70da01a1c2241509a40a",
+   "frames": 65,
+   "fps": 30,
+   "seconds": 2.167,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "stunned, staggers and drops",
+   "sourceSha256": "1b45df35dca32c78b34d8d2e0f4affc24495f04b761e70da01a1c2241509a40a"
+  },
+  {
+   "name": "knockout",
+   "file": "Clips/knockout.fbx",
+   "source": "Anim/mixamo_library/Knocked_Out__c9c7216e.fbx",
+   "sha256": "47961489b6db0bec8f875bffb3061480a0614e31b514baa9171c0e01e5274e2c",
+   "frames": 169,
+   "fps": 30,
+   "seconds": 5.633,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "knocked out: the victim goes down and ends lying (5.6 s)",
+   "sourceSha256": "47961489b6db0bec8f875bffb3061480a0614e31b514baa9171c0e01e5274e2c"
+  },
+  {
+   "name": "knockout_alt",
+   "file": "Clips/knockout_alt.fbx",
+   "source": "Anim/mixamo_library/Knocked_Out__c9c725f7.fbx",
+   "sha256": "c5c16854c9cc119717277809c83e8fddc7d643796782f7152abcaae8a613d41d",
+   "frames": 149,
+   "fps": 30,
+   "seconds": 4.967,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "knocked out, second variant (5 s)",
+   "sourceSha256": "c5c16854c9cc119717277809c83e8fddc7d643796782f7152abcaae8a613d41d"
+  },
+  {
+   "name": "kill_victim",
+   "file": "Clips/kill_victim.fbx",
+   "source": "Anim/mixamo_library/Dying__c9c62bc7.fbx",
+   "sha256": "3111984032b9f0a2ccfacdec599ec3e843541e2af528299b47df9050878a6641",
+   "frames": 133,
+   "fps": 30,
+   "seconds": 4.433,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "killed: falls and ends lying (4.4 s)",
+   "sourceSha256": "3111984032b9f0a2ccfacdec599ec3e843541e2af528299b47df9050878a6641"
+  },
+  {
+   "name": "kill_victim_back",
+   "file": "Clips/kill_victim_back.fbx",
+   "source": "Anim/mixamo_library/Standing_React_Death_Backward__e13a58d8.fbx",
+   "sha256": "9ca8d0ba3b1aeb37d736bfd82760806d5d0f9e8cc062de04053e64488fdd54e3",
+   "frames": 110,
+   "fps": 30,
+   "seconds": 3.667,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "killed from the front: falls backward (3.7 s)",
+   "sourceSha256": "9ca8d0ba3b1aeb37d736bfd82760806d5d0f9e8cc062de04053e64488fdd54e3"
+  },
+  {
+   "name": "kill_attacker",
+   "file": "Clips/kill_attacker.fbx",
+   "source": "Anim/mixamo_library/Brutal_Assassination__c9cd2609.fbx",
+   "sha256": "6b57f84e71220b35d0bd4503a06a43b95a3e117d8521ed0c50b25bd83f51452f",
+   "frames": 149,
+   "fps": 30,
+   "seconds": 4.967,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "the Enforcer kills (5 s); pairs with kill_victim by eye, not by sync",
+   "sourceSha256": "6b57f84e71220b35d0bd4503a06a43b95a3e117d8521ed0c50b25bd83f51452f"
+  },
+  {
+   "name": "struggle",
+   "file": "Clips/struggle.fbx",
+   "source": "Anim/mixamo_library/Hold_Off_Assailant__c9c95818.fbx",
+   "sha256": "efc2728c61061503a4f6181a57e28f09cf1c14f40abeee0ad4162f31f23552b4",
+   "frames": 144,
+   "fps": 30,
+   "seconds": 4.8,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "held and struggling (arms up)",
+   "sourceSha256": "efc2728c61061503a4f6181a57e28f09cf1c14f40abeee0ad4162f31f23552b4"
+  },
+  {
+   "name": "struggle_strangled",
+   "file": "Clips/struggle_strangled.fbx",
+   "source": "Anim/mixamo_library/Being_Strangled__c9c9e5e8.fbx",
+   "sha256": "bf0af33ef53856c68d104bbe28c9d903d8e1256f5e53dc727f3e4cd4aef882b0",
+   "frames": 529,
+   "fps": 30,
+   "seconds": 17.633,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "being choked, goes limp (17 s)",
+   "sourceSha256": "bf0af33ef53856c68d104bbe28c9d903d8e1256f5e53dc727f3e4cd4aef882b0"
+  },
+  {
+   "name": "carry",
+   "file": "Clips/carry.fbx",
+   "source": "Anim/mixamo_library/Carrying__c9c82dfa.fbx",
+   "sha256": "545de621c37426999235dfc0d9c49de6fe013c9a23f1a45bb978e936124336a6",
+   "frames": 301,
+   "fps": 30,
+   "seconds": 10.033,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "the carrier holds a load",
+   "sourceSha256": "545de621c37426999235dfc0d9c49de6fe013c9a23f1a45bb978e936124336a6"
+  },
+  {
+   "name": "carried",
+   "file": "Clips/carried.fbx",
+   "source": "Anim/mixamo_library/Laying_Idle__c9ccd767.fbx",
+   "sha256": "3fa78bcb3f2ded739c65736322bd139cc1a59950b5b89321fd4024d3f0d83280",
+   "frames": 376,
+   "fps": 30,
+   "seconds": 12.533,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "the carried body, limp and flat: the figure is placed at the carrier's shoulder (hips about 0.13 m above the object; no library clip drapes a body over a shoulder: Being_Carried is a pick-up sequence that climbs from the ground to 1.4 m)",
+   "sourceSha256": "3fa78bcb3f2ded739c65736322bd139cc1a59950b5b89321fd4024d3f0d83280"
+  },
+  {
+   "name": "lying",
+   "file": "Clips/lying.fbx",
+   "source": "Anim/mixamo_library/Laying_Idle__c9ccd767.fbx",
+   "sha256": "3fa78bcb3f2ded739c65736322bd139cc1a59950b5b89321fd4024d3f0d83280",
+   "frames": 376,
+   "fps": 30,
+   "seconds": 12.533,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "a body lying, breathing",
+   "sourceSha256": "3fa78bcb3f2ded739c65736322bd139cc1a59950b5b89321fd4024d3f0d83280"
+  },
+  {
+   "name": "restrained",
+   "file": "Clips/restrained.fbx",
+   "source": "Anim/mixamo_library/Hostage_Situation_Idle_Hostage__c9cd0d5d.fbx",
+   "sha256": "c16e94eee565ecbe22ca0e5cbfd1ee96b17d722d1e61785a23e4f37af4d62606",
+   "frames": 151,
+   "fps": 30,
+   "seconds": 5.033,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "restrained: hostage, hands up and in",
+   "sourceSha256": "c16e94eee565ecbe22ca0e5cbfd1ee96b17d722d1e61785a23e4f37af4d62606"
+  },
+  {
+   "name": "captor",
+   "file": "Clips/captor.fbx",
+   "source": "Anim/mixamo_library/Hostage_Situation_Idle_Villain__c9cd0c9e.fbx",
+   "sha256": "507def7c1c05d301b832feb442a20efac989e09dfbdd65029fd1fbc05d07f0c7",
+   "frames": 151,
+   "fps": 30,
+   "seconds": 5.033,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "holds a restrained person",
+   "sourceSha256": "507def7c1c05d301b832feb442a20efac989e09dfbdd65029fd1fbc05d07f0c7"
+  },
+  {
+   "name": "phone",
+   "file": "Clips/phone.fbx",
+   "source": "Anim/mixamo_library/Talking_On_Phone__c9c9f63d.fbx",
+   "sha256": "863667592803f65d93ee07d3264a729dc20a3a24b278593533519149c71ed305",
+   "frames": 1166,
+   "fps": 30,
+   "seconds": 38.867,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "on the phone (a witness reporting)",
+   "sourceSha256": "863667592803f65d93ee07d3264a729dc20a3a24b278593533519149c71ed305"
+  },
+  {
+   "name": "look_around",
+   "file": "Clips/look_around.fbx",
+   "source": "Anim/mixamo_library/Looking_Around__c9c6cdf7.fbx",
+   "sha256": "d462aa588f514d63374fe820da05da3b272c4296f1854dd0b8e2b391de652424",
+   "frames": 191,
+   "fps": 30,
+   "seconds": 6.367,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "watching, looking about (Scout, guard)",
+   "sourceSha256": "d462aa588f514d63374fe820da05da3b272c4296f1854dd0b8e2b391de652424"
+  },
+  {
+   "name": "talk",
+   "file": "Clips/talk.fbx",
+   "source": "Anim/mixamo_library/Talking__c9c6de72.fbx",
+   "sha256": "3510fa906ac2687d5e44b9d9ebec26fa0ecb54992b41337de6ba78c4ccda3a0e",
+   "frames": 156,
+   "fps": 30,
+   "seconds": 5.2,
+   "loop": true,
+   "naturalSpeedMs": null,
+   "use": "talking, hand on hip (Fixer, Inez)",
+   "sourceSha256": "3510fa906ac2687d5e44b9d9ebec26fa0ecb54992b41337de6ba78c4ccda3a0e"
+  },
+  {
+   "name": "point",
+   "file": "Clips/point.fbx",
+   "source": "Anim/mixamo_library/Pointing__c9c693bf.fbx",
+   "sha256": "705e7d341050566ca6b08be1bbb5cb904dfe6a2615833dc5298ba67ce0464ad2",
+   "frames": 109,
+   "fps": 30,
+   "seconds": 3.633,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "pointing",
+   "sourceSha256": "705e7d341050566ca6b08be1bbb5cb904dfe6a2615833dc5298ba67ce0464ad2"
+  },
+  {
+   "name": "beckon",
+   "file": "Clips/beckon.fbx",
+   "source": "Anim/mixamo_library/Beckoning__c9c795b6.fbx",
+   "sha256": "282c6a3214e589bbb2c6b183679911c0e67d6590342bcb85e7e6b9c068485e1f",
+   "frames": 79,
+   "fps": 30,
+   "seconds": 2.633,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "beckon (come with me)",
+   "sourceSha256": "282c6a3214e589bbb2c6b183679911c0e67d6590342bcb85e7e6b9c068485e1f"
+  },
+  {
+   "name": "search",
+   "file": "Clips/search.fbx",
+   "source": "Anim/mixamo_library/Searching_Pockets__c9c965bb.fbx",
+   "sha256": "27bea3df6e22bc04e18139a0afda32f03eaeeec7d7c8f238fb507fd3c24055b0",
+   "frames": 151,
+   "fps": 30,
+   "seconds": 5.033,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "frisk or search pockets",
+   "sourceSha256": "27bea3df6e22bc04e18139a0afda32f03eaeeec7d7c8f238fb507fd3c24055b0"
+  },
+  {
+   "name": "pickup",
+   "file": "Clips/pickup.fbx",
+   "source": "Anim/mixamo_library/Picking_Up__c9c6d7aa.fbx",
+   "sha256": "0038158381dfbbaf219093a0fc7559af62fe25526e5d214d44ae4322a6762bac",
+   "frames": 288,
+   "fps": 30,
+   "seconds": 9.6,
+   "loop": false,
+   "naturalSpeedMs": null,
+   "use": "bend and pick something up",
+   "sourceSha256": "0038158381dfbbaf219093a0fc7559af62fe25526e5d214d44ae4322a6762bac"
+  }
+ ]
+}

@@ -200,6 +200,7 @@ export function inset(plan: Plan, d: Derived, civ: Civic, R: Report) {
     + civ.structures.map(x => P.poly(x.poly, 'struct')).join('')
     + civ.objects.map(o => o.kind === 'fountain' ? P.circle(centroid(o.poly), 3.3, 'fountain') : P.poly(o.poly, `obj ${o.kind}`)).join('')
     + civ.bays.map(b => P.poly(b.poly, 'bay')).join('')
+    + (civ.drives ?? []).map(x => P.poly(x.poly, 'bay')).join('') // a drive is drawn as the bay it reaches (brief 023)
     + crossingLights(P, civ.crossing)
     + civ.buildings.map(b => P.text(add(centroid(b.poly), [0, -1]), b.id === 'cafe' ? 'CAFÉ' : 'RECORDS OFFICE', 'bldg-lab', [1, 0], 2.6)).join(''));
   const pts = civ.walkFrom.filter((p, i, A) => A.findIndex(q => dist(q.p, p.p) < .3) === i);

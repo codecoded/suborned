@@ -185,7 +185,7 @@ namespace Suborned.Play
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
+            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{s}", Mathf.Max(1, ServingBackS(o.Target)).ToString()).Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
             // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;
@@ -196,9 +196,17 @@ namespace Suborned.Play
         string TargetKindOf(string target)
         {
             if (string.IsNullOrEmpty(target)) return null;
+            if (ServingBackS(target) > 0) return "serving"; // brief 022 (Fable): a server out at a table
             if (target == "patrol" || target.StartsWith("camera:") || target.StartsWith("camera/") || target.Contains("robot")) return "machine";
             foreach (var p in Pickables()) if (p.T.Kind == "camera" && p.T.Key == target) return "machine";
             return null;
+        }
+
+        /// <summary>Brief 022: seconds until a server out on her round is back at her post (RoundNext), or -1 when she is there or has no round.</summary>
+        public int ServingBackS(string target)
+        {
+            if (Game == null || string.IsNullOrEmpty(target)) return -1; Person p = null; foreach (var x in Game.People) if (x.Role == target) { p = x; break; } if (p == null) return -1; // any target: a camera ("entrance"), the patrol, a crowd id (PersonByRole throws on those)
+            int n = -1; Guard("round next", () => n = Game.RoundNext(p)); return n > 0 ? Mathf.CeilToInt(n / (float)Game.Hz) : -1;
         }
 
         /// <summary>A pop the host builds itself (less.pop by key), with its long line kept for Alt.</summary>

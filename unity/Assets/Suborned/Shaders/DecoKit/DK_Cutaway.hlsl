@@ -29,8 +29,11 @@ float4 _DKCutBack;   // x how far beyond the focus along the view the cut reache
 // point, the key people): each keeps its own disc clear, by the same rule as the focus, at its own level. xyz the point (world), w its
 // disc radius (m). Always DK_CUT_POINTS long (ArchitectureFade.MaxPoints); the first _DKCutBack.w are used. Each point's floor
 // stands as far above it as the focus's floor stands above the focus.
+// Brief 020 (Glyph: no screen door over a person): a point with a negative radius is a person's disc, cut clean rather than to the ghost,
+// with its own narrow feather: _DKCutClean.x what stays there (0 at full fade), .y its feather (m). The shadow map keeps the ghost shadow.
 #define DK_CUT_POINTS 10
 float4 _DKCutPoints[DK_CUT_POINTS];
+float4 _DKCutClean;
 
 float DKBayer4(float2 px)
 {
@@ -48,14 +51,14 @@ float DKSegmentDistance(float2 c, float2 a, float2 b)
 
 // How much of the fragment at world position p stays (1 = all of it) for one disc: round `focus`, radius `radius`, nothing at or below
 // floorY cut, nothing more than `back` beyond the focus along the view cut.
-float DKCutDisc(float3 p, float3 focus, float radius, float floorY, float ghost)
+float DKCutDisc(float3 p, float3 focus, float radius, float floorY, float ghost, float featherM)
 {
     if (p.y <= floorY) return 1.0;
     float2 k = _DKCutView.xz / max(-_DKCutView.y, 1e-3);  // ground run of the view ray per metre it drops
     float2 hit = p.xz + k * (p.y - focus.y);
     float d = _DKCutShape.z > .5 ? DKSegmentDistance(focus.xz, p.xz + k * (floorY - focus.y), hit)
                                  : length(hit - focus.xz);
-    float feather = max(_DKCutShape.x, 1e-3);
+    float feather = max(featherM, 1e-3);
     float outside = saturate((d - (radius - feather)) / feather);
     float2 ahead = _DKCutView.xz / max(length(_DKCutView.xz), 1e-3);  // the view on the ground
     float beyond = saturate((dot(p.xz - focus.xz, ahead) - _DKCutBack.x) / max(_DKCutBack.y, 1e-3) + 1.0);
@@ -64,20 +67,21 @@ float DKCutDisc(float3 p, float3 focus, float radius, float floorY, float ghost)
 
 // How much of the fragment at world position p stays (1 = all of it) when the faded part keeps `ghost`: the least of the focus disc's
 // and every point's.
-float DKCutKeepAt(float3 p, float ghost)
+float DKCutKeepAt(float3 p, float ghost, float clean)
 {
-    float keep = DKCutDisc(p, _DKCutFocus.xyz, _DKCutFocus.w, _DKCutView.w, ghost);
+    float keep = DKCutDisc(p, _DKCutFocus.xyz, _DKCutFocus.w, _DKCutView.w, ghost, _DKCutShape.x);
     float rise = _DKCutView.w - _DKCutFocus.y;
     int n = min((int)_DKCutBack.w, DK_CUT_POINTS);
     for (int i = 0; i < n; i++)
     {
         float4 q = _DKCutPoints[i];
-        keep = min(keep, DKCutDisc(p, q.xyz, q.w, q.y + rise, ghost));
+        bool person = q.w < 0.0;
+        keep = min(keep, DKCutDisc(p, q.xyz, abs(q.w), q.y + rise, person ? clean : ghost, person ? _DKCutClean.y : _DKCutShape.x));
     }
     return keep;
 }
 
-float DKCutKeep(float3 p) { return DKCutKeepAt(p, _DKCutShape.y); }
+float DKCutKeep(float3 p) { return DKCutKeepAt(p, _DKCutShape.y, _DKCutClean.x); }
 
 bool DKCutOn() { return _DKCutFocus.w > 0.0 && (GetMeshRenderingLayer() & DK_CUT_LAYER) != 0u; }
 
@@ -165,7 +169,7 @@ half4 DKShadowPassFragment(DKShadowVaryings input) : SV_TARGET
 {
     UNITY_SETUP_INSTANCE_ID(input);
 #if defined(_DK_CUT)
-    if (_DKCutShape.w > .5 && DKCutOn()) clip(DKCutKeepAt(input.positionWS, _DKCutBack.z) - DKBayer4(input.positionCS.xy));
+    if (_DKCutShape.w > .5 && DKCutOn()) clip(DKCutKeepAt(input.positionWS, _DKCutBack.z, _DKCutBack.z) - DKBayer4(input.positionCS.xy));
 #endif
     Varyings v = (Varyings)0;
     UNITY_TRANSFER_INSTANCE_ID(input, v);

@@ -34,8 +34,8 @@
    "building": "civic-office",
    "name": "Office entrance",
    "kind": "public",
-   "at": [5175,-3000],
-   "stand": [5175,-2975]
+   "at": [6400,-4125],
+   "stand": [6425,-4125]
   },
   {
    "id": "official-entrance",
@@ -58,8 +58,8 @@
    "building": "civic-office",
    "name": "Office service door",
    "kind": "service",
-   "at": [6300,-4110],
-   "stand": [6325,-4125]
+   "at": [6250,-1890],
+   "stand": [6275,-1875]
   }
  ],
  "stashes": [
@@ -77,8 +77,8 @@
    "id": "stash/office-service-door/door",
    "kind": "door",
    "of": "office-service-door",
-   "at": [6300,-4110],
-   "stand": [6325,-4125],
+   "at": [6250,-1890],
+   "stand": [6275,-1875],
    "holds": 3,
    "src": "civic-block.json entrance with kind service: a body put through it is a timed off-screen action (Motive 013 §2.4, 10 s)"
   },
@@ -86,8 +86,8 @@
    "id": "stash/office-service-door/container",
    "kind": "container",
    "of": "office-service-door",
-   "at": [6035,-4119],
-   "stand": [6025,-4275],
+   "at": [5985,-1881],
+   "stand": [5975,-1725],
    "holds": 1,
    "item": "street/civic/stash/office-service-door",
    "src": "a street item whose kit piece is tagged stash in kit.json (Dumpster, holds 1): a body put in it is a carry on the street (Motive 013 §2.4, 5 s)"
@@ -104,8 +104,8 @@
   {
    "id": "door:office-entrance",
    "kind": "door",
-   "at": [5175,-3000],
-   "stand": [5175,-2975],
+   "at": [6400,-4125],
+   "stand": [6425,-4125],
    "door": "office-entrance"
   },
   {
@@ -126,14 +126,14 @@
    "id": "street/rocket-west/e1/phone-booth-548",
    "kind": "call-box",
    "at": [11100,-6300],
-   "stand": [11075,-6175],
+   "stand": [11125,-6275],
    "item": "street/rocket-west/e1/phone-booth-548"
   },
   {
    "id": "street/civic/call-box-0",
    "kind": "call-box",
-   "at": [3000,-600],
-   "stand": [3025,-575],
+   "at": [3000,-1400],
+   "stand": [3025,-1375],
    "item": "street/civic/call-box-0"
   },
   {
@@ -146,16 +146,30 @@
   {
    "id": "street/civic/call-box-2",
    "kind": "call-box",
-   "at": [3000,-5600],
-   "stand": [3025,-5575],
+   "at": [-200,-4900],
+   "stand": [-175,-4875],
    "item": "street/civic/call-box-2"
   },
   {
    "id": "street/civic/call-box-3",
    "kind": "call-box",
-   "at": [-2500,-400],
-   "stand": [-2475,-375],
+   "at": [-2500,1400],
+   "stand": [-2475,1425],
    "item": "street/civic/call-box-3"
+  },
+  {
+   "id": "street/civic/call-box-4",
+   "kind": "call-box",
+   "at": [-2500,-4400],
+   "stand": [-2475,-4375],
+   "item": "street/civic/call-box-4"
+  },
+  {
+   "id": "street/civic/call-box-5",
+   "kind": "call-box",
+   "at": [5000,-4900],
+   "stand": [5025,-4875],
+   "item": "street/civic/call-box-5"
   }
  ],
  "origins": [
@@ -169,8 +183,8 @@
   {
    "id": "door:office-entrance",
    "kind": "post",
-   "at": [5175,-3000],
-   "stand": [5175,-2975],
+   "at": [6400,-4125],
+   "stand": [6425,-4125],
    "door": "office-entrance"
   },
   {
@@ -183,106 +197,140 @@
   {
    "id": "street/civic/police-post-0",
    "kind": "post",
-   "at": [-200,-4900],
-   "stand": [-175,-4875],
+   "at": [3000,-2200],
+   "stand": [3025,-2175],
    "item": "street/civic/police-post-0"
   },
   {
    "id": "street/civic/police-post-1",
    "kind": "post",
-   "at": [7900,600],
-   "stand": [7925,625],
+   "at": [7900,-200],
+   "stand": [7925,-175],
    "item": "street/civic/police-post-1"
   },
   {
    "id": "street/civic/police-post-2",
    "kind": "post",
-   "at": [3000,-2000],
-   "stand": [3025,-1975],
+   "at": [-2500,-3400],
+   "stand": [-2475,-3375],
    "item": "street/civic/police-post-2"
   },
   {
    "id": "street/civic/police-post-3",
    "kind": "post",
-   "at": [11000,-4900],
-   "stand": [11025,-4875],
+   "at": [3000,-4400],
+   "stand": [3025,-4375],
    "item": "street/civic/police-post-3"
   },
   {
    "id": "street/civic/police-post-4",
    "kind": "post",
-   "at": [-2500,-1200],
-   "stand": [-2475,-1175],
+   "at": [10200,-4900],
+   "stand": [10225,-4875],
    "item": "street/civic/police-post-4"
+  },
+  {
+   "id": "street/civic/police-post-5",
+   "kind": "post",
+   "at": [-1200,500],
+   "stand": [-1175,525],
+   "item": "street/civic/police-post-5"
+  },
+  {
+   "id": "street/civic/police-post-6",
+   "kind": "post",
+   "at": [4500,-200],
+   "stand": [4525,-175],
+   "item": "street/civic/police-post-6"
   }
  ],
  "coverage": {
   "report": {
-   "samples": 2480,
+   "samples": 2856,
    "worstM": 39.8,
-   "medianM": 18.4,
+   "medianM": 17.6,
    "within": 1000,
-   "baselineWithin": 808,
-   "baselineWorstM": 59
+   "baselineWithin": 652,
+   "baselineWorstM": 67.2
   },
   "origin": {
-   "samples": 2480,
+   "samples": 2856,
    "worstM": 39.8,
-   "medianM": 19.4,
+   "medianM": 17,
    "within": 1000,
-   "baselineWithin": 773,
-   "baselineWorstM": 59
+   "baselineWithin": 636,
+   "baselineWorstM": 68
   }
  },
  "solids": [
   {
    "id": "street/civic/call-box-0",
-   "poly": [[2950,-550],[2950,-650],[3050,-650],[3050,-550]],
+   "poly": [[3050,-1450],[3050,-1350],[2950,-1350],[2950,-1450]],
    "h": 250
   },
   {
    "id": "street/civic/call-box-1",
-   "poly": [[-2450,-2650],[-2450,-2550],[-2550,-2550],[-2550,-2650]],
+   "poly": [[-2550,-2550],[-2550,-2650],[-2450,-2650],[-2450,-2550]],
    "h": 250
   },
   {
    "id": "street/civic/call-box-2",
-   "poly": [[2950,-5550],[2950,-5650],[3050,-5650],[3050,-5550]],
+   "poly": [[-250,-4950],[-150,-4950],[-150,-4850],[-250,-4850]],
    "h": 250
   },
   {
    "id": "street/civic/call-box-3",
-   "poly": [[-2450,-450],[-2450,-350],[-2550,-350],[-2550,-450]],
+   "poly": [[-2550,1450],[-2550,1350],[-2450,1350],[-2450,1450]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/call-box-4",
+   "poly": [[-2550,-4350],[-2550,-4450],[-2450,-4450],[-2450,-4350]],
+   "h": 250
+  },
+  {
+   "id": "street/civic/call-box-5",
+   "poly": [[4950,-4950],[5050,-4950],[5050,-4850],[4950,-4850]],
    "h": 250
   },
   {
    "id": "street/civic/police-post-0",
-   "poly": [[-150,-4850],[-250,-4850],[-250,-4950],[-150,-4950]],
+   "poly": [[3050,-2250],[3050,-2150],[2950,-2150],[2950,-2250]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-1",
-   "poly": [[7850,650],[7850,550],[7950,550],[7950,650]],
+   "poly": [[7950,-250],[7950,-150],[7850,-150],[7850,-250]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-2",
-   "poly": [[2950,-1950],[2950,-2050],[3050,-2050],[3050,-1950]],
+   "poly": [[-2550,-3350],[-2550,-3450],[-2450,-3450],[-2450,-3350]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-3",
-   "poly": [[11050,-4850],[10950,-4850],[10950,-4950],[11050,-4950]],
+   "poly": [[3050,-4450],[3050,-4350],[2950,-4350],[2950,-4450]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-4",
-   "poly": [[-2450,-1250],[-2450,-1150],[-2550,-1150],[-2550,-1250]],
+   "poly": [[10150,-4950],[10250,-4950],[10250,-4850],[10150,-4850]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-5",
+   "poly": [[-1250,450],[-1150,450],[-1150,550],[-1250,550]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-6",
+   "poly": [[4450,-150],[4450,-250],[4550,-250],[4550,-150]],
    "h": 280
   },
   {
    "id": "street/civic/stash/office-service-door",
-   "poly": [[6140,-4060],[5930,-4060],[5930,-4179],[6140,-4179]],
+   "poly": [[5880,-1940],[6090,-1940],[6090,-1821],[5880,-1821]],
    "h": 151
   }
  ],

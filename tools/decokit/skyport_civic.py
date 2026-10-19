@@ -210,7 +210,7 @@ def platform(s, sx):
         lamp_post(s, sx * (PX1 - 0.7), y, PT, 3.0)
 
 
-def canopy(s):
+def canopy(s, name=NAME):
     """Streamline canopy over both platforms and the track: arched ivory shell with tapered ends, chrome eave beads,
     speed ribs, lamp strips, columns on the platforms, the dorsal fin with the lit station name."""
     n = 12
@@ -242,7 +242,8 @@ def canopy(s):
         s.extrude([(-11.0, 0.3), (10.6, 0.3), (9.8, 2.6), (-9.0, 2.6)], -0.33, 0.33, pal.Enamel_Teal)
     for rot, x in (((90, 0, 90), 0.33), ((90, 0, -90), -0.33)):
         with s.at((x, 0.8, CROWN + 1.35), rot):
-            word(s, NAME, 1.25, 0.2, 0.0, 0.05, pal.Lamp)
+            if name:
+                word(s, name, 1.25, 0.2, 0.0, 0.05, pal.Lamp)
     for sd in (-1, 1):  # hanging name boards facing the track
         xb = sd * 4.9
         for y in (-8.0, 8.0):
@@ -252,7 +253,8 @@ def canopy(s):
                 cable_z = EAVE + (canopy_z(4.9) - EAVE) * 0.9 - 0.35
                 s.box((xb - 0.02, y + dy - 0.02, zb + 0.9), (xb + 0.02, y + dy + 0.02, cable_z), pal.Chrome)
             with s.at((xb - sd * 0.065, y, zb + 0.45), (90, 0, -90 if sd > 0 else 90)):
-                word(s, NAME, 0.5, 0.08, 0.0, 0.02, pal.Lamp)
+                if name:
+                    word(s, name, 0.5, 0.08, 0.0, 0.02, pal.Lamp)
 
 
 def tower(s):
@@ -290,12 +292,22 @@ def tower(s):
     flight(s, xw - 0.8, xw + 0.8, 14.8, yb - 1.35, PT, OB, 22)  # down onto the west platform (rises toward +Y)
 
 
-@asset("SkyRailStation", "Skyport", bevel=0.0)
-def sky_rail_station(s):
+def _station(s, name):
     for sx in (-1, 1):
         platform(s, sx)
-    canopy(s)
+    canopy(s, name)
     tower(s)
+
+
+@asset("SkyRailStation", "Skyport", bevel=0.0)
+def sky_rail_station(s):
+    _station(s, NAME)
+
+
+@asset("SkyRailStation_Blank", "Skyport", bevel=0.0)
+def sky_rail_station_blank(s):
+    """SkyRailStation with no name on the dorsal fin and the hanging boards (brief 020 C: HARBOUR was baked into the kit piece; a station's name is the plan's, set by a sign)."""
+    _station(s, "")
 
 
 # ----------------------------------------------------------------- SkyRail_Pylon_Tall

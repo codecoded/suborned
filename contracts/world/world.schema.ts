@@ -16,6 +16,7 @@ export type World = {
     roads: Road[]; foot: Road[]; medians: Mass[]; circuses: Circus[];
     water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
+    drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
   transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
@@ -44,6 +45,11 @@ export type World = {
 export type Road = { id: string; surface: string; kerbSurface: string; line: V[]; width: number; level: number; kerbWidth: number; kerbHeight: number };
 export type Circus = { id: string; surface: string; islandSurface: string; centre: V; radius: number; islandRadius: number; level: number; islandHeight: number };
 export type Flat = { id: string; surface: string; ring: V[]; level: number };
+/** A drive (brief 023; civic-block.json `drives`, rules DR-1..DR-3): the way a car takes from a road's carriageway, across the pavement of the plot beside it, to a bay that touches no road.
+ *  `ring` is the way, a flat at road level (`level`, the bay flats' level, below the plot slab's 0.18 top it cuts through); `road` = the id of the world road it leaves (`road/<plan road>`), `to` = the id of the bay
+ *  flat it reaches (`civic/bay/<bay>`); `kerb` = the segment of the road's kerb the drive crosses, which is DROPPED there: along it the kerb strip (`kerbWidth` m wide, the road's) has height `kerbHeight` (0 = flush
+ *  with the carriageway), so the way runs level from the road into the drive. Nothing stands on it and street items keep 2 m off it (SF-2); no pylon (SF-18) and no crossing (SF-20) either. */
+export type Drive = { id: string; surface: string; ring: V[]; level: number; road: string; to: string; kerb: [V, V]; kerbWidth: number; kerbHeight: number };
 /** Extruded footprint from base to base + height. */
 export type Mass = {
   id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number };

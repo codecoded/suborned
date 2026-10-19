@@ -268,8 +268,8 @@ test('wave 2 is deterministic', () => {
 test('civic furniture and the steward stand at person scale; the monument planters and the robot are kit pieces (Latch round 3)', () => {
   for (const m of w.civic.filter(x => /cafe-(table|palm)-\d+$/.test(x.id))) expect(m.kit!.scale, m.id).toEqual([1, 1, 1]);
   const robot = w.civic.find(m => m.id === 'civic/foreground-civic-robot')!;
-  expect(robot.kit!.id).toBe('RobotButler'); expect(robot.kit!.scale[0]).toBe(1);
-  expect(robot.kit!.base + by.get('RobotButler')!.size[1]).toBeCloseTo(robot.base + robot.height, 2); // on a plinth to the monument's height
+  expect(robot.kit!.id).toBe('RobotButler_Play'); // civic-look.json swaps the 16k-triangle RobotButler for its 2.6k play copy (brief 020 follow-up) expect(robot.kit!.scale[0]).toBe(1);
+  expect(robot.kit!.base + by.get('RobotButler_Play')!.size[1]).toBeCloseTo(robot.base + robot.height, 2); // on a plinth to the monument's height
   for (const id of ['civic/civic-monument-west', 'civic/civic-monument-east']) expect(w.civic.find(m => m.id === id)!.kit!.id).toBe('OvalPlanter');
   expect(civicClearance(w.civic)).toEqual([]); // round 3 wrap-up: the two palms whose fronds reached the café wall slide out (build.ts clearWalls)
   for (const id of ['civic/cafe-palm-0', 'civic/cafe-palm-1']) { // 0.35 m off the café's east wall (plan y -219.3), still the door's pair, inside the terrace before the table row

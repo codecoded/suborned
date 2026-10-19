@@ -288,6 +288,9 @@ namespace Suborned
             renderers[i].sharedMaterials = to ? cutting[i] : plain[i];
         }
 
+        /// <summary>The cutting twins of these materials (shared with the reach's own, destroyed with it).</summary>
+        public Material[] CuttingOf(Material[] of) => Twins(of);
+
         Material[] Twins(Material[] of)
         {
             var to = new Material[of.Length];

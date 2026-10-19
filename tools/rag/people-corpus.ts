@@ -37,6 +37,7 @@ export function blockChunks(source: string, text: string): Chunk[] {
     parts.push([`building ${x.id}`, `Building ${x.id} (${x.name}): height ${x.height} m, z ${x.z}${x.interior ? `, interior ${show(x.interior)}` : ''}\nentrances: ${(x.entrances ?? []).map((e: any) => `${e.id} "${e.name}" at ${show(e.at)}${e.on ? ` on ${e.on}` : ''}`).join('; ')}${x.towers ? `\ntowers: ${x.towers.map((t: any) => `${t.id} at ${show(t.at)} height ${t.height}`).join('; ')}` : ''}${x.heights ? `\nheights: ${show(x.heights)}` : ''}`]);
   }
   parts.push(['bays', (b.bays as any[]).map(x => `${x.id}: ${show(x.polygon)}`).join('\n')]);
+  if (b.drives?.length) parts.push(['drives', (b.drives as any[]).map(x => `${x.id}: ${show(x.polygon)} from ${x.road} (kerb ${show(x.kerb)}) to bay ${x.to}: ${x.reason}`).join('\n')]);
   parts.push(['street furniture', (b.objects as any[]).map(o => `${o.id} (${o.kind})`).join(', ')]);
   const kc = (b.dressing?.keepClear ?? []) as any[];
   if (kc.length) parts.push(['keep-clear zones', kc.map(z => `${z.id}: ${z.reason}`).join('\n')]);

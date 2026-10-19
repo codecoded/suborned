@@ -1,0 +1,217 @@
+--- a/contracts/rules/rulebook.json
++++ b/contracts/rules/rulebook.json
+@@ -315,6 +315,7 @@
+   "suspicion-mercenary-pm": { "v": 1000, "unit": "per-mille", "tag": "S", "src": "Aster 2026-10-16 (Pulse's difference 1, built, default flat); briefs/013/pulse-witnesses.md §11.2", "proposed": true, "reason": "OPTIONAL temperament scale on suspicion-s; default 1000, a flat 20 s (Motive). 2250 would make it 45 s" },
+   "rounds-linger-s": { "v": 3, "unit": "s", "tag": "S", "src": "brief 022 (Pulse; Sky 2026-10-18: \"have the waitress also walk around the cafe tables\"); contracts/people/routines.rules.json rounds.holds.lingerS", "proposed": true, "reason": "a person spoken to stands still until the order lands and this long after, so a chain of orders (Help, Help, the call) re-issued at the landing tick is one hold" },
+   "partners-close-cm": { "v": 120, "unit": "cm", "tag": "S", "src": "brief 022 (Pulse; Sky 2026-10-18: \"when guard comes, they stand together\"); routines.rules.json partners.closeCm", "proposed": true, "reason": "arm's length: the summoned lover stops this short of the caller's post on his own route and faces her; inside summon.together, so a Watch that ends with them there still teaches the affair" },
++  "partners-clear-cm": { "v": 100, "unit": "cm", "tag": "S", "src": "brief 022 addendum (Pulse)", "proposed": true, "reason": "the summoned partner never stops within this of anyone else" },
+   "partners-part-s": { "v": 2, "unit": "s", "tag": "S", "src": "brief 022 (Pulse); routines.rules.json partners.partS", "proposed": true, "reason": "the beat they stand turned to each other after he turns to go; her round resumes after it" },
+   "captured-trail": { "v": 4, "unit": "trail", "tag": "S", "src": "§06 downed: captured → rescue; Sky 2026-10-18, brief 018 the getaway (Motive), option 3: \"get my team into the car, and get away\"", "proposed": true, "reason": "a captive is as much evidence as a knockout's statement (+4)" },
+   "custody-fear": { "v": 1, "unit": "scale-steps", "tag": "S", "src": "§04 Talker test; brief 018 §3 (Motive)", "proposed": true, "reason": "custody pressures as one Pressure does: fear +1 at each questioning, before the Talker test" },
+@@ -683,6 +684,7 @@
+   "linger": "v:rounds-linger-s",
+   "close": "v:partners-close-cm",
+   "part": "v:partners-part-s",
++  "clear": "v:partners-clear-cm",
+   "holds": ["listen", "ask", "pay", "help", "pressure"],
+   "ends": ["alert-2", "gunfire", "body-found", "final-fight"],
+   "rule": "A server who works a terrace (brief 022; the baked round sim/data/handover.rounds.json, made by tools/routines from contracts/people/routines.rules.json, Pulse) walks to the tables on a round clock and back to her post; her position is the round's. The round clock stops while she is held: from the tick an order of a verb in `holds` is taken on her to the tick it lands, plus `linger`; an order taken inside the linger extends the same hold; she stands where she is, turned to the operative. Watch holds nothing. The round ends, for the rest of the mission, at the first of `ends` (Alert 2, any shot, a body found, the final fight): she walks back along her own path and stands her post. Called (the summons): the guard's walk is to her post, as before, and stops `close` short of it, facing her; she breaks off and walks back to her post, they stand together from his arrival to his turn plus `part`, and her round resumes at the start of its next rest. Summon's reach, its refusals and its walk limit read her post, never her pose.",
+--- a/sim/Suborned.Sim/Rules.cs
++++ b/sim/Suborned.Sim/Rules.cs
+@@ -237,7 +237,7 @@
+         /// <summary>The founding (training) cell's scales (campaign.custody.cellStart), in ScaleNames order: bravery, resentment, fear, loyalty.</summary>
+         public readonly int[] CellStart = new int[4];
+         // brief 022 (Pulse): a server's round: the linger after an order on her, the summoned lover's stop short of her post, the beat they part
+-        public readonly int RoundsLingerS, PartnersCloseCm, PartnersPartS;
++        public readonly int RoundsLingerS, PartnersCloseCm, PartnersClearCm, PartnersPartS;
+         public readonly HashSet<string> RoundHolds = new HashSet<string>(StringComparer.Ordinal), RoundEnds = new HashSet<string>(StringComparer.Ordinal);
+         // the investigation and between missions
+         public readonly int InvestigatorsBase, InvestigatorsPerAlert, InvestigatorHops, WordHops, WordQuietLoyalty, IntroductionsPerContact, NeedWeightScale;
+@@ -512,8 +512,8 @@
+             foreach (var m2 in new[] { "saw-takedown", "attacked", "attacked-aware", "saw-carry", "found-body", "heard-alarm", "reported", "missed-expected" })
+                 if (!MemoryActs.Contains(m2)) throw new FormatException($"memory.acts.{m2}: brief 013's act is missing");
+             if (!Traceable.ContainsKey("takedown")) throw new FormatException("traceable.takedown is missing");
+-            var rd = b["rounds"]; rd.Only("linger", "close", "part", "holds", "ends", "rule", "tag", "src", "proposed", "reason"); // brief 022
+-            RoundsLingerS = RI(rd["linger"]); PartnersCloseCm = RI(rd["close"]); PartnersPartS = RI(rd["part"]);
++            var rd = b["rounds"]; rd.Only("linger", "close", "clear", "part", "holds", "ends", "rule", "tag", "src", "proposed", "reason"); // brief 022
++            RoundsLingerS = RI(rd["linger"]); PartnersCloseCm = RI(rd["close"]); PartnersClearCm = RI(rd["clear"]); PartnersPartS = RI(rd["part"]);
+             foreach (var v in rd["holds"].Strs()) { if (v != "listen" && !approaches.ContainsKey(v)) throw new FormatException($"rounds.holds: '{v}' is neither listen nor an approach (unknown = reject)"); RoundHolds.Add(v); }
+             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
+             if (PartnersCloseCm < 1 || PartnersCloseCm >= TogetherCm) throw new FormatException("rounds.close is inside summon.together (a Watch that ends with them standing together still teaches the affair)");
+--- a/sim/Suborned.Sim/GameRounds.cs
++++ b/sim/Suborned.Sim/GameRounds.cs
+@@ -19,8 +19,10 @@
+         public sealed class Exc { public string Table = ""; public Pt At, Face; public int Start, Out, Serve, Back; public Path Path = null!; }
+         public sealed class Server { public string Id = "", Role = "", Post = ""; public Pt At, Face; public int From, To, Origin; public readonly List<Exc> Exc = new List<Exc>(); }
+         public readonly Dictionary<string, Server> Servers = new Dictionary<string, Server>(StringComparer.Ordinal);
+-        public int LingerS, CloseCm, PartS, StayS, PaceCmPerS;
+-        public Pt GuardStopAt, GuardFace; public int GuardWalkCm, GuardShortCm;
++        public int LingerS, CloseCm, ClearCm, PartS, StayS, PaceCmPerS;
++        public Pt GuardStopAt, GuardFace; public int GuardWalkCm, GuardStopWalkCm;
++        /// <summary>Where the summoned partner may stand, in the file's order (ring of CloseCm round her post, free ground, most lateral first, her left first): the engine picks, never computes.</summary>
++        public readonly List<Pt> GuardStops = new List<Pt>();
+         /// <summary>The reference poses (tick, x, y, facing x, facing y, phase) by server and kind: free, held, called, ended (tests read them).</summary>
+         public readonly Dictionary<string, Dictionary<string, List<(int tick, Pt pos, Pt face, string phase)>>> Vectors = new Dictionary<string, Dictionary<string, List<(int, Pt, Pt, string)>>>(StringComparer.Ordinal);
+ 
+@@ -29,10 +31,10 @@
+             var n = JNode.Parse(json, "rounds"); var d = new RoundsData();
+             n.Only("schema", "from", "frame", "rules", "servers", "meetings", "guard", "vectors");
+             if (n["schema"].Str() != "suborned.sim.rounds/1") throw new FormatException("rounds schema is not suborned.sim.rounds/1");
+-            var ru = n["rules"]; ru.Only("file", "sha256", "paceCmPerS", "lingerS", "closeCm", "partS", "settleS", "stayS", "chanceStayS");
+-            d.LingerS = ru["lingerS"].Int(); d.CloseCm = ru["closeCm"].Int(); d.PartS = ru["partS"].Int(); d.StayS = ru["stayS"].Int(); d.PaceCmPerS = ru["paceCmPerS"].Int();
++            var ru = n["rules"]; ru.Only("file", "sha256", "paceCmPerS", "lingerS", "closeCm", "clearCm", "partS", "settleS", "stayS", "chanceStayS");
++            d.LingerS = ru["lingerS"].Int(); d.CloseCm = ru["closeCm"].Int(); d.ClearCm = ru["clearCm"].Int(); d.PartS = ru["partS"].Int(); d.StayS = ru["stayS"].Int(); d.PaceCmPerS = ru["paceCmPerS"].Int();
+             // the baked numbers are the rulebook's (Motive confirms them there): a file baked from other numbers is rejected
+-            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.CellSpeed)
++            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.ClearCm != r.PartnersClearCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.CellSpeed)
+                 throw new FormatException("rounds.rules (lingerS, closeCm, partS, stayS, paceCmPerS) are not the rulebook's rounds.linger, rounds.close, rounds.part, summon.stay and cell.speed: rebake (bun run rounds)");
+             if (n["meetings"].Items.Count > 0) throw new FormatException("rounds.meetings: chance meetings are not played yet (brief 022 §2.6): unknown = reject");
+             foreach (var kv in n["servers"].Entries)
+@@ -67,9 +69,11 @@
+                     }
+                 d.Vectors[sv.Id] = vec;
+             }
+-            var g = n["guard"]; g.Only("from", "post", "walkCm", "stopAt", "face", "shortCm");
+-            d.GuardStopAt = Pt.Of(g["stopAt"]); d.GuardFace = Pt.Of(g["face"]); d.GuardWalkCm = g["walkCm"].Int(); d.GuardShortCm = g["shortCm"].Int();
+-            if (d.GuardShortCm != d.CloseCm) throw new FormatException("rounds.guard.shortCm is rules.closeCm");
++            var g = n["guard"]; g.Only("from", "post", "walkCm", "ringCm", "stopAt", "face", "stops");
++            d.GuardStopAt = Pt.Of(g["stopAt"]); d.GuardFace = Pt.Of(g["face"]); d.GuardWalkCm = g["walkCm"].Int();
++            if (g["ringCm"].Int() != d.CloseCm) throw new FormatException("rounds.guard.ringCm is rules.closeCm");
++            foreach (var st in g["stops"].Items) { st.Only("at", "face", "deg", "walkCm"); if (d.GuardStops.Count == 0) d.GuardStopWalkCm = st["walkCm"].Int(); d.GuardStops.Add(Pt.Of(st["at"])); }
++            if (d.GuardStops.Count > 0 && d.GuardStops[0] != d.GuardStopAt) throw new FormatException("rounds.guard.stopAt is stops[0]");
+             return d;
+         }
+     }
+@@ -139,6 +143,24 @@
+             foreach (var ev in roundEv.Values)
+                 foreach (var h in ev.Holds) if (h.By == op.Id && h.To > Tick) { h.To = Tick; ev.Version++; }
+         }
++        /// <summary>The summoned partner's stop (brief 022 addendum, partners.summoned.side): the first stop in the file with nobody within partners-clear-cm of it at the tick of the call
++        /// (the operatives not down and everyone on the street, not the server and not the summoned); if every stop is taken, the one whose nearest person is farthest, the earlier on a tie;
++        /// null when the file holds no stop (the old stop: on his route, close short of her post).</summary>
++        Pt? PartnerStop(Person server, Person lover)
++        {
++            var stops = S.Rounds!.GuardStops; if (stops.Count == 0) return null;
++            var people = new List<Pt>();
++            foreach (var op in Ops) if (!op.Down) people.Add(op.Pos);
++            foreach (var w in Walkers) { if (w.P == server || w.P == lover) continue; var q = CrowdPos(w); if (q.HasValue) people.Add(q.Value); }
++            Pt best = stops[0]; long bestD = -1;
++            foreach (var st in stops)
++            {
++                long near = long.MaxValue; foreach (var q in people) near = Math.Min(near, G.Dist(st, q));
++                if (near >= R.PartnersClearCm) return st;
++                if (near > bestD) { bestD = near; best = st; }
++            }
++            return best;
++        }
+         /// <summary>The summons reaches a server (brief 022): she walks back to her post, and they stand together while he stays.</summary>
+         void RoundCall(Person p, int arrive, int until, Pt stop)
+         {
+--- a/sim/Suborned.Sim/GameOrders.cs
++++ b/sim/Suborned.Sim/GameOrders.cs
+@@ -640,9 +640,11 @@
+             var from = GuardPose()!.Value.pos; var to = sv != null ? sv.At : PersonPos(p)!.Value;
+             guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(to) ?? to)!);
+             walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
+-            if (sv != null) // brief 022: he walks the route he always walked and stops rounds.close short of her post, facing her
++            if (sv != null) // brief 022: he walks to her post and stops rounds.close from it, at her side (PartnerStop), facing her
+             {
+-                guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L));
++                var side = PartnerStop(p, lover);
++                if (side.HasValue) guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, side.Value)!);
++                else guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L)); // the file holds no stop: the old stop, on his route
+                 walkT = (int)((guardOut.Length + opSpeed - 1) / opSpeed);
+                 cafeFace = to - guardOut.End;
+                 RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End);
+--- a/sim/Suborned.Sim/ScenariosRounds.cs
++++ b/sim/Suborned.Sim/ScenariosRounds.cs
+@@ -5,6 +5,9 @@
+ //  N131 the chain hold: a Listen, then a Help given at the tick it lands: one hold, she stands still the whole way though her round was due out
+ //  N132 the call from mid-walk: she walks back to her post; the guard walks his route and stops 1.2 m short, facing her; they stand together
+ //  N133 the round ends at the first shot: she walks back from her table and stands her post for the rest of the mission
++//  N134 the guard stands at her side (brief 022 addendum): nobody near, he takes the first stop (her left); the Scout at beside-inez is 1.4 m or more from him
++//  N135 the Scout stands on the first stop at the call: he takes the other hand
++//  N136 both front stops are taken: the stop whose nearest person is farthest
+ using System;
+ using System.Collections.Generic;
+ using System.Linq;
+@@ -14,7 +17,7 @@
+     public static partial class Scenarios
+     {
+         /// <summary>The cases that read the round itself (they have nothing to compare with the round off).</summary>
+-        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133" };
++        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133", "N134", "N135", "N136" };
+         static string PhaseOf(Game g) => g.PersonPose(g.Inez)?.phase ?? "";
+         static Start KnowingRoutine() { var s = new Start(); s.Known["waitress"] = new List<string> { "routine" }; return s; }
+ 
+@@ -64,12 +67,13 @@
+                 r.Do(Fixer, "call", Inez);
+                 g.Step(); r.Eq(PhaseOf(g), "to post", "the call: she walks back to her post");
+                 int arrive = g.LureTick + g.VisitWalkTicks;
+-                var gs = g.S.Rounds!.GuardWalkCm; int full = (gs * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed, cut = (gs * 10 - g.R.PartnersCloseCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed;
+-                r.Is(Math.Abs(g.VisitWalkTicks - cut) <= 2 && g.VisitWalkTicks < full, $"his walk stops 1.2 m short: {g.VisitWalkTicks / Game.Hz} s, not {full / Game.Hz} s");
++                var st0 = g.S.Rounds!.GuardStops[0]; int cut = (g.S.Rounds.GuardStopWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed, full = (g.S.Rounds.GuardWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed;
++                r.Is(Math.Abs(g.VisitWalkTicks - cut) <= 3 && g.VisitWalkTicks < full + T(1), $"his walk is to his stop at her side: {g.VisitWalkTicks / Game.Hz} s (to her post it was {full / Game.Hz} s)");
+                 r.To(arrive + 1);
+                 var gp = g.GuardPose()!.Value; var post = g.S.Stand(g.Inez.Place);
+                 int d = G.Dist(gp.pos, post);
+                 r.Is(gp.phase == "at café" && d >= g.R.PartnersCloseCm - 30 && d <= g.R.PartnersCloseCm + 30, $"he stops {d} cm from her post");
++                r.Is(G.Within(gp.pos, g.S.Rounds!.GuardStops[0], 5), "at the first stop in the file (nobody stands near it)");
+                 r.Is(G.Within(g.PersonPos(g.Inez)!.Value, post, 1) && PhaseOf(g) == "together", "she is at her post, together with him");
+                 long dot = (long)gp.facing.X * (post.X - gp.pos.X) + (long)gp.facing.Y * (post.Y - gp.pos.Y);
+                 r.Is(dot > 0, "he faces her");
+@@ -89,6 +93,43 @@
+                 bool stays = true; for (int k = 0; k < T(90) && !g.Over; k += 5) { if (PhaseOf(g) != "at post") stays = false; g.Advance(5); }
+                 r.Is(stays, "and stays there");
+             }, Level(1));
++
++            Add("N134", "—", "The guard stands at her side (brief 022 addendum, partners.summoned.side): Inez turned, the Scout at beside-inez (2.1 m from her post), the Fixer at the Courtyard. The call at 0:20 sends the guard to the first stop in the file (her left, 45 degrees off her facing); nobody stands within a metre of it, and the Scout is 1.4 m or more from him, not 0.9 m.", r =>
++            {
++                var g = r.G;
++                r.To(Max(r.Send(Scout, "beside-inez"), r.Send(Fixer, "d:Courtyard")));
++                r.To(T(20)); r.Do(Fixer, "call", Inez);
++                var arrive = g.LureTick + g.VisitWalkTicks; r.To(arrive + 1);
++                var gp = g.GuardPose()!.Value; var stops = g.S.Rounds!.GuardStops;
++                r.Is(gp.phase == "at café" && G.Within(gp.pos, stops[0], 5), $"he stands at the first stop {stops[0]} (at {gp.pos})");
++                var scout = r.Op(Scout).Pos; int d = G.Dist(gp.pos, scout);
++                r.Is(d >= 140, $"he is {d} cm from the Scout, not on top of him (was 90 cm at the old stop)");
++                r.Is(G.Dist(gp.pos, g.S.Stand(g.Inez.Place)) >= g.R.PartnersCloseCm - 5 && G.Dist(gp.pos, g.S.Stand(g.Inez.Place)) <= g.R.PartnersCloseCm + 5, "1.2 m from her post");
++            }, Turned(Inez));
++
++            Add("N135", "—", "The other hand (brief 022 addendum): the Scout stands on the first stop when the call is given (Listen done from there, 1.2 m from Inez's post). The guard takes the second stop, her right, instead of stopping on him.", r =>
++            {
++                var g = r.G; var stops = g.S.Rounds!.GuardStops;
++                r.To(Max(r.SendTo(Scout, stops[0]), r.Send(Fixer, "d:Courtyard")));
++                r.To(T(20)); r.Do(Fixer, "call", Inez);
++                r.To(g.LureTick + g.VisitWalkTicks + 1);
++                var gp = g.GuardPose()!.Value;
++                r.Is(G.Within(r.Op(Scout).Pos, stops[0], 30), "the Scout is on the first stop");
++                r.Is(G.Within(gp.pos, stops[1], 5), $"he takes the second stop {stops[1]} (at {gp.pos})");
++                r.Is(G.Dist(gp.pos, r.Op(Scout).Pos) >= g.R.PartnersClearCm, "a metre or more from the Scout");
++            }, Turned(Inez));
++
++            Add("N136", "—", "Every stop taken (brief 022 addendum): the Scout on the first stop, the Fixer on the second, the Tech on the third. The guard takes the stop whose nearest person is farthest (the earlier in the file on a tie), the same pick every time.", r =>
++            {
++                var g = r.G; var stops = g.S.Rounds!.GuardStops;
++                r.To(Max(r.SendTo(Scout, stops[0]), Max(r.SendTo(Fixer, stops[1]), r.SendTo(Tech, stops[2]))));
++                r.To(g.Tick + T(1)); r.Do(Fixer, "call", Inez);
++                r.To(g.LureTick + g.VisitWalkTicks + 1);
++                var gp = g.GuardPose()!.Value; var people = new List<Pt> { r.Op(Scout).Pos, r.Op(Fixer).Pos, r.Op(Tech).Pos, r.Op(Enf).Pos };
++                long best = -1; Pt want = stops[0];
++                foreach (var st in stops) { long near = long.MaxValue; foreach (var q in people) near = Math.Min(near, G.Dist(st, q)); if (near > best) { best = near; want = st; } }
++                r.Is(G.Within(gp.pos, want, 5), $"he stands at {want}, the stop farthest from all four (at {gp.pos}, {best} cm clear)");
++            }, Turned(Inez));
+         }
+     }
+ }
+--- a/sim/Suborned.Sim.Tests/Rounds.cs
++++ b/sim/Suborned.Sim.Tests/Rounds.cs
+@@ -37,7 +37,7 @@
+             if (kind == "held") holds = new[] { (at0 + 50, at0 + 50 + 420, new Pt(100, 0)) };
+             if (kind == "called")
+             {
+-                int gw = (int)Math.Round((R.GuardWalkCm - R.CloseCm) / (double)R.PaceCmPerS * Game.Hz, MidpointRounding.AwayFromZero), c0 = at0 + (int)Math.Floor(e0.Out * Game.Hz * 0.5);
++                int gw = (int)Math.Round(R.GuardStopWalkCm / (double)R.PaceCmPerS * Game.Hz, MidpointRounding.AwayFromZero), c0 = at0 + (int)Math.Floor(e0.Out * Game.Hz * 0.5);
+                 call = (c0, c0 + gw, c0 + gw + R.StayS * Game.Hz, R.GuardStopAt);
+             }
+             if (kind == "ended") { var mid = sv.Exc[Math.Min(1, sv.Exc.Count - 1)]; end = o0 + mid.Start * Game.Hz + mid.Out * Game.Hz + 20; }

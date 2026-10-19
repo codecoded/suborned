@@ -250,7 +250,7 @@
     "outcome": "success"
    },
    "src": "brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
-   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. Route G with a kill, the body carried to the Office's service door and put through it: never found in the mission; a missing person in the debrief (+2 T, no Menace, an open case, the block hardens)."
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. Route G with a kill, the body carried to the Office's service door and put through it: never found in the mission; a missing person in the debrief (+2 T, no Menace, an open case, the block hardens). Brief 023: in at 4:04, not at once, so guard 74's walk past the service lane (4:33) is over before Vale comes out (4:42); going in at 3:30 he sees the escort and the win stands at Alert 2, level with going loud."
   },
   {
    "id": "route-g-kill-board",
@@ -262,7 +262,7 @@
     "outcome": "success"
    },
    "src": "brief 018 §5 (board and go); brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
-   "note": "The board-and-go twin of route-g-kill: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell."
+   "note": "The board-and-go twin of route-g-kill: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell. Brief 023: in at 4:04, not at once, so guard 74's walk past the service lane (4:33) is over before Vale comes out (4:42); going in at 3:30 he sees the escort and the win stands at Alert 2, level with going loud."
   },
   {
    "id": "loud",
@@ -275,7 +275,7 @@
     "outcome": "success"
    },
    "src": "GDD §07 loud; Keel N10",
-   "note": "Board and go, the reference loud (brief 018 §5): the response unit's security-2, first on the street, takes the lane as the blocker and is down before the Enforcer reaches the car; the whole cell boards and the car leaves with officers 1 and 2 still at their stands, so officer-2 sees it go (+1 T, the car hunted). Before it, as brief 013 D: the guard shot just after his 2:30 check-in mark; the Scout and Fixer return fire only until the final fight, the Fixer at the pavilion's centre support (cv-094), out of the unit's line."
+   "note": "Board and go, the reference loud (brief 018 §5): the response unit's security-2, first on the street, takes the lane as the blocker and is down before the Enforcer reaches the car; the whole cell boards and the car leaves with officers 1 and 2 still at their stands, so officer-2 sees it go (+1 T, the car hunted). Before it, as brief 013 D: the guard shot just after his 2:30 check-in mark; the Scout and Fixer return fire only until the final fight, the Fixer at the pavilion's centre support (cv-094), out of the unit's line. c022 (brief 023, Sky's door option (b)): the response unit now walks from the north street along Rocket Lane past the car to the west-face door, so the Scout and Fixer keep their weapons holstered in cover until the final fight, then fire at will; 4:34.6, 10 T."
   },
   {
    "id": "loud-fight",
@@ -287,7 +287,7 @@
     "outcome": "success"
    },
    "src": "brief 018 §5 (fight it out); GDD §07 loud; Keel N10",
-   "note": "Fight it out, the loud twin (brief 018 §5): the police never break, so the Scout and Tech close on the café wall once the unit is down and the cell downs both officers; the whole cell then boards (the seal clock runs: anyone left standing would be captured). Nobody sees the car leave, so it costs 1 T less than loud and 2.2 s more."
+   "note": "Fight it out, the loud twin (brief 018 §5): the police never break, so the Scout and Tech close on the café wall once the unit is down and the cell downs both officers; the whole cell then boards (the seal clock runs: anyone left standing would be captured). Nobody sees the car leave, so it costs 1 T less than loud and 2.2 s more. c022 (brief 023): holstered until the fight as loud, and without the close on the café wall (walking out at the officers got the Scout and the Tech downed): the cell downs both officers from the cover by the car; 4:42.2, 9 T."
   },
   {
    "id": "loud-fast",
@@ -298,7 +298,7 @@
     "outcome": "success"
    },
    "src": "GDD §07 loud; Keel N10; Motive briefs/011/motive-fights.md; brief 018 §5",
-   "note": "The cheapest loud win (brief 013 D): loud's orders with the Scout and Fixer holding fire until the final fight, so only the guard's shots are traced. c019: walking Vale, the Enforcer no longer fires, so the Scout and Tech keep their cover (c017's close on the café wall took them off the blocker's line and the blocker shot the Enforcer down); the blocker is down 3.3 s into the fight, the response unit downs the Fixer, whom the Tech carries in, and the whole cell leaves with officer-2 seeing it go (+1 T). Its orders up to the walk to the car are c017's, pinned by `at` in its plan.",
+   "note": "The cheapest loud win (brief 013 D): loud's orders with the Scout and Fixer holding fire until the final fight, so only the guard's shots are traced. c019: walking Vale, the Enforcer no longer fires, so the Scout and Tech keep their cover (c017's close on the café wall took them off the blocker's line and the blocker shot the Enforcer down); the blocker is down 3.3 s into the fight, the response unit downs the Fixer, whom the Tech carries in, and the whole cell leaves with officer-2 seeing it go (+1 T). Its orders up to the walk to the car are c017's, pinned by `at` in its plan. c022 (brief 023): with the reference now holding fire the same way and nobody downed, its head is the reference's (composed, not pinned) and the whole cell boards: it plays as loud does (4:34.6, 10 T). No earlier shot is possible (the reroute lands at 2:04, the guard's next mark is 2:30), so the reference is now the fastest and cheapest loud.",
    "plan": "loud-fast.plan.json"
   },
   {
@@ -446,7 +446,7 @@
     }
    },
    "src": "brief 018 §5: one run that leaves a downed op (captured, +4 T)",
-   "note": "The reference loud with the Scout sent out of cover at the officers as the fight opens: downed and not carried, he is captured when the car leaves (+4 T to the campaign)."
+   "note": "The reference loud with the Scout sent out of cover at the officers as the fight opens: downed and not carried, he is captured when the car leaves (+4 T to the campaign). c022 (brief 023): the Scout goes out once the response unit is down (sent as the fight opened, the unit by the car downed the Tech and the Enforcer too)."
   },
   {
    "id": "loud-left-standing",
@@ -507,7 +507,7 @@
    },
    "twin": "route-b",
    "src": "brief 013 D: a reporter not stopped; Keel N65",
-   "note": "Route B with guard 73 killed and left where he fell on the square (retimed for the brief 014 café crowd: carrying him north is now seen by the walkers at 4:10). Walker p-garden-row-east-06 finds him at 6:44 and walks to the café door unstopped, landing after the Take, so the run still wins, at Alert 2 and 21 T with an open case against route B's 3 T (MC-7 counts it worse, not failed). Since brief 018 the whole cell boards at the car (the seal clock runs, so anyone left standing would be captured, +4 T each); its other orders keep their c017 ticks, pinned by `at` in its plan.",
+   "note": "Route B with guard 73 (p-records-office-73) killed on his walk to the public door and left where he fell. Re-sited 2026-10-19 (Waymark, brief 023; engine 0.8.2 crowd.pace): the kill is timed to his arrival, the first tick he is within takedown reach, not a pinned tick (refused since crowd.pace), at a spot a finder passes, on the square north of the Office: killed at 4:29.8, unseen; his missed 5:30 mark is Alert 1; guard 64 (p-records-office-64) walking back to the Office finds him at 7:35.2 and radios it in, unstopped, landing at 7:40.2 after the Take: a win at Alert 2, 3 T + 6 T campaign + an open case (12 T in total) against route B's 3 T at Alert 0 (MC-7: worse, not failed).",
    "plan": "careless-reporter-not-stopped.plan.json"
   },
   {

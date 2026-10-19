@@ -7,13 +7,14 @@
 // SF-3, SF-14). Deterministic: same plan, same block, same kit, same items. A block with no service door has none of this (a recorded run's pinned block).
 import type { StreetItem, Takedown } from '../../../../contracts/world/world.schema';
 import { toPlanFn } from '../../../plan/civic';
-import { type V, dist, inPoly } from '../../../plan/geom';
+import { type V, dist, inPoly, lineDist } from '../../../plan/geom';
 import { boxRing, samples9 } from '../../../plan/street-zones';
 import { reachField, toBlockFn, walkGrid } from '../../../plan/walk-grid';
 import { blockersOf } from '../../../plan/walk';
 import { handoverPoints } from '../../civic/handover';
 import { QUIET, type Cand, cameraDir, cover, lattice, measure, stashSpot } from '../../civic/quiet';
 import { dressingOf } from '../../civic/dress';
+import { SITING, cornerOf, junctionCorners } from '../../civic/siting';
 import { type Ctx, r3, r4, rv } from '../common';
 import { cataloguedFor } from '../kitrefs';
 import type { Layer } from './kit';
@@ -30,7 +31,7 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
   const { polys } = blockersOf(plan, d, civ);
   const blockers: V[][] = [...polys, ...(civ.solids ?? [])];
   const dr = dressingOf(civ);
-  const zones = (dr?.keepClear ?? []).filter(k => k.id !== 'service-lane' && k.bars.includes('bollard') && 'polygon' in k).map(k => ({ id: k.id, ring: ('polygon' in k ? k.polygon : []).map(toPlan) }));
+  const zones = [...(dr?.keepClear ?? []).filter(k => k.id !== 'service-lane' && k.bars.includes('bollard') && 'polygon' in k).map(k => ({ id: k.id, ring: ('polygon' in k ? k.polygon : []).map(toPlan) })), ...civ.drives.map(x => ({ id: `drive ${x.id}`, ring: x.poly }))]; // a drive bars what its keep-clear zone barred (brief 023)
   const points = handoverPoints(toPlan);
   /** The free cell a walker stands on for a point (plan frame), or the point itself where the plan has built over it (R-REPORT / R-STASH then fail on it). */
   const standOf = (p: V): V => rv(toPlan(grid.tryNearestFree(toBlock(p)) ?? toBlock(p)));
@@ -45,9 +46,9 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
   for (const e of all) doorsOut.push({ id: e.id, building: e.building, name: e.name, kind: e.kind, at: rv(e.p), z: e.z, stand: standOf(e.p) });
   for (const e of civ.serviceDoors) {
     const b = civ.buildings.find(x => x.id === e.building)!, doorStash = { id: `stash/${e.id}/door`, kind: 'door' as const, at: rv(e.p), stand: standOf(e.p), holds: QUIET.doorHolds, of: e.id };
-    const spot = holds < 1 ? undefined : stashSpot({ door: e, building: b.poly, size: dsize, cam: cameraDir(QUIET.cameraYaw), blockers, zones, points, pointClear: CLEAR_POINT, grid, toBlock, roads: d.roads.filter(r => !r.gyratory), kerbReach: QUIET.kerbReach, fits: (at, yaw) => L.fits('dumpster', at, yaw, z, `civic/${e.building}`, { size: dsize }) });
+    const spot = holds < 1 ? undefined : stashSpot({ door: e, building: b.poly, size: dsize, cam: cameraDir(QUIET.cameraYaw), blockers, zones, points, pointClear: CLEAR_POINT, grid, toBlock, roads: d.roads.filter(r => !r.gyratory), kerbReach: QUIET.kerbReach, fits: (at, yaw) => L.fits('dumpster', at, yaw, z, `civic/${e.building}`, { size: dsize, blocks: true }) });
     const id = `street/civic/stash/${e.id}`;
-    if (!spot || !L.add('dumpster', spot.at, spot.yaw, z, `civic/${e.building}`, { size: dsize, id, uncounted: true })) {
+    if (!spot || !L.add('dumpster', spot.at, spot.yaw, z, `civic/${e.building}`, { size: dsize, id, uncounted: true, blocks: true })) {
       stashes.push({ ...doorStash, bare: holds < 1 ? 'no container: the kit has no piece tagged stash' : `no container: neither against the wall beside ${e.name} nor in a kerb zone within ${QUIET.kerbReach} m of it does a ${dump!.id} (${r3(dsize[0])} x ${r3(dsize[1])} m) pass the street rules (SF-1 clear walking zone, SF-2 crossings and doors, SF-14 quay)` });
       continue;
     }
@@ -65,6 +66,7 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
   const booths = existing('phone-booth'), docks = existing('civic-robot-dock');
 
   // ---- kerb candidates: along each road in the window, both sides, in the kerb zone
+  const corners = junctionCorners(d.roads, plan.nodes);
   const cands = (kind: string, tag: string): Cand[] => {
     const size = sizeOf(kind), out: Cand[] = [];
     for (const r of d.roads) {
@@ -80,13 +82,16 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
           for (const side of [1, -1] as const) {
             const at: V = [p[0] + nl[0] * side * off, p[1] + nl[1] * side * off];
             if (!inWin(at)) continue;
-            const yaw = Math.atan2(t[1], t[0]) + (side > 0 ? Math.PI : 0), ring = boxRing(at, size[0], size[1], yaw);
+            const yaw = Math.atan2(t[1], t[0]) + (side > 0 ? 0 : Math.PI), ring = boxRing(at, size[0], size[1], yaw); // the piece's +Z front faces yaw + 90°: here the kerb's pavement side, so a box opens on the footway, never on the carriageway (it faced the road until 2026-10-19)
             if (!samples9(ring).every(q => grid.free(toBlock(q)))) continue;
+            if (d.roads.some(o => o !== r && !o.gyratory && samples9(ring).some(q => lineDist(q, o.line) < o.w / 2 + SITING.mouthKerb))) continue; // a side road's mouth: this road's kerb line runs across its carriageway there, and nothing stands on a road (a post blocks sight, a box is glazed: neither stands on one)
+            const corner = cornerOf(r, at, corners), atCorner = !!corner && corner.along >= SITING.setback && corner.along <= SITING.zone;
+            if (kind === 'phone-booth' && !atCorner) continue; // a call box stands on a corner's pavement, set back from the corner and in sight of it (tools/world/civic/siting.ts)
             if (civ.bays.some(bay => inPoly(at, bay.poly) || bay.poly.some(q => dist(q, at) < 1.5))) continue;
             if (zones.some(zn => inPoly(at, zn.ring))) continue;
             if (points.some(pt => dist(pt.p, at) < CLEAR_POINT + size[0] / 2)) continue;
-            if (!L.fits(kind, at, yaw, z, `civic/${r.id}`, { size })) continue;
-            out.push({ id: `${tag}@${r3(at[0])},${r3(at[1])}`, at, yaw: r4(Math.atan2(Math.sin(yaw), Math.cos(yaw))), stand: grid.tryNearestFree(toBlock(at)) ?? toBlock(at), edge: `civic/${r.id}` });
+            if (!L.fits(kind, at, yaw, z, `civic/${r.id}`, { size, blocks: kind === 'police-post' })) continue;
+            out.push({ id: `${tag}@${r3(at[0])},${r3(at[1])}`, at, yaw: r4(Math.atan2(Math.sin(yaw), Math.cos(yaw))), stand: grid.tryNearestFree(toBlock(at)) ?? toBlock(at), edge: `civic/${r.id}`, ...(kind === 'phone-booth' ? { tier: SITING.rank[r.class] ?? 2, near: corner!.along } : atCorner ? { tier: SITING.rank[r.class] ?? 2, near: corner!.along } : { tier: 3 }) }); // a police post is a corner's too (the same pavement, the same set-back); where no corner's ground brings more ground within reach, it stands anywhere in a kerb zone
           }
         }
         run += seg;
@@ -94,26 +99,25 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
     }
     return out;
   };
-  const standing: V[] = [...docks, ...booths].map(i => i.at); // what already stands for the city's phones and docks: a new one keeps `apart` m off every one of them, whatever its kind
+  const standing: { at: V; kind: string }[] = [...docks, ...booths].map(i => ({ at: i.at, kind: i.kind })); // what already stands for the city's phones and docks: a new one keeps `apart` m off every one of them, of its kind or not
   const made = new Map<Cand, StreetItem>(), count: Record<string, number> = {};
   const put = (kind: string, name: string) => (c: Cand): boolean => {
-    if (standing.some(p => dist(p, c.at) < QUIET.apart)) return false;
+    if (standing.some(p => dist(p.at, c.at) < QUIET.apart)) return false;
     const id = `street/civic/${name}-${count[name] ?? 0}`;
-    if (!L.add(kind, c.at, c.yaw, z, c.edge, { size: sizeOf(kind), id, uncounted: true })) return false;
+    if (!L.add(kind, c.at, c.yaw, z, c.edge, { size: sizeOf(kind), id, uncounted: true, blocks: kind === 'police-post' })) return false;
     count[name] = (count[name] ?? 0) + 1;
     const it = L.items[L.items.length - 1]!;
-    if (kind === 'police-post') it.sight = 'blocks';
-    standing.push(it.at); made.set(c, it);
+    standing.push({ at: it.at, kind }); made.set(c, it);
     return true;
   };
 
+  // ---- report points: call boxes until every sample is within reach of a door of a staffed unit, a phone booth or a box (a police post is a response origin, not a report point)
+  const reportSrc: V[] = [...doorStands, ...booths.map(i => toBlock(i.at))];
+    const boxes = cover({ grid, samples, sources: reportSrc, reachM: QUIET.reach.report, cands: cands('phone-booth', 'box'), place: put('phone-booth', 'call-box') });
   // ---- origins: police posts until every sample is within reach of a dock or a post (the Records Office's doors are posts)
   const officeDoors = pub.filter(e => e.building === 'civic-office');
   const originSrc: V[] = [...docks.map(i => toBlock(i.at)), ...officeDoors.map(e => toBlock(e.p))];
     const posts = cover({ grid, samples, sources: originSrc, reachM: QUIET.reach.origin, cands: cands('police-post', 'post'), place: put('police-post', 'police-post') });
-  // ---- report points: call boxes until every sample is within reach of a door of a staffed unit, a phone booth or a box (a police post is a response origin, not a report point)
-  const reportSrc: V[] = [...doorStands, ...booths.map(i => toBlock(i.at))];
-    const boxes = cover({ grid, samples, sources: reportSrc, reachM: QUIET.reach.report, cands: cands('phone-booth', 'box'), place: put('phone-booth', 'call-box') });
 
   // ---- the section
   const report: Takedown['report'] = [

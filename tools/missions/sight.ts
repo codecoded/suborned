@@ -125,7 +125,7 @@ export function blockersOf(w: World, near: [number, number, number, number], pie
     if (shape) { shape.parts.forEach((q, i) => out.push({ id: `${m.id}#${i}`, ring: q.ring, z0: q.z0, z1: q.z1, fade: !!m.fade, kind: 'architecture' })); continue; }
     if (!m.kit) { arch(m, true); continue; } // the café, the Office and its towers
     const k = m.kit.id, top = m.base + m.height;
-    if (k === 'CafeBay') arch(m, true); // the café's ground storey
+    if (k === 'CafeBay' || k === 'CafeBay_v2') arch(m, true); // the café's ground storey
     else if (/^Cypress/.test(k)) out.push({ id: m.id, ring: ringScaled(m.ring, 0.55), z0: m.base + 0.8, z1: top, fade: !!m.fade, kind: 'dressing' });
     else if (/^Parasol/.test(k)) out.push({ id: m.id, ring: m.ring, z0: m.base + 2.07, z1: top, fade: !!m.fade, kind: 'dressing' });
     else if (/^BoardingPavilion/.test(k)) out.push({ id: m.id, ring: m.ring, z0: top - 0.4, z1: top, fade: !!m.fade, kind: 'dressing' });

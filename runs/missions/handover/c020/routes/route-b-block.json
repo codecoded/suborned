@@ -1,0 +1,27 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route B with the turned driver also blocking the pickup camera (GDD §07 'driver blocks pickup camera 2:30'). In the engine a turned driver always moves the pickup to the service lane, so this is route B with one blockade more, not a pickup at the bay.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"enforcer","do":"move","to":"d:Service lane"},
+  {"tick":0,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":556,"op":"scout","do":"watch","target":"driver"},
+  {"tick":756,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":756,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":778,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1198,"op":"scout","do":"move","to":[8250,-3100]},
+  {"tick":1256,"op":"fixer","do":"call","target":"driver"},
+  {"tick":1256,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2340,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":3700,"op":"enforcer","do":"take"},
+  {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":4394,"op":"cell","do":"panic"},
+  {"tick":4500,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4629,"op":"enforcer","do":"board","target":"car"},
+  {"tick":4669,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

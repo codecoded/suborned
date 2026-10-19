@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "32f843448d832206325bbea5c322db2048cd4e653c8486fd92418ba31d4fc6af",
+  "sha256": "62b7266c6a07ed57d0cc959a8b8d71749e6d731c50672edeba450d1a1227918a",
   "owner": "Vantage",
   "applied": [
    {
@@ -129,15 +129,15 @@
      "name": "Public door landing",
      "category": "entrance-landing",
      "polygon": [
-      [51, -32.3],
-      [52.5, -32.3],
-      [52.5, -27.7],
-      [51, -27.7]
+      [61.7, -42],
+      [66.3, -42],
+      [66.3, -40.5],
+      [61.7, -40.5]
      ],
      "z": 0,
      "height": 0.75
     },
-    "reason": "Vantage, brief 008 B2 (L1, H4): steps are real geometry. The public door is on tower-public's north face (x 52.5), on the tower's axis y -30, which is also the axis of the Orbit Walk crossing (y -32.5..-27.5) and of the fountain. Landing 1.5 m deep (x 51..52.5), 4.6 m wide, top at 0.75: 'Office entrance' stands on it at (51.75, -30), 0.75 m off the face. Sizes are Vela's RecordsEntrance (pivot 52.5, -30; front north)."
+    "reason": "Vantage, brief 008 B2 (L1, H4): steps are real geometry. Landing 1.5 m deep, 4.6 m wide, top at 0.75; sizes are Vela's RecordsEntrance. Sky 2026-10-19, door option (b), V-1 (briefs/011/vantage/study.ts optB; brief 023): the public door and its forecourt turn a quarter (from +x toward +y) off tower-public's north face onto the wing's west face, pivot (52.5, -30) -> (64, -40.5), front west onto Rocket Lane. Was x 51..52.5, y -32.3..-27.7 on the tower axis; now y -42..-40.5 out from the wing face (y -40.5, x 58.9..70.8), x 61.7..66.3 on the door axis x 64. 'Office entrance' stands on it at (64, -41.25), 0.75 m off the face. Seen at the opening yaw 30, where the old north door read only through the fade."
    },
    {
     "op": "addStructure",
@@ -146,21 +146,21 @@
      "name": "Public door steps",
      "category": "entrance-steps",
      "polygon": [
-      [49.2, -32.3],
-      [51, -32.3],
-      [51, -27.7],
-      [49.2, -27.7]
+      [61.7, -43.8],
+      [66.3, -43.8],
+      [66.3, -42],
+      [61.7, -42]
      ],
      "z": 0,
      "height": 0.625,
      "risers": 6,
      "rise": 0.125,
      "going": 0.36,
-     "foot": [49.2, -30],
-     "top": [51, -30],
+     "foot": [64, -43.8],
+     "top": [64, -42],
      "landing": "office-public-landing"
     },
-    "reason": "Vantage, brief 008 B2 (L1, H4): the flight to the landing. 6 risers of 0.125 m (0.75 m), 5 treads of 0.36 m (1.8 m), foot at x 49.2, 3.3 m out from the face; height 0.625 is the top tread. 'Office approach' stands at the foot, (48.6, -30), 0.6 m before the first riser. How the sim takes the height is Keel's (H4)."
+    "reason": "Vantage, brief 008 B2 (L1, H4): the flight to the landing. 6 risers of 0.125 m (0.75 m), 5 treads of 0.36 m (1.8 m), foot 3.3 m out from the face; height 0.625 is the top tread. How the sim takes the height is Keel's (H4). Sky 2026-10-19, door option (b), V-1: turned with the landing onto the west face (was x 49.2..51, y -32.3..-27.7, foot (49.2, -30), top (51, -30)). Foot at y -43.8, 6.2 m from the Rocket Lane kerb (y -50); 'Office approach' stands at the foot, (64, -44.4), 0.6 m before the first riser."
    },
    {
     "op": "edit",
@@ -243,8 +243,9 @@
      "id": "office-service-door",
      "name": "Office service door",
      "kind": "service",
-     "at": [63, -41.1],
-     "z": 0
+     "at": [62.5, -18.9],
+     "z": 0,
+     "face": "wing east, y -19.5 (x 58.9..72.5), onto the service yard"
     },
     "face": "wing west, y -40.5 (x 58.9..70.8), onto the service lane",
     "reason": "Brief 013 C (Vantage, briefs/013/vantage-quiet-places.md D1; Sky's answer 5 in briefs/013-takedowns.md, 'a service door and a Dumpster in the service lane: ok'). GDD §07 route A says Vale 'exits service door' and the block had no such door; the quiet-place rule needs one: a body carried through a service door is a timed off-screen action, the exterior-only stash. 0.6 m off the wing face (y -40.5, the lane side), 4 m clear of the wing's corners (x 58.9 and 70.8), and on the same side of the Office as the Service lane point (62.5, -43.2) 2.1 m away, so the carry from the guard's post is 26 m and from the pickup 18 m (Vantage's survey, 15..40 s). `kind` is new on entrances: public (the door a visitor uses), official (the councillor's door), service (staff and goods; no refuge for the crowd, no walk origin for the cast, a stash for the checker). The container beside it is the world generator's, by rule (tools/world/civic/quiet.ts)."
@@ -261,6 +262,73 @@
     },
     "face": "back wall, x -22 (y -40..-18), onto the strip behind the café",
     "reason": "Brief 013 C (Vantage D2; Sky's answer 5). The café has a front door only; its kitchen needs a back door onto the strip behind it (the 'Behind café' point, -23.4 -35, is the Scout's seat there). 0.4 m off the back wall (x -22), 8 y from the point so the Scout's seat keeps its 1.2 m, unwatched all mission on the r016 cast (Pulse §7), 24.5 s from Inez's café door (Vantage's survey). Same `kind: service` as the Office's."
+   },
+   {
+    "op": "moveEntrance",
+    "id": "office-entrance",
+    "to": [64, -41.25],
+    "z": 0.75,
+    "on": "office-public-landing",
+    "face": "wing west, y -40.5 (x 58.9..70.8), onto Rocket Lane",
+    "reason": "Sky 2026-10-19, door option (b), V-1 (briefs/011/vantage/study.ts optB; brief 023): the public door turns off tower-public's north face (51.75, -30) onto the wing's west face, the point turned a quarter about the door pivot (52.5, -30) -> (64, -40.5). On the turned landing, 0.75 m off the face, 0.75 m from the top riser (y -42), on the door axis x 64. tower-public keeps its footprint; its north face no longer has a door. At the play camera's opening yaw 30 the door is seen past architecture, where the north door read only through the fade or at yaw 210."
+   },
+   {
+    "op": "moveEntrance",
+    "id": "office-service-door",
+    "to": [62.5, -18.9],
+    "z": 0,
+    "face": "wing east, y -19.5 (x 58.9..72.5), onto the service yard",
+    "reason": "Sky 2026-10-19, service door east face, quiet back way. The public door's turned landing, steps and piers take x 60.0..68.0 of the west face, over the service door's old place (63, -41.1). The service door goes round the back, onto the wing's east face (x 58.9..72.5), 0.6 m off it as before, 3.6 m from its north corner and 10 m from its south one, so the Apron Road pavement (the plot strip x 76..80) stays beyond the 13 m witness range (witness-range-m; 13.5 m at x 76, where the face's middle, x 65.7, came to 10.3 m): away from the public door, the entrance camera, the patrol's sweep on Rocket Lane and the guard's door cone, and out of the official side's sight behind tower-official, so it stays the quiet back way out route B was designed around. 'Service lane' stands 2.1 m out from it, (62.5, -16.8). The yard in front is 5.5 m deep once civic-office-west moves back (below); the world's container rule stands the Dumpster against the wall beside the door."
+   },
+   {
+    "op": "edit",
+    "id": "civic-office-west",
+    "move": [0, 6.3],
+    "reason": "Sky 2026-10-19, service door east face, quiet back way. This bed lay 1.18 m off the wing's east face (y -18.315..-16.45, x 60.34..70.45), across the new service door and with no room for the Dumpster against the wall. Moved 6.3 m east to y -12.015..-10.15: a 7.5 m service yard between it and the face, which holds the 3 m door strip (door, Dumpster, 'Service lane'), serviceBay (3 m) and 1.5 m behind the bay, and the bed screens the yard from the east of the plot."
+   },
+   {
+    "op": "addBay",
+    "id": "serviceBay",
+    "polygon": [
+     [60.5, -16.5],
+     [67, -16.5],
+     [67, -13.5],
+     [60.5, -13.5]
+    ],
+    "reason": "Sky 2026-10-19, service door east face, quiet back way; Sky's rule that things go where a real city would put them: a service yard behind an office has a bay for a van or car, reached from the nearest road. One car, 6.5 x 3 m (the lay-bys are 3 m deep), parallel to the wing's east face, 3 m off it (y -16.5..-13.5), x 60.5..67, beside the Dumpster (which stands against the wall in the door strip, y -19.5..-18.2) and the door. The driver's car pulls in nose first along -x from Apron Road down the reserved drive (keep-clear service-drive, x 67..80, y -16.5..-13.5) and stops at (63.75, -15.0); 'Service lane' (62.5, -16.8), 2.1 m out from the service door, is the car's kerbside door. Quiet: no camera cone, the guard's door cone or the patrol's sweep reaches the yard, and the Apron Road pavement (x 76..80) is 14.2 m from the stopped car and 15.6 m from 'Service lane', beyond the 13 m witness range. A bay is carriageway level (plan 0); until the block can state the drive (Splice, brief 023), the world has no lowered way between it and Apron Road."
+   },
+   {
+    "op": "addDrive",
+    "id": "service-drive",
+    "road": "apron-road",
+    "kerb": [
+     [80, -16.5],
+     [80, -13.5]
+    ],
+    "to": "serviceBay",
+    "polygon": [
+     [67, -16.5],
+     [80, -16.5],
+     [80, -13.5],
+     [67, -13.5]
+    ],
+    "reason": "Sky 2026-10-19, service door east face, quiet back way: the vehicle way from Apron Road (kerb x 80) to serviceBay (x 67), 3 m wide on the bay's line (y -16.5..-13.5), 3 m clear of the wing's south-east corner (72.5, -19.5), crossing the Apron pavement (x 72.5..80) as a dropped-kerb driveway would. It was a keep-clear zone until the block could state a drive; now it is one (Splice, brief 023): the block's drives[] carries it, the world exports it as a flat at road level with the kerb dropped along x 80, y -16.5..-13.5, nothing stands on it and street items keep 2 m off it (DR-1..DR-3, SF-2, SF-18, SF-20), and the sim routes the turned driver's car over it (tools/sim/drive.ts)."
+   },
+   {
+    "op": "remove",
+    "id": "civic-entrance-west",
+    "reason": "Sky 2026-10-19, door option (b): the public door has left tower-public's north face, and this entrance bed (with civic-entrance-east) framed nothing there. The adjust format can only translate a source object, and this one is long across the old door axis: moved to the west door it would stand across the pavement, not along the face. Removed; cyp-office-e, the tree it held, now frames the west door on the ground (dressing). Turned beds under the trees are Vela's if wanted (brief 023)."
+   },
+   {
+    "op": "remove",
+    "id": "civic-entrance-east",
+    "reason": "As civic-entrance-west: removed with the old north door; cyp-office-w, the tree it held, now frames the west door on the ground (dressing)."
+   },
+   {
+    "op": "edit",
+    "id": "civic-control-cabinet",
+    "move": [19.6, -27.5],
+    "reason": "Sky 2026-10-19, door option (b), V-1 (study.ts B_SITES 'cabinet' (46.5, -44.5)): the Tech's control cabinet goes with the door to the office plot's north-west corner, behind the entrance camera's pole (53, -44.5) and outside its cone, the guard's door cone and the patrol's sweep (y -44.8, x 52..68), within 5.5 m of the west face line where the ground is seen (further west the 35 m terrace across Rocket Lane, bld/rocket-west/17, hides it). Centre (25.4, -17) -> (45.0, -44.5), x 44.546..45.454, y -45.344..-43.656: the mission's 'cabinet' point (46.5, -44.5) stands 1.05 m off its south (x 45.454) face, centred on it, as before; the cabinet stands on the far side of the Tech from the play camera, so it never hides him."
    },
    {
     "op": "dressing",
@@ -359,10 +427,10 @@
      "id": "office-entrance",
      "name": "Office entrance",
      "kind": "public",
-     "at": [51.75, -30],
+     "at": [64, -41.25],
      "z": 0.75,
      "on": "office-public-landing",
-     "face": "tower public, north face x 52.5"
+     "face": "wing west, y -40.5 (x 58.9..70.8), onto Rocket Lane"
     },
     {
      "id": "official-entrance",
@@ -375,8 +443,9 @@
      "id": "office-service-door",
      "name": "Office service door",
      "kind": "service",
-     "at": [63, -41.1],
-     "z": 0
+     "at": [62.5, -18.9],
+     "z": 0,
+     "face": "wing east, y -19.5 (x 58.9..72.5), onto the service yard"
     }
    ],
    "heights": {
@@ -442,10 +511,10 @@
    "name": "civic-control-cabinet",
    "category": "service-cabinet",
    "polygon": [
-    [24.946, -17.844],
-    [25.854, -17.844],
-    [25.854, -16.156],
-    [24.946, -16.156]
+    [44.546, -45.344],
+    [45.454, -45.344],
+    [45.454, -43.656],
+    [44.546, -43.656]
    ],
    "z": 0,
    "height": 1.575
@@ -532,10 +601,10 @@
    "name": "Public door landing",
    "category": "entrance-landing",
    "polygon": [
-    [51, -32.3],
-    [52.5, -32.3],
-    [52.5, -27.7],
-    [51, -27.7]
+    [61.7, -42],
+    [66.3, -42],
+    [66.3, -40.5],
+    [61.7, -40.5]
    ],
    "z": 0,
    "height": 0.75
@@ -545,18 +614,18 @@
    "name": "Public door steps",
    "category": "entrance-steps",
    "polygon": [
-    [49.2, -32.3],
-    [51, -32.3],
-    [51, -27.7],
-    [49.2, -27.7]
+    [61.7, -43.8],
+    [66.3, -43.8],
+    [66.3, -42],
+    [61.7, -42]
    ],
    "z": 0,
    "height": 0.625,
    "risers": 6,
    "rise": 0.125,
    "going": 0.36,
-   "foot": [49.2, -30],
-   "top": [51, -30],
+   "foot": [64, -43.8],
+   "top": [64, -42],
    "landing": "office-public-landing"
   }
  ],
@@ -858,92 +927,6 @@
    "height": 0.52
   },
   {
-   "id": "civic-entrance-west",
-   "kind": "planter",
-   "polygon": [
-    [50.15, -19.4],
-    [50.15, -23],
-    [50.171, -23.398],
-    [50.233, -23.792],
-    [50.337, -24.177],
-    [50.48, -24.549],
-    [50.725, -25.097],
-    [50.889, -25.364],
-    [51.116, -25.58],
-    [51.392, -25.729],
-    [51.697, -25.802],
-    [52.01, -25.793],
-    [52.31, -25.704],
-    [52.577, -25.54],
-    [52.792, -25.312],
-    [52.941, -25.037],
-    [53.014, -24.732],
-    [53.006, -24.419],
-    [52.916, -24.119],
-    [52.672, -23.571],
-    [52.619, -23.434],
-    [52.581, -23.292],
-    [52.558, -23.147],
-    [52.55, -23],
-    [52.55, -19.4],
-    [52.509, -19.089],
-    [52.389, -18.8],
-    [52.199, -18.551],
-    [51.95, -18.361],
-    [51.661, -18.241],
-    [51.35, -18.2],
-    [51.039, -18.241],
-    [50.75, -18.361],
-    [50.501, -18.551],
-    [50.311, -18.8],
-    [50.191, -19.089]
-   ],
-   "z": 0,
-   "height": 0.52
-  },
-  {
-   "id": "civic-entrance-east",
-   "kind": "planter",
-   "polygon": [
-    [50.103, -35.18],
-    [50.287, -37.473],
-    [50.29, -37.662],
-    [50.269, -37.851],
-    [50.225, -38.036],
-    [50.033, -38.657],
-    [49.989, -38.914],
-    [50.013, -39.174],
-    [50.104, -39.419],
-    [50.254, -39.632],
-    [50.455, -39.798],
-    [50.693, -39.908],
-    [50.95, -39.951],
-    [51.21, -39.927],
-    [51.455, -39.837],
-    [51.668, -39.686],
-    [51.834, -39.485],
-    [51.943, -39.248],
-    [52.135, -38.627],
-    [52.239, -38.196],
-    [52.288, -37.756],
-    [52.281, -37.313],
-    [52.097, -35.02],
-    [52.042, -34.765],
-    [51.923, -34.532],
-    [51.748, -34.339],
-    [51.529, -34.197],
-    [51.281, -34.116],
-    [51.02, -34.103],
-    [50.765, -34.158],
-    [50.532, -34.277],
-    [50.339, -34.452],
-    [50.197, -34.671],
-    [50.116, -34.919]
-   ],
-   "z": 0,
-   "height": 0.52
-  },
-  {
    "id": "civic-facade-southwest",
    "kind": "planter",
    "polygon": [
@@ -1015,38 +998,38 @@
    "id": "civic-office-west",
    "kind": "planter",
    "polygon": [
-    [69.7, -16.45],
-    [62.9, -16.45],
-    [62.432, -16.479],
-    [61.972, -16.567],
-    [60.906, -16.839],
-    [60.725, -16.912],
-    [60.568, -17.029],
-    [60.447, -17.183],
-    [60.37, -17.363],
-    [60.342, -17.557],
-    [60.365, -17.751],
-    [60.438, -17.933],
-    [60.555, -18.089],
-    [60.709, -18.21],
-    [60.889, -18.288],
-    [61.083, -18.315],
-    [61.278, -18.292],
-    [62.343, -18.02],
-    [62.619, -17.968],
-    [62.9, -17.95],
-    [69.7, -17.95],
-    [69.894, -17.924],
-    [70.075, -17.85],
-    [70.23, -17.73],
-    [70.35, -17.575],
-    [70.424, -17.394],
-    [70.45, -17.2],
-    [70.424, -17.006],
-    [70.35, -16.825],
-    [70.23, -16.67],
-    [70.075, -16.55],
-    [69.894, -16.476]
+    [69.7, -10.15],
+    [62.9, -10.15],
+    [62.432, -10.179],
+    [61.972, -10.267],
+    [60.906, -10.539],
+    [60.725, -10.612],
+    [60.568, -10.729],
+    [60.447, -10.883],
+    [60.37, -11.063],
+    [60.342, -11.257],
+    [60.365, -11.451],
+    [60.438, -11.633],
+    [60.555, -11.789],
+    [60.709, -11.91],
+    [60.889, -11.988],
+    [61.083, -12.015],
+    [61.278, -11.992],
+    [62.343, -11.72],
+    [62.619, -11.668],
+    [62.9, -11.65],
+    [69.7, -11.65],
+    [69.894, -11.624],
+    [70.075, -11.55],
+    [70.23, -11.43],
+    [70.35, -11.275],
+    [70.424, -11.094],
+    [70.45, -10.9],
+    [70.424, -10.706],
+    [70.35, -10.525],
+    [70.23, -10.37],
+    [70.075, -10.25],
+    [69.894, -10.176]
    ],
    "z": 0,
    "height": 0.52
@@ -1552,6 +1535,33 @@
     [13, -47],
     [4, -47]
    ]
+  },
+  {
+   "id": "serviceBay",
+   "polygon": [
+    [60.5, -16.5],
+    [67, -16.5],
+    [67, -13.5],
+    [60.5, -13.5]
+   ]
+  }
+ ],
+ "drives": [
+  {
+   "id": "service-drive",
+   "polygon": [
+    [67, -16.5],
+    [80, -16.5],
+    [80, -13.5],
+    [67, -13.5]
+   ],
+   "road": "apron-road",
+   "kerb": [
+    [80, -16.5],
+    [80, -13.5]
+   ],
+   "to": "serviceBay",
+   "reason": "Sky 2026-10-19, service door east face, quiet back way: the vehicle way from Apron Road (kerb x 80) to serviceBay (x 67), 3 m wide on the bay's line (y -16.5..-13.5), 3 m clear of the wing's south-east corner (72.5, -19.5), crossing the Apron pavement (x 72.5..80) as a dropped-kerb driveway would. It was a keep-clear zone until the block could state a drive; now it is one (Splice, brief 023): the block's drives[] carries it, the world exports it as a flat at road level with the kerb dropped along x 80, y -16.5..-13.5, nothing stands on it and street items keep 2 m off it (DR-1..DR-3, SF-2, SF-18, SF-20), and the sim routes the turned driver's car over it (tools/sim/drive.ts)."
   }
  ],
  "dressing": {
@@ -1648,7 +1658,7 @@
      "bollard",
      "tree"
     ],
-    "reason": "Fountain to the foot of the public steps, over the Orbit Walk crossing x-orbit-axis (strip 4 m, y -32..-28): the long sightline that makes the Records Office door the block's far end."
+    "reason": "Fountain to the old foot of the public steps, over the Orbit Walk crossing x-orbit-axis (strip 4 m, y -32..-28): the crowd's way from the square to the Office. Sky 2026-10-19, door option (b): the door has turned onto the west face, so this axis now ends at tower-public's north face, which has no door; kept clear as the way across."
    },
    {
     "id": "pool-walk",
@@ -1699,10 +1709,10 @@
    {
     "id": "public-door",
     "polygon": [
-     [47.3, -32.56],
-     [52.5, -32.56],
-     [52.5, -27.44],
-     [47.3, -27.44]
+     [61.44, -45.7],
+     [66.56, -45.7],
+     [66.56, -40.5],
+     [61.44, -40.5]
     ],
     "bars": [
      "planter",
@@ -1711,7 +1721,7 @@
      "tree",
      "parasol"
     ],
-    "reason": "Landing, steps and 1.9 m of forecourt at their foot, cheek to cheek: 'Office approach' and 'Office entrance'."
+    "reason": "Landing, steps and 1.9 m of forecourt at their foot, cheek to cheek: 'Office approach' and 'Office entrance'. Sky 2026-10-19, door option (b), V-1: turned with the door onto the west face (was x 47.3..52.5, y -32.56..-27.44)."
    },
    {
     "id": "official-door",
@@ -1751,10 +1761,10 @@
    {
     "id": "service-lane",
     "polygon": [
-     [48, -46],
-     [77, -46],
-     [77, -40.5],
-     [48, -40.5]
+     [58.9, -19.5],
+     [72.5, -19.5],
+     [72.5, -12.1],
+     [58.9, -12.1]
     ],
     "bars": [
      "planter",
@@ -1762,7 +1772,7 @@
      "bollard",
      "tree"
     ],
-    "reason": "The west side of the office: Tech's cabinets and the walk from 'Service lane' round to both doors."
+    "reason": "Sky 2026-10-19, service door east face, quiet back way: the service yard on the wing's east face, between the face (y -19.5) and civic-office-west moved back (y -12.015), the face's length (x 58.9..72.5), serviceBay in it. 'Service lane' and the service door stand in it; the Dumpster may (the container rule skips this zone), nothing else that stands on the ground. Was the west side of the office (x 48..77, y -46..-40.5), which the public door now holds."
    }
   ],
   "pieces": [
@@ -1861,61 +1871,61 @@
    },
    {
     "piece": "RecordsEntrance",
-    "at": [52.5, -30],
-    "yawDeg": -90,
+    "at": [64, -40.5],
+    "yawDeg": 0,
     "on": [
      "office-public-landing",
      "office-public-steps"
     ],
-    "reason": "Front north, on tower-public's north face and axis.",
+    "reason": "Front west, on the wing's west face (y -40.5), door axis x 64. Sky 2026-10-19, door option (b), V-1: turned a quarter with its landing and steps from tower-public's north face (was at (52.5, -30), yaw -90, front north); the solids below turned with it. The piers are let 0.23 m into the wing face as they were into the tower's.",
     "solids": [
      {
       "id": "cheek-w",
       "polygon": [
-       [49.1, -32.56],
-       [52.5, -32.56],
-       [52.5, -32.3],
-       [49.1, -32.3]
+       [66.3, -43.9],
+       [66.56, -43.9],
+       [66.56, -40.5],
+       [66.3, -40.5]
       ]
      },
      {
       "id": "cheek-e",
       "polygon": [
-       [49.1, -27.7],
-       [52.5, -27.7],
-       [52.5, -27.44],
-       [49.1, -27.44]
+       [61.44, -43.9],
+       [61.7, -43.9],
+       [61.7, -40.5],
+       [61.44, -40.5]
       ]
      },
      {
       "id": "pier-w",
       "polygon": [
-       [51.47, -33.98],
-       [52.73, -33.98],
-       [52.73, -33.02],
-       [51.47, -33.02]
+       [67.02, -41.53],
+       [67.98, -41.53],
+       [67.98, -40.27],
+       [67.02, -40.27]
       ]
      },
      {
       "id": "pier-e",
       "polygon": [
-       [51.47, -26.98],
-       [52.73, -26.98],
-       [52.73, -26.02],
-       [51.47, -26.02]
+       [60.02, -41.53],
+       [60.98, -41.53],
+       [60.98, -40.27],
+       [60.02, -40.27]
       ]
      },
      {
       "id": "marquee",
       "polygon": [
-       [50.2, -33.11],
-       [52.5, -33.11],
-       [52.5, -26.89],
-       [50.2, -26.89]
+       [60.89, -42.3],
+       [67.11, -42.3],
+       [67.11, -40.5],
+       [60.89, -40.5]
       ],
-      "z": 4.05,
-      "height": 0.57,
-      "note": "overhead, not a blocker. The play camera (yaw 30) looks at this door from behind the 38 m tower: a person on the landing is hidden above 0.7 m, at the top riser above 1.35 m, at the foot not at all. The landing reads only through the architecture fade (brief 008: this front is an eye-level part); 'Office approach' at the foot reads without it"
+      "z": 4.5,
+      "height": 0.5,
+      "note": "overhead, not a blocker. Turned with the door (option b): the play camera (yaw 30) now looks at this door from the front, across Rocket Lane, not from behind the 38 m tower. Vela, brief 023: the marquee lifted to soffit 4.5 (was 4.05), fascia top 5.0 (was 4.62), reach 1.8 m (was 2.3), so a figure on the landing is whole under it at the play camera (Office entrance 50 % -> see briefs/023/vela)."
      }
     ]
    },
@@ -2039,17 +2049,17 @@
     },
     {
      "id": "lamp-fore-w",
-     "at": [46.6, -35.2],
-     "yawDeg": 240,
+     "at": [69.2, -47],
+     "yawDeg": 60,
      "ring": false,
-     "reason": "Office side of the crossing, 2.6 m before the stair foot. No ring: it would cross the forecourt bar (x 47.9). Nearest mission walk 1.04 m ('Service lane' to 'South walkway')."
+     "reason": "Sky 2026-10-19, door option (b): turned with the door onto the west face (was (46.6, -35.2), yaw 240, on the Office side of the crossing): 3.2 m before the stair foot (y -43.8), 5.2 m south of the door axis x 64, 3 m off the Rocket Lane kerb (y -50). Yaw 60: arms broadside to the play camera and pointing away from the axis it flanks (south); the arms reach 0.6 m east, so the pole stands 1 m outside service-lane (y -46): turned exactly (y -46.4) the arms reached into it (CD-1). 1.1 m off civic-service-cabinet-1. No ring."
     },
     {
      "id": "lamp-fore-e",
-     "at": [46.6, -24.8],
-     "yawDeg": 60,
+     "at": [58.8, -47],
+     "yawDeg": 240,
      "ring": false,
-     "reason": "Mirror. Nearest mission walk 3.46 m."
+     "reason": "Mirror of lamp-fore-w, 5.2 m north of the door axis (was (46.6, -24.8), yaw 60), 1.1 m off civic-service-cabinet-0. Yaw 240: arms north, away from the axis."
     }
    ]
   },
@@ -2242,9 +2252,8 @@
    "at": [
     {
      "id": "cyp-office-w",
-     "at": [51.2, -38],
-     "yawDeg": 0,
-     "on": "civic-entrance-east"
+     "at": [71, -42.3],
+     "yawDeg": 0
     },
     {
      "id": "cyp-facade-w",
@@ -2254,9 +2263,8 @@
     },
     {
      "id": "cyp-office-e",
-     "at": [51.2, -22],
-     "yawDeg": 140,
-     "on": "civic-entrance-west"
+     "at": [57, -42.3],
+     "yawDeg": 140
     },
     {
      "id": "cyp-facade-e",
@@ -2275,7 +2283,7 @@
      "yawDeg": 350
     }
    ],
-   "reason": "Office front: a pair each side of the public door, as the mission-block and records-office paintings show: the outer tree forward in the entrance bed (8 m off the axis), the inner one back against the wing in the facade bed (6.1 m and 6.9 m off: the two chamfers differ). All four stand in beds that are already there, so they take no ground and no walk passes; the facade pair overhangs its 1.05 m bed by 0.3 m a side and stands 0.38 m off the wing. From the play camera three of the four are behind the wing and read through the fade; cyp-office-w shows past the office's west corner. They are for the eye-level view at the Office door. Square: one at each north corner, 0.4 m inside both kerbs, 0.59 m and 0.98 m off the landings x-rocket-n and x-garden-n. They close the view either side of the café and their camera shadows (8 m, to the north-north-east) fall off the plot. None at the south corners: the crew's walk to 'Service lane' passes 1.0 m from the south-west spot and would run 8 m in the tree's camera shadow, and the planter run holds that kerb. No Handover point is hidden by any of the six. Yaws only vary the silhouette."
+   "reason": "Office front: a pair each side of the public door, as the mission-block and records-office paintings show: the outer tree forward in the entrance bed (8 m off the axis), the inner one back against the wing in the facade bed (6.1 m and 6.9 m off: the two chamfers differ). All four stand in beds that are already there, so they take no ground and no walk passes; the facade pair overhangs its 1.05 m bed by 0.3 m a side and stands 0.38 m off the wing. From the play camera three of the four are behind the wing and read through the fade; cyp-office-w shows past the office's west corner. They are for the eye-level view at the Office door. Square: one at each north corner, 0.4 m inside both kerbs, 0.59 m and 0.98 m off the landings x-rocket-n and x-garden-n. They close the view either side of the café and their camera shadows (8 m, to the north-north-east) fall off the plot. None at the south corners: the crew's walk to 'Service lane' passes 1.0 m from the south-west spot and would run 8 m in the tree's camera shadow, and the planter run holds that kerb. No Handover point is hidden by any of the six. Yaws only vary the silhouette. Sky 2026-10-19, door option (b): the public door has turned onto the west face and the paintings' pair now frames it. cyp-office-w and -e leave the removed entrance beds and stand on the ground 7 m either side of the door axis x 64, 1.8 m out from the wing face (y -42.3): (71, -42.3) south, 1.8 m off the wing's south-west corner, and (57, -42.3) north, before the north-west chamfer (cyp-facade-w stays in its bed on the chamfer). Each stands 2.5 m or more off the steps' cheeks, the pots and the service cabinets; their camera shadows fall north-north-east onto the wing, 2.6 m or more clear of 'Office entrance'. On the ground, like cyp-sq-nw/ne, they are not walk solids (civic.ts: trees stand in beds); turned beds under them are Vela's if wanted."
   },
   "topiary": {
    "piece": "PottedTopiary_Play",
@@ -2283,11 +2291,11 @@
    "at": [
     {
      "id": "top-office-w",
-     "at": [50.9, -33.45]
+     "at": [67.45, -42.1]
     },
     {
      "id": "top-office-e",
-     "at": [50.9, -26.55]
+     "at": [60.55, -42.1]
     },
     {
      "id": "top-official-w",
@@ -2306,7 +2314,7 @@
      "at": [-3.5, -21.8]
     }
    ],
-   "reason": "Public door: in the dead-end pockets in front of the pier plinths, between each cheek wall and its bed (0.21 m off the plinth, 0.53 m off the cheek, 0.3 m or more off the bed), outside public-door: steps and landing stay clear. Official door: in the two inner corners where the tower meets the wing (0.14 m off both walls), behind the face line, so the 1.5 m pavement and official-door stay clear; the west pot shows from the play camera, the east one stands behind the tower. Terrace: outside the wall where the straight front turns into each arc, 4.6 m from the gate jambs and 0.21 m off the wall; nearest walk 1.19 m ('Courtyard' to the crew line). Pots at the gate jambs or at the wall's far ends were tried and moved 49 walks, the crew line's to 'West side' by 1.4 m and to 'Courtyard' and 'Café door' by 0.4 to 0.5 m. None at the café door: cafe-palm-0 and cafe-palm-1 flank it."
+   "reason": "Public door: in the dead-end pockets in front of the pier plinths, between each cheek wall and its bed (0.21 m off the plinth, 0.53 m off the cheek, 0.3 m or more off the bed), outside public-door: steps and landing stay clear. Official door: in the two inner corners where the tower meets the wing (0.14 m off both walls), behind the face line, so the 1.5 m pavement and official-door stay clear; the west pot shows from the play camera, the east one stands behind the tower. Terrace: outside the wall where the straight front turns into each arc, 4.6 m from the gate jambs and 0.21 m off the wall; nearest walk 1.19 m ('Courtyard' to the crew line). Pots at the gate jambs or at the wall's far ends were tried and moved 49 walks, the crew line's to 'West side' by 1.4 m and to 'Courtyard' and 'Café door' by 0.4 to 0.5 m. None at the café door: cafe-palm-0 and cafe-palm-1 flank it. Sky 2026-10-19, door option (b): the public door's pair turned with the door onto the west face (were (50.9, -33.45) and (50.9, -26.55)); the entrance beds stay on the tower's north front, so each pot stands in its pocket between cheek and wing: 0.21 m off the pier plinth, 0.53 m off the cheek, inside the entrance pocket that service-lane leaves out."
   },
   "crossings": {
    "standard": "plan standards.streetscape.crossings: strip 4 m wide kerb to kerb, landing 1.8 m deep inside the kerb, stagger at most 3.5 m. `at` = the kerb point on the civic plot edge (block frame); `inward` = from the kerb into the plot; `partner` = the other landing: a civic one by id, or the district landing the generator dropped (SF-20), by its plot edge and kerb point.",
@@ -2332,7 +2340,7 @@
      "partner": {
       "id": "x-orbit-axis-n"
      },
-     "reason": "Its other landing: 5.2 m from the kerb to the foot of the steps (x 49.2), 2.8 m from the patch to 'Office approach'; lamp-fore-w and -e stand 3 m either side."
+     "reason": "Its other landing, on the office plot's north kerb. Sky 2026-10-19, door option (b): the steps and lamps that stood 5 m in front of it have turned with the door onto the west face; from here the way to the door is 20 m round the Office's north-west corner."
     },
     {
      "id": "x-starline-w",

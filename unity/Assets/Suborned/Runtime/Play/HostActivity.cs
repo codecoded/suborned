@@ -243,7 +243,7 @@ namespace Suborned.Play
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
+            line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)).Replace("{s}", Mathf.Max(1, ServingBackS(o.Target)).ToString()); // brief 022: back in {s} s // brief 018: car-held names what blocks the car (Answer.ids)
             return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }
 

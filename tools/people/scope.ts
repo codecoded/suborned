@@ -139,6 +139,8 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
     id: z.id as string, bars: (z.bars ?? []) as string[],
     test: z.ring ? (p: V) => { const c = toPlan(z.ring.centre), r = dist(p, c); return r >= z.ring.r0 && r <= z.ring.r1; } : (p: V) => inPoly(p, (z.polygon as V[]).map(toPlan)),
   }));
+  // a drive (brief 023) is a zone like the keep-clear zone it replaced (service-drive): nobody stands on it off-shift, and no table or chair is set on it
+  for (const x of civ.drives ?? []) zones.push({ id: x.id, bars: ['planter', 'lamp', 'bollard', 'tree', 'parasol', 'band'], test: (p: V) => inPoly(p, x.poly) });
   const sets = cafeSets(civ), seats: string[] = [], eligible = (p: V) => !zones.some(z => z.bars.includes('table') && z.test(p));
   const setsOut: Scope['sets'] = [];
   for (const o of sets) {

@@ -147,8 +147,9 @@ describe('the Handover\'s cover file', () => {
     const pts = made.cover.points, car = placeAt('d:Getaway bay')!, pick = (id: string, foe: boolean) => selectCover(pts, { at: placeAt(id)!, objective: car, ...(foe ? { foe: car } : {}) }, new Set())?.id ?? null;
     const got = Object.fromEntries(['ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally'].map(id => [id, [pick(id, true), pick(id, false)]]));
     expect(got).toEqual({
-      'ambush-1': ['cv-079', 'cv-079'], 'ambush-2': ['cv-046', 'cv-046'], 'ambush-3': ['cv-081', 'cv-081'], 'ambush-4': ['cv-043', 'cv-045'], 'ambush-5': ['cv-082', 'cv-082'],
-      'police-1': ['cv-043', 'cv-043'], 'police-2': ['cv-041', 'cv-041'], 'police-3': ['cv-046', 'cv-098'], 'police-4': ['cv-041', 'cv-042'], 'guard-ally': ['cv-079', 'cv-078'],
+      // 2026-10-19 (door option b): the same picks, numbered one lower from cv-078 up: the cover points are numbered in order and one earlier point went (civic-service-cabinet-1's: the block's cabinets changed with the doors, Vantage)
+      'ambush-1': ['cv-078', 'cv-078'], 'ambush-2': ['cv-046', 'cv-046'], 'ambush-3': ['cv-080', 'cv-080'], 'ambush-4': ['cv-043', 'cv-045'], 'ambush-5': ['cv-081', 'cv-081'],
+      'police-1': ['cv-043', 'cv-043'], 'police-2': ['cv-041', 'cv-041'], 'police-3': ['cv-046', 'cv-097'], 'police-4': ['cv-041', 'cv-042'], 'guard-ally': ['cv-078', 'cv-077'],
     });
     expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-046']))?.id).not.toBe('cv-046'); // two bodies never take one point
     expect(pts.filter(p => p.of === 'car/getaway').map(p => p.id)).toEqual(['cv-001', 'cv-002', 'cv-003', 'cv-004', 'cv-005', 'cv-006']);

@@ -185,7 +185,13 @@ def plathe(s, prof, mats, seg=32):
         for v in bv[i:i + n]:
             idx[v] = k
         i += n
-    for f in {f for v in bv for f in v.link_faces}:
+    seen, faces = set(), []
+    for v in bv:  # in vertex order, not set order: a set of BMFaces iterates by address, and the first use of a material fixes its slot (the FBX differed run to run, brief 020)
+        for f in v.link_faces:
+            if f not in seen:
+                seen.add(f)
+                faces.append(f)
+    for f in faces:
         f.material_index = s._mi(mats[min(idx[v] for v in f.verts)])
 
 

@@ -26,6 +26,7 @@ export function findings(cover: Cover, plan: any, block: any, site: any): Findin
   const at = (id: string): V2 => { const p = site.places[id], a = p.stand ?? p.at; return [a[0] / 100, a[1] / 100]; };
   // the dressing's keep-clear zones that bar planters: a polygon, or a ring (centre, r0..r1) about a point
   const zones = ((block.dressing?.keepClear ?? []) as { id: string; polygon?: V2[]; ring?: { centre: V2; r0: number; r1: number }; bars: string[] }[]).filter(z => z.bars.includes('planter'))
+    .concat(((block.drives ?? []) as { id: string; polygon: V2[] }[]).map(x => ({ id: x.id, polygon: x.polygon, bars: ['planter'] }))) // a drive is no ground for a planter (brief 023: it was the keep-clear zone service-drive)
     .map(z => (p: V2) => (z.polygon ? inPoly(p as V, z.polygon as V[]) : Math.hypot(p[0] - z.ring!.centre[0], p[1] - z.ring!.centre[1]) >= z.ring!.r0 && Math.hypot(p[0] - z.ring!.centre[0], p[1] - z.ring!.centre[1]) <= z.ring!.r1));
   const blockedCm = (x: number, y: number) => !grid.free(Math.floor((x * 100 - grid.x0) / grid.cell), Math.floor((y * 100 - grid.y0) / grid.cell));
   for (const a of cover.areas) {

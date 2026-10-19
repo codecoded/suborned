@@ -158,10 +158,17 @@ namespace Suborned.World
             }
             else { float s2 = s; map = q => wl.P(s2 + q.x, zc + q.y, dd); nrm = w.Out; }
             const float th = 0.22f;
-            string ink = spec.Atlas.Colour(ss.Board).grayscale < 0.45f ? "paper" : "ink";
+            string ink = ss.FixedInk ? ss.Ink : spec.Atlas.Colour(ss.Board).grayscale < 0.45f ? "paper" : "ink";
             B.Plate(ss.Board, Cls.Enamel, pts, map, nrm, th);
             if (ss.Mount == "stand" && !blade && D >= 1) B.Box("chrome", Cls.Chrome, w, s - 0.05f, s + 0.05f, ct, zc - sh * 0.35f, dd - 0.05f, dd + 0.05f);
             if (D >= 2) B.Tube(ss.Tube, Cls.Neon, pts, map, nrm, th * 0.5f + 0.012f, 0.08f, 0.07f);
+            if (D >= 2 && ss.Shape == "disc")
+            {   // Vela round 5 (briefs/020/kit/ProcShop_diner_sign_options.png, B): a planet: an orbit ring, an ellipse tilted 14° off level, wider
+                // than the disc, in front of the board; cream on a trade that fixes its sign colours, else the tube's
+                var ring = new List<Vector2>(); float ca = Mathf.Cos(14f * Mathf.Deg2Rad), sa = Mathf.Sin(14f * Mathf.Deg2Rad);
+                for (int i = 0; i < 28; i++) { float a = 2f * Mathf.PI * i / 28; var e = new Vector2(Mathf.Cos(a) * sw * 0.72f, Mathf.Sin(a) * sh * 0.16f); ring.Add(new Vector2(e.x * ca - e.y * sa, e.x * sa + e.y * ca)); }
+                B.Tube(ss.FixedInk ? ss.Ink : ss.Tube, Cls.Neon, ring, map, nrm, th * 0.5f + 0.05f, 0f, 0.07f);
+            }
             // trade icon on the board
             var prims = IconOf(ss.Icon);
             float k = Mathf.Min(sw, sh) * (ss.Shape == "bar" || ss.Shape == "arrow" ? 0.8f : 0.5f);

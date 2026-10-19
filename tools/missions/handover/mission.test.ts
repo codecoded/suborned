@@ -5,7 +5,7 @@
 // timeline test (GDD §07, entry for entry). Re-worded 2026-10-17 (Waymark, GDD v0.23.0): the 0:00 entry is §07's new words.
 // Re-pinned 2026-10-16 (Waymark, brief 014): the cell's start moved into the camera's view (the four crew rows of MOVED). Re-pinned 2026-10-14 (Waymark). Sky, 2026-10-13: "the handover mission is crucial we keep, though the timings and
 // placements can be adjusted given we've regenerated the world". What moved: the Records Office doors now stand on its tower
-// faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 'Steps' is 'Terrace gate' (the café door is
+// faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 2026-10-19 (Sky, door option b) the public door is on the wing's west face and the service door on its east face (Splice: MOVED and PLACES re-pinned; Waymark owns the file's words); 'Steps' is 'Terrace gate' (the café door is
 // flush, there are no steps; the point has not moved). No time moved: the schedule is GDD §07's clock offsets and names no
 // leg and no walking pace, so none follows from a length that changed.
 // Any other change still fails: PLACES pins the bytes as they are, and undoing MOVED and RENAMED must give back WAS, the
@@ -30,15 +30,20 @@ setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../../..'), FILE = 'contracts/missions/handover/mission.json';
 const text = (p: string) => Bun.file(resolve(root, p)).text();
 const raw = await text(FILE), mission = Mission.parse(JSON.parse(raw));
-/** Destinations, crew and routes as written: the file from `"destinations"` to its end. */
-const places = (s: string) => s.slice(s.indexOf('\n "destinations": ['));
+/** Destinations, crew and routes as written: the file from `"destinations"` to its end, without `yaw` and `hidden`. Those two say how a
+ *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), not where it stands,
+ *  so adding them moves no place and recorded runs keep their pinned places. Each is dropped with the comma it put on the line before. */
+const places = (s: string) => s.slice(s.indexOf('\n "destinations": [')).replace(/,\n {3}"(?:yaw|hidden)": (?:\d+|"(?:[^"\\]|\\.)*")(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
-const PLACES = 'c71d2774843a1b094f144809900181d5180408251ae74f3914b1babcef6e3a62'; // sha256 of places() now: WAS with MOVED and RENAMED applied
+const PLACES = '4f9fbebf0ee133e8a0dba471cf8ced9887cd56137ce02eec280f741d5b4ef39c'; // sha256 of places() now: WAS with MOVED and RENAMED applied
 /** Every point re-sited since WAS: name, from, to (block frame, m). */
 const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
-  ['Office approach', [52, -30.5], [48.6, -30]], // the foot of the public door steps, 0.6 m before the first riser
-  ['Office entrance', [54.65, -30.5], [51.75, -30]], // the public door landing, 0.75 m off tower-public's north face
+  // door option b (Sky 2026-10-19; Vantage, brief 023): the public door and forecourt moved from tower-public's north face onto the Office wing's west face, onto Rocket Lane
+  ['Office approach', [52, -30.5], [64, -44.4]], // the foot of the public door steps on the west forecourt, 0.6 m before the first riser
+  ['Office entrance', [54.65, -30.5], [64, -41.25]], // the public door landing on the wing's west face (y -40.5), 0.75 m up
+  ['Service lane', [62.5, -43.2], [62.5, -16.8]], // the service door moved to the wing's east face (Sky 2026-10-19, same round): the point stands in the yard outside it
+  ['South walkway', [26.6, -17], [26.6, -23]], // the walkway's point follows the new front (Vantage, brief 023)
   ['Official entrance', [73.25, -31], [76.25, -30]], // the flush official door, 0.75 m off tower-official's south face
   ['Meet Vale', [73.25, -31], [76.25, -30]], // the same point as Official entrance, as before
   ['Under parasol', [-7.92, -23.88], [-8.1, -23.7]], // off cafe-table-2's footprint (1.16 m from its centre, inside body clearance) onto free ground 1.41 m from it, still under the parasol's canopy, 0.3 m inside its ring (Pulse, Aster; Vantage's civic-dress test: the canopy is overhead)
@@ -80,8 +85,8 @@ describe('handover mission file', () => {
     expect(broken(m => { m.roles[3].leavesTo.at = 'Nowhere'; })).toBe(false);
     expect(broken(m => { delete m.roles[2].at; })).toBe(false); // alone, and nowhere
     // the engine's points and cameras (brief 011 B, Suture O-6): mission content, read into the site by tools/sim/site.ts
-    expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'block-spot',
-      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally']); // the final fight's posts since engine 0.4.0
+    expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'service-bay', 'block-spot',
+      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally']); // the final fight's posts since engine 0.4.0; service-bay, the turned driver's car in the east yard's serviceBay (2026-10-19, brief 023)
     expect(mission.arms?.sidearms).toBe(3); // GDD §07 Arms 3
     expect(mission.rivals?.public).toBe('menace'); // briefs/014/motive-standing.md rule 4: the Handover's rivals are feared (fight.public)
     expect(mission.cameras!.map(c => `${c.id}>${c.looksAt}`)).toEqual(['entrance>Office entrance', 'pickup>Official drop-off']);
@@ -165,8 +170,9 @@ describe('handover mission file', () => {
   test('the overlay still passes on the world (people that meet the roles), and every event names a plan area', async () => {
     const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
     const R = check(plan, derive(plan), civic(plan.civic, block), false, overlay(plan, block, play(await people()))), by = (id: string) => R.checks.find(c => c.id === id)!;
-    // V-1 (Vantage, 2026-10-15) fails until Sky picks an option for the public door (briefs/011/vantage-visibility.md); then this expects []
-    expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual(['V-1']);
+    // V-1 passes since Sky's pick (h) (2026-10-18; briefs/011/vantage/door-recheck.json): the Office front is played at yaw 210 and the
+    // two hiding places carry their reasons (tools/missions/handover/visibility.test.ts)
+    expect(R.checks.filter(c => !c.ok).map(c => c.id)).toEqual([]);
     expect(by('C-3').value).toBe(`${mission.destinations.length}/${mission.destinations.length}`);
     expect(by('W-4').value).toBe('2/2'); // the overlay's walk origins (standards.walking.from): Café door, Office entrance
     expect(by('M-1').ok).toBe(true);

@@ -16,7 +16,7 @@ export const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NO
 export const hasDotnet = () => !!Bun.which('dotnet');
 
 /** An order in the engine's format (suborned.sim.script/1, sim/Suborned.Sim/Script.cs). */
-export type Order = { tick: number; op?: 'scout' | 'fixer' | 'tech' | 'enforcer'; do: string; to?: string | number[]; target?: string; approach?: string; how?: 'knockout' | 'kill' };
+export type Order = { tick: number; op?: 'scout' | 'fixer' | 'tech' | 'enforcer'; do: string; to?: string | number[]; target?: string; approach?: string; how?: 'knockout' | 'kill'; run?: boolean; face?: number; release?: boolean }; // face, release: brief 025's drive samples (engine 0.9.0)
 export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; note?: string; start: Record<string, unknown>; orders: Order[]; until: number };
 /** What a play reports (sim/Suborned.Sim/Script.cs Report.Json); the checker keeps all of it in memory and records a digest. */
 export type Play = {

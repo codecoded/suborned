@@ -14,6 +14,8 @@ export type Civic = {
   structures: { id: string; name: string; category: string; poly: V[]; height: number; z: number }[];
   objects: { id: string; kind: string; poly: V[]; height: number; z: number }[];
   bays: { id: string; poly: V[] }[];
+  /** Drives (block/4 `drives`, brief 023): the vehicle crossings from a road's carriageway across a plot's pavement to a bay that touches no road, plan frame. `road` = the plan road it leaves, `kerb` = the segment of its kerb the drive crosses, `to` = the bay it reaches. Absent on a pinned older block (read as none). */
+  drives: { id: string; poly: V[]; road: string; kerb: [V, V]; to: string }[];
   /** The doors people use: public and official (block/4 `kind`, absent = public). The consumers of "the door" (the cast's places, the crowd's refuges, the people tools) read this list only. */
   entrances: { id: string; name: string; building: string; p: V; z: number; kind: EntranceKind }[];
   /** The service doors (brief 013: `kind: 'service'`, staff and goods): stashes for the checker and the engine, a walk origin so the checker proves them reachable, but not a place the cast or the crowd uses. */
@@ -70,6 +72,7 @@ export function civic(spec: any, block: any): Civic {
     structures: block.structures.map(({ polygon, ...s }: any) => ({ ...s, poly: polygon.map(toPlan) })),
     objects: block.objects.map(({ polygon, ...x }: any) => ({ ...x, poly: polygon.map(toPlan) })),
     bays: block.bays.map((b: any) => ({ id: b.id, poly: b.polygon.map(toPlan) })),
+    drives: (block.drives ?? []).map((x: any) => ({ id: x.id, poly: x.polygon.map(toPlan), road: x.road, kerb: x.kerb.map(toPlan) as [V, V], to: x.to })),
     entrances, serviceDoors,
     walkFrom: doors.map((e: any) => ({ name: e.name, p: e.p })),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),

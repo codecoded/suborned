@@ -1,0 +1,46 @@
+{
+ "schema": "suborned.builds/1",
+ "note": "One entry per game build sent (tools/game/cli.ts --send). whatsNew is one line, filled by Aster.",
+ "builds": [
+  {
+   "build": 1,
+   "version": "0.2.1",
+   "date": "2026-10-19T05:40:00.000Z",
+   "builtAt": "2026-10-19T05:23:33.6362290Z",
+   "sha": "8bf8ce6",
+   "dirty": true,
+   "engine": "0.8.2",
+   "engineSource": "working tree on 8bf8ce66770c (uncommitted engine or input changes)",
+   "dllSha256": "676ca6ec0670e0f8e110799995f896c6c60bcf1730b27241dd8f282d0ee940ce",
+   "recording": "c023",
+   "zip": "TheSuborned-0.2.1.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-10-19T05:40:00.000Z"
+    }
+   ],
+   "whatsNew": "First numbered build: patrol panel crash fixed (PanelGuard test), camera lab on P, Office public door west / service door east with yard, drive and nose-in bay, cars on roads only, walkable pavements district-wide, call boxes re-sited, crowd spread, fire ends with the final fight, 'Turn twice: Q Q'. Logged by hand: the send crashed in logSent after the file was delivered (fixed)."
+  },
+  {
+   "build": 2,
+   "version": "0.2.2",
+   "date": "2026-10-19T06:43:03.871Z",
+   "builtAt": "2026-10-19T06:28:14.2512500Z",
+   "sha": "8bf8ce6",
+   "dirty": true,
+   "engine": "0.9.0",
+   "engineSource": "working tree on 8bf8ce66770c (uncommitted engine or input changes)",
+   "dllSha256": "7c743c1482dcf57c27d048e7e5d82f04820b8435a6fba924ed198ed8b8d65ee5",
+   "recording": "c024",
+   "zip": "TheSuborned-0.2.2.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-10-19T06:43:03.871Z"
+    }
+   ],
+   "whatsNew": "Take control (brief 025): T drives the selected agent (WASD, Shift/G run, drag orbit), E acts on the nearest with its price, T or a click lets go; explore toggle holds the clock; P panel playground switches (pace, onBusy, onRelease, people gap); engine 0.9.0, c024."
+  }
+ ]
+}

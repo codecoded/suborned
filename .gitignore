@@ -25,6 +25,9 @@ unity/Assets/Scenes/HarbourDistrict.unity.meta
 # DecoKit binaries copied by `bun run kit` (brief 006 A); catalogue = contracts/world/kit.json
 unity/Assets/Suborned/Kit/
 unity/Assets/Suborned/Kit.meta
+# Stand-in people mirrored by `bun tools/figures/run.ts --install` (brief 020); manifest = briefs/020/people/manifest.json
+unity/Assets/Suborned/People/
+unity/Assets/Suborned/People.meta
 unity/Assets/Scenes/probe-*
 unity/Assets/Scenes/probe-*.meta
 unity/*.slnx
@@ -48,3 +51,12 @@ unity/Assets/StreamingAssets.meta
 # C# engine build output (brief 011 A)
 sim/**/bin/
 sim/**/obj/
+
+# Screenshots, renders and test captures in briefs stay on disk, out of git (Sky, 2026-10-19). Images a tool reads are kept.
+briefs/**/*.png
+briefs/**/*.jpg
+briefs/**/*.jpeg
+briefs/**/*.webp
+briefs/**/*.mp4
+briefs/**/*.mov
+!briefs/020/people/cell-lineup-latest.png

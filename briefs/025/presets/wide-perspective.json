@@ -1,0 +1,33 @@
+{
+    "name": "wide-perspective",
+    "overhead": {
+        "zoom": 40.0,
+        "zoomMin": 5.0,
+        "zoomMax": 120.0,
+        "pitch": 50.0,
+        "freeYaw": false,
+        "perspective": true,
+        "fov": 35.0
+    },
+    "follow": {
+        "distance": 5.5,
+        "distanceMin": 3.0,
+        "distanceMax": 10.0,
+        "height": 1.2999999523162842,
+        "rise": 0.3199999928474426,
+        "pitch": -1.0,
+        "lookAhead": 8.0,
+        "lookHeight": 1.350000023841858,
+        "shoulder": 0.0,
+        "fov": 55.0,
+        "orbitDrag": true,
+        "orbitDegPerPixel": 0.25,
+        "collision": true,
+        "smoothing": 0.20000000298023224
+    },
+    "wheel": {
+        "proportional": true,
+        "rate": 0.07999999821186066,
+        "step": 0.5
+    }
+}

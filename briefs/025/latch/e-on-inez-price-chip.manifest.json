@@ -1,0 +1,13 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "image", "x": 1700, "y": 1939, "w": 52, "h": 52, "text": "hint reopen"},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 110, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 54, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "image", "x": 468, "y": 1843, "w": 167, "h": 60, "text": "follow view chip"},
+  {"kind": "image", "x": 3271, "y": 24, "w": 157, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

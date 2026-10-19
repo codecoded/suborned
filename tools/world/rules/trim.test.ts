@@ -52,19 +52,19 @@ describe('SF-21 on the live world', () => {
     expect(parts.filter(p => /\/mullion-\d$/.test(p.id)).length).toBe(44);
   });
 
-  test('fails on the export as it was: each key put back to trim names its parts (486 in all)', () => {
-    const per: [string, number][] = [[CANOPY, 2], [PLATE, 142], [BOOTH, 68], [TUB, 198], [CRANE, 8], [GIRDER, 8], [HOOP, 60]];
+  test('fails on the export as it was: each key put back to trim names its parts (220 in all; the 198 tub palms and the 67 phone booths are kit pieces since brief 020 and have no procedural parts)', () => {
+    const per: [string, number][] = [[CANOPY, 2], [PLATE, 142], [CRANE, 8], [GIRDER, 8], [HOOP, 60]];
     for (const [key, n] of per) {
       const { w, check } = sf21(w => { for (const x of owned(w)) if (x.surface === key) x.surface = 'trim'; });
       expect(broadParts(w).length, key).toBe(n);
       expect(check.ok, key).toBe(false);
       expect(check.detail, key).toContain(`${n} fail: `);
     }
-    expect(per.reduce((t, [, n]) => t + n, 0)).toBe(486);
+    expect(per.reduce((t, [, n]) => t + n, 0)).toBe(220);
     const all = sf21(w => { for (const x of owned(w, LARGE)) x.surface = 'trim'; });
-    expect(broadParts(all.w).length).toBe(486);
+    expect(broadParts(all.w).length).toBe(220);
     expect(broadParts(all.w)).toContain('mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)');
-    expect(all.check.detail).toContain('486 fail: street/stop/T1/comet/l/phone-booth-13 (phone-booth box 1 x 1 x 2.5 m, face 1 x 2.5 m)'); // the first six are named, the rest counted
+    expect(all.check.detail).toContain('220 fail: mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)'); // the first six are named, the rest counted
   });
 
   test('brief 009: a crossing\'s arcs (322), eyes (207) and lit strip modules (747, 3.9 m across) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {

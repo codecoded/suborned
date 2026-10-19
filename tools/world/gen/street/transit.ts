@@ -43,7 +43,9 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     const tr = tracks.reduce((best, l) => (lineDist(c, l) < lineDist(c, best) ? l : best)), nearest = tr.reduce((b, q) => (dist(q, c) < dist(b, c) ? q : b));
     const out = norm(sub(c, nearest)), yaw = Math.atan2(u[1], u[0]), top = 0.3, id = m.id;
     const at = (s: number, o: number): V => [c[0] + u[0] * s + out[0] * o, c[1] + u[1] * s + out[1] * o];
-    L.add('tram-shelter', at(0, w / 2 - 0.75), yaw, top, id, { force: true });
+    // brief 020: both platforms of a stop share the platform's yaw, so one of the pair would face away from its track. A shelter piece's open front is its +Z (yaw + 90 degrees; BusShelter_Play's glass back is at -Z, measured in the engine): turn it to face the track, i.e. toward -out
+    const shYaw = Math.cos(yaw + Math.PI / 2) * out[0] + Math.sin(yaw + Math.PI / 2) * out[1] > 0 ? Math.atan2(Math.sin(yaw + Math.PI), Math.cos(yaw + Math.PI)) : yaw;
+    L.add('tram-shelter', at(0, w / 2 - 0.75), shYaw, top, id, { force: true });
     for (const s of [-2, 2]) L.add('bench', at(s, w / 2 - 0.55), yaw, top, id, { force: true });
     L.add('ticket-machine', at(len / 2 - 1.2, 0), yaw, top, id, { size: [0.8, 0.6, 1.8], force: true });
     L.add('timetable-column', at(-len / 2 + 1.2, 0), yaw, top, id, { size: [0.4, 0.4, 2.6], variant: 'coral-dial', force: true });

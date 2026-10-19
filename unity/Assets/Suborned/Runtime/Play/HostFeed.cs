@@ -73,7 +73,7 @@ namespace Suborned.Play
                 {
                     string target = op.Busy?.Target ?? "", approach = op.Busy?.Approach ?? "", verb = d.Verb == "turn" ? approach : d.Verb;
                     var label = Text?.Action(verb, target).label ?? verb;
-                    string kind = d.Verb is "watch" or "listen" ? "learned" : d.Verb == "turn" ? "approach" : "learned";
+                    string kind = d.Verb is "watch" or "listen" ? "learned" : d.Verb == "turn" ? "approach" : "act"; // Glyph 022: an order the cell carried out (Enter, Loop, Reroute) is not something learned: its own kind, the neutral bar, not under Learned
                     var place = IsRole(target) ? TargetWorld(new Target { Kind = "person", Key = target }) : (Vector3?)frame.World(op.Pos);
                     c = actCard[k] = NewCard(kind, label, Glyph(d.Verb, approach), $"{(target.Length > 0 && IsRole(target) ? Name(target) + " · " : "")}{PlaceWords(target)}".Trim(' ', '·'), place, IsRole(target) ? target : "op/" + Op.Name((OpId)k));
                     c.Agent = k; c.Verb = verb; c.Target = target; c.Live = true; c.Paid = op.BusyPaid;
@@ -161,8 +161,8 @@ namespace Suborned.Play
                         c.Tone = Feedback.Ok;
                         return $"Learned: what {who} sees{(k.Routine && k.RoutineNeedsS > 0 ? ", and its rounds" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its rounds)" : "")}.";
                     }
-                case "watch": { var p = g.PersonByRole(c.Target); return p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
-                case "listen": { var p = g.PersonByRole(c.Target); return !p.KNeed && !p.KTemperament ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
+                case "watch": { var p = CastOf(c.Target); return p == null ? "Nothing learned." : p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
+                case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is tied to the cabinet." : "The loop didn't hold.";
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
                 case "mislead": c.Tone = g.RivalsPresent ? Feedback.Info : Feedback.Ok; return g.RivalsPresent ? "The tip missed." : "The rivals follow the false tip. They may be back.";
@@ -216,7 +216,7 @@ namespace Suborned.Play
         void FeedCall(string role)
         {
             if (Text == null) return;
-            var p = Game.PersonByRole(role);
+            var p = CastOf(role); if (p == null) return; // a call is on a turned cast person only
             var sc = Text.LookupScene(new PlayText.SceneQuery { Kind = "call", Verb = "call", About = role, Temperament = p.Temperament });
             var c = NewCard("call", Text.Action("call", role).label, "call", $"{Name(role)} · {PlaceWords(role)}", TargetWorld(new Target { Kind = "person", Key = role }), role);
             c.Agent = (int)OpId.Fixer; c.Verb = "call"; c.Target = role;
@@ -230,7 +230,7 @@ namespace Suborned.Play
         void FeedSummonRefused(string role, Order o, Answer a)
         {
             if (Text == null) return;
-            var p = Game.PersonByRole(role);
+            var p = CastOf(role); if (p == null) return;
             var c = NewCard("call", Text.Action("call", role).label, "call", $"{Name(role)} · {PlaceWords(role)}", TargetWorld(new Target { Kind = "person", Key = role }), role);
             c.Agent = (int)OpId.Fixer; c.Verb = "call"; c.Target = role; c.Tone = Feedback.Refused;
             foreach (var sp in new[] { role, p.Lover?.Role }) if (sp != null && Text.Pick(new PlayText.Query { Event = "summon-refused", Speaker = sp, Outcome = a.code }) is string line) Add(c, sp, Fill(line, Name(sp)));
@@ -308,7 +308,7 @@ namespace Suborned.Play
                 case "fight.loud": return $"{Num()} officers, from the north street." + (g.Lockdown < int.MaxValue / 8 ? $" The district seals at {MissionClock(g.Lockdown)}." : "");
                 case "fight.safe": return $"{Num()} of them. The car can't leave while they stand.";
                 case "fight.ambush": return t.Contains("warning") ? "Inez's warning came in time. You saw it first." : "The rivals open fire at the car.";
-                case "fight.over": return "The last of them is down or gone. The car can go.";
+                case "fight.over": return Text?.CardFor("fight.over")?.Result is { Length: > 0 } fo ? fo : "The last of them is down or gone. Fire orders end. The car can go."; // Fable's card (text.json cards.items["fight.over"].result)
                 case "captured": return t;
             }
             return l.Code.EndsWith(".down") ? "Another agent can carry them." : "";

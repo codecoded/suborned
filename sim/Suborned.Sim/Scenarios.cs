@@ -29,8 +29,19 @@ namespace Suborned.Sim
             return v is IFormattable f ? f.ToString(null, System.Globalization.CultureInfo.InvariantCulture) : v?.ToString() ?? "";
         }
         /// <summary>Give an order now and check it was taken.</summary>
+        /// <summary>Brief 022: a player who means to speak to (or watch) a server who works her round waits until she is back at her post (the
+        /// HUD's "back in n s", Game.RoundNext); a held server is already standing still. Off-round, or for anyone else, nothing waits.</summary>
+        public void ForHer(string verb, string target)
+        {
+            if (!G.RoundsOn || (verb != "listen" && verb != "watch" && verb != "turn") || target.Length == 0) return;
+            Person? p = null; foreach (var x in G.People) if (x.Role == target || x.Id == target) p = x;
+            if (p == null || p.Down) return;
+            var pose = G.PersonPose(p); if (pose.HasValue && pose.Value.phase == "held") return;
+            int n = G.RoundNext(p); if (n > 0) G.RunTo(G.Tick + n);
+        }
         public bool Do(string op, string verb, string target = "", string approach = "")
         {
+            ForHer(verb, target);
             var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target, Approach = approach });
             return Is(ok, $"{op} {verb} {target} {approach} taken at {Report.Clock(G.Tick)}{(ok ? "" : ": " + why)}".Replace("  ", " "));
         }
@@ -40,7 +51,8 @@ namespace Suborned.Sim
             var (ok, _) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target, Approach = approach });
             return Is(!ok, what);
         }
-        public bool Try(string op, string verb, string target = "", string approach = "") => G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target, Approach = approach }).ok;
+        public bool Try(string op, string verb, string target = "", string approach = "") { ForHer(verb, target); return TryNow(op, verb, target, approach); }
+        bool TryNow(string op, string verb, string target, string approach) => G.Issue(new Order { Tick = G.Tick, Op = op, Do = verb, Target = target, Approach = approach }).ok;
         /// <summary>Send an operative to a place; returns the tick they arrive.</summary>
         public int Send(string op, string place, bool run = false)
         {
@@ -147,6 +159,8 @@ namespace Suborned.Sim
                 Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
                        free, Math.Max(1, (end - G.Tick) / Game.Hz), ops.ToArray(), true);
                 if (G.Over || G.Tick >= end) return;
+                // the fight is over: the engine ends the fire orders still open on the broken crew (rulebook fight.over, Motive 2026-10-19),
+                // so the helper calls nothing off (the cease it gave here before 0.8.2 is gone; N95 holds without it)
                 if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
                 {
                     int at = SendTo("enforcer", G.S.Stand(G.S.GetawayCar));

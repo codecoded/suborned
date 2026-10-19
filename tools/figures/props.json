@@ -1,0 +1,73 @@
+{
+ "note": "Held props for the stand-in people (brief 022, Forma). One FBX each under People/Props/<id>/, URP Lit materials beside it, and the attach data Latch reads: the Humanoid bone, the clips it is shown with, and the local offset per figure. The prop's origin is the point that rests on the palm (the middle of the tray's underside); its +Y is up when the palm faces up, its +Z points the way the hand's fingers point. Held props belong to the people; tableware on a table or a counter is world kit (Vela, DecoKit).",
+ "props": [
+  {
+   "id": "tray",
+   "label": "Serving tray with a cup: round cream enamel tray, chrome rim, one brass inlay line, a cream cup and saucer with coffee, a chrome spoon (1950s diner, centuries-ahead enamel and chrome; brass only as the thin line)",
+   "builder": "tray",
+   "bone": "RightHand",
+   "clips": [
+    "serve",
+    "serve_walk"
+   ],
+   "size": {
+    "diameterM": 0.32,
+    "heightM": 0.075
+   },
+   "attach": {
+    "note": "Parent the prop to the figure's Humanoid RightHand bone (Animator.GetBoneTransform(HumanBodyBones.RightHand)), then set localPosition and localEulerAngles (Quaternion.Euler) from the figure's row; localScale 1. The offsets seat the tray level on the palm, centred a palm-length along the hand, 4 cm above the bone line, measured on the figure playing `serve` at phase 0.3 in a scratch project (tools/figures/scratch/FigProp.cs); they are per rig because the figures' hand bones have different local axes (the waitress, cafe_w5 and cafe_w2/cafe_w3 pairs). Checked against `serve_walk` at four phases: the tray stays level and on the hand. Show the tray only while the clip is `serve` or `serve_walk`; hide it (SetActive(false)) in every other state.",
+    "bone": "RightHand",
+    "perFigure": {
+     "waitress": {
+      "localPosition": [
+       0.0114,
+       0.0475,
+       -0.0442
+      ],
+      "localEuler": [
+       280.4,
+       98.1,
+       258.4
+      ]
+     },
+     "cafe_w2": {
+      "localPosition": [
+       0.0001,
+       0.045,
+       -0.0481
+      ],
+      "localEuler": [
+       277.7,
+       215.0,
+       139.9
+      ]
+     },
+     "cafe_w3": {
+      "localPosition": [
+       0.0001,
+       0.045,
+       -0.0481
+      ],
+      "localEuler": [
+       277.7,
+       215.0,
+       139.9
+      ]
+     },
+     "cafe_w5": {
+      "localPosition": [
+       0.017,
+       0.0463,
+       -0.0438
+      ],
+      "localEuler": [
+       282.5,
+       96.6,
+       254.7
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

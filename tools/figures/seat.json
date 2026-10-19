@@ -1,0 +1,262 @@
+{
+ "note": "Seated clips on the caf\u00e9 chair (brief 022, Forma, 2026-10-19). Measured in Unity 6000.6.2f1 on each figure's LOD0 mesh playing `sit` (scratch project, tools/figures/scratch/FigSit.cs) with the root on the chair's foot centre; the numbers are metres in the chair's frame. Re-measure after a figure or clip change.",
+ "chair": {
+  "piece": "CafeChair_Tulip (drawn on the block as CafeSet_Tulip_Play)",
+  "source": "tools/decokit/furnish_cafe.py tulip_chair",
+  "seatAtM": "chair centre = the foot centre = the `at` point; the seat bowl is centred on it",
+  "bowlTopUp": 0.462,
+  "cushionTopUp": 0.474,
+  "cushionRadius": 0.198,
+  "backTopUp": 0.83,
+  "backInnerForward": -0.25,
+  "facing": "toward the table; chairs at -60, 60 and 180 degrees on a 0.72 m circle round the table pivot (tools/people/seats.ts CAFE_SET)"
+ },
+ "contract": "Object (figure root, feet level) at world position = chair `at` point on the ground the chair stands on, + (0, rootUp, 0) + rootForward along the figure's heading; heading = from the chair toward the table pivot (the figure faces +Z, as everywhere). The clips already put the pelvis over the root, so the offset is zero for the pooled commuters (rootUp, rootForward below are 0 for the Hunyuan C1-rig figures) and a few cm for the figures with their own rig.",
+ "hipsBone": "Hips bone, rig-relative, with the root offsets applied: about 0.65 m above the chair's floor and 0.04 m behind its centre (hipsBoneUp, hipsBoneForward per figure). 0.46 m is the seat: the underside of the thighs rests at 0.43 to 0.47 m; the Hips bone is the pelvis centre, about 0.19 m above that.",
+ "clips": {
+  "sit": "4.3 s loop",
+  "sit_alt": "7 s loop",
+  "sit_talk": "44 s loop with hand gestures",
+  "stand_to_sit": "2.3 s, once; starts standing over the seat, ends on the first frame of sit",
+  "sit_to_stand": "2.3 s, once; starts on the sit pose, ends standing over the seat"
+ },
+ "chaining": "stand_to_sit then sit (or sit_alt, sit_talk): CrossFadeInFixedTime 0.15 s at its end. sit_to_stand then idle: at its end move the object off the chair to the stand point (the figure stands over the seat, inside the chair) in the same frame you switch to idle, or walk.",
+ "knownGaps": [
+  "The sitter's toes reach 0.41 to 0.55 m in front of the chair centre; the table's pedestal foot starts at 0.45 m: shoes may overlap its rim by up to 0.1 m (hidden at play zoom).",
+  "Skirt and dress hems hang below the thigh and pass 4 to 8 cm into the seat bowl (hidden by the body from above).",
+  "Feet float 1 to 4 cm above the floor (the library clip was captured on a 0.43 m chair, the caf\u00e9's is 0.462 to 0.474 m).",
+  "Enforcer, guard and security: their long coat or own rig make the thigh line sit lower than the feet; see soleAboveFloor."
+ ],
+ "perFigure": {
+  "c1": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.022,
+   "thighUndersideUp": 0.512,
+   "torsoBackForward": -0.213,
+   "toeFrontForward": 0.486
+  },
+  "c6": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.022,
+   "thighUndersideUp": 0.398,
+   "torsoBackForward": -0.17,
+   "toeFrontForward": 0.485
+  },
+  "cafe_w2": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.026,
+   "thighUndersideUp": 0.469,
+   "torsoBackForward": -0.174,
+   "toeFrontForward": 0.545
+  },
+  "cafe_w3": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.02,
+   "thighUndersideUp": 0.481,
+   "torsoBackForward": -0.151,
+   "toeFrontForward": 0.472
+  },
+  "cafe_w5": {
+   "rootUp": -0.016,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.676,
+   "hipsBoneForward": -0.038,
+   "soleAboveFloor": -0.003,
+   "thighUndersideUp": 0.471,
+   "torsoBackForward": -0.17,
+   "toeFrontForward": 0.446
+  },
+  "councillor": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.02,
+   "thighUndersideUp": 0.448,
+   "torsoBackForward": -0.199,
+   "toeFrontForward": 0.455
+  },
+  "d2m": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.021,
+   "thighUndersideUp": 0.432,
+   "torsoBackForward": -0.191,
+   "toeFrontForward": 0.464
+  },
+  "d4": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.021,
+   "thighUndersideUp": 0.449,
+   "torsoBackForward": -0.19,
+   "toeFrontForward": 0.453
+  },
+  "d4b": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.021,
+   "thighUndersideUp": 0.449,
+   "torsoBackForward": -0.19,
+   "toeFrontForward": 0.453
+  },
+  "d5c": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.016,
+   "thighUndersideUp": 0.413,
+   "torsoBackForward": -0.185,
+   "toeFrontForward": 0.529
+  },
+  "d6": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.022,
+   "thighUndersideUp": 0.378,
+   "torsoBackForward": -0.168,
+   "toeFrontForward": 0.475
+  },
+  "driver": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.021,
+   "thighUndersideUp": 0.431,
+   "torsoBackForward": -0.191,
+   "toeFrontForward": 0.463
+  },
+  "el1": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.015,
+   "thighUndersideUp": 0.468,
+   "torsoBackForward": -0.162,
+   "toeFrontForward": 0.443
+  },
+  "enforcer": {
+   "rootUp": -0.034,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.605,
+   "hipsBoneForward": -0.077,
+   "soleAboveFloor": 0.036,
+   "thighUndersideUp": 0.293,
+   "torsoBackForward": -0.199,
+   "toeFrontForward": 0.537
+  },
+  "fixer": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.022,
+   "thighUndersideUp": 0.455,
+   "torsoBackForward": -0.178,
+   "toeFrontForward": 0.486
+  },
+  "guard": {
+   "rootUp": -0.031,
+   "rootForward": 0.03,
+   "hipsBoneUp": 0.641,
+   "hipsBoneForward": -0.019,
+   "soleAboveFloor": 0.039,
+   "thighUndersideUp": 0.448,
+   "torsoBackForward": -0.227,
+   "toeFrontForward": 0.483
+  },
+  "rival": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.015,
+   "thighUndersideUp": 0.418,
+   "torsoBackForward": -0.225,
+   "toeFrontForward": 0.469
+  },
+  "scout": {
+   "rootUp": -0.033,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.674,
+   "hipsBoneForward": -0.054,
+   "soleAboveFloor": 0.006,
+   "thighUndersideUp": 0.472,
+   "torsoBackForward": -0.22,
+   "toeFrontForward": 0.472
+  },
+  "security": {
+   "rootUp": -0.031,
+   "rootForward": 0.03,
+   "hipsBoneUp": 0.641,
+   "hipsBoneForward": -0.019,
+   "soleAboveFloor": 0.039,
+   "thighUndersideUp": 0.449,
+   "torsoBackForward": -0.219,
+   "toeFrontForward": 0.484
+  },
+  "sh2": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.011,
+   "thighUndersideUp": 0.376,
+   "torsoBackForward": -0.229,
+   "toeFrontForward": 0.423
+  },
+  "tech": {
+   "rootUp": -0.009,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.666,
+   "hipsBoneForward": -0.053,
+   "soleAboveFloor": 0.011,
+   "thighUndersideUp": 0.443,
+   "torsoBackForward": -0.224,
+   "toeFrontForward": 0.468
+  },
+  "waitress": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.658,
+   "hipsBoneForward": -0.046,
+   "soleAboveFloor": 0.021,
+   "thighUndersideUp": 0.459,
+   "torsoBackForward": -0.175,
+   "toeFrontForward": 0.409
+  },
+  "workers_d5": {
+   "rootUp": 0.0,
+   "rootForward": 0.0,
+   "hipsBoneUp": 0.654,
+   "hipsBoneForward": -0.037,
+   "soleAboveFloor": 0.015,
+   "thighUndersideUp": 0.418,
+   "torsoBackForward": -0.222,
+   "toeFrontForward": 0.469
+  }
+ }
+}

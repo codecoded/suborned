@@ -18,7 +18,7 @@ namespace Suborned.Play
         public static bool ShotBusy { get; private set; }
         public static string LastShot { get; private set; } = "";
 
-        /// <summary>Queue a capture to `basePath` (absolute, no extension); `state` is rest, active or alt. Poll ShotBusy.</summary>
+        /// <summary>Queue a capture to `basePath` (absolute, no extension); `state` is rest, active or alt (rest becomes briefing while the briefing card is up, log while the history panel is open). Poll ShotBusy.</summary>
         public static string Shoot(string basePath, string state)
         {
             if (live == null || !live.on) return "the kit view is not drawing";
@@ -34,6 +34,8 @@ namespace Suborned.Play
             var full = ScreenCapture.CaptureScreenshotAsTexture();
             int w = full.width, h = full.height;
             File.WriteAllBytes(basePath + ".png", full.EncodeToPNG());
+            if (state == "rest" && host != null && host.ShowBriefing) state = "briefing"; // Splice's budget state for the briefing card (modal)
+            else if (state == "rest" && host != null && host.FeedHistoryOpen) state = "log"; // Splice's budget state for the open history panel (a reading surface, 18 %)
             File.WriteAllText(basePath + ".manifest.json", Manifest(state, h));
             File.WriteAllText(basePath + ".parts.json", Parts(h)); // brief 014 round 2: every visible HUD part's rect, for the 2x inspection crops
             Destroy(full);
@@ -150,7 +152,9 @@ namespace Suborned.Play
                 int i = 0; foreach (var c in e.Children()) Walk(c, $"{path}/{(c.name.Length > 0 ? c.name : c.GetType().Name)}[{i++}]");
             }
             Walk(live.root, "hud");
+            FeedAudit(bad);
             EndCardAudit(bad);
+            EndButtonAudit(bad);
             return bad;
         }
 
@@ -158,6 +162,34 @@ namespace Suborned.Play
         /// line text.json can put there (less.end win, withdraw and each fail) is measured at the card's narrow width (400 less its 30 px
         /// padding each side), whether or not the card is open, so a new or longer line fails here first (the 379 px "The rival crew got to
         /// Vale first" in a 340 px box, 2026-10-18).</summary>
+        /// <summary>Sky 2026-10-18 (rows drawn over each other): every feed row holds its own lines (no label past the row's bottom) and sits
+        /// above the next row. FeedBadLayout rebuilds the rows as they were, so the check can be seen to fail.</summary>
+        static void FeedAudit(List<string> bad)
+        {
+            var rows = live.historyRows; if (rows == null || !Visible(live.history)) return;
+            var list = new List<VisualElement>(); foreach (var c in rows.Children()) if (c.name == "feed-row" && c.resolvedStyle.display != DisplayStyle.None) list.Add(c);
+            for (int i = 0; i < list.Count; i++)
+            {
+                var rb = list[i].worldBound;
+                list[i].Query<Label>().ForEach(l => { if (l.resolvedStyle.display != DisplayStyle.None && !string.IsNullOrEmpty(l.text) && l.worldBound.yMax > rb.yMax + 0.5f) bad.Add($"feed row {i}: '{(l.text.Length > 30 ? l.text[..30] + "…" : l.text)}' ends {l.worldBound.yMax - rb.yMax:0.#} px below its row"); });
+                if (i + 1 < list.Count && rb.yMax > list[i + 1].worldBound.yMin + 0.5f) bad.Add($"feed rows {i} and {i + 1} overlap by {rb.yMax - list[i + 1].worldBound.yMin:0.#} px");
+            }
+        }
+
+        /// <summary>Sky on the Air ("Show me again" ran past its pill): every end-card button's label inside its pill with 12 px each side, whether
+        /// or not the card is open (the buttons are measured as laid out, the middle one as it would read on a failure).</summary>
+        static void EndButtonAudit(List<string> bad)
+        {
+            var row = live.endButtons; if (row == null) return; live.EndButtonsFit();
+            foreach (var b in row.Children())
+            {
+                if (b.Q<Label>() is not Label l || string.IsNullOrEmpty(l.text)) continue;
+                float need = l.MeasureTextSize(l.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x + 48f, pill = b.resolvedStyle.width; // 24 px each side: the pointed ends
+                if (float.IsNaN(pill) || pill <= 0) pill = b.style.width.value.value;
+                if (pill > 0 && need > pill + 0.5f) bad.Add($"end card button '{l.text}': label {need - 48f:0} px (+48) in a {pill:0} px pill");
+            }
+        }
+
         static void EndCardAudit(List<string> bad)
         {
             var t = live.host != null ? live.host.Text : null; var l = live.endTitle; if (t == null || l == null) return;

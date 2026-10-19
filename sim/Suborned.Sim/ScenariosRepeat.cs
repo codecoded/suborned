@@ -76,7 +76,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Is(g.GuardP.KRoutine && g.GuardP.KSecret && !g.Known(GuardR)!.Sight, "told his routine and the affair, not his sight");
-                r.To(r.SendTo(Scout, g.S.Grid.NearestFree(g.GuardPose()!.Value.pos + new Pt(-400, 0))!.Value));
+                r.To(r.SendTo(Scout, AheadOfGuard(r, 400)));
                 r.Is(g.ScoutQuery("watch", GuardR).ok && g.Quote(g.R.Ev("scout.watch"), g.GuardP).Refused == "", "his sight unknown: the Watch is open, card and query");
                 r.Do(Scout, "watch", GuardR); r.Done(Scout);
                 r.Is(g.Known(GuardR)!.Sight, "his sight is learned");

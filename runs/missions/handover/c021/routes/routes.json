@@ -1,0 +1,526 @@
+{
+ "schema": "suborned.mission.routes/1",
+ "mission": "handover",
+ "note": "The Handover's route scripts (brief 011 B, Waymark), played headless by the mission checker (bun run missions:check handover). Rewritten 2026-10-15 for Keel's round-2 engine: the final fight (N10, N11) and the crowd are on in every script, the cast is M-2's from the promoted people run r016 (sim/data/handover.site.json cast, 2026-10-16; Inez p-cafe-14 Fearful, the guard p-records-office-01, the driver p-records-office-31 and Vale p-records-office-07 Mercenary), so route A helps Inez twice (§04: a Fearful person needs Help ×2), Watch takes 20 s and the fight's shots are untraced (Sky's balance rulings). The scripts start from Keel's scenarios where one exists (N10, N11, N11b, S09, S25, N08), without their fixtures and keeping only the orders the engine took; every fixture a script would need became orders. Keel's readings are kept: the response unit enters from the north street (§07 'west street'), one door guard stays the whole mission, and Vale follows the mission's timeline, not his routine. Closing events (Suture's question; Aster 2026-10-15): route A's is Vale's exit at 5:50 (§07 route A, before 5:50), secured when the Enforcer is inside; route B's is the mission's close, 8:30 since Sky's ruling (rivals take Vale or the car leaves), secured when Vale is with the Enforcer. A carry in progress at the close (Waymark's ruling, 2026-10-15, on Keel's E8): the close ends the take, not a carry already under way. If the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open) and wins only when Vale reaches the getaway car; the final fight, the seal and the Enforcer's health bound the carry. Recommended to Keel and Motive, not yet in the engine: a hard stop at 12:00 (§01: a mission is 8-12 min) where a carry still under way ends as 'district seals'. Brief 013 D (Waymark, 2026-10-16): the takedown engine (Keel 0.5.0, security level 2, the guard's check-in marks every 90 s). Route G takes the guard out (knockout; fast; kill hidden behind the service door). Careless scripts (kind careless) do the same violence seen by a camera, seen by a crowd, found before the exit, or reported unstopped, each against its careful twin (MC-7). Trail is compared in total, the mission's plus what the debrief carries into the campaign. Rev 4 (2026-10-16): a found body holds the doors in its sight (careless-guard-left-door-held); open cases are priced at the rulebook's case-trail-eq in the totals. The driver route (Motive §6.2) is still not scripted: with the pickup loop and three bodies to a service door it plays, but each staff victim's missed mark is its own incident (the second lands at Alert 2, and the search opens the service door), and every witness at the bay tells a Loyal workmate by telephone (briefs/013/waymark-handover.md §5). Brief 018 (Waymark, 2026-10-18; Keel's engine 0.7.0, the getaway): extract is retired into Board and Go. Each quiet route has two references: fight it out (the original id: the Enforcer waits for the crew to break, boards, and the car leaves; the three walk out) and board and go (<id>-board, the primary of A, B and G: the Enforcer walks Vale to the car as the ambush springs, the three board once the blocker is down, nobody left behind). Loud has board and go (loud), fight it out (loud-fight) and the cheapest (loud-fast), each boarding the whole cell, since the seal clock captures anyone left standing. loud-left-downed and loud-left-standing are the two runs that leave an op behind (captured downed; captured fighting, abandoned). Plans may wait for the engine's `blocker.out` (c019: the engine logs it, and `car.free`). c019 (engine 0.7.x: walking Vale, the Enforcer does not fire): plans recomposed; loud-fast keeps its cover and carries its downed Fixer in. MC-10 checks quiet beats loud on Trail (a captive's +4 T counts as campaign Trail), Alert, Standing and the seal; MC-11 that no ambush spot or police stand holds the car.",
+ "closing": {
+  "at": "8:30",
+  "what": "rivals take Vale or car leaves = over",
+  "src": "mission.json timeline: the last entry closes the mission (GDD §07 schedule 8:00; Sky 2026-10-15 moves it to 8:30)"
+ },
+ "informedSpareS": 60,
+ "contacts": [
+  {
+   "role": "waitress",
+   "who": "Inez (route A: she calls the guard away)"
+  },
+  {
+   "role": "driver",
+   "who": "the official driver (route B: he moves the pickup to the service lane)"
+  }
+ ],
+ "fails": [
+  {
+   "id": "vale-killed",
+   "gdd": "Vale killed",
+   "codes": [
+    "vale-dead"
+   ]
+  },
+  {
+   "id": "vale-leaves",
+   "gdd": "Vale leaves in official car",
+   "codes": [
+    "vale-leaves"
+   ]
+  },
+  {
+   "id": "rivals-reach-vale",
+   "gdd": "rivals reach Vale",
+   "codes": [
+    "rivals-reach-vale"
+   ]
+  },
+  {
+   "id": "district-seals",
+   "gdd": "district seals",
+   "codes": [
+    "sealed"
+   ]
+  },
+  {
+   "id": "enforcer-down",
+   "gdd": "Enforcer down",
+   "codes": [
+    "enforcer-down"
+   ]
+  },
+  {
+   "id": "entry-seen-guard",
+   "gdd": "entry seen by guard",
+   "codes": [
+    "entry-seen-guard"
+   ]
+  },
+  {
+   "id": "entry-seen-camera",
+   "gdd": "entry seen by live camera",
+   "codes": [
+    "entry-seen-camera",
+    "abduction-seen-camera"
+   ]
+  },
+  {
+   "id": "entry-seen-patrol",
+   "gdd": "entry seen by patrol",
+   "codes": [
+    "entry-seen-patrol"
+   ]
+  }
+ ],
+ "scripts": [
+  {
+   "id": "route-a",
+   "file": "route-a.json",
+   "plan": "route-a.plan.json",
+   "kind": "quiet",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route A; Keel N11",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. The route's primary is its board-and-go twin (route-a-board) since brief 018: the same plan to the ambush, 1.8 s quicker and nobody left behind."
+  },
+  {
+   "id": "route-a-board",
+   "file": "route-a-board.json",
+   "plan": "route-a-board.plan.json",
+   "kind": "quiet",
+   "route": "A",
+   "primary": true,
+   "closes": {
+    "at": "5:50",
+    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
+    "secured": "enter.in"
+   },
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); GDD §07 route A; Keel N11",
+   "note": "The board-and-go twin of route-a: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell. The primary since brief 018 (the informed player's best play: 6-11 s quicker than fighting it out, at one more hit on the Enforcer); the crew breaks before he boards, so the fight still earns its Standing."
+  },
+  {
+   "id": "route-a-pressure",
+   "file": "route-a-pressure.json",
+   "plan": "route-a-pressure.plan.json",
+   "kind": "quiet",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "Keel S25; Sky Q4",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. Pressure on her affair ($0, +3 T; the r016 cast's Inez is Fearful, so it is her own approach and turns her in one order, where Help takes two)."
+  },
+  {
+   "id": "route-a-pressure-board",
+   "file": "route-a-pressure-board.json",
+   "plan": "route-a-pressure-board.plan.json",
+   "kind": "quiet",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); Keel S25; Sky Q4",
+   "note": "The board-and-go twin of route-a-pressure: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell."
+  },
+  {
+   "id": "route-b",
+   "file": "route-b.json",
+   "plan": "route-b.plan.json",
+   "kind": "quiet",
+   "route": "B",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route B; Keel N11b",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. The route's primary is its board-and-go twin (route-b-board) since brief 018: the same plan to the ambush, 1.8 s quicker and nobody left behind."
+  },
+  {
+   "id": "route-b-board",
+   "file": "route-b-board.json",
+   "plan": "route-b-board.plan.json",
+   "kind": "quiet",
+   "route": "B",
+   "primary": true,
+   "closes": {
+    "at": "8:30",
+    "what": "rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)",
+    "secured": "take.done"
+   },
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); GDD §07 route B; Keel N11b",
+   "note": "The board-and-go twin of route-b: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell. The primary since brief 018 (the informed player's best play: 6-11 s quicker than fighting it out, at one more hit on the Enforcer); the crew breaks before he boards, so the fight still earns its Standing."
+  },
+  {
+   "id": "route-b-block",
+   "file": "route-b-block.json",
+   "plan": "route-b-block.plan.json",
+   "kind": "quiet",
+   "route": "B",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 route B (driver blocks pickup camera 2:30); Keel N11b plus the call",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. The engine moves a turned driver's pickup to the service lane, so §07's 'or driver blocks pickup camera' is not yet a separate pickup at the bay (to Keel)."
+  },
+  {
+   "id": "route-b-block-board",
+   "file": "route-b-block-board.json",
+   "plan": "route-b-block-board.plan.json",
+   "kind": "quiet",
+   "route": "B",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); GDD §07 route B (driver blocks pickup camera 2:30); Keel N11b plus the call",
+   "note": "The board-and-go twin of route-b-block: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell."
+  },
+  {
+   "id": "route-g",
+   "file": "route-g.json",
+   "plan": "route-g.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 013 D; Motive briefs/013/motive-takedowns.md §6.1 G-KO; Keel N46",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. Motive's reference G-KO: the knockout just after the 2:30 mark; 30 s slower than route-g-fast and the Enforcer idles longer waiting for the mark (43 % against 35 %)."
+  },
+  {
+   "id": "route-g-board",
+   "file": "route-g-board.json",
+   "plan": "route-g-board.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); brief 013 D; Motive briefs/013/motive-takedowns.md §6.1 G-KO; Keel N46",
+   "note": "The board-and-go twin of route-g: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell."
+  },
+  {
+   "id": "route-g-fast",
+   "file": "route-g-fast.json",
+   "plan": "route-g-fast.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 013 D; Motive 013 §6.1 G-fast",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. The informed route G (the primary): the knockout at 2:01, the moment the rerouted patrol leaves the door's sweep; the 2:30 mark is missed while the Enforcer is inside (Alert 1: at level 2 the dock's robots reach only places within 60 m, and the patrol is away), so Motive's gamble (robots on the forecourt as he comes out) does not bite on this block. The route's primary is its board-and-go twin (route-g-fast-board) since brief 018: the same plan to the ambush, 1.8 s quicker and nobody left behind."
+  },
+  {
+   "id": "route-g-fast-board",
+   "file": "route-g-fast-board.json",
+   "plan": "route-g-fast-board.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "primary": true,
+   "closes": {
+    "at": "5:50",
+    "what": "Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside",
+    "secured": "enter.in"
+   },
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); brief 013 D; Motive 013 §6.1 G-fast",
+   "note": "The board-and-go twin of route-g-fast: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell. The primary since brief 018 (the informed player's best play: 6-11 s quicker than fighting it out, at one more hit on the Enforcer); the crew breaks before he boards, so the fight still earns its Standing. As route-g-fast: the knockout at 2:01, the moment the rerouted patrol leaves the door's sweep; the 2:30 mark is missed while the Enforcer is inside (Alert 1: at level 2 the dock's robots reach only places within 60 m, and the patrol is away), so Motive's gamble (robots on the forecourt as he comes out) does not bite on this block."
+  },
+  {
+   "id": "route-g-kill",
+   "file": "route-g-kill.json",
+   "plan": "route-g-kill.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
+   "note": "Fight it out (brief 018 §5): the Enforcer holds 19.5 m out until the crew is broken (fight.over), then boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. Route G with a kill, the body carried to the Office's service door and put through it: never found in the mission; a missing person in the debrief (+2 T, no Menace, an open case, the block hardens)."
+  },
+  {
+   "id": "route-g-kill-board",
+   "file": "route-g-kill-board.json",
+   "plan": "route-g-kill-board.plan.json",
+   "kind": "quiet",
+   "route": "G",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (board and go); brief 013 D; Motive 013 §6.1 G-kill; Keel N47",
+   "note": "The board-and-go twin of route-g-kill: the Enforcer walks Vale to the car as the ambush springs, walking Vale he does not fire (engine 0.7.x), so the three cover him; the crew breaks 10-12.5 s after the ambush, with him 1-4 m from the car, and the three board after him; the car leaves with the whole cell."
+  },
+  {
+   "id": "loud",
+   "file": "loud.json",
+   "plan": "loud.plan.json",
+   "kind": "loud",
+   "route": "A",
+   "primary": true,
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 loud; Keel N10",
+   "note": "Board and go, the reference loud (brief 018 §5): the response unit's security-2, first on the street, takes the lane as the blocker and is down before the Enforcer reaches the car; the whole cell boards and the car leaves with officers 1 and 2 still at their stands, so officer-2 sees it go (+1 T, the car hunted). Before it, as brief 013 D: the guard shot just after his 2:30 check-in mark; the Scout and Fixer return fire only until the final fight, the Fixer at the pavilion's centre support (cv-094), out of the unit's line."
+  },
+  {
+   "id": "loud-fight",
+   "file": "loud-fight.json",
+   "plan": "loud-fight.plan.json",
+   "kind": "loud",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "brief 018 §5 (fight it out); GDD §07 loud; Keel N10",
+   "note": "Fight it out, the loud twin (brief 018 §5): the police never break, so the Scout and Tech close on the café wall once the unit is down and the cell downs both officers; the whole cell then boards (the seal clock runs: anyone left standing would be captured). Nobody sees the car leave, so it costs 1 T less than loud and 2.2 s more."
+  },
+  {
+   "id": "loud-fast",
+   "file": "loud-fast.json",
+   "kind": "loud",
+   "route": "A",
+   "expects": {
+    "outcome": "success"
+   },
+   "src": "GDD §07 loud; Keel N10; Motive briefs/011/motive-fights.md; brief 018 §5",
+   "note": "The cheapest loud win (brief 013 D): loud's orders with the Scout and Fixer holding fire until the final fight, so only the guard's shots are traced. c019: walking Vale, the Enforcer no longer fires, so the Scout and Tech keep their cover (c017's close on the café wall took them off the blocker's line and the blocker shot the Enforcer down); the blocker is down 3.3 s into the fight, the response unit downs the Fixer, whom the Tech carries in, and the whole cell leaves with officer-2 seeing it go (+1 T). Its orders up to the walk to the car are c017's, pinned by `at` in its plan.",
+   "plan": "loud-fast.plan.json"
+  },
+  {
+   "id": "fail-vale-dead",
+   "file": "fail-vale-dead.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "vale-dead"
+   },
+   "reaches": "vale-killed",
+   "src": "GDD §07 fail; Keel S09"
+  },
+  {
+   "id": "fail-vale-leaves",
+   "file": "fail-vale-leaves.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "vale-leaves"
+   },
+   "reaches": "vale-leaves",
+   "src": "GDD §07 fail; Suture N1"
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "file": "fail-rivals-reach-vale.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "reaches": "rivals-reach-vale",
+   "src": "GDD §07 fail; Suture N2"
+  },
+  {
+   "id": "fail-district-seals",
+   "file": "fail-district-seals.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "sealed"
+   },
+   "reaches": "district-seals",
+   "src": "GDD §07 fail; §05 district seals 2:25 after the response unit arrives; Suture N3"
+  },
+  {
+   "id": "fail-enforcer-down",
+   "file": "fail-enforcer-down.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "reaches": "enforcer-down",
+   "src": "GDD §07 fail; Suture N4"
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "file": "fail-entry-seen-guard.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard"
+   },
+   "reaches": "entry-seen-guard",
+   "src": "GDD §07 fail; Suture N5"
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "file": "fail-entry-seen-camera.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera"
+   },
+   "reaches": "entry-seen-camera",
+   "src": "GDD §07 fail; Suture N6"
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "file": "fail-entry-seen-patrol.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol"
+   },
+   "reaches": "entry-seen-patrol",
+   "src": "GDD §07 fail; Suture N7"
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "file": "fail-take-seen-camera.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera"
+   },
+   "reaches": "entry-seen-camera",
+   "src": "GDD §07 fail (live camera), at the pickup; Keel's abduction-seen-camera"
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "file": "fight-loud-enforcer-down.json",
+   "plan": "fight-loud-enforcer-down.plan.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "reaches": "enforcer-down",
+   "src": "GDD §07 final fight [S], loud; Suture N10",
+   "note": "The loud branch's officers and the response unit down the Enforcer when he carries Vale at them alone."
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "file": "fight-safe-rivals-reach-vale.json",
+   "kind": "fail",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "reaches": "rivals-reach-vale",
+   "src": "GDD §07 final fight [S], safe; Suture N11",
+   "note": "Since Keel's engine fec836f (Motive's addendum) a safe fight lost ends as §07's 'rivals reach Vale'."
+  },
+  {
+   "id": "withdraw",
+   "file": "withdraw.json",
+   "kind": "outcome",
+   "expects": {
+    "outcome": "withdrawn"
+   },
+   "src": "GDD §07 Withdraw ends the attempt; Keel N08"
+  },
+  {
+   "id": "loud-left-downed",
+   "file": "loud-left-downed.json",
+   "plan": "loud-left-downed.plan.json",
+   "kind": "outcome",
+   "expects": {
+    "outcome": "success",
+    "left": {
+     "scout": "captured downed"
+    }
+   },
+   "src": "brief 018 §5: one run that leaves a downed op (captured, +4 T)",
+   "note": "The reference loud with the Scout sent out of cover at the officers as the fight opens: downed and not carried, he is captured when the car leaves (+4 T to the campaign)."
+  },
+  {
+   "id": "loud-left-standing",
+   "file": "loud-left-standing.json",
+   "plan": "loud-left-standing.plan.json",
+   "kind": "outcome",
+   "expects": {
+    "outcome": "success",
+    "left": {
+     "scout": "captured fighting"
+    }
+   },
+   "src": "brief 018 §5: one run that leaves a standing op mid-fight (captured, abandoned)",
+   "note": "The reference loud with the Scout not boarding: the officers at their stands are still up when the car leaves, so he is captured (fighting: abandoned; +4 T to the campaign)."
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "file": "careless-takedown-seen-camera.json",
+   "kind": "careless",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera"
+   },
+   "twin": "route-g",
+   "src": "brief 013 D done-check: the same act in front of a camera",
+   "note": "Route G without the Loop: the entrance camera sees the knockout at the guard's post."
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "file": "careless-takedown-seen-crowd.json",
+   "kind": "careless",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "twin": "route-g",
+   "src": "brief 013 D done-check: the same act in front of a crowd; Keel N48",
+   "note": "Route G's knockout at 5:31, in front of the clerks leaving by the door: Alert 3 when their reports land, the doors lock, a loud fight the cell never answers (no draw). Since brief 018 the blocker (security-1, at cv-088 in the exit lane, 11 m from the car) shoots the Enforcer at the car: Enforcer down at 6:45.9, where c017 sealed at 8:40."
+  },
+  {
+   "id": "careless-body-found",
+   "file": "careless-body-found.json",
+   "kind": "careless",
+   "expects": {
+    "outcome": "failure",
+    "fail": "sealed"
+   },
+   "twin": "route-g-kill",
+   "src": "brief 013 D: a body found before the exit; Keel N54",
+   "note": "Route G-kill with the body left at the post: the camera finds it as the loop goes (Alert 2) while the Enforcer is inside; the fight is loud and the district seals at 5:37 with Vale at the held car."
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "file": "careless-reporter-not-stopped.json",
+   "kind": "careless",
+   "expects": {
+    "outcome": "success"
+   },
+   "twin": "route-b",
+   "src": "brief 013 D: a reporter not stopped; Keel N65",
+   "note": "Route B with guard 73 killed and left where he fell on the square (retimed for the brief 014 café crowd: carrying him north is now seen by the walkers at 4:10). Walker p-garden-row-east-06 finds him at 6:44 and walks to the café door unstopped, landing after the Take, so the run still wins, at Alert 2 and 21 T with an open case against route B's 3 T (MC-7 counts it worse, not failed). Since brief 018 the whole cell boards at the car (the seal clock runs, so anyone left standing would be captured, +4 T each); its other orders keep their c017 ticks, pinned by `at` in its plan.",
+   "plan": "careless-reporter-not-stopped.plan.json"
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "file": "careless-guard-left-door-held.json",
+   "kind": "careless",
+   "twin": "route-g-fast",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "src": "brief 013 D; Motive rev 4 R4.1 (Sky: a found body locks down the scene)",
+   "note": "The knocked-out guard left at his door while the cell still needs it: found by the camera, the unit holds the door, the Enter is refused (door-held)."
+  }
+ ]
+}

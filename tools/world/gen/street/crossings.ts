@@ -77,11 +77,14 @@ export function ringToLine(ring: V[], line: V[]): number {
   return line.some(p => inPoly(p, ring)) ? 0 : m;
 }
 
-/** Why a strip may not stand: it crosses a tram track's swept envelope (the plan's SF-3 envelope: centre ± trackCentres/2 + 0.5) or a bay. '' if it may. */
-export function stripBlock(strip: V[], tracks: V[][], envelope: number, bays: V[][]): string {
+/** Why a strip may not stand: it crosses a tram track's swept envelope (the plan's SF-3 envelope: centre ± trackCentres/2 + 0.5), a drive (never allowed: nothing stands on a drive, brief 023) or a bay. '' if it may. */
+export function stripBlock(strip: V[], tracks: V[][], envelope: number, bays: V[][], drives: V[][] = []): string {
   if (tracks.some(t => ringToLine(strip, t) < envelope - 0.011)) return 'a tram track';
+  if (drives.some(b => overlaps(strip, b))) return 'a drive';
   return bays.some(b => overlaps(strip, b)) ? 'a bay' : '';
 }
+/** The kinds of crossing the plan lets cross `block` (a stripBlock answer): none may cross a drive. */
+export const mayCross = (across: { track?: string[]; bay?: string[] } | undefined, block: string): string[] | undefined => (block === 'a tram track' ? across?.track : block === 'a drive' ? undefined : across?.bay);
 
 /** The strip between two kerb points: `width` wide, from kerb to kerb. */
 export const stripRing = (ka: V, kb: V, width: number): V[] => boxRing([(ka[0] + kb[0]) / 2, (ka[1] + kb[1]) / 2], dist(ka, kb), width, Math.atan2(kb[1] - ka[1], kb[0] - ka[0])).map(rv);
@@ -134,9 +137,9 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     return { it, e, k: add(e.a, mul(e.u, dot(sub(it.at, e.a), e.u))) };
   };
   // a strip may not cross a tram track's swept envelope or a bay unless the plan allows it for kerb crossings
-  const envelope = ctx.plan.standards.tram.trackCentres / 2 + 0.5, tracks = ctx.d.tram.map(p => polyline(p.segs, 2) as V[]), bays = ctx.civ.bays.map(b => b.poly);
-  const across = (why: string) => (why === 'a tram track' ? std.across?.track : std.across?.bay)?.includes('kerb');
-  const blocked = (ka: V, kb: V) => { const why = stripBlock(stripRing(ka, kb, W), tracks, envelope, bays); return why && !across(why) ? `its strip crosses ${why}` : ''; };
+  const envelope = ctx.plan.standards.tram.trackCentres / 2 + 0.5, tracks = ctx.d.tram.map(p => polyline(p.segs, 2) as V[]), bays = ctx.civ.bays.map(b => b.poly), drives = (ctx.civ.drives ?? []).map(x => x.poly);
+  const across = (why: string) => mayCross(std.across, why)?.includes('kerb');
+  const blocked = (ka: V, kb: V) => { const why = stripBlock(stripRing(ka, kb, W), tracks, envelope, bays, drives); return why && !across(why) ? `its strip crosses ${why}` : ''; };
   const opposite = (ea: Edge, eb: Edge) => ea.road === eb.road && dot(ea.n, eb.n) < -0.7;
   const fits = (road: string, ka: V, kb: V, ea: Edge) => Math.abs(dist(ka, kb) - roads.get(road)!.w) <= 1.5 && Math.abs(dot(sub(kb, ka), ea.u)) <= std.stagger;
 

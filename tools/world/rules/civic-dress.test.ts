@@ -45,14 +45,14 @@ describe('civic dressing: what is placed', () => {
     for (const id of Object.values(look.place)) expect(ids.has(id)).toBe(true);
     const cafe = civicMass(base.w, 'civic/cafe'), ground = civicMass(base.w, 'civic/cafe/ground');
     expect(cafe.groundBy).toBe('civic/cafe/ground');
-    expect(cafe.base).toBeCloseTo(ground.base + look.ground.CafeBay!.top, 3);
-    expect(ground.kit!.id).toBe('CafeBay');
+    expect(cafe.base).toBeCloseTo(ground.base + look.ground.CafeBay_v2!.top, 3);
+    expect(ground.kit!.id).toBe('CafeBay_v2'); // the block names CafeBay; civic-look.json swaps it (brief 020)
   });
   test('yaw and pivot follow the block: each entrance piece covers the points and structures it stands for', () => {
     const cover = (id: string, block: V[]) => { const m = civicMass(base.w, id), ring = footOf(adoptedBy(m.kit!.id)!, m.kit!); return block.filter(p => !inPoly(toPlan(p), ring)); };
     expect(cover('civic/cafe/ground', [[-10.3, -29]])).toEqual([]); // café door
     expect(cover('civic/cafe/terrace', [[-4.3, -29], [-7.1, -35.45], [-7.92, -23.88], [-4.63, -34.7], [-12.7, -46.2], [-12.7, -11.8]])).toEqual([]); // the wall line at the gate, Between tables, Under parasol, the wall's front corner and both stone ends
-    expect(cover('civic/office-public-entrance', [[51.75, -30], [49.5, -30], [50.1, -30]])).toEqual([]); // Office entrance, the first tread, the steps
+    expect(cover('civic/office-public-entrance', [[64, -41.25], [64, -43.5], [64, -42.5]])).toEqual([]); // Office entrance (on the west face, door option b), the first tread, the steps
     expect(cover('civic/office-official-entrance', [[76.25, -30], [75.9, -30]])).toEqual([]); // Official entrance
   });
   test('a parasol stands on its table: pole = table centre', () => {
@@ -84,8 +84,9 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
   const beds = base.w.civic.filter(m => m.surface === look.beds.kerb.surface), tufts = base.w.civic.filter(m => /\/tuft-\d+$/.test(m.id)), hedges = base.w.civic.filter(m => m.surface === look.beds.hedge.surface);
   test('the terrace goes with the café bay: same pivot, yaw and ground; the bay keeps the fade, the terrace does not', () => {
     const bay = civicMass(base.w, 'civic/cafe/ground'), terrace = civicMass(base.w, 'civic/cafe/terrace');
-    expect({ ...terrace.kit!, id: 'CafeBay' }).toEqual(bay.kit!);
-    expect([terrace.kit!.id, bay.kit!.id]).toEqual(['CafeTerrace', 'CafeBay']);
+    expect({ ...terrace.kit!, id: 'CafeBay_v2' }).toEqual(bay.kit!);
+    expect([terrace.kit!.id, bay.kit!.id]).toEqual(['CafeTerrace', 'CafeBay_v2']);
+    const room = civicMass(base.w, 'civic/cafe/interior'); expect({ ...room.kit!, id: 'CafeBay_v2' }).toEqual(bay.kit!); expect(room.fade).toBe(true); // the room and its walls fade with the bay
     expect(bay.fade).toBe(true); expect(terrace.fade).toBeUndefined();
     expect(terrace.height).toBeCloseTo(adoptedBy('CafeTerrace')!.size[1], 3);
   });
@@ -97,13 +98,13 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     expect(inPoly(table.kit!.at, ring)).toBe(true);
     expect(civicClearance(base.w.civic)).toEqual([]);
   });
-  test('seven beds: a kerb and a hedge each, 171 tufts in Vela\'s counts, 15,390 triangles', () => {
-    expect(beds.map(m => m.id).sort()).toEqual(['dropoff-west', 'entrance-east', 'entrance-west', 'facade-southeast', 'facade-southwest', 'office-north', 'office-west'].map(s => `civic/civic-${s}`));
+  test('five beds: a kerb and a hedge each, 92 tufts in Vela\'s counts, 8,305 triangles (the two beds either side of the old north door went with it, 2026-10-19: 171 and 15,390 before)', () => {
+    expect(beds.map(m => m.id).sort()).toEqual(['dropoff-west', 'facade-southeast', 'facade-southwest', 'office-north', 'office-west'].map(s => `civic/civic-${s}`));
     expect(hedges.map(m => m.id)).toEqual(beds.map(m => `${m.id}/hedge`).sort());
-    expect(tufts).toHaveLength(171);
+    expect(tufts).toHaveLength(92);
     const per = Object.fromEntries(beds.map(b => [b.id.replace('civic/civic-', ''), tufts.filter(t => t.id.startsWith(`${b.id}/`)).length]));
-    expect(per).toEqual({ 'dropoff-west': 17, 'entrance-east': 33, 'entrance-west': 46, 'facade-southeast': 13, 'facade-southwest': 12, 'office-north': 16, 'office-west': 34 });
-    expect(tufts.reduce((n, t) => n + adoptedBy(t.kit!.id)!.tris, 0)).toBe(15390);
+    expect(per).toEqual({ 'dropoff-west': 17, 'facade-southeast': 13, 'facade-southwest': 12, 'office-north': 16, 'office-west': 34 });
+    expect(tufts.reduce((n, t) => n + adoptedBy(t.kit!.id)!.tris, 0)).toBe(8305);
     expect(base.w.civic.some(m => m.surface === 'park' && !m.kit)).toBe(false); // none left as a plain prism
   });
   test('kerb to mass height, hedge a rise on top, tufts on the hedge top less the drop; everything lies inside the bed\'s own ring', () => {
@@ -122,7 +123,7 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
       own.forEach((t, i) => expect(t.kit!.id).toBe(look.beds.tufts.pieces[(i + bi) % 3]));
       own.slice(1).forEach((t, i) => expect(t.kit!.id).not.toBe(own[i]!.kit!.id));
     }
-    expect(new Set(tufts.map(t => t.kit!.yaw)).size).toBeGreaterThan(100);
+    expect(new Set(tufts.map(t => t.kit!.yaw)).size).toBeGreaterThan(80);
     const again = generated(plan, d, civ).w.civic.filter(m => /\/tuft-\d+$/.test(m.id));
     expect(again.map(t => t.kit!.yaw)).toEqual(tufts.map(t => t.kit!.yaw));
   });
@@ -168,7 +169,7 @@ describe('CD-1 keep-clear and Handover points', () => {
   test('fails: a bollard on a crossing landing, a parasol in the café gate spine, a band in the steps and one in a bed', () => {
     expect(rules(w => moveTo(civicMass(w, 'civic/bol-cross-1'), [30.9, -30.5]))['CD-1']!.detail).toContain('landing x-orbit-axis-n');
     expect(rules(w => moveTo(civicMass(w, 'civic/cafe-table-0/parasol'), [-5, -29]))['CD-1']!.detail).toContain('cafe-gate-spine');
-    expect(rules(w => moveTo(civicMass(w, 'civic/band/forecourt-bar.0'), [50.1, -30]))['CD-1']!.detail).toContain('office-public-steps');
+    expect(rules(w => moveTo(civicMass(w, 'civic/band/forecourt-bar.0'), [64, -42.5]))['CD-1']!.detail).toContain('office-public-steps');
     expect(rules(w => moveTo(civicMass(w, 'civic/band/spine-inner.0'), [2.1, -25.6]))['CD-1']!.detail).toContain('fountain-garden');
   });
   test('crossings (brief 009): a stud or a signal halo on a Handover point fails; the orb overhead, the dot rows and the arcs flush with the paving pass', () => {
@@ -213,7 +214,7 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
   test('CD-3 counts the LOD0 triangles of the new pieces as placed (the tufts and the terrace among them), and fails over the budget', () => {
     const n = civicTris(base.w.civic);
     expect(n).toBeGreaterThan(80000); expect(n).toBeLessThanOrEqual(look.budget.lod0Tris);
-    expect(n - civicTris(base.w.civic.filter(m => !/\/tuft-\d+$/.test(m.id)))).toBe(15390);
+    expect(n - civicTris(base.w.civic.filter(m => !/\/tuft-\d+$/.test(m.id)))).toBe(8305);
     expect(civicTris(base.w.civic.filter(m => m.id !== 'civic/cafe/terrace'))).toBe(n - 3372);
     expect(budgetRule(base.w.civic).ok).toBe(true);
     expect(budgetRule(base.w.civic, n - 1).ok).toBe(false);
@@ -233,7 +234,7 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
     expect(look.palette.materials.map(m => m.material)).toEqual(expect.arrayContaining(['DK_Brass_Civic', 'DK_Banner_Comet_Seafoam', 'DK_Pool_Civic']));
   });
   test('every piece brief 008 added is named in the placement kinds or a swap, so none is orphaned', () => {
-    const kinds = placementKinds(dr), used = new Set([...kinds.keys(), ...Object.values(look.swaps), ...Object.keys(look.place), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces, ...look.pieces.filter(p => /^(CafeSet_Tulip_Play|PavilionPier)/.test(p))]);
+    const kinds = placementKinds(dr), used = new Set([...kinds.keys(), ...Object.values(look.swaps), ...Object.keys(look.place), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces, ...look.pieces.filter(p => /^(CafeSet_Tulip_Play|PavilionPier|CafeBay$)/.test(p))]);
     expect(look.pieces.filter(p => !used.has(p) && !/^PlanterRun_(2|Corner|End)/.test(p))).toEqual([]);
   });
 });

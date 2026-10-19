@@ -7,7 +7,7 @@
 // a spoken line from a rule printed on a card. Without a manifest every running line fails, which is the safe answer.
 import type { Image } from './png';
 
-export type State = 'rest' | 'active' | 'alt';
+export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing';
 export interface Rect { x: number; y: number; w: number; h: number }
 export interface Element extends Rect { kind: 'speech' | 'beat' | 'line' | 'image' | 'hud'; text?: string } // image: art with no text by construction (portraits, the plot scope): its strokes are not read
 export interface Manifest { state?: State; elements: Element[] }
@@ -20,8 +20,12 @@ export interface Report {
   failures: string[]; warnings: string[]; pass: boolean;
 }
 
-/** Fail above this share of the screen at rest (brief 014: about 15%); an open order card and the Alt layer get more room. */
-export const LIMIT: Record<State, number> = { rest: 15, active: 22, alt: 30 };
+/** Fail above this share of the screen at rest (brief 014: about 15%); an open order card and the Alt layer get more room. `log`: the history panel
+ *  the player opens to read (Glyph; a reading surface, only while open): 18% (the open panel measures 17.0 to 17.5%), and its lines may be sentences.
+ *  `briefing`: the full-screen briefing card before play (title and copy): the same room and the same freedom. */
+export const LIMIT: Record<State, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
+/** The states that are reading surfaces the player opens or meets before play (the history log; the briefing card): their lines are sentences by design. */
+export const READING: State[] = ['log', 'briefing'];
 /** Warn above this at rest: the goal is a bare screen. */
 export const WARN_REST = 10;
 export const HUD_ALPHA = 24, WORLD_DIFF = 10;
@@ -124,6 +128,7 @@ export function textRuns(shot: Image, mask: Uint8Array): Run[] {
   const bl = all.filter(c => {
     const h = c.y1 - c.y0 + 1, w = c.x1 - c.x0 + 1;
     if (isIcon(c) || icons.some(i => within(c, i))) return false; // a glyph and the strokes inside it are not letters
+    if (w >= 40 * s && c.area / (w * h) < 0.18) return false; // a long, sparse diagonal is a line drawn on the HUD layer (a tracer, a sightline), never a word: lettering fills a fifth of its box or more
     return h >= minH && h <= maxH && w <= 16 * h && c.area >= 6 && (w <= 2 * h || c.area / (w * h) <= 0.75);
   }).sort((a, b) => a.x0 - b.x0);
   const letters = (c: Comp) => Math.max(1, Math.round((c.x1 - c.x0 + 1) / (0.75 * (c.y1 - c.y0 + 1))));
@@ -151,6 +156,8 @@ export function textRuns(shot: Image, mask: Uint8Array): Run[] {
 
 const inside = (r: Run, e: Rect) => { const cx = r.x + r.w / 2, cy = r.y + r.h / 2; return cx >= e.x && cx <= e.x + e.w && cy >= e.y && cy <= e.y + e.h; };
 const wordsOf = (t: string) => t.trim().split(/\s+/).filter(Boolean).length;
+/** The words of a hint or goal line as the budget counts them (brief 016): the line as shown, a keycap counting as a word (`Turn twice: Q Q` is four). `short` is text.json's form, with [ringed nouns] and <KeyTokens>; a key token is one word. text.test.ts counts with this, so the two cannot disagree. */
+export const shownWords = (short: string) => wordsOf(short.replace(/\{[a-z]+\}/g, 'them').replace(/<[A-Za-z]+>/g, 'K').replace(/[[\]]/g, ''));
 
 /** Stacked runs that belong together: a line below another, close, overlapping in x. */
 export function stack(runs: Run[]): Run[][] {
@@ -173,13 +180,22 @@ export function analyse(shot: Image, o: Options): Report {
   for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
   const art = els.filter(e => e.kind === 'image'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
-  const sentences = hudRuns.filter(isSentence);
-  const blocks = stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
+  const sentences = READING.includes(o.state) ? [] : hudRuns.filter(isSentence); // the open history is read, so its lines are sentences by design
+  const blocks = READING.includes(o.state) ? [] : stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
   if (coveragePct > limitPct) failures.push(`HUD covers ${coveragePct.toFixed(1)}% of the screen (limit ${limitPct}% ${o.state})`);
   else if (o.state === 'rest' && coveragePct > WARN_REST) warnings.push(`HUD covers ${coveragePct.toFixed(1)}% at rest (aim under ${WARN_REST}%)`);
   if (sentences.length) failures.push(`${sentences.length} line${sentences.length > 1 ? 's' : ''} of running text that is not speech`);
   if (blocks.length) failures.push(`${blocks.length} block${blocks.length > 1 ? 's' : ''} of stacked text`);
-  const lines = (es: Run[]) => { const ys = es.map(r => r.y + r.h / 2).sort((a, b) => a - b); let n = 0, last = -1e9; for (const y of ys) { if (y - last > 8) n++; last = y; } return n; };
+  // Text rows of a line or beat: runs whose centres lie within 8 px share a row. A row of a few strokes beside a row of a whole line is the panel's rim
+  // meeting a busy picture behind it (dark foliage under a bright plate edge breaks into letter-sized strokes), not a second line: it needs a quarter of
+  // the strongest row's strokes, and at least three.
+  const lines = (all: Run[]) => {
+    const tall = Math.max(0, ...all.map(r => r.h)), es = all.filter(r => r.h >= 0.6 * tall); // a run under 0.6 of the tallest is a fragment of the rim, not a line (Glyph's review)
+    const rs = [...es].sort((a, b) => a.y + a.h / 2 - (b.y + b.h / 2)), rows: { y: number; comps: number }[] = [];
+    for (const r of rs) { const y = r.y + r.h / 2, last = rows[rows.length - 1]; if (last && y - last.y <= 8) { last.comps += r.comps; last.y = y; } else rows.push({ y, comps: r.comps }); }
+    const top = Math.max(0, ...rows.map(r => r.comps));
+    return rows.filter(r => r.comps >= Math.max(3, 0.25 * top)).length;
+  };
   if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);

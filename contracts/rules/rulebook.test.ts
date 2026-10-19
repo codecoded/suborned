@@ -395,10 +395,22 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
   const n = (r: string) => num(rb, people, r);
   const td = rb.takedown!, wi = rb.witness!, rs = rb.response!, cp = rb.campaign!;
 
+  test('car.pace.road is the city\'s access-road pace (life.json traffic.byClass.access.speed, Motive 2026-10-19, brief 023)', () => {
+    const life = read('contracts/world/harbour-district.life.json');
+    expect(rb.car?.pace?.road).toBe('v:car-road-cm-s');
+    expect(rb.values['car-road-cm-s'].v).toBe(Math.round(life.traffic.byClass.access.speed * 100));
+    expect(rb.values['car-yard-cm-s'].v).toBeLessThan(rb.values['car-road-cm-s'].v);
+  });
+
   test('the live rulebook has the sections (optional only for runs pinned before them); the 18 s check-in is retired', () => {
     expect(rb.cell.loop.targets).toBeDefined(); expect(rb.cell.take.struggle).toBeDefined(); // optional in the schema only so dialogue r017-r019's pinned rulebook parses
     expect([td, wi, rs, cp].every((x) => x !== undefined)).toBe(true);
-    expect([rb.cell.board, rb.fight.block, rb.fight.blockers, rb.fight.blockNear, rb.fight.blockFar, cp.custody].every((x) => x !== undefined)).toBe(true); // brief 018 (the getaway)
+    expect([rb.cell.board, rb.fight.block, rb.fight.blockers, rb.fight.blockNear, rb.fight.blockFar, cp.custody, rb.rounds].every((x) => x !== undefined)).toBe(true); // brief 018 (the getaway)
+    expect(rb.car?.drive).toBeDefined(); // brief 023 (engine 0.8.2): car.drive
+    expect(rb.fight.over).toBeDefined(); // brief 023 (Motive 2026-10-19): fight.over, fire orders end with the final fight
+    expect(rb.car?.pace && rb.car?.paceRule).toBeTruthy(); // brief 023 (Motive 2026-10-19): car.pace
+    expect(rb.cell.drive?.experimental).toBeTruthy(); // brief 025 (engine 0.9.0): cell.drive, marked experimental
+    expect(rb.crowd.pace).toBeDefined(); // brief 023 (Pulse): crowd.pace, optional in the schema only so dialogue r017-r019's pinned rulebook parses
     expect(rb.values['check-in-s']).toBeUndefined();
     expect(rb.values['response-check-in-s']).toBeUndefined();
     expect(rb.security.checkIn).toBeUndefined();

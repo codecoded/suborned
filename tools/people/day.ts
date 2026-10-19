@@ -107,7 +107,14 @@ export type Cycle = (pick?: Pick) => Seg[];
 
 export const first = (t: Table, fit: (place: string) => Fit | undefined) => { const p = t.seats[0] ?? t.standing?.[0]; if (!p) return undefined; const f = fit(p); return f && { place: p, ...f }; };
 
-export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: number }, work: string, home: string, v: Row['routines'][number]): Cycle {
+/** Brief 023 (Pulse, Sky's door option b; Latch's route B shot at 6:11 showed 31 clerks in one block): a shift ends at its chime, but its people do not step out on the same
+ *  second. Someone who works inside lingers `0..maxMin` minutes after the shift (finishing a form, fetching a coat) before they leave, drawn from their own stream
+ *  `<id>/leave` (so no other draw of the person moves), the earlier more likely (the lower of two draws). Starting value [S]. Only an `inside` post: a door, a bay or the official entrance is
+ *  held by one person at a time and its relief arrives at the chime. A car pair (councillor, driver) leaves on the mission's own clock. */
+export const LEAVE = { maxMin: 8 };
+export const lingerOf = (id: string, v: Row['routines'][number]): number => { if (v.commute === 'car') return 0; const q = rng(`${id}/leave`); return Math.min(q.int(0, LEAVE.maxMin), q.int(0, LEAVE.maxMin)); };
+
+export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: number }, work: string, home: string, v: Row['routines'][number], linger = 0): Cycle {
   const { scope, walk } = c, at = (id: string): V => scope.places.find(p => p.id === id)!.at as V;
   const w = (a: string, b: string) => (a === b ? 0 : stepMin(walk, at(a), at(b)));
   const tramStop = scope.stops.find(s => s.mode === 'tram')?.place;
@@ -136,17 +143,17 @@ export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: 
     if (meal !== 'none' && len >= 240) {
       if (meal === 'square') {
         const s = pick(mealAt!, p => { const q = w(work, p); return ms + MEAL + 2 * q + 5 > b ? undefined : { from: ms + q, to: ms + q + MEAL, q }; });
-        if (s) segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: work, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b });
+        if (s) segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: work, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b + linger });
         else if (ms + MEAL + 5 > b) meal = 'none';
-        else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b }); // no free seat: lunch is eaten on site
+        else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b + linger }); // no free seat: lunch is eaten on site
       } else if (ms + MEAL + 5 > b) meal = 'none';
-      else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b });
+      else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b + linger });
     } else meal = 'none';
-    if (meal === 'none') segs.push({ place: work, doing: 'work', from: a, to: b });
-    // the evening, then home
-    let t = b, here = work;
+    if (meal === 'none') segs.push({ place: work, doing: 'work', from: a, to: b + linger });
+    // the evening, then home (after the linger: a person who stays a few minutes past the chime leaves, and walks, that much later)
+    let t = b + linger, here = work;
     if (eveningAt) {
-      const s = pick(eveningAt, p => { const tq = w(work, p); return { from: b + tq, to: b + tq + 45 }; });
+      const s = pick(eveningAt, p => { const tq = w(work, p); return { from: t + tq, to: t + tq + 45 }; });
       if (s) { segs.push({ place: s.place, doing: 'evening', from: s.from, to: s.to }); t = s.to; here = s.place; }
     }
     const back = t + w(here, origin);

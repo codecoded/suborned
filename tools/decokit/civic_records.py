@@ -27,7 +27,10 @@ FRONT, SIDE_R, SIDE_L = (90, 0, 0), (90, 0, 90), (90, 0, -90)
 ZL, NR, RISE, GO, LAND = 0.75, 6, 0.125, 0.36, 1.5   # landing height, risers, rise, going, landing depth
 SW = 2.3                                              # half width of the flight
 PR, SU, PS = 1.65, 2.2, 7.6                           # window half width, surround outer half width, arch spring
-ZC0, ZC1 = 4.05, 4.62                                 # marquee soffit and fascia top
+ZC0, ZC1 = 4.05, 4.62                                 # marquee soffit and fascia top (the official canopy: the office-boarding-pavilion envelope)
+ZG0, ZG1, DG = 4.5, 5.0, 1.8                          # the public marquee (brief 023): soffit, fascia top, projection. Was 4.05, 4.62, 2.3: at the play camera (38 deg, yaw 30) the old
+                                                      # marquee hid the top half of a figure on the landing; now a figure 0.75 m off the face is whole under it, and the lift and the
+                                                      # shorter reach cost the arch window 0.45 m of straight side and the doors a taller transom, nothing else
 EDGE = 0.1375                                         # the fascia sections reach 0.11 and the gold bead 0.14 past the plan line: the plan is drawn that far inside the envelope
 PX, PW, PD0, PD1 = 3.5, 0.48, -1.03, 0.23             # public pier: centre, plinth half width, plinth front and back (y)
 GR = 1.2                                              # globe radius (centre 7.0 m up, 0.9 m out of the face)
@@ -59,7 +62,7 @@ def banner(s, x0, x1, y, zt, length, tip=0.5, kr=0.055):
         sphere(s, (x, y, zt + 0.05), kr, pal.Brass_Civic, seg=8, n=4)
 
 
-def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
+def globe(s, c, r, nlon=40, nlat=20, lon0=-15, zroof=ZC1):
     """Relief globe at a third of plaza_parts.globe's triangles: chrome seas, satin-steel continents, no graticule sweeps
     (an equator and a meridian ring instead), tilted 23.5 deg on a chrome stand with a base disc and two struts."""
     h = 0.03
@@ -95,8 +98,8 @@ def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
     with s.at(c, (90, 0, 0)):  # meridian ring in the plane of the face
         s.lathe([(r + 0.14, -0.06), (r + 0.23, -0.06), (r + 0.23, 0.06), (r + 0.14, 0.06), (r + 0.14, -0.06)], pal.Chrome, seg=48, cap_bottom=False, cap_top=False)
     # stand: base disc on the marquee roof, post to the globe, two struts
-    zb = ZC1 + 0.28
-    s.rbox((-0.95, c[1] - 1.15, ZC1 - 0.03), (0.95, c[1] + 0.4, zb), 0.06, pal.Limestone, seg=1)
+    zb = zroof + 0.28
+    s.rbox((-0.95, max(c[1] - 1.15, -(DG - 0.2)), zroof - 0.03), (0.95, c[1] + 0.4, zb), 0.06, pal.Limestone, seg=1)  # plinth stays on the marquee roof (front y >= -(DG - 0.2))
     with s.at((c[0], c[1], zb)):
         s.lathe([(0, 0), (0.7, 0), (0.7, 0.06), (0.55, 0.13), (0.28, 0.2), (0.14, 0.28), (0, 0.3)], pal.Chrome, seg=24)
     s.sweep([(c[0], c[1], zb + 0.2), (c[0], c[1], c[2] - r - 0.15)], 0.09, pal.Chrome, seg=10)
@@ -105,19 +108,19 @@ def globe(s, c, r, nlon=40, nlat=20, lon0=-15):
         s.sweep([(c[0] + 0.45 * sx, c[1], zb + 0.08), end], 0.05, pal.Chrome, seg=6)
 
 
-def window(s, grand):
+def window(s, grand, z0=ZC0, z1=ZC1):
     """Tall arched window on the face above the marquee: seafoam and mint surround with an 8 cm deep-teal reveal, dark glass, brass grid."""
     with s.at((0, 0, 0), FRONT):
-        soft_extrude(s, arch_band(PR, PR + 0.08, PS, ZC0, n=14), 0.0, 0.18, pal.Enamel_Teal, 0.02)       # deep teal: an 8 cm reveal line, no more
-        soft_extrude(s, arch_band(PR + 0.08, PR + 0.32, PS, ZC0, n=14), 0.0, 0.16, pal.Enamel_Seafoam, 0.05)
-        soft_extrude(s, arch_band(PR + 0.32, SU, PS, ZC0, n=14), 0.0, 0.07, pal.Enamel_Mint, 0.03)
-    head = arch(2 * PR, PS, ZC0, n=14)
+        soft_extrude(s, arch_band(PR, PR + 0.08, PS, z0, n=14), 0.0, 0.18, pal.Enamel_Teal, 0.02)       # deep teal: an 8 cm reveal line, no more
+        soft_extrude(s, arch_band(PR + 0.08, PR + 0.32, PS, z0, n=14), 0.0, 0.16, pal.Enamel_Seafoam, 0.05)
+        soft_extrude(s, arch_band(PR + 0.32, SU, PS, z0, n=14), 0.0, 0.07, pal.Enamel_Mint, 0.03)
+    head = arch(2 * PR, PS, z0, n=14)
     s.face([(x, -0.03, z) for x, z in head], pal.Enamel_Charcoal)
     s.face([(x, -0.07, z) for x, z in head], pal.GlassDark)
     s.sweep(xz(arc(0, PS, PR - 0.04, 0, 180, 14), -0.1), 0.035, pal.Brass_Civic, seg=4)
     for x in (-0.6, 0.6):
-        s.box((x - 0.04, -0.14, ZC1 + 0.2), (x + 0.04, -0.07, PS + math.sqrt(PR * PR - x * x) - 0.05), pal.Brass_Civic)
-    for z in (ZC1 + 0.2, PS):
+        s.box((x - 0.04, -0.14, z1 + 0.2), (x + 0.04, -0.07, PS + math.sqrt(PR * PR - x * x) - 0.05), pal.Brass_Civic)
+    for z in (z1 + 0.2, PS):
         s.box((-PR, -0.14, z - 0.035), (PR, -0.07, z + 0.035), pal.Brass_Civic)
 
 
@@ -131,10 +134,10 @@ def blades(s):
         s.box((x - 0.012, -0.205, z0 + 0.3 * h), (x + 0.012, -0.195, z1 - 0.1), pal.Brass_Civic)
 
 
-def doors(s, wide, zl=ZL):
+def doors(s, wide, zl=ZL, zt0=ZC0):
     """Brass double doors with side lights and a transom: dark glass in gold frames, chrome pulls, kick plates. zl = sill height."""
     ZL = zl  # noqa: N806 (local: the public front stands on its landing at 0.75, the official door is flush at 0)
-    y, z1, hd = -0.12, ZC0, 2.5
+    y, z1, hd = -0.12, zt0, 2.5
     zt = ZL + hd
     s.face([(-wide, y, ZL), (wide, y, ZL), (wide, y, z1), (-wide, y, z1)], pal.GlassDark)
     s.face([(-wide, y + 0.09, ZL), (wide, y + 0.09, ZL), (wide, y + 0.09, z1), (-wide, y + 0.09, z1)], pal.Enamel_Charcoal)
@@ -149,24 +152,24 @@ def doors(s, wide, zl=ZL):
             s.sweep([(x, y - 0.03, z), (x, y - 0.14, z)], 0.014, pal.Chrome, seg=4, caps=False)
 
 
-def marquee(s, hw, d):
+def marquee(s, hw, d, z0=ZC0, z1=ZC1):
     """hw, d = the envelope (half width along the face, projection): nothing of the canopy reaches past it."""
     path = canopy_plan(hw - EDGE, d - EDGE, 3.0, 16)
-    s.extrude(path, ZC0, ZC0 + 0.1, pal.Enamel_Ivory)
-    zf = ZC1 - 0.18
-    tube(s, lift(path), sec(-0.07, 0.3, ZC0 + 0.02, zf, 0.0), pal.Enamel_Seafoam)  # fascia band: seafoam (deep teal read as a dark marquee in Unity)
-    tube(s, lift(path), sec(-0.11, 0.36, zf, ZC1, 0.0), pal.Enamel_Mint)
-    s.extrude(path, zf - 0.07, ZC1 - 0.03, pal.Enamel_Seafoam)
-    hair(s, path, -0.1, ZC0 + 0.05, 0.035, pal.Brass_Civic)
+    s.extrude(path, z0, z0 + 0.1, pal.Enamel_Ivory)
+    zf = z1 - 0.18
+    tube(s, lift(path), sec(-0.07, 0.3, z0 + 0.02, zf, 0.0), pal.Enamel_Seafoam)  # fascia band: seafoam (deep teal read as a dark marquee in Unity)
+    tube(s, lift(path), sec(-0.11, 0.36, zf, z1, 0.0), pal.Enamel_Mint)
+    s.extrude(path, zf - 0.07, z1 - 0.03, pal.Enamel_Seafoam)
+    hair(s, path, -0.1, z0 + 0.05, 0.035, pal.Brass_Civic)
     hair(s, path, -0.12, zf, 0.035, pal.Brass_Civic)
     for x in (-hw * 0.5, hw * 0.5):
-        with s.at((x, -d * 0.62, ZC0)):
+        with s.at((x, -d * 0.62, z0)):
             bulb = [(0.17 * math.cos(t), -0.03 - 0.12 * math.sin(t)) for t in (math.pi / 2 * k / 4 for k in range(1, 5))]
             s.lathe([(0.19, 0.0), (0.19, -0.03)] + bulb, pal.Lamp_Deco, seg=12)
     for x in (-hw + 0.2, hw - 0.2):  # chrome ball finials on the marquee corners
-        with s.at((x, -0.6, ZC1 - 0.03)):
+        with s.at((x, -0.6, z1 - 0.03)):
             s.lathe([(0, 0), (0.1, 0), (0.1, 0.05), (0.045, 0.1), (0.04, 0.55), (0.07, 0.6), (0, 0.62)], pal.Chrome, seg=10)
-        sphere(s, (x, -0.6, ZC1 + 0.84), 0.2, pal.Chrome, seg=14, n=7)
+        sphere(s, (x, -0.6, z1 + 0.84), 0.2, pal.Chrome, seg=14, n=7)
 
 
 def stairs(s):
@@ -217,16 +220,16 @@ def pilaster(s, x, h):
 
 def build(s, grand):
     if grand:
-        marquee(s, 3.15, 2.3)
-        doors(s, PR)
+        marquee(s, 3.15, DG, ZG0, ZG1)
+        doors(s, PR, zt0=ZG0)
         stairs(s)
         for sx in (-1, 1):
             pier(s, sx * PX, 7.2, True)
             x0, x1 = sorted((sx * (PX - 0.27), sx * (PX + 0.27)))
             banner(s, x0, x1, -1.0, 7.2 - 0.7, 7.2 - 1.4)  # on the shaft, inside the plinth footprint
-        window(s, True)
+        window(s, True, ZG0, ZG1)
         blades(s)
-        globe(s, (0.0, -0.9, 7.0), GR)
+        globe(s, (0.0, -0.9, 7.0 + (ZG1 - ZC1)), GR, zroof=ZG1)  # the globe rides the marquee up with its stand
         return
     marquee(s, 3.0, 3.0)          # = office-boarding-pavilion (x 75.5..78.5, y -33..-27, soffit 4.05, top 4.62), carried on the face
     doors(s, 1.45, 0.0)           # flush: sill at the pavement

@@ -252,3 +252,33 @@ Written on the same rules and glossary. `extract` is gone; Board and Go replace 
 **Evidence**: `bun test contracts/missions/handover` 115 pass; `bun test tools/levels/dialogue/test/dialogue.test.ts` 9 pass; `bun run verify` OK (18 runs replayed, 1 superseded, 45 play shots within HUD budget, typecheck clean) after declaring the dialogue drift for `text.schema.ts` twice (`tools/levels/dialogue/drift.json`).
 
 **Added after Keel's last codes:** lock `fire-carrying-vale` (pop "Hands full · Vale"; Alt "The Enforcer is carrying Vale. Get Vale in the car, and let the others fire."); log `car.free` is an icon card ("The car is free" / "Nothing blocks the car now. Go when you are ready."; the street shows it by the holder marks going), and `blocker.out` is silent on purpose.
+
+## Part 3: the fail camera (Sky 2026-10-18)
+
+`less.failcam` in `text.json`: `caption[fail][why]` (at most 6 words, the HUD line limit) and `tip[fail][why]` (at most 6), keyed by Keel's `Game.Cause` (`FailCause.cs`); for `sealed` the why is `desk` or `heard` when the reporter is one of those, else `origin.because` (`response`, `confirmed`, `loud-fight`). `{by}` = the first culprit in words (`less.failcam.by` for guard, patrol, officer, robot, rival, `rivals`, person, car; a camera is `names.targets` for its id, capitalised; an operative is its speaker name; a cast person is `names.targets`, else "A passer-by"); `{agent}` = the first of `Cause.ops` as `names.speakers` says it ("the Enforcer"). No caption for a withdrawal (no camera on a withdrawal).
+
+| Fail / why | Caption | Tip |
+|---|---|---|
+| entry-seen-guard / seen | {by} saw {agent}. | The guard watches the door. |
+| entry-seen-camera / seen | {by} saw {agent}. | This camera covers the door. |
+| entry-seen-patrol / seen | {by} saw {agent}. | The patrol sweeps past the door. |
+| abduction-seen-camera / seen | {by} saw {agent}. | This camera covers Vale's car. |
+| rivals-reach-vale / beat-to-pickup | {by} reached the pickup first. | The rivals head for the pickup. |
+| rivals-reach-vale / downed-enforcer | {by} downed {agent}. | Rivals shoot the one carrying Vale. |
+| rivals-reach-vale / reached-at-close | {by} reached Vale first. | Rivals take Vale at the close. |
+| rivals-reach-vale / reached-car | {by} reached the car. | Rivals take a car nobody guards. |
+| vale-leaves / too-late | Vale's car left. Too slow. | Vale's car leaves on schedule. |
+| vale-dead / killed | {agent} killed Vale. | Use Take, not Kill, on Vale. |
+| vale-dead / shot | {by} shot Vale. | Never fire near Vale. |
+| enforcer-down / shot | {by} shot {agent}. | Enemy fire goes for the Enforcer. |
+| driver-shot / shot | {by} shot the driver. | Keep shots away from the driver. |
+| sealed / response | {by} raised the alarm. | Anyone who sees you can report. |
+| sealed / confirmed | {by} reported it. | A found body gets reported. |
+| sealed / loud-fight | The shooting sealed the district. | Stay quiet: the first shot counts. |
+| sealed / desk | A missed check-in sealed the district. | Empty posts get noticed. |
+| sealed / heard | Shots were heard. District sealed. | Shots carry: fire only if needed. |
+| engine-error / error | Something broke. This run doesn't count. | (none) |
+
+Tips follow Sky's rule that everyone can be turned more than one way: each names what to deal with and why, and leaves the how open (no agent, no order). The rule tips ("Use Take, not Kill, on Vale.", "Never fire near Vale.", "Keep shots away from the driver.", "Stay quiet: the first shot counts.", "Shots carry: fire only if needed.") stay as they were. The wording needs no mission data, so generated missions can reuse it; "the door", "the pickup" and "Vale's car" are the Handover's places and a generated mission would fill its own.
+
+**Brief 022 (Inez's rounds):** `locks.too-far.byTarget.serving` for a Listen or Ask refused as too far on a server out at a table: pop "Serving · back in {s} s", Alt "{who} is serving a table. Back at the door in {s} s." (`{s}` = seconds until she is back at her post; the host picks the variant, `fillLock(..., { variant: 'serving', s })` is the reference). `round.ends` is silent on purpose (the street shows her at her post).

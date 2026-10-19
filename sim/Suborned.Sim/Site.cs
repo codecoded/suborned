@@ -36,6 +36,19 @@ namespace Suborned.Sim
         public readonly string GuardPost, GuardCafe, ValeExit, ValeCar, ValeService, CarPickup, CarDriver, CarService, CarBlock, RivalsPark, RivalsEntry, RivalsFront,
             SecEntry, SecVia, SecTo, GetawayCar, FightEntry, FightGuard, PatrolA, PatrolB, PatrolReroute;
         public readonly Pt GuardFacing, CafeFacing, PatrolFacing, PatrolRerouteFacing;
+        /// <summary>Where a car may be (brief 023, engine 0.8.2; rulebook car.drive): site `drive`, the walk grid's window and cells.</summary>
+        public readonly Grid Drive = null!;
+        /// <summary>Brief 023: half the city's lane (cm), the keep-off a car holds from the edge on a carriageway (site drive.lane, Grid.CarRoute).</summary>
+        public readonly int DriveLaneCm;
+        /// <summary>The official car's heading parked at block-spot (site car.blockFacing): along its bay's kerb, nose the way it pulled out.</summary>
+        public readonly Pt CarBlockFacing;
+        /// <summary>The car parked in the service bay faces this way (site car.serviceFacing: the bay's long axis, nose away from its drive).</summary>
+        public readonly Pt CarServiceFacing;
+        /// <summary>The official car's drives from the pickup, on drivable cells (car.drive), resolved at load: to the block stand and to the service bay.</summary>
+        public readonly Pt[] CarBlockPath = Array.Empty<Pt>(), CarServicePath = Array.Empty<Pt>();
+        readonly Dictionary<string, Pt> carStand = new Dictionary<string, Pt>(StringComparer.Ordinal);
+        /// <summary>Where a car stands for a car place (car.pickup, car.block, car.service): the place, or its nearest drivable cell (car.drive).</summary>
+        public Pt CarStand(string id) => carStand.TryGetValue(id, out var p) ? p : throw new FormatException($"'{id}' is not a car place");
         public readonly string[] FightAmbush, FightPolice;
         /// <summary>The getaway car's exit lane (brief 018 §1; site getaway.exit): the centreline in the site frame (cm) and half its width (cm).</summary>
         public readonly Pt[] ExitLane = Array.Empty<Pt>(); public readonly int ExitHalfCm;
@@ -190,17 +203,28 @@ namespace Suborned.Sim
         /// <summary>tan of whole degrees 0..89, ×10000, rounded: a cone's half-width at its reach, in integers (no libm at load).</summary>
         static readonly int[] TanHalf = { 0, 175, 349, 524, 699, 875, 1051, 1228, 1405, 1584, 1763, 1944, 2126, 2309, 2493, 2679, 2867, 3057, 3249, 3443, 3640, 3839, 4040, 4245, 4452, 4663, 4877, 5095, 5317, 5543, 5774, 6009, 6249, 6494, 6745, 7002, 7265, 7536, 7813, 8098, 8391, 8693, 9004, 9325, 9657, 10000, 10355, 10724, 11106, 11504, 11918, 12349, 12799, 13270, 13764, 14281, 14826, 15399, 16003, 16643, 17321, 18040, 18807, 19626, 20503, 21445, 22460, 23559, 24751, 26051, 27475, 29042, 30777, 32709, 34874, 37321, 40108, 43315, 47046, 51446, 56713, 63138, 71154, 81443, 95144, 114301, 143007, 190811, 286363, 572900 };
         public bool HasTakedownWorld;
+        /// <summary>Brief 022: the baked rounds of the mission's servers (sim/data/handover.rounds.json), or null: the mission has no round.</summary>
+        public RoundsData? Rounds;
         public int SecurityLevel => Math.Max(0, Math.Min(4, SecurityBase + SecurityBonus));
 
         public Site(string json)
         {
             Root = JNode.Parse(json, "site");
             var r = Root;
-            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover");
+            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover", "drive");
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             if (r["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
             r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
             Grid = new Grid(r["grid"]);
+            // brief 023 (engine 0.8.2, rulebook car.drive): where a car may be, on the walk grid's window and cells. Required: no car moves without it
+            var dg = r.Opt("drive") ?? throw new FormatException("site drive is missing: engine 0.8.2 routes every moving car on the drive grid (rulebook car.drive, tools/sim/drive.ts)");
+            dg.Only("x0", "y0", "cell", "nx", "ny", "lane", "rows", "src"); dg["src"].Str();
+            Drive = new Grid(dg);
+            // brief 023 (Motive 2026-10-19, rulebook car.pace): every drivable cell names its surface (r carriageway, y drive or bay), and the lane a car keeps to
+            if (!Drive.Surfaces) throw new FormatException("site drive: every drivable cell names its surface, 'r' carriageway or 'y' drive or bay (rulebook car.pace; tools/sim/drive.ts)");
+            DriveLaneCm = (dg.Opt("lane") ?? throw new FormatException("site drive: lane (cm) is missing: half the city's lane, the keep-off a car holds on a carriageway (tools/sim/drive.ts)")).Int();
+            if (DriveLaneCm <= 0 || DriveLaneCm > 1000) throw new FormatException("site drive: lane 1..1000 cm");
+            if (Drive.X0 != Grid.X0 || Drive.Y0 != Grid.Y0 || Drive.Cell != Grid.Cell || Drive.Nx != Grid.Nx || Drive.Ny != Grid.Ny) throw new FormatException("site drive: the drive grid shares the walk grid's window and cells");
             foreach (var o in r["occluders"].Items)
             {
                 o.Only("id", "z", "h", "poly", "src");
@@ -232,7 +256,17 @@ namespace Suborned.Sim
             var gu = r["guard"]; gu.Only("post", "facing", "cafe", "cafeFacing", "src");
             GuardPost = P(gu["post"]); GuardCafe = P(gu["cafe"]); GuardFacing = F(gu["facing"]); CafeFacing = F(gu["cafeFacing"]);
             var va = r["vale"]; va.Only("exit", "car", "service", "src"); ValeExit = P(va["exit"]); ValeCar = P(va["car"]); ValeService = P(va["service"]);
-            var ca = r["car"]; ca.Only("pickup", "driver", "service", "block", "src"); CarPickup = P(ca["pickup"]); CarDriver = P(ca["driver"]); CarService = P(ca["service"]); CarBlock = P(ca["block"]);
+            var ca = r["car"]; ca.Only("pickup", "driver", "service", "block", "serviceFacing", "blockFacing", "src");
+            CarBlockFacing = F(ca.Opt("blockFacing") ?? throw new FormatException("site car.blockFacing is missing: the car's heading parked at block-spot (tools/sim/site.ts)")); CarPickup = P(ca["pickup"]); CarDriver = P(ca["driver"]); CarService = P(ca["service"]); CarBlock = P(ca["block"]);
+            CarServiceFacing = F(ca["serviceFacing"]);
+            // car.drive: each car place stands on the drive grid (its nearest drivable cell within 6 m) and the pickup reaches the others by drivable cells
+            foreach (var id in new[] { CarPickup, CarBlock, CarService })
+            {
+                var cs = Drive.NearestFree(at[id]) ?? throw new FormatException($"car place '{id}' has no drivable cell within 6 m (rulebook car.drive)");
+                carStand[id] = cs;
+            }
+            CarBlockPath = Drive.CarRoute(carStand[CarPickup], carStand[CarBlock], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarBlock}'");
+            CarServicePath = Drive.CarRoute(carStand[CarPickup], carStand[CarService], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarService}' (the turned driver's way to the service bay)");
             var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
             if (ri.Opt("public") is JNode rp) { RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, RivalsPublic) < 0) throw new FormatException($"{rp.Path} = '{RivalsPublic}' is not one of {string.Join(", ", Rules.RivalsPublics)}"); }
             var se = r["security"]; se.Only("entry", "via", "to", "src"); SecEntry = P(se["entry"]); SecVia = P(se["via"]); SecTo = P(se["to"]);

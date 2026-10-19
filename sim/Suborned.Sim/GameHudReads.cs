@@ -45,6 +45,7 @@ namespace Suborned.Sim
             if (!DoorHeld(doorId)) return -1;
             if (Alert >= 3) return Never;
             int end = lastAlarm < 0 ? Tick : lastAlarm + T(Alert >= 2 ? R.StandDownSearchS : R.StandDownInquiryS);
+            if (!SceneHolds.Exists(h => h.Doors.Contains(doorId) && HoldActive(h))) return FixtureHeldUntil(doorId); // test only: held by a start fixture alone (N85)
             foreach (var h in SceneHolds)
             {
                 if (!h.Doors.Contains(doorId) || !HoldActive(h)) continue;

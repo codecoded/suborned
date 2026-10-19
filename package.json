@@ -28,6 +28,8 @@
     "test": "bun test",
     "check": "bun run typecheck && bun test && bun run plan",
     "people": "bun tools/people/cli.ts",
+    "rounds": "bun tools/routines/rounds.ts",
+    "seats": "bun tools/routines/seats.ts",
     "dialogue": "bun tools/dialogue/cli.ts",
     "cover": "bun tools/cover/cli.ts",
     "people:view": "bun tools/people-view/cli.ts",

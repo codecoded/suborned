@@ -16,7 +16,11 @@ namespace Suborned.Sim
             return n;
         }
         /// <summary>A point in front of the guard at his door, within point blank (3 m along his facing), on free ground.</summary>
-        static Pt FrontOfGuard(Run r) => r.Stand("d:Office entrance") + new Pt(-300, 0);
+        static Pt FrontOfGuard(Run r) => r.Stand("d:Office entrance") + Along(r.G.S.GuardFacing, 300); // along his facing from the site (2026-10-19: west, the door on the west face; was a fixed 3 m north)
+        /// <summary>`cm` along a facing (any length), in integer centimetres.</summary>
+        static Pt Along(Pt facing, int cm) { long len = Math.Max(1, G.Isqrt((long)facing.X * facing.X + (long)facing.Y * facing.Y)); return new Pt((int)(facing.X * cm / len), (int)(facing.Y * cm / len)); }
+        /// <summary>Free ground `cm` in front of the guard where he stands now (along his facing).</summary>
+        static Pt AheadOfGuard(Run r, int cm) { var gp = r.G.GuardPose()!.Value; return r.G.S.Grid.NearestFree(gp.pos + Along(gp.facing, cm))!.Value; }
 
         static void FightCases()
         {
@@ -172,6 +176,8 @@ namespace Suborned.Sim
                 r.FightItOut(120);
                 r.Eq(g.Result, Outcome.Failure, "the lone, unprepared Enforcer loses the safe fight");
                 r.Eq(g.FailCode, "rivals-reach-vale", "and the fail names what the rivals came for");
+                var fc = CauseIs(r, "rivals-reach-vale", "downed-enforcer", true, r.Shots().FindLast(s => s.hit).by, "rival", Enf); // the fail camera (ScenariosFailCause.cs): the rival whose shot downed him
+                ShotFrom(r, fc, r.Shots().FindLast(s => s.hit).by, Enf);
             }, pressure);
 
             Add("N37", "—", "The crowd scatters (Pulse §4): a weapon drawn among people on the square startles those in sight within witness range; after the startle they run to a refuge farther from it than they stood, shelter off the street, and walk back when it has been quiet.", r =>

@@ -64,7 +64,8 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
   };
 
   // the block's pieces: on the structures they stand for (the structures stay logical solids in the block, the piece is what is drawn), or as a building's ground storey
-  for (const p of dr.pieces) {
+  for (const p0 of dr.pieces) {
+    const p = { ...p0, piece: look.swaps[p0.piece] ?? p0.piece }; // civic-look.json `swaps`: the block names CafeBay, the world draws CafeBay_v2 (brief 020); place, ground, companions and fade are keyed by the piece drawn
     const id = look.place[p.piece]; if (!id) throw new Error(`civic dressing: ${p.piece} has no mass id in civic-look.json place`);
     const g = look.ground[p.piece];
     if (g) {

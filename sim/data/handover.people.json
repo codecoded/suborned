@@ -58,9 +58,10 @@
   "home-pylon-row-east": [4300,1500],
   "home-rocket-west": [3225,-6100],
   "office-bay": [7850,-3100],
-  "office-entrance": [5175,-3000],
+  "office-entrance": [6400,-4125],
   "official-entrance": [7625,-3000],
   "s1-gardens": [-23000,-3000],
+  "service-bay": [6375,-1500],
   "square-bay": [850,-4850],
   "t1-records": [15000,13000],
   "t1-records-stand-00": [15000,13000],
@@ -116,7 +117,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-cafe-03"],["workmate","p-cafe-04"]],
-   "stops": [["home-rocket-west",-62670,-41250,0],["cafe-entrance",-41070,-29430,0],["cafe-entrance",-29430,-27630,0],["cafe-entrance",-27630,-19470,0],["home-rocket-west",-19350,23730,0]]
+   "stops": [["home-rocket-west",-62670,-41250,0],["cafe-entrance",-41070,-29430,0],["cafe-entrance",-29430,-27630,0],["cafe-entrance",-27630,-19170,0],["home-rocket-west",-19050,23730,0]]
   },
   {
    "id": "p-cafe-02",
@@ -146,7 +147,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-cafe-01"],["workmate","p-cafe-08"]],
-   "stops": [["home-garden-row-east",-62670,-41190,0],["cafe-entrance",-41070,-31230,0],["cafe-entrance",-31230,-29430,0],["cafe-entrance",-29430,-19470,0],["cafe-table-0-seat-0",-19350,-16650,1],["home-garden-row-east",-16530,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-41190,0],["cafe-entrance",-41070,-31230,0],["cafe-entrance",-31230,-29430,0],["cafe-entrance",-29430,-19410,0],["cafe-table-0-seat-0",-19290,-16590,1],["home-garden-row-east",-16470,23730,0]]
   },
   {
    "id": "p-cafe-04",
@@ -191,7 +192,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-cafe-20"]],
-   "stops": [["beyond",-62670,-41490,0],["t1-records",-41490,-41370,1],["cafe-entrance",-41070,-30690,0],["cafe-entrance",-30690,-28890,0],["cafe-entrance",-28890,-19470,0],["t1-records",-19170,-19050,1],["beyond",-19050,23730,0]]
+   "stops": [["beyond",-62670,-41490,0],["t1-records",-41490,-41370,1],["cafe-entrance",-41070,-30690,0],["cafe-entrance",-30690,-28890,0],["cafe-entrance",-28890,-19170,0],["t1-records",-18870,-18750,1],["beyond",-18750,23730,0]]
   },
   {
    "id": "p-cafe-07",
@@ -221,7 +222,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-cafe-03"]],
-   "stops": [["home-rocket-west",-62670,-41550,0],["cafe-entrance",-41070,-31410,0],["cafe-entrance",-31410,-29610,0],["cafe-entrance",-29610,-19470,0],["cafe-table-0-seat-1",-19350,-16650,1],["home-rocket-west",-16530,23730,0]]
+   "stops": [["home-rocket-west",-62670,-41550,0],["cafe-entrance",-41070,-31410,0],["cafe-entrance",-31410,-29610,0],["cafe-entrance",-29610,-19290,0],["cafe-table-0-seat-1",-19170,-16470,1],["home-rocket-west",-16350,23730,0]]
   },
   {
    "id": "p-cafe-09",
@@ -236,7 +237,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-cafe-11"]],
-   "stops": [["home-rocket-west",-62670,-19650,0],["cafe-entrance",-19470,-7650,0],["cafe-entrance",-7650,-5850,0],["cafe-entrance",-5850,2130,0],["home-rocket-west",2250,23730,0]]
+   "stops": [["home-rocket-west",-62670,-19650,0],["cafe-entrance",-19470,-7650,0],["cafe-entrance",-7650,-5850,0],["cafe-entrance",-5850,2430,0],["home-rocket-west",2550,23730,0]]
   },
   {
    "id": "p-cafe-10",
@@ -251,7 +252,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-cafe-23"]],
-   "stops": [["home-rocket-west",-62670,-19890,0],["cafe-entrance",-19470,-7950,0],["cafe-entrance",-7950,-6150,0],["cafe-entrance",-6150,2130,0],["cafe-table-6-seat-1",2250,4950,1],["home-rocket-west",5070,23730,0]]
+   "stops": [["home-rocket-west",-62670,-19890,0],["cafe-entrance",-19470,-7950,0],["cafe-entrance",-7950,-6150,0],["cafe-entrance",-6150,2250,0],["cafe-table-6-seat-1",2370,5070,1],["home-rocket-west",5190,23730,0]]
   },
   {
    "id": "p-cafe-11",
@@ -296,7 +297,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-32"]],
-   "stops": [["home-rocket-west",-62670,-19650,0],["cafe-entrance",-19470,-7950,0],["cafe-entrance",-7950,-6150,0],["cafe-entrance",-6150,2130,0],["cafe-table-6-seat-2",2250,4950,1],["home-rocket-west",5070,23730,0]]
+   "stops": [["home-rocket-west",-62670,-19650,0],["cafe-entrance",-19470,-7950,0],["cafe-entrance",-7950,-6150,0],["cafe-entrance",-6150,2190,0],["cafe-table-6-seat-2",2310,5010,1],["home-rocket-west",5130,23730,0]]
   },
   {
    "id": "p-cafe-14",
@@ -356,7 +357,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-cafe-02"]],
-   "stops": [["cafe-table-4-seat-0",-62550,-59850,1],["home-rocket-west",-59730,1650,0],["cafe-entrance",2130,13050,0],["cafe-entrance",13050,14850,0],["cafe-entrance",14850,23730,0]]
+   "stops": [["cafe-entrance",-62670,-62250,0],["cafe-table-4-seat-0",-62130,-59430,1],["home-rocket-west",-59310,1650,0],["cafe-entrance",2130,13050,0],["cafe-entrance",13050,14850,0],["cafe-entrance",14850,23730,0]]
   },
   {
    "id": "p-cafe-18",
@@ -371,7 +372,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-cafe-24"],["family","p-rocket-west-03"],["workmate","p-cafe-22"]],
-   "stops": [["home-rocket-west",-62550,1890,0],["cafe-entrance",2130,12810,0],["cafe-entrance",12810,14610,0],["cafe-entrance",14610,23730,0]]
+   "stops": [["cafe-entrance",-62670,-62610,0],["home-rocket-west",-62490,1890,0],["cafe-entrance",2130,12810,0],["cafe-entrance",12810,14610,0],["cafe-entrance",14610,23730,0]]
   },
   {
    "id": "p-cafe-19",
@@ -491,7 +492,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["regular","p-cafe-20"],["family","p-garden-row-east-07"]],
-   "stops": [["home-garden-row-east",-62670,-27030,0],["t1-records-stand-00",-26790,-25890,1],["home-garden-row-east",-25650,-23190,0],["cafe-table-4-seat-0",-23070,-20970,1],["home-garden-row-east",-20850,-11790,0],["cafe-stand-00",-11670,-11310,1],["home-garden-row-east",-11190,-6390,0],["cafe-stand-00",-6270,-5910,1],["home-garden-row-east",-5790,-5190,0],["cafe-table-0-seat-0",-5070,-2490,1],["home-garden-row-east",-2370,-90,0],["cafe-table-3-seat-1",30,2370,1],["home-garden-row-east",2490,6510,0],["cafe-table-2-seat-0",6630,10230,1],["home-garden-row-east",10350,15810,0],["cafe-table-0-seat-0",15930,18870,1],["home-garden-row-east",18990,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-27030,0],["t1-records-stand-00",-26790,-25890,1],["home-garden-row-east",-25650,-23190,0],["cafe-table-4-seat-0",-23070,-20970,1],["home-garden-row-east",-20850,-11790,0],["cafe-stand-00",-11670,-11310,1],["home-garden-row-east",-11190,-6390,0],["cafe-stand-00",-6270,-5910,1],["home-garden-row-east",-5790,-5190,0],["cafe-table-0-seat-0",-5070,-2490,1],["home-garden-row-east",-2370,-90,0],["cafe-table-6-seat-1",30,2370,1],["home-garden-row-east",2490,6510,0],["cafe-table-2-seat-0",6630,10230,1],["home-garden-row-east",10350,15810,0],["cafe-table-0-seat-0",15930,18870,1],["home-garden-row-east",18990,23730,0]]
   },
   {
    "id": "p-garden-row-east-03",
@@ -506,7 +507,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-garden-row-east-05"]],
-   "stops": [["home-garden-row-east",-62670,-39090,0],["cafe-stand-00",-38970,-38610,1],["home-garden-row-east",-38490,-35490,0],["cafe-stand-00",-35370,-35010,1],["home-garden-row-east",-34890,-33090,0],["cafe-stand-00",-32970,-32610,1],["home-garden-row-east",-32490,-27750,0],["t1-records-stand-01",-27510,-26610,1],["home-garden-row-east",-26370,-17790,0],["cafe-table-2-seat-0",-17670,-15570,1],["home-garden-row-east",-15450,-6090,0],["cafe-table-0-seat-1",-5970,-3210,1],["home-garden-row-east",-3090,-90,0],["cafe-table-3-seat-2",30,2610,1],["home-garden-row-east",2730,6510,0],["cafe-table-0-seat-0",6630,9090,1],["home-garden-row-east",9210,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-39090,0],["cafe-stand-00",-38970,-38610,1],["home-garden-row-east",-38490,-35490,0],["cafe-stand-00",-35370,-35010,1],["home-garden-row-east",-34890,-33090,0],["cafe-stand-00",-32970,-32610,1],["home-garden-row-east",-32490,-27750,0],["t1-records-stand-01",-27510,-26610,1],["home-garden-row-east",-26370,-17790,0],["cafe-table-2-seat-0",-17670,-15570,1],["home-garden-row-east",-15450,-6090,0],["cafe-table-0-seat-1",-5970,-3210,1],["home-garden-row-east",-3090,-90,0],["cafe-table-3-seat-1",30,2610,1],["home-garden-row-east",2730,6510,0],["cafe-table-0-seat-0",6630,9090,1],["home-garden-row-east",9210,23730,0]]
   },
   {
    "id": "p-garden-row-east-04",
@@ -716,7 +717,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-07"],["regular","p-cafe-14"],["lover","p-cafe-14"]],
-   "stops": [["home-rocket-west",-62670,-29610,0],["cafe-table-1-seat-0",-29490,-28590,1],["office-entrance",-28470,-15270,1],["office-entrance",-15270,-13470,1],["office-entrance",-13470,330,1],["cafe-table-3-seat-0",450,3150,1],["home-rocket-west",3270,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29610,0],["cafe-table-1-seat-0",-29490,-28590,1],["office-entrance",-28470,-15270,1],["office-entrance",-15270,-13470,1],["office-entrance",-13470,330,1],["cafe-table-3-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
   },
   {
    "id": "p-records-office-02",
@@ -731,7 +732,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-49"]],
-   "stops": [["beyond",-62670,-28950,0],["t1-records",-28950,-28830,1],["office-entrance",-28470,-12990,0],["office-entrance",-12990,-11190,0],["office-entrance",-11190,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28950,0],["t1-records",-28950,-28830,1],["office-entrance",-28470,-12990,0],["office-entrance",-12990,-11190,0],["office-entrance",-11190,690,0],["t1-records",930,1050,1],["beyond",1050,23730,0]]
   },
   {
    "id": "p-records-office-03",
@@ -746,7 +747,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-53"],["workmate","p-records-office-63"]],
-   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-13890,0],["cafe-table-7-seat-0",-13770,-11970,1],["office-entrance",-11850,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-13890,0],["cafe-table-7-seat-0",-13710,-11910,1],["office-entrance",-11730,570,0],["home-rocket-west",690,23730,0]]
   },
   {
    "id": "p-records-office-04",
@@ -761,7 +762,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-68"],["family","p-rocket-west-01"]],
-   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-13410,0],["cafe-table-7-seat-1",-13290,-11490,1],["office-entrance",-11370,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-13410,0],["cafe-table-7-seat-1",-13230,-11430,1],["office-entrance",-11250,570,0],["home-rocket-west",690,23730,0]]
   },
   {
    "id": "p-records-office-05",
@@ -791,7 +792,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-41"]],
-   "stops": [["home-rocket-west",-62670,-28590,0],["office-entrance",-28470,-13350,0],["cafe-table-0-seat-0",-13230,-11430,1],["office-entrance",-11310,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28590,0],["office-entrance",-28470,-13350,0],["cafe-table-0-seat-0",-13170,-11370,1],["office-entrance",-11190,570,0],["home-rocket-west",690,23730,0]]
   },
   {
    "id": "p-records-office-07",
@@ -821,7 +822,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-14"]],
-   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-12990,0],["office-entrance",-12990,-11190,0],["office-entrance",-11190,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-12990,0],["office-entrance",-12990,-11190,0],["office-entrance",-11190,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-09",
@@ -851,7 +852,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-40"]],
-   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13170,0],["office-entrance",-13170,-11370,0],["office-entrance",-11370,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13170,0],["office-entrance",-13170,-11370,0],["office-entrance",-11370,510,0],["t1-records",750,870,1],["beyond",870,23730,0]]
   },
   {
    "id": "p-records-office-11",
@@ -866,7 +867,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-27"]],
-   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-14970,0],["office-entrance",-14970,-13170,0],["office-entrance",-13170,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-14970,0],["office-entrance",-14970,-13170,0],["office-entrance",-13170,450,0],["t1-records",690,810,1],["beyond",810,23730,0]]
   },
   {
    "id": "p-records-office-12",
@@ -896,7 +897,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-53"]],
-   "stops": [["beyond",-62670,-28950,0],["t1-records",-28950,-28830,1],["office-entrance",-28470,-15030,0],["office-entrance",-15030,-13230,0],["office-entrance",-13230,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28950,0],["t1-records",-28950,-28830,1],["office-entrance",-28470,-15030,0],["office-entrance",-15030,-13230,0],["office-entrance",-13230,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-14",
@@ -911,7 +912,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-08"],["workmate","p-records-office-62"]],
-   "stops": [["home-garden-row-east",-62670,-28950,0],["office-entrance",-28470,-13770,0],["cafe-table-1-seat-0",-13650,-11850,1],["office-entrance",-11730,330,0],["home-garden-row-east",450,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-28950,0],["office-entrance",-28470,-13770,0],["cafe-table-1-seat-0",-13650,-11850,1],["office-entrance",-11730,570,0],["home-garden-row-east",690,23730,0]]
   },
   {
    "id": "p-records-office-15",
@@ -926,7 +927,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-cafe-16"],["workmate","p-records-office-58"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14310,0],["cafe-table-7-seat-2",-14190,-12390,1],["office-entrance",-12270,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14310,0],["cafe-table-7-seat-2",-14130,-12330,1],["office-entrance",-12150,630,0],["home-rocket-west",750,23730,0]]
   },
   {
    "id": "p-records-office-16",
@@ -941,7 +942,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-41"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-13470,0],["cafe-table-3-seat-0",-13350,-11550,1],["office-entrance",-11430,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-13470,0],["cafe-table-3-seat-0",-13290,-11490,1],["office-entrance",-11310,690,0],["home-rocket-west",810,23730,0]]
   },
   {
    "id": "p-records-office-17",
@@ -971,7 +972,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-29"]],
-   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-table-6-seat-2",-14490,-12690,1],["office-entrance",-12570,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-table-6-seat-2",-14430,-12630,1],["office-entrance",-12450,330,0],["home-rocket-west",450,23730,0]]
   },
   {
    "id": "p-records-office-19",
@@ -986,7 +987,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-35"],["workmate","p-records-office-69"]],
-   "stops": [["home-rocket-west",-62670,-28890,0],["office-entrance",-28470,-14430,0],["cafe-table-4-seat-0",-14310,-12510,1],["office-entrance",-12390,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28890,0],["office-entrance",-28470,-14430,0],["cafe-table-4-seat-0",-14250,-12450,1],["office-entrance",-12270,450,0],["home-rocket-west",570,23730,0]]
   },
   {
    "id": "p-records-office-20",
@@ -1001,7 +1002,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-35"]],
-   "stops": [["beyond",-62670,-29190,0],["t1-records",-29190,-29070,1],["office-entrance",-28470,-14850,0],["office-entrance",-14850,-13050,0],["office-entrance",-13050,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29190,0],["t1-records",-29190,-29070,1],["office-entrance",-28470,-14850,0],["office-entrance",-14850,-13050,0],["office-entrance",-13050,450,0],["t1-records",690,810,1],["beyond",810,23730,0]]
   },
   {
    "id": "p-records-office-21",
@@ -1016,7 +1017,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-70"],["workmate","p-records-office-36"],["workmate","p-records-office-46"]],
-   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-15090,0],["office-entrance",-15090,-13290,0],["office-entrance",-13290,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-15090,0],["office-entrance",-15090,-13290,0],["office-entrance",-13290,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-22",
@@ -1031,7 +1032,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-50"]],
-   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-15270,0],["office-entrance",-15270,-13470,0],["office-entrance",-13470,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-15270,0],["office-entrance",-15270,-13470,0],["office-entrance",-13470,630,0],["t1-records",870,990,1],["beyond",990,23730,0]]
   },
   {
    "id": "p-records-office-23",
@@ -1046,7 +1047,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-52"],["family","p-rocket-west-06"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-13170,0],["cafe-table-3-seat-1",-13050,-11250,1],["office-entrance",-11130,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-13170,0],["cafe-table-3-seat-1",-12990,-11190,1],["office-entrance",-11010,510,0],["home-rocket-west",630,23730,0]]
   },
   {
    "id": "p-records-office-24",
@@ -1061,7 +1062,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-26"],["family","p-records-office-68"]],
-   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-14370,0],["cafe-table-3-seat-2",-14250,-12450,1],["office-entrance",-12330,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-14370,0],["cafe-table-3-seat-2",-14190,-12390,1],["office-entrance",-12210,450,0],["home-rocket-west",570,23730,0]]
   },
   {
    "id": "p-records-office-25",
@@ -1076,7 +1077,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-71"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14730,0],["cafe-table-2-seat-1",-14610,-12810,1],["office-entrance",-12690,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14730,0],["cafe-table-2-seat-1",-14550,-12750,1],["office-entrance",-12570,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-26",
@@ -1091,7 +1092,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-12"],["workmate","p-records-office-24"],["workmate","p-records-office-44"]],
-   "stops": [["home-garden-row-east",-62670,-28770,0],["office-entrance",-28470,-14490,0],["cafe-table-0-seat-1",-14370,-12570,1],["office-entrance",-12450,330,0],["home-garden-row-east",450,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-28770,0],["office-entrance",-28470,-14490,0],["cafe-table-0-seat-1",-14310,-12510,1],["office-entrance",-12330,330,0],["home-garden-row-east",450,23730,0]]
   },
   {
    "id": "p-records-office-27",
@@ -1106,7 +1107,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-11"]],
-   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-13410,0],["office-entrance",-13410,-11610,0],["office-entrance",-11610,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28890,0],["t1-records",-28890,-28770,1],["office-entrance",-28470,-13410,0],["office-entrance",-13410,-11610,0],["office-entrance",-11610,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-28",
@@ -1121,7 +1122,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-30"]],
-   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-13110,0],["cafe-table-1-seat-1",-12990,-11190,1],["office-entrance",-11070,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-13110,0],["cafe-table-1-seat-1",-12990,-11190,1],["office-entrance",-11070,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-29",
@@ -1151,7 +1152,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-02"],["workmate","p-records-office-28"],["family","p-pylon-row-east-01"]],
-   "stops": [["home-pylon-row-east",-62670,-29910,0],["cafe-table-1-seat-2",-29550,-28650,1],["official-entrance",-28470,-14430,0],["official-entrance",-14430,-12630,0],["official-entrance",-12630,330,0],["cafe-table-7-seat-0",510,3210,1],["home-pylon-row-east",3330,23730,0]]
+   "stops": [["home-pylon-row-east",-62670,-29910,0],["cafe-table-1-seat-2",-29550,-28650,1],["official-entrance",-28470,-14430,0],["official-entrance",-14430,-12630,0],["official-entrance",-12630,450,0],["cafe-table-7-seat-0",630,3330,1],["home-pylon-row-east",3450,23730,0]]
   },
   {
    "id": "p-records-office-31",
@@ -1181,7 +1182,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-cafe-13"],["workmate","p-records-office-42"]],
-   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-table-2-seat-2",-14490,-12690,1],["office-entrance",-12570,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-table-2-seat-2",-14490,-12690,1],["office-entrance",-12570,690,0],["home-rocket-west",810,23730,0]]
   },
   {
    "id": "p-records-office-33",
@@ -1196,7 +1197,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-68"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-13410,0],["cafe-table-1-seat-2",-13290,-11490,1],["office-entrance",-11370,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-13410,0],["cafe-table-1-seat-2",-13230,-11430,1],["office-entrance",-11250,510,0],["home-rocket-west",630,23730,0]]
   },
   {
    "id": "p-records-office-34",
@@ -1211,7 +1212,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-pylon-row-east-02"],["workmate","p-records-office-61"],["workmate","p-records-office-73"]],
-   "stops": [["home-pylon-row-east",-62670,-28590,0],["office-entrance",-28470,-13290,0],["cafe-table-0-seat-2",-13170,-11370,1],["office-entrance",-11250,330,0],["home-pylon-row-east",450,23730,0]]
+   "stops": [["home-pylon-row-east",-62670,-28590,0],["office-entrance",-28470,-13290,0],["cafe-table-0-seat-2",-13110,-11310,1],["office-entrance",-11130,330,0],["home-pylon-row-east",450,23730,0]]
   },
   {
    "id": "p-records-office-35",
@@ -1226,7 +1227,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-19"],["family","p-records-office-45"],["workmate","p-records-office-38"],["workmate","p-records-office-20"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14730,0],["cafe-table-4-seat-1",-14610,-12810,1],["office-entrance",-12690,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14730,0],["cafe-table-4-seat-1",-14550,-12750,1],["office-entrance",-12570,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-36",
@@ -1241,7 +1242,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-04"],["workmate","p-records-office-21"],["family","p-records-office-49"],["family","p-records-office-37"]],
-   "stops": [["home-rocket-west",-62670,-29730,0],["cafe-table-0-seat-0",-29550,-28650,1],["official-entrance",-28470,-13830,0],["official-entrance",-13830,-12030,0],["official-entrance",-12030,330,0],["cafe-table-5-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29730,0],["cafe-table-0-seat-0",-29550,-28650,1],["official-entrance",-28470,-13830,0],["official-entrance",-13830,-12030,0],["official-entrance",-12030,690,0],["cafe-table-5-seat-0",870,3570,1],["home-rocket-west",3690,23730,0]]
   },
   {
    "id": "p-records-office-37",
@@ -1256,7 +1257,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-68"],["family","p-records-office-36"],["workmate","p-records-office-64"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-15270,0],["cafe-table-4-seat-2",-15150,-13350,1],["office-entrance",-13230,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-15270,0],["cafe-table-4-seat-2",-15090,-13290,1],["office-entrance",-13110,690,0],["home-rocket-west",810,23730,0]]
   },
   {
    "id": "p-records-office-38",
@@ -1271,7 +1272,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-35"],["family","p-garden-row-east-06"]],
-   "stops": [["home-garden-row-east",-62670,-28710,0],["office-entrance",-28470,-14610,0],["cafe-table-5-seat-0",-14490,-12690,1],["office-entrance",-12570,330,0],["home-garden-row-east",450,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-28710,0],["office-entrance",-28470,-14610,0],["cafe-table-5-seat-0",-14430,-12630,1],["office-entrance",-12450,690,0],["home-garden-row-east",810,23730,0]]
   },
   {
    "id": "p-records-office-39",
@@ -1301,7 +1302,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-10"]],
-   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13290,0],["office-entrance",-13290,-11490,0],["office-entrance",-11490,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13290,0],["office-entrance",-13290,-11490,0],["office-entrance",-11490,510,0],["t1-records",750,870,1],["beyond",870,23730,0]]
   },
   {
    "id": "p-records-office-41",
@@ -1316,7 +1317,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-70"],["workmate","p-records-office-06"],["workmate","p-records-office-16"]],
-   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-14130,0],["cafe-table-5-seat-1",-14010,-12210,1],["office-entrance",-12090,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-14130,0],["cafe-table-5-seat-1",-13950,-12150,1],["office-entrance",-11970,510,0],["home-rocket-west",630,23730,0]]
   },
   {
    "id": "p-records-office-42",
@@ -1331,7 +1332,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-records-office-32"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14370,0],["cafe-table-5-seat-2",-14250,-12450,1],["office-entrance",-12330,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14370,0],["cafe-table-5-seat-2",-14190,-12390,1],["office-entrance",-12210,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-43",
@@ -1346,7 +1347,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-71"],["workmate","p-records-office-17"],["family","p-rocket-west-07"]],
-   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-12870,0],["cafe-table-2-seat-1",-12750,-10950,1],["office-entrance",-10830,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-12870,0],["cafe-table-2-seat-1",-12690,-10890,1],["office-entrance",-10710,750,0],["home-rocket-west",870,23730,0]]
   },
   {
    "id": "p-records-office-44",
@@ -1361,7 +1362,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-26"],["workmate","p-records-office-54"]],
-   "stops": [["beyond",-62670,-29130,0],["t1-records",-29130,-29010,1],["office-entrance",-28470,-13170,0],["office-entrance",-13170,-11370,0],["office-entrance",-11370,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29130,0],["t1-records",-29130,-29010,1],["office-entrance",-28470,-13170,0],["office-entrance",-13170,-11370,0],["office-entrance",-11370,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-45",
@@ -1376,7 +1377,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-35"],["workmate","p-records-office-60"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-12930,0],["cafe-table-4-seat-1",-12810,-11010,1],["office-entrance",-10890,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-12930,0],["cafe-table-4-seat-1",-12750,-10950,1],["office-entrance",-10770,330,0],["home-rocket-west",450,23730,0]]
   },
   {
    "id": "p-records-office-46",
@@ -1391,7 +1392,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-21"],["family","p-records-office-55"]],
-   "stops": [["home-garden-row-east",-62670,-29730,0],["cafe-table-4-seat-1",-29550,-28650,1],["official-entrance",-28470,-14970,0],["official-entrance",-14970,-13170,0],["official-entrance",-13170,330,0],["cafe-table-0-seat-1",510,3210,1],["home-garden-row-east",3330,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-29730,0],["cafe-table-4-seat-1",-29550,-28650,1],["official-entrance",-28470,-14970,0],["official-entrance",-14970,-13170,0],["official-entrance",-13170,390,0],["cafe-table-0-seat-1",570,3270,1],["home-garden-row-east",3390,23730,0]]
   },
   {
    "id": "p-records-office-47",
@@ -1406,7 +1407,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-29"],["workmate","p-records-office-39"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14490,0],["cafe-stand-02",-14370,-12570,1],["office-entrance",-12450,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14490,0],["cafe-stand-01",-14310,-12510,1],["office-entrance",-12330,510,0],["home-rocket-west",630,23730,0]]
   },
   {
    "id": "p-records-office-48",
@@ -1421,7 +1422,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-12"]],
-   "stops": [["home-garden-row-east",-62670,-28710,0],["office-entrance",-28470,-13770,0],["cafe-stand-01",-13650,-11850,1],["office-entrance",-11730,330,0],["home-garden-row-east",450,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-28710,0],["office-entrance",-28470,-13770,0],["cafe-stand-02",-13590,-11790,1],["office-entrance",-11610,630,0],["home-garden-row-east",750,23730,0]]
   },
   {
    "id": "p-records-office-49",
@@ -1436,7 +1437,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-36"],["workmate","p-records-office-02"]],
-   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14970,0],["cafe-table-3-seat-1",-14850,-13050,1],["office-entrance",-12930,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28710,0],["office-entrance",-28470,-14970,0],["cafe-table-3-seat-1",-14790,-12990,1],["office-entrance",-12810,450,0],["home-rocket-west",570,23730,0]]
   },
   {
    "id": "p-records-office-50",
@@ -1451,7 +1452,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-22"],["workmate","p-records-office-71"],["family","p-rocket-west-05"]],
-   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-15030,0],["cafe-table-2-seat-0",-14910,-13110,1],["office-entrance",-12990,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-15030,0],["cafe-table-2-seat-0",-14850,-13050,1],["office-entrance",-12870,630,0],["home-rocket-west",750,23730,0]]
   },
   {
    "id": "p-records-office-51",
@@ -1466,7 +1467,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-05"]],
-   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-13050,0],["office-entrance",-13050,-11250,0],["office-entrance",-11250,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-28830,0],["t1-records",-28830,-28710,1],["office-entrance",-28470,-13050,0],["office-entrance",-13050,-11250,0],["office-entrance",-11250,690,0],["t1-records",930,1050,1],["beyond",1050,23730,0]]
   },
   {
    "id": "p-records-office-52",
@@ -1481,7 +1482,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-records-office-61"],["workmate","p-records-office-23"]],
-   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-15030,0],["cafe-table-1-seat-1",-14910,-13110,1],["office-entrance",-12990,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28650,0],["office-entrance",-28470,-15030,0],["cafe-table-1-seat-1",-14910,-13110,1],["office-entrance",-12990,450,0],["home-rocket-west",570,23730,0]]
   },
   {
    "id": "p-records-office-53",
@@ -1496,7 +1497,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-03"],["workmate","p-records-office-67"],["workmate","p-records-office-13"]],
-   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13890,0],["office-entrance",-13890,-12090,0],["office-entrance",-12090,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29010,0],["t1-records",-29010,-28890,1],["office-entrance",-28470,-13890,0],["office-entrance",-13890,-12090,0],["office-entrance",-12090,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-54",
@@ -1511,7 +1512,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-records-office-44"],["workmate","p-records-office-56"]],
-   "stops": [["beyond",-62670,-29070,0],["t1-records",-29070,-28950,1],["office-entrance",-28470,-14490,0],["office-entrance",-14490,-12690,0],["office-entrance",-12690,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29070,0],["t1-records",-29070,-28950,1],["office-entrance",-28470,-14490,0],["office-entrance",-14490,-12690,0],["office-entrance",-12690,690,0],["t1-records",930,1050,1],["beyond",1050,23730,0]]
   },
   {
    "id": "p-records-office-55",
@@ -1526,7 +1527,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-records-office-46"]],
-   "stops": [["home-garden-row-east",-62670,-28890,0],["office-entrance",-28470,-13290,0],["cafe-table-4-seat-2",-13170,-11370,1],["office-entrance",-11250,330,0],["home-garden-row-east",450,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-28890,0],["office-entrance",-28470,-13290,0],["cafe-table-4-seat-2",-13110,-11310,1],["office-entrance",-11130,330,0],["home-garden-row-east",450,23730,0]]
   },
   {
    "id": "p-records-office-56",
@@ -1541,7 +1542,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-records-office-54"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14610,0],["cafe-stand-03",-14490,-12690,1],["office-entrance",-12570,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-14610,0],["cafe-stand-03",-14430,-12630,1],["office-entrance",-12450,330,0],["home-rocket-west",450,23730,0]]
   },
   {
    "id": "p-records-office-57",
@@ -1556,7 +1557,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-07"],["workmate","p-records-office-66"]],
-   "stops": [["home-rocket-west",-62670,-29730,0],["cafe-table-0-seat-2",-29550,-28650,1],["official-entrance",-28470,-13230,0],["official-entrance",-13230,-11430,0],["official-entrance",-11430,330,0],["cafe-table-4-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29730,0],["cafe-table-0-seat-2",-29550,-28650,1],["official-entrance",-28470,-13230,0],["official-entrance",-13230,-11430,0],["official-entrance",-11430,390,0],["cafe-table-4-seat-0",570,3270,1],["home-rocket-west",3390,23730,0]]
   },
   {
    "id": "p-records-office-58",
@@ -1571,7 +1572,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-15"]],
-   "stops": [["home-rocket-west",-62670,-28590,0],["office-entrance",-28470,-12990,0],["cafe-stand-04",-12870,-11070,1],["office-entrance",-10950,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28590,0],["office-entrance",-28470,-12990,0],["cafe-stand-04",-12810,-11010,1],["office-entrance",-10830,330,0],["home-rocket-west",450,23730,0]]
   },
   {
    "id": "p-records-office-59",
@@ -1586,7 +1587,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-72"]],
-   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-stand-05",-14490,-12690,1],["office-entrance",-12570,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28950,0],["office-entrance",-28470,-14610,0],["cafe-stand-05",-14430,-12630,1],["office-entrance",-12450,630,0],["home-rocket-west",750,23730,0]]
   },
   {
    "id": "p-records-office-60",
@@ -1601,7 +1602,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-45"],["workmate","p-records-office-68"],["family","p-rocket-west-02"]],
-   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-14490,0],["cafe-stand-06",-14370,-12570,1],["office-entrance",-12450,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-14490,0],["cafe-stand-06",-14310,-12510,1],["office-entrance",-12330,570,0],["home-rocket-west",690,23730,0]]
   },
   {
    "id": "p-records-office-61",
@@ -1631,7 +1632,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-14"]],
-   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-14790,0],["cafe-stand-04",-14670,-12870,1],["office-entrance",-12750,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-14790,0],["cafe-stand-04",-14610,-12810,1],["office-entrance",-12630,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-63",
@@ -1646,7 +1647,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-03"]],
-   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-13770,0],["cafe-stand-07",-13650,-11850,1],["office-entrance",-11730,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28830,0],["office-entrance",-28470,-13770,0],["cafe-stand-07",-13590,-11790,1],["office-entrance",-11610,690,0],["home-rocket-west",810,23730,0]]
   },
   {
    "id": "p-records-office-64",
@@ -1661,7 +1662,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-37"]],
-   "stops": [["home-rocket-west",-62670,-29910,0],["cafe-table-4-seat-2",-29550,-28650,1],["official-entrance",-28470,-15090,0],["official-entrance",-15090,-13290,0],["official-entrance",-13290,330,0],["cafe-table-0-seat-2",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29910,0],["cafe-table-4-seat-2",-29550,-28650,1],["official-entrance",-28470,-15090,0],["official-entrance",-15090,-13290,0],["official-entrance",-13290,390,0],["cafe-table-0-seat-2",570,3270,1],["home-rocket-west",3390,23730,0]]
   },
   {
    "id": "p-records-office-65",
@@ -1676,7 +1677,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-02"],["workmate","p-records-office-07"]],
-   "stops": [["home-rocket-west",-62670,-29910,0],["cafe-table-2-seat-1",-29550,-28650,1],["official-entrance",-28470,-13710,0],["official-entrance",-13710,-11910,0],["official-entrance",-11910,330,0],["cafe-table-7-seat-1",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29910,0],["cafe-table-2-seat-1",-29550,-28650,1],["official-entrance",-28470,-13710,0],["official-entrance",-13710,-11910,0],["official-entrance",-11910,390,0],["cafe-table-7-seat-1",570,3270,1],["home-rocket-west",3390,23730,0]]
   },
   {
    "id": "p-records-office-66",
@@ -1691,7 +1692,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-57"]],
-   "stops": [["beyond",-62670,-29130,0],["t1-records",-29130,-29010,1],["office-entrance",-28470,-13890,0],["office-entrance",-13890,-12090,0],["office-entrance",-12090,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29130,0],["t1-records",-29130,-29010,1],["office-entrance",-28470,-13890,0],["office-entrance",-13890,-12090,0],["office-entrance",-12090,390,0],["t1-records",630,750,1],["beyond",750,23730,0]]
   },
   {
    "id": "p-records-office-67",
@@ -1706,7 +1707,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-05"],["workmate","p-records-office-53"],["family","p-garden-row-east-04"]],
-   "stops": [["home-garden-row-east",-62670,-29670,0],["cafe-table-2-seat-2",-29550,-28650,1],["official-entrance",-28470,-14010,0],["official-entrance",-14010,-12210,0],["official-entrance",-12210,330,0],["cafe-table-6-seat-0",510,3210,1],["home-garden-row-east",3330,23730,0]]
+   "stops": [["home-garden-row-east",-62670,-29670,0],["cafe-table-2-seat-2",-29550,-28650,1],["official-entrance",-28470,-14010,0],["official-entrance",-14010,-12210,0],["official-entrance",-12210,450,0],["cafe-table-6-seat-0",630,3330,1],["home-garden-row-east",3450,23730,0]]
   },
   {
    "id": "p-records-office-68",
@@ -1721,7 +1722,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-04"],["family","p-records-office-04"],["family","p-records-office-24"],["workmate","p-records-office-33"],["workmate","p-records-office-37"],["workmate","p-records-office-60"]],
-   "stops": [["home-rocket-west",-62670,-29670,0],["cafe-table-4-seat-0",-29550,-28650,1],["official-entrance",-28470,-15090,0],["official-entrance",-15090,-13290,0],["official-entrance",-13290,330,0],["cafe-table-1-seat-2",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29670,0],["cafe-table-4-seat-0",-29550,-28650,1],["official-entrance",-28470,-15090,0],["official-entrance",-15090,-13290,0],["official-entrance",-13290,390,0],["cafe-table-1-seat-2",570,3270,1],["home-rocket-west",3390,23730,0]]
   },
   {
    "id": "p-records-office-69",
@@ -1751,7 +1752,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-21"],["workmate","p-records-office-41"]],
-   "stops": [["beyond",-62670,-29070,0],["t1-records",-29070,-28950,1],["office-entrance",-28470,-14430,0],["office-entrance",-14430,-12630,0],["office-entrance",-12630,330,0],["t1-records",570,690,1],["beyond",690,23730,0]]
+   "stops": [["beyond",-62670,-29070,0],["t1-records",-29070,-28950,1],["office-entrance",-28470,-14430,0],["office-entrance",-14430,-12630,0],["office-entrance",-12630,570,0],["t1-records",810,930,1],["beyond",930,23730,0]]
   },
   {
    "id": "p-records-office-71",
@@ -1766,7 +1767,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-25"],["workmate","p-records-office-50"],["family","p-records-office-43"]],
-   "stops": [["home-rocket-west",-62670,-28890,0],["office-entrance",-28470,-14490,0],["cafe-stand-08",-14370,-12570,1],["office-entrance",-12450,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28890,0],["office-entrance",-28470,-14490,0],["cafe-stand-08",-14310,-12510,1],["office-entrance",-12330,390,0],["home-rocket-west",510,23730,0]]
   },
   {
    "id": "p-records-office-72",
@@ -1781,7 +1782,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-59"]],
-   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-13530,0],["cafe-stand-09",-13410,-11610,1],["office-entrance",-11490,330,0],["home-rocket-west",450,23730,0]]
+   "stops": [["home-rocket-west",-62670,-28770,0],["office-entrance",-28470,-13530,0],["cafe-stand-09",-13350,-11550,1],["office-entrance",-11370,510,0],["home-rocket-west",630,23730,0]]
   },
   {
    "id": "p-records-office-73",
@@ -1796,7 +1797,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-16"],["regular","p-cafe-11"],["family","p-cafe-07"],["workmate","p-records-office-34"]],
-   "stops": [["office-entrance",-62670,-57270,1],["cafe-table-4-seat-0",-57150,-54450,1],["home-rocket-west",-54330,-930,0],["cafe-table-1-seat-0",-690,210,1],["office-entrance",330,13890,1],["office-entrance",13890,15690,1],["office-entrance",15690,23730,1]]
+   "stops": [["office-entrance",-62670,-57270,1],["cafe-table-4-seat-0",-57090,-54390,1],["home-rocket-west",-54270,-930,0],["cafe-table-1-seat-0",-690,210,1],["office-entrance",330,13890,1],["office-entrance",13890,15690,1],["office-entrance",15690,23730,1]]
   },
   {
    "id": "p-records-office-74",
@@ -1826,7 +1827,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-05"],["workmate","p-records-office-76"],["lover","p-cafe-05"]],
-   "stops": [["home-rocket-west",-62670,-57750,0],["office-entrance",-57270,-42750,1],["office-entrance",-42750,-40950,1],["office-entrance",-40950,-28470,1],["cafe-table-7-seat-0",-28350,-25650,1],["home-rocket-west",-25530,23730,0]]
+   "stops": [["home-rocket-west",-62670,-57750,0],["office-entrance",-57270,-42750,1],["office-entrance",-42750,-40950,1],["office-entrance",-40950,-28470,1],["cafe-table-7-seat-0",-28290,-25590,1],["home-rocket-west",-25470,23730,0]]
   },
   {
    "id": "p-records-office-76",
@@ -1856,7 +1857,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-04"]],
-   "stops": [["home-rocket-west",-62670,-35190,0],["cafe-table-3-seat-0",-35070,-33150,1],["home-rocket-west",-33030,-31890,0],["cafe-table-3-seat-0",-31770,-28830,1],["home-rocket-west",-28710,-25230,0],["t1-records-stand-03",-24930,-24030,1],["home-rocket-west",-23730,-19590,0],["cafe-table-7-seat-0",-19470,-17370,1],["home-rocket-west",-17250,-12090,0],["cafe-table-7-seat-0",-11970,-9090,1],["home-rocket-west",-8970,-5490,0],["cafe-table-0-seat-2",-5370,-3330,1],["home-rocket-west",-3210,5910,0],["cafe-table-4-seat-0",6030,8910,1],["home-rocket-west",9030,13110,0],["cafe-table-4-seat-0",13230,15750,1],["home-rocket-west",15870,23730,0]]
+   "stops": [["home-rocket-west",-62670,-35190,0],["cafe-table-3-seat-0",-35070,-33150,1],["home-rocket-west",-33030,-31890,0],["cafe-table-3-seat-0",-31770,-28830,1],["home-rocket-west",-28710,-25170,0],["t1-records-stand-03",-24930,-24030,1],["home-rocket-west",-23790,-19590,0],["cafe-table-7-seat-0",-19470,-17370,1],["home-rocket-west",-17250,-12090,0],["cafe-table-7-seat-2",-11970,-9090,1],["home-rocket-west",-8970,-5490,0],["cafe-table-0-seat-2",-5370,-3330,1],["home-rocket-west",-3210,5910,0],["cafe-table-4-seat-0",6030,8910,1],["home-rocket-west",9030,13110,0],["cafe-table-4-seat-0",13230,15750,1],["home-rocket-west",15870,23730,0]]
   },
   {
    "id": "p-rocket-west-02",
@@ -1871,7 +1872,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["family","p-records-office-60"]],
-   "stops": [["home-rocket-west",-62670,-38190,0],["cafe-table-1-seat-1",-38070,-35790,1],["home-rocket-west",-35670,-33690,0],["cafe-stand-00",-33570,-33210,1],["home-rocket-west",-33090,-26850,0],["t1-records-stand-03",-26550,-25650,1],["home-rocket-west",-25350,-13890,0],["cafe-stand-10",-13770,-11250,1],["home-rocket-west",-11130,-9390,0],["cafe-stand-00",-9270,-8910,1],["home-rocket-west",-8790,-1590,0],["cafe-table-2-seat-2",-1470,450,1],["home-rocket-west",570,2910,0],["cafe-stand-01",3030,3390,1],["home-rocket-west",3510,6510,0],["cafe-table-2-seat-1",6630,9510,1],["home-rocket-west",9630,23730,0]]
+   "stops": [["home-rocket-west",-62670,-38190,0],["cafe-table-1-seat-1",-38070,-35790,1],["home-rocket-west",-35670,-33690,0],["cafe-stand-00",-33570,-33210,1],["home-rocket-west",-33090,-26790,0],["t1-records-stand-03",-26550,-25650,1],["home-rocket-west",-25410,-13890,0],["cafe-stand-10",-13770,-11250,1],["home-rocket-west",-11130,-9390,0],["cafe-stand-00",-9270,-8910,1],["home-rocket-west",-8790,-1590,0],["cafe-table-2-seat-2",-1470,450,1],["home-rocket-west",570,2910,0],["cafe-stand-01",3030,3390,1],["home-rocket-west",3510,6510,0],["cafe-table-2-seat-1",6630,9510,1],["home-rocket-west",9630,23730,0]]
   },
   {
    "id": "p-rocket-west-03",
@@ -1886,7 +1887,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-17"],["family","p-cafe-18"]],
-   "stops": [["home-rocket-west",-62670,-26370,0],["t1-records-stand-04",-26070,-25170,1],["home-rocket-west",-24870,-21090,0],["cafe-table-1-seat-0",-20970,-18870,1],["home-rocket-west",-18750,-17790,0],["cafe-stand-00",-17670,-17310,1],["home-rocket-west",-17190,-4290,0],["cafe-table-5-seat-0",-4170,-2310,1],["home-rocket-west",-2190,4110,0],["cafe-table-1-seat-0",4230,7830,1],["home-rocket-west",7950,9510,0],["cafe-stand-00",9630,9990,1],["home-rocket-west",10110,15510,0],["cafe-table-6-seat-0",15630,17550,1],["home-rocket-west",17670,21210,0],["cafe-table-0-seat-0",21330,23130,1],["home-rocket-west",23250,23730,0]]
+   "stops": [["home-rocket-west",-62670,-26310,0],["t1-records-stand-04",-26070,-25170,1],["home-rocket-west",-24930,-21090,0],["cafe-table-1-seat-0",-20970,-18870,1],["home-rocket-west",-18750,-17790,0],["cafe-stand-00",-17670,-17310,1],["home-rocket-west",-17190,-4290,0],["cafe-table-5-seat-0",-4170,-2310,1],["home-rocket-west",-2190,4110,0],["cafe-table-1-seat-0",4230,7830,1],["home-rocket-west",7950,9510,0],["cafe-stand-00",9630,9990,1],["home-rocket-west",10110,15510,0],["cafe-table-6-seat-0",15630,17550,1],["home-rocket-west",17670,21210,0],["cafe-table-0-seat-0",21330,23130,1],["home-rocket-west",23250,23730,0]]
   },
   {
    "id": "p-rocket-west-04",
@@ -1901,7 +1902,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-rocket-west-08"]],
-   "stops": [["home-rocket-west",-62670,-25350,0],["t1-records-stand-04",-25050,-24150,1],["home-rocket-west",-23850,-10590,0],["cafe-table-6-seat-0",-10470,-8250,1],["home-rocket-west",-8130,-7890,0],["cafe-table-0-seat-0",-7770,-5850,1],["home-rocket-west",-5730,-1590,0],["cafe-stand-01",-1470,-1110,1],["home-rocket-west",-990,3510,0],["cafe-stand-00",3630,3990,1],["home-rocket-west",4110,23730,0]]
+   "stops": [["home-rocket-west",-62670,-25290,0],["t1-records-stand-04",-25050,-24150,1],["home-rocket-west",-23910,-10590,0],["cafe-table-6-seat-0",-10470,-8250,1],["home-rocket-west",-8130,-7890,0],["cafe-table-0-seat-0",-7770,-5850,1],["home-rocket-west",-5730,-1590,0],["cafe-stand-01",-1470,-1110,1],["home-rocket-west",-990,3510,0],["cafe-stand-00",3630,3990,1],["home-rocket-west",4110,23730,0]]
   },
   {
    "id": "p-rocket-west-05",
@@ -1916,7 +1917,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["family","p-records-office-50"]],
-   "stops": [["home-rocket-west",-62670,-35490,0],["cafe-stand-02",-35370,-35010,1],["home-rocket-west",-34890,-27750,0],["t1-records-stand-07",-27450,-26550,1],["home-rocket-west",-26250,-8190,0],["cafe-stand-00",-8070,-7710,1],["home-rocket-west",-7590,-3390,0],["cafe-table-2-seat-1",-3270,-510,1],["home-rocket-west",-390,9210,0],["cafe-table-2-seat-2",9330,11850,1],["home-rocket-west",11970,20010,0],["cafe-table-0-seat-1",20130,23010,1],["home-rocket-west",23130,23730,0]]
+   "stops": [["home-rocket-west",-62670,-35490,0],["cafe-stand-02",-35370,-35010,1],["home-rocket-west",-34890,-27690,0],["t1-records-stand-07",-27450,-26550,1],["home-rocket-west",-26310,-8190,0],["cafe-stand-00",-8070,-7710,1],["home-rocket-west",-7590,-3390,0],["cafe-table-2-seat-1",-3270,-510,1],["home-rocket-west",-390,9210,0],["cafe-table-2-seat-2",9330,11850,1],["home-rocket-west",11970,20010,0],["cafe-table-0-seat-1",20130,23010,1],["home-rocket-west",23130,23730,0]]
   },
   {
    "id": "p-rocket-west-06",
@@ -1931,7 +1932,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["family","p-records-office-23"]],
-   "stops": [["home-rocket-west",-62670,-37590,0],["cafe-table-7-seat-0",-37470,-34470,1],["home-rocket-west",-34350,-28890,0],["cafe-stand-00",-28770,-28410,1],["home-rocket-west",-28290,-24870,0],["t1-records-stand-02",-24570,-23670,1],["home-rocket-west",-23370,-18990,0],["cafe-stand-00",-18870,-18510,1],["home-rocket-west",-18390,-1290,0],["cafe-stand-02",-1170,-810,1],["home-rocket-west",-690,14010,0],["cafe-table-4-seat-1",14130,16950,1],["home-rocket-west",17070,23730,0]]
+   "stops": [["home-rocket-west",-62670,-37590,0],["cafe-table-7-seat-0",-37470,-34470,1],["home-rocket-west",-34350,-28890,0],["cafe-stand-00",-28770,-28410,1],["home-rocket-west",-28290,-24810,0],["t1-records-stand-02",-24570,-23670,1],["home-rocket-west",-23430,-18990,0],["cafe-stand-00",-18870,-18510,1],["home-rocket-west",-18390,-1290,0],["cafe-stand-02",-1170,-810,1],["home-rocket-west",-690,14010,0],["cafe-table-4-seat-1",14130,16950,1],["home-rocket-west",17070,23730,0]]
   },
   {
    "id": "p-rocket-west-07",
@@ -1946,7 +1947,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-records-office-43"]],
-   "stops": [["home-rocket-west",-62670,-27870,0],["t1-records-stand-08",-27570,-26670,1],["home-rocket-west",-26370,-9990,0],["cafe-stand-02",-9870,-9510,1],["home-rocket-west",-9390,2010,0],["cafe-stand-01",2130,2490,1],["home-rocket-west",2610,6210,0],["cafe-table-2-seat-2",6330,8850,1],["home-rocket-west",8970,16410,0],["cafe-table-0-seat-2",16530,18690,1],["home-rocket-west",18810,23730,0]]
+   "stops": [["home-rocket-west",-62670,-27810,0],["t1-records-stand-08",-27570,-26670,1],["home-rocket-west",-26430,-9990,0],["cafe-stand-02",-9870,-9510,1],["home-rocket-west",-9390,2010,0],["cafe-stand-01",2130,2490,1],["home-rocket-west",2610,6210,0],["cafe-table-2-seat-2",6330,8850,1],["home-rocket-west",8970,16410,0],["cafe-table-0-seat-2",16530,18690,1],["home-rocket-west",18810,23730,0]]
   },
   {
    "id": "p-rocket-west-08",
@@ -1961,7 +1962,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-rocket-west-04"]],
-   "stops": [["home-rocket-west",-62670,-40890,0],["cafe-stand-00",-40770,-40410,1],["home-rocket-west",-40290,-37590,0],["cafe-stand-00",-37470,-37110,1],["home-rocket-west",-36990,-32190,0],["cafe-stand-00",-32070,-31710,1],["home-rocket-west",-31590,-30990,0],["cafe-stand-00",-30870,-30510,1],["home-rocket-west",-30390,-24570,0],["t1-records-stand-05",-24270,-23370,1],["home-rocket-west",-23070,-10590,0],["cafe-table-4-seat-0",-10470,-8370,1],["home-rocket-west",-8250,7110,0],["cafe-stand-01",7230,7590,1],["home-rocket-west",7710,8610,0],["cafe-table-5-seat-1",8730,11730,1],["home-rocket-west",11850,23730,0]]
+   "stops": [["home-rocket-west",-62670,-40890,0],["cafe-stand-00",-40770,-40410,1],["home-rocket-west",-40290,-37590,0],["cafe-stand-00",-37470,-37110,1],["home-rocket-west",-36990,-32190,0],["cafe-stand-00",-32070,-31710,1],["home-rocket-west",-31590,-30990,0],["cafe-stand-00",-30870,-30510,1],["home-rocket-west",-30390,-24510,0],["t1-records-stand-05",-24270,-23370,1],["home-rocket-west",-23130,-10590,0],["cafe-table-4-seat-0",-10470,-8370,1],["home-rocket-west",-8250,7110,0],["cafe-stand-01",7230,7590,1],["home-rocket-west",7710,8610,0],["cafe-table-5-seat-1",8730,11730,1],["home-rocket-west",11850,23730,0]]
   },
   {
    "id": "p-s1-gardens-kiosk-01",
@@ -1976,7 +1977,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-s1-gardens-kiosk-03"],["workmate","p-s1-gardens-kiosk-02"]],
-   "stops": [["beyond",-62670,-45330,0],["t1-records",-45330,-45210,1],["s1-gardens",-44670,-33690,0],["s1-gardens",-33690,-31890,0],["s1-gardens",-31890,-20670,0],["t1-records",-20250,-20130,1],["beyond",-20130,23730,0]]
+   "stops": [["beyond",-62670,-45330,0],["t1-records",-45330,-45210,1],["s1-gardens",-44670,-33690,0],["s1-gardens",-33690,-31890,0],["s1-gardens",-31890,-20610,0],["t1-records",-20190,-20070,1],["beyond",-20070,23730,0]]
   },
   {
    "id": "p-s1-gardens-kiosk-02",
@@ -2021,7 +2022,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["family","p-cafe-21"],["workmate","p-t1-records-kiosk-02"]],
-   "stops": [["home-rocket-west",-62670,-45210,0],["t1-records",-44670,-32550,0],["t1-records",-32550,-30750,0],["t1-records",-30750,-20670,0],["home-rocket-west",-20370,23730,0]]
+   "stops": [["home-rocket-west",-62670,-45150,0],["t1-records",-44670,-32550,0],["t1-records",-32550,-30750,0],["t1-records",-30750,-20430,0],["home-rocket-west",-20190,23730,0]]
   },
   {
    "id": "p-t1-records-kiosk-02",
@@ -2051,7 +2052,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-t1-records-kiosk-02"]],
-   "stops": [["t1-records",-62670,-59070,1],["home-rocket-west",-58770,2910,0],["t1-records",3330,15270,1],["t1-records",15270,17070,1],["t1-records",17070,23730,1]]
+   "stops": [["t1-records",-62670,-59070,1],["home-rocket-west",-58830,2970,0],["t1-records",3330,15270,1],["t1-records",15270,17070,1],["t1-records",17070,23730,1]]
   }
  ]
 }

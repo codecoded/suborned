@@ -205,6 +205,684 @@
     "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
     "rules": []
    }
+  ],
+  "ad1d43199c0722bc2fc0d34c03b82636b56ab3b1bb0594da980448ef77b4690a": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   }
+  ],
+  "5d6a6c21e8657d3d08286d41cd08bcd179326fefc34b358eb65b76f26e3f61a4": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   }
+  ],
+  "2cd1c4977acf20fe3e404b7023cdd73574bfb32fa78e9cd8532c5140c86a224b": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   }
+  ],
+  "abe1eb1584cdf7ecb98fcd37782919daf0687d578d4c9472da7250a32322a2f5": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   }
+  ],
+  "ab742fe8b14766f0f6beb1ba900277a6828ef5ff499a419aae02549ed06a120d": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-18 (Sky's pick (h) of Vantage's door re-study, GDD v0.24 §10): rule V-1 reads each mission point from its own heading (tools/missions/handover/visibility.ts: optional yaw 30/120/210/300 and hidden on the mission's destinations, crew, points and cameras; a camera cone counts its open ground only; blockers 130 m round the block on every side; the patrol sweep takes patrol-a's and patrol-b's heading; V-1's rule text and source). Traced: the only hashed file changed since the last declared state (the hash with HEAD's visibility.ts equals it), and V-1 is read by no recorded run's checker: tools/levels/checker.ts and tools/levels/skyline/mission.ts build the Handover layer with legacyOverlay (C-3, M-1 from the pinned block's destinations, no mission, so no V-1), and tools/people/cli.ts reads M-2 from the overlay's checks only. No recorded rule result moves",
+    "rules": []
+   }
+  ],
+  "71f7862afea86633f958d55a0563dc828fc7598029242cb32347df6b53103f05": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-18 (Sky's pick (h) of Vantage's door re-study, GDD v0.24 §10): rule V-1 reads each mission point from its own heading (tools/missions/handover/visibility.ts: optional yaw 30/120/210/300 and hidden on the mission's destinations, crew, points and cameras; a camera cone counts its open ground only; blockers 130 m round the block on every side; the patrol sweep takes patrol-a's and patrol-b's heading; V-1's rule text and source). Traced: the only hashed file changed since the last declared state (the hash with HEAD's visibility.ts equals it), and V-1 is read by no recorded run's checker: tools/levels/checker.ts and tools/levels/skyline/mission.ts build the Handover layer with legacyOverlay (C-3, M-1 from the pinned block's destinations, no mission, so no V-1), and tools/people/cli.ts reads M-2 from the overlay's checks only. No recorded rule result moves",
+    "rules": []
+   },
+   {
+    "cause": "door-b (Splice, 2026-10-19; Sky's option (b): the Records Office's public door and forecourt move onto the wing's west face and its service door onto the east face; Vantage, brief 023). Tool changes: the street layer refuses a sight-blocking item within 6 m of a junction corner's kerb tangent point (tools/world/gen/street/kit.ts Layer.fits, with a blocks option; the corner list is edges.junctionCorners, which SF-8 in tools/plan/street-checks.ts now reads too: the same list, the rule's text and limit unchanged); the quiet-place generator (tools/world/gen/street/quiet.ts) passes blocks for police posts and stashes, keeps a post off a side road's mouth, and no longer marks a post sight-blocking after it is placed; tools/sim/site.ts turns the guard to face west and the patrol east with the door. Why it was needed: the new door moved the response cover, the generator stood a sixth police post 5.5 m from the Rocket Lane / Apron Road corner and SF-8 failed. Rules a block with service doors can answer differently from this code: SF-8, and the world rules R-DOCK and R-REPORT (where the posts and call boxes stand; not ledger rule ids). A replay with --allow-drift gives the same verdicts and the same differing rules as the states already declared (skyline: SF-17, K-1; people: P-7, P-11, P-12, P-13): recorded runs pin their own block, kit and look, so the door move itself changes no recorded result.",
+    "rules": [
+     "SF-8"
+    ]
+   }
+  ],
+  "a85a9e443d33e88b7ca8cfb47e9f2e7cba7481d49f6a02daad8abaee51a647c0": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-18 (Sky's pick (h) of Vantage's door re-study, GDD v0.24 §10): rule V-1 reads each mission point from its own heading (tools/missions/handover/visibility.ts: optional yaw 30/120/210/300 and hidden on the mission's destinations, crew, points and cameras; a camera cone counts its open ground only; blockers 130 m round the block on every side; the patrol sweep takes patrol-a's and patrol-b's heading; V-1's rule text and source). Traced: the only hashed file changed since the last declared state (the hash with HEAD's visibility.ts equals it), and V-1 is read by no recorded run's checker: tools/levels/checker.ts and tools/levels/skyline/mission.ts build the Handover layer with legacyOverlay (C-3, M-1 from the pinned block's destinations, no mission, so no V-1), and tools/people/cli.ts reads M-2 from the overlay's checks only. No recorded rule result moves",
+    "rules": []
+   },
+   {
+    "cause": "door-b (Splice, 2026-10-19; Sky's option (b): the Records Office's public door and forecourt move onto the wing's west face and its service door onto the east face; Vantage, brief 023). Tool changes: the street layer refuses a sight-blocking item within 6 m of a junction corner's kerb tangent point (tools/world/gen/street/kit.ts Layer.fits, with a blocks option; the corner list is edges.junctionCorners, which SF-8 in tools/plan/street-checks.ts now reads too: the same list, the rule's text and limit unchanged); the quiet-place generator (tools/world/gen/street/quiet.ts) passes blocks for police posts and stashes, keeps a post off a side road's mouth, and no longer marks a post sight-blocking after it is placed; tools/sim/site.ts turns the guard to face west and the patrol east with the door. Why it was needed: the new door moved the response cover, the generator stood a sixth police post 5.5 m from the Rocket Lane / Apron Road corner and SF-8 failed. Rules a block with service doors can answer differently from this code: SF-8, and the world rules R-DOCK and R-REPORT (where the posts and call boxes stand; not ledger rule ids). A replay with --allow-drift gives the same verdicts and the same differing rules as the states already declared (skyline: SF-17, K-1; people: P-7, P-11, P-12, P-13): recorded runs pin their own block, kit and look, so the door move itself changes no recorded result.",
+    "rules": [
+     "SF-8"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-19, brief 023 (call boxes where a real city puts them; the service drive). Traced file by file against the files of the skyline hash changed since the last declared state. (1) tools/world/civic/siting.ts, rules/quiet.ts, gen/street/quiet.ts, civic/quiet.ts: a call box stands on a corner's pavement 6..25 m off the corner, never in a side road's mouth; boxes are placed before posts, a box may stand 2 m from a post or the dock (apartOther); new world rule R-REPORT/site. All of it acts only on a block that has a service door (the quiet-place generator returns nothing without one): no recorded run's pinned block has one, so no recorded result moves. (2) tools/plan/drives.ts and civic.ts, block.ts, checks.ts: the block's drives[] and the plan checker's DR-1..DR-3 (a bay that touches no road is reached by a drive; a drive crosses only its own plot's pavement; nothing of the block stands on a drive). A pinned block has no drives and no bay out of a road's reach, so the three pass with nothing to hold; a rule added since a run is labelled as such. (3) tools/world: build.ts exports ground.drives only when the block has drives; gen/street/kit.ts Layer.fits keeps items 2 m off a drive (none in a pinned block); gen/street/crossings.ts stripBlock and mayCross refuse a strip across a drive; rules/crossings.ts (SF-20), rules/pylons.ts (SF-18), plan/street-checks.ts (SF-2), rules/civic-dress.ts (CD-1) hold a drive as they hold a bay. (4) tools/people (day.ts, expand.ts: leave-stagger, declared in the people ledger; scope.ts: a drive is a zone as the keep-clear zone service-drive it replaces was). Traced by replaying r011 with --allow-drift: the rules that differ are SF-17 and K-1 (declared above) and SF-2 and SF-18, whose RULE TEXT changed (SF-2 adds 'or of a drive; nothing at all on a drive' and its source, SF-18 adds 'drives'); every verdict, value and detail of SF-2 and SF-18 is as recorded (ok true both times).",
+    "rules": [
+     "SF-2",
+     "SF-18"
+    ]
+   }
+  ],
+  "d4166d0e64c25946feb9e14f80ffca975e5ea43cf47d0307cdd22d90aa2cc319": [
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-18 (Sky's pick (h) of Vantage's door re-study, GDD v0.24 §10): rule V-1 reads each mission point from its own heading (tools/missions/handover/visibility.ts: optional yaw 30/120/210/300 and hidden on the mission's destinations, crew, points and cameras; a camera cone counts its open ground only; blockers 130 m round the block on every side; the patrol sweep takes patrol-a's and patrol-b's heading; V-1's rule text and source). Traced: the only hashed file changed since the last declared state (the hash with HEAD's visibility.ts equals it), and V-1 is read by no recorded run's checker: tools/levels/checker.ts and tools/levels/skyline/mission.ts build the Handover layer with legacyOverlay (C-3, M-1 from the pinned block's destinations, no mission, so no V-1), and tools/people/cli.ts reads M-2 from the overlay's checks only. No recorded rule result moves",
+    "rules": []
+   },
+   {
+    "cause": "door-b (Splice, 2026-10-19; Sky's option (b): the Records Office's public door and forecourt move onto the wing's west face and its service door onto the east face; Vantage, brief 023). Tool changes: the street layer refuses a sight-blocking item within 6 m of a junction corner's kerb tangent point (tools/world/gen/street/kit.ts Layer.fits, with a blocks option; the corner list is edges.junctionCorners, which SF-8 in tools/plan/street-checks.ts now reads too: the same list, the rule's text and limit unchanged); the quiet-place generator (tools/world/gen/street/quiet.ts) passes blocks for police posts and stashes, keeps a post off a side road's mouth, and no longer marks a post sight-blocking after it is placed; tools/sim/site.ts turns the guard to face west and the patrol east with the door. Why it was needed: the new door moved the response cover, the generator stood a sixth police post 5.5 m from the Rocket Lane / Apron Road corner and SF-8 failed. Rules a block with service doors can answer differently from this code: SF-8, and the world rules R-DOCK and R-REPORT (where the posts and call boxes stand; not ledger rule ids). A replay with --allow-drift gives the same verdicts and the same differing rules as the states already declared (skyline: SF-17, K-1; people: P-7, P-11, P-12, P-13): recorded runs pin their own block, kit and look, so the door move itself changes no recorded result.",
+    "rules": [
+     "SF-8"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-19, brief 023 (call boxes where a real city puts them; the service drive). Traced file by file against the files of the skyline hash changed since the last declared state. (1) tools/world/civic/siting.ts, rules/quiet.ts, gen/street/quiet.ts, civic/quiet.ts: a call box stands on a corner's pavement 6..25 m off the corner, never in a side road's mouth; boxes are placed before posts, a box may stand 2 m from a post or the dock (apartOther); new world rule R-REPORT/site. All of it acts only on a block that has a service door (the quiet-place generator returns nothing without one): no recorded run's pinned block has one, so no recorded result moves. (2) tools/plan/drives.ts and civic.ts, block.ts, checks.ts: the block's drives[] and the plan checker's DR-1..DR-3 (a bay that touches no road is reached by a drive; a drive crosses only its own plot's pavement; nothing of the block stands on a drive). A pinned block has no drives and no bay out of a road's reach, so the three pass with nothing to hold; a rule added since a run is labelled as such. (3) tools/world: build.ts exports ground.drives only when the block has drives; gen/street/kit.ts Layer.fits keeps items 2 m off a drive (none in a pinned block); gen/street/crossings.ts stripBlock and mayCross refuse a strip across a drive; rules/crossings.ts (SF-20), rules/pylons.ts (SF-18), plan/street-checks.ts (SF-2), rules/civic-dress.ts (CD-1) hold a drive as they hold a bay. (4) tools/people (day.ts, expand.ts: leave-stagger, declared in the people ledger; scope.ts: a drive is a zone as the keep-clear zone service-drive it replaces was). Traced by replaying r011 with --allow-drift: the rules that differ are SF-17 and K-1 (declared above) and SF-2 and SF-18, whose RULE TEXT changed (SF-2 adds 'or of a drive; nothing at all on a drive' and its source, SF-18 adds 'drives'); every verdict, value and detail of SF-2 and SF-18 is as recorded (ok true both times).",
+    "rules": [
+     "SF-2",
+     "SF-18"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-19, brief 023 (Sky: add pavement on Starline Street north of Garden Row; Datum found the pavement was in the plan and the world but not on the walk grid): tools/plan/walk.ts blockersOf (and walk-gap.ts) block a built plot only behind its building line (tools/world/gen/edges.ts buildingLine: the plot edge set back along each road by the street section's pavement, the line B-3 holds every building to), not out to its boundary, so the pavement walks; a plan with no street sections still blocks its plots whole. W-1's walks to stops and stations run over the pavements and are shorter where they hugged a built plot (the live plan: Cafe entrance to tram Records 279 to 260 m, Cafe kitchen door to tram Crown Circus 254 m, Office entrance 233 to 219 m, Official entrance 210 to 195 m; a pinned run's rerun reads the same). Rules whose result differs on a recorded plan: W-1 only; the street, kit, pylon and people rules read nothing of the walk grid but the live world's civic block (a pinned older block has none). Traced by replaying r011 and r012-r016 with the code before and after this change: the only rule the change moves in r011 is W-1 (SF-2, K-1 and SF-18 are the carried causes' of brief 020 and the service drive), and the rules r012-r016 differ in are the same set as before (P-0, P-6, P-7, P-11, P-12, P-13).",
+    "rules": [
+     "W-1"
+    ]
+   }
+  ],
+  "4a6246ab3211085b91e1da122acda628434fe576a85a9587ba724b07d639da82": [
+   {
+    "cause": "brief 008 B3 second half: the world generator places a civic block's `dressing` (tools/world/civic: pieces, parasols, lamps, bollards, planters, cypresses, bands, civic crossing landings) and registers rules CD-1..CD-4; on a plan that carries streetscape.crossings.strip a tram stop's crossing patch lies at the carriageway's level, a bank patch is moved off a lawn, and SF-20 also holds the patch level and the lawn; the plan checker's walk reads the block's ground solids. Every one of these is opt-in on a block `dressing` or on crossings.strip, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "brief 008 colour round: the world generator places CafeTerrace with CafeBay (no fade), dresses each free-standing civic bed (a park mass without a kit piece) as a kerb, a hedge and BedTuft_A/B/C tufts, and gives the atom fountain's DK_Water slot DK_Pool_Civic through an optional per-mass materials key; CD-2 also checks a replaced slot and its material, CD-3 counts the tufts and the terrace, and CD-4 also holds the bed kerb and hedge, the replaced slots and the whole look palette. Every one of these is opt-in on a block dressing, which no recorded plan or pinned block carries, so a recorded run regenerates what it was made with.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, rulings of 2026-10-14: runs pin contracts/world/civic-look.json and the world rules read the pinned copy (plan checker --look, withLook, pinnedWorld); the world cache key hashes the kit catalogue and civic look as loaded; SK-1 and SG-1 read TIP_TOL; K-2 (a regenerated tower's built tip within TIP_TOL of its order's regen.tip); with 8df5287 (SF-17 accepts the crossing surface). Recorded runs pin no look and regenerate what they were made with, so every recorded rule result is unchanged",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14: the world generator draws large parts in look keys of their own instead of trim (gen/surfaces.ts: canopy, plate, hoop, booth, tub, crane, girder; 482 parts) and SF-21 (brass is thin) is a new world rule; SF-17 accepts booth and tub. Surface keys only: no geometry, id or count moves. A recorded transit or skyline plan carries no world standards, so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-14, brief 009 after B: the crossing's eight pieces are adopted in contracts/world/kit.json with use tags (tools/kit/tags.ts); the generator emits a brass edge line (crossing-edge, CrossEdgeLine_2/_1, plan lights.edge) along each strip edge at +-2.0 m and moves the light lines to +-1.75 m (lights.inset 0.035); beacons are no longer placed where a signal eye stands; SF-20 also holds the edge line and that the lights clear it; the CAD sheet draws a crossing as its two light lines. A recorded transit or skyline plan carries no world standards (no streetscape.crossings.strip), so no recorded rule result changes",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-16 (Sky: signal colours are no longer reserved): the world rules drop the colour-distance gates. CD-4 no longer measures dE2000 from the cones, guard and rivals colours and no longer lists the palette's own rows, so it counts the materials the civic block draws and checks only that each has an unlit colour in the look palette (its text and its count change, its verdict does not); SF-17 no longer bars a sign or street item for a signal or faction colour name (its text changes; a sign outside the city palette still fails); civic-look.json palette loses signals and minDE; tools/world/rules/deltae.ts is removed. No geometry, kit or plan change.",
+    "rules": [
+     "CD-4",
+     "SF-17"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-17 (GDD v0.23 §05: the response dial's base level is plan data): the plan checker gains SEC-1 (an area that sets securityBase gives a level 0..4 and a securityWhy) and tools/plan/plan.ts the areas' securityBase and securityWhy fields. No recorded run's plan sets a securityBase, so SEC-1 passes with 'none set' on every one of them and no verdict moves; a rule added since a run is labelled as such. No geometry, kit or other rule change.",
+    "rules": [
+     "SEC-1"
+    ]
+   },
+   {
+    "cause": "brief 017 phase 1 (Pulse, Sky 2026-10-18): tools/people gains needs.ts and needs-check.ts and the expander draws a need record after the kind (persons byte-identical apart from needRecord and secretRecord), which the Handover overlay's M-2 re-expansion reaches through tools/people/inputs.ts; no skyline rule's result changes",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 the getaway (Keel, engine 0.7.0): contracts/people people.rules talker.facts gains cell-face and contact (what a captured operative gives) and the FACTS enum in people.rules.schema.ts with it; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 018 (Motive, 2026-10-18): contracts/people people.rules talker.facts text for cell-face and contact; rule M-2 expands the promoted cast, which reads no talker fact",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): the stand-in visuals wiring. tools/world: civic/dress.ts reads civic-look.json swaps (the block's CafeBay is drawn as CafeBay_v2 with its companion CafeInterior); gen/kitrefs.ts: slots for planter, mailbox, public-clock, tram-shelter, newsstand, kiosk-food, a tub palm's wider height tolerance, bare palms in planter beds, roofPiece (a roof kit piece honours pivotOffset); gen/roofs.ts: roof programmes take Roof_* kit pieces; tools/plan/kit-fit.ts: K-1 reads a roof piece's footprint with its pivotOffset (the two hover pads now stand flush in the corner); tools/missions/sight.ts: CafeBay_v2 blocks as CafeBay did; tools/kit: catalogue reads generated textures, tags for the new pieces. Every rule outcome of a recorded run is as before; only the world's kit references and the civic palette gain",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 (Splice, 2026-10-18): K-1 reads a roof kit piece's footprint with its pivotOffset (kit-fit.ts footOf); the two hover pads of a run made before this placed SkyPad_Roof with its pivot, not its footprint centre, in the roof corner, so the pad stands 2.3 m outside the rect K-1 now measures; the generator since places the footprint flush (roofPiece) and the current world passes. K-1 is the only rule whose result moves",
+    "rules": [
+     "K-1"
+    ]
+   },
+   {
+    "cause": "brief 020 follow-up (Splice, 2026-10-18): the street slots take FanPalm_Play, Planter_Urn_Play, PneumaticPost_Play (the plan's 1.3 m mailbox box), PhoneBooth_Single and Newsstand; the full pieces and CurvedKiosk_Play keep retired tags (tools/kit/tags.ts), the mailbox slot returns to the plan's height (tools/world/gen/kitrefs.ts). Kit references only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 2 (Splice, 2026-10-18): tram shelters turn to face their track (tools/world/gen/street/transit.ts: the item's yaw, not the platform's), civic-look.json swaps RobotButler for RobotButler_Play. World kit references and one street item yaw only; no rule outcome of a recorded run moves",
+    "rules": []
+   },
+   {
+    "cause": "brief 020 follow-up 3 (Splice, 2026-10-18; Glint: kerb z-fight at 6016x3384): tools/world/build.ts PROV.kerb.height 0.18 -> 0.168, so the kerb strip's top lies 12 mm under the plot slab top instead of coplanar with it. The only code change since the last declared state: it changes the exported roads' kerbHeight only, which no rule or checker reads (rg kerbHeight over tools: build.ts and the Road type alone); every item on the kerb still stands at the 0.18 pavement top. Rule results unchanged.",
+    "rules": []
+   },
+   {
+    "cause": "Splice, 2026-10-18 (Sky's pick (h) of Vantage's door re-study, GDD v0.24 §10): rule V-1 reads each mission point from its own heading (tools/missions/handover/visibility.ts: optional yaw 30/120/210/300 and hidden on the mission's destinations, crew, points and cameras; a camera cone counts its open ground only; blockers 130 m round the block on every side; the patrol sweep takes patrol-a's and patrol-b's heading; V-1's rule text and source). Traced: the only hashed file changed since the last declared state (the hash with HEAD's visibility.ts equals it), and V-1 is read by no recorded run's checker: tools/levels/checker.ts and tools/levels/skyline/mission.ts build the Handover layer with legacyOverlay (C-3, M-1 from the pinned block's destinations, no mission, so no V-1), and tools/people/cli.ts reads M-2 from the overlay's checks only. No recorded rule result moves",
+    "rules": []
+   },
+   {
+    "cause": "door-b (Splice, 2026-10-19; Sky's option (b): the Records Office's public door and forecourt move onto the wing's west face and its service door onto the east face; Vantage, brief 023). Tool changes: the street layer refuses a sight-blocking item within 6 m of a junction corner's kerb tangent point (tools/world/gen/street/kit.ts Layer.fits, with a blocks option; the corner list is edges.junctionCorners, which SF-8 in tools/plan/street-checks.ts now reads too: the same list, the rule's text and limit unchanged); the quiet-place generator (tools/world/gen/street/quiet.ts) passes blocks for police posts and stashes, keeps a post off a side road's mouth, and no longer marks a post sight-blocking after it is placed; tools/sim/site.ts turns the guard to face west and the patrol east with the door. Why it was needed: the new door moved the response cover, the generator stood a sixth police post 5.5 m from the Rocket Lane / Apron Road corner and SF-8 failed. Rules a block with service doors can answer differently from this code: SF-8, and the world rules R-DOCK and R-REPORT (where the posts and call boxes stand; not ledger rule ids). A replay with --allow-drift gives the same verdicts and the same differing rules as the states already declared (skyline: SF-17, K-1; people: P-7, P-11, P-12, P-13): recorded runs pin their own block, kit and look, so the door move itself changes no recorded result.",
+    "rules": [
+     "SF-8"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-19, brief 023 (call boxes where a real city puts them; the service drive). Traced file by file against the files of the skyline hash changed since the last declared state. (1) tools/world/civic/siting.ts, rules/quiet.ts, gen/street/quiet.ts, civic/quiet.ts: a call box stands on a corner's pavement 6..25 m off the corner, never in a side road's mouth; boxes are placed before posts, a box may stand 2 m from a post or the dock (apartOther); new world rule R-REPORT/site. All of it acts only on a block that has a service door (the quiet-place generator returns nothing without one): no recorded run's pinned block has one, so no recorded result moves. (2) tools/plan/drives.ts and civic.ts, block.ts, checks.ts: the block's drives[] and the plan checker's DR-1..DR-3 (a bay that touches no road is reached by a drive; a drive crosses only its own plot's pavement; nothing of the block stands on a drive). A pinned block has no drives and no bay out of a road's reach, so the three pass with nothing to hold; a rule added since a run is labelled as such. (3) tools/world: build.ts exports ground.drives only when the block has drives; gen/street/kit.ts Layer.fits keeps items 2 m off a drive (none in a pinned block); gen/street/crossings.ts stripBlock and mayCross refuse a strip across a drive; rules/crossings.ts (SF-20), rules/pylons.ts (SF-18), plan/street-checks.ts (SF-2), rules/civic-dress.ts (CD-1) hold a drive as they hold a bay. (4) tools/people (day.ts, expand.ts: leave-stagger, declared in the people ledger; scope.ts: a drive is a zone as the keep-clear zone service-drive it replaces was). Traced by replaying r011 with --allow-drift: the rules that differ are SF-17 and K-1 (declared above) and SF-2 and SF-18, whose RULE TEXT changed (SF-2 adds 'or of a drive; nothing at all on a drive' and its source, SF-18 adds 'drives'); every verdict, value and detail of SF-2 and SF-18 is as recorded (ok true both times).",
+    "rules": [
+     "SF-2",
+     "SF-18"
+    ]
+   },
+   {
+    "cause": "Splice, 2026-10-19, brief 023 (Sky: add pavement on Starline Street north of Garden Row; Datum found the pavement was in the plan and the world but not on the walk grid): tools/plan/walk.ts blockersOf (and walk-gap.ts) block a built plot only behind its building line (tools/world/gen/edges.ts buildingLine: the plot edge set back along each road by the street section's pavement, the line B-3 holds every building to), not out to its boundary, so the pavement walks; a plan with no street sections still blocks its plots whole. W-1's walks to stops and stations run over the pavements and are shorter where they hugged a built plot (the live plan: Cafe entrance to tram Records 279 to 260 m, Cafe kitchen door to tram Crown Circus 254 m, Office entrance 233 to 219 m, Official entrance 210 to 195 m; a pinned run's rerun reads the same). Rules whose result differs on a recorded plan: W-1 only; the street, kit, pylon and people rules read nothing of the walk grid but the live world's civic block (a pinned older block has none). Traced by replaying r011 and r012-r016 with the code before and after this change: the only rule the change moves in r011 is W-1 (SF-2, K-1 and SF-18 are the carried causes' of brief 020 and the service drive), and the rules r012-r016 differ in are the same set as before (P-0, P-6, P-7, P-11, P-12, P-13).",
+    "rules": [
+     "W-1"
+    ]
+   },
+   {
+    "cause": "tools/missions/check/engine.ts (Keel, 2026-10-19, brief 025, engine 0.9.0): the TS Order type gained optional run, face and release (the driven agent's drive samples), a type only, no code that runs. Traced: with it undone the skyline hash is a declared state (d4166d0e64c2). r011 reruns with only the rules already declared differing (W-1, SF-2, SF-17, K-1, SF-18)",
+    "rules": []
+   }
   ]
  }
 }

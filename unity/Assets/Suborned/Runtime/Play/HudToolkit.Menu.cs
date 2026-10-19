@@ -27,6 +27,7 @@ namespace Suborned.Play
             Btn("Resume", () => host.ResumeFromMenu());
             Btn("Restart mission", () => host.RestartFromMenu());
             Btn("Quit", () => host.QuitFromMenu());
+            BuildLine(menuCard, corner: false); // Sky 2026-10-19: which build this is (BuildStamp)
             manifest.Add((menuCard, "image", () => "pause menu"));
             Show(menuVeil, false); Show(menuCard, false);
         }

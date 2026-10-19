@@ -3,7 +3,7 @@
  "brief": "008 B3 (Splice): what the civic block takes from Vela's brief 008 B1/B2 output. Committed so generation never reads out/. Edit by re-importing from the sources named here, never by hand.",
  "sources": {
   "out/decokit-008/catalogue.proposal.json": "3f6c174d8f0ab4955ee0589573658909a49f6d55ee14d7d96386f4b52e6877bb",
-  "out/decokit-008/paving-bands.json": "3e92f39cc96ea19019be86fc02f98dbc69cd3f6da5156e3b0aa1e121c4c68a94",
+  "out/decokit-008/paving-bands.json": "f8d2afa80678b363cabb5c9704ec55db36c2d24f6b7db89201f2f889effc5a65",
   "out/decokit-008/civic-colour-roles.json": "e78acb22272edfd74ca51d6a130cefcc2d6eb2913b935dcad62a4e84a0b1b96d",
   "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
   "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6",
@@ -30,6 +30,7 @@
   "PlanterRun_End_C",
   "BoardingPavilion_Square_v2",
   "CafeBay",
+  "CafeBay_v2",
   "RecordsEntrance",
   "RecordsEntrance_Official",
   "InlayBand_06_2",
@@ -38,6 +39,7 @@
   "InlayArc_R4_W06",
   "InlayArc_R9_W12",
   "PottedTopiary_Play",
+  "CafeInterior",
   "CafeTerrace",
   "BedTuft_A",
   "BedTuft_B",
@@ -45,7 +47,9 @@
  ],
  "swaps": {
   "CafeSet_Tulip": "CafeSet_Tulip_Play",
-  "BoardingPavilion_Square": "BoardingPavilion_Square_v2"
+  "BoardingPavilion_Square": "BoardingPavilion_Square_v2",
+  "CafeBay": "CafeBay_v2",
+  "RobotButler": "RobotButler_Play"
  },
  "grounded": [
   "BoardingPavilion_Square_v2"
@@ -54,13 +58,14 @@
   "PavilionPier_Square": 1.2
  },
  "place": {
-  "CafeBay": "civic/cafe/ground",
   "RecordsEntrance": "civic/office-public-entrance",
   "RecordsEntrance_Official": "civic/office-official-entrance",
-  "CafeTerrace": "civic/cafe/terrace"
+  "CafeTerrace": "civic/cafe/terrace",
+  "CafeBay_v2": "civic/cafe/ground",
+  "CafeInterior": "civic/cafe/interior"
  },
  "ground": {
-  "CafeBay": {
+  "CafeBay_v2": {
    "building": "cafe",
    "top": 4.7
   }
@@ -71,14 +76,16 @@
  "fade": [
   "Parasol_Stripe",
   "Cypress_Play",
-  "CafeBay",
+  "CafeInterior",
+  "CafeBay_v2",
   "RecordsEntrance",
   "RecordsEntrance_Official",
   "BoardingPavilion_Square_v2",
   "PavilionPier_Square"
  ],
  "companions": {
-  "CafeBay": [
+  "CafeBay_v2": [
+   "CafeInterior",
    "CafeTerrace"
   ]
  },
@@ -390,10 +397,10 @@
     "band": "forecourt-bar",
     "piece": "InlayBand_12_2",
     "at": [
-     47.9,
-     -33
+     61,
+     -45.1
     ],
-    "yawDeg": 90,
+    "yawDeg": 0,
     "role": "apron line before the entrance stairs, on the door axis"
    },
    {
@@ -401,10 +408,10 @@
     "band": "forecourt-bar",
     "piece": "InlayBand_12_2",
     "at": [
-     47.9,
-     -31
+     63,
+     -45.1
     ],
-    "yawDeg": 90,
+    "yawDeg": 0,
     "role": "apron line before the entrance stairs, on the door axis"
    },
    {
@@ -412,10 +419,10 @@
     "band": "forecourt-bar",
     "piece": "InlayBand_12_2",
     "at": [
-     47.9,
-     -29
+     65,
+     -45.1
     ],
-    "yawDeg": 90,
+    "yawDeg": 0,
     "role": "apron line before the entrance stairs, on the door axis"
    },
    {
@@ -423,10 +430,10 @@
     "band": "forecourt-bar",
     "piece": "InlayBand_12_2",
     "at": [
-     47.9,
-     -27
+     67,
+     -45.1
     ],
-    "yawDeg": 90,
+    "yawDeg": 0,
     "role": "apron line before the entrance stairs, on the door axis"
    },
    {
@@ -701,8 +708,107 @@
     "used_by": [
      "BoardingPavilion_Square_v2",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance",
      "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Cafe_BackBar",
+    "unlit": "#9A8A63",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Bakelite",
+    "unlit": "#2A2B2E",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Coral",
+    "unlit": "#FC9C84",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Cove",
+    "unlit": "#FFB866",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Floor",
+    "unlit": "#C4D5C1",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Ivory",
+    "unlit": "#EFE8D6",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Leaf",
+    "unlit": "#4E8A52",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Mural",
+    "unlit": "#9EA58E",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Opal",
+    "unlit": "#FFE6AA",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_PetrolEnamel",
+    "unlit": "#2E7C80",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Plaster",
+    "unlit": "#E1CBB1",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Seafoam",
+    "unlit": "#72B5A7",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Velvet",
+    "unlit": "#2B6567",
+    "used_by": [
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_Walnut",
+    "unlit": "#7A5640",
+    "used_by": [
+     "CafeInterior"
     ]
    },
    {
@@ -715,6 +821,7 @@
      "PlazaSphereLamp_Play",
      "BoardingPavilion_Square_v2",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance",
      "RecordsEntrance_Official"
     ]
@@ -723,14 +830,16 @@
     "material": "DK_Cloth_CoralSoft",
     "unlit": "#FC9C84",
     "used_by": [
-     "PlazaSphereLamp_Play"
+     "PlazaSphereLamp_Play",
+     "CafeBay_v2"
     ]
    },
    {
     "material": "DK_Cloth_Cream",
     "unlit": "#EFE8D6",
     "used_by": [
-     "Parasol_Stripe"
+     "Parasol_Stripe",
+     "CafeBay_v2"
     ]
    },
    {
@@ -803,6 +912,7 @@
      "CafeSet_Tulip_Play",
      "BoardingPavilion_Square_v2",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance",
      "RecordsEntrance_Official"
     ]
@@ -823,6 +933,7 @@
      "CafeSet_Tulip_Play",
      "BoardingPavilion_Square_v2",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance",
      "RecordsEntrance_Official"
     ]
@@ -834,6 +945,7 @@
      "CafeSet_Tulip_Play",
      "PlazaSphereLamp_Play",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance"
     ]
    },
@@ -865,6 +977,22 @@
      "CafeBay",
      "RecordsEntrance",
      "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Glass_Clear",
+    "unlit": "#B3D9DE",
+    "used_by": [
+     "CafeBay_v2",
+     "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Glass_Sheen",
+    "unlit": "#F4FBFA",
+    "used_by": [
+     "CafeBay_v2",
+     "CafeInterior"
     ]
    },
    {
@@ -1024,6 +1152,7 @@
      "PlanterRun_End_B",
      "PlanterRun_End_C",
      "CafeBay",
+     "CafeBay_v2",
      "RecordsEntrance",
      "RecordsEntrance_Official",
      "PottedTopiary_Play",

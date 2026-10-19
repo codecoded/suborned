@@ -1,0 +1,25 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route G with the Tech's Loop left out. The entrance camera sees the guard's post all mission, so the knockout at 2:31 is on its screen: the camera reports the breach and Vale is locked down (entry-seen-camera at 2:37). The careful twin is route-g.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[4850,-2300]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":355,"op":"scout","do":"watch","target":"guard"},
+  {"tick":555,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1440,"op":"enforcer","do":"move","to":[5175,-2880]},
+  {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":1570,"op":"enforcer","do":"enter"},
+  {"tick":1570,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1950,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":2264,"op":"cell","do":"panic"},
+  {"tick":2345,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2474,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2515,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

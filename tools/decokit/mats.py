@@ -124,7 +124,8 @@ TEXTURES = {
 UV_MAPPED = ("decal", "art", "emit", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
 EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
-TEXDIRS = (*EXTRA_TEXDIRS, SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
+ART_DIRS = (Path(__file__).resolve().parent / "art/cafe",)  # source art kept in this repo (brief 020: the café's paintings and floor, with PROVENANCE.json)
+TEXDIRS = (*EXTRA_TEXDIRS, *ART_DIRS, SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
 
 
 def tex_path(file):
@@ -155,6 +156,9 @@ KIND = {
     "stone": (0.75, 0.0, 0.0, 0.0, 1.0), "chrome": (0.05, 1.0, 0.0, 0.0, 1.0),
     "metal": (0.3, 1.0, 0.0, 0.0, 1.0), "rubber": (0.8, 0.0, 0.0, 0.0, 1.0),
     "glass": (0.02, 0.0, 0.0, 0.0, 0.3), "emit": (0.2, 0.0, 0.0, 0.0, 1.0),
+    # brief 020 (the café's lit interior seen through clear glass): `clear` is a window pane you read the room through (alpha 0.12, as the 9 Oct café's clear glazing),
+    # `sheen` the reflection streaks laid on it (alpha 0.2). Both are written for Unity from the legacy DK_GlassDark.mat (unity_mats.py), not by the generic table.
+    "clear": (0.02, 0.0, 0.0, 0.0, 0.12), "sheen": (0.02, 0.0, 0.0, 0.0, 0.2),
     "decal": (0.3, 0.0, 1.0, 0.03, 1.0), "art": (0.45, 0.0, 0.6, 0.05, 1.0), "fabric": (0.85, 0.0, 0.0, 0.0, 1.0),
     "cutout": (0.85, 0.0, 0.0, 0.0, 1.0),  # + near-zero specular (get): dark leaves on bent card normals read as satin
     "satin": (0.5, 1.0, 0.0, 0.0, 1.0),  # brushed/cast metal that must not mirror the studio black (ground.py)
@@ -198,7 +202,7 @@ def get(name):
     b.inputs["Metallic"].default_value = metal
     b.inputs["Coat Weight"].default_value = coat
     b.inputs["Coat Roughness"].default_value = coat_rough
-    if kind == "glass":  # alpha-blended film, as Unity renders it: transmission speckles at icon samples
+    if kind in ("glass", "clear", "sheen"):  # alpha-blended film, as Unity renders it: transmission speckles at icon samples
         b.inputs["IOR"].default_value = 1.45
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = alpha
@@ -277,8 +281,11 @@ class _Pal:
 pal = _Pal()
 
 
+METRIC_UV = ("DK_Awning_Teal", "DK_Cafe_Floor")  # UV-mapped kinds that still tile by the metre (the café floor: emit kind, 1 m box-projected UVs)
+
+
 def metric_tiling(name, kind):
-    return kind not in UV_MAPPED or name == "DK_Awning_Teal"
+    return kind not in UV_MAPPED or name in METRIC_UV
 
 
 def export_json(path):

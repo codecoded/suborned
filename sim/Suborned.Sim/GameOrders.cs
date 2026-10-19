@@ -58,13 +58,14 @@ namespace Suborned.Sim
 
         string Check(Order o)
         {
-            if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "go") return Go(o); // brief 018: anyone, from the car's card (GameGetaway.cs)
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
             if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
+            if (o.Do == "drive") return Drive(op, o); // brief 025 (EXPERIMENTAL): before the busy check, since moving a busy agent is the step's to judge (cell.drive.onBusy)
             if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             if (op.InCar) // brief 018: a move steps out first; a stance, holster or cease changes nothing on the street; the rest waits for stepping out
             {
@@ -115,6 +116,7 @@ namespace Suborned.Sim
             if (!S.Grid.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
             var route = S.Grid.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
+            if (op.Driven) EndDrive(op, false); // brief 025: a click move takes control back
             op.Walk = new Path(route); op.WalkMm = 0;
             if (op.Walk.Length == 0) op.Walk = null;
             op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
@@ -162,6 +164,7 @@ namespace Suborned.Sim
             var q = Quote(ev, p);
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = 0;
+            RoundHold(p, op, o.Do, op.BusyEnd); // brief 022: spoken to, a server stands still (Watch holds nothing: rounds.holds)
             return "";
         }
 
@@ -221,6 +224,7 @@ namespace Suborned.Sim
             Cash -= q.Usd; // the price is paid when the order is given; a refusal gives back exactly this (Redline E2)
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = q.Usd;
+            RoundHold(p, op, o.Approach, op.BusyEnd); // brief 022: spoken to, a server stands still
             return "";
         }
 
@@ -507,6 +511,11 @@ namespace Suborned.Sim
         {
             var p = PersonByRole(role); var q = Quote(R.Ev("turn." + approach), p);
             var at = PersonPos(p); var op = OpOf(by);
+            if (at.HasValue && ServerOf(p) != null && !G.Within(op.Pos, at.Value, approachReach)) // brief 022: aim the walk at where her round will have her
+            {
+                var st = S.Grid.NearestFree(at.Value); var rt = st.HasValue ? S.Grid.Route(op.Pos, st.Value) : null;
+                if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, opSpeed)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
+            }
             if (at.HasValue && !G.Within(op.Pos, at.Value, approachReach))
             {
                 var stand = S.Grid.NearestFree(at.Value); var route = stand.HasValue ? S.Grid.Route(op.Pos, stand.Value) : null;
@@ -559,7 +568,7 @@ namespace Suborned.Sim
                 if ((m.Act == "saw-gunfire" || m.Act == "saw-violence" || m.Act == "saw-weapon-drawn") && (m.By == "scout" || m.By == "fixer" || m.By == "tech" || m.By == "enforcer"))
                     return ("summon-saw-violence", "he saw what you did");
             if (lover.Summoned >= R.SummonsPerShift) return ("summon-came-once", "he came once already");
-            var to = PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street");
+            var to = ServerOf(caller) is RoundsData.Server csv && !caller.Down ? csv.At : PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street"); // brief 022: the summons reads her post, never her pose
             var route = S.Grid.Route(S.Grid.NearestFree(at.Value.pos) ?? at.Value.pos, S.Grid.NearestFree(to.Value) ?? to.Value);
             if (route == null) return ("summon-too-far", "no walk between them");
             long len = new Path(route).Length; walkTicks = (int)((len + opSpeed - 1) / opSpeed); // at walking pace (cell.speed)
@@ -629,10 +638,22 @@ namespace Suborned.Sim
         {
             SummonRefusal(p, out int walk);
             var lover = p.Lover!;
-            var from = GuardPose()!.Value.pos; var to = PersonPos(p)!.Value;
+            var sv = ServerOf(p);
+            var from = GuardPose()!.Value.pos; var to = sv != null ? sv.At : PersonPos(p)!.Value;
             guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(to) ?? to)!);
-            guardBack = new Path(S.Grid.Route(S.Grid.NearestFree(to) ?? to, S.Grid.NearestFree(from) ?? from)!);
             walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
+            if (sv != null) // brief 022: he walks to her post and stops rounds.close from it, at her side (PartnerStop), facing her
+            {
+                var side = PartnerStop(p, lover); // baked free and walkable from his post; a stop his grid cannot reach falls back as no stop does
+                var toSide = side.HasValue ? S.Grid.Route(S.Grid.NearestFree(from) ?? from, side.Value) : null;
+                if (toSide != null) guardOut = new Path(toSide);
+                else guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L)); // the file holds no stop: the old stop, on his route
+                walkT = (int)((guardOut.Length + opSpeed - 1) / opSpeed);
+                cafeFace = to - guardOut.End;
+                RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End);
+            }
+            else cafeFace = S.CafeFacing;
+            guardBack = new Path(S.Grid.Route(S.Grid.NearestFree(guardOut.End) ?? guardOut.End, S.Grid.NearestFree(from) ?? from)!);
             LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT; lover.Summoned++;
             AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
             Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");
@@ -680,9 +701,9 @@ namespace Suborned.Sim
             if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", "Vale is not inside");
             if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return No("stand-at-door", "stand at the public door", cm: R.AtReachCm);
             op.Walk = null;
-            if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned."); return ""; }
-            if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down."); return ""; }
-            if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down."); return ""; }
+            if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
+            if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
+            if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
             RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap"; // a takedown is no shooting (brief 013 E4)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
             bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
@@ -699,10 +720,10 @@ namespace Suborned.Sim
             var vp = ValePos()!.Value;
             if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", "stand beside Vale", m: actReach / 100);
             op.Walk = null;
-            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued."); return ""; }
+            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued.", () => With(Because("seen", true, Locate("camera:pickup", "saw", op.Pos), Locate("councillor", "victim")), "enforcer")); return ""; }
             var rp = RivalsPose();
             if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, RivalsGun.W!.EffCm)))) // drawn rivals within their weapon's effective reach
-            { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first."); return ""; }
+            { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first.", () => With(Because("beat-to-pickup", true, Locate("rivals", "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
             Vale = ValeAt.Taking;
             Engage(op, o, R.TakeS);

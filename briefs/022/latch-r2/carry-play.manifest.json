@@ -1,0 +1,21 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1527, "y": 1925, "w": 399, "h": 80, "text": "Get Vale to the car."},
+  {"kind": "beat", "x": 3139, "y": 1699, "w": 285, "h": 72, "text": "Police coming."},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 564, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 508, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "speech", "x": -619, "y": -1649, "w": 373, "h": 50, "text": "They're waiting at the car."},
+  {"kind": "speech", "x": 1360, "y": 704, "w": 426, "h": 50, "text": "Inside. Tell me if that changes."},
+  {"kind": "image", "x": -337, "y": -945, "w": 52, "h": 52, "text": "car marker"},
+  {"kind": "image", "x": 2454, "y": 165, "w": 52, "h": 52, "text": "pip guard"},
+  {"kind": "image", "x": 3102, "y": 1268, "w": 52, "h": 52, "text": "pip driver"},
+  {"kind": "image", "x": 1601, "y": 827, "w": 52, "h": 52, "text": "pip councillor"},
+  {"kind": "beat", "x": 2792, "y": 1818, "w": 278, "h": 32, "text": "The rivals wait at the car"},
+  {"kind": "speech", "x": 2792, "y": 1856, "w": 576, "h": 33, "text": "Rival: That's him! Take the car!"},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

@@ -42,6 +42,8 @@ export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
   'board', 'go', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
+/** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
+export const CONTROL_VERBS = ['drive'] as const;
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
 export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as const;
@@ -91,9 +93,9 @@ export const Action = z.strictObject({
 export const Lock = z.strictObject({
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
-  verbs: z.array(z.union([Verb, z.literal('*')])).min(1).describe('the verbs that can return it'),
-  byTarget: z.partialRecord(z.enum(['machine']), z.strictObject({ line: Line, short: Short() })).optional()
-    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Additive: a host that does not read it shows the base line and short'),
+  verbs: z.array(z.union([Verb, z.enum(CONTROL_VERBS), z.literal('*')])).min(1).describe('the verbs that can return it'),
+  byTarget: z.partialRecord(z.enum(['machine', 'serving']), z.strictObject({ line: Line, short: Short() })).optional()
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 022: `serving` on too-far, for a Listen or Ask on a server out at a table: {who} {s} (seconds until she is back at her post). Additive: a host that does not read it shows the base line and short'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
@@ -107,13 +109,18 @@ export const Activity = z.strictObject({
 /** A training hint line fits Glyph's 110 characters (briefs/011/motive-fights.md §8). */
 export const HINT_MAX = 110;
 const HintLine = z.string().min(1).max(HINT_MAX).regex(/^[^\n<>]+$/);
+/** A hint's pop: a `Short`, but it may carry key tokens (`<TurnLeft>`, a PlayAction's name) that the host draws as keycaps (HudToolkit.Keys); the length counts a token as one character. */
+const KEY_TOKEN = /<(TurnLeft|TurnRight)>/g;
+const HintShort = (max: number) => z.string().min(1).regex(/^[^\n]+$/).refine((x) => !/[<>]/.test(x.replace(KEY_TOKEN, '')), 'only key tokens may use < >').refine((x) => x.replace(KEY_TOKEN, 'K').length <= max, `at most ${max} characters, a key token counting one`);
 export const Hint = z.strictObject({
   priority: z.number().int().min(-9).describe('the order hints are offered in, lowest first; 0 = ahead of the training line (H13, the view); -1 = the fight hint (H17), behind the end steps; below -1 = the Handover\'s end steps (H14 Enter, H16 Take at the pickup, H15 Board), which win over every other hint when their trigger holds'),
   agent: z.enum([...AGENTS, 'any']).describe('the agent the line names; `any` = "another agent" (H11: any agent can carry)'),
   verb: DVerb,
   target: z.string().min(1).describe('what the hint rings, in words'),
   line: HintLine.describe('brief 014: the long line, shown on Alt and by the relearn key; the line at rest is `short`'),
-  short: Short(36).describe('brief 014: the Next Step line, an imperative of at most six words with the one noun that is ringed in [brackets] (the host colours it as its marker); {who} is the person; it names no agent (the agent\'s portrait pulses) and no approach'),
+  short: HintShort(36).describe('brief 014: the Next Step line, an imperative of at most six words with the one noun that is ringed in [brackets] (the host colours it as its marker); {who} is the person; it names no agent (the agent\'s portrait pulses) and no approach. Brief 016: it may end in key tokens (`<TurnLeft>`), drawn as keycaps and not counted as words'),
+  door: z.strictObject({ line: HintLine, short: HintShort(36) }).optional()
+    .describe('brief 016 (Sky 2026-10-18, civic layout played at yaw 210): H13 only. The same hint when the Office door is the next step and a wall hides it at this yaw: the pop rings the door marker, and the long line is its Alt. Without the door cause (the 0:20 timer) the host shows `short` and `line`'),
   trigger: z.string().min(1).describe('copied from Motive: the game state that shows it'),
   rings: z.string().min(1),
   goneWhen: z.string().min(1),
@@ -276,6 +283,12 @@ export const Less = z.strictObject({
     flag: Short().describe('the roster flag on every agent not in the car while the Go card is open'),
     fate: z.record(code, Line).describe('Alt on a name\'s fate glyph, by the engine\'s fate (captured, walked); {who} is the agent'),
   }),
+  failcam: z.strictObject({
+    rule: z.string().min(1),
+    by: z.record(code, Line).describe('the first culprit in words, by its kind (or `rivals` for the crew); cameras, operatives and cast people come from names'),
+    caption: z.record(code, z.record(code, Line)).describe('the fail camera\'s one line, by fail code then why (sealed: desk, heard, or origin.because); {by} {agent}; at most six words filled'),
+    tip: z.record(code, z.record(code, Line)).describe('what to do next time, by the same keys; at most six words'),
+  }),
   intel: z.strictObject({
     rule: z.string().min(1),
     need: z.record(code, Fragment).describe('one fragment per need value the rulebook allows (people.rules.json needs.list); a new need without one fails the test'),
@@ -329,7 +342,7 @@ export const TextFile = z.strictObject({
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(Verb, Action),
+  actions: z.record(z.enum([...VERBS, ...CONTROL_VERBS]), Action),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),
@@ -389,12 +402,13 @@ export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
 }
 /** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
  *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
-export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string } = {}): string | undefined {
+export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string; variant?: 'machine' | 'serving'; s?: number } = {}): string | undefined {
   const l = t.locks[a.code];
   if (!l) return undefined;
+  const line = (ctx.variant && l.byTarget?.[ctx.variant]?.line) || l.line;
   const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
-  return l.line
-    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
+  return line
+    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{s\}/g, ctx.s === undefined ? '?' : String(ctx.s)).replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
     .replace(/\{m\}/g, m === undefined ? '?' : String(m))
     .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
     .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');

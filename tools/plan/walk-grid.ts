@@ -1,5 +1,5 @@
 // The walk grid the engine and the world rules share: the civic block's window in block frame, 0.5 m cells, a cell free when its centre is outside every
-// walk blocker (tools/plan/walk.ts blockersOf: built plots, the civic footprints and towers, water, landmarks) and BODY clear of every ground solid
+// walk blocker (tools/plan/walk.ts blockersOf: built plots behind their building lines, the civic footprints and towers, water, landmarks) and BODY clear of every ground solid
 // (walk-solids.ts). tools/sim/site.ts writes it for the engine (sim/data/handover.site.json `grid`); tools/world/civic/quiet.ts measures report
 // and response reach on it (brief 013 C), so a call box covers what a walker in the engine walks, not a second opinion of the ground.
 import type { Civic } from './civic';

@@ -320,7 +320,8 @@
   "move": {"label":"Walk","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Walk there. Quiet, and the only pace while carrying Vale.","withTarget":"Walk to {target}","then":"walks to {target}"},
   "run": {"label":"Run","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Run there. Twice as fast, but anyone who can see you will notice.","withTarget":"Run to {target}","then":"runs to {target}"},
   "cancel": {"label":"Cancel","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"Stop what this agent is doing. Some stops cost something: check the price."},
-  "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."}
+  "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."},
+  "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Let go","does":"Hand this agent back. They stop, or carry on their walk."}}}
  },
  "cancelCosts": {
   "stop": "Stops where they stand. Nothing is lost.",
@@ -394,7 +395,7 @@
   "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","short":"Fixer only","verbs":["ask","pay","help","pressure","call"]},
   "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
-  "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"]},
+  "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"],"byTarget":{"serving":{"line":"{who} is serving a table. Back at the door in {s} s.","short":"Serving · back in {s} s"}}},
   "needs-routine": {"line":"Learn {who}'s routine first: have the Scout Watch them.","short":"Watch first","verbs":["listen","pay"]},
   "needs-need": {"line":"Find out what {who} needs first: have the Scout Listen.","short":"Listen first","verbs":["help","pressure"]},
   "needs-temperament": {"line":"Find out who {who} is first: have the Scout Listen.","short":"Listen first","verbs":["ask","pay","help","pressure"]},
@@ -441,6 +442,7 @@
   "fire-carrying-vale": {"line":"The Enforcer is carrying Vale. Get Vale in the car, and let the others fire.","short":"Hands full · Vale","verbs":["fire"]},
   "fire-carrying": {"line":"Can't fire while carrying. Put them down, or let another shoot.","short":"Hands full","verbs":["fire"]},
   "no-target": {"line":"Nothing to fire at: no hostile in range with a clear line.","short":"No target","verbs":["fire"]},
+  "fight-over": {"line":"The fight is over. Nobody is left to fire on.","short":"Fight is over","verbs":["fire"]},
   "fire-on-cell": {"line":"Agents never fire on each other.","short":"Not the cell","verbs":["fire"]},
   "target-unknown": {"line":"That can't be watched, listened to or fired on.","short":"Not a target","verbs":["fire","watch","listen"]},
   "civilian-target": {"line":"A civilian or someone you've turned. Ctrl fires anyway, and the city remembers.","short":"Civilian · Ctrl","verbs":["fire"]},
@@ -504,7 +506,7 @@
    "fight.loud": {"kind":"fight","fate":"beat","beat":"Police coming.","title":"Police coming in","result":"{n} officers, from the north street. Police seal the district at {clock}."},
    "fight.safe": {"kind":"fight","fate":"alt","title":"The rivals wait at the car","result":"{n} of them. They block the car until they're beaten."},
    "fight.ambush": {"kind":"fight","fate":"alt","title":"Ambush","result":{"sprung":"The rivals open fire at the car.","warned":"Inez's warning came in time. You saw it first."},"pick":"warned when Game.FightWarned, else sprung"},
-   "fight.over": {"kind":"fight","fate":"alt","title":"The fight is over","result":"The last of them is down or gone. The car can go."},
+   "fight.over": {"kind":"fight","fate":"alt","title":"The fight is over","result":"The last of them is down or gone. Fire orders end. The car can go."},
    "fight.blocker": {"kind":"fight","fate":"beat","beat":"One takes the road.","title":"A hostile takes the road","result":"One of them is heading for the road. Down it to free the car."},
    "car.seen": {"kind":"warning","fate":"debrief","title":"The car was seen","result":"Security saw the car leave. Investigators will hunt it."},
    "board.in": {"kind":"city","fate":"icon","title":"In the car","result":{"plain":"{agent} is in the car.","vale":"{agent} is in the car, with Vale.","carried":"{agent} is in the car, with the one carried."},"pick":"vale when the engine's text says with Vale, carried when it says with the, else plain"},
@@ -810,7 +812,7 @@
   "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
-  "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled): bookkeeping; the shots speak through the fight events",
+  "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled): bookkeeping; the shots speak through the fight events. When the final fight is over (brief 023) every fire order on a final-fight hostile ends with fire.done: the fight.over card says \"Fire orders end\" and a new fire order there is refused as fight-over",
   "witness.": "witness bookkeeping (camera, patrol, told); the spoken reactions are witness-reacts and witness-screams, the visible ones the feed cards",
   "fail.": "the fail text is the `fail` event, keyed by code",
   "scout.": "scout.watch.watched and scout.listen.heard: spoken by `read`",
@@ -835,6 +837,7 @@
   "captured": "an agent left behind and captured: told in the debrief (left-behind, captive), not spoken",
   "blocker.out": "the road blocker is down or gone: the street shows it, and car.free speaks if that frees the car",
   "car.free": "the car is free to go: the feed card says it",
+  "round.ends": "a server's rounds end (an order or a body holds her at her post): the street shows her there",
   "walked": "an agent left behind who walks out: the mission ends at Go; the debrief's left-behind line says it",
   "car.seen": "the car was seen leaving: the mission ends at Go; the debrief's car-seen line says it and the feed card keeps it",
   "board.in": "an agent is in the car: the order's ack spoke, and the car marker's pip fills",
@@ -1009,10 +1012,14 @@
     "verb": "turn-view",
     "target": "the view",
     "line": "A wall hides an agent? Press Q or E to turn the view a quarter turn.",
-    "short": "Turn the view: Q / E.",
-    "trigger": "0:20 has passed, at the first lull in the hint line, and the view has never turned (brief 016, Latch/Sky 2026-10-17; not in Motive's table)",
-    "rings": "nothing: no noun is ringed",
-    "goneWhen": "the view turns, for good"
+    "short": "Turn the view: <TurnLeft> <TurnRight>",
+    "door": {
+     "line": "The Office wings hide the public door. Press Q twice to turn the view round and see it.",
+     "short": "Turn twice: <TurnLeft> <TurnLeft>"
+    },
+    "trigger": "Two causes, one hint (brief 016, Latch/Sky 2026-10-17 and 2026-10-18; not in Motive's table). Door: the public door is the next step (H14's door, the Enforcer outside) and a wall hides it at the current yaw; shows `door`, rings the door marker; it retires once the door has been in clear view. Timer: 0:20 has passed, at the first lull in the hint line, no door cause is open and the view has never turned; shows `short` and `line`",
+    "rings": "the public door marker, for the door cause (the pop names no noun: the ring is the pointer); nothing for the timer cause",
+    "goneWhen": "the door cause: the door in clear view, for good; the timer cause: the view turns, for good"
    },
    "H14": {
     "priority": -4,
@@ -1118,6 +1125,7 @@
    "toasts.run-seen": "cut",
    "goingLoud.captured": "alt",
    "less.go": "label",
+   "less.failcam": "beat",
    "dialogue": "speech",
    "scenes.items.beats": "speech",
    "scenes.items.result": "alt",
@@ -1397,7 +1405,9 @@
    "hints-on": "Hints on",
    "hints-off": "Hints off",
    "no-line": "No clear line",
-   "car-held": "Fight blocks car"
+   "car-held": "Fight blocks car",
+   "take-control": "Take control: T",
+   "let-go": "Let go: T"
   },
   "cancel": {
    "stop": "free",
@@ -1455,6 +1465,102 @@
    "fate": {
     "captured": "{who} would be captured.",
     "walked": "{who} would walk out."
+   }
+  },
+  "failcam": {
+   "rule": "Sky 2026-10-18: on a fail the camera rewinds and orbits what failed the run, with one caption and one tip. The host reads Game.Cause (sim FailCause.cs): `caption[fail][why]` is the line (for `sealed`, why is the origin: desk or heard when the reporter is one of those, else origin.because: response, confirmed, loud-fight); `tip[fail][why]` is the next-time line. {by} is the first culprit in words (`by` for its kind; a camera is names.targets for its id, capitalised; an operative is its speaker name, e.g. The Fixer; a person with a cast role is names.targets, else a passer-by); {agent} is the first of Cause.ops as names.speakers says it (the Enforcer). A caption is at most six words once filled, a tip at most six. Nothing here is a rule.",
+   "by": {
+    "guard": "The guard",
+    "patrol": "The patrol",
+    "officer": "A police officer",
+    "robot": "A police robot",
+    "rival": "A rival",
+    "rivals": "The rivals",
+    "person": "A passer-by",
+    "car": "Vale's car"
+   },
+   "caption": {
+    "entry-seen-guard": {
+     "seen": "{by} saw {agent}."
+    },
+    "entry-seen-camera": {
+     "seen": "{by} saw {agent}."
+    },
+    "entry-seen-patrol": {
+     "seen": "{by} saw {agent}."
+    },
+    "abduction-seen-camera": {
+     "seen": "{by} saw {agent}."
+    },
+    "rivals-reach-vale": {
+     "beat-to-pickup": "{by} reached the pickup first.",
+     "downed-enforcer": "{by} downed {agent}.",
+     "reached-at-close": "{by} reached Vale first.",
+     "reached-car": "{by} reached the car."
+    },
+    "vale-leaves": {
+     "too-late": "Vale's car left. Too slow."
+    },
+    "vale-dead": {
+     "killed": "{agent} killed Vale.",
+     "shot": "{by} shot Vale."
+    },
+    "enforcer-down": {
+     "shot": "{by} shot {agent}."
+    },
+    "driver-shot": {
+     "shot": "{by} shot the driver."
+    },
+    "sealed": {
+     "response": "{by} raised the alarm.",
+     "confirmed": "{by} reported it.",
+     "loud-fight": "The shooting sealed the district.",
+     "desk": "A missed check-in sealed the district.",
+     "heard": "Shots were heard. District sealed."
+    },
+    "engine-error": {
+     "error": "Something broke. This run doesn't count."
+    }
+   },
+   "tip": {
+    "entry-seen-guard": {
+     "seen": "The guard watches the door."
+    },
+    "entry-seen-camera": {
+     "seen": "This camera covers the door."
+    },
+    "entry-seen-patrol": {
+     "seen": "The patrol sweeps past the door."
+    },
+    "abduction-seen-camera": {
+     "seen": "This camera covers Vale's car."
+    },
+    "rivals-reach-vale": {
+     "beat-to-pickup": "The rivals head for the pickup.",
+     "downed-enforcer": "Rivals shoot the one carrying Vale.",
+     "reached-at-close": "Rivals take Vale at the close.",
+     "reached-car": "Rivals take a car nobody guards."
+    },
+    "vale-leaves": {
+     "too-late": "Vale's car leaves on schedule."
+    },
+    "vale-dead": {
+     "killed": "Use Take, not Kill, on Vale.",
+     "shot": "Never fire near Vale."
+    },
+    "enforcer-down": {
+     "shot": "Enemy fire goes for the Enforcer."
+    },
+    "driver-shot": {
+     "shot": "Keep shots away from the driver."
+    },
+    "sealed": {
+     "response": "Anyone who sees you can report.",
+     "confirmed": "A found body gets reported.",
+     "loud-fight": "Stay quiet: the first shot counts.",
+     "desk": "Empty posts get noticed.",
+     "heard": "Shots carry: fire only if needed."
+    }
    }
   },
   "intel": {

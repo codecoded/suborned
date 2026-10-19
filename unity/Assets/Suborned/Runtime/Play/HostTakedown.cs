@@ -84,7 +84,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the takedown (Glyph §1, §2)
 
-        Person PersonOf(Target t) => t.Kind switch { "person" => Game.PersonByRole(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key), _ => null };
+        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key), _ => null };
 
         /// <summary>A takedown on a person, one way, priced by the engine (QuoteTakedown, read-only).</summary>
         Intent TakedownIntent(int slot, Target t, string how)

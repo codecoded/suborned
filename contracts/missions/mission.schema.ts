@@ -18,6 +18,10 @@
 // cameras), each with its reason; tools/sim/site.ts reads them into sim/data/handover.site.json. Then (2026-10-15, engine 0.4.0):
 // the final fight's posts join `points` (ambush-*, police-*, guard-ally), `arms` carries §07's Arms 3, and `prep` restates §07's
 // route prep times against the rulebook (Watch 20 s).
+// Later still (2026-10-18, Sky's pick (h) of Vantage's door re-study, GDD §10 v0.24; Splice): optional and additive, on destinations, crew,
+// `points` and `cameras`: `yaw` (30 | 120 | 210 | 300, default 30), the heading the point is played at, which rule V-1 measures it from
+// (the Records Office front is played at 210), and `hidden` (a reason, on destinations, crew and `points`): the point is out of the camera's
+// view by design; V-1 lists it and does not fail it. Neither is read by the engine's site extract (tools/sim/site.ts picks its own fields).
 // A recorded run's pinned block carries its own /1 layer and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
@@ -34,6 +38,9 @@ const at = z.string().regex(/^\d{1,2}:[0-5]\d$/).describe('mission-clock offset 
 const dayTime = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/).describe('day clock HH:MM or HH:MM:SS');
 const src = z.string().min(1).describe('where the entry comes from: GDD §, plan, [S] starting value');
 const note = z.string().min(1).optional();
+/** The heading a point is played at (GDD §10: Q/E turn the view in quarter steps from the opening yaw 30). Rule V-1 measures the point from it. */
+const yaw = z.union([z.literal(30), z.literal(120), z.literal(210), z.literal(300)]).optional().describe('compass heading the point is played at; default 30');
+const hidden = z.string().min(1).optional().describe('why the point is out of the camera\'s view by design (a hiding place): V-1 lists it and does not fail it');
 /** A named point in the block frame [x, y] on a walk surface. */
 /** A generated person's id (contracts/people/people.schema.ts). */
 const personId = z.string().regex(/^p-[a-z0-9-]+-\d{2,3}$/);
@@ -63,10 +70,10 @@ const role = z.strictObject({
 /** A place the engine plays on that the mission owns (block frame, m): at a point, or at the centre of a civic-block structure. */
 const sitePoint = z.strictObject({
   id, at: z.tuple([z.number(), z.number()]).optional(), structure: id.optional().describe('civic-block.json structures id: the point is its centre'),
-  src, reason: z.string().min(1),
+  src, reason: z.string().min(1), yaw, hidden,
 }).refine(p => (p.at === undefined) !== (p.structure === undefined), { error: 'exactly one of at and structure' });
 /** A camera (§05 fixed visible cones): mount, the destination it looks at, reach and cone half-width at the reach, m. */
-const camera = z.strictObject({ id, at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1) });
+const camera = z.strictObject({ id, at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1), yaw });
 
 /** A route's timed window, read from the rules: the lover summons (rulebook `summon`: his walk on the grid at walking pace, his stay
  *  `stay`, the walk at most `walkMax`). The mission names who walks between which destinations; it restates no number the rules hold. */
@@ -79,7 +86,7 @@ const window = z.strictObject({
   src, note: z.string().min(1).describe('why the window reads as it does'),
 });
 
-const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1) });
+const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1), yaw, hidden });
 
 export const Mission = z.strictObject({
   schema: z.literal('suborned.mission/3'),

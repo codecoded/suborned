@@ -13,15 +13,17 @@ namespace Suborned.Play
     /// run.seen). Hints read the run; they never change it, so a replay is untouched.</summary>
     public sealed partial class HandoverHost
     {
-        public sealed class HintShown { public string Id = "", Line = "", Who = ""; public Vector3? Ring; public int Portrait = -1; }
-        string trigWho = ""; // the role a trigger found (brief 014: the short line's {who})
+        public sealed class HintShown { public string Id = "", Line = "", Who = "", Cause = ""; public Vector3? Ring; public int Portrait = -1; }
+        string trigWho = "", trigCause = ""; // the role a trigger found (brief 014: the short line's {who}); H13's cause (door or timer)
+        /// <summary>H13's door cause, spent and learned apart from its timer cause (Fable: two causes, one hint).</summary>
+        const string H13Door = "H13:door";
         /// <summary>The hint on screen now, else null.</summary>
         public HintShown HintNow { get; private set; }
         public bool HintsOn { get => PlayerPrefs.GetInt(HintsPref, 1) == 1; set { PlayerPrefs.SetInt(HintsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", "H17" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17" };
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -55,6 +57,10 @@ namespace Suborned.Play
         {
             if (Text == null || Game.Over || Game.Tick % 5 != 0) return;
             if (!HintsOn) { HintNow = null; return; }
+            // GDD v0.24 (H13's door cause): the first time the public door is the next step and a wall hides it, the turn hint cuts in at
+            // once, over any hint and without the idle wait; it is spent only by the door standing in clear view (DoorViewFrame)
+            if (!ShowBriefing && HintNow is not { Id: "H13", Cause: "door" } && Trigger("H13", out var dr, out var dp) && trigCause == "door" && Text.Hints2.Find(x => x.Id == "H13") is { } h13)
+            { HintNow = new HintShown { Id = "H13", Line = h13.DoorLine.Length > 0 ? h13.DoorLine : h13.Line, Ring = dr, Portrait = dp, Cause = "door" }; hintOrdersAt = Game.Orders.Count; return; }
             if (HintNow != null && Game.Tick - lastOrderTick >= 8 * Game.Hz && Text.Hints2.Find(x => x.Id == HintNow.Id) is { Priority: >= 0 })
             {   // the end steps (H14 to H16, negative priorities) cut in over a teaching hint on show: they say what wins the mission now (Sky, route B)
                 var learnedNow = Learned();
@@ -76,16 +82,16 @@ namespace Suborned.Play
             var known = Learned();
             foreach (var h in Text.Hints2)
             {
-                if (hintsDone.Contains(h.Id) || known.Contains(h.Id) || h.Line.Length == 0) continue;
+                if (h.Id != "H13" && (hintsDone.Contains(h.Id) || known.Contains(h.Id)) || h.Line.Length == 0) continue; // H13: each cause keeps its own spent state (Trigger)
                 if (!Trigger(h.Id, out var ring, out var portrait)) continue;
-                HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = ring, Portrait = portrait, Who = trigWho }; hintOrdersAt = Game.Orders.Count;
+                HintNow = new HintShown { Id = h.Id, Line = h.Id == "H13" && trigCause == "door" && h.DoorLine.Length > 0 ? h.DoorLine : h.Line, Ring = ring, Portrait = portrait, Who = trigWho, Cause = h.Id == "H13" ? trigCause : "" }; hintOrdersAt = Game.Orders.Count;
                 return;
             }
         }
 
         /// <summary>The ✕ on the hint: this one is spent. H: the whole layer off (or back on).</summary>
         public void RelearnHints() { PlayerPrefs.DeleteKey(LearnedPref); learned = null; PlayerPrefs.Save(); HintsOn = true; Status = "Hints on, from the start."; PopKey("hints-on", null, SelectedWorld(), Feedback.Info, Status); }
-        public void DismissHint() { if (HintNow != null) { hintsDone.Add(HintNow.Id); HintNow = null; } }
+        public void DismissHint() { if (HintNow != null) { hintsDone.Add(HintNow.Cause == "door" ? H13Door : HintNow.Id); HintNow = null; } }
         public void ToggleHints() { HintsOn = !HintsOn; if (!HintsOn) HintNow = null; Status = HintsOn ? "Hints on." : $"Hints off. {controls.Label(PlayAction.Hints)} brings them back."; PopKey(HintsOn ? "hints-on" : "hints-off", null, SelectedWorld(), Feedback.Info, Status); }
 
         IEnumerable<Order> OrdersTaken(int from = 0) { for (int i = from; i < Game.Orders.Count; i++) if (Game.Orders[i].ok) yield return Game.Orders[i].order; }
@@ -97,7 +103,7 @@ namespace Suborned.Play
         /// <summary>Motive's trigger for a hint, from the engine's state, with what it rings.</summary>
         bool Trigger(string id, out Vector3? ring, out int portrait)
         {
-            var g = Game; ring = null; portrait = -1; trigWho = "";
+            var g = Game; ring = null; portrait = -1; trigWho = ""; trigCause = "";
             switch (id)
             {
                 case "H1":
@@ -182,8 +188,19 @@ namespace Suborned.Play
                         for (int k = 0; k < 3; k++) if (Armed(k) && !g.Ops[k].Down && !g.Ops[k].Inside) { foreach (var h in g.Hostiles) if (!h.Down && h.Present) { ring = frame.World(h.Pos(g.Tick)); portrait = k; trigWho = h.Id.StartsWith("rival") ? "rival" : "officer"; return true; } } // Fable: {who} the hostile, "rival" or "officer" (they carry no names)
                         return false;
                     }
-                case "H13": // brief 016: the view turns; taught once, early (Fable's line in text.json; the HUD shows its keys as keycaps)
-                    return g.Tick >= 20 * Game.Hz && !TurnedThisRun && !g.FightOn;
+                case "H13": // brief 016 and GDD v0.24 (Fable: two causes, one hint; the HUD shows its keys as keycaps)
+                    {
+                        if (g.FightOn) return false;
+                        var lrn = Learned(); bool showingDoor = HintNow is { Id: "H13", Cause: "door" };
+                        // door: the public door is the next step (the door marker up with the Fixer or Enforcer selected, or ringed for Enter) and
+                        // a wall hides it at this yaw; once shown it holds until the door has stood in clear view (DoorViewFrame spends it)
+                        bool doorNext = (DoorMarked && (Selected[(int)OpId.Fixer] || Selected[(int)OpId.Enforcer])) || EnterAvailable;
+                        if (!hintsDone.Contains(H13Door) && !lrn.Contains(H13Door) && doorNext && (DoorHiddenNow || showingDoor))
+                        { trigCause = "door"; ring = DoorWorld; return true; }
+                        // timer: 0:20 has passed and the view has never turned (the fallback)
+                        if (hintsDone.Contains("H13") || lrn.Contains("H13") || showingDoor) return false;
+                        trigCause = "timer"; return g.Tick >= 20 * Game.Hz && !TurnedThisRun;
+                    }
                 case "H18": // brief 018 §6.7 (Fable): Vale is in the car and no Go has been given; rings the car
                     if (g.Vale != ValeAt.Car || g.Over || Given(o => o.Do == "go")) return false;
                     ring = At("car/getaway"); return true;
@@ -215,7 +232,7 @@ namespace Suborned.Play
                 case "H10": return Given(o => o.Do == "draw", from);
                 case "H11": return Given(o => o.Do is "carry" or "board", from);
                 case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
-                case "H13": return TurnedThisRun;
+                case "H13": return HintNow?.Cause != "door" && TurnedThisRun; // the door cause is spent by the door in clear view (DoorViewFrame)
                 case "H17": return Given(o => o.Do == "fire" && o.Op != "enforcer", from) || !g.FightOn;
                 case "H14": return Given(o => o.Do == "enter", from);
                 case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);

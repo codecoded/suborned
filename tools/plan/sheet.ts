@@ -136,7 +136,7 @@ export function sheet(plan: Plan, R: Report, svgs: { district: string; inset: st
     ['Sky rail', 'Pylons only in', std.skyrail.pylonZones.join(', ')],
     ['Sky rail', 'Interchange walk to tram', `≤ ${std.skyrail.interchange} m`],
     ['Roads', 'Junction spacing, primary / district', `≥ ${std.roads.junctionSpacing.primary} m / ≥ ${std.roads.junctionSpacing.district} m (plan rule at game scale)`],
-    ['Walking', 'Crossing roads', 'anywhere: kerbs, medians, tram reservation and circus are walkable; buildings, built plots, landmarks and water block'],
+    ['Walking', 'Crossing roads', 'anywhere: kerbs, medians, tram reservation and circus are walkable; buildings, built plots behind their building line (the pavement in front of it walks), landmarks and water block'],
     ['Walking', 'Escape walk directness', `walk ÷ straight line ≤ ${std.walking.directness}`],
     ...(std.walking.body ? [['Walking', 'Body · clear width (W-5)', `a walker keeps ${std.walking.body.r} m from a ground solid (${+(2 * std.walking.body.r).toFixed(2)} m wide) · walks keep ${std.walking.body.clearWidth} m clear (${std.walking.body.constrained.w} m for ≤ ${std.walking.body.constrained.run} m; seating aisles ${std.walking.body.aisle} m)`]] : []),
     ['Roads', 'Widths kerb to kerb', 'primary 24 (median 4) · Boulevard 28 (tram 10) · district 18 (median 6) · access 12–13 · Parade 40'],

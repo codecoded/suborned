@@ -18,8 +18,10 @@ const d = derive(plan);
 const crewLine = toPlan([2.968, -49.666]); // the middle of the four crew marks (mission.json crew: x 1.168 … 4.768, y -49.666)
 
 test('the solids are the dressing\'s wall, cheeks and pilasters, the objects and the pillars, cabinets and monument, and its planter runs, pots, bollards and lamp bases; the overhead marquee and the steps are not', () => {
-  expect(live.solids!.length).toBe(85); // 10 of the pieces (4 wall, 4 cheeks and piers, 2 pilasters; not the overhead marquee) + 28 objects + 6 pillars, cabinets and the monument + 41 ground furniture
-  expect(live.solidIds!.length).toBe(85);
+  expect(live.solids!.length).toBe(83); // 10 of the pieces (4 wall, 4 cheeks and piers, 2 pilasters; not the overhead marquee) + 26 objects + 6 pillars, cabinets and the monument + 41 ground furniture (was 85 with 28 objects: the two beds either side of the old north door are gone since the public door moved to the west face, 2026-10-19)
+  expect(live.solidIds!.length).toBe(83);
+  expect(live.solidIds).not.toContain('civic-entrance-west'); // the north door's beds went with the door
+  expect(live.solidIds).not.toContain('civic-entrance-east');
   expect(bare.solids).toBeUndefined();
   const wall = block.dressing.pieces.find((p: any) => p.piece === 'CafeBay').solids[0].polygon.map(toPlan);
   expect(live.solids!.some(s => JSON.stringify(s) === JSON.stringify(wall))).toBe(true);
@@ -59,20 +61,20 @@ describe('the dressing\'s ground furniture is a walk solid (Vantage, 2026-10-15:
     expect(solids.clear(...(side(-(2.185 + r - 0.05)) as [V, V]))).toBe(false); // 0.05 m inside it
   });
 
-  test('a piece the plan gives no footprint fails civic() by name; a plan with no groundPieces walks as it always did (44 solids)', () => {
+  test('a piece the plan gives no footprint fails civic() by name; a plan with no groundPieces walks as it always did (42 solids)', () => {
     const p2 = structuredClone(plan.civic); delete p2.groundPieces.sizes.PlanterRun_4_C; // the first run with a C module names it
     expect(() => civic(p2, block)).toThrow(/run-[a-z-]+\/\d is PlanterRun_4_C, which plan.civic.groundPieces.sizes gives no footprint/);
     const p3 = structuredClone(plan.civic); delete p3.groundPieces;
-    expect(civic(p3, block).solids!.length).toBe(44);
+    expect(civic(p3, block).solids!.length).toBe(42);
   });
 });
 
-test('Crew line → Between tables is 26.2 m round the terrace wall (17.7 m with no wall); Service lane → Office entrance is 25.5 m (17.5 m with no cheeks or beds)', () => {
-  const between = toPlan([-7.1, -35.45]), service = toPlan([62.5, -43.2]), office = toPlan([51.75, -30]);
+test('Crew line → Between tables is 26.2 m round the terrace wall (17.7 m with no wall); the lane by the Office west face → Office entrance is 9.1 m (5.3 m with no cheeks or beds)', () => {
+  const between = toPlan([-7.1, -35.45]), service = toPlan([69.4, -41.1]), office = toPlan([64, -41.25]); // the old service door's spot in the lane, and the public door on the Office's west face (2026-10-19, option b)
   expect(walkBetween(plan, d, live, crewLine, between)).toBeCloseTo(26.2, 0);
-  expect(walkBetween(plan, d, live, service, office)).toBeCloseTo(25.5, 0);
+  expect(walkBetween(plan, d, live, service, office)).toBeCloseTo(9.1, 0);
   expect(walkBetween(plan, d, bare, crewLine, between)).toBeCloseTo(17.65, 1);
-  expect(walkBetween(plan, d, bare, service, office)).toBeCloseTo(17.5, 0);
+  expect(walkBetween(plan, d, bare, service, office)).toBeCloseTo(5.3, 0);
 });
 
 test('a step is blocked by a wall 0.66 m thick that no cell centre of a 2 m grid holds, and by the clearance round it', () => {
@@ -86,7 +88,8 @@ test('a step is blocked by a wall 0.66 m thick that no cell centre of a 2 m grid
 test('the coarse walk reads the solids too: every stop and station is still reached, and a walk through the block is no shorter', () => {
   const r1 = reach(plan, derive(plan), live), r0 = reach(plan, derive(plan), bare);
   expect(r1.filter(r => r.m === Infinity)).toEqual([]);
-  r1.forEach((r, i) => expect(r.m).toBeGreaterThanOrEqual(r0[i]!.m - 1e-9));
+  // no shorter, to the grid: a walk with solids starts at the door's own point, a bare one at its cell's centre, so the two differ by under a cell where a route turns (the pavements walk since 2026-10-19: one stop reads 0.8 m under its bare walk)
+  r1.forEach((r, i) => expect(r.m).toBeGreaterThanOrEqual(r0[i]!.m - (plan.standards.walking.grid as number)));
   const w1 = walks(plan, derive(plan), live), w0 = walks(plan, derive(plan), bare);
   expect(w1.length).toBe(w0.length);
   for (const w of w1) expect(w.m / w.straight).toBeLessThanOrEqual(plan.standards.walking.directness);

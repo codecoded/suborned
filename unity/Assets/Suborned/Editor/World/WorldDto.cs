@@ -55,7 +55,12 @@ namespace Suborned.World
         public List<MassDto> Medians = new();
         public List<WaterDto> Flats = new(); // flat land layers (surface at Level)
         public List<MassDto> Plots = new();  // one 0.18 m pavement slab per plot
+        public List<DriveDto> Drives = new(); // brief 023: a car's way from a road's carriageway over a plot's pavement to a bay that touches no road
     }
+
+    /// <summary>A drive (brief 023, world.schema.ts Drive): Ring a flat at Level in Surface, from Road (a road id) to To (a bay flat id); the road's
+    /// kerb is dropped along Kerb (two points on it) to KerbHeight (0 = flush with the carriageway).</summary>
+    public sealed class DriveDto { public string Id, Surface, Road, To; public Vector2[] Ring, Kerb; public float Level, KerbWidth, KerbHeight; }
 
     /// <summary>Carriageway ribbon at Level, kerb strips either side (KerbWidth wide, KerbHeight proud).</summary>
     public sealed class RoadDto { public string Id, Surface, KerbSurface; public Vector2[] Line; public float Width, Level, KerbWidth, KerbHeight; }

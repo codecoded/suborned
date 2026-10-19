@@ -7,6 +7,7 @@ import { transitChecks } from './transit-checks';
 import { type Civic, blockPlanRect, footprints } from './civic';
 import { type Walk, walks as footWalks } from './walk';
 import { entranceChecks } from './entrances';
+import { driveChecks } from './drives';
 import { edges } from './graph';
 import type { Overlay, Route } from './overlay';
 
@@ -194,6 +195,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   const homes: Record<string, string> = { cafe: 'square', 'civic-office': 'office' };
   const out = civ.buildings.filter(b => !b.poly.every(v => inPoly(v, plotOf(homes[b.id] ?? 'square'))));
   add({ id: 'C-2', group: 'Civic', rule: 'Café and office footprints inside their blocks', value: `${civ.buildings.length - out.length}/${civ.buildings.length}`, limit: 'all', ok: !out.length && civ.buildings.length === 2 });
+  C.push(...driveChecks(plan, d, civ));
   const ctx = { plan, d, civ, E, roadById };
   C.push(...(overlay?.civic(ctx) ?? []));
 

@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1505, "y": 1925, "w": 442, "h": 80, "text": "Go in by the door."},
+  {"kind": "image", "x": 1537, "y": 1947, "w": 36, "h": 36, "text": "hint portrait"},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 261, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 205, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "image", "x": 468, "y": 1843, "w": 226, "h": 60, "text": "follow view chip"},
+  {"kind": "beat", "x": 2792, "y": 1818, "w": 266, "h": 32, "text": "The guard is at the café"},
+  {"kind": "speech", "x": 2792, "y": 1856, "w": 576, "h": 33, "text": "Guard: Yes, ma'am."},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

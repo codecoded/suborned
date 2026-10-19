@@ -14,8 +14,10 @@
 //   by      m:ss: the latest the step may be given; past it the plan fails to compose, naming the step;
 //   when    an engine log code that must have been logged first (fight.over: the last hostile is down; blocker.out, brief 018: every
 //           hostile the engine sent for the road is down, broken or gone);
-//   unless  an engine log code that must not be logged by the order or `clear` s after it (captured: nobody left behind at the extract).
-// The search: from the earliest tick, every 5 s until taken, then back tick by tick to the first tick taken. Deterministic: the same
+//   unless  an engine log code that must not be logged by the order or `clear` s after it (captured: nobody left behind at the extract);
+//   every   seconds between the search's coarse tries (default 5): a step whose window is shorter (a takedown on a passer-by is taken only
+//           while he is within reach, about 2 s) sets it under that window, so the search can't step over it (brief 023).
+// The search: from the earliest tick, every `every` s until taken, then back tick by tick to the first tick taken. Deterministic: the same
 // plan on the same engine gives the same script.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -29,6 +31,7 @@ export const Step = z.strictObject({
   run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(), how: z.enum(['knockout', 'kill']).optional(),
   label: z.string().min(1).optional(), after: z.array(z.string().min(1)).optional(), gap: z.number().nonnegative().optional(),
   at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.string().min(1).optional(), why: z.string().min(1).optional(),
+  every: z.number().min(0.1).max(5).optional(),
 });
 export const Plan = z.strictObject({
   schema: z.literal('suborned.mission.plan/1'), mission: z.string().min(1), note: z.string().min(1),
@@ -61,12 +64,13 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
       return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
     });
     let found = -1;
-    for (let t0 = lo; t0 <= hi && found < 0; t0 += 50 * 12) { // coarse: every 5 s, twelve at a time
-      const ts = Array.from({ length: 12 }, (_, k) => t0 + k * 50).filter(t => t <= hi), ok = await tryAt(ts);
+    const every = Math.round((s.every ?? 5) * 10);
+    for (let t0 = lo; t0 <= hi && found < 0; t0 += every * 12) { // coarse: every `every` s (default 5), twelve at a time
+      const ts = Array.from({ length: 12 }, (_, k) => t0 + k * every).filter(t => t <= hi), ok = await tryAt(ts);
       const k = ok.indexOf(true); if (k >= 0) found = ts[k]!;
     }
     if (found < 0) throw new Error(`${name} step ${i + 1} (${s.op ?? ''} ${s.do}${s.target ? ` ${s.target}` : ''}): not taken${clearT ? ` clear for ${s.clear} s` : ''} between ${lo} and ${hi}`);
-    for (let a = Math.max(lo, found - 49); a < found; a += 12) { // fine: back to the first tick taken
+    for (let a = Math.max(lo, found - every + 1); a < found; a += 12) { // fine: back to the first tick taken
       const ts = Array.from({ length: 12 }, (_, k) => a + k).filter(t => t < found), ok = await tryAt(ts);
       const k = ok.indexOf(true); if (k >= 0) { found = ts[k]!; break; }
     }

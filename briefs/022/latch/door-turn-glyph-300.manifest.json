@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1544, "y": 1925, "w": 365, "h": 80, "text": "Turn the view: Q"},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 564, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 508, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "image", "x": 1383, "y": 903, "w": 52, "h": 52, "text": "door marker"},
+  {"kind": "image", "x": 1334, "y": 880, "w": 43, "h": 43, "text": "door turn"},
+  {"kind": "image", "x": 1329, "y": 745, "w": 52, "h": 52, "text": "pip guard"},
+  {"kind": "image", "x": 2362, "y": 28, "w": 48, "h": 48, "text": "edge cameo"},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

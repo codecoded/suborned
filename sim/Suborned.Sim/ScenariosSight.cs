@@ -118,7 +118,7 @@ namespace Suborned.Sim
             Add("N43", "—", "The guard is watched as the person he is (scout.watch, 6 m): the Watch teaches his routine and his sight. Detection needs no knowledge: in his cone the Scout is noticed (the fill) with '?' over him until his sight is known, and known after.", r =>
             {
                 var g = r.G;
-                var front = g.S.Grid.NearestFree(g.GuardPose()!.Value.pos + new Pt(-400, 0))!.Value;
+                var front = AheadOfGuard(r, 400);
                 r.To(r.SendTo(Scout, front));
                 var n0 = g.Detection().Find(n => n.Watcher == "guard" && n.Op == Scout);
                 r.Is(n0 != null && n0.PerMille == 1000 && !n0.Known && n0.From == g.GuardPose()!.Value.pos && n0.To == r.Op(Scout).Pos, "in his cone, the guard notices the Scout: the fill, and '?' over him");

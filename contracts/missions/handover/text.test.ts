@@ -6,6 +6,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { shownWords } from '../../../tools/hud-budget/budget.ts';
 import { Cast } from '../../people/cast.schema.ts';
 import { checkPeople } from '../../../tools/people/check.ts';
 import { expand } from '../../../tools/people/expand.ts';
@@ -13,7 +14,7 @@ import { readTexts, world } from '../../../tools/people/inputs.ts';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, BEAT_MAX, CARD_FATES, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -61,9 +62,9 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   walk('activity', t.activity);
   for (const [code, l] of Object.entries(t.locks)) { push(`locks.${code}`, l.line); push(`locks.${code}.short`, l.short, false, SHORT_MAX); }
   // brief 014: the short forms are strings the player reads, so the same length, tone, name and key rules apply (brackets mark a ringed noun and are not text)
-  const plain = (x: string) => x.replace(/[[\]]/g, '');
+  const plain = (x: string) => x.replace(/<[A-Za-z]+>/g, 'k').replace(/[[\]]/g, ''); // a key token is one keycap
   b.timeline.forEach((x, i) => push(`briefing.timeline[${i}].short`, x.short, false, 16));
-  for (const [id, h] of Object.entries(t.hints.items)) push(`hints.${id}.short`, plain(h.short), false, 36);
+  for (const [id, h] of Object.entries(t.hints.items)) { push(`hints.${id}.short`, plain(h.short), false, 36); if (h.door) { push(`hints.${id}.door`, h.door.line, false, HINT_MAX); push(`hints.${id}.door.short`, plain(h.door.short), false, 36); } }
   for (const [k, c] of Object.entries(t.cards.items)) for (const [v, r] of typeof c.beat === 'string' ? [['', c.beat] as const] : Object.entries(c.beat ?? {})) push(`cards.${k}.beat.${v}`, r, false, BEAT_MAX);
   t.scenes.items.forEach((sc, i) => { if (sc.beat) push(`scenes[${i}].beat ${sceneKey(sc)}`, sc.beat, false, BEAT_MAX); });
   { const L = t.less;
@@ -71,6 +72,8 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     push('less.end.win', L.end.win, false, SHORT_MAX); push('less.end.withdraw', L.end.withdraw, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.end.fail)) push(`less.end.fail.${k}`, x, false, SHORT_MAX);
     for (const [k, x] of Object.entries(L.pop)) push(`less.pop.${k}`, x, false, SHORT_MAX);
+    for (const [f, m] of Object.entries(L.failcam.caption)) for (const [w, x] of Object.entries(m)) push(`less.failcam.caption.${f}.${w}`, x, false, 56);
+    for (const [f, m] of Object.entries(L.failcam.tip)) for (const [w, x] of Object.entries(m)) push(`less.failcam.tip.${f}.${w}`, x, false, 36);
     for (const [k, x] of Object.entries(L.cancel)) push(`less.cancel.${k}`, x, false, 20);
     for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x);
     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
@@ -81,7 +84,7 @@ const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\
   // brief 013's between-missions fields: the widest the host fills each (the same widths as contracts/dialogue debriefFill, with a short place name)
   .replace(/\{fact\}/g, "the Fixer's face").replace(/\{facts\}/g, "place, time and the Enforcer's face").replace(/\{place\}/g, 'the service lane').replace(/\{of\}/g, 'Dimitra Marchetti').replace(/\{move\}/g, 'bravery +1')
   .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found')
-  .replace(/\{holders\}/g, '2 rivals').replace(/\{fate\}/g, 'walked out').replace(/\{why\}/g, 'the district was sealed').replace(/\{held-at\}/g, 'the post').replace(/\{holds\}/g, '3 missions').replace(/\{rescue-until\}/g, '3 missions').replace(/\{by\}/g, 'A police officer')
+  .replace(/\{s\}/g, '99').replace(/\{holders\}/g, '2 rivals').replace(/\{fate\}/g, 'walked out').replace(/\{why\}/g, 'the district was sealed').replace(/\{held-at\}/g, 'the post').replace(/\{holds\}/g, '3 missions').replace(/\{rescue-until\}/g, '3 missions').replace(/\{by\}/g, 'A police officer')
   .replace(/\{district\}/g, 'Harbour').replace(/\{band\}/g, 'Neutral').replace(/\{from\}/g, '-3').replace(/\{to\}/g, '-3');
 
 describe('the file', () => {
@@ -98,7 +101,7 @@ describe('the file', () => {
     expect(bad).toEqual([]);
   });
   test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}, and the Standing line\'s {district} {band} {from} {to}, and brief 018\'s {holders} (locks) {fate} {why} {held-at} {holds} {rescue-until} {by} (the getaway lines)', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\}|holders\}|fate\}|why\}|held-at\}|holds\}|rescue-until\}|by\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\}|s\}|holders\}|fate\}|why\}|held-at\}|holds\}|rescue-until\}|by\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -144,7 +147,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Vale', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Halcyon']);
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon']);
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -200,7 +203,7 @@ describe('times and numbers agree with the mission', () => {
 
 describe('verbs and refusals', () => {
   test('every panel verb has an action, a label, an agent and an engine order', () => {
-    expect(Object.keys(t.actions).sort()).toEqual([...VERBS].sort());
+    expect(Object.keys(t.actions).sort()).toEqual([...VERBS, ...CONTROL_VERBS].sort());
     for (const a of Object.values(t.actions)) { expect(a.label.length).toBeGreaterThan(0); expect(a.by.length).toBeGreaterThan(0); }
   });
   test('every rulebook verb is an action: scout events, turn approaches, the cell\'s verbs', () => {
@@ -965,13 +968,21 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
     if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Gait,\s*keys = new\[\] \{ Key\.G \}/);
   });
-  test('H13 teaches the view turn: Q / E in the short form (the host swaps them for keycaps), the game\'s own keys, retired for good by turning', () => {
+  test('H13 teaches the view turn in two causes: the door the walls hide (Q twice, rings the door) and the 0:20 timer (Q / E); the keys are tokens the host draws as keycaps, the game\'s own keys, retired for good', () => {
     const h = t.hints.items.H13!;
     expect(h.verb).toBe('turn-view');
     expect(h.agent).toBe('any');
     expect(h.priority).toBe(0);
-    expect(h.short).toBe('Turn the view: Q / E.');
-    expect(marked(h.short)).toEqual([]); // nothing in the street is ringed; the host draws the glyph, the words, then Q and E as keycaps
+    expect(h.short).toBe('Turn the view: <TurnLeft> <TurnRight>'); // the timer form: nothing in the street is ringed; the host draws the glyph, the words, then Q and E as keycaps
+    expect(marked(h.short)).toEqual([]);
+    expect(h.door!.short).toBe('Turn twice: <TurnLeft> <TurnLeft>'); // the door form: two quarter turns reach the Office front from the opening view (yaw 30 to 210); the ring on the door marker points, so no noun
+    expect(marked(h.door!.short)).toEqual([]);
+    expect(shownWords(h.door!.short)).toBe(4); // keycaps counted, as the HUD budget counts them
+    expect(shownWords(h.short)).toBe(5);
+    expect(h.door!.line).toMatch(/\bQ twice\b/);
+    expect(h.door!.line).toMatch(/public door/);
+    expect(h.trigger).toMatch(/hides it/);
+    expect(h.rings).toMatch(/door/);
     expect(h.line).toMatch(/\bQ\b/);
     expect(h.line).toMatch(/\bE\b/);
     expect(h.line).toMatch(/\bagent\b/i);
@@ -993,22 +1004,24 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('no new short form uses a gendered word', () => {
     const GENDER = /\b(he|she|him|her|hers|his|himself|herself|man|men|woman|women|boy|girl|sir|madam|lady|lord)\b/i;
-    const mine = strings.filter((s) => /^(locks\.[a-z-]+\.short|hints\.H\d+\.short|briefing\.timeline\[\d\]\.short|cards\..*\.beat|scenes\[\d+\]\.beat|less\.)/.test(s.path));
+    const mine = strings.filter((s) => /^(locks\.[a-z-]+\.short|hints\.H\d+\.(door\.)?short|briefing\.timeline\[\d\]\.short|cards\..*\.beat|scenes\[\d+\]\.beat|less\.)/.test(s.path));
     expect(mine.length).toBeGreaterThan(150);
     expect(JSON.stringify(t.less).match(GENDER)).toBeNull(); // the rules, fates and grammar too
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn the view\b/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn (the view|twice)\b/ };
     const bad: string[] = [];
-    for (const [id, h] of Object.entries(t.hints.items)) {
-      const n = marked(h.short);
-      if (n.length !== (id === 'H13' ? 0 : 1)) bad.push(`${id}: ${n.length} ringed nouns`); // H13 rings nothing: the view is no thing in the street
-      if (words(h.short) > 6) bad.push(`${id}: more than six words`);
-      if (!(lead[h.verb] ?? /^$/).test(h.short)) bad.push(`${id}: "${h.short}" does not lead with its verb (${h.verb})`);
-      if (/\b(Scout|Fixer|Tech|Enforcer|Ask|Pay|Help|Pressure|first|then|before|after|next|until|once)\b|\d/.test(h.short)) bad.push(`${id}: names an agent, an approach, a time or a sequence`);
-      if (h.short.length >= h.line.length) bad.push(`${id}: not shorter than its line`);
-      expect(nums(h.short), id).toEqual([]);
+    const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
+    for (const { id, h, short, line, ring } of forms) {
+      const bare = short.replace(/<[A-Za-z]+>/g, ''); // for the other rules, a key token is no word
+      const n = marked(short);
+      if (n.length !== ring) bad.push(`${id}: ${n.length} ringed nouns`); // both H13 forms ring no noun in the pop (the view is no thing in the street; the door's ring is the marker itself)
+      if (shownWords(short) > 6) bad.push(`${id}: more than six words, a keycap counting as one (the HUD budget's count)`);
+      if (!(lead[h.verb] ?? /^$/).test(short)) bad.push(`${id}: "${short}" does not lead with its verb (${h.verb})`);
+      if (/\b(Scout|Fixer|Tech|Enforcer|Ask|Pay|Help|Pressure|first|then|before|after|next|until|once)\b|\d/.test(bare)) bad.push(`${id}: names an agent, an approach, a time or a sequence`);
+      if (short.length >= line.length) bad.push(`${id}: not shorter than its line`);
+      expect(nums(bare), id).toEqual([]);
     }
     expect(bad).toEqual([]);
   });
@@ -1122,6 +1135,38 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [k, x] of [...Object.entries(L.cancel), ...Object.entries(L.pop)]) { expect(words(x), k).toBeLessThanOrEqual(3); expect(x, k).not.toMatch(/[.!?]/); }
     // the host builds these refusals itself today: HandoverHost (Pop), HostFight, HostTakedown
     for (const id of ['no-way', 'no-room', 'unarmed', 'not-drawn', 'other-carries', 'nothing-there', 'never-vale', 'who-can', 'nothing-here', 'select-agent']) expect(L.pop[id], id).toBeTruthy();
+  });
+  test('brief 019: the fail camera has a caption of at most six words and a tip of at most six for every way a run can fail (Cause.fail and why), and the same keys in both', () => {
+    const F = L.failcam;
+    const ways: Record<string, string[]> = {
+      'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'entry-seen-patrol': ['seen'], 'abduction-seen-camera': ['seen'],
+      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
+      'enforcer-down': ['shot'], 'driver-shot': ['shot'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
+    expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
+    for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
+    for (const f of FAILS) expect(f in F.caption, f).toBe(true);
+    // tips: every way but a broken engine
+    for (const [f, ws] of Object.entries(ways)) if (f !== 'engine-error') expect(Object.keys(F.tip[f]!).sort(), f).toEqual([...ws].sort());
+    expect('engine-error' in F.tip).toBe(false);
+    // words once filled (the HUD line limit is six): {by} is two words ("The guard") except where a camera or a police officer can be the culprit (three)
+    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'driver-shot.shot', 'vale-dead.shot']);
+    const bad: string[] = [];
+    for (const [f, m] of Object.entries(F.caption)) for (const [w, x] of Object.entries(m)) {
+      const filled = x.replace(/\{by\}/g, three.has(`${f}.${w}`) ? 'The entrance camera' : 'The guard').replace(/\{agent\}/g, 'the Enforcer');
+      if (words(filled) > 6) bad.push(`${f}.${w}: ${words(filled)} words: ${filled}`);
+      if (/!/.test(x)) bad.push(`${f}.${w}: exclamation`);
+    }
+    for (const [f, m] of Object.entries(F.tip)) for (const [w, x] of Object.entries(m)) if (words(x) > 6) bad.push(`tip ${f}.${w}: ${words(x)} words`);
+    expect(bad).toEqual([]);
+    for (const k of ['guard', 'patrol', 'officer', 'robot', 'rival', 'rivals', 'person', 'car']) expect(F.by[k], k).toBeTruthy();
+  });
+  test('brief 022: a Listen or Ask refused as too far on a server out at a table says she is serving and when she is back', () => {
+    const v = t.locks['too-far']!.byTarget!.serving!;
+    expect(v.short).toBe('Serving · back in {s} s');
+    expect(widest(v.short).length).toBeLessThanOrEqual(SHORT_MAX);
+    expect(v.line.length).toBeGreaterThan(v.short.length); expect(v.line.length).toBeLessThanOrEqual(MAX_LINE);
+    expect(fillLock(t, { code: 'too-far', m: 4 }, { who: 'Inez', variant: 'serving', s: 12 })).toBe('Inez is serving a table. Back at the door in 12 s.');
+    expect(fillLock(t, { code: 'too-far', m: 4 }, { who: 'Inez' })).toBe('Too far from Inez. Walk within 4 m first.');
   });
   test('the timeline marks have a word for Alt', () => {
     expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);

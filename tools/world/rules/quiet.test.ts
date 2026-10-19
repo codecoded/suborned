@@ -6,8 +6,12 @@ import { resolve } from 'node:path';
 import type { World } from '../../../contracts/world/world.schema';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
+import { toBlockFn } from '../../plan/walk-grid';
 import { ctxOf, generated } from '../../plan/world-ctx';
 import { cameraDir, QUIET } from '../civic/quiet';
+import { SITING, cornerOf, junctionCorners, opensOnFootway } from '../civic/siting';
+import { type V, lineDist } from '../../plan/geom';
+import { r4 } from '../gen/common';
 import { quietRules } from './quiet';
 
 setDefaultTimeout(120000);
@@ -22,8 +26,18 @@ const failing = (mutate: (w: World) => void = () => {}): Record<string, string> 
 const t = base.w.takedown!;
 
 describe('the takedown places of the civic block', () => {
-  test('the live world passes R-HIDE, R-STASH, R-REPORT and R-DOCK', () => {
+  test('the live world passes R-HIDE, R-STASH, R-REPORT, R-REPORT/site and R-DOCK, on the walk grid where a built plot blocks only behind its building line (Starline\'s pavements are ground)', () => {
     expect(Object.keys(failing())).toEqual([]);
+    expect(t.coverage.report).toMatchObject({ within: 1000, worstM: 39.8 });
+    expect(t.coverage.origin).toMatchObject({ within: 1000, worstM: 39.8 });
+  });
+
+  test('the north-west mouth of the block (Starline Street north of Garden Row) has a call box on its own pavement, and the box, the post and the dock do not bunch at the square\'s corner (brief 023)', () => {
+    const toBlock = toBlockFn(plan.civic), items = base.w.street.filter(s => s.id.startsWith('street/civic/')).map(s => ({ id: s.id, kind: s.kind, p: toBlock(s.at) as [number, number] }));
+    const north = items.filter(i => i.kind === 'phone-booth' && i.p[0] > -27 && i.p[0] < -20 && i.p[1] > 4);
+    expect(north.length, 'a call box on the pavement of Starline Street north of Garden Row').toBeGreaterThanOrEqual(1);
+    const corner: [number, number] = [-26, -8]; // where Garden Row leaves Starline Street on the square's side: the box, the post and the dock used to stand within 7 m of it
+    expect(items.filter(i => Math.hypot(i.p[0] - corner[0], i.p[1] - corner[1]) < 12).length, 'at most one placed box or post within 12 m of that corner').toBeLessThanOrEqual(1);
   });
 
   test('every door of the block has its kind; the two service doors are the Office\'s and the café\'s', () => {
@@ -58,7 +72,7 @@ describe('the takedown places of the civic block', () => {
     expect(t.coverage.report.baselineWithin).toBeLessThan(1000); // the doors alone leave ground out of reach (Pulse: 84%)
   });
 
-  test('a call box and a police post keep `apart` m off every other, and a booth never stands where the dock does', () => {
+  test('a call box, a police post or a dock keeps `apart` m off every other, of its kind or not', () => {
     const all = [...t.report.filter(r => r.kind === 'call-box'), ...t.origins.filter(o => o.kind !== undefined && o.item)];
     for (const [i, a] of all.entries()) for (const b of all.slice(i + 1)) {
       if (a.item === b.item) continue; // a post is listed once as an origin
@@ -97,6 +111,41 @@ describe('the takedown places of the civic block', () => {
   test('R-REPORT / R-DOCK: a point whose street item is not where it says is refused', () => {
     const f = failing(w => { const p = w.takedown!.origins.find(o => o.item && /police-post-0/.test(o.item))!; p.at = [p.at[0] + 5, p.at[1]]; });
     expect(f['R-DOCK']).toMatch(/not where its street item is/);
+  });
+
+  test('call boxes stand where a real city puts them: on a corner\'s pavement, off the corner, never in a carriageway or a side road\'s mouth, opening on the footway (brief 023 research)', () => {
+    const roads = d.roads, corners = junctionCorners(roads, plan.nodes), boxes = base.w.street.filter(s => /^street\/civic\/call-box-\d+$/.test(s.id));
+    expect(boxes.length).toBe(6); // the walk grid before 2026-10-19 (a built plot blocked to its edge, pavements and all) made 4; the pavements are ground now
+    for (const b of boxes) {
+      const r = roads.find(o => `civic/${o.id}` === b.edge)!, k = cornerOf(r, b.at as V, corners)!;
+      expect(k, b.id).toBeDefined();
+      expect(k.along, b.id).toBeGreaterThanOrEqual(SITING.setback - 0.5);
+      expect(k.along, b.id).toBeLessThanOrEqual(SITING.zone + 0.5);
+      expect(roads.some(o => lineDist(b.at as V, o.line) < o.w / 2), `${b.id} in a carriageway`).toBe(false);
+      expect(opensOnFootway(r.line, b.at as V, b.yaw), `${b.id} faces the road`).toBe(true);
+    }
+    // the two the old rule stood in a side road's mouth, (-186,-260) in Rocket Lane's and (-134,-205) in Garden Row's, are gone, and nothing else stands there
+    for (const mouth of [[-186, -260], [-134, -205]] as V[]) expect(base.w.street.some(s => s.kind === 'phone-booth' && Math.hypot(s.at[0] - mouth[0], s.at[1] - mouth[1]) < 4)).toBe(false);
+  });
+
+  test('a corner exists only where a street leaves: Garden Row meets Starline Street on its south pavement, two corners, and none on the far side', () => {
+    const cs = junctionCorners(d.roads, plan.nodes).filter(c => c.node === 'r_garden_n');
+    expect(cs.map(c => c.at.map(Math.round).join(',')).sort()).toEqual(['-126,-204', '-138,-204']);
+    expect(junctionCorners(d.roads, plan.nodes).some(c => c.at[1] > -198 && c.at[1] < -190 && c.at[0] > -140 && c.at[0] < -124)).toBe(false);
+  });
+
+  test('R-REPORT/site: a box in a side road\'s mouth, one that opens on the road, one on a frontage no corner serves', () => {
+    const mouth = failing(w => { const b = w.street.find(s => s.id === 'street/civic/call-box-0')!; b.at = [-186, -260]; });
+    expect(mouth['R-REPORT/site']).toMatch(/call-box-0 stands in the carriageway of Rocket Lane/);
+    const gm = failing(w => { const b = w.street.find(s => s.id === 'street/civic/call-box-1')!; b.at = [-134, -205]; });
+    expect(gm['R-REPORT/site']).toMatch(/call-box-1 stands in the carriageway of Garden Row/);
+    const road = failing(w => { const b = w.street.find(s => s.id === 'street/civic/call-box-0')!; b.yaw = r4(b.yaw + Math.PI); });
+    expect(road['R-REPORT/site']).toMatch(/call-box-0 opens on the carriageway of Orbit Walk, not on the footway/);
+    const far = failing(w => { const b = w.street.find(s => s.id === 'street/civic/call-box-0')!; b.edge = 'civic/garden-row'; b.at = [-139, -232.5]; });
+    expect(far['R-REPORT/site']).toMatch(/call-box-0 stands 2\d\.\d m from the corner at .*: a corner's box stands 6\.\.25 m off it/);
+    const near = failing(w => { const b = w.street.find(s => s.id === 'street/civic/call-box-2')!; b.at = [-178, -260]; });
+    expect(near['R-REPORT/site']).toMatch(/call-box-2 stands [0-5]\.\d m from the corner/);
+    expect(Object.keys(mouth).includes('R-REPORT/site')).toBe(true);
   });
 
   test('deterministic: the same plan, block and kit give the same takedown, and a pinned block with no service door gives none', () => {

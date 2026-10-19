@@ -12,7 +12,7 @@ import { derive } from '../plan/plan';
 import { civic, toPlanFn } from '../plan/civic';
 import { blockersOf } from '../plan/walk';
 import { CELL, WINDOW, walkGrid } from '../plan/walk-grid';
-import type { V } from '../plan/geom';
+import { inPoly, type V } from '../plan/geom';
 import { castRoles } from '../missions/handover/cast';
 import { castRules } from '../missions/handover/overlay';
 import { summonRules } from '../missions/handover/summon';
@@ -20,6 +20,7 @@ import { createHash } from 'node:crypto';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 import { buildExit, blockM, checkExit } from './getaway';
+import { driveGrid, type Drive } from './drive';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -45,7 +46,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   const { polys } = blockersOf(plan, d, civ);
   const G = walkGrid(plan, d, civ, WINDOW, CELL), { solids, nx, ny, rows, free, nearestFree } = G;
 
-  // ---- sight: the civic buildings and their towers at their heights, and the built plots around the square
+  // ---- sight: the civic buildings and their towers at their heights, and the built plots around the square (each behind its building line: the pavement is not a wall)
   const toBlock = (p: V): V => { // invert plan = o + bx·ax + by·ay
     const o: V = plan.civic.blockToPlan.origin, ax: V = plan.civic.blockToPlan.x, ay: V = plan.civic.blockToPlan.y;
     const det = ax[0] * ay[1] - ax[1] * ay[0], dx = p[0] - o[0], dy = p[1] - o[1];
@@ -63,7 +64,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     if (civicPolys.has(poly) || plan.water.includes(poly)) continue;
     const bp = poly.map(toBlock);
     if (!inWindow(bp)) continue;
-    occluders.push({ id: `plot-${String(++plotN).padStart(2, '0')}`, z: 0, h: 1500, poly: bp.map(P), src: 'plan built plot (tools/plan/walk.ts blockersOf); no height in the plan, stood at 15 m: any built plot blocks an eye-level sightline' });
+    occluders.push({ id: `plot-${String(++plotN).padStart(2, '0')}`, z: 0, h: 1500, poly: bp.map(P), src: 'plan built plot behind its building line (tools/plan/walk.ts blockersOf); no height in the plan, stood at 15 m: any built plot blocks an eye-level sightline' });
   }
 
   // ---- places: the mission's points as they stand, then the engine's own (O-6, for Waymark)
@@ -136,19 +137,50 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   const exitBad = checkExit(exitLane, plan, d, toPlan(dest('Getaway bay')), blockM(rulebook).m);
   if (exitBad.length) throw new Error(`getaway.exit (SX-1): ${exitBad.join('; ')}`);
 
+  // ---- where a car may be (brief 023, engine 0.8.2: rulebook car.drive): carriageways, the block's bays and its drives. The drives are the world's
+  // vehicle crossings, civic-block.json drives[] (Splice, brief 023; block frame polygons): the Handover's one is service-drive, Apron Road to
+  // serviceBay. Required: a block without drives has no way into serviceBay, so the site is not written (no keep-clear stand-in)
+  const drives: Drive[] = ((block.drives ?? []) as { id: string; polygon: V[] }[]).map((x) => ({ id: x.id, polygon: x.polygon }));
+  if (!drives.length) throw new Error('car.drive: the civic block has no drives[]: the turned driver has no way into serviceBay (brief 023)');
+  // brief 023 (car.pace): the lane a car keeps to on a carriageway is the city's lane (life.json traffic.laneWidth, the traffic model's [S])
+  const laneWidth = JSON.parse(read('contracts/world/harbour-district.life.json')).traffic?.laneWidth;
+  if (typeof laneWidth !== 'number') throw new Error('car.pace: harbour-district.life.json has no traffic.laneWidth (the lane a car keeps to)');
+  const drive = driveGrid(plan, d, block.bays, drives, laneWidth);
+  // the car's heading parked in the service bay: the bay's long axis, pointing away from the drive (or the carriageway) it is entered by
+  const sb = places['service-bay'];
+  if (!sb) throw new Error('mission.json has no point service-bay: the turned driver has nowhere to park (brief 023)');
+  const sbAt: V = [sb.at[0]! / 100, sb.at[1]! / 100];
+  const bay = (block.bays as { id: string; polygon: V[] }[]).find((b) => inPoly(sbAt, b.polygon));
+  if (!bay) throw new Error(`service-bay (${sbAt}) lies in no bay of the civic block`);
+  const bx = bay.polygon.map((p) => p[0]), by = bay.polygon.map((p) => p[1]), lx = Math.max(...bx) - Math.min(...bx), ly = Math.max(...by) - Math.min(...by);
+  const bc: V = [(Math.max(...bx) + Math.min(...bx)) / 2, (Math.max(...by) + Math.min(...by)) / 2];
+  const entry = drives.find((x) => x.polygon.some((p) => inPoly(p, bay.polygon)) || bay.polygon.some((p) => inPoly(p, x.polygon)));
+  const ec: V | undefined = entry && [entry.polygon.reduce((a, p) => a + p[0], 0) / entry.polygon.length, entry.polygon.reduce((a, p) => a + p[1], 0) / entry.polygon.length];
+  const serviceFacing = lx >= ly ? [ec && ec[0] > bc[0] ? -100 : 100, 0] : [0, ec && ec[1] > bc[1] ? -100 : 100];
+  // the car's heading parked at block-spot (Aster 2026-10-19, Latch's editor-car-block-spot.png): along the long axis of the bay it stands in (the
+  // official bay's kerb), nose the way it pulled out from the pickup, so it never stands angled across the pavement
+  const bs = places['block-spot'], pu = places['d:Official drop-off'];
+  if (!bs || !pu) throw new Error('mission.json has no block-spot or Official drop-off: the car has nowhere to block from');
+  const bsAt: V = [bs.at[0]! / 100, bs.at[1]! / 100], puAt: V = [pu.at[0]! / 100, pu.at[1]! / 100];
+  const blockBay = (block.bays as { id: string; polygon: V[] }[]).find((b) => inPoly(bsAt, b.polygon));
+  if (!blockBay) throw new Error(`block-spot (${bsAt}) lies in no bay of the civic block: the car would stand across the pavement`);
+  const kx = blockBay.polygon.map((p) => p[0]), ky = blockBay.polygon.map((p) => p[1]);
+  const blockFacing = Math.max(...kx) - Math.min(...kx) >= Math.max(...ky) - Math.min(...ky) ? [bsAt[0] >= puAt[0] ? 100 : -100, 0] : [0, bsAt[1] >= puAt[1] ? 100 : -100];
+
   const site = {
     schema: 'suborned.sim.site/1',
     mission: 'handover',
     frame: 'civic-block.json block frame in integer centimetres: x south, y east. Mission clock in seconds from 0:00 (the engine ticks at 10 Hz).',
     from: [PLAN, plan.civic.block, MISSION, 'tools/plan/walk.ts blockersOf', 'tools/plan/walk-solids.ts'],
-    grid: { x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows, src: 'tools/plan/walk.ts blockersOf (built plots, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance): a cell is free when its centre is' },
+    grid: { x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows, src: 'tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance): a cell is free when its centre is' },
     occluders,
     places,
     cameras,
-    patrol: { a: 'patrol-a', b: 'patrol-b', facing: [100, 0], reroute: 'patrol-reroute', rerouteFacing: [0, -100], src: 'the top-down test: the patrol faces the building it guards; here south, toward the public door' },
-    guard: { post: 'd:Office entrance', facing: [-100, 0], cafe: 'd:Café door', cafeFacing: [-100, 0], src: 'GDD §05 guard on door routine (café stop pre-shift); mission.json windows.front-door; he faces the square from the door, and the café at it' },
+    patrol: { a: 'patrol-a', b: 'patrol-b', facing: [0, 100], reroute: 'patrol-reroute', rerouteFacing: [0, -100], src: 'the top-down test: the patrol faces the building it guards; the public door is on the Office\'s west face (Sky 2026-10-19, option b), the sweep runs along the forecourt (x 52..68, y -44.8) and the patrol faces east, toward the door' },
+    guard: { post: 'd:Office entrance', facing: [0, -100], cafe: 'd:Café door', cafeFacing: [-100, 0], src: 'GDD §05 guard on door routine (café stop pre-shift); mission.json windows.front-door; he faces out over the forecourt from the door, which is on the Office\'s west face (Sky 2026-10-19, option b), so west; at the café he faces the café' },
     vale: { exit: 'd:Official entrance', car: 'd:Official drop-off', service: 'd:Service lane', src: 'GDD §07 5:50 Vale exits, 6:10 at car (service lane if the driver is turned); mission.json roles.councillor leavesTo' },
-    car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'd:Service lane', block: 'block-spot', src: 'GDD §07; mission.json roles.driver' },
+    car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'service-bay', block: 'block-spot', serviceFacing: serviceFacing, blockFacing: blockFacing, src: 'GDD §07; mission.json roles.driver; blockFacing: parked at block-spot the car lies along its bay\'s long axis (the official bay\'s kerb), nose the way it pulled out from the pickup (tools/sim/site.ts); the turned driver parks in the Office\'s east yard bay (mission.json point service-bay, brief 023), nose in: serviceFacing is the bay\'s long axis pointing away from the drive it is entered by (tools/sim/site.ts)' },
+    drive,
     rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', ...(mission.rivals ? { public: mission.rivals.public } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
     getaway: { car: 'd:Getaway bay', exit: exitLane, src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },

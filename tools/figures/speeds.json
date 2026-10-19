@@ -1,0 +1,14 @@
+{
+ "note": "Natural ground speed of each locomotion clip in m/s: the planted foot's median speed in the hips' frame, measured in Unity on the scout (1.75 m), stance frames only (tools/figures/scratch/FigAnim.cs, Speeds). Run is five frames only: treat it as +-15 %.",
+ "speeds": {
+  "walk": 1.29,
+  "walk_f": 0.99,
+  "walk_old": 0.41,
+  "run": 2.52,
+  "walk_armed": 2.44,
+  "run_armed": 3.11,
+  "crouch_walk": 0.85,
+  "carry_shoulder": 1.29,
+  "serve_walk": 0.99
+ }
+}

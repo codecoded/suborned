@@ -6,8 +6,10 @@
 //   Editor closed: Unity in batch mode, -executeMethod Suborned.World.Play.GameBuild.Cli (log: out/build/play/build.log).
 //   Editor open:   through the Editor (`unity cmd menu "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
 //                  refuses and says so (a build would end the session). Either way the result is out/build/play/build.json.
-// `bun run game:pack` zips the app for another Mac; `bun run game:send [device]` packs and sends it by Taildrop (default the MacBook Air,
-// skys-macbook-air-1; --dry-run prints the command).
+// `bun run game:pack` zips the app for another Mac (TheSuborned-0.2.<build>.zip); `bun run game:send [device]` packs and sends it by
+// Taildrop (default the MacBook Air, skys-macbook-air-1; --dry-run prints the command) and logs it in runs/builds/builds.json.
+// Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
+// Finder Version, the pause menu, the briefing's corner and the zip all say 0.2.<build>.
 // `bun run game:signing-check` says whether the Developer ID identity and the notary profile exist, and how to make each.
 // Flags: --build (force), --check, --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -101,7 +103,7 @@ async function build(): Promise<boolean> {
   const b = built();
   if (!b.ok || b.at <= before) { console.error(`game: the build did not finish (${b.why || 'no new build.json'}); see out/build/play/build.json and build.log or the Editor console`); return false; }
   const j = JSON.parse(readFileSync(STAMP, 'utf8'));
-  console.log(`game: built in ${j.seconds} s, engine ${j.engine}; ${j.post}`);
+  console.log(`game: built ${j.version ? `Build ${j.version} (${j.recording}, sim ${j.sim}, ${j.sha}${j.dirty ? '+' : ''}) ` : ''}in ${j.seconds} s, engine ${j.engine}; ${j.post}`);
   return true;
 }
 
@@ -116,7 +118,24 @@ function check(): boolean {
   const sj = existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
   console.log(`game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
   const { pj, status } = proof();
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0;
+  const drive = driveReplay(pj);
+  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive;
+}
+
+/** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
+ *  every checkpoint (the repo's engine CLI, `sim play`); a copy goes beside the proof. */
+function driveReplay(pj: any): boolean {
+  const f = pj?.frames?.driveSession as string | undefined;
+  if (!f || !existsSync(f)) { console.error(`game: no driven session from the proof (${f ?? 'none'})`); return false; }
+  const out = join(DIR, 'proof', 'drive-session.script.json'); run('cp', [f, out], { quiet: true });
+  const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
+  const r = spawnSync('dotnet', ['run', '--project', 'sim/cli', '--', 'play', out], { cwd: ROOT, encoding: 'utf8', env, timeout: 300000 });
+  const ok = r.status === 0 && /\[ok\] the replay matches its record/.test(r.stdout);
+  const cps = r.stdout.match(/checkpoints (\d+)/)?.[1] ?? '?';
+  const d = pj.frames.drive?.[0];
+  console.log(`game: driven session ${ok ? 'replays headless on every checkpoint' : 'DOES NOT replay'} (${cps} checkpoints; ${out})${d ? `; street level driven ${d.fps} fps (p99 ${d.p99Ms} ms${d.gpuMs >= 0 ? `, gpu ${d.gpuMs} ms` : ''})` : ''}`);
+  if (!ok) console.error(r.stdout.slice(-2000), r.stderr.slice(-1000));
+  return ok;
 }
 
 /** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
@@ -126,13 +145,19 @@ function proof(): { pj: any; status: number | null } {
   const out = join(DIR, 'proof');
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 180000 }); // uncapped: the headroom over 60 fps
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 420000 }); // uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
-  console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; follow view (test) ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms)`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
+  console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
 }
 
 function proofBlank(): boolean { const f = join(DIR, 'proof', 'proof.json'); return existsSync(f) && JSON.parse(readFileSync(f, 'utf8')).status === 'blank'; }
+
+/** A blank build is never shipped: its number goes back to tools/game/version.json, so the rebuild takes the same one. */
+function giveBackNumber(): void {
+  const f = join(ROOT, 'tools', 'game', 'version.json'); if (!existsSync(f)) return;
+  const v = JSON.parse(readFileSync(f, 'utf8')); if (typeof v.build === 'number' && v.build > 0) { v.build -= 1; Bun.write(f, JSON.stringify(v, null, 4) + '\n'); }
+}
 
 /** A fresh build is proved to draw before it is trusted: a second player build in one Editor domain can ship a player whose URP pipeline
  *  fails to start (a black screen; GameBuild.cs). A blank proof gets one more build, then the proof again. */
@@ -140,7 +165,8 @@ async function buildDrawn(): Promise<boolean> {
   if (!(await build())) return false;
   const first = proof();
   if (first.pj?.status !== 'blank') return true;
-  console.log('game: the build drew a blank frame (the second-build black screen); building once more…');
+  console.log('game: the build drew a blank frame (the second-build black screen); building once more, under the same number…');
+  giveBackNumber();
   if (!(await build())) return false;
   const again = proof();
   if (again.pj?.status === 'blank') { console.error('game: the rebuild drew a blank frame too; see out/build/play/proof/player.log'); return false; }
@@ -157,7 +183,8 @@ if (has('--build') || stale) {
 if (has('--check')) {
   if (check()) process.exit(0);
   if (proofBlank()) { // a blank frame from an app built earlier: build once more and prove again
-    console.log('game: the app drew a blank frame (the second-build black screen); building once more…');
+    console.log('game: the app drew a blank frame (the second-build black screen); building once more, under the same number…');
+    giveBackNumber();
     if (!(await build())) process.exit(1);
     process.exit(check() ? 0 : 1);
   }
@@ -206,10 +233,37 @@ function signingCheck(): boolean {
   return !!(id && prof);
 }
 
+/** The built app's stamp (build.json): its version 0.2.<build> (tools/game/version.json, GameBuild.Version), recording, engine and commit. */
+interface Stamp { version?: string; build?: number; recording?: string; sim?: string; sha?: string; dirty?: boolean; engine?: string; dllSha256?: string; at?: string }
+function stamp(): Stamp { return existsSync(STAMP) ? JSON.parse(readFileSync(STAMP, 'utf8')) : {}; }
+
+/** TheSuborned-0.2.<build>.zip (Sky 2026-10-19: builds told apart by number); an app built before the counter keeps the commit name. */
 function zipOf(): string {
+  const st = stamp();
+  if (st.version) return join(DIR, `TheSuborned-${st.version}.zip`);
   const sha = run('git', ['rev-parse', '--short', 'HEAD'], { quiet: true }).stdout.trim();
   const dirty = run('git', ['status', '--porcelain'], { quiet: true }).stdout.trim().length > 0;
   return join(DIR, `TheSuborned-${sha}${dirty ? '-dirty' : ''}.zip`);
+}
+
+/** The build log (committed): runs/builds/builds.json, one entry per build sent, newest last: number, version, date, commit (and dirty),
+ *  engine, recording, the zip, where it went and a one-line "what's new" for Aster to fill. A build sent again adds the device and date. */
+function buildsPath() { return join(ROOT, 'runs', 'builds', 'builds.json'); }
+function logSent(zip: string, device: string): string {
+  const st = stamp();
+  const log: { schema: string; note: string; builds: any[] } = existsSync(buildsPath()) ? JSON.parse(readFileSync(buildsPath(), 'utf8'))
+    : { schema: 'suborned.builds/1', note: 'One entry per game build sent (tools/game/cli.ts --send). whatsNew is one line, filled by Aster.', builds: [] };
+  const at = new Date().toISOString();
+  const same = st.build !== undefined ? log.builds.find(b => b.build === st.build) : undefined;
+  if (same) { same.sent = [...(same.sent ?? []), { device, at }]; }
+  else log.builds.push({
+    build: st.build ?? null, version: st.version ?? null, date: at, builtAt: st.at ?? null, sha: st.sha ?? null, dirty: st.dirty ?? null,
+    engine: st.sim ?? null, engineSource: st.engine ?? null, dllSha256: st.dllSha256 ?? null, recording: st.recording ?? null,
+    zip: zip.split('/').pop(), sent: [{ device, at }], whatsNew: '',
+  });
+  run('mkdir', ['-p', join(ROOT, 'runs', 'builds')]);
+  Bun.write(buildsPath(), JSON.stringify(log, null, 1) + '\n');
+  return relative(ROOT, buildsPath());
 }
 function zipApp(zip: string): boolean {
   if (existsSync(zip)) run('rm', ['-f', zip]);
@@ -257,12 +311,12 @@ function send(zip: string): boolean {
   const device = next && !next.startsWith('--') ? next : 'skys-macbook-air-1';
   const ts = existsSync('/Applications/Tailscale.app/Contents/MacOS/Tailscale') ? '/Applications/Tailscale.app/Contents/MacOS/Tailscale' : 'tailscale';
   const cmd = [ts, 'file', 'cp', zip, `${device}:`];
-  if (has('--dry-run')) console.log(`game: would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}`);
+  if (has('--dry-run')) console.log(`game: would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}; would log build ${stamp().version ?? '(no version: built before the counter)'} in runs/builds/builds.json`);
   else {
     console.log(`game: sending to ${device} by Taildrop…`);
     const r = run(cmd[0], cmd.slice(1));
     if (r.status !== 0) { console.error(`game: tailscale file cp exited ${r.status}`); return false; }
-    console.log(`game: sent ${relative(ROOT, zip)} to ${device}`);
+    console.log(`game: sent ${relative(ROOT, zip)} to ${device}; logged in ${logSent(zip, device)}`);
   }
   const name = zip.split('/').pop();
   const notarised = existsSync(SIGNING) && JSON.parse(readFileSync(SIGNING, 'utf8')).notarised === true;

@@ -6,7 +6,7 @@
  "until": 5100,
  "steps": [
   {"op": "tech", "do": "move", "to": "cabinet", "run": true},
-  {"op": "enforcer", "do": "move", "to": [4850, -2300], "why": "beside the door, out of the guard's cone and both cameras", "run": true},
+  {"op": "enforcer", "do": "move", "to": [6950, -4250], "why": "beside the door on the west face, 5.6 m south of it and out of the guard's cone (the entrance camera is looped from 1:18)", "run": true},
   {"op": "tech", "do": "loop", "target": "entrance"},
   {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute"},
   {"op": "enforcer", "do": "fire", "target": "guard", "after": ["reroute", "enforcer"], "gap": 45, "label": "shot", "why": "once the patrol has gone: fire until the guard is down"},

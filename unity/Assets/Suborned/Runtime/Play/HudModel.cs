@@ -221,10 +221,10 @@ namespace Suborned.Play
                 PanelPerson = pn.T.Kind == "person"; PanelBadge = Badge(pn.T); PanelSub = pn.T.Label; PanelNeed = PanelNeedMark = PanelTemp = ""; PanelSecret = false;
                 if (PanelPerson)
                 {
-                    int ri = System.Array.IndexOf(Roles, pn.T.Key); var p = g.PersonByRole(pn.T.Key);
+                    int ri = System.Array.IndexOf(Roles, pn.T.Key); var p = h.CastOf(pn.T.Key); // a cast person only (PersonByRole throws on anything else)
                     if (ri >= 0) { var row = Intel[ri]; PanelTarget = row.Name; PanelNeed = row.NeedIcon; PanelNeedMark = row.NeedMark; PanelTemp = row.TempIcon; PanelSub = row.Job; }
-                    if (p.KNeed) PanelSub += " · " + NeedShort(p.Need); if (p.KTemperament) PanelSub += " · " + char.ToUpperInvariant(p.Temperament[0]) + p.Temperament[1..];
-                    PanelSecret = p.Knows("secret");
+                    if (p != null && p.KNeed) PanelSub += " · " + NeedShort(p.Need); if (p != null && p.KTemperament) PanelSub += " · " + char.ToUpperInvariant(p.Temperament[0]) + p.Temperament[1..];
+                    PanelSecret = p != null && p.Knows("secret");
                 }
                 string hintVerb = null; if (h.HintNow != null && h.Text != null) { var hi = h.Text.Hints2.Find(x => x.Id == h.HintNow.Id); hintVerb = hi?.Verb; }
                 foreach (var row in pn.Rows)
@@ -256,7 +256,7 @@ namespace Suborned.Play
             BriefingOpen = h.ShowBriefing && !ended; if (BriefingOpen && Briefing.Count == 0) BriefingParts(h); else if (!BriefingOpen) Briefing.Clear();
             // the feed and the ticker
             Feed = h.Feed; Unread = h.Unread; FeedFold = g.FightOn; HistoryOpen = h.FeedHistoryOpen; Filter = h.FeedFilter;
-            if (HistoryOpen) HistoryRows(h); else historyKey = "";
+            HistoryRows(h); // Sky 2026-10-18: the panel always shows the newest entry (collapsed), so the list is kept either way (cached by key)
             Ticker = null; for (int i = h.Talk.Count - 1; i >= 0; i--) if (h.Talk[i].Agent >= 0) { Ticker = h.Talk[i]; break; }
             TickerAge = Ticker == null ? 99f : Time.unscaledTime - Ticker.Born;
         }

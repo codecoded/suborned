@@ -24,7 +24,8 @@ from signals import ball, band, bezel, puck, slab
 from structures import along, ccw, sec, superell, tube
 
 for _n, _k, _h, *_e in (("DK_Billboard_Ads", "art", "#FFFFFF"), ("DK_Billboard_Ads_Lit", "emit", "#FFFFFF", 1.0),
-                        ("DK_Neon_Red", "emit", "#FF4A3A", 5.0), ("DK_Neon_Teal", "emit", "#3CF2D2", 4.0),
+                        ("DK_Neon_Red", "emit", "#FF4A3A", 5.0), ("DK_Neon_Coral", "emit", "#F58468", 2.4),
+                        ("DK_Neon_Cream", "emit", "#FFE6C4", 1.8),  # brief 022: the cafe sign's own lit pair, warm, soft, no pink bloom ("DK_Neon_Teal", "emit", "#3CF2D2", 4.0),
                         ("DK_Neon_Gold", "emit", "#FFC94A", 4.0), ("DK_Bulb_Dim", "emit", "#F0B860", 0.5),
                         ("DK_Enamel_Coral", "enamel", "#E07560"),  # = skyline.py's entry
                         ("DK_Steel_Ivory", "enamel", "#E4DFD2")):  # = landmarks.py's painted lattice steel
@@ -215,7 +216,7 @@ def billboard_wall_c(s):
 
 # ----------------------------------------------------------------- blade sign
 
-def blade(s, word, body, letters, neon, border):
+def blade(s, word, body, letters, neon, border, crest=True):
     """Streamline blade 1.0 m out x 0.35 m thick x 6.2 m on three chrome arms, stacked channel letters with neon on
     both faces, a neon border, chrome edge bead and a starburst on the outer top corner."""
     Y0, Y1, T = -0.28, -1.28, 0.175
@@ -234,13 +235,16 @@ def blade(s, word, body, letters, neon, border):
     strut(s, (0, -0.03, 6.5), (0, Y0 - 0.02, 5.47), 0.06, pal.Chrome)
     s.rbox((-0.1, -0.04, 6.4), (0.1, 0.0, 6.62), 0.02, pal.Chrome)
     with s.at((0, Y1 + 0.12, 5.72), SIDE_R):
-        starburst(s, 8, 0.07, 0.5, (pal.Gold, pal.Chrome), alt=0.55, ridge=0.04, tip=0.04)
-        ball(s, 0.075, pal.Chrome, seg=12, n=6)
+        if crest:
+            starburst(s, 8, 0.07, 0.5, (pal.Gold, pal.Chrome), alt=0.55, ridge=0.04, tip=0.04)
+        ball(s, 0.075 if crest else 0.09, pal.Chrome, seg=12, n=6)
 
 
 @asset("BladeSign_Cafe", "Signage", bevel=0.0)
 def blade_sign_cafe(s):
-    blade(s, "CAFE", pal.Enamel_Teal, pal.Enamel_Cream, pal.Neon_Red, pal.Neon_Gold)
+    """Brief 022 (Glyph: read as a HUD waypoint at distance): cream blade, coral channel letters with soft coral neon, warm cream
+    neon border, chrome bead and a plain chrome ball finial (no starburst, no magenta). Static: nothing animates on a kit sign."""
+    blade(s, "CAFE", pal.Enamel_Cream, pal.Enamel_Coral, pal.Neon_Coral, pal.Neon_Cream, crest=False)
 
 
 @asset("BladeSign_Hotel", "Signage", bevel=0.0)
@@ -377,8 +381,8 @@ def sandwich_board(s):
 
 @asset("NeonStar_Wall", "Signage", bevel=0.0)
 def neon_star_wall(s):
-    """Googie starburst, 2.5 m: 16 faceted mustard / coral spikes with gold tips and neon on the long ones, a
-    chrome-rimmed ivory hub with a teal neon ring and red boss, on two chrome stand-offs (wall at y = 0)."""
+    """Googie starburst, 2.5 m: 16 faceted coral / cream spikes with gold tips and cream neon on the long ones, a
+    chrome-rimmed ivory hub with a coral neon ring and coral boss (brief 022: was mustard/teal/red), on two chrome stand-offs (wall at y = 0)."""
     zc, yf = 1.32, -0.3
     for z in (zc - 0.3, zc + 0.3):
         s.rbox((-0.05, yf + 0.05, z - 0.05), (0.05, -0.02, z + 0.05), 0.015, pal.Chrome)
@@ -388,11 +392,11 @@ def neon_star_wall(s):
         s.lathe([(0.33, 0.03), (0.37, 0.03), (0.38, 0.06), (0.35, 0.1), (0.33, 0.09), (0.33, 0.03)], pal.Chrome,
                 seg=32, cap_bottom=False, cap_top=False)
         s.sweep([(0.25 * math.cos(a), 0.25 * math.sin(a), 0.1) for a in (2 * math.pi * k / 32 for k in range(33))],
-                0.022, pal.Neon_Teal, seg=6, caps=False)
-        s.lathe([(0, 0.08)] + dome(0.14, 0.08, 0.08, n=5), pal.Enamel_Red, seg=20)
+                0.022, pal.Neon_Coral, seg=6, caps=False)
+        s.lathe([(0, 0.08)] + dome(0.14, 0.08, 0.08, n=5), pal.Enamel_Coral, seg=20)
         ball(s, 0.05, pal.Chrome, seg=12, n=6, z=0.19)
-        starburst(s, 16, 0.3, 1.25, (pal.Enamel_Mustard, pal.Enamel_Teal), alt=0.58, ridge=0.07, tip=0.055)
+        starburst(s, 16, 0.3, 1.25, (pal.Enamel_Coral, pal.Enamel_Cream), alt=0.58, ridge=0.07, tip=0.055)
         for k in range(0, 16, 2):
             a = math.pi / 2 + 2 * math.pi * k / 16
             s.sweep([(r * math.cos(a), r * math.sin(a), 0.07 * (1.25 - r) / 0.89 + 0.02) for r in (0.52, 1.0)], 0.018,
-                    pal.Neon_Red, seg=5)
+                    pal.Neon_Cream, seg=5)

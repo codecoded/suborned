@@ -71,7 +71,7 @@ namespace Suborned.Sim
             Add("N109", "—", "People stay the Scout's (Sky 2026-10-18): the Tech's Watch on the guard, Inez or the driver, and his Listen, are refused only-scout, free, even standing beside the guard; the response unit is watched by no one (target-unknown: its sight is known when it comes); the Fixer and the Enforcer watch no camera.", r =>
             {
                 var g = r.G;
-                r.To(r.SendTo(Tech, g.S.Grid.NearestFree(g.GuardPose()!.Value.pos + new Pt(-400, 0))!.Value));
+                r.To(r.SendTo(Tech, AheadOfGuard(r, 400)));
                 RefusedFreeBy(r, Tech, "watch", GuardR, "only-scout");
                 RefusedFreeBy(r, Tech, "listen", GuardR, "only-scout");
                 RefusedFreeBy(r, Tech, "watch", Inez, "only-scout");

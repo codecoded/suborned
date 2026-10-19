@@ -1,0 +1,452 @@
+{
+ "clips": [
+  {
+   "name": "idle",
+   "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+   "loop": true,
+   "use": "standing, any figure (calm, 8.8 s)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "idle_alt",
+   "src": "Anim/mixamo_library/Breathing_Idle__c9c6d0d5.fbx",
+   "loop": true,
+   "use": "second idle so a crowd does not breathe in step",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "walk",
+   "src": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "loop": true,
+   "use": "walk, any figure",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "walk_f",
+   "src": "Anim/mixamo_library/Female_Tough_Walk__c9c68eaa.fbx",
+   "loop": true,
+   "use": "walk, women (crowd, staff): a tough strut with a full arm swing (Female_Walk swings the arms half as far)",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "walk_old",
+   "src": "Anim/mixamo_library/Old_Man_Walk__c9c6c0c2.fbx",
+   "loop": true,
+   "use": "walk, elders",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "run",
+   "src": "Anim/mixamo_library/Running__c9c610bc.fbx",
+   "loop": true,
+   "use": "run (double-click, panic run)",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "walk_armed",
+   "src": "Anim/mixamo_library/Pistol_Walk__c9cdb8f0.fbx",
+   "loop": true,
+   "use": "walk with a weapon drawn",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "run_armed",
+   "src": "Anim/mixamo_library/Pistol_Run__c9c9b1f3.fbx",
+   "loop": true,
+   "use": "run with a weapon drawn",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "aim",
+   "src": "Anim/mixamo_library/Idle_Aiming__c9cea19a.fbx",
+   "loop": true,
+   "use": "weapon up, holding",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "aim_pistol",
+   "src": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "loop": true,
+   "use": "pistol up, holding",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "shoot",
+   "src": "Anim/mixamo_library/Firing_Rifle__c9c9245d.fbx",
+   "loop": false,
+   "use": "one shot with recoil (0.6 s)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "draw",
+   "src": "Anim/mixamo_library/Drawing_Gun__c9c83441.fbx",
+   "loop": false,
+   "use": "draw a weapon",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "melee",
+   "src": "Anim/mixamo_library/Jab_Cross__c9cae414.fbx",
+   "loop": false,
+   "use": "strike: jab and cross",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "melee_whip",
+   "src": "Anim/mixamo_library/Pistol_Whip__c9c890a6.fbx",
+   "loop": false,
+   "use": "strike: pistol whip",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "hit",
+   "src": "Anim/mixamo_library/Standing_React_Small_From_Front__c9cebe15.fbx",
+   "loop": false,
+   "use": "hit reaction, small",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "hit_large",
+   "src": "Anim/mixamo_library/Standing_React_Large_From_Front__314b7218.fbx",
+   "loop": false,
+   "use": "hit reaction, large (staggers)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "panic",
+   "src": "Anim/mixamo_library/Scared__c9c77b46.fbx",
+   "loop": true,
+   "use": "startled or panicking on the spot",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cower",
+   "src": "Anim/mixamo_library/Ducking__c9c8de59.fbx",
+   "loop": false,
+   "use": "duck and cover (1.5 s); hold the last frame",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "crouch",
+   "src": "Anim/mixamo_library/Crouch_Idle__c9cecb5b.fbx",
+   "loop": true,
+   "use": "crouch stance, holding",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "crouch_walk",
+   "src": "Anim/mixamo_library/Crouched_Walking__c9c616aa.fbx",
+   "loop": true,
+   "use": "crouch stance, moving",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "stunned",
+   "src": "Anim/mixamo_library/Stunned__c9ca7f74.fbx",
+   "loop": false,
+   "use": "stunned, staggers and drops",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "knockout",
+   "src": "Anim/mixamo_library/Knocked_Out__c9c7216e.fbx",
+   "loop": false,
+   "use": "knocked out: the victim goes down and ends lying (5.6 s)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "knockout_alt",
+   "src": "Anim/mixamo_library/Knocked_Out__c9c725f7.fbx",
+   "loop": false,
+   "use": "knocked out, second variant (5 s)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "kill_victim",
+   "src": "Anim/mixamo_library/Dying__c9c62bc7.fbx",
+   "loop": false,
+   "use": "killed: falls and ends lying (4.4 s)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "kill_victim_back",
+   "src": "Anim/mixamo_library/Standing_React_Death_Backward__e13a58d8.fbx",
+   "loop": false,
+   "use": "killed from the front: falls backward (3.7 s)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "kill_attacker",
+   "src": "Anim/mixamo_library/Brutal_Assassination__c9cd2609.fbx",
+   "loop": false,
+   "use": "the Enforcer kills (5 s); pairs with kill_victim by eye, not by sync",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "struggle",
+   "src": "Anim/mixamo_library/Hold_Off_Assailant__c9c95818.fbx",
+   "loop": true,
+   "use": "held and struggling (arms up)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "struggle_strangled",
+   "src": "Anim/mixamo_library/Being_Strangled__c9c9e5e8.fbx",
+   "loop": false,
+   "use": "being choked, goes limp (17 s)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "carry",
+   "src": "Anim/mixamo_library/Carrying__c9c82dfa.fbx",
+   "loop": true,
+   "use": "the carrier holds a load",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "carried",
+   "src": "Anim/mixamo_library/Laying_Idle__c9ccd767.fbx",
+   "loop": true,
+   "use": "the carried body, limp and flat: the figure is placed at the carrier's shoulder (hips about 0.13 m above the object; no library clip drapes a body over a shoulder: Being_Carried is a pick-up sequence that climbs from the ground to 1.4 m)",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "lying",
+   "src": "Anim/mixamo_library/Laying_Idle__c9ccd767.fbx",
+   "loop": true,
+   "use": "a body lying, breathing",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "restrained",
+   "src": "Anim/mixamo_library/Hostage_Situation_Idle_Hostage__c9cd0d5d.fbx",
+   "loop": true,
+   "use": "restrained: hostage, hands up and in",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "captor",
+   "src": "Anim/mixamo_library/Hostage_Situation_Idle_Villain__c9cd0c9e.fbx",
+   "loop": true,
+   "use": "holds a restrained person",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "phone",
+   "src": "Anim/mixamo_library/Talking_On_Phone__c9c9f63d.fbx",
+   "loop": true,
+   "use": "on the phone (a witness reporting)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "look_around",
+   "src": "Anim/mixamo_library/Looking_Around__c9c6cdf7.fbx",
+   "loop": true,
+   "use": "watching, looking about (Scout, guard)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "talk",
+   "src": "Anim/mixamo_library/Talking__c9c6de72.fbx",
+   "loop": true,
+   "use": "talking, hand on hip (Fixer, Inez)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "point",
+   "src": "Anim/mixamo_library/Pointing__c9c693bf.fbx",
+   "loop": false,
+   "use": "pointing",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "beckon",
+   "src": "Anim/mixamo_library/Beckoning__c9c795b6.fbx",
+   "loop": false,
+   "use": "beckon (come with me)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "search",
+   "src": "Anim/mixamo_library/Searching_Pockets__c9c965bb.fbx",
+   "loop": false,
+   "use": "frisk or search pockets",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "pickup",
+   "src": "Anim/mixamo_library/Picking_Up__c9c6d7aa.fbx",
+   "loop": false,
+   "use": "bend and pick something up",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "carried_drape",
+   "author": "tools/figures/author_clips.py",
+   "donor": "Anim/mixamo_library/Laying_Idle__c9ccd767.fbx",
+   "loop": true,
+   "use": "the carried body draped over a shoulder (fireman's carry): trunk and arms hanging toward +Z, legs hanging toward -Z, limp sway; seat the figure turned 180 degrees to the carrier, hips on his shoulder",
+   "loco": false,
+   "feet": false
+  },
+  {
+   "name": "carry_shoulder",
+   "author": "tools/figures/author_clips.py",
+   "kind": "carry",
+   "arm": "Right",
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "loop": true,
+   "use": "the carrier walks with a person over his right shoulder (pair with carried_drape): the library walk, right arm holding the load",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "carry_shoulder_idle",
+   "author": "tools/figures/author_clips.py",
+   "kind": "carry",
+   "arm": "Right",
+   "donor": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+   "loop": true,
+   "use": "the carrier stands with a person over his right shoulder (pair with carried_drape)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "serve",
+   "author": "tools/figures/author_clips.py",
+   "kind": "tray",
+   "arm": "Right",
+   "donor": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+   "loop": true,
+   "use": "standing and serving: the right hand holds a tray out in front at waist height, palm up (attach the serving tray to the RightHand bone while this plays); the left arm is as the idle has it",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "serve_walk",
+   "author": "tools/figures/author_clips.py",
+   "kind": "tray",
+   "arm": "Right",
+   "donor": "Anim/mixamo_library/Female_Tough_Walk__c9c68eaa.fbx",
+   "loop": true,
+   "use": "walking with a tray: the same right arm as `serve`, the library women's walk for the rest (same legs as walk_f); the tray stays on the RightHand bone",
+   "loco": true,
+   "feet": true
+  },
+  {
+   "name": "sit",
+   "loop": true,
+   "use": "seated on the caf\u00e9 chair (4.3 s loop): thighs level, feet flat in front, back upright. Place by manifest.seat (the root offset from the chair)",
+   "loco": false,
+   "feet": false,
+   "author": "tools/figures/author_clips.py",
+   "kind": "seated",
+   "donor": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "pin": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "seat": [
+    -0.1,
+    0.12
+   ]
+  },
+  {
+   "name": "sit_alt",
+   "loop": true,
+   "use": "second seated idle (7 s) so a table does not breathe in step; same pose and root offset as sit",
+   "loco": false,
+   "feet": false,
+   "author": "tools/figures/author_clips.py",
+   "kind": "seated",
+   "donor": "Anim/mixamo_library/Sitting__c9ccad56.fbx",
+   "pin": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "seat": [
+    -0.1,
+    0.12
+   ]
+  },
+  {
+   "name": "sit_talk",
+   "loop": true,
+   "use": "seated and talking, hand gestures (44 s loop); same pose and root offset as sit",
+   "loco": false,
+   "feet": false,
+   "author": "tools/figures/author_clips.py",
+   "kind": "seated",
+   "donor": "Anim/mixamo_library/Sitting_Talking__c9cd76b1.fbx",
+   "pin": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "seat": [
+    -0.1,
+    0.12
+   ]
+  },
+  {
+   "name": "stand_to_sit",
+   "author": "tools/figures/author_clips.py",
+   "kind": "pinned",
+   "donor": "Anim/mixamo_library/Stand_To_Sit__c9ccaece.fbx",
+   "pin": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "loop": false,
+   "loco": false,
+   "feet": false,
+   "use": "sit down (2.3 s): starts standing over the seat, ends in the sit pose; same root as sit (pelvis travel pinned over the seat, so chain it straight into sit)",
+   "seat": [
+    -0.1,
+    0.12
+   ]
+  },
+  {
+   "name": "sit_to_stand",
+   "author": "tools/figures/author_clips.py",
+   "kind": "pinned",
+   "donor": "Anim/mixamo_library/Sit_To_Stand__c9ccabe2.fbx",
+   "pin": "Anim/mixamo_library/Sitting_Idle__c9ccab1b.fbx",
+   "loop": false,
+   "loco": false,
+   "feet": false,
+   "use": "stand up (2.3 s): starts in the sit pose, ends standing over the seat; same root as sit; then step off and play idle or walk",
+   "seat": [
+    -0.1,
+    0.12
+   ]
+  }
+ ]
+}

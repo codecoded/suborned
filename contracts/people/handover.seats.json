@@ -1,0 +1,529 @@
+{
+ "schema": "suborned.view.seats/1",
+ "from": ["sim/data/handover.people.json","sim/data/handover.site.json","contracts/world/civic-block.json","tools/routines/seats.ts"],
+ "frame": "integer centimetres, block frame (x south, y east), as sim/data/handover.site.json; ticks are 10 Hz from mission 0. View only: no engine reader, not hashed. A person in `seated` is at `chairs[chair].at` of `table` from `from` to `to` (the engine walks them there); draw them sitting, facing `face`.",
+ "tables": {
+  "cafe-table-0": {
+   "at": [-710,-3760],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-667,-3702],
+     "face": [-60,-80],
+     "yawDeg": -127
+    },
+    {
+     "chair": 1,
+     "at": [-781,-3752],
+     "face": [99,-11],
+     "yawDeg": -6
+    },
+    {
+     "chair": 2,
+     "at": [-681,-3826],
+     "face": [-40,92],
+     "yawDeg": 113
+    }
+   ]
+  },
+  "cafe-table-1": {
+   "at": [-710,-3330],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-668,-3272],
+     "face": [-59,-81],
+     "yawDeg": -126
+    },
+    {
+     "chair": 1,
+     "at": [-782,-3323],
+     "face": [100,-10],
+     "yawDeg": -6
+    },
+    {
+     "chair": 2,
+     "at": [-681,-3396],
+     "face": [-40,92],
+     "yawDeg": 113
+    }
+   ]
+  },
+  "cafe-table-2": {
+   "at": [-710,-2470],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-668,-2411],
+     "face": [-58,-81],
+     "yawDeg": -126
+    },
+    {
+     "chair": 1,
+     "at": [-782,-2463],
+     "face": [100,-10],
+     "yawDeg": -6
+    },
+    {
+     "chair": 2,
+     "at": [-680,-2535],
+     "face": [-42,91],
+     "yawDeg": 115
+    }
+   ]
+  },
+  "cafe-table-3": {
+   "at": [-710,-2040],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-669,-1981],
+     "face": [-57,-82],
+     "yawDeg": -125
+    },
+    {
+     "chair": 1,
+     "at": [-782,-2034],
+     "face": [100,-8],
+     "yawDeg": -5
+    },
+    {
+     "chair": 2,
+     "at": [-679,-2105],
+     "face": [-43,90],
+     "yawDeg": 116
+    }
+   ]
+  },
+  "cafe-table-4": {
+   "at": [-1480,-4290],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-1440,-4231],
+     "face": [-56,-83],
+     "yawDeg": -124
+    },
+    {
+     "chair": 1,
+     "at": [-1552,-4285],
+     "face": [100,-7],
+     "yawDeg": -4
+    },
+    {
+     "chair": 2,
+     "at": [-1449,-4355],
+     "face": [-43,90],
+     "yawDeg": 116
+    }
+   ]
+  },
+  "cafe-table-5": {
+   "at": [-1960,-4290],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-1920,-4230],
+     "face": [-55,-83],
+     "yawDeg": -124
+    },
+    {
+     "chair": 1,
+     "at": [-2032,-4285],
+     "face": [100,-7],
+     "yawDeg": -4
+    },
+    {
+     "chair": 2,
+     "at": [-1928,-4354],
+     "face": [-45,89],
+     "yawDeg": 117
+    }
+   ]
+  },
+  "cafe-table-6": {
+   "at": [-1480,-1510],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-1441,-1450],
+     "face": [-54,-84],
+     "yawDeg": -123
+    },
+    {
+     "chair": 1,
+     "at": [-1552,-1506],
+     "face": [100,-6],
+     "yawDeg": -3
+    },
+    {
+     "chair": 2,
+     "at": [-1447,-1574],
+     "face": [-46,89],
+     "yawDeg": 117
+    }
+   ]
+  },
+  "cafe-table-7": {
+   "at": [-1960,-1510],
+   "chairs": [
+    {
+     "chair": 0,
+     "at": [-1921,-1449],
+     "face": [-54,-84],
+     "yawDeg": -123
+    },
+    {
+     "chair": 1,
+     "at": [-2032,-1507],
+     "face": [100,-4],
+     "yawDeg": -2
+    },
+    {
+     "chair": 2,
+     "at": [-1927,-1574],
+     "face": [-46,89],
+     "yawDeg": 117
+    }
+   ]
+  }
+ },
+ "seated": {
+  "p-cafe-10": [
+   {
+    "table": "cafe-table-6",
+    "chair": 1,
+    "from": 2370,
+    "to": 5070
+   }
+  ],
+  "p-cafe-11": [
+   {
+    "table": "cafe-table-0",
+    "chair": 0,
+    "from": 2250,
+    "to": 4950
+   }
+  ],
+  "p-cafe-12": [
+   {
+    "table": "cafe-table-7",
+    "chair": 2,
+    "from": 2250,
+    "to": 4950
+   }
+  ],
+  "p-cafe-13": [
+   {
+    "table": "cafe-table-6",
+    "chair": 2,
+    "from": 2310,
+    "to": 5010
+   }
+  ],
+  "p-garden-row-east-02": [
+   {
+    "table": "cafe-table-6",
+    "chair": 1,
+    "from": 30,
+    "to": 2370
+   },
+   {
+    "table": "cafe-table-2",
+    "chair": 0,
+    "from": 6630,
+    "to": 10230
+   }
+  ],
+  "p-garden-row-east-03": [
+   {
+    "table": "cafe-table-3",
+    "chair": 1,
+    "from": 30,
+    "to": 2610
+   },
+   {
+    "table": "cafe-table-0",
+    "chair": 0,
+    "from": 6630,
+    "to": 9090
+   }
+  ],
+  "p-garden-row-east-04": [
+   {
+    "table": "cafe-table-3",
+    "chair": 0,
+    "from": 3630,
+    "to": 6090
+   }
+  ],
+  "p-garden-row-east-05": [
+   {
+    "table": "cafe-table-4",
+    "chair": 0,
+    "from": 3930,
+    "to": 5790
+   }
+  ],
+  "p-garden-row-east-07": [
+   {
+    "table": "cafe-table-2",
+    "chair": 0,
+    "from": -1770,
+    "to": 210
+   }
+  ],
+  "p-garden-row-east-08": [
+   {
+    "table": "cafe-table-0",
+    "chair": 1,
+    "from": 3630,
+    "to": 5850
+   },
+   {
+    "table": "cafe-table-5",
+    "chair": 0,
+    "from": 6930,
+    "to": 10530
+   }
+  ],
+  "p-pylon-row-east-01": [
+   {
+    "table": "cafe-table-3",
+    "chair": 0,
+    "from": -2070,
+    "to": 210
+   },
+   {
+    "table": "cafe-table-6",
+    "chair": 0,
+    "from": 6450,
+    "to": 10050
+   }
+  ],
+  "p-pylon-row-east-02": [
+   {
+    "table": "cafe-table-4",
+    "chair": 1,
+    "from": 4050,
+    "to": 7650
+   }
+  ],
+  "p-pylon-row-east-03": [
+   {
+    "table": "cafe-table-5",
+    "chair": 1,
+    "from": 330,
+    "to": 3330
+   },
+   {
+    "table": "cafe-table-7",
+    "chair": 0,
+    "from": 6210,
+    "to": 9810
+   }
+  ],
+  "p-pylon-row-east-04": [
+   {
+    "table": "cafe-table-0",
+    "chair": 0,
+    "from": -1770,
+    "to": 210
+   },
+   {
+    "table": "cafe-table-0",
+    "chair": 1,
+    "from": 5970,
+    "to": 9570
+   }
+  ],
+  "p-pylon-row-east-05": [
+   {
+    "table": "cafe-table-2",
+    "chair": 1,
+    "from": 30,
+    "to": 2370
+   },
+   {
+    "table": "cafe-table-7",
+    "chair": 1,
+    "from": 6210,
+    "to": 9810
+   }
+  ],
+  "p-pylon-row-east-06": [
+   {
+    "table": "cafe-table-7",
+    "chair": 2,
+    "from": 7290,
+    "to": 10890
+   }
+  ],
+  "p-pylon-row-east-07": [
+   {
+    "table": "cafe-table-3",
+    "chair": 1,
+    "from": 4530,
+    "to": 8130
+   }
+  ],
+  "p-records-office-29": [
+   {
+    "table": "cafe-table-2",
+    "chair": 0,
+    "from": 510,
+    "to": 3210
+   }
+  ],
+  "p-records-office-30": [
+   {
+    "table": "cafe-table-7",
+    "chair": 0,
+    "from": 630,
+    "to": 3330
+   }
+  ],
+  "p-records-office-36": [
+   {
+    "table": "cafe-table-5",
+    "chair": 0,
+    "from": 870,
+    "to": 3570
+   }
+  ],
+  "p-records-office-39": [
+   {
+    "table": "cafe-table-1",
+    "chair": 0,
+    "from": 510,
+    "to": 3210
+   }
+  ],
+  "p-records-office-46": [
+   {
+    "table": "cafe-table-0",
+    "chair": 1,
+    "from": 570,
+    "to": 3270
+   }
+  ],
+  "p-records-office-57": [
+   {
+    "table": "cafe-table-4",
+    "chair": 0,
+    "from": 570,
+    "to": 3270
+   }
+  ],
+  "p-records-office-61": [
+   {
+    "table": "cafe-table-1",
+    "chair": 1,
+    "from": 510,
+    "to": 3210
+   }
+  ],
+  "p-records-office-64": [
+   {
+    "table": "cafe-table-0",
+    "chair": 2,
+    "from": 570,
+    "to": 3270
+   }
+  ],
+  "p-records-office-65": [
+   {
+    "table": "cafe-table-7",
+    "chair": 1,
+    "from": 570,
+    "to": 3270
+   }
+  ],
+  "p-records-office-67": [
+   {
+    "table": "cafe-table-6",
+    "chair": 0,
+    "from": 630,
+    "to": 3330
+   }
+  ],
+  "p-records-office-68": [
+   {
+    "table": "cafe-table-1",
+    "chair": 2,
+    "from": 570,
+    "to": 3270
+   }
+  ],
+  "p-records-office-73": [
+   {
+    "table": "cafe-table-1",
+    "chair": 0,
+    "from": -690,
+    "to": 210
+   }
+  ],
+  "p-records-office-74": [
+   {
+    "table": "cafe-table-1",
+    "chair": 1,
+    "from": -750,
+    "to": 150
+   }
+  ],
+  "p-rocket-west-01": [
+   {
+    "table": "cafe-table-4",
+    "chair": 0,
+    "from": 6030,
+    "to": 8910
+   }
+  ],
+  "p-rocket-west-02": [
+   {
+    "table": "cafe-table-2",
+    "chair": 2,
+    "from": -1470,
+    "to": 450
+   },
+   {
+    "table": "cafe-table-2",
+    "chair": 1,
+    "from": 6630,
+    "to": 9510
+   }
+  ],
+  "p-rocket-west-03": [
+   {
+    "table": "cafe-table-1",
+    "chair": 0,
+    "from": 4230,
+    "to": 7830
+   }
+  ],
+  "p-rocket-west-07": [
+   {
+    "table": "cafe-table-2",
+    "chair": 2,
+    "from": 6330,
+    "to": 8850
+   }
+  ],
+  "p-rocket-west-08": [
+   {
+    "table": "cafe-table-5",
+    "chair": 1,
+    "from": 8730,
+    "to": 11730
+   }
+  ],
+  "p-t1-records-kiosk-02": [
+   {
+    "table": "cafe-table-5",
+    "chair": 0,
+    "from": 3630,
+    "to": 6330
+   }
+  ]
+ }
+}

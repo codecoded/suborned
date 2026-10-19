@@ -125,6 +125,13 @@ def baked(obj):
                 d.uv, bad = (0.0, 0.0), bad + 1
     if bad:
         print(f"[DK-EXPORT] {obj.name}: zeroed {bad} non-finite UVs from the bevel")
+    if "EdgeSoften" in obj.modifiers:
+        # Determinism (brief 020): the Bevel modifier interpolates the UVs of the faces it cuts, and its float sums run in an order that depends on memory addresses, so a few
+        # dozen UVs differ in the last bit between two runs (1.2e-7 on CoffeeCart: a different FBX each time). Snap them to 1e-3 (a metre-tiled texture's mm, a 1k sheet's texel),
+        # as the LODs always were; pieces built with bevel 0 are byte-stable already and are not touched.
+        for layer in me.uv_layers:
+            for d in layer.data:
+                d.uv = (round(d.uv[0], 3), round(d.uv[1], 3))
     out = bpy.data.objects.new(obj.name, me)
     bpy.context.scene.collection.objects.link(out)
     return out

@@ -1,0 +1,18 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1572, "y": 1925, "w": 308, "h": 80, "text": "Take Vale alive."},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 564, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 508, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "speech", "x": -2000, "y": -2286, "w": 512, "h": 50, "text": "Response unit moving. Cordon forming."},
+  {"kind": "speech", "x": 1802, "y": 191, "w": 508, "h": 50, "text": "Disturbance. Proceeding to the source."},
+  {"kind": "image", "x": 1642, "y": 1112, "w": 52, "h": 52, "text": "door marker"},
+  {"kind": "image", "x": 1706, "y": 1112, "w": 104, "h": 52, "text": "door next step"},
+  {"kind": "beat", "x": 2792, "y": 1821, "w": 70, "h": 32, "text": "Police"},
+  {"kind": "speech", "x": 2792, "y": 1859, "w": 576, "h": 30, "text": "Watcher: Camera room. Seal the district."},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

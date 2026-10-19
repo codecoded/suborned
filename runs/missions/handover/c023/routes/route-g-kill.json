@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route G, kill (brief 013 D; Motive 013 §6.1 G-kill): route G with a kill (3 s) instead of a knockout; the body is carried at a walk to the Office's service door and put through it (10 s, off-screen), the Dumpster beside it being emptied at 5:22. Nobody sees the act or the carry; the 4:00 mark is missed (Alert 1) and at Alert 1 nobody opens the door. In the debrief the guard is a missing person: +2 T, no Menace, his lover's worry, +1 guard and +1 camera on the block for 3 missions, and an open case. Brief 023 (Waymark, 2026-10-19; engine 0.8.2 crowd.pace): guard 74 (p-records-office-74) walks from the café round the Office's north-east corner and past the service lane at 4:33, on the escort's line, and sees the carry within near-m 3 m (Alert 2 at 4:20 when the Enforcer went in at 3:30). The careful player waits at the public door and goes in at 4:04, so Vale comes out at 4:42 with 74 6 m south of the lane and walking away: nobody sees the escort (A 1, 2 T, Standing +3 with the fight), 34 s slower than going in at once.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[6950,-4250]},
+  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
+  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":462,"op":"scout","do":"watch","target":"guard"},
+  {"tick":662,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1440,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"kill"},
+  {"tick":1540,"op":"enforcer","do":"carry","target":"guard"},
+  {"tick":1570,"op":"enforcer","do":"move","to":[6275,-1875]},
+  {"tick":1864,"op":"enforcer","do":"stash","target":"stash/office-service-door/door"},
+  {"tick":1964,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":2440,"op":"enforcer","do":"enter"},
+  {"tick":2440,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":2820,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":3210,"op":"cell","do":"panic"},
+  {"tick":3363,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":3492,"op":"enforcer","do":"board","target":"car"},
+  {"tick":3532,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

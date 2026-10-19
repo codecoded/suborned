@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "§07 fail \"entry seen by live camera\" (Suture N6): route A without the Tech; the entrance camera is live when the Enforcer enters. Two Helps on Inez (r016 cast: a Fearful Inez needs Help ×2, §04), so the call and everything after it come 50 s later.",
+ "note": "§07 fail \"entry seen by live camera\" (Suture N6): route A without the Tech; the entrance camera is live when the Enforcer enters. Two Helps on Inez (r016 cast: a Fearful Inez needs Help ×2, §04), so the call and everything after it come 50 s later. Re-sited 2026-10-19 (Waymark, brief 023): the Enforcer waits by the service end of the west face.",
  "start": {},
  "orders": [
   {"tick": 0, "op": "scout", "do": "move", "to": "d:Courtyard"},
@@ -9,7 +9,7 @@
   {"tick": 803, "op": "scout", "do": "move", "to": "beside-inez"},
   {"tick": 813, "op": "scout", "do": "listen", "target": "waitress"},
   {"tick": 813, "op": "fixer", "do": "move", "to": "d:Courtyard"},
-  {"tick": 813, "op": "enforcer", "do": "move", "to": [4900,-1700]},
+  {"tick": 813, "op": "enforcer", "do": "move", "to": [6950, -4250]},
   {"tick": 1233, "op": "fixer", "do": "turn", "target": "waitress", "approach": "help"},
   {"tick": 1733, "op": "fixer", "do": "turn", "target": "waitress", "approach": "help"},
   {"tick": 2233, "op": "fixer", "do": "call", "target": "waitress"},

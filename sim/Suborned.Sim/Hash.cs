@@ -56,6 +56,7 @@ namespace Suborned.Sim
             {
                 h.I((int)op.Id).P(op.Pos).Z(op.Walk != null).I(op.WalkMm).Z(op.Inside);
                 if (op.Running && op.Walk != null) h.S("run").I(op.WalkSpeed); // only a run adds bytes: a walk hashes as it always did
+                if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }
@@ -116,7 +117,8 @@ namespace Suborned.Sim
             foreach (var x in g.ExposedByWatcher) h.S(x);
             g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
             g.HashTakedown(h);
-            g.HashGetaway(h); // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
+            g.HashGetaway(h);
+            g.HashRounds(h); // brief 022: no bytes unless the round is played // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }
     }

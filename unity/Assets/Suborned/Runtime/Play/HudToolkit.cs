@@ -22,6 +22,7 @@ namespace Suborned.Play
         /// <summary>A screen point (origin bottom left) on a piece that takes clicks.</summary>
         public static bool Blocks(Vector2 screen)
         {
+            if (CameraLab.Blocks(screen)) return true; // brief 025: the camera lab's panel takes its clicks
             if (!Active || live.root?.panel == null) return false;
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
             return live.root.panel.Pick(p) != null;
@@ -80,6 +81,15 @@ namespace Suborned.Play
             if (ellipsis) { l.style.overflow = Overflow.Hidden; l.style.whiteSpace = WhiteSpace.NoWrap; l.style.textOverflow = TextOverflow.Ellipsis; }
             l.style.unityTextAlign = TextAnchor.MiddleLeft;
             parent?.Add(l); return l;
+        }
+
+        /// <summary>The build line (BuildStamp): one quiet line, the card's corner or under the pause menu's buttons; a reading surface, never in play.</summary>
+        static Label BuildLine(VisualElement parent, bool corner)
+        {
+            var l = L(parent, "briefing-small"); l.text = BuildStamp.Line; l.style.fontSize = 10; l.style.color = new Color(0.69f, 0.8f, 0.78f, 0.55f);
+            if (corner) { l.style.position = Position.Absolute; l.style.right = 40; l.style.bottom = 7; } // clear of the card's corner screw
+            else l.style.marginTop = 18;
+            return l;
         }
 
         static void Text(Label l, string s) { s ??= ""; if (l.text != s) l.text = s; }
@@ -463,10 +473,17 @@ namespace Suborned.Play
             var ways = E(brief); ways.style.flexDirection = FlexDirection.Row; ways.style.marginTop = 12;
             for (int i = 0; i < 2; i++) { var c = E(ways, "s-panel_card"); c.style.flexGrow = 1; c.style.flexBasis = 0; c.style.minHeight = 106; if (i == 1) c.style.marginLeft = 10; var t = L(c, "card-title"); t.style.marginLeft = 12; t.style.marginTop = 5; var b = L(c, "card-body"); b.style.whiteSpace = WhiteSpace.Normal; b.style.marginLeft = 12; b.style.marginRight = 12; b.style.marginTop = 10; briefWays[i] = (t, b); }
             var foot = E(brief); foot.style.flexDirection = FlexDirection.Row; foot.style.alignItems = Align.Center; foot.style.marginTop = 16;
-            var fl = L(foot, "briefing-small"); briefFootLine = fl; fl.text = "Time stops until you begin. Space pauses at any time."; fl.style.color = new Color(0.69f, 0.8f, 0.78f); fl.style.flexGrow = 1;
+            var fcol = E(foot); fcol.style.flexGrow = 1; fcol.style.flexShrink = 1;
+            var fl = L(fcol, "briefing-small"); briefFootLine = fl; fl.text = "Time stops until you begin. Space pauses at any time."; fl.style.color = new Color(0.69f, 0.8f, 0.78f);
+            { // GDD v0.24: the Office front is played at yaw 210, two quarter turns from the opening view; the briefing names the turn keys
+                var kr = E(fcol); kr.style.flexDirection = FlexDirection.Row; kr.style.alignItems = Align.Center; kr.style.marginTop = 6;
+                KeyCap(kr, host.controls.Label(PlayAction.TurnLeft)); KeyCap(kr, host.controls.Label(PlayAction.TurnRight)); kr[0].style.marginLeft = 0;
+                var kl = L(kr, "briefing-small"); kl.text = "turn the view."; kl.style.color = new Color(0.69f, 0.8f, 0.78f); kl.style.marginLeft = 8;
+            }
             var begin = E(foot, "s-btn_text_normal btn_text", w: 190, h: 40, pick: true); begin.style.flexDirection = FlexDirection.Row; begin.style.alignItems = Align.Center; begin.style.justifyContent = Justify.Center;
             begin.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.StartClock(); e.StopPropagation(); } });
             var bl = L(begin, "button-label"); bl.text = "Begin"; briefBeginKey = L(null, "keycap"); /* Sky: no key hint on a button (keys are taught by the hints at first use); Space still begins */
+            BuildLine(brief, corner: true); // Sky 2026-10-19: which build this is, quiet, in the card's corner (BuildStamp)
             // the end card (debrief_card): 560 wide, top centre +40, y 160; Debrief opens the numbers, Replay plays again
             end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = EndCardPad; end.style.paddingRight = EndCardPad; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
             endTitle = L(end, "briefing-title"); endTitle.style.whiteSpace = WhiteSpace.Normal; /* a reading surface: the line wraps to two lines (EndCardAudit) */ endLine = L(end, "briefing-body"); endLine.style.whiteSpace = WhiteSpace.Normal; endLine.style.marginTop = 6;
@@ -475,26 +492,164 @@ namespace Suborned.Play
             var eb = E(end); eb.style.flexDirection = FlexDirection.Row; eb.style.marginTop = 18; eb.style.justifyContent = Justify.Center; // Glyph round 2: the pair centred
             VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
-            var rp = Btn("Replay", () => host.Begin()); endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
+            showAgain = Btn("Show me", () => host.FailCamStart()); // the fail camera again (Sky on the Air: "Show me again" ran past its pill) // the fail camera again (HostFailCam)
+            var rp = Btn("Replay", () => host.Begin()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
             // the history (history_panel): above the feed bar; filters, Read all, the rows (the wheel scrolls them)
             history = E(root, "s-panel_dark", pick: true); history.style.position = Position.Absolute; history.style.right = 14; history.style.bottom = 14 + 32 + 6; history.style.width = 384;
             history.style.paddingLeft = 28; history.style.paddingRight = 28; history.style.paddingTop = 14; history.style.paddingBottom = 12; // clear of the frame's corner screws
-            var hh = E(history); hh.style.flexDirection = FlexDirection.Row; hh.style.alignItems = Align.Center; var ht = L(hh, "section-label"); ht.text = "SCENES · HISTORY"; ht.style.flexGrow = 1;
+            var hh = E(history); hh.name = "head"; hh.style.flexDirection = FlexDirection.Row; hh.style.alignItems = Align.Center; var ht = L(hh, "section-label"); ht.text = "SCENES · HISTORY"; ht.style.flexGrow = 1;
+            history.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0 && !host.FeedHistoryOpen) { host.FeedHistoryOpen = true; e.StopPropagation(); } }); // Sky 2026-10-18: collapsed, a click on the panel expands it (L too)
             var ra = E(hh, "s-pill_white", pick: true); ra.style.height = 20; var ral = L(ra, "feed-filter"); ral.text = "Read all"; ral.style.paddingLeft = 8; ral.style.paddingRight = 8; ral.style.unityTextAlign = TextAnchor.MiddleCenter;
             ra.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ReadAll(); e.StopPropagation(); } });
-            var fr = E(history); fr.style.flexDirection = FlexDirection.Row; fr.style.flexWrap = Wrap.Wrap; fr.style.marginTop = 8;
+            var fr = E(history); fr.name = "filters"; fr.style.flexDirection = FlexDirection.Row; fr.style.flexWrap = Wrap.Wrap; fr.style.marginTop = 8;
             foreach (var (key, label) in new[] { ("all", "All"), ("learned", "Learned"), ("turned", "Turned"), ("city", "City"), ("warnings", "Warnings") })
             {
                 var f = E(fr, "s-plate_dark", pick: true); f.style.height = 19; f.style.height = 24; f.style.unitySliceScale = 0.5f; f.style.marginRight = 6; f.style.marginBottom = 4; f.name = key; var fl2 = L(f, "feed-filter"); fl2.text = label; fl2.style.paddingLeft = 12; fl2.style.paddingRight = 12; fl2.style.flexGrow = 1; fl2.style.unityTextAlign = TextAnchor.MiddleCenter; /* Sky: the same padding rule as the other chips */
                 f.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.FeedFilter = key; e.StopPropagation(); } });
                 filterChips.Add(f);
             }
-            var sv = new ScrollView(ScrollViewMode.Vertical) { pickingMode = PickingMode.Ignore, focusable = false }; sv.verticalScrollerVisibility = ScrollerVisibility.Hidden; sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden; sv.style.maxHeight = 420; sv.style.marginTop = 6; sv.style.overflow = Overflow.Hidden; sv.style.flexShrink = 1; history.Add(sv); history.style.overflow = Overflow.Hidden; /* the list scrolls inside its frame, never past it */
-            historyRows = sv.contentContainer;
+            // Sky 2026-10-18 (the list clipped "Reroute patrol 4:02" mid-line and had no scroll): newest at the top, a scrollable list (wheel,
+            // trackpad, a thin bar in the panel's style) under a fixed header and filters, a fade on the bottom edge so no row ends cut, and
+            // "↑ n new" when entries arrive while the player reads further down
+            var wrap = E(history); wrap.name = "list"; wrap.style.position = Position.Relative; wrap.style.flexShrink = 1; wrap.style.marginTop = 6; wrap.style.overflow = Overflow.Hidden;
+            var sv = new ScrollView(ScrollViewMode.Vertical) { focusable = false }; sv.verticalScrollerVisibility = ScrollerVisibility.Auto; sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden; sv.mouseWheelScrollSize = 36f;
+            sv.style.maxHeight = 420; sv.style.overflow = Overflow.Hidden; sv.style.flexShrink = 1; wrap.Add(sv); history.style.overflow = Overflow.Hidden; /* the list scrolls inside its frame, never past it */
+            ScrollBasics(sv); ThinScroller(sv.verticalScroller);
+            historyRows = sv.contentContainer; historySv = sv;
+            historyFade = E(wrap, null, pick: false); historyFade.style.position = Position.Absolute; historyFade.style.left = 0; historyFade.style.right = 10; historyFade.style.bottom = 0; historyFade.style.height = 28; historyFade.style.backgroundImage = FadeTexture();
+            historyNew = E(hh, "s-pill_white", pick: true); historyNew.style.height = 20; historyNew.style.marginRight = 6; historyNew.style.flexShrink = 0; historyNew.PlaceBehind(ra); // in the header beside Read all: over the list it covered the top row's title
+            var hnl = L(historyNew, "feed-filter"); hnl.name = "n"; hnl.style.paddingLeft = 10; hnl.style.paddingRight = 10; hnl.style.unityTextAlign = TextAnchor.MiddleCenter;
+            historyNew.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { historySv.scrollOffset = Vector2.zero; historyPinned = true; historyNewCount = 0; e.StopPropagation(); } });
+            Show(historyNew, false);
+            { var cv = E(hh, null, w: 18, h: 18, pick: true); cv.style.marginLeft = 10; Icon(cv, "chev_down", Cream); cv.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.FeedHistoryOpen = false; e.StopPropagation(); } }); } // collapse
             foreach (var e2 in new[] { hint, hintChip, toast, chip, loud, brief, end, history }) Show(e2, false);
         }
 
-        int historyKey = -1; Label briefFootLine;
+        VisualElement endButtons; /** the end card's button row: every pill the widest label's width plus 28 px each side (EndButtonsFit) */
+        /// <summary>Test hook for the layout audit: a deliberately long label on the middle button, so the end card's button check can be seen to fail.</summary>
+        public static bool EndButtonBad; float EndButtonsW;
+        void EndButtonsFit()
+        {
+            if (endButtons == null) return; float w = 0;
+            foreach (var b in endButtons.Children()) if (b.resolvedStyle.display != DisplayStyle.None && b.Q<Label>() is Label l)
+            { if (b == showAgain) l.text = EndButtonBad ? "Show me the whole thing again" : "Show me"; w = Mathf.Max(w, l.MeasureTextSize(l.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x); }
+            float pill = EndButtonBad ? 150 : Mathf.Max(130, Mathf.Ceil(w) + 76) /* the pill art's pointed ends take about 24 px each */; int shown = 0; foreach (var b in endButtons.Children()) { b.style.width = pill; b.style.marginLeft = b.style.marginRight = 8; b.style.flexShrink = 0; if (b.resolvedStyle.display != DisplayStyle.None) shown++; }
+            EndButtonsW = shown * (pill + 16) + 2 * EndCardPad; // the card is at least this wide (EndLess): a squeezed pill ran its label past its rim
+        }
+        VisualElement showAgain, failBox, failMarks, failChip, failLoc, failLocIcon; Label failCap, failTip; bool failHid;
+        /// <summary>The fail camera (HostFailCam): every HUD piece hidden but one caption at the bottom centre and its tip under it (Fable's
+        /// less.failcam); the end card waits. True while it plays.</summary>
+        bool FailCamHud()
+        {
+            if (failBox == null)
+            {
+                failBox = E(root, "s-plate_dark", 0, 0, float.NaN, float.NaN); failBox.style.top = StyleKeyword.Auto; failBox.style.bottom = 40; failBox.style.paddingLeft = 22; failBox.style.paddingRight = 22; failBox.style.paddingTop = 10; failBox.style.paddingBottom = 12; failBox.style.alignItems = Align.Center;
+                failCap = L(failBox, "verb-name"); failCap.style.fontSize = 17; failTip = L(failBox, "card-body"); failTip.style.color = Cream; failTip.style.opacity = 0.8f; failTip.style.marginTop = 3; failTip.style.fontSize = 13;
+                manifest.Add((failCap, "line", () => failCap.text)); manifest.Add((failTip, "line", () => failTip.text)); Show(failBox, false);
+                failCap.style.fontSize = 17; failCap.style.whiteSpace = WhiteSpace.NoWrap; failTip.style.fontSize = 17; failTip.style.color = Cream; failTip.style.opacity = 1f; failTip.style.marginTop = 0; failTip.style.whiteSpace = WhiteSpace.NoWrap;
+                // Glyph r1: the marks drawn over the world: the caught operative's pulsing cyan ring, a dotted line to the culprit, its locator
+                failMarks = new VisualElement { pickingMode = PickingMode.Ignore }; failMarks.style.position = Position.Absolute; failMarks.style.left = 0; failMarks.style.top = 0; failMarks.style.right = 0; failMarks.style.bottom = 0;
+                failMarks.generateVisualContent += FailMarksPaint; root.Add(failMarks); failMarks.SendToBack(); Show(failMarks, false);
+                failLoc = E(root, "s-disc_dark_24", 0, 0, 28, 28); Border(failLoc, 2f, new Color(0.878f, 0.227f, 0.184f)); failLocIcon = E(failLoc, null, 5, 5, 18, 18); Icon(failLocIcon, "eye_open", new Color(0.878f, 0.227f, 0.184f)); manifest.Add((failLoc, "image", () => "culprit locator")); Show(failLoc, false);
+                failChip = E(root, "s-plate_dark", 14, 14, float.NaN, 30); failChip.style.flexDirection = FlexDirection.Row; failChip.style.alignItems = Align.Center; failChip.style.paddingLeft = 12; failChip.style.paddingRight = 12;
+                var fcl = L(failChip, "verb-name"); fcl.name = "t"; fcl.style.fontSize = 12; manifest.Add((failChip, "image", () => "replay chip")); Show(failChip, false);
+            }
+            bool f = host.FailCamOn;
+            if (showAgain != null) Show(showAgain, !f && host.FailCamAvailable && m.Ended); EndButtonsFit();
+            if (!f && !failHid) return false;
+            failHid = f;
+            foreach (var c in root.Children()) if (c != failBox && c != failMarks && c != failLoc && c != failChip) c.style.visibility = f ? Visibility.Hidden : StyleKeyword.Null;
+            Show(failBox, f); Show(failMarks, f); Show(failChip, f); if (!f) { Show(failLoc, false); return false; }
+            // one line: the caption while it replays; at the deciding moment the tip replaces it, the same size (Glyph r1)
+            bool atMoment = host.FailAtMoment && host.FailTip.Length > 0;
+            Text(failCap, atMoment ? host.FailTip : host.FailCaption); Show(failTip, false);
+            Text(failChip.Q<Label>("t"), $"replay {host.FailPace:0.0#}×");
+            Icon(failLocIcon, host.FailShot ? "fire" : "eye_open", new Color(0.878f, 0.227f, 0.184f)); // a shooter is marked by the shot, not an eye
+            if (host.FailCulpritAt is Vector3 cw && Proj(cw, out var cq)) { Show(failLoc, true); failLoc.style.left = cq.x - 14; failLoc.style.top = cq.y - 14; } else Show(failLoc, false);
+            failMarks.MarkDirtyRepaint();
+            var sz = root.panel.visualTree.layout.size; float bw = failBox.resolvedStyle.width; if (float.IsNaN(bw)) bw = 360; failBox.style.left = ((float.IsNaN(sz.x) ? 1920 : sz.x) - bw) / 2;
+            return true;
+        }
+        /// <summary>The fail camera's marks: a 4 px cyan ring round the caught operative's feet (about 1.3 x a figure's width, pulsing) and a
+        /// dotted line from it up to the culprit's locator.</summary>
+        void FailMarksPaint(MeshGenerationContext ctx)
+        {
+            var p = ctx.painter2D; var cam = host.View; if (!cam || !host.FailCamOn) return;
+            if (host.FailOpAt is not Vector3 ow || !Proj(ow, out var oq)) return;
+            float px = 14f / cam.orthographicSize, k = 1f + 0.1f * Mathf.Sin(Time.unscaledTime * 5f), rx = 0.75f * 38.6f * px * k, ry = rx * 0.62f;
+            var cyan = new Color(0.376f, 0.878f, 0.918f);
+            for (int pass = 0; pass < 2; pass++)
+            {
+                p.strokeColor = pass == 0 ? new Color(0.09f, 0.188f, 0.184f, 0.6f) : cyan; p.lineWidth = pass == 0 ? 6.5f : 4f; p.BeginPath();
+                for (int i = 0; i <= 40; i++) { float a = i * Mathf.PI * 2f / 40f; var v = oq + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (i == 0) p.MoveTo(v); else p.LineTo(v); }
+                p.Stroke();
+            }
+            if (host.FailShot && Proj(host.FailShooterAt, out var sq) && Proj(ow + Vector3.up * 1.3f, out var hq))
+            {
+                // Glyph 022 (N125): the shot itself, a tracer from the shooter's chest to the operative's, flashing once every 0.7 s
+                float ph = (Time.unscaledTime % 0.7f) / 0.7f, a = ph < 0.4f ? 1f : 0.8f; // a steady line that flashes: any still frame shows it
+                var dv = (hq - sq).normalized; var a0 = sq + dv * 6f; var b0 = hq - dv * 4f;
+                p.lineCap = LineCap.Round;
+                p.strokeColor = new Color(0.09f, 0.188f, 0.184f, 0.6f * a); p.lineWidth = 5f; p.BeginPath(); p.MoveTo(a0); p.LineTo(b0); p.Stroke();
+                p.strokeColor = new Color(1f, 0.86f, 0.55f, a); p.lineWidth = 2.6f; p.BeginPath(); p.MoveTo(a0); p.LineTo(b0); p.Stroke();
+                p.fillColor = new Color(1f, 0.93f, 0.75f, a); p.BeginPath(); p.Arc(a0, 4f * a + 1f, new Angle(0), new Angle(360, AngleUnit.Degree)); p.Fill(); // the muzzle
+            }
+            else if (host.FailCulpritAt is Vector3 cw && Proj(cw, out var cq))
+            {
+                // the watcher's line to whom it saw: a thin static dotted line (Glyph 022: a heavy red line read as a shot)
+                var dv = (cq - oq).normalized; float te = 1f / Mathf.Sqrt(dv.x * dv.x / (rx * rx) + dv.y * dv.y / (ry * ry)); // the ring's edge along the line (Glyph r2)
+                var a0 = oq + dv * (te + 3f); var b = cq + (oq - cq).normalized * 15f; float len = Vector2.Distance(a0, b); if (len < 4f) return; var dir = (b - a0) / len;
+                for (int pass = 0; pass < 2; pass++) { p.fillColor = pass == 0 ? new Color(0.09f, 0.188f, 0.184f, 0.55f) : new Color(0.878f, 0.227f, 0.184f, 0.9f); float r0 = pass == 0 ? 1.8f : 1.05f; for (float d = 0; d <= len; d += 6f) { var c = a0 + dir * d; p.BeginPath(); p.MoveTo(c + new Vector2(r0, 0)); p.Arc(c, r0, new Angle(0), new Angle(360, AngleUnit.Degree)); p.Fill(); } }
+            }
+        }
+        int historyKey = -1; Label briefFootLine; ScrollView historySv; bool historyPinned = true, historyWasOpen, historySnapped = true;
+        const float HistoryMaxH = 420f; float historyFitH = HistoryMaxH, historyLastOff, historyStillAt;
+        VisualElement historyFade, historyNew; int historyTopId = -1, historyNewCount; string historyFilter = ""; float historyKeepH = -2f, historyKeepOff;
+        /// <summary>A public view of the history's scroll for shots and checks: the offset (px from the newest at the top) and its limit.</summary>
+        public (float offset, float max, int fresh) HistoryScroll => historySv == null ? (0f, 0f, 0) : (historySv.scrollOffset.y, Mathf.Max(0f, historyRows.layout.height - historySv.contentViewport.layout.height), historyNewCount);
+        public void HistoryScrollTo(float y) { if (historySv != null) { historySv.scrollOffset = new Vector2(0f, y); historyPinned = y <= 4f; } }
+
+        /// <summary>The HUD theme (HudTheme.tss) carries only the kit's sheet, not Unity's default one, so a ScrollView has none of its layout
+        /// rules: the content shrank to the viewport (nothing to scroll) and the bar sat under the list. These are the defaults it needs.</summary>
+        static void ScrollBasics(ScrollView sv)
+        {
+            if (sv.Q(className: "unity-scroll-view__content-and-vertical-scroll-container") is VisualElement row) { row.style.flexDirection = FlexDirection.Row; row.style.flexGrow = 1; row.style.flexShrink = 1; }
+            sv.contentViewport.style.flexGrow = 1; sv.contentViewport.style.flexShrink = 1; sv.contentViewport.style.overflow = Overflow.Hidden;
+            sv.contentContainer.style.flexShrink = 0; sv.contentContainer.style.flexGrow = 0;
+            var sc = sv.verticalScroller; sc.style.flexShrink = 0; sc.style.flexDirection = FlexDirection.Column;
+            var sl = sc.slider; sl.style.flexGrow = 1; sl.style.flexDirection = FlexDirection.Column;
+            if (sl.Q(className: "unity-base-slider__input") is VisualElement inp) { inp.style.flexGrow = 1; inp.style.flexDirection = FlexDirection.Column; }
+            if (sl.Q(className: "unity-base-slider__drag-container") is VisualElement dc) { dc.style.flexGrow = 1; dc.style.position = Position.Relative; }
+            else if (sl.Q("unity-drag-container") is VisualElement dc2) { dc2.style.flexGrow = 1; dc2.style.position = Position.Relative; }
+            if (sl.Q("unity-tracker") is VisualElement tr) { tr.style.position = Position.Absolute; tr.style.top = 0; tr.style.bottom = 0; }
+            if (sl.Q("unity-dragger") is VisualElement dg) dg.style.position = Position.Absolute;
+            if (sl.Q("unity-dragger-border") is VisualElement db) db.style.position = Position.Absolute;
+        }
+
+        /// <summary>The panel's thin scrollbar: no arrow buttons, a 4 px cream thumb on a faint track, 6 px wide.</summary>
+        static void ThinScroller(Scroller sc)
+        {
+            sc.style.width = 6; sc.style.minWidth = 6; sc.style.marginLeft = 4; sc.style.borderLeftWidth = 0; sc.style.backgroundColor = Color.clear;
+            Show(sc.lowButton, false); Show(sc.highButton, false);
+            var sl = sc.slider; sl.style.marginTop = sl.style.marginBottom = 0; sl.style.width = 6; sl.style.minWidth = 6;
+            if (sl.Q("unity-tracker") is VisualElement tr) { tr.style.backgroundColor = new Color(0.824f, 0.902f, 0.886f, 0.12f); tr.style.borderTopWidth = tr.style.borderBottomWidth = tr.style.borderLeftWidth = tr.style.borderRightWidth = 0; tr.style.left = 1; tr.style.right = 1; tr.style.borderTopLeftRadius = tr.style.borderTopRightRadius = tr.style.borderBottomLeftRadius = tr.style.borderBottomRightRadius = 2; }
+            var dg = sl.Q("unity-dragger"); if (dg == null) return; dg.style.backgroundColor = new Color(Cream.r, Cream.g, Cream.b, 0.7f); dg.style.width = 4; dg.style.left = 1; dg.style.borderTopWidth = dg.style.borderBottomWidth = dg.style.borderLeftWidth = dg.style.borderRightWidth = 0;
+            dg.style.borderTopLeftRadius = dg.style.borderTopRightRadius = dg.style.borderBottomLeftRadius = dg.style.borderBottomRightRadius = 2;
+            if (sl.Q("unity-dragger-border") is VisualElement db) Show(db, false);
+        }
+
+        static Texture2D fadeTex;
+        /// <summary>The bottom-edge fade: the dark panel's own colour from clear to solid, top to bottom.</summary>
+        static Texture2D FadeTexture()
+        {
+            if (fadeTex) return fadeTex;
+            fadeTex = new Texture2D(1, 32, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
+            for (int y = 0; y < 32; y++) { float a = 1f - y / 31f; fadeTex.SetPixel(0, y, new Color(11 / 255f, 57 / 255f, 55 / 255f, a * a * (3f - 2f * a))); } // row 0 is the bottom
+            fadeTex.Apply(); return fadeTex;
+        }
+        /// <summary>Test hook for the layout audit's feed check: rebuilds the rows as they were before the fix (rows that shrink to a fixed list
+        /// height), so the audit can be seen to fail on overlapping rows.</summary>
+        public static bool FeedBadLayout;
         void Step3Frame()
         {
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x;
@@ -567,14 +722,21 @@ namespace Suborned.Play
                 }
             }
             else endDetailOpen = false;
-            // the history
-            Show(history, m.HistoryOpen);
-            if (m.HistoryOpen)
+            // the history (Sky 2026-10-18: "always opened showing latest message, but then can expand up for history"): collapsed it shows the
+            // newest entry only (its title and its newest spoken line), anchored at its bottom edge; expanded (L, a click on it, or the papers
+            // key) it grows upward: the header and filters fixed, every entry with the newest at the top, held at the newest unless scrolled down
+            bool expanded = m.HistoryOpen, collapsedOn = !expanded && !m.Ended && !m.BriefingOpen && m.History.Count > 0;
+            Show(history, expanded || collapsedOn);
+            if (expanded && !historyWasOpen) historyPinned = true; historyWasOpen = expanded;
+            if (expanded || collapsedOn)
             {
+                Show(history.Q("head"), expanded); Show(history.Q("filters"), expanded); history.Q("list").style.marginTop = expanded ? 6 : 0;
+                history.style.paddingTop = expanded ? 14 : 14; history.style.paddingBottom = expanded ? 12 : 14; // collapsed: the text clear of the frame's corner screws
                 foreach (var f in filterChips) { bool on = f.name == m.Filter; Class(f, "s-plate_light", on); Class(f, "s-plate_dark", !on); f.Q<Label>().style.color = on ? Ink : Cream; } // ink on the light plate, cream on the dark
-                int key = m.History.Count * 31 + m.Filter.GetHashCode() + m.Unread * 7 + openRows.Count * 131;
+                int key = m.History.Count * 31 + m.Filter.GetHashCode() + m.Unread * 7 + openRows.Count * 131 + (expanded ? 7919 : 0) + (FeedBadLayout ? 104729 : 0) + (m.History.Count > 0 ? m.History[0].card.Id * 13 + m.History[0].card.Lines.Count : 0);
                 if (key != historyKey)
                 {
+                    float oldH = historyRows.layout.height, oldOff = historySv.scrollOffset.y;
                     historyKey = key; historyRows.Clear();
                     // Sky: "Runner seen" three times for one agent: repeats of the same title and result within 15 s merge into one row, "×n"
                     var merged = new List<(HandoverHost.FeedCard card, bool unread, int n)>();
@@ -585,26 +747,123 @@ namespace Suborned.Play
                         { var mm = merged[^1]; merged[^1] = (mm.card, mm.unread || unread, mm.n + 1); continue; }
                         merged.Add((card, unread, 1));
                     }
+                    // newest at the top, in every filter (the list arrives newest first; Sky 2026-10-18)
+                    feedTitle = null; feedSpeech = null;
+                    if (!expanded && merged.Count > 1) merged.RemoveRange(1, merged.Count - 1); // collapsed: the newest only
+                    int topId = merged.Count > 0 ? merged[0].card.Id : -1;
+                    if (!expanded || m.Filter != historyFilter || historyTopId < 0) { historyPinned = true; historyNewCount = 0; historyKeepH = -2f; } // a new filter (or opening it) starts at the newest
+                    else if (!historyPinned)
+                    {
+                        if (topId != historyTopId) { int at = merged.FindIndex(x => x.card.Id == historyTopId); historyNewCount = at < 0 ? merged.Count : at; historyKeepH = oldH; historyKeepOff = oldOff; } // new rows above: keep the reader's place
+                        else { historyKeepH = -1f; historyKeepOff = oldOff; } // the same rows (a row opened or closed): the same offset
+                    }
+                    if (historyPinned || !expanded) historyTopId = topId;
+                    historyFilter = m.Filter;
+                    historySv.style.maxHeight = expanded ? historyFitH : StyleKeyword.None; // whole rows (the frame below sets it from the rows)
+                    historySv.style.height = FeedBadLayout ? 120 : StyleKeyword.Auto; // the audit's bad case: a fixed list height the rows shrink into
                     foreach (var (card, unread, count) in merged)
                     {
-                        var r = E(historyRows, null, pick: true); r.style.flexDirection = FlexDirection.Row; r.style.minHeight = 40; r.style.marginBottom = 6; r.style.alignItems = Align.FlexStart;
+                        var r = E(historyRows, null, pick: true); r.name = "feed-row"; r.style.flexDirection = FlexDirection.Row; r.style.minHeight = expanded ? 40 : 0; r.style.marginBottom = expanded ? 6 : 0; r.style.alignItems = Align.FlexStart;
+                        r.style.flexShrink = FeedBadLayout ? 1 : 0; // Sky's overlap: a row shrank below its wrapped lines, which drew into the next row; it is as tall as its lines
                         var bar = E(r, null, w: 3, h: 34); bar.style.backgroundColor = Accent(card.Kind); bar.style.marginRight = 8; bar.style.flexShrink = 0;
-                        var disc = E(r, "s-disc_light_24", w: 21, h: 21); disc.style.flexShrink = 0; disc.style.marginTop = 2; Icon(E(disc, null, 4.5f, 4.5f, 12, 12), card.Verb.Length > 0 ? HudModel.AtlasIcon(card.Verb, card.Verb, "") : KindGlyph.TryGetValue(card.Kind, out var kg) ? kg : "dot", Ink); // the verb's own glyph (Reroute is not Listen's ear), else the kind's
+                        // Glyph 022: a row that is one person speaking (its title is the speaker) is one line, "Passer-by: Stay inside.", under a
+                        // speech-bubble glyph; no empty title line above it, and no stopwatch
+                        int sl0 = expanded ? 0 : card.Lines.Count - 1;
+                        bool speech = count == 1 && card.Lines.Count > 0 && card.Verb.Length == 0 && string.Equals(card.Title.Trim(), card.Lines[sl0].Name.Trim(), System.StringComparison.OrdinalIgnoreCase);
+                        var disc = E(r, "s-disc_light_24", w: 21, h: 21); disc.style.flexShrink = 0; disc.style.marginTop = 2;
+                        if (speech && expanded) { r.style.minHeight = 26; bar.style.height = 22; } // one line: the row as tall as its line
+                        if (speech) SpeechGlyph(E(disc, null, 4f, 4.5f, 13, 12), Ink);
+                        else Icon(E(disc, null, 4.5f, 4.5f, 12, 12), card.Verb.Length > 0 ? HudModel.AtlasIcon(card.Verb, card.Verb, "") : KindGlyph.TryGetValue(card.Kind, out var kg) ? kg : "dot", Ink); // the verb's own glyph (Reroute is not Listen's ear), else the kind's
                         var col = E(r); col.style.flexGrow = 1; col.style.flexShrink = 1; col.style.marginLeft = 8;
                         var top = E(col); top.style.flexDirection = FlexDirection.Row; top.style.alignItems = Align.Center;
-                        var t = L(top, "history-row-title"); t.text = count > 1 ? $"{card.Title} ×{count}" : card.Title; t.style.flexShrink = 0; var wh = L(top, "feed-where", ellipsis: true); wh.text = card.Where; wh.style.marginLeft = 6; wh.style.flexGrow = 1; wh.style.flexShrink = 1;
+                        var t = L(top, "history-row-title"); t.text = count > 1 ? $"{card.Title} ×{count}" : card.Title; t.style.flexShrink = 0;
+                        if (speech)
+                        {   // the speaker's line takes the title's place (Glyph: "Guard" over "Guard: He's armed…" said it twice; an empty title left a blank line)
+                            var ln0 = card.Lines[sl0]; t.text = $"{ln0.Name}: {ln0.Text}"; Class(t, "t-history-row-title", false); Class(t, "t-history-row-result", true); BodyText(t);
+                            t.style.flexShrink = 1; t.style.flexGrow = 1; t.style.whiteSpace = expanded ? WhiteSpace.Normal : WhiteSpace.NoWrap; if (!expanded) t.style.textOverflow = TextOverflow.Ellipsis; t.style.overflow = Overflow.Hidden; t.style.marginRight = 6;
+                        }
+                        var wh = L(top, "feed-where", ellipsis: true); wh.text = speech ? "" : card.Where; wh.style.marginLeft = 6; wh.style.flexGrow = speech ? 0 : 1; wh.style.flexShrink = 1;
                         if (unread) { var dot = E(top, "s-dot_unread", w: 10, h: 10); dot.style.marginRight = 6; dot.style.flexShrink = 0; } // unread: a dot, no button
                         var ck = L(top, "feed-clock"); ck.text = HandoverHost.MissionClock(card.Started); ck.style.flexShrink = 0;
+                        if (!expanded) // collapsed: the title and the newest spoken line (one line, the budget's speech), "+n" for the rest; the full entry on expand
+                        {
+                            wh.text = ""; bar.style.height = 22;
+                            if (speech) { feedSpeech = t; feedTitle = null; } // one line: the speaker and their words
+                            else
+                            {
+                                if (card.Lines.Count > 0) { var ln = card.Lines[card.Lines.Count - 1]; var sl = L(col, "history-row-result", ellipsis: true); sl.name = "speech"; sl.text = $"{ln.Name}: {ln.Text}"; sl.style.whiteSpace = WhiteSpace.NoWrap; BodyText(sl); sl.style.marginTop = 2; sl.style.flexShrink = 0; feedSpeech = sl; } else feedSpeech = null;
+                                feedTitle = t;
+                            }
+                            if (card.Lines.Count > 1) { var more = L(top, "feed-clock"); more.text = $"+{card.Lines.Count - 1}"; more.style.marginRight = 8; more.style.flexShrink = 0; more.PlaceBehind(ck); }
+                            continue;
+                        }
                         bool open = openRows.Contains(card.Id) || card.Footer.Length == 0;
-                        if (card.Footer.Length > 0) { var res = L(col, "history-row-result"); res.text = card.Footer; res.style.whiteSpace = WhiteSpace.Normal; res.style.maxHeight = open ? new StyleLength(StyleKeyword.None) : new StyleLength(34); res.style.overflow = Overflow.Hidden; }
+                        if (card.Footer.Length > 0) { var res = L(col, "history-row-result"); res.text = card.Footer; BodyText(res); res.style.whiteSpace = WhiteSpace.Normal; res.style.maxHeight = open ? new StyleLength(StyleKeyword.None) : new StyleLength(40); res.style.overflow = Overflow.Hidden; res.style.flexShrink = FeedBadLayout ? 1 : 0; }
                         if (open)
-                            foreach (var ln in card.Lines)
-                            { var l = L(col, "history-row-result"); l.text = $"{ln.Name}: {ln.Text}"; l.style.whiteSpace = WhiteSpace.Normal; l.style.opacity = 0.8f; l.style.marginTop = 2; }
+                            for (int li = speech ? 1 : 0; li < card.Lines.Count; li++)
+                            { var ln = card.Lines[li]; var l = L(col, "history-row-result"); l.text = $"{ln.Name}: {ln.Text}"; BodyText(l); l.style.whiteSpace = WhiteSpace.Normal; l.style.marginTop = 2; l.style.flexShrink = FeedBadLayout ? 1 : 0; }
                         // a click pans to its place and opens (or closes) the row to the card's lines
                         var cc = card; r.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; if (!openRows.Remove(cc.Id)) openRows.Add(cc.Id); if (host.PlaceNow(cc) is Vector3 at) host.LookAt(at); e.StopPropagation(); });
                     }
+                    // the budget's manifest: collapsed, the title is a beat (the newest event, a few words) and its line is speech
+                    manifest.RemoveAll(x => x.e == feedTitleReg || x.e == feedSpeechReg); feedTitleReg = feedSpeechReg = null;
+                    if (!expanded && feedTitle != null) { var ft = feedTitle; feedTitleReg = ft; manifest.Add((ft, "beat", () => ft.text)); }
+                    if (!expanded && feedSpeech != null) { var fs = feedSpeech; feedSpeechReg = fs; manifest.Add((fs, "speech", () => fs.text)); }
                 }
+                // expanded: at the newest (the top) unless the player has scrolled down; their place is kept when rows arrive above it
+                if (expanded && historySv != null)
+                {
+                    float h = historyRows.layout.height, max = Mathf.Max(0f, h - historySv.contentViewport.layout.height);
+                    if (historyKeepH > -2f)
+                    {
+                        if (!float.IsNaN(h) && (historyKeepH < 0f || Mathf.Abs(h - historyKeepH) > 0.5f)) { historySv.scrollOffset = new Vector2(0f, historyKeepOff + (historyKeepH < 0f ? 0f : h - historyKeepH)); historyKeepH = -2f; }
+                    }
+                    else
+                    {
+                        bool atTop = historySv.scrollOffset.y <= 4f;
+                        if (atTop && !historyPinned) { historyPinned = true; historyNewCount = 0; historyTopId = -1; historyKey = -1; } // back at the top: the newest, and rebuild to take the top id
+                        else if (!atTop && historyPinned) historyPinned = false;
+                    }
+                    if (historyPinned && historySv.scrollOffset.y > 0.5f && historyKeepH <= -2f && historySv.scrollOffset.y <= 4f) historySv.scrollOffset = Vector2.zero;
+                    Show(historyNew, !historyPinned && historyNewCount > 0); if (historyNewCount > 0) historyNew.Q<Label>("n").text = $"↑ {historyNewCount} new";
+                    // Sky 2026-10-18 ("Reroute patrol 4:02" cut in half): the list is as tall as the whole rows that fit in 420 px from the top, so
+                    // at the newest no row ends cut; scrolled, it comes to rest on a row's top edge, and a row the bottom edge still crosses fades
+                    float fit = 0f; bool laid = true;
+                    foreach (var c in historyRows.Children()) { float rh = c.layout.height + c.resolvedStyle.marginBottom; if (float.IsNaN(rh)) { laid = false; break; } if (fit > 0f && fit + rh > HistoryMaxH) break; fit += rh; }
+                    if (laid && fit > 0f) { fit = Mathf.Min(Mathf.Ceil(fit), HistoryMaxH); if (Mathf.Abs(fit - historyFitH) > 0.5f) { historyFitH = fit; historySv.style.maxHeight = fit; } }
+                    float off = historySv.scrollOffset.y, now = Time.unscaledTime;
+                    if (Mathf.Abs(off - historyLastOff) > 0.1f) { historyLastOff = off; historyStillAt = now; historySnapped = false; }
+                    else if (!historySnapped && now - historyStillAt > 0.15f && !float.IsNaN(max) && off > 4f && off < max - 1f)
+                    {
+                        historySnapped = true; float best = off, bd = float.MaxValue;
+                        foreach (var c in historyRows.Children()) { float y0 = c.layout.yMin; if (Mathf.Abs(y0 - off) < bd) { bd = Mathf.Abs(y0 - off); best = y0; } }
+                        best = Mathf.Min(best, max); if (Mathf.Abs(best - off) > 0.5f) { historySv.scrollOffset = new Vector2(0f, best); historyLastOff = best; }
+                    }
+                    float vb = historySv.scrollOffset.y + historySv.contentViewport.layout.height; bool cut = false;
+                    foreach (var c in historyRows.Children()) { var l = c.layout; if (l.yMin < vb - 1f && l.yMax > vb + 1f) { cut = true; break; } }
+                    Show(historyFade, cut); // a row crossing the bottom edge fades out, never ends in a sliced line
+                }
+                else { Show(historyFade, false); Show(historyNew, false); }
             }
+        }
+        Label feedTitle, feedSpeech; VisualElement feedTitleReg, feedSpeechReg;
+
+        /// <summary>Glyph 022: the history's body text at 13.5 px in the light sea-cream (#c8e0da, about 8:1 on the panel) instead of 12.5 px muted
+        /// teal (about 4:1).</summary>
+        static void BodyText(Label l) { l.style.fontSize = 13.5f; l.style.color = new Color(0.784f, 0.878f, 0.855f); l.style.opacity = 1f; }
+
+        /// <summary>A speech bubble drawn in the glyph's box (the atlas has none without a ? or !): a rounded bubble, its tail at the lower left.</summary>
+        static void SpeechGlyph(VisualElement e, Color c)
+        {
+            e.generateVisualContent += ctx =>
+            {
+                var p = ctx.painter2D; var r = e.contentRect; float w = r.width, h = r.height, bh = h * 0.74f, rad = bh * 0.45f;
+                p.fillColor = c; p.BeginPath();
+                p.MoveTo(new Vector2(rad, 0)); p.LineTo(new Vector2(w - rad, 0)); p.ArcTo(new Vector2(w, 0), new Vector2(w, rad), rad); p.LineTo(new Vector2(w, bh - rad)); p.ArcTo(new Vector2(w, bh), new Vector2(w - rad, bh), rad);
+                p.LineTo(new Vector2(w * 0.42f, bh)); p.LineTo(new Vector2(w * 0.16f, h)); p.LineTo(new Vector2(w * 0.24f, bh)); p.LineTo(new Vector2(rad, bh)); p.ArcTo(new Vector2(0, bh), new Vector2(0, bh - rad), rad); p.LineTo(new Vector2(0, rad)); p.ArcTo(new Vector2(0, 0), new Vector2(rad, 0), rad);
+                p.ClosePath(); p.Fill();
+            };
+            e.MarkDirtyRepaint();
         }
 
         static Color Accent(string kind) => kind switch
@@ -668,6 +927,7 @@ namespace Suborned.Play
             bool want = host.Game != null && host.Fault == null && host.controls.view == HudView.Kit;
             if (want != on) { on = want; Show(root, on); }
             if (!on) return;
+            if (FailCamHud()) return; // the fail camera: its caption alone
             m.Frame(host); CrispScale();
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
@@ -770,10 +1030,11 @@ namespace Suborned.Play
             {
                 followChip = E(root, "s-plate_dark", 0, 0, float.NaN, 30); followChip.style.top = StyleKeyword.Auto; followChip.style.left = 14 + 212 + 8; followChip.style.bottom = 14 + (132 - 30) / 2f;
                 followChip.style.flexDirection = FlexDirection.Row; followChip.style.alignItems = Align.Center; followChip.style.paddingLeft = 12; followChip.style.paddingRight = 10;
-                var fl = L(followChip, "verb-name"); fl.text = "Follow view"; fl.style.fontSize = 12; KeyCap(followChip, host.controls.Label(PlayAction.FollowView));
+                var fl = L(followChip, "verb-name"); followLabel = fl; fl.text = "Follow view"; fl.style.fontSize = 12; KeyCap(followChip, host.controls.Label(PlayAction.FollowView));
                 manifest.Add((followChip, "image", () => "follow view chip")); Show(followChip, false);
             }
             Show(followChip, f && !m.Ended);
+            if (f) Text(followLabel, host.Exploring ? "Exploring" : host.Driving ? "Let go" : "Follow view"); // brief 025 (Fable: "Let go: T")
             // a plain ground ring under the followed agent, drawn in the view's own perspective (the one world mark the follow view keeps)
             followRing.Clear();
             if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
@@ -785,7 +1046,7 @@ namespace Suborned.Play
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }
-        bool followHid; VisualElement followChip; readonly List<Vector2> followRing = new();
+        bool followHid; VisualElement followChip; Label followLabel; readonly List<Vector2> followRing = new();
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).
         ///  · left column: the column at (12, 84); a strip beside each shown agent's window; the verb plate right of the selected strip; the ticker under the column.

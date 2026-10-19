@@ -9,6 +9,7 @@ bytes. A new name gets a guid derived from the name, so the same table gives the
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 
 LIT = "2529b42165e1d45a8bcfb0013bb5aba3"       # the shader guid every kit .mat uses (Complex Lit for enamel: 206122...)
@@ -95,6 +96,32 @@ def meta_text(name, legacy):
             "  assetBundleName: \n  assetBundleVariant: \n")
 
 
+def clear_text(row, legacy):
+    """A window-pane .mat (kinds `clear` and `sheen`, brief 020): the legacy DK_GlassDark.mat (premultiplied transparent, no shadow caster, queue 3000) with this row's
+    name, colour, alpha and smoothness."""
+    t = (legacy / "DK_GlassDark.mat").read_text()
+    r, g, b = row["color"]
+    t = t.replace("m_Name: DK_GlassDark", f"m_Name: {row['name']}")
+    t = re.sub(r"(- _BaseColor: )\{[^}]*\}", rf"\g<1>{{r: {_f(r)}, g: {_f(g)}, b: {_f(b)}, a: {_f(row['alpha'])}}}", t)
+    t = re.sub(r"(- _Color: )\{[^}]*\}", rf"\g<1>{{r: {_f(r)}, g: {_f(g)}, b: {_f(b)}, a: {_f(row['alpha'])}}}", t)
+    return re.sub(r"(- _Smoothness: )[0-9.]+", rf"\g<1>{_f(row['smoothness'])}", t)
+
+
+def lit_art_text(row, legacy, tex_guid):
+    """A textured lit-from-within .mat (`emit` kind with a texture and no legacy .mat: the café's floor and paintings, brief 020): the legacy DK_Lightbox_Travel.mat with its
+    texture swapped, the emission strength and the metric tiling (m_Scale = 1 / tileMetres, where the row has one)."""
+    t = (legacy / "DK_Lightbox_Travel.mat").read_text()
+    old = re.search(r"_BaseMap:\n\s+m_Texture: \{fileID: 2800000, guid: ([0-9a-f]{32})", t).group(1)
+    t = t.replace(old, tex_guid).replace("m_Name: DK_Lightbox_Travel", f"m_Name: {row['name']}")
+    em = row["emission"]
+    v = _f(em ** (1 / 2.2))
+    t = re.sub(r"(- _EmissionColor: )\{[^}]*\}", rf"\g<1>{{r: {v}, g: {v}, b: {v}, a: {_f(em)}}}", t)
+    if row.get("tileMetres"):
+        k = _f(1 / row["tileMetres"])
+        t = re.sub(rf"(guid: {tex_guid}, type: 3\}}\n\s+m_Scale: )\{{x: 1, y: 1\}}", rf"\g<1>{{x: {k}, y: {k}}}", t)
+    return t
+
+
 def write(table_path, dst, retuned):
     """Write the .mat for the missing and retuned materials; returns the names."""
     rows = json.loads(Path(table_path).read_text())["materials"]
@@ -102,6 +129,23 @@ def write(table_path, dst, retuned):
     out = []
     for row in rows:
         n = row["name"]
+        d = Path(dst) / "Materials"
+        if row["kind"] in ("clear", "sheen") and not (legacy / f"{n}.mat").exists():  # window panes
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(clear_text(row, legacy))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
+        if row["texture"] and row["kind"] == "emit" and not (legacy / f"{n}.mat").exists():  # lit art: a texture + .meta with a name-derived guid, and the .mat
+            tg = hashlib.md5(f"suborned.decokit.tex/{row['texture']}".encode()).hexdigest()
+            tm = (legacy / "../Textures/poster_travel_v1.png.meta").resolve().read_text()
+            (Path(dst) / "Textures").mkdir(parents=True, exist_ok=True)
+            (Path(dst) / "Textures" / f"{row['texture']}.meta").write_text(re.sub(r"guid: [0-9a-f]{32}", f"guid: {tg}", tm, count=1))
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(lit_art_text(row, legacy, tg))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
         if row["texture"] or row["kind"] not in SUPPORTED:
             continue
         if n not in retuned and (legacy / f"{n}.mat").exists():
