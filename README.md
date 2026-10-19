@@ -2,6 +2,8 @@
 
 Single-player real-time tactics and social infiltration in a bright retro-future city. PC · Unity. Design: `GDD/`.
 
+The [illustrated art bible](GDD/the-suborned-art-bible-v0.24.0-2026-10-18.html) brings together the current art direction, palettes, image options and approved reference boards. `bun run art:bible --check` detects source or output drift; `bun run art:bible` rebuilds it offline.
+
 The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): Aster leads 16 agents, Sky is the only human. Content is generated at build time by the same crew, from the GDD retrieved out of a local index; nothing runs AI at play time.
 
 ## Assignment 4 submission (content pipeline)

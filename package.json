@@ -22,6 +22,7 @@
     "world": "bun tools/world/export.ts",
     "life": "bun tools/life/cli.ts",
     "crew": "bun tools/crew/cards.ts",
+    "art:bible": "bun tools/art-bible/generate.ts",
     "ingest": "bun tools/rag/ingest.ts",
     "retrieve": "bun tools/rag/retrieval.ts",
     "typecheck": "tsc --noEmit",
