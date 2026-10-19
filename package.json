@@ -43,7 +43,9 @@
     "missions:check": "bun tools/missions/check/cli.ts",
     "deck:pack": "mkdir -p out/presentation && rm -f out/presentation/TheSuborned-presentation.zip && ditto -c -k --keepParent presentation out/presentation/TheSuborned-presentation.zip && ls -lh out/presentation/TheSuborned-presentation.zip",
     "deck:send": "bun run deck:pack && TS=\"$(command -v tailscale || echo /Applications/Tailscale.app/Contents/MacOS/Tailscale)\" && \"$TS\" file cp out/presentation/TheSuborned-presentation.zip \"${DECK_DEVICE:-skys-macbook-air-1}:\" && echo \"sent to ${DECK_DEVICE:-skys-macbook-air-1}\"",
-    "deck:publish": "rsync -a --delete --exclude README.md presentation/ out/deck-publish/ && CLOUDFLARE_ACCOUNT_ID=9bea085fe09385497720ce4f203f8ad0 wrangler pages deploy out/deck-publish --project-name suborned-deck --branch main --commit-dirty=true"
+    "deck:publish": "rsync -a --delete --exclude README.md presentation/ out/deck-publish/ && CLOUDFLARE_ACCOUNT_ID=9bea085fe09385497720ce4f203f8ad0 wrangler pages deploy out/deck-publish --project-name suborned-deck --branch main --commit-dirty=true",
+    "goals": "bun tools/goals/cli.ts",
+    "goals:test": "bun test tools/goals/test"
   },
   "devDependencies": {
     "@types/bun": "1.3.0",

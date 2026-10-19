@@ -15,7 +15,7 @@ const ts = (base: string, dir: string, deep = true): string[] =>
 
 export const VERDICT_FILES = [
   'tools/gen/sha.ts', 'tools/levels/pins.ts', 'tools/levels/rerun.ts',
-  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
+  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/gdd-sources.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts',
   'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
   'tools/levels/people/cast.ts', 'tools/levels/people/pins.ts', 'tools/missions/handover/cast.ts',
   'tools/missions/handover/summon.ts', // the lover summons' walk and limits (Waymark): cast.ts's M-2 reads them, and `bun run people` reports M-2

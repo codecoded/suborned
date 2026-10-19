@@ -91,3 +91,9 @@ briefs/**/*.mov
 briefs/012/cell/_test/
 !briefs/020/people/cell-lineup-latest.png
 presentation/_check/
+
+# Local compiler caches inside goal/crew evidence; retain source and reports.
+runs/goals/**/bin/
+runs/goals/**/obj/
+runs/crew/**/bin/
+runs/crew/**/obj/

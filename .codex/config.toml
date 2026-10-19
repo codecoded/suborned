@@ -1,0 +1,5 @@
+# Project crew. Roles are generated from GDD §01 and §14 by `bun run crew`.
+# Model, reasoning effort, permissions, provider and MCP stay with the session.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3

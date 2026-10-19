@@ -7,6 +7,12 @@ The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): A
 ## Assignment 4 submission (content pipeline)
 Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, 1–2.5 minutes; allow a 5-minute timeout).
 
+## Goal-oriented development and the Codex crew
+
+The [goal coordinator](tools/goals/README.md) discovers gaps against the current GDD, ranks work, generates independently reviewed tests/code, and verifies and rescans after each write. It supports Claude and Codex, with explicit live-call approval and budget limits. Start with `bun run goals status`; main carries no imported submission backlog. See the guide for offline checks, live setup and per-run reports.
+
+The [Codex crew](.codex/README.md) mirrors the 17 Claude roles. `bun run crew --check` checks both sets against the GDD; `bun run crew` regenerates them. Assignment 5's historical reports and execution evidence remain on the [submission branch](https://github.com/codecoded/suborned/tree/assignment-05/courses/a05-goal-agent).
+
 ## Play the game
 
 ```sh

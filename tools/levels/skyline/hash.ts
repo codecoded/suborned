@@ -19,7 +19,7 @@ const ts = (base: string, dir: string): string[] =>
 export const VERDICT_FILES = [
   'tools/levels/apply.ts', 'tools/levels/checker.ts', 'tools/levels/timetable.ts', 'tools/kit/fit.ts',
   'tools/missions/handover/overlay.ts', 'tools/missions/handover/cast.ts', 'tools/missions/handover/visibility.ts', 'tools/missions/handover/summon.ts', 'tools/missions/check/engine.ts', 'tools/missions/sight.ts', 'tools/gen/pin-kit.ts', 'tools/gen/sha.ts',
-  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/images.ts',
+  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/gdd-sources.ts', 'tools/rag/corpus-html.ts', 'tools/rag/images.ts',
   'tools/rag/kit-corpus.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts', 'tools/rag/plan-skyline.ts',
   ...['apply', 'candidate', 'check', 'concepts', 'known', 'mission', 'retime'].map(f => `tools/levels/skyline/${f}.ts`),
 ];

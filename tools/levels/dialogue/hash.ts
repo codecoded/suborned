@@ -13,7 +13,7 @@ export const VERDICT_FILES = [
   'tools/dialogue/check.ts', 'tools/dialogue/expand.ts', 'tools/dialogue/fill.ts', 'tools/dialogue/fixture.ts', 'tools/dialogue/rules.ts', 'tools/dialogue/situations.ts', 'tools/dialogue/texts.ts',
   'contracts/people/people.rules.schema.ts', 'contracts/people/people.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts', 'contracts/missions/handover/text.schema.ts',
   'tools/gen/sha.ts', 'tools/levels/pins.ts', 'tools/levels/rerun.ts',
-  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts', 'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
+  'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/gdd-sources.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts', 'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
   'tools/levels/dialogue/cast.ts', 'tools/levels/dialogue/pins.ts', 'tools/levels/dialogue/hash.ts',
 ];
 export const dialogueFiles = (base: string = root): string[] => [...ts(base, 'contracts/dialogue'), ...VERDICT_FILES];
