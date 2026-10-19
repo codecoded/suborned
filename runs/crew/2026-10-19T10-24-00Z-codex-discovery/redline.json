@@ -1,0 +1,194 @@
+{
+  "schema": "suborned.crew.discovery.redline/1",
+  "role": "Redline / code-performance-reviewer",
+  "reviewedAt": "2026-10-19T10:30:39.591484+00:00",
+  "mode": "Independent Codex crew scan review; not goals CLI execution or provider generation",
+  "head": "af46f14dfd6edd29eeed6123e38778081275abef",
+  "whatChanged": [
+    "runs/crew/2026-10-19T10-24-00Z-codex-discovery/redline.json",
+    "runs/crew/2026-10-19T10-24-00Z-codex-discovery/redline-evidence.txt",
+    "out/redline-codex-discovery/"
+  ],
+  "sourceHashes": {
+    "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+    "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+    "sim/Suborned.Sim/GameTakedown.cs": "31fc1b13b49e068f804723f482f347f4342a3cb80792b32651a50441edd9636e",
+    "sim/Suborned.Sim/GameCombat.cs": "80ff19c53ec6fe82a5d92ec608c8c01570039a15a4f0f871335d2022b5164b73",
+    "sim/Suborned.Sim/Debrief.cs": "5dd715dd4c7bb01710b568d5605935ec1bc7bf8d8579d97983924506c97c8230",
+    "sim/Suborned.Sim/GameInvestigation.cs": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350",
+    "sim/Suborned.Sim/ScenariosTakedown.cs": "bef1536857379108fca814ae03cb29b9adf7d57a5285f2f7b32db1c3ceed4418",
+    "out/redline-codex-discovery/Program.cs": "dc8175202fbfb73ebb05973cd5800a81cd73d9b26ed4f3c25918316501fc4e11"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "selection-blocking",
+      "candidate": "keel-stop-woken-report",
+      "status": "blocked-unproven-defect",
+      "finding": "Do not accept the proposed second-takedown production fix on the submitted evidence. The Down injection bypasses Seize, which already cancels every pending report for the seized person, without a woken exception.",
+      "source": [
+        "sim/Suborned.Sim/GameTakedown.cs:173",
+        "sim/Suborned.Sim/GameTakedown.cs:196",
+        "sim/Suborned.Sim/GameTakedown.cs:202",
+        "sim/Suborned.Sim/GameTakedown.cs:558",
+        "sim/Suborned.Sim/GameTakedown.cs:807"
+      ],
+      "evidence": "N56 orders with only the final retreat omitted: wake at 3660; issue accepted knockout or kill at 3661; original report due 3730 immediately becomes stopped, original ActTrail remains false, Acts.Count=2. Both runs have zero refused orders, equal replay checkpoints and equal full state hashes. No public-state injection.",
+      "limitation": "This refutes the claimed pre-deadline second-takedown gap in the exercised route; it does not prove the woken exemption safe for every incapacitation path. GuardHit/CivilianHit directly set Down without Seize. An attempted fire order at guard 73 was refused target-unknown, so no shooting defect is claimed. Exact landing-tick ties and all other victim types were not tested."
+    },
+    {
+      "id": "R2",
+      "severity": "priority-correction",
+      "finding": "All submitted totals use the formula correctly, but none of the claimed direct dependents has a demonstrated prerequisite edge to distinct pending work. Silent-takedown interruption and Trail/dispatch correctness are benefits of the same fix. Closing-event correctness restates its task. Campaign code can consume the existing Between data; the proposed Start case-count slice does not require JSON export. Escalation and its tests are part of the carry-forward task. Set all four dependency bonuses to zero for this selection."
+    },
+    {
+      "id": "R3",
+      "severity": "confirmed-bounded-gap",
+      "candidate": "splice-debrief-case-export",
+      "finding": "N47 produces one typed missing case and one typed area watch. Debrief.Write exports neither structured collection, while prose and aggregates already exist. The data loss at the writer boundary is real; treating structured JSON as desired output is an engineering interpretation, not a new literal GDD mandate.",
+      "source": [
+        "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html:540",
+        "sim/Suborned.Sim/GameInvestigation.cs:38",
+        "sim/Suborned.Sim/GameInvestigation.cs:420",
+        "sim/Suborned.Sim/Debrief.cs:103",
+        "sim/Suborned.Sim/Debrief.cs:128"
+      ],
+      "evidence": "N47 27/27 checks pass; Cases.Count=1, AreaWatch.Count=1; serialized JSON has neither cases nor areaWatch key."
+    }
+  ],
+  "scoreAudit": {
+    "formula": "4*value + 2*directDependents - effort - risk",
+    "method": "Keep submitted value/effort/risk estimates; remove unsupported dependency edges. Scores are prioritization estimates, not measured costs.",
+    "candidates": [
+      {
+        "id": "keel-stop-woken-report",
+        "value": 5,
+        "effort": 2,
+        "risk": 2,
+        "submittedDirectDependents": 2,
+        "submittedScore": 20,
+        "directDependents": 0,
+        "correctedScore": 16,
+        "eligible": false,
+        "reason": "No reproduced defect through second takedown; existing cancellation passes."
+      },
+      {
+        "id": "keel-driverless-departure",
+        "value": 3,
+        "effort": 2,
+        "risk": 3,
+        "submittedDirectDependents": 1,
+        "submittedScore": 9,
+        "directDependents": 0,
+        "correctedScore": 7,
+        "eligible": false,
+        "reason": "Design ruling and reachable order fixture still needed. Human GDD says current generated driver opportunities are closed; terminal predicate alone does not establish a playable route."
+      },
+      {
+        "id": "splice-debrief-case-export",
+        "value": 4,
+        "effort": 2,
+        "risk": 2,
+        "submittedDirectDependents": 1,
+        "submittedScore": 14,
+        "directDependents": 0,
+        "correctedScore": 12,
+        "eligible": true,
+        "reason": "Confirmed small serialization gap; ready as explicitly bounded additive engineering task."
+      },
+      {
+        "id": "splice-case-security-carry",
+        "value": 4,
+        "effort": 4,
+        "risk": 4,
+        "submittedDirectDependents": 2,
+        "submittedScore": 12,
+        "directDependents": 0,
+        "correctedScore": 8,
+        "eligible": false,
+        "reason": "Campaign identity, aging, closure and handoff semantics remain unassigned; proposed count input is not complete carry-forward."
+      }
+    ]
+  },
+  "recommendation": {
+    "id": "splice-debrief-case-export",
+    "status": "ready",
+    "correctedScore": 12,
+    "title": "Serialize existing case and area-watch consequences in the headless debrief",
+    "asterCanAccept": true,
+    "acceptanceScope": "Accept this bounded export selection; reject the claim that a second-takedown fix is presently justified. Implementation remains a separate handoff.",
+    "productionPath": "sim/Suborned.Sim/Debrief.cs",
+    "testPath": "sim/Suborned.Sim.Tests/CaseDebriefTests.cs",
+    "contract": "Add nextMission.cases entries {who,kind,place,missions} and nextMission.areaWatch entries {place,guards,cameras,missions} from existing tuples in their existing order. Omit each empty collection to preserve empty-case output. Preserve current who role/id convention, coordinate-string place values, -1 missing-case lifetime, aggregate fields and prose. No new block mapping, campaign progression or consequence calculation.",
+    "risks": [
+      "Existing who values mix role aliases and person IDs; export faithfully and document this, do not imply stable campaign identity.",
+      "place is a scene coordinate string, not a block ID; export cannot claim generated block guard/camera placement.",
+      "Prose already exposes the consequences, so value is structured integration fidelity, not a wholly missing debrief feature.",
+      "Additive keys may affect strict downstream JSON consumers; inspect consumers and preserve existing fields and empty output."
+    ],
+    "acceptanceTests": [
+      "N47 missing-person fixture: parse serialized debrief; verify one guard missing case, existing scene place, missions=-1, watch +1 guard/+1 camera for 3 missions; check tuples are preserved and retain aggregate/prose compatibility.",
+      "Use an existing order-driven found-killing fixture; assert found-killing lifetime from the rulebook and matching scene/watch data, with expected values independent of writer output.",
+      "No-case successful debrief: no new empty fields under the proposed contract; existing FailCauseTests remain passing.",
+      "Repeated Debrief.Of/Write yields deterministic JSON and leaves full simulation state hashes/checkpoints unchanged. Selected scenario replays stay identical.",
+      "Run focused C# tests for changed serializer and chosen scenarios; record any unrelated pre-existing suite failure separately."
+    ],
+    "explicitLimitation": "This completes a serialization boundary only. It does not implement campaign persistence, case aging/closure, next-mission security input, block identification or guard/camera placement; it is not complete GDD coverage or a completed revised goals-agent live demonstration.",
+    "handoff": {
+      "inputs": [
+        "redline.json",
+        "redline-evidence.txt",
+        "splice.json",
+        "latest human GDD \u00a708",
+        "existing Between.Cases/AreaWatch tuples"
+      ],
+      "doneCheck": "Focused export assertions, compatibility, query purity and deterministic replay pass; no new campaign behavior.",
+      "nextOwner": "Aster assigns Keel implementation; Suture or Redline independently checks acceptance."
+    }
+  },
+  "validation": {
+    "scenarioChecks": 61,
+    "scenarioFailures": 0,
+    "orderDrivenRetakedownVariants": 2,
+    "bothReplayExactly": true,
+    "broadSuiteRun": false,
+    "unityOrPerformanceTestRun": false
+  },
+  "commands": [
+    {
+      "command": "pwd && cat AGENTS.md && cat CLAUDE.md",
+      "result": "Read workspace and shared crew policy; review only."
+    },
+    {
+      "command": "cat runs/crew/2026-10-19T10-24-00Z-codex-discovery/{keel.json,keel-evidence.txt,splice.json,bootstrap.json,retrieval.json}",
+      "result": "Read both candidate submissions and saved real retrieval. Bootstrap reused corpus ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df in c_ffc7f384e553845d (577 chunks). No new retrieval/model call."
+    },
+    {
+      "command": "Targeted rg/sed reads: GameTakedown.cs (154\u2013220, 552\u2013645, 780\u2013820), GameCombat.cs (435\u2013485, 651\u2013674), Debrief.cs, GameInvestigation.cs (32\u201340, 420\u2013425), ScenariosTakedown.cs (N47/N56/N65), tools/goals/backlog.ts (70\u201377), latest human GDD (355\u2013389, 477\u2013490, 532\u2013551), agent GDD \u00a711",
+      "result": "Seize cancels pending reports before their deadline; serializer omits existing tuples; GDD requires report interruption and case/watch output but does not prescribe JSON fields. Two initial guessed paths Engine.cs and Replay.cs did not exist; located Engine in Debrief.cs and read it."
+    },
+    {
+      "command": "mkdir -p out/redline-codex-discovery && cp out/keel-codex-discovery/Probe.csproj out/redline-codex-discovery/Probe.csproj",
+      "result": "Created separate scratch project; Keel scratch unchanged. Program.cs authored only in Redline scratch."
+    },
+    {
+      "command": "dotnet run --project out/redline-codex-discovery/Probe.csproj > out/redline-codex-discovery/probe-output.txt 2>&1",
+      "exitCode": 0,
+      "result": "N56 15/15, N65 19/19, N47 27/27 checks pass. Both order-driven second takedowns stop woken report and replay exactly; N47 structured case/watch JSON absent. Fire experiment refused, not a reachable shooting reproduction. Execution success is not acceptance of the proposed fix."
+    },
+    {
+      "command": "git status --short; git rev-parse HEAD",
+      "result": "HEAD af46f14dfd6edd29eeed6123e38778081275abef; existing dirty source/crew/goals/Watch work observed and preserved."
+    },
+    {
+      "command": "Python hashlib.sha256 over GDD and reviewed source/probe files",
+      "result": "Hashes saved in this report and scratch hashes.json; latest GDD hashes match both submissions and retrieval."
+    }
+  ],
+  "limitations": [
+    "Focused current-worktree review, not exhaustive GDD discovery.",
+    "Saved retrieval was inspected; no new corpus ingest, live call or paid API.",
+    "No production/GDD/card/submission edits, commit/push/checkout/reset/stash, browser, Unity/assets, or delegation.",
+    "The legacy white-box experiment remains a branch discrepancy, not itself an order-reachable bug."
+  ]
+}

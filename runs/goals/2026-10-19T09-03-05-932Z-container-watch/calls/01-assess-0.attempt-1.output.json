@@ -1,0 +1,66 @@
+{
+  "summary": "Baseline: the deterministic container round clock is in place. NextRound works out the round's timing from the container's id hash and the service period, always returns known=false, and its check passes (1/1). Scout Watch on a container is not built. Watch on any target that isn't a person goes to WatchWatcher, which refuses with target-unknown because a container is not a watcher. NextRound still hard-codes known=false, and its own comment says the engine has no order that teaches a round yet. As a result 5 of the 6 watch checks fail, and the replay check fails (0/1). Regression passes (858/858).",
+  "features": [
+    {
+      "id": "container-clock",
+      "state": "satisfied",
+      "explanation": "NextRound gives the next round tick from an id-hash phase and the service period. It changes no state, returns -1 for doors and unknown ids, and returns known=false. Check 'clock' passed 1/1.",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/GameHudReads.cs",
+          "quote": "int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameHudReads.cs",
+          "quote": "Known is false for now: the engine has no order that teaches a round yet (the HUD shows \"?\")."
+        }
+      ],
+      "value": 3,
+      "effort": 1,
+      "risk": 1,
+      "reason": "Already built and passing. It is the base the Watch feature reads from, so its value is moderate and no further work is needed."
+    },
+    {
+      "id": "container-watch",
+      "state": "missing",
+      "explanation": "Scout() sends every non-person Watch to WatchWatcher, which refuses with target-unknown when the target is not a watcher. No container Watch exists, no knowledge flag is stored, and NextRound hard-codes false. Check 'watch' failed 5 of 6. This needs a container path covering the Scout-only rule, reach (SightReachCm), duration SightWatchS, the already-watched refusal, matching LearnQuery answers, Land and OnDone, and NextRound reading the stored knowledge. Cancel already gives 'lost' for watch.",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/GameOrders.cs",
+          "quote": "if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameSight.cs",
+          "quote": "if (!IsWatcher(o.Target)) return No(\"target-unknown\", $\"'{o.Target}' is no one to watch here\");"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameHudReads.cs",
+          "quote": "return (next, false);"
+        }
+      ],
+      "value": 4,
+      "effort": 3,
+      "risk": 3,
+      "reason": "This is the core of the objective: the player learns the round and can plan a stash around it. It touches order routing, Land, cancel and the query path that every Watch already uses, so recorded runs could be affected; the regression suite guards that."
+    },
+    {
+      "id": "watch-replay",
+      "state": "missing",
+      "explanation": "Learned container timing is not stored anywhere, so it cannot be hashed or replayed. Check 'replay' failed 0/1. The knowledge has to be mission state that Hash.State includes only once something is learned, so existing checksums stay the same. It must also be rebuilt from the recorded orders when a run is replayed.",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/Hash.cs",
+          "quote": "g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameSight.cs",
+          "quote": "internal void HashSight(Hash.H h)"
+        }
+      ],
+      "value": 3,
+      "effort": 2,
+      "risk": 3,
+      "reason": "Exact replay is a house rule. Little code is needed once the Watch exists, but a hash change could break every existing checkpoint if the new bytes are not added only when something has been learned."
+    }
+  ]
+}

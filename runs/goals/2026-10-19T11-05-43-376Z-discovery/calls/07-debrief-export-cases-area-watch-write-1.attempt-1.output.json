@@ -1,0 +1,10 @@
+{
+  "summary": "Add unconditional nextMission.cases and areaWatch arrays, exporting every tuple field in collection order without mutation or consequence changes (§08, source 7b449f26a7918e1853ee1882). Existing fields remain unchanged. Tests were not run; patch is ready for independent acceptance checks.",
+  "edits": [
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "search": "            w.OpenArr(\"standing\"); // brief 014: one line per district (rulebook debrief.lines.standing) and the Standing the next mission starts at",
+      "replacement": "            w.OpenArr(\"cases\");\n            foreach (var c in Next.Cases)\n                w.Obj().Prop(\"who\", c.who).Prop(\"kind\", c.kind).Prop(\"place\", c.place).Prop(\"missions\", c.missions).EndObj();\n            w.EndArr();\n            w.OpenArr(\"areaWatch\");\n            foreach (var a in Next.AreaWatch)\n                w.Obj().Prop(\"place\", a.place).Prop(\"guards\", a.guards).Prop(\"cameras\", a.cameras).Prop(\"missions\", a.missions).EndObj();\n            w.EndArr();\n            w.OpenArr(\"standing\"); // brief 014: one line per district (rulebook debrief.lines.standing) and the Standing the next mission starts at"
+    }
+  ]
+}

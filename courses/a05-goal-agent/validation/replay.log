@@ -1,0 +1,69 @@
+$ bun tools/goals/cli.ts verify "runs/goals/2026-10-19T09-03-05-932Z-container-watch"
+{
+  "ok": true,
+  "run": "2026-10-19T09-03-05-932Z-container-watch",
+  "rounds": 1,
+  "generatedFeature": true,
+  "requirements": 3,
+  "directory": "out/goals/verify-FXWzBg",
+  "replayed": [
+    {
+      "stage": "baseline",
+      "checks": [
+        {
+          "id": "clock",
+          "passed": 1,
+          "failed": 0,
+          "ok": true
+        },
+        {
+          "id": "watch",
+          "passed": 1,
+          "failed": 5,
+          "ok": false
+        },
+        {
+          "id": "replay",
+          "passed": 0,
+          "failed": 1,
+          "ok": false
+        },
+        {
+          "id": "regression",
+          "passed": 858,
+          "failed": 0,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "stage": "round-1",
+      "checks": [
+        {
+          "id": "clock",
+          "passed": 1,
+          "failed": 0,
+          "ok": true
+        },
+        {
+          "id": "watch",
+          "passed": 6,
+          "failed": 0,
+          "ok": true
+        },
+        {
+          "id": "replay",
+          "passed": 1,
+          "failed": 0,
+          "ok": true
+        },
+        {
+          "id": "regression",
+          "passed": 858,
+          "failed": 0,
+          "ok": true
+        }
+      ]
+    }
+  ]
+}

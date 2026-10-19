@@ -1,0 +1,5 @@
+N56 baseline: 15 checks, failures=0
+interruption kind=woken reporterDown=True reportPhase=landed actTrail=True tick=3730 due=3730
+interruption kind=seen reporterDown=True reportPhase=stopped actTrail=False tick=3730 due=3730
+deadline fixture driverDown=False result=Failure cause=vale-leaves Vale=Pickup tick=5100
+deadline fixture driverDown=True result=Failure cause=vale-leaves Vale=Pickup tick=5100

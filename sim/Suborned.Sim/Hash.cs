@@ -118,6 +118,7 @@ namespace Suborned.Sim
             g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
             g.HashTakedown(h);
             g.HashGetaway(h);
+            g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned
             g.HashRounds(h); // brief 022: no bytes unless the round is played // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }

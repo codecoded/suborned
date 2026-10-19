@@ -1,0 +1,162 @@
+{
+  "query": "GDD bodies container service round time learnable Watch Scout ‖ deterministic simulation orders replay cancellation Watch",
+  "queries": [
+    "GDD bodies container service round time learnable Watch Scout",
+    "deterministic simulation orders replay cancellation Watch"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3406811160052152,
+      "key": "0b451c58f5802f9c3cfbd293",
+      "kind": "gdd-human",
+      "lineEnd": 219,
+      "lineStart": 217,
+      "section": "Watch, turn, time, take, inherit",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Watch, turn, time, take, inherit\nWatch → Learn → Turn → Time → Take → Fight → Inherit",
+      "version": "v0.24.0",
+      "score": 0.0601597005196435,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.36307881098515804,
+      "key": "faa51917ad025160dabf7ed4",
+      "kind": "gdd-human",
+      "lineEnd": 243,
+      "lineStart": 223,
+      "section": "Watch, turn, time, take, inherit › What the player manages (3/3)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Watch, turn, time, take, inherit › What the player manages\n03 · THE CELL",
+      "version": "v0.24.0",
+      "score": 0.057500843454790826,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3561819791793823,
+      "key": "ff475527301e5a276b3aff78",
+      "kind": "gdd-human",
+      "lineEnd": 246,
+      "lineStart": 245,
+      "section": "Four operatives, four verbs › Scout",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Four operatives, four verbs › Scout\nWatch · Listen · Mislead. Watch reveals a routine, and a watcher's sight (its cone) and check-in marks: the cones are the Scout's skill. Listen reveals needs and temperament. Can send rivals after false tips.",
+      "version": "v0.24.0",
+      "score": 0.04435786435786436,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3486791862856611,
+      "key": "4e7ee6bfd474ee552879fd71",
+      "kind": "gdd-human",
+      "lineEnd": 636,
+      "lineStart": 627,
+      "section": "Prove the rules small, then dress them › How it's built",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+      "version": "v0.24.0",
+      "score": 0.03200204813108039,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.36461502593293993,
+      "key": "9a5fab386a34fd16cd455279",
+      "kind": "gdd-agent",
+      "lineEnd": 232,
+      "lineStart": 232,
+      "section": "§11 BUILD › architecture",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§11 BUILD › architecture\narchitecture: rules separate from engine · events carry conditions, effects, witnesses · exact replay from start state + orders · Unity must pass the same 28 scenarios before it's trusted · one C# sim engine as a Unity-free library: Unity runs it live, build tools headless via dotnet; 10 Hz fixed tick, integer state, replay = orders + checksums · performance = frame rate at play zoom, not polygons: target 60 fps at 1080p on the reference machine, a 15-inch MacBook Air M4 (Mac16,13; no fan, 10-core GPU), measured warm (after several minutes of running, since it throttles) at play zoom with people, vehicles and the simulation in, by a perf harness in a development build (Redline specifies it, Latch builds it); a mid-range PC (RTX 3060-class GPU, 6-core CPU) must also pass, as a check, not the bar.",
+      "version": "v0.24.0",
+      "score": 0.030679156908665108,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.35470225541008926,
+      "key": "7b86771e41f8db83f5162421",
+      "kind": "gdd-agent",
+      "lineEnd": 400,
+      "lineStart": 395,
+      "section": "§14 ROLES › Redline",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§14 ROLES › Redline\n### Redline · Code and performance reviewer · Opus 5.5\nowns: Code review and performance.\nreceives: Latch's build and the performance targets.\ndelivers: A review. Latch fixes; Redline retests.\nhold: Judge by frame rate at play zoom, not polygon counts: 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13; the reference machine: no fan, 10-core GPU), measured warm at play zoom with people, vehicles and the simulation in, by a perf harness in a development build; a mid-range PC (RTX 3060-class GPU, 6-core CPU) must also pass, as a check. 30 active combatants at most; the background crowd can be far larger (a 10,000-citizen stress test already runs). Anything that breaks exact replay is a defect.\nopens: §11",
+      "version": "v0.24.0",
+      "score": 0.03055037313432836,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3569045108982034,
+      "key": "06dc432993965a32106057ec",
+      "kind": "gdd-agent",
+      "lineEnd": 376,
+      "lineStart": 371,
+      "section": "§14 ROLES › Keel",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+      "version": "v0.24.0",
+      "score": 0.03036576949620428,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3538086414337158,
+      "key": "5295442c65be9b67f46d5c8a",
+      "kind": "gdd-human",
+      "lineEnd": 478,
+      "lineStart": 472,
+      "section": "Handover › B · Take the pickup (from 5:50)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Handover › B · Take the pickup (from 5:50)\nScout watches the official car: the driver needs cash (48 s).\nFixer turns the driver before 5:40 ($40,000). The pickup moves to the service lane. Or the driver parks across the pickup camera for 2:30.\nScout plants a false tip on the rivals (44 s), or you fight.\nEnforcer intercepts (38 s) and heads for the car (44 s).",
+      "version": "v0.24.0",
+      "score": 0.03021353930031804,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    }
+  ]
+}

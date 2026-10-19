@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2adc6fa5-fe67-48ee-b007-199d88c270d8" name="@Skys-Mac-Studio 2026-10-19 16:04:38" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-19T16:04:38.6870560+07:00" queuing="2026-10-19T16:04:38.6870560+07:00" start="2026-10-19T16:04:37.7417460+07:00" finish="2026-10-19T16:04:38.6892480+07:00" />
+  <TestSettings name="default" id="94003b4c-6241-4cd6-8b10-8439939f7c9f">
+    <Deployment runDeploymentRoot="_Skys-Mac-Studio_2026-10-19_16_04_38" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="30da8b7d-5a62-4eab-a385-2de57abca99c" testId="99cb1fc7-3113-9f60-1698-7147535e0011" testName="GoalWatchTests.ContainerWatchUsesTheExistingWatchReach" computerName="Skys-Mac-Studio" duration="00:00:00.0078541" startTime="2026-10-19T16:04:38.6276490+07:00" endTime="2026-10-19T16:04:38.6353800+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="30da8b7d-5a62-4eab-a385-2de57abca99c">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ
+            ↓ (pos 1)
+Expected: "too-far"
+Actual:   "target-unknown"
+            ↑ (pos 1)</Message>
+          <StackTrace>   at GoalWatchTests.ContainerWatchUsesTheExistingWatchReach() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 133
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="de3c7fe0-4691-4a53-bb45-f84995e99a99" testId="9433132d-295c-39ba-8468-dca1a1747498" testName="GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState" computerName="Skys-Mac-Studio" duration="00:00:00.0278926" startTime="2026-10-19T16:04:38.5603600+07:00" endTime="2026-10-19T16:04:38.5934490+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="de3c7fe0-4691-4a53-bb45-f84995e99a99">
+      <Output>
+        <ErrorInfo>
+          <Message>target-unknown: 'stash/office-service-door/container' is no one to watch here</Message>
+          <StackTrace>   at GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 103
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0caed121-3ad5-4cd6-b0c0-7f5d3d427e1d" testId="0c8eb442-a1ee-c0a9-3304-f17782ce977b" testName="GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice" computerName="Skys-Mac-Studio" duration="00:00:00.0122729" startTime="2026-10-19T16:04:38.6002840+07:00" endTime="2026-10-19T16:04:38.6057880+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0caed121-3ad5-4cd6-b0c0-7f5d3d427e1d">
+      <Output>
+        <ErrorInfo>
+          <Message>target-unknown: 'stash/office-service-door/container' is no one to watch here</Message>
+          <StackTrace>   at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 87
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="24d0191d-c1a7-4ba6-a55f-79399f5779f5" testId="387cfa99-fbca-af08-7e84-9db38fd1abc4" testName="GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach" computerName="Skys-Mac-Studio" duration="00:00:00.0106876" startTime="2026-10-19T16:04:38.6170770+07:00" endTime="2026-10-19T16:04:38.6274510+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="24d0191d-c1a7-4ba6-a55f-79399f5779f5">
+      <Output>
+        <ErrorInfo>
+          <Message>target-unknown: 'stash/office-service-door/container' is no one to watch here</Message>
+          <StackTrace>   at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 72
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9f3de743-44ae-490c-adce-46f19d8f6121" testId="d5e1c2cf-341e-8fce-f4fb-5e48b1801065" testName="GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration" computerName="Skys-Mac-Studio" duration="00:00:00.0103510" startTime="2026-10-19T16:04:38.6356040+07:00" endTime="2026-10-19T16:04:38.6457880+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9f3de743-44ae-490c-adce-46f19d8f6121">
+      <Output>
+        <ErrorInfo>
+          <Message>target-unknown: 'stash/office-service-door/container' is no one to watch here</Message>
+          <StackTrace>   at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 54
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ca75646e-ed10-4f81-9801-776acd23f722" testId="cc652ba2-87e9-c1cf-dc52-249db9d75fcd" testName="GoalWatchTests.ContainersRequireScoutAndAnActualContainerTarget" computerName="Skys-Mac-Studio" duration="00:00:00.0108694" startTime="2026-10-19T16:04:38.6063100+07:00" endTime="2026-10-19T16:04:38.6167820+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ca75646e-ed10-4f81-9801-776acd23f722" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="387cfa99-fbca-af08-7e84-9db38fd1abc4">
+      <Execution id="24d0191d-c1a7-4ba6-a55f-79399f5779f5" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach" />
+    </UnitTest>
+    <UnitTest name="GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="9433132d-295c-39ba-8468-dca1a1747498">
+      <Execution id="de3c7fe0-4691-4a53-bb45-f84995e99a99" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState" />
+    </UnitTest>
+    <UnitTest name="GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="d5e1c2cf-341e-8fce-f4fb-5e48b1801065">
+      <Execution id="9f3de743-44ae-490c-adce-46f19d8f6121" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration" />
+    </UnitTest>
+    <UnitTest name="GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="0c8eb442-a1ee-c0a9-3304-f17782ce977b">
+      <Execution id="0caed121-3ad5-4cd6-b0c0-7f5d3d427e1d" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="KnownContainerRejectsARepeatWithoutTimeOrPrice" />
+    </UnitTest>
+    <UnitTest name="GoalWatchTests.ContainerWatchUsesTheExistingWatchReach" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="99cb1fc7-3113-9f60-1698-7147535e0011">
+      <Execution id="30da8b7d-5a62-4eab-a385-2de57abca99c" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="ContainerWatchUsesTheExistingWatchReach" />
+    </UnitTest>
+    <UnitTest name="GoalWatchTests.ContainersRequireScoutAndAnActualContainerTarget" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="cc652ba2-87e9-c1cf-dc52-249db9d75fcd">
+      <Execution id="ca75646e-ed10-4f81-9801-776acd23f722" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalWatchTests" name="ContainersRequireScoutAndAnActualContainerTarget" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="99cb1fc7-3113-9f60-1698-7147535e0011" executionId="30da8b7d-5a62-4eab-a385-2de57abca99c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9433132d-295c-39ba-8468-dca1a1747498" executionId="de3c7fe0-4691-4a53-bb45-f84995e99a99" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0c8eb442-a1ee-c0a9-3304-f17782ce977b" executionId="0caed121-3ad5-4cd6-b0c0-7f5d3d427e1d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="387cfa99-fbca-af08-7e84-9db38fd1abc4" executionId="24d0191d-c1a7-4ba6-a55f-79399f5779f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d5e1c2cf-341e-8fce-f4fb-5e48b1801065" executionId="9f3de743-44ae-490c-adce-46f19d8f6121" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cc652ba2-87e9-c1cf-dc52-249db9d75fcd" executionId="ca75646e-ed10-4f81-9801-776acd23f722" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="6" executed="6" passed="1" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.02]   Discovering: Suborned.Sim.Tests
+[xUnit.net 00:00:00.63]   Discovered:  Suborned.Sim.Tests
+[xUnit.net 00:00:00.64]   Starting:    Suborned.Sim.Tests
+[xUnit.net 00:00:00.68]       target-unknown: 'stash/office-service-door/container' is no one to watch here
+[xUnit.net 00:00:00.68]       Stack Trace:
+[xUnit.net 00:00:00.68]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(103,0): at GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState()
+[xUnit.net 00:00:00.68]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.68]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.69]       target-unknown: 'stash/office-service-door/container' is no one to watch here
+[xUnit.net 00:00:00.69]       Stack Trace:
+[xUnit.net 00:00:00.69]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(32,0): at GoalWatchTests.Watch(Game g)
+[xUnit.net 00:00:00.69]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(87,0): at GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice()
+[xUnit.net 00:00:00.69]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.69]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.71]       target-unknown: 'stash/office-service-door/container' is no one to watch here
+[xUnit.net 00:00:00.71]       Stack Trace:
+[xUnit.net 00:00:00.71]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(32,0): at GoalWatchTests.Watch(Game g)
+[xUnit.net 00:00:00.71]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(72,0): at GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach()
+[xUnit.net 00:00:00.71]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.71]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.72]       Assert.Equal() Failure: Strings differ
+[xUnit.net 00:00:00.72]                   ↓ (pos 1)
+[xUnit.net 00:00:00.72]       Expected: "too-far"
+[xUnit.net 00:00:00.72]       Actual:   "target-unknown"
+[xUnit.net 00:00:00.72]                   ↑ (pos 1)
+[xUnit.net 00:00:00.72]       Stack Trace:
+[xUnit.net 00:00:00.72]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(133,0): at GoalWatchTests.ContainerWatchUsesTheExistingWatchReach()
+[xUnit.net 00:00:00.72]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.72]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.73]       target-unknown: 'stash/office-service-door/container' is no one to watch here
+[xUnit.net 00:00:00.73]       Stack Trace:
+[xUnit.net 00:00:00.73]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(32,0): at GoalWatchTests.Watch(Game g)
+[xUnit.net 00:00:00.73]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs(54,0): at GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration()
+[xUnit.net 00:00:00.73]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.73]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.73]   Finished:    Suborned.Sim.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T16:04:38.5946050+07:00">
+        <Text>[xUnit.net 00:00:00.68]     GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T16:04:38.6060040+07:00">
+        <Text>[xUnit.net 00:00:00.69]     GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T16:04:38.6276590+07:00">
+        <Text>[xUnit.net 00:00:00.71]     GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T16:04:38.6354840+07:00">
+        <Text>[xUnit.net 00:00:00.72]     GoalWatchTests.ContainerWatchUsesTheExistingWatchReach [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T16:04:38.6459010+07:00">
+        <Text>[xUnit.net 00:00:00.73]     GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

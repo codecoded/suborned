@@ -1,0 +1,43 @@
+{
+  "satisfied": true,
+  "explanation": "The supplied current implementation satisfies all six acceptance criteria for debrief-export-cases-area-watch. Both arrays are unconditional and preserve tuple values, order and multiplicity. Existing fields and consequence calculations remain intact; serialization adds no state mutation, duration advancement or persistence. Supplied executed checks passed all 5 target and 866 regression tests. Independent review passed with no unresolved faults, including closure of the previous numeric-fidelity coverage gap.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.OpenArr(\"cases\");\n            foreach (var c in Next.Cases)\n                w.Obj().Prop(\"who\", c.who).Prop(\"kind\", c.kind).Prop(\"place\", c.place).Prop(\"missions\", c.missions).EndObj();\n            w.EndArr();\n            w.OpenArr(\"areaWatch\");\n            foreach (var a in Next.AreaWatch)\n                w.Obj().Prop(\"place\", a.place).Prop(\"guards\", a.guards).Prop(\"cameras\", a.cameras).Prop(\"missions\", a.missions).EndObj();\n            w.EndArr();"
+    },
+    {
+      "path": "sim/Suborned.Sim/Script.cs",
+      "quote": "if (g.Result == Outcome.Success) { w.Key(\"debrief\"); var d = new JWriter(); Debrief.Of(g).Write(d); w.Raw(d.ToString()); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "var b = new Between();\n            var copies = new Dictionary<Person, Person>();"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "d.Next.AreaWatch.Add((\"block\\\"z\", 2, 5, 7));\n        d.Next.AreaWatch.Add((\"block\\na\", 11, 3, 1));\n        d.Next.AreaWatch.Add((\"block\\\"z\", 0, 9, 0));\n        d.Next.AreaWatch.Add(d.Next.AreaWatch[0]);"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "Assert.Empty(d.Next.Cases);\n        Assert.Empty(d.Next.AreaWatch);\n        using var report = JsonDocument.Parse(Report.Json(\"S10\", g, new List<(bool, string)>(), true));\n        var exported = Property(report.RootElement, \"debrief\");\n        Exports(exported, d.Next.Cases.ToArray(), d.Next.AreaWatch.ToArray());"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "root[\"nextMission\"] = Property(a.RootElement, \"nextMission\").EnumerateObject()\n            .Where(p => p.Name != \"cases\" && p.Name != \"areaWatch\")\n            .ToDictionary(p => p.Name, p => p.Value.Clone());\n        using var stripped = JsonDocument.Parse(JsonSerializer.Serialize(root));\n        SameJson(e.RootElement, stripped.RootElement);"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "Assert.Equal(first, Write(Debrief.Of(g)));\n            Assert.Equal(cases, d.Next.Cases.ToArray());\n            Assert.Equal(watch, d.Next.AreaWatch.ToArray());\n            Assert.Equal(state, Hash.State(g));\n            Assert.Equal(checkpoints, g.Checkpoints.ToArray());\n            Assert.Equal(script, Script.Write(g, Repo.Inputs.Hash));"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "Assert.Equal(\"\", Script.Parse(script).Verify(replay, Repo.Inputs.Hash));\n        Assert.Equal(first, Write(Debrief.Of(replay)));"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+      "quote": "Assert.Equal(Hash.State(control), Hash.State(observed));\n        Assert.Equal(control.Checkpoints.ToArray(), observed.Checkpoints.ToArray());\n        Assert.Equal(Script.Write(control, Repo.Inputs.Hash), Script.Write(observed, Repo.Inputs.Hash));\n        Assert.Equal(Write(Debrief.Of(control)), Write(Debrief.Of(observed)));"
+    }
+  ],
+  "remaining": []
+}

@@ -1,0 +1,189 @@
+{
+  "version": 2,
+  "gddHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+  "humanHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+  "gddVersion": "0.24.0",
+  "catalog": {
+    "summary": "One goal-scoped requirement preserves existing missing-person cases and area-watch consequences in headless JSON debriefs. Current code inspection must establish existing behavior, serialization gaps and compatibility constraints; no implementation status is inferred from the code index.",
+    "coverage": [
+      {
+        "section": "01",
+        "disposition": "outside-domain",
+        "reason": "Core gameplay and world rules are outside this serialization goal. Exact replay is supporting context for the §08 requirement, not a separate task."
+      },
+      {
+        "section": "02",
+        "disposition": "outside-domain",
+        "reason": "Resource accounting, travel and chains are outside scope; existing consequence values must be preserved, not recalculated."
+      },
+      {
+        "section": "03",
+        "disposition": "outside-domain",
+        "reason": "Operative abilities, movement and recruitment do not belong to the requested debrief serialization change."
+      },
+      {
+        "section": "04",
+        "disposition": "outside-domain",
+        "reason": "People, ties, fear and Standing provide upstream consequences. Changing their rules or between-mission processing is outside this goal."
+      },
+      {
+        "section": "05",
+        "disposition": "outside-domain",
+        "reason": "Missing-person alarms and security responses are upstream simulation behavior. This goal preserves their existing debrief consequences without modifying detection, dispatch or the response dial."
+      },
+      {
+        "section": "06",
+        "disposition": "outside-domain",
+        "reason": "Combat, takedown costs and Heat are outside scope; no new consequence calculations are requested."
+      },
+      {
+        "section": "07",
+        "disposition": "outside-domain",
+        "reason": "Handover's missing-person route is useful inspection context, but mission rules and route implementation are outside the serialization goal."
+      },
+      {
+        "section": "08",
+        "disposition": "requirements",
+        "reason": "Defines the missing-person cases, area watch and district-security consequences that the headless JSON debrief must preserve."
+      },
+      {
+        "section": "09",
+        "disposition": "outside-domain",
+        "reason": "Generation and mission checking are outside scope. Replay consistency supports the §08 acceptance criteria without requiring a separate generator task."
+      },
+      {
+        "section": "10",
+        "disposition": "outside-domain",
+        "reason": "Presentation and other query APIs are unrelated to this specific JSON debrief goal."
+      },
+      {
+        "section": "11",
+        "disposition": "outside-domain",
+        "reason": "Shared-engine architecture and replay constrain verification of §08; engine migration, performance work and milestone delivery are outside scope."
+      },
+      {
+        "section": "12",
+        "disposition": "outside-domain",
+        "reason": "Crew workflow and historical decisions are context only. Relevant case decisions corroborate §08 and do not create another serialization requirement."
+      },
+      {
+        "section": "13",
+        "disposition": "outside-domain",
+        "reason": "Uncoached playtests and presentation gates do not verify the requested headless serialization contract."
+      },
+      {
+        "section": "14",
+        "disposition": "outside-domain",
+        "reason": "Role ownership and replay expectations are design context, not additional work for this goal."
+      },
+      {
+        "section": "15",
+        "disposition": "outside-domain",
+        "reason": "Art, assets, lighting and visual presentation are explicitly excluded and unrelated to JSON debrief preservation."
+      }
+    ],
+    "requirements": [
+      {
+        "id": "debrief-preserve-missing-person-consequences",
+        "title": "Preserve existing case and area-watch consequences in JSON debriefs",
+        "section": "08",
+        "quote": "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+        "acceptance": [
+          "Inspect the current debrief model, consequence calculation, JSON writer and consumers to establish which case and area-watch data already exist and which are omitted from JSON. Treat the code index and prior reviews as navigation only.",
+          "Serialize existing missing-person and case consequences without losing their existing identities, status, affected locations or associated values. Preserve the existing area-watch additions, duration and district security level wherever represented by the current debrief model.",
+          "For existing scenarios covering an undiscovered killing and a found killing, JSON faithfully represents the computed consequences. Do not introduce or change Trail, Standing, fear, case closure, area-watch duration or security-level calculations.",
+          "Repeated serialization of the same debrief produces byte-identical JSON. Replaying the same starting state and orders produces identical serialized case and area-watch consequences.",
+          "Serialization does not advance time, mutate simulation or debrief state, change checksums, apply consequences again or alter subsequent simulation behavior.",
+          "Preserve existing JSON fields, types and meanings and compatibility with current consumers. Verify both debriefs with consequences and debriefs without them; establish any additive representation from current contract inspection rather than inventing field names during extraction.",
+          "Do not implement campaign persistence or new consequence rules. Flag absent model data, unspecified rulebook values or conflicts with the quoted design as inspection blockers instead of supplying invented defaults."
+        ],
+        "terms": [
+          "missing person",
+          "open case",
+          "area watch",
+          "last-seen block",
+          "security level S",
+          "JSON debrief",
+          "deterministic serialization",
+          "backward compatibility"
+        ],
+        "dependsOn": [],
+        "value": 5,
+        "effort": 2,
+        "risk": 3,
+        "rationale": "Makes existing campaign consequences available to headless consumers without changing gameplay. A bounded serialization change should be modest, but omitted model data and consumer compatibility require inspection. Determinism follows §01 and §11; the explicit goal adds side-effect-free serialization and compatibility constraints. The human debrief passage 23452dd13fc8b530fd20ce15 supplies surrounding context but does not replace this literal §08 case row."
+      }
+    ]
+  },
+  "entries": [
+    {
+      "requirement": {
+        "id": "debrief-preserve-missing-person-consequences",
+        "title": "Preserve existing case and area-watch consequences in JSON debriefs",
+        "section": "08",
+        "quote": "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+        "acceptance": [
+          "Inspect the current debrief model, consequence calculation, JSON writer and consumers to establish which case and area-watch data already exist and which are omitted from JSON. Treat the code index and prior reviews as navigation only.",
+          "Serialize existing missing-person and case consequences without losing their existing identities, status, affected locations or associated values. Preserve the existing area-watch additions, duration and district security level wherever represented by the current debrief model.",
+          "For existing scenarios covering an undiscovered killing and a found killing, JSON faithfully represents the computed consequences. Do not introduce or change Trail, Standing, fear, case closure, area-watch duration or security-level calculations.",
+          "Repeated serialization of the same debrief produces byte-identical JSON. Replaying the same starting state and orders produces identical serialized case and area-watch consequences.",
+          "Serialization does not advance time, mutate simulation or debrief state, change checksums, apply consequences again or alter subsequent simulation behavior.",
+          "Preserve existing JSON fields, types and meanings and compatibility with current consumers. Verify both debriefs with consequences and debriefs without them; establish any additive representation from current contract inspection rather than inventing field names during extraction.",
+          "Do not implement campaign persistence or new consequence rules. Flag absent model data, unspecified rulebook values or conflicts with the quoted design as inspection blockers instead of supplying invented defaults."
+        ],
+        "terms": [
+          "missing person",
+          "open case",
+          "area watch",
+          "last-seen block",
+          "security level S",
+          "JSON debrief",
+          "deterministic serialization",
+          "backward compatibility"
+        ],
+        "dependsOn": [],
+        "value": 5,
+        "effort": 2,
+        "risk": 3,
+        "rationale": "Makes existing campaign consequences available to headless consumers without changing gameplay. A bounded serialization change should be modest, but omitted model data and consumer compatibility require inspection. Determinism follows §01 and §11; the explicit goal adds side-effect-free serialization and compatibility constraints. The human debrief passage 23452dd13fc8b530fd20ce15 supplies surrounding context but does not replace this literal §08 case row."
+      },
+      "anchor": "ab2a29c889742dba0e03b6026238e5bb6c5a8dc926bd2bb2bd96cf759b9f0be8",
+      "status": "unknown",
+      "explanation": "Inspection budget exhausted without a supported conclusion. ",
+      "inspectedHashes": {
+        "contracts/rules/rulebook.json": "627344123cb08346338d35f33e058749745dadea167a6f15e38e81fd8e9a6229",
+        "sim/Suborned.Sim/GameInvestigation.cs": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350",
+        "sim/Suborned.Sim/GameResponse.cs": "c669d425ef261798e5ad3f2645d484791494af1122f5f3e2d8dc773b0610d779",
+        "sim/Suborned.Sim/Rules.cs": "c80cd73a73fbb2e1406c6703a3da1abc562e92328fe859bc77affeb7cd758f3c",
+        "sim/Suborned.Sim/ScenariosTakedown.cs": "bef1536857379108fca814ae03cb29b9adf7d57a5285f2f7b32db1c3ceed4418",
+        "sim/Suborned.Sim/Debrief.cs": "5dd715dd4c7bb01710b568d5605935ec1bc7bf8d8579d97983924506c97c8230",
+        "sim/Suborned.Sim/Script.cs": "5399e0da18139ce1edf9d647dcd65b195db3aacc69efb3427c6db3b69ee51ddd",
+        "sim/Suborned.Sim/Json.cs": "49f080c9ae5f39e6d83ec0ad09f2132d77065f05c61eae93f5a807cd5ba2e3b0",
+        "sim/Suborned.Sim.Tests/Tests.cs": "f450d8146073c3a5cf24f7f664e23ddc634b802eb8211556dc6b6aa16fd3b3cb",
+        "sim/Suborned.Sim.Tests/Redline.cs": "2a4f4e05721d0015dac1aecdcca559cef09076dc9c95a17c680d79e684049335",
+        "sim/Suborned.Sim.Tests/FailCauseTests.cs": "c3860bbb5ed37410cb4b9b118fadcaa66546ac4e7870e0765f7f363ddb02c2ee",
+        "sim/cli/Program.cs": "d5870e457fa2e3bb70b2381516a37568bb06612d31164b81922639cccc5e32c7"
+      },
+      "history": [
+        {
+          "run": "runs/goals/2026-10-19T10-55-42-065Z-discovery",
+          "status": "unknown",
+          "reason": "Inspection budget exhausted without a supported conclusion. "
+        }
+      ],
+      "inspection": {
+        "state": "unknown",
+        "explanation": "Inspection budget exhausted without a supported conclusion. ",
+        "evidence": [],
+        "reads": [],
+        "searches": [],
+        "tests": [],
+        "writable": []
+      }
+    }
+  ],
+  "retired": [],
+  "goal": "Preserve existing missing-person case and area-watch consequences in the headless JSON debrief, including deterministic, side-effect-free serialization and backward compatibility. Do not implement campaign persistence or new consequence rules.",
+  "catalogOrigin": "runs/goals/2026-10-19T10-55-42-065Z-discovery/catalog-2.json",
+  "indexHash": "48f3effabb857f7987e1d9be49c19d35942b4d5a13e869db37ad2419b3173353"
+}

@@ -1,0 +1,88 @@
+$ bun test tools/goals/test
+bun test v1.4.3 (c6da4a4d3)
+
+tools/goals/test/models.test.ts:
+(pass) unknown, negative and non-finite prior costs stop retries instead of increasing the budget [0.16ms]
+(pass) spent budgets and call limits prevent another invocation [0.03ms]
+(pass) retrieval requires bootstrap and always passes its pinned hash [0.18ms]
+
+tools/goals/test/audit.test.ts:
+(pass) audit accepts both recorded modifications and newly generated writable source [5.24ms]
+(pass) audit refuses changed immutable acceptance tests [2.19ms]
+(pass) audit refuses unrecorded edits to otherwise writable source [2.48ms]
+(pass) audit refuses newly injected source outside the declared write scope [2.74ms]
+
+tools/goals/test/patch.test.ts:
+(pass) bounded exact code patches > preparation permits exactly one match, records before/after hashes, and does not mutate the snapshot [0.07ms]
+(pass) bounded exact code patches > ambiguous, absent, empty, out-of-scope and no-op replacements fail [0.05ms]
+(pass) bounded exact code patches > new files require an empty search and nonempty content [0.04ms]
+(pass) bounded exact code patches > stale sources are rejected even when the search text would still match [0.44ms]
+(pass) bounded exact code patches > all replacements validate before any file changes [0.52ms]
+(pass) bounded exact code patches > applies multiple exact edits and new files within the approved snapshot [0.88ms]
+(pass) bounded exact code patches > destination symlinks and symlinked ancestors cannot escape the root [0.68ms]
+(pass) bounded exact code patches > a staging-path symlink must never overwrite its external target [0.94ms]
+
+tools/goals/test/checks.test.ts:
+(pass) TRX check evidence > accepts complete passing runs with minimum test coverage [0.36ms]
+(pass) TRX check evidence > zero tests and too few matched tests cannot verify a requirement [0.04ms]
+(pass) TRX check evidence > skipped tests fail even if the completed tests passed [0.03ms]
+(pass) TRX check evidence > failed tests retain counters and fail the check [0.03ms]
+(pass) TRX check evidence > aborted, error and inconsistent summary outcomes cannot pass [0.13ms]
+(pass) TRX check evidence > rejects missing, nonnumeric, negative, fractional and overflowing counters [0.07ms]
+(pass) TRX check evidence > rejects truncated, mismatched, duplicate and malformed XML [0.07ms]
+(pass) TRX check evidence > requires one root and one direct result summary; comment evidence is ignored [0.02ms]
+(pass) TRX check evidence > rejects entity declarations rather than resolving untrusted XML
+
+tools/goals/test/loop.test.ts:
+[goals] round 1: watch; 18 priority
+(pass) goal coordinator iteration > writes, verifies, rescans, independently reviews, then reassesses before completion [6.27ms]
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+(pass) goal coordinator iteration > repairs failed checks in a second recorded iteration [5.07ms]
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+(pass) goal coordinator iteration > repairs an independent review rejection in a second recorded iteration [4.28ms]
+[goals] round 1: watch; 18 priority
+(pass) goal coordinator iteration > iteration exhaustion remains INCOMPLETE even if the model claims satisfaction [3.27ms]
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+(pass) goal coordinator iteration > failed checks force a repair even when review and assessment both claim success [4.74ms]
+[goals] round 1: watch; 18 priority
+(pass) goal coordinator iteration > a budget stop after a real application preserves mechanical rescan and incomplete status [3.75ms]
+(pass) goal coordinator iteration > blocked scope does not invoke a writer or claim completion [1.96ms]
+
+tools/goals/test/verify.test.ts:
+(pass) offline replay refuses an edited immutable input before running tests [4.55ms]
+(pass) offline replay refuses modified recorded patch hashes [2.14ms]
+(pass) offline replay refuses manual implementation edits outside the recorded patches [1.97ms]
+(pass) offline replay rejects escaping input and run paths [2.10ms]
+(pass) an accepted label cannot turn a failed transcript into generation evidence [4.53ms]
+(pass) already-complete readiness runs replay their baseline without claiming a generated feature [10.06ms]
+
+tools/goals/test/bootstrap.test.ts:
+(pass) retrieval bootstrap (offline) > fresh checkout starts its local services and publishes an index; second run reuses it [0.32ms]
+(pass) retrieval bootstrap (offline) > source changes create a new index and preserve the previous corpus [0.05ms]
+(pass) retrieval bootstrap (offline) > healthy remote services ingest normally without Docker [0.03ms]
+(pass) retrieval bootstrap (offline) > remote: failure must not start Docker or ingest [0.18ms]
+(pass) retrieval bootstrap (offline) > custom local ports: failure must not start Docker or ingest [0.04ms]
+(pass) retrieval bootstrap (offline) > startup disabled: failure must not start Docker or ingest [0.02ms]
+(pass) retrieval bootstrap (offline) > stale embedding model or incomplete manifest requires ingestion [0.05ms]
+(pass) retrieval bootstrap (offline) > ingest success without a published manifest is not accepted [0.04ms]
+(pass) retrieval bootstrap (offline) > source mutation during ingestion fails instead of reporting the wrong corpus [0.04ms]
+(pass) retrieval bootstrap (offline) > startup failure preserves the cause while redacting credentials [0.18ms]
+(pass) retrieval bootstrap (offline) > services that remain unhealthy after startup stop before ingestion [0.09ms]
+
+tools/goals/test/scan.test.ts:
+(pass) goal scan and ranking > verification requires a satisfied source assessment and passing behavioral checks [0.15ms]
+(pass) goal scan and ranking > every referenced check must pass and a missing check cannot certify success [0.03ms]
+(pass) goal scan and ranking > literal source evidence must be present in the supplied context, not just the inventory [0.03ms]
+(pass) goal scan and ranking > missing, duplicate, or extra model requirement IDs reject the entire assessment [0.03ms]
+(pass) goal scan and ranking > dependencies require verified evidence and unknown/blocked work is ineligible [0.10ms]
+(pass) goal scan and ranking > score counts direct work unlocked and ties use a stable requirement ID order [0.23ms]
+(pass) goal scan and ranking > rescan reads changed source, includes newly created writable files, and pins GDD quotes [3.21ms]
+(pass) goal scan and ranking > scope loader rejects missing dependencies and cyclic prerequisite graphs [1.27ms]
+
+ 56 pass
+ 0 fail
+ 236 expect() calls
+Ran 56 tests across 8 files. [115.00ms]

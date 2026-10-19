@@ -1,0 +1,42 @@
+{
+  "state": "partial",
+  "explanation": "Existing consequence collections are calculated, but the complete Debrief.Write implementation does not export Cases or AreaWatch as JSON collections, including when empty. Headless Report.Json delegates to this serializer; counts and descriptive lines cannot preserve every entry's structured values and associations. Repair only Debrief.cs: unconditionally serialize the existing collections under nextMission, preserving their order and all tuple fields, without changing calculations or existing fields. Existing scenario tests cover some in-memory consequences and replay checksums, but do not cover collection export, empty arrays, complete value preservation, repeated-read immutability, or exported replay equality. Those acceptance criteria remain unverified; no tests were run. No campaign persistence or new design values are needed.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/Script.cs:78",
+      "quote": "if (g.Result == Outcome.Success) { w.Key(\"debrief\"); var d = new JWriter(); Debrief.Of(g).Write(d); w.Raw(d.ToString()); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs:103-105",
+      "quote": "w.Open(\"nextMission\").Prop(\"ambush\", Next.Ambush);\n            if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before\n                w.Prop(\"campaignTrail\", Next.CampaignTrail).Prop(\"campaignStanding\", Next.CampaignStanding).Prop(\"openCases\", Next.OpenCases).Prop(\"nextLevel\", Next.NextLevel);"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs:38-39",
+      "quote": "public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)\n        public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs:421",
+      "quote": "foreach (var a in missing) { b.AreaWatch.Add((a.Scene.ToString(), R.AreaWatchStep, R.AreaWatchStep, R.AreaWatchMissions)); b.Cases.Add((Who(a.P), \"missing\", a.Scene.ToString(), -1)); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/ScenariosTakedown.cs:142-143",
+      "quote": "r.Is(next.AreaWatch.Count == 1 && next.AreaWatch[0].guards == g.R.AreaWatchStep && next.AreaWatch[0].missions == g.R.AreaWatchMissions, \"the block gets +1 guard and +1 camera for 3 missions\");\n                r.Is(next.Cases.Count == 1 && next.Cases[0].kind == \"missing\", \"one open case\");"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs:36-42",
+      "quote": "public void ReplaysFromStartStateAndOrders(string id)\n    {\n        var played = Scenarios.Run(Repo.Inputs, Scenarios.Find(id)!).G;\n        var replay = Engine.Replay(Repo.Inputs, played);\n        Assert.Equal(played.Checkpoints, replay.Checkpoints);\n        Assert.Equal(played.Result, replay.Result);"
+    }
+  ],
+  "reads": [],
+  "searches": [],
+  "tests": [
+    "ScenarioTests.Passes",
+    "ScenarioTests.SameOrdersSameChecksumsTwice",
+    "ScenarioTests.ReplaysFromStartStateAndOrders",
+    "RedlineTests.E7_every_report_is_the_same_in_every_culture",
+    "FailCauseTests.ASuccessCarriesNoCauseAndItsDebriefIsAsItWas"
+  ],
+  "writable": [
+    "sim/Suborned.Sim/Debrief.cs"
+  ]
+}

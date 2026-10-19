@@ -1,0 +1,6 @@
+Command: ["bun","run","crew","--check"]
+Exit: 0; timedOut: false
+
+Crew current: 17 Claude + 17 Codex roles from GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md.
+
+$ bun tools/crew/cards.ts --check

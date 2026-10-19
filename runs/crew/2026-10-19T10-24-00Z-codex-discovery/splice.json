@@ -1,0 +1,269 @@
+{
+  "role": "Splice / tools-engineer",
+  "mode": "Codex subscription crew discovery; static current-code inspection, not goals CLI generation",
+  "scope": "Focused capstone integration review, not exhaustive GDD coverage. No production edits, ingestion, model/API calls, Unity, browser, commits or delegation.",
+  "sourceFreshness": {
+    "version": "0.24.0",
+    "agent": {
+      "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1"
+    },
+    "human": {
+      "path": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sha256": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159"
+    },
+    "localMain": {
+      "root": "/Users/sky/Projects/suborned",
+      "head": "af46f14dfd6edd29eeed6123e38778081275abef",
+      "agentSha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "humanSha256": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "status": "identical"
+    },
+    "assignmentHead": "af46f14dfd6edd29eeed6123e38778081275abef",
+    "remoteFreshness": "not checked",
+    "workingTree": "Existing modifications and untracked crew/goals/Container Watch files observed; evidence is pinned to working-file hashes, not HEAD alone."
+  },
+  "boundaries": {
+    "latestSourceSelection": "tools/rag/gdd-sources.ts selectLatestGdd is shared by RAG and goals/discovery-sources.ts; assertLatestGdd checks locally registered main hashes. Executed successfully.",
+    "provider": "tools/goals/models.ts imports invokeClaude; tools/rag/agent.ts imports invokeClaude and records provider claude. Codex crew cards do not change those execution paths. No provider adapter work proposed.",
+    "writer": "tools/goals/feature.ts:65-66 allows 1–10 flat sim/Suborned.Sim/*.cs production files; acceptance tests are generated separately under sim/Suborned.Sim.Tests. tools/sim exporters, contracts and UI are outside this writer.",
+    "excludedAlreadyBuilt": "GameStashWatch.cs and GoalWatchTests.cs exist in working tree. Container Watch is not a missing candidate.",
+    "rag": "No ingest or retrieval started; Aster owns bootstrap/retrieval."
+  },
+  "candidates": [
+    {
+      "id": "splice-debrief-case-export",
+      "title": "Preserve structured cases and area-watch consequences in Handover JSON debrief",
+      "status": "missing serialization connection; consequences already computed and presented in prose",
+      "gddSources": [
+        {
+          "path": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "lines": "532-550",
+          "section": "§08 / The debrief writes the next mission",
+          "quote": "Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level"
+        },
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 190,
+          "quote": "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+        }
+      ],
+      "executionPath": [
+        {
+          "path": "sim/Suborned.Sim/GameInvestigation.cs",
+          "lines": "32-40,420-425",
+          "sha256": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350",
+          "finding": "Between holds typed Cases and AreaWatch tuples. Takedown aftermath populates victim, kind, scene, lifetime and watch counts, then produces prose lines."
+        },
+        {
+          "path": "sim/Suborned.Sim/Debrief.cs",
+          "lines": "23-27,103-105,128-133",
+          "sha256": "5dd715dd4c7bb01710b568d5605935ec1bc7bf8d8579d97983924506c97c8230",
+          "finding": "Debrief.Of computes BetweenMissions. Write emits counts/nextLevel and lines but never serializes Cases or AreaWatch. Case lines omit place; watch lines are prose, so downstream data consumers lose structured relationships."
+        },
+        {
+          "path": "sim/Suborned.Sim/Script.cs",
+          "lines": "78",
+          "sha256": "5399e0da18139ce1edf9d647dcd65b195db3aacc69efb3427c6db3b69ee51ddd",
+          "finding": "Successful report JSON invokes Debrief.Of(g).Write; sim/cli/Program.cs:97 also invokes the same writer."
+        }
+      ],
+      "existingTests": [
+        {
+          "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+          "scenario": "N47",
+          "lines": "113-145",
+          "covers": "Unseen guard kill/stash -> +2 Trail, worry, one missing case, +1 guard/camera for three missions; asserts in-memory values only."
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/Tests.cs",
+          "tests": [
+            "ScenarioTests.Passes",
+            "ScenarioTests.SameOrdersSameChecksumsTwice",
+            "ScenarioTests.ReplaysFromStartStateAndOrders"
+          ],
+          "covers": "Scenario behavior and deterministic replay."
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/FailCauseTests.cs",
+          "tests": [
+            "ASuccessCarriesNoCauseAndItsDebriefIsAsItWas",
+            "AFailedDebriefCarriesTheCause"
+          ],
+          "covers": "Debrief JSON cause field, not structured case/watch export."
+        }
+      ],
+      "smallestChange": {
+        "productionPaths": [
+          "sim/Suborned.Sim/Debrief.cs"
+        ],
+        "description": "Write additive nextMission.cases and nextMission.areaWatch arrays from existing tuples, retaining existing aggregates and lines; optionally omit empty arrays for compatibility. Do not invent campaign advancement, new guard placement or case rules.",
+        "testPath": "sim/Suborned.Sim.Tests/CaseDebriefTests.cs",
+        "withinExistingWriterAllowlist": true
+      },
+      "blockersDependencies": [
+        "Keel should confirm additive field names and role/id convention before implementation; current Who() values sometimes use mission roles.",
+        "Current area-watch place is a scene coordinate, not a block id. Preserve it faithfully; correct block attribution requires a separate exporter/world task.",
+        "Structured JSON is an engineering interpretation of the GDD output requirement; existing prose already exposes cases to a human reader."
+      ],
+      "acceptanceChecks": [
+        "Run N47, serialize Debrief.Of(game), parse JSON and compare every case/watch tuple to Next, including scene and -1 lifetime for missing cases.",
+        "Add a found-killing fixture verifying finite CaseCloseMissions and AreaWatchMissions; do not derive expected output from the serializer.",
+        "Verify no-case successful debrief compatibility, deterministic repeated serialization, and unchanged simulation checkpoints before/after debrief.",
+        "Run existing scenario/replay tests for selected fixtures and FailCauseTests; record pre-existing failures separately."
+      ],
+      "scores": {
+        "value": 4,
+        "effort": 2,
+        "risk": 2,
+        "directDependents": 1,
+        "total": 14,
+        "directDependentWork": [
+          "Campaign carry-forward can consume complete structured consequences"
+        ]
+      },
+      "confidence": {
+        "absence": 0.98,
+        "boundedFeasibility": 0.95,
+        "priority": 0.8
+      },
+      "validation": "Static execution-path trace only; no failing C# regression written or executed in this research task."
+    },
+    {
+      "id": "splice-case-security-carry",
+      "title": "Connect prior open cases to the next headless mission security dial",
+      "status": "missing campaign input connection; larger follow-on, defer behind bounded export",
+      "gddSources": [
+        {
+          "path": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "lines": "373-386",
+          "section": "§05 / The response is a dial",
+          "quote": "How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2."
+        },
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 117,
+          "quote": "response [S] (Sky: \"it's easy to swarm the play area with robots if we need to temper the game play\"): a dial, data per district and mission, not code. S = the district's base (data in the plan) + ⌊open cases ÷ 2⌋ (at most +2) + the mission's bonus. The Handover runs at S2."
+        }
+      ],
+      "executionPath": [
+        {
+          "path": "sim/Suborned.Sim/GameInvestigation.cs",
+          "lines": "36-40,420-425",
+          "sha256": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350",
+          "finding": "Explicitly says no campaign layer runs yet. Computes new cases from this mission and NextLevel from this mission count plus SecurityBase; outputs only."
+        },
+        {
+          "path": "sim/Suborned.Sim/Game.cs",
+          "lines": "20-90",
+          "sha256": "a60f4bac6cc6aa172e15c16a4b733be21be26bbe2cc98a2dcca39356c0fb087e",
+          "finding": "Start exposes explicit Security override, but no prior case collection or open-case count; strict Only() rejects additional fields."
+        },
+        {
+          "path": "sim/Suborned.Sim/GameResponse.cs",
+          "lines": "34-38",
+          "sha256": "c669d425ef261798e5ad3f2645d484791494af1122f5f3e2d8dc773b0610d779",
+          "finding": "SecurityLevel resolves Start.Security ?? S.SecurityLevel, then selects dial data."
+        },
+        {
+          "path": "sim/Suborned.Sim/Site.cs",
+          "lines": "124-137,208",
+          "sha256": "efef1516dd4d0554246c8de87aae2e8f1b0806bbb7b4fca774f235dea2b08b5d",
+          "finding": "Site.SecurityLevel includes SecurityBase + SecurityBonus, with no case input."
+        },
+        {
+          "path": "tools/sim/site.ts",
+          "lines": "200-219",
+          "sha256": "f23483852afa6f5fd48bcb407f80276ebde59613bd4b929ccc352c8d8877eb2f",
+          "finding": "Exporter already passes plan base and mission bonus to provisional data. Missing connection is campaign state, not those authored inputs."
+        }
+      ],
+      "existingTests": [
+        {
+          "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+          "scenario": "N47",
+          "covers": "One newly open case does not increase next district level. No next-mission start from prior cases."
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/Tests.cs",
+          "tests": [
+            "ScenarioTests.ReplaysFromStartStateAndOrders"
+          ],
+          "covers": "Start-state replay plumbing must remain deterministic."
+        }
+      ],
+      "smallestChange": {
+        "productionPaths": [
+          "sim/Suborned.Sim/Game.cs",
+          "sim/Suborned.Sim/GameResponse.cs",
+          "sim/Suborned.Sim/Hash.cs"
+        ],
+        "description": "Bounded first slice: optional prior open-case count in Start, canonicalized and hashed; absent explicit scenario override, derive dial from base + capped case increment + bonus. This proves input-to-dial only, not persistence or case aging.",
+        "testPath": "sim/Suborned.Sim.Tests/CaseSecurityTests.cs",
+        "withinExistingWriterAllowlist": true,
+        "fullFeatureWithinSlice": false
+      },
+      "blockersDependencies": [
+        "Aster/Keel must define campaign handoff semantics: an input count alone does not persist victims, close found-killing cases after three missions or resolve discovered missing bodies.",
+        "Full carry-forward/area guard-camera application needs campaign ownership and generated-world integration beyond a small shared-sim task.",
+        "Preserve explicit Start.Security override semantics and historical canonical hashes when new field absent.",
+        "Do not add mission bonus to NextLevel blindly: it currently represents projected district level, whereas SecurityLevel is mission-specific."
+      ],
+      "acceptanceChecks": [
+        "For base 2 and bonus 0, prior cases 0/1 -> S2, 2/3 -> S3, 4+ -> S4; cap increment at two and overall level at four.",
+        "Verify a nonzero mission bonus is added once, and explicit Security override remains authoritative.",
+        "Reject invalid negative case input; round-trip canonical Start and replay with identical checksums; absent case input preserves existing behavior.",
+        "Two successive headless mission starts must eventually consume produced consequences; mark this requirement incomplete until that consumer exists."
+      ],
+      "scores": {
+        "value": 4,
+        "effort": 4,
+        "risk": 4,
+        "directDependents": 2,
+        "total": 12,
+        "directDependentWork": [
+          "Campaign response escalation",
+          "Case lifetime and multi-mission consequence tests"
+        ]
+      },
+      "confidence": {
+        "absence": 0.99,
+        "boundedFeasibility": 0.85,
+        "fullFeatureFeasibilityInOneTask": 0.4
+      },
+      "validation": "Static execution-path trace; no simulation test execution."
+    }
+  ],
+  "recommendation": {
+    "first": "splice-debrief-case-export",
+    "why": "Small production surface, uses existing rulebook facts and Handover scenario, entirely inside shared-sim writer boundary. Treat it as complete data export, not as a completed campaign.",
+    "defer": "splice-case-security-carry until campaign handoff semantics are assigned",
+    "nextOwner": "Aster assigns Keel implementation and Suture independent acceptance tests/Redline review. Splice hands over source hashes and serialization trace."
+  },
+  "commands": [
+    {
+      "command": "pwd; cat AGENTS.md; cat CLAUDE.md",
+      "result": "Read shared policy."
+    },
+    {
+      "command": "git worktree list --porcelain; git status --short",
+      "result": "Assignment and local main at af46f14; existing dirty working tree noted, untouched."
+    },
+    {
+      "command": "rg --files GDD tools/goals tools/rag sim; targeted rg/sed reads of listed code",
+      "result": "Located current GDD, provider boundaries, writer scope, case/debrief/security paths. Initial guessed GameCampaign.cs/Campaign.cs reads failed because files do not exist; corrected by file inventory."
+    },
+    {
+      "command": "bun -e: import assertLatestGdd from tools/goals/discovery-sources; await assertLatestGdd(process.cwd())",
+      "result": "PASS: v0.24.0 agent/human hashes identical to local main."
+    },
+    {
+      "command": "bun -e: chunkHtml human GDD and print only chunks containing missing persons/open cases",
+      "result": "Read scoped authoritative human sections; confirmed §05/§08 requirements, no whole HTML loaded into model context."
+    },
+    {
+      "command": "bun test tools/goals/test/discovery-sources.test.ts",
+      "result": "PASS: 12 tests, 61 expectations, 0 failures (47ms). Tests cover GDD freshness and code evidence navigation; not simulation feature behavior."
+    }
+  ]
+}

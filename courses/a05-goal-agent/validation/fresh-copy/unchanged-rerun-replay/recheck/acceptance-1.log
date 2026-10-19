@@ -1,0 +1,16 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests/Suborned.Sim.Tests.csproj","--filter","FullyQualifiedName~GoalDebriefCaseWatchFidelityTests","--logger","trx;LogFileName=/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/evidence/recheck/acceptance-1.trx","--verbosity","minimal"]
+Exit: 0; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Suborned.Sim -> /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+Results File: /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/evidence/recheck/acceptance-1.trx
+
+Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 510 ms - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+

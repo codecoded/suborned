@@ -1,0 +1,50 @@
+{
+  "schema": "suborned.a05.report-validation/2",
+  "status": "COMPLETE_SCOPED_GOAL",
+  "preview": [
+    {
+      "width": 1200,
+      "contentHeight": 3690,
+      "capturedHeight": 3690,
+      "consoleMessages": [
+        {
+          "level": "log",
+          "text": "Report verified: three workflow views render; completion is scoped; actual rerun is separate from change explanation."
+        },
+        {
+          "level": "log",
+          "text": "Layout overflow: false"
+        }
+      ],
+      "screenshot": {
+        "mimeType": "image/png",
+        "width": 1200,
+        "height": 3690
+      }
+    },
+    {
+      "width": 390,
+      "contentHeight": 6763,
+      "capturedHeight": 4000,
+      "consoleMessages": [
+        {
+          "level": "log",
+          "text": "Report verified: three workflow views render; completion is scoped; actual rerun is separate from change explanation."
+        },
+        {
+          "level": "log",
+          "text": "Layout overflow: false"
+        }
+      ],
+      "screenshot": {
+        "mimeType": "image/png",
+        "width": 390,
+        "height": 4000
+      }
+    }
+  ],
+  "localLinks": "index.html and technical-report.html: all local targets and in-page anchors exist",
+  "data": "latest-run-summary.json",
+  "evidence": "validation-codex.json",
+  "note": "Headless preview only; no browser pane opened."
+}

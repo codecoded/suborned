@@ -146,6 +146,7 @@ namespace Suborned.Sim
         {
             bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
             if (op.Id != OpId.Scout && !(machine && (WatchesKind(op, o.Target) || ArrivesKnown(o.Target)))) return No("only-scout", "only the Scout watches people and listens (§03)");
+            if (machine && IsContainer(o.Target)) return WatchContainer(op, o, engage); // a container's round (§05; GameStashWatch.cs)
             if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target);
@@ -233,6 +234,7 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
+                case "watch" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)
                 case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
                 case "watch": case "listen":
                     LandPersonEvent(op, o, R.Ev("scout." + o.Do), PersonByRole(o.Target));

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "satisfied": {
+      "type": "boolean"
+    },
+    "explanation": {
+      "type": "string",
+      "minLength": 12
+    },
+    "evidence": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 12
+          }
+        },
+        "required": [
+          "path",
+          "quote"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "remaining": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "satisfied",
+    "explanation",
+    "evidence",
+    "remaining"
+  ],
+  "additionalProperties": false
+}

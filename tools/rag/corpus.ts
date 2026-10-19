@@ -8,6 +8,7 @@ import { chunkHtml } from './corpus-html';
 import { KIT_FILE, kitChunks } from './kit-corpus';
 import { planChunks } from './plan-corpus';
 import { blockChunks, lifeChunks, missionChunks, peopleRulesChunks } from './people-corpus';
+import { selectLatestGdd } from './gdd-sources';
 
 export const hash = (text: string) => createHash('sha256').update(text).digest('hex');
 export type Chunk = { key: string; source: string; sourceHash: string; section: string; lineStart: number; lineEnd: number; text: string; authority: string; version: string; kind?: string };
@@ -33,9 +34,9 @@ export function chunkDocument(source: string, text: string, meta: Meta = { autho
   return chunks;
 }
 
-const latest = (part: string, ext: string) => `GDD/${readdirSync(resolve(root, 'GDD')).filter(f => f.includes(part) && f.endsWith(ext)).sort().at(-1)}`;
+const latestGdd = () => selectLatestGdd(readdirSync(resolve(root, 'GDD')));
 const versionOf = (file: string) => file.match(/v\d+\.\d+\.\d+/)?.[0] ?? 'unversioned';
-export const sources = { agentGdd: () => latest('agent-gdd', '.md'), humanGdd: () => latest('-gdd-v', '.html'), plans: () => { const dir = process.env.SUBORNED_PLANS ?? 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.plan.json')).sort().map(f => `${dir}/${f}`); },
+export const sources = { agentGdd: () => latestGdd().agent.path, humanGdd: () => latestGdd().human.path, plans: () => { const dir = process.env.SUBORNED_PLANS ?? 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.plan.json')).sort().map(f => `${dir}/${f}`); },
   life: () => { const dir = 'contracts/world'; return readdirSync(resolve(root, dir)).filter(f => f.endsWith('.life.json')).sort().map(f => `${dir}/${f}`); },
   block: () => { const f = 'contracts/world/civic-block.json'; return existsSync(resolve(root, f)) ? [f] : []; },
   missions: () => { const dir = 'contracts/missions'; return readdirSync(resolve(root, dir), { withFileTypes: true }).filter(d => d.isDirectory() && existsSync(resolve(root, dir, d.name, 'mission.json'))).map(d => `${dir}/${d.name}/mission.json`).sort(); },

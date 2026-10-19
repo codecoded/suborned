@@ -1,0 +1,163 @@
+{
+  "query": "Export the existing case and area-watch collections in headless JSON debriefs. Preserve current consequence values, existing JSON fields, deterministic replay and side-effect-free reads. Do not add campaign persistence or change gameplay rules. ‖ headless deterministic orders query pricing cancellation replay",
+  "queries": [
+    "Export the existing case and area-watch collections in headless JSON debriefs. Preserve current consequence values, existing JSON fields, deterministic replay and side-effect-free reads. Do not add campaign persistence or change gameplay rules.",
+    "headless deterministic orders query pricing cancellation replay"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3457250205114485,
+      "key": "23452dd13fc8b530fd20ce15",
+      "kind": "gdd-human",
+      "lineEnd": 550,
+      "lineStart": 532,
+      "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+      "version": "v0.24.0",
+      "score": 0.05729319413160854,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.34702162111062795,
+      "key": "06dc432993965a32106057ec",
+      "kind": "gdd-agent",
+      "lineEnd": 376,
+      "lineStart": 371,
+      "section": "§14 ROLES › Keel",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+      "version": "v0.24.0",
+      "score": 0.04670793048402157,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.34332416484725936,
+      "key": "4e7ee6bfd474ee552879fd71",
+      "kind": "gdd-human",
+      "lineEnd": 636,
+      "lineStart": 627,
+      "section": "Prove the rules small, then dress them › How it's built",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+      "version": "v0.24.0",
+      "score": 0.04635096553822021,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3760436177253723,
+      "key": "857f380894cbf25e3e1d7ffd",
+      "kind": "gdd-human",
+      "lineEnd": 813,
+      "lineStart": 790,
+      "section": "One lead, clear owners, named handoffs › Decisions (v0.17.0) (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "One lead, clear owners, named handoffs › Decisions (v0.17.0)\nBudget. Agent work runs inside two existing 20× subscriptions (one Codex, one Claude), which cap usage over time rather than charging per use. Aster watches both and drops optional work when the allowance runs low. Anything paid per use, such as Runware and Meshy credits, is priced before use.\nReview record and version history: ../the-suborned-gdd-changelog.html . The Suborned · Game Design Document v0.24.0 · Sky Rumsey · 18 October 2026. Rules tagged Built come from docs/prototypes/suborned-world-sim.js . Values tagged Spec are starting points to be tuned against playtests.",
+      "version": "v0.24.0",
+      "score": 0.04477508513502811,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.37234697855552934,
+      "key": "d9be59bc49a769f52c74bb1d",
+      "kind": "gdd-agent",
+      "lineEnd": 323,
+      "lineStart": 312,
+      "section": "§13 TESTS › default",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§13 TESTS › default\ndefault: 6 new players.\n| id | question | method | pass |\n| T1 | tactical pause? | same build, 6 each way | pause wins unless no-pause players explain failures as well and rate tension higher |\n| T2 | loud dominates? | log first-shot time + route; re-measured with check-ins and the dial (S2) | < 25% shoot before 2:00; informed quiet runs finish faster |\n| T3 | Trail readable? | ask \"why is the investigation active?\" | ≥ 5/6 give correct cause |\n| T4 | witnesses add decisions? | A/B witnesses on/off | players route around crowds on purpose |\n| T5 | kidnapping fits tone? | framing survey | cell read as resistance, not criminals |\n| T6 | final fight reads as consequence? | ask \"why these enemies?\" | ≥ 5/6 link it to loud/quiet |\n| T7 [L] | contacts memorable? | recall 1 day later | name ≥ 2 contacts + what happened |\n| T8 | shoot-outs readable? | ask \"why did that operative go down?\" | ≥ 5/6 name the cause (outnumbered, no cover, walking, long range) |\n| T9 | takedowns cost what they show? | Handover: an unseen takedown route, then the same takedown in front of a witness who reports | the unseen route wins at Alert ≤ 1; the seen one ends in failure or a loud run; ≥ 5/6 say why |\n| T10 | the street reads without text? | uncoached, HUD at rest; ask \"where is Vale?\", \"who is the waitress?\", \"will that walk be seen?\" | ≥ 5/6 answer from the scope, the markers and the ring; no capture fails the HUD budget |",
+      "version": "v0.24.0",
+      "score": 0.04187323331158947,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "bm25": 4.870223045349121,
+      "key": "9a5fab386a34fd16cd455279",
+      "kind": "gdd-agent",
+      "lineEnd": 232,
+      "lineStart": 232,
+      "section": "§11 BUILD › architecture",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§11 BUILD › architecture\narchitecture: rules separate from engine · events carry conditions, effects, witnesses · exact replay from start state + orders · Unity must pass the same 28 scenarios before it's trusted · one C# sim engine as a Unity-free library: Unity runs it live, build tools headless via dotnet; 10 Hz fixed tick, integer state, replay = orders + checksums · performance = frame rate at play zoom, not polygons: target 60 fps at 1080p on the reference machine, a 15-inch MacBook Air M4 (Mac16,13; no fan, 10-core GPU), measured warm (after several minutes of running, since it throttles) at play zoom with people, vehicles and the simulation in, by a perf harness in a development build (Redline specifies it, Latch builds it); a mid-range PC (RTX 3060-class GPU, 6-core CPU) must also pass, as a check, not the bar.",
+      "version": "v0.24.0",
+      "score": 0.03177805800756621,
+      "signals": [
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.34811097515621303,
+      "key": "0dffd14eab5f60ca398c8382",
+      "kind": "gdd-human",
+      "lineEnd": 570,
+      "lineStart": 550,
+      "section": "Nothing hand-authored, everything checked (3/4)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Nothing hand-authored, everything checked\nConsequences | The rules, applied to the mission log | Replaying the mission to confirm the same result |\nThe mission checker: a generated mission ships only if at least 2 quiet routes win · a loud route exists and costs more Trail · every way to fail can actually happen · no single contact is essential · a player who knows everything finishes with at least a minute to spare. An open case counts as 3 Trail.\nThe risk is sameness. When everyone is generated, it's easy for nobody to be memorable. Watch Dogs: Legion is the cautionary example. The answer is history, not backstory : people become memorable through what the systems record with you (who you helped, who got braver, who sold you out). Generated text is only a light layer on top. Every fact a person carries must change a price or an outcome: a field that no rule reads is rejected, because detailed bios that change nothing (Legion again) are the opposite of memorable.",
+      "version": "v0.24.0",
+      "score": 0.03149801587301587,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.35399484634399414,
+      "key": "56b343520632f1b4dbd286d2",
+      "kind": "gdd-human",
+      "lineEnd": 627,
+      "lineStart": 622,
+      "section": "Prove the rules small, then dress them › Built",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Prove the rules small, then dress them › Built\nTop-down test of Handover: four operatives, two contacts, security, rivals, shooting, debrief and campaign lock. 28 scenario tests pass.\nHarbour District 3D world in progress, built from the plan: world generator and export, DecoKit kit pieces plus procedural fill, Unity builder. Handover goes in next, then player actions.\nCity simulation architecture chosen: one C# engine as a Unity-free library.",
+      "version": "v0.24.0",
+      "score": 0.030309988518943745,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests","--filter","FullyQualifiedName~GoalWatchTests&FullyQualifiedName!~ExistingServiceClockIsDeterministicAndInitiallyUnknown&FullyQualifiedName!~LearnedRoundSurvivesReplayFromOnlyTheRecordedOrders","--logger","trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T09-03-05-932Z-container-watch/baseline/watch.trx","--verbosity","minimal"]
+Exit: 1; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Suborned.Sim -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState [27 ms]
+  Error Message:
+   target-unknown: 'stash/office-service-door/container' is no one to watch here
+  Stack Trace:
+     at GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 103
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice [12 ms]
+  Error Message:
+   target-unknown: 'stash/office-service-door/container' is no one to watch here
+  Stack Trace:
+     at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 87
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach [10 ms]
+  Error Message:
+   target-unknown: 'stash/office-service-door/container' is no one to watch here
+  Stack Trace:
+     at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 72
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalWatchTests.ContainerWatchUsesTheExistingWatchReach [7 ms]
+  Error Message:
+   Assert.Equal() Failure: Strings differ
+            ↓ (pos 1)
+Expected: "too-far"
+Actual:   "target-unknown"
+            ↑ (pos 1)
+  Stack Trace:
+     at GoalWatchTests.ContainerWatchUsesTheExistingWatchReach() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 133
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration [10 ms]
+  Error Message:
+   target-unknown: 'stash/office-service-door/container' is no one to watch here
+  Stack Trace:
+     at GoalWatchTests.Watch(Game g) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 32
+   at GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalWatchTests.cs:line 54
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Results File: /Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T09-03-05-932Z-container-watch/baseline/watch.trx
+
+Failed!  - Failed:     5, Passed:     1, Skipped:     0, Total:     6, Duration: 85 ms - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+[xUnit.net 00:00:00.68]     GoalWatchTests.QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState [FAIL]
+[xUnit.net 00:00:00.69]     GoalWatchTests.KnownContainerRejectsARepeatWithoutTimeOrPrice [FAIL]
+[xUnit.net 00:00:00.71]     GoalWatchTests.CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach [FAIL]
+[xUnit.net 00:00:00.72]     GoalWatchTests.ContainerWatchUsesTheExistingWatchReach [FAIL]
+[xUnit.net 00:00:00.73]     GoalWatchTests.CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration [FAIL]
+

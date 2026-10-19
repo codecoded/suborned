@@ -1,0 +1,27 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tools/goals/test/campaign-loop.test.ts:
+[goals] evidence: runs/goals/2026-10-19T09-54-04-329Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T09-54-04-337Z-discovery; latest local GDD 0.24.0
+[goals] inspect second-price (priority 14)
+(pass) two bounded runs retain the first proof, rerun its tests, and select the next discovered gap [17.38ms]
+[goals] evidence: runs/goals/2026-10-19T09-54-04-345Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+(pass) one passing selector cannot hide a missing separately requested acceptance test [5.71ms]
+[goals] evidence: runs/goals/2026-10-19T09-54-04-351Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+(pass) an implemented inspection cannot waive the pending review of an interrupted generated feature [7.00ms]
+[goals] evidence: runs/goals/2026-10-19T09-54-04-358Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+(pass) a rejected continuation preserves its previous frozen-test pointer and concrete stop reason [6.43ms]
+[goals] evidence: runs/goals/2026-10-19T09-54-04-364Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T09-54-04-367Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+(pass) reruns preserve the observed minimum count of existing acceptance cases [8.95ms]
+
+ 5 pass
+ 0 fail
+ 31 expect() calls
+Ran 5 tests across 1 file. [72.00ms]

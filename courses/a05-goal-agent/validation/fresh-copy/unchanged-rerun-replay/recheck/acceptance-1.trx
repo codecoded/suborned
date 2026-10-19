@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="0e3acb54-b202-4a69-aa38-1a14b396528f" name="@Skys-Mac-Studio 2026-10-19 18:32:20" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-19T18:32:20.6477360+07:00" queuing="2026-10-19T18:32:20.6477360+07:00" start="2026-10-19T18:32:19.2599700+07:00" finish="2026-10-19T18:32:20.6499120+07:00" />
+  <TestSettings name="default" id="d70a05de-3793-4f76-9115-37dc2d95262f">
+    <Deployment runDeploymentRoot="_Skys-Mac-Studio_2026-10-19_18_32_20" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="bcf70d26-b400-4299-afc1-0c94acbda6ed" testId="2d554b30-f5fd-ecd2-3f79-86a4abbc485d" testName="GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays" computerName="Skys-Mac-Studio" duration="00:00:00.0278716" startTime="2026-10-19T18:32:20.3335860+07:00" endTime="2026-10-19T18:32:20.3612370+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bcf70d26-b400-4299-afc1-0c94acbda6ed" />
+    <UnitTestResult executionId="4b7cc734-0111-471f-a6bc-7635c6456c6b" testId="f6d77160-e218-f35c-4d1f-ab9b35d1e482" testName="GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues" computerName="Skys-Mac-Studio" duration="00:00:00.1429753" startTime="2026-10-19T18:32:20.1934790+07:00" endTime="2026-10-19T18:32:20.3333070+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4b7cc734-0111-471f-a6bc-7635c6456c6b" />
+    <UnitTestResult executionId="9cba8caf-a530-44be-b942-5ee94e308442" testId="5c6e7031-0b9c-4e77-53a5-80e28a2fc321" testName="GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" computerName="Skys-Mac-Studio" duration="00:00:00.1154881" startTime="2026-10-19T18:32:20.4850720+07:00" endTime="2026-10-19T18:32:20.6005270+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9cba8caf-a530-44be-b942-5ee94e308442" />
+    <UnitTestResult executionId="da3efb8b-6dc5-4519-a60d-6b400d2ff30a" testId="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b" testName="GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" computerName="Skys-Mac-Studio" duration="00:00:00.1236607" startTime="2026-10-19T18:32:20.3613330+07:00" endTime="2026-10-19T18:32:20.4849680+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="da3efb8b-6dc5-4519-a60d-6b400d2ff30a" />
+    <UnitTestResult executionId="5c3bdca6-948e-4413-a305-e6484d83d911" testId="009dcb30-fb04-0f2d-538c-cd80e10f9913" testName="GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" computerName="Skys-Mac-Studio" duration="00:00:00.0981155" startTime="2026-10-19T18:32:20.0901260+07:00" endTime="2026-10-19T18:32:20.1902610+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5c3bdca6-948e-4413-a305-e6484d83d911" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays" storage="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/t/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-za6mpc/feature-1/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="2d554b30-f5fd-ecd2-3f79-86a4abbc485d">
+      <Execution id="bcf70d26-b400-4299-afc1-0c94acbda6ed" />
+      <TestMethod codeBase="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="SuccessfulHeadlessReportIncludesEmptyArrays" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" storage="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/t/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-za6mpc/feature-1/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b">
+      <Execution id="da3efb8b-6dc5-4519-a60d-6b400d2ff30a" />
+      <TestMethod codeBase="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues" storage="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/t/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-za6mpc/feature-1/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="f6d77160-e218-f35c-4d1f-ab9b35d1e482">
+      <Execution id="4b7cc734-0111-471f-a6bc-7635c6456c6b" />
+      <TestMethod codeBase="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="ExistingLegacyFieldsKeepTheirNamesTypesAndValues" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" storage="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/t/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-za6mpc/feature-1/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="009dcb30-fb04-0f2d-538c-cd80e10f9913">
+      <Execution id="5c3bdca6-948e-4413-a305-e6484d83d911" />
+      <TestMethod codeBase="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" storage="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/t/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-za6mpc/feature-1/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="5c6e7031-0b9c-4e77-53a5-80e28a2fc321">
+      <Execution id="9cba8caf-a530-44be-b942-5ee94e308442" />
+      <TestMethod codeBase="/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-zA6mpc/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2d554b30-f5fd-ecd2-3f79-86a4abbc485d" executionId="bcf70d26-b400-4299-afc1-0c94acbda6ed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f6d77160-e218-f35c-4d1f-ab9b35d1e482" executionId="4b7cc734-0111-471f-a6bc-7635c6456c6b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5c6e7031-0b9c-4e77-53a5-80e28a2fc321" executionId="9cba8caf-a530-44be-b942-5ee94e308442" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b" executionId="da3efb8b-6dc5-4519-a60d-6b400d2ff30a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="009dcb30-fb04-0f2d-538c-cd80e10f9913" executionId="5c3bdca6-948e-4413-a305-e6484d83d911" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="5" executed="5" passed="5" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.02]   Discovering: Suborned.Sim.Tests
+[xUnit.net 00:00:00.63]   Discovered:  Suborned.Sim.Tests
+[xUnit.net 00:00:00.64]   Starting:    Suborned.Sim.Tests
+[xUnit.net 00:00:01.16]   Finished:    Suborned.Sim.Tests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

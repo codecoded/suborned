@@ -1,0 +1,49 @@
+{
+  "state": "partial",
+  "explanation": "Existing case and area-watch consequences are calculated, but headless JSON does not export either collection. The complete Debrief.Write path emits aggregate case fields and narrative lines, never the Cases or AreaWatch entries; empty arrays are also absent. Repair only Debrief.cs: serialize both existing collections unconditionally, preserving every tuple field, association and entry order, without changing calculations or existing fields. Existing tests cover consequence generation, replay checkpoints and culture-stable reports, but do not establish collection export fidelity, empty arrays, compatibility, repeated-read immutability or exported-data replay equality. No tests were run in this inspection. Next owner: simulation implementation, followed by coordinator verification.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/Script.cs",
+      "quote": "if (g.Result == Outcome.Success) { w.Key(\"debrief\"); var d = new JWriter(); Debrief.Of(g).Write(d); w.Raw(d.ToString()); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "d.Inv = g.Investigate(); d.Next = g.BetweenMissions(d.Inv); d.Sightings = g.Sightings.Count;"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)\n        public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "foreach (var a in missing) { b.AreaWatch.Add((a.Scene.ToString(), R.AreaWatchStep, R.AreaWatchStep, R.AreaWatchMissions)); b.Cases.Add((Who(a.P), \"missing\", a.Scene.ToString(), -1)); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before\n                w.Prop(\"campaignTrail\", Next.CampaignTrail).Prop(\"campaignStanding\", Next.CampaignStanding).Prop(\"openCases\", Next.OpenCases).Prop(\"nextLevel\", Next.NextLevel); w.OpenArr(\"ambushBy\"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.OpenArr(\"lines\"); foreach (var l in Next.Lines) w.Obj().Prop(\"line\", l.Line).Prop(\"who\", l.Who).Prop(\"detail\", l.Detail).EndObj(); w.EndArr();"
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs",
+      "quote": "Assert.Equal(played.Checkpoints, replay.Checkpoints);\n        Assert.Equal(played.Result, replay.Result);"
+    },
+    {
+      "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+      "quote": "r.Is(next.Cases.Count == 1 && next.Cases[0].kind == \"missing\", \"one open case\");"
+    }
+  ],
+  "reads": [],
+  "searches": [],
+  "tests": [
+    "ScenarioTests.Passes",
+    "ScenarioTests.SameOrdersSameChecksumsTwice",
+    "ScenarioTests.ReplaysFromStartStateAndOrders",
+    "RedlineTests.E7_every_report_is_the_same_in_every_culture"
+  ],
+  "writable": [
+    "sim/Suborned.Sim/Debrief.cs"
+  ]
+}

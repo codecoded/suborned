@@ -7,6 +7,10 @@ The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): A
 ## Assignment 4 submission (content pipeline)
 Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, 1–2.5 minutes; allow a 5-minute timeout).
 
+## Assignment 5 submission (goal-oriented coding agent)
+
+Branch `assignment-05`. Human and agent reviewers: start at **[courses/a05-goal-agent/README.md](courses/a05-goal-agent/README.md)**. Run `bun install --frozen-lockfile && bun run goals:verify` from the repository root (Bun 1.4+, .NET 10; allow 10 minutes). It tests the submitted simulation and replays the real Codex generation and unchanged rerun. No model, database, Docker or Unity is needed. New live generation is a separate, opt-in workflow with documented limits.
+
 ## Play the game
 
 ```sh

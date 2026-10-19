@@ -1,0 +1,741 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tools/kit/kit.test.ts:
+15 | const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
+16 | const root = kitRoot();
+17 | 
+18 | test('kit.json is the manifest, normalised, and rebuilding it changes nothing', () => {
+19 |   expect(kit.assets.filter(a => a.source !== 'generated').length).toBe(202);
+20 |   expect(JSON.stringify(buildCatalogue(root, kit, GEN_ROOT))).toBe(JSON.stringify(kit));
+                                                                   ^
+error: expect(received).toBe(expected)
+
+Expected: "{"schema":"suborned.kit/1","source":{"manifest":"decokit_manifest.json","materials":"decokit_materi... (1207575 bytes truncated) ...:["tram-shelter"],"scale":[0.8,1.1],"squash":1,"wave":2},"status":"adopted","source":"generated"}]}"
+Received: "{"schema":"suborned.kit/1","source":{"manifest":"decokit_manifest.json","materials":"decokit_materi... (1167286 bytes truncated) ...:["tram-shelter"],"scale":[0.8,1.1],"squash":1,"wave":2},"status":"adopted","source":"generated"}]}"
+
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/kit/kit.test.ts:20:63)
+(fail) kit.json is the manifest, normalised, and rebuilding it changes nothing [259.68ms]
+(pass) wave 1 is exactly the adopted set [0.18ms]
+27 | });
+28 | 
+29 | test('copy verifies hashes, is idempotent, and refuses a tampered source', () => {
+30 |   const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT), b = copyAdopted(kit, root, dest, GEN_ROOT);
+31 |   try {
+32 |     expect(a.errors).toEqual([]); expect(a.copied.length).toBeGreaterThan(100);
+                          ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "Materials/DK_Accent_Coral.mat: missing in source",
++   "Materials/DK_Accent_Coral.mat.meta: missing in source",
++   "Materials/DK_Accent_Gold.mat: missing in source",
++   "Materials/DK_Accent_Gold.mat.meta: missing in source",
++   "Materials/DK_Accent_Teal.mat: missing in source",
++   "Materials/DK_Accent_Teal.mat.meta: missing in source",
++   "Materials/DK_Banner_Comet_Seafoam.mat: missing in source",
++   "Materials/DK_Banner_Comet_Seafoam.mat.meta: missing in source",
++   "Materials/DK_Beacon_Rose.mat: missing in source",
++   "Materials/DK_Beacon_Rose.mat.meta: missing in source",
++   "Materials/DK_Bloom_Coral.mat: missing in source",
++   "Materials/DK_Bloom_Coral.mat.meta: missing in source",
++   "Materials/DK_Bloom_Cream.mat: missing in source",
++   "Materials/DK_Bloom_Cream.mat.meta: missing in source",
++   "Materials/DK_Bloom_Flamingo.mat: missing in source",
++   "Materials/DK_Bloom_Flamingo.mat.meta: missing in source",
++   "Materials/DK_Bloom_Peach.mat: missing in source",
++   "Materials/DK_Bloom_Peach.mat.meta: missing in source",
++   "Materials/DK_Brass_Civic.mat: missing in source",
++   "Materials/DK_Brass_Civic.mat.meta: missing in source",
++   "Materials/DK_Cafe_BackBar.mat: missing in source",
++   "Materials/DK_Cafe_BackBar.mat.meta: missing in source",
++   "Materials/DK_Cafe_Bakelite.mat: missing in source",
++   "Materials/DK_Cafe_Bakelite.mat.meta: missing in source",
++   "Materials/DK_Cafe_Coral.mat: missing in source",
++   "Materials/DK_Cafe_Coral.mat.meta: missing in source",
++   "Materials/DK_Cafe_Cove.mat: missing in source",
++   "Materials/DK_Cafe_Cove.mat.meta: missing in source",
++   "Materials/DK_Cafe_Floor.mat: missing in source",
++   "Materials/DK_Cafe_Floor.mat.meta: missing in source",
++   "Materials/DK_Cafe_Ivory.mat: missing in source",
++   "Materials/DK_Cafe_Ivory.mat.meta: missing in source",
++   "Materials/DK_Cafe_Leaf.mat: missing in source",
++   "Materials/DK_Cafe_Leaf.mat.meta: missing in source",
++   "Materials/DK_Cafe_Mural.mat: missing in source",
++   "Materials/DK_Cafe_Mural.mat.meta: missing in source",
++   "Materials/DK_Cafe_Opal.mat: missing in source",
++   "Materials/DK_Cafe_Opal.mat.meta: missing in source",
++   "Materials/DK_Cafe_PetrolEnamel.mat: missing in source",
++   "Materials/DK_Cafe_PetrolEnamel.mat.meta: missing in source",
++   "Materials/DK_Cafe_Plaster.mat: missing in source",
++   "Materials/DK_Cafe_Plaster.mat.meta: missing in source",
++   "Materials/DK_Cafe_Seafoam.mat: missing in source",
++   "Materials/DK_Cafe_Seafoam.mat.meta: missing in source",
++   "Materials/DK_Cafe_Velvet.mat: missing in source",
++   "Materials/DK_Cafe_Velvet.mat.meta: missing in source",
++   "Materials/DK_Cafe_Walnut.mat: missing in source",
++   "Materials/DK_Cafe_Walnut.mat.meta: missing in source",
++   "Materials/DK_Cloth_CoralSoft.mat: missing in source",
++   "Materials/DK_Cloth_CoralSoft.mat.meta: missing in source",
++   "Materials/DK_Cloth_Cream.mat: missing in source",
++   "Materials/DK_Cloth_Cream.mat.meta: missing in source",
++   "Materials/DK_Cloth_Seafoam.mat: missing in source",
++   "Materials/DK_Cloth_Seafoam.mat.meta: missing in source",
++   "Materials/DK_Cross_Light.mat: missing in source",
++   "Materials/DK_Cross_Light.mat.meta: missing in source",
++   "Materials/DK_Cross_Stop.mat: missing in source",
++   "Materials/DK_Cross_Stop.mat.meta: missing in source",
++   "Materials/DK_Cross_Walk.mat: missing in source",
++   "Materials/DK_Cross_Walk.mat.meta: missing in source",
++   "Materials/DK_Crown_Gold.mat: missing in source",
++   "Materials/DK_Crown_Gold.mat.meta: missing in source",
++   "Materials/DK_Crown_Gold17.mat: missing in source",
++   "Materials/DK_Crown_Gold17.mat.meta: missing in source",
++   "Materials/DK_Enamel_Coral17.mat: missing in source",
++   "Materials/DK_Enamel_Coral17.mat.meta: missing in source",
++   "Materials/DK_Enamel_Flamingo.mat: missing in source",
++   "Materials/DK_Enamel_Flamingo.mat.meta: missing in source",
++   "Materials/DK_Enamel_Mustard.mat: missing in source",
++   "Materials/DK_Enamel_Mustard.mat.meta: missing in source",
++   "Materials/DK_Enamel_Red.mat: missing in source",
++   "Materials/DK_Enamel_Red.mat.meta: missing in source",
++   "Materials/DK_Enamel_Sunshine.mat: missing in source",
++   "Materials/DK_Enamel_Sunshine.mat.meta: missing in source",
++   "Materials/DK_Enamel_Turquoise.mat: missing in source",
++   "Materials/DK_Enamel_Turquoise.mat.meta: missing in source",
++   "Materials/DK_Exhaust_Core.mat: missing in source",
++   "Materials/DK_Exhaust_Core.mat.meta: missing in source",
++   "Materials/DK_Exhaust_Flame.mat: missing in source",
++   "Materials/DK_Exhaust_Flame.mat.meta: missing in source",
++   "Materials/DK_Faience_Teal.mat: missing in source",
++   "Materials/DK_Faience_Teal.mat.meta: missing in source",
++   "Materials/DK_Far_Band.mat: missing in source",
++   "Materials/DK_Far_Band.mat.meta: missing in source",
++   "Materials/DK_Far_Coral.mat: missing in source",
++   "Materials/DK_Far_Coral.mat.meta: missing in source",
++   "Materials/DK_Far_Gold.mat: missing in source",
++   "Materials/DK_Far_Gold.mat.meta: missing in source",
++   "Materials/DK_Far_Shade.mat: missing in source",
++   "Materials/DK_Far_Shade.mat.meta: missing in source",
++   "Materials/DK_Far_Stone.mat: missing in source",
++   "Materials/DK_Far_Stone.mat.meta: missing in source",
++   "Materials/DK_Flower_CoralSoft.mat: missing in source",
++   "Materials/DK_Flower_CoralSoft.mat.meta: missing in source",
++   "Materials/DK_Flower_Flamingo.mat: missing in source",
++   "Materials/DK_Flower_Flamingo.mat.meta: missing in source",
++   "Materials/DK_Glass_Clear.mat: missing in source",
++   "Materials/DK_Glass_Clear.mat.meta: missing in source",
++   "Materials/DK_Glass_Sheen.mat: missing in source",
++   "Materials/DK_Glass_Sheen.mat.meta: missing in source",
++   "Materials/DK_Gold.mat: missing in source",
++   "Materials/DK_Gold.mat.meta: missing in source",
++   "Materials/DK_Gold17.mat: missing in source",
++   "Materials/DK_Gold17.mat.meta: missing in source",
++   "Materials/DK_GroundCover.mat: missing in source",
++   "Materials/DK_GroundCover.mat.meta: missing in source",
++   "Materials/DK_Inlay_Seafoam.mat: missing in source",
++   "Materials/DK_Inlay_Seafoam.mat.meta: missing in source",
++   "Materials/DK_Lamp_Deco.mat: missing in source",
++   "Materials/DK_Lamp_Deco.mat.meta: missing in source",
++   "Materials/DK_Leaf_Civic.mat: missing in source",
++   "Materials/DK_Leaf_Civic.mat.meta: missing in source",
++   "Materials/DK_Leaf_CivicDark.mat: missing in source",
++   "Materials/DK_Leaf_CivicDark.mat.meta: missing in source",
++   "Materials/DK_Liner_Dome.mat: missing in source",
++   "Materials/DK_Liner_Dome.mat.meta: missing in source",
++   "Materials/DK_Liner_Pool.mat: missing in source",
++   "Materials/DK_Liner_Pool.mat.meta: missing in source",
++   "Materials/DK_Liner_Teak.mat: missing in source",
++   "Materials/DK_Liner_Teak.mat.meta: missing in source",
++   "Materials/DK_Liner_White.mat: missing in source",
++   "Materials/DK_Liner_White.mat.meta: missing in source",
++   "Materials/DK_Moon_1.mat: missing in source",
++   "Materials/DK_Moon_1.mat.meta: missing in source",
++   "Materials/DK_Moon_2.mat: missing in source",
++   "Materials/DK_Moon_2.mat.meta: missing in source",
++   "Materials/DK_Neon_Cream.mat: missing in source",
++   "Materials/DK_Neon_Cream.mat.meta: missing in source",
++   "Materials/DK_Pave_Civic.mat: missing in source",
++   "Materials/DK_Pave_Civic.mat.meta: missing in source",
++   "Materials/DK_Planet_1.mat: missing in source",
++   "Materials/DK_Planet_1.mat.meta: missing in source",
++   "Materials/DK_Planet_2.mat: missing in source",
++   "Materials/DK_Planet_2.mat.meta: missing in source",
++   "Materials/DK_Planet_3.mat: missing in source",
++   "Materials/DK_Planet_3.mat.meta: missing in source",
++   "Materials/DK_Planet_4.mat: missing in source",
++   "Materials/DK_Planet_4.mat.meta: missing in source",
++   "Materials/DK_Planet_Ring.mat: missing in source",
++   "Materials/DK_Planet_Ring.mat.meta: missing in source",
++   "Materials/DK_Plume_Glow.mat: missing in source",
++   "Materials/DK_Plume_Glow.mat.meta: missing in source",
++   "Materials/DK_Plume_Shade.mat: missing in source",
++   "Materials/DK_Plume_Shade.mat.meta: missing in source",
++   "Materials/DK_Pool_Civic.mat: missing in source",
++   "Materials/DK_Pool_Civic.mat.meta: missing in source",
++   "Materials/DK_Render_Cream.mat: missing in source",
++   "Materials/DK_Render_Cream.mat.meta: missing in source",
++   "Materials/DK_Signal_Red.mat: missing in source",
++   "Materials/DK_Signal_Red.mat.meta: missing in source",
++   "Models/Booths/DK_CoffeeCart_Play_L1.fbx: missing in source",
++   "Models/Booths/DK_CoffeeCart_Play_L2.fbx: missing in source",
++   "Models/Booths/DK_CoffeeCart_Play.fbx: missing in source",
++   "Models/Booths/DK_PhoneBooth_L1.fbx: missing in source",
++   "Models/Booths/DK_PhoneBooth_Single_L1.fbx: missing in source",
++   "Models/Booths/DK_PhoneBooth_Single_L2.fbx: missing in source",
++   "Models/Booths/DK_PhoneBooth_Single.fbx: missing in source",
++   "Models/Booths/DK_PhoneBooth.fbx: missing in source",
++   "Models/Booths/DK_TicketMachine_L1.fbx: missing in source",
++   "Models/Booths/DK_TicketMachine_L2.fbx: missing in source",
++   "Models/Booths/DK_UtilityCabinet_L1.fbx: missing in source",
++   "Models/Booths/DK_UtilityCabinet_L2.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Antenna_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Antenna.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Atom_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Atom_L2.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Atom.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Dish_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Dish.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Finial_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Finial.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Needle_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Needle.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Saucer_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Saucer.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Starburst_L1.fbx: missing in source",
++   "Models/Crowns/DK_Crown_Starburst.fbx: missing in source",
++   "Models/Facades/DK_ArcadeBay_3_L1.fbx: missing in source",
++   "Models/Facades/DK_ArcadeBay_3_L2.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_3_L1.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_3_L2.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_4_L1.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_4_L2.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_8_L1.fbx: missing in source",
++   "Models/Facades/DK_BalconyBay_8_L2.fbx: missing in source",
++   "Models/Facades/DK_DecoCorner_10_L1.fbx: missing in source",
++   "Models/Facades/DK_DecoCorner_10_L2.fbx: missing in source",
++   "Models/Facades/DK_DecoEnd_10_L1.fbx: missing in source",
++   "Models/Facades/DK_DecoEnd_10_L2.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_3_L1.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_3_L2.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_4_L1.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_4_L2.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_7_L1.fbx: missing in source",
++   "Models/Facades/DK_PortholeBay_7_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamBay_2_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamBay_3_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamBay_3W_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamBay_4_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamBay_4_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_2_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_2_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_3_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_3_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_4_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_4_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_6_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamCorner_6_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_2_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_2_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_3_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_3_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_3W_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_3W_L2.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_4_L1.fbx: missing in source",
++   "Models/Facades/DK_StreamEnd_4_L2.fbx: missing in source",
++   "Models/Furnish/DK_CafeSet_Tulip_L1.fbx: missing in source",
++   "Models/Furnish/DK_CafeSet_Tulip_L2.fbx: missing in source",
++   "Models/Furnish/DK_CafeSet_Tulip_Play_L1.fbx: missing in source",
++   "Models/Furnish/DK_CafeSet_Tulip_Play.fbx: missing in source",
++   "Models/Furnish/DK_Parasol_Stripe_L1.fbx: missing in source",
++   "Models/Furnish/DK_Parasol_Stripe.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Trough_L1.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Trough_L2.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Trough.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Urn_L1.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Urn_L2.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Urn_Play_L1.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Urn_Play.fbx: missing in source",
++   "Models/Furnish/DK_Planter_Urn.fbx: missing in source",
++   "Models/Furnish/DK_PneumaticPost_L1.fbx: missing in source",
++   "Models/Furnish/DK_PneumaticPost_L2.fbx: missing in source",
++   "Models/Furnish/DK_PneumaticPost_Play_L1.fbx: missing in source",
++   "Models/Furnish/DK_PneumaticPost_Play.fbx: missing in source",
++   "Models/Furnish/DK_PneumaticPost.fbx: missing in source",
++   "Models/Furnish/DK_PottedFern_L1.fbx: missing in source",
++   "Models/Furnish/DK_PottedFern_L2.fbx: missing in source",
++   "Models/Furnish/DK_PottedFern.fbx: missing in source",
++   "Models/Furnish/DK_PottedPalm_Small_L1.fbx: missing in source",
++   "Models/Furnish/DK_PottedPalm_Small_L2.fbx: missing in source",
++   "Models/Furnish/DK_StreetClock_L1.fbx: missing in source",
++   "Models/Furnish/DK_StreetClock_L2.fbx: missing in source",
++   "Models/Furnish/DK_StreetClock.fbx: missing in source",
++   "Models/Ground/DK_CrossEdgeLine_1_L1.fbx: missing in source",
++   "Models/Ground/DK_CrossEdgeLine_1.fbx: missing in source",
++   "Models/Ground/DK_CrossEdgeLine_2_L1.fbx: missing in source",
++   "Models/Ground/DK_CrossEdgeLine_2.fbx: missing in source",
++   "Models/Ground/DK_CrossInlayArc_R24_W08_L1.fbx: missing in source",
++   "Models/Ground/DK_CrossInlayArc_R24_W08.fbx: missing in source",
++   "Models/Ground/DK_InlayArc_R2_W06.fbx: missing in source",
++   "Models/Ground/DK_InlayArc_R4_W06.fbx: missing in source",
++   "Models/Ground/DK_InlayArc_R9_W12.fbx: missing in source",
++   "Models/Ground/DK_InlayBand_06_2.fbx: missing in source",
++   "Models/Ground/DK_InlayBand_12_2.fbx: missing in source",
++   "Models/Ground/DK_LightBar_4_L1.fbx: missing in source",
++   "Models/Ground/DK_LightBar_4.fbx: missing in source",
++   "Models/Ground/DK_LightDotRow_1_L1.fbx: missing in source",
++   "Models/Ground/DK_LightDotRow_1.fbx: missing in source",
++   "Models/Ground/DK_LightDotRow_2_L1.fbx: missing in source",
++   "Models/Ground/DK_LightDotRow_2.fbx: missing in source",
++   "Models/Ground/DK_LightField_1_L1.fbx: missing in source",
++   "Models/Ground/DK_LightField_1.fbx: missing in source",
++   "Models/Ground/DK_LightField_2_L1.fbx: missing in source",
++   "Models/Ground/DK_LightField_2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Atom@crescent-tower_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Atom@crescent-tower_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Atom@crescent-tower.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Lantern@lantern-beacon_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Lantern@lantern-beacon.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle@avenue-needle_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle@avenue-needle_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Needle@avenue-needle.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst@avenue-starburst_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Starburst@avenue-starburst.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L1.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace@crescent-terrace_L2.fbx: missing in source",
++   "Models/Highrise/DK_Tower_Terrace@crescent-terrace.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Massif_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Massif_L2.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Massif.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Moon_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Moon.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_PlanetRinged_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_PlanetRinged_L2.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_PlanetRinged.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_RocketAscent_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_RocketAscent_L2.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_RocketAscent.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_RocketPad_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_RocketPad.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_A_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_A.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_B_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_B.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_C_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_C.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_D_L1.fbx: missing in source",
++   "Models/Horizon/DK_Horizon_Spire_D.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-e_L1.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-e_L2.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-e.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-w_L1.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-w_L2.fbx: missing in source",
++   "Models/Landmarks/DK_DiscTower@avenue-gate-w.fbx: missing in source",
++   "Models/Landmarks/DK_LinerDock@liner-berth_L1.fbx: missing in source",
++   "Models/Landmarks/DK_LinerDock@liner-berth_L2.fbx: missing in source",
++   "Models/Landmarks/DK_LinerDock@liner-berth.fbx: missing in source",
++   "Models/Landmarks/DK_OceanLiner_L1.fbx: missing in source",
++   "Models/Landmarks/DK_OceanLiner_L2.fbx: missing in source",
++   "Models/Landmarks/DK_OceanLiner.fbx: missing in source",
++   "Models/Landmarks/DK_ParabolicArch_L1.fbx: missing in source",
++   "Models/Landmarks/DK_ParabolicArch_L2.fbx: missing in source",
++   "Models/Landmarks/DK_ParabolicArch.fbx: missing in source",
++   "Models/Landmarks/DK_SpaceHQ_Portal_L1.fbx: missing in source",
++   "Models/Landmarks/DK_SpaceHQ_Portal_L2.fbx: missing in source",
++   "Models/Landmarks/DK_SpaceHQ_Portal.fbx: missing in source",
++   "Models/Landmarks/DK_SphereStation_L1.fbx: missing in source",
++   "Models/Landmarks/DK_SphereStation_L2.fbx: missing in source",
++   "Models/Plants/DK_CoconutPalm_L1.fbx: missing in source",
++   "Models/Plants/DK_CoconutPalm_L2.fbx: missing in source",
++   "Models/Plants/DK_Cypress_L1.fbx: missing in source",
++   "Models/Plants/DK_Cypress_L2.fbx: missing in source",
++   "Models/Plants/DK_Cypress_Play_L1.fbx: missing in source",
++   "Models/Plants/DK_Cypress_Play.fbx: missing in source",
++   "Models/Plants/DK_FanPalm_L1.fbx: missing in source",
++   "Models/Plants/DK_FanPalm_L2.fbx: missing in source",
++   "Models/Plants/DK_FanPalm_Play_L1.fbx: missing in source",
++   "Models/Plants/DK_FanPalm_Play.fbx: missing in source",
++   "Models/Plaza/DK_AtomFountain_L1.fbx: missing in source",
++   "Models/Plaza/DK_AtomFountain_L2.fbx: missing in source",
++   "Models/Plaza/DK_AtomFountain.fbx: missing in source",
++   "Models/Plaza/DK_BedTuft_A.fbx: missing in source",
++   "Models/Plaza/DK_BedTuft_B.fbx: missing in source",
++   "Models/Plaza/DK_BedTuft_C.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Office_L1.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Office.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Square_L1.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Square_v2_L1.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Square_v2.fbx: missing in source",
++   "Models/Plaza/DK_BoardingPavilion_Square.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay_L1.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay_L2.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay_v2_L1.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay_v2_L2.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay_v2.fbx: missing in source",
++   "Models/Plaza/DK_CafeBay.fbx: missing in source",
++   "Models/Plaza/DK_CafeInterior_L1.fbx: missing in source",
++   "Models/Plaza/DK_CafeInterior_L2.fbx: missing in source",
++   "Models/Plaza/DK_CafeInterior.fbx: missing in source",
++   "Models/Plaza/DK_CafeTerrace_L1.fbx: missing in source",
++   "Models/Plaza/DK_CafeTerrace_L2.fbx: missing in source",
++   "Models/Plaza/DK_CafeTerrace.fbx: missing in source",
++   "Models/Plaza/DK_PavilionPier_Office.fbx: missing in source",
++   "Models/Plaza/DK_PavilionPier_Square.fbx: missing in source",
++   "Models/Plaza/DK_PlanterArc_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterArc_L2.fbx: missing in source",
++   "Models/Plaza/DK_PlanterArc.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_2_A_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_2_A.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_2_B_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_2_B.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_2_C.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_A_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_A.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_B_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_B.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_C_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_4_C.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_A_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_A.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_B_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_B.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_C_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_Corner_C.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_A_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_A.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_B_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_B.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_C_L1.fbx: missing in source",
++   "Models/Plaza/DK_PlanterRun_End_C.fbx: missing in source",
++   "Models/Plaza/DK_PottedTopiary_Play_L1.fbx: missing in source",
++   "Models/Plaza/DK_PottedTopiary_Play.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance_L1.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance_L2.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance_Official_L1.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance_Official_L2.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance_Official.fbx: missing in source",
++   "Models/Plaza/DK_RecordsEntrance.fbx: missing in source",
++   "Models/Robots/DK_RobotButler_Play_L1.fbx: missing in source",
++   "Models/Robots/DK_RobotButler_Play_L2.fbx: missing in source",
++   "Models/Robots/DK_RobotButler_Play.fbx: missing in source",
++   "Models/Robots/DK_RobotPorter_Play_L1.fbx: missing in source",
++   "Models/Robots/DK_RobotPorter_Play_L2.fbx: missing in source",
++   "Models/Robots/DK_RobotPorter_Play.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Cabana.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Conservatory_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Conservatory_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Conservatory.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LapPool_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LapPool_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LapPool.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LatticeMast_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LatticeMast_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_LatticeMast.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Mast_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Mast_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Mast.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Planter_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Planter.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Pool_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Pool_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Pool.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Tank_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Tank_L2.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Tank.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Tennis_L1.fbx: missing in source",
++   "Models/Rooftop/DK_Roof_Tennis.fbx: missing in source",
++   "Models/Signage/DK_AdColumn_L1.fbx: missing in source",
++   "Models/Signage/DK_AdColumn_L2.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Cafe_L1.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Cafe_L2.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Cafe.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Cinema_L1.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Cinema_L2.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Hotel_L1.fbx: missing in source",
++   "Models/Signage/DK_BladeSign_Hotel_L2.fbx: missing in source",
++   "Models/Signage/DK_NeonStar_Wall_L1.fbx: missing in source",
++   "Models/Signage/DK_NeonStar_Wall_L2.fbx: missing in source",
++   "Models/Signage/DK_NeonStar_Wall.fbx: missing in source",
++   "Models/Signals/DK_CCTVPole_L1.fbx: missing in source",
++   "Models/Signals/DK_CCTVPole.fbx: missing in source",
++   "Models/Signals/DK_DomeCamera.fbx: missing in source",
++   "Models/Signals/DK_PlazaSphereLamp_L1.fbx: missing in source",
++   "Models/Signals/DK_PlazaSphereLamp_L2.fbx: missing in source",
++   "Models/Signals/DK_PlazaSphereLamp_Play_L1.fbx: missing in source",
++   "Models/Signals/DK_PlazaSphereLamp_Play.fbx: missing in source",
++   "Models/Signals/DK_SignalEye_L1.fbx: missing in source",
++   "Models/Signals/DK_SignalEye.fbx: missing in source",
++   "Models/Skyline/DK_DecoBay_10_L1.fbx: missing in source",
++   "Models/Skyline/DK_DecoBay_10.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_6_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_6_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_6.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9W_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9W_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamBay_9W.fbx: missing in source",
++   "Models/Skyline/DK_StreamCorner_9_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamCorner_9_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamCorner_9.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_6_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_6_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_6.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9W_L1.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9W_L2.fbx: missing in source",
++   "Models/Skyline/DK_StreamEnd_9W.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L1.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Saucer@harbour-hotel_L2.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Saucer@harbour-hotel.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-n_L1.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-n_L2.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-n.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-s_L1.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-s_L2.fbx: missing in source",
++   "Models/Skyline/DK_Tower_Stepped@parade-gate-s.fbx: missing in source",
++   "Models/Skyport/DK_CircusMonument_L1.fbx: missing in source",
++   "Models/Skyport/DK_CircusMonument_L2.fbx: missing in source",
++   "Models/Skyport/DK_ParadeGate_Block_L1.fbx: missing in source",
++   "Models/Skyport/DK_ParadeGate_Block_L2.fbx: missing in source",
++   "Models/Skyport/DK_ParadeGate_Block.fbx: missing in source",
++   "Models/Skyport/DK_SkyPad_Roof_L1.fbx: missing in source",
++   "Models/Skyport/DK_SkyPad_Roof_L2.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower_L1.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower_L2.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower_Portal_L1.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower_Portal_L2.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower_Portal.fbx: missing in source",
++   "Models/Skyport/DK_Skyport_Tower.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Decks_L1.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Decks_L2.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Decks.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Twin_L1.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Twin_L2.fbx: missing in source",
++   "Models/Skyport/DK_SkyRailStation_Twin.fbx: missing in source",
++   "Models/Street/DK_Bench_L1.fbx: missing in source",
++   "Models/Street/DK_Bench_L2.fbx: missing in source",
++   "Models/Street/DK_Bollard.fbx: missing in source",
++   "Models/Street/DK_BollardSphere_L1.fbx: missing in source",
++   "Models/Street/DK_BollardSphere.fbx: missing in source",
++   "Models/Street/DK_Hydrant_L1.fbx: missing in source",
++   "Models/Street/DK_Hydrant.fbx: missing in source",
++   "Models/Street/DK_KerbStud_L1.fbx: missing in source",
++   "Models/Street/DK_KerbStud.fbx: missing in source",
++   "Models/Street/DK_RecyclingBins.fbx: missing in source",
++   "Models/Street/DK_Streetlamp_L1.fbx: missing in source",
++   "Models/Street/DK_Streetlamp_L2.fbx: missing in source",
++   "Models/Structures/DK_BusShelter_Play_L1.fbx: missing in source",
++   "Models/Structures/DK_BusShelter_Play_L2.fbx: missing in source",
++   "Models/Structures/DK_BusShelter_Play.fbx: missing in source",
++   "Models/Structures/DK_CurvedKiosk_Play_L1.fbx: missing in source",
++   "Models/Structures/DK_CurvedKiosk_Play_L2.fbx: missing in source",
++   "Models/Structures/DK_CurvedKiosk_Play.fbx: missing in source",
++   "Models/Structures/DK_Newsstand_L1.fbx: missing in source",
++   "Models/Structures/DK_Newsstand_L2.fbx: missing in source",
++   "Models/Structures/DK_Newsstand.fbx: missing in source",
++   "Models/Structures/DK_TramCanopy_Play_L1.fbx: missing in source",
++   "Models/Structures/DK_TramCanopy_Play_L2.fbx: missing in source",
++   "Models/Structures/DK_TramCanopy_Play.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Getaway_L1.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Getaway_L2.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Getaway.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Official_L1.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Official_L2.fbx: missing in source",
++   "Models/Vehicles/DK_Sedan_Official.fbx: missing in source",
++   "Models/Vehicles/DK_ServiceRobot_Play_L1.fbx: missing in source",
++   "Models/Vehicles/DK_ServiceRobot_Play_L2.fbx: missing in source",
++   "Models/Vehicles/DK_ServiceRobot_Play.fbx: missing in source",
++   "Textures/banner_comet_seafoam_v1.png: missing in source",
++   "Textures/banner_comet_seafoam_v1.png.meta: missing in source",
++   "Textures/cafe_back_bar_v1.png: missing in source",
++   "Textures/cafe_back_bar_v1.png.meta: missing in source",
++   "Textures/cafe_floor_v1.png: missing in source",
++   "Textures/cafe_floor_v1.png.meta: missing in source",
++   "Textures/cafe_mural_v1.png: missing in source",
++   "Textures/cafe_mural_v1.png.meta: missing in source",
++   "Textures/flower_cluster_coralsoft_v1_alpha.png: missing in source",
++   "Textures/flower_cluster_coralsoft_v1_alpha.png.meta: missing in source",
++   "Textures/flower_cluster_flamingo_v1_alpha.png: missing in source",
++   "Textures/flower_cluster_flamingo_v1_alpha.png.meta: missing in source",
++   "Textures/pave_civic_v1_mask.png: missing in source",
++   "Textures/pave_civic_v1_mask.png.meta: missing in source",
++   "Textures/pave_civic_v1_normal.png: missing in source",
++   "Textures/pave_civic_v1_normal.png.meta: missing in source",
++   "Textures/pave_civic_v1.png: missing in source",
++   "Textures/pave_civic_v1.png.meta: missing in source",
++ ]
+
+- Expected  - 1
++ Received  + 553
+
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/kit/kit.test.ts:32:22)
+(fail) copy verifies hashes, is idempotent, and refuses a tampered source [160.28ms]
+(pass) fit scales inside the range and refuses what does not fit [0.26ms]
+(pass) LOD categories (Vela, brief 007 round 3): every piece names one; its LOD switch points are the category's [0.33ms]
+(pass) Vela's slimmed street props (round 3) are the generator's binaries; Bollard and RecyclingBins have no LODs [0.05ms]
+77 |   for (const m of ['DK_Faience_Teal', 'DK_GroundCover']) expect(by('PlanterArc').materials, m).toContain(m);
+78 |   // a far version built by hand (tools/decokit kit.asset far=) is a separate mesh: the copy brings only the piece's listed materials, so a LOD naming another would import pink
+79 |   // (pieces whose L0 is the generator's own binary; the legacy DecoKit pieces' generator LODs carry DK_Beacon_Rose where their L0 has the DecoKit beacon: open, Vela)
+80 |   for (const a of kit.assets.filter(x => x.status === 'adopted' && x.files.some(f => f.role === 'fbx' && f.root === 'generated') && !x.files.some(f => f.role === 'fbx-meta')))
+81 |     for (const f of a.files.filter(x => x.role === 'lod' && x.root === 'generated')) {
+82 |       const names = new Set([...readFileSync(join(GEN_ROOT, f.path)).toString('latin1').matchAll(/DK_[A-Za-z0-9_]+/g)].map(m => m[0]).filter(n => kit.assets.every(x => !n.startsWith(`DK_${x.id.split('@')[0]}`))));
+                                     ^
+error: ENOENT: no such file or directory, open '/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/out/decokit/Models/Plaza/DK_AtomFountain_L1.fbx'
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/kit/kit.test.ts:82:33)
+(fail) brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece's materials [0.33ms]
+90 |   expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'LinerDock@liner-berth', 'ParabolicArch', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9',
+91 |     'StreamEnd_6', 'StreamEnd_9', 'StreamEnd_9W', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle', 'Tower_Needle@avenue-needle', 'Tower_Saucer@harbour-hotel', 'Tower_Starburst', 'Tower_Starburst@avenue-starburst', 'Tower_Terrace', 'Tower_Terrace@crescent-terrace'].sort());
+92 |   for (const a of crown) expect(a.materials.filter(m => /^DK_(Gold|Gold17|Accent_Gold)$/.test(m)), `${a.id} draws a brass beside its crown gold`).toEqual([]); // the swap is whole: one gold per piece
+93 |   const palette = new Map((JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/civic-look.json'), 'utf8')) as { palette: { materials: { material: string; unlit: string }[] } }).palette.materials.map(m => [m.material, m.unlit]));
+94 |   // the dE gate reads the palette rows; the .mat the generator wrote is what Unity draws: they must say the same colour
+95 |   const hexOf = (name: string) => { const c = /_BaseColor: \{r: ([\d.e-]+), g: ([\d.e-]+), b: ([\d.e-]+)/.exec(readFileSync(join(GEN_ROOT, `Materials/${name}.mat`), 'utf8'))!; return '#' + [c[1]!, c[2]!, c[3]!].map(x => Math.round(+x * 255).toString(16).padStart(2, '0')).join('').toUpperCase(); };
+                                                                                                                    ^
+error: ENOENT: no such file or directory, open '/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/out/decokit/Materials/DK_Gold.mat'
+      at hexOf (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/kit/kit.test.ts:95:112)
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/kit/kit.test.ts:97:57)
+(fail) brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25 crown and skyline pieces keep the old golds as DK_Crown_Gold and DK_Crown_Gold17 [0.73ms]
+(pass) brief 013 (Vantage, Motive §2.5): only a piece tagged `stash` can hold a body, and today that is the Dumpster, still a candidate until Vela adopts it [0.09ms]
+
+tools/cover/cover.test.ts:
+(pass) the generator on a synthetic ground > a planter run is cover from both sides, facing each other, wide and full quality [0.13ms]
+(pass) the generator on a synthetic ground > a body-high bollard, a bed under 0.9 m and a lamp's foot are not cover [0.02ms]
+(pass) the generator on a synthetic ground > an object at eye height or more blocks sight too, and a long face has a point each 4.6 m [0.06ms]
+(pass) the generator on a synthetic ground > a point stands only on free ground and never nearer another object than a body [0.08ms]
+(pass) the generator on a synthetic ground > a car is cover only while it is there [0.03ms]
+(pass) the generator on a synthetic ground > chains: a rectangle is four faces; a circle is faces of at most 30° turn [0.09ms]
+(pass) the generator on a synthetic ground > quality is the height class times the arc: waist-high and narrow is partial, eye-high and wide is full [0.02ms]
+(pass) what the engine does with a point, in integers > protects: inside the cone and beyond point blank [0.02ms]
+(pass) what the engine does with a point, in integers > protects: a point present from 100 s to 200 s
+(pass) what the engine does with a point, in integers > coverModifier: beside a full point 500, beside a partial one 750, away from it or from the wrong side 1000 [0.05ms]
+(pass) what the engine does with a point, in integers > selectCover: distance minus quality, within seek, not retreating, shielding against the foe, not taken, then the lower id [0.08ms]
+(pass) what the engine does with a point, in integers > isqrt
+102 | });
+103 | 
+104 | describe('the Handover\'s cover file', () => {
+105 |   const made = buildCover();
+106 |   test('is what the plan, the block, the kit and the site make today (bun run cover)', () => {
+107 |     expect(read(COVER_FILE)).toBe(made.json);
+                                   ^
+error: expect(received).toBe(expected)
+
+@@ -2,11 +2,11 @@
+   "schema": "suborned.cover/1",
+   "mission": "handover",
+   "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
+   "from": {
+    "block": "cb967df477ab31e9767eec185eb564fa37a784bce5e32553b39b9f507343786c",
+-   "site": "a6c5bb81958563e658714a22cfac52df6d9da2d91bf2e2d26e359f399346e8d2",
++   "site": "e1c7d61912848f5c9fb738deddd4e31e94fb646dbf42a1f22f4ccd068d02eaa9",
+    "kit": "b41f10d45b796395f0bc44bfcea9b1dc373f9a2822f7e19ad88ac1e0fe1a6408",
+    "plan": "28c826ea1a471209fdb0ab998e1d7fc19dc3063962c57aacc35c122a8fdedd1e"
+   },
+   "rules": {
+    "eyeCm": 160,
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/cover/cover.test.ts:107:30)
+(fail) the Handover's cover file > is what the plan, the block, the kit and the site make today (bun run cover) [0.36ms]
+107 |     expect(read(COVER_FILE)).toBe(made.json);
+108 |     expect(buildCover().json).toBe(made.json); // twice
+109 |     expect(Cover.safeParse(JSON.parse(read(COVER_FILE))).success).toBe(true);
+110 |   });
+111 |   const rules = () => checkCover(JSON.parse(read(COVER_FILE)), { free: freeCm, placeAt, inputs: today() });
+112 |   test('CV-1 holds', () => { expect(rules().find(c => c.id === 'CV-1')!.ok).toBe(true); });
+                                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/cover/cover.test.ts:112:77)
+(fail) the Handover's cover file > CV-1 holds [2.44ms]
+(pass) the Handover's cover file > the points are beside what the world draws: planter runs, the café wall, the fountain, the pavilion piers, the cabinets, the cars [0.08ms]
+(pass) the Handover's cover file > every ambush and police post has cover that shields it from the car, the cell side is answered everywhere, and CV-2 passes [1.46ms]
+(pass) the Handover's cover file > the report is empty when no post lacks cover; for a post that does it names the nearest shielding cover and a planter run that would shield it [18.02ms]
+(pass) the Handover's cover file > the objects at eye height or more are the sight blockers the engine adds to its occluders: the fountain, the robot, the pavilion piers [0.06ms]
+(pass) the Handover's cover file > the conformance vectors the spec gives Keel: the point a body at each post would run to, with the car as its foe and advancing [0.26ms]
+(pass) the Handover's cover file > a hostile at ambush-4 runs to the café wall, and two of them take two points [0.04ms]
+166 | describe('the rules, each with a failing example', () => {
+167 |   const good = () => clone(JSON.parse(read(COVER_FILE))) as Cover;
+168 |   const run1 = (c: Cover, inputs = today()) => checkCover(c, { free: freeCm, placeAt, inputs });
+169 |   const failing = (c: Cover, id: string) => run1(c).find(x => x.id === id)!;
+170 |   test('CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window', () => {
+171 |     expect(failing(good(), 'CV-1').ok).toBe(true);
+                                             ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/cover/cover.test.ts:171:40)
+(fail) the rules, each with a failing example > CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window [1.66ms]
+(pass) the rules, each with a failing example > CV-2: passes when half the posts each way are covered, fails when the hostile side or the cell side is bare [4.31ms]
+(pass) the rules, each with a failing example > every rule has a source [1.14ms]
+(pass) the proposed rulebook values (briefs/011/pulse-fight-ai.values.json) > each entry has a value, a unit, a tag, a source and a reason; the ones Keel has adopted into the rulebook carry the same value [0.06ms]
+(pass) the proposed rulebook values (briefs/011/pulse-fight-ai.values.json) > the spec says what each is for (its id, or its group, is named) [0.12ms]
+(pass) the proposed rulebook values (briefs/011/pulse-fight-ai.values.json) > the cover constants of the file are the cover values [0.01ms]
+
+tools/people/test/needs.test.ts:
+(pass) nothing moved > the files are read: kinds and a catalogue [0.05ms]
+(pass) nothing moved > the promoted cast: the same people with and without the catalogue, apart from the record ids [98.61ms]
+(pass) nothing moved > the stand-in cast (every kind offered): the same [84.18ms]
+(pass) nothing moved > the kinds are the engine's own table, less secret: same approaches, help and requirement [0.14ms]
+54 |       expect([...v.metBy].sort()).toEqual([...d.metBy].sort()); expect(v.help).toBe(d.help); expect(v.requires).toBe(d.requires);
+55 |     }
+56 |     expect(Object.keys(w.needs!.rules.kinds).sort()).toEqual(Object.keys(w.rules.needs.list).filter(k => k !== 'secret').sort());
+57 |   });
+58 |   test('the record ids are the only difference in the written people file', () => {
+59 |     const only = JSON.parse(readFileSync('out/people/harbour-district.people.json', 'utf8')) as People;
+                                 ^
+error: ENOENT: no such file or directory, open 'out/people/harbour-district.people.json'
+      at <anonymous> (/Users/sky/.t3/worktrees/suborned/assignment-05/out/a05-baseline-o04dkycl/tools/people/test/needs.test.ts:59:29)
+(fail) nothing moved > the record ids are the only difference in the written people file [0.20ms]
+(pass) records > every person draws one record of their kind; a secret draws one of its kind [0.12ms]
+(pass) records > Inez is a Bureau loan (debt, standard), the driver a Lean month (cash, standard) [0.05ms]
+(pass) records > the draw is seeded by the person: the same bytes twice; a stream no other draw shares [98.03ms]
+(pass) records > a catalogue with no record of a person's kind fails the expansion naming them (P-0) [397.63ms]
+(pass) records > a run pinned before records (no kinds, no catalogue) has no record fields and no N-rules, and passes [1522.41ms]
+(pass) records > the written inputs name the kinds and the catalogue [0.04ms]
+(pass) schemas > the rules and the catalogue parse; a stray key, a missing standard size or a lax label field is rejected [1.09ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > the promoted cast and the stand-in cast pass them all [337.95ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > every N-rule has a source [201.51ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-1: a record of a kind the rules do not have; a kind that is not the engine's; a person's record of another kind [965.64ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-2: a size that is priced by a rulebook value it does not have, an unknown size, a holder that binds to nothing, a subject its kind does not take [1094.58ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-3: label length, sentence, digits, era, gendered words, names, case, duplicates [2466.86ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-4: tone: harm, a child, a pressable care record [1339.54ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-5: a record that widens its kind; a row whose temperament reaches no record [734.84ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-6: two records that differ only in wording [565.42ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-7: an orphan record; a kind with no record in an area [557.51ms]
+(pass) checker rules N-1..N-8 pass on the real inputs and fail on their examples > N-8: the Handover pins: Inez debt, standard, beyond; the driver cash, standard, beyond [944.17ms]
+
+8 tests failed:
+(fail) kit.json is the manifest, normalised, and rebuilding it changes nothing [259.68ms]
+(fail) copy verifies hashes, is idempotent, and refuses a tampered source [160.28ms]
+(fail) brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece's materials [0.33ms]
+(fail) brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25 crown and skyline pieces keep the old golds as DK_Crown_Gold and DK_Crown_Gold17 [0.73ms]
+(fail) the Handover's cover file > is what the plan, the block, the kit and the site make today (bun run cover) [0.36ms]
+(fail) the Handover's cover file > CV-1 holds [2.44ms]
+(fail) the rules, each with a failing example > CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window [1.66ms]
+(fail) nothing moved > the record ids are the only difference in the written people file [0.20ms]
+
+ 49 pass
+ 8 fail
+ 1208 expect() calls
+Ran 57 tests across 3 files. [13.14s]

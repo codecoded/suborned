@@ -1,0 +1,8 @@
+{
+  "schema": "suborned.a05.validation-pointer/1",
+  "status": "COMPLETE_SCOPED_GOAL",
+  "current": "validation-codex.json",
+  "previous": "validation-v2-before-codex.json",
+  "run": "runs/goals/2026-10-19T11-05-43-376Z-discovery",
+  "rerun": "runs/goals/2026-10-19T11-14-05-156Z-discovery"
+}

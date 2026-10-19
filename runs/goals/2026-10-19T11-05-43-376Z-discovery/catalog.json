@@ -1,0 +1,110 @@
+{
+  "summary": "One cohesive requirement for exporting existing case and area-watch collections in headless JSON debriefs. Implementation status and exact collection shapes remain unverified pending current code inspection.",
+  "coverage": [
+    {
+      "section": "01",
+      "disposition": "outside-domain",
+      "reason": "Core gameplay is outside this export goal. Determinism and rulebook fidelity constrain the §08 requirement without creating separate work."
+    },
+    {
+      "section": "02",
+      "disposition": "outside-domain",
+      "reason": "Resource rules, prices, travel and mission chains are unchanged by exporting existing debrief collections."
+    },
+    {
+      "section": "03",
+      "disposition": "outside-domain",
+      "reason": "Operative abilities, movement and recruitment are outside the serialization goal."
+    },
+    {
+      "section": "04",
+      "disposition": "outside-domain",
+      "reason": "People, knowledge and Standing rules remain unchanged; their existing consequences are preservation constraints on the §08 export."
+    },
+    {
+      "section": "05",
+      "disposition": "outside-domain",
+      "reason": "Security responses, reports and investigations are outside scope. Existing case-driven security consequences must be preserved by the §08 export."
+    },
+    {
+      "section": "06",
+      "disposition": "outside-domain",
+      "reason": "Combat and takedown consequence calculations are unchanged; this goal only exposes collections already produced."
+    },
+    {
+      "section": "07",
+      "disposition": "outside-domain",
+      "reason": "Handover routes and outcomes provide consequence context but require no mission changes for this export."
+    },
+    {
+      "section": "08",
+      "disposition": "requirements",
+      "reason": "Anchors the case and area-watch information that headless JSON debriefs must expose."
+    },
+    {
+      "section": "09",
+      "disposition": "outside-domain",
+      "reason": "Generation and mission validation are outside scope. Replay-consistent consequences constrain the §08 requirement."
+    },
+    {
+      "section": "10",
+      "disposition": "outside-domain",
+      "reason": "Presentation and its other query APIs are unrelated to exporting case and area-watch collections."
+    },
+    {
+      "section": "11",
+      "disposition": "outside-domain",
+      "reason": "The shared headless C# engine and exact replay are preservation constraints on the §08 requirement, not a separate architecture task. Human passage 4e7ee6bfd474ee552879fd71 confirms these constraints."
+    },
+    {
+      "section": "12",
+      "disposition": "outside-domain",
+      "reason": "Crew process and decision history add no independent export behavior; case decisions cross-reference the §08 consequence rules."
+    },
+    {
+      "section": "13",
+      "disposition": "outside-domain",
+      "reason": "Player studies and presentation gates do not test this narrowly scoped JSON export."
+    },
+    {
+      "section": "14",
+      "disposition": "outside-domain",
+      "reason": "Ownership instructions are design context. Repeated replay and consequence constraints are covered by the §08 requirement."
+    },
+    {
+      "section": "15",
+      "disposition": "outside-domain",
+      "reason": "Art, assets and visual presentation are outside the headless serialization goal."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "debrief-export-cases-area-watch",
+      "title": "Export existing cases and area watch in headless JSON debriefs",
+      "section": "08",
+      "quote": "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "acceptance": [
+        "Headless JSON debriefs expose both existing case and area-watch collections, including empty collections when there are no entries.",
+        "Each exported collection faithfully represents all existing entries and their current values and associations, without dropping, duplicating or synthesizing consequences.",
+        "All previously emitted JSON fields retain their names, types and values for the same simulation state; adding these collections does not change existing consequence calculations.",
+        "Reading or serializing a debrief leaves simulation state, collection contents, mission progression and replay checksums unchanged; repeated reads of an unchanged state produce identical output.",
+        "Replaying the same starting state and recorded orders produces identical exported case and area-watch data while preserving existing replay results.",
+        "Exporting the collections does not advance case or area-watch durations, apply consequences again, commit a campaign result or introduce campaign persistence."
+      ],
+      "terms": [
+        "headless JSON debrief",
+        "cases",
+        "area watch",
+        "missing persons",
+        "consequence preservation",
+        "deterministic replay",
+        "side-effect-free reads"
+      ],
+      "dependsOn": [],
+      "value": 4,
+      "effort": 2,
+      "risk": 2,
+      "rationale": "Makes existing consequence data available to headless consumers through one cohesive serializer change. Expected effort is modest because the goal specifies existing collections; compatibility and accidental mutation are the main risks. The explicit goal requires preservation, not implementation of new campaign rules. Current code inspection must establish collection shapes, existing JSON behavior and any gaps; the index and prior test claims establish none of these. Missing rulebook values or source conflicts are blockers to flag, not permission to invent values."
+    }
+  ]
+}

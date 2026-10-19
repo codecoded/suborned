@@ -1,0 +1,16 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests","--filter","FullyQualifiedName~GoalWatchTests&FullyQualifiedName!~ExistingServiceClockIsDeterministicAndInitiallyUnknown&FullyQualifiedName!~LearnedRoundSurvivesReplayFromOnlyTheRecordedOrders","--logger","trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T09-03-05-932Z-container-watch/round-1/watch.trx","--verbosity","minimal"]
+Exit: 0; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Suborned.Sim -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+Results File: /Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T09-03-05-932Z-container-watch/round-1/watch.trx
+
+Passed!  - Failed:     0, Passed:     6, Skipped:     0, Total:     6, Duration: 93 ms - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+

@@ -70,13 +70,14 @@ namespace Suborned.Sim
 
         /// <summary>A container's next servicing round (Pulse §4.1; takedown.service): the first tick from now on which the round opens it
         /// (its phase from the container's id, every service.period), and whether the cell knows it. -1 for a door or an unknown id (a door
-        /// has no round). Known is false for now: the engine has no order that teaches a round yet (the HUD shows "?").</summary>
+        /// has no round). Known once a Scout's Watch on the container has completed this mission (GameStashWatch.cs); until then the HUD
+        /// shows "?". Read-only.</summary>
         public (int tick, bool known) NextRound(string stashId)
         {
             var s = StashById(stashId); if (s == null || s.Kind != "container") return (-1, false);
             int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);
             int next = Tick + ((phase - Tick % period) % period + period) % period;
-            return (next, false);
+            return (next, KnowsRound(s.Id));
         }
 
         /// <summary>Who sees a carry walk from the carrier to `to` (Glyph §4): the grid route at the carrier's carrying pace (the Enforcer

@@ -1,0 +1,1242 @@
+[
+  {
+    "path": "contracts/rules/rulebook.json",
+    "sha256": "627344123cb08346338d35f33e058749745dadea167a6f15e38e81fd8e9a6229",
+    "lines": 1791,
+    "symbols": [
+      "schema",
+      "author",
+      "gdd",
+      "rule",
+      "reads",
+      "tags",
+      "units",
+      "values",
+      "standing",
+      "alert",
+      "fit",
+      "reports",
+      "ladders",
+      "memory",
+      "exposure",
+      "traceable",
+      "privacy",
+      "cell",
+      "security",
+      "weapons",
+      "ai",
+      "crowd",
+      "summon",
+      "cancel",
+      "perception",
+      "sight",
+      "takedown",
+      "witness",
+      "response",
+      "campaign",
+      "rounds",
+      "car",
+      "fight",
+      "investigation",
+      "preview",
+      "streams",
+      "phases",
+      "debrief",
+      "events"
+    ],
+    "summary": "Rule contract JSON; top-level keys: schema, author, gdd, rule, reads, tags, units, values, standing, alert, fit, reports, ladders, memory, exposure, traceable, privacy, cell, security, weapons, ai, crowd, summon, cancel, perception, sight, takedown, witness, response, campaign, rounds, car, fight, investigation, preview, streams, phases, debrief, events"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/FailCauseTests.cs",
+    "sha256": "c3860bbb5ed37410cb4b9b118fadcaa66546ac4e7870e0765f7f363ddb02c2ee",
+    "lines": 141,
+    "symbols": [
+      "FailCauseTests",
+      "WellFormed",
+      "EveryScenarioEndsWithAWellFormedCauseThatReplays",
+      "Routes",
+      "EveryRouteScriptEndsWithAWellFormedCauseAndItsRecord",
+      "EveryFailKindTheHandoverReachesIsCoveredByAScenario",
+      "ASuccessCarriesNoCauseAndItsDebriefIsAsItWas",
+      "AFailedDebriefCarriesTheCause",
+      "EngineErrorNamesNoCulprit",
+      "ARivalAtTheCarWithNobodyBesideItIsTheCulprit"
+    ],
+    "summary": "// The fail camera's culprit (Sky 2026-10-18; Suborned.Sim/FailCause.cs): every run that ends without Vale says what failed it, in a form a\n// host can read, and saying so moves nothing (the cause is read-only: same checkpoints, same replay, the same cause when replayed).\n/// <summary>The cause's shape, whatever the ending: it matches the result, it is at the last tick, a single culprit is named and placed\n/// first, a seal names its origin, and its JSON is what the outcome writes.</summary>\npublic class FailCauseTests\nstatic void WellFormed(Game g, string what)\npublic void EveryScenarioEndsWithAWellFormedCauseThatReplays(string id)\npublic static IEnumerable<object[]> Routes()\npublic void EveryRouteScriptEndsWithAWellFormedCauseAndItsRecord(string rel)\npublic void EveryFailKindTheHandoverReachesIsCoveredByAScenario()\npublic void ASuccessCarriesNoCauseAndItsDebriefIsAsItWas()\npublic void AFailedDebriefCarriesTheCause()\npublic void EngineErrorNamesNoCulprit()\npublic void ARivalAtTheCarWithNobodyBesideItIsTheCulprit()"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+    "sha256": "cde9023e75fdb16e6e2c7b0d2c7ecb56da361c28185738c42524666d818ce756",
+    "lines": 300,
+    "symbols": [
+      "GoalDebriefCaseWatchFidelityTests",
+      "Write",
+      "Property",
+      "SameJson",
+      "Exports",
+      "Play",
+      "SuccessfulHeadlessReportIncludesEmptyArrays",
+      "SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates",
+      "ExistingLegacyFieldsKeepTheirNamesTypesAndValues",
+      "MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums",
+      "ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything",
+      "Legacy",
+      "AssertLegacy"
+    ],
+    "summary": "// Serialization-boundary data, not new campaign rules or balance values.\n// Independent legacy JSON contract oracle, using public debrief data captured before Write.\n// Remove only the two explicitly authorized additions before comparing the entire old contract.\npublic class GoalDebriefCaseWatchFidelityTests\nstatic string Write(Debrief d)\nstatic JsonElement Property(JsonElement e, string name)\nstatic void SameJson(JsonElement expected, JsonElement actual)\nstatic void Exports(JsonElement root,\nstatic Game Play(string id)\npublic void SuccessfulHeadlessReportIncludesEmptyArrays()\npublic void SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates()\npublic void ExistingLegacyFieldsKeepTheirNamesTypesAndValues()\npublic void MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums()\npublic void ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything()\nstatic string Legacy(Debrief d)\nstatic void AssertLegacy(string expected, string actual)"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/GoalWatchTests.cs",
+    "sha256": "acf56e1c1279bd6c3b3fcac0e58fb3ccc3ddce4f87820c061c09803b005b9d49",
+    "lines": 157,
+    "symbols": [
+      "GoalWatchTests",
+      "New",
+      "Bin",
+      "Order",
+      "BesideBin",
+      "Watch",
+      "ExistingServiceClockIsDeterministicAndInitiallyUnknown",
+      "CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration",
+      "CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach",
+      "KnownContainerRejectsARepeatWithoutTimeOrPrice",
+      "QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState",
+      "ContainersRequireScoutAndAnActualContainerTarget",
+      "ContainerWatchUsesTheExistingWatchReach",
+      "LearnedRoundSurvivesReplayFromOnlyTheRecordedOrders"
+    ],
+    "summary": "// Assignment 5 acceptance checks, authored independently before the goal agent writes the feature.\n// GDD §05 bodies: a container's service time is learnable by Watch. Reuse the existing Scout Watch\n// duration/reach (rulebook sight.watch); no new balance numbers. Cancel follows rulebook cancel.watch.\n// Real orders, rather than teleporting a fixture, so every learning run can replay unmodified.\npublic class GoalWatchTests\nstatic Game New() => Engine.New(Repo.Inputs);\nstatic StashPlace Bin(Game g) => g.S.Stashes.First(s => s.Kind == \"container\");\nstatic Answer Order(Game g, string verb, string target = \"\", string op = \"scout\") =>\nstatic Game BesideBin()\nstatic void Watch(Game g)\npublic void ExistingServiceClockIsDeterministicAndInitiallyUnknown()\npublic void CompletedScoutWatchTeachesTheExistingRoundAtItsFullDuration()\npublic void CancellingWatchLearnsNothingAndAFreshCompleteWatchCanTeach()\npublic void KnownContainerRejectsARepeatWithoutTimeOrPrice()\npublic void QueryAgreesWithIssueAndDoesNotTeachOrChangeTheState()\npublic void ContainersRequireScoutAndAnActualContainerTarget()\npublic void ContainerWatchUsesTheExistingWatchReach()\npublic void LearnedRoundSurvivesReplayFromOnlyTheRe"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/Needs.cs",
+    "sha256": "390ba80bb64ab4753d8c3f4bdcf9e6c14f444f5f1457ac595d7197b51494e234",
+    "lines": 75,
+    "symbols": [
+      "NeedRecordTests",
+      "TheHandoversPinnedRecordsReadWithTheirLabels",
+      "EveryoneCarriesARecordOfTheirOwnNeedsKind",
+      "UnknownRecordsSizesHoldersAndKeysAreRejected",
+      "AReplacedNeedTakesItsKindsRecordWithNoDraw"
+    ],
+    "summary": "// Open needs, phase 1 (brief 017): the people file carries each person's need record (kind, label, size, holder) and the engine reads it\n// strictly (unknown = reject). Nothing acts on it yet: the hashes held to one start text are the same before and after (Keel's report).\n// people.rules needs.list still lists the retired kind `secret` (needs.rules.json sameAs minus secret), and the replacement may draw it:\n// the catalogue has no record of it, so the record and label are \"\" and the host shows the kind's word. Phase 2 draws records (Motive).\npublic class NeedRecordTests\npublic void TheHandoversPinnedRecordsReadWithTheirLabels()\npublic void EveryoneCarriesARecordOfTheirOwnNeedsKind()\npublic void UnknownRecordsSizesHoldersAndKeysAreRejected()\npublic void AReplacedNeedTakesItsKindsRecordWithNoDraw()"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/Redline.cs",
+    "sha256": "2a4f4e05721d0015dac1aecdcca559cef09076dc9c95a17c680d79e684049335",
+    "lines": 137,
+    "symbols": [
+      "RedlineTests",
+      "Rejects",
+      "Sub",
+      "E1_unknown_is_rejected_at_load_everywhere_the_engine_reads",
+      "E1_step_never_throws",
+      "E2_a_refusal_gives_back_exactly_what_was_taken",
+      "E5_cones_hold_at_district_scale",
+      "E4_crlf_and_bom_replay_to_the_same_hashes",
+      "E4_the_checkpoint_hash_covers_what_the_debrief_reads",
+      "E11_json_edges",
+      "E7_every_report_is_the_same_in_every_culture"
+    ],
+    "summary": "// Redline's engine review (briefs/011/review/redline-engine.html), each finding as a test that would have caught it.\npublic class RedlineTests\nstatic void Rejects(string rulebook, string people, string site, string what)\nstatic string Sub(string text, string from, string to) { Assert.Contains(from, text); return text.Replace(from, to); }\npublic void E1_unknown_is_rejected_at_load_everywhere_the_engine_reads()\npublic void E1_step_never_throws()\npublic void E2_a_refusal_gives_back_exactly_what_was_taken()\npublic void E5_cones_hold_at_district_scale()\npublic void E4_crlf_and_bom_replay_to_the_same_hashes()\npublic void E4_the_checkpoint_hash_covers_what_the_debrief_reads()\npublic void E11_json_edges()\npublic void E7_every_report_is_the_same_in_every_culture(string culture)"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/Rounds.cs",
+    "sha256": "6f2b3acf85d069c107031f925c0fc46866b0e7ce051f165f9a0def1759cae9bf",
+    "lines": 96,
+    "symbols": [
+      "RoundsTests",
+      "TheMissionDataTurnsTheRoundOn",
+      "TheEngineMatchesPulsesReferencePoses",
+      "WithTheRoundOffEveryScenarioPlaysAsWithNoRoundsFile",
+      "WithTheRoundOffEveryRecordedRoutePlaysAsWithNoRoundsFile",
+      "Same",
+      "HeadingSkipsZeroLengthSegments"
+    ],
+    "summary": "// Brief 022 (Pulse; Sky 2026-10-18): the living café. The engine's round is tools/routines/rounds.ts poseAt: it reproduces Pulse's reference\n// vectors (sim/data/handover.rounds.json `vectors`) to 30 cm and by phase; and with the round switched off (Start.Rounds false, the migration\n// gate) every scenario and recorded route plays exactly as it does with no rounds file at all.\n/// <summary>The same behaviour: every log line's tick and code, every order's answer, the outcome and the numbers.</summary>\npublic class RoundsTests\npublic void TheMissionDataTurnsTheRoundOn()\npublic void TheEngineMatchesPulsesReferencePoses(string kind)\npublic void WithTheRoundOffEveryScenarioPlaysAsWithNoRoundsFile()\npublic void WithTheRoundOffEveryRecordedRoutePlaysAsWithNoRoundsFile()\nstatic bool Same(Game a, Game b) =>\npublic void HeadingSkipsZeroLengthSegments()"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/Sight.cs",
+    "sha256": "621888d018a9b6542ea938b06000e503b6ebe8fa83a20578bb83707ac0bb4c11",
+    "lines": 173,
+    "symbols": [
+      "SightTests",
+      "SegDist",
+      "EdgeDist",
+      "Disagreements",
+      "AllAgree",
+      "TheFanIsTheEnginesSightAtTheStart",
+      "TheSweepingPatrolsFanFollowsItAlongItsSweep",
+      "TheFanWithPeopleOnTheStreetIsCutByThem",
+      "AWalkingGuardsFanHasItsNearCircleAndALoopedCameraIsNotLive",
+      "TheReadsChangeNothing",
+      "KnowledgeNeverChangesAnOutcomeOnlyTheCard",
+      "TheStartStateRejectsAnUnknownWatcherOrFact",
+      "TheRulebookSightSectionIsReadStrictly"
+    ],
+    "summary": "// The cell's knowledge of watchers (Sky 2026-10-16: view cones are the Scout's skill; rulebook sight). The fan is the engine's own\n// sight test drawn as a polygon: every sampled point the engine sees is inside it and every point it doesn't is outside, but for a band\n// of a few centimetres along the fan's edge (the rays' spacing and integer rounding). The reads change nothing, and knowledge never\n// changes an outcome, only what the cards show.\npublic class SightTests\nstatic double SegDist(Pt p, Pt a, Pt b)\nstatic double EdgeDist(Pt p, Pt[] poly)\nstatic List<string> Disagreements(Game g, string w, bool crowd, int step = 23)\nstatic void AllAgree(Game g, bool crowd = false)\npublic void TheFanIsTheEnginesSightAtTheStart()\npublic void TheSweepingPatrolsFanFollowsItAlongItsSweep(int tick)\npublic void TheFanWithPeopleOnTheStreetIsCutByThem()\npublic void AWalkingGuardsFanHasItsNearCircleAndALoopedCameraIsNotLive()\npublic void TheReadsChangeNothing()\npublic void KnowledgeNeverChangesAnOutcomeOnlyTheCard()\npublic void TheStartStateRejectsAnUnknownWatcherOrFact()\npublic void TheRulebookSightSectionIsReadStrictly()"
+  },
+  {
+    "path": "sim/Suborned.Sim.Tests/Tests.cs",
+    "sha256": "f450d8146073c3a5cf24f7f664e23ddc634b802eb8211556dc6b6aa16fd3b3cb",
+    "lines": 333,
+    "symbols": [
+      "Repo",
+      "ScenarioTests",
+      "Passes",
+      "SameOrdersSameChecksumsTwice",
+      "ReplaysFromStartStateAndOrders",
+      "TwentyEightPortedPlusTheEnginesNCases",
+      "OrdersAfterAnOrderEndsTheMissionReplayToo",
+      "AScriptRoundTripsThroughTheOrderFormat",
+      "RulesTests",
+      "New",
+      "Knowing",
+      "InezReferencePricesFromTheRulebook",
+      "Q4GridMatchesTheTypeScriptEvaluator",
+      "ThePreviewShowsQuestionMarksOnlyWhereTemperamentsDiffer",
+      "TalkerTestReadsPeopleRules",
+      "UnknownIsRejected",
+      "TheFightOrdersKeepTheOrderFormat",
+      "EveryRefusalHasAStableCodeAndTheHashReadsTheCodeNotTheWords",
+      "TheSummonsIsRefusedForEachReasonAtNoCost",
+      "TheCallQueryAndIssueAgree",
+      "ArmsDecideWhoCarriesASidearm",
+      "CoverMatchesPulsesVectors",
+      "AccuracyMatchesTheTypeScriptReference",
+      "GeometryTests",
+      "IntegerSquareRootIsExact",
+      "A_slab_above_eye_height_does_not_block_and_a_wall_does",
+      "ConesAreDirectional",
+      "StreamTests",
+      "TheNeedStreamIsTheTypeScriptOne"
+    ],
+    "summary": "// dotnet test sim/Suborned.Sim.Tests — the done-check of brief 011 A: the 28 scenarios pass headless; the same orders give\n// byte-identical checksums twice; a replay from the order log matches; the rules agree with contracts/rules/rulebook.test.ts.\n// Keel 2026-10-16 (found while re-casting r016): an order that ends the mission (withdraw, an entry seen) leaves the tick where it\n// is, so anything given after it at that tick is refused (mission-over) and is still the player's, in the record. The replay plays it.\npublic static class Repo\npublic class ScenarioTests\npublic void Passes(string id)\npublic void SameOrdersSameChecksumsTwice(string id)\npublic void ReplaysFromStartStateAndOrders(string id)\npublic void TwentyEightPortedPlusTheEnginesNCases()\npublic void OrdersAfterAnOrderEndsTheMissionReplayToo()\npublic void AScriptRoundTripsThroughTheOrderFormat()\npublic class RulesTests\nstatic Game New(Start? s = null) => Engine.New(Repo.Inputs, s);\nstatic Start Knowing(string temperament)\npublic void InezReferencePricesFromTheRulebook()\npublic void Q4GridMatchesTheTypeScriptEvaluator(string t, string approach, long usd, long orders, string outcome)\npublic void ThePreviewShowsQuestionMarks"
+  },
+  {
+    "path": "sim/Suborned.Sim/Cover.cs",
+    "sha256": "3bfaed80637717e3413e61e76c37f56bf2818f59451fa6ab73f719894218b339",
+    "lines": 62,
+    "symbols": [
+      "CoverPoint",
+      "Present",
+      "CoverRules",
+      "Protects",
+      "Modifier",
+      "Select",
+      "Dist"
+    ],
+    "summary": "// Cover as data (brief 011 fight AI, Pulse: briefs/011/pulse-fight-ai.md §5; contracts/world/civic-block.cover.json, copied into the site\n// by tools/sim/site.ts with its sha256). The three functions are tools/cover/select.ts in integers, and give its conformance vectors.\n/// <summary>The point shields a body standing at it from a shooter at s: at least minRange away (point blank is never turned), inside the\n/// cone about `faces` (dot(s − at, faces) ≥ cos × |s − at|, cm·per mille), and present at the mission second.</summary>\npublic sealed class CoverPoint\npublic bool Present(int missionS) => missionS >= From && missionS < To;\npublic static class CoverRules\npublic static bool Protects(CoverPoint c, Pt s, int missionS, int minRangeCm)\npublic static int Modifier(IReadOnlyList<CoverPoint> points, Pt p, Pt shooter, int missionS, int snapCm, int minRangeCm, int qFull, int qPartial, int modFull, int modPartial)\npublic static CoverPoint? Select(IReadOnlyList<CoverPoint> points, Pt me, Pt objective, Pt? foe, ICollection<string> taken, int seekCm, int missionS,\nstatic long Dist(Pt a, Pt b) => G.Isqrt(G.D2(a, b));"
+  },
+  {
+    "path": "sim/Suborned.Sim/Debrief.cs",
+    "sha256": "125846a90d9cc388c028bf7e2cd337a341c3a08a647c8cf64172c96346e55b91",
+    "lines": 236,
+    "symbols": [
+      "Debrief",
+      "List",
+      "Of",
+      "Write",
+      "Engine",
+      "Inputs",
+      "Load",
+      "FromTexts",
+      "FindRoot",
+      "New",
+      "Play",
+      "Replay"
+    ],
+    "summary": "// The debrief (§08 [B]) as data: the top-down test's nextCity, with ids instead of sentences (Fable writes the words, Glyph lays\n// them out). Public security from the final Alert and any shot; the investigation from the Trail and named causes; contacts and\n// assets; the route summary; the interventions beyond the route.\n/// <summary>brief 018 §3: everyone not in the car when it left, with fate and why.</summary>\npublic sealed class Debrief\npublic readonly List<(string op, string fate, string why)> LeftBehind = new List<(string, string, string)>();\npublic static Debrief Of(Game g)\npublic void Write(JWriter w)\npublic static class Engine\npublic sealed class Inputs\npublic static Inputs Load(string root)\npublic static Inputs FromTexts(string rulebook, string peopleRules, string site, string? people = null, string? provisional = null, string? takedown = null, string? rounds = null)\npublic static string FindRoot(string from)\npublic static Game New(Inputs i, Start? start = null) => new Game(i.Rules, i.SiteData, start, i.Hash.ToString(System.Globalization.CultureInfo.InvariantCulture), i.Crowd);\npublic static Game Play(Inputs i, Start start, IReadOnlyList<Order> orders, int until)\npublic"
+  },
+  {
+    "path": "sim/Suborned.Sim/FailCause.cs",
+    "sha256": "5d5e9ac5b0b6d688fe046b6e49a88be391f90017cd40595ad39966ece71c0126",
+    "lines": 283,
+    "symbols": [
+      "Blamed",
+      "Write",
+      "ToString",
+      "CauseOrigin",
+      "FailCause",
+      "Json",
+      "Game",
+      "Because",
+      "With",
+      "Locate",
+      "OpIn",
+      "Recast"
+    ],
+    "summary": "// What failed the run, as data for the fail camera (Sky 2026-10-18: \"if you fail mission, the camera should pan around the item / person\n// that failed you so you know what it was for next time\"). Read-only: built at the tick the run ends from state the engine already holds,\n// never hashed, never read by a rule, so every replay and checkpoint is the one it was. One cause per ending (a failure, or a withdrawal).\n//  · culprits: what decided it, the first is the one to orbit: a camera, the guard, the patrol, an officer or robot, the rivals, a person,\npublic sealed class Blamed\npublic void Write(JWriter w)\npublic override string ToString() => $\"{Kind}:{Id}/{Role}\" + (Placed ? \"@\" + At : \"\") + (Faces ? \">\" + Facing : \"\");\npublic sealed class CauseOrigin\npublic void Write(JWriter w)\npublic sealed class FailCause\npublic void Write(JWriter w)\npublic string Json() { var w = new JWriter(); Write(w); return w.ToString(); }\npublic sealed partial class Game\nstatic FailCause Because(string why, bool single, params Blamed?[] culprits)\nstatic FailCause With(FailCause c, params string[] ops) { foreach (var o in ops) if (o.Length > 0 && !c.Ops.Contains(o)) c.Ops.Add(o); return c; }\npublic Blamed "
+  },
+  {
+    "path": "sim/Suborned.Sim/Game.cs",
+    "sha256": "a60f4bac6cc6aa172e15c16a4b733be21be26bbe2cc98a2dcca39356c0fb087e",
+    "lines": 665,
+    "symbols": [
+      "Outcome",
+      "ValeAt",
+      "Start",
+      "List",
+      "Parse",
+      "Canonical",
+      "Game",
+      "T",
+      "IncidentKeys",
+      "PersonByRole",
+      "OpOf",
+      "Within",
+      "D2",
+      "Note",
+      "Step",
+      "RunTo",
+      "Advance",
+      "public",
+      "CarPos",
+      "CarHeading",
+      "DriverPos",
+      "ValePos",
+      "PersonPos",
+      "Back",
+      "CameraWatching",
+      "InHeads",
+      "PickupCameraLive",
+      "GuardWatching",
+      "PatrolWatching",
+      "SweepSeesEntrance",
+      "SecurityWatching",
+      "RivalsWatching",
+      "Finish"
+    ],
+    "summary": "// The Handover, stepped at 10 Hz on integer state (GDD §11). The top-down test's causal model\n// (~/Projects/the-suborned/testbed/reference/suborned-world-sim.cjs) moved onto the real civic block (sim/data/handover.site.json)\n// and onto the rules as data (contracts/rules/rulebook.json, contracts/people/people.rules.json). Every number comes from the\n// rulebook, the people rules or the site; this file holds behaviour only. Orders are the only input after the start state, so a\npublic enum Outcome { None, Success, Failure, Withdrawn }\npublic enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead }\npublic sealed class Start\npublic readonly List<(string door, int from, int until)> Holds = new List<(string, int, int)>();\npublic static Start Parse(JNode? n)\npublic string Canonical()\npublic sealed partial class Game\npublic static int T(int seconds) => seconds * Hz;\npublic readonly List<(Order order, bool ok, string code, string why)> Orders = new List<(Order, bool, string, string)>();\npublic readonly List<(int tick, ulong hash)> Checkpoints = new List<(int, ulong)>();\npublic readonly List<(int tick, string line, string who, string detail)> DebriefLines = new List<(int, s"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameAi.cs",
+    "sha256": "34791d7e150fc1cbdaf7f195fbee44b1ab885643eaac8aad020db5d5c26ef7c3",
+    "lines": 332,
+    "symbols": [
+      "Game",
+      "HashAi",
+      "IsRival"
+    ],
+    "summary": "// The fight AI (Pulse, briefs/011/pulse-fight-ai.md; rulebook `ai`): one machine for every hostile body. routine → alerted → advance →\n// engage ↔ hold, break → gone (rivals), down. Targets by class (whoever fired at it, whoever holds Vale, the nearest with a weapon drawn,\n// the nearest), kept until a better class appears; cover from the site's cover points (Cover.cs); police hold their stand; the response\n// unit joins the loud fight; the guard as an ally runs to his post and shoots the rival nearest the Enforcer. Integers only, ties on id.\npublic sealed partial class Game\ninternal void HashAi(Func<long, Hash.H> i)\nstatic bool IsRival(string id) => id.StartsWith(\"rival-\", StringComparison.Ordinal);"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameCancel.cs",
+    "sha256": "00a3bf97b0cdbb20ceabd7065666018916eea4d8059af757e43d0ee641e9bf18",
+    "lines": 247,
+    "symbols": [
+      "Activity",
+      "Game",
+      "Activities",
+      "ActivityOf",
+      "ExitWithoutVale"
+    ],
+    "summary": "// What an operative is doing, and stopping it (Sky 2026-10-15 playtest: \"there's nothing showing me what the cell player is doing when\n// they're busy, nor is there a way to cancel their action\"). Activity(op) is the HUD's read, every tick, and changes nothing. The cancel\n// order stops the activity it shows; what that costs or keeps is the rulebook's `cancel` section.\n/// <summary>One operative's current activity, as the HUD shows it.</summary>\npublic sealed class Activity\npublic sealed partial class Game\npublic Activity[] Activities() { var a = new Activity[4]; for (int i = 0; i < 4; i++) a[i] = ActivityOf((OpId)i); return a; }\npublic Activity ActivityOf(OpId id)\ninternal void ExitWithoutVale(Op op, bool first)"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameCombat.cs",
+    "sha256": "80ff19c53ec6fe82a5d92ec608c8c01570039a15a4f0f871335d2022b5164b73",
+    "lines": 780,
+    "symbols": [
+      "LoudCard",
+      "MoveQuote",
+      "Game",
+      "IsOpId",
+      "GunOf",
+      "PosOf",
+      "Dist",
+      "PendingShot",
+      "GoingLoud",
+      "QuoteMove"
+    ],
+    "summary": "// Real-time shoot-outs and running (Sky 2026-10-15: approved Motive's briefs/011/motive-fights.md, all five answers as recommended).\n// Every number is the rulebook's `weapons` section (and cell.runSpeed, cell.runAlert, cell.carry, alert.gunfire). The rules here:\n//  · A shot's accuracy is its band's (point blank, effective, long) times the modifiers that apply (Rules.Accuracy). Hits are counted,\n//    not rolled: each shooter keeps an integer accumulator on its target, starting at acc.start; each shot adds the accuracy, and at\npublic sealed class LoudCard\npublic sealed class MoveQuote\npublic sealed partial class Game\nstatic bool IsOpId(string id) => id == \"scout\" || id == \"fixer\" || id == \"tech\" || id == \"enforcer\";\npublic Gun? GunOf(string id)\npublic Pt? PosOf(string id)\nstatic long Dist(Pt a, Pt b) => G.Isqrt(G.D2(a, b));\nsealed class PendingShot { public string By = \"\", T = \"\"; public Gun G = null!; public Pt At, From; public long D; public int Acc; public bool Hit; }\npublic LoudCard GoingLoud(Order o)\npublic MoveQuote QuoteMove(string opName, Pt to)"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameCrowd.cs",
+    "sha256": "3e0447a9850bed9015b59d60172989131093aa697ac2d4ed7025f862385a8e87",
+    "lines": 192,
+    "symbols": [
+      "Walker",
+      "Fresh",
+      "Crowd",
+      "SortedDictionary",
+      "Dictionary",
+      "DefaultRecord",
+      "Warm",
+      "Leg",
+      "Game",
+      "CrowdPos",
+      "LegMm"
+    ],
+    "summary": "// The city's people stepping their routines (N12; GDD §04 person = routine + need + temperament + memory; brief 010): every\n// simulated person of sim/data/handover.people.json stands at the stop their routine gives for the mission's clock, or walks the\n// grid between two stops, timed from one stop's end to the next one's start. At home, working inside or beyond the sheet they are\n// not on the street. On the street they witness (§05; rulebook witness.sees): within 13 m on a clear sightline they add Trail once\npublic sealed class Walker\npublic Walker Fresh()\npublic sealed class Crowd\npublic readonly SortedDictionary<string, (string kind, string label, string size)> Records = new SortedDictionary<string, (string, string, string)>(StringComparer.Ordinal);\npublic readonly Dictionary<string, (string record, string size, string holder)> RecordOf = new Dictionary<string, (string, string, string)>(StringComparer.Ordinal);\npublic string DefaultRecord(string kind) { foreach (var kv in Records) if (kv.Value.kind == kind) return kv.Key; return \"\"; }\npublic readonly Dictionary<string, List<(string kind, string with)>> Ties = new Dictionary<string, List<(string, string)>>(StringComparer.Ordin"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameDrive.cs",
+    "sha256": "48df2c8424809e8689190efec66b32bbb5447c28b0d1a52d87434774daa19ca7",
+    "lines": 170,
+    "symbols": [
+      "DrivePose",
+      "Game",
+      "DrivePoseOf",
+      "DriveSample",
+      "DriveRelease",
+      "Mm"
+    ],
+    "summary": "// The driven agent (brief 025 playground, EXPERIMENTAL; Keel, briefs/024/keel-wasd.md; rulebook cell.drive). The host moves one operative\n// freely (a character controller) and hands the engine where it is each tick as a drive sample, an order in the log like any other, so a\n// replay reads the samples back and never re-runs the controller. The engine checks every sample against the agent's pace budget and the walk\n// grid (and the gap to people), keeps the legal part, and the agent is then simply where it stands for every other rule. Integer state only.\npublic struct DrivePose\npublic sealed partial class Game\npublic DrivePose DrivePoseOf(OpId id)\npublic Order DriveSample(OpId id, Pt at, bool run, int face) => new Order { Tick = Tick, Op = Sim.Op.Name(id), Do = \"drive\", Point = at, Run = run, Face = ((face % 360) + 360) % 360 };\npublic Order DriveRelease(OpId id) => new Order { Tick = Tick, Op = Sim.Op.Name(id), Do = \"drive\", Release = true };\nstatic long Mm(Pt a, Pt b) => G.Isqrt(G.D2(a, b) * 100); // mm between two cm points, floored to the mm"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameFight.cs",
+    "sha256": "ad22bffe1c87442ceea1dd0f24745c637c814743d862d25575b5c376eb51da00",
+    "lines": 135,
+    "symbols": [
+      "Hostile",
+      "Pos",
+      "Moving",
+      "Game"
+    ],
+    "summary": "// The final fight (GDD §07 [S]: always; 3–5 hostiles; rulebook `fight`). It starts when the Enforcer has Vale and is fought at the\n// getaway car: the car can't leave while a hostile holds it. Loud (any shot or Alert ≥ 2): police officers run in from the response\n// unit's entry; the seal clock runs; no allies. Safe: the rival crew ambushes the extraction, fewer for a turned driver and an earlier\n// false tip; a helped Inez's warning holds their first shots back; a guard who never saw the cell joins in. Every hostile shoots at\npublic sealed class Hostile\npublic Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);\npublic bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;\npublic sealed partial class Game"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameGetaway.cs",
+    "sha256": "e7c996dff310eb730d360d6bf9866564f70b337a85d4cc1620096db283744f27",
+    "lines": 370,
+    "symbols": [
+      "Captive",
+      "Game",
+      "List",
+      "foreach",
+      "Up",
+      "CarHolders",
+      "CarHeld",
+      "LeftBehind",
+      "WouldBeCaptured",
+      "GoQuery",
+      "CarWatcher",
+      "HashGetaway"
+    ],
+    "summary": "// The getaway (brief 018, Motive; approved by Sky 2026-10-18: \"I want to get my team into the car, and get away\"). Rulebook fight.hold,\n// fight.block, fight.blockers, cell.board, campaign.custody, debrief.lines left-behind, captive, car-seen; site getaway.exit.\n//  · The hold: a holder is a combatant (a final-fight hostile, or anyone who has fired on or aims at the cell) not down, broken or gone,\n//    within fight.hold of the car (any level, line or none) or on the street inside the exit lane. Every position the engine keeps is on\npublic sealed class Captive\npublic sealed partial class Game\npublic readonly List<(string op, string fate, string why)> LeftBehindAtGo = new List<(string, string, string)>();\npublic bool AnyInCar { get { foreach (var op in Ops) if (op.InCar) return true; return Vale == ValeAt.Car; } }\nstatic bool Up(Hostile h) => !h.Down && h.Gun.St != \"break\" && h.Gun.St != \"gone\";\npublic List<string> CarHolders()\npublic bool CarHeld() => CarHolders().Count > 0;\npublic List<(string op, string fate, string why)> LeftBehind()\npublic List<string> WouldBeCaptured() { var l = new List<string>(); foreach (var x in LeftBehind()) if (x.fate == \"captured\") l.Add(x.op); return "
+  },
+  {
+    "path": "sim/Suborned.Sim/GameHudReads.cs",
+    "sha256": "639e8c1547d2533fd8510d8137d4e709b9172961f7296149332d67571e9d4485",
+    "lines": 127,
+    "symbols": [
+      "CarryStretch",
+      "CarrySight",
+      "Game",
+      "HeldUntil",
+      "public",
+      "CarryPathSight"
+    ],
+    "summary": "// Read-only accessors for the takedown HUD (Glyph, briefs/013/glyph-takedown-hud.md, ask 1; Aster 2026-10-16). Each reads the state the\n// engine already holds and changes nothing: no state, no hash moves, no order. The host calls them at will (hover, every frame).\n//  · HeldUntil(door): when a held door's hold ends (the units' sweep, then the stand-down), Game.Never at Alert 3, -1 if not held.\n//  · StashRoom(stash): the bodies in a stash and how many it holds (the pips).\npublic sealed class CarryStretch\npublic sealed class CarrySight\npublic sealed partial class Game\npublic int HeldUntil(string doorId)\npublic (int bodies, int holds) StashRoom(string stashId)\npublic (int tick, bool known) NextRound(string stashId)\npublic CarrySight CarryPathSight(OpId carrier, Pt to)\npublic (string kind, string record, string label)? NeedRecordOf(string idOrRole) => PersonById(idOrRole) is Person p ? NeedRecordOf(p) : ((string, string, string)?)null;\npublic (string kind, string record, string label) NeedRecordOf(Person p)"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameInvestigation.cs",
+    "sha256": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350",
+    "lines": 456,
+    "symbols": [
+      "Incident",
+      "Sighting",
+      "Finding",
+      "Investigation",
+      "BetweenLine",
+      "StandingLine",
+      "List",
+      "Between",
+      "Streams",
+      "Fnv1a32",
+      "Mulberry",
+      "Next",
+      "Draw",
+      "Game",
+      "Investigate",
+      "Question",
+      "FactsOf",
+      "BetweenMissions"
+    ],
+    "summary": "// What the city learns, and what happens before the next mission (brief 011 A, task 3).\n// During the mission: every incident keeps its place, time and witnesses; the watchers (the two cameras and the patrol: §05 watchers)\n// log any operative they see, with place and time, act or no act; a watcher that logs an operative within approach reach of a contact\n// exposes the contact's job (rulebook exposure, Motive's review #12); in a Menace district a sighting counts as a witness report.\npublic sealed class Incident { public int Tick; public string Kind = \"\", Cause = \"\"; public Pt At; public readonly List<(Person p, Pt at)> Witnesses = new List<(Person, Pt)>(); }\npublic sealed class Sighting { public string Watcher = \"\", Op = \"\"; public int From, To; public Pt At; }\npublic sealed class Finding { public string Who = \"\", Outcome = \"\", Lead = \"\"; public readonly List<string> Facts = new List<string>(); public string Cause = \"\"; public int Hop; }\npublic sealed class Investigation\npublic sealed class BetweenLine { public string Line = \"\", Who = \"\", Detail = \"\"; }\npublic sealed class StandingLine\npublic readonly List<(int delta, string cause, string who)> Moves = new List<(int, string, stri"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameOrders.cs",
+    "sha256": "9abfa2fa0b7c072141baaf8e32ce0f8d8232331caff5b0d53538ef359a56b79f",
+    "lines": 737,
+    "symbols": [
+      "Game",
+      "Issue",
+      "Do",
+      "ScoutQuery",
+      "LearnQuery",
+      "Sighting",
+      "PCtx",
+      "Outcome_",
+      "Describe",
+      "FitId",
+      "ReadsTemperament",
+      "Quote",
+      "Preview",
+      "HoldsFace",
+      "CanCall",
+      "CallQuery"
+    ],
+    "summary": "// Orders: each is checked when given (a rejected order changes nothing and is logged with its reason), takes its time, and lands at\n// its end. Turn, Watch and Listen run from the rulebook's events (needs, price lines, outcomes, also, witnesses); the other verbs\n// read their numbers from the rulebook's `cell` section and the mission's from the site.\n/// <summary>Give an order now (its tick must be the game's tick). Returns whether it was taken and, if not, a stable refusal code\npublic sealed partial class Game\npublic Answer Issue(Order o)\npublic bool Do(Order o) => Issue(o).ok;\npublic Answer ScoutQuery(string verb, string target) => LearnQuery(\"scout\", verb, target);\npublic Answer LearnQuery(string agent, string verb, string target)\nstatic bool Sighting(string act) => act == \"saw-act\" || act == \"saw-runner\" || act == \"saw-gunfire\" || act == \"saw-violence\" || act == \"saw-weapon-drawn\" || act == \"told\"\nsealed class PCtx { public Person P = null!; public Event Ev = null!; public Band Band; public string? Outcome; public bool Reach = true; public long Cash; }\nreadonly struct Outcome_ { public readonly string Id; public readonly List<Eff> Changes; public Outcome_(ROutcome o) { Id = o."
+  },
+  {
+    "path": "sim/Suborned.Sim/GamePublicFight.cs",
+    "sha256": "1011079ea9cadbc16fba5d37cb26f56c0a66a3e9e2fe71dfc1339763236e2c03",
+    "lines": 161,
+    "symbols": [
+      "PublicFight",
+      "Game",
+      "IsRivalId"
+    ],
+    "summary": "// A public fight (Sky 2026-10-16, via Aster: \"it should be per fight, and depends who you're fighting - a rival gang that has menace\n// level authority is a +1\"; Motive, briefs/014/motive-standing.md, a public fight; rulebook fight.public). It replaces engine 0.6.1's\n// per-target gunfire step (gunfire.heard, retired with the cause seen-gunfire).\n//  · One fight: the final fight is one fight, from its first shot by or at the cell to its end (FightOverTick) or the mission's. Outside\npublic sealed class PublicFight\npublic sealed partial class Game\nstatic bool IsRivalId(string id) => id == \"rivals\" || id.StartsWith(\"rival-\", StringComparison.Ordinal);"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameResponse.cs",
+    "sha256": "c669d425ef261798e5ad3f2645d484791494af1122f5f3e2d8dc773b0610d779",
+    "lines": 670,
+    "symbols": [
+      "Unit",
+      "OnStreet",
+      "Game",
+      "PatrolUnit",
+      "public",
+      "SceneHold",
+      "DoorsInSightOf",
+      "DoorHeld",
+      "NextMarkOf",
+      "HashResponse"
+    ],
+    "summary": "// The response as a dial (brief 013 B, Keel; Sky 2026-10-16: \"it's easy to swarm the play area with robots if we need to temper the game\n// play\"): the rulebook's `response` section (Motive's levels, briefs/013/motive-takedowns.md §5.3; Pulse's behaviour, briefs/013/\n// pulse-witnesses.md §12, §13). The level is data (the district's base + the mission's bonus, sim/data/handover.provisional.json until the\n// plan and mission carry it; a scenario may fix it). A landed alarm sends robots at Alert 1, units and robots at Alert 2, the cordon at 3;\npublic sealed class Unit\npublic bool OnStreet(int tick) => St != \"wait\" && St != \"gone\" && (Legacy || tick >= Launch);\npublic sealed partial class Game\npublic Unit? PatrolUnit() { foreach (var u in Units) if (u.Patrol && u.St != \"gone\" && u.St != \"wait\") return u; return null; }\npublic (Pt pos, Pt facing)? UnitPose(Unit u)\npublic sealed class SceneHold { public int Act; public Pt At; public readonly List<string> Doors = new List<string>(); }\npublic List<string> DoorsInSightOf(Pt at)\npublic bool DoorHeld(string id) { if (id.Length == 0) return false; foreach (var h in SceneHolds) if (h.Doors.Contains(id) && HoldActive(h)) return true; return Fi"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameRounds.cs",
+    "sha256": "212f894f6d8681bf3b950038417c3adee16b1305f0dafc49509b6391d141c637",
+    "lines": 342,
+    "symbols": [
+      "RoundsData",
+      "Exc",
+      "Server",
+      "Parse",
+      "RoundPose",
+      "RoundEvents",
+      "Hold",
+      "Game",
+      "public",
+      "RoundNext",
+      "Piece",
+      "RoundHalf",
+      "BodyPose",
+      "static",
+      "Resume",
+      "StableByFrom",
+      "StableByAt",
+      "RoundReference",
+      "HashRounds"
+    ],
+    "summary": "// The living café (brief 022, Pulse; Sky 2026-10-18: \"have the waitress also walk around the cafe tables, and when guard comes, they stand\n// together\"). The round is baked at build time (tools/routines/rounds.ts → sim/data/handover.rounds.json); the engine reads it and plays it on a\n// round clock that stops while she is held (rulebook rounds). This is tools/routines/rounds.ts poseAt in integers, piece for piece:\n//  · free: the round clock runs with the mission; she rests at her post and goes out to a table (to table, serving, from table)\npublic sealed class RoundsData\npublic sealed class Exc { public string Table = \"\"; public Pt At, Face; public int Start, Out, Serve, Back; public Path Path = null!; }\npublic sealed class Server { public string Id = \"\", Role = \"\", Post = \"\"; public Pt At, Face; public int From, To, Origin; public readonly List<Exc> Exc = new List<Exc>(); }\npublic readonly Dictionary<string, Dictionary<string, List<(int tick, Pt pos, Pt face, string phase)>>> Vectors = new Dictionary<string, Dictionary<string, List<(int, Pt, Pt, string)>>>(StringComparer.Ordinal);\npublic static RoundsData Parse(string json, Rules r, Site site)\npublic struct RoundPose { public Pt "
+  },
+  {
+    "path": "sim/Suborned.Sim/GameScatter.cs",
+    "sha256": "1fd51411e4430b8bf649b8d1eba4d57427e5fe7d8513f9ebaa2fc16f745b89f7",
+    "lines": 135,
+    "symbols": [
+      "Game",
+      "CrowdBlocks"
+    ],
+    "summary": "// The crowd in a fight (Pulse, briefs/011/pulse-fight-ai.md §4; rulebook `crowd`): the city's people scatter from shots and drawn weapons\n// to the refuges of the site's cover data, shelter, and walk back when it is quiet; and a person on the street blocks a watcher's\n// sightline. The four people cast by role keep their places. Integers only; people act in the walker order (by id, as loaded).\n// brief 013: a witness on the way to a phone or to look at a body, a victim staggering; at the phone they are off the street\npublic sealed partial class Game\npublic bool CrowdBlocks(Pt a, Pt b)"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameSight.cs",
+    "sha256": "b119a1113ea0f3c81cc46a06f2e55d4651d9743abfce748dcd0dc8e75e6985b7",
+    "lines": 661,
+    "symbols": [
+      "Fan",
+      "WatcherKnown",
+      "SightFact",
+      "RoutineEvent",
+      "Noticing",
+      "SeenQuote",
+      "Game",
+      "WatcherKind",
+      "WatcherIds",
+      "IsPersonRoleName",
+      "Key",
+      "InSight",
+      "SeesNow",
+      "Dictionary",
+      "ConeFan",
+      "KnownFans",
+      "Half",
+      "SegPoint",
+      "PolyExit",
+      "CrowdCut",
+      "Known",
+      "HashSight",
+      "Routine",
+      "Detection",
+      "DetectionOf",
+      "SeenAt",
+      "FarthestSight"
+    ],
+    "summary": "// What the cell knows of the city's watchers, and the reads the HUD draws from it (Sky 2026-10-16: view cones are the Scout's skill;\n// Glyph's review, briefs/011/ui/review-2026-10-16 §3.4; the rulebook's `sight` section).\n//  · ConeFan(watcher): the watcher's sight now as a flat polygon on the ground, the engine's own test (rulebook perception: its cone or\n//    sweep, the near circle, occluders at eye height; people on the street if asked). Integer only, read-only, cached by pose.\npublic sealed class Fan\npublic sealed class WatcherKnown\npublic sealed class SightFact { public string Watcher = \"\", What = \"\", How = \"\"; public int Tick; }\npublic sealed class RoutineEvent { public int Tick; public string What = \"\"; }\npublic sealed class Noticing\npublic sealed class SeenQuote\npublic sealed partial class Game\npublic static string WatcherKind(string id) =>\npublic List<string> WatcherIds()\nstatic bool IsPersonRoleName(string id) => id == \"waitress\" || id == \"driver\" || id == \"guard\" || id == \"councillor\";\npublic string Key() => $\"{(Sweep ? 1 : 0)}|{(Live ? 1 : 0)}|{At.X},{At.Y}|{F.X},{F.Y}|{Reach}|{Half}|{Near}|{Depth}|{HalfBase}|{PerMille}|{Heads?.Length ?? 1}\";\npublic bool InSight(stri"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameStashWatch.cs",
+    "sha256": "d4e71f055f991a306ef02c56f0606c59f1c878288ff90a268f373f4361bc18ac",
+    "lines": 57,
+    "symbols": [
+      "Game",
+      "List",
+      "KnowsRound",
+      "HashStashWatch"
+    ],
+    "summary": "// The Scout's Watch on a container (GDD §05 bodies: \"A container is emptied on a round every 15:00, its time learnable by Watch, in the\n// mission only\"). The round itself is GameTakedown's ServiceRound and the HUD's NextRound; this file holds what the cell has learned of\n// it. The Watch reuses the rulebook's sight.watch (its seconds and its reach) and the Watch cancel line (lost: nothing learned). Mission\n// knowledge only: never carried to the debrief. Hashed only once something is learned, so every run that never watches a container\npublic sealed partial class Game\nreadonly List<(string id, int tick)> roundsKnown = new List<(string id, int tick)>();\npublic bool KnowsRound(string stashId) => roundsKnown.Exists(r => r.id == stashId);\ninternal void HashStashWatch(Hash.H h)"
+  },
+  {
+    "path": "sim/Suborned.Sim/GameTakedown.cs",
+    "sha256": "31fc1b13b49e068f804723f482f347f4342a3cb80792b32651a50441edd9636e",
+    "lines": 930,
+    "symbols": [
+      "Body",
+      "TdAct",
+      "Rep",
+      "TakedownQuote",
+      "List",
+      "Game",
+      "MarkedFoe",
+      "PersonById",
+      "CrowdPosOrStand",
+      "WalkerOf",
+      "PosOfPerson",
+      "BodyOf",
+      "BodyById",
+      "BodyPos",
+      "HoldsOf",
+      "Who",
+      "QuoteTakedown",
+      "HashTakedown"
+    ],
+    "summary": "// Takedowns, bodies and the people who find them (brief 013 B, Keel; Sky 2026-10-16: \"anyone can be targeted, but it's all about being seen\n// or not\"). The rules are the rulebook's `takedown` and `witness` sections (Motive, briefs/013/motive-takedowns.md; Pulse,\n// briefs/013/pulse-witnesses.md). One rule set for every simulated person, cast or crowd: no named target list.\n//  · The Enforcer takes a person down (knockout or kill) within reach; the victim is seized at the order and lies where he fell: a body.\npublic sealed class Body\npublic sealed class TdAct\npublic sealed class Rep\npublic sealed class TakedownQuote\npublic readonly List<(string id, string name, string verb, int landS)> People = new List<(string, string, string, int)>(); // within witness range now: verb \"?\" until the temperament is known\npublic sealed partial class Game\npublic bool MarkedFoe(string op) => markedFoes.Contains(op);\npublic Person? PersonById(string idOrRole)\npublic Pt CrowdPosOrStand(Person p) => PosOfPerson(p) ?? (p.Place.Length > 0 && S.HasPlace(p.Place) ? S.Stand(p.Place) : default);\npublic Walker? WalkerOf(Person p) => WalkerOfMap.TryGetValue(p, out var w) ? w : null;\npublic Pt? PosOfPerson(Perso"
+  },
+  {
+    "path": "sim/Suborned.Sim/Geo.cs",
+    "sha256": "521b6dadac776fcb01e009aae129bec5a0848565bf921d65eac312918423ec0c",
+    "lines": 128,
+    "symbols": [
+      "Pt",
+      "Equals",
+      "GetHashCode",
+      "ToString",
+      "Of",
+      "G",
+      "Isqrt",
+      "D2",
+      "Dist",
+      "Within",
+      "Cross",
+      "Sign",
+      "Lerp",
+      "InPoly",
+      "OnSegment",
+      "SegHit",
+      "SegHitsPoly",
+      "InCone",
+      "Occluder",
+      "Blocks",
+      "BoxMeets",
+      "Contains"
+    ],
+    "summary": "// Integer geometry in centimetres: points, exact integer square roots, polygons, sightlines past occluders, cones.\n// Nothing here uses floating point, so the same inputs give the same answers on every machine and in Unity.\n/// <summary>floor(sqrt(n)) for n ≥ 0, exactly.</summary>\n// Newton's method on integers from a power-of-two start above the root: decreases to floor(sqrt(n)) exactly.\npublic readonly struct Pt : IEquatable<Pt>\npublic Pt(int x, int y) { X = x; Y = y; }\npublic static Pt operator -(Pt a, Pt b) => new Pt(a.X - b.X, a.Y - b.Y);\npublic static Pt operator +(Pt a, Pt b) => new Pt(a.X + b.X, a.Y + b.Y);\npublic bool Equals(Pt o) => X == o.X && Y == o.Y;\npublic override bool Equals(object? o) => o is Pt p && Equals(p);\npublic override int GetHashCode() => unchecked(X * 73856093 ^ Y * 19349663);\npublic override string ToString() => \"(\" + X.ToString(System.Globalization.CultureInfo.InvariantCulture) + \",\" + Y.ToString(System.Globalization.CultureInfo.InvariantCulture) + \")\";\npublic static Pt Of(JNode n) { var a = n.Ints(); if (a.Length != 2) throw new FormatException($\"{n.Path} is not a point\"); return new Pt(a[0], a[1]); }\npublic static class G\npublic static long Isqrt(lo"
+  },
+  {
+    "path": "sim/Suborned.Sim/Grid.cs",
+    "sha256": "406a9153efb095fe7bebd3dba3c6d18f4fee79463bf80f12b026d351d9be0460",
+    "lines": 307,
+    "symbols": [
+      "Grid",
+      "SurfaceAt",
+      "ClearanceAt",
+      "CarRoute",
+      "FreeCell",
+      "CI",
+      "CJ",
+      "FloorDiv",
+      "Free",
+      "Centre",
+      "NearestFree",
+      "LineFree",
+      "Pool",
+      "Fit",
+      "G",
+      "Set",
+      "IsClosed",
+      "Route",
+      "Heap",
+      "Clear",
+      "Push",
+      "Pop",
+      "Path",
+      "At",
+      "Heading",
+      "Cut"
+    ],
+    "summary": "// The walk grid (sim/data/handover.site.json grid): A* over free cells, 8 neighbours, no corner cutting, integer costs, ties broken\n// by cell index so every run finds the same path; then string-pulled to an any-angle polyline (the walk.ts way). A Path moves along\n// its polyline by millimetres, so a speed in cm/s advances exactly that many mm a tick at 10 Hz.\n/// <summary>Brief 023 (car.pace): each free cell's surface on a drive grid, 'r' carriageway or 'y' drive or bay; '.' on a walk grid.</summary>\npublic sealed class Grid\npublic Grid(JNode g)\npublic char SurfaceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? surface[i * Ny + j] : '#'; }\npublic int ClearanceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Clearance()[i * Ny + j] : 0; }\npublic Pt[]? CarRoute(Pt a, Pt b, int laneCm)\npublic bool FreeCell(int i, int j) => i >= 0 && j >= 0 && i < Nx && j < Ny && free[i * Ny + j];\npublic int CI(int x) => FloorDiv(x - X0, Cell);\npublic int CJ(int y) => FloorDiv(y - Y0, Cell);\nstatic int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);\npublic bool Free(Pt p) => FreeCell(CI(p.X), CJ(p.Y));\npublic Pt Centre(int i, int j) => new Pt(X0 + i * "
+  },
+  {
+    "path": "sim/Suborned.Sim/Hash.cs",
+    "sha256": "98c67b3ac91bd7ff51a39b9eb09d7294a466866683f621054ea92f67cce17d9e",
+    "lines": 127,
+    "symbols": [
+      "Hash",
+      "Of",
+      "Hex",
+      "H",
+      "B",
+      "I",
+      "Z",
+      "S",
+      "P",
+      "HashGun",
+      "Gun",
+      "Person",
+      "Fight",
+      "State"
+    ],
+    "summary": "// Checksums: FNV-1a 64 over a canonical walk of the whole state, in a fixed order. A replay is right when its checkpoint hashes match.\n/// <summary>One person's state alone (what they are, know and remember), for \"before and after\" checks.</summary>\n/// <summary>For a behaviour-only comparison across a move of standing.start (suborned-sim hashes --standing-as n, brief 014): hash Standing\n/// as if the run had started at n. Never set in play.</summary>\npublic static class Hash\npublic static ulong Of(string s) { var h = new H(); h.S(JNode.Canon(s)); return h.V; }\npublic static string Hex(ulong v) => v.ToString(\"x16\", System.Globalization.CultureInfo.InvariantCulture);\npublic sealed class H\npublic H B(byte b) { unchecked { V ^= b; V *= Prime; } return this; }\npublic H I(long v) { unchecked { for (int k = 0; k < 8; k++) B((byte)(v >> (8 * k))); } return this; }\npublic H Z(bool v) => B(v ? (byte)1 : (byte)0);\npublic H S(string s) { I(s.Length); unchecked { foreach (var c in s) { B((byte)c); B((byte)(c >> 8)); } } return this; }\npublic H P(Pt p) => I(p.X).I(p.Y);\npublic static void HashGun(H h, Gun g) => Gun(h, g);\nstatic void Gun(H h, Gun g)\npublic static ulong Person(Person p)\nstatic "
+  },
+  {
+    "path": "sim/Suborned.Sim/Json.cs",
+    "sha256": "49f080c9ae5f39e6d83ec0ad09f2132d77065f05c61eae93f5a807cd5ba2e3b0",
+    "lines": 184,
+    "symbols": [
+      "JKind",
+      "JNode",
+      "Parse",
+      "Canon",
+      "Has",
+      "Opt",
+      "foreach",
+      "Str",
+      "Bool",
+      "Long",
+      "Int",
+      "Strs",
+      "Ints",
+      "Only",
+      "Parser",
+      "End",
+      "Value",
+      "JWriter",
+      "Obj",
+      "EndObj",
+      "Arr",
+      "EndArr",
+      "Key",
+      "Num",
+      "Null",
+      "Raw",
+      "Prop",
+      "Open",
+      "OpenArr",
+      "ToString"
+    ],
+    "summary": "// A small strict JSON reader (RFC 8259): objects keep their key order, duplicate keys are an error, numbers keep their text.\n// The engine reads its rules and site with it so it needs no package (Unity loads the DLL as it is) and so a number is never\n// silently turned into a float: Long() refuses anything that is not an integer.\n/// <summary>The text as the engine reads and hashes it: a leading BOM dropped, CRLF and CR made LF (Redline E4, E11).</summary>\npublic enum JKind { Obj, Arr, Str, Num, Bool, Null }\npublic sealed class JNode\npublic static JNode Parse(string s, string name = \"$\") { var p = new Parser(Canon(s), name); var n = p.Value(name); p.End(); return n; }\npublic static string Canon(string s) { if (s.Length > 0 && s[0] == '\\uFEFF') s = s.Substring(1); return s.IndexOf('\\r') < 0 ? s : s.Replace(\"\\r\\n\", \"\\n\").Replace('\\r', '\\n'); }\npublic bool Has(string key) => Kind == JKind.Obj && index!.ContainsKey(key);\npublic JNode? Opt(string key) => Kind == JKind.Obj && index!.TryGetValue(key, out var v) ? v : null;\npublic IEnumerable<string> Keys { get { foreach (var kv in Entries) yield return kv.Key; } }\npublic string Str() => Kind == JKind.Str ? text! : throw new FormatExcepti"
+  },
+  {
+    "path": "sim/Suborned.Sim/Model.cs",
+    "sha256": "9046f8282eec03b3a8ae0d454fbfcb98cad7a4e1f0683bb01fcffe9ba5be6054",
+    "lines": 216,
+    "symbols": [
+      "Mem",
+      "Person",
+      "Knows",
+      "Learn",
+      "Forget",
+      "Count",
+      "Has",
+      "OpId",
+      "Gun",
+      "Op",
+      "Name",
+      "Parse",
+      "Order",
+      "Write",
+      "ToString",
+      "LogLine",
+      "Answer",
+      "Deconstruct",
+      "operator",
+      "Quote",
+      "L"
+    ],
+    "summary": "// The engine's state pieces: people (the cast the rules act on), the cell's four operatives, orders, the event log, the action card.\n/// <summary>A memory entry (rulebook memory, K1): {act, by, place, time, witnessed}; `By` is an operative's face, only an id.</summary>\n/// <summary>A simulated person (people.rules tiers.simulated): routine, need, temperament, memory, and what the cell knows of them.</summary>\n/// <summary>The need's record (brief 017, sim people `record`, `size`, `holder`): the catalogue's record of the `Need` kind, its size and\npublic struct Mem\npublic sealed class Person\npublic bool Knows(string what) => what == \"routine\" ? KRoutine : what == \"need\" ? KNeed : what == \"temperament\" ? KTemperament : what == \"refused\" ? KnownRefused.Count > 0 : what == \"secret\" ? KSecret && Secret.Length > 0 : throw new FormatException($\"knowledge '{what}'\");\npublic void Learn(string what)\npublic void Forget(string what) { if (what == \"routine\") KRoutine = false; else if (what == \"need\") KNeed = false; else if (what == \"temperament\") KTemperament = false; else if (what == \"secret\") KSecret = false; }\npublic int Count(string act) { int n = 0; foreach (var m in Memory) if (m.Act == a"
+  },
+  {
+    "path": "sim/Suborned.Sim/Rules.cs",
+    "sha256": "c80cd73a73fbb2e1406c6703a3da1abc562e92328fe859bc77affeb7cd758f3c",
+    "lines": 812,
+    "symbols": [
+      "Band",
+      "Fit",
+      "Cond",
+      "S",
+      "B",
+      "L",
+      "Eff",
+      "Line",
+      "ROutcome",
+      "Also",
+      "Witness",
+      "Event",
+      "FightOutcome",
+      "Temperament",
+      "Approach",
+      "Need",
+      "Rules",
+      "CheckCond",
+      "CheckEff",
+      "Step",
+      "Dictionary",
+      "DriveRules",
+      "Bounded",
+      "Known",
+      "OneOf",
+      "ParseFit",
+      "Scales",
+      "WeaponOf",
+      "Accuracy",
+      "OneOfStr",
+      "IsRef",
+      "V",
+      "VI",
+      "Num",
+      "Ev",
+      "HasEvent",
+      "Temp",
+      "HasTemperament",
+      "App",
+      "HasApproach",
+      "ApproachRequires",
+      "NeedMetBy",
+      "CheckNeed",
+      "BandOf",
+      "BandId",
+      "FitOf",
+      "IsTalker",
+      "ScaleIndex",
+      "Clamp",
+      "DialLevel",
+      "Weapon"
+    ],
+    "summary": "// The rules, read as data and compiled at load: contracts/rules/rulebook.json (Keel) and contracts/people/people.rules.json (Motive).\n// Everything the engine reads is checked when the rules load and turned into typed fields: every object's keys (unknown = reject,\n// GDD §01), every condition and effect kind with its values, where each kind may stand (no cash-covers outside an event's needs,\n// nothing that prices inside a price line, no fit outside a Turn), every v:/p: ref resolved to an integer within its unit's bounds,\npublic enum Band { Hero, Neutral, Menace }\npublic enum Fit { Suits, Worse, Refused }\npublic sealed class Cond\npublic Cond(JNode n) { N = n; K = n[\"k\"].Str(); Rules.CheckCond(this); }\npublic string S(string key) => N[key].Str();\npublic bool B(string key) => N[key].Bool();\npublic List<string> L(string key) => N[key].Strs();\npublic sealed class Eff\npublic Eff(JNode n) { N = n; Do = n[\"do\"].Str(); Rules.CheckEff(this); }\npublic string S(string key) => N[key].Str();\npublic List<string> L(string key) => N[key].Strs();\npublic sealed class Line\npublic Line(JNode n)\npublic sealed class ROutcome\npublic ROutcome(JNode n)\npublic sealed class Also\npublic Also(JNode n) { n.Onl"
+  },
+  {
+    "path": "sim/Suborned.Sim/Scenarios.cs",
+    "sha256": "41260464249787e05f8db6800057b6f745084a23ac0ec3e81c4685b436ca996e",
+    "lines": 233,
+    "symbols": [
+      "Scenario",
+      "Run",
+      "Is",
+      "Eq",
+      "Inv",
+      "ForHer",
+      "Do",
+      "Refused",
+      "Try",
+      "Send",
+      "SendTo",
+      "Arrival",
+      "To",
+      "Wait",
+      "Done",
+      "Fire",
+      "Until",
+      "Shots",
+      "Engage",
+      "CityGunmen",
+      "FightOff",
+      "FightItOut",
+      "FightItOutAll",
+      "GetAway",
+      "Extract",
+      "Takedown",
+      "Body",
+      "At",
+      "Stand",
+      "Op",
+      "Scenarios",
+      "if",
+      "Find",
+      "Add",
+      "T"
+    ],
+    "summary": "// The 28 scenarios of the top-down test (~/Projects/game-source/docs/prototypes/suborned-world-sim.test.js, sha256 c41a8d78…),\n// rebased on the real civic block, the rulebook and the promoted cast (r016 since 2026-10-16), plus Suture's N-cases the engine owns. Each keeps its intent;\n// its positions and times are the real block's (sim/data/handover.site.json), and every change from the prototype is said beside it.\n// They live in the engine DLL so the xunit tests, the CLI and Unity (brief 011 D) run the very same code.\npublic sealed class Scenario\npublic sealed class Run\npublic Run(Game g) { G = g; }\npublic bool Is(bool ok, string what) { Checks.Add((ok, what)); return ok; }\npublic void Eq<T>(T a, T b, string what) => Is(EqualityComparer<T>.Default.Equals(a, b), what + \" (got \" + Inv(a) + \", want \" + Inv(b) + \")\");\nstatic string Inv(object? v)\npublic void ForHer(string verb, string target)\npublic bool Do(string op, string verb, string target = \"\", string approach = \"\")\npublic bool Refused(string op, string verb, string target, string what, string approach = \"\")\npublic bool Try(string op, string verb, string target = \"\", string approach = \"\") { ForHer(verb, target); return TryNow("
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosCancel.cs",
+    "sha256": "c1c8d2a530f8da0ac30ebdcbe2a0ceada8da2971654653a02c16623438132e6f",
+    "lines": 187,
+    "symbols": [
+      "Scenarios",
+      "CancelCases"
+    ],
+    "summary": "// Cancel and the activity read (Sky 2026-10-15 playtest: \"there's nothing showing me what the cell player is doing when they're busy,\n// nor is there a way to cancel their action\"): each verb cancelled mid-way, at the rulebook cancel line's cost. Each scenario also runs\n// twice and replays from its orders (the Theory tests), and checks the state it touches before and after.\npublic static partial class Scenarios\nstatic void CancelCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosDrive.cs",
+    "sha256": "96c289da8c56f5b9553443ad57a88ba37cf88dd380782189fb64f5f525abbbbd",
+    "lines": 281,
+    "symbols": [
+      "Scenarios",
+      "Sample",
+      "Push",
+      "Heading",
+      "OnFree",
+      "WallEast",
+      "static",
+      "WalkCm",
+      "RunCm",
+      "DriveCases",
+      "DriveStart",
+      "GapCase"
+    ],
+    "summary": "// The driven agent (brief 025 playground, EXPERIMENTAL; rulebook cell.drive; engine 0.9.0). Each scenario drives an operative by drive samples\n// as a host would (one a tick, where its controller has the agent), and checks what the engine keeps. The suite replays every one of them\n// from its start state and order log (the samples are orders), so \"the samples replay exactly\" is checked for each.\n//  D01 a straight walk: samples a walk's pace apart are taken whole; the agent is where the host put it; nothing corrected\npublic static partial class Scenarios\nstatic bool Sample(Run r, string op, Pt at, bool run = false, int face = 0)\nstatic int Push(Run r, string op, Pt v, int ticks, bool run = false)\nstatic int Heading(Pt v) => (int)((Math.Atan2(v.Y, v.X) * 180 / Math.PI + 360) % 360); // a scenario's facing only (never read by a rule)\nstatic bool OnFree(Run r, string op) => r.G.S.Grid.Free(r.Op(op).Pos);\nstatic Pt? WallEast(Grid gr, Pt near)\nstatic (Pt at, Pt beyond)? Corner(Grid gr, Pt near)\nstatic int WalkCm(Run r) => r.G.R.CellSpeed / 10;    // cm a tick at a walk (cell.speed, mm a tick)\nstatic int RunCm(Run r) => r.G.R.RunSpeed / 10;\nstatic void DriveCases()\nstatic Start DriveSta"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosDriveProof.cs",
+    "sha256": "01b8e86bd4a9a4e8932fec1642889f8015246616e3b589c9ef05b04c810700a1",
+    "lines": 52,
+    "symbols": [
+      "Scenarios",
+      "DriveSession",
+      "DrivenSessionStart",
+      "DrivenSessionProof"
+    ],
+    "summary": "// DP1, the recorded driven session (brief 025; game:check's replay proof). The session (Fixtures/drive-session.script.json) was played the way a\n// host plays it: a float controller moved by camera-relative keys at a jittered 60 fps, its position rounded to centimetres and handed over as one\n// drive sample a tick, pulled back to the engine's pose when corrected. It is saved with its record (Script.Write: inputs, engine, start hash,\n// every checkpoint, outcome) and embedded in the DLL, so every runtime that runs the scenarios (the CLI, the Editor, the built player) replays it\npublic static partial class Scenarios\nstatic Suborned.Sim.Script? DriveSession()\nstatic Start DrivenSessionStart() => DriveSession()?.Start ?? new Start();\nstatic void DrivenSessionProof(Run r)"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosFailCause.cs",
+    "sha256": "905a8018592a37fbb06796dbe300bb9567bd93103a33124216119edd6921e580",
+    "lines": 184,
+    "symbols": [
+      "Scenarios",
+      "CauseIs",
+      "PosedAs",
+      "ShotFrom",
+      "Script",
+      "FailCauseCases"
+    ],
+    "summary": "// The fail camera's culprit (Sky 2026-10-18: \"if you fail mission, the camera should pan around the item / person that failed you so you\n// know what it was for next time\"; FailCause.cs). Every way the Handover can end without Vale carries its cause: the fail code, why, the\n// deciding tick, the culprits (the first is the one to orbit) where they stood and faced, the operatives involved, and, where no single\n// culprit decided it (the seal clock), the report that started it. Read-only: none of these runs hashes differently for it.\npublic static partial class Scenarios\nstatic FailCause? CauseIs(Run r, string fail, string why, bool single, string first, string kind, string ops)\nstatic void PosedAs(Run r, Blamed? b, Pt at, Pt facing, string what)\nstatic void ShotFrom(Run r, FailCause? c, string shooter, string victim)\nstatic void Script(Run r, string orders) => Orders(r, JNode.Parse(orders, \"orders\").Items.Select(Order.Parse).ToArray());\nstatic void FailCauseCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosFights.cs",
+    "sha256": "5b04bcc812ed71dc1f9c9188f0e4584d943ce78da6377f6541fa4fcb68c1ce48",
+    "lines": 356,
+    "symbols": [
+      "Scenarios",
+      "SawRunner",
+      "FrontOfGuard",
+      "Along",
+      "AheadOfGuard",
+      "FightCases"
+    ],
+    "summary": "// Running and real-time shoot-outs (Sky 2026-10-15: Motive's briefs/011/motive-fights.md approved, all five answers as recommended):\n// a run seen by people and by security, runs refused, hits counted not rolled, a drawn weapon as an act, the going-loud card, panic,\n// and carrying a downed operative.\n/// <summary>A point in front of the guard at his door, within point blank (3 m along his facing), on free ground.</summary>\npublic static partial class Scenarios\nstatic int SawRunner(Game g)\nstatic Pt FrontOfGuard(Run r) => r.Stand(\"d:Office entrance\") + Along(r.G.S.GuardFacing, 300); // along his facing from the site (2026-10-19: west, the door on the west face; was a fixed 3 m north)\nstatic Pt Along(Pt facing, int cm) { long len = Math.Max(1, G.Isqrt((long)facing.X * facing.X + (long)facing.Y * facing.Y)); return new Pt((int)(facing.X * cm / len), (int)(facing.Y * cm / len)); }\nstatic Pt AheadOfGuard(Run r, int cm) { var gp = r.G.GuardPose()!.Value; return r.G.S.Grid.NearestFree(gp.pos + Along(gp.facing, cm))!.Value; }\nstatic void FightCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosGetaway.cs",
+    "sha256": "15e994e659712a6fe15ec24eab53fd46ca41b862deedb7b4095c2b9329e0702a",
+    "lines": 351,
+    "symbols": [
+      "Scenarios",
+      "ToAmbush",
+      "BoardVale",
+      "Support",
+      "Targets",
+      "CoveredBoarding",
+      "BlockerOnly",
+      "CoveredBoardAndGo",
+      "DrawFire",
+      "DownBlocker",
+      "Go",
+      "static",
+      "ShotsAt",
+      "GetawayCases",
+      "LoudToCar"
+    ],
+    "summary": "// The getaway (brief 018, Motive; Sky 2026-10-18: \"I want to get my team into the car, and get away\"). On the real block, the promoted\n// cast and the crowd, at the mission's own security level unless a case says otherwise.\n//  N111 the hold and Go refused: the Scout boards empty-handed (1 s) before the ambush; one rival goes for the road; the ambush stops\n//       hold nothing by standing; Go is refused car-held, naming the holders in id order (the Go card reads the same); in the car she\npublic static partial class Scenarios\nstatic void ToAmbush(Run r)\nstatic int BoardVale(Run r)\nstatic void Support(Run r)\nstatic List<string> Targets(Game g, bool spareBlocker) { var l = new List<string>(); foreach (var h in g.Hostiles) if (h.Present && !h.Down && h.Gun.St != \"break\" && h.Gun.St != \"gone\" && !(spareBlocker && h.Blocker)) l.Add(h.Id); return l; }\nstatic int CoveredBoarding(Run r, bool spareBlocker)\nstatic void BlockerOnly(Run r)\nstatic void CoveredBoardAndGo(Run r, bool go, bool draw = true)\nstatic void DrawFire(Run r, Func<bool> until, int limitS)\nstatic void DownBlocker(Run r, params string[] ops)\nstatic Order Go(Game g) => new Order { Tick = g.Tick, Op = \"cell\", Do = \"go\" };\nsta"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosHandover.cs",
+    "sha256": "fd228ef29b337c7d2a885f6bab9ce9068d11fb2ac60f8cd82ac5ea0c3077fa76",
+    "lines": 1030,
+    "symbols": [
+      "Scenarios",
+      "NoFight",
+      "Level",
+      "Turned",
+      "Max",
+      "TurnDriver",
+      "HelpUntilTurned",
+      "RouteA",
+      "Handover",
+      "NCases"
+    ],
+    "summary": "// S01–S28: the top-down test's scenarios on the real block. \"proto\" is the prototype test's line. What changed and why is said in\n// each; the common changes are: actions take their rulebook time and land at its end (the prototype landed them at once); Watch\n// reveals the routine only and Listen the need and temperament (Sky 2026-10-15); who plays each role, and their temperament, is the\n// promoted cast's (sim/data/handover.site.json cast, M-2): a scenario that plays the mission reads the card as a player would (route A\npublic static partial class Scenarios\nstatic Start NoFight() { var s = new Start(); s.FinalFight = false; return s; }\nstatic Start Level(int level) { var s = new Start(); s.Security = level; return s; } // brief 013: the response dial's level, fixed\nstatic Start Turned(params string[] roles) { var s = new Start(); s.Turned.AddRange(roles); return s; }\nstatic int Max(params int[] xs) { int m = int.MinValue; foreach (var x in xs) m = Math.Max(m, x); return m; }\nstatic void TurnDriver(Run r)\nstatic void HelpUntilTurned(Run r, string role, int most = 4)\nstatic void RouteA(Run r, bool reroute = false)\nstatic void Handover()\nstatic void NCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosPublicFight.cs",
+    "sha256": "2af79ebd8e7da5dbf622ce86372ec1087aad48e0d25cddd50adab33a2dd0a7b4",
+    "lines": 248,
+    "symbols": [
+      "Scenarios",
+      "Moves",
+      "FightMoves",
+      "HeardBy",
+      "PatrolShotDown",
+      "FireOnArrivingRivals",
+      "FireOnDrawnRivals",
+      "PublicFightCases"
+    ],
+    "summary": "// A public fight (Sky 2026-10-16, via Aster: \"it should be per fight, and depends who you're fighting - a rival gang that has menace\n// level authority is a +1\"; Motive, briefs/014/motive-standing.md, a public fight; rulebook fight.public). One scenario a row of the\n// outcomes table, on the real block and the promoted cast, with the crowd in unless a scenario says otherwise.\n//  N95  feared rivals driven off: route A's safe final fight, the rivals break: one fight, +1 seen-fight-rivals when it ends; with\npublic static partial class Scenarios\nstatic string Moves(Game g) => string.Join(\", \", FightMoves(g).Select(m => $\"{m.delta.ToString(System.Globalization.CultureInfo.InvariantCulture)} {m.cause} {m.who}\"));\nstatic List<(int tick, int delta, string cause, string who)> FightMoves(Game g) => g.StandingMoves.FindAll(m => m.cause.StartsWith(\"seen-fight-\", StringComparison.Ordinal));\nstatic int HeardBy(Game g, string op, bool crowd)\nstatic int PatrolShotDown(Run r)\nstatic void FireOnArrivingRivals(Run r, bool once)\nstatic void FireOnDrawnRivals(Run r, bool waitForPeople = false)\nstatic void PublicFightCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosRepeat.cs",
+    "sha256": "a717d4e137ba320bc3764f3590e9d149d397162171368d6aabec0bf1cbb1e9a0",
+    "lines": 113,
+    "symbols": [
+      "Scenarios",
+      "RefusedFree",
+      "RepeatCases",
+      "Told"
+    ],
+    "summary": "// A Watch or Listen that can teach nothing more is refused, free (Sky 2026-10-18, playing: \"if I've listened to someone before, I think I\n// can then listen to them again?\"). Listen on a person whose need and temperament (and secret, if any) the cell knows: already-heard. Watch\n// when everything a Watch can teach of the target is known: a person's routine (and an affair a lover's visit could show), the guard's\n// sight too, a camera's sight, the patrol's sight and routine (open until the cell's Watches total its routine seconds): already-watched.\npublic static partial class Scenarios\nstatic void RefusedFree(Run r, string verb, string target, string code, Person? p = null)\nstatic void RepeatCases()\nstatic Start Told(string role, params string[] what) { var s = new Start(); s.Known[role] = new System.Collections.Generic.List<string>(what); return s; }"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosRounds.cs",
+    "sha256": "6e67ee519fd8516a6ecba98668905c514c869700e690e2d15d8c9e0b63999327",
+    "lines": 136,
+    "symbols": [
+      "Scenarios",
+      "PhaseOf",
+      "KnowingRoutine",
+      "RoundsCases"
+    ],
+    "summary": "// The living café (brief 022, Pulse; Sky 2026-10-18: \"have the waitress also walk around the cafe tables, and when guard comes, they stand\n// together\"), on the real block with the mission's baked round (sim/data/handover.rounds.json). Pulse's reference poses are matched in\n// Suborned.Sim.Tests/Rounds.cs; these play the round with orders.\n//  N130 a Listen refused too-far while she serves a table; the HUD's \"back in n s\" (RoundNext) and PoseAhead say when she is back; then taken\npublic static partial class Scenarios\nstatic string PhaseOf(Game g) => g.PersonPose(g.Inez)?.phase ?? \"\";\nstatic Start KnowingRoutine() { var s = new Start(); s.Known[\"waitress\"] = new List<string> { \"routine\" }; return s; }\nstatic void RoundsCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosSight.cs",
+    "sha256": "0ea86a292f82d89449b09c5ffd8694f3aea42a5cc01d437652b15d0cd9f8090d",
+    "lines": 179,
+    "symbols": [
+      "Scenarios",
+      "WatchSpot",
+      "FindWatchSpot",
+      "Watchable",
+      "SightCases"
+    ],
+    "summary": "// Cones are the Scout's skill (Sky 2026-10-16; Glyph's review §3.4; the rulebook's `sight`): what the cell knows of each watcher, how\n// a Watch teaches it, what the cards show before and after, the routine a timed Watch teaches, and the detection fill. Each scenario also\n// runs twice and replays from its orders (the Theory tests). The fan's geometry is checked point by point in the tests (SightTests).\n/// <summary>The free ground nearest the Scout, or `who` (that it can walk to) from which a Watch on this watcher is taken now: within\npublic static partial class Scenarios\nstatic Pt WatchSpot(Run r, string watcher, bool unseen = true, bool line = true, string who = Scout) => FindWatchSpot(r, watcher, unseen, line, who) ?? throw new InvalidOperationException($\"no spot to watch {watcher} from\");\nstatic Pt? FindWatchSpot(Run r, string watcher, bool unseen, bool line, string who = Scout)\nstatic bool Watchable(Run r, string watcher, string who = Scout)\nstatic void SightCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosStanding.cs",
+    "sha256": "859b4ea2a6dbfb652ffeb4e76484767bb163c38f2b900dc55bc5ca056f2a01a4",
+    "lines": 181,
+    "symbols": [
+      "Scenarios",
+      "Knowing",
+      "StartingAt",
+      "HelpRole",
+      "OneLine",
+      "StandingCases",
+      "Also"
+    ],
+    "summary": "// Brief 014 (Keel, 2026-10-16; Sky's approval of briefs/014/motive-standing.md): Standing leans Hero. One scenario a rule, on the real\n// block and the promoted cast. The word moves Standing only between missions, so every in-mission price stays as it was.\n//  N88 help spreads: route A's Help ×2 on Inez is private (no move in the mission); she tells her ties: +1, the Hero band next mission\n//  N89 harm spreads: a Pressure in sight moves it at once (−1) and Inez's word does again (−1): 0, Motive's route A Pressure row\npublic static partial class Scenarios\nstatic Start Knowing(params string[] roles)\nstatic Start StartingAt(int standing) { var s = new Start { FinalFight = false, Standing = standing }; return s; }\nstatic bool HelpRole(Run r, string role, int most = 3)\nstatic StandingLine OneLine(Run r, Between next)\nstatic void StandingCases()\nstatic Start Also(this Start s, Action<Start> f) { f(s); return s; }"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+    "sha256": "bef1536857379108fca814ae03cb29b9adf7d57a5285f2f7b32db1c3ceed4418",
+    "lines": 684,
+    "symbols": [
+      "Scenarios",
+      "GuardQuiet",
+      "ActOn",
+      "Beside",
+      "MeetFromBehind",
+      "WalkerById",
+      "DriverBlind",
+      "TakedownCases"
+    ],
+    "summary": "// Brief 013 B (Keel; Sky 2026-10-16): takedowns, bodies, the people who report them and the response dial, as scenarios on the real block\n// and the promoted cast (r016). Each runs twice and replays from its orders (the Theory tests). The numbers are the rulebook's, read\n// through the engine; the clocks (the guard's 90 s marks from his shift's start, guard 74's walk, the clerks after the chime) are the\n// people file's. Where a scenario fixes something in its start state (a level, a temperament), it says why.\npublic static partial class Scenarios\nstatic void GuardQuiet(Run r)\nstatic TdAct ActOn(Run r, string id)\nstatic Pt? Beside(Run r, Pt at, Pt? facing = null)\nstatic int MeetFromBehind(Run r, Walker w, int tick)\nstatic Walker WalkerById(Run r, string id) => r.G.Walkers.First(w => w.P.Id == id);\nstatic Start DriverBlind() { var s = new Start(); s.Turned.Add(\"driver\"); s.Crowd = false; return s; }\nstatic void TakedownCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosTakedownE.cs",
+    "sha256": "3e649c6caad29b1e3346e16ac7da43dfe2b8701d81c45e239295495b3e88529a",
+    "lines": 218,
+    "symbols": [
+      "Scenarios",
+      "DriverOpening",
+      "ToldBy",
+      "TakedownE"
+    ],
+    "summary": "// Brief 013 E (Keel, 2026-10-16; Aster's small items after Waymark's c010): one scenario a change, on the real block and the promoted cast.\n//  N79 a tie out of speaking range is told only from a phone: the teller walks there, and a takedown on the way stops it (the driver route, early)\n//  N80 the same walk not stopped: the tie is told by phone when the call is made, not at the sight\n//  N81 face to face is unchanged (the driver route, late: the driver tells Vale at once); N82 one hop: a told person never retells\npublic static partial class Scenarios\nstatic Order[] DriverOpening() => new[] {\nstatic bool ToldBy(Person q, Person by) => q.Memory.Exists(m => m.Act == \"told\" && m.By == by.Id);\nstatic void TakedownE()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosTakedownFixes.cs",
+    "sha256": "c0fea5d3ac898ace45fc23e281bd8b8a090163f49308386f0dc23e0bf7b1232b",
+    "lines": 326,
+    "symbols": [
+      "Scenarios",
+      "Orders",
+      "Mv",
+      "MvTo",
+      "Act",
+      "TakedownFixes"
+    ],
+    "summary": "// Brief 013 D (Keel, 2026-10-16): the engine fixes and rule changes after Waymark played the Handover with takedowns\n// (briefs/013/waymark-handover.md §5, §6; Aster's hand-off). One scenario a fix or change, on the real block and the promoted cast:\n//  N68 the report chain no longer throws when a check ends and its walk to the phone is added (5:34.1, \"Collection was modified\")\n//  N69 a takedown under the live entrance camera goes through the camera's report chain; N69b the §07 entry rule it was mistaken for\npublic static partial class Scenarios\nstatic void Orders(Run r, params Order[] os)\nstatic Order Mv(int tick, string op, string to, bool run = false) => new Order { Tick = tick, Op = op, Do = \"move\", To = to, Run = run };\nstatic Order MvTo(int tick, string op, Pt at) => new Order { Tick = tick, Op = op, Do = \"move\", Point = at };\nstatic Order Act(int tick, string op, string verb, string target = \"\", string how = \"\") => new Order { Tick = tick, Op = op, Do = verb, Target = target, How = how };\nstatic void TakedownFixes()"
+  },
+  {
+    "path": "sim/Suborned.Sim/ScenariosTechWatch.cs",
+    "sha256": "e09a99ce2c23016d6c633b44d5bd51cb673eff9a7c08add8d7a92ab4bcb96b26",
+    "lines": 105,
+    "symbols": [
+      "Scenarios",
+      "RefusedFreeBy",
+      "TechWatchCases"
+    ],
+    "summary": "// The Tech watches the machines too (Sky 2026-10-18: \"I think tech should be able to watch camera / robots like scout can\"; rulebook\n// sight.kinds.*.by). A Watch on a camera or the patrol is open to the Scout and the Tech, with the same reach, time and teaching; what either\n// learns is the cell's, and the patrol's watched seconds add up across both. A person's Watch (the guard, Inez, the driver) and every Listen\n// stay the Scout's (only-scout). The Tech doesn't Watch while his loop holds (tethered to the cabinet: run-tethered). The query before the\npublic static partial class Scenarios\nstatic void RefusedFreeBy(Run r, string who, string verb, string target, string code)\nstatic void TechWatchCases()"
+  },
+  {
+    "path": "sim/Suborned.Sim/Script.cs",
+    "sha256": "5399e0da18139ce1edf9d647dcd65b195db3aacc69efb3427c6db3b69ee51ddd",
+    "lines": 83,
+    "symbols": [
+      "Expect",
+      "Script",
+      "Parse",
+      "Write",
+      "Verify",
+      "Report",
+      "Clock",
+      "Json"
+    ],
+    "summary": "// An order script (brief 011 B, Waymark's route scripts): a start state and timed orders in the engine's order format.\n// {\"schema\": \"suborned.sim.script/1\", \"mission\": \"handover\", \"start\": {...}, \"orders\": [{\"tick\": 0, \"op\": \"scout\", \"do\": \"move\", \"to\": \"d:Courtyard\"}, ...], \"until\": 4800}\n/// <summary>A run record (Redline E4): what a replay must match. inputs = the inputs' canonical hash; engine = Engine.Version (and\n/// the assembly MVID, for information); start = the start state's hash; checkpoints = every (tick, hash); outcome.</summary>\npublic sealed class Expect\npublic sealed class Script\npublic static Script Parse(string json)\npublic static string Write(Game g, ulong inputsHash)\npublic string Verify(Game g, ulong inputsHash)\npublic static class Report\npublic static string Clock(int tick) { int s = tick / Game.Hz; return $\"{s / 60}:{(s % 60).ToString(\"00\", CultureInfo.InvariantCulture)}.{tick % Game.Hz}\"; }\npublic static string Json(string id, Game g, List<(bool ok, string what)> checks, bool replayIdentical)"
+  },
+  {
+    "path": "sim/Suborned.Sim/Site.cs",
+    "sha256": "efef1516dd4d0554246c8de87aae2e8f1b0806bbb7b4fca774f235dea2b08b5d",
+    "lines": 344,
+    "symbols": [
+      "Camera",
+      "CastRole",
+      "StashPlace",
+      "Site",
+      "CarStand",
+      "MetresToCm",
+      "InExitLane",
+      "LanePointAt",
+      "NearestInExitLane",
+      "List",
+      "AddProvisional",
+      "AddTakedownWorld",
+      "At",
+      "Stand",
+      "HasPlace",
+      "Role",
+      "Sight",
+      "InsideOccluder"
+    ],
+    "summary": "// The mission's ground: sim/data/handover.site.json, written by tools/sim/site.ts from the plan, the civic block and mission.json.\n// Block frame, integer centimetres. Places by id; the walk grid; the occluders; the cameras and the patrol; the schedule; the cast.\n/// <summary>Every head's facing (a mast carries several; the mission's poles one, Facing). World: built by the world's rules\n/// (sim/data/handover.takedown.json watchers), so the Tech's cabinet can loop it; the mission's poles are the mission's.</summary>\npublic sealed class Camera\npublic sealed class CastRole\npublic sealed class StashPlace { public string Id = \"\", Kind = \"\", Of = \"\"; public Pt At, Stand; public int Holds; } // At: the piece or the door; Stand: the free cell the operative stands on\npublic sealed class Site\npublic Pt CarStand(string id) => carStand.TryGetValue(id, out var p) ? p : throw new FormatException($\"'{id}' is not a car place\");\nstatic int MetresToCm(JNode n)\npublic bool InExitLane(Pt p)\npublic Pt LanePointAt(int cm)\npublic Pt NearestInExitLane(Pt p)\npublic readonly List<(string id, Pt at, string kind)> Refuges = new List<(string, Pt, string)>(); // where the crowd runs (Pulse §4)\npublic readonly"
+  },
+  {
+    "path": "sim/cli/DriveSession.cs",
+    "sha256": "0d883560437879a99fd934a67e741688f47e9c1e5831b2343a41b397bf6fa38b",
+    "lines": 57,
+    "symbols": [
+      "DriveSession",
+      "Record"
+    ],
+    "summary": "// suborned-sim drive-session [out.json]: record the driven session DP1 replays (brief 025). A stand-in for the Unity host, deliberately\n// host-shaped: a float controller (double metres) moved per frame at a jittered 60 fps by camera-relative keys (yaw 30, the opening view),\n// walk 1.4 m/s or run 2.8 m/s, with no collision of its own (worse than Latch's grid-backed mover, so the engine corrects it often); each tick\n// it hands the engine its position rounded to centimetres, one drive sample, then pulls itself back to the engine's pose if they differ by more\nstatic class DriveSession\npublic static int Record(Engine.Inputs inputs, string root, string? outPath)"
+  },
+  {
+    "path": "sim/cli/Probe.cs",
+    "sha256": "0eb7db60eaa456ad40689d42ece2f1fe4ce05052cdbd222697707ac32c448002",
+    "lines": 37,
+    "symbols": [
+      "Probe",
+      "Run"
+    ],
+    "summary": "// Measurements on the real block, for writing and re-siting scenarios: walk times, the sweep's blind windows, the guard's walk.\nstatic class Probe\npublic static void Run(Engine.Inputs i)"
+  },
+  {
+    "path": "sim/cli/Program.cs",
+    "sha256": "d5870e457fa2e3bb70b2381516a37568bb06612d31164b81922639cccc5e32c7",
+    "lines": 174,
+    "symbols": [
+      "Program",
+      "CoverVectors",
+      "Main",
+      "Play",
+      "Hashes",
+      "Fans",
+      "Same",
+      "Perf"
+    ],
+    "summary": "// suborned-sim: the engine headless (brief 011 A).\n//   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums\n//   list                                        the scenarios\n//   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)\nstatic class Program\nstatic string CoverVectors(Engine.Inputs i)\nstatic int Main(string[] args)\nstatic int Play(Engine.Inputs inputs, string root, string what, bool json)\nstatic string Hashes(Engine.Inputs i, string root, string? startText)\nstatic int Fans(Engine.Inputs i, int tick, bool crowd)\nstatic bool Same(Game a, Game b)\nstatic int Perf(Engine.Inputs inputs, int runs, string id)"
+  },
+  {
+    "path": "tools/sim/drive.ts",
+    "sha256": "11973dea3da8174334ded44a3fca4f1326602764837fa8d2e8037c15db4fa70e",
+    "lines": 49,
+    "symbols": [],
+    "summary": "// The drive grid (brief 023, engine 0.8.2, Keel; Aster 2026-10-19): where a car may be, in the walk grid's window and cells (sim/data/handover.site.json\n// `drive`, block frame). A cell is drivable when its centre lies on a carriageway (within w/2 of a plan road's centreline: plan.roads w is the\n// carriageway's width, as getaway.ts SX-1 reads it), inside a kerb bay of the civic block (civic-block.json bays) or inside a drive (a vehicle\n// crossing from a carriageway to a bay or yard: `drives`, block frame polygons). Pavements, yards and squares are not. The engine routes every"
+  },
+  {
+    "path": "tools/sim/getaway.test.ts",
+    "sha256": "449a7b46a565879c843d9043cb438bc046e7212ce060848ccbe02662e5f929ca",
+    "lines": 64,
+    "symbols": [],
+    "summary": "// Brief 018 §1 (Splice): getaway.exit in sim/data/handover.site.json, from routes.getaway and the plan road. Rule SX-1 passes on the shipped lane and fails\n// on deliberately wrong ones. Run: bun test tools/sim/getaway.test.ts"
+  },
+  {
+    "path": "tools/sim/getaway.ts",
+    "sha256": "16e2506093a95e603aa96ed87bd5d2e8403fb9372c2df52d92a7558f4ddbfc53",
+    "lines": 145,
+    "symbols": [],
+    "summary": "// The getaway car's exit lane (brief 018 §1, Splice): `getaway.exit` in sim/data/handover.site.json.\n// Derived, never authored: the mission's routes.getaway (a plan-graph route), the car's bay projected onto the route's first road, then the\n// route walked forward `fight-block-m` (30 m) along the carriageway, at the plan road's own width w. The engine reads only this field.\n// Shape (Keel reads it): { polyline: [[x, y], ...] in the site frame (block frame, integer cm, like every point in the file), w: metres, src }."
+  },
+  {
+    "path": "tools/sim/people.ts",
+    "sha256": "12b071aef859faf2d56f3c7f104dac53e23b5a65524e67fad3febad835949dc1",
+    "lines": 96,
+    "symbols": [],
+    "summary": "// The city's people as the C# engine reads them (brief 011 A, N12; Keel): sim/data/handover.people.json. Read from the people file\n// `bun run people` writes from the promoted cast (out/people/<plan>.people.json), never from the expander's code, as Aster asked\n// while Pulse changes the day-building. Block frame, integer centimetres; routine times in mission seconds from 0:00 (mission.json\n// clock.startsAt). A stop is out on the street unless the person is at home or working inside (people.schema.ts post \"inside\");"
+  },
+  {
+    "path": "tools/sim/sim.test.ts",
+    "sha256": "2197b9144efee49fa0635429ddf4b1ff182999dc84710e5d338d16e249d3ceec",
+    "lines": 110,
+    "symbols": [],
+    "summary": "// The engine from bun (brief 011 A): the site the engine reads is fresh against its inputs, and the C# CLI plays a scenario and a\n// script with identical checksums twice. Needs the .NET SDK (dotnet on PATH); without it the CLI tests are skipped, not failed.\n// Run: bun test tools/sim"
+  },
+  {
+    "path": "tools/sim/site.ts",
+    "sha256": "f23483852afa6f5fd48bcb407f80276ebde59613bd4b929ccc352c8d8877eb2f",
+    "lines": 277,
+    "symbols": [],
+    "summary": "// The Handover's ground as the C# engine reads it (brief 011 A, Keel): sim/data/handover.site.json, block frame, integer centimetres.\n// Built from the plan's walk blockers and the civic block's solids (the same ground tools/plan/walk.ts and walk-fine.ts walk on), the\n// civic buildings as sight occluders, the mission's points, timeline and window, and the engine's own points (cameras, the Tech's\n// cabinet, the patrol's sweep, the rivals' and the response unit's entries), each with the reason it stands where it does. Those"
+  },
+  {
+    "path": "tools/sim/takedown.ts",
+    "sha256": "d5d8a4b180ce2d1c045758f98894c2f7f812e3753cc5ea1cc0b0988dbeb7d075",
+    "lines": 67,
+    "symbols": [],
+    "summary": "// The takedown places as the C# engine reads them (brief 013 C, Splice for Keel): sim/data/handover.takedown.json, block frame, integer centimetres, the same frame\n// and grid as sim/data/handover.site.json. Derived from the world export (`w.takedown`: tools/world/gen/street/quiet.ts, rules R-HIDE, R-STASH, R-REPORT, R-DOCK) and the\n// civic block, so the engine reads the stash containers, the service doors, the report points (call boxes and staffed doors), the response origins (docks and posts) and the\n// watchers the world stands, from data, and nothing here is written for one mission."
+  },
+  {
+    "path": "tools/sim/unity.ts",
+    "sha256": "bfd59d04f3f77ba32f3be23b47115f450b88e3face45812ad432568ab28f2d8b",
+    "lines": 158,
+    "symbols": [],
+    "summary": "// The engine for Unity (brief 011 D, Latch): one build of Keel's engine (sim/Suborned.Sim, netstandard2.1) for both hosts. It exports the\n// engine and its three inputs at a commit (default HEAD: the committed engine; --tree: the working tree), builds the CLI against that very\n// project (Release), plays every scenario headless through it, and copies into the Unity project:\n//   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)"
+  }
+]

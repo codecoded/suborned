@@ -1,0 +1,36 @@
+{
+  "state": "inspect",
+  "explanation": "The supplied execution path computes Cases and AreaWatch, but Debrief.Write emits only aggregate case values and prose lines. Before concluding, I need the found-killing scenario and current JSON consumer contracts to establish compatibility and test coverage. Existing replay tests compare checkpoints, not serialized consequences.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.Prop(\"campaignTrail\", Next.CampaignTrail).Prop(\"campaignStanding\", Next.CampaignStanding).Prop(\"openCases\", Next.OpenCases).Prop(\"nextLevel\", Next.NextLevel);"
+    }
+  ],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 320,
+      "to": 357
+    },
+    {
+      "path": "sim/cli/Program.cs",
+      "from": 66,
+      "to": 102
+    }
+  ],
+  "searches": [
+    "found-killing",
+    "CaseCloseMissions",
+    "nextMission",
+    "areaWatch",
+    "Next.Cases",
+    "Next.AreaWatch"
+  ],
+  "tests": [],
+  "writable": []
+}

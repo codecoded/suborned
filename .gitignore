@@ -52,6 +52,14 @@ unity/Assets/StreamingAssets.meta
 sim/**/bin/
 sim/**/obj/
 
+# Assignment 5 keeps source, transcripts and TRX evidence, not compiler caches.
+courses/a05-goal-agent/**/bin/
+courses/a05-goal-agent/**/obj/
+runs/goals/**/bin/
+runs/goals/**/obj/
+runs/crew/**/bin/
+runs/crew/**/obj/
+
 # Screenshots, renders and test captures in briefs stay on disk, out of git (Sky, 2026-10-19; history rewritten to drop them).
 # Kept: concept art and images a tool reads.
 briefs/**/*.png

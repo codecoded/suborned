@@ -1,0 +1,51 @@
+{
+  "state": "inspect",
+  "explanation": "The supplied complete Debrief.Write omits the structured Cases and AreaWatch lists while emitting aggregate values and prose lines. Before concluding, I need the current consumer contract and relevant tests, including the found-killing scenario and serialization side-effect checks. Please search repository-wide for the literal terms below, including tools and consumer contracts outside the supplied C# index.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>();"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.Prop(\"campaignTrail\", Next.CampaignTrail).Prop(\"campaignStanding\", Next.CampaignStanding).Prop(\"openCases\", Next.OpenCases).Prop(\"nextLevel\", Next.NextLevel);"
+    }
+  ],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim.Tests/Redline.cs",
+      "from": 80,
+      "to": 137
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/FailCauseTests.cs",
+      "from": 80,
+      "to": 110
+    },
+    {
+      "path": "contracts/rules/rulebook.json",
+      "from": 334,
+      "to": 344
+    },
+    {
+      "path": "sim/Suborned.Sim/Rules.cs",
+      "from": 519,
+      "to": 528
+    }
+  ],
+  "searches": [
+    "nextMission",
+    "AreaWatch",
+    "found-killing",
+    "CampaignStanding",
+    "Debrief.Of",
+    "\"areaWatch\"",
+    "\"cases\""
+  ],
+  "tests": [],
+  "writable": []
+}

@@ -1,0 +1,54 @@
+{
+  "state": "inspect",
+  "explanation": "Need the complete serializer entry path, consequence projection, headless consumer, and relevant tests to distinguish existing projection support from JSON export coverage.",
+  "evidence": [],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "from": 1,
+      "to": 88
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "from": 200,
+      "to": 228
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 240,
+      "to": 456
+    },
+    {
+      "path": "sim/cli/Program.cs",
+      "from": 1,
+      "to": 174
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Redline.cs",
+      "from": 1,
+      "to": 137
+    },
+    {
+      "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+      "from": 110,
+      "to": 170
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs",
+      "from": 1,
+      "to": 40
+    },
+    {
+      "path": "contracts/rules/rulebook.json",
+      "from": 685,
+      "to": 702
+    }
+  ],
+  "searches": [
+    "Debrief.Of(",
+    "AreaWatch",
+    "\"areaWatch\""
+  ],
+  "tests": [],
+  "writable": []
+}

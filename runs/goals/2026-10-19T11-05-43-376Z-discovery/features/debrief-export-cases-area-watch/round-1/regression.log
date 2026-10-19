@@ -1,0 +1,16 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests","--filter","FullyQualifiedName!~GoalDebriefCaseWatchFidelityTests","--logger","trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T11-05-43-376Z-discovery/features/debrief-export-cases-area-watch/round-1/regression.trx","--verbosity","minimal"]
+Exit: 0; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Suborned.Sim -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+Results File: /Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T11-05-43-376Z-discovery/features/debrief-export-cases-area-watch/round-1/regression.trx
+
+Passed!  - Failed:     0, Passed:   866, Skipped:     0, Total:   866, Duration: 42 s - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+

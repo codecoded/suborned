@@ -1,0 +1,10 @@
+$ bun tools/goals/cli.ts setup
+{
+  "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+  "database": "c_ffc7f384e553845d",
+  "chunks": 577,
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "indexed": false,
+  "reused": true,
+  "started": false
+}

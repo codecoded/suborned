@@ -1,0 +1,23 @@
+{
+  "schema": "suborned.crew.result/1",
+  "run": "runs/crew/2026-10-19T10-24-00Z-codex-discovery",
+  "status": "SCAN_COMPLETE",
+  "mode": "Codex crew scan (T3 delegated tasks, not goals CLI)",
+  "provider": "codex",
+  "model": "gpt-6-astra",
+  "taskSelected": "Serialize existing case and area-watch consequences in the headless debrief",
+  "taskId": "splice-debrief-case-export",
+  "taskStatus": "READY_NOT_IMPLEMENTED",
+  "score": 12,
+  "candidateCount": 4,
+  "specialistTasks": 3,
+  "productionWrites": 0,
+  "gddVersion": "0.24.0",
+  "scenarioChecks": 61,
+  "scenarioFailures": 0,
+  "costUsd": null,
+  "costNote": "Existing Codex subscription; T3 task calls do not expose dollar cost. No claim of zero cost or pipeline dollar-budget enforcement.",
+  "limits": "Focused Codex crew inspection, not exhaustive GDD coverage and not the goals CLI loop",
+  "previousGoalsCliRun": "runs/goals/2026-10-19T10-09-48-241Z-discovery",
+  "previousGoalsCliStatus": "ERROR: usage_limit_reached"
+}
