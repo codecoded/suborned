@@ -116,6 +116,7 @@ namespace Suborned.Sim
                     {
                         if (o.Target == "guard") return "learns the routine and his sight";
                         if (IsPersonRoleName(o.Target)) return "learns the routine";
+                        if (IsContainer(o.Target)) return "learns when the round empties it";
                         var k = Known(o.Target);
                         bool routine = k != null && !k.Routine && k.RoutineNeedsS > 0 && k.WatchedS + R.SightWatchS >= k.RoutineNeedsS;
                         return routine ? "learns the sight and the routine" : "learns the sight";

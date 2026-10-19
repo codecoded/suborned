@@ -103,6 +103,14 @@ namespace Suborned.Sim
             w.Open("nextMission").Prop("ambush", Next.Ambush);
             if (Next.Cases.Count > 0 || Next.CampaignTrail != 0) // brief 013: written only when a takedown left something, so older debriefs read as before
                 w.Prop("campaignTrail", Next.CampaignTrail).Prop("campaignStanding", Next.CampaignStanding).Prop("openCases", Next.OpenCases).Prop("nextLevel", Next.NextLevel); w.OpenArr("ambushBy"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();
+            w.OpenArr("cases");
+            foreach (var c in Next.Cases)
+                w.Obj().Prop("who", c.who).Prop("kind", c.kind).Prop("place", c.place).Prop("missions", c.missions).EndObj();
+            w.EndArr();
+            w.OpenArr("areaWatch");
+            foreach (var a in Next.AreaWatch)
+                w.Obj().Prop("place", a.place).Prop("guards", a.guards).Prop("cameras", a.cameras).Prop("missions", a.missions).EndObj();
+            w.EndArr();
             w.OpenArr("standing"); // brief 014: one line per district (rulebook debrief.lines.standing) and the Standing the next mission starts at
             foreach (var l in Next.Standing)
             {
