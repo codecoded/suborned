@@ -15,10 +15,11 @@ button.on { background: var(--cream); color: var(--ink); border-color: var(--cre
 #about { background: var(--panel); padding: 5px 10px; border-radius: 8px; width: max-content; max-width: 760px; font-size: 13px; }
 #stats { position: fixed; right: 12px; top: 12px; background: var(--panel); padding: 7px 12px; border-radius: 9px; z-index: 6; }
 #stats u { text-decoration: none; opacity: .7; } #fps { opacity: .5; font-size: 12px; }
-#roster { position: fixed; left: 12px; bottom: 12px; display: flex; gap: 8px; z-index: 6; }
-#roster button { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; align-items: center; width: 138px; text-align: left; border-left: 6px solid var(--c); padding: 6px 10px; }
+#roster { position: fixed; left: 12px; bottom: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 6; align-items: flex-start; }
+.agentrow { display: flex; align-items: center; gap: 8px; }
+#roster button[data-agent] { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; align-items: center; width: 138px; text-align: left; border-left: 6px solid var(--c); padding: 6px 10px; }
 #roster b { grid-row: span 2; font-size: 20px; opacity: .8; } #roster small { opacity: .75; min-height: 1em; }
-#roster button.sel { background: var(--cream); color: var(--ink); box-shadow: 0 0 0 3px var(--c); }
+#roster button[data-agent].sel { background: var(--cream); color: var(--ink); box-shadow: 0 0 0 3px var(--c); }
 #log { position: fixed; right: 12px; bottom: 12px; width: 460px; display: grid; gap: 3px; justify-items: end; z-index: 6; pointer-events: none; font-size: 13px; }
 #log div { background: var(--panel); padding: 3px 9px; border-radius: 6px; }
 #log .warn { color: #ffd9a0; } #log .ok { color: #a8f0c0; } #log .act { color: var(--cream); }
@@ -58,7 +59,47 @@ svg { display: block; }
 
 /* squad: portrait strip, box select, portrait drag */
 #roster .squad { width: 70px; display: grid; place-items: center; font-weight: 700; }
-#roster button.lead::after { content: "lead"; grid-column: 2; font-size: 10px; opacity: .6; margin-top: -2px; }
+#roster button[data-agent].lead::after { content: "lead"; grid-column: 2; font-size: 10px; opacity: .6; margin-top: -2px; }
 #box { position: fixed; border: 2px solid #1fd1b5; background: rgba(31, 209, 181, .14); z-index: 4; pointer-events: none; display: none; }
 #rubber { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 7; pointer-events: none; display: none; }
 #ghost { position: fixed; z-index: 8; pointer-events: none; display: none; background: var(--cream); color: var(--ink); padding: 4px 10px; border-radius: 99px; font-weight: 700; transform: translate(12px, 12px); border: 2px solid #1fd1b5; }
+
+/* who breaks away: round faces with a colour rim, stacked */
+.faces { display: inline-flex; margin-left: 4px; } .faces img { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; background: #10201f; margin-left: -9px; image-rendering: auto; } .faces img:first-child { margin-left: 0; }
+.chip .faces img { width: 24px; height: 24px; vertical-align: middle; }
+#roster button[data-agent].break { box-shadow: 0 0 0 3px #fff; } #roster button[data-agent].hold { opacity: .45; }
+
+/* running */
+#runmarks .rm { position: fixed; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; background: #f1ead8; color: #10201f; border: 2px solid #10201f; display: none; place-items: center; pointer-events: none; z-index: 3; }
+#roster small svg { vertical-align: -3px; }
+
+/* the action plate beside a portrait: gait or act icon, progress, time left; lighter when running */
+.aplate { display: none; align-items: center; gap: 8px; height: 36px; padding: 0 10px; background: var(--panel); border: 1px solid rgba(241, 234, 216, .3); border-radius: 18px; width: 190px; }
+.aplate.run { background: rgba(70, 120, 118, .92); }
+.aplate .gi { all: unset; display: grid; place-items: center; width: 24px; height: 24px; cursor: pointer; border-radius: 50%; color: var(--cream); } .aplate .gi:hover { background: rgba(241, 234, 216, .2); }
+.aplate .bar { flex: 1; height: 8px; border-radius: 4px; background: #0a1a1c; border: 1px solid rgba(241, 234, 216, .35); overflow: hidden; } .aplate .bar i { display: block; height: 100%; background: #6fe0d2; }
+.aplate.run .bar i { background: var(--cream); }
+.aplate .val { min-width: 38px; text-align: right; font-weight: 700; } .aplate .eye { display: none; place-items: center; opacity: .85; }
+.aplate .x { all: unset; cursor: pointer; opacity: 0; font-size: 18px; line-height: 1; padding: 0 2px; } .aplate:hover .x { opacity: .9; }
+
+/* hold to fire */
+.pill.chg { overflow: hidden; } .pill.chg .fill { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255, 255, 255, .55); width: 0; } .pill.chg span { position: relative; }
+#reticle { position: fixed; left: -16px; top: -16px; width: 32px; height: 32px; border: 2px solid #f1ead8; border-radius: 50%; z-index: 7; pointer-events: none; display: none; margin: -0px; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+#reticle::before, #reticle::after { content: ""; position: absolute; background: #f1ead8; left: 50%; top: 50%; } #reticle::before { width: 2px; height: 10px; margin: -5px 0 0 -1px; } #reticle::after { width: 10px; height: 2px; margin: -1px 0 0 -5px; }
+#firemarks .fm { position: fixed; left: 6px; top: -14px; width: 26px; height: 26px; border-radius: 50%; background: #1fd1b5; color: #10201f; border: 2px solid #10201f; display: none; place-items: center; pointer-events: none; z-index: 3; }
+#roster button[data-agent].firing { box-shadow: 0 0 0 3px #ff4d7d; } .aplate.fire .bar i { background: #ff4d7d; }
+
+/* pause and plan, cones, attention */
+#ghosts .gh { position: fixed; left: 0; top: 0; display: none; align-items: center; gap: 6px; background: rgba(241, 234, 216, .85); color: #10201f; border: 2px dashed #10201f; border-radius: 99px; padding: 3px 12px 3px 6px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 4; margin: -50px 0 0 -40px; }
+#ghosts .faces img { width: 24px; height: 24px; }
+.mk .seen { background: #ff7a5c; color: #10201f; border-radius: 99px; padding: 1px 9px; margin-left: 8px; font-size: 13px; border: 2px solid #fff; }
+#att .at { position: fixed; left: -34px; top: -14px; min-width: 68px; height: 24px; display: none; align-items: center; justify-content: center; border-radius: 12px; font-size: 12px; font-weight: 700; color: #10201f; background: conic-gradient(#ff7a5c var(--f), rgba(241, 234, 216, .9) 0); border: 2px solid #10201f; pointer-events: none; z-index: 3; }
+#att .at[data-w="noticed"] { background: conic-gradient(#ffb02e var(--f), rgba(241, 234, 216, .9) 0); } #att .at[data-w="report"] { background: #ff4d3a; color: #fff; }
+#test { position: fixed; top: 56px; right: 12px; background: var(--panel); padding: 7px 12px; border-radius: 9px; z-index: 6; display: none; max-width: 520px; font-weight: 600; }
+#paused { position: fixed; top: 52px; left: 50%; transform: translateX(-50%); background: #ff4d7d; color: #10201f; font-weight: 800; padding: 4px 18px; border-radius: 99px; z-index: 6; display: none; } body.paused #paused { display: block; } body.paused canvas { filter: saturate(.7); }
+
+.aplate .val { min-width: 92px; font-size: 13px; } .pill.st i { margin: 0 8px; } .pill.st { gap: 6px; }
+
+#opts { display: none; } body.opts-open #opts { display: flex; } .gear { margin-left: 8px; opacity: .85; }
+
+#orders .ord { width: 190px; left: -95px; } .ord span { white-space: nowrap; }

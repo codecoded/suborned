@@ -30,6 +30,7 @@ export class Nav {
   }
   cell(x, z) { return [Math.floor((x - X0) / CELL), Math.floor((z - Z0) / CELL)]; }
   at(i) { return [X0 + (i % NX + 0.5) * CELL, Z0 + (Math.floor(i / NX) + 0.5) * CELL]; }
+  solid(x, z) { const [ix, iz] = this.cell(x, z); return ix < 0 || iz < 0 || ix >= NX || iz >= NZ || this.b[iz * NX + ix] === 1; }
   free(x, z) { const [ix, iz] = this.cell(x, z); return ix >= 0 && iz >= 0 && ix < NX && iz < NZ && !this.inf[iz * NX + ix]; }
   los(ax, az, bx, bz) { const n = Math.ceil(Math.hypot(bx - ax, bz - az) / 0.2); for (let i = 1; i < n; i++) { const t = i / n; if (!this.free(ax + (bx - ax) * t, az + (bz - az) * t)) return false; } return true; }
   nearestFree(x, z, r = 3) { if (this.free(x, z)) return [x, z]; let best = null, bd = 1e9; for (let dz = -r; dz <= r; dz += CELL) for (let dx = -r; dx <= r; dx += CELL) if (dx * dx + dz * dz < bd && this.free(x + dx, z + dz)) { bd = dx * dx + dz * dz; best = [x + dx, z + dz]; } return best; }
@@ -89,8 +90,8 @@ export function buildWorld(scene) {
   prop('door', 'door', 12, 7, (g, pick) => { const leaf = box(2, 3, 0.2, 0x6b8f86); leaf.position.set(0, 1.5, -0.1); g.add(leaf); pick.push(leaf); g.leaf = leaf; }, 1.0, 3.2, { reach: 2.6 });
   prop('cabinet', 'cabinet', 3, 1.8, (g, pick) => { const b = box(1.3, 1.5, 0.8, 0x2d4a52); b.position.y = 0.75; const t = box(1.4, 0.2, 0.9, 0xb89f72); t.position.y = 1.6; g.add(b, t); pick.push(b, t); g.tintMesh = b; }, 0.8, 1.7);
   nav.box(3, 1.8, 1.3, 0.8);
-  prop('camera', 'camera', 6.5, 1.2, (g, pick) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 4.5, 10), M(0xb9c4c8)); p.position.y = 2.25; const hd = box(0.9, 0.45, 0.45, 0x8fa3a8); hd.position.set(0, 4.6, 0.3); const big = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 5, 8), new THREE.MeshBasicMaterial({ visible: false })); big.position.y = 2.5; g.add(p, hd, big); pick.push(p, hd, big); g.tintMesh = hd; }, 0.4, 5);
-  nav.box(6.5, 1.2, 0.4, 0.4);
+  prop('camera', 'camera', 5.2, 0.9, (g, pick) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 4.5, 10), M(0xb9c4c8)); p.position.y = 2.25; const hd = box(0.9, 0.45, 0.45, 0x8fa3a8); hd.position.set(0, 4.6, 0.3); const big = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 5, 8), new THREE.MeshBasicMaterial({ visible: false })); big.position.y = 2.5; g.add(p, hd, big); pick.push(p, hd, big); g.tintMesh = hd; }, 0.4, 5);
+  nav.box(5.2, 0.9, 0.4, 0.4);
   prop('car', 'car', 14, -3, (g, pick) => { const b = box(4.4, 0.9, 1.7, 0x3d9a96); b.position.y = 0.7; const c = box(2.2, 0.8, 1.5, 0x9fd8d2); c.position.set(-0.2, 1.45, 0); g.add(b, c); for (const [dx, dz] of [[-1.4, 0.9], [1.4, 0.9], [-1.4, -0.9], [1.4, -0.9]]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 12), M(0x22262b)); w.rotation.x = Math.PI / 2; w.position.set(dx, 0.35, dz); g.add(w); } pick.push(b, c); g.tintMesh = b; }, 1.4, 1.9, { reach: 3.2 });
   nav.box(14, -3, 4.4, 1.7);
   nav.bake();
@@ -100,7 +101,7 @@ export function buildWorld(scene) {
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 1.0, 4, 10), M(color)); body.position.y = 0.82;
     const nose = box(0.16, 0.12, 0.3, 0xffffff); nose.position.set(0, 1.25, 0.3);
     pose.add(body, nose); g.pose = pose;
-    return add({ id, kind, ...TARGETS[kind], g, r: 0.4, h: 1.95, reach: 1.9, pick: [body, nose], used: new Set(), tint: [], body, state: 'ok', ...o });
+    return add({ id, kind, ...TARGETS[kind], g, r: 0.4, h: 1.95, reach: 1.9, pick: [body, nose], used: new Set(), tint: [], body, state: 'ok', person: true, ...o });
   };
   person('guard', 'guard', 10.4, 5.2, 0xd9a441);
   person('inez', 'inez', -9.5, 5.4, 0xe88aa0);
@@ -130,5 +131,5 @@ export function buildWorld(scene) {
   }
   const raise = (e, s) => { e.g.pose && (e.g.pose.rotation.x = s ? -Math.PI / 2 : 0, e.g.pose.position.y = s ? 0.4 : 0); };
   const tint = (e, c) => { const m = (e.body || e.g.tintMesh); if (m) m.material.emissive = new THREE.Color(c); };
-  return { group, ents, byId, agents, nav, update, raise, tint, dispose: () => scene.remove(group) };
+  return { group, ents, byId, agents, nav, update, raise, tint, addPerson: person, dispose: () => scene.remove(group) };
 }

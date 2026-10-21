@@ -3,7 +3,8 @@
 import { G, say } from './state.js';
 import { KINDS, priceLine } from './data.js';
 import { icon } from './icons.js';
-import { planFor } from './orders.js';
+import { planFor, crew } from './orders.js';
+import { facesHtml } from './markers.js';
 
 const R1 = 34, R2 = 78, SZ = 330, C = SZ / 2;
 const pt = (r, a) => [C + r * Math.sin(a * Math.PI / 180), C - r * Math.cos(a * Math.PI / 180)];
@@ -18,6 +19,7 @@ function split(ways, style) {
 }
 
 let el, onTake;
+const runNow = () => G.keys.has('ShiftLeft') || G.keys.has('ShiftRight');
 export const initRing = (node, take) => { el = node; onTake = take; };
 
 export function openRing(ent, ways, style) {
@@ -48,8 +50,8 @@ export function draw() {
     if (r.dots) rest.forEach((w, j) => { const aa = a + (j - (rest.length - 1) / 2) * 34, k = KINDS[w.kind], [x, y] = pt(104, aa);
       g += `<g data-w="r${j}" class="wedge"><path d="${arc(86, 120, aa - 16, aa + 16)}" fill="${r.hover === 'r' + j ? '#34504f' : 'rgba(20,34,36,.92)'}" stroke="${r.hover === 'r' + j ? '#fff' : k.color}" stroke-width="2" ${w.kind === 'harm' ? 'stroke-dasharray="7 5"' : ''}/><foreignObject x="${x - 13}" y="${y - 13}" width="26" height="26" style="color:${k.color};pointer-events:none"><div class="wi">${icon(w.icon, 22)}</div></foreignObject></g>`; });
   }
-  const plates = style === 'busy' ? shown.map((w, i) => { const [x, y] = pt(104, i * 72), pl = planFor(r.ent, w), p = priceLine(w, r.ent, pl.walkS, true, pl.who);
-    return `<div class="bp${i === r.lit ? ' lit' : ''}" style="left:${x}px;top:${y}px;${Math.sin(i * 72 * Math.PI / 180) < -0.2 ? 'transform:translate(-100%,-50%)' : 'transform:translate(0,-50%)'}">${icon(w.icon, 16)}${p.join(' · ')}<b>${icon('finger', 12)}${w.trail || 0}</b><b>${icon('siren', 12)}${w.alert ? 2 : 0}</b></div>`; }).join('') : '';
+  const plates = style === 'busy' ? shown.map((w, i) => { const [x, y] = pt(104, i * 72), pl = planFor(r.ent, w, crew(), runNow()), p = priceLine(w, r.ent, pl.walkS, true, '', pl.running);
+    return `<div class="bp${i === r.lit ? ' lit' : ''}" style="left:${x}px;top:${y}px;${Math.sin(i * 72 * Math.PI / 180) < -0.2 ? 'transform:translate(-100%,-50%)' : 'transform:translate(0,-50%)'}">${icon(w.icon, 16)}${p.join(' · ')}<b>${icon('finger', 12)}${w.trail || 0}</b><b>${icon('siren', 12)}${w.alert ? 2 : 0}</b>${facesHtml(pl.agents)}</div>`; }).join('') : '';
   el.innerHTML = `<svg width="${SZ}" height="${SZ}" viewBox="0 0 ${SZ} ${SZ}">${g}<circle cx="${C}" cy="${C}" r="4" fill="#fff"/></svg>${plates}<div class="plate1"></div>`;
   el.style.display = 'block'; plate();
 }
@@ -60,7 +62,7 @@ function plate() {
   const h = r.hover, w = h === 'dots' ? null : typeof h === 'string' && h[0] === 'r' ? r.rest[+h.slice(1)] : r.shown[h >= 0 ? h : 0];
   if (!w) { p.innerHTML = 'More ways'; p.style.setProperty('--c', '#f1ead8'); return; }
   p.style.setProperty('--c', KINDS[w.kind].color); p.classList.toggle('harm', w.kind === 'harm');
-  p.innerHTML = icon(w.icon, 18) + (() => { const pl = planFor(r.ent, w); return priceLine(w, r.ent, pl.walkS, true, pl.who).join('<i>·</i>'); })();
+  p.innerHTML = icon(w.icon, 18) + (() => { const pl = planFor(r.ent, w, crew(), runNow()); return priceLine(w, r.ent, pl.walkS, true, '', pl.running).join('<i>·</i>') + facesHtml(pl.agents); })();
 }
 
 export function ringPointer(e, down) {
@@ -68,7 +70,7 @@ export function ringPointer(e, down) {
   const t = e.target.closest?.('[data-w]'), v = t ? t.dataset.w : null;
   if (!down) { const nv = v === null ? -1 : v === 'dots' ? 'dots' : v[0] === 'r' ? v : +v; if (nv !== r.hover) { r.hover = nv; draw(); } return true; }
   if (v === 'dots') { r.dots = !r.dots; draw(); return true; }
-  if (v !== null) { onTake(v[0] === 'r' ? r.rest[+v.slice(1)] : r.shown[+v], e.shiftKey); return true; }
+  if (v !== null) { onTake(v[0] === 'r' ? r.rest[+v.slice(1)] : r.shown[+v], { shift: e.shiftKey, alt: e.altKey }); return true; }
   if (e.button === 2 && r.style === 'busy') { onTake(r.shown[r.lit]); return true; }
   return false;
 }
@@ -78,4 +80,11 @@ export function placeRing(project) {
   const x = Math.max(160, Math.min(innerWidth - 160, p.x)), y = Math.max(160, Math.min(innerHeight - 160, p.y));
   el.style.transform = `translate(${Math.round(x - C)}px,${Math.round(y - C)}px)`;
   const pl = el.querySelector('.plate1'); if (pl) pl.classList.toggle('up', y > innerHeight - 260);
+}
+
+// While a harmful wedge is held, its plate fills (the ring stays open).
+export function ringCharge(c) {
+  const p = el?.querySelector('.plate1'); if (!p) return;
+  const f = Math.min(1, c.t / G.chargeS) * 100;
+  p.textContent = `Hold to ${c.way.id === 'fire' ? 'fire' : c.way.verb.toLowerCase()}`; p.style.background = `linear-gradient(90deg, #fff ${f}%, ${KINDS[c.way.kind].color} ${f}%)`;
 }

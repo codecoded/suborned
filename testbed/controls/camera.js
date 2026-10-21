@@ -23,7 +23,7 @@ const SNAP = { smoothS: 0.15, lookReturnS: 1.0 };
 export class Rig {
   constructor(camera) {
     this.cam = camera; this.mode = 'cmd'; this.blend = 1; this.from = null;
-    this.focus = new THREE.Vector3(2, 0, 1); this.yaw = rad(210); this.yawTarget = this.yaw; this.yawVel = { v: 0 }; this.dist = 38;
+    this.focus = new THREE.Vector3(2, 0, 4.5); this.yaw = rad(210); this.yawTarget = this.yaw; this.yawVel = { v: 0 }; this.dist = 38;
     this.f = 0; this.fVel = { v: 0 }; this.arm = LEASH.arm; this.pivot = new THREE.Vector3(); this.pitch = rad(15);
     this.idle = 99; this.steady = 0; this.lastH = 0; this.side = 1; this.frame = null; this.lastTgt = new THREE.Vector3();
   }

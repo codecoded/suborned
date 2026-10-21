@@ -33,3 +33,15 @@ Sky, 2026-10-21, after playing 0.2.34 and seeing the calm-ring mockup:
 
 ## Sky's pick, 2026-10-21
 "ok, so, let's try verb pill, leash camera, double click." To Unity (Latch): the **Double click** preset, the **Verb pill** marker and the **Leash** camera, ported exactly as the playground plays them (`testbed/controls/data.js` and the marker and camera code beside it). Time display stays "Total" until Sky picks otherwise. Provisional until Sky has played them in the game.
+
+## Sky, later 2026-10-21
+- Added in the playground: squad selection (5, Ctrl/Cmd+A, Squad button, drag box; Shift/Ctrl toggle), group walk in formation, group acts (Best placed / Everyone), portrait drag, running (Shift in third person; double click on ground or Shift+click on the map), breakaway shown by the doer's face in the pill and a ground cue (Sky: no lifting, "that's daft").
+- "avatar would be anywhere where the name appears in the pill": the doer's face replaces the agent's name in every pill.
+- "experience is getting better now, starting to feel I have control of the squad and my actions."
+- Running (Sky): single click walks, double click runs, for things and ground alike (new default tab "Click acts, double click runs"). In squad mode a non-default act runs with Shift ("I think that's ok"), and the per-agent action plate beside each portrait keeps its walk/run (feet/running) toggle, as in the game ("like it does currently"); no toggle inside the ring.
+- The plate's walk/run toggle is "only for that action": it changes the current order's gait; the next order starts from walk unless given as a run.
+- Firing (Sky): "what about hold down LMB to fire? because I have to admit, it's pretty easy to fire on someone right now." Playground: hold LMB to fire (charge ~0.4 s, keeps firing while held, release cancels); toggle for Kill and Knock out holding too; non-hostiles need Ctrl as well.
+- Sky: Kill and Knock out need no hold ("accessed by Right click"), so they must never be a left-click default; bystanders need only the same LMB hold, no Ctrl ("it's enough"). Port to the game, range included, when the playground set moves to Unity.
+- **Hold to fire adopted** (Sky, after playing it): "hold and fire feels good actually. Think that as a constant means the action element is easily ready and we can tune as we go now e.g. ammo / different weapons / outcomes etc." Hold LMB to fire is the fixed input; ammo, weapon types and outcomes are later tuning (Motive, Keel), not input changes.
+- Sky, after hold-to-fire: "starting to feel holding down LMB for the quick action is always the case, and left click is walk there still." New default preset "Click walks, hold acts": click walks (double click runs), hold LMB does the main action (charge ~0.4 s), Shift+hold runs then acts, right tap opens the ring.
+- Sky: "but then how do we decide to fire? Maybe hold down right click?" In "Click walks, hold acts": left mouse never harms (click walks, double click runs, hold does the main non-harmful act); right tap opens the ring, right hold fires (charge, keeps firing while held). Third person toggle: right hold fires vs right aims + left fires.
