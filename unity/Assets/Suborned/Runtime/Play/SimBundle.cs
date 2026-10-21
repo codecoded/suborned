@@ -57,7 +57,7 @@ namespace Suborned.Play
         public static Engine.Inputs LoadRange(string layout)
         {
             if (range.TryGetValue(layout, out var have)) return have;
-            var site = layout == "dense" ? "range-dense.site.json" : layout == "open" ? "range.site.json" : throw new InvalidDataException($"Sim: range layout '{layout}' is not open or dense");
+            var site = layout == "dense" ? "range-dense.site.json" : layout == "open" ? "range.site.json" : layout == "lane" ? "range-lane.site.json" : throw new InvalidDataException($"Sim: range layout '{layout}' is not open, dense or lane"); // lane: engine 0.16 (tuning.md §10.4)
             var m = JNode.Parse(File.ReadAllText(Path.Combine(Dir, "engine.json")), "engine.json");
             if (m.Opt("range") is not JNode rb || rb.Opt(site) is not JNode want) throw new InvalidDataException($"Sim: engine.json has no range {site}; run `bun tools/sim/unity.ts --tree`");
             string Read(string file, string sha)

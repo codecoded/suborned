@@ -58,6 +58,12 @@ namespace Suborned.Play
                 float a0 = -90f + i * w - w / 2f + gap, a1 = -90f + i * w + w / 2f - gap;
                 p.BeginPath(); p.Arc(c, ro, Deg(a0), Deg(a1)); p.Arc(c, ri, Deg(a1), Deg(a0), ArcDirection.CounterClockwise); p.ClosePath();
                 p.fillColor = lit ? DeepTeal : Plate; p.Fill();
+                if (rs.HoldSeg == i) // brief 024 rule 2, brief 038 §4.3: a harmful wedge fills from the middle out over its 0.5 s hold, and takes when full
+                {
+                    float hr = ri + (ro - ri) * host.RingHoldProgress;
+                    p.BeginPath(); p.Arc(c, hr, Deg(a0), Deg(a1)); p.Arc(c, ri, Deg(a1), Deg(a0), ArcDirection.CounterClockwise); p.ClosePath();
+                    p.fillColor = new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.75f); p.Fill();
+                }
                 if (s.Violent) // dashed outline: the loud shape cue
                 {
                     p.strokeColor = lit ? TurqLight : Cream; p.lineWidth = 1.6f; p.lineCap = LineCap.Butt;

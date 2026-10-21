@@ -39,7 +39,7 @@ const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules
 // brief 029 (Keel): the fight range's two sites, its own inputs beside the Handover's (a range run never loads the Handover's files, and the
 // Handover's inputs and hashes are untouched by these). Copied to StreamingAssets/sim/, hashed in engine.json `range`, and R01..R10 played
 // headless into headless.json `range` for the Unity match.
-const RANGE = { 'range.site.json': 'sim/data/range.site.json', 'range-dense.site.json': 'sim/data/range-dense.site.json' } as const;
+const RANGE = { 'range.site.json': 'sim/data/range.site.json', 'range-dense.site.json': 'sim/data/range-dense.site.json', 'range-lane.site.json': 'sim/data/range-lane.site.json' } as const; // lane: engine 0.16 (F8-BREAK, F11-*, F12-*, F13-*)
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
 const dirty = sh(['git', 'diff', '--quiet', 'HEAD', '--', 'sim/Suborned.Sim', ...Object.values(INPUTS)]).code !== 0;
 const label = (tree ? `working tree on ${commit.slice(0, 12)}${dirty ? ' (uncommitted engine or input changes)' : ''}` : `commit ${commit.slice(0, 12)}`) + (dllArg ? `, engine bytes from ${dllArg}` : '');

@@ -1,0 +1,19 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 519, "y": 407, "w": 188, "h": 25, "text": "Patrol is leaving its round."},
+  {"kind": "speech", "x": 417, "y": 258, "w": 242, "h": 25, "text": "Disturbance reported. Leaving route."},
+  {"kind": "image", "x": 637, "y": 326, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 540, "y": 12, "w": 56, "h": 56, "text": "attention callout"},
+  {"kind": "image", "x": 610, "y": 243, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1161, "y": 444, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": 1226, "y": 393, "w": 355, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 154, "h": 16, "text": "The patrol leaves its sweep"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Patrol: Disturbance reported. Leaving route."},
+  {"kind": "image", "x": 1828, "y": 12, "w": 80, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

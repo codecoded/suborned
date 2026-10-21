@@ -11,7 +11,7 @@ namespace Suborned.Play
     /// and draws its weapon in a fight. View only: nothing here is read by the engine. Keys with no figure keep their capsule.</summary>
     public sealed partial class HostViews
     {
-        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; }
+        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; }
         readonly Dictionary<string, Fig> figs = new(); readonly Dictionary<string, Vector3> faces = new(); // brief 022: a pose's facing, while standing
         readonly Dictionary<string, string> phases = new(); // brief 022: a server's round phase (at post, to table, serving, from table, held, to post, together)
         readonly Dictionary<string, float> lifted = new(); // a view's lift (m) while down: 0 on the ground, 1.15 on a shoulder
@@ -128,6 +128,15 @@ namespace Suborned.Play
                     f.model.localRotation = Quaternion.Euler(0f, f.yaw, 0f);
                 }
                 bool armed = Armed(key, g), startled = key.StartsWith("crowd/") && CrowdStartled(key, g);
+                // brief 024 fire placeholder (Forma's clips aim_pistol, shoot, draw): raise to the aim while the agent aims or its fire state has a
+                // target, a recoil restarted on every engine shot (the shot log's event, never a loop), the draw clip when the gun comes out, then lowered
+                int opIdx = System.Array.IndexOf(OpKeys, key); float nowU = Time.unscaledTime;
+                int shotN = shotEvents.TryGetValue(key, out var sn) ? sn : 0; bool shotNew = shotN != f.shots; f.shots = shotN; if (shotNew) f.shotAt = nowU;
+                bool shotRecent = nowU - f.shotAt < ShootHoldS;
+                if (opIdx >= 0 && armed && !f.drawn) f.drawAt = nowU; if (opIdx >= 0) f.drawn = armed;
+                bool drawing = armed && nowU - f.drawAt < host.DrawS && host.DrawS > 0f;
+                bool aimPose = opIdx >= 0 && armed && (key == DriveKey && host.Aiming || host.FireNow[opIdx].Mode.Length > 0 && host.FireNow[opIdx].Target.Length > 0);
+                if (opIdx >= 0 && aimPose && key == DriveKey && host.Aiming && host.AimFaceOn && speed < 0.15f) f.yaw = Mathf.MoveTowardsAngle(f.yaw, host.AimFace, 900f * Time.unscaledDeltaTime); // the driven agent faces the reticle
                 // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
                 var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null;
                 if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
@@ -141,13 +150,18 @@ namespace Suborned.Play
                 else if (phases.TryGetValue(key, out var ph) && ph == "serving") state = Has(f, "serve") ? "serve" : "talk"; // brief 022: at the table she serves (faces it), the tray on her hand
                 else if (phases.TryGetValue(key, out var pt) && pt == "together") state = "talk"; // with the guard they talk
                 else if (seat is { } so) state = SeatState(f, so.from, so.to, g); // HostSeats: sit down, a seated loop, stand up
-                else if (aiming) state = FiredNow.Contains(key) && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
+                else if (opIdx >= 0 && shotRecent && Has(f, "shoot")) state = "shoot"; // brief 024 (Sky: "a clear animation when the player fires"): the recoil, restarted on every engine shot
+                else if (opIdx >= 0 && drawing && Has(f, "draw")) state = "draw"; // the raise: the draw clip over the rulebook's draw time
+                else if (aiming || aimPose) state = shotRecent && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
                 else state = armed && g.FightOn ? "aim_pistol" : f.phase > 0.5f ? "idle_alt" : "idle";
                 natural = host.figures.Speed(f.id, state); if (natural <= 0f && state == "carry_shoulder") natural = 1.29f; // Forma: the walk's legs
                 float stride = natural > 0f ? Mathf.Clamp(speed / natural, 0.4f, 1.8f) : 1f; // the floor was 0.6: a 0.52 m/s walker's legs walked 0.59 m/s and slid (crowd/33, brief 024 anim-fix)
+                if (state == "draw") stride = DrawClipS / Mathf.Max(0.2f, host.DrawS); // the draw clip fits the rulebook's draw time
                 f.anim.speed = (key == DriveKey ? 1f : pace) * stride; // the driven agent walks in an explore pause too
                 Tray(f, state is "serve" or "serve_walk");
-                if (state != f.state) { f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 ? 0f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend)
+                if (state == "shoot" && shotNew && f.state == "shoot") f.anim.CrossFadeInFixedTime("shoot", 0.03f, 0, 0f); // the next shot: the recoil again from its start
+                else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
+                if (AnimLog != null && opIdx >= 0) LogFigure(key, f, state, shotNew, speed, opIdx);
             }
         }
 
@@ -174,6 +188,25 @@ namespace Suborned.Play
             if (f.bones.TryGetValue(name, out var t) && t) return t;
             foreach (var c in f.model.GetComponentsInChildren<Transform>(true)) if (c.name == name || c.name.EndsWith(":" + name) || c.name == "mixamorig:" + name) { f.bones[name] = c; return c; }
             f.bones[name] = null; return null;
+        }
+
+        /// <summary>Brief 024: each engine shot by a view key (the shot log, HandoverHost.Shot): its figure plays the recoil once.</summary>
+        readonly Dictionary<string, int> shotEvents = new();
+        public void ShotEvent(string key) { if (string.IsNullOrEmpty(key)) return; shotEvents[key] = (shotEvents.TryGetValue(key, out var n) ? n : 0) + 1; }
+        /// <summary>How long a shot holds the shoot clip (its 18 frames at 30 fps are 0.6 s; the next aim takes over after 0.45 s).</summary>
+        const float ShootHoldS = 0.45f, DrawClipS = 2.0f;
+        /// <summary>A figure's drawn yaw (Unity degrees), else null: the muzzle the HUD's tracer starts from.</summary>
+        public float? FigureYaw(string key) => figs.TryGetValue(key, out var f) ? f.yaw : null;
+
+        /// <summary>The per-frame animation log (player-animation-verification): on when not null; one TSV row per cell figure per frame.</summary>
+        public List<string> AnimLog;
+        public const string AnimLogHeader = "frame	t	key	state	clip	norm	transition	speed	ground	isHuman	shotEvent	shots	fireMode	firing	shot	aiming";
+        void LogFigure(string key, Fig f, string state, bool shotNew, float ground, int k)
+        {
+            var info = f.anim.GetCurrentAnimatorStateInfo(0); var clips = f.anim.GetCurrentAnimatorClipInfo(0); string clip = clips.Length > 0 && clips[0].clip ? clips[0].clip.name : "";
+            var fs = host.FireNow[k];
+            AnimLog.Add($"{Time.frameCount}	{Time.unscaledTime:0.000}	{key}	{state}	{clip}	{info.normalizedTime:0.000}	{(f.anim.IsInTransition(0) ? 1 : 0)}	{f.anim.speed:0.00}	{ground:0.00}	{(f.anim.isHuman ? 1 : 0)}	{(shotNew ? 1 : 0)}	{f.shots}	{fs.Mode}	{(fs.Firing ? 1 : 0)}	{(fs.Shot ? 1 : 0)}	{(key == DriveKey && host.Aiming ? 1 : 0)}");
+            if (AnimLog.Count > 40000) AnimLog.RemoveRange(0, 10000);
         }
 
         /// <summary>The aim clip for a shooter: a long gun's "aim" (Forma: tb_aim, tb_fire_rifle), else the pistol's "aim_pistol".</summary>

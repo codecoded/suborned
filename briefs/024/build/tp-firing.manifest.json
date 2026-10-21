@@ -1,0 +1,14 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 845, "y": 1026, "w": 231, "h": 40, "text": "Watch the café terrace."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 234, "y": 985, "w": 83, "h": 30, "text": "follow view chip"},
+  {"kind": "image", "x": 988, "y": 478, "w": 345, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "image", "x": 691, "y": 1032, "w": 538, "h": 34, "text": "third person key strip"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 233, "h": 17, "text": "Passer-by: I'll remember that face."},
+  {"kind": "image", "x": 1828, "y": 12, "w": 80, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

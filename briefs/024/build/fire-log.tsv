@@ -1,0 +1,55 @@
+tick	frame	kind	agent	...
+813	30643	state	fixer	lock	car:official	firing	-	-	824	15		lock:car:official
+824	30863	state	fixer	lock	car:official	firing	-	shot	839	15		lock:car:official
+830	30993	state	scout	return	patrol	firing	-	-	0	15		lock:
+841	31039	state	scout	return	patrol	firing	-	shot	856	15		lock:
+845	31120	state	fixer			-	-	-	854	15		lock:
+845	31120	followers	enforcer	Fixer
+853	31255	aim	enforcer	on
+856	31297	state	scout	return	patrol	firing	-	shot	871	15		lock:
+871	31393	state	scout	return	patrol	firing	-	shot	886	15		lock:
+872	31420	trigger	enforcer	on	car:official	taken
+873	31421	state	fixer	follow	car:official	firing	-	-	883	15	enforcer	lock:
+873	31421	state	enforcer	trigger	car:official	firing	-	-	883	20		lock:
+883	31586	state	fixer	follow	car:official	firing	-	shot	898	15	enforcer	lock:
+883	31586	state	enforcer	trigger	car:official	firing	-	shot	903	20		lock:
+886	31587	state	scout	return	patrol	firing	-	shot	901	15		lock:
+898	31680	state	fixer	follow	car:official	firing	-	shot	913	15	enforcer	lock:
+901	31730	state	scout			-	-	shot	916	15		lock:
+901	31730	followers	enforcer	Scout,Fixer
+902	31747	state	scout	follow	car:official	-	hollow	-	916	15	enforcer	lock:
+903	31764	state	enforcer	trigger	car:official	firing	-	shot	923	20		lock:
+913	31933	state	fixer	follow	car:official	firing	-	shot	928	15	enforcer	lock:
+923	32105	state	enforcer	trigger	car:official	firing	-	shot	943	20		lock:
+928	32202	state	fixer	follow	car:official	firing	-	shot	943	15	enforcer	lock:
+933	32276	trigger	enforcer	off	car:official	taken
+934	32277	state	scout	follow-held	car:official	-	hollow	-	916	15	enforcer	lock:
+934	32277	state	fixer	follow-held	car:official	-	-	-	943	15	enforcer	lock:
+934	32277	state	enforcer	trigger-held	car:official	-	-	-	943	20		lock:
+975	32702	trigger	enforcer	on	car:official	taken
+975	32703	state	scout	follow	car:official	-	hollow	-	916	15	enforcer	lock:
+975	32703	state	fixer	follow	car:official	firing	-	-	943	15	enforcer	lock:
+975	32703	state	enforcer	trigger	car:official	firing	-	-	943	20		lock:
+975	32703	trigger	enforcer	off	car:official	taken
+976	32704	state	scout	follow-held	car:official	-	hollow	-	916	15	enforcer	lock:
+976	32704	state	fixer	follow-held	car:official	-	-	-	943	15	enforcer	lock:
+976	32704	state	enforcer	trigger-held	car:official	-	-	shot	996	20		lock:
+991	32890	state	fixer	lock	car:official	firing	-	shot	1006	15		lock:car:official
+991	32890	followers	enforcer	Scout
+991	32891	trigger	enforcer	on	car:official	taken
+992	32892	state	scout	follow	car:official	-	hollow	-	916	15	enforcer	lock:
+992	32892	state	enforcer	trigger	car:official	firing	-	-	996	20		lock:
+996	32939	state	enforcer	trigger	car:official	firing	-	shot	1016	20		lock:
+1016	33081	state	fixer	lock	car:official	-	hollow	-	1021	15		lock:car:official
+1016	33081	state	enforcer	trigger	car:official	-	-	shot	1036	20		lock:
+1016	33081	followers	enforcer	Scout,Fixer
+1017	33093	state	fixer	follow	car:official	-	hollow	-	1021	15	enforcer	lock:
+1027	33234	trigger	enforcer	off	car:official	taken
+1027	33234	aim	enforcer	off
+1028	33235	state	scout	follow-held	car:official	-	hollow	-	916	15	enforcer	lock:
+1028	33235	state	fixer	follow-held	car:official	-	hollow	-	1021	15	enforcer	lock:
+1028	33235	state	enforcer	trigger-held	car:official	-	-	-	1036	20		lock:
+1042	33424	state	scout	follow-held		-	-	-	916	15	enforcer	lock:
+1042	33424	state	fixer	follow-held		-	-	-	1021	15	enforcer	lock:
+1042	33424	state	enforcer			-	-	-	1036	20		lock:
+1042	33424	followers	-	

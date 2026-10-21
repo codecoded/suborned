@@ -1,0 +1,14 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 1496, "y": 359, "w": 24, "h": 24, "text": "agent cameo"},
+  {"kind": "image", "x": 1546, "y": 361, "w": 20, "h": 20, "text": "target badge"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 234, "y": 985, "w": 83, "h": 30, "text": "follow view chip"},
+  {"kind": "image", "x": 691, "y": 1032, "w": 538, "h": 34, "text": "third person key strip"},
+  {"kind": "image", "x": 1828, "y": 12, "w": 80, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

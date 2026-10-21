@@ -168,7 +168,7 @@ namespace Suborned.Play
             "only-scout" => "portraits/cameo_scout_normal", "only-fixer" => "portraits/cameo_fixer_normal", "only-tech" => "portraits/cameo_tech_normal", "only-enforcer" => "portraits/cameo_enforcer_normal",
             "no-cash" => "icons/singles/pay",
             "driver-too-late" or "call-too-late" or "car-busy" or "patrol-away" or "agent-busy" or "summon-too-far" => "icons/singles/p_time",
-            "no-weapon" or "already-drawn" or "not-drawn" or "fire-running" or "fire-carrying" or "no-target" or "civilian-target" or "no-clear-line" or "target-unknown" or "fire-on-cell" or "fire-carrying-vale"
+            "no-weapon" or "already-drawn" or "not-drawn" or "fire-carrying" or "no-target" or "civilian-target" or "no-clear-line" or "target-unknown" or "fire-on-cell" or "fire-carrying-vale"
                 or "stance-unknown" or "panic-not-cell" or "panic-no-fight" or "panic-nobody" or "unarmed" or "never-vale" or "no-line" or "stance-hold" or "stance-return" or "stance-free" => "icons/singles/fire",
             "carry-vale" or "already-carrying" or "carry-names-downed" or "carry-self" or "not-down" or "no-body" or "already-carried" or "body-stashed" or "not-carrying" or "stash-full" or "body-dead"
                 or "already-restrained" or "keeps-vale" or "run-carrying-vale" or "run-carrying-downed" or "other-carries" or "no-room" => "icons/singles/s_carrying",
@@ -324,7 +324,7 @@ namespace Suborned.Play
         public MoveParts MoveNow { get; private set; }
 
         /// <summary>The crosshair chip: the target's badge, down in n s, hits as a fraction, Trail per hit; never: the refusal.</summary>
-        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ }
+        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ /** Keel 0.15 §8.8: the gait the chance is read at (walk, run, run-away; "" standing) and the seconds to down on arrival (-1 none) */ public string Gait = ""; public int ArriveS = -1; }
         public AimParts AimNow { get; private set; }
 
         /// <summary>A watcher-or-not eye for a SeenQuote: "shut" nobody, "open" a known watcher sees it, "unk" an unknown one could.</summary>

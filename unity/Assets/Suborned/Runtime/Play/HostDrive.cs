@@ -93,6 +93,7 @@ namespace Suborned.Play
 
         void DriveTake(int k)
         {
+            if (Game.Ops[k].Gun.Order.Length > 0) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)k), Do = "cease" })); // brief 024 Firing: taking control drops the agent's standing fire order (the trigger is the player's now)
             var op = Game.Ops[k]; dAgent = k; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null; dSentFace = -1; dMoving = false; DriveCorrections = 0;
             dYaw = Following ? fYaw : yawNow;
             if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)k); views.DrivePos = CmWorld(dCm); views.DriveYaw = dYaw; views.DriveSpeed = 0f; }
@@ -104,7 +105,7 @@ namespace Suborned.Play
         void DriveExit(bool release, bool toMap = false)
         {
             if (!Driving) return;
-            int k = dAgent; if (release) DriveRelease(k);
+            int k = dAgent; AimEnd(); if (release) DriveRelease(k);
             if (Lab.explore) { Lab.explore = false; Paused = exploreWasPaused; }
             Driving = false; dAuto = false; dAgent = -1; DriveFocus = null; dFocusKey = "";
             dResume = !release && !toMap; // the game ended control (not the player): WASD takes it back (DriveResume)
@@ -159,7 +160,7 @@ namespace Suborned.Play
                 if (controls.Held(kb, PlayAction.PanRight)) input.x += 1; if (controls.Held(kb, PlayAction.PanLeft)) input.x -= 1;
                 run |= controls.Held(kb, PlayAction.AddToGroup);
                 if (controls.Down(kb, PlayAction.Gait)) dRunLatch = !dRunLatch;
-                DriveE(kb); // brief 030: E is the quick click on the focus; held 0.22 s, the ring on it
+                TpE(kb); // brief 024 revision: E taps act on the prompt, held 0.22 s the ring (HostAim)
             }
             if (dAuto)
             {
@@ -172,8 +173,10 @@ namespace Suborned.Play
                     DriveFocusFrame(); return;
                 }
             }
+            if (TriggerDown && !run) input = Vector2.zero; // brief 024 rule 3: firing at a walk plants the agent; a runner keeps going (the engine reads the run flag)
             bool free = (!Paused || Exploring) && !(op.Busy != null && DriveOnBusyHold) && !op.Down && !op.Inside && !op.InCar;
             DriveMove(free ? input : Vector2.zero, run, dt, Following ? fYaw : yawNow);
+            if (Aiming && AimFaceOn && !dMoving) dYaw = AimFace; // brief 024: aiming, the agent turns to the reticle (the sample's facing; the camera follows the travel heading only)
             if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)dAgent); views.DrivePos = CmWorld(dCm); views.DriveYaw = dYaw; views.DriveSpeed = dVel.magnitude / 100f; }
             DriveFocusFrame();
         }
@@ -302,7 +305,7 @@ namespace Suborned.Play
         }
 
         /// <summary>A restart: nobody is driven, explore is off (the views are new).</summary>
-        void DriveReset() { dResume = false; Driving = false; dAuto = false; dAgent = -1; DriveFocus = null; dFocusKey = ""; Lab.explore = false; DriveInputOverride = null; DriveRunOverride = false; DriveRoute = null; }
+        void DriveReset() { Aiming = false; TriggerDown = false; dResume = false; Driving = false; dAuto = false; dAgent = -1; DriveFocus = null; dFocusKey = ""; Lab.explore = false; DriveInputOverride = null; DriveRunOverride = false; DriveRoute = null; }
 
         /// <summary>Leaving explore: the controller goes back to where the engine has the agent.</summary>
         public void DriveExploreOff() { if (Driving && Game != null) { var p = Game.Ops[dAgent].Pos; dCm = new Vector2(p.X, p.Y); dVel = Vector2.zero; dSent = null; } }
@@ -329,6 +332,13 @@ namespace Suborned.Play
             cands.Sort((a, b) => a.score.CompareTo(b.score));
             if (cands.Count == 0) dFocusStep = 0;
             else { int pick = ((dFocusStep % cands.Count) + cands.Count) % cands.Count; best = cands[pick].t; bestAt = cands[pick].at; bestScore = cands[pick].score; }
+            // brief 024 revision: the prompt is the thing under the cursor (within 15 m, on screen, off the HUD), else the nearest in front (Z steps it)
+            var mp = PointerWorld is Vector3 pw && cam ? (Vector2)cam.WorldToScreenPoint(pw) : PointerOverride ?? UnityEngine.InputSystem.Mouse.current?.position.ReadValue();
+            if (cam && mp is Vector2 mpv && dFocusStep == 0 && mpv.x >= 0 && mpv.y >= 0 && mpv.x <= Screen.width && mpv.y <= Screen.height && !HudToolkit.Blocks(mpv) && !PlayHud.Blocks(mpv))
+            {
+                var under = TargetAt(mpv);
+                if (under != null && under.Kind is not ("op" or "unit") && TargetWorld(under) is Vector3 uw && (uw - me).magnitude <= 15f) { best = under; bestAt = uw + Vector3.up * (under.Kind == "car" ? 0.8f : under.Kind == "camera" ? 0f : under.Kind is "body" or "stash" ? 0.25f : 1.0f); }
+            }
             DriveFocus = best;
             if (best == null)
             {

@@ -100,6 +100,7 @@ namespace Suborned.Play
             if (!r.Available) { LockPop(r, at, world); return; }
             if (r.I.Order?.Do == "go") { GoGive(r.By, at, source); return; } // brief 018: the commit hold when anyone stays
             if (SeenGate(r.I, t, at, source)) return;
+            if (r.I.Order?.Do == "fire") { FireRow(r.By, r.I.Order, t, at, source); return; } // a Fire way: the fire path (the going-loud card or the wedge's hold; the engine walks it into reach)
             Give(r.By, r.I.Order, t, at);
         }
 
@@ -117,12 +118,14 @@ namespace Suborned.Play
         public sealed class RingSeg
         {
             public int Way = -1; public PanelRow Row; public readonly List<OpId> By = new(); public string Word = "", Icon = "";
-            public bool Violent, Draws, More, Harmful; public int Key = -1;
+            public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
         }
         public sealed class RingState
         {
             public ContextPlan Plan; public Vector2 Gui, Screen; public float OpenedAt; public bool Sticky, ByE, FromHold, Always; public int Hover = -1, Lit = -1;
             public Vector2 PointerAtOpen; public readonly List<RingSeg> Segs = new();
+            /// <summary>A harmful wedge's hold under way (HostAim.RingHoldFrame): which wedge, since when, by what input (left, right, E); Ctrl: Ctrl + right's Fire.</summary>
+            public int HoldSeg = -1; public float HoldStart = -1f; public string HoldSrc = ""; public bool HoldCtrl;
         }
         /// <summary>The open ring, else null (the HUD draws it; the host reads the pointer against it).</summary>
         public RingState Ring { get; private set; }
@@ -145,6 +148,7 @@ namespace Suborned.Play
                 s.By.AddRange(plan.Givers[w]);
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click
+                s.HoldWedge = o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
                 s.Key = r.Key >= 0 && Selected[(int)r.By] ? r.Key : -1;
                 rs.Segs.Add(s);
             }
@@ -253,32 +257,33 @@ namespace Suborned.Play
             var kb = Keyboard.current;
             if (Ring != null)
             {
-                var rs = Ring; rs.Hover = RingSegAt(p);
+                if (RingHoldFrame(mouse, p)) return true; // a harmful wedge's hold under way (HostAim)
+                var rs = Ring; if (rs == null) return true; rs.Hover = RingSegAt(p);
                 if (rs.Hover >= 0 && rs.Hover != rs.Lit && rs.Segs[rs.Hover].Row is PanelRow hr) RingPath(hr); else if (rs.Hover < 0) views?.ShowPath(null);
                 bool esc = kb != null && kb.escapeKey.wasPressedThisFrame;
                 if (esc) { CloseRing(); return true; }
                 // Sky 2026-10-21 (ring by default): Enter takes the lit way (the one under the pointer, else the likely one)
-                if (kb != null && (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)) { RingTake(rs.Hover >= 0 ? rs.Hover : rs.Lit); return true; }
+                if (kb != null && (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)) { RingTakeTry(rs.Hover >= 0 ? rs.Hover : rs.Lit, "release"); return true; }
                 bool middle = ((p - rs.Screen) / KitScale).magnitude < RingDeadPx; // the dead zone: the likely way stays lit
                 if (rs.FromHold && mouse.rightButton.wasReleasedThisFrame)
                 {
                     rs.FromHold = false;
-                    if (rs.Hover >= 0 && (!rs.Always || (p - rs.PointerAtOpen).magnitude > RingDeadPx * KitScale)) { RingTake(rs.Hover); return true; } // a drag onto a wedge
+                    if (rs.Hover >= 0 && (!rs.Always || (p - rs.PointerAtOpen).magnitude > RingDeadPx * KitScale)) { RingTakeTry(rs.Hover, "release"); return true; } // a drag onto a wedge (a harmful one: held, never on release)
                     if (rs.Always || Time.unscaledTime - rs.OpenedAt < RingStickyS && (p - rs.PointerAtOpen).magnitude < RingMovePx * KitScale) { rs.Sticky = true; return true; }
                     CloseRing(); return true;
                 }
-                if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTake(rs.Hover); else if (rs.Always && middle) RingTake(rs.Lit); else CloseRing(); return true; }
+                if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTakeTry(rs.Hover, "left"); else if (rs.Always && middle) RingTakeTry(rs.Lit, "left"); else CloseRing(); return true; }
                 if (mouse.rightButton.wasPressedThisFrame)
                 {
                     if (rs.Always) // brief 038 §4.1: a second right click on the same target takes the lit way; on another target the ring moves there; on the ground it closes
                     {
-                        if (rs.Hover >= 0) { RingTake(rs.Hover); return true; }
+                        if (rs.Hover >= 0) { RingTakeTry(rs.Hover, "right"); return true; }
                         var t2 = middle ? rs.Plan.T : TargetAt(p);
-                        if (t2 != null && SameTarget(t2, rs.Plan.T)) { RingTake(rs.Lit); return true; }
+                        if (t2 != null && SameTarget(t2, rs.Plan.T)) { RingTakeTry(rs.Lit, "right"); return true; }
                         CloseRing(); if (t2 != null && t2.Kind != "op" && !HudToolkit.Blocks(p)) RightRing(t2, p);
                         return true;
                     }
-                    if (rs.Hover >= 0 && rs.Sticky) RingTake(rs.Hover); else CloseRing(); return true;
+                    if (rs.Hover >= 0 && rs.Sticky) RingTakeTry(rs.Hover, "right"); else CloseRing(); return true;
                 }
                 return true; // a ring open: the world takes no click
             }
@@ -287,6 +292,7 @@ namespace Suborned.Play
                 RightClickUsed = true; // brief 030: the first-act hint retires
                 if (!ModalGate.AllowsClicks(Modal) || Game == null || Fault != null || !cam) return false;
                 lastRight = p; var t = TargetAt(p);
+                if (CtrlFireRing(t, p)) return true; // brief 038 §4.3: Ctrl + right opens the ring with Fire held, never an instant shot
                 bool shift = controls.Held(kb, PlayAction.AddToGroup), fire = IsFire(t) && (controls.quickAction || PressFires(t));
                 if (controls.panelOnRight || (Picked >= 0 && !shift) || fire) { PointerRight(p); return false; } // Fire acts on press (the going-loud hold and the sweep belong to it)
                 if (!controls.quickAction) { RightRing(t, p); return true; } // Sky 2026-10-21: a right click opens the ring at the target, the likely way lit
@@ -353,7 +359,7 @@ namespace Suborned.Play
 
         /// <summary>Brief 038 §4.3: with the ring by default, a press fires at once only on a combatant with a gun drawn (or Ctrl, a deliberate
         /// force: the going-loud hold still guards it); a guard, a civilian, Vale or anyone not engaged opens the ring.</summary>
-        bool PressFires(Target t) => t != null && (Combatant(t) && (AnyDrawn() || t.Kind == "hostile") || controls.Held(Keyboard.current, PlayAction.Force) || t.Kind == "person" && t.Key == "councillor" && controls.Held(Keyboard.current, PlayAction.Force));
+        bool PressFires(Target t) => t != null && Combatant(t) && (AnyDrawn() || t.Kind == "hostile"); // Ctrl no longer fires on press: it opens the ring with Fire held (CtrlFireRing)
 
         /// <summary>A right click here fires (acts on press): a hostile, security with a gun drawn, Ctrl on a civilian; Vale never.</summary>
         bool IsFire(Target t)

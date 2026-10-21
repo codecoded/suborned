@@ -121,7 +121,7 @@ function check(): boolean {
   if (reuse) console.log(`game: proof reused, taken right after the build (${reuse.screen} ${reuse.mode}, ${reuse.frames?.fps} fps mean, p99 ${reuse.frames?.p99Ms} ms)`);
   const first = reuse ? { pj: reuse, status: 0 } : proof();
   const pj = airFrames(first.pj), status = first.status; // the pictures are 1920x1080; the frame times are the Air's size
-  const drive = driveReplay(pj);
+  const drive = driveReplay(pj) && driveReplay(pj, 'fireSession', 'fire-session.script.json'); // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
   const inputs = inputChecks(pj);
   return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs;
 }
@@ -130,7 +130,7 @@ function check(): boolean {
  *  (the fight gave no hostile in range) is reported, not failed. */
 function inputChecks(pj: any): boolean {
   let pass = true;
-  for (const k of ['driveClick', 'fireStop', 'ringCheck']) {
+  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars']) {
     const r = pj?.frames?.[k];
     if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
     const { ok, ...rest } = r ?? {};
@@ -142,16 +142,16 @@ function inputChecks(pj: any): boolean {
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
  *  every checkpoint (the repo's engine CLI, `sim play`); a copy goes beside the proof. */
-function driveReplay(pj: any): boolean {
-  const f = pj?.frames?.driveSession as string | undefined;
-  if (!f || !existsSync(f)) { console.error(`game: no driven session from the proof (${f ?? 'none'})`); return false; }
-  const out = join(DIR, 'proof', 'drive-session.script.json'); run('cp', [f, out], { quiet: true });
+function driveReplay(pj: any, key = 'driveSession', name = 'drive-session.script.json'): boolean {
+  const f = pj?.frames?.[key] as string | undefined;
+  if (!f || !existsSync(f)) { console.error(`game: no ${key} from the proof (${f ?? 'none'})`); return false; }
+  const out = join(DIR, 'proof', name); run('cp', [f, out], { quiet: true });
   const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
   const r = spawnSync('dotnet', ['run', '--project', 'sim/cli', '--', 'play', out], { cwd: ROOT, encoding: 'utf8', env, timeout: 300000 });
   const ok = r.status === 0 && /\[ok\] the replay matches its record/.test(r.stdout);
   const cps = r.stdout.match(/checkpoints (\d+)/)?.[1] ?? '?';
   const d = pj.frames.drive?.[0];
-  console.log(`game: driven session ${ok ? 'replays headless on every checkpoint' : 'DOES NOT replay'} (${cps} checkpoints; ${out})${d ? `; street level driven ${d.fps} fps (p99 ${d.p99Ms} ms${d.gpuMs >= 0 ? `, gpu ${d.gpuMs} ms` : ''})` : ''}`);
+  console.log(`game: ${key} ${ok ? 'replays headless on every checkpoint' : 'DOES NOT replay'} (${cps} checkpoints; ${out})${d ? `; street level driven ${d.fps} fps (p99 ${d.p99Ms} ms${d.gpuMs >= 0 ? `, gpu ${d.gpuMs} ms` : ''})` : ''}`);
   if (!ok) console.error(r.stdout.slice(-2000), r.stderr.slice(-1000));
   return ok;
 }
@@ -163,7 +163,7 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   const out = join(DIR, sub);
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 420000 }); // uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };

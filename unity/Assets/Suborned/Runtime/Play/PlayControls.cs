@@ -15,7 +15,11 @@ namespace Suborned.Play
         CameraLab,
         TargetMode,
         StepTarget,
+        Act,
     }
+
+    /// <summary>Brief 024 revision (action-game controls): the right button aims while held (the default) or toggles the aim (for the trackpad's two-finger click).</summary>
+    public enum AimMode { Hold, Toggle }
 
     public enum RosterDock { Bottom, Left, Corner }
 
@@ -80,6 +84,7 @@ namespace Suborned.Play
             new() { action = PlayAction.CameraLab, keys = new[] { Key.P }, label = "P" },
             new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
             new() { action = PlayAction.StepTarget, keys = new[] { Key.Z }, label = "Z" }, // brief 030 §8: step the target (Tab's old overlap and target uses; Z was free) // brief 027: target mode (Y was free; Motive proposed it) // brief 025: the camera lab (P was free; no fn needed on a MacBook)
+            new() { action = PlayAction.Act, keys = new[] { Key.E }, label = "E" }, // brief 024 revision: third person's act key (tap acts, hold the options); E is the view's turn on the map, so the two never meet in one mode
         };
         static readonly Binding[] defaults = Defaults();
 
@@ -107,18 +112,31 @@ namespace Suborned.Play
         public ConversationScenes conversations = ConversationScenes.FirstTime;
         [UnityEngine.Tooltip("Sky 2026-10-21 (after 0.2.19): off (the default), a right click (or E in third person) opens the ring at the target with the likely way lit, and a second click takes it. On: the quick action of brief 030 (a click takes the likely way at once, a hold opens the ring). Pause menu, Right-click.")]
         public bool quickAction = false;
+        [UnityEngine.Tooltip("Brief 024 revision (action-game controls): in third person a left click on the prompted target does what E does (tap acts, hold 0.22 s opens the options). Off: E only. Pause menu, Left click acts.")]
+        public bool clickActs = true;
+        [UnityEngine.Tooltip("Brief 024 revision: the right button aims while held (Hold, the default) or a hold toggles the aim on and a tap lowers it (Toggle, for a trackpad).")]
+        public AimMode aimMode = AimMode.Hold;
+        [UnityEngine.Tooltip("Brief 024 Firing (commander view): off (the default), a right click on a hostile gives a lasting fire order; on, it fires only while the right button is held (Syndicate-style), and release ceases.")]
+        public bool commanderHoldFire = false;
+        [UnityEngine.Tooltip("Brief 024 (Sky on firing): the follow setting. Off (the default), agents near the driven one fire at its target while its trigger is held; on, they lock its target and keep firing. Sent to the engine as the logged follow order (op cell).")]
+        public bool followLock = false;
 
-        const string PlatePref = "Suborned.Controls.ActionPlate", ConvoPref = "Suborned.Controls.Conversations", QuickPref = "Suborned.Controls.QuickAction";
+        const string PlatePref = "Suborned.Controls.ActionPlate", ConvoPref = "Suborned.Controls.Conversations", QuickPref = "Suborned.Controls.QuickAction", ClickPref = "Suborned.Controls.ClickActs", AimPref = "Suborned.Controls.AimMode", HoldFirePref = "Suborned.Controls.CommanderHoldFire", FollowPref = "Suborned.Controls.FollowLock";
         /// <summary>The two menu settings from the player's profile (PlayerPrefs), when saved; the table's own values otherwise.</summary>
         public void LoadSettings()
         {
             if (UnityEngine.PlayerPrefs.HasKey(PlatePref)) actionPlate = UnityEngine.PlayerPrefs.GetInt(PlatePref) == 1;
             if (UnityEngine.PlayerPrefs.HasKey(ConvoPref)) conversations = (ConversationScenes)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(ConvoPref), 0, 2);
             if (UnityEngine.PlayerPrefs.HasKey(QuickPref)) quickAction = UnityEngine.PlayerPrefs.GetInt(QuickPref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(ClickPref)) clickActs = UnityEngine.PlayerPrefs.GetInt(ClickPref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(AimPref)) aimMode = (AimMode)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(AimPref), 0, 1);
+            if (UnityEngine.PlayerPrefs.HasKey(HoldFirePref)) commanderHoldFire = UnityEngine.PlayerPrefs.GetInt(HoldFirePref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(FollowPref)) followLock = UnityEngine.PlayerPrefs.GetInt(FollowPref) == 1;
         }
         public void SaveSettings()
         {
-            UnityEngine.PlayerPrefs.SetInt(PlatePref, actionPlate ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(ConvoPref, (int)conversations); UnityEngine.PlayerPrefs.SetInt(QuickPref, quickAction ? 1 : 0); UnityEngine.PlayerPrefs.Save();
+            UnityEngine.PlayerPrefs.SetInt(PlatePref, actionPlate ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(ConvoPref, (int)conversations); UnityEngine.PlayerPrefs.SetInt(QuickPref, quickAction ? 1 : 0);
+            UnityEngine.PlayerPrefs.SetInt(ClickPref, clickActs ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(AimPref, (int)aimMode); UnityEngine.PlayerPrefs.SetInt(HoldFirePref, commanderHoldFire ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(FollowPref, followLock ? 1 : 0); UnityEngine.PlayerPrefs.Save();
         }
 
         /// <summary>The binding for an action: this table's, else the default's (a table saved in a scene before an action existed keeps working).</summary>

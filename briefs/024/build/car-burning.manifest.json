@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 845, "y": 1026, "w": 231, "h": 40, "text": "Watch the café terrace."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": -832, "y": -1038, "w": 202, "h": 25, "text": "Fuel's alight. Everyone back."},
+  {"kind": "speech", "x": 555, "y": 429, "w": 198, "h": 25, "text": "That car's on fire. Get clear!"},
+  {"kind": "image", "x": 579, "y": 331, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 552, "y": 248, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1103, "y": 448, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 233, "h": 17, "text": "Passer-by: I'll remember that face."},
+  {"kind": "image", "x": 1828, "y": 12, "w": 80, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

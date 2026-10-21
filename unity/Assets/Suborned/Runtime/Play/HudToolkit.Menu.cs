@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// buttons, labels only (no keycaps: Sky), a one-word title. Built with the less-reading HUD, drawn above everything while it is up.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement menuVeil, menuCard; Label menuConvo, menuPlate, menuRight;
+        VisualElement menuVeil, menuCard; Label menuConvo, menuPlate, menuRight, menuClick, menuAim, menuFollow, menuHoldFire;
         const float MenuW = 340;
 
         void BuildMenu()
@@ -29,6 +29,11 @@ namespace Suborned.Play
             menuConvo = Btn("", () => { var c = host.controls; c.conversations = (ConversationScenes)(((int)c.conversations + 1) % 3); c.SaveSettings(); });
             menuPlate = Btn("", () => { var c = host.controls; c.actionPlate = !c.actionPlate; c.SaveSettings(); });
             menuRight = Btn("", () => { var c = host.controls; c.quickAction = !c.quickAction; c.SaveSettings(); }); // Sky 2026-10-21: ring by default
+            // brief 024 revision and Firing: third person's left click on the prompt, the aim's hold or toggle, the follow setting, the commander's hold-to-fire
+            menuClick = Btn("", () => { var c = host.controls; c.clickActs = !c.clickActs; c.SaveSettings(); });
+            menuAim = Btn("", () => { var c = host.controls; c.aimMode = c.aimMode == AimMode.Hold ? AimMode.Toggle : AimMode.Hold; c.SaveSettings(); });
+            menuFollow = Btn("", () => host.SetFollowLock(!host.controls.followLock));
+            menuHoldFire = Btn("", () => { var c = host.controls; c.commanderHoldFire = !c.commanderHoldFire; c.SaveSettings(); });
             Btn("Restart mission", () => host.RestartFromMenu());
             Btn(host.rangeMode ? "The Handover" : "Fight range", () => host.SwitchRangeScene()); // brief 029: the range from the menu, and back
             Btn("Quit", () => host.QuitFromMenu());
@@ -45,9 +50,13 @@ namespace Suborned.Play
             Text(menuConvo, "Conversations: " + host.controls.conversations switch { ConversationScenes.Always => "always", ConversationScenes.Never => "never", _ => "first time" });
             Text(menuPlate, "Action plate: " + (host.controls.actionPlate ? "on" : "off"));
             Text(menuRight, "Right-click: " + (host.controls.quickAction ? "quick action" : "ring"));
+            Text(menuClick, "Left click acts: " + (host.controls.clickActs ? "on" : "off"));
+            Text(menuAim, "Aim: " + (host.controls.aimMode == AimMode.Hold ? "hold" : "toggle"));
+            Text(menuFollow, "Agents near you: " + (host.controls.followLock ? "lock your target" : "fire with you"));
+            Text(menuHoldFire, "Map fire: " + (host.controls.commanderHoldFire ? "while held" : "until down"));
             if (root.IndexOf(menuCard) != root.childCount - 1) { menuVeil.BringToFront(); menuCard.BringToFront(); }
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? 1080 : size.y;
-            menuCard.style.left = (W - MenuW) / 2; menuCard.style.top = H * 0.3f;
+            menuCard.style.left = (W - MenuW) / 2; menuCard.style.top = H * 0.16f; // brief 024: four more settings
         }
     }
 }

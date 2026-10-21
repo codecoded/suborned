@@ -1052,6 +1052,7 @@ namespace Suborned.Play
             PanelFrame(); Step3Frame(); TakedownFrame();
             LessFrame(); MenuFrame(); // brief 014: the less-reading HUD over the pieces above (it hides what is cut at rest)
             FollowMarks();
+            { var fsz = root.panel.visualTree.layout.size; FireHud(float.IsNaN(fsz.x) || fsz.x <= 0 ? 1920 : fsz.x, float.IsNaN(fsz.y) || fsz.y <= 0 ? 1080 : fsz.y); } // brief 024 Firing: tracers, marks, the line, the reticle, the strip, the cars (HudToolkit.Fire)
         }
 
         /// <summary>The test follow view (HostFollow): the world marks are sized for the orthographic camera (rings, pins, markers, the move ring,
@@ -1078,7 +1079,7 @@ namespace Suborned.Play
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world || c == actBadge; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge || c == fireLayer; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }

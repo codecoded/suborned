@@ -780,7 +780,9 @@ namespace Suborned.Play
                     else
                     {
                         if (a.Lab && a.WalkS >= 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = "s_moving", Text = $"{a.WalkS} s" }); // Keel's walk-in: the walk first, the pips from the stop point
+                        if (a.Gait.Length > 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = a.Gait == "walk" ? "s_moving" : "run", Text = "" }); // Keel 0.15 §8.8: the gait the odds are read at
                         fs.Add(new HudModel.PField { Kind = "time", Icon = a.Lab ? "" : "p_time", Text = a.Down }); // brief 027: the lab chip has no seconds
+                        if (a.ArriveS >= 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "", Text = $"→ {a.ArriveS} s" }); // on arrival (the move's end, standing)
                         if (a.Lab && a.Charge > 0) fs.Add(new HudModel.PField { Kind = "charge", Icon = "", Text = $"▮{a.Charge}" });
                         if (alt) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = "hits " + a.Ratio }); // Glyph fight r1 #2: "3/10" read as shots, odds or a magazine; the odds in words, with Alt
                         if (a.Trail.Length > 0 && (!a.Lab || alt || !host.Fights.Hud.trailAltOnly)) fs.Add(new HudModel.PField { Kind = "trail", Icon = "p_trail", Text = a.Trail });
@@ -797,6 +799,10 @@ namespace Suborned.Play
                         lead = "icons/singles/s_moving"; fs.Add(new HudModel.PField { Kind = "walk", Icon = "", Text = $"{mv.WalkS} s" });
                         if (mv.RunS >= 0) { fs.Add(new HudModel.PField { Kind = "run", Icon = "run", Text = $"{mv.RunS} s" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye }); if (mv.Alert.Length > 0) fs.Add(new HudModel.PField { Kind = "alert", Icon = "p_alert", Text = mv.Alert }); }
                     }
+                }
+                else if (it != null && hov != null && it.Actionable && host.Driving && it.Opens && host.HoverAct.glyph.Length == 0)
+                {   // brief 024 rule 2: third person, the likely way is harmful (never lit): the prompt shows only that E opens the options
+                    lead = null; fs = new List<HudModel.PField> { new HudModel.PField { Kind = "more", Icon = "", Text = "⋯" } };
                 }
                 else if (it != null && hov != null && it.Actionable)
                 {
@@ -1690,7 +1696,7 @@ namespace Suborned.Play
             var c = host.Loud.Card;
             Show(loudSub, alt); foreach (var l in loudRows) Show(l.parent, alt && l.text.Length > 0); Show(loudHold, alt); Show(loudTitle, alt);
             var left = host.Loud.Left;
-            var key = $"{c.AlertTo}|{c.PoliceInS}|{c.RivalsInS}|{c.Seal}|{c.GuardAllyLost}|{c.WarningLost}|{c.DownedCaptured}|{c.TrailPerHit}|{host.Loud.Takedown}|{(left == null ? "-" : string.Join(",", left.ConvertAll(x => x.op + x.fate)))}|{host.Loud.SeenLeaving}";
+            var key = $"{c.AlertTo}|{c.PoliceInS}|{c.RivalsInS}|{c.Seal}|{c.GuardAllyLost}|{c.WarningLost}|{c.DownedCaptured}|{c.TrailPerHit}|{host.Loud.Takedown}|{(left == null ? "-" : string.Join(",", left.ConvertAll(x => x.op + x.fate)))}|{host.Loud.SeenLeaving}|{c.Fails}|{host.Loud.What}";
             if (key == loudKey) return; loudKey = key; loudIcons.Clear(); loudLost.Clear();
             void Part(string art, string text, Color? tint = null) { var p = E(loudIcons); p.style.flexDirection = FlexDirection.Row; p.style.alignItems = Align.Center; p.style.marginRight = 14; p.style.marginBottom = 4; var e = E(p, null, w: 18, h: 18); Art(e, art, tint); var l = L(p, "chip-value"); l.text = text; l.style.marginLeft = 5; }
             if (left != null)
@@ -1705,6 +1711,12 @@ namespace Suborned.Play
                 if (host.Loud.SeenLeaving) Part("icons/singles/p_trail", "+1");
                 return;
             }
+            if (c.Fails.Length > 0) // engine 0.15.0 (tuning.md §9.3): a shot that fails the mission always takes the hold; the card says what fails, at rest (Fable's fail line)
+            {
+                var fl = host.Text?.Fails.Find(f => f.code == c.Fails).line ?? ""; fl = c.Fails == "vale-dead" || fl.Length == 0 ? "Vale dies." : fl.Split(new[] { ". " }, StringSplitOptions.None)[0].TrimEnd('.') + ".";
+                Part("icons/singles/refused", fl + " The mission fails.", Red); // Keel 0.15 host notes, Fable: "Vale dies. The mission fails." 
+            }
+            if (!c.Loud && c.Fails.Length == 0 && host.Loud.What == "panic") { Part("icons/singles/run", ""); return; } // brief 038 §5: the panic hold in a fight: the run glyph and the hold ring
             Part("icons/singles/p_alert", c.AlertTo.ToString());
             if (c.PoliceInS >= 0) Part("badges/signal_police", $"{c.PoliceInS} s");
             if (c.RivalsInS >= 0) Part("badges/signal_rival", $"{c.RivalsInS} s");
