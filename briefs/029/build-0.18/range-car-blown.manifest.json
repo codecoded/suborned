@@ -1,0 +1,13 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 2628, "y": 396, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 630, "y": 640, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 2604, "y": 385, "w": 20, "h": 20, "text": "door turn"},
+  {"kind": "beat", "x": 1590, "y": 987, "w": 75, "h": 16, "text": "Fixer is down"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

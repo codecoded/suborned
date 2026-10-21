@@ -259,6 +259,7 @@ namespace Suborned.Play
                 case "car": return "car:" + t.Key;
                 case "person": if (t.Key == "guard") return "guard"; force = true; return t.Key;
                 case "crowd": force = true; return t.Id.Length > 0 ? t.Id : "";
+                case "bystander": force = true; return t.Key; // engine 0.18: a range bystander (the engine takes it only forced)
             }
             return "";
         }
@@ -524,10 +525,17 @@ namespace Suborned.Play
 
         /// <summary>Car effects the HUD draws (shape cues, no text): each car's state and when the host first saw it blow.</summary>
         public readonly Dictionary<string, float> CarBlownAt = new();
+        /// <summary>The cars that can be shot now: the Handover's three, or the fight range's spawned cars (engine 0.18).</summary>
+        public IEnumerable<string> CarIdsNow()
+        {
+            var g = Game; if (g == null) yield break;
+            if (g.Range) { foreach (var c in g.RangeCars()) yield return c.Id; yield break; }
+            foreach (var id in Game.CarIds) yield return id;
+        }
         void CarFrame()
         {
             var g = Game; if (g == null) return;
-            foreach (var id in Game.CarIds) { var c = g.CarOf(id); if (c != null && c.Blown && !CarBlownAt.ContainsKey(id)) CarBlownAt[id] = Time.unscaledTime; }
+            foreach (var id in CarIdsNow()) { var c = g.CarOf(id); if (c != null && c.Blown && !CarBlownAt.ContainsKey(id)) CarBlownAt[id] = Time.unscaledTime; }
         }
     }
 }

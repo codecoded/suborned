@@ -37,6 +37,7 @@ namespace Suborned.Play
         {
             if (Application.isEditor || Application.isBatchMode) return;
             if (ArgValue("-shots033") is string s33) { var sg = new GameObject("shots-033"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots033>().Dir = s33; return; } // briefs 030, 032, 033 (Latch)
+            if (ArgValue("-rangeShots") is string rs) { var sg = new GameObject("range-shots"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<RangeShots>().Dir = rs; return; } // brief 029, engine 0.18 (Latch)
             if (ArgValue("-shots031") is string sd) { var sg = new GameObject("shots-031"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots031>().Dir = sd; return; } // brief 031's shots (Latch)
             var dir = ArgValue("-gameProof"); if (dir == null) return;
             var go = new GameObject("game-proof"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<GameProof>().Dir = dir;

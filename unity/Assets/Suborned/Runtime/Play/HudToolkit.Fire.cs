@@ -308,7 +308,7 @@ namespace Suborned.Play
         void CarFx(float now)
         {
             var g = host.Game;
-            foreach (var id in Game.CarIds)
+            foreach (var id in host.CarIdsNow())
             {
                 Game.CarTarget c = null; try { c = g.CarOf(id); } catch { }
                 if (c == null || c.DisabledAt < 0 && c.BurningAt < 0 && !c.Blown) continue;

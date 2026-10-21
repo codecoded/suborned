@@ -189,6 +189,7 @@ namespace Suborned.Play
             switch (t.Kind)
             {
                 case "hostile": id = t.Key; return true;
+                case "bystander": if (!ctrl) return false; id = t.Key; force = true; return true; // engine 0.18: a range bystander, only with Ctrl held
                 case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind; return true;
                 case "unit": if (!(drawn || ctrl || Game.FightOn)) return false; id = t.Key; return true; // Keel 0.15.0 host notes: a unit is fired on by its own id (police-1, robot-1, …)
                 case "person":
@@ -305,7 +306,7 @@ namespace Suborned.Play
             string id = gun.Order.Length > 0 ? gun.Order : gun.Target; if (w == null || id.Length == 0) return -1; /* the standing fire order's target (Target is the aim, empty between shots) */ var tg = g.GunOf(id); var at = g.PosOf(id); if (tg == null || !at.HasValue || tg.Down) return -1;
             long d = G.Isqrt(G.D2(op.Pos, at.Value)); if (d > w.MaxCm || !g.S.Sight(op.Pos, at.Value, R.Eye)) return -1;
             bool targetMoving = false; foreach (var h in g.Hostiles) if (h.Id == id) targetMoving = h.Moving(g.Tick);
-            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
+            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.Range ? g.CoverNow() : g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
             int acc = R.Accuracy(w, d, op.Walk != null, cover, op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer, !gun.Trained); if (acc <= 0) return -1;
             int ticks = DownTicks(k, id, tg, acc); return (ticks + Game.Hz - 1) / Game.Hz;
         }
@@ -328,7 +329,7 @@ namespace Suborned.Play
             if (!g.S.Sight(op.Pos, at.Value, R.Eye)) { AimNoLine = true; parts.Refused = P("no-line", "No clear line"); return $"{who} · ✕ no clear line"; }
             bool moving = op.Walk != null, targetMoving = false;
             foreach (var h in g.Hostiles) if (h.Id == id) targetMoving = h.Moving(g.Tick);
-            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
+            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.Range ? g.CoverNow() : g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
             bool vale = op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer;
             int acc = R.Accuracy(w, d, moving, cover, vale, !gun.Trained);
             if (acc <= 0) { parts.Refused = P("no-line", "No clear line"); return $"{who} · can't hit from here"; }
@@ -484,6 +485,7 @@ namespace Suborned.Play
             if (id == "rivals") return "rivals/0";
             if (id.StartsWith("car:")) return "car/" + id[4..]; // engine 0.16: a car target is drawn by its car view
             if (id.StartsWith("camera:")) return "camera/" + id[7..]; // engine 0.15: a camera target
+            if (Game.Range && id.StartsWith("bystander-")) return views?.BystanderKey(Game, id) ?? id; // engine 0.18: a range bystander
             for (int i = 0; i < Game.Hostiles.Count; i++) if (Game.Hostiles[i].Id == id) return "hostile/" + i;
             for (int i = 0; i < Game.SecGuns.Length; i++) if (Game.SecGuns[i].Id == id) return "security/" + Math.Min(i, 1);
             foreach (var u in Game.Units) if (u.Id == id) return "unit/" + id; // a response officer or robot

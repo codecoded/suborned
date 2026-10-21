@@ -56,12 +56,28 @@ namespace Suborned.World.Play
             }
             // the pieces, per layout (each a root; RangePieces shows the one the run uses)
             int open = Pieces(range.transform, "pieces-open", site), dense = Pieces(range.transform, "pieces-dense", Json.Parse(File.ReadAllText(Path.Combine(repo, "sim/data/range-dense.site.json"))));
-            range.transform.Find("pieces-dense").gameObject.SetActive(false);
+            // engine 0.16 lane (tuning.md §10.4): the open layout's pieces on a floor run on to 90 m; the floor's second half and the rings past
+            // 40 m (their arc on the floor ahead of the mark) are the lane's own, shown with it
+            int lane = Pieces(range.transform, "pieces-lane", Json.Parse(File.ReadAllText(Path.Combine(repo, "sim/data/range-lane.site.json"))));
+            var laneRoot = range.transform.Find("pieces-lane");
+            var ext = GameObject.CreatePrimitive(PrimitiveType.Quad); ext.name = "floor-lane"; ext.transform.SetParent(laneRoot, false);
+            Object.DestroyImmediate(ext.GetComponent<Collider>());
+            ext.transform.SetPositionAndRotation(new Vector3(67.5f, 0f, 20f), Quaternion.Euler(90f, 0f, 0f)); ext.transform.localScale = new Vector3(45f, 40f, 1f);
+            ext.GetComponent<MeshRenderer>().sharedMaterial = FloorMaterial();
+            for (int r = 45; r <= 85; r += 5)
+            {
+                var go = new GameObject($"ring-{r}m"); go.transform.SetParent(laneRoot, false);
+                var lr = go.AddComponent<LineRenderer>(); lr.useWorldSpace = true; lr.loop = false; lr.widthMultiplier = r % 15 == 0 ? 0.1f : 0.05f; lr.sharedMaterial = ringMat;
+                lr.shadowCastingMode = ShadowCastingMode.Off; lr.receiveShadows = false; lr.alignment = LineAlignment.TransformZ; go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                float half = Mathf.Asin(Mathf.Min(1f, 19.9f / r)); const int n = 48; lr.positionCount = n + 1; // the arc ahead of the mark that lies on the 40 m wide floor
+                for (int i = 0; i <= n; i++) { float a = -half + 2f * half * i / n; lr.SetPosition(i, mark + new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r)); }
+            }
+            range.transform.Find("pieces-dense").gameObject.SetActive(false); laneRoot.gameObject.SetActive(false);
             range.AddComponent<RangePieces>();
             var host = PlayInstall.InstallRange();
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(Path.Combine(Application.dataPath, "..", ScenePath))));
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new IOException($"Range: could not save {ScenePath}");
-            Debug.Log($"Range: built {ScenePath}: floor 45 x 40 m, 1 m grid, rings every 5 m about the mark {mark}, pieces open {open} / dense {dense}");
+            Debug.Log($"Range: built {ScenePath}: floor 45 x 40 m, 1 m grid, rings every 5 m about the mark {mark}, pieces open {open} / dense {dense} / lane {lane}");
         }
 
         static int Pieces(Transform parent, string name, object site)

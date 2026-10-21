@@ -1,0 +1,17 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 438, "y": 594, "w": 243, "h": 25, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": 428, "y": 555, "w": 296, "h": 25, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 2580, "y": 218, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 538, "y": 672, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 2555, "y": 206, "w": 21, "h": 21, "text": "door turn"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 28, "h": 16, "text": "Rival"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Police: Behind the wall, officers!"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

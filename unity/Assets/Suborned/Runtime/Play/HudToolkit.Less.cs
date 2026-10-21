@@ -361,7 +361,8 @@ namespace Suborned.Play
             float showS = t.ObjShowS;
             bool objOn = now - host.ClockStarted < showS || now - objChanged < showS && host.ClockStarted > 0 || now - markAt < showS || pillHover;
             string line = null, cameo = null, glyph = null; hintAlpha = 0f; hintQOn = false;
-            if (objOn) line = obj;
+            if (host.RangeHint is string rh) { line = rh; glyph = HudModel.AtlasIcon("fire", "fire", ""); } // engine 0.18 (the fight range): over a bystander, how to fire on one
+            else if (objOn) line = obj;
             else if (host.HintNow != null && t.Hints2.Find(x => x.Id == host.HintNow.Id) is PlayText.Hint h && h.Short.Length > 0)
             {
                 if (!hintShows.TryGetValue(h.Id, out var hs)) { hs = (now, 1, -1f); hintShows[h.Id] = hs; }

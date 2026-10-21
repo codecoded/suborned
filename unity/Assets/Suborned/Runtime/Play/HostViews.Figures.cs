@@ -127,7 +127,7 @@ namespace Suborned.Play
                     f.model.localPosition = down ? new Vector3(0f, -lift, 0f) : Vector3.zero;
                     f.model.localRotation = Quaternion.Euler(0f, f.yaw, 0f);
                 }
-                bool armed = Armed(key, g), startled = key.StartsWith("crowd/") && CrowdStartled(key, g);
+                bool armed = Armed(key, g), startled = key.StartsWith("crowd/") && CrowdStartled(key, g) || BystanderStartled.Contains(key); // engine 0.18: the range's bystanders crouch too
                 // brief 024 fire placeholder (Forma's clips aim_pistol, shoot, draw): raise to the aim while the agent aims or its fire state has a
                 // target, a recoil restarted on every engine shot (the shot log's event, never a loop), the draw clip when the gun comes out, then lowered
                 int opIdx = System.Array.IndexOf(OpKeys, key); float nowU = Time.unscaledTime;

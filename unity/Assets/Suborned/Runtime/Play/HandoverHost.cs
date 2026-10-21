@@ -680,6 +680,8 @@ namespace Suborned.Play
                 if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
+                if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
+                if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a bystander" }; } // engine 0.18: a range bystander
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
                 if (n == "marker/cabinet") return new Target { Kind = "cabinet", Key = "cabinet", Label = "the control cabinet" };
@@ -715,10 +717,25 @@ namespace Suborned.Play
 
         static readonly string[] AgentNames = { "Scout", "Fixer", "Tech", "Enforcer" };
 
+        /// <summary>The range's context hint over a bystander (engine 0.18: a civilian is fired on only when forced): what to press, in one line.</summary>
+        public string BystanderHint => $"Bystander: hold {controls.Label(PlayAction.Force)} and right click to fire.";
+        /// <summary>The goal line's context hint now, else null: in the fight range, a bystander hovered with an armed agent selected and Ctrl up.</summary>
+        public string RangeHint
+        {
+            get
+            {
+                if (!rangeMode || Game == null || Hover == null || Hover.Kind != "bystander" || Ring != null || Panel != null) return null;
+                if (controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null;
+                for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) return BystanderHint;
+                return null;
+            }
+        }
+
         /// <summary>"Nothing here for the Scout. The Fixer can.": the first other agent with a verb on the target, stated, never a control
         /// instruction (Fable F10; the controls are taught once, by the hints).</summary>
         string WhoCan(Target t, IList<int> mine = null)
         {
+            if (t != null && t.Kind == "bystander") return BystanderHint; // engine 0.18: a bystander is fired on only with Ctrl held
             var me = mine == null || mine.Count == 0 ? AgentNames[(int)Agent] : string.Join(" or the ", new List<int>(mine).ConvertAll(k => AgentNames[k]));
             for (int k = 0; k < 4; k++)
             {
@@ -791,9 +808,10 @@ namespace Suborned.Play
                     {
                         // engine 0.15.0 (tuning.md §9.1): anyone can be shot: every person (Vale too: the hold card says the mission fails), forced
                         // (a civilian), a unit by its own id, a camera, a car (0.16.0); each a harmful wedge with the 0.5 s hold (HoldWedge)
-                        string target = t.Kind is "person" or "hostile" or "unit" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
+                        if (t.Kind == "bystander" && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
+                        string target = t.Kind is "person" or "hostile" or "unit" or "bystander" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
                         if (target.Length == 0) return null;
-                        var i = I("fire", target, "", $"Fire on {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? "" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
+                        var i = I("fire", target, "", $"Fire on {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? "" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
                     }
             }
             return null;
@@ -802,8 +820,11 @@ namespace Suborned.Play
         /// <summary>Fire on a fight target for any armed agent (the Enforcer's knob intent, for an agent with no Fire knob).</summary>
         Intent FireIntent(OpId by, Target t)
         {
-            var R = Game.R; string target = t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind is "hostile" or "unit" ? t.Key : ""; if (target.Length == 0) return null; // Keel 0.15.0: a unit by its own id
-            var i = new Intent { Slot = -1, Label = $"Fire on {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target } };
+            var R = Game.R; string target = t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind is "hostile" or "unit" ? t.Key : "";
+            if (Game.Range && t.Kind == "car") target = "car:" + t.Key; // engine 0.18: the range's cars, by every armed agent
+            if (Game.Range && t.Kind == "bystander" && controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) target = t.Key; // and a bystander, only with Ctrl held
+            if (target.Length == 0) return null; // Keel 0.15.0: a unit by its own id
+            var i = new Intent { Slot = -1, Label = $"Fire on {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target, Force = t.Kind == "bystander" } };
             i.Time = "until down"; i.Trail = $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
         }
 
@@ -970,7 +991,7 @@ namespace Suborned.Play
                         foreach (var bv in BodyIntents((OpId)k, t)) vs.Add((-1, bv)); // carry, put down, hide, tie: rows, never knobs (Glyph §1)
                         // Sky 2026-10-18 ("I thought they were unarmed"): every armed agent fires, not only the Enforcer, whose plate has the knob;
                         // in a fight, Fire tops the rows on a hostile
-                        if (Armed(k) && t.Kind is "hostile" or "rivals" or "security" or "patrol" or "unit" && !vs.Exists(x => x.v.Order?.Do == "fire") && FireIntent((OpId)k, t) is Intent fv)
+                        if (Armed(k) && (t.Kind is "hostile" or "rivals" or "security" or "patrol" or "unit" || Game.Range && t.Kind is "car" or "bystander") && !vs.Exists(x => x.v.Order?.Do == "fire") && FireIntent((OpId)k, t) is Intent fv)
                         { if (Game.FightOn) vs.Insert(0, (-1, fv)); else vs.Add((-1, fv)); }
                         foreach (var (i, v) in vs)
                         {
@@ -1176,7 +1197,7 @@ namespace Suborned.Play
             "person" => CastOf(t.Key) is Person pp ? Game.PersonPos(pp) : null, "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
             "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
             "crowd" => Game.PersonById(t.Id) is Person cp ? Game.PosOfPerson(cp) : null, "body" => Game.BodyById(t.Key) is Body b ? Game.BodyPos(b) : null,
-            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, _ => null,
+            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, "bystander" => Game.PosOf(t.Key), "car" when Game.Range => Game.CarAt("car:" + t.Key), _ => null,
         };
 
         int ReachOf(string ev)
@@ -1262,7 +1283,7 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }
 

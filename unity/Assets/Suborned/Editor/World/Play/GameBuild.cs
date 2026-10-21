@@ -71,6 +71,9 @@ namespace Suborned.World.Play
         {
             Debug.Log(Suborned.World.UI.KitImport.LivePortraits()); // brief 033: Forma's live portraits as they are now (a re-cut rides with the next build)
             var b = SimBundle.Load(); SimScenarios.CheckDll(b); // the DLL Unity builds is the bundle's
+            // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale
+            if (EditorSceneManager.GetActiveScene().isDirty) throw new InvalidOperationException($"Game: save or close {EditorSceneManager.GetActiveScene().path} first (the build rebuilds {RangeScene.ScenePath})");
+            RangeScene.Build();
             var active = EditorSceneManager.GetActiveScene();
             if (active.path != HarbourWorldBuilder.ScenePath)
             {

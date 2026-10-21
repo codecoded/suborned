@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 619, "y": 508, "w": 243, "h": 25, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": 622, "y": 469, "w": 296, "h": 25, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 2711, "y": 366, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 713, "y": 610, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 2686, "y": 354, "w": 23, "h": 23, "text": "door turn"},
+  {"kind": "image", "x": 1155, "y": 305, "w": 346, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

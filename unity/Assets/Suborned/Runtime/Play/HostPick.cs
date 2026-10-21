@@ -36,7 +36,7 @@ namespace Suborned.Play
                 if (!x || !x.gameObject.activeInHierarchy) continue;
                 if (n.StartsWith("crowd/") || n.StartsWith("act/")) continue;
                 var t = TargetOf(x); if (t == null) continue;
-                float up = t.Kind is "op" or "person" or "hostile" or "rivals" or "security" or "patrol" or "unit" ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
+                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
                 pickables.Add(new Pickable { T = t, Anchor = x.position + Vector3.up * up, Name = OneWord(t) });
             }
             return pickables;
@@ -49,7 +49,7 @@ namespace Suborned.Play
             "person" => FirstWord(Name(t.Key)),
             "camera" => "Camera", "cabinet" => "Cabinet", "door" => "Door", "car" => "Car", "patrol" => "Patrol", "rivals" => "Rivals",
             "security" => "Police", "unit" => t.Label.Contains("robot") ? "Robot" : "Officer", "hostile" => t.Label.Contains("rival") ? "Rival" : "Officer",
-            "body" => "Body", "stash" => "Stash", _ => "",
+            "body" => "Body", "stash" => "Stash", "bystander" => "Bystander", _ => "",
         };
         static string FirstWord(string s) { s = s.StartsWith("the ") ? s[4..] : s; int i = s.IndexOf(' '); s = i > 0 ? s[..i] : s; return s.Length > 0 ? char.ToUpperInvariant(s[0]) + s[1..] : s; }
 

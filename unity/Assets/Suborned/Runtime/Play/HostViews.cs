@@ -159,6 +159,7 @@ namespace Suborned.Play
                     Set(hostileKeys[i], show ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down);
                     if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
                 }
+                RangeCars(g); RangeBystanders(g); // engine 0.18: the range's cars and bystanders
                 return;
             }
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
@@ -288,6 +289,78 @@ namespace Suborned.Play
                 if (!things.ContainsKey(key)) { if (u.Robot) Drum(key, RobotColour); else { Person(key, host.securityColour); Dress(key, "security"); } }
                 var pose = g.UnitPose(u); Set(key, pose?.pos);
             }
+        }
+
+        // ---------------------------------------------------------------- engine 0.18: the fight range's cars and bystanders
+
+        readonly HashSet<string> rangeCarKeys = new(), carsSeen = new();
+        readonly Dictionary<string, string> rangeCarLook = new();
+        public readonly HashSet<string> BystanderStartled = new();
+        int bystanderViews;
+        const int MaxBystanders = 40;
+        static MaterialPropertyBlock carMpb;
+
+        /// <summary>Each car the range spawned (Game.RangeCars): Vela's sedan on its slot, long side across the firing line (the engine's nose
+        /// +y); scorched while it burns, charred once it blows (the wreck stays until a car is spawned on its slot). Smoke, flame and the blast
+        /// ring are the HUD's (HudToolkit.CarFx), as for the Handover's cars.</summary>
+        void RangeCars(Game g)
+        {
+            carsSeen.Clear();
+            foreach (var c in g.RangeCars())
+            {
+                var key = "car/" + c.Id.Substring(4); carsSeen.Add(key);
+                if (!things.ContainsKey(key))
+                {
+                    Box(key, new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
+                    if (Visual(key, host.sedanOfficial) is Transform m) { m.localRotation = Quaternion.LookRotation(frame.Dir(c.Facing), Vector3.up) * carNose; carModels[key] = m; }
+                    rangeCarKeys.Add(key);
+                }
+                Set(key, c.At);
+                string look = c.State is "wrecked" ? "wrecked" : c.State == "burning" ? "burning" : "ok";
+                if (!rangeCarLook.TryGetValue(key, out var was) || was != look) { rangeCarLook[key] = look; Scorch(key, look == "wrecked" ? 0.16f : look == "burning" ? 0.5f : 1f); }
+            }
+            foreach (var key in rangeCarKeys) if (!carsSeen.Contains(key)) Set(key, null);
+        }
+
+        /// <summary>A car's paint darkened by `k` (1 = as built): every renderer under its view, by a property block (shared materials untouched).</summary>
+        void Scorch(string key, float k)
+        {
+            carMpb ??= new MaterialPropertyBlock();
+            foreach (var r in things[key].t.GetComponentsInChildren<Renderer>(true))
+            {
+                if (k >= 1f) { r.SetPropertyBlock(null); continue; }
+                r.GetPropertyBlock(carMpb); var baseC = r.sharedMaterial && r.sharedMaterial.HasProperty("_BaseColor") ? r.sharedMaterial.GetColor("_BaseColor") : Color.white;
+                carMpb.SetColor("_BaseColor", new Color(baseC.r * k, baseC.g * k, baseC.b * k, baseC.a)); r.SetPropertyBlock(carMpb);
+            }
+        }
+
+        /// <summary>The range's bystanders (Game.RangeBystanders), in spawn order: passers-by from the figure pool, crouched while startled, running
+        /// for the far refuges, off the floor while safe, lying where they fell. View key bystander/&lt;index in spawn order&gt;.</summary>
+        void RangeBystanders(Game g)
+        {
+            var list = g.RangeBystanders(); BystanderStartled.Clear();
+            for (int i = 0; i < list.Count && i < MaxBystanders; i++)
+            {
+                var b = list[i]; var key = "bystander/" + i;
+                if (i >= bystanderViews)
+                {
+                    Person(key, Passer, false, true); bystanderViews = i + 1;
+                    if (host.figures != null) Dress(key, host.figures.Pick("family/passer", b.Id));
+                }
+                Set(key, b.State == "safe" ? (Pt?)null : b.Pos, b.Down);
+                if (!b.Moving && (b.Facing.X != 0 || b.Facing.Y != 0)) faces[key] = frame.Dir(b.Facing);
+                bool cower = b.State == "startled"; if (cower) BystanderStartled.Add(key);
+                var t = things[key].t; var want = cower ? new Vector3(1.2f, 0.75f, 1.2f) : Vector3.one; if (!figs.ContainsKey(key) && t.localScale != want) t.localScale = want;
+            }
+            for (int i = list.Count; i < bystanderViews; i++) Set("bystander/" + i, null);
+        }
+
+        /// <summary>A bystander's view key from its engine id, or null.</summary>
+        public string BystanderKey(Game g, string id)
+        {
+            var list = g.RangeBystanders();
+            for (int i = 0; i < list.Count && i < MaxBystanders; i++) if (list[i].Id == id) return "bystander/" + i;
+            return null;
         }
 
         void Drum(string key, Color c)

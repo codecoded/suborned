@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 527, "y": 507, "w": 202, "h": 25, "text": "Fuel's alight. Everyone back."},
+  {"kind": "speech", "x": 587, "y": 569, "w": 198, "h": 25, "text": "That car's on fire. Get clear!"},
+  {"kind": "image", "x": 2628, "y": 396, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 630, "y": 640, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 2602, "y": 383, "w": 24, "h": 24, "text": "door turn"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 28, "h": 16, "text": "Rival"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Police: Behind the wall, officers!"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}
